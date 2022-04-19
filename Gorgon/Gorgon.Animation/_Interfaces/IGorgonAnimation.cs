@@ -140,6 +140,15 @@ namespace Gorgon.Animation
         }
 
         /// <summary>
+        /// Property to return the track used to update any values using a Quaternion.
+        /// </summary>
+        [JsonProperty("quaterniontracks")]
+        IReadOnlyDictionary<string, IGorgonAnimationTrack<GorgonKeyQuaternion>> QuaternionTracks
+        {
+            get;
+        }
+
+        /// <summary>
         /// Property to return the track used to update any values using a <see cref="GorgonColor"/>.
         /// </summary>
         [JsonProperty("colortracks")]

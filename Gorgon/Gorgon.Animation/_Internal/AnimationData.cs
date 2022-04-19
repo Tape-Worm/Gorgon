@@ -109,6 +109,13 @@ namespace Gorgon.Animation
             set;
         }
 
+        /// <summary>Property to return the track used to update any values using a Quaternion.</summary>
+        public IReadOnlyDictionary<string, IGorgonAnimationTrack<GorgonKeyQuaternion>> QuaternionTracks
+        {
+            get;
+            set;
+        }
+
         /// <summary>Property to set or return the track used to update any values using a <see cref="GorgonColor"/>.</summary>
         public IReadOnlyDictionary<string, IGorgonAnimationTrack<GorgonKeyGorgonColor>> ColorTracks
         {
@@ -150,6 +157,7 @@ namespace Gorgon.Animation
             result = result.Max(Vector2Tracks.Select(item => item.Value).DefaultIfEmpty().Max(key => key?.KeyFrames.Count ?? 0));
             result = result.Max(Vector3Tracks.Select(item => item.Value).DefaultIfEmpty().Max(key => key?.KeyFrames.Count ?? 0));
             result = result.Max(Vector4Tracks.Select(item => item.Value).DefaultIfEmpty().Max(key => key?.KeyFrames.Count ?? 0));
+            result = result.Max(QuaternionTracks.Select(item => item.Value).DefaultIfEmpty().Max(key => key?.KeyFrames.Count ?? 0));
             result = result.Max(ColorTracks.Select(item => item.Value).DefaultIfEmpty().Max(key => key?.KeyFrames.Count ?? 0));
             result = result.Max(RectangleTracks.Select(item => item.Value).DefaultIfEmpty().Max(key => key?.KeyFrames.Count ?? 0));
             return result.Max(Texture2DTracks.Select(item => item.Value).DefaultIfEmpty().Max(key => key?.KeyFrames.Count ?? 0));

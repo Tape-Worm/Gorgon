@@ -149,8 +149,6 @@ GorgonSpriteLitVertex GorgonVertexLitShader(GorgonSpriteVertex vertex)
 // Entry point for lighting shader.
 float4 GorgonPixelShaderLighting(GorgonSpriteLitVertex vertex) : SV_Target
 {
-    float4 result = float4(0, 0, 0, 1);    
-
     float4 diffuseColor = SampleMainTexture(vertex.uv, vertex.color);
     REJECT_ALPHA(diffuseColor.a);
     
@@ -170,13 +168,11 @@ float4 GorgonPixelShaderLighting(GorgonSpriteLitVertex vertex) : SV_Target
     {			
         case 1:
             color = PointLight(diffuseColor.rgb, normal, vertex, uv, _light);
-            result = float4(result.rgb + color, diffuseColor.a);                
             break;
         case 2:
 			color = DirectionalLight(diffuseColor.rgb, normal, vertex, uv, _light);
-            result = float4(result.rgb + color, diffuseColor.a);
             break;			
     }
 
-    return saturate(float4(result.rgb, diffuseColor.a));
+    return float4(color, diffuseColor.a);
 }

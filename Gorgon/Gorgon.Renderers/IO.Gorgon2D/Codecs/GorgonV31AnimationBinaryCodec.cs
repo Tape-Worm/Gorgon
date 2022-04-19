@@ -73,6 +73,10 @@ namespace Gorgon.IO
         /// </summary>
         public static readonly ulong Vector4Data = "VEC4DATA".ChunkID();
         /// <summary>
+        /// The Quaternion tracks data chunk ID.
+        /// </summary>
+        public static readonly ulong QuaternionData = "QUATDATA".ChunkID();
+        /// <summary>
         /// The color track data chunk ID.
         /// </summary>
         public static readonly ulong ColorData = "COLRDATA".ChunkID();
@@ -416,6 +420,7 @@ namespace Gorgon.IO
                 WriteTrackValues(writer, Vector2Data, animation.Vector2Tracks, k => k.Value);
                 WriteTrackValues(writer, Vector3Data, animation.Vector3Tracks, k => k.Value);
                 WriteTrackValues(writer, Vector4Data, animation.Vector4Tracks, k => k.Value);
+                WriteTrackValues(writer, QuaternionData, animation.QuaternionTracks, k => k.Value);
                 WriteTrackValues(writer, RectData, animation.RectangleTracks, k => k.Value);
                 WriteTrackValues(writer, ColorData, animation.ColorTracks, k => k.Value);
 
@@ -525,6 +530,7 @@ namespace Gorgon.IO
                 ReadTrackValues<GorgonKeyVector2, Vector2>(reader, Vector2Data, builder.EditVector2, (t, v) => new GorgonKeyVector2(t, v));
                 ReadTrackValues<GorgonKeyVector3, Vector3>(reader, Vector3Data, builder.EditVector3, (t, v) => new GorgonKeyVector3(t, v));
                 ReadTrackValues<GorgonKeyVector4, Vector4>(reader, Vector4Data, builder.EditVector4, (t, v) => new GorgonKeyVector4(t, v));
+                ReadTrackValues<GorgonKeyQuaternion, Quaternion>(reader, QuaternionData, builder.EditQuaternion, (t, v) => new GorgonKeyQuaternion(t, v));
                 ReadTrackValues<GorgonKeyRectangle, DX.RectangleF>(reader, RectData, builder.EditRectangle, (t, v) => new GorgonKeyRectangle(t, v));
                 ReadTrackValues<GorgonKeyGorgonColor, GorgonColor>(reader, ColorData, builder.EditColor, (t, v) => new GorgonKeyGorgonColor(t, v));
                 ReadTextureTrackValues(reader, TextureData, builder);

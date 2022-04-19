@@ -286,6 +286,14 @@ namespace System.Numerics
         public static Vector3 ToVector3(this Vector4 v) => new(v.X, v.Y, v.Z);
 
         /// <summary>
+        /// Function to convert a 4D vector to a Quaternion.
+        /// </summary>
+        /// <param name="v">The vector to convert.</param>
+        /// <returns>The converted quaternion.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Quaternion ToQuaternion(this Vector4 v) => new(v.X, v.Y, v.Z, v.W);
+
+        /// <summary>
         /// Function to convert a 2D vector to a 4D vector.
         /// </summary>
         /// <param name="v">The vector to convert.</param>
@@ -303,5 +311,13 @@ namespace System.Numerics
         /// <returns>The converted vector.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Vector4 ToVector4(this Vector3 v, float w = 0) => new(v.X, v.Y, v.Z, w);
+
+        /// <summary>
+        /// Function to convert a Quaternion to a 4D vector.
+        /// </summary>
+        /// <param name="q">The quaternion to convert.</param>
+        /// <returns>The converted vector.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Vector4 ToVector4(this Quaternion q) => new(q.X, q.Y, q.Z, q.W);
     }
 }

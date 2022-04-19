@@ -63,7 +63,11 @@ namespace Gorgon.Animation
         /// <summary>
         /// 2D texture, coordinate, and array index values.
         /// </summary>
-        Texture2D = 6
+        Texture2D = 6,
+        /// <summary>
+        /// A quaternion
+        /// </summary>
+        Quaternion = 7
     }
 
     /// <summary>

@@ -271,6 +271,16 @@ namespace Gorgon.Animation
                             _playableTracks.Add(registration);
                         }
                         break;
+                    case AnimationTrackKeyType.Quaternion:
+                        if (animation.QuaternionTracks.TryGetValue(registration.TrackName, out IGorgonAnimationTrack<GorgonKeyQuaternion> trackQuat))
+                        {
+                            if (trackQuat.SupportsInterpolation != registration.SupportedInterpolation)
+                            {
+                                throw new NotSupportedException(string.Format(Resources.GORANM_ERR_INTERPOLATION_MISMATCH, registration.TrackName, registration.SupportedInterpolation, trackQuat.SupportsInterpolation));
+                            }
+                            _playableTracks.Add(registration);
+                        }
+                        break;
                     case AnimationTrackKeyType.Rectangle:
                         if (animation.RectangleTracks.TryGetValue(registration.TrackName, out IGorgonAnimationTrack<GorgonKeyRectangle> trackRect))
                         {
@@ -352,6 +362,15 @@ namespace Gorgon.Animation
                             OnVector4ValueUpdate(registration, _animatedObject, vec4DValue);
                         }
                         break;
+                    case AnimationTrackKeyType.Quaternion:
+                        if ((CurrentAnimation.QuaternionTracks.TryGetValue(registration.TrackName, out IGorgonAnimationTrack<GorgonKeyQuaternion> quatTrack))
+                            && (quatTrack.IsEnabled)
+                            && (quatTrack.KeyFrames.Count > 0)
+                            && (TrackKeyProcessor.TryUpdateQuaternion(quatTrack, _time, out Quaternion quatValue)))
+                        {
+                            OnQuaternionValueUpdate(registration, _animatedObject, quatValue);
+                        }
+                        break;
                     case AnimationTrackKeyType.Rectangle:
                         if ((CurrentAnimation.RectangleTracks.TryGetValue(registration.TrackName, out IGorgonAnimationTrack<GorgonKeyRectangle> rectTrack))
                             && (rectTrack.IsEnabled)
@@ -414,6 +433,14 @@ namespace Gorgon.Animation
         /// <param name="animObject">The object to update.</param>
         /// <param name="value">The value to apply.</param>
         protected abstract void OnVector4ValueUpdate(GorgonTrackRegistration track, T animObject, Vector4 value);
+
+        /// <summary>
+        /// Function called when a Quaternion value needs to be updated on the animated object.
+        /// </summary>
+        /// <param name="track">The track currently being processed.</param>
+        /// <param name="animObject">The object to update.</param>
+        /// <param name="value">The value to apply.</param>
+        protected abstract void OnQuaternionValueUpdate(GorgonTrackRegistration track, T animObject, Quaternion value);
 
         /// <summary>
         /// Function called when a <see cref="GorgonColor"/> value needs to be updated on the animated object.

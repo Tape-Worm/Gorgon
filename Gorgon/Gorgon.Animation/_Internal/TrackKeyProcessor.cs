@@ -242,6 +242,51 @@ namespace Gorgon.Animation
         }
 
         /// <summary>
+        /// Function to update the vector4 property of the object that the animation is being applied to.
+        /// </summary>
+        /// <param name="track">The track to evaluate.</param>
+        /// <param name="time">The current time for the animation.</param>
+        /// <param name="result">The result value to apply to the vector3 object property.</param>
+        /// <returns><b>true</b> if there's a value to update, <b>false</b> if not.</returns>
+	    public static bool TryUpdateQuaternion(IGorgonAnimationTrack<GorgonKeyQuaternion> track, float time, out Quaternion result)
+        {
+            switch (track.KeyFrames.Count)
+            {
+                case 0:
+                    result = Quaternion.Identity;
+                    return false;
+                case 1:
+                    result = track.KeyFrames[0].Value;
+                    return true;
+            }
+
+            GorgonKeyQuaternion firstKey = track.KeyFrames[0];
+            GorgonKeyQuaternion lastKey = track.KeyFrames[track.KeyFrames.Count - 1];
+
+            if ((time < 0) || (time.EqualsEpsilon(firstKey.Time)))
+            {
+                result = firstKey.Value;
+                return true;
+            }
+
+            if ((time > lastKey.Time) || (time.EqualsEpsilon(lastKey.Time)))
+            {
+                result = lastKey.Value;
+                return true;
+            }
+
+            (GorgonKeyQuaternion prev, GorgonKeyQuaternion next, int prevKeyIndex, float deltaTime) = TweenKey.GetNearestKeys(track, time, lastKey.Time);
+
+            result = track.InterpolationMode switch
+            {
+                TrackInterpolationMode.Linear => Quaternion.Lerp(prev.Value, next.Value, deltaTime),
+                TrackInterpolationMode.Spline => track.SplineController.GetInterpolatedValue(prevKeyIndex, deltaTime).ToQuaternion(),
+                _ => prev.Value,
+            };
+            return true;
+        }
+
+        /// <summary>
         /// Function to update the color of the object that the animation is being applied to.
         /// </summary>
         /// <param name="track">The track to evaluate.</param>

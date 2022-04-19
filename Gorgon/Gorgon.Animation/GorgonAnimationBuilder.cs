@@ -65,6 +65,8 @@ namespace Gorgon.Animation
         private readonly Dictionary<string, TrackKeyBuilder<GorgonKeyVector3>> _vector3Tracks = new(StringComparer.OrdinalIgnoreCase);
         // A list of builders for vector 4 tracks.
         private readonly Dictionary<string, TrackKeyBuilder<GorgonKeyVector4>> _vector4Tracks = new(StringComparer.OrdinalIgnoreCase);
+        // A list of builders for quaternion tracks.
+        private readonly Dictionary<string, TrackKeyBuilder<GorgonKeyQuaternion>> _quatTracks = new(StringComparer.OrdinalIgnoreCase);
         // A list of builders for rectangle tracks.
         private readonly Dictionary<string, TrackKeyBuilder<GorgonKeyRectangle>> _rectangleTracks = new(StringComparer.OrdinalIgnoreCase);
         // A list of builders for rectangle tracks.
@@ -197,6 +199,38 @@ namespace Gorgon.Animation
             if (!_vector4Tracks.TryGetValue(name, out TrackKeyBuilder<GorgonKeyVector4> result))
             {
                 result = _vector4Tracks[name] = new TrackKeyBuilder<GorgonKeyVector4>(this);
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// Function to edit a track that uses quaternions for its key frame values.
+        /// </summary>
+        /// <param name="name">The registration name of the track to edit.</param>
+        /// <returns>The builder used to update the requested animation track.</returns>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="name"/> parameter is <b>null</b>.</exception>
+        /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="name"/> parameter is empty.</exception>
+        /// <remarks>
+        /// <para>
+        /// If no track exists with the specified <paramref name="name"/>, then a new track is created.
+        /// </para>
+        /// </remarks>
+        public IGorgonTrackKeyBuilder<GorgonKeyQuaternion> EditQuaternion(string name)
+        {
+            if (name is null)
+            {
+                throw new ArgumentNullException(nameof(name));
+            }
+
+            if (string.IsNullOrWhiteSpace(name))
+            {
+                throw new ArgumentEmptyException(nameof(name));
+            }
+
+            if (!_quatTracks.TryGetValue(name, out TrackKeyBuilder<GorgonKeyQuaternion> result))
+            {
+                result = _quatTracks[name] = new TrackKeyBuilder<GorgonKeyQuaternion>(this);
             }
 
             return result;
@@ -415,6 +449,35 @@ namespace Gorgon.Animation
         }
 
         /// <summary>
+        /// Function to delete a track that updates a Quaternion value for its key frame values.
+        /// </summary>
+        /// <param name="name">The registration name of the track to delete.</param>
+        /// <returns>The fluent builder for the animation.</returns>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="name"/> parameter is <b>null</b>.</exception>
+        /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="name"/> parameter is empty.</exception>
+        /// <exception cref="KeyNotFoundException">Thrown if the track with the name specified does not exist.</exception>
+        public GorgonAnimationBuilder DeleteQuaternion(string name)
+        {
+            if (name is null)
+            {
+                throw new ArgumentNullException(nameof(name));
+            }
+
+#pragma warning disable IDE0046 // Convert to conditional expression
+
+            if (string.IsNullOrWhiteSpace(name))
+            {
+                throw new ArgumentEmptyException(nameof(name));
+            }
+
+            return !_quatTracks.Remove(name)
+                ? throw new KeyNotFoundException(string.Format(Resources.GORANM_TRACK_DOES_NOT_EXIST, name))
+                : this;
+#pragma warning restore IDE0046 // Convert to conditional expression
+
+        }
+
+        /// <summary>
         /// Function to delete a track that updates a SharpDX <c>RectangleF</c> value for its key frame values.
         /// </summary>
         /// <param name="name">The registration name of the track to delete.</param>
@@ -544,6 +607,7 @@ namespace Gorgon.Animation
             var vec2 = new Dictionary<string, IGorgonAnimationTrack<GorgonKeyVector2>>(StringComparer.OrdinalIgnoreCase);
             var vec3 = new Dictionary<string, IGorgonAnimationTrack<GorgonKeyVector3>>(StringComparer.OrdinalIgnoreCase);
             var vec4 = new Dictionary<string, IGorgonAnimationTrack<GorgonKeyVector4>>(StringComparer.OrdinalIgnoreCase);
+            var quat = new Dictionary<string, IGorgonAnimationTrack<GorgonKeyQuaternion>>(StringComparer.OrdinalIgnoreCase);
             var rect = new Dictionary<string, IGorgonAnimationTrack<GorgonKeyRectangle>>(StringComparer.OrdinalIgnoreCase);
             var color = new Dictionary<string, IGorgonAnimationTrack<GorgonKeyGorgonColor>>(StringComparer.OrdinalIgnoreCase);
             var texture = new Dictionary<string, IGorgonAnimationTrack<GorgonKeyTexture2D>>(StringComparer.OrdinalIgnoreCase);
@@ -604,6 +668,20 @@ namespace Gorgon.Animation
                 };
             }
 
+            foreach (KeyValuePair<string, TrackKeyBuilder<GorgonKeyQuaternion>> builder in _quatTracks)
+            {
+                foreach (GorgonKeyQuaternion keyValue in builder.Value.Keys)
+                {
+                    keyValue.Time = AdjustKeyTime(keyValue.Time);
+                }
+
+                quat[builder.Key] = new QuaternionTrack(builder.Value.GetSortedKeys(), builder.Key)
+                {
+                    IsEnabled = builder.Value.IsEnabled,
+                    InterpolationMode = builder.Value.InterpolationMode
+                };
+            }
+
             foreach (KeyValuePair<string, TrackKeyBuilder<GorgonKeyRectangle>> builder in _rectangleTracks)
             {
                 foreach (GorgonKeyRectangle keyValue in builder.Value.Keys)
@@ -653,6 +731,7 @@ namespace Gorgon.Animation
                                       .Concat(_vector2Tracks.SelectMany(item => item.Value.Keys).DefaultIfEmpty())
                                       .Concat(_vector3Tracks.SelectMany(item => item.Value.Keys).DefaultIfEmpty())
                                       .Concat(_vector4Tracks.SelectMany(item => item.Value.Keys).DefaultIfEmpty())
+                                      .Concat(_quatTracks.SelectMany(item => item.Value.Keys).DefaultIfEmpty())
                                       .Concat(_rectangleTracks.SelectMany(item => item.Value.Keys).DefaultIfEmpty())
                                       .Concat(_colorTracks.SelectMany(item => item.Value.Keys).DefaultIfEmpty())
                                       .Concat(_textureTracks.SelectMany(item => item.Value.Keys).DefaultIfEmpty())
@@ -667,7 +746,8 @@ namespace Gorgon.Animation
                 Texture2DTracks = texture,
                 Vector2Tracks = vec2,
                 Vector3Tracks = vec3,
-                Vector4Tracks = vec4
+                Vector4Tracks = vec4,
+                QuaternionTracks = quat
             };
         }
 
@@ -726,6 +806,15 @@ namespace Gorgon.Animation
                 _vector4Tracks[track.Key] = trackBuilder;
             }
 
+            foreach (KeyValuePair<string, IGorgonAnimationTrack<GorgonKeyQuaternion>> track in builderObject.QuaternionTracks)
+            {
+                var trackBuilder = new TrackKeyBuilder<GorgonKeyQuaternion>(this);
+                trackBuilder.SetInterpolationMode(track.Value.InterpolationMode);
+                trackBuilder.Enabled();
+                trackBuilder.Keys.AddRange(track.Value.KeyFrames.Select(item => new GorgonKeyQuaternion(item)));
+                _quatTracks[track.Key] = trackBuilder;
+            }
+
             foreach (KeyValuePair<string, IGorgonAnimationTrack<GorgonKeyRectangle>> track in builderObject.RectangleTracks)
             {
                 var trackBuilder = new TrackKeyBuilder<GorgonKeyRectangle>(this);
@@ -766,6 +855,7 @@ namespace Gorgon.Animation
             _vector2Tracks.Clear();
             _vector3Tracks.Clear();
             _vector4Tracks.Clear();
+            _quatTracks.Clear();
             _rectangleTracks.Clear();
             _colorTracks.Clear();
             _textureTracks.Clear();
@@ -791,6 +881,7 @@ namespace Gorgon.Animation
                 .Concat(_vector2Tracks.SelectMany(item => item.Value.Keys))
                 .Concat(_vector3Tracks.SelectMany(item => item.Value.Keys))
                 .Concat(_vector4Tracks.SelectMany(item => item.Value.Keys))
+                .Concat(_quatTracks.SelectMany(item => item.Value.Keys))
                 .Concat(_rectangleTracks.SelectMany(item => item.Value.Keys))
                 .Concat(_colorTracks.SelectMany(item => item.Value.Keys))
                 .Concat(_textureTracks.SelectMany(item => item.Value.Keys))

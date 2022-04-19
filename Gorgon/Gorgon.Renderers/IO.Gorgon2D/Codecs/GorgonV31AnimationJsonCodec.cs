@@ -363,9 +363,11 @@ namespace Gorgon.IO
             var vec2Converter = new JsonVector2KeyConverter();
             var vec3Converter = new JsonVector3KeyConverter();
             var vec4Converter = new JsonVector4KeyConverter();
+            var quatConverter = new JsonQuaternionKeyConverter();
             var rectConverter = new JsonRectKeyConverter();
 
             var vec4 = new Dictionary<string, (List<GorgonKeyVector4>, TrackInterpolationMode, bool)>(StringComparer.OrdinalIgnoreCase);
+            var quat = new Dictionary<string, (List<GorgonKeyQuaternion>, TrackInterpolationMode, bool)>(StringComparer.OrdinalIgnoreCase);
             var vec3 = new Dictionary<string, (List<GorgonKeyVector3>, TrackInterpolationMode, bool)>(StringComparer.OrdinalIgnoreCase);
             var vec2 = new Dictionary<string, (List<GorgonKeyVector2>, TrackInterpolationMode, bool)>(StringComparer.OrdinalIgnoreCase);
             var singles = new Dictionary<string, (List<GorgonKeySingle>, TrackInterpolationMode, bool)>(StringComparer.OrdinalIgnoreCase);
@@ -403,6 +405,9 @@ namespace Gorgon.IO
                             break;
                         case "VECTOR4TRACKS":
                             ReadTrack(reader, vec4Converter, vec4);
+                            break;
+                        case "QUATERNIONTRACKS":
+                            ReadTrack(reader, quatConverter, quat);
                             break;
                         case "RECTTRACKS":
                             ReadTrack(reader, rectConverter, rects);
@@ -475,6 +480,18 @@ namespace Gorgon.IO
                 foreach (KeyValuePair<string, (List<GorgonKeyVector4> keys, TrackInterpolationMode interpolation, bool isEnabled)> track in vec4)
                 {
                     builder.EditVector4(track.Key)
+                           .SetInterpolationMode(track.Value.interpolation)
+                           .Enabled(track.Value.isEnabled)
+                           .SetKeys(track.Value.keys)
+                           .EndEdit();
+                }
+            }
+
+            if (quat.Count > 0)
+            {
+                foreach (KeyValuePair<string, (List<GorgonKeyQuaternion> keys, TrackInterpolationMode interpolation, bool isEnabled)> track in quat)
+                {
+                    builder.EditQuaternion(track.Key)
                            .SetInterpolationMode(track.Value.interpolation)
                            .Enabled(track.Value.isEnabled)
                            .SetKeys(track.Value.keys)

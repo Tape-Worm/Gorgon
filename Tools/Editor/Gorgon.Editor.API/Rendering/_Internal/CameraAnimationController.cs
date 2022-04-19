@@ -132,6 +132,15 @@ namespace Gorgon.Editor.Rendering
         {
             // Not needed.
         }
+
+        /// <summary>Function called when a Quaternion value needs to be updated on the animated object.</summary>
+        /// <param name="track">The track currently being processed.</param>
+        /// <param name="animObject">The object to update.</param>
+        /// <param name="value">The value to apply.</param>
+        protected override void OnQuaternionValueUpdate(GorgonTrackRegistration track, GorgonOrthoCamera animObject, Quaternion value)        
+        {
+            // Not needed.
+        }
         #endregion
 
         #region Constructor.

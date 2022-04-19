@@ -441,7 +441,15 @@ namespace Gorgon.Animation
             animObject.TextureRegion = textureCoordinates;
             animObject.TextureArrayIndex = textureArrayIndex;
         }
-        
+
+        /// <summary>Function called when a Quaternion value needs to be updated on the animated object.</summary>
+        /// <param name="track">The track currently being processed.</param>
+        /// <param name="animObject">The object to update.</param>
+        /// <param name="value">The value to apply.</param>
+        protected override void OnQuaternionValueUpdate(GorgonTrackRegistration track, GorgonSprite animObject, Quaternion value)
+        {
+        }
+
         /// <summary>Initializes a new instance of the <see cref="GorgonSpriteAnimationController"/> class.</summary>
         public GorgonSpriteAnimationController()
         {
