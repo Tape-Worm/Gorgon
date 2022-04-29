@@ -182,7 +182,7 @@ namespace Gorgon.Graphics.Core
             {
                 SizeInBytes = _info.SizeInBytes,
                 Usage = (D3D11.ResourceUsage)_info.Usage,
-                BindFlags = D3D11.BindFlags.ConstantBuffer,
+                BindFlags = _info.Usage != ResourceUsage.Staging ? D3D11.BindFlags.ConstantBuffer : D3D11.BindFlags.None,
                 OptionFlags = D3D11.ResourceOptionFlags.None,
                 CpuAccessFlags = cpuFlags,
                 StructureByteStride = 0
