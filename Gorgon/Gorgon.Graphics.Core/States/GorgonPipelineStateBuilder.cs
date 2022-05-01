@@ -56,8 +56,6 @@ namespace Gorgon.Graphics.Core
     /// <seealso cref="GorgonPipelineStateBuilder"/>
     /// <seealso cref="GorgonDrawCallBuilder"/>
     /// <seealso cref="GorgonDrawIndexCallBuilder"/>
-    /// <seealso cref="GorgonInstancedCallBuilder"/>
-    /// <seealso cref="GorgonInstancedIndexCallBuilder"/>
     /// <seealso cref="GorgonStreamOutCallBuilder"/>
     public class GorgonPipelineStateBuilder
         : IGorgonGraphicsObject, IGorgonFluentBuilder<GorgonPipelineStateBuilder, GorgonPipelineState>

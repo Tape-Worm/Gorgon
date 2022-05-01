@@ -47,8 +47,6 @@ namespace Gorgon.Graphics.Core
     /// <seealso cref="GorgonPipelineStateBuilder"/>
     /// <seealso cref="GorgonDrawCall"/>
     /// <seealso cref="GorgonDrawIndexCall"/>
-    /// <seealso cref="GorgonInstancedCall"/>
-    /// <seealso cref="GorgonInstancedIndexCall"/>
     /// <seealso cref="GorgonStreamOutCall"/>
     public class GorgonPipelineState
     {
