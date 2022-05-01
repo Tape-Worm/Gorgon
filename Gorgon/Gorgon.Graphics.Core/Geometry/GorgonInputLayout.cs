@@ -35,6 +35,7 @@ using System.Threading;
 using Gorgon.Core;
 using Gorgon.Graphics.Core.Properties;
 using Gorgon.Reflection;
+using DX = SharpDX;
 using D3D11 = SharpDX.Direct3D11;
 
 namespace Gorgon.Graphics.Core
@@ -59,46 +60,85 @@ namespace Gorgon.Graphics.Core
         // Type mapping for types.
         private static readonly Dictionary<Type, BufferFormat> _typeMapping = new()
         {
-                {
-                    typeof(byte), BufferFormat.R8_UInt
-                },
-                {
-                    typeof(sbyte), BufferFormat.R8_SInt
-                },
-                {
-                    typeof(int), BufferFormat.R32_UInt
-                },
-                {
-                    typeof(uint), BufferFormat.R32_UInt
-                },
-                {
-                    typeof(short), BufferFormat.R16_UInt
-                },
-                {
-                    typeof(ushort), BufferFormat.R16_UInt
-                },
-                {
-                    typeof(long), BufferFormat.R32G32_SInt
-                },
-                {
-                    typeof(ulong), BufferFormat.R32G32_UInt
-                },
-                {
-                    typeof(float), BufferFormat.R32_Float
-                },
-                {
-                    typeof(Vector2), BufferFormat.R32G32_Float
-                },
-                {
-                    typeof(Vector3), BufferFormat.R32G32B32_Float
-                },
-                {
-                    typeof(Vector4), BufferFormat.R32G32B32A32_Float
-                },
-                {
-                    typeof(GorgonColor), BufferFormat.R32G32B32A32_Float
-                }
-            };
+            {
+                typeof(byte),
+                BufferFormat.R8_UInt
+            },
+            {
+                typeof(sbyte),
+                BufferFormat.R8_SInt
+            },
+            {
+                typeof(int),
+                BufferFormat.R32_UInt
+            },
+            {
+                typeof(uint),
+                BufferFormat.R32_UInt
+            },
+            {
+                typeof(short),
+                BufferFormat.R16_UInt
+            },
+            {
+                typeof(ushort),
+                BufferFormat.R16_UInt
+            },
+            {
+                typeof(long),
+                BufferFormat.R32G32_SInt
+            },
+            {
+                typeof(ulong),
+                BufferFormat.R32G32_UInt
+            },
+            {
+                typeof(float),
+                BufferFormat.R32_Float
+            },
+            {
+                typeof(Vector2),
+                BufferFormat.R32G32_Float
+            },
+            {
+                typeof(Vector3),
+                BufferFormat.R32G32B32_Float
+            },
+            {
+                typeof(Vector4),
+                BufferFormat.R32G32B32A32_Float
+            },
+            {
+                typeof(GorgonColor),
+                BufferFormat.R32G32B32A32_Float
+            },
+            {
+                typeof(DX.Half),
+                BufferFormat.R16_Float
+            },
+            {
+                typeof(DX.Half2),
+                BufferFormat.R16G16_Float
+            },
+            {
+                typeof(DX.Half4),
+                BufferFormat.R16G16B16A16_Float
+            },
+#if NET6_0_OR_GREATER
+            {
+                typeof(Half),
+                BufferFormat.R16_Float
+            },
+#endif
+            {
+                typeof(DX.Int3),
+                BufferFormat.R32G32B32_SInt
+            },
+            {
+                typeof(DX.Int4),
+                BufferFormat.R32G32B32A32_SInt
+            }
+        };
 
         // Elements used to build the layout.
         private readonly GorgonInputElement[] _elements;
@@ -282,6 +322,7 @@ namespace Gorgon.Graphics.Core
             return result;
         }
 
+#if NET6_0_OR_GREATER
         /// <summary>
         /// Function to build an input layout using the fields from a value type.
         /// </summary>
@@ -344,13 +385,31 @@ namespace Gorgon.Graphics.Core
         ///			<description><see cref="float"/></description>
         ///		</item>
         ///		<item>
-        ///			<description><c>Vector2</c></description>
+        ///			<description><see cref="Half"/></description>
         ///		</item>
         ///		<item>
-        ///			<description><c>Vector3</c></description>
+        ///		    <description><c>SharpDX.Half</c></description>
         ///		</item>
         ///		<item>
-        ///			<description><c>Vector4</c></description>
+        ///		    <description><c>SharpDX.Half2</c></description>
+        ///		</item>
+        ///		<item>
+        ///		    <description><c>SharpDX.Half4</c></description>
+        ///		</item>
+        ///		<item>
+        ///		    <description><c>SharpDX.Int3</c></description>
+        ///		</item>
+        ///		<item>
+        ///		    <description><c>SharpDX.Int4</c></description>
+        ///		</item>
+        ///		<item>
+        ///			<description><see cref="Vector2"/></description>
+        ///		</item>
+        ///		<item>
+        ///			<description><see cref="Vector3"/></description>
+        ///		</item>
+        ///		<item>
+        ///			<description><see cref="Vector4"/></description>
         ///		</item>
         ///		<item>
         ///			<description><see cref="GorgonColor"/></description>
@@ -361,9 +420,19 @@ namespace Gorgon.Graphics.Core
         /// </para>
         /// </remarks>
         /// <seealso cref="GorgonReflectionExtensions.IsFieldSafeForNative"/>
+#else
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="graphics"></param>
+        /// <param name="shader"></param>
+        /// <returns></returns>
+#endif
         public static GorgonInputLayout CreateUsingType<T>(GorgonGraphics graphics, GorgonVertexShader shader)
             where T : unmanaged => CreateUsingType(graphics, typeof(T), shader);
 
+#if NET6_0_OR_GREATER
         /// <summary>
         /// Function to build an input layout using the fields from a value type.
         /// </summary>
@@ -427,13 +496,31 @@ namespace Gorgon.Graphics.Core
         ///			<description><see cref="float"/></description>
         ///		</item>
         ///		<item>
-        ///			<description><c>Vector2</c></description>
+        ///			<description><see cref="Half"/></description>
         ///		</item>
         ///		<item>
-        ///			<description><c>Vector3</c></description>
+        ///		    <description><c>SharpDX.Half</c></description>
         ///		</item>
         ///		<item>
-        ///			<description><c>Vector4</c></description>
+        ///		    <description><c>SharpDX.Half2</c></description>
+        ///		</item>
+        ///		<item>
+        ///		    <description><c>SharpDX.Half4</c></description>
+        ///		</item>
+        ///		<item>
+        ///		    <description><c>SharpDX.Int3</c></description>
+        ///		</item>
+        ///		<item>
+        ///		    <description><c>SharpDX.Int4</c></description>
+        ///		</item>
+        ///		<item>
+        ///			<description><see cref="Vector2"/></description>
+        ///		</item>
+        ///		<item>
+        ///			<description><see cref="Vector3"/></description>
+        ///		</item>
+        ///		<item>
+        ///			<description><see cref="Vector4"/></description>
         ///		</item>
         ///		<item>
         ///			<description><see cref="GorgonColor"/></description>
@@ -444,6 +531,17 @@ namespace Gorgon.Graphics.Core
         /// </para>
         /// </remarks>
         /// <seealso cref="GorgonReflectionExtensions.IsFieldSafeForNative"/>
+#else
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="graphics"></param>
+        /// <param name="type"></param>
+        /// <param name="shader"></param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentNullException"></exception>
+        /// <exception cref="ArgumentException"></exception>
+#endif
         public static GorgonInputLayout CreateUsingType(GorgonGraphics graphics, Type type, GorgonVertexShader shader)
         {
             if (graphics is null)
@@ -464,6 +562,136 @@ namespace Gorgon.Graphics.Core
             if (shader is null)
             {
                 throw new ArgumentNullException(nameof(shader));
+            }
+
+            IReadOnlyList<GorgonInputElement> elements = ElementsFromType(type);
+            return new GorgonInputLayout(graphics, type.FullName, shader, elements);
+        }
+
+        /// <summary>
+        /// Function to retrieve the input elements from the type passed in.
+        /// </summary>
+        /// <typeparam name="T">The type to evaluate.</typeparam>
+        /// <returns>A list of input elements used to build the input layout.</returns>
+        public static IReadOnlyList<GorgonInputElement> ElementsFromType<T>()
+            where T : unmanaged => ElementsFromType(typeof(T));
+
+#if NET6_0_OR_GREATER
+        /// <summary>
+        /// Function to retrieve the input elements corresponding to fields on a type.
+        /// </summary>
+        /// <param name="type">The type to evaluate.</param>
+        /// <returns>A new <see cref="GorgonInputLayout"/> for the type passed to <paramref name="type"/>.</returns>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="type"/> parameter is <b>null</b>.</exception>
+        /// <exception cref="ArgumentException">Thrown when an element with the same context, slot and index appears more than once in the members of the <paramref name="type"/>.
+        /// <para>-or-</para>
+        /// <para>Thrown if the <paramref name="type"/> does not have a <see cref="LayoutKind"/> of <see cref="LayoutKind.Sequential"/> or <see cref="LayoutKind.Explicit"/>.</para>
+        /// </exception>
+        /// <exception cref="GorgonException">Thrown when the type specified by <paramref name="type"/> is not safe for use with native functions (see <see cref="GorgonReflectionExtensions.IsFieldSafeForNative"/>).
+        /// <para>-or-</para>
+        /// <para>Thrown when the type specified by <paramref name="type"/> does not contain any public members.</para>
+        /// </exception>
+        /// <remarks>
+        /// <para>
+        /// This will return a list of <see cref="GorgonInputElement"/> values using the fields within a value type (<c>struct</c>). Each of the members that are to be included in the layout must be decorated with a 
+        /// <see cref="InputElementAttribute"/>. If a member is not decorated with this attribute, then it will be ignored.
+        /// </para>
+        /// <para>
+        /// The <paramref name="type"/> parameter must be an unmanaged value type (<c>struct</c>), reference types are not supported. The members of the type must also be public fields. Properties are not 
+        /// supported. Futhermore, the struct must be decorated with a <see cref="StructLayoutAttribute"/> that defines a <see cref="LayoutKind"/> of <see cref="LayoutKind.Sequential"/> or 
+        /// <see cref="LayoutKind.Explicit"/>. This is necessary to ensure that the member of the value type are in the correct order when writing to a <see cref="GorgonVertexBuffer"/>.
+        /// </para>
+        /// <para>
+        /// If the type specified by <paramref name="type"/> has members that are not primitive types or value types with a <see cref="StructLayoutAttribute"/>, or the member has a 
+        /// <see cref="MarshalAsAttribute"/>, then an exception is thrown.  Gorgon does not support marshalling of complex types for vertices.
+        /// </para>
+        /// <para>
+        /// The types of the fields must be one of the following types:
+        /// <para>
+        /// <list type="bullet">
+        ///		<item>
+        ///			<description><see cref="byte"/></description>
+        ///		</item>
+        ///		<item>
+        ///			<description><see cref="sbyte"/></description>
+        ///		</item>
+        ///		<item>
+        ///			<description><see cref="short"/></description>
+        ///		</item>
+        ///		<item>
+        ///			<description><see cref="ushort"/></description>
+        ///		</item>
+        ///		<item>
+        ///			<description><see cref="int"/></description>
+        ///		</item>
+        ///		<item>
+        ///			<description><see cref="uint"/></description>
+        ///		</item>
+        ///		<item>
+        ///			<description><see cref="long"/></description>
+        ///		</item>
+        ///		<item>
+        ///			<description><see cref="ulong"/></description>
+        ///		</item>
+        ///		<item>
+        ///			<description><see cref="float"/></description>
+        ///		</item>
+        ///		<item>
+        ///			<description><see cref="Half"/></description>
+        ///		</item>
+        ///		<item>
+        ///		    <description><c>SharpDX.Half</c></description>
+        ///		</item>
+        ///		<item>
+        ///		    <description><c>SharpDX.Half2</c></description>
+        ///		</item>
+        ///		<item>
+        ///		    <description><c>SharpDX.Half4</c></description>
+        ///		</item>
+        ///		<item>
+        ///		    <description><c>SharpDX.Int3</c></description>
+        ///		</item>
+        ///		<item>
+        ///		    <description><c>SharpDX.Int4</c></description>
+        ///		</item>
+        ///		<item>
+        ///			<description><see cref="Vector2"/></description>
+        ///		</item>
+        ///		<item>
+        ///			<description><see cref="Vector3"/></description>
+        ///		</item>
+        ///		<item>
+        ///			<description><see cref="Vector4"/></description>
+        ///		</item>
+        ///		<item>
+        ///			<description><see cref="GorgonColor"/></description>
+        ///		</item>
+        /// </list>
+        /// </para>
+        /// If the type of the member does not match, an exception will be thrown.
+        /// </para>
+        /// </remarks>
+        /// <seealso cref="GorgonReflectionExtensions.IsFieldSafeForNative"/>
+#else
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="type"></param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentNullException"></exception>
+        /// <exception cref="ArgumentException"></exception>
+        /// <exception cref="GorgonException"></exception>
+#endif
+        public static IReadOnlyList<GorgonInputElement> ElementsFromType(Type type)
+        {
+            if (type is null)
+            {
+                throw new ArgumentNullException(nameof(type));
+            }
+
+            if ((type.IsAutoLayout) || ((!type.IsLayoutSequential) && (!type.IsExplicitLayout)))
+            {
+                throw new ArgumentException(string.Format(Resources.GORGFX_ERR_LAYOUT_NOT_SEQUENTIAL_EXPLICIT, type.FullName));
             }
 
             int byteOffset = 0;
@@ -500,8 +728,9 @@ namespace Gorgon.Graphics.Core
                 byteOffset += element.SizeInBytes;
             }
 
-            return new GorgonInputLayout(graphics, type.Name, shader, elements);
+            return elements;
         }
+
 
         /// <summary>
         /// Function to convert this input layout into a <see cref="GorgonStreamOutLayout"/>
@@ -636,9 +865,9 @@ namespace Gorgon.Graphics.Core
 
             this.UnregisterDisposable(Graphics);
         }
-        #endregion
+#endregion
 
-        #region Constructor/Destructor.
+#region Constructor/Destructor.
         /// <summary>
         /// Initializes a new instance of the <see cref="GorgonInputLayout"/> class.
         /// </summary>
@@ -687,6 +916,6 @@ namespace Gorgon.Graphics.Core
 
             this.RegisterDisposable(graphics);
         }
-        #endregion
+#endregion
     }
 }
