@@ -821,6 +821,61 @@ namespace Gorgon.Graphics.Core
             return _slotSizes[slot];
         }
 
+        /// <summary>
+        /// Function to retrieve any elements for a given slot number.
+        /// </summary>
+        /// <param name="slot">The slot to look up.</param>
+        /// <returns>A list of input elements that belong to the specified slot.</returns>
+        public IReadOnlyList<GorgonInputElement> GetElementsForSlot(int slot) => Elements.Where(item => item.Slot == slot).ToArray();
+
+        /// <summary>
+        /// Function to retrieve any elements for a context.
+        /// </summary>
+        /// <param name="context">The context of the elements to look up.</param>
+        /// <param name="index">[Optional] The context index to restrict the elements to.</param>
+        /// <returns>A list of input elements that belong to the specified context and index (if supplied).</returns>
+        public IReadOnlyList<GorgonInputElement> GetElementsByContext(string context, int? index = null)
+        {
+            List<GorgonInputElement> elements = new();
+
+            for (int i = 0; i < Elements.Count; ++i)
+            {
+                GorgonInputElement element = Elements[i];
+
+                if ((string.Equals(context, element.Context, StringComparison.OrdinalIgnoreCase))
+                    && ((index is null) || (index.Value == element.Index)))
+                {
+                    elements.Add(element);
+                }
+            }
+
+            return Elements;
+        }
+
+        /// <summary>
+        /// Function to retrieve an element by its context, and optionally, its context index and/or slot.
+        /// </summary>
+        /// <param name="context">The context name for the element.</param>
+        /// <param name="index">[Optional] The context index for the element.</param>
+        /// <param name="slot">[Optional] The slot for the element.</param>
+        /// <returns>The element if found, or <b>null</b> if not.</returns>
+        public GorgonInputElement? GetElement(string context, int index = 0, int? slot = null)
+        {
+            for (int i = 0; i < Elements.Count; ++i)
+            {
+                GorgonInputElement element = Elements[i];
+
+                if ((string.Equals(context, element.Context, StringComparison.OrdinalIgnoreCase)) 
+                    && (index == element.Index) 
+                    && ((slot is null) || (slot.Value == element.Slot)))
+                {
+                    return element;
+                }
+            }
+
+            return null;
+        }
+
         /// <summary>Indicates whether the current object is equal to another object of the same type.</summary>
         /// <returns>true if the current object is equal to the <paramref name="layout" /> parameter; otherwise, false.</returns>
         /// <param name="layout">An object to compare with this object.</param>
