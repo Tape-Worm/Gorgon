@@ -528,6 +528,7 @@ namespace Gorgon.Graphics.Imaging.Codecs
                 if ((dx10settings.MiscFlags & DdsHeaderMiscFlags.TextureCube) == DdsHeaderMiscFlags.TextureCube)
                 {
                     arrayCount *= 6;
+                    imageType = ImageType.ImageCube;
                 }
             }
             else
