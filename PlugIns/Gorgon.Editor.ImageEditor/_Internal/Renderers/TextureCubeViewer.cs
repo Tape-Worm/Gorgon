@@ -188,15 +188,15 @@ namespace Gorgon.Editor.ImageEditor
 
             var bottomLeft = new Vector2(_cubeScreenBounds[0].BottomLeft.X, _cubeScreenBounds[0].BottomLeft.Y);
             Renderer.DrawString("+X", bottomLeft - offset, _axisFont, new GorgonColor(GorgonColor.White, Opacity));
-            bottomLeft = new Vector2(_cubeScreenBounds[1].BottomLeft.X, _cubeScreenBounds[0].BottomLeft.Y);
+            bottomLeft = new Vector2(_cubeScreenBounds[1].BottomLeft.X, _cubeScreenBounds[1].BottomLeft.Y);
             Renderer.DrawString("-X", bottomLeft - offset, _axisFont, new GorgonColor(GorgonColor.White, Opacity));
-            bottomLeft = new Vector2(_cubeScreenBounds[2].BottomLeft.X, _cubeScreenBounds[0].BottomLeft.Y);
+            bottomLeft = new Vector2(_cubeScreenBounds[2].BottomLeft.X, _cubeScreenBounds[2].BottomLeft.Y);
             Renderer.DrawString("+Y", bottomLeft - offset, _axisFont, new GorgonColor(GorgonColor.White, Opacity));
-            bottomLeft = new Vector2(_cubeScreenBounds[3].BottomLeft.X, _cubeScreenBounds[0].BottomLeft.Y);
+            bottomLeft = new Vector2(_cubeScreenBounds[3].BottomLeft.X, _cubeScreenBounds[3].BottomLeft.Y);
             Renderer.DrawString("-Y", bottomLeft - offset, _axisFont, new GorgonColor(GorgonColor.White, Opacity));
-            bottomLeft = new Vector2(_cubeScreenBounds[4].BottomLeft.X, _cubeScreenBounds[0].BottomLeft.Y);
+            bottomLeft = new Vector2(_cubeScreenBounds[4].BottomLeft.X, _cubeScreenBounds[4].BottomLeft.Y);
             Renderer.DrawString("+Z", bottomLeft - offset, _axisFont, new GorgonColor(GorgonColor.White, Opacity));
-            bottomLeft = new Vector2(_cubeScreenBounds[5].BottomLeft.X, _cubeScreenBounds[0].BottomLeft.Y);
+            bottomLeft = new Vector2(_cubeScreenBounds[5].BottomLeft.X, _cubeScreenBounds[5].BottomLeft.Y);
             Renderer.DrawString("-Z", bottomLeft - offset, _axisFont, new GorgonColor(GorgonColor.White, Opacity));
 
             Renderer.End();
