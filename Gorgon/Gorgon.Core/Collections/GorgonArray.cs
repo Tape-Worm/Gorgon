@@ -211,7 +211,7 @@ namespace Gorgon.Collections
 
             for (int i = 0; dirtyState != 0 && i < BackingArray.Length; ++i)
             {
-                long dirtyMask = 1 << i;
+                long dirtyMask = 1L << i;
 
                 if (((dirtyState & dirtyMask) == dirtyMask) && (startSlot == -1))
                 {
