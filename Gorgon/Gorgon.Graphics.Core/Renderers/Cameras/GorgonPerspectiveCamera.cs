@@ -170,7 +170,7 @@ namespace Gorgon.Renderers.Cameras
         /// </summary>
         /// <param name="axis">The axes to rotate around.</param>
         /// <param name="angle">The angle of rotation, in degrees.</param>
-        public void RotateAxis(ref Vector3 axis, float angle)
+        public void RotateAxis(Vector3 axis, float angle)
         {
             _rotationQuat = Quaternion.Conjugate(Quaternion.CreateFromAxisAngle(axis, angle.ToRadians()));
             Changes |= CameraChange.View | CameraChange.Rotation;
@@ -180,7 +180,7 @@ namespace Gorgon.Renderers.Cameras
         /// Function to set the camera rotation using a rotation matrix.
         /// </summary>
         /// <param name="rotation">The matrix used for rotation.</param>
-        public void AssignRotationMatrix(ref Matrix4x4 rotation)
+        public void AssignRotationMatrix(in Matrix4x4 rotation)
         {
             _rotationQuat = Quaternion.Conjugate(Quaternion.CreateFromRotationMatrix(rotation));
             Changes |= CameraChange.View | CameraChange.Rotation;
