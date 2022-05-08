@@ -26,6 +26,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Threading.Tasks;
 using Gorgon.Animation;
 using Gorgon.Core;
@@ -238,9 +239,6 @@ namespace Gorgon.IO
         /// <param name="path">The path to the sprite to load.</param>
         /// <param name="overrideTexture">[Optional] When supplied, this will override the associated texture for the sprite.</param>
         /// <returns>The <see cref="GorgonSprite"/> content for the file system.</returns>
-        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="path"/> parameter is <b>null</b>.</exception>
-        /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="path"/> parameter is empty.</exception>
-        /// <exception cref="GorgonException">Thrown if the file system isn't a Gorgon Editor file system, or the file could not be read.</exception>
         /// <remarks>
         /// <para>
         /// This method will load a <see cref="GorgonSprite"/> from a Gorgon Editor file system mounted as a <see cref="IGorgonFileSystem"/>.  
@@ -280,6 +278,19 @@ namespace Gorgon.IO
         /// </para>
         /// </remarks>
         Task<GorgonSprite> LoadSpriteAsync(string path, GorgonTexture2DView overrideTexture = null);
+
+        /// <summary>
+        /// Function to determine if a directory has been marked as excluded.
+        /// </summary>
+        /// <param name="path">The path to the directory.</param>
+        /// <returns><b>true</b> if the directory has been marked as excluded by the editor, or <b>false</b> if not.</returns>
+        /// <remarks>
+        /// <para>
+        /// The editor can mark specific directories as "excluded" so they are not included with packed files. However, sometimes it is useful to be able to query this data for other purposes. This method 
+        /// provides the user with the ability to determine if a directory is excluded and then they may take action depending on the result.
+        /// </para>
+        /// </remarks>
+        bool IsDirectoryExcluded(string path);
         #endregion
     }
 }

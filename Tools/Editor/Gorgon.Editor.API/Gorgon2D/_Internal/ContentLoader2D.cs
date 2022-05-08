@@ -26,6 +26,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -657,6 +658,52 @@ namespace Gorgon.IO
 
             using Stream stream = spriteFile.OpenStream();
             return spriteCodec.FromStream(stream, overrideTexture);
+        }
+
+        /// <summary>
+        /// Function to determine if a directory has been marked as excluded.
+        /// </summary>
+        /// <param name="path">The path to the directory.</param>
+        /// <returns><b>true</b> if the directory has been marked as excluded by the editor, or <b>false</b> if not.</returns>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="path"/> parameter is <b>null</b>.</exception>
+        /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="path"/> parameter is empty.</exception>
+        /// <exception cref="DirectoryNotFoundException">Thrown if the path to the directory was not found.</exception>
+        /// <remarks>
+        /// <para>
+        /// The editor can mark specific directories as "excluded" so they are not included with packed files. However, sometimes it is useful to be able to query this data for other purposes. This method 
+        /// provides the user with the ability to determine if a directory is excluded and then they may take action depending on the result.
+        /// </para>
+        /// </remarks>
+        public bool IsDirectoryExcluded(string path)
+        {
+            if (path is null)
+            {
+                throw new ArgumentNullException(nameof(path));
+            }
+
+            if (string.IsNullOrWhiteSpace(path))
+            {
+                throw new ArgumentEmptyException(nameof(path));
+            }
+
+            IGorgonVirtualDirectory directory = _fileSystem.GetDirectory(path);
+
+            if (directory is null)
+            {
+                throw new DirectoryNotFoundException(string.Format(Resources.GOREDIT_ERR_DIR_NOT_FOUND, path));
+            }
+
+            if (!_metadata.ProjectItems.TryGetValue(path, out ProjectItemMetadata metadata))
+            {
+                return true;
+            }
+
+            if (!metadata.Attributes.TryGetValue(CommonEditorConstants.ExcludedAttrName, out string excluded))
+            {
+                return false;
+            }
+
+            return Convert.ToBoolean(excluded, CultureInfo.InvariantCulture);
         }
         #endregion
 

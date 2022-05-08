@@ -238,7 +238,7 @@ namespace Gorgon.Editor.ViewModels
                     });
 
                     if ((project.ProjectItems.TryGetValue(newDir.FullPath, out ProjectItemMetadata projectItem))
-                        && (projectItem.Attributes.TryGetValue(ProjectEditor.ExcludedAttrName, out string attrValue))
+                        && (projectItem.Attributes.TryGetValue(CommonEditorConstants.ExcludedAttrName, out string attrValue))
                         && (bool.TryParse(attrValue, out bool isExcluded)))
                     {
                         newDir.IsExcluded = isExcluded;

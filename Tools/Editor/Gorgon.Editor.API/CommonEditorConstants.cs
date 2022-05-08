@@ -60,5 +60,10 @@ namespace Gorgon.Editor
         /// The name of the attribute for the is new flag.
         /// </summary>
         public const string IsNewAttr = "IsNew";
+
+        /// <summary>
+        /// Metadata naming for the excluded item type attribute.
+        /// </summary>
+        public const string ExcludedAttrName = "Excluded";
     }
 }

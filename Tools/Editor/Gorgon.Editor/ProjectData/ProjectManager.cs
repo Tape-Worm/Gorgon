@@ -672,7 +672,7 @@ namespace Gorgon.Editor.ProjectData
 
                 foreach (KeyValuePair<string, ProjectItemMetadata> metaData in project.ProjectItems)
                 {
-                    if ((metaData.Value.Attributes.TryGetValue(ViewModels.ProjectEditor.ExcludedAttrName, out string excluded))
+                    if ((metaData.Value.Attributes.TryGetValue(CommonEditorConstants.ExcludedAttrName, out string excluded))
                         && (string.Equals(excluded, bool.TrueString, StringComparison.OrdinalIgnoreCase)))
                     {
                         excludedPaths.Add((metaData.Key, project.FileSystemDirectory.FullName + metaData.Key.FormatDirectory(Path.DirectorySeparatorChar)));
