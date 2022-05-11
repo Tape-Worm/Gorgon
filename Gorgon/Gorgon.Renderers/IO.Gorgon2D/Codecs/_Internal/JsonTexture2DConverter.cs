@@ -26,6 +26,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Gorgon.Diagnostics;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
@@ -119,16 +120,16 @@ namespace Gorgon.IO
         /// Function to read a texture from the JSON data.
         /// </summary>
         /// <param name="reader">The JSON reader to use.</param>
-        /// <param name="textureName">The name of the texture.</param>
-        /// <returns></returns>
-        public GorgonTexture2DView ReadTexture(JsonReader reader, out string textureName)
+        /// <param name="overrides">[Optional] A list of overrides for the texture.</param>
+        /// <returns>The texture and texture name.</returns>
+        public (GorgonTexture2DView Texture, string TextureName) ReadTexture(JsonReader reader, IEnumerable<GorgonTexture2DView> overrides = null)
         {
-            textureName = string.Empty;
+            string textureName = string.Empty;
 
             if ((reader.TokenType != JsonToken.StartObject)
                 || (_graphics is null))
             {
-                return null;
+                return (null, null);
             }
 
             int? texWidth = null;
@@ -187,8 +188,25 @@ namespace Gorgon.IO
                 }
             }
 
-            if ((string.IsNullOrWhiteSpace(textureName))
-                || (texWidth is null)
+            if (string.IsNullOrWhiteSpace(textureName))
+            {
+                _graphics?.Log.Print("Attempted to load a texture from JSON data, but texture was not in memory and name is unknown, or JSON texture data is not in the correct format.",
+                                     LoggingLevel.Verbose);
+                return (null, null);
+            }
+
+            // Check overrides list if one was supplied.
+            if (overrides is not null)
+            {
+                GorgonTexture2DView overrideMatch = overrides.FirstOrDefault(item => string.Equals(item.Texture.Name, textureName, StringComparison.OrdinalIgnoreCase));
+
+                if (overrideMatch is not null)
+                {
+                    return (overrideMatch, null);
+                }
+            }
+
+            if ((texWidth is null)
                 || (texHeight is null)
                 || (texFormat is null)
                 || (texArrayCount is null)
@@ -199,23 +217,17 @@ namespace Gorgon.IO
                 || (viewMipCount is null)
                 || (viewFormat is null))
             {
-                if (string.IsNullOrWhiteSpace(textureName))
-                {
-                    _graphics?.Log.Print("Attempted to load a texture from JSON data, but texture was not in memory and name is unknown, or JSON texture data is not in the correct format.",
-                                         LoggingLevel.Verbose);
-                }
-
-                return null;
+                return (null, textureName);
             }
 
             if (_override is not null)
             {
-                return _override;
+                return (_override, textureName);
             }
 
             GorgonTexture2D texture = _graphics?.Locate2DTextureByName(textureName, texWidth ?? 1, texHeight ?? 1, texFormat ?? BufferFormat.R8G8B8A8_UNorm, texArrayCount ?? 1, texMipCount ?? 1);
 
-            return texture?.GetShaderResourceView(viewFormat.Value, viewMipStart.Value, viewMipCount.Value, viewArrayStart.Value, viewArrayCount.Value);
+            return (texture?.GetShaderResourceView(viewFormat.Value, viewMipStart.Value, viewMipCount.Value, viewArrayStart.Value, viewArrayCount.Value), textureName);
         }
 
         /// <summary>Reads the JSON representation of the object.</summary>
@@ -225,7 +237,7 @@ namespace Gorgon.IO
         /// <param name="hasExistingValue">The existing value has a value.</param>
         /// <param name="serializer">The calling serializer.</param>
         /// <returns>The object value.</returns>
-        public override GorgonTexture2DView ReadJson(JsonReader reader, Type objectType, GorgonTexture2DView existingValue, bool hasExistingValue, JsonSerializer serializer) => ReadTexture(reader, out string _);
+        public override GorgonTexture2DView ReadJson(JsonReader reader, Type objectType, GorgonTexture2DView existingValue, bool hasExistingValue, JsonSerializer serializer) => ReadTexture(reader).Texture;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="JsonTexture2DConverter"/> class.

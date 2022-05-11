@@ -27,11 +27,13 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Numerics;
 using System.Text;
 using Gorgon.Animation;
 using Gorgon.Core;
 using Gorgon.Graphics;
+using Gorgon.Graphics.Core;
 using Gorgon.IO.Properties;
 using Gorgon.Renderers;
 using Newtonsoft.Json;
@@ -687,9 +689,15 @@ namespace Gorgon.IO
         /// <param name="name">Not used.</param>
         /// <param name="stream">The stream containing the animation.</param>
         /// <param name="byteCount">The number of bytes to read from the stream.</param>
+        /// <param name="textureOverrides">[Optional] Textures to use in a texture animation track.</param>
         /// <returns>A new <see cref="IGorgonAnimation"/>.</returns>
-        protected override IGorgonAnimation OnReadFromStream(string name, Stream stream, int byteCount)
+        protected override IGorgonAnimation OnReadFromStream(string name, Stream stream, int byteCount, IEnumerable<GorgonTexture2DView> textureOverrides)
         {
+            if ((textureOverrides is not null) && (textureOverrides.Any()))
+            {
+                Graphics.Log.Print("WARNING: The texture overrides parameter is not supported for version 3 files. Textures will not be overridden.", Diagnostics.LoggingLevel.Intermediate);
+            }
+
             using var wrappedStream = new GorgonStreamWrapper(stream, stream.Position, byteCount, false);
             using var reader = new StreamReader(wrappedStream, Encoding.UTF8, true, 80192, true);
             string jsonString = reader.ReadToEnd();

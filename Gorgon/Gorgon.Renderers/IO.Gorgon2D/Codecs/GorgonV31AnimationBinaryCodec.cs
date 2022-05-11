@@ -110,16 +110,16 @@ namespace Gorgon.IO
         /// Function to load the texture information.
         /// </summary>
         /// <param name="reader">The reader containing the texture information.</param>
-        /// <param name="textureName">The name of the texture.</param>
-        /// <returns>The texture attached to the animation keyframe.</returns>
-        private GorgonTexture2DView LoadTexture(GorgonBinaryReader reader, out string textureName)
+        /// <param name="textureOverrides">Overrides for the texture keys.</param>
+        /// <returns>The texture attached to the sprite.</returns>
+        private (GorgonTexture2DView Texture, string TextureName) LoadTexture(GorgonBinaryReader reader, IEnumerable<GorgonTexture2DView> textureOverrides)
         {
             // Write out as much info about the texture as we can so we can look it up based on these values when loading.
-            textureName = reader.ReadString();
+            string textureName = reader.ReadString();
 
             if (string.IsNullOrWhiteSpace(textureName))
             {
-                return null;
+                return (null, null);
             }
 
             reader.ReadValue(out int textureWidth);
@@ -128,14 +128,27 @@ namespace Gorgon.IO
             reader.ReadValue(out int textureArrayCount);
             reader.ReadValue(out int textureMipCount);
 
+            // Locate the texture resource.
+            GorgonTexture2DView overrideMatch = textureOverrides?.FirstOrDefault(item => string.Equals(item.Texture.Name, textureName, StringComparison.OrdinalIgnoreCase));
+
+            // We need to read these even if we don't use them.
             reader.ReadValue(out int viewArrayIndex);
             reader.ReadValue(out int viewArrayCount);
             reader.ReadValue(out int viewMipSlice);
             reader.ReadValue(out int viewMipCount);
             reader.ReadValue(out BufferFormat viewFormat);
 
-            // Locate the texture resource.
+            if (overrideMatch is not null)
+            {
+                return (overrideMatch, textureName);
+            }
+
             GorgonTexture2D texture = Renderer.Graphics.Locate2DTextureByName(textureName, textureWidth, textureHeight, textureFormat, textureArrayCount, textureMipCount);
+
+            if (texture is null)
+            {
+                return (null, textureName);
+            }
 
             if (viewArrayCount == -1)
             {
@@ -147,10 +160,10 @@ namespace Gorgon.IO
                 viewMipCount = texture.MipLevels;
             }
 
-            return texture?.GetShaderResourceView(viewFormat, viewMipSlice.Max(0).Min(texture.MipLevels - 1),
+            return (texture.GetShaderResourceView(viewFormat, viewMipSlice.Max(0).Min(texture.MipLevels - 1),
                                                               viewMipCount.Max(1).Min(texture.MipLevels),
                                                               viewArrayIndex.Max(0).Min(texture.ArrayCount - 1),
-                                                              viewArrayCount.Max(1).Min(texture.ArrayCount));
+                                                              viewArrayCount.Max(1).Min(texture.ArrayCount)), textureName);
         }
 
         /// <summary>
@@ -292,7 +305,8 @@ namespace Gorgon.IO
         /// <param name="reader">The chunk file reader.</param>
         /// <param name="chunkID">The ID of the chunk for the track.</param>
         /// <param name="builder">The builder used to generate the animation.</param>
-        private void ReadTextureTrackValues(GorgonChunkFileReader reader, ulong chunkID, GorgonAnimationBuilder builder)
+        /// <param name="overrides">The texture overrides.</param>
+        private void ReadTextureTrackValues(GorgonChunkFileReader reader, ulong chunkID, GorgonAnimationBuilder builder, IEnumerable<GorgonTexture2DView> overrides)
         {
             if (!reader.Chunks.Contains(chunkID))
             {
@@ -321,7 +335,7 @@ namespace Gorgon.IO
 
                     if (hasTexture != 0)
                     {
-                        texture = LoadTexture(binReader, out textureName);
+                        (texture, textureName) = LoadTexture(binReader, overrides);
 
                         if ((texture is null) && (string.IsNullOrWhiteSpace(textureName)))
                         {
@@ -502,8 +516,13 @@ namespace Gorgon.IO
         /// <param name="name">The name of the animation.</param>
         /// <param name="stream">The stream containing the animation.</param>
         /// <param name="byteCount">The number of bytes to read from the stream.</param>
-        /// <returns>A new <see cref="IGorgonAnimation"/>.</returns>
-        protected override IGorgonAnimation OnReadFromStream(string name, Stream stream, int byteCount)
+        /// <param name="textureOverrides">[Optional] Textures to use in a texture animation track.</param>
+        /// <returns>A new <see cref="IGorgonAnimation" />.</returns>
+        /// <remarks>
+        /// Implementors should handle the <paramref name="textureOverrides" /> parameter by matching the textures by name, and, if the texture is not found in the override list, fall back to whatever scheme
+        /// is used to retrieve the texture for codec.
+        /// </remarks>
+        protected override IGorgonAnimation OnReadFromStream(string name, Stream stream, int byteCount, IEnumerable<GorgonTexture2DView> textureOverrides)
         {
             var builder = new GorgonAnimationBuilder();
 
@@ -533,7 +552,7 @@ namespace Gorgon.IO
                 ReadTrackValues<GorgonKeyQuaternion, Quaternion>(reader, QuaternionData, builder.EditQuaternion, (t, v) => new GorgonKeyQuaternion(t, v));
                 ReadTrackValues<GorgonKeyRectangle, DX.RectangleF>(reader, RectData, builder.EditRectangle, (t, v) => new GorgonKeyRectangle(t, v));
                 ReadTrackValues<GorgonKeyGorgonColor, GorgonColor>(reader, ColorData, builder.EditColor, (t, v) => new GorgonKeyGorgonColor(t, v));
-                ReadTextureTrackValues(reader, TextureData, builder);
+                ReadTextureTrackValues(reader, TextureData, builder, textureOverrides);
 
                 IGorgonAnimation result;
                 result = builder.Build(name, fps, length);

@@ -30,6 +30,7 @@ using System.IO;
 using System.Text;
 using Gorgon.Animation;
 using Gorgon.Core;
+using Gorgon.Graphics.Core;
 using Gorgon.IO.Properties;
 using Gorgon.Renderers;
 using Newtonsoft.Json;
@@ -326,11 +327,18 @@ namespace Gorgon.IO
         /// <param name="renderer">The renderer for the animation.</param>
         /// <param name="json">The JSON string containing the animation data.</param>
         /// <param name="name">[Optional] The name of the animation.</param>
+        /// <param name="textureOverrides">[Optional] Textures to use in a texture animation track.</param>
         /// <returns>A new <see cref="IGorgonAnimation"/>.</returns>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="renderer"/>, or the <paramref name="json"/> parameter is <b>null</b>.</exception>
         /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="json"/> parameter is empty.</exception>
         /// <exception cref="GorgonException">Thrown if the JSON string does not contain animation data, or there is a version mismatch.</exception>
-        public IGorgonAnimation FromJson(Gorgon2D renderer, string json, string name = null)
+        /// <remarks>
+        /// <para>
+        /// When passing in a list of <paramref name="textureOverrides"/>, the texture names should match the expected texture names in the key frame. For example, if the 
+        /// <see cref="GorgonKeyTexture2D.TextureName"/> is <c>"WalkingFrames"</c>, then the <see cref="GorgonTexture2D.Name"/> should also be <c>"WalkingFrames"</c>. 
+        /// </para>
+        /// </remarks>
+        public IGorgonAnimation FromJson(Gorgon2D renderer, string json, string name = null, IEnumerable<GorgonTexture2DView> textureOverrides = null)
         {
             if (renderer is null)
             {
@@ -358,7 +366,7 @@ namespace Gorgon.IO
             bool isLooped = false;
 
             var colorConvert = new JsonGorgonColorKeyConverter();
-            var textureConvert = new JsonTextureKeyConverter(renderer.Graphics);
+            var textureConvert = new JsonTextureKeyConverter(renderer.Graphics, textureOverrides);
             var singleConverter = new JsonSingleKeyConverter();
             var vec2Converter = new JsonVector2KeyConverter();
             var vec3Converter = new JsonVector3KeyConverter();
@@ -561,13 +569,14 @@ namespace Gorgon.IO
         /// <param name="name">The name of the animation.</param>
         /// <param name="stream">The stream containing the animation.</param>
         /// <param name="byteCount">The number of bytes to read from the stream.</param>
+        /// <param name="textureOverrides">[Optional] Textures to use in a texture animation track.</param>
         /// <returns>A new <see cref="IGorgonAnimation"/>.</returns>
-        protected override IGorgonAnimation OnReadFromStream(string name, Stream stream, int byteCount)
+        protected override IGorgonAnimation OnReadFromStream(string name, Stream stream, int byteCount, IEnumerable<GorgonTexture2DView> textureOverrides)
         {
             using var wrappedStream = new GorgonStreamWrapper(stream, stream.Position, byteCount, false);
             using var reader = new StreamReader(wrappedStream, Encoding.UTF8, true, 80192, true);
             string jsonString = reader.ReadToEnd();
-            return FromJson(Renderer, name, jsonString);
+            return FromJson(Renderer, name, jsonString, textureOverrides);
         }
 
         /// <summary>

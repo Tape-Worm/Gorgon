@@ -775,14 +775,25 @@ namespace Gorgon.IO
             return result;
         }
 
-        /// <summary>
-        /// Function to read the animation data from a stream.
-        /// </summary>
-        /// <param name="name">Not used.</param>
+        /// <summary>Function to read the animation data from a stream.</summary>
+        /// <param name="name">The name of the animation.</param>
         /// <param name="stream">The stream containing the animation.</param>
         /// <param name="byteCount">The number of bytes to read from the stream.</param>
-        /// <returns>A new <see cref="IGorgonAnimation"/>.</returns>
-        protected override IGorgonAnimation OnReadFromStream(string name, Stream stream, int byteCount) => OnReadMultipleFromStream(stream, true)[0];
+        /// <param name="textureOverrides">[Optional] Textures to use in a texture animation track.</param>
+        /// <returns>A new <see cref="IGorgonAnimation" />.</returns>
+        /// <remarks>
+        /// Implementors should handle the <paramref name="textureOverrides" /> parameter by matching the textures by name, and, if the texture is not found in the override list, fall back to whatever scheme
+        /// is used to retrieve the texture for codec.
+        /// </remarks>
+        protected override IGorgonAnimation OnReadFromStream(string name, Stream stream, int byteCount, IEnumerable<GorgonTexture2DView> textureOverrides)
+        {
+            if ((textureOverrides is not null) && (textureOverrides.Any()))
+            {
+                Graphics.Log.Print("WARNING: The texture overrides parameter is not supported for version 1.x files. Textures will not be overridden.", LoggingLevel.Intermediate);
+            }
+
+            return OnReadMultipleFromStream(stream, true)[0];
+        }
 
 
         /// <summary>Function to retrieve the names of the associated textures.</summary>

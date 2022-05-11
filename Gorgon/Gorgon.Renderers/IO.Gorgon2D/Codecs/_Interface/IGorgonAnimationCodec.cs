@@ -29,6 +29,7 @@ using System.Collections.Generic;
 using System.IO;
 using Gorgon.Animation;
 using Gorgon.Core;
+using Gorgon.Graphics.Core;
 using Gorgon.Renderers;
 
 namespace Gorgon.IO
@@ -112,16 +113,30 @@ namespace Gorgon.IO
         /// <param name="stream">The stream containing the animation.</param>
         /// <param name="byteCount">[Optional] The number of bytes to read from the stream.</param>
         /// <param name="name">[Optional] The name of the animation.</param>
+        /// <param name="textureOverrides">[Optional] Textures to use in a texture animation track.</param>
         /// <returns>A new <see cref="IGorgonAnimation"/>.</returns>
-        IGorgonAnimation FromStream(Stream stream, int? byteCount = null, string name = null);
+        /// <remarks>
+        /// <para>
+        /// When passing in a list of <paramref name="textureOverrides"/>, the texture names should match the expected texture names in the key frame. For example, if the 
+        /// <see cref="GorgonKeyTexture2D.TextureName"/> is <c>"WalkingFrames"</c>, then the <see cref="GorgonTexture2D.Name"/> should also be <c>"WalkingFrames"</c>. 
+        /// </para>
+        /// </remarks>
+        IGorgonAnimation FromStream(Stream stream, int? byteCount = null, string name = null, IEnumerable<GorgonTexture2DView> textureOverrides = null);
 
         /// <summary>
         /// Function to read the animation data from a file on the physical file system.
         /// </summary>
         /// <param name="filePath">The path to the file to read.</param>
         /// <param name="name">[Optional] The name of the animation.</param>
+        /// <param name="textureOverrides">[Optional] Textures to use in a texture animation track.</param>
         /// <returns>A new <see cref="IGorgonAnimation"/>.</returns>
-        IGorgonAnimation FromFile(string filePath, string name = null);
+        /// <remarks>
+        /// <para>
+        /// When passing in a list of <paramref name="textureOverrides"/>, the texture names should match the expected texture names in the key frame. For example, if the 
+        /// <see cref="GorgonKeyTexture2D.TextureName"/> is <c>"WalkingFrames"</c>, then the <see cref="GorgonTexture2D.Name"/> should also be <c>"WalkingFrames"</c>. 
+        /// </para>
+        /// </remarks>
+        IGorgonAnimation FromFile(string filePath, string name = null, IEnumerable<GorgonTexture2DView> textureOverrides = null);
 
         /// <summary>
         /// Function to save the animation data to a stream.

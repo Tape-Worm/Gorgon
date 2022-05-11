@@ -25,6 +25,8 @@
 #endregion
 
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using Gorgon.Animation;
 using Gorgon.Graphics.Core;
 using Newtonsoft.Json;
@@ -42,6 +44,8 @@ namespace Gorgon.IO
         private readonly JsonTexture2DConverter _textureConverter;
         // The texture converter to serialize a rectangle.
         private readonly JsonRectangleFConverter _rectConverter = new();
+        // The texture overrides.
+        private readonly IEnumerable<GorgonTexture2DView> _overrides;
 
         /// <summary>Writes the JSON representation of the object.</summary>
         /// <param name="writer">The <see cref="JsonWriter" /> to write to.</param>
@@ -105,7 +109,8 @@ namespace Gorgon.IO
                         break;
                     case "TEXTURE":
                         reader.Read();
-                        texture = _textureConverter.ReadTexture(reader, out textureName);
+
+                        (texture, textureName) = _textureConverter.ReadTexture(reader, _overrides);
 
                         if ((texture is null) && (string.IsNullOrWhiteSpace(textureName)))
                         {
@@ -123,6 +128,11 @@ namespace Gorgon.IO
         /// Initializes a new instance of the <see cref="JsonTextureKeyConverter"/> class.
         /// </summary>
         /// <param name="graphics">The graphics interface to use for texture lookup.</param>
-        public JsonTextureKeyConverter(GorgonGraphics graphics) => _textureConverter = new JsonTexture2DConverter(graphics, null);
+        /// <param name="overrides">The textures to use as overrides.</param>
+        public JsonTextureKeyConverter(GorgonGraphics graphics, IEnumerable<GorgonTexture2DView> overrides = null)
+        {
+            _overrides = overrides;
+            _textureConverter = new JsonTexture2DConverter(graphics, null);
+        }
     }
 }

@@ -27,6 +27,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Numerics;
 using Gorgon.Animation;
 using Gorgon.Diagnostics;
@@ -225,15 +226,19 @@ namespace Gorgon.IO
         /// <exception cref="NotSupportedException">This operation is not supported.</exception>
         protected override void OnSaveToStream(IGorgonAnimation animation, Stream stream) => throw new NotSupportedException();
 
-        /// <summary>
-        /// Function to read the animation data from a stream.
-        /// </summary>
+        /// <summary>Function to read the animation data from a stream.</summary>
         /// <param name="name">Not used.</param>
         /// <param name="stream">The stream containing the animation.</param>
         /// <param name="byteCount">The number of bytes to read from the stream.</param>
-        /// <returns>A new <see cref="IGorgonAnimation"/>.</returns>
-        protected override IGorgonAnimation OnReadFromStream(string name, Stream stream, int byteCount)
+        /// <param name="textureOverrides">[Optional] Textures to use in a texture animation track.</param>
+        /// <returns>A new <see cref="IGorgonAnimation" />.</returns>
+        protected override IGorgonAnimation OnReadFromStream(string name, Stream stream, int byteCount, IEnumerable<GorgonTexture2DView> textureOverrides = null)
         {
+            if ((textureOverrides is not null) && (textureOverrides.Any()))
+            {
+                Graphics.Log.Print("WARNING: The texture overrides parameter is not supported for version 3 files. Textures will not be overridden.", Diagnostics.LoggingLevel.Intermediate);
+            }
+
             var builder = new GorgonAnimationBuilder();
 
             var reader = new GorgonChunkFileReader(stream,

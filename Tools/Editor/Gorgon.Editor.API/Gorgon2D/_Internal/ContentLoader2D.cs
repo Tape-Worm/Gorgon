@@ -371,16 +371,20 @@ namespace Gorgon.IO
 
             _graphics.Log.Print($"Loading animation '{path}'...", LoggingLevel.Verbose);
 
+            IEnumerable<GorgonTexture2DView> textures = null;
+
             if ((metadata.DependsOn.TryGetValue(CommonEditorContentTypes.ImageType, out List<string> paths)) 
                 && (paths is not null)
                 && (paths.Count > 0))
             {
-                IEnumerable<Task> dependencyTasks = paths.Select(item => TextureCache.GetTextureAsync(item, ReadTextureAsync));
+                IEnumerable<Task<GorgonTexture2D>> dependencyTasks = paths.Select(item => TextureCache.GetTextureAsync(item, ReadTextureAsync));
                 await Task.WhenAll(dependencyTasks);
+
+                textures = dependencyTasks.Select(item => item.Result.GetShaderResourceView());
             }
 
             using Stream stream = animationFile.OpenStream();
-            return animationCodec.FromStream(stream);
+            return animationCodec.FromStream(stream, textureOverrides: textures);
         }
 
         /// <summary>

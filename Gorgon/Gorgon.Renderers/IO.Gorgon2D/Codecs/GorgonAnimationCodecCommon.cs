@@ -137,8 +137,15 @@ namespace Gorgon.IO
         /// <param name="name">The name of the animation.</param>
         /// <param name="stream">The stream containing the animation.</param>
         /// <param name="byteCount">The number of bytes to read from the stream.</param>
+        /// <param name="textureOverrides">[Optional] Textures to use in a texture animation track.</param>
         /// <returns>A new <see cref="IGorgonAnimation"/>.</returns>
-        protected abstract IGorgonAnimation OnReadFromStream(string name, Stream stream, int byteCount);
+        /// <remarks>
+        /// <para>
+        /// Implementors should handle the <paramref name="textureOverrides"/> parameter by matching the textures by name, and, if the texture is not found in the override list, fall back to whatever scheme 
+        /// is used to retrieve the texture for codec.
+        /// </para>
+        /// </remarks>
+        protected abstract IGorgonAnimation OnReadFromStream(string name, Stream stream, int byteCount, IEnumerable<GorgonTexture2DView> textureOverrides = null);
 
         /// <summary>
         /// Function to determine if the data in a stream is readable by this codec.
@@ -205,11 +212,18 @@ namespace Gorgon.IO
         /// <param name="stream">The stream containing the animation.</param>
         /// <param name="byteCount">[Optional] The number of bytes to read from the stream.</param>
         /// <param name="name">[Optional] The name of the animation.</param>
+        /// <param name="textureOverrides">[Optional] Textures to use in a texture animation track.</param>
         /// <returns>A new <see cref="IGorgonAnimation"/>.</returns>
         /// <exception cref="GorgonException">Thrown if the <paramref name="stream"/> is write only.</exception>
         /// <exception cref="EndOfStreamException">Thrown if the current <paramref name="stream"/> position, plus the size of the data exceeds the length of the stream.</exception>
         /// <exception cref="NotSupportedException">This method is not supported by this codec.</exception>
-        public IGorgonAnimation FromStream(Stream stream, int? byteCount = null, string name = null)
+        /// <remarks>
+        /// <para>
+        /// When passing in a list of <paramref name="textureOverrides"/>, the texture names should match the expected texture names in the key frame. For example, if the 
+        /// <see cref="GorgonKeyTexture2D.TextureName"/> is <c>"WalkingFrames"</c>, then the <see cref="GorgonTexture2D.Name"/> should also be <c>"WalkingFrames"</c>. 
+        /// </para>
+        /// </remarks>
+        public IGorgonAnimation FromStream(Stream stream, int? byteCount = null, string name = null, IEnumerable<GorgonTexture2DView> textureOverrides = null)
         {
             if (!CanDecode)
             {
@@ -252,7 +266,7 @@ namespace Gorgon.IO
                     externalStream.Position = 0;
                 }
 
-                return OnReadFromStream(name, externalStream, byteCount.Value);
+                return OnReadFromStream(name, externalStream, byteCount.Value, textureOverrides);
             }
             finally
             {
@@ -268,11 +282,18 @@ namespace Gorgon.IO
         /// </summary>
         /// <param name="filePath">The path to the file to read.</param>
         /// <param name="name">[Optional] The name of the animation.</param>
+        /// <param name="textureOverrides">[Optional] Textures to use in a texture animation track.</param>
         /// <returns>A new <see cref="IGorgonAnimation"/>.</returns>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="filePath"/> parameter is <b>null</b>.</exception>
         /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="filePath"/> parameter is empty.</exception>
         /// <exception cref="NotSupportedException">This method is not supported by this codec.</exception>
-        public IGorgonAnimation FromFile(string filePath, string name = null)
+        /// <remarks>
+        /// <para>
+        /// When passing in a list of <paramref name="textureOverrides"/>, the texture names should match the expected texture names in the key frame. For example, if the 
+        /// <see cref="GorgonKeyTexture2D.TextureName"/> is <c>"WalkingFrames"</c>, then the <see cref="GorgonTexture2D.Name"/> should also be <c>"WalkingFrames"</c>. 
+        /// </para>
+        /// </remarks>
+        public IGorgonAnimation FromFile(string filePath, string name = null, IEnumerable<GorgonTexture2DView> textureOverrides = null)
         {
             if (!CanDecode)
             {
@@ -295,7 +316,7 @@ namespace Gorgon.IO
             }
 
             using FileStream stream = File.Open(filePath, FileMode.Open, FileAccess.Read, FileShare.Read);
-            return FromStream(stream, (int)stream.Length, name);
+            return FromStream(stream, (int)stream.Length, name, textureOverrides);
         }
 
         /// <summary>
