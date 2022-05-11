@@ -175,6 +175,7 @@ namespace Gorgon.IO
         /// Function to load an animation from the editor file system.
         /// </summary>
         /// <param name="path">The path to the animation content.</param>
+        /// <param name="textureOverrides">[Optional] The textures used to override the textures for a texture track in the animation.</param>
         /// <returns>A new <see cref="IGorgonAnimation"/> containing the animation data from the file system.</returns>
         /// <remarks>
         /// <para>
@@ -183,6 +184,11 @@ namespace Gorgon.IO
         /// <para>
         /// If the animation is not in a format known by Gorgon, then users should add the <see cref="IGorgonAnimationCodec"/> for reading the sprite data to the <see cref="ExternalAnimationCodecs"/> list. 
         /// Doing this will allow a user to create a custom image codec plug in and use that to read animation data.
+        /// </para>
+        /// <para>
+        /// When the <paramref name="textureOverrides"/> contains a list of textures, the loader will override any matching textures in any texture tracks within the animation. This allows user defined pre 
+        /// loading of texture data for an animation. The textures in the <paramref name="textureOverrides"/> list will be matched by name to the key <see cref="GorgonKeyTexture2D.TextureName"/>. If the 
+        /// texture is matched with one from the override list, then it will be used for the key. Otherwise, the codec will load the appropriate texture via other means.
         /// </para>
         /// <para>
         /// <h2>Technical info</h2>
@@ -195,7 +201,7 @@ namespace Gorgon.IO
         /// </para>
         /// </para>
         /// </remarks>
-        Task<IGorgonAnimation> LoadAnimationAsync(string path);
+        Task<IGorgonAnimation> LoadAnimationAsync(string path, IEnumerable<GorgonTexture2DView> textureOverrides = null);
 
         /// <summary>
         /// Function to load an image as a texture from the editor file system.

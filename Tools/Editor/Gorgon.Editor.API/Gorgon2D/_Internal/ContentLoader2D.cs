@@ -308,6 +308,7 @@ namespace Gorgon.IO
         /// Function to load an animation from the editor file system.
         /// </summary>
         /// <param name="path">The path to the animation content.</param>
+        /// <param name="textureOverrides">[Optional] The textures used to override the textures for a texture track in the animation.</param>
         /// <returns>A new <see cref="IGorgonAnimation"/> containing the animation data from the file system.</returns>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="path"/> parameter is <b>null</b>.</exception>
         /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="path"/> parameter is empty.</exception>
@@ -321,6 +322,11 @@ namespace Gorgon.IO
         /// Doing this will allow a user to create a custom image codec plug in and use that to read animation data.
         /// </para>
         /// <para>
+        /// When the <paramref name="textureOverrides"/> contains a list of textures, the loader will override any matching textures in any texture tracks within the animation. This allows user defined pre 
+        /// loading of texture data for an animation. The textures in the <paramref name="textureOverrides"/> list will be matched by name to the key <see cref="GorgonKeyTexture2D.TextureName"/>. If the 
+        /// texture is matched with one from the override list, then it will be used for the key. Otherwise, the codec will load the appropriate texture via other means.
+        /// </para>
+        /// <para>
         /// <h2>Technical info</h2>
         /// <para>
         /// Plug ins must generate the following metadata for the files in the editor file system.
@@ -331,7 +337,7 @@ namespace Gorgon.IO
         /// </para>
         /// </para>
         /// </remarks>
-        public async Task<IGorgonAnimation> LoadAnimationAsync(string path)
+        public async Task<IGorgonAnimation> LoadAnimationAsync(string path, IEnumerable<GorgonTexture2DView> textureOverrides = null)
         {
             if (path is null)
             {
@@ -371,20 +377,36 @@ namespace Gorgon.IO
 
             _graphics.Log.Print($"Loading animation '{path}'...", LoggingLevel.Verbose);
 
-            IEnumerable<GorgonTexture2DView> textures = null;
-
             if ((metadata.DependsOn.TryGetValue(CommonEditorContentTypes.ImageType, out List<string> paths)) 
                 && (paths is not null)
                 && (paths.Count > 0))
             {
-                IEnumerable<Task<GorgonTexture2D>> dependencyTasks = paths.Select(item => TextureCache.GetTextureAsync(item, ReadTextureAsync));
+                IEnumerable<Task<GorgonTexture2D>> dependencyTasks;
+
+                if ((textureOverrides is null) || (!textureOverrides.Any()))
+                {
+                    dependencyTasks = paths.Select(item => TextureCache.GetTextureAsync(item, ReadTextureAsync));
+                }
+                else
+                {
+                    dependencyTasks = paths.Except(textureOverrides.Select(item => item.Texture.Name))
+                                           .Select(item => TextureCache.GetTextureAsync(item, ReadTextureAsync));
+                }
+
                 await Task.WhenAll(dependencyTasks);
 
-                textures = dependencyTasks.Select(item => item.Result.GetShaderResourceView());
+                if (textureOverrides is null)
+                {
+                    textureOverrides = dependencyTasks.Select(item => item.Result.GetShaderResourceView());
+                }
+                else
+                {
+                    textureOverrides = textureOverrides.Concat(dependencyTasks.Select(item => item.Result.GetShaderResourceView()));
+                }                
             }
 
             using Stream stream = animationFile.OpenStream();
-            return animationCodec.FromStream(stream, textureOverrides: textures);
+            return animationCodec.FromStream(stream, textureOverrides: textureOverrides);
         }
 
         /// <summary>
