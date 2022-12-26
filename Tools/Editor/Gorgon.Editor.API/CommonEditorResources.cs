@@ -31,80 +31,79 @@ using Gorgon.Graphics.Imaging.Codecs;
 using Gorgon.Renderers;
 using Microsoft.IO;
 
-namespace Gorgon.Editor
+namespace Gorgon.Editor;
+
+/// <summary>
+/// Provides access to common resources used in the editor.
+/// </summary>
+public static class CommonEditorResources
 {
     /// <summary>
-    /// Provides access to common resources used in the editor.
+    /// A small memory stream manager pool for loading resource data using <see cref="MemoryStream"/>.
     /// </summary>
-    public static class CommonEditorResources
+    public static readonly RecyclableMemoryStreamManager MemoryStreamManager = new(1_048_576, 67_108_864);
+
+    /// <summary>
+    /// Property to return a checkerboard pattern image (encoded as DDS/DXT1 data) for background images
+    /// </summary>
+    /// <remarks>
+    /// The image size is 256x256.
+    /// </remarks>
+    public static IGorgonImage CheckerBoardPatternImage
     {
-        /// <summary>
-        /// A small memory stream manager pool for loading resource data using <see cref="MemoryStream"/>.
-        /// </summary>
-        public static readonly RecyclableMemoryStreamManager MemoryStreamManager = new(1_048_576, 67_108_864);
+        get;
+        private set;
+    }
 
-        /// <summary>
-        /// Property to return a checkerboard pattern image (encoded as DDS/DXT1 data) for background images
-        /// </summary>
-        /// <remarks>
-        /// The image size is 256x256.
-        /// </remarks>
-        public static IGorgonImage CheckerBoardPatternImage
+    /// <summary>
+    /// Property to return a keyboard icon (encoded as DDS/DXT5 data).
+    /// </summary>
+    public static IGorgonImage KeyboardIcon
+    {
+        get;
+        private set;
+    }
+
+    /// <summary>
+    /// Property to return a large (64x64) version of the keybaord icon (encoded as DDS/DXT5 data).
+    /// </summary>
+    public static IGorgonImage KeyboardIconLarge
+    {
+        get;
+        private set;
+    }
+
+    /// <summary>
+    /// Function to load the common resources at application start up.
+    /// </summary>
+    public static void LoadResources()
+    {
+        IGorgonImageCodec dds = new GorgonCodecDds();
+
+        using MemoryStream stream1 = MemoryStreamManager.GetStream(Resources.Bg_Pattern_256x256);
+        CheckerBoardPatternImage = dds.FromStream(stream1);
+
+        using MemoryStream stream2 = MemoryStreamManager.GetStream(Resources.manual_input_24x24);
+        KeyboardIcon = dds.FromStream(stream2);
+
+        using MemoryStream stream3 = MemoryStreamManager.GetStream(Resources.manual_vertex_edit_64x64);
+        KeyboardIconLarge = dds.FromStream(stream3);
+    }
+
+    /// <summary>
+    /// Function to unload all resources at the end of the application life cycle.
+    /// </summary>
+    public static void UnloadResources()
+    {
+        try
         {
-            get;
-            private set;
+            CheckerBoardPatternImage?.Dispose();
+            KeyboardIcon?.Dispose();
+            KeyboardIconLarge?.Dispose();
         }
-
-        /// <summary>
-        /// Property to return a keyboard icon (encoded as DDS/DXT5 data).
-        /// </summary>
-        public static IGorgonImage KeyboardIcon
+        catch
         {
-            get;
-            private set;
-        }
-
-        /// <summary>
-        /// Property to return a large (64x64) version of the keybaord icon (encoded as DDS/DXT5 data).
-        /// </summary>
-        public static IGorgonImage KeyboardIconLarge
-        {
-            get;
-            private set;
-        }
-
-        /// <summary>
-        /// Function to load the common resources at application start up.
-        /// </summary>
-        public static void LoadResources()
-        {
-            IGorgonImageCodec dds = new GorgonCodecDds();
-
-            using MemoryStream stream1 = MemoryStreamManager.GetStream(Resources.Bg_Pattern_256x256);
-            CheckerBoardPatternImage = dds.FromStream(stream1);
-
-            using MemoryStream stream2 = MemoryStreamManager.GetStream(Resources.manual_input_24x24);
-            KeyboardIcon = dds.FromStream(stream2);
-
-            using MemoryStream stream3 = MemoryStreamManager.GetStream(Resources.manual_vertex_edit_64x64);
-            KeyboardIconLarge = dds.FromStream(stream3);
-        }
-
-        /// <summary>
-        /// Function to unload all resources at the end of the application life cycle.
-        /// </summary>
-        public static void UnloadResources()
-        {
-            try
-            {
-                CheckerBoardPatternImage?.Dispose();
-                KeyboardIcon?.Dispose();
-                KeyboardIconLarge?.Dispose();
-            }
-            catch
-            {
-                // Do nothing here, application should be closing anyway.
-            }
+            // Do nothing here, application should be closing anyway.
         }
     }
 }

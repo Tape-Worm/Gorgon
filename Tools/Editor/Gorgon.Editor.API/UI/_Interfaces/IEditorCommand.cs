@@ -24,30 +24,29 @@
 // 
 #endregion
 
-namespace Gorgon.Editor.UI
+namespace Gorgon.Editor.UI;
+
+/// <summary>
+/// An command used to carry out an operation.
+/// </summary>
+/// <typeparam name="T">The type of data to pass to the command.</typeparam>
+/// <remarks>
+/// <para>
+/// Commands are used to perform actions on a view model. They work similarly to events in that they are usually called in response to a UI action like a button click. 
+/// </para>
+/// </remarks>
+public interface IEditorCommand<in T>
 {
     /// <summary>
-    /// An command used to carry out an operation.
+    /// Function to determine if a command can be executed or not.
     /// </summary>
-    /// <typeparam name="T">The type of data to pass to the command.</typeparam>
-    /// <remarks>
-    /// <para>
-    /// Commands are used to perform actions on a view model. They work similarly to events in that they are usually called in response to a UI action like a button click. 
-    /// </para>
-    /// </remarks>
-    public interface IEditorCommand<in T>
-    {
-        /// <summary>
-        /// Function to determine if a command can be executed or not.
-        /// </summary>
-        /// <param name="args">The arguments to check.</param>
-        /// <returns><b>true</b> if the command can be executed, <b>false</b> if not.</returns>
-        bool CanExecute(T args);
+    /// <param name="args">The arguments to check.</param>
+    /// <returns><b>true</b> if the command can be executed, <b>false</b> if not.</returns>
+    bool CanExecute(T args);
 
-        /// <summary>
-        /// Function to execute the command.
-        /// </summary>
-        /// <param name="args">The arguments to pass to the command.</param>
-        void Execute(T args);
-    }
+    /// <summary>
+    /// Function to execute the command.
+    /// </summary>
+    /// <param name="args">The arguments to pass to the command.</param>
+    void Execute(T args);
 }

@@ -30,65 +30,64 @@ using System.Numerics;
 using Gorgon.Graphics;
 using Gorgon.Renderers;
 
-namespace Gorgon.Examples
+namespace Gorgon.Examples;
+
+/// <summary>
+/// Provides functionality to parse a string containing polygon hull coordinates.
+/// </summary>
+public static class PolygonHullParser
 {
     /// <summary>
-    /// Provides functionality to parse a string containing polygon hull coordinates.
+    /// Function to parse the string containing the hull data.
     /// </summary>
-    public static class PolygonHullParser
+    /// <param name="data">The string containing the hull data.</param>
+    /// <param name="builder">The polygonal sprite builder used to create the sprite.</param>
+    private static void ParseString(string data, GorgonPolySpriteBuilder builder)
     {
-        /// <summary>
-        /// Function to parse the string containing the hull data.
-        /// </summary>
-        /// <param name="data">The string containing the hull data.</param>
-        /// <param name="builder">The polygonal sprite builder used to create the sprite.</param>
-        private static void ParseString(string data, GorgonPolySpriteBuilder builder)
-        {
-            string[] lines = data.Split(new[]
-                                        {
-                                            "\n"
-                                        },
-                                        StringSplitOptions.RemoveEmptyEntries);
+        string[] lines = data.Split(new[]
+                                    {
+                                        "\n"
+                                    },
+                                    StringSplitOptions.RemoveEmptyEntries);
 
-            for (int i = 0; i < lines.Length; ++i)
+        for (int i = 0; i < lines.Length; ++i)
+        {
+            string line = lines[i].Replace("\r", string.Empty).Trim();
+
+            string[] components = line.Split(new[]
+                                             {
+                                                 ','
+                                             },
+                                             StringSplitOptions.None);
+
+            // If this line lacks at least 4 components, then we cannot use it.
+            if (components.Length != 4)
             {
-                string line = lines[i].Replace("\r", string.Empty).Trim();
-
-                string[] components = line.Split(new[]
-                                                 {
-                                                     ','
-                                                 },
-                                                 StringSplitOptions.None);
-
-                // If this line lacks at least 4 components, then we cannot use it.
-                if (components.Length != 4)
-                {
-                    continue;
-                }
-
-                float.TryParse(components[0], NumberStyles.Float, CultureInfo.InvariantCulture, out float x);
-                float.TryParse(components[1], NumberStyles.Float, CultureInfo.InvariantCulture, out float y);
-                float.TryParse(components[2], NumberStyles.Float, CultureInfo.InvariantCulture, out float u);
-                float.TryParse(components[3], NumberStyles.Float, CultureInfo.InvariantCulture, out float v);
-
-                builder.AddVertex(new GorgonPolySpriteVertex(new Vector2(x, y), GorgonColor.White, new Vector2(u, v)));
+                continue;
             }
+
+            float.TryParse(components[0], NumberStyles.Float, CultureInfo.InvariantCulture, out float x);
+            float.TryParse(components[1], NumberStyles.Float, CultureInfo.InvariantCulture, out float y);
+            float.TryParse(components[2], NumberStyles.Float, CultureInfo.InvariantCulture, out float u);
+            float.TryParse(components[3], NumberStyles.Float, CultureInfo.InvariantCulture, out float v);
+
+            builder.AddVertex(new GorgonPolySpriteVertex(new Vector2(x, y), GorgonColor.White, new Vector2(u, v)));
         }
+    }
 
-        /// <summary>
-        /// Function to parse the polygon hull string data.
-        /// </summary>
-        /// <param name="renderer">The renderer used to generate the polygonal sprite.</param>
-        /// <param name="polygonHull">The string containing the polygon hull data.</param>
-        /// <returns>The polygon sprite from the polygon hull data.</returns>
-        public static GorgonPolySprite ParsePolygonHullString(Gorgon2D renderer, string polygonHull)
-        {
-            var builder = new GorgonPolySpriteBuilder(renderer);
+    /// <summary>
+    /// Function to parse the polygon hull string data.
+    /// </summary>
+    /// <param name="renderer">The renderer used to generate the polygonal sprite.</param>
+    /// <param name="polygonHull">The string containing the polygon hull data.</param>
+    /// <returns>The polygon sprite from the polygon hull data.</returns>
+    public static GorgonPolySprite ParsePolygonHullString(Gorgon2D renderer, string polygonHull)
+    {
+        var builder = new GorgonPolySpriteBuilder(renderer);
 
-            ParseString(polygonHull, builder);
+        ParseString(polygonHull, builder);
 
-            return builder.Anchor(new Vector2(0.5f, 0.5f))
-                          .Build();
-        }
+        return builder.Anchor(new Vector2(0.5f, 0.5f))
+                      .Build();
     }
 }

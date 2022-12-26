@@ -29,35 +29,34 @@ using System.Windows.Forms;
 using Gorgon.Core;
 using Gorgon.UI;
 
-namespace Gorgon.Examples
-{
-    /// <summary>
-    /// Main application.
-    /// </summary>
-    static class Program
-    {
-        #region Methods.
-        /// <summary>
-        /// The main entry point for the application.
-        /// </summary>
-        [STAThread]
-        static void Main()
-        {
-            try
-            {
-#if NET6_0_OR_GREATER
-                Application.SetHighDpiMode(HighDpiMode.PerMonitorV2);
-#endif
-                Application.EnableVisualStyles();
-                Application.SetCompatibleTextRenderingDefault(false);
+namespace Gorgon.Examples;
 
-                GorgonApplication.Run(new Form());
-            }
-            catch (Exception ex)
-            {
-                ex.Catch(_ => GorgonDialogs.ErrorBox(null, _), GorgonApplication.Log);
-            }
+/// <summary>
+/// Main application.
+/// </summary>
+static class Program
+{
+    #region Methods.
+    /// <summary>
+    /// The main entry point for the application.
+    /// </summary>
+    [STAThread]
+    static void Main()
+    {
+        try
+        {
+#if NET6_0_OR_GREATER
+            Application.SetHighDpiMode(HighDpiMode.PerMonitorV2);
+#endif
+            Application.EnableVisualStyles();
+            Application.SetCompatibleTextRenderingDefault(false);
+
+            GorgonApplication.Run(new Form());
         }
-        #endregion
+        catch (Exception ex)
+        {
+            ex.Catch(_ => GorgonDialogs.ErrorBox(null, _), GorgonApplication.Log);
+        }
     }
+    #endregion
 }

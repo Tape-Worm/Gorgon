@@ -26,24 +26,23 @@
 
 using System;
 
-namespace Gorgon.Editor.UI
+namespace Gorgon.Editor.UI;
+
+/// <summary>
+/// Event arguments for the a zoom event.
+/// </summary>
+public class ZoomEventArgs
+    : EventArgs
 {
     /// <summary>
-    /// Event arguments for the a zoom event.
+    /// Property to return the current zoom level.
     /// </summary>
-    public class ZoomEventArgs
-        : EventArgs
+    public ZoomLevels ZoomLevel
     {
-        /// <summary>
-        /// Property to return the current zoom level.
-        /// </summary>
-        public ZoomLevels ZoomLevel
-        {
-            get;
-        }
-
-        /// <summary>Initializes a new instance of the <see cref="ZoomEventArgs"/> class.</summary>
-        /// <param name="currentZoomLevel">The current zoom level.</param>
-        public ZoomEventArgs(ZoomLevels currentZoomLevel) => ZoomLevel = currentZoomLevel;
+        get;
     }
+
+    /// <summary>Initializes a new instance of the <see cref="ZoomEventArgs"/> class.</summary>
+    /// <param name="currentZoomLevel">The current zoom level.</param>
+    public ZoomEventArgs(ZoomLevels currentZoomLevel) => ZoomLevel = currentZoomLevel;
 }

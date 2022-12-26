@@ -30,138 +30,137 @@ using Gorgon.Editor.Rendering;
 using Gorgon.Renderers.Cameras;
 using DX = SharpDX;
 
-namespace Gorgon.Editor.Services
+namespace Gorgon.Editor.Services;
+
+/// <summary>
+/// A service used to clip a rectangular area from an image.
+/// </summary>
+public interface IRectClipperService
+    : IDisposable
 {
+    #region Events.
     /// <summary>
-    /// A service used to clip a rectangular area from an image.
+    /// Event triggered when the keyboard icon is clicked.
     /// </summary>
-    public interface IRectClipperService
-        : IDisposable
+    event EventHandler KeyboardIconClicked;
+
+    /// <summary>
+    /// Event triggered when the rectangle coordinates have been altered.
+    /// </summary>
+    event EventHandler RectChanged;
+    #endregion
+
+    #region Properties.
+    /// <summary>
+    /// Property to set or return the camera being used.
+    /// </summary>
+    GorgonOrthoCamera Camera
     {
-        #region Events.
-        /// <summary>
-        /// Event triggered when the keyboard icon is clicked.
-        /// </summary>
-        event EventHandler KeyboardIconClicked;
-
-        /// <summary>
-        /// Event triggered when the rectangle coordinates have been altered.
-        /// </summary>
-        event EventHandler RectChanged;
-        #endregion
-
-        #region Properties.
-        /// <summary>
-        /// Property to set or return the camera being used.
-        /// </summary>
-        GorgonOrthoCamera Camera
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// Property to return whether we're in the middle of a drag operation or not.
-        /// </summary>
-        bool IsDragging
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to set or return whether the selection can be moved.
-        /// </summary>
-        bool AllowMove
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// Property to set or return whether resizing is allowed.
-        /// </summary>
-        bool AllowResize
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// Property to set or return the rectangular region marked for clipping.
-        /// </summary>
-        DX.RectangleF Rectangle
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// Property to set or return the boundaries for the clipping rectangle.
-        /// </summary>
-        DX.RectangleF Bounds
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// Property to set or return whether manual input is allowed or not.
-        /// </summary>
-        bool AllowManualInput
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// Property to set or return whether to clip the rectangle against the boundaries provided by <see cref="Bounds"/>.
-        /// </summary>
-        bool ClipAgainstBoundaries
-        {
-            get;
-            set;
-        }
-        #endregion
-
-        #region Methods.
-        /// <summary>
-        /// Function to force a refresh of the service.
-        /// </summary>
-        void Refresh();
-
-        /// <summary>
-        /// Function to render the clipping region.
-        /// </summary>
-        void Render();
-
-        /// <summary>
-        /// Function called when the mouse button is moved.
-        /// </summary>
-        /// <param name="mouseArgs">The arguments for the mouse events.</param>
-        /// <returns><b>true</b> if the mouse event was handled, <b>false</b> if it was not.</returns>
-        bool MouseMove(MouseArgs mouseArgs);
-
-        /// <summary>
-        /// Function called when the mouse button is pressed.
-        /// </summary>
-        /// <param name="mouseArgs">The arguments for the mouse events.</param>
-        /// <returns><b>true</b> if the mouse event was handled, <b>false</b> if it was not.</returns>
-        bool MouseDown(MouseArgs mouseArgs);
-
-        /// <summary>
-        /// Function called when the mouse button is released.
-        /// </summary>
-        /// <param name="mouseArgs">The arguments for the mouse events.</param>
-        /// <returns><b>true</b> if the mouse event was handled, <b>false</b> if it was not.</returns>
-        bool MouseUp(MouseArgs mouseArgs);
-
-        /// <summary>
-        /// Function called when a key is held down.
-        /// </summary>
-        /// <param name="key">The key that was held down.</param>
-        /// <param name="modifiers">The modifier keys held down with the <paramref name="key"/>.</param>
-        /// <returns><b>true</b> if the key was handled, <b>false</b> if it was not.</returns>
-        bool KeyDown(Keys key, Keys modifiers);
-        #endregion
+        get;
+        set;
     }
+
+    /// <summary>
+    /// Property to return whether we're in the middle of a drag operation or not.
+    /// </summary>
+    bool IsDragging
+    {
+        get;
+    }
+
+    /// <summary>
+    /// Property to set or return whether the selection can be moved.
+    /// </summary>
+    bool AllowMove
+    {
+        get;
+        set;
+    }
+
+    /// <summary>
+    /// Property to set or return whether resizing is allowed.
+    /// </summary>
+    bool AllowResize
+    {
+        get;
+        set;
+    }
+
+    /// <summary>
+    /// Property to set or return the rectangular region marked for clipping.
+    /// </summary>
+    DX.RectangleF Rectangle
+    {
+        get;
+        set;
+    }
+
+    /// <summary>
+    /// Property to set or return the boundaries for the clipping rectangle.
+    /// </summary>
+    DX.RectangleF Bounds
+    {
+        get;
+        set;
+    }
+
+    /// <summary>
+    /// Property to set or return whether manual input is allowed or not.
+    /// </summary>
+    bool AllowManualInput
+    {
+        get;
+        set;
+    }
+
+    /// <summary>
+    /// Property to set or return whether to clip the rectangle against the boundaries provided by <see cref="Bounds"/>.
+    /// </summary>
+    bool ClipAgainstBoundaries
+    {
+        get;
+        set;
+    }
+    #endregion
+
+    #region Methods.
+    /// <summary>
+    /// Function to force a refresh of the service.
+    /// </summary>
+    void Refresh();
+
+    /// <summary>
+    /// Function to render the clipping region.
+    /// </summary>
+    void Render();
+
+    /// <summary>
+    /// Function called when the mouse button is moved.
+    /// </summary>
+    /// <param name="mouseArgs">The arguments for the mouse events.</param>
+    /// <returns><b>true</b> if the mouse event was handled, <b>false</b> if it was not.</returns>
+    bool MouseMove(MouseArgs mouseArgs);
+
+    /// <summary>
+    /// Function called when the mouse button is pressed.
+    /// </summary>
+    /// <param name="mouseArgs">The arguments for the mouse events.</param>
+    /// <returns><b>true</b> if the mouse event was handled, <b>false</b> if it was not.</returns>
+    bool MouseDown(MouseArgs mouseArgs);
+
+    /// <summary>
+    /// Function called when the mouse button is released.
+    /// </summary>
+    /// <param name="mouseArgs">The arguments for the mouse events.</param>
+    /// <returns><b>true</b> if the mouse event was handled, <b>false</b> if it was not.</returns>
+    bool MouseUp(MouseArgs mouseArgs);
+
+    /// <summary>
+    /// Function called when a key is held down.
+    /// </summary>
+    /// <param name="key">The key that was held down.</param>
+    /// <param name="modifiers">The modifier keys held down with the <paramref name="key"/>.</param>
+    /// <returns><b>true</b> if the key was handled, <b>false</b> if it was not.</returns>
+    bool KeyDown(Keys key, Keys modifiers);
+    #endregion
 }

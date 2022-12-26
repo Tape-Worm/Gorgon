@@ -27,15 +27,14 @@
 using System.Runtime.InteropServices;
 // ReSharper disable All
 
-namespace Gorgon.Native
+namespace Gorgon.Native;
+
+[StructLayout(LayoutKind.Sequential)]
+internal struct IMAGEINFO
 {
-    [StructLayout(LayoutKind.Sequential)]
-    internal struct IMAGEINFO
-    {
-        internal nint hbmImage;
-        internal nint hbmMask;
-        internal int Unused1;
-        internal int Unused2;
-        internal RECT rcImage;
-    }
+    internal nint hbmImage;
+    internal nint hbmMask;
+    internal int Unused1;
+    internal int Unused2;
+    internal RECT rcImage;
 }

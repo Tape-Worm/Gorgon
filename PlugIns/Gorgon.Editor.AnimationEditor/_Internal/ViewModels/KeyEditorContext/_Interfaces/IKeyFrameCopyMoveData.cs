@@ -27,56 +27,55 @@
 using System;
 using System.Collections.Generic;
 
-namespace Gorgon.Editor.AnimationEditor
+namespace Gorgon.Editor.AnimationEditor;
+
+/// <summary>
+/// The type of operation being performed when copying/moving data.
+/// </summary>
+[Flags]
+internal enum CopyMoveOperation
 {
     /// <summary>
-    /// The type of operation being performed when copying/moving data.
+    /// Unknown operation.
     /// </summary>
-    [Flags]
-    internal enum CopyMoveOperation
+    Unknown = 0,
+    /// <summary>
+    /// Copy operation.
+    /// </summary>
+    Copy = 1,
+    /// <summary>
+    /// Move operation.
+    /// </summary>
+    Move = 2
+}
+
+/// <summary>
+/// A data structure used to copy keyframe data.
+/// </summary>
+internal interface IKeyFrameCopyMoveData
+{
+    /// <summary>
+    /// Property to set or return the index of the key that will receive the copied data.
+    /// </summary>
+    int DestinationKeyIndex
     {
-        /// <summary>
-        /// Unknown operation.
-        /// </summary>
-        Unknown = 0,
-        /// <summary>
-        /// Copy operation.
-        /// </summary>
-        Copy = 1,
-        /// <summary>
-        /// Move operation.
-        /// </summary>
-        Move = 2
+        get;
+        set;
     }
 
     /// <summary>
-    /// A data structure used to copy keyframe data.
+    /// Property to return the keyframes to copy.
     /// </summary>
-    internal interface IKeyFrameCopyMoveData
+    IReadOnlyList<TrackKeySelection> KeyFrames
     {
-        /// <summary>
-        /// Property to set or return the index of the key that will receive the copied data.
-        /// </summary>
-        int DestinationKeyIndex
-        {
-            get;
-            set;
-        }
+        get;
+    }
 
-        /// <summary>
-        /// Property to return the keyframes to copy.
-        /// </summary>
-        IReadOnlyList<TrackKeySelection> KeyFrames
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to return the type of operation.
-        /// </summary>
-        CopyMoveOperation Operation
-        {
-            get;
-        }
+    /// <summary>
+    /// Property to return the type of operation.
+    /// </summary>
+    CopyMoveOperation Operation
+    {
+        get;
     }
 }

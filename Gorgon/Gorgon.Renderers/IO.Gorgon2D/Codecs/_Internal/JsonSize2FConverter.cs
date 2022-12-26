@@ -28,62 +28,61 @@ using System;
 using Newtonsoft.Json;
 using DX = SharpDX;
 
-namespace Gorgon.IO
+namespace Gorgon.IO;
+
+/// <summary>
+/// A converter used to convert a size to and from a string.
+/// </summary>
+internal class JsonSize2FConverter
+    : JsonConverter
 {
-    /// <summary>
-    /// A converter used to convert a size to and from a string.
-    /// </summary>
-    internal class JsonSize2FConverter
-        : JsonConverter
+    /// <summary>Writes the JSON representation of the object.</summary>
+    /// <param name="writer">The <see cref="JsonWriter" /> to write to.</param>
+    /// <param name="value">The value.</param>
+    /// <param name="serializer">The calling serializer.</param>
+    public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
     {
-        /// <summary>Writes the JSON representation of the object.</summary>
-        /// <param name="writer">The <see cref="JsonWriter" /> to write to.</param>
-        /// <param name="value">The value.</param>
-        /// <param name="serializer">The calling serializer.</param>
-        public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
-        {
-            var v2 = (DX.Size2F)value;
-            writer.WriteStartObject();
-            writer.WritePropertyName("w");
-            writer.WriteValue(v2.Width);
-            writer.WritePropertyName("h");
-            writer.WriteValue(v2.Height);
-            writer.WriteEndObject();
-        }
-
-        /// <summary>Reads the JSON representation of the object.</summary>
-        /// <param name="reader">The <see cref="JsonReader" /> to read from.</param>
-        /// <param name="objectType">Type of the object.</param>
-        /// <param name="existingValue">The existing value of object being read.</param>
-        /// <param name="serializer">The calling serializer.</param>
-        /// <returns>The object value.</returns>
-        public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
-        {
-            if ((reader.TokenType != JsonToken.StartObject)
-                || (!reader.Read()))
-            {
-                return DX.Size2F.Zero;
-            }
-
-            float w = (float)(reader.ReadAsDouble() ?? 0);
-            if (!reader.Read())
-            {
-                return new DX.Size2F(w, 0);
-            }
-
-            float h = (float)(reader.ReadAsDouble() ?? 0);
-            reader.Read();
-
-            return new DX.Size2F(w, h);
-        }
-
-        /// <summary>
-        /// Determines whether this instance can convert the specified object type.
-        /// </summary>
-        /// <param name="objectType">Type of the object.</param>
-        /// <returns>
-        /// 	<c>true</c> if this instance can convert the specified object type; otherwise, <c>false</c>.
-        /// </returns>
-        public override bool CanConvert(Type objectType) => (objectType == typeof(DX.Size2F));
+        var v2 = (DX.Size2F)value;
+        writer.WriteStartObject();
+        writer.WritePropertyName("w");
+        writer.WriteValue(v2.Width);
+        writer.WritePropertyName("h");
+        writer.WriteValue(v2.Height);
+        writer.WriteEndObject();
     }
+
+    /// <summary>Reads the JSON representation of the object.</summary>
+    /// <param name="reader">The <see cref="JsonReader" /> to read from.</param>
+    /// <param name="objectType">Type of the object.</param>
+    /// <param name="existingValue">The existing value of object being read.</param>
+    /// <param name="serializer">The calling serializer.</param>
+    /// <returns>The object value.</returns>
+    public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
+    {
+        if ((reader.TokenType != JsonToken.StartObject)
+            || (!reader.Read()))
+        {
+            return DX.Size2F.Zero;
+        }
+
+        float w = (float)(reader.ReadAsDouble() ?? 0);
+        if (!reader.Read())
+        {
+            return new DX.Size2F(w, 0);
+        }
+
+        float h = (float)(reader.ReadAsDouble() ?? 0);
+        reader.Read();
+
+        return new DX.Size2F(w, h);
+    }
+
+    /// <summary>
+    /// Determines whether this instance can convert the specified object type.
+    /// </summary>
+    /// <param name="objectType">Type of the object.</param>
+    /// <returns>
+    /// 	<c>true</c> if this instance can convert the specified object type; otherwise, <c>false</c>.
+    /// </returns>
+    public override bool CanConvert(Type objectType) => (objectType == typeof(DX.Size2F));
 }

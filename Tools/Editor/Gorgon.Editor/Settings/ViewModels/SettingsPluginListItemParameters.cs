@@ -30,130 +30,129 @@ using Gorgon.Editor.Properties;
 using Gorgon.Editor.UI.ViewModels;
 using Gorgon.IO.Providers;
 
-namespace Gorgon.Editor.ViewModels
+namespace Gorgon.Editor.ViewModels;
+
+/// <summary>
+/// The parameters for the <see cref="ISettingsPlugInListItem"/> view model.
+/// </summary>
+internal class SettingsPlugInListItemParameters
+    : ViewModelInjection<IHostServices>
 {
+    #region Properties.
     /// <summary>
-    /// The parameters for the <see cref="ISettingsPlugInListItem"/> view model.
+    /// Property to return the description/name of the plug in.
     /// </summary>
-    internal class SettingsPlugInListItemParameters
-        : ViewModelInjection<IHostServices>
+    public string Name
     {
-        #region Properties.
-        /// <summary>
-        /// Property to return the description/name of the plug in.
-        /// </summary>
-        public string Name
-        {
-            get;
-            private set;
-        }
-
-        /// <summary>
-        /// Property to return the type of plug in.
-        /// </summary>
-        public PlugInType Type
-        {
-            get;
-            private set;
-        }
-
-        /// <summary>
-        /// Property to return the current state of the plug in.
-        /// </summary>
-        public string State
-        {
-            get;
-            private set;
-        }
-
-        /// <summary>
-        /// Property to return the reason that the plug in was disabled.
-        /// </summary>
-        public string DisabledReason
-        {
-            get;
-            private set;
-        }
-
-        /// <summary>
-        /// Property to return the path to the plug in assembly.
-        /// </summary>
-        public string Path
-        {
-            get;
-            private set;
-        }
-
-        /// <summary>
-        /// Property to return the description of the plug in.
-        /// </summary>
-        public string Description
-        {
-            get;
-            private set;
-        }
-        #endregion
-
-        #region Constructor/Finalizer.
-        /// <summary>Initializes a new instance of the <see cref="SettingsPlugInListItemParameters"/> class.</summary>
-        /// <param name="plugin">The plugin to evaluate.</param>
-        /// <param name="hostServices">The host application services.</param>
-        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="plugin"/> is parameter <b>null</b>.</exception>
-        public SettingsPlugInListItemParameters(EditorPlugIn plugin, IHostServices hostServices)
-            : base(hostServices)
-        {
-            if (plugin is null)
-            {
-                throw new ArgumentNullException(nameof(plugin));
-            }
-
-            Name = string.IsNullOrWhiteSpace(plugin.Description) ? plugin.Name : plugin.Description;
-            Type = plugin.PlugInType;
-            State = Resources.GOREDIT_PLUGIN_STATE_LOADED;
-            DisabledReason = string.Empty;
-            Path = plugin.PlugInPath;
-            Description = plugin.Description;
-        }
-
-        /// <summary>Initializes a new instance of the <see cref="SettingsPlugInListItemParameters"/> class.</summary>
-        /// <param name="plugin">The plugin to evaluate.</param>
-        /// <param name="hostServices">The host application services.</param>
-        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="plugin"/> is parameter <b>null</b>.</exception>
-        public SettingsPlugInListItemParameters(IDisabledPlugIn plugin, IHostServices hostServices)
-            : base(hostServices)
-        {
-            if (plugin is null)
-            {
-                throw new ArgumentNullException(nameof(plugin));
-            }
-
-            Name = plugin.PlugInName;
-            Type = PlugInType.Unknown;
-            State = plugin.ReasonCode.ToString();
-            DisabledReason = plugin.Description;
-            Path = plugin.Path;
-            Description = string.Empty;
-        }
-
-        /// <summary>Initializes a new instance of the <see cref="SettingsPlugInListItemParameters"/> class.</summary>
-        /// <param name="plugin">The plugin to evaluate.</param>
-        /// <param name="hostServices">The host application services.</param>
-        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="plugin"/> is parameter <b>null</b>.</exception>
-        public SettingsPlugInListItemParameters(IGorgonFileSystemProvider plugin, IHostServices hostServices)
-            : base(hostServices)
-        {
-            if (plugin is null)
-            {
-                throw new ArgumentNullException(nameof(plugin));
-            }
-
-            Name = string.IsNullOrWhiteSpace(plugin.Description) ? plugin.Name : plugin.Description;
-            Type = PlugInType.Reader;
-            State = Resources.GOREDIT_PLUGIN_STATE_LOADED;
-            DisabledReason = string.Empty;
-            Path = plugin.ProviderPath;
-            Description = plugin.Description;
-        }
-        #endregion
+        get;
+        private set;
     }
+
+    /// <summary>
+    /// Property to return the type of plug in.
+    /// </summary>
+    public PlugInType Type
+    {
+        get;
+        private set;
+    }
+
+    /// <summary>
+    /// Property to return the current state of the plug in.
+    /// </summary>
+    public string State
+    {
+        get;
+        private set;
+    }
+
+    /// <summary>
+    /// Property to return the reason that the plug in was disabled.
+    /// </summary>
+    public string DisabledReason
+    {
+        get;
+        private set;
+    }
+
+    /// <summary>
+    /// Property to return the path to the plug in assembly.
+    /// </summary>
+    public string Path
+    {
+        get;
+        private set;
+    }
+
+    /// <summary>
+    /// Property to return the description of the plug in.
+    /// </summary>
+    public string Description
+    {
+        get;
+        private set;
+    }
+    #endregion
+
+    #region Constructor/Finalizer.
+    /// <summary>Initializes a new instance of the <see cref="SettingsPlugInListItemParameters"/> class.</summary>
+    /// <param name="plugin">The plugin to evaluate.</param>
+    /// <param name="hostServices">The host application services.</param>
+    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="plugin"/> is parameter <b>null</b>.</exception>
+    public SettingsPlugInListItemParameters(EditorPlugIn plugin, IHostServices hostServices)
+        : base(hostServices)
+    {
+        if (plugin is null)
+        {
+            throw new ArgumentNullException(nameof(plugin));
+        }
+
+        Name = string.IsNullOrWhiteSpace(plugin.Description) ? plugin.Name : plugin.Description;
+        Type = plugin.PlugInType;
+        State = Resources.GOREDIT_PLUGIN_STATE_LOADED;
+        DisabledReason = string.Empty;
+        Path = plugin.PlugInPath;
+        Description = plugin.Description;
+    }
+
+    /// <summary>Initializes a new instance of the <see cref="SettingsPlugInListItemParameters"/> class.</summary>
+    /// <param name="plugin">The plugin to evaluate.</param>
+    /// <param name="hostServices">The host application services.</param>
+    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="plugin"/> is parameter <b>null</b>.</exception>
+    public SettingsPlugInListItemParameters(IDisabledPlugIn plugin, IHostServices hostServices)
+        : base(hostServices)
+    {
+        if (plugin is null)
+        {
+            throw new ArgumentNullException(nameof(plugin));
+        }
+
+        Name = plugin.PlugInName;
+        Type = PlugInType.Unknown;
+        State = plugin.ReasonCode.ToString();
+        DisabledReason = plugin.Description;
+        Path = plugin.Path;
+        Description = string.Empty;
+    }
+
+    /// <summary>Initializes a new instance of the <see cref="SettingsPlugInListItemParameters"/> class.</summary>
+    /// <param name="plugin">The plugin to evaluate.</param>
+    /// <param name="hostServices">The host application services.</param>
+    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="plugin"/> is parameter <b>null</b>.</exception>
+    public SettingsPlugInListItemParameters(IGorgonFileSystemProvider plugin, IHostServices hostServices)
+        : base(hostServices)
+    {
+        if (plugin is null)
+        {
+            throw new ArgumentNullException(nameof(plugin));
+        }
+
+        Name = string.IsNullOrWhiteSpace(plugin.Description) ? plugin.Name : plugin.Description;
+        Type = PlugInType.Reader;
+        State = Resources.GOREDIT_PLUGIN_STATE_LOADED;
+        DisabledReason = string.Empty;
+        Path = plugin.ProviderPath;
+        Description = plugin.Description;
+    }
+    #endregion
 }

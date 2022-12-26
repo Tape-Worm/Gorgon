@@ -27,11 +27,10 @@
 using System.Runtime.InteropServices;
 // ReSharper disable All
 
-namespace Gorgon.Native
+namespace Gorgon.Native;
+
+[StructLayout(LayoutKind.Sequential)]
+internal struct RECT
 {
-    [StructLayout(LayoutKind.Sequential)]
-    internal struct RECT
-    {
-        public int left, top, right, bottom;
-    }
+    public int left, top, right, bottom;
 }

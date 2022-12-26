@@ -26,28 +26,27 @@
 
 using System.ComponentModel;
 
-namespace Gorgon.Editor.Tools
-{
-    /// <summary>
-    /// Arguments for the <see cref="IEditorTool.CloseToolCommand"/>.
-    /// </summary>
-    public class CloseToolArgs
-        : CancelEventArgs
-    {
-        #region Properties.
-        /// <summary>
-        /// Property to return whether or not to check the content for changes prior to closing.
-        /// </summary>
-        public bool CheckChanges
-        {
-            get;
-        }
-        #endregion
+namespace Gorgon.Editor.Tools;
 
-        #region Constructor.
-        /// <summary>Initializes a new instance of the <see cref="CloseToolArgs"/> class.</summary>
-        /// <param name="checkForChanges"><b>true</b> to check for changes prior to closing, <b>false</b> to skip the check and force a close.</param>
-        public CloseToolArgs(bool checkForChanges) => CheckChanges = checkForChanges;
-        #endregion
+/// <summary>
+/// Arguments for the <see cref="IEditorTool.CloseToolCommand"/>.
+/// </summary>
+public class CloseToolArgs
+    : CancelEventArgs
+{
+    #region Properties.
+    /// <summary>
+    /// Property to return whether or not to check the content for changes prior to closing.
+    /// </summary>
+    public bool CheckChanges
+    {
+        get;
     }
+    #endregion
+
+    #region Constructor.
+    /// <summary>Initializes a new instance of the <see cref="CloseToolArgs"/> class.</summary>
+    /// <param name="checkForChanges"><b>true</b> to check for changes prior to closing, <b>false</b> to skip the check and force a close.</param>
+    public CloseToolArgs(bool checkForChanges) => CheckChanges = checkForChanges;
+    #endregion
 }

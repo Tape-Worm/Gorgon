@@ -28,52 +28,51 @@ using System;
 using Gorgon.Editor.PlugIns;
 using Gorgon.IO;
 
-namespace Gorgon.Editor.ViewModels
+namespace Gorgon.Editor.ViewModels;
+
+/// <summary>
+/// Parameters for the <see cref="Directory"/> view model.
+/// </summary>
+internal class DirectoryParameters
+    : ViewModelCommonParameters
 {
+    #region Properties.
     /// <summary>
-    /// Parameters for the <see cref="Directory"/> view model.
+    /// Property to set or return the virtual directory represented by the view model.
     /// </summary>
-    internal class DirectoryParameters
-        : ViewModelCommonParameters
+    public IGorgonVirtualDirectory VirtualDirectory
     {
-        #region Properties.
-        /// <summary>
-        /// Property to set or return the virtual directory represented by the view model.
-        /// </summary>
-        public IGorgonVirtualDirectory VirtualDirectory
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// Property to set or return the path to the directory on the physical file system that represents the root of the virtual file system.
-        /// </summary>
-        public string PhysicalPath
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// Property to set or return the parent of the directory.
-        /// </summary>
-        public IDirectory Parent
-        {
-            get;
-            set;
-        }
-        #endregion
-
-        #region Constructor.
-        /// <summary>Initializes a new instance of the <see cref="DirectoryParameters"/> class.</summary>
-        /// <param name="hostServices">The services from the host application.</param>
-        /// <param name="factory">The factory used to create view models.</param>
-        /// <exception cref="ArgumentNullException">Thrown when any of the required parameters are <b>null</b>.</exception>
-        public DirectoryParameters(IHostContentServices hostServices, ViewModelFactory factory)
-            : base(hostServices, factory)
-        {
-        }
-        #endregion
+        get;
+        set;
     }
+
+    /// <summary>
+    /// Property to set or return the path to the directory on the physical file system that represents the root of the virtual file system.
+    /// </summary>
+    public string PhysicalPath
+    {
+        get;
+        set;
+    }
+
+    /// <summary>
+    /// Property to set or return the parent of the directory.
+    /// </summary>
+    public IDirectory Parent
+    {
+        get;
+        set;
+    }
+    #endregion
+
+    #region Constructor.
+    /// <summary>Initializes a new instance of the <see cref="DirectoryParameters"/> class.</summary>
+    /// <param name="hostServices">The services from the host application.</param>
+    /// <param name="factory">The factory used to create view models.</param>
+    /// <exception cref="ArgumentNullException">Thrown when any of the required parameters are <b>null</b>.</exception>
+    public DirectoryParameters(IHostContentServices hostServices, ViewModelFactory factory)
+        : base(hostServices, factory)
+    {
+    }
+    #endregion
 }

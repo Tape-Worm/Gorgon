@@ -31,127 +31,126 @@ using Gorgon.Editor.Content;
 using Gorgon.Editor.PlugIns;
 using Gorgon.Editor.UI;
 
-namespace Gorgon.Editor.ViewModels
+namespace Gorgon.Editor.ViewModels;
+
+/// <summary>
+/// The view model for interacting with the project data.
+/// </summary>
+internal interface IProjectEditor
+    : IViewModel
 {
+    #region Properties.
     /// <summary>
-    /// The view model for interacting with the project data.
+    /// Property to return the available tool plug in button definitions for the application.
     /// </summary>
-    internal interface IProjectEditor
-        : IViewModel
+    IReadOnlyDictionary<string, IReadOnlyList<IToolPlugInRibbonButton>> ToolButtons
     {
-        #region Properties.
-        /// <summary>
-        /// Property to return the available tool plug in button definitions for the application.
-        /// </summary>
-        IReadOnlyDictionary<string, IReadOnlyList<IToolPlugInRibbonButton>> ToolButtons
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to return the title for the project.
-        /// </summary>
-        string ProjectTitle
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to return the content file manager for managing content file systems through content plug ins.
-        /// </summary>
-        IContentFileManager ContentFileManager
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to return the file explorer view model for use with the file explorer subview.
-        /// </summary>
-        IFileExplorer FileExplorer
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to return the content previewer.
-        /// </summary>
-        IContentPreview ContentPreviewer
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to return the current command context.
-        /// </summary>
-        string CommandContext
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to return the current content file for the project.
-        /// </summary>
-        IEditorContent CurrentContent
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to set or return the current clipboard context depending on content.
-        /// </summary>
-        IClipboardHandler ClipboardContext
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// Property to return the command to execute when the project is closing.
-        /// </summary>
-        IEditorAsyncCommand<CancelEventArgs> BeforeCloseCommand
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to return the command to execute after the project is closed.
-        /// </summary>
-        IEditorCommand<object> AfterCloseCommand
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to return the command to save the project metadata.
-        /// </summary>
-        IEditorCommand<object> SaveProjectMetadataCommand
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to return the command used to save the project to a packed file.
-        /// </summary>
-        IEditorAsyncCommand<CancelEventArgs> SaveProjectToPackFileCommand
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to return the command used to create content.
-        /// </summary>
-        IEditorAsyncCommand<Guid> CreateContentCommand
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to return the command executed when the currently active content is closed.
-        /// </summary>
-        IEditorCommand<object> ContentClosedCommand
-        {
-            get;
-        }
-        #endregion
+        get;
     }
+
+    /// <summary>
+    /// Property to return the title for the project.
+    /// </summary>
+    string ProjectTitle
+    {
+        get;
+    }
+
+    /// <summary>
+    /// Property to return the content file manager for managing content file systems through content plug ins.
+    /// </summary>
+    IContentFileManager ContentFileManager
+    {
+        get;
+    }
+
+    /// <summary>
+    /// Property to return the file explorer view model for use with the file explorer subview.
+    /// </summary>
+    IFileExplorer FileExplorer
+    {
+        get;
+    }
+
+    /// <summary>
+    /// Property to return the content previewer.
+    /// </summary>
+    IContentPreview ContentPreviewer
+    {
+        get;
+    }
+
+    /// <summary>
+    /// Property to return the current command context.
+    /// </summary>
+    string CommandContext
+    {
+        get;
+    }
+
+    /// <summary>
+    /// Property to return the current content file for the project.
+    /// </summary>
+    IEditorContent CurrentContent
+    {
+        get;
+    }
+
+    /// <summary>
+    /// Property to set or return the current clipboard context depending on content.
+    /// </summary>
+    IClipboardHandler ClipboardContext
+    {
+        get;
+        set;
+    }
+
+    /// <summary>
+    /// Property to return the command to execute when the project is closing.
+    /// </summary>
+    IEditorAsyncCommand<CancelEventArgs> BeforeCloseCommand
+    {
+        get;
+    }
+
+    /// <summary>
+    /// Property to return the command to execute after the project is closed.
+    /// </summary>
+    IEditorCommand<object> AfterCloseCommand
+    {
+        get;
+    }
+
+    /// <summary>
+    /// Property to return the command to save the project metadata.
+    /// </summary>
+    IEditorCommand<object> SaveProjectMetadataCommand
+    {
+        get;
+    }
+
+    /// <summary>
+    /// Property to return the command used to save the project to a packed file.
+    /// </summary>
+    IEditorAsyncCommand<CancelEventArgs> SaveProjectToPackFileCommand
+    {
+        get;
+    }
+
+    /// <summary>
+    /// Property to return the command used to create content.
+    /// </summary>
+    IEditorAsyncCommand<Guid> CreateContentCommand
+    {
+        get;
+    }
+
+    /// <summary>
+    /// Property to return the command executed when the currently active content is closed.
+    /// </summary>
+    IEditorCommand<object> ContentClosedCommand
+    {
+        get;
+    }
+    #endregion
 }

@@ -27,114 +27,113 @@
 using System;
 using DX = SharpDX;
 
-namespace Gorgon.Input
+namespace Gorgon.Input;
+
+/// <summary>
+/// Mouse event arguments.
+/// </summary>
+public class GorgonMouseEventArgs
+    : EventArgs
 {
+    #region Properties.
     /// <summary>
-    /// Mouse event arguments.
+    /// Property to return the buttons that were held down during a <see cref="GorgonRawMouse"/> event.
     /// </summary>
-    public class GorgonMouseEventArgs
-        : EventArgs
+    public MouseButtons Buttons
     {
-        #region Properties.
-        /// <summary>
-        /// Property to return the buttons that were held down during a <see cref="GorgonRawMouse"/> event.
-        /// </summary>
-        public MouseButtons Buttons
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to return the buttons that were being held down in conjunction with the <see cref="Buttons"/> during a <see cref="GorgonRawMouse"/> event.
-        /// </summary>
-        public MouseButtons ShiftButtons
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to return the position of the mouse.
-        /// </summary>
-        public DX.Point Position
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to return the wheel position.
-        /// </summary>
-        /// <remarks>
-        /// If there is no mouse wheel present, this value will return 0.
-        /// </remarks>
-        public int WheelPosition
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to return the amount that the mouse has moved since the last <see cref="GorgonRawMouse"/> event.
-        /// </summary>
-        public DX.Point RelativePosition
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to return the amount that the wheel has moved since the last <see cref="GorgonRawMouse"/> event.
-        /// </summary>
-        /// <remarks>
-        /// If this is no mouse wheel present, this value will return 0.
-        /// </remarks>
-        public int WheelDelta
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to return if a double click caused the event to trigger.
-        /// </summary>
-        public bool DoubleClick => (ClickCount > 1);
-
-        /// <summary>
-        /// Property to return the number of full clicks.
-        /// </summary>
-        public int ClickCount
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to return whether the mouse is using absolute coordinates, or relative.
-        /// </summary>
-        public bool IsAbsolute
-        {
-            get;
-        }
-        #endregion
-
-        #region Constructor/Destructor.
-        /// <summary>
-        /// Initializes a new instance of the <see cref="GorgonMouseEventArgs" /> class.
-        /// </summary>
-        /// <param name="buttons">Buttons that are pressed during mouse event.</param>
-        /// <param name="shiftButtons">Buttons that are held down during the mouse event.</param>
-        /// <param name="position">Position of the mouse.</param>
-        /// <param name="wheelPosition">Position of the wheel.</param>
-        /// <param name="relativePosition">Relative position of the mouse.</param>
-        /// <param name="wheelDelta">Relative position of the wheel.</param>
-        /// <param name="clickCount">Number of clicks in a timed period.</param>
-        /// <param name="isAbsolute"><b>true</b> to use absolute positioning, <b>false</b> to use relative.</param>
-        public GorgonMouseEventArgs(MouseButtons buttons, MouseButtons shiftButtons, DX.Point position, int wheelPosition, DX.Point relativePosition, int wheelDelta, int clickCount, bool isAbsolute)
-        {
-            Buttons = buttons;
-            ShiftButtons = shiftButtons;
-            Position = position;
-            WheelPosition = wheelPosition;
-            RelativePosition = relativePosition;
-            WheelDelta = wheelDelta;
-            ClickCount = clickCount;
-            IsAbsolute = isAbsolute;
-        }
-        #endregion
+        get;
     }
+
+    /// <summary>
+    /// Property to return the buttons that were being held down in conjunction with the <see cref="Buttons"/> during a <see cref="GorgonRawMouse"/> event.
+    /// </summary>
+    public MouseButtons ShiftButtons
+    {
+        get;
+    }
+
+    /// <summary>
+    /// Property to return the position of the mouse.
+    /// </summary>
+    public DX.Point Position
+    {
+        get;
+    }
+
+    /// <summary>
+    /// Property to return the wheel position.
+    /// </summary>
+    /// <remarks>
+    /// If there is no mouse wheel present, this value will return 0.
+    /// </remarks>
+    public int WheelPosition
+    {
+        get;
+    }
+
+    /// <summary>
+    /// Property to return the amount that the mouse has moved since the last <see cref="GorgonRawMouse"/> event.
+    /// </summary>
+    public DX.Point RelativePosition
+    {
+        get;
+    }
+
+    /// <summary>
+    /// Property to return the amount that the wheel has moved since the last <see cref="GorgonRawMouse"/> event.
+    /// </summary>
+    /// <remarks>
+    /// If this is no mouse wheel present, this value will return 0.
+    /// </remarks>
+    public int WheelDelta
+    {
+        get;
+    }
+
+    /// <summary>
+    /// Property to return if a double click caused the event to trigger.
+    /// </summary>
+    public bool DoubleClick => (ClickCount > 1);
+
+    /// <summary>
+    /// Property to return the number of full clicks.
+    /// </summary>
+    public int ClickCount
+    {
+        get;
+    }
+
+    /// <summary>
+    /// Property to return whether the mouse is using absolute coordinates, or relative.
+    /// </summary>
+    public bool IsAbsolute
+    {
+        get;
+    }
+    #endregion
+
+    #region Constructor/Destructor.
+    /// <summary>
+    /// Initializes a new instance of the <see cref="GorgonMouseEventArgs" /> class.
+    /// </summary>
+    /// <param name="buttons">Buttons that are pressed during mouse event.</param>
+    /// <param name="shiftButtons">Buttons that are held down during the mouse event.</param>
+    /// <param name="position">Position of the mouse.</param>
+    /// <param name="wheelPosition">Position of the wheel.</param>
+    /// <param name="relativePosition">Relative position of the mouse.</param>
+    /// <param name="wheelDelta">Relative position of the wheel.</param>
+    /// <param name="clickCount">Number of clicks in a timed period.</param>
+    /// <param name="isAbsolute"><b>true</b> to use absolute positioning, <b>false</b> to use relative.</param>
+    public GorgonMouseEventArgs(MouseButtons buttons, MouseButtons shiftButtons, DX.Point position, int wheelPosition, DX.Point relativePosition, int wheelDelta, int clickCount, bool isAbsolute)
+    {
+        Buttons = buttons;
+        ShiftButtons = shiftButtons;
+        Position = position;
+        WheelPosition = wheelPosition;
+        RelativePosition = relativePosition;
+        WheelDelta = wheelDelta;
+        ClickCount = clickCount;
+        IsAbsolute = isAbsolute;
+    }
+    #endregion
 }

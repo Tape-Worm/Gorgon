@@ -27,24 +27,23 @@
 using System;
 using System.Numerics;
 
-namespace Gorgon.Editor.Rendering
+namespace Gorgon.Editor.Rendering;
+
+/// <summary>
+/// Event arguments for the <see cref="IContentRenderer.OffsetChanged"/> event.
+/// </summary>
+public class OffsetEventArgs
+    : EventArgs
 {
     /// <summary>
-    /// Event arguments for the <see cref="IContentRenderer.OffsetChanged"/> event.
+    /// Property to return the offset.
     /// </summary>
-    public class OffsetEventArgs
-        : EventArgs
+    /// <remarks>
+    /// This value is in world space, relative to the <see cref="IContentRenderer.RenderRegion"/>.
+    /// </remarks>
+    public Vector2 Offset
     {
-        /// <summary>
-        /// Property to return the offset.
-        /// </summary>
-        /// <remarks>
-        /// This value is in world space, relative to the <see cref="IContentRenderer.RenderRegion"/>.
-        /// </remarks>
-        public Vector2 Offset
-        {
-            get;
-            internal set;
-        }
+        get;
+        internal set;
     }
 }

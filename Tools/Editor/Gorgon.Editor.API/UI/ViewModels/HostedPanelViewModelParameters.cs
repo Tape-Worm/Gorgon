@@ -28,20 +28,19 @@ using System;
 using Gorgon.Editor.PlugIns;
 using Gorgon.Editor.UI.ViewModels;
 
-namespace Gorgon.Editor.UI
+namespace Gorgon.Editor.UI;
+
+/// <summary>
+/// Parameters for a <see cref="IHostedPanelViewModel"/>
+/// </summary>
+public class HostedPanelViewModelParameters
+    : ViewModelInjection<IHostContentServices>
 {
-    /// <summary>
-    /// Parameters for a <see cref="IHostedPanelViewModel"/>
-    /// </summary>
-    public class HostedPanelViewModelParameters
-        : ViewModelInjection<IHostContentServices>
+    /// <summary>Initializes a new instance of the <see cref="HostedPanelViewModelParameters"/> class.</summary>
+    /// <param name="hostServices">Common application services.</param>
+    /// <exception cref="ArgumentNullException">Thrown when any of the parameters are <b>null</b>.</exception>
+    public HostedPanelViewModelParameters(IHostContentServices hostServices)
+        : base(hostServices)
     {
-        /// <summary>Initializes a new instance of the <see cref="HostedPanelViewModelParameters"/> class.</summary>
-        /// <param name="hostServices">Common application services.</param>
-        /// <exception cref="ArgumentNullException">Thrown when any of the parameters are <b>null</b>.</exception>
-        public HostedPanelViewModelParameters(IHostContentServices hostServices)
-            : base(hostServices)
-        {
-        }
     }
 }

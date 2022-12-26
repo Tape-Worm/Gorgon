@@ -27,48 +27,47 @@
 using Gorgon.Graphics.Core.Properties;
 using D3D = SharpDX.Direct3D;
 
-namespace Gorgon.Graphics.Core
+namespace Gorgon.Graphics.Core;
+
+/// <summary>
+/// Extension methods for the <see cref="FeatureSet"/> enumeration.
+/// </summary>
+public static class GorgonFeatureSetExtensions
 {
     /// <summary>
-    /// Extension methods for the <see cref="FeatureSet"/> enumeration.
+    /// Function to convert the feature set value to a corresponding Direct3D version number.
     /// </summary>
-    public static class GorgonFeatureSetExtensions
+    /// <param name="featureSet">The feature set to evaluate.</param>
+    /// <returns>The Direct3D version number.</returns>        
+    internal static string D3DVersion(this FeatureSet featureSet) => featureSet switch
     {
-        /// <summary>
-        /// Function to convert the feature set value to a corresponding Direct3D version number.
-        /// </summary>
-        /// <param name="featureSet">The feature set to evaluate.</param>
-        /// <returns>The Direct3D version number.</returns>        
-        internal static string D3DVersion(this FeatureSet featureSet) => featureSet switch
-        {
-            FeatureSet.Level_12_1 or FeatureSet.Level_12_0 => "11.4",
-            FeatureSet.Level_11_2 => "11.2",
-            _ => Resources.GORGFX_TEXT_FEATURE_SET_UNKNOWN,
-        };
+        FeatureSet.Level_12_1 or FeatureSet.Level_12_0 => "11.4",
+        FeatureSet.Level_11_2 => "11.2",
+        _ => Resources.GORGFX_TEXT_FEATURE_SET_UNKNOWN,
+    };
 
-        /// <summary>
-        /// Function to convert the feature set value to a corresponding Direct3D version number.
-        /// </summary>
-        /// <param name="featureLevel">The feature set to evaluate.</param>
-        /// <returns>The Direct3D version number.</returns>        
-        internal static string D3DVersion(this D3D.FeatureLevel featureLevel) => featureLevel switch
-        {
-            D3D.FeatureLevel.Level_12_1 or D3D.FeatureLevel.Level_12_0 => "11.4",
-            D3D.FeatureLevel.Level_11_1 => "11.2",
-            _ => Resources.GORGFX_TEXT_FEATURE_SET_UNKNOWN,
-        };
+    /// <summary>
+    /// Function to convert the feature set value to a corresponding Direct3D version number.
+    /// </summary>
+    /// <param name="featureLevel">The feature set to evaluate.</param>
+    /// <returns>The Direct3D version number.</returns>        
+    internal static string D3DVersion(this D3D.FeatureLevel featureLevel) => featureLevel switch
+    {
+        D3D.FeatureLevel.Level_12_1 or D3D.FeatureLevel.Level_12_0 => "11.4",
+        D3D.FeatureLevel.Level_11_1 => "11.2",
+        _ => Resources.GORGFX_TEXT_FEATURE_SET_UNKNOWN,
+    };
 
-        /// <summary>
-        /// Function to return a friendly description for a feature set.
-        /// </summary>
-        /// <param name="featureSet">The feature set to evaluate.</param>
-        /// <returns>The friendly description.</returns>
-        public static string Description(this FeatureSet featureSet) => featureSet switch
-        {
-            FeatureSet.Level_12_1 => Resources.GORGFX_TEXT_FEATURE_SET_121,
-            FeatureSet.Level_12_0 => Resources.GORGFX_TEXT_FEATURE_SET_120,
-            FeatureSet.Level_11_2 => Resources.GORGFX_TEXT_FEATURE_SET_112,
-            _ => Resources.GORGFX_TEXT_FEATURE_SET_UNKNOWN,
-        };
-    }
+    /// <summary>
+    /// Function to return a friendly description for a feature set.
+    /// </summary>
+    /// <param name="featureSet">The feature set to evaluate.</param>
+    /// <returns>The friendly description.</returns>
+    public static string Description(this FeatureSet featureSet) => featureSet switch
+    {
+        FeatureSet.Level_12_1 => Resources.GORGFX_TEXT_FEATURE_SET_121,
+        FeatureSet.Level_12_0 => Resources.GORGFX_TEXT_FEATURE_SET_120,
+        FeatureSet.Level_11_2 => Resources.GORGFX_TEXT_FEATURE_SET_112,
+        _ => Resources.GORGFX_TEXT_FEATURE_SET_UNKNOWN,
+    };
 }

@@ -27,66 +27,65 @@
 using Gorgon.Editor.UI;
 using DX = SharpDX;
 
-namespace Gorgon.Editor.AnimationEditor
+namespace Gorgon.Editor.AnimationEditor;
+
+/// <summary>
+/// The view model used to manipulate the settings for the sprite editor plug in.
+/// </summary>
+internal interface ISettings
+    : ISettingsCategory
 {
     /// <summary>
-    /// The view model used to manipulate the settings for the sprite editor plug in.
+    /// Property to set or return the offset of the splitter between the main view and lower view.
     /// </summary>
-    internal interface ISettings
-        : ISettingsCategory
+    int SplitterOffset
     {
-        /// <summary>
-        /// Property to set or return the offset of the splitter between the main view and lower view.
-        /// </summary>
-        int SplitterOffset
-        {
-            get;
-            set;
-        }
+        get;
+        set;
+    }
 
-        /// <summary>
-        /// Property to set or return whether to animate the background when no primary sprite is present.
-        /// </summary>
-        bool AnimateNoPrimarySpriteBackground
-        {
-            get;
-            set;
-        }
+    /// <summary>
+    /// Property to set or return whether to animate the background when no primary sprite is present.
+    /// </summary>
+    bool AnimateNoPrimarySpriteBackground
+    {
+        get;
+        set;
+    }
 
-        /// <summary>
-        /// Property to set or return whether to use onion skinning for some editors.
-        /// </summary>
-        bool UseOnionSkinning
-        {
-            get;
-            set;
-        }
+    /// <summary>
+    /// Property to set or return whether to use onion skinning for some editors.
+    /// </summary>
+    bool UseOnionSkinning
+    {
+        get;
+        set;
+    }
 
-        /// <summary>
-        /// Property to set or return whether to create a texture track in an empty animation on primary sprite assignment.
-        /// </summary>
-        bool AddTextureTrackForPrimarySprite
-        {
-            get;
-            set;
-        }
+    /// <summary>
+    /// Property to set or return whether to create a texture track in an empty animation on primary sprite assignment.
+    /// </summary>
+    bool AddTextureTrackForPrimarySprite
+    {
+        get;
+        set;
+    }
 
-        /// <summary>
-        /// Property to set or return the default screen resolution for the animation.
-        /// </summary>
-        DX.Size2 DefaultResolution
-        {
-            get;
-            set;
-        }
+    /// <summary>
+    /// Property to set or return the default screen resolution for the animation.
+    /// </summary>
+    DX.Size2 DefaultResolution
+    {
+        get;
+        set;
+    }
 
-        /// <summary>
-        /// Property to set or return whether a warning will be shown when an animation with unsupported tracks is loaded.
-        /// </summary>
-        bool WarnUnsupportedTracks
-        {
-            get;
-            set;
-        }
+    /// <summary>
+    /// Property to set or return whether a warning will be shown when an animation with unsupported tracks is loaded.
+    /// </summary>
+    bool WarnUnsupportedTracks
+    {
+        get;
+        set;
     }
 }

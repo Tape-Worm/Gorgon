@@ -29,66 +29,65 @@ using System.Numerics;
 using Gorgon.Editor.UI;
 using DX = SharpDX;
 
-namespace Gorgon.Editor.SpriteEditor
+namespace Gorgon.Editor.SpriteEditor;
+
+/// <summary>
+/// The view model for the sprite anchor editor.
+/// </summary>
+internal interface ISpriteAnchorEdit
+    : IHostedPanelViewModel
 {
+    #region Properties.
     /// <summary>
-    /// The view model for the sprite anchor editor.
+    /// Property to set or return whether to preview rotation with the current anchor setting.
     /// </summary>
-    internal interface ISpriteAnchorEdit
-        : IHostedPanelViewModel
+    bool PreviewRotation
     {
-        #region Properties.
-        /// <summary>
-        /// Property to set or return whether to preview rotation with the current anchor setting.
-        /// </summary>
-        bool PreviewRotation
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// Property to set or return whether to preview scaling with the current anchor setting.
-        /// </summary>
-        bool PreviewScale
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// Property to return the boundaries for the anchor point.
-        /// </summary>
-        DX.Rectangle Bounds
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to return the mid point of the sprite, based on its vertices.
-        /// </summary>
-        Vector2 MidPoint
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to set or return the boundaries of the sprite (vertices).
-        /// </summary>
-        IReadOnlyList<Vector2> SpriteBounds
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// Property to set or return the anchor point.
-        /// </summary>
-        Vector2 Anchor
-        {
-            get;
-            set;
-        }
-        #endregion
+        get;
+        set;
     }
+
+    /// <summary>
+    /// Property to set or return whether to preview scaling with the current anchor setting.
+    /// </summary>
+    bool PreviewScale
+    {
+        get;
+        set;
+    }
+
+    /// <summary>
+    /// Property to return the boundaries for the anchor point.
+    /// </summary>
+    DX.Rectangle Bounds
+    {
+        get;
+    }
+
+    /// <summary>
+    /// Property to return the mid point of the sprite, based on its vertices.
+    /// </summary>
+    Vector2 MidPoint
+    {
+        get;
+    }
+
+    /// <summary>
+    /// Property to set or return the boundaries of the sprite (vertices).
+    /// </summary>
+    IReadOnlyList<Vector2> SpriteBounds
+    {
+        get;
+        set;
+    }
+
+    /// <summary>
+    /// Property to set or return the anchor point.
+    /// </summary>
+    Vector2 Anchor
+    {
+        get;
+        set;
+    }
+    #endregion
 }

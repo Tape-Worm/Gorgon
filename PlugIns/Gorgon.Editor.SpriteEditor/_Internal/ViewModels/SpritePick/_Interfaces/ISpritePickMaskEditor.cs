@@ -27,30 +27,29 @@
 using Gorgon.Editor.UI;
 using Gorgon.Graphics;
 
-namespace Gorgon.Editor.SpriteEditor
+namespace Gorgon.Editor.SpriteEditor;
+
+/// <summary>
+/// The view model used to manipulate the sprite picker mask clipping type and color.
+/// </summary>
+internal interface ISpritePickMaskEditor
+    : IHostedPanelViewModel
 {
     /// <summary>
-    /// The view model used to manipulate the sprite picker mask clipping type and color.
+    /// Property to set or return the type of masking to perform when picking a sprite using the sprite picker tool.
     /// </summary>
-    internal interface ISpritePickMaskEditor
-        : IHostedPanelViewModel
+    ClipMask ClipMaskType
     {
-        /// <summary>
-        /// Property to set or return the type of masking to perform when picking a sprite using the sprite picker tool.
-        /// </summary>
-        ClipMask ClipMaskType
-        {
-            get;
-            set;
-        }
+        get;
+        set;
+    }
 
-        /// <summary>
-        /// Property to set or return the sprite picker mask color.
-        /// </summary>
-        GorgonColor ClipMaskValue
-        {
-            get;
-            set;
-        }
+    /// <summary>
+    /// Property to set or return the sprite picker mask color.
+    /// </summary>
+    GorgonColor ClipMaskValue
+    {
+        get;
+        set;
     }
 }

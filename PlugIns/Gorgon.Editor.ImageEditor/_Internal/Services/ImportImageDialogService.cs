@@ -34,132 +34,131 @@ using Gorgon.Editor.Services;
 using Gorgon.Graphics.Imaging.Codecs;
 using Gorgon.IO;
 
-namespace Gorgon.Editor.ImageEditor
+namespace Gorgon.Editor.ImageEditor;
+
+/// <summary>
+/// Dialog serivce used for retrieving paths for importing image data.
+/// </summary>
+internal class ImportImageDialogService
+    : FileOpenDialogService, IImportImageDialogService
 {
-    /// <summary>
-    /// Dialog serivce used for retrieving paths for importing image data.
-    /// </summary>
-    internal class ImportImageDialogService
-        : FileOpenDialogService, IImportImageDialogService
+    #region Variables.
+    // The settings for the image editor.
+    private readonly ISettings _settings;
+    // The codecs available to the importer.
+    private readonly ICodecRegistry _codecs;
+    #endregion
+
+    #region Properties.
+    /// <summary>Property to return the codec used for exporting.</summary>
+    public IGorgonImageCodec SelectedCodec
     {
-        #region Variables.
-        // The settings for the image editor.
-        private readonly ISettings _settings;
-        // The codecs available to the importer.
-        private readonly ICodecRegistry _codecs;
-        #endregion
+        get;
+        private set;
+    }
+    #endregion
 
-        #region Properties.
-        /// <summary>Property to return the codec used for exporting.</summary>
-        public IGorgonImageCodec SelectedCodec
+    #region Methods.
+    /// <summary>
+    /// Function to retrieve the last directory path used for import/export.
+    /// </summary>
+    /// <returns>The directory last used for import/export.</returns>
+    private DirectoryInfo GetLastImportExportPath()
+    {
+        DirectoryInfo result;
+
+        string importExportPath = _settings.LastImportExportPath.FormatDirectory(Path.DirectorySeparatorChar);
+
+        if (string.IsNullOrWhiteSpace(importExportPath))
         {
-            get;
-            private set;
+            result = new DirectoryInfo(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments));
         }
-        #endregion
-
-        #region Methods.
-        /// <summary>
-        /// Function to retrieve the last directory path used for import/export.
-        /// </summary>
-        /// <returns>The directory last used for import/export.</returns>
-        private DirectoryInfo GetLastImportExportPath()
+        else
         {
-            DirectoryInfo result;
-
-            string importExportPath = _settings.LastImportExportPath.FormatDirectory(Path.DirectorySeparatorChar);
-
-            if (string.IsNullOrWhiteSpace(importExportPath))
-            {
-                result = new DirectoryInfo(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments));
-            }
-            else
-            {
-                result = new DirectoryInfo(importExportPath);
-
-                if (!result.Exists)
-                {
-                    result = new DirectoryInfo(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments));
-                }
-            }
+            result = new DirectoryInfo(importExportPath);
 
             if (!result.Exists)
             {
-                result = new DirectoryInfo(AppDomain.CurrentDomain.BaseDirectory);
+                result = new DirectoryInfo(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments));
             }
-
-            return result;
         }
 
-        /// <summary>
-        /// Function to configure the file dialog.
-        /// </summary>
-        private void ConfigureDialog()
+        if (!result.Exists)
         {
-            var fileFilter = new StringBuilder();
-            foreach (IGorgonImageCodec codec in _codecs.Codecs)
-            {
-                IEnumerable<string> extensions = codec.CodecCommonExtensions.Distinct(StringComparer.CurrentCultureIgnoreCase).Select(item => $"*.{item}");
+            result = new DirectoryInfo(AppDomain.CurrentDomain.BaseDirectory);
+        }
 
-                if (fileFilter.Length > 0)
-                {
-                    fileFilter.Append('|');
-                }
+        return result;
+    }
 
-                fileFilter.AppendFormat("{0} ({1})|{2}", codec.CodecDescription, string.Join(", ", extensions), string.Join(";", extensions));
-            }
+    /// <summary>
+    /// Function to configure the file dialog.
+    /// </summary>
+    private void ConfigureDialog()
+    {
+        var fileFilter = new StringBuilder();
+        foreach (IGorgonImageCodec codec in _codecs.Codecs)
+        {
+            IEnumerable<string> extensions = codec.CodecCommonExtensions.Distinct(StringComparer.CurrentCultureIgnoreCase).Select(item => $"*.{item}");
 
             if (fileFilter.Length > 0)
             {
                 fileFilter.Append('|');
             }
 
-            fileFilter.Append(Resources.GORIMG_FILEMASK_ALL_FILES);
-
-            FileFilter = fileFilter.ToString();
-            DialogTitle = Resources.GORIMG_CAPTION_IMPORT_IMAGE;
-            InitialDirectory = GetLastImportExportPath();
+            fileFilter.AppendFormat("{0} ({1})|{2}", codec.CodecDescription, string.Join(", ", extensions), string.Join(";", extensions));
         }
 
-        /// <summary>Function to retrieve a single file name.</summary>
-        /// <returns>The selected file path, or <b>null</b> if cancelled.</returns>
-        public override string GetFilename()
+        if (fileFilter.Length > 0)
         {
-            ConfigureDialog();
-            string filePath = base.GetFilename();
-
-            if (string.IsNullOrWhiteSpace(filePath))
-            {
-                return null;
-            }
-
-            var extension = new GorgonFileExtension(Path.GetExtension(filePath));
-
-            SelectedCodec = null;
-
-            // Check for an extension match on the codec list.
-            foreach (IGorgonImageCodec codec in _codecs.Codecs.Where(item => (item.CodecCommonExtensions.Count > 0) && (item.CanDecode)))
-            {
-                if (codec.CodecCommonExtensions.Any(item => extension == new GorgonFileExtension(item)))
-                {
-                    SelectedCodec = codec;
-                    break;
-                }
-            }
-
-            return filePath;
+            fileFilter.Append('|');
         }
-        #endregion
 
-        #region Constructor.
-        /// <summary>Initializes a new instance of the <see cref="ImportImageDialogService"/> class.</summary>
-        /// <param name="settings">The settings.</param>
-        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="settings" />, or the <paramref name="codecs"/> parameter is <strong>null</strong>.</exception>
-        public ImportImageDialogService(ISettings settings, ICodecRegistry codecs)
-        {
-            _settings = settings ?? throw new ArgumentNullException(nameof(settings));
-            _codecs = codecs ?? throw new ArgumentNullException(nameof(codecs));
-        }
-        #endregion
+        fileFilter.Append(Resources.GORIMG_FILEMASK_ALL_FILES);
+
+        FileFilter = fileFilter.ToString();
+        DialogTitle = Resources.GORIMG_CAPTION_IMPORT_IMAGE;
+        InitialDirectory = GetLastImportExportPath();
     }
+
+    /// <summary>Function to retrieve a single file name.</summary>
+    /// <returns>The selected file path, or <b>null</b> if cancelled.</returns>
+    public override string GetFilename()
+    {
+        ConfigureDialog();
+        string filePath = base.GetFilename();
+
+        if (string.IsNullOrWhiteSpace(filePath))
+        {
+            return null;
+        }
+
+        var extension = new GorgonFileExtension(Path.GetExtension(filePath));
+
+        SelectedCodec = null;
+
+        // Check for an extension match on the codec list.
+        foreach (IGorgonImageCodec codec in _codecs.Codecs.Where(item => (item.CodecCommonExtensions.Count > 0) && (item.CanDecode)))
+        {
+            if (codec.CodecCommonExtensions.Any(item => extension == new GorgonFileExtension(item)))
+            {
+                SelectedCodec = codec;
+                break;
+            }
+        }
+
+        return filePath;
+    }
+    #endregion
+
+    #region Constructor.
+    /// <summary>Initializes a new instance of the <see cref="ImportImageDialogService"/> class.</summary>
+    /// <param name="settings">The settings.</param>
+    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="settings" />, or the <paramref name="codecs"/> parameter is <strong>null</strong>.</exception>
+    public ImportImageDialogService(ISettings settings, ICodecRegistry codecs)
+    {
+        _settings = settings ?? throw new ArgumentNullException(nameof(settings));
+        _codecs = codecs ?? throw new ArgumentNullException(nameof(codecs));
+    }
+    #endregion
 }

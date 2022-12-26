@@ -30,53 +30,52 @@ using Gorgon.Core;
 using Gorgon.Diagnostics;
 using Gorgon.UI;
 
-namespace Gorgon.Examples
+namespace Gorgon.Examples;
+
+/// <summary>
+/// Example entry point.
+/// </summary>
+/// <remarks>To see a description of this example, look in formMain.cs</remarks>
+internal static class Program
 {
+    #region Properties.
     /// <summary>
-    /// Example entry point.
+    /// Property to return the log used for debug log messages.
     /// </summary>
-    /// <remarks>To see a description of this example, look in formMain.cs</remarks>
-    internal static class Program
-    {
-        #region Properties.
-        /// <summary>
-        /// Property to return the log used for debug log messages.
-        /// </summary>
 	    public static IGorgonLog Log
-        {
-            get;
-            private set;
-        }
-        #endregion
-
-        #region Methods.
-        /// <summary>
-        /// The main entry point for the application.
-        /// </summary>
-        [STAThread]
-        private static void Main()
-        {
-            Log = new GorgonTextFileLog("MultiSource", "Tape_Worm");
-            Log.LogStart();
-
-            try
-            {
-#if NET6_0_OR_GREATER
-                Application.SetHighDpiMode(HighDpiMode.PerMonitorV2);
-#endif
-                Application.EnableVisualStyles();
-                Application.SetCompatibleTextRenderingDefault(false);
-                Application.Run(new Form());
-            }
-            catch (Exception ex)
-            {
-                ex.Catch(_ => GorgonDialogs.ErrorBox(null, _), Log);
-            }
-            finally
-            {
-                Log.LogEnd();
-            }
-        }
-        #endregion
+    {
+        get;
+        private set;
     }
+    #endregion
+
+    #region Methods.
+    /// <summary>
+    /// The main entry point for the application.
+    /// </summary>
+    [STAThread]
+    private static void Main()
+    {
+        Log = new GorgonTextFileLog("MultiSource", "Tape_Worm");
+        Log.LogStart();
+
+        try
+        {
+#if NET6_0_OR_GREATER
+            Application.SetHighDpiMode(HighDpiMode.PerMonitorV2);
+#endif
+            Application.EnableVisualStyles();
+            Application.SetCompatibleTextRenderingDefault(false);
+            Application.Run(new Form());
+        }
+        catch (Exception ex)
+        {
+            ex.Catch(_ => GorgonDialogs.ErrorBox(null, _), Log);
+        }
+        finally
+        {
+            Log.LogEnd();
+        }
+    }
+    #endregion
 }

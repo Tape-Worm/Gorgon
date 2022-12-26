@@ -31,75 +31,74 @@ using Gorgon.Editor.Properties;
 using Gorgon.Editor.UI;
 using Gorgon.UI;
 
-namespace Gorgon.Editor.Services
+namespace Gorgon.Editor.Services;
+
+/// <summary>
+/// A service used to locate a directory on the physical file system.
+/// </summary>
+public class DirectoryLocateService
+    : IDirectoryLocateService
 {
     /// <summary>
-    /// A service used to locate a directory on the physical file system.
+    /// Function to retrieve the parent form for the message box.
     /// </summary>
-    public class DirectoryLocateService
-        : IDirectoryLocateService
+    /// <returns>The form to use as the owner.</returns>
+    private static Form GetParentForm() => Form.ActiveForm ?? (Application.OpenForms.Count > 1 ? Application.OpenForms[Application.OpenForms.Count - 1] : GorgonApplication.MainForm);
+
+    /// <summary>
+    /// Function to show an interface that allows directory selection.
+    /// </summary>
+    /// <param name="initialDir">The initial directory to use.</param>
+    /// <param name="caption">[Optional] The caption for the dialog.</param>
+    /// <param name="onSelected">[Optional] The method to call when a directory is selected.</param>
+    /// <param name="onEntered">[Optional] The method to call when a directory is entered.</param>
+    /// <returns>The selected directory, or <b>null</b> if cancelled.</returns>
+    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="initialDir"/> parameter is <b>null</b>.</exception>
+    public DirectoryInfo GetDirectory(DirectoryInfo initialDir, string caption = null, Action<FolderSelectedArgs> onSelected = null, Action<FolderSelectedArgs> onEntered = null)
     {
-        /// <summary>
-        /// Function to retrieve the parent form for the message box.
-        /// </summary>
-        /// <returns>The form to use as the owner.</returns>
-        private static Form GetParentForm() => Form.ActiveForm ?? (Application.OpenForms.Count > 1 ? Application.OpenForms[Application.OpenForms.Count - 1] : GorgonApplication.MainForm);
-
-        /// <summary>
-        /// Function to show an interface that allows directory selection.
-        /// </summary>
-        /// <param name="initialDir">The initial directory to use.</param>
-        /// <param name="caption">[Optional] The caption for the dialog.</param>
-        /// <param name="onSelected">[Optional] The method to call when a directory is selected.</param>
-        /// <param name="onEntered">[Optional] The method to call when a directory is entered.</param>
-        /// <returns>The selected directory, or <b>null</b> if cancelled.</returns>
-        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="initialDir"/> parameter is <b>null</b>.</exception>
-        public DirectoryInfo GetDirectory(DirectoryInfo initialDir, string caption = null, Action<FolderSelectedArgs> onSelected = null, Action<FolderSelectedArgs> onEntered = null)
+        if (initialDir is null)
         {
-            if (initialDir is null)
+            throw new ArgumentNullException(nameof(initialDir));
+        }
+
+        if (!initialDir.Exists)
+        {
+            initialDir = new DirectoryInfo(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments));
+        }
+
+        void OnSelected(object sender, FolderSelectedArgs e) => onSelected(e);
+
+        void OnEntered(object sender, FolderSelectedArgs e) => onEntered(e);
+
+        Form parent = GetParentForm();
+        FormDirectoryLocator locatorUI = null;
+
+        try
+        {
+            locatorUI = new FormDirectoryLocator
             {
-                throw new ArgumentNullException(nameof(initialDir));
+                Text = string.IsNullOrWhiteSpace(caption) ? Resources.GOREDIT_TITLE_DEFAULT_DIR_LOCATOR : caption
+            };
+
+            locatorUI.CurrentDirectory = initialDir.FullName;
+
+            if (onSelected is not null)
+            {
+                locatorUI.FolderSelected += OnSelected;
             }
 
-            if (!initialDir.Exists)
+            if (onEntered is not null)
             {
-                initialDir = new DirectoryInfo(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments));
+                locatorUI.FolderEntered += OnEntered;
             }
 
-            void OnSelected(object sender, FolderSelectedArgs e) => onSelected(e);
-
-            void OnEntered(object sender, FolderSelectedArgs e) => onEntered(e);
-
-            Form parent = GetParentForm();
-            FormDirectoryLocator locatorUI = null;
-
-            try
-            {
-                locatorUI = new FormDirectoryLocator
-                {
-                    Text = string.IsNullOrWhiteSpace(caption) ? Resources.GOREDIT_TITLE_DEFAULT_DIR_LOCATOR : caption
-                };
-
-                locatorUI.CurrentDirectory = initialDir.FullName;
-
-                if (onSelected is not null)
-                {
-                    locatorUI.FolderSelected += OnSelected;
-                }
-
-                if (onEntered is not null)
-                {
-                    locatorUI.FolderEntered += OnEntered;
-                }
-
-                return locatorUI.ShowDialog(parent) == DialogResult.Cancel ? null : new DirectoryInfo(locatorUI.CurrentDirectory);
-            }
-            finally
-            {
-                locatorUI.FolderEntered -= OnEntered;
-                locatorUI.FolderSelected -= OnSelected;
-                locatorUI?.Dispose();
-            }
+            return locatorUI.ShowDialog(parent) == DialogResult.Cancel ? null : new DirectoryInfo(locatorUI.CurrentDirectory);
+        }
+        finally
+        {
+            locatorUI.FolderEntered -= OnEntered;
+            locatorUI.FolderSelected -= OnSelected;
+            locatorUI?.Dispose();
         }
     }
 }

@@ -30,88 +30,87 @@ using Gorgon.Editor.PlugIns;
 using Gorgon.Editor.Services;
 using Gorgon.Editor.UI.ViewModels;
 
-namespace Gorgon.Editor.AnimationEditor
+namespace Gorgon.Editor.AnimationEditor;
+
+/// <summary>
+/// Parameters for a the <see cref="ITrack"/> view model.
+/// </summary>
+internal class TrackParameters
+    : ViewModelInjection<IHostContentServices>
 {
+    #region Properties.
     /// <summary>
-    /// Parameters for a the <see cref="ITrack"/> view model.
+    /// Property to return the registration for the track.
     /// </summary>
-    internal class TrackParameters
-        : ViewModelInjection<IHostContentServices>
+    public GorgonTrackRegistration Registration
     {
-        #region Properties.
-        /// <summary>
-        /// Property to return the registration for the track.
-        /// </summary>
-        public GorgonTrackRegistration Registration
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to return the interpolation mode for the track.
-        /// </summary>
-        public TrackInterpolationMode InterpolationMode
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to return the types of interpolation supported by the track.
-        /// </summary>
-        public TrackInterpolationMode SupportedInterpolationMode
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to return the number of keys in this track.
-        /// </summary>
-        public int KeyCount
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to return the service that handles undo/redo functionality.
-        /// </summary>
-        public IUndoService UndoService
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to set or return the metadata for the key type in the track.
-        /// </summary>
-        public KeyValueMetadata KeyMetadata
-        {
-            get;
-            set;
-        }
-        #endregion
-
-        #region Constructor/Finalizer.
-        /// <summary>Initializes a new instance of the <see cref="TrackParameters{T}"/> class.</summary>
-        /// <param name="registration">The registration data for the track.</param>
-        /// <param name="interpolationMode">The type of interpolation for the track.</param>
-        /// <param name="supportedInterpolationMode">The type of interpolation modes supported by the track.</param>
-        /// <param name="keyCount">The number of keys in this track.</param>
-        /// <param name="undoService">The service that handles undo/redo functionality.</param>        
-        /// <param name="hostServices">The services from the host application.</param>
-        /// <exception cref="ArgumentNullException">Thrown when any of the parameters are <b>null</b>.</exception>
-        public TrackParameters(GorgonTrackRegistration registration, 
-                            TrackInterpolationMode interpolationMode, 
-                            TrackInterpolationMode supportedInterpolationMode,
-                            int keyCount,
-                            IUndoService undoService,                            
-                            IHostContentServices hostServices)
-            : base(hostServices)
-        {
-            Registration = registration ?? throw new ArgumentNullException(nameof(registration));
-            UndoService = undoService ?? throw new ArgumentNullException(nameof(undoService));
-            SupportedInterpolationMode = supportedInterpolationMode;
-            InterpolationMode = interpolationMode;
-            KeyCount = keyCount;
-        }
-        #endregion
+        get;
     }
+
+    /// <summary>
+    /// Property to return the interpolation mode for the track.
+    /// </summary>
+    public TrackInterpolationMode InterpolationMode
+    {
+        get;
+    }
+
+    /// <summary>
+    /// Property to return the types of interpolation supported by the track.
+    /// </summary>
+    public TrackInterpolationMode SupportedInterpolationMode
+    {
+        get;
+    }
+
+    /// <summary>
+    /// Property to return the number of keys in this track.
+    /// </summary>
+    public int KeyCount
+    {
+        get;
+    }
+
+    /// <summary>
+    /// Property to return the service that handles undo/redo functionality.
+    /// </summary>
+    public IUndoService UndoService
+    {
+        get;
+    }
+
+    /// <summary>
+    /// Property to set or return the metadata for the key type in the track.
+    /// </summary>
+    public KeyValueMetadata KeyMetadata
+    {
+        get;
+        set;
+    }
+    #endregion
+
+    #region Constructor/Finalizer.
+    /// <summary>Initializes a new instance of the <see cref="TrackParameters{T}"/> class.</summary>
+    /// <param name="registration">The registration data for the track.</param>
+    /// <param name="interpolationMode">The type of interpolation for the track.</param>
+    /// <param name="supportedInterpolationMode">The type of interpolation modes supported by the track.</param>
+    /// <param name="keyCount">The number of keys in this track.</param>
+    /// <param name="undoService">The service that handles undo/redo functionality.</param>        
+    /// <param name="hostServices">The services from the host application.</param>
+    /// <exception cref="ArgumentNullException">Thrown when any of the parameters are <b>null</b>.</exception>
+    public TrackParameters(GorgonTrackRegistration registration, 
+                        TrackInterpolationMode interpolationMode, 
+                        TrackInterpolationMode supportedInterpolationMode,
+                        int keyCount,
+                        IUndoService undoService,                            
+                        IHostContentServices hostServices)
+        : base(hostServices)
+    {
+        Registration = registration ?? throw new ArgumentNullException(nameof(registration));
+        UndoService = undoService ?? throw new ArgumentNullException(nameof(undoService));
+        SupportedInterpolationMode = supportedInterpolationMode;
+        InterpolationMode = interpolationMode;
+        KeyCount = keyCount;
+    }
+    #endregion
 }

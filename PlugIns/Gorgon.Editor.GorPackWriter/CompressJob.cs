@@ -28,29 +28,28 @@ using System.Collections.Generic;
 using System.IO;
 using System.Xml.Linq;
 
-namespace Gorgon.Editor.GorPackWriterPlugIn
-{
-    /// <summary>
-    /// Information about a compression job.
-    /// </summary>
-    internal class CompressJob
-    {
-        #region Properties.
-        /// <summary>
-        /// Property to return the files to process for this job.
-        /// </summary>
-        public List<(XElement node, FileInfo file)> Files
-        {
-            get;
-        } = new List<(XElement node, FileInfo file)>();
+namespace Gorgon.Editor.GorPackWriterPlugIn;
 
-        /// <summary>
-        /// Property to return the list of processed files.
-        /// </summary>
-        public List<(XElement node, FileInfo file)> CompressedFiles
-        {
-            get;
-        } = new List<(XElement node, FileInfo file)>();
-        #endregion
-    }
+/// <summary>
+/// Information about a compression job.
+/// </summary>
+internal class CompressJob
+{
+    #region Properties.
+    /// <summary>
+    /// Property to return the files to process for this job.
+    /// </summary>
+    public List<(XElement node, FileInfo file)> Files
+    {
+        get;
+    } = new List<(XElement node, FileInfo file)>();
+
+    /// <summary>
+    /// Property to return the list of processed files.
+    /// </summary>
+    public List<(XElement node, FileInfo file)> CompressedFiles
+    {
+        get;
+    } = new List<(XElement node, FileInfo file)>();
+    #endregion
 }

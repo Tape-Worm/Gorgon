@@ -27,24 +27,23 @@
 using System;
 using System.Collections.Generic;
 
-namespace Gorgon.IO
+namespace Gorgon.IO;
+
+/// <summary>
+/// Event arguments for the <see cref="IGorgonFileSystemWriter{T}.VirtualDirectoryDeleted"/> event.
+/// </summary>
+public class VirtualDirectoryDeletedEventArgs
+    : EventArgs
 {
     /// <summary>
-    /// Event arguments for the <see cref="IGorgonFileSystemWriter{T}.VirtualDirectoryDeleted"/> event.
+    /// Property to return the virtual directories that were deleted.
     /// </summary>
-    public class VirtualDirectoryDeletedEventArgs
-        : EventArgs
+    public IReadOnlyList<IGorgonVirtualDirectory> VirtualDirectories
     {
-        /// <summary>
-        /// Property to return the virtual directories that were deleted.
-        /// </summary>
-        public IReadOnlyList<IGorgonVirtualDirectory> VirtualDirectories
-        {
-            get;
-        }
-
-        /// <summary>Initializes a new instance of the <see cref="VirtualDirectoryDeletedEventArgs"/> class.</summary>
-        /// <param name="directories">The list of virtual directories that were deleted.</param>
-        internal VirtualDirectoryDeletedEventArgs(IReadOnlyList<IGorgonVirtualDirectory> directories) => VirtualDirectories = directories;
+        get;
     }
+
+    /// <summary>Initializes a new instance of the <see cref="VirtualDirectoryDeletedEventArgs"/> class.</summary>
+    /// <param name="directories">The list of virtual directories that were deleted.</param>
+    internal VirtualDirectoryDeletedEventArgs(IReadOnlyList<IGorgonVirtualDirectory> directories) => VirtualDirectories = directories;
 }

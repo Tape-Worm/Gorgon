@@ -26,96 +26,95 @@
 
 using Gorgon.Core;
 
-namespace Gorgon.Graphics.Core
+namespace Gorgon.Graphics.Core;
+
+/// <summary>
+/// Information used to create a 1D texture object.
+/// </summary>
+/// <remarks>
+/// <para>
+/// This provides an immutable view of the texture information so that it cannot be modified after the texture is created.
+/// </para>
+/// </remarks>
+public interface IGorgonTexture1DInfo
+    : IGorgonNamedObject
 {
     /// <summary>
-    /// Information used to create a 1D texture object.
+    /// Property to return the width of the texture, in pixels.
+    /// </summary>
+    int Width
+    {
+        get;
+    }
+
+    /// <summary>
+    /// Property to return the number of array levels for a texture.
     /// </summary>
     /// <remarks>
     /// <para>
-    /// This provides an immutable view of the texture information so that it cannot be modified after the texture is created.
+    /// When this value is greater than 0, the texture will be used as a texture array. If the texture is supposed to be a cube map, then this value should be a multiple of 6 (1 for each face in the cube).
+    /// </para>
+    /// <para>
+    /// For video adapters with a feature set of <see cref="FeatureSet.Level_12_0"/>, there can only be a single cube map and thus this value must be set to 6 when creating a cube map texture.
+    /// </para>
+    /// <para>
+    /// This value is defaulted to 1.
     /// </para>
     /// </remarks>
-    public interface IGorgonTexture1DInfo
-        : IGorgonNamedObject
+    int ArrayCount
     {
-        /// <summary>
-        /// Property to return the width of the texture, in pixels.
-        /// </summary>
-        int Width
-        {
-            get;
-        }
+        get;
+    }
 
-        /// <summary>
-        /// Property to return the number of array levels for a texture.
-        /// </summary>
-        /// <remarks>
-        /// <para>
-        /// When this value is greater than 0, the texture will be used as a texture array. If the texture is supposed to be a cube map, then this value should be a multiple of 6 (1 for each face in the cube).
-        /// </para>
-        /// <para>
-        /// For video adapters with a feature set of <see cref="FeatureSet.Level_12_0"/>, there can only be a single cube map and thus this value must be set to 6 when creating a cube map texture.
-        /// </para>
-        /// <para>
-        /// This value is defaulted to 1.
-        /// </para>
-        /// </remarks>
-        int ArrayCount
-        {
-            get;
-        }
+    /// <summary>
+    /// Property to return the format of the texture.
+    /// </summary>
+    BufferFormat Format
+    {
+        get;
+    }
 
-        /// <summary>
-        /// Property to return the format of the texture.
-        /// </summary>
-        BufferFormat Format
-        {
-            get;
-        }
+    /// <summary>
+    /// Property to return the number of mip-map levels for the texture.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// If the texture is multisampled, this value must be set to 1.
+    /// </para>
+    /// <para>
+    /// This value is defaulted to 1.
+    /// </para>
+    /// </remarks>
+    int MipLevels
+    {
+        get;
+    }
 
-        /// <summary>
-        /// Property to return the number of mip-map levels for the texture.
-        /// </summary>
-        /// <remarks>
-        /// <para>
-        /// If the texture is multisampled, this value must be set to 1.
-        /// </para>
-        /// <para>
-        /// This value is defaulted to 1.
-        /// </para>
-        /// </remarks>
-        int MipLevels
-        {
-            get;
-        }
+    /// <summary>
+    /// Property to return the intended usage flags for this texture.
+    /// </summary>
+    /// <remarks>
+    /// This value is defaulted to <see cref="ResourceUsage.Default"/>.
+    /// </remarks>
+    ResourceUsage Usage
+    {
+        get;
+    }
 
-        /// <summary>
-        /// Property to return the intended usage flags for this texture.
-        /// </summary>
-        /// <remarks>
-        /// This value is defaulted to <see cref="ResourceUsage.Default"/>.
-        /// </remarks>
-        ResourceUsage Usage
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to return the flags to determine how the texture will be bound with the pipeline when rendering.
-        /// </summary>
-        /// <remarks>
-        /// <para>
-        /// If the <see cref="Usage"/> property is set to <see cref="ResourceUsage.Staging"/>, then the texture must be created with a value of <see cref="TextureBinding.None"/> as staging textures do not 
-        /// support bindings of any kind. If this value is set to anything other than <see cref="TextureBinding.None"/>, an exception will be thrown.
-        /// </para>
-        /// <para>
-        /// This value is defaulted to <see cref="TextureBinding.ShaderResource"/>. 
-        /// </para>
-        /// </remarks>
-        TextureBinding Binding
-        {
-            get;
-        }
+    /// <summary>
+    /// Property to return the flags to determine how the texture will be bound with the pipeline when rendering.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// If the <see cref="Usage"/> property is set to <see cref="ResourceUsage.Staging"/>, then the texture must be created with a value of <see cref="TextureBinding.None"/> as staging textures do not 
+    /// support bindings of any kind. If this value is set to anything other than <see cref="TextureBinding.None"/>, an exception will be thrown.
+    /// </para>
+    /// <para>
+    /// This value is defaulted to <see cref="TextureBinding.ShaderResource"/>. 
+    /// </para>
+    /// </remarks>
+    TextureBinding Binding
+    {
+        get;
     }
 }

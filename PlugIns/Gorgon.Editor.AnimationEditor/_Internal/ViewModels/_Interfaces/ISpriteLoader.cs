@@ -27,19 +27,18 @@
 using System.Collections.Generic;
 using Gorgon.Editor.UI;
 
-namespace Gorgon.Editor.AnimationEditor
+namespace Gorgon.Editor.AnimationEditor;
+
+/// <summary>
+/// Defines a view model that can load sprites.
+/// </summary>
+internal interface ISpriteLoader
 {
     /// <summary>
-    /// Defines a view model that can load sprites.
+    /// Property to return the command used to load a sprite from the project (for use in texture animations).
     /// </summary>
-    internal interface ISpriteLoader
+    IEditorAsyncCommand<IReadOnlyList<string>> LoadSpriteCommand
     {
-        /// <summary>
-        /// Property to return the command used to load a sprite from the project (for use in texture animations).
-        /// </summary>
-        IEditorAsyncCommand<IReadOnlyList<string>> LoadSpriteCommand
-        {
-            get;
-        }
+        get;
     }
 }

@@ -27,55 +27,54 @@
 using System.ComponentModel;
 using System.Threading.Tasks;
 
-namespace Gorgon.UI
+namespace Gorgon.UI;
+
+/// <summary>
+/// Event arguments for the <see cref="GorgonFolderBrowser.FolderDeleting"/> event.
+/// </summary>
+public class FolderDeleteArgs
+    : CancelEventArgs
 {
+    #region Properties.
     /// <summary>
-    /// Event arguments for the <see cref="GorgonFolderBrowser.FolderDeleting"/> event.
+    /// Property to return the path to the directory being deleted.
     /// </summary>
-    public class FolderDeleteArgs
-        : CancelEventArgs
+    public string DirectoryPath
     {
-        #region Properties.
-        /// <summary>
-        /// Property to return the path to the directory being deleted.
-        /// </summary>
-        public string DirectoryPath
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to set or return whether this event has handled the deletion of the directory on our behalf.
-        /// </summary>
-        public bool DeletionHandled
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// Property to suppress the prompt to ask the user if they are sure they wish to delete.
-        /// </summary>
-        public bool SuppressPrompt
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// Property to set or return an asynchronous task for deleting.
-        /// </summary>
-        public Task DeleteTask
-        {
-            get;
-            set;
-        }
-        #endregion
-
-        #region Constructor/Finalizer.
-        /// <summary>Initializes a new instance of the <see cref="FolderDeleteArgs"/> class.</summary>
-        /// <param name="dirPath">The path to the directory to delete.</param>
-        internal FolderDeleteArgs(string dirPath) => DirectoryPath = dirPath;
-        #endregion
+        get;
     }
+
+    /// <summary>
+    /// Property to set or return whether this event has handled the deletion of the directory on our behalf.
+    /// </summary>
+    public bool DeletionHandled
+    {
+        get;
+        set;
+    }
+
+    /// <summary>
+    /// Property to suppress the prompt to ask the user if they are sure they wish to delete.
+    /// </summary>
+    public bool SuppressPrompt
+    {
+        get;
+        set;
+    }
+
+    /// <summary>
+    /// Property to set or return an asynchronous task for deleting.
+    /// </summary>
+    public Task DeleteTask
+    {
+        get;
+        set;
+    }
+    #endregion
+
+    #region Constructor/Finalizer.
+    /// <summary>Initializes a new instance of the <see cref="FolderDeleteArgs"/> class.</summary>
+    /// <param name="dirPath">The path to the directory to delete.</param>
+    internal FolderDeleteArgs(string dirPath) => DirectoryPath = dirPath;
+    #endregion
 }

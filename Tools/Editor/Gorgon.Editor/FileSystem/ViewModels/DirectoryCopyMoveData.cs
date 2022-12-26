@@ -25,40 +25,39 @@
 #endregion
 
 
-namespace Gorgon.Editor.ViewModels
+namespace Gorgon.Editor.ViewModels;
+
+/// <summary>
+/// A data structure used to copy directories.
+/// </summary>
+internal class DirectoryCopyMoveData
+    : IDirectoryCopyMoveData
 {
-    /// <summary>
-    /// A data structure used to copy directories.
-    /// </summary>
-    internal class DirectoryCopyMoveData
-        : IDirectoryCopyMoveData
+    /// <summary>Gets or sets the source directory.</summary>
+    public string SourceDirectory
     {
-        /// <summary>Gets or sets the source directory.</summary>
-        public string SourceDirectory
-        {
-            get;
-            set;
-        }
+        get;
+        set;
+    }
 
-        /// <summary>Gets or sets the destination directory.</summary>
-        public string DestinationDirectory
-        {
-            get;
-            set;
-        }
+    /// <summary>Gets or sets the destination directory.</summary>
+    public string DestinationDirectory
+    {
+        get;
+        set;
+    }
 
-        /// <summary>Gets or sets the operation.</summary>
-        public CopyMoveOperation Operation
-        {
-            get;
-            set;
-        }
+    /// <summary>Gets or sets the operation.</summary>
+    public CopyMoveOperation Operation
+    {
+        get;
+        set;
+    }
 
-        /// <summary>Property to set to return whether any directories or files were copied.</summary>
-        public bool DirectoriesCopied
-        {
-            get;
-            set;
-        }
+    /// <summary>Property to set to return whether any directories or files were copied.</summary>
+    public bool DirectoriesCopied
+    {
+        get;
+        set;
     }
 }

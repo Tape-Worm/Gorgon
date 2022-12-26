@@ -24,35 +24,34 @@
 // 
 #endregion
 
-namespace Gorgon.Examples
+namespace Gorgon.Examples;
+
+/// <summary>
+/// Here's our main plug in entry point.
+/// </summary>
+internal class BluePlugIn
+    : TextColorPlugIn
 {
+    #region Methods.
     /// <summary>
-    /// Here's our main plug in entry point.
+    /// Now we'll define the method to return our blue text color writer.
     /// </summary>
-    internal class BluePlugIn
-        : TextColorPlugIn
+    /// <returns>
+    /// The blue text color writer.
+    /// </returns>
+    public override TextColorWriter CreateWriter() => new BlueTextColorWriter();
+    #endregion
+
+    #region Constructor/Destructor.
+    /// <summary>
+    /// Initializes a new instance of the <see cref="BluePlugIn" /> class.
+    /// </summary>
+    public BluePlugIn()
+        : base("This plug in will print blue text.")
     {
-        #region Methods.
-        /// <summary>
-        /// Now we'll define the method to return our blue text color writer.
-        /// </summary>
-        /// <returns>
-        /// The blue text color writer.
-        /// </returns>
-        public override TextColorWriter CreateWriter() => new BlueTextColorWriter();
-        #endregion
-
-        #region Constructor/Destructor.
-        /// <summary>
-        /// Initializes a new instance of the <see cref="BluePlugIn" /> class.
-        /// </summary>
-        public BluePlugIn()
-            : base("This plug in will print blue text.")
-        {
-            // Here we can pass a description of the plug in back to the application.
-            // This is handy when we want friendly names for the plug in.
-        }
-        #endregion
-
+        // Here we can pass a description of the plug in back to the application.
+        // This is handy when we want friendly names for the plug in.
     }
+    #endregion
+
 }

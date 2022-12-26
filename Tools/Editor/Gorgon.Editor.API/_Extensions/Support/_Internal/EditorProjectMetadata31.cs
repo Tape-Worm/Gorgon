@@ -30,44 +30,43 @@ using Gorgon.Editor.Metadata;
 using Gorgon.Editor.ProjectData;
 using Newtonsoft.Json;
 
-namespace Gorgon.Editor.Support
+namespace Gorgon.Editor.Support;
+
+/// <summary>
+/// The project data for an editor project.
+/// </summary>        
+internal class EditorProjectMetadata31
+    : IProjectMetadata
 {
-    /// <summary>
-    /// The project data for an editor project.
-    /// </summary>        
-    internal class EditorProjectMetadata31
-        : IProjectMetadata
+    /// <summary>Property to return the version for the project file.</summary>                
+    [JsonProperty]
+    public string Version
     {
-        /// <summary>Property to return the version for the project file.</summary>                
-        [JsonProperty]
-        public string Version
-        {
-            get;
-            private set;
-        } = CommonEditorConstants.EditorCurrentProjectVersion;
+        get;
+        private set;
+    } = CommonEditorConstants.EditorCurrentProjectVersion;
 
-        /// <summary>Property to return the list of project items.</summary>        
-        [JsonProperty]
-        public Dictionary<string, ProjectItemMetadata> ProjectItems
-        {
-            get;
-        } = new Dictionary<string, ProjectItemMetadata>(StringComparer.OrdinalIgnoreCase);
+    /// <summary>Property to return the list of project items.</summary>        
+    [JsonProperty]
+    public Dictionary<string, ProjectItemMetadata> ProjectItems
+    {
+        get;
+    } = new Dictionary<string, ProjectItemMetadata>(StringComparer.OrdinalIgnoreCase);
 
-        /// <summary>Initializes a new instance of the <see cref="EditorProjectMetadata31"/> class.</summary>
-        [JsonConstructor]
-        public EditorProjectMetadata31()
-        {
-        }
+    /// <summary>Initializes a new instance of the <see cref="EditorProjectMetadata31"/> class.</summary>
+    [JsonConstructor]
+    public EditorProjectMetadata31()
+    {
+    }
 
-        /// <summary>Initializes a new instance of the <see cref="EditorProjectMetadata31"/> class.</summary>
-        /// <param name="oldVersion">The old version of the project data.</param>
-        public EditorProjectMetadata31(EditorProjectMetadata30 oldVersion)
+    /// <summary>Initializes a new instance of the <see cref="EditorProjectMetadata31"/> class.</summary>
+    /// <param name="oldVersion">The old version of the project data.</param>
+    public EditorProjectMetadata31(EditorProjectMetadata30 oldVersion)
+    {
+        foreach (KeyValuePair<string, ProjectItemMetadata30> item in oldVersion.ProjectItems)
         {
-            foreach (KeyValuePair<string, ProjectItemMetadata30> item in oldVersion.ProjectItems)
-            {
-                var newItem = new ProjectItemMetadata(item.Value);
-                ProjectItems[item.Key] = newItem;
-            }
+            var newItem = new ProjectItemMetadata(item.Value);
+            ProjectItems[item.Key] = newItem;
         }
     }
 }

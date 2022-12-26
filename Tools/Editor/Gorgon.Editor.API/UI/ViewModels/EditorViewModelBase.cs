@@ -26,23 +26,22 @@
 
 using Gorgon.Editor.PlugIns;
 
-namespace Gorgon.Editor.UI
+namespace Gorgon.Editor.UI;
+
+/// <summary>
+/// Common functionality for the an editor view model.
+/// </summary>
+/// <typeparam name="T">The type of dependency injection object. Must be a class, and implement <see cref="IViewModelInjection{IHostServices}"/>.</typeparam>
+/// <remarks>
+/// <para>
+/// Developers can use this to implement basic view models for various UI elements. This type provides basic common functionality for custom views so developers can have more freedom when implementing 
+/// their own views. For more complete common content functionality, there are several base view model types that wrap up common functionality. For example, when developing a content editor plug in 
+/// developers should use the <see cref="ContentEditorViewModelBase{T}"/> as a base view model type.
+/// </para>
+/// </remarks>
+/// <seealso cref="ContentEditorViewModelBase{T}"/>
+public abstract class EditorViewModelBase<T>
+    : ViewModelBase<T, IHostServices>
+    where T : class, IViewModelInjection<IHostServices>
 {
-    /// <summary>
-    /// Common functionality for the an editor view model.
-    /// </summary>
-    /// <typeparam name="T">The type of dependency injection object. Must be a class, and implement <see cref="IViewModelInjection{IHostServices}"/>.</typeparam>
-    /// <remarks>
-    /// <para>
-    /// Developers can use this to implement basic view models for various UI elements. This type provides basic common functionality for custom views so developers can have more freedom when implementing 
-    /// their own views. For more complete common content functionality, there are several base view model types that wrap up common functionality. For example, when developing a content editor plug in 
-    /// developers should use the <see cref="ContentEditorViewModelBase{T}"/> as a base view model type.
-    /// </para>
-    /// </remarks>
-    /// <seealso cref="ContentEditorViewModelBase{T}"/>
-    public abstract class EditorViewModelBase<T>
-        : ViewModelBase<T, IHostServices>
-        where T : class, IViewModelInjection<IHostServices>
-    {
-    }
 }

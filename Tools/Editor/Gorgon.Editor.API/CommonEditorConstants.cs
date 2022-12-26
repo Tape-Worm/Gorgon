@@ -24,46 +24,45 @@
 // 
 #endregion
 
-namespace Gorgon.Editor
+namespace Gorgon.Editor;
+
+/// <summary>
+/// Contains commonly used constants for the editor.
+/// </summary>
+public static class CommonEditorConstants
 {
     /// <summary>
-    /// Contains commonly used constants for the editor.
+    /// The attribute name for the content type attribute.
     /// </summary>
-    public static class CommonEditorConstants
-    {
-        /// <summary>
-        /// The attribute name for the content type attribute.
-        /// </summary>
-        public const string ContentTypeAttr = "Type";
+    public const string ContentTypeAttr = "Type";
 
-        /// <summary>
-        /// The header value for a project. 
-        /// </summary>
-        public const string EditorProjectHeader = "GOREDIT";
+    /// <summary>
+    /// The header value for a project. 
+    /// </summary>
+    public const string EditorProjectHeader = "GOREDIT";
 
-        /// <summary>
-        /// The current version for an editor project.
-        /// </summary>
-        public const string EditorCurrentProjectVersion = EditorProjectHeader + "31";
+    /// <summary>
+    /// The current version for an editor project.
+    /// </summary>
+    public const string EditorCurrentProjectVersion = EditorProjectHeader + "31";
 
-        /// <summary>
-        /// The version for a 3.0 editor project.
-        /// </summary>
-        public const string Editor30ProjectVersion = EditorProjectHeader + "30";
+    /// <summary>
+    /// The version for a 3.0 editor project.
+    /// </summary>
+    public const string Editor30ProjectVersion = EditorProjectHeader + "30";
 
-        /// <summary>
-        /// The name of the file that holds the metadata for the project.
-        /// </summary>
-        public const string EditorMetadataFileName = "_$GEMD$_.db";
+    /// <summary>
+    /// The name of the file that holds the metadata for the project.
+    /// </summary>
+    public const string EditorMetadataFileName = "_$GEMD$_.db";
 
-        /// <summary>
-        /// The name of the attribute for the is new flag.
-        /// </summary>
-        public const string IsNewAttr = "IsNew";
+    /// <summary>
+    /// The name of the attribute for the is new flag.
+    /// </summary>
+    public const string IsNewAttr = "IsNew";
 
-        /// <summary>
-        /// Metadata naming for the excluded item type attribute.
-        /// </summary>
-        public const string ExcludedAttrName = "Excluded";
-    }
+    /// <summary>
+    /// Metadata naming for the excluded item type attribute.
+    /// </summary>
+    public const string ExcludedAttrName = "Excluded";
 }

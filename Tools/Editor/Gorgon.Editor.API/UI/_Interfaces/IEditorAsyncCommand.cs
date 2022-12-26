@@ -26,29 +26,28 @@
 
 using System.Threading.Tasks;
 
-namespace Gorgon.Editor.UI
+namespace Gorgon.Editor.UI;
+
+/// <summary>
+/// An command used to carry out an asynchronous operation.
+/// </summary>
+/// <typeparam name="T">The type of data to pass to the command.</typeparam>
+/// <remarks>
+/// <para>
+/// Commands are used to perform actions on a view model. They work similarly to events in that they are usually called in response to a UI action like a button click. 
+/// </para>
+/// <para>
+/// Unlike the <see cref="IEditorCommand{T}"/> type, this allows commands to execute asynchronously and await the results on the view so that order of execution can be guaranteed even on the view.
+/// </para>
+/// </remarks>
+/// <seealso cref="IEditorCommand{T}"/>
+public interface IEditorAsyncCommand<in T>
+    : IEditorCommand<T>
 {
     /// <summary>
-    /// An command used to carry out an asynchronous operation.
+    /// Function to execute the command.
     /// </summary>
-    /// <typeparam name="T">The type of data to pass to the command.</typeparam>
-    /// <remarks>
-    /// <para>
-    /// Commands are used to perform actions on a view model. They work similarly to events in that they are usually called in response to a UI action like a button click. 
-    /// </para>
-    /// <para>
-    /// Unlike the <see cref="IEditorCommand{T}"/> type, this allows commands to execute asynchronously and await the results on the view so that order of execution can be guaranteed even on the view.
-    /// </para>
-    /// </remarks>
-    /// <seealso cref="IEditorCommand{T}"/>
-    public interface IEditorAsyncCommand<in T>
-        : IEditorCommand<T>
-    {
-        /// <summary>
-        /// Function to execute the command.
-        /// </summary>
-        /// <param name="args">The arguments to pass to the command.</param>
-        /// <returns>A <see cref="Task"/> for asynchronous operation.</returns>
-        Task ExecuteAsync(T args);
-    }
+    /// <param name="args">The arguments to pass to the command.</param>
+    /// <returns>A <see cref="Task"/> for asynchronous operation.</returns>
+    Task ExecuteAsync(T args);
 }

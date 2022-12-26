@@ -24,55 +24,54 @@
 // 
 #endregion
 
-namespace Gorgon.Graphics.Core
+namespace Gorgon.Graphics.Core;
+
+/// <summary>
+/// A draw call that draws only using a set of vertices.
+/// </summary>
+/// <remarks>
+/// <para>
+/// A draw call is an immutable object that contains all of the state required to render mesh information. For each mesh an application needs to render, an single draw call should be issued via the
+/// <see cref="GorgonGraphics.Submit(GorgonDrawCall, in GorgonColor?, int, int)"/> methods.  
+/// </para>
+/// <para>
+/// State management is handled internally by Gorgon so that duplicate states are not set and thus, performance is not impacted by redundant states.
+/// </para>
+/// <para>
+/// Because a draw call is immutable, it is not possible to modify a draw call after it's been created. However, a copy of a draw call can be created using the
+/// <see cref="GorgonDrawCallBuilderCommon{TB,TDc}.ResetTo"/> method on this object. Or, the builder can be modified after the creation of your draw call that needs to be updated and a new call may be 
+/// built then.
+/// </para>
+/// </remarks>
+/// <seealso cref="GorgonGraphics"/>
+/// <seealso cref="GorgonPipelineState"/>
+/// <seealso cref="GorgonDrawCallBuilder"/>
+public class GorgonDrawCall
+    : GorgonDrawCallCommon
 {
     /// <summary>
-    /// A draw call that draws only using a set of vertices.
+    /// Property to return the vertex index to start at within the vertex buffer.
     /// </summary>
-    /// <remarks>
-    /// <para>
-    /// A draw call is an immutable object that contains all of the state required to render mesh information. For each mesh an application needs to render, an single draw call should be issued via the
-    /// <see cref="GorgonGraphics.Submit(GorgonDrawCall, in GorgonColor?, int, int)"/> methods.  
-    /// </para>
-    /// <para>
-    /// State management is handled internally by Gorgon so that duplicate states are not set and thus, performance is not impacted by redundant states.
-    /// </para>
-    /// <para>
-    /// Because a draw call is immutable, it is not possible to modify a draw call after it's been created. However, a copy of a draw call can be created using the
-    /// <see cref="GorgonDrawCallBuilderCommon{TB,TDc}.ResetTo"/> method on this object. Or, the builder can be modified after the creation of your draw call that needs to be updated and a new call may be 
-    /// built then.
-    /// </para>
-    /// </remarks>
-    /// <seealso cref="GorgonGraphics"/>
-    /// <seealso cref="GorgonPipelineState"/>
-    /// <seealso cref="GorgonDrawCallBuilder"/>
-    public class GorgonDrawCall
-        : GorgonDrawCallCommon
+    public int VertexStartIndex
     {
-        /// <summary>
-        /// Property to return the vertex index to start at within the vertex buffer.
-        /// </summary>
-        public int VertexStartIndex
-        {
-            get;
-            set;
-        }
+        get;
+        set;
+    }
 
-        /// <summary>
-        /// Property to return the number of vertices to draw.
-        /// </summary>
-        public int VertexCount
-        {
-            get;
-            set;
-        }
+    /// <summary>
+    /// Property to return the number of vertices to draw.
+    /// </summary>
+    public int VertexCount
+    {
+        get;
+        set;
+    }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="GorgonDrawCall"/> class.
-        /// </summary>
-        internal GorgonDrawCall()
-        {
-            // We need to create this through a builder.
-        }
+    /// <summary>
+    /// Initializes a new instance of the <see cref="GorgonDrawCall"/> class.
+    /// </summary>
+    internal GorgonDrawCall()
+    {
+        // We need to create this through a builder.
     }
 }

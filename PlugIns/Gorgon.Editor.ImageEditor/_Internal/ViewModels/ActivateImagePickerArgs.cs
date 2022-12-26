@@ -27,63 +27,62 @@
 using System.Collections.Generic;
 using Gorgon.Graphics.Imaging;
 
-namespace Gorgon.Editor.ImageEditor
+namespace Gorgon.Editor.ImageEditor;
+
+/// <summary>
+/// Arguments for the <see cref="IImagePicker.ActivateCommand"/>.
+/// </summary>
+internal class ActivateImagePickerArgs
 {
     /// <summary>
-    /// Arguments for the <see cref="IImagePicker.ActivateCommand"/>.
+    /// Property to set or return whether the picker cancelled or not.
     /// </summary>
-    internal class ActivateImagePickerArgs
+    public bool Cancel
     {
-        /// <summary>
-        /// Property to set or return whether the picker cancelled or not.
-        /// </summary>
-        public bool Cancel
-        {
-            get;
-            set;
-        }
+        get;
+        set;
+    }
 
-        /// <summary>
-        /// Property to return the list of files being imported.
-        /// </summary>
-        public IReadOnlyList<ImagePickerImportData> FilesToImport
-        {
-            get;
-        }
+    /// <summary>
+    /// Property to return the list of files being imported.
+    /// </summary>
+    public IReadOnlyList<ImagePickerImportData> FilesToImport
+    {
+        get;
+    }
 
-        /// <summary>
-        /// Property to set or return the current image data to update.
-        /// </summary>
-        public IGorgonImage ImageData
-        {
-            get;
-        }
+    /// <summary>
+    /// Property to set or return the current image data to update.
+    /// </summary>
+    public IGorgonImage ImageData
+    {
+        get;
+    }
 
-        /// <summary>
-        /// Property to set or return the current array index or depth slice.
-        /// </summary>
-        public int CurrentArrayIndexDepthSlice
-        {
-            get;
-            set;
-        }
+    /// <summary>
+    /// Property to set or return the current array index or depth slice.
+    /// </summary>
+    public int CurrentArrayIndexDepthSlice
+    {
+        get;
+        set;
+    }
 
-        /// <summary>
-        /// Property to set or return the current mip map level.
-        /// </summary>
-        public int MipLevel
-        {
-            get;
-            set;
-        }
+    /// <summary>
+    /// Property to set or return the current mip map level.
+    /// </summary>
+    public int MipLevel
+    {
+        get;
+        set;
+    }
 
-        /// <summary>Initializes a new instance of the <see cref="ActivateImagePickerArgs"/> class.</summary>
-        /// <param name="files">The files to import.</param>
-        /// <param name="imageData">The image data to update.</param>
-        public ActivateImagePickerArgs(IReadOnlyList<ImagePickerImportData> files, IGorgonImage imageData)
-        {
-            FilesToImport = files;
-            ImageData = imageData;
-        }
+    /// <summary>Initializes a new instance of the <see cref="ActivateImagePickerArgs"/> class.</summary>
+    /// <param name="files">The files to import.</param>
+    /// <param name="imageData">The image data to update.</param>
+    public ActivateImagePickerArgs(IReadOnlyList<ImagePickerImportData> files, IGorgonImage imageData)
+    {
+        FilesToImport = files;
+        ImageData = imageData;
     }
 }

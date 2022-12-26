@@ -45,343 +45,342 @@ using Gorgon.IO;
 using Gorgon.Math;
 using DX = SharpDX;
 
-namespace Gorgon.Editor.SpriteEditor
+namespace Gorgon.Editor.SpriteEditor;
+
+/// <summary>
+/// A form used to set up a new sprite.
+/// </summary>
+internal partial class FormNewSprite
+    : Form
 {
+    #region Variables.
+    // The list of textures.
+    private IReadOnlyList<IContentFile> _textures = Array.Empty<IContentFile>();
+    // The preview image for the selected texture.
+    private Image _previewImage;
+    // The cancellation token source for the preview thread.
+    private CancellationTokenSource _cancelSource;
+    // The task used to load the preview image.
+    private Task<IGorgonImage> _previewTask;
+    // The original size for the sprite.
+    private DX.Size2F? _originalSize;
+    // The path to the preview directory.
+    private static readonly string _previewDirPath = $"/Thumbnails/";
+    #endregion
+
+    #region Properties.
     /// <summary>
-    /// A form used to set up a new sprite.
+    /// Property to set or return the image codec for sprites.
     /// </summary>
-    internal partial class FormNewSprite
-        : Form
+    [Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+    public IGorgonImageCodec ImageCodec
     {
-        #region Variables.
-        // The list of textures.
-        private IReadOnlyList<IContentFile> _textures = Array.Empty<IContentFile>();
-        // The preview image for the selected texture.
-        private Image _previewImage;
-        // The cancellation token source for the preview thread.
-        private CancellationTokenSource _cancelSource;
-        // The task used to load the preview image.
-        private Task<IGorgonImage> _previewTask;
-        // The original size for the sprite.
-        private DX.Size2F? _originalSize;
-        // The path to the preview directory.
-        private static readonly string _previewDirPath = $"/Thumbnails/";
-        #endregion
+        get;
+        set;
+    }
 
-        #region Properties.
-        /// <summary>
-        /// Property to set or return the image codec for sprites.
-        /// </summary>
-        [Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-        public IGorgonImageCodec ImageCodec
+    /// <summary>
+    /// Property to set or return the file manager for the project.
+    /// </summary>
+    [Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+    public IContentFileManager FileManager
+    {
+        get;
+        set;
+    }
+
+    /// <summary>
+    /// Property to set or return the name of the object.
+    /// </summary>
+    [Category("Appearance"), Description("The name of the object to be named."), DefaultValue("")]
+    public string ObjectName
+    {
+        get => TextName.Text;
+        set => TextName.Text = value?.FormatFileName().Trim() ?? string.Empty;
+    }
+
+    /// <summary>
+    /// Property to set or return the cue text for the name box.
+    /// </summary>
+    [Browsable(false)]
+    public string CueText
+    {
+        get => TextName.CueText;
+        set => TextName.CueText = value;
+    }
+
+    /// <summary>
+    /// Property to return the width and height for the sprite.
+    /// </summary>
+    public DX.Size2F SpriteSize => new((float)NumericWidth.Value, (float)NumericHeight.Value);
+
+    /// <summary>
+    /// Property to return the selected texture file.
+    /// </summary>
+    public IContentFile TextureFile
+    {
+        get;
+        private set;
+    }
+    #endregion
+
+    #region Methods.
+    /// <summary>Handles the FileEntrySelected event of the FileTextures control.</summary>
+    /// <param name="sender">The source of the event.</param>
+    /// <param name="e">The <see cref="ContentFileEntrySelectedEventArgs"/> instance containing the event data.</param>
+    private async void FileTextures_FileEntrySelected(object sender, ContentFileEntrySelectedEventArgs e)
+    {            
+        IGorgonImage image = null;
+        Stream imageStream = null;
+
+        try
         {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// Property to set or return the file manager for the project.
-        /// </summary>
-        [Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-        public IContentFileManager FileManager
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// Property to set or return the name of the object.
-        /// </summary>
-        [Category("Appearance"), Description("The name of the object to be named."), DefaultValue("")]
-        public string ObjectName
-        {
-            get => TextName.Text;
-            set => TextName.Text = value?.FormatFileName().Trim() ?? string.Empty;
-        }
-
-        /// <summary>
-        /// Property to set or return the cue text for the name box.
-        /// </summary>
-        [Browsable(false)]
-        public string CueText
-        {
-            get => TextName.CueText;
-            set => TextName.CueText = value;
-        }
-
-        /// <summary>
-        /// Property to return the width and height for the sprite.
-        /// </summary>
-        public DX.Size2F SpriteSize => new((float)NumericWidth.Value, (float)NumericHeight.Value);
-
-        /// <summary>
-        /// Property to return the selected texture file.
-        /// </summary>
-        public IContentFile TextureFile
-        {
-            get;
-            private set;
-        }
-        #endregion
-
-        #region Methods.
-        /// <summary>Handles the FileEntrySelected event of the FileTextures control.</summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="ContentFileEntrySelectedEventArgs"/> instance containing the event data.</param>
-        private async void FileTextures_FileEntrySelected(object sender, ContentFileEntrySelectedEventArgs e)
-        {            
-            IGorgonImage image = null;
-            Stream imageStream = null;
-
-            try
+            if (_previewTask is not null)
             {
-                if (_previewTask is not null)
-                {
-                    if (_previewTask.Status == TaskStatus.Faulted)
-                    {
-                        _previewImage?.Dispose();
-                        PicturePreview.Image = null;
-                        _previewTask = null;
-                        return;
-                    }
-
-                    _cancelSource.Cancel();
-                    (await _previewTask)?.Dispose();
-                    _previewTask = null;
-                }
-
-                if (string.IsNullOrWhiteSpace(e.FileEntry.File.Metadata.Thumbnail))
-                {
-                    e.FileEntry.File.Metadata.Thumbnail = Guid.NewGuid().ToString("N");
-                }
-                string filePath = _previewDirPath + e.FileEntry.File.Metadata.Thumbnail;
-
-                _cancelSource = new CancellationTokenSource();
-
-                imageStream = FileManager.OpenStream(e.FileEntry.FullPath, FileMode.Open);
-                IGorgonImageInfo metaData = ImageCodec.GetMetaData(imageStream);
-                imageStream.Dispose();
-
-                _previewTask = e.FileEntry.File.Metadata.ContentMetadata.GetThumbnailAsync(e.FileEntry.File, filePath, _cancelSource.Token);
-                image = await _previewTask;
-
-                if (_cancelSource.IsCancellationRequested)
+                if (_previewTask.Status == TaskStatus.Faulted)
                 {
                     _previewImage?.Dispose();
                     PicturePreview.Image = null;
-                    image?.Dispose();
+                    _previewTask = null;
                     return;
                 }
 
-                _previewImage?.Dispose();
-
-                if (image.Format != BufferFormat.R8G8B8A8_UNorm)
-                {
-                    if (image.CanConvertToFormat(BufferFormat.R8G8B8A8_UNorm))
-                    {
-                        image.BeginUpdate().ConvertToFormat(BufferFormat.R8G8B8A8_UNorm).EndUpdate();
-                    }
-                    else
-                    {
-                        // If we cannot convert, then use a placeholder.
-                        image.Dispose();
-                        PicturePreview.Image = _previewImage = Resources.no_thumb_sprite_64x64;
-                        return;
-                    }
-                }
-
-                PicturePreview.Image = _previewImage = image.Buffers[0].ToBitmap();
-
-                // Default width/height to the image size.
-                if (_originalSize is null)
-                {
-                    NumericWidth.Value = metaData.Width.Max(1).Min((int)NumericWidth.Maximum);
-                    NumericHeight.Value = metaData.Height.Max(1).Min((int)NumericHeight.Maximum);
-                }
-
-                TextureFile = e.FileEntry.File;
+                _cancelSource.Cancel();
+                (await _previewTask)?.Dispose();
+                _previewTask = null;
             }
-            catch
+
+            if (string.IsNullOrWhiteSpace(e.FileEntry.File.Metadata.Thumbnail))
             {
-                // Do nothing.                 
+                e.FileEntry.File.Metadata.Thumbnail = Guid.NewGuid().ToString("N");
+            }
+            string filePath = _previewDirPath + e.FileEntry.File.Metadata.Thumbnail;
+
+            _cancelSource = new CancellationTokenSource();
+
+            imageStream = FileManager.OpenStream(e.FileEntry.FullPath, FileMode.Open);
+            IGorgonImageInfo metaData = ImageCodec.GetMetaData(imageStream);
+            imageStream.Dispose();
+
+            _previewTask = e.FileEntry.File.Metadata.ContentMetadata.GetThumbnailAsync(e.FileEntry.File, filePath, _cancelSource.Token);
+            image = await _previewTask;
+
+            if (_cancelSource.IsCancellationRequested)
+            {
                 _previewImage?.Dispose();
                 PicturePreview.Image = null;
-            }
-            finally
-            {
-                imageStream?.Dispose();
                 image?.Dispose();
+                return;
             }
-        }
 
-        /// <summary>Handles the FileEntryUnselected event of the FileTextures control.</summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="ContentFileEntrySelectedEventArgs"/> instance containing the event data.</param>
-        private void FileTextures_FileEntryUnselected(object sender, ContentFileEntrySelectedEventArgs e)
-        {
             _previewImage?.Dispose();
-            PicturePreview.Image = null;
-            TextureFile = null;
-        }
 
-        /// <summary>Handles the Search event of the FileTextures control.</summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="Gorgon.UI.GorgonSearchEventArgs"/> instance containing the event data.</param>
-        private void FileTextures_Search(object sender, Gorgon.UI.GorgonSearchEventArgs e)
-        {
-            if (string.IsNullOrWhiteSpace(e.SearchText))
+            if (image.Format != BufferFormat.R8G8B8A8_UNorm)
             {
-                FillTextureList(_textures);
-                return;
-            }
-            
-            FillTextureList(_textures.Where(item => item.Name.IndexOf(e.SearchText, StringComparison.CurrentCultureIgnoreCase) > -1).ToArray());
-        }
-
-        /// <summary>Handles the Leave event of the TextName control.</summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
-        private void TextName_Leave(object sender, EventArgs e)
-        {
-            PanelUnderline.BackColor = DarkFormsRenderer.WindowBackground;
-            TextName.BackColor = DarkFormsRenderer.WindowBackground;
-            TextName.ForeColor = ForeColor;
-
-            if (!string.IsNullOrWhiteSpace(TextName.Text))
-            {
-                TextName.Text = TextName.Text.Trim().FormatFileName();
-            }
-        }
-
-        /// <summary>Handles the MouseEnter event of the TextName control.</summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
-        private void TextName_MouseEnter(object sender, EventArgs e)
-        {
-            if (TextName.Focused)
-            {
-                return;
-            }
-
-            TextName.BackColor = Color.FromKnownColor(KnownColor.SteelBlue);
-        }
-
-        /// <summary>Handles the MouseLeave event of the TextName control.</summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
-        private void TextName_MouseLeave(object sender, EventArgs e)
-        {
-            if (TextName.Focused)
-            {
-                return;
-            }
-
-            TextName.BackColor = DarkFormsRenderer.WindowBackground;
-            TextName.ForeColor = ForeColor;
-        }
-
-        /// <summary>Handles the Enter event of the TextName control.</summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
-        private void TextName_Enter(object sender, EventArgs e)
-        {
-            PanelUnderline.BackColor = Color.Black;
-            TextName.Parent.BackColor = TextName.BackColor = Color.White;
-            TextName.ForeColor = BackColor;
-            TextName.SelectAll();
-        }
-
-        /// <summary>Handles the TextChanged event of the TextName control.</summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
-        private void TextName_TextChanged(object sender, EventArgs e) => ButtonOK.Enabled = !string.IsNullOrWhiteSpace(ObjectName);
-
-        /// <summary>
-        /// Function to populate the texture browser.
-        /// </summary>
-        private void FillTextureList(IReadOnlyList<IContentFile> textures)
-        {
-            ContentFileExplorerFileEntry selectedTexture = null;
-            var dirs = new Dictionary<string, ContentFileExplorerDirectoryEntry>(StringComparer.OrdinalIgnoreCase);
-
-            foreach (IContentFile texture in textures.OrderBy(item => item.Path))
-            {
-                List<ContentFileExplorerFileEntry> fileEntries = null;
-                string dirName = Path.GetDirectoryName(texture.Path).FormatDirectory('/');
-
-                if (!dirs.TryGetValue(dirName, out ContentFileExplorerDirectoryEntry dirEntry))
+                if (image.CanConvertToFormat(BufferFormat.R8G8B8A8_UNorm))
                 {
-                    fileEntries = new List<ContentFileExplorerFileEntry>();
-                    dirEntry = new ContentFileExplorerDirectoryEntry(dirName, fileEntries);
-                    dirs[dirName] = dirEntry;
+                    image.BeginUpdate().ConvertToFormat(BufferFormat.R8G8B8A8_UNorm).EndUpdate();
                 }
                 else
                 {
-                    fileEntries = (List<ContentFileExplorerFileEntry>)dirEntry.Files;
+                    // If we cannot convert, then use a placeholder.
+                    image.Dispose();
+                    PicturePreview.Image = _previewImage = Resources.no_thumb_sprite_64x64;
+                    return;
                 }
-
-                var file = new ContentFileExplorerFileEntry(texture, dirEntry);
-
-                if (TextureFile == texture)
-                {
-                    selectedTexture = file;
-                    file.IsSelected = true;
-                }
-
-                fileEntries.Add(file);
             }
 
-            FileTextures.Entries = dirs.Values.ToArray();
+            PicturePreview.Image = _previewImage = image.Buffers[0].ToBitmap();
 
-            if (selectedTexture is null)
+            // Default width/height to the image size.
+            if (_originalSize is null)
             {
-                return;
+                NumericWidth.Value = metaData.Width.Max(1).Min((int)NumericWidth.Maximum);
+                NumericHeight.Value = metaData.Height.Max(1).Min((int)NumericHeight.Maximum);
             }
 
-            FileTextures_FileEntrySelected(FileTextures, new ContentFileEntrySelectedEventArgs(selectedTexture));
+            TextureFile = e.FileEntry.File;
         }
-
-        /// <summary>Handles the <see cref="UserControl.Load"/> event.</summary>
-        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
-        protected override void OnLoad(EventArgs e)
+        catch
         {
-            base.OnLoad(e);
-
-            TextName.Select();
-            TextName.SelectAll();
+            // Do nothing.                 
+            _previewImage?.Dispose();
+            PicturePreview.Image = null;
         }
-
-        /// <summary>
-        /// Function to populate the file list with available textures from the project file system.
-        /// </summary>
-        /// <param name="textures">The textures to display.</param>
-        /// <param name="currentTexture">[Optional] The currently active texture file.</param>
-        public void FillTextures(IReadOnlyList<IContentFile> textures, IContentFile currentTexture = null)
+        finally
         {
-            _textures = textures;
-            TextureFile = currentTexture;
-            FillTextureList(textures);
+            imageStream?.Dispose();
+            image?.Dispose();
         }
-
-        /// <summary>
-        /// Function to assign the original size for the sprite.
-        /// </summary>
-        /// <param name="size">The size to assign, or <b>null</b> to automatically size.</param>
-        public void SetOriginalSize(DX.Size2F? size)
-        {
-            _originalSize = size;
-
-            if (_originalSize is not null)
-            {
-                NumericWidth.Value = (int)_originalSize.Value.Width.Max(1).Min((int)NumericWidth.Maximum);
-                NumericHeight.Value = (int)_originalSize.Value.Height.Max(1).Min((int)NumericHeight.Maximum);
-            }
-        }
-        #endregion
-
-        #region Constructor/Finalizer.
-        /// <summary>Initializes a new instance of the <see cref="FormNewSprite"/> class.</summary>
-        public FormNewSprite() => InitializeComponent();
-        #endregion
     }
+
+    /// <summary>Handles the FileEntryUnselected event of the FileTextures control.</summary>
+    /// <param name="sender">The source of the event.</param>
+    /// <param name="e">The <see cref="ContentFileEntrySelectedEventArgs"/> instance containing the event data.</param>
+    private void FileTextures_FileEntryUnselected(object sender, ContentFileEntrySelectedEventArgs e)
+    {
+        _previewImage?.Dispose();
+        PicturePreview.Image = null;
+        TextureFile = null;
+    }
+
+    /// <summary>Handles the Search event of the FileTextures control.</summary>
+    /// <param name="sender">The source of the event.</param>
+    /// <param name="e">The <see cref="Gorgon.UI.GorgonSearchEventArgs"/> instance containing the event data.</param>
+    private void FileTextures_Search(object sender, Gorgon.UI.GorgonSearchEventArgs e)
+    {
+        if (string.IsNullOrWhiteSpace(e.SearchText))
+        {
+            FillTextureList(_textures);
+            return;
+        }
+        
+        FillTextureList(_textures.Where(item => item.Name.IndexOf(e.SearchText, StringComparison.CurrentCultureIgnoreCase) > -1).ToArray());
+    }
+
+    /// <summary>Handles the Leave event of the TextName control.</summary>
+    /// <param name="sender">The source of the event.</param>
+    /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+    private void TextName_Leave(object sender, EventArgs e)
+    {
+        PanelUnderline.BackColor = DarkFormsRenderer.WindowBackground;
+        TextName.BackColor = DarkFormsRenderer.WindowBackground;
+        TextName.ForeColor = ForeColor;
+
+        if (!string.IsNullOrWhiteSpace(TextName.Text))
+        {
+            TextName.Text = TextName.Text.Trim().FormatFileName();
+        }
+    }
+
+    /// <summary>Handles the MouseEnter event of the TextName control.</summary>
+    /// <param name="sender">The source of the event.</param>
+    /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+    private void TextName_MouseEnter(object sender, EventArgs e)
+    {
+        if (TextName.Focused)
+        {
+            return;
+        }
+
+        TextName.BackColor = Color.FromKnownColor(KnownColor.SteelBlue);
+    }
+
+    /// <summary>Handles the MouseLeave event of the TextName control.</summary>
+    /// <param name="sender">The source of the event.</param>
+    /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+    private void TextName_MouseLeave(object sender, EventArgs e)
+    {
+        if (TextName.Focused)
+        {
+            return;
+        }
+
+        TextName.BackColor = DarkFormsRenderer.WindowBackground;
+        TextName.ForeColor = ForeColor;
+    }
+
+    /// <summary>Handles the Enter event of the TextName control.</summary>
+    /// <param name="sender">The source of the event.</param>
+    /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+    private void TextName_Enter(object sender, EventArgs e)
+    {
+        PanelUnderline.BackColor = Color.Black;
+        TextName.Parent.BackColor = TextName.BackColor = Color.White;
+        TextName.ForeColor = BackColor;
+        TextName.SelectAll();
+    }
+
+    /// <summary>Handles the TextChanged event of the TextName control.</summary>
+    /// <param name="sender">The source of the event.</param>
+    /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+    private void TextName_TextChanged(object sender, EventArgs e) => ButtonOK.Enabled = !string.IsNullOrWhiteSpace(ObjectName);
+
+    /// <summary>
+    /// Function to populate the texture browser.
+    /// </summary>
+    private void FillTextureList(IReadOnlyList<IContentFile> textures)
+    {
+        ContentFileExplorerFileEntry selectedTexture = null;
+        var dirs = new Dictionary<string, ContentFileExplorerDirectoryEntry>(StringComparer.OrdinalIgnoreCase);
+
+        foreach (IContentFile texture in textures.OrderBy(item => item.Path))
+        {
+            List<ContentFileExplorerFileEntry> fileEntries = null;
+            string dirName = Path.GetDirectoryName(texture.Path).FormatDirectory('/');
+
+            if (!dirs.TryGetValue(dirName, out ContentFileExplorerDirectoryEntry dirEntry))
+            {
+                fileEntries = new List<ContentFileExplorerFileEntry>();
+                dirEntry = new ContentFileExplorerDirectoryEntry(dirName, fileEntries);
+                dirs[dirName] = dirEntry;
+            }
+            else
+            {
+                fileEntries = (List<ContentFileExplorerFileEntry>)dirEntry.Files;
+            }
+
+            var file = new ContentFileExplorerFileEntry(texture, dirEntry);
+
+            if (TextureFile == texture)
+            {
+                selectedTexture = file;
+                file.IsSelected = true;
+            }
+
+            fileEntries.Add(file);
+        }
+
+        FileTextures.Entries = dirs.Values.ToArray();
+
+        if (selectedTexture is null)
+        {
+            return;
+        }
+
+        FileTextures_FileEntrySelected(FileTextures, new ContentFileEntrySelectedEventArgs(selectedTexture));
+    }
+
+    /// <summary>Handles the <see cref="UserControl.Load"/> event.</summary>
+    /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+    protected override void OnLoad(EventArgs e)
+    {
+        base.OnLoad(e);
+
+        TextName.Select();
+        TextName.SelectAll();
+    }
+
+    /// <summary>
+    /// Function to populate the file list with available textures from the project file system.
+    /// </summary>
+    /// <param name="textures">The textures to display.</param>
+    /// <param name="currentTexture">[Optional] The currently active texture file.</param>
+    public void FillTextures(IReadOnlyList<IContentFile> textures, IContentFile currentTexture = null)
+    {
+        _textures = textures;
+        TextureFile = currentTexture;
+        FillTextureList(textures);
+    }
+
+    /// <summary>
+    /// Function to assign the original size for the sprite.
+    /// </summary>
+    /// <param name="size">The size to assign, or <b>null</b> to automatically size.</param>
+    public void SetOriginalSize(DX.Size2F? size)
+    {
+        _originalSize = size;
+
+        if (_originalSize is not null)
+        {
+            NumericWidth.Value = (int)_originalSize.Value.Width.Max(1).Min((int)NumericWidth.Maximum);
+            NumericHeight.Value = (int)_originalSize.Value.Height.Max(1).Min((int)NumericHeight.Maximum);
+        }
+    }
+    #endregion
+
+    #region Constructor/Finalizer.
+    /// <summary>Initializes a new instance of the <see cref="FormNewSprite"/> class.</summary>
+    public FormNewSprite() => InitializeComponent();
+    #endregion
 }

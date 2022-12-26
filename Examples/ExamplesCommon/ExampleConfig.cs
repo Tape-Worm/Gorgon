@@ -28,88 +28,87 @@ using System;
 using Microsoft.Extensions.Configuration;
 using DX = SharpDX;
 
-namespace Gorgon.Examples
+namespace Gorgon.Examples;
+
+/// <summary>
+/// Configuration information for the example application.
+/// </summary>
+public class ExampleConfig
 {
+    // The default instance.
+    private static ExampleConfig _default;
+
     /// <summary>
-    /// Configuration information for the example application.
+    /// Function to load the configuration.
     /// </summary>
-    public class ExampleConfig
+    private static void LoadConfig()
     {
-        // The default instance.
-        private static ExampleConfig _default;
+        IConfigurationRoot config = new ConfigurationBuilder()
+                                        .SetBasePath(AppDomain.CurrentDomain.BaseDirectory)
+                                        .AddJsonFile("appsettings.json", optional: true, reloadOnChange: false)
+                                        .Build();
 
-        /// <summary>
-        /// Function to load the configuration.
-        /// </summary>
-        private static void LoadConfig()
+        IConfigurationSection section = config.GetSection(nameof(ExampleConfig));
+
+        _default = new ExampleConfig();
+
+        if (section is null)
         {
-            IConfigurationRoot config = new ConfigurationBuilder()
-                                            .SetBasePath(AppDomain.CurrentDomain.BaseDirectory)
-                                            .AddJsonFile("appsettings.json", optional: true, reloadOnChange: false)
-                                            .Build();
-
-            IConfigurationSection section = config.GetSection(nameof(ExampleConfig));
-
-            _default = new ExampleConfig();
-
-            if (section is null)
-            {
-                return;
-            }
-
-            section.Bind(_default);
+            return;
         }
 
-        /// <summary>
-        /// Property to return the default settings.
-        /// </summary>
-        public static ExampleConfig Default
-        {
-            get
-            {
-                if (_default is null)
-                {
-                    LoadConfig();
-                }
-
-                return _default;
-            }
-        }
-
-        /// <summary>
-        /// Property to set or return the path to the resources for the example.
-        /// </summary>
-        public string ResourceLocation
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// Property to set or return the path to the location for example plug ins.
-        /// </summary>
-        public string PlugInLocation
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// Property to set or return the desired window resolution.
-        /// </summary>
-        public DX.Size2 Resolution
-        {
-            get;
-            set;
-        } = new DX.Size2(1280, 800);
-
-        /// <summary>
-        /// Property to set or return whether the example runs in windowed mode, or full screen mode.
-        /// </summary>
-        public bool IsWindowed
-        {
-            get;
-            set;
-        } = true;
+        section.Bind(_default);
     }
+
+    /// <summary>
+    /// Property to return the default settings.
+    /// </summary>
+    public static ExampleConfig Default
+    {
+        get
+        {
+            if (_default is null)
+            {
+                LoadConfig();
+            }
+
+            return _default;
+        }
+    }
+
+    /// <summary>
+    /// Property to set or return the path to the resources for the example.
+    /// </summary>
+    public string ResourceLocation
+    {
+        get;
+        set;
+    }
+
+    /// <summary>
+    /// Property to set or return the path to the location for example plug ins.
+    /// </summary>
+    public string PlugInLocation
+    {
+        get;
+        set;
+    }
+
+    /// <summary>
+    /// Property to set or return the desired window resolution.
+    /// </summary>
+    public DX.Size2 Resolution
+    {
+        get;
+        set;
+    } = new DX.Size2(1280, 800);
+
+    /// <summary>
+    /// Property to set or return whether the example runs in windowed mode, or full screen mode.
+    /// </summary>
+    public bool IsWindowed
+    {
+        get;
+        set;
+    } = true;
 }

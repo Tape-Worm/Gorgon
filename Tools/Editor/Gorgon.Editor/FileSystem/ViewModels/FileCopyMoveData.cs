@@ -26,40 +26,39 @@
 
 using System.Collections.Generic;
 
-namespace Gorgon.Editor.ViewModels
+namespace Gorgon.Editor.ViewModels;
+
+/// <summary>
+/// A data structure used to copy files.
+/// </summary>
+internal class FileCopyMoveData
+    : IFileCopyMoveData
 {
-    /// <summary>
-    /// A data structure used to copy files.
-    /// </summary>
-    internal class FileCopyMoveData
-        : IFileCopyMoveData
+    /// <summary>Gets or sets the destination directory.</summary>
+    public string DestinationDirectory
     {
-        /// <summary>Gets or sets the destination directory.</summary>
-        public string DestinationDirectory
-        {
-            get;
-            set;
-        }
+        get;
+        set;
+    }
 
-        /// <summary>Gets or sets the operation.</summary>
-        public CopyMoveOperation Operation
-        {
-            get;
-            set;
-        }
+    /// <summary>Gets or sets the operation.</summary>
+    public CopyMoveOperation Operation
+    {
+        get;
+        set;
+    }
 
-        /// <summary>Gets or sets the source files.</summary>
-        public IReadOnlyList<string> SourceFiles
-        {
-            get;
-            set;
-        }
+    /// <summary>Gets or sets the source files.</summary>
+    public IReadOnlyList<string> SourceFiles
+    {
+        get;
+        set;
+    }
 
-        /// <summary>Property to set or return whether any files were copied or not.</summary>
-        public bool FilesCopied
-        {
-            get;
-            set;
-        }
+    /// <summary>Property to set or return whether any files were copied or not.</summary>
+    public bool FilesCopied
+    {
+        get;
+        set;
     }
 }

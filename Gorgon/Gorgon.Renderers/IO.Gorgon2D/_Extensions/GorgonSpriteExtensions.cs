@@ -29,98 +29,97 @@ using Gorgon.IO;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace Gorgon.Renderers
+namespace Gorgon.Renderers;
+
+/// <summary>
+/// Extension methods for the <see cref="GorgonSprite"/> object.
+/// </summary>
+public static class GorgonSpriteExtensions
 {
+    #region Constants.
     /// <summary>
-    /// Extension methods for the <see cref="GorgonSprite"/> object.
+    /// The property name for the header value.
     /// </summary>
-    public static class GorgonSpriteExtensions
+    internal const string JsonHeaderProp = "header";
+    /// <summary>
+    /// The property name for the header value.
+    /// </summary>
+    internal const string JsonVersionProp = "version";
+    #endregion
+
+    #region Methods.
+    /// <summary>
+    /// Function to convert a sprite into a JSON formatted string.
+    /// </summary>
+    /// <param name="sprite">The sprite to serialize.</param>
+    /// <param name="prettyFormat"><b>true</b> to employ pretty formatting on the JSON string (increases size), <b>false</b> to compact the string.</param>
+    /// <returns>The sprite data as a JSON formatted string.</returns>
+    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="sprite"/> parameter is <b>null</b>.</exception>
+    /// <seealso cref="GorgonSprite"/>
+    public static string ToJson(this GorgonSprite sprite, bool prettyFormat = false)
     {
-        #region Constants.
-        /// <summary>
-        /// The property name for the header value.
-        /// </summary>
-        internal const string JsonHeaderProp = "header";
-        /// <summary>
-        /// The property name for the header value.
-        /// </summary>
-        internal const string JsonVersionProp = "version";
-        #endregion
-
-        #region Methods.
-        /// <summary>
-        /// Function to convert a sprite into a JSON formatted string.
-        /// </summary>
-        /// <param name="sprite">The sprite to serialize.</param>
-        /// <param name="prettyFormat"><b>true</b> to employ pretty formatting on the JSON string (increases size), <b>false</b> to compact the string.</param>
-        /// <returns>The sprite data as a JSON formatted string.</returns>
-        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="sprite"/> parameter is <b>null</b>.</exception>
-        /// <seealso cref="GorgonSprite"/>
-        public static string ToJson(this GorgonSprite sprite, bool prettyFormat = false)
+        if (sprite is null)
         {
-            if (sprite is null)
-            {
-                throw new ArgumentNullException(nameof(sprite));
-            }
-
-            var serializer = new JsonSerializer
-            {
-                CheckAdditionalContent = false,
-                Formatting = prettyFormat ? Formatting.Indented : Formatting.None
-            };
-
-            serializer.Converters.Add(new JsonVector2Converter());
-            serializer.Converters.Add(new JsonVector3Converter());
-            serializer.Converters.Add(new JsonSize2FConverter());
-            serializer.Converters.Add(new JsonGorgonColorConverter());
-            serializer.Converters.Add(new JsonRectangleFConverter());
-            serializer.Converters.Add(new JsonSamplerConverter(null));
-            serializer.Converters.Add(new JsonTexture2DConverter(null, null));
-
-            var jsonObj = JObject.FromObject(sprite, serializer);
-            JToken firstProp = jsonObj.First;
-            firstProp.AddBeforeSelf(new JProperty(JsonHeaderProp, GorgonSpriteCodecCommon.CurrentFileHeader));
-            firstProp.AddBeforeSelf(new JProperty(JsonVersionProp, GorgonSpriteCodecCommon.CurrentVersion.ToString(2)));
-
-            return jsonObj.ToString(prettyFormat ? Formatting.Indented : Formatting.None);
+            throw new ArgumentNullException(nameof(sprite));
         }
 
-        /// <summary>
-        /// Function to convert a polygonal sprite into a JSON formatted string.
-        /// </summary>
-        /// <param name="sprite">The polygonal sprite to serialize.</param>
-        /// <param name="prettyFormat"><b>true</b> to employ pretty formatting on the JSON string (increases size), <b>false</b> to compact the string.</param>
-        /// <returns>The polygonal sprite data as a JSON formatted string.</returns>
-        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="sprite"/> parameter is <b>null</b>.</exception>
-        /// <seealso cref="GorgonPolySprite"/>
-        public static string ToJson(this GorgonPolySprite sprite, bool prettyFormat = false)
+        var serializer = new JsonSerializer
         {
-            if (sprite is null)
-            {
-                throw new ArgumentNullException(nameof(sprite));
-            }
+            CheckAdditionalContent = false,
+            Formatting = prettyFormat ? Formatting.Indented : Formatting.None
+        };
 
-            var serializer = new JsonSerializer
-            {
-                CheckAdditionalContent = false,
-                Formatting = prettyFormat ? Formatting.Indented : Formatting.None
-            };
+        serializer.Converters.Add(new JsonVector2Converter());
+        serializer.Converters.Add(new JsonVector3Converter());
+        serializer.Converters.Add(new JsonSize2FConverter());
+        serializer.Converters.Add(new JsonGorgonColorConverter());
+        serializer.Converters.Add(new JsonRectangleFConverter());
+        serializer.Converters.Add(new JsonSamplerConverter(null));
+        serializer.Converters.Add(new JsonTexture2DConverter(null, null));
 
-            serializer.Converters.Add(new JsonVector2Converter());
-            serializer.Converters.Add(new JsonVector3Converter());
-            serializer.Converters.Add(new JsonSize2FConverter());
-            serializer.Converters.Add(new JsonGorgonColorConverter());
-            serializer.Converters.Add(new JsonRectangleFConverter());
-            serializer.Converters.Add(new JsonSamplerConverter(null));
-            serializer.Converters.Add(new JsonTexture2DConverter(null, null));
+        var jsonObj = JObject.FromObject(sprite, serializer);
+        JToken firstProp = jsonObj.First;
+        firstProp.AddBeforeSelf(new JProperty(JsonHeaderProp, GorgonSpriteCodecCommon.CurrentFileHeader));
+        firstProp.AddBeforeSelf(new JProperty(JsonVersionProp, GorgonSpriteCodecCommon.CurrentVersion.ToString(2)));
 
-            var jsonObj = JObject.FromObject(sprite, serializer);
-            JToken firstProp = jsonObj.First;
-            firstProp.AddBeforeSelf(new JProperty(JsonHeaderProp, GorgonPolySpriteCodecCommon.CurrentFileHeader));
-            firstProp.AddBeforeSelf(new JProperty(JsonVersionProp, GorgonPolySpriteCodecCommon.CurrentVersion.ToString(2)));
-
-            return jsonObj.ToString(prettyFormat ? Formatting.Indented : Formatting.None);
-        }
-        #endregion
+        return jsonObj.ToString(prettyFormat ? Formatting.Indented : Formatting.None);
     }
+
+    /// <summary>
+    /// Function to convert a polygonal sprite into a JSON formatted string.
+    /// </summary>
+    /// <param name="sprite">The polygonal sprite to serialize.</param>
+    /// <param name="prettyFormat"><b>true</b> to employ pretty formatting on the JSON string (increases size), <b>false</b> to compact the string.</param>
+    /// <returns>The polygonal sprite data as a JSON formatted string.</returns>
+    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="sprite"/> parameter is <b>null</b>.</exception>
+    /// <seealso cref="GorgonPolySprite"/>
+    public static string ToJson(this GorgonPolySprite sprite, bool prettyFormat = false)
+    {
+        if (sprite is null)
+        {
+            throw new ArgumentNullException(nameof(sprite));
+        }
+
+        var serializer = new JsonSerializer
+        {
+            CheckAdditionalContent = false,
+            Formatting = prettyFormat ? Formatting.Indented : Formatting.None
+        };
+
+        serializer.Converters.Add(new JsonVector2Converter());
+        serializer.Converters.Add(new JsonVector3Converter());
+        serializer.Converters.Add(new JsonSize2FConverter());
+        serializer.Converters.Add(new JsonGorgonColorConverter());
+        serializer.Converters.Add(new JsonRectangleFConverter());
+        serializer.Converters.Add(new JsonSamplerConverter(null));
+        serializer.Converters.Add(new JsonTexture2DConverter(null, null));
+
+        var jsonObj = JObject.FromObject(sprite, serializer);
+        JToken firstProp = jsonObj.First;
+        firstProp.AddBeforeSelf(new JProperty(JsonHeaderProp, GorgonPolySpriteCodecCommon.CurrentFileHeader));
+        firstProp.AddBeforeSelf(new JProperty(JsonVersionProp, GorgonPolySpriteCodecCommon.CurrentVersion.ToString(2)));
+
+        return jsonObj.ToString(prettyFormat ? Formatting.Indented : Formatting.None);
+    }
+    #endregion
 }

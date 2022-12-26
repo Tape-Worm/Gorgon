@@ -26,28 +26,27 @@
 
 using System;
 
-namespace Gorgon.UI
-{
-    /// <summary>
-    /// Event arguments for the <see cref="GorgonSearchBox.Search"/> event.
-    /// </summary>
-    public class GorgonSearchEventArgs
-        : EventArgs
-    {
-        #region Properties.
-        /// <summary>
-        /// Property to return the text to search for.
-        /// </summary>
-        public string SearchText
-        {
-            get;
-        }
-        #endregion
+namespace Gorgon.UI;
 
-        #region Constructor/Finalizer.
-        /// <summary>Initializes a new instance of the <see cref="GorgonSearchEventArgs"/> class.</summary>
-        /// <param name="searchText">  The text to search for.</param>
-        public GorgonSearchEventArgs(string searchText) => SearchText = searchText ?? string.Empty;
-        #endregion
+/// <summary>
+/// Event arguments for the <see cref="GorgonSearchBox.Search"/> event.
+/// </summary>
+public class GorgonSearchEventArgs
+    : EventArgs
+{
+    #region Properties.
+    /// <summary>
+    /// Property to return the text to search for.
+    /// </summary>
+    public string SearchText
+    {
+        get;
     }
+    #endregion
+
+    #region Constructor/Finalizer.
+    /// <summary>Initializes a new instance of the <see cref="GorgonSearchEventArgs"/> class.</summary>
+    /// <param name="searchText">  The text to search for.</param>
+    public GorgonSearchEventArgs(string searchText) => SearchText = searchText ?? string.Empty;
+    #endregion
 }

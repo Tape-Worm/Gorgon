@@ -28,26 +28,25 @@ using System;
 using Gorgon.Core;
 using Gorgon.Editor.PlugIns;
 
-namespace Gorgon.Editor.UI
+namespace Gorgon.Editor.UI;
+
+/// <summary>
+/// A view model for a settings category.
+/// </summary>
+/// <remarks>
+/// <para>
+/// This is a view model that is used provide a settings interface for a plug in. The editor will pick these up and present your custom settings view (along with the view model) so that users can make 
+/// changes to plug in settings. These settings objects are returned to the host editor application by way of the <see cref="EditorPlugIn.OnGetSettings"/> method.
+/// </para>
+/// </remarks>
+public interface ISettingsCategory
+    : IViewModel, IGorgonNamedObject
 {
     /// <summary>
-    /// A view model for a settings category.
+    /// Property to return the ID for the panel.
     /// </summary>
-    /// <remarks>
-    /// <para>
-    /// This is a view model that is used provide a settings interface for a plug in. The editor will pick these up and present your custom settings view (along with the view model) so that users can make 
-    /// changes to plug in settings. These settings objects are returned to the host editor application by way of the <see cref="EditorPlugIn.OnGetSettings"/> method.
-    /// </para>
-    /// </remarks>
-    public interface ISettingsCategory
-        : IViewModel, IGorgonNamedObject
+    Guid ID
     {
-        /// <summary>
-        /// Property to return the ID for the panel.
-        /// </summary>
-        Guid ID
-        {
-            get;
-        }
+        get;
     }
 }

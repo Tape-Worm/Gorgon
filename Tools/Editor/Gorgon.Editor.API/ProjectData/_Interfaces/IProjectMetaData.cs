@@ -27,27 +27,26 @@
 using System.Collections.Generic;
 using Gorgon.Editor.Metadata;
 
-namespace Gorgon.Editor.ProjectData
+namespace Gorgon.Editor.ProjectData;
+
+/// <summary>
+/// JSON specific properties for project data.
+/// </summary>
+public interface IProjectMetadata
 {
     /// <summary>
-    /// JSON specific properties for project data.
+    /// Property to return the version for the project file.
     /// </summary>
-    public interface IProjectMetadata
+    string Version
     {
-        /// <summary>
-        /// Property to return the version for the project file.
-        /// </summary>
-        string Version
-        {
-            get;
-        }
+        get;
+    }
 
-        /// <summary>
-        /// Property to return the list of project items.
-        /// </summary>
-        Dictionary<string, ProjectItemMetadata> ProjectItems
-        {
-            get;
-        }
+    /// <summary>
+    /// Property to return the list of project items.
+    /// </summary>
+    Dictionary<string, ProjectItemMetadata> ProjectItems
+    {
+        get;
     }
 }

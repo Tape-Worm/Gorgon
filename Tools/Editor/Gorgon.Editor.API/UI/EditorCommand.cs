@@ -26,79 +26,78 @@
 
 using System;
 
-namespace Gorgon.Editor.UI
+namespace Gorgon.Editor.UI;
+
+/// <summary>
+/// An implementation of the <see cref="IEditorCommand{T}"/> interface.
+/// </summary>
+/// <typeparam name="T">The type of data to pass to the command.</typeparam>
+/// <remarks>
+/// <para>
+/// Commands are used to perform actions on a view model. They work similarly to events in that they are usually called in response to a UI action like a button click. 
+/// </para>
+/// </remarks>
+public class EditorCommand<T>
+    : IEditorCommand<T>
 {
+    #region Variables.
+    // Function called to determine if a command can be executed or not.
+    private readonly Func<T, bool> _canExecute;
+    // Action called to execute the function.
+    private readonly Action<T> _execute;
+    // Function called to determine if a command can be executed or not.
+    private readonly Func<bool> _canExecuteNoArgs;
+    // Action called to execute the function.
+    private readonly Action _executeNoArgs;
+    #endregion
+
+    #region Methods.
     /// <summary>
-    /// An implementation of the <see cref="IEditorCommand{T}"/> interface.
+    /// Function to determine if a command can be executed or not.
     /// </summary>
-    /// <typeparam name="T">The type of data to pass to the command.</typeparam>
-    /// <remarks>
-    /// <para>
-    /// Commands are used to perform actions on a view model. They work similarly to events in that they are usually called in response to a UI action like a button click. 
-    /// </para>
-    /// </remarks>
-    public class EditorCommand<T>
-        : IEditorCommand<T>
+    /// <param name="args">The arguments to check.</param>
+    /// <returns><b>true</b> if the command can be executed, <b>false</b> if not.</returns>
+    public bool CanExecute(T args) => (_canExecute is null) && (_canExecuteNoArgs is null) || (_canExecute is not null ? _canExecute(args) : _canExecuteNoArgs());
+
+    /// <summary>
+    /// Function to execute the command.
+    /// </summary>
+    /// <param name="args">The arguments to pass to the command.</param>
+    public void Execute(T args)
     {
-        #region Variables.
-        // Function called to determine if a command can be executed or not.
-        private readonly Func<T, bool> _canExecute;
-        // Action called to execute the function.
-        private readonly Action<T> _execute;
-        // Function called to determine if a command can be executed or not.
-        private readonly Func<bool> _canExecuteNoArgs;
-        // Action called to execute the function.
-        private readonly Action _executeNoArgs;
-        #endregion
-
-        #region Methods.
-        /// <summary>
-        /// Function to determine if a command can be executed or not.
-        /// </summary>
-        /// <param name="args">The arguments to check.</param>
-        /// <returns><b>true</b> if the command can be executed, <b>false</b> if not.</returns>
-        public bool CanExecute(T args) => (_canExecute is null) && (_canExecuteNoArgs is null) || (_canExecute is not null ? _canExecute(args) : _canExecuteNoArgs());
-
-        /// <summary>
-        /// Function to execute the command.
-        /// </summary>
-        /// <param name="args">The arguments to pass to the command.</param>
-        public void Execute(T args)
+        if (_execute is not null)
         {
-            if (_execute is not null)
-            {
-                _execute(args);
-                return;
-            }
-
-            _executeNoArgs();
-        }
-        #endregion
-
-        #region Constructor/Finalizer.
-        /// <summary>
-        /// Initializes a new instance of the <see cref="EditorCommand{T}"/> class.
-        /// </summary>
-        /// <param name="execute">The method to execute when the command is executed.</param>
-        /// <param name="canExecute">The method used to determine if the command can execute.</param>
-        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="execute"/> parameter is <b>null</b>.</exception>
-        public EditorCommand(Action<T> execute, Func<T, bool> canExecute = null)
-        {
-            _execute = execute ?? throw new ArgumentNullException(nameof(execute));
-            _canExecute = canExecute;
+            _execute(args);
+            return;
         }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="EditorCommand{T}" /> class.
-        /// </summary>
-        /// <param name="execute">The method to execute when the command is executed.</param>
-        /// <param name="canExecute">The method used to determine if the command can execute.</param>
-        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="execute"/> parameter is <b>null</b>.</exception>
-        public EditorCommand(Action execute, Func<bool> canExecute = null)
-        {
-            _executeNoArgs = execute ?? throw new ArgumentNullException(nameof(execute));
-            _canExecuteNoArgs = canExecute;
-        }
-        #endregion
+        _executeNoArgs();
     }
+    #endregion
+
+    #region Constructor/Finalizer.
+    /// <summary>
+    /// Initializes a new instance of the <see cref="EditorCommand{T}"/> class.
+    /// </summary>
+    /// <param name="execute">The method to execute when the command is executed.</param>
+    /// <param name="canExecute">The method used to determine if the command can execute.</param>
+    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="execute"/> parameter is <b>null</b>.</exception>
+    public EditorCommand(Action<T> execute, Func<T, bool> canExecute = null)
+    {
+        _execute = execute ?? throw new ArgumentNullException(nameof(execute));
+        _canExecute = canExecute;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="EditorCommand{T}" /> class.
+    /// </summary>
+    /// <param name="execute">The method to execute when the command is executed.</param>
+    /// <param name="canExecute">The method used to determine if the command can execute.</param>
+    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="execute"/> parameter is <b>null</b>.</exception>
+    public EditorCommand(Action execute, Func<bool> canExecute = null)
+    {
+        _executeNoArgs = execute ?? throw new ArgumentNullException(nameof(execute));
+        _canExecuteNoArgs = canExecute;
+    }
+    #endregion
 }

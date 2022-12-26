@@ -26,158 +26,157 @@
 
 using System;
 
-namespace Gorgon.UI
+namespace Gorgon.UI;
+
+/// <summary>
+/// Dialog for warning messages.
+/// </summary>
+internal partial class WarningDialog
 {
+    #region Variables.
+    private int _lastWidth;                 // Last used width.
+    private string _warningDetails;         // Error details.
+    private int _detailHeight;              // Height for details panel.
+    #endregion
+
+    #region Properties.
     /// <summary>
-    /// Dialog for warning messages.
+    /// Property to set or return whether to open the detail panel when the dialog is shown.
     /// </summary>
-    internal partial class WarningDialog
+    public bool ShowDetailPanel
     {
-        #region Variables.
-        private int _lastWidth;                 // Last used width.
-        private string _warningDetails;         // Error details.
-        private int _detailHeight;              // Height for details panel.
-        #endregion
-
-        #region Properties.
-        /// <summary>
-        /// Property to set or return whether to open the detail panel when the dialog is shown.
-        /// </summary>
-        public bool ShowDetailPanel
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// Property to return or set the additional details for the warning.
-        /// </summary>
-        public string WarningDetails
-        {
-            get => _warningDetails;
-            set
-            {
-                if (string.IsNullOrEmpty(value))
-                {
-                    value = string.Empty;
-                }
-
-                _warningDetails = value;
-
-                // Fix up line endings.				
-                textWarningDetails.Text = value.Replace("\n", Environment.NewLine);
-
-                ValidateFunctions();
-            }
-        }
-        #endregion
-
-        #region Methods.
-        /// <summary>
-        /// Handles the Click event of the detailsButton control.
-        /// </summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
-        private void DetailsButton_Click(object sender, EventArgs e)
-        {
-            if (checkDetail.Checked)
-            {
-                _lastWidth = Width;
-                Height += _detailHeight;
-                Width = MessageWidth + ((Width - ClientSize.Width) * 2);
-                textWarningDetails.Visible = true;
-            }
-            else
-            {
-                textWarningDetails.Visible = false;
-                Width = _lastWidth;
-                Height -= _detailHeight;
-            }
-
-            Refresh();
-            Invalidate();
-        }
-
-        /// <summary>
-        /// OK button click event.
-        /// </summary>
-        /// <param name="sender">Sender of the event.</param>
-        /// <param name="e">Event arguments.</param>
-        private void OKButton_Click(object sender, EventArgs e) => Close();
-
-        /// <summary>
-        /// Function to validate the buttons.
-        /// </summary>
-        protected override void ValidateFunctions() => checkDetail.Enabled = !string.IsNullOrWhiteSpace(_warningDetails);
-
-        /// <summary>
-        /// Raises the <see cref="E:System.Windows.Forms.Form.Load"></see> event.
-        /// </summary>
-        /// <param name="e">An <see cref="EventArgs"></see> that contains the event data.</param>
-        protected override void OnLoad(EventArgs e)
-        {
-            base.OnLoad(e);
-
-            _detailHeight = textWarningDetails.Height + 10;
-            MessageHeight -= _detailHeight;
-
-            _lastWidth = Width;
-            buttonOK.Focus();
-            ValidateFunctions();
-
-            if (!ShowDetailPanel)
-            {
-                return;
-            }
-
-            checkDetail.Checked = ShowDetailPanel;
-            DetailsButton_Click(this, EventArgs.Empty);
-        }
-
-        /// <summary>
-        /// Function to perform the actual drawing of the message.
-        /// </summary>
-        /// <param name="g">Graphics object to use.</param>
-        protected override void DrawDialog(System.Drawing.Graphics g)
-        {
-            // Get size.
-            float maxTextHeight = AdjustSize(g, 0);
-
-            // Relocate buttons.
-            buttonOK.Left = ClientSize.Width - buttonOK.Width - checkDetail.Left;
-
-            // Adjust for detail window.
-            if (checkDetail.Checked)
-            {
-                checkDetail.Top = textWarningDetails.Top - 6 - checkDetail.Height;
-                buttonOK.Top = textWarningDetails.Top - 6 - buttonOK.Height;
-            }
-            else
-            {
-                checkDetail.Top = ClientSize.Height - 6 - checkDetail.Height;
-                buttonOK.Top = ClientSize.Height - 6 - buttonOK.Height;
-            }
-
-            // Adjust the position of the details box.
-            textWarningDetails.Top = ClientSize.Height - 8 - textWarningDetails.Height;
-            textWarningDetails.Width = ClientSize.Width - (textWarningDetails.Left * 2);
-
-            DrawMessage(g, maxTextHeight);
-        }
-        #endregion
-
-        #region Constructor/Destructor.
-        /// <summary>
-        /// Constructor.
-        /// </summary>
-        public WarningDialog()
-        {
-            // Initial height = 134.
-            // Expanded height = 334.
-            InitializeComponent();
-            ShowDetailPanel = false;
-            _warningDetails = "";
-        }
-        #endregion
+        get;
+        set;
     }
+
+    /// <summary>
+    /// Property to return or set the additional details for the warning.
+    /// </summary>
+    public string WarningDetails
+    {
+        get => _warningDetails;
+        set
+        {
+            if (string.IsNullOrEmpty(value))
+            {
+                value = string.Empty;
+            }
+
+            _warningDetails = value;
+
+            // Fix up line endings.				
+            textWarningDetails.Text = value.Replace("\n", Environment.NewLine);
+
+            ValidateFunctions();
+        }
+    }
+    #endregion
+
+    #region Methods.
+    /// <summary>
+    /// Handles the Click event of the detailsButton control.
+    /// </summary>
+    /// <param name="sender">The source of the event.</param>
+    /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+    private void DetailsButton_Click(object sender, EventArgs e)
+    {
+        if (checkDetail.Checked)
+        {
+            _lastWidth = Width;
+            Height += _detailHeight;
+            Width = MessageWidth + ((Width - ClientSize.Width) * 2);
+            textWarningDetails.Visible = true;
+        }
+        else
+        {
+            textWarningDetails.Visible = false;
+            Width = _lastWidth;
+            Height -= _detailHeight;
+        }
+
+        Refresh();
+        Invalidate();
+    }
+
+    /// <summary>
+    /// OK button click event.
+    /// </summary>
+    /// <param name="sender">Sender of the event.</param>
+    /// <param name="e">Event arguments.</param>
+    private void OKButton_Click(object sender, EventArgs e) => Close();
+
+    /// <summary>
+    /// Function to validate the buttons.
+    /// </summary>
+    protected override void ValidateFunctions() => checkDetail.Enabled = !string.IsNullOrWhiteSpace(_warningDetails);
+
+    /// <summary>
+    /// Raises the <see cref="E:System.Windows.Forms.Form.Load"></see> event.
+    /// </summary>
+    /// <param name="e">An <see cref="EventArgs"></see> that contains the event data.</param>
+    protected override void OnLoad(EventArgs e)
+    {
+        base.OnLoad(e);
+
+        _detailHeight = textWarningDetails.Height + 10;
+        MessageHeight -= _detailHeight;
+
+        _lastWidth = Width;
+        buttonOK.Focus();
+        ValidateFunctions();
+
+        if (!ShowDetailPanel)
+        {
+            return;
+        }
+
+        checkDetail.Checked = ShowDetailPanel;
+        DetailsButton_Click(this, EventArgs.Empty);
+    }
+
+    /// <summary>
+    /// Function to perform the actual drawing of the message.
+    /// </summary>
+    /// <param name="g">Graphics object to use.</param>
+    protected override void DrawDialog(System.Drawing.Graphics g)
+    {
+        // Get size.
+        float maxTextHeight = AdjustSize(g, 0);
+
+        // Relocate buttons.
+        buttonOK.Left = ClientSize.Width - buttonOK.Width - checkDetail.Left;
+
+        // Adjust for detail window.
+        if (checkDetail.Checked)
+        {
+            checkDetail.Top = textWarningDetails.Top - 6 - checkDetail.Height;
+            buttonOK.Top = textWarningDetails.Top - 6 - buttonOK.Height;
+        }
+        else
+        {
+            checkDetail.Top = ClientSize.Height - 6 - checkDetail.Height;
+            buttonOK.Top = ClientSize.Height - 6 - buttonOK.Height;
+        }
+
+        // Adjust the position of the details box.
+        textWarningDetails.Top = ClientSize.Height - 8 - textWarningDetails.Height;
+        textWarningDetails.Width = ClientSize.Width - (textWarningDetails.Left * 2);
+
+        DrawMessage(g, maxTextHeight);
+    }
+    #endregion
+
+    #region Constructor/Destructor.
+    /// <summary>
+    /// Constructor.
+    /// </summary>
+    public WarningDialog()
+    {
+        // Initial height = 134.
+        // Expanded height = 334.
+        InitializeComponent();
+        ShowDetailPanel = false;
+        _warningDetails = "";
+    }
+    #endregion
 }

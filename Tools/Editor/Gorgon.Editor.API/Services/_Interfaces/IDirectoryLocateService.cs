@@ -28,22 +28,21 @@ using System;
 using System.IO;
 using Gorgon.UI;
 
-namespace Gorgon.Editor.Services
+namespace Gorgon.Editor.Services;
+
+/// <summary>
+/// A service used to locate a directory on the physical file system.
+/// </summary>
+public interface IDirectoryLocateService
 {
     /// <summary>
-    /// A service used to locate a directory on the physical file system.
+    /// Function to show an interface that allows directory selection.
     /// </summary>
-    public interface IDirectoryLocateService
-    {
-        /// <summary>
-        /// Function to show an interface that allows directory selection.
-        /// </summary>
-        /// <param name="initialDir">The initial directory to use.</param>
-        /// <param name="caption">[Optional] The caption for the dialog.</param>
-        /// <param name="onSelected">[Optional] The method to call when a directory is selected.</param>
-        /// <param name="onEntered">[Optional] The method to call when a directory is entered.</param>
-        /// <returns>The selected directory, or <b>null</b> if cancelled.</returns>
-        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="initialDir"/> parameter is <b>null</b>.</exception>
-        DirectoryInfo GetDirectory(DirectoryInfo initialDir, string caption = null, Action<FolderSelectedArgs> onSelected = null, Action<FolderSelectedArgs> onEntered = null);
-    }
+    /// <param name="initialDir">The initial directory to use.</param>
+    /// <param name="caption">[Optional] The caption for the dialog.</param>
+    /// <param name="onSelected">[Optional] The method to call when a directory is selected.</param>
+    /// <param name="onEntered">[Optional] The method to call when a directory is entered.</param>
+    /// <returns>The selected directory, or <b>null</b> if cancelled.</returns>
+    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="initialDir"/> parameter is <b>null</b>.</exception>
+    DirectoryInfo GetDirectory(DirectoryInfo initialDir, string caption = null, Action<FolderSelectedArgs> onSelected = null, Action<FolderSelectedArgs> onEntered = null);
 }

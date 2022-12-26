@@ -24,29 +24,28 @@
 // 
 #endregion
 
-namespace Gorgon.Diagnostics.LogProviders
+namespace Gorgon.Diagnostics.LogProviders;
+
+/// <summary>
+/// A provider that accesses a data store to store logging messages.
+/// </summary>
+public interface IGorgonLogProvider
 {
     /// <summary>
-    /// A provider that accesses a data store to store logging messages.
+    /// Function to open the data store for writing.
     /// </summary>
-    public interface IGorgonLogProvider
-    {
-        /// <summary>
-        /// Function to open the data store for writing.
-        /// </summary>
-        /// <param name="initialMessage">[Optional] The initial message to write.</param>
-        void Open(string initialMessage = null);
+    /// <param name="initialMessage">[Optional] The initial message to write.</param>
+    void Open(string initialMessage = null);
 
-        /// <summary>
-        /// Function to write a message to the data store.
-        /// </summary>
-        /// <param name="message">The message to write.</param>
-        void SendMessage(string message);
+    /// <summary>
+    /// Function to write a message to the data store.
+    /// </summary>
+    /// <param name="message">The message to write.</param>
+    void SendMessage(string message);
 
-        /// <summary>
-        /// Function to close the data store for writing.
-        /// </summary>
-        /// <param name="closingMessage">[Optional] The message to write when closing.</param>
-        void Close(string closingMessage = null);
-    }
+    /// <summary>
+    /// Function to close the data store for writing.
+    /// </summary>
+    /// <param name="closingMessage">[Optional] The message to write when closing.</param>
+    void Close(string closingMessage = null);
 }

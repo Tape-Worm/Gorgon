@@ -26,53 +26,52 @@
 
 using Gorgon.Editor.UI;
 
-namespace Gorgon.Editor.FontEditor
+namespace Gorgon.Editor.FontEditor;
+
+/// <summary>
+/// The view model for the settings for the text content editor.
+/// </summary>
+internal class Settings
+    : SettingsCategoryBase<SettingsParameters>, ISettings
 {
-    /// <summary>
-    /// The view model for the settings for the text content editor.
-    /// </summary>
-    internal class Settings
-        : SettingsCategoryBase<SettingsParameters>, ISettings
+    #region Variables.
+    // The settings data for the plug in.
+    private FontEditorSettings _settings;
+    #endregion
+
+    #region Properties.
+    /// <summary>Property to set or return the default font face.</summary>
+    public string DefaultFont
     {
-        #region Variables.
-        // The settings data for the plug in.
-        private FontEditorSettings _settings;
-        #endregion
-
-        #region Properties.
-        /// <summary>Property to set or return the default font face.</summary>
-        public string DefaultFont
+        get => _settings.DefaultFont;
+        set
         {
-            get => _settings.DefaultFont;
-            set
+            if (_settings.DefaultFont == value)
             {
-                if (_settings.DefaultFont == value)
-                {
-                    return;
-                }
-
-                OnPropertyChanging();
-                _settings.DefaultFont = value;
-                OnPropertyChanged();
+                return;
             }
-        }        
 
-        /// <summary>Property to return the name of this object.</summary>
-        public override string Name => "Example Plug in - Text Content";
-        #endregion
+            OnPropertyChanging();
+            _settings.DefaultFont = value;
+            OnPropertyChanged();
+        }
+    }        
 
-        #region Methods.
-        /// <summary>Function to inject dependencies for the view model.</summary>
-        /// <param name="injectionParameters">The parameters to inject.</param>
-        /// <remarks>
-        ///   <para>
-        /// Applications should call this when setting up the view model for complex operations and/or dependency injection. The constructor should only be used for simple set up and initialization of objects.
-        /// </para>
-        ///   <para>
-        /// This method is only ever called after the view model has been created, and never again during the lifetime of the view model.
-        /// </para>
-        /// </remarks>
-        protected override void OnInitialize(SettingsParameters injectionParameters) => _settings = injectionParameters.Settings;
-        #endregion
-    }
+    /// <summary>Property to return the name of this object.</summary>
+    public override string Name => "Example Plug in - Text Content";
+    #endregion
+
+    #region Methods.
+    /// <summary>Function to inject dependencies for the view model.</summary>
+    /// <param name="injectionParameters">The parameters to inject.</param>
+    /// <remarks>
+    ///   <para>
+    /// Applications should call this when setting up the view model for complex operations and/or dependency injection. The constructor should only be used for simple set up and initialization of objects.
+    /// </para>
+    ///   <para>
+    /// This method is only ever called after the view model has been created, and never again during the lifetime of the view model.
+    /// </para>
+    /// </remarks>
+    protected override void OnInitialize(SettingsParameters injectionParameters) => _settings = injectionParameters.Settings;
+    #endregion
 }

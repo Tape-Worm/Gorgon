@@ -27,92 +27,91 @@
 using System;
 using Gorgon.Diagnostics.LogProviders;
 
-namespace Gorgon.Diagnostics
+namespace Gorgon.Diagnostics;
+
+/// <summary>
+/// Enumeration containing the logging levels.
+/// </summary>
+public enum LoggingLevel
 {
+    /// <summary>This will disable the log file.</summary>
+    NoLogging = 0,
+    /// <summary>This will only pass messages marked as simple.</summary>
+    Simple = 1,
+    /// <summary>This will only pass messages marked as intermediate.</summary>
+    Intermediate = 2,
+    /// <summary>This will only pass messages marked as verbose.</summary>
+    Verbose = 3,
+    /// <summary>This will print all messages regardless of level.</summary>
+    All = 4
+}
+
+/// <summary>
+/// Provides logging functionality for an application.
+/// </summary>
+/// <remarks>
+/// <para>
+/// This object will send logging information to a logging data source. This could be a text file, XML document, a database, etc... 
+/// </para>
+/// </remarks>
+public interface IGorgonLog
+{
+    #region Properties.
     /// <summary>
-    /// Enumeration containing the logging levels.
+    /// Property to return the provider for this log.
     /// </summary>
-    public enum LoggingLevel
+	    IGorgonLogProvider Provider
     {
-        /// <summary>This will disable the log file.</summary>
-        NoLogging = 0,
-        /// <summary>This will only pass messages marked as simple.</summary>
-        Simple = 1,
-        /// <summary>This will only pass messages marked as intermediate.</summary>
-        Intermediate = 2,
-        /// <summary>This will only pass messages marked as verbose.</summary>
-        Verbose = 3,
-        /// <summary>This will print all messages regardless of level.</summary>
-        All = 4
+        get;
     }
 
     /// <summary>
-    /// Provides logging functionality for an application.
+    /// Property to set or return the filtering level of this log.
     /// </summary>
-    /// <remarks>
-    /// <para>
-    /// This object will send logging information to a logging data source. This could be a text file, XML document, a database, etc... 
-    /// </para>
-    /// </remarks>
-    public interface IGorgonLog
+    LoggingLevel LogFilterLevel
     {
-        #region Properties.
-        /// <summary>
-        /// Property to return the provider for this log.
-        /// </summary>
-	    IGorgonLogProvider Provider
-        {
-            get;
-        }
+        get;
+        set;
+    }
 
-        /// <summary>
-        /// Property to set or return the filtering level of this log.
-        /// </summary>
-        LoggingLevel LogFilterLevel
-        {
-            get;
-            set;
-        }
+    /// <summary>
+    /// Property to return the name of the application that is being logged.
+    /// </summary>
+    string LogApplication
+    {
+        get;
+    }
+    #endregion
 
-        /// <summary>
-        /// Property to return the name of the application that is being logged.
-        /// </summary>
-        string LogApplication
-        {
-            get;
-        }
-        #endregion
-
-        #region Methods.
-        /// <summary>
-        /// Function to perform any one time inital logging.
-        /// </summary>
+    #region Methods.
+    /// <summary>
+    /// Function to perform any one time inital logging.
+    /// </summary>
 	    void LogStart();
 
-        /// <summary>
-        /// Function to perform any one time final logging.
-        /// </summary>
+    /// <summary>
+    /// Function to perform any one time final logging.
+    /// </summary>
 	    void LogEnd();
 
-        /// <summary>
-        /// Function to send an exception to the log.
-        /// </summary>
-        /// <param name="ex">The exception to log.</param>
-        /// <remarks>
-        /// <para>
-        /// If the <see cref="GorgonLog.LogFilterLevel"/> is set to <c>LoggingLevel.NoLogging</c>, then the exception will not be logged. If the filter is set to any other setting, it will be logged 
-        /// regardless of filter level.
-        /// </para>
-        /// </remarks>
-        void LogException(Exception ex);
+    /// <summary>
+    /// Function to send an exception to the log.
+    /// </summary>
+    /// <param name="ex">The exception to log.</param>
+    /// <remarks>
+    /// <para>
+    /// If the <see cref="GorgonLog.LogFilterLevel"/> is set to <c>LoggingLevel.NoLogging</c>, then the exception will not be logged. If the filter is set to any other setting, it will be logged 
+    /// regardless of filter level.
+    /// </para>
+    /// </remarks>
+    void LogException(Exception ex);
 
-        /// <summary>
-        /// Function to print a formatted line of text to the log.
-        /// </summary>
-        /// <param name="formatSpecifier">Format specifier for the line.</param>
-        /// <param name="level">Level that this message falls under.</param>
-        /// <param name="arguments">List of optional arguments.</param>
-        void Print(string formatSpecifier, LoggingLevel level, params object[] arguments);
-        #endregion
-    }
+    /// <summary>
+    /// Function to print a formatted line of text to the log.
+    /// </summary>
+    /// <param name="formatSpecifier">Format specifier for the line.</param>
+    /// <param name="level">Level that this message falls under.</param>
+    /// <param name="arguments">List of optional arguments.</param>
+    void Print(string formatSpecifier, LoggingLevel level, params object[] arguments);
+    #endregion
 }

@@ -28,83 +28,82 @@ using System;
 using System.IO;
 using System.Threading;
 
-namespace Gorgon.IO
+namespace Gorgon.IO;
+
+/// <summary>
+/// A file stream writer that will update the virtual file information when it closes.
+/// </summary>
+internal class FileSystemWriteStream
+    : FileStream
 {
+    #region Variables.
+    // The length of the stream, in bytes.
+    private long _length;
+    // Flag to indicate that the stream is disposed.
+    private int _disposed;
+    #endregion
+
+    #region Properties.
+    /// <summary>Gets the length in bytes of the stream.</summary>
+    public override long Length => (_disposed == 0) ? base.Length : _length;
+
     /// <summary>
-    /// A file stream writer that will update the virtual file information when it closes.
+    /// Property to set or return the callback to execute once the stream is closed.
     /// </summary>
-    internal class FileSystemWriteStream
-        : FileStream
+    public Action<FileStream> OnCloseCallback
     {
-        #region Variables.
-        // The length of the stream, in bytes.
-        private long _length;
-        // Flag to indicate that the stream is disposed.
-        private int _disposed;
-        #endregion
-
-        #region Properties.
-        /// <summary>Gets the length in bytes of the stream.</summary>
-        public override long Length => (_disposed == 0) ? base.Length : _length;
-
-        /// <summary>
-        /// Property to set or return the callback to execute once the stream is closed.
-        /// </summary>
-        public Action<FileStream> OnCloseCallback
-        {
-            get;
-            set;
-        }
-        #endregion
-
-        #region Methods.
-        /// <summary>
-        /// Releases the unmanaged resources used by the <see cref="FileStream"/> and optionally releases the managed resources.
-        /// </summary>
-        /// <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources. </param>
-        protected override void Dispose(bool disposing)
-        {
-            try
-            {
-                if (disposing)
-                {
-                    if (Interlocked.Exchange(ref _disposed, 1) == 1)
-                    {
-                        base.Dispose(disposing);
-                        return;
-                    }
-
-                    Interlocked.Exchange(ref _length, Length);
-                }
-
-                base.Dispose(disposing);
-
-                if (disposing)
-                {                    
-                    OnCloseCallback?.Invoke(this);
-                }
-            }
-            finally
-            {
-                // Always unhook the callback to avoid leakage.
-                OnCloseCallback = null;
-            }
-        }
-        #endregion
-
-        #region Constructor/Finalizer.
-        /// <summary>
-        /// Initializes a new instance of the <see cref="FileSystemWriteStream"/> class.
-        /// </summary>
-        /// <param name="writePath">The path to the writable file.</param>
-        /// <param name="fileMode">The file mode to use to open the file.</param>
-        public FileSystemWriteStream(string writePath, FileMode fileMode)
-            : base(writePath,
-                   fileMode,
-                   fileMode == FileMode.Open ? FileAccess.Read : fileMode == FileMode.OpenOrCreate ? FileAccess.ReadWrite : FileAccess.Write,
-                   fileMode == FileMode.Open ? FileShare.Read : FileShare.None)
-        {
-        }
-        #endregion
+        get;
+        set;
     }
+    #endregion
+
+    #region Methods.
+    /// <summary>
+    /// Releases the unmanaged resources used by the <see cref="FileStream"/> and optionally releases the managed resources.
+    /// </summary>
+    /// <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources. </param>
+    protected override void Dispose(bool disposing)
+    {
+        try
+        {
+            if (disposing)
+            {
+                if (Interlocked.Exchange(ref _disposed, 1) == 1)
+                {
+                    base.Dispose(disposing);
+                    return;
+                }
+
+                Interlocked.Exchange(ref _length, Length);
+            }
+
+            base.Dispose(disposing);
+
+            if (disposing)
+            {                    
+                OnCloseCallback?.Invoke(this);
+            }
+        }
+        finally
+        {
+            // Always unhook the callback to avoid leakage.
+            OnCloseCallback = null;
+        }
+    }
+    #endregion
+
+    #region Constructor/Finalizer.
+    /// <summary>
+    /// Initializes a new instance of the <see cref="FileSystemWriteStream"/> class.
+    /// </summary>
+    /// <param name="writePath">The path to the writable file.</param>
+    /// <param name="fileMode">The file mode to use to open the file.</param>
+    public FileSystemWriteStream(string writePath, FileMode fileMode)
+        : base(writePath,
+               fileMode,
+               fileMode == FileMode.Open ? FileAccess.Read : fileMode == FileMode.OpenOrCreate ? FileAccess.ReadWrite : FileAccess.Write,
+               fileMode == FileMode.Open ? FileShare.Read : FileShare.None)
+    {
+    }
+    #endregion
 }

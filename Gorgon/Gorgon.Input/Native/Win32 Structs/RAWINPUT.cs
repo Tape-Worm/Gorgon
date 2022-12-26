@@ -27,31 +27,30 @@
 using System.Runtime.InteropServices;
 
 // ReSharper disable InconsistentNaming
-namespace Gorgon.Native
-{
-    /// <summary>
-    /// Value type for raw input.
-    /// </summary>
-    [StructLayout(LayoutKind.Sequential)]
-    internal struct RAWINPUT
-    {
-        /// <summary>Header for the data.</summary>
-        public RAWINPUTHEADER Header;
-        /// <summary>Union containing device data.</summary>
-        public RAWINPUT_UNION Union;
-    }
+namespace Gorgon.Native;
 
-    [StructLayout(LayoutKind.Explicit)]
-    internal struct RAWINPUT_UNION
-    {
-        /// <summary>Mouse raw input data.</summary>
-        [FieldOffset(0)]
-        public RAWINPUTMOUSE Mouse;
-        /// <summary>Keyboard raw input data.</summary>
-        [FieldOffset(0)]
-        public RAWINPUTKEYBOARD Keyboard;
-        /// <summary>HID raw input data.</summary>
-        [FieldOffset(0)]
-        public RAWINPUTHID HID;
-    }
+/// <summary>
+/// Value type for raw input.
+/// </summary>
+[StructLayout(LayoutKind.Sequential)]
+internal struct RAWINPUT
+{
+    /// <summary>Header for the data.</summary>
+    public RAWINPUTHEADER Header;
+    /// <summary>Union containing device data.</summary>
+    public RAWINPUT_UNION Union;
+}
+
+[StructLayout(LayoutKind.Explicit)]
+internal struct RAWINPUT_UNION
+{
+    /// <summary>Mouse raw input data.</summary>
+    [FieldOffset(0)]
+    public RAWINPUTMOUSE Mouse;
+    /// <summary>Keyboard raw input data.</summary>
+    [FieldOffset(0)]
+    public RAWINPUTKEYBOARD Keyboard;
+    /// <summary>HID raw input data.</summary>
+    [FieldOffset(0)]
+    public RAWINPUTHID HID;
 }

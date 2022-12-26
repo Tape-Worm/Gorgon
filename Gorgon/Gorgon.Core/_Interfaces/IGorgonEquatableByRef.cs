@@ -26,32 +26,31 @@
 
 using System;
 
-namespace Gorgon.Core
+namespace Gorgon.Core;
+
+/// <summary>
+/// Extends the <see cref="IEquatable{T}"/> type to pass by reference.
+/// </summary>	
+/// <typeparam name="T">The type to use for comparison.  Must be a value type.</typeparam>
+/// <remarks>
+/// <para>
+/// This interface extends the <see cref="IEquatable{T}"/> interface to use references in the Equals parameter.  Passing values by reference is much faster than passing by value on the stack 
+/// (if the value is a value type).
+/// </para>
+/// <para>
+/// This is here to optimize passing value types to methods, therefore it is only suitable for value or primitive types.
+/// </para>
+/// </remarks>
+public interface IGorgonEquatableByRef<T>
+    : IEquatable<T>
+    where T : struct
 {
+    #region Methods.
     /// <summary>
-    /// Extends the <see cref="IEquatable{T}"/> type to pass by reference.
-    /// </summary>	
-    /// <typeparam name="T">The type to use for comparison.  Must be a value type.</typeparam>
-    /// <remarks>
-    /// <para>
-    /// This interface extends the <see cref="IEquatable{T}"/> interface to use references in the Equals parameter.  Passing values by reference is much faster than passing by value on the stack 
-    /// (if the value is a value type).
-    /// </para>
-    /// <para>
-    /// This is here to optimize passing value types to methods, therefore it is only suitable for value or primitive types.
-    /// </para>
-    /// </remarks>
-    public interface IGorgonEquatableByRef<T>
-        : IEquatable<T>
-        where T : struct
-    {
-        #region Methods.
-        /// <summary>
-        /// Function to compare this instance with another.
-        /// </summary>
-        /// <param name="other">The other instance to use for comparison.</param>
-        /// <returns><b>true</b> if equal, <b>false</b> if not.</returns>
-        bool Equals(in T other);
-        #endregion
-    }
+    /// Function to compare this instance with another.
+    /// </summary>
+    /// <param name="other">The other instance to use for comparison.</param>
+    /// <returns><b>true</b> if equal, <b>false</b> if not.</returns>
+    bool Equals(in T other);
+    #endregion
 }

@@ -31,170 +31,169 @@ using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Newtonsoft.Json;
 
-namespace Gorgon.IO
+namespace Gorgon.IO;
+
+/// <summary>
+/// A converter used to convert a texture sampler to and from a string.
+/// </summary>
+internal class JsonSamplerConverter
+    : JsonConverter<GorgonSamplerState>
 {
-    /// <summary>
-    /// A converter used to convert a texture sampler to and from a string.
-    /// </summary>
-    internal class JsonSamplerConverter
-        : JsonConverter<GorgonSamplerState>
+    // The graphics object to use for resource look up.
+    private readonly GorgonGraphics _graphics;
+    // The property names for the object.
+    private readonly HashSet<string> _propNames = new(StringComparer.Ordinal)
+                                                  {
+                                                      "borderColor",
+                                                      "compareFunc",
+                                                      "filter",
+                                                      "maxAnisotropy",
+                                                      "maxLod",
+                                                      "minLod",
+                                                      "mipLodBias",
+                                                      "wrapU",
+                                                      "wrapV",
+                                                      "wrapW"
+                                                  };
+
+    /// <summary>Writes the JSON representation of the object.</summary>
+    /// <param name="writer">The <see cref="JsonWriter" /> to write to.</param>
+    /// <param name="value">The value.</param>
+    /// <param name="serializer">The calling serializer.</param>
+    public override void WriteJson(JsonWriter writer, GorgonSamplerState value, JsonSerializer serializer)
     {
-        // The graphics object to use for resource look up.
-        private readonly GorgonGraphics _graphics;
-        // The property names for the object.
-        private readonly HashSet<string> _propNames = new(StringComparer.Ordinal)
-                                                      {
-                                                          "borderColor",
-                                                          "compareFunc",
-                                                          "filter",
-                                                          "maxAnisotropy",
-                                                          "maxLod",
-                                                          "minLod",
-                                                          "mipLodBias",
-                                                          "wrapU",
-                                                          "wrapV",
-                                                          "wrapW"
-                                                      };
-
-        /// <summary>Writes the JSON representation of the object.</summary>
-        /// <param name="writer">The <see cref="JsonWriter" /> to write to.</param>
-        /// <param name="value">The value.</param>
-        /// <param name="serializer">The calling serializer.</param>
-        public override void WriteJson(JsonWriter writer, GorgonSamplerState value, JsonSerializer serializer)
+        if (value is null)
         {
-            if (value is null)
-            {
-                writer.WriteNull();
-                return;
-            }
-
-            writer.WriteStartObject();
-
-            foreach (string propName in _propNames)
-            {
-                writer.WritePropertyName(propName);
-                switch (propName)
-                {
-                    case "borderColor":
-                        writer.WriteValue(value.BorderColor.ToARGB());
-                        break;
-                    case "compareFunc":
-                        writer.WriteValue(value.ComparisonFunction);
-                        break;
-                    case "filter":
-                        writer.WriteValue(value.Filter);
-                        break;
-                    case "maxAnisotropy":
-                        writer.WriteValue(value.MaxAnisotropy);
-                        break;
-                    case "maxLod":
-                        writer.WriteValue(value.MaximumLevelOfDetail);
-                        break;
-                    case "minLod":
-                        writer.WriteValue(value.MinimumLevelOfDetail);
-                        break;
-                    case "mipLodBias":
-                        writer.WriteValue(value.MipLevelOfDetailBias);
-                        break;
-                    case "wrapU":
-                        writer.WriteValue(value.WrapU);
-                        break;
-                    case "wrapV":
-                        writer.WriteValue(value.WrapV);
-                        break;
-                    case "wrapW":
-                        writer.WriteValue(value.WrapW);
-                        break;
-                    default:
-                        throw new GorgonException(GorgonResult.CannotWrite, $@"Unknown property name {propName}.");
-                }
-            }
-
-            writer.WriteEndObject();
+            writer.WriteNull();
+            return;
         }
 
-        /// <summary>Reads the JSON representation of the object.</summary>
-        /// <param name="reader">The <see cref="JsonReader" /> to read from.</param>
-        /// <param name="objectType">Type of the object.</param>
-        /// <param name="existingValue">The existing value of object being read. If there is no existing value then <c>null</c> will be used.</param>
-        /// <param name="hasExistingValue">The existing value has a value.</param>
-        /// <param name="serializer">The calling serializer.</param>
-        /// <returns>The object value.</returns>
-        public override GorgonSamplerState ReadJson(JsonReader reader, Type objectType, GorgonSamplerState existingValue, bool hasExistingValue, JsonSerializer serializer)
+        writer.WriteStartObject();
+
+        foreach (string propName in _propNames)
         {
-            if ((reader.TokenType != JsonToken.StartObject)
-                || (_graphics is null))
+            writer.WritePropertyName(propName);
+            switch (propName)
             {
-                return null;
+                case "borderColor":
+                    writer.WriteValue(value.BorderColor.ToARGB());
+                    break;
+                case "compareFunc":
+                    writer.WriteValue(value.ComparisonFunction);
+                    break;
+                case "filter":
+                    writer.WriteValue(value.Filter);
+                    break;
+                case "maxAnisotropy":
+                    writer.WriteValue(value.MaxAnisotropy);
+                    break;
+                case "maxLod":
+                    writer.WriteValue(value.MaximumLevelOfDetail);
+                    break;
+                case "minLod":
+                    writer.WriteValue(value.MinimumLevelOfDetail);
+                    break;
+                case "mipLodBias":
+                    writer.WriteValue(value.MipLevelOfDetailBias);
+                    break;
+                case "wrapU":
+                    writer.WriteValue(value.WrapU);
+                    break;
+                case "wrapV":
+                    writer.WriteValue(value.WrapV);
+                    break;
+                case "wrapW":
+                    writer.WriteValue(value.WrapW);
+                    break;
+                default:
+                    throw new GorgonException(GorgonResult.CannotWrite, $@"Unknown property name {propName}.");
             }
-
-            GorgonColor? borderColor = null;
-            Comparison? compareFunction = null;
-            SampleFilter? filter = null;
-            int? maxAnisotropy = null;
-            float? maxLod = null;
-            float? minLod = null;
-            float? mipLodBias = null;
-            TextureWrap? wrapU = null;
-            TextureWrap? wrapV = null;
-            TextureWrap? wrapW = null;
-
-            var builder = new GorgonSamplerStateBuilder(_graphics);
-
-            while ((reader.Read()) && (reader.TokenType != JsonToken.EndObject))
-            {
-                if (reader.TokenType != JsonToken.PropertyName)
-                {
-                    continue;
-                }
-
-                switch (reader.Value.ToString())
-                {
-                    case "borderColor":
-                        borderColor = reader.ReadAsInt32();
-                        break;
-                    case "compareFunc":
-                        compareFunction = (Comparison?)reader.ReadAsInt32();
-                        break;
-                    case "filter":
-                        filter = (SampleFilter?)reader.ReadAsInt32();
-                        break;
-                    case "maxAnisotropy":
-                        maxAnisotropy = reader.ReadAsInt32();
-                        break;
-                    case "maxLod":
-                        maxLod = (float?)reader.ReadAsDouble();
-                        break;
-                    case "minLod":
-                        minLod = (float?)reader.ReadAsDouble();
-                        break;
-                    case "mipLodBias":
-                        mipLodBias = (float?)reader.ReadAsDouble();
-                        break;
-                    case "wrapU":
-                        wrapU = (TextureWrap?)reader.ReadAsInt32();
-                        break;
-                    case "wrapV":
-                        wrapV = (TextureWrap?)reader.ReadAsInt32();
-                        break;
-                    case "wrapW":
-                        wrapW = (TextureWrap?)reader.ReadAsInt32();
-                        break;
-                }
-            }
-
-            return builder.Wrapping(wrapU, wrapV, wrapW, borderColor)
-                          .MaxAnisotropy(maxAnisotropy ?? 1)
-                          .ComparisonFunction(compareFunction ?? Comparison.Never)
-                          .Filter(filter ?? SampleFilter.MinMagMipLinear)
-                          .MipLevelOfDetail(minLod ?? float.MinValue, maxLod ?? float.MaxValue, mipLodBias ?? 0)
-                          .Build();
         }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="JsonSamplerConverter"/> class.
-        /// </summary>
-        /// <param name="graphics">The graphics interface used for resource look up.</param>
-        public JsonSamplerConverter(GorgonGraphics graphics) => _graphics = graphics;
+        writer.WriteEndObject();
     }
+
+    /// <summary>Reads the JSON representation of the object.</summary>
+    /// <param name="reader">The <see cref="JsonReader" /> to read from.</param>
+    /// <param name="objectType">Type of the object.</param>
+    /// <param name="existingValue">The existing value of object being read. If there is no existing value then <c>null</c> will be used.</param>
+    /// <param name="hasExistingValue">The existing value has a value.</param>
+    /// <param name="serializer">The calling serializer.</param>
+    /// <returns>The object value.</returns>
+    public override GorgonSamplerState ReadJson(JsonReader reader, Type objectType, GorgonSamplerState existingValue, bool hasExistingValue, JsonSerializer serializer)
+    {
+        if ((reader.TokenType != JsonToken.StartObject)
+            || (_graphics is null))
+        {
+            return null;
+        }
+
+        GorgonColor? borderColor = null;
+        Comparison? compareFunction = null;
+        SampleFilter? filter = null;
+        int? maxAnisotropy = null;
+        float? maxLod = null;
+        float? minLod = null;
+        float? mipLodBias = null;
+        TextureWrap? wrapU = null;
+        TextureWrap? wrapV = null;
+        TextureWrap? wrapW = null;
+
+        var builder = new GorgonSamplerStateBuilder(_graphics);
+
+        while ((reader.Read()) && (reader.TokenType != JsonToken.EndObject))
+        {
+            if (reader.TokenType != JsonToken.PropertyName)
+            {
+                continue;
+            }
+
+            switch (reader.Value.ToString())
+            {
+                case "borderColor":
+                    borderColor = reader.ReadAsInt32();
+                    break;
+                case "compareFunc":
+                    compareFunction = (Comparison?)reader.ReadAsInt32();
+                    break;
+                case "filter":
+                    filter = (SampleFilter?)reader.ReadAsInt32();
+                    break;
+                case "maxAnisotropy":
+                    maxAnisotropy = reader.ReadAsInt32();
+                    break;
+                case "maxLod":
+                    maxLod = (float?)reader.ReadAsDouble();
+                    break;
+                case "minLod":
+                    minLod = (float?)reader.ReadAsDouble();
+                    break;
+                case "mipLodBias":
+                    mipLodBias = (float?)reader.ReadAsDouble();
+                    break;
+                case "wrapU":
+                    wrapU = (TextureWrap?)reader.ReadAsInt32();
+                    break;
+                case "wrapV":
+                    wrapV = (TextureWrap?)reader.ReadAsInt32();
+                    break;
+                case "wrapW":
+                    wrapW = (TextureWrap?)reader.ReadAsInt32();
+                    break;
+            }
+        }
+
+        return builder.Wrapping(wrapU, wrapV, wrapW, borderColor)
+                      .MaxAnisotropy(maxAnisotropy ?? 1)
+                      .ComparisonFunction(compareFunction ?? Comparison.Never)
+                      .Filter(filter ?? SampleFilter.MinMagMipLinear)
+                      .MipLevelOfDetail(minLod ?? float.MinValue, maxLod ?? float.MaxValue, mipLodBias ?? 0)
+                      .Build();
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="JsonSamplerConverter"/> class.
+    /// </summary>
+    /// <param name="graphics">The graphics interface used for resource look up.</param>
+    public JsonSamplerConverter(GorgonGraphics graphics) => _graphics = graphics;
 }

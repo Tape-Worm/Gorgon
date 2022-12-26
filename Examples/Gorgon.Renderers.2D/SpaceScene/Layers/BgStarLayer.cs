@@ -28,51 +28,50 @@ using Gorgon.Graphics.Core;
 using Gorgon.Renderers;
 using DX = SharpDX;
 
-namespace Gorgon.Examples
+namespace Gorgon.Examples;
+
+/// <summary>
+/// This will represent a 2D layer that renders our background stars.
+/// </summary>
+internal class BgStarLayer
+    : Layer2D
 {
+    #region Properties.
     /// <summary>
-    /// This will represent a 2D layer that renders our background stars.
+    /// Property to set or return the texture used to draw the stars on the background.
     /// </summary>
-    internal class BgStarLayer
-        : Layer2D
+    public GorgonTexture2DView StarsTexture
     {
-        #region Properties.
-        /// <summary>
-        /// Property to set or return the texture used to draw the stars on the background.
-        /// </summary>
-        public GorgonTexture2DView StarsTexture
-        {
-            get;
-            set;
-        }
-        #endregion
-
-        #region Methods.
-        /// <summary>Function called to update items per frame on the layer.</summary>
-        protected sealed override void OnUpdate()
-        {
-            // Since this layer doesn't move, there's nothing to really update.
-        }
-
-        /// <summary>Function used to render data into the layer.</summary>
-        public override void Render()
-        {
-            Renderer.Begin(Gorgon2DBatchState.NoBlend);
-            Blit(StarsTexture,
-                new DX.RectangleF(0, 0, OutputSize.Width / (float)StarsTexture.Width, OutputSize.Height / (float)StarsTexture.Height),
-                GorgonSamplerState.Wrapping);
-            Renderer.End();
-        }
-        #endregion
-
-        #region Constructor/Finalizer.
-        /// <summary>Initializes a new instance of the <see cref="BgStarLayer"/> class.</summary>
-        /// <param name="renderer">The 2D renderer for the application.</param>
-        public BgStarLayer(Gorgon2D renderer)
-            : base(renderer)
-        {
-
-        }
-        #endregion
+        get;
+        set;
     }
+    #endregion
+
+    #region Methods.
+    /// <summary>Function called to update items per frame on the layer.</summary>
+    protected sealed override void OnUpdate()
+    {
+        // Since this layer doesn't move, there's nothing to really update.
+    }
+
+    /// <summary>Function used to render data into the layer.</summary>
+    public override void Render()
+    {
+        Renderer.Begin(Gorgon2DBatchState.NoBlend);
+        Blit(StarsTexture,
+            new DX.RectangleF(0, 0, OutputSize.Width / (float)StarsTexture.Width, OutputSize.Height / (float)StarsTexture.Height),
+            GorgonSamplerState.Wrapping);
+        Renderer.End();
+    }
+    #endregion
+
+    #region Constructor/Finalizer.
+    /// <summary>Initializes a new instance of the <see cref="BgStarLayer"/> class.</summary>
+    /// <param name="renderer">The 2D renderer for the application.</param>
+    public BgStarLayer(Gorgon2D renderer)
+        : base(renderer)
+    {
+
+    }
+    #endregion
 }

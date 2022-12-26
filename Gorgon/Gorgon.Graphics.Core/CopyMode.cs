@@ -26,24 +26,23 @@
 
 using D3D11 = SharpDX.Direct3D11;
 
-namespace Gorgon.Graphics.Core
+namespace Gorgon.Graphics.Core;
+
+/// <summary>
+/// Defines the available modes for copying subresource data.
+/// </summary>
+public enum CopyMode
 {
     /// <summary>
-    /// Defines the available modes for copying subresource data.
+    /// Data is copied into the buffer, overwriting existing data.
     /// </summary>
-    public enum CopyMode
-    {
-        /// <summary>
-        /// Data is copied into the buffer, overwriting existing data.
-        /// </summary>
-        None = 0,
-        /// <summary>
-        /// Data is copied into the buffer, but existing data cannot be overwritten.
-        /// </summary>
-        NoOverwrite = D3D11.CopyFlags.NoOverwrite,
-        /// <summary>
-        /// Data is copied into the buffer, but any existing data is discarded.
-        /// </summary>
-        Discard = D3D11.CopyFlags.Discard
-    }
+    None = 0,
+    /// <summary>
+    /// Data is copied into the buffer, but existing data cannot be overwritten.
+    /// </summary>
+    NoOverwrite = D3D11.CopyFlags.NoOverwrite,
+    /// <summary>
+    /// Data is copied into the buffer, but any existing data is discarded.
+    /// </summary>
+    Discard = D3D11.CopyFlags.Discard
 }

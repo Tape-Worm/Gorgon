@@ -28,37 +28,36 @@ using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
 
-namespace Gorgon.Editor.Views
+namespace Gorgon.Editor.Views;
+
+/// <summary>
+/// Event parameters for the <see cref="DataGridViewEx.RowsDrag"/> event.
+/// </summary>
+internal class RowsDragEventArgs
+    : EventArgs
 {
     /// <summary>
-    /// Event parameters for the <see cref="DataGridViewEx.RowsDrag"/> event.
+    /// Property to return the rows that are being dragged.
     /// </summary>
-    internal class RowsDragEventArgs
-        : EventArgs
+    public IReadOnlyList<DataGridViewRow> DraggedRows
     {
-        /// <summary>
-        /// Property to return the rows that are being dragged.
-        /// </summary>
-        public IReadOnlyList<DataGridViewRow> DraggedRows
-        {
-            get;
-        }
+        get;
+    }
 
-        /// <summary>
-        /// Property to return the mouse buttons that were pressed while dragging.
-        /// </summary>
-        public MouseButtons MouseButtons
-        {
-            get;
-        }
+    /// <summary>
+    /// Property to return the mouse buttons that were pressed while dragging.
+    /// </summary>
+    public MouseButtons MouseButtons
+    {
+        get;
+    }
 
-        /// <summary>Initializes a new instance of the <see cref="RowsDragEventArgs"/> class.</summary>
-        /// <param name="dragRows">The rows being dragged.</param>
-        /// <param name="mouseButtons">The mouse buttons that were pressed while dragging.</param>
-        public RowsDragEventArgs(IReadOnlyList<DataGridViewRow> dragRows, MouseButtons mouseButtons)
-        {
-            DraggedRows = dragRows;
-            MouseButtons = mouseButtons;
-        }
+    /// <summary>Initializes a new instance of the <see cref="RowsDragEventArgs"/> class.</summary>
+    /// <param name="dragRows">The rows being dragged.</param>
+    /// <param name="mouseButtons">The mouse buttons that were pressed while dragging.</param>
+    public RowsDragEventArgs(IReadOnlyList<DataGridViewRow> dragRows, MouseButtons mouseButtons)
+    {
+        DraggedRows = dragRows;
+        MouseButtons = mouseButtons;
     }
 }

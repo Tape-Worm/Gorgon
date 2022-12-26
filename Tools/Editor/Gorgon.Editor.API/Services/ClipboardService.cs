@@ -28,107 +28,106 @@ using System;
 using Gorgon.Core;
 using Gorgon.Editor.Properties;
 
-namespace Gorgon.Editor.Services
+namespace Gorgon.Editor.Services;
+
+/// <summary>
+/// The clipboard service used to assign or retrieve data from the internal clipboard.
+/// </summary>
+public class ClipboardService
+    : IClipboardService
 {
+    #region Variables.
+    // The data stored on the clipboard.
+    private object _data;
+    #endregion
+
+    #region Properties.
     /// <summary>
-    /// The clipboard service used to assign or retrieve data from the internal clipboard.
+    /// Property to return whether or not there is data on the clipboard.
     /// </summary>
-    public class ClipboardService
-        : IClipboardService
+    public bool HasData => _data is not null;
+    #endregion
+
+    #region Methods.
+    /// <summary>
+    /// Function to return the data from the clipboard as the specified type.
+    /// </summary>
+    /// <typeparam name="T">The type of data to retrieve.</typeparam>
+    /// <returns>The data as the specified type.</returns>
+    /// <exception cref="GorgonException">Thrown if there is no data, or no data of type <typeparamref name="T"/> on the clipboard.</exception>
+    /// <remarks>
+    /// <para>
+    /// If there is no data of the specified type on the clipboard, then this method will throw an exception. Check for data of the specified type using the <see cref="IsType{T}"/> method prior to 
+    /// calling this method.
+    /// </para>
+    /// </remarks>
+    public T GetData<T>()
     {
-        #region Variables.
-        // The data stored on the clipboard.
-        private object _data;
-        #endregion
+        Type type = typeof(T);
 
-        #region Properties.
-        /// <summary>
-        /// Property to return whether or not there is data on the clipboard.
-        /// </summary>
-        public bool HasData => _data is not null;
-        #endregion
-
-        #region Methods.
-        /// <summary>
-        /// Function to return the data from the clipboard as the specified type.
-        /// </summary>
-        /// <typeparam name="T">The type of data to retrieve.</typeparam>
-        /// <returns>The data as the specified type.</returns>
-        /// <exception cref="GorgonException">Thrown if there is no data, or no data of type <typeparamref name="T"/> on the clipboard.</exception>
-        /// <remarks>
-        /// <para>
-        /// If there is no data of the specified type on the clipboard, then this method will throw an exception. Check for data of the specified type using the <see cref="IsType{T}"/> method prior to 
-        /// calling this method.
-        /// </para>
-        /// </remarks>
-        public T GetData<T>()
+        if (_data is null)
         {
-            Type type = typeof(T);
-
-            if (_data is null)
-            {
-                throw new GorgonException(GorgonResult.CannotRead, string.Format(Resources.GOREDIT_ERR_CLIPBOARD_NO_DATA_OF_TYPE, type.FullName));
-            }
-
-            Type objectType = _data.GetType();
-
-            return (type != objectType)
-                && (!type.IsInstanceOfType(_data))
-                && (!type.IsAssignableFrom(objectType))
-                && (!objectType.IsAssignableFrom(type))
-                && (!type.IsSubclassOf(objectType))
-                && (!objectType.IsSubclassOf(type))
-                ? throw new GorgonException(GorgonResult.CannotRead, string.Format(Resources.GOREDIT_ERR_CLIPBOARD_NO_DATA_OF_TYPE, type.FullName))
-                : (T)_data;
+            throw new GorgonException(GorgonResult.CannotRead, string.Format(Resources.GOREDIT_ERR_CLIPBOARD_NO_DATA_OF_TYPE, type.FullName));
         }
 
-        /// <summary>
-        /// Function to clear the clipboard contents.
-        /// </summary>
-        public void Clear() => _data = null;
+        Type objectType = _data.GetType();
 
-        /// <summary>
-        /// Function to return whether or not the data on the clipboard is of the type specified.
-        /// </summary>
-        /// <typeparam name="T">The type to check.</typeparam>
-        /// <returns><b>true</b> if the data is of the type specified, <b>false</b> if not.</returns>
-        /// <remarks>
-        /// <para>
-        /// If there is no data on the clipboard, then this will always return <b>false</b>.
-        /// </para>
-        /// </remarks>
-        public bool IsType<T>()
-        {
-            Type type = typeof(T);
-
-            if (_data is null)
-            {
-                return false;
-            }
-
-            Type objectType = _data.GetType();
-
-            return ((type == objectType)
-                || (type.IsInstanceOfType(_data))
-                || (type.IsAssignableFrom(objectType))
-                || (objectType.IsAssignableFrom(type))
-                || (type.IsSubclassOf(objectType))
-                || (objectType.IsSubclassOf(type)));
-        }
-
-        /// <summary>
-        /// Function to place an item on the clipboard for copying.
-        /// </summary>
-        /// <param name="item">The item to copy.</param>
-        public void CopyItem(object item)
-        {
-            if (item is null)
-            {
-                return;
-            }
-
-            _data = item;
-        }
-        #endregion
+        return (type != objectType)
+            && (!type.IsInstanceOfType(_data))
+            && (!type.IsAssignableFrom(objectType))
+            && (!objectType.IsAssignableFrom(type))
+            && (!type.IsSubclassOf(objectType))
+            && (!objectType.IsSubclassOf(type))
+            ? throw new GorgonException(GorgonResult.CannotRead, string.Format(Resources.GOREDIT_ERR_CLIPBOARD_NO_DATA_OF_TYPE, type.FullName))
+            : (T)_data;
     }
+
+    /// <summary>
+    /// Function to clear the clipboard contents.
+    /// </summary>
+    public void Clear() => _data = null;
+
+    /// <summary>
+    /// Function to return whether or not the data on the clipboard is of the type specified.
+    /// </summary>
+    /// <typeparam name="T">The type to check.</typeparam>
+    /// <returns><b>true</b> if the data is of the type specified, <b>false</b> if not.</returns>
+    /// <remarks>
+    /// <para>
+    /// If there is no data on the clipboard, then this will always return <b>false</b>.
+    /// </para>
+    /// </remarks>
+    public bool IsType<T>()
+    {
+        Type type = typeof(T);
+
+        if (_data is null)
+        {
+            return false;
+        }
+
+        Type objectType = _data.GetType();
+
+        return ((type == objectType)
+            || (type.IsInstanceOfType(_data))
+            || (type.IsAssignableFrom(objectType))
+            || (objectType.IsAssignableFrom(type))
+            || (type.IsSubclassOf(objectType))
+            || (objectType.IsSubclassOf(type)));
+    }
+
+    /// <summary>
+    /// Function to place an item on the clipboard for copying.
+    /// </summary>
+    /// <param name="item">The item to copy.</param>
+    public void CopyItem(object item)
+    {
+        if (item is null)
+        {
+            return;
+        }
+
+        _data = item;
+    }
+    #endregion
 }

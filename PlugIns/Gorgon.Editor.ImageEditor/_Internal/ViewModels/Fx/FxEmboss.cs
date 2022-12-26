@@ -28,56 +28,55 @@ using System.Linq;
 using Gorgon.Editor.UI;
 using Gorgon.Math;
 
-namespace Gorgon.Editor.ImageEditor
+namespace Gorgon.Editor.ImageEditor;
+
+/// <summary>
+/// The settings view model for the emboss effects.
+/// </summary>
+internal class FxEmboss
+    : HostedPanelViewModelBase<HostedPanelViewModelParameters>, IFxEmboss
 {
-    /// <summary>
-    /// The settings view model for the emboss effects.
-    /// </summary>
-    internal class FxEmboss
-        : HostedPanelViewModelBase<HostedPanelViewModelParameters>, IFxEmboss
+    #region Variables.
+    // The amount to sharpen.
+    private int _amount = 50;
+    #endregion
+
+    #region Properties.
+    /// <summary>Property to set or return the amount to sharpen.</summary>
+    public int Amount
     {
-        #region Variables.
-        // The amount to sharpen.
-        private int _amount = 50;
-        #endregion
-
-        #region Properties.
-        /// <summary>Property to set or return the amount to sharpen.</summary>
-        public int Amount
+        get => _amount;
+        set
         {
-            get => _amount;
-            set
+            if (_amount == value)
             {
-                if (_amount == value)
-                {
-                    return;
-                }
-
-                _amount = value.Max(0).Max(100);
-                OnPropertyChanging();
-                _amount = value;
-                OnPropertyChanged();
+                return;
             }
-        }
 
-        /// <summary>Property to return whether the panel is modal.</summary>
-        public override bool IsModal => false;
-        #endregion
-
-        #region Methods.
-        /// <summary>Function to inject dependencies for the view model.</summary>
-        /// <param name="injectionParameters">The parameters to inject.</param>
-        /// <remarks>
-        ///   <para>
-        /// Applications should call this when setting up the view model for complex operations and/or dependency injection. The constructor should only be used for simple set up and initialization of objects.
-        /// </para>
-        ///   <para>
-        /// This method is only ever called after the view model has been created, and never again during the lifetime of the view model.
-        /// </para>
-        /// </remarks>
-        protected override void OnInitialize(HostedPanelViewModelParameters injectionParameters)
-        {
+            _amount = value.Max(0).Max(100);
+            OnPropertyChanging();
+            _amount = value;
+            OnPropertyChanged();
         }
-        #endregion
     }
+
+    /// <summary>Property to return whether the panel is modal.</summary>
+    public override bool IsModal => false;
+    #endregion
+
+    #region Methods.
+    /// <summary>Function to inject dependencies for the view model.</summary>
+    /// <param name="injectionParameters">The parameters to inject.</param>
+    /// <remarks>
+    ///   <para>
+    /// Applications should call this when setting up the view model for complex operations and/or dependency injection. The constructor should only be used for simple set up and initialization of objects.
+    /// </para>
+    ///   <para>
+    /// This method is only ever called after the view model has been created, and never again during the lifetime of the view model.
+    /// </para>
+    /// </remarks>
+    protected override void OnInitialize(HostedPanelViewModelParameters injectionParameters)
+    {
+    }
+    #endregion
 }

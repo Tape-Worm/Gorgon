@@ -28,168 +28,167 @@ using System;
 using System.Runtime.InteropServices;
 // ReSharper disable All
 
-namespace Gorgon.Native
+namespace Gorgon.Native;
+
+/// <summary>
+/// IIimageList COM object interface.
+/// </summary>
+[ComImport(),
+ Guid("46EB5926-582E-4017-9FDF-E8998DAA0950"),
+ InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
+internal interface IImageList
 {
-    /// <summary>
-    /// IIimageList COM object interface.
-    /// </summary>
-    [ComImport(),
-     Guid("46EB5926-582E-4017-9FDF-E8998DAA0950"),
-     InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
-    internal interface IImageList
-    {
-        [PreserveSig]
-        int Add(
-            nint hbmImage,
-            nint hbmMask,
-            ref int pi);
+    [PreserveSig]
+    int Add(
+        nint hbmImage,
+        nint hbmMask,
+        ref int pi);
 
-        [PreserveSig]
-        int ReplaceIcon(
-            int i,
-            nint hicon,
-            ref int pi);
+    [PreserveSig]
+    int ReplaceIcon(
+        int i,
+        nint hicon,
+        ref int pi);
 
-        [PreserveSig]
-        int SetOverlayImage(
-            int iImage,
-            int iOverlay);
+    [PreserveSig]
+    int SetOverlayImage(
+        int iImage,
+        int iOverlay);
 
-        [PreserveSig]
-        int Replace(
-            int i,
-            nint hbmImage,
-            nint hbmMask);
+    [PreserveSig]
+    int Replace(
+        int i,
+        nint hbmImage,
+        nint hbmMask);
 
-        [PreserveSig]
-        int AddMasked(
-            nint hbmImage,
-            int crMask,
-            ref int pi);
+    [PreserveSig]
+    int AddMasked(
+        nint hbmImage,
+        int crMask,
+        ref int pi);
 
-        [PreserveSig]
-        int Draw(
-            ref IMAGELISTDRAWPARAMS pimldp);
+    [PreserveSig]
+    int Draw(
+        ref IMAGELISTDRAWPARAMS pimldp);
 
-        [PreserveSig]
-        int Remove(
-            int i);
+    [PreserveSig]
+    int Remove(
+        int i);
 
-        [PreserveSig]
-        int GetIcon(
-            int i,
-            int flags,
-            ref nint picon);
+    [PreserveSig]
+    int GetIcon(
+        int i,
+        int flags,
+        ref nint picon);
 
-        [PreserveSig]
-        int GetImageInfo(
-            int i,
-            ref IMAGEINFO pImageInfo);
+    [PreserveSig]
+    int GetImageInfo(
+        int i,
+        ref IMAGEINFO pImageInfo);
 
-        [PreserveSig]
-        int Copy(
-            int iDst,
-            IImageList punkSrc,
-            int iSrc,
-            int uFlags);
+    [PreserveSig]
+    int Copy(
+        int iDst,
+        IImageList punkSrc,
+        int iSrc,
+        int uFlags);
 
-        [PreserveSig]
-        int Merge(
-            int i1,
-            IImageList punk2,
-            int i2,
-            int dx,
-            int dy,
-            ref Guid riid,
-            ref nint ppv);
+    [PreserveSig]
+    int Merge(
+        int i1,
+        IImageList punk2,
+        int i2,
+        int dx,
+        int dy,
+        ref Guid riid,
+        ref nint ppv);
 
-        [PreserveSig]
-        int Clone(
-            ref Guid riid,
-            ref nint ppv);
+    [PreserveSig]
+    int Clone(
+        ref Guid riid,
+        ref nint ppv);
 
-        [PreserveSig]
-        int GetImageRect(
-            int i,
-            ref RECT prc);
+    [PreserveSig]
+    int GetImageRect(
+        int i,
+        ref RECT prc);
 
-        [PreserveSig]
-        int GetIconSize(
-            ref int cx,
-            ref int cy);
+    [PreserveSig]
+    int GetIconSize(
+        ref int cx,
+        ref int cy);
 
-        [PreserveSig]
-        int SetIconSize(
-            int cx,
-            int cy);
+    [PreserveSig]
+    int SetIconSize(
+        int cx,
+        int cy);
 
-        [PreserveSig]
-        int GetImageCount(
-            ref int pi);
+    [PreserveSig]
+    int GetImageCount(
+        ref int pi);
 
-        [PreserveSig]
-        int SetImageCount(
-            int uNewCount);
+    [PreserveSig]
+    int SetImageCount(
+        int uNewCount);
 
-        [PreserveSig]
-        int SetBkColor(
-            int clrBk,
-            ref int pclr);
+    [PreserveSig]
+    int SetBkColor(
+        int clrBk,
+        ref int pclr);
 
-        [PreserveSig]
-        int GetBkColor(
-            ref int pclr);
+    [PreserveSig]
+    int GetBkColor(
+        ref int pclr);
 
-        [PreserveSig]
-        int BeginDrag(
-            int iTrack,
-            int dxHotspot,
-            int dyHotspot);
+    [PreserveSig]
+    int BeginDrag(
+        int iTrack,
+        int dxHotspot,
+        int dyHotspot);
 
-        [PreserveSig]
-        int EndDrag();
+    [PreserveSig]
+    int EndDrag();
 
-        [PreserveSig]
-        int DragEnter(
-            nint hwndLock,
-            int x,
-            int y);
+    [PreserveSig]
+    int DragEnter(
+        nint hwndLock,
+        int x,
+        int y);
 
-        [PreserveSig]
-        int DragLeave(
-            nint hwndLock);
+    [PreserveSig]
+    int DragLeave(
+        nint hwndLock);
 
-        [PreserveSig]
-        int DragMove(
-            int x,
-            int y);
+    [PreserveSig]
+    int DragMove(
+        int x,
+        int y);
 
-        [PreserveSig]
-        int SetDragCursorImage(
-            ref IImageList punk,
-            int iDrag,
-            int dxHotspot,
-            int dyHotspot);
+    [PreserveSig]
+    int SetDragCursorImage(
+        ref IImageList punk,
+        int iDrag,
+        int dxHotspot,
+        int dyHotspot);
 
-        [PreserveSig]
-        int DragShowNolock(
-            int fShow);
+    [PreserveSig]
+    int DragShowNolock(
+        int fShow);
 
-        [PreserveSig]
-        int GetDragImage(
-            ref POINT ppt,
-            ref POINT pptHotspot,
-            ref Guid riid,
-            ref nint ppv);
+    [PreserveSig]
+    int GetDragImage(
+        ref POINT ppt,
+        ref POINT pptHotspot,
+        ref Guid riid,
+        ref nint ppv);
 
-        [PreserveSig]
-        int GetItemFlags(
-            int i,
-            ref int dwFlags);
+    [PreserveSig]
+    int GetItemFlags(
+        int i,
+        ref int dwFlags);
 
-        [PreserveSig]
-        int GetOverlayImage(
-            int iOverlay,
-            ref int piIndex);
-    };
-}
+    [PreserveSig]
+    int GetOverlayImage(
+        int iOverlay,
+        ref int piIndex);
+};

@@ -26,58 +26,57 @@
 
 using System.Collections.Generic;
 
-namespace Gorgon.Editor.ViewModels
+namespace Gorgon.Editor.ViewModels;
+
+/// <summary>
+/// Extension method(s) for the file system.
+/// </summary>
+internal static class FileSystemExtensions
 {
     /// <summary>
-    /// Extension method(s) for the file system.
+    /// Function to determine if the file can be included in the file system.
     /// </summary>
-    internal static class FileSystemExtensions
+    /// <param name="file">The file to evaluate.</param>
+    /// <returns><b>true</b> if the file can be included, <b>false</b> if not.</returns>
+    /// <remarks>
+    /// <para>
+    /// Only hidden and system files are excluded from the editor file system.
+    /// </para>
+    /// </remarks>
+    public static bool IsValidFile(this System.IO.FileInfo file)
+    {            
+        System.IO.FileAttributes attribs = file.Attributes;
+
+        return (((attribs & System.IO.FileAttributes.Hidden) != System.IO.FileAttributes.Hidden)
+            && ((attribs & System.IO.FileAttributes.System) != System.IO.FileAttributes.System)
+            && ((attribs & System.IO.FileAttributes.Directory) != System.IO.FileAttributes.Directory));
+    }
+
+    /// <summary>
+    /// Function to calculate the total number of bytes for all files under a directory.
+    /// </summary>
+    /// <param name="recursive"><b>true</b> to evaluate all files in all subdirectories, or <b>false</b> to include only this directory.</param>
+    /// <param name="directory">The directory to start from.</param>
+    /// <returns>The total number of bytes.</returns>
+    public static long GetTotalByteCount(this IDirectory directory, bool recursive)
     {
-        /// <summary>
-        /// Function to determine if the file can be included in the file system.
-        /// </summary>
-        /// <param name="file">The file to evaluate.</param>
-        /// <returns><b>true</b> if the file can be included, <b>false</b> if not.</returns>
-        /// <remarks>
-        /// <para>
-        /// Only hidden and system files are excluded from the editor file system.
-        /// </para>
-        /// </remarks>
-        public static bool IsValidFile(this System.IO.FileInfo file)
-        {            
-            System.IO.FileAttributes attribs = file.Attributes;
+        long result = 0;
+        IEnumerable<string> files = System.IO.Directory.EnumerateFiles(directory.PhysicalPath, "*", 
+            recursive ? System.IO.SearchOption.AllDirectories : System.IO.SearchOption.TopDirectoryOnly);
 
-            return (((attribs & System.IO.FileAttributes.Hidden) != System.IO.FileAttributes.Hidden)
-                && ((attribs & System.IO.FileAttributes.System) != System.IO.FileAttributes.System)
-                && ((attribs & System.IO.FileAttributes.Directory) != System.IO.FileAttributes.Directory));
-        }
-
-        /// <summary>
-        /// Function to calculate the total number of bytes for all files under a directory.
-        /// </summary>
-        /// <param name="recursive"><b>true</b> to evaluate all files in all subdirectories, or <b>false</b> to include only this directory.</param>
-        /// <param name="directory">The directory to start from.</param>
-        /// <returns>The total number of bytes.</returns>
-        public static long GetTotalByteCount(this IDirectory directory, bool recursive)
+        foreach (string filePath in files)
         {
-            long result = 0;
-            IEnumerable<string> files = System.IO.Directory.EnumerateFiles(directory.PhysicalPath, "*", 
-                recursive ? System.IO.SearchOption.AllDirectories : System.IO.SearchOption.TopDirectoryOnly);
+            var fileInfo = new System.IO.FileInfo(filePath);
+            System.IO.FileAttributes attribs = fileInfo.Attributes;
 
-            foreach (string filePath in files)
+            if (!IsValidFile(fileInfo))
             {
-                var fileInfo = new System.IO.FileInfo(filePath);
-                System.IO.FileAttributes attribs = fileInfo.Attributes;
-
-                if (!IsValidFile(fileInfo))
-                {
-                    continue;
-                }
-
-                result += fileInfo.Length;
+                continue;
             }
 
-            return result;
+            result += fileInfo.Length;
         }
+
+        return result;
     }
 }

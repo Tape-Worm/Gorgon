@@ -29,92 +29,91 @@ using Gorgon.Animation;
 using Gorgon.Core;
 using Gorgon.Editor.UI;
 
-namespace Gorgon.Editor.AnimationEditor
+namespace Gorgon.Editor.AnimationEditor;
+
+/// <summary>
+/// A view model for an animation track.
+/// </summary>
+internal interface ITrack
+    : IViewModel, IGorgonNamedObject        
 {
     /// <summary>
-    /// A view model for an animation track.
+    /// Property to return the ID for the track registration.
     /// </summary>
-    internal interface ITrack
-        : IViewModel, IGorgonNamedObject        
+    int ID
     {
-        /// <summary>
-        /// Property to return the ID for the track registration.
-        /// </summary>
-        int ID
-        {
-            get;
-        }
+        get;
+    }
 
-        /// <summary>
-        /// Property to return the sprite property updated by this track.
-        /// </summary>
-        TrackSpriteProperty SpriteProperty
-        {
-            get;
-        }
+    /// <summary>
+    /// Property to return the sprite property updated by this track.
+    /// </summary>
+    TrackSpriteProperty SpriteProperty
+    {
+        get;
+    }
 
-        /// <summary>
-        /// Property to return the interpolation mode for the track.
-        /// </summary>
-        TrackInterpolationMode InterpolationMode
-        {
-            get;
-        }
+    /// <summary>
+    /// Property to return the interpolation mode for the track.
+    /// </summary>
+    TrackInterpolationMode InterpolationMode
+    {
+        get;
+    }
 
-        /// <summary>
-        /// Property to return the types of interpolation supported by the track.
-        /// </summary>
-        TrackInterpolationMode InterpolationSupport
-        {
-            get;
-        }
+    /// <summary>
+    /// Property to return the types of interpolation supported by the track.
+    /// </summary>
+    TrackInterpolationMode InterpolationSupport
+    {
+        get;
+    }
 
-        /// <summary>
-        /// Property to return the type of key data for this track.
-        /// </summary>
-        AnimationTrackKeyType KeyType
-        {
-            get;
-        }
+    /// <summary>
+    /// Property to return the type of key data for this track.
+    /// </summary>
+    AnimationTrackKeyType KeyType
+    {
+        get;
+    }
 
-        /// <summary>
-        /// Property to return the friendly track description used for display.
-        /// </summary>
-        string Description
-        {
-            get;
-        }
+    /// <summary>
+    /// Property to return the friendly track description used for display.
+    /// </summary>
+    string Description
+    {
+        get;
+    }
 
-        /// <summary>
-        /// Property to return the list of key frames for the track.
-        /// </summary>
-        IReadOnlyList<IKeyFrame> KeyFrames
-        {
-            get;
-        }
+    /// <summary>
+    /// Property to return the list of key frames for the track.
+    /// </summary>
+    IReadOnlyList<IKeyFrame> KeyFrames
+    {
+        get;
+    }
 
-        /// <summary>
-        /// Property to return the metadata for the type of key in this track.
-        /// </summary>
-        KeyValueMetadata KeyMetadata
-        {
-            get;
-        }
+    /// <summary>
+    /// Property to return the metadata for the type of key in this track.
+    /// </summary>
+    KeyValueMetadata KeyMetadata
+    {
+        get;
+    }
 
-        /// <summary>
-        /// Property to return the command used to assign the interpolation mode for the track.
-        /// </summary>
-        IEditorCommand<TrackInterpolationMode> SetInterpolationModeCommand
-        {
-            get;
-        }
+    /// <summary>
+    /// Property to return the command used to assign the interpolation mode for the track.
+    /// </summary>
+    IEditorCommand<TrackInterpolationMode> SetInterpolationModeCommand
+    {
+        get;
+    }
 
-        /// <summary>
-        /// Property to return the command used to assign a list of key frames to the track.
-        /// </summary>
-        IEditorCommand<SetKeyFramesArgs> SetKeyFramesCommand
-        {
-            get;
-        }
+    /// <summary>
+    /// Property to return the command used to assign a list of key frames to the track.
+    /// </summary>
+    IEditorCommand<SetKeyFramesArgs> SetKeyFramesCommand
+    {
+        get;
     }
 }

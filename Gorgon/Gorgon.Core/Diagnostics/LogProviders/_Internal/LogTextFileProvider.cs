@@ -31,133 +31,132 @@ using System.Text;
 using Gorgon.Core;
 using Gorgon.IO;
 
-namespace Gorgon.Diagnostics.LogProviders
+namespace Gorgon.Diagnostics.LogProviders;
+
+/// <summary>
+/// A provider used to store logging messages to a text file.
+/// </summary>
+internal class LogTextFileProvider
+    : IGorgonLogProvider
 {
+    #region Variables.
+    // The file information for the log file.
+    private readonly FileInfo _filePath;
+    #endregion
+
+    #region Methods.
     /// <summary>
-    /// A provider used to store logging messages to a text file.
+    /// Function to open the data store for writing.
     /// </summary>
-    internal class LogTextFileProvider
-        : IGorgonLogProvider
+    /// <param name="initialMessage">[Optional] The initial message to write.</param>
+    public void Open(string initialMessage = null)
     {
-        #region Variables.
-        // The file information for the log file.
-        private readonly FileInfo _filePath;
-        #endregion
+        StreamWriter stream = null;
 
-        #region Methods.
-        /// <summary>
-        /// Function to open the data store for writing.
-        /// </summary>
-        /// <param name="initialMessage">[Optional] The initial message to write.</param>
-        public void Open(string initialMessage = null)
+        Debug.Assert(_filePath.Directory is not null, $"Directory not found for '{_filePath.FullName}'");
+
+        try
         {
-            StreamWriter stream = null;
-
-            Debug.Assert(_filePath.Directory is not null, $"Directory not found for '{_filePath.FullName}'");
-
-            try
+            // Create the directory if it doesn't exist.
+            if (!_filePath.Directory.Exists)
             {
-                // Create the directory if it doesn't exist.
-                if (!_filePath.Directory.Exists)
-                {
-                    _filePath.Directory.Create();
-                    _filePath.Directory.Refresh();
-                }
+                _filePath.Directory.Create();
+                _filePath.Directory.Refresh();
+            }
 
-                // Open the stream.
-                stream = new StreamWriter(File.Open(_filePath.FullName, FileMode.Create, FileAccess.Write, FileShare.Read), Encoding.UTF8);
-                if (!string.IsNullOrWhiteSpace(initialMessage))
-                {
-                    stream.WriteLine(initialMessage);
-                }
-                stream.Flush();
-            }
-            finally
+            // Open the stream.
+            stream = new StreamWriter(File.Open(_filePath.FullName, FileMode.Create, FileAccess.Write, FileShare.Read), Encoding.UTF8);
+            if (!string.IsNullOrWhiteSpace(initialMessage))
             {
-                stream?.Close();
+                stream.WriteLine(initialMessage);
             }
+            stream.Flush();
         }
-
-        /// <summary>
-        /// Function to write a message to the data store.
-        /// </summary>
-        /// <param name="message">The message to write.</param>
-        public void SendMessage(string message)
+        finally
         {
-            StreamWriter stream = null;
-
-            if (!_filePath.Exists)
-            {
-                return;
-            }
-
-            if (message is null)
-            {
-                message = string.Empty;
-            }
-
-            try
-            {
-                // Open the stream.
-                stream = new StreamWriter(File.Open(_filePath.FullName, FileMode.Append, FileAccess.Write, FileShare.Read), Encoding.UTF8);
-                stream.WriteLine(message);
-                stream.Flush();
-            }
-            finally
-            {
-                stream?.Close();
-            }
+            stream?.Close();
         }
-
-        /// <summary>
-        /// Function to close the data store for writing.
-        /// </summary>
-        /// <param name="closingMessage">[Optional] The message to write when closing.</param>
-        public void Close(string closingMessage)
-        {
-            StreamWriter stream = null;
-
-            if ((!_filePath.Exists)
-                || (string.IsNullOrWhiteSpace(closingMessage)))
-            {
-                return;
-            }
-
-            try
-            {
-                // Open the stream.
-                stream = new StreamWriter(File.Open(_filePath.FullName, FileMode.Append, FileAccess.Write, FileShare.Read), Encoding.UTF8);
-                stream.WriteLine(closingMessage);
-                stream.Flush();
-            }
-            finally
-            {
-                stream?.Close();
-            }
-        }
-        #endregion
-
-        #region Constructor/Finalizer.
-        /// <summary>
-        /// Initializes a new instance of the <see cref="LogTextFileProvider"/> class.
-        /// </summary>
-        /// <param name="filePath">The path to the file to write into.</param>
-        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="filePath"/> parameter is <b>null</b>.</exception>
-        /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="filePath"/> parameter is empty.</exception>
-        public LogTextFileProvider(string filePath)
-        {
-            if (filePath is null)
-            {
-                throw new ArgumentNullException(nameof(filePath));
-            }
-
-            if (filePath.IsWhiteSpaceOrEmpty())
-            {
-                throw new ArgumentEmptyException(nameof(filePath));
-            }
-
-            _filePath = new FileInfo(filePath.FormatPath(Path.DirectorySeparatorChar));
-        }
-        #endregion
     }
+
+    /// <summary>
+    /// Function to write a message to the data store.
+    /// </summary>
+    /// <param name="message">The message to write.</param>
+    public void SendMessage(string message)
+    {
+        StreamWriter stream = null;
+
+        if (!_filePath.Exists)
+        {
+            return;
+        }
+
+        if (message is null)
+        {
+            message = string.Empty;
+        }
+
+        try
+        {
+            // Open the stream.
+            stream = new StreamWriter(File.Open(_filePath.FullName, FileMode.Append, FileAccess.Write, FileShare.Read), Encoding.UTF8);
+            stream.WriteLine(message);
+            stream.Flush();
+        }
+        finally
+        {
+            stream?.Close();
+        }
+    }
+
+    /// <summary>
+    /// Function to close the data store for writing.
+    /// </summary>
+    /// <param name="closingMessage">[Optional] The message to write when closing.</param>
+    public void Close(string closingMessage)
+    {
+        StreamWriter stream = null;
+
+        if ((!_filePath.Exists)
+            || (string.IsNullOrWhiteSpace(closingMessage)))
+        {
+            return;
+        }
+
+        try
+        {
+            // Open the stream.
+            stream = new StreamWriter(File.Open(_filePath.FullName, FileMode.Append, FileAccess.Write, FileShare.Read), Encoding.UTF8);
+            stream.WriteLine(closingMessage);
+            stream.Flush();
+        }
+        finally
+        {
+            stream?.Close();
+        }
+    }
+    #endregion
+
+    #region Constructor/Finalizer.
+    /// <summary>
+    /// Initializes a new instance of the <see cref="LogTextFileProvider"/> class.
+    /// </summary>
+    /// <param name="filePath">The path to the file to write into.</param>
+    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="filePath"/> parameter is <b>null</b>.</exception>
+    /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="filePath"/> parameter is empty.</exception>
+    public LogTextFileProvider(string filePath)
+    {
+        if (filePath is null)
+        {
+            throw new ArgumentNullException(nameof(filePath));
+        }
+
+        if (filePath.IsWhiteSpaceOrEmpty())
+        {
+            throw new ArgumentEmptyException(nameof(filePath));
+        }
+
+        _filePath = new FileInfo(filePath.FormatPath(Path.DirectorySeparatorChar));
+    }
+    #endregion
 }

@@ -28,76 +28,75 @@ using System.Numerics;
 using System.Windows.Forms;
 using DX = SharpDX;
 
-namespace Gorgon.Editor.Rendering
+namespace Gorgon.Editor.Rendering;
+
+/// <summary>
+/// Arguments for the <see cref="DefaultContentRenderer{T}.OnMouseMove(MouseArgs)"/> method.
+/// </summary>
+public class MouseArgs
 {
     /// <summary>
-    /// Arguments for the <see cref="DefaultContentRenderer{T}.OnMouseMove(MouseArgs)"/> method.
+    /// Property to return the mouse position in client space.
     /// </summary>
-    public class MouseArgs
+    /// <remarks>
+    /// This returns the location of the mouse in relation to the control.
+    /// </remarks>
+    public DX.Point ClientPosition
     {
-        /// <summary>
-        /// Property to return the mouse position in client space.
-        /// </summary>
-        /// <remarks>
-        /// This returns the location of the mouse in relation to the control.
-        /// </remarks>
-        public DX.Point ClientPosition
-        {
-            get;
-            internal set;
-        }
-
-        /// <summary>
-        /// Property to return the mouse position in camera space.
-        /// </summary>
-        /// <remarks>
-        /// This returns the location of the mouse in relation to the transformed (i.e. panning and scaling applied) content render region, where 0x0 is the center of the screen.
-        /// </remarks>
-        public Vector2 CameraSpacePosition
-        {
-            get;
-            internal set;
-        }
-
-        /// <summary>
-        /// Property to return which of the mouse buttons are held down (or released when the button is released).
-        /// </summary>
-        public MouseButtons MouseButtons
-        {
-            get;
-            internal set;
-        }
-
-        /// <summary>
-        /// Property to return the signed count of the number of detents the mouse wheel has rotated.
-        /// </summary>
-        public int MouseWheelDelta
-        {
-            get;
-            internal set;
-        }
-
-        /// <summary>
-        /// Property to set or return whether the mouse event has been handled.
-        /// </summary>
-        public bool Handled
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// Property to return the number of times a button has been clicked.
-        /// </summary>
-        public int ButtonClickCount
-        {
-            get;
-            internal set;
-        }
-
-        /// <summary>
-        /// Property to return which modifier keys (CTRL, ALT, and Shift) are active during the mouse event.
-        /// </summary>
-        public Keys Modifiers => Control.ModifierKeys;
+        get;
+        internal set;
     }
+
+    /// <summary>
+    /// Property to return the mouse position in camera space.
+    /// </summary>
+    /// <remarks>
+    /// This returns the location of the mouse in relation to the transformed (i.e. panning and scaling applied) content render region, where 0x0 is the center of the screen.
+    /// </remarks>
+    public Vector2 CameraSpacePosition
+    {
+        get;
+        internal set;
+    }
+
+    /// <summary>
+    /// Property to return which of the mouse buttons are held down (or released when the button is released).
+    /// </summary>
+    public MouseButtons MouseButtons
+    {
+        get;
+        internal set;
+    }
+
+    /// <summary>
+    /// Property to return the signed count of the number of detents the mouse wheel has rotated.
+    /// </summary>
+    public int MouseWheelDelta
+    {
+        get;
+        internal set;
+    }
+
+    /// <summary>
+    /// Property to set or return whether the mouse event has been handled.
+    /// </summary>
+    public bool Handled
+    {
+        get;
+        set;
+    }
+
+    /// <summary>
+    /// Property to return the number of times a button has been clicked.
+    /// </summary>
+    public int ButtonClickCount
+    {
+        get;
+        internal set;
+    }
+
+    /// <summary>
+    /// Property to return which modifier keys (CTRL, ALT, and Shift) are active during the mouse event.
+    /// </summary>
+    public Keys Modifiers => Control.ModifierKeys;
 }

@@ -27,71 +27,70 @@
 using Gorgon.Editor.UI;
 using Gorgon.Graphics;
 
-namespace Gorgon.Examples
+namespace Gorgon.Examples;
+
+/// <summary>
+/// The current font face to use.
+/// </summary>
+internal enum FontFace
+{
+    Arial,
+    TimesNewRoman,
+    Papyrus
+}
+
+/// <summary>
+/// This is the interface for our view model that we use to present data back to the text viewer view.
+/// </summary>
+internal interface ITextContent
+    : IVisualEditorContent
 {
     /// <summary>
-    /// The current font face to use.
+    /// Property to return the view model for the text color editor.
     /// </summary>
-    internal enum FontFace
+    ITextColor TextColor
     {
-        Arial,
-        TimesNewRoman,
-        Papyrus
+        get;
     }
 
     /// <summary>
-    /// This is the interface for our view model that we use to present data back to the text viewer view.
+    /// Property to return the text to display.
     /// </summary>
-    internal interface ITextContent
-        : IVisualEditorContent
+    string Text
     {
-        /// <summary>
-        /// Property to return the view model for the text color editor.
-        /// </summary>
-        ITextColor TextColor
-        {
-            get;
-        }
+        get;
+    }
 
-        /// <summary>
-        /// Property to return the text to display.
-        /// </summary>
-        string Text
-        {
-            get;
-        }
+    /// <summary>
+    /// Property to set or return the font face to use.
+    /// </summary>
+    FontFace FontFace
+    {
+        get;
+        set;
+    }
 
-        /// <summary>
-        /// Property to set or return the font face to use.
-        /// </summary>
-        FontFace FontFace
-        {
-            get;
-            set;
-        }
+    /// <summary>
+    /// Property to return the color of the text.
+    /// </summary>
+    GorgonColor Color
+    {
+        get;
+    }
 
-        /// <summary>
-        /// Property to return the color of the text.
-        /// </summary>
-        GorgonColor Color
-        {
-            get;
-        }
+    /// <summary>
+    /// Property to return the command used to activate the text color editor.
+    /// </summary>
+    IEditorCommand<object> ActivateTextColorCommand
+    {
+        get;
+    }
 
-        /// <summary>
-        /// Property to return the command used to activate the text color editor.
-        /// </summary>
-        IEditorCommand<object> ActivateTextColorCommand
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to return the command to alter the text of the content.
-        /// </summary>
-        IEditorCommand<object> ChangeTextCommand
-        {
-            get;
-        }
+    /// <summary>
+    /// Property to return the command to alter the text of the content.
+    /// </summary>
+    IEditorCommand<object> ChangeTextCommand
+    {
+        get;
     }
 }

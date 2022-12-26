@@ -27,47 +27,46 @@
 using Gorgon.Core;
 using Gorgon.IO;
 
-namespace Gorgon.Editor.SpriteEditor
+namespace Gorgon.Editor.SpriteEditor;
+
+/// <summary>
+/// A setting used to display a loaded codec.
+/// </summary>
+internal class CodecSetting
+    : IGorgonNamedObject
 {
     /// <summary>
-    /// A setting used to display a loaded codec.
+    /// Property to return the description for the codec.
     /// </summary>
-    internal class CodecSetting
-        : IGorgonNamedObject
+    public string Description
     {
-        /// <summary>
-        /// Property to return the description for the codec.
-        /// </summary>
-        public string Description
-        {
-            get;
-        }
+        get;
+    }
 
-        /// <summary>
-        /// Property to return the plug in that contains the codec.
-        /// </summary>
-        public GorgonSpriteCodecPlugIn PlugIn
-        {
-            get;
-        }
+    /// <summary>
+    /// Property to return the plug in that contains the codec.
+    /// </summary>
+    public GorgonSpriteCodecPlugIn PlugIn
+    {
+        get;
+    }
 
-        /// <summary>
-        /// Property to return the formal name of the codec.
-        /// </summary>
-        public string Name
-        {
-            get;
-        }
+    /// <summary>
+    /// Property to return the formal name of the codec.
+    /// </summary>
+    public string Name
+    {
+        get;
+    }
 
-        /// <summary>Initializes a new instance of the <see cref="CodecSetting"/> class.</summary>
-        /// <param name="description">The friendly description of the codec.</param>
-        /// <param name="plugin">The plugin for the codec.</param>
-        /// <param name="desc">The description of the codec.</param>
-        public CodecSetting(string description, GorgonSpriteCodecPlugIn plugin, GorgonSpriteCodecDescription desc)
-        {
-            Description = description;
-            PlugIn = plugin;
-            Name = desc.Name;
-        }
+    /// <summary>Initializes a new instance of the <see cref="CodecSetting"/> class.</summary>
+    /// <param name="description">The friendly description of the codec.</param>
+    /// <param name="plugin">The plugin for the codec.</param>
+    /// <param name="desc">The description of the codec.</param>
+    public CodecSetting(string description, GorgonSpriteCodecPlugIn plugin, GorgonSpriteCodecDescription desc)
+    {
+        Description = description;
+        PlugIn = plugin;
+        Name = desc.Name;
     }
 }

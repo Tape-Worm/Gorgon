@@ -26,24 +26,23 @@
 
 using System;
 
-namespace Gorgon.IO
+namespace Gorgon.IO;
+
+/// <summary>
+/// Event arguments for the <see cref="IGorgonFileSystemWriter{T}.VirtualDirectoryAdded"/> event.
+/// </summary>
+public class VirtualDirectoryAddedEventArgs
+    : EventArgs
 {
     /// <summary>
-    /// Event arguments for the <see cref="IGorgonFileSystemWriter{T}.VirtualDirectoryAdded"/> event.
+    /// Property to return the virtual directory that represents the physical directory.
     /// </summary>
-    public class VirtualDirectoryAddedEventArgs
-        : EventArgs
+    public IGorgonVirtualDirectory VirtualDirectory
     {
-        /// <summary>
-        /// Property to return the virtual directory that represents the physical directory.
-        /// </summary>
-        public IGorgonVirtualDirectory VirtualDirectory
-        {
-            get;
-        }
-
-        /// <summary>Initializes a new instance of the <see cref="VirtualDirectoryAddedEventArgs"/> class.</summary>
-        /// <param name="directory">The virtual directory that was added..</param>
-        internal VirtualDirectoryAddedEventArgs(IGorgonVirtualDirectory directory) => VirtualDirectory = directory;
+        get;
     }
+
+    /// <summary>Initializes a new instance of the <see cref="VirtualDirectoryAddedEventArgs"/> class.</summary>
+    /// <param name="directory">The virtual directory that was added..</param>
+    internal VirtualDirectoryAddedEventArgs(IGorgonVirtualDirectory directory) => VirtualDirectory = directory;
 }

@@ -26,20 +26,19 @@
 
 using System;
 
-namespace Gorgon.Examples
+namespace Gorgon.Examples;
+
+/// <summary>
+/// Our blue text color writer.
+/// 
+/// So now we can implement our blue text color writer by overloading its color method and
+/// return the blue color.
+/// </summary>
+internal class BlueTextColorWriter
+    : TextColorWriter
 {
     /// <summary>
-    /// Our blue text color writer.
-    /// 
-    /// So now we can implement our blue text color writer by overloading its color method and
-    /// return the blue color.
+    /// We'll use this property to advertise the text color.
     /// </summary>
-    internal class BlueTextColorWriter
-        : TextColorWriter
-    {
-        /// <summary>
-        /// We'll use this property to advertise the text color.
-        /// </summary>
-        public override ConsoleColor TextColor => ConsoleColor.Blue;
-    }
+    public override ConsoleColor TextColor => ConsoleColor.Blue;
 }

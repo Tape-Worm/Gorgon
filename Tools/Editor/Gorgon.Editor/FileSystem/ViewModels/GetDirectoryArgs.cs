@@ -24,32 +24,31 @@
 // 
 #endregion
 
-namespace Gorgon.Editor.ViewModels
+namespace Gorgon.Editor.ViewModels;
+
+/// <summary>
+/// Arguments for the <see cref="IFileExplorer.GetDirectoryCommand"/>.
+/// </summary>
+internal class GetDirectoryArgs
 {
     /// <summary>
-    /// Arguments for the <see cref="IFileExplorer.GetDirectoryCommand"/>.
+    /// Property to return the path for the directory to retrieve.
     /// </summary>
-    internal class GetDirectoryArgs
+    public string Path
     {
-        /// <summary>
-        /// Property to return the path for the directory to retrieve.
-        /// </summary>
-        public string Path
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to set or return the <see cref="IDirectory"/> for the supplied <see cref="Path"/>.
-        /// </summary>
-        public IDirectory Directory
-        {
-            get;
-            set;
-        }
-
-        /// <summary>Initializes a new instance of the <see cref="GetDirectoryArgs"/> class.</summary>
-        /// <param name="path">The path to the directory to retrieve.</param>
-        public GetDirectoryArgs(string path) => Path = path;
+        get;
     }
+
+    /// <summary>
+    /// Property to set or return the <see cref="IDirectory"/> for the supplied <see cref="Path"/>.
+    /// </summary>
+    public IDirectory Directory
+    {
+        get;
+        set;
+    }
+
+    /// <summary>Initializes a new instance of the <see cref="GetDirectoryArgs"/> class.</summary>
+    /// <param name="path">The path to the directory to retrieve.</param>
+    public GetDirectoryArgs(string path) => Path = path;
 }

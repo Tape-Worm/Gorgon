@@ -30,165 +30,164 @@ using Gorgon.Editor.UI;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 
-namespace Gorgon.Editor.SpriteEditor
+namespace Gorgon.Editor.SpriteEditor;
+
+/// <summary>
+/// The view model for the sprite texture wrapping editor
+/// </summary>
+internal class SpriteTextureWrapEdit
+    : HostedPanelViewModelBase<SpriteTextureWrapEditParameters>, ISpriteTextureWrapEdit
 {
-    /// <summary>
-    /// The view model for the sprite texture wrapping editor
-    /// </summary>
-    internal class SpriteTextureWrapEdit
-        : HostedPanelViewModelBase<SpriteTextureWrapEditParameters>, ISpriteTextureWrapEdit
+    #region Variables.
+    // The builder used to create samplers.
+    private GorgonSamplerStateBuilder _samplerBuilder;
+    // The current sampler state for the sprite.
+    private GorgonSamplerState _current = GorgonSamplerState.Default;
+    // Horiztonal wrapping state.
+    private TextureWrap _hWrap = TextureWrap.Clamp;
+    // Vertical wrapping state.
+    private TextureWrap _vWrap = TextureWrap.Clamp;
+    // The current color for the border.
+    private GorgonColor _border = GorgonColor.White;
+    #endregion
+
+    #region Properties.
+    /// <summary>Property to return whether the panel is modal.</summary>
+    public override bool IsModal => false;
+
+    /// <summary>Property to set or return the current horizontal wrapping state.</summary>
+    public TextureWrap HorizontalWrapping
     {
-        #region Variables.
-        // The builder used to create samplers.
-        private GorgonSamplerStateBuilder _samplerBuilder;
-        // The current sampler state for the sprite.
-        private GorgonSamplerState _current = GorgonSamplerState.Default;
-        // Horiztonal wrapping state.
-        private TextureWrap _hWrap = TextureWrap.Clamp;
-        // Vertical wrapping state.
-        private TextureWrap _vWrap = TextureWrap.Clamp;
-        // The current color for the border.
-        private GorgonColor _border = GorgonColor.White;
-        #endregion
-
-        #region Properties.
-        /// <summary>Property to return whether the panel is modal.</summary>
-        public override bool IsModal => false;
-
-        /// <summary>Property to set or return the current horizontal wrapping state.</summary>
-        public TextureWrap HorizontalWrapping
+        get => _hWrap;
+        set
         {
-            get => _hWrap;
-            set
+            if (_hWrap == value)
             {
-                if (_hWrap == value)
-                {
-                    return;
-                }
-
-                OnPropertyChanging();
-                _hWrap = value;
-                BuildSampler();
-                OnPropertyChanged();
+                return;
             }
+
+            OnPropertyChanging();
+            _hWrap = value;
+            BuildSampler();
+            OnPropertyChanged();
         }
-
-        /// <summary>Property to set or return the current vertical wrapping state.</summary>
-        public TextureWrap VerticalWrapping
-        {
-            get => _vWrap;
-            set
-            {
-                if (_vWrap == value)
-                {
-                    return;
-                }
-
-                OnPropertyChanging();
-                _vWrap = value;
-                BuildSampler();
-                OnPropertyChanged();
-            }
-        }
-
-        /// <summary>Property to set or return the current border color.</summary>
-        public GorgonColor BorderColor
-        {
-            get => _border;
-            set
-            {
-                if (_border.Equals(in value))
-                {
-                    return;
-                }
-
-                OnPropertyChanging();
-                _border = value;
-                BuildSampler();
-                OnPropertyChanged();
-            }
-        }
-
-        /// <summary>Property to return the set or return the current sampler state for the sprite.</summary>
-        public GorgonSamplerState CurrentSampler
-        {
-            get => _current;
-            set
-            {
-                if (value is null)
-                {
-                    value = GorgonSamplerState.Default;
-                }
-
-                if ((value == _current) || (value.Equals(_current)))
-                {
-                    return;
-                }
-
-                OnPropertyChanging();
-                _current = value;
-                _samplerBuilder.ResetTo(value);
-                BorderColor = value.BorderColor;
-                VerticalWrapping = value.WrapV;
-                HorizontalWrapping = value.WrapU;
-                OnPropertyChanged();
-            }
-        }
-        #endregion        
-
-        #region Methods.
-        /// <summary>
-        /// Function to build a sampler based on state.
-        /// </summary>
-        private void BuildSampler()
-        {
-            HostServices.BusyService.SetBusy();
-
-            try
-            {
-                if ((GorgonSamplerState.Default.BorderColor == BorderColor)
-                    && (GorgonSamplerState.Default.WrapU == HorizontalWrapping)
-                    && (GorgonSamplerState.Default.WrapV == VerticalWrapping)
-                    && (GorgonSamplerState.Default.Filter == SampleFilter.MinMagMipLinear))
-                {
-                    CurrentSampler = GorgonSamplerState.Default;
-                    return;
-                }
-
-                if ((GorgonSamplerState.Default.BorderColor == BorderColor)
-                    && (GorgonSamplerState.Default.WrapU == HorizontalWrapping)
-                    && (GorgonSamplerState.Default.WrapV == VerticalWrapping)
-                    && (GorgonSamplerState.Default.Filter == SampleFilter.MinMagMipPoint))
-                {
-                    CurrentSampler = GorgonSamplerState.PointFiltering;
-                    return;
-                }
-
-                CurrentSampler = _samplerBuilder.ResetTo(_current)
-                                                .Wrapping(_hWrap, _vWrap, borderColor: BorderColor)
-                                                .Build();
-            }
-            catch (Exception ex)
-            {
-                HostServices.MessageDisplay.ShowError(ex, Resources.GORSPR_ERR_UPDATING);
-            }
-            finally
-            {
-                HostServices.BusyService.SetIdle();
-            }
-        }
-
-        /// <summary>Function to inject dependencies for the view model.</summary>
-        /// <param name="injectionParameters">The parameters to inject.</param>
-        /// <remarks>
-        ///   <para>
-        /// Applications should call this when setting up the view model for complex operations and/or dependency injection. The constructor should only be used for simple set up and initialization of objects.
-        /// </para>
-        ///   <para>
-        /// This method is only ever called after the view model has been created, and never again during the lifetime of the view model.
-        /// </para>
-        /// </remarks>
-        protected override void OnInitialize(SpriteTextureWrapEditParameters injectionParameters) => _samplerBuilder = injectionParameters.SamplerStateBuilder;
-        #endregion
     }
+
+    /// <summary>Property to set or return the current vertical wrapping state.</summary>
+    public TextureWrap VerticalWrapping
+    {
+        get => _vWrap;
+        set
+        {
+            if (_vWrap == value)
+            {
+                return;
+            }
+
+            OnPropertyChanging();
+            _vWrap = value;
+            BuildSampler();
+            OnPropertyChanged();
+        }
+    }
+
+    /// <summary>Property to set or return the current border color.</summary>
+    public GorgonColor BorderColor
+    {
+        get => _border;
+        set
+        {
+            if (_border.Equals(in value))
+            {
+                return;
+            }
+
+            OnPropertyChanging();
+            _border = value;
+            BuildSampler();
+            OnPropertyChanged();
+        }
+    }
+
+    /// <summary>Property to return the set or return the current sampler state for the sprite.</summary>
+    public GorgonSamplerState CurrentSampler
+    {
+        get => _current;
+        set
+        {
+            if (value is null)
+            {
+                value = GorgonSamplerState.Default;
+            }
+
+            if ((value == _current) || (value.Equals(_current)))
+            {
+                return;
+            }
+
+            OnPropertyChanging();
+            _current = value;
+            _samplerBuilder.ResetTo(value);
+            BorderColor = value.BorderColor;
+            VerticalWrapping = value.WrapV;
+            HorizontalWrapping = value.WrapU;
+            OnPropertyChanged();
+        }
+    }
+    #endregion        
+
+    #region Methods.
+    /// <summary>
+    /// Function to build a sampler based on state.
+    /// </summary>
+    private void BuildSampler()
+    {
+        HostServices.BusyService.SetBusy();
+
+        try
+        {
+            if ((GorgonSamplerState.Default.BorderColor == BorderColor)
+                && (GorgonSamplerState.Default.WrapU == HorizontalWrapping)
+                && (GorgonSamplerState.Default.WrapV == VerticalWrapping)
+                && (GorgonSamplerState.Default.Filter == SampleFilter.MinMagMipLinear))
+            {
+                CurrentSampler = GorgonSamplerState.Default;
+                return;
+            }
+
+            if ((GorgonSamplerState.Default.BorderColor == BorderColor)
+                && (GorgonSamplerState.Default.WrapU == HorizontalWrapping)
+                && (GorgonSamplerState.Default.WrapV == VerticalWrapping)
+                && (GorgonSamplerState.Default.Filter == SampleFilter.MinMagMipPoint))
+            {
+                CurrentSampler = GorgonSamplerState.PointFiltering;
+                return;
+            }
+
+            CurrentSampler = _samplerBuilder.ResetTo(_current)
+                                            .Wrapping(_hWrap, _vWrap, borderColor: BorderColor)
+                                            .Build();
+        }
+        catch (Exception ex)
+        {
+            HostServices.MessageDisplay.ShowError(ex, Resources.GORSPR_ERR_UPDATING);
+        }
+        finally
+        {
+            HostServices.BusyService.SetIdle();
+        }
+    }
+
+    /// <summary>Function to inject dependencies for the view model.</summary>
+    /// <param name="injectionParameters">The parameters to inject.</param>
+    /// <remarks>
+    ///   <para>
+    /// Applications should call this when setting up the view model for complex operations and/or dependency injection. The constructor should only be used for simple set up and initialization of objects.
+    /// </para>
+    ///   <para>
+    /// This method is only ever called after the view model has been created, and never again during the lifetime of the view model.
+    /// </para>
+    /// </remarks>
+    protected override void OnInitialize(SpriteTextureWrapEditParameters injectionParameters) => _samplerBuilder = injectionParameters.SamplerStateBuilder;
+    #endregion
 }

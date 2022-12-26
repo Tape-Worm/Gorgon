@@ -27,36 +27,35 @@
 using System.Collections.ObjectModel;
 using Gorgon.Editor.UI;
 
-namespace Gorgon.Editor.ViewModels
+namespace Gorgon.Editor.ViewModels;
+
+/// <summary>
+/// The plug in list category for the settings.
+/// </summary>
+internal interface ISettingsPlugInsList
+    : ISettingsCategory
 {
     /// <summary>
-    /// The plug in list category for the settings.
+    /// Property to return the plug ins.
     /// </summary>
-    internal interface ISettingsPlugInsList
-        : ISettingsCategory
+    ObservableCollection<ISettingsPlugInListItem> PlugIns
     {
-        /// <summary>
-        /// Property to return the plug ins.
-        /// </summary>
-        ObservableCollection<ISettingsPlugInListItem> PlugIns
-        {
-            get;
-        }
+        get;
+    }
 
-        /// <summary>
-        /// Property to return the currently selected plug in.
-        /// </summary>
-        ISettingsPlugInListItem Current
-        {
-            get;
-        }
+    /// <summary>
+    /// Property to return the currently selected plug in.
+    /// </summary>
+    ISettingsPlugInListItem Current
+    {
+        get;
+    }
 
-        /// <summary>
-        /// Property to return the command to execute for selecting plug ins.
-        /// </summary>
-        IEditorCommand<int> SelectPlugInCommand
-        {
-            get;
-        }
+    /// <summary>
+    /// Property to return the command to execute for selecting plug ins.
+    /// </summary>
+    IEditorCommand<int> SelectPlugInCommand
+    {
+        get;
     }
 }

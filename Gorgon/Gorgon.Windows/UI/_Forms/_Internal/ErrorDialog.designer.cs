@@ -27,10 +27,10 @@
 using System.ComponentModel;
 using System.Windows.Forms;
 
-namespace Gorgon.UI
-{
+namespace Gorgon.UI;
+
 	partial class ErrorDialog
-        : BaseDialog 
+    : BaseDialog 
 	{
 		/// <summary>
 		/// Required designer variable.
@@ -58,58 +58,58 @@ namespace Gorgon.UI
 		/// </summary>
 		private void InitializeComponent()
 		{
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ErrorDialog));
-            this.errorDetails = new System.Windows.Forms.TextBox();
-            this.checkDetail = new System.Windows.Forms.CheckBox();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureDialog)).BeginInit();
-            this.SuspendLayout();
-            // 
-            // buttonOK
-            // 
-            this.buttonOK.FlatAppearance.BorderColor = System.Drawing.Color.Black;
-            this.buttonOK.FlatAppearance.MouseDownBackColor = System.Drawing.Color.Silver;
-            this.buttonOK.FlatAppearance.MouseOverBackColor = System.Drawing.Color.Silver;
-            resources.ApplyResources(this.buttonOK, "buttonOK");
-            this.buttonOK.Click += new System.EventHandler(this.OKButton_Click);
-            // 
-            // pictureDialog
-            // 
-            this.pictureDialog.Image = global::Gorgon.Windows.Properties.Resources.Error_48x48;
-            // 
-            // errorDetails
-            // 
-            resources.ApplyResources(this.errorDetails, "errorDetails");
-            this.errorDetails.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
-            this.errorDetails.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.errorDetails.Name = "errorDetails";
-            this.errorDetails.ReadOnly = true;
-            // 
-            // checkDetail
-            // 
-            resources.ApplyResources(this.checkDetail, "checkDetail");
-            this.checkDetail.FlatAppearance.BorderColor = System.Drawing.Color.Black;
-            this.checkDetail.FlatAppearance.BorderSize = 2;
-            this.checkDetail.FlatAppearance.CheckedBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
-            this.checkDetail.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
-            this.checkDetail.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
-            this.checkDetail.Name = "checkDetail";
-            this.checkDetail.Click += new System.EventHandler(this.DetailsButton_Click);
-            // 
-            // ErrorDialog
-            // 
-            resources.ApplyResources(this, "$this");
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.Controls.Add(this.checkDetail);
-            this.Controls.Add(this.errorDetails);
-            this.DialogImage = global::Gorgon.Windows.Properties.Resources.Error_48x48;
-            this.Name = "ErrorDialog";
-            this.Controls.SetChildIndex(this.pictureDialog, 0);
-            this.Controls.SetChildIndex(this.errorDetails, 0);
-            this.Controls.SetChildIndex(this.buttonOK, 0);
-            this.Controls.SetChildIndex(this.checkDetail, 0);
-            ((System.ComponentModel.ISupportInitialize)(this.pictureDialog)).EndInit();
-            this.ResumeLayout(false);
-            this.PerformLayout();
+        System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ErrorDialog));
+        this.errorDetails = new System.Windows.Forms.TextBox();
+        this.checkDetail = new System.Windows.Forms.CheckBox();
+        ((System.ComponentModel.ISupportInitialize)(this.pictureDialog)).BeginInit();
+        this.SuspendLayout();
+        // 
+        // buttonOK
+        // 
+        this.buttonOK.FlatAppearance.BorderColor = System.Drawing.Color.Black;
+        this.buttonOK.FlatAppearance.MouseDownBackColor = System.Drawing.Color.Silver;
+        this.buttonOK.FlatAppearance.MouseOverBackColor = System.Drawing.Color.Silver;
+        resources.ApplyResources(this.buttonOK, "buttonOK");
+        this.buttonOK.Click += new System.EventHandler(this.OKButton_Click);
+        // 
+        // pictureDialog
+        // 
+        this.pictureDialog.Image = global::Gorgon.Windows.Properties.Resources.Error_48x48;
+        // 
+        // errorDetails
+        // 
+        resources.ApplyResources(this.errorDetails, "errorDetails");
+        this.errorDetails.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
+        this.errorDetails.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+        this.errorDetails.Name = "errorDetails";
+        this.errorDetails.ReadOnly = true;
+        // 
+        // checkDetail
+        // 
+        resources.ApplyResources(this.checkDetail, "checkDetail");
+        this.checkDetail.FlatAppearance.BorderColor = System.Drawing.Color.Black;
+        this.checkDetail.FlatAppearance.BorderSize = 2;
+        this.checkDetail.FlatAppearance.CheckedBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
+        this.checkDetail.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
+        this.checkDetail.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
+        this.checkDetail.Name = "checkDetail";
+        this.checkDetail.Click += new System.EventHandler(this.DetailsButton_Click);
+        // 
+        // ErrorDialog
+        // 
+        resources.ApplyResources(this, "$this");
+        this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+        this.Controls.Add(this.checkDetail);
+        this.Controls.Add(this.errorDetails);
+        this.DialogImage = global::Gorgon.Windows.Properties.Resources.Error_48x48;
+        this.Name = "ErrorDialog";
+        this.Controls.SetChildIndex(this.pictureDialog, 0);
+        this.Controls.SetChildIndex(this.errorDetails, 0);
+        this.Controls.SetChildIndex(this.buttonOK, 0);
+        this.Controls.SetChildIndex(this.checkDetail, 0);
+        ((System.ComponentModel.ISupportInitialize)(this.pictureDialog)).EndInit();
+        this.ResumeLayout(false);
+        this.PerformLayout();
 
 		}
 
@@ -118,4 +118,3 @@ namespace Gorgon.UI
 		private TextBox errorDetails;
 		private CheckBox checkDetail;
 	}
-}

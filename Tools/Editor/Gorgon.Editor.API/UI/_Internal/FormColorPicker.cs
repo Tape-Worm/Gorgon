@@ -30,55 +30,54 @@ using System.Windows.Forms;
 using Gorgon.Editor.UI.Controls;
 using Gorgon.Graphics;
 
-namespace Gorgon.Editor.Services
+namespace Gorgon.Editor.Services;
+
+/// <summary>
+/// A color picker dialog.
+/// </summary>
+internal partial class FormColorPicker
+    : Form
 {
+    #region Properties.
     /// <summary>
-    /// A color picker dialog.
+    /// Property to set or return the original color.
     /// </summary>
-    internal partial class FormColorPicker
-        : Form
+    [Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+    public GorgonColor OriginalColor
     {
-        #region Properties.
-        /// <summary>
-        /// Property to set or return the original color.
-        /// </summary>
-        [Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-        public GorgonColor OriginalColor
-        {
-            get => Picker.OriginalColor;
-            set => Picker.OriginalColor = value;
-        }
-
-        /// <summary>
-        /// Property to set or return the selected color.
-        /// </summary>
-        [Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-        public GorgonColor Color
-        {
-            get => Picker.SelectedColor;
-            set => Picker.SelectedColor = value;
-        }
-        #endregion
-
-        #region Methods.
-        /// <summary>Handles the ColorChanged event of the Picker control.</summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="ColorChangedEventArgs"/> instance containing the event data.</param>
-        private void Picker_ColorChanged(object sender, ColorChangedEventArgs e) => ButtonOk.Enabled = Picker.SelectedColor != Picker.OriginalColor;
-
-        /// <summary>Raises the Load event.</summary>
-        /// <param name="e">An EventArgs containing event data.</param>
-        protected override void OnLoad(EventArgs e)
-        {
-            base.OnLoad(e);
-
-            ButtonOk.Enabled = Picker.SelectedColor != Picker.OriginalColor;
-        }
-        #endregion
-
-        #region Constructor/Finalizer.
-        /// <summary>Initializes a new instance of the <see cref="FormColorPicker"/> class.</summary>
-        public FormColorPicker() => InitializeComponent();
-        #endregion
+        get => Picker.OriginalColor;
+        set => Picker.OriginalColor = value;
     }
+
+    /// <summary>
+    /// Property to set or return the selected color.
+    /// </summary>
+    [Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+    public GorgonColor Color
+    {
+        get => Picker.SelectedColor;
+        set => Picker.SelectedColor = value;
+    }
+    #endregion
+
+    #region Methods.
+    /// <summary>Handles the ColorChanged event of the Picker control.</summary>
+    /// <param name="sender">The source of the event.</param>
+    /// <param name="e">The <see cref="ColorChangedEventArgs"/> instance containing the event data.</param>
+    private void Picker_ColorChanged(object sender, ColorChangedEventArgs e) => ButtonOk.Enabled = Picker.SelectedColor != Picker.OriginalColor;
+
+    /// <summary>Raises the Load event.</summary>
+    /// <param name="e">An EventArgs containing event data.</param>
+    protected override void OnLoad(EventArgs e)
+    {
+        base.OnLoad(e);
+
+        ButtonOk.Enabled = Picker.SelectedColor != Picker.OriginalColor;
+    }
+    #endregion
+
+    #region Constructor/Finalizer.
+    /// <summary>Initializes a new instance of the <see cref="FormColorPicker"/> class.</summary>
+    public FormColorPicker() => InitializeComponent();
+    #endregion
 }

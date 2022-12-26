@@ -24,57 +24,56 @@
 // 
 #endregion
 
-namespace Gorgon.Graphics.Core
+namespace Gorgon.Graphics.Core;
+
+/// <summary>
+/// Options to pass when loading a texture from a stream or the file system.
+/// </summary>
+public class GorgonTextureLoadOptions
 {
     /// <summary>
-    /// Options to pass when loading a texture from a stream or the file system.
+    /// Property to set or return the name of the image.
     /// </summary>
-    public class GorgonTextureLoadOptions
+    public string Name
     {
-        /// <summary>
-        /// Property to set or return the name of the image.
-        /// </summary>
-        public string Name
-        {
-            get;
-            set;
-        }
+        get;
+        set;
+    }
 
-        /// <summary>
-        /// Property to set or return the intended usage for the texture.
-        /// </summary>
-        /// <remarks>
-        /// The default value is <see cref="ResourceUsage.Default"/>.
-        /// </remarks>
-        public ResourceUsage Usage
-        {
-            get;
-            set;
-        } = ResourceUsage.Default;
+    /// <summary>
+    /// Property to set or return the intended usage for the texture.
+    /// </summary>
+    /// <remarks>
+    /// The default value is <see cref="ResourceUsage.Default"/>.
+    /// </remarks>
+    public ResourceUsage Usage
+    {
+        get;
+        set;
+    } = ResourceUsage.Default;
 
 
-        /// <summary>
-        /// Property to set or return the allowed bindings for the texture.
-        /// </summary>
-        /// <remarks>
-        /// The default value is <see cref="TextureBinding.ShaderResource"/>.
-        /// </remarks>
-        public TextureBinding Binding
-        {
-            get;
-            set;
-        } = TextureBinding.ShaderResource;
+    /// <summary>
+    /// Property to set or return the allowed bindings for the texture.
+    /// </summary>
+    /// <remarks>
+    /// The default value is <see cref="TextureBinding.ShaderResource"/>.
+    /// </remarks>
+    public TextureBinding Binding
+    {
+        get;
+        set;
+    } = TextureBinding.ShaderResource;
 
-        /// <summary>
-        /// Property to set or return whether to convert the texture data to premultiplied alpha when loading.
-        /// </summary>
-        /// <remarks>
-        /// The default value is <b>false</b>.
-        /// </remarks>
-        public bool ConvertToPremultipliedAlpha
-        {
-            get;
-            set;
-        }
+    /// <summary>
+    /// Property to set or return whether to convert the texture data to premultiplied alpha when loading.
+    /// </summary>
+    /// <remarks>
+    /// The default value is <b>false</b>.
+    /// </remarks>
+    public bool ConvertToPremultipliedAlpha
+    {
+        get;
+        set;
     }
 }

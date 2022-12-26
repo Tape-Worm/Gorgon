@@ -27,21 +27,20 @@
 using Gorgon.Graphics.Core;
 using Gorgon.Memory;
 
-namespace Gorgon.Renderers
+namespace Gorgon.Renderers;
+
+/// <summary>
+/// An allocator used to retrieve 2D shader states from a pool.
+/// </summary>    
+/// <typeparam name="T">The type of shader. Must inherit from <see cref="GorgonShader"/>.</typeparam>
+public class Gorgon2DShaderStatePoolAllocator<T>
+    : GorgonRingPool<Gorgon2DShaderState<T>>
+    where T : GorgonShader
 {
-    /// <summary>
-    /// An allocator used to retrieve 2D shader states from a pool.
-    /// </summary>    
-    /// <typeparam name="T">The type of shader. Must inherit from <see cref="GorgonShader"/>.</typeparam>
-    public class Gorgon2DShaderStatePoolAllocator<T>
-        : GorgonRingPool<Gorgon2DShaderState<T>>
-        where T : GorgonShader
-    {
-        #region Constructor/Finalizer.
-        /// <summary>Initializes a new instance of the <see cref="Gorgon2DShaderStatePoolAllocator{T}"/> class.</summary>
-        /// <param name="objectCount">[Optional] The number of objects to initialize the pool with.</param>
-        public Gorgon2DShaderStatePoolAllocator(int objectCount = 128)
-            : base(objectCount) => ItemAllocator = () => new Gorgon2DShaderState<T>();        
-        #endregion        
-    }
+    #region Constructor/Finalizer.
+    /// <summary>Initializes a new instance of the <see cref="Gorgon2DShaderStatePoolAllocator{T}"/> class.</summary>
+    /// <param name="objectCount">[Optional] The number of objects to initialize the pool with.</param>
+    public Gorgon2DShaderStatePoolAllocator(int objectCount = 128)
+        : base(objectCount) => ItemAllocator = () => new Gorgon2DShaderState<T>();        
+    #endregion        
 }

@@ -44,12 +44,12 @@ using Gorgon.Renderers;
 using Gorgon.Renderers.Services;
 using DX = SharpDX;
 
-namespace Gorgon.Editor.ImageAtlasTool
-{
-    /// <summary>
-    /// The view model for the main UI.
-    /// </summary>
-    internal class ImageAtlas
+namespace Gorgon.Editor.ImageAtlasTool;
+
+/// <summary>
+/// The view model for the main UI.
+/// </summary>
+internal class ImageAtlas
 		: EditorToolViewModelBase<ImageAtlasParameters>, IImageAtlas
 	{
 		#region Variables.
@@ -460,9 +460,9 @@ namespace Gorgon.Editor.ImageAtlasTool
 		}
 
 		/// <summary>
-        /// Function to retrieve sprites for the atlas generation phase.
-        /// </summary>
-        /// <returns>A list of sprites for each image.</returns>
+    /// Function to retrieve sprites for the atlas generation phase.
+    /// </summary>
+    /// <returns>A list of sprites for each image.</returns>
 		private IReadOnlyDictionary<IContentFile, GorgonSprite> GetSprites()
 		{
 			var result = new Dictionary<IContentFile, GorgonSprite>();
@@ -492,9 +492,9 @@ namespace Gorgon.Editor.ImageAtlasTool
 		}
 
 		/// <summary>
-        /// Function to unload sprite textures from memory.
-        /// </summary>
-        /// <param name="sprites">The list of sprites to evaluate.</param>
+    /// Function to unload sprite textures from memory.
+    /// </summary>
+    /// <param name="sprites">The list of sprites to evaluate.</param>
 		private void UnloadSpriteTextures(IEnumerable<GorgonSprite> sprites)
 		{
 			foreach (GorgonTexture2DView texture in sprites.Select(item => item.Texture))
@@ -554,9 +554,9 @@ namespace Gorgon.Editor.ImageAtlasTool
 		private bool CanGenerate() => (LoadedImageCount > 1) && (!string.IsNullOrWhiteSpace(OutputPath)) && (!string.IsNullOrWhiteSpace(BaseTextureName)) && (_loadImageTask is null);
 
 		/// <summary>
-        /// Function to perform the atlas generation.
-        /// </summary>
-        /// <param name="sprites">The sprites used to build the atlas.</param>
+    /// Function to perform the atlas generation.
+    /// </summary>
+    /// <param name="sprites">The sprites used to build the atlas.</param>
 		private GorgonTextureAtlas GenerateAtlas(IEnumerable<GorgonSprite> sprites)
 		{
 			GorgonTextureAtlas atlas;
@@ -661,13 +661,13 @@ namespace Gorgon.Editor.ImageAtlasTool
 				return ((PreviewArrayIndex + 1 < texture.ArrayCount) || (PreviewTextureIndex + 1 < Atlas.Textures.Count));
 			}
 
-            return (Images is not null) && (Images.Count != 0) && (_currentImageIndex + 1 < _imageFiles.Length);
-        }
+        return (Images is not null) && (Images.Count != 0) && (_currentImageIndex + 1 < _imageFiles.Length);
+    }
 
-        /// <summary>
-        /// Function to move to the next index in the preview.
-        /// </summary>
-        private void DoNextPreview()
+    /// <summary>
+    /// Function to move to the next index in the preview.
+    /// </summary>
+    private void DoNextPreview()
 		{
 			try
 			{
@@ -707,12 +707,12 @@ namespace Gorgon.Editor.ImageAtlasTool
 			}
 
 #pragma warning disable IDE0046 // Convert to conditional expression
-            if (Atlas is not null)
-            {
-                return (Atlas.Textures is not null) && (Atlas.Textures.Count != 0) && ((PreviewArrayIndex - 1 >= 0) || (PreviewTextureIndex - 1 >= 0));
-            }
+        if (Atlas is not null)
+        {
+            return (Atlas.Textures is not null) && (Atlas.Textures.Count != 0) && ((PreviewArrayIndex - 1 >= 0) || (PreviewTextureIndex - 1 >= 0));
+        }
 
-            return (Images is not null) && (Images.Count != 0) && (_currentImageIndex - 1 >= 0);
+        return (Images is not null) && (Images.Count != 0) && (_currentImageIndex - 1 >= 0);
 #pragma warning restore IDE0046 // Convert to conditional expression
 		}
 
@@ -917,4 +917,3 @@ namespace Gorgon.Editor.ImageAtlasTool
 		}
 		#endregion
 	}
-}

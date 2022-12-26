@@ -26,52 +26,51 @@
 
 using System.ComponentModel;
 
-namespace Gorgon.Editor.UI
+namespace Gorgon.Editor.UI;
+
+/// <summary>
+/// Defines an interface that can handle clipboard functionality.
+/// </summary>
+public interface IClipboardHandler
+    : INotifyPropertyChanged, INotifyPropertyChanging
 {
     /// <summary>
-    /// Defines an interface that can handle clipboard functionality.
+    /// Property to return whether the clipboard has data or not.
     /// </summary>
-    public interface IClipboardHandler
-        : INotifyPropertyChanged, INotifyPropertyChanging
+    bool HasData
     {
-        /// <summary>
-        /// Property to return whether the clipboard has data or not.
-        /// </summary>
-        bool HasData
-        {
-            get;
-        }
+        get;
+    }
 
-        /// <summary>
-        /// Property to return the command that returns the type of data present on the clipboard (if any).
-        /// </summary>
-        IEditorCommand<GetClipboardDataTypeArgs> GetClipboardDataTypeCommand
-        {
-            get;
-        }
+    /// <summary>
+    /// Property to return the command that returns the type of data present on the clipboard (if any).
+    /// </summary>
+    IEditorCommand<GetClipboardDataTypeArgs> GetClipboardDataTypeCommand
+    {
+        get;
+    }
 
-        /// <summary>
-        /// Property to return the command used to clear the clipboard.
-        /// </summary>
-        IEditorCommand<object> ClearCommand
-        {
-            get;
-        }
+    /// <summary>
+    /// Property to return the command used to clear the clipboard.
+    /// </summary>
+    IEditorCommand<object> ClearCommand
+    {
+        get;
+    }
 
-        /// <summary>
-        /// Property to return the command used to copy data into the clipboard.
-        /// </summary>
-        IEditorCommand<object> CopyDataCommand
-        {
-            get;
-        }
+    /// <summary>
+    /// Property to return the command used to copy data into the clipboard.
+    /// </summary>
+    IEditorCommand<object> CopyDataCommand
+    {
+        get;
+    }
 
-        /// <summary>
-        /// Property to return the command used to paste data from the clipboard.
-        /// </summary>
-        IEditorAsyncCommand<object> PasteDataCommand
-        {
-            get;
-        }
+    /// <summary>
+    /// Property to return the command used to paste data from the clipboard.
+    /// </summary>
+    IEditorAsyncCommand<object> PasteDataCommand
+    {
+        get;
     }
 }

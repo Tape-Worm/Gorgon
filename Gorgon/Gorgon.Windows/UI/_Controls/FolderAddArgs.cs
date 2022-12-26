@@ -26,60 +26,59 @@
 
 using System.ComponentModel;
 
-namespace Gorgon.UI
+namespace Gorgon.UI;
+
+/// <summary>
+/// Event arguments for the <see cref="GorgonFolderBrowser.FolderAdding"/> event.
+/// </summary>
+public class FolderAddArgs
+    : CancelEventArgs
 {
+    #region Properties.
     /// <summary>
-    /// Event arguments for the <see cref="GorgonFolderBrowser.FolderAdding"/> event.
+    /// Property to return the path to the directory being created.
     /// </summary>
-    public class FolderAddArgs
-        : CancelEventArgs
+    public string DirectoryPath
     {
-        #region Properties.
-        /// <summary>
-        /// Property to return the path to the directory being created.
-        /// </summary>
-        public string DirectoryPath
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to return the path to the parent directory.
-        /// </summary>
-        public string ParentPath
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to return the name of the directory.
-        /// </summary>
-        public string DirectoryName
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to set or return whether this event has handled the creation of the directory on our behalf.
-        /// </summary>
-        public bool CreationHandled
-        {
-            get;
-            set;
-        }
-        #endregion
-
-        #region Constructor/Finalizer.
-        /// <summary>Initializes a new instance of the <see cref="FolderAddArgs"/> class.</summary>
-        /// <param name="parentPath">The parent to the parent directory.</param>
-        /// <param name="newDirPath">  The path to the new directory.</param>
-        /// <param name="directoryName">The name of the directory.</param>
-        internal FolderAddArgs(string parentPath, string newDirPath, string directoryName)
-        {
-            ParentPath = parentPath;
-            DirectoryPath = newDirPath;
-            DirectoryName = directoryName;
-        }
-        #endregion
+        get;
     }
+
+    /// <summary>
+    /// Property to return the path to the parent directory.
+    /// </summary>
+    public string ParentPath
+    {
+        get;
+    }
+
+    /// <summary>
+    /// Property to return the name of the directory.
+    /// </summary>
+    public string DirectoryName
+    {
+        get;
+    }
+
+    /// <summary>
+    /// Property to set or return whether this event has handled the creation of the directory on our behalf.
+    /// </summary>
+    public bool CreationHandled
+    {
+        get;
+        set;
+    }
+    #endregion
+
+    #region Constructor/Finalizer.
+    /// <summary>Initializes a new instance of the <see cref="FolderAddArgs"/> class.</summary>
+    /// <param name="parentPath">The parent to the parent directory.</param>
+    /// <param name="newDirPath">  The path to the new directory.</param>
+    /// <param name="directoryName">The name of the directory.</param>
+    internal FolderAddArgs(string parentPath, string newDirPath, string directoryName)
+    {
+        ParentPath = parentPath;
+        DirectoryPath = newDirPath;
+        DirectoryName = directoryName;
+    }
+    #endregion
 }

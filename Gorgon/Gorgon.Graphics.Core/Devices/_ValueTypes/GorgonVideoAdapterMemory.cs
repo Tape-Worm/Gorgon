@@ -24,43 +24,42 @@
 // 
 #endregion
 
-namespace Gorgon.Graphics.Core
+namespace Gorgon.Graphics.Core;
+
+/// <summary>
+/// Information about video memory for a <see cref="IGorgonVideoAdapterInfo"/>.
+/// </summary>
+public readonly struct GorgonVideoAdapterMemory
 {
+    #region Variables.
     /// <summary>
-    /// Information about video memory for a <see cref="IGorgonVideoAdapterInfo"/>.
+    /// The amount of dedicated system memory available, in bytes.
     /// </summary>
-    public readonly struct GorgonVideoAdapterMemory
+    public readonly long System;
+
+    /// <summary>
+    /// The amount of memory available on the GPU, in bytes.
+    /// </summary>
+    public readonly long Video;
+
+    /// <summary>
+    /// The amount of memory shared between the CPU and GPU, in bytes.
+    /// </summary>
+    public readonly long Shared;
+    #endregion
+
+    #region Constructor.
+    /// <summary>
+    /// Initializes a new instance of the <see cref="GorgonVideoAdapterMemory"/> struct.
+    /// </summary>
+    /// <param name="system">The system memory available.</param>
+    /// <param name="shared">The shared memory available.</param>
+    /// <param name="gpu">The gpu memory available.</param>
+    internal GorgonVideoAdapterMemory(long system, long shared, long gpu)
     {
-        #region Variables.
-        /// <summary>
-        /// The amount of dedicated system memory available, in bytes.
-        /// </summary>
-        public readonly long System;
-
-        /// <summary>
-        /// The amount of memory available on the GPU, in bytes.
-        /// </summary>
-        public readonly long Video;
-
-        /// <summary>
-        /// The amount of memory shared between the CPU and GPU, in bytes.
-        /// </summary>
-        public readonly long Shared;
-        #endregion
-
-        #region Constructor.
-        /// <summary>
-        /// Initializes a new instance of the <see cref="GorgonVideoAdapterMemory"/> struct.
-        /// </summary>
-        /// <param name="system">The system memory available.</param>
-        /// <param name="shared">The shared memory available.</param>
-        /// <param name="gpu">The gpu memory available.</param>
-        internal GorgonVideoAdapterMemory(long system, long shared, long gpu)
-        {
-            System = system;
-            Shared = shared;
-            Video = gpu;
-        }
-        #endregion
+        System = system;
+        Shared = shared;
+        Video = gpu;
     }
+    #endregion
 }

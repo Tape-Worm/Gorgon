@@ -35,205 +35,204 @@ using Gorgon.Graphics.Core;
 using Gorgon.Graphics.Imaging;
 using Gorgon.IO;
 
-namespace Gorgon.Editor.ImageEditor.ViewModels
+namespace Gorgon.Editor.ImageEditor.ViewModels;
+
+/// <summary>
+/// Parameters to pass to the <see cref="ImageContent"/> view model.
+/// </summary>
+internal class ImageContentParameters
+    : ContentViewModelInjection
 {
+    #region Properties.
     /// <summary>
-    /// Parameters to pass to the <see cref="ImageContent"/> view model.
+    /// Property to return the image dimension editor view model.
     /// </summary>
-    internal class ImageContentParameters
-        : ContentViewModelInjection
+    public IDimensionSettings DimensionSettings
     {
-        #region Properties.
-        /// <summary>
-        /// Property to return the image dimension editor view model.
-        /// </summary>
-        public IDimensionSettings DimensionSettings
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to return the image picker view model.
-        /// </summary>
-        public IImagePicker ImagePicker
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to return the crop/resize settings view model.
-        /// </summary>        
-        public ICropResizeSettings CropResizeSettings
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to return the mip map generation view model.
-        /// </summary>
-        public IMipMapSettings MipMapSettings
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to return the alpha settings view model.
-        /// </summary>
-        public IAlphaSettings AlphaSettings
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to return the service used to load/save image data.
-        /// </summary>
-        public IImageIOService ImageIOService
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to return the file used to storing working changes.
-        /// </summary>
-        public IGorgonVirtualFile WorkingFile
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to return the image to edit.
-        /// </summary>
-        public IGorgonImage Image
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to return the context for the image effects.
-        /// </summary>
-        public IFxContext FxContext
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to return the format support information for the current video card.
-        /// </summary>
-        public IReadOnlyDictionary<BufferFormat, IGorgonFormatSupportInfo> FormatSupport
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to return the information about the currently active video adapter.
-        /// </summary>
-        public IGorgonVideoAdapterInfo VideoAdapterInfo
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to return the settings for the image editor plugin.
-        /// </summary>
-        public ISettings Settings
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to return the plug in settings for the image editor.
-        /// </summary>
-        public ISettingsPlugins PluginSettings
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to return the original format for the image.
-        /// </summary>
-        public BufferFormat OriginalFormat
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to return the service used to update the image.
-        /// </summary>
-        public IImageUpdaterService ImageUpdater
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to return the undo service for the editor.
-        /// </summary>
-        public IUndoService UndoService
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to return the external editor service used to update an image.
-        /// </summary>
-        public IImageExternalEditService ExternalEditorService
-        {
-            get;
-        }        
-        #endregion
-
-        #region Constructor/Finalizer.
-        /// <summary>Initializes a new instance of the ImageContentVmParameters class.</summary>
-        /// <param name="fileManager">The file manager for content files.</param>
-        /// <param name="file">The file for the image content.</param>
-        /// <param name="settings">The settings for the image editor.</param>
-        /// <param name="pluginSettings">The plug in settings for the image editor.</param>
-        /// <param name="imagePicker">The image picker used to import image data into the current image.</param>
-        /// <param name="cropResizeSettings">The crop/resize settings view model.</param>
-        /// <param name="dimensionSettings">The image dimensions settings view model.</param>
-        /// <param name="mipMapSettings">The mip map generation settings view model.</param>
-        /// <param name="alphaSettings">The set alpha value settings view model.</param>
-        /// <param name="fxContext">The context for the image effects.</param>
-        /// <param name="imageData">The image data and related information.</param>
-        /// <param name="videoAdapter">Information about the current video adapter.</param>
-        /// <param name="formatSupport">A list of <see cref="IGorgonFormatSupportInfo"/> objects for each pixel format.</param>
-        /// <param name="extEditorInfo">The external image editor information.</param>
-        /// <param name="userEditorInfo">The external image editor information.</param>
-        /// <param name="services">The services required by the image editor.</param>
-        /// <exception cref="ArgumentNullException">Thrown when any of the parameters are <b>null</b>.</exception>
-        public ImageContentParameters(IContentFileManager fileManager,
-            IContentFile file,
-            ISettings settings,
-            ISettingsPlugins pluginSettings,
-            IImagePicker imagePicker,
-            ICropResizeSettings cropResizeSettings,
-            IDimensionSettings dimensionSettings,
-            IMipMapSettings mipMapSettings,
-            IAlphaSettings alphaSettings,
-            IFxContext fxContext,
-            (IGorgonImage image, IGorgonVirtualFile workingFile, BufferFormat originalFormat) imageData,            
-            IGorgonVideoAdapterInfo videoAdapter,            
-            IReadOnlyDictionary<BufferFormat, IGorgonFormatSupportInfo> formatSupport,
-            ImageEditorServices services)
-            : base(fileManager, file, services.HostContentServices ?? throw new ArgumentNullException(nameof(services)))
-        {
-            Settings = settings ?? throw new ArgumentNullException(nameof(settings));
-            PluginSettings = pluginSettings ?? throw new ArgumentNullException(nameof(pluginSettings));
-            WorkingFile = imageData.workingFile ?? throw new ArgumentNullException(nameof(imageData.workingFile));
-            Image = imageData.image ?? throw new ArgumentNullException(nameof(imageData.image));
-            FormatSupport = formatSupport ?? throw new ArgumentNullException(nameof(formatSupport));
-            ImageIOService = services.ImageIO;
-            UndoService = services.UndoService;
-            ImageUpdater = services.ImageUpdater;
-            ExternalEditorService = services.ExternalEditorService;
-            ImagePicker = imagePicker ?? throw new ArgumentNullException(nameof(imagePicker));
-            CropResizeSettings = cropResizeSettings ?? throw new ArgumentNullException(nameof(cropResizeSettings));
-            DimensionSettings = dimensionSettings ?? throw new ArgumentNullException(nameof(dimensionSettings));
-            MipMapSettings = mipMapSettings ?? throw new ArgumentNullException(nameof(mipMapSettings));
-            AlphaSettings = alphaSettings ?? throw new ArgumentNullException(nameof(alphaSettings));
-            FxContext = fxContext ?? throw new ArgumentNullException(nameof(fxContext));
-            VideoAdapterInfo = videoAdapter ?? throw new ArgumentNullException(nameof(videoAdapter));
-            OriginalFormat = imageData.originalFormat;
-        }
-        #endregion
+        get;
     }
+
+    /// <summary>
+    /// Property to return the image picker view model.
+    /// </summary>
+    public IImagePicker ImagePicker
+    {
+        get;
+    }
+
+    /// <summary>
+    /// Property to return the crop/resize settings view model.
+    /// </summary>        
+    public ICropResizeSettings CropResizeSettings
+    {
+        get;
+    }
+
+    /// <summary>
+    /// Property to return the mip map generation view model.
+    /// </summary>
+    public IMipMapSettings MipMapSettings
+    {
+        get;
+    }
+
+    /// <summary>
+    /// Property to return the alpha settings view model.
+    /// </summary>
+    public IAlphaSettings AlphaSettings
+    {
+        get;
+    }
+
+    /// <summary>
+    /// Property to return the service used to load/save image data.
+    /// </summary>
+    public IImageIOService ImageIOService
+    {
+        get;
+    }
+
+    /// <summary>
+    /// Property to return the file used to storing working changes.
+    /// </summary>
+    public IGorgonVirtualFile WorkingFile
+    {
+        get;
+    }
+
+    /// <summary>
+    /// Property to return the image to edit.
+    /// </summary>
+    public IGorgonImage Image
+    {
+        get;
+    }
+
+    /// <summary>
+    /// Property to return the context for the image effects.
+    /// </summary>
+    public IFxContext FxContext
+    {
+        get;
+    }
+
+    /// <summary>
+    /// Property to return the format support information for the current video card.
+    /// </summary>
+    public IReadOnlyDictionary<BufferFormat, IGorgonFormatSupportInfo> FormatSupport
+    {
+        get;
+    }
+
+    /// <summary>
+    /// Property to return the information about the currently active video adapter.
+    /// </summary>
+    public IGorgonVideoAdapterInfo VideoAdapterInfo
+    {
+        get;
+    }
+
+    /// <summary>
+    /// Property to return the settings for the image editor plugin.
+    /// </summary>
+    public ISettings Settings
+    {
+        get;
+    }
+
+    /// <summary>
+    /// Property to return the plug in settings for the image editor.
+    /// </summary>
+    public ISettingsPlugins PluginSettings
+    {
+        get;
+    }
+
+    /// <summary>
+    /// Property to return the original format for the image.
+    /// </summary>
+    public BufferFormat OriginalFormat
+    {
+        get;
+    }
+
+    /// <summary>
+    /// Property to return the service used to update the image.
+    /// </summary>
+    public IImageUpdaterService ImageUpdater
+    {
+        get;
+    }
+
+    /// <summary>
+    /// Property to return the undo service for the editor.
+    /// </summary>
+    public IUndoService UndoService
+    {
+        get;
+    }
+
+    /// <summary>
+    /// Property to return the external editor service used to update an image.
+    /// </summary>
+    public IImageExternalEditService ExternalEditorService
+    {
+        get;
+    }        
+    #endregion
+
+    #region Constructor/Finalizer.
+    /// <summary>Initializes a new instance of the ImageContentVmParameters class.</summary>
+    /// <param name="fileManager">The file manager for content files.</param>
+    /// <param name="file">The file for the image content.</param>
+    /// <param name="settings">The settings for the image editor.</param>
+    /// <param name="pluginSettings">The plug in settings for the image editor.</param>
+    /// <param name="imagePicker">The image picker used to import image data into the current image.</param>
+    /// <param name="cropResizeSettings">The crop/resize settings view model.</param>
+    /// <param name="dimensionSettings">The image dimensions settings view model.</param>
+    /// <param name="mipMapSettings">The mip map generation settings view model.</param>
+    /// <param name="alphaSettings">The set alpha value settings view model.</param>
+    /// <param name="fxContext">The context for the image effects.</param>
+    /// <param name="imageData">The image data and related information.</param>
+    /// <param name="videoAdapter">Information about the current video adapter.</param>
+    /// <param name="formatSupport">A list of <see cref="IGorgonFormatSupportInfo"/> objects for each pixel format.</param>
+    /// <param name="extEditorInfo">The external image editor information.</param>
+    /// <param name="userEditorInfo">The external image editor information.</param>
+    /// <param name="services">The services required by the image editor.</param>
+    /// <exception cref="ArgumentNullException">Thrown when any of the parameters are <b>null</b>.</exception>
+    public ImageContentParameters(IContentFileManager fileManager,
+        IContentFile file,
+        ISettings settings,
+        ISettingsPlugins pluginSettings,
+        IImagePicker imagePicker,
+        ICropResizeSettings cropResizeSettings,
+        IDimensionSettings dimensionSettings,
+        IMipMapSettings mipMapSettings,
+        IAlphaSettings alphaSettings,
+        IFxContext fxContext,
+        (IGorgonImage image, IGorgonVirtualFile workingFile, BufferFormat originalFormat) imageData,            
+        IGorgonVideoAdapterInfo videoAdapter,            
+        IReadOnlyDictionary<BufferFormat, IGorgonFormatSupportInfo> formatSupport,
+        ImageEditorServices services)
+        : base(fileManager, file, services.HostContentServices ?? throw new ArgumentNullException(nameof(services)))
+    {
+        Settings = settings ?? throw new ArgumentNullException(nameof(settings));
+        PluginSettings = pluginSettings ?? throw new ArgumentNullException(nameof(pluginSettings));
+        WorkingFile = imageData.workingFile ?? throw new ArgumentNullException(nameof(imageData.workingFile));
+        Image = imageData.image ?? throw new ArgumentNullException(nameof(imageData.image));
+        FormatSupport = formatSupport ?? throw new ArgumentNullException(nameof(formatSupport));
+        ImageIOService = services.ImageIO;
+        UndoService = services.UndoService;
+        ImageUpdater = services.ImageUpdater;
+        ExternalEditorService = services.ExternalEditorService;
+        ImagePicker = imagePicker ?? throw new ArgumentNullException(nameof(imagePicker));
+        CropResizeSettings = cropResizeSettings ?? throw new ArgumentNullException(nameof(cropResizeSettings));
+        DimensionSettings = dimensionSettings ?? throw new ArgumentNullException(nameof(dimensionSettings));
+        MipMapSettings = mipMapSettings ?? throw new ArgumentNullException(nameof(mipMapSettings));
+        AlphaSettings = alphaSettings ?? throw new ArgumentNullException(nameof(alphaSettings));
+        FxContext = fxContext ?? throw new ArgumentNullException(nameof(fxContext));
+        VideoAdapterInfo = videoAdapter ?? throw new ArgumentNullException(nameof(videoAdapter));
+        OriginalFormat = imageData.originalFormat;
+    }
+    #endregion
 }

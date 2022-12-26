@@ -26,35 +26,34 @@
 
 using Gorgon.Animation;
 
-namespace Gorgon.Examples
+namespace Gorgon.Examples;
+
+/// <summary>
+/// Defines a layer for our planet.
+/// </summary>
+/// <remarks>
+/// Each layer is composited on top of the previous layer. By doing this we can give the appearance of clouds moving over planetary body, layers of gas, etc...
+/// </remarks>
+internal class PlanetaryLayer
 {
     /// <summary>
-    /// Defines a layer for our planet.
+    /// Property to return the mesh representing the layer.
     /// </summary>
-    /// <remarks>
-    /// Each layer is composited on top of the previous layer. By doing this we can give the appearance of clouds moving over planetary body, layers of gas, etc...
-    /// </remarks>
-    internal class PlanetaryLayer
+    public MoveableMesh Mesh
     {
-        /// <summary>
-        /// Property to return the mesh representing the layer.
-        /// </summary>
-        public MoveableMesh Mesh
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to set or return an animation to play for this layer.
-        /// </summary>
-        public IGorgonAnimation Animation
-        {
-            get;
-            set;
-        }
-
-        /// <summary>Initializes a new instance of the <see cref="PlanetaryLayer"/> class.</summary>
-        /// <param name="mesh">The mesh.</param>
-        public PlanetaryLayer(MoveableMesh mesh) => Mesh = mesh;
+        get;
     }
+
+    /// <summary>
+    /// Property to set or return an animation to play for this layer.
+    /// </summary>
+    public IGorgonAnimation Animation
+    {
+        get;
+        set;
+    }
+
+    /// <summary>Initializes a new instance of the <see cref="PlanetaryLayer"/> class.</summary>
+    /// <param name="mesh">The mesh.</param>
+    public PlanetaryLayer(MoveableMesh mesh) => Mesh = mesh;
 }

@@ -26,37 +26,36 @@
 
 using System;
 
-namespace Gorgon.Editor.Content
+namespace Gorgon.Editor.Content;
+
+/// <summary>
+/// Event parameters for the <see cref="IContentFile.Renamed"/> event.
+/// </summary>
+public class ContentFileRenamedEventArgs
+    : EventArgs
 {
     /// <summary>
-    /// Event parameters for the <see cref="IContentFile.Renamed"/> event.
+    /// Property to return the new name of the node.
     /// </summary>
-    public class ContentFileRenamedEventArgs
-        : EventArgs
+    public string NewName
     {
-        /// <summary>
-        /// Property to return the new name of the node.
-        /// </summary>
-        public string NewName
-        {
-            get;
-        }
+        get;
+    }
 
-        /// <summary>
-        /// Property to return the old name of the node.
-        /// </summary>
-        public string OldName
-        {
-            get;
-        }
+    /// <summary>
+    /// Property to return the old name of the node.
+    /// </summary>
+    public string OldName
+    {
+        get;
+    }
 
-        /// <summary>Initializes a new instance of the <see cref="ContentFileRenamedEventArgs"/> class.</summary>
-        /// <param name="oldName">The old name.</param>
-        /// <param name="newName">The new name.</param>
-        public ContentFileRenamedEventArgs(string oldName, string newName)
-        {
-            OldName = oldName ?? string.Empty;
-            NewName = newName ?? string.Empty;
-        }
+    /// <summary>Initializes a new instance of the <see cref="ContentFileRenamedEventArgs"/> class.</summary>
+    /// <param name="oldName">The old name.</param>
+    /// <param name="newName">The new name.</param>
+    public ContentFileRenamedEventArgs(string oldName, string newName)
+    {
+        OldName = oldName ?? string.Empty;
+        NewName = newName ?? string.Empty;
     }
 }

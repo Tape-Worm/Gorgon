@@ -28,57 +28,56 @@ using Gorgon.Editor.UI;
 using Gorgon.Graphics;
 using DX = SharpDX;
 
-namespace Gorgon.Editor.SpriteEditor
+namespace Gorgon.Editor.SpriteEditor;
+
+/// <summary>
+/// The view model used to manipulate the settings for the sprite editor plug in.
+/// </summary>
+internal interface ISettings
+    : IViewModel
 {
     /// <summary>
-    /// The view model used to manipulate the settings for the sprite editor plug in.
+    /// Property to set or return the type of masking to perform when picking a sprite using the <see cref="SpriteEditTool.SpritePick"/> tool.
     /// </summary>
-    internal interface ISettings
-        : IViewModel
+    ClipMask ClipMaskType
     {
-        /// <summary>
-        /// Property to set or return the type of masking to perform when picking a sprite using the <see cref="SpriteEditTool.SpritePick"/> tool.
-        /// </summary>
-        ClipMask ClipMaskType
-        {
-            get;
-            set;
-        }
+        get;
+        set;
+    }
 
-        /// <summary>
-        /// Property to set or return the sprite picker mask color.
-        /// </summary>
-        GorgonColor ClipMaskValue
-        {
-            get;
-            set;
-        }
+    /// <summary>
+    /// Property to set or return the sprite picker mask color.
+    /// </summary>
+    GorgonColor ClipMaskValue
+    {
+        get;
+        set;
+    }
 
-        /// <summary>
-        /// Property to set or return the position of the manual rectangle editor window.
-        /// </summary>
-        DX.Rectangle? ManualRectangleEditorBounds
-        {
-            get;
-            set;
-        }
+    /// <summary>
+    /// Property to set or return the position of the manual rectangle editor window.
+    /// </summary>
+    DX.Rectangle? ManualRectangleEditorBounds
+    {
+        get;
+        set;
+    }
 
-        /// <summary>
-        /// property to set or return the position of the manual vertex editor window.
-        /// </summary>
-        DX.Rectangle? ManualVertexEditorBounds
-        {
-            get;
-            set;
-        }
+    /// <summary>
+    /// property to set or return the position of the manual vertex editor window.
+    /// </summary>
+    DX.Rectangle? ManualVertexEditorBounds
+    {
+        get;
+        set;
+    }
 
-        /// <summary>
-        /// Property to set or return the flag used to show a warning when a large image is being used with the sprite picker tool.
-        /// </summary>
-        bool ShowImageSizeWarning
-        {
-            get;
-            set;
-        }
+    /// <summary>
+    /// Property to set or return the flag used to show a warning when a large image is being used with the sprite picker tool.
+    /// </summary>
+    bool ShowImageSizeWarning
+    {
+        get;
+        set;
     }
 }

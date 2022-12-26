@@ -26,106 +26,105 @@
 
 using Gorgon.Native;
 
-namespace Gorgon.Input
+namespace Gorgon.Input;
+
+/// <summary>
+/// Provides information about a Raw Input keyboard device.
+/// </summary>
+internal class RawKeyboardInfo
+    : IGorgonKeyboardInfo
 {
+    #region Properties.
     /// <summary>
-    /// Provides information about a Raw Input keyboard device.
+    /// Property to return a human friendly description of the device.
     /// </summary>
-    internal class RawKeyboardInfo
-        : IGorgonKeyboardInfo
+    public string Description
     {
-        #region Properties.
-        /// <summary>
-        /// Property to return a human friendly description of the device.
-        /// </summary>
-        public string Description
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to return human interface device path for the device.
-        /// </summary>
-        public string HIDPath
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to return the device class name.
-        /// </summary>
-        public string DeviceClass
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to return the device handle.
-        /// </summary>
-        public nint Handle
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to return the total number of keys present on the keyboard.
-        /// </summary>
-        /// <remarks>
-        /// <para>
-        /// This value may or may not be accurate depending on the implementation. That is, for some systems, this will be an estimate, and for others this will be accurate.
-        /// </para> 
-        /// </remarks>
-        public int KeyCount
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to return the number of LED indicators on the keyboard.
-        /// </summary>
-        public int IndicatorCount
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to return the number of function keys on the keyboard.
-        /// </summary>
-        public int FunctionKeyCount
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to return the type of keyboard.
-        /// </summary>
-        public KeyboardType KeyboardType
-        {
-            get;
-        }
-        #endregion
-
-        #region Constructor/Finalizer.
-        /// <summary>
-        /// Initializes a new instance of the <see cref="RawKeyboardInfo"/> class.
-        /// </summary>
-        /// <param name="deviceHandle">The device handle.</param>
-        /// <param name="hidPath">The human interface device path.</param>
-        /// <param name="className">The class of device.</param>
-        /// <param name="description">The human readable description of this device.</param>
-        /// <param name="deviceInfo">The data about the device.</param>
-        public RawKeyboardInfo(nint deviceHandle, string hidPath, string className, string description, RID_DEVICE_INFO_KEYBOARD deviceInfo)
-        {
-            Handle = deviceHandle;
-            Description = description;
-            HIDPath = hidPath;
-            DeviceClass = className;
-
-            FunctionKeyCount = deviceInfo.dwNumberOfFunctionKeys;
-            IndicatorCount = deviceInfo.dwNumberOfIndicators;
-            KeyCount = deviceInfo.dwNumberOfKeysTotal;
-            KeyboardType = (KeyboardType)deviceInfo.dwType;
-        }
-        #endregion
+        get;
     }
+
+    /// <summary>
+    /// Property to return human interface device path for the device.
+    /// </summary>
+    public string HIDPath
+    {
+        get;
+    }
+
+    /// <summary>
+    /// Property to return the device class name.
+    /// </summary>
+    public string DeviceClass
+    {
+        get;
+    }
+
+    /// <summary>
+    /// Property to return the device handle.
+    /// </summary>
+    public nint Handle
+    {
+        get;
+    }
+
+    /// <summary>
+    /// Property to return the total number of keys present on the keyboard.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// This value may or may not be accurate depending on the implementation. That is, for some systems, this will be an estimate, and for others this will be accurate.
+    /// </para> 
+    /// </remarks>
+    public int KeyCount
+    {
+        get;
+    }
+
+    /// <summary>
+    /// Property to return the number of LED indicators on the keyboard.
+    /// </summary>
+    public int IndicatorCount
+    {
+        get;
+    }
+
+    /// <summary>
+    /// Property to return the number of function keys on the keyboard.
+    /// </summary>
+    public int FunctionKeyCount
+    {
+        get;
+    }
+
+    /// <summary>
+    /// Property to return the type of keyboard.
+    /// </summary>
+    public KeyboardType KeyboardType
+    {
+        get;
+    }
+    #endregion
+
+    #region Constructor/Finalizer.
+    /// <summary>
+    /// Initializes a new instance of the <see cref="RawKeyboardInfo"/> class.
+    /// </summary>
+    /// <param name="deviceHandle">The device handle.</param>
+    /// <param name="hidPath">The human interface device path.</param>
+    /// <param name="className">The class of device.</param>
+    /// <param name="description">The human readable description of this device.</param>
+    /// <param name="deviceInfo">The data about the device.</param>
+    public RawKeyboardInfo(nint deviceHandle, string hidPath, string className, string description, RID_DEVICE_INFO_KEYBOARD deviceInfo)
+    {
+        Handle = deviceHandle;
+        Description = description;
+        HIDPath = hidPath;
+        DeviceClass = className;
+
+        FunctionKeyCount = deviceInfo.dwNumberOfFunctionKeys;
+        IndicatorCount = deviceInfo.dwNumberOfIndicators;
+        KeyCount = deviceInfo.dwNumberOfKeysTotal;
+        KeyboardType = (KeyboardType)deviceInfo.dwType;
+    }
+    #endregion
 }

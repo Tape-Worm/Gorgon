@@ -26,31 +26,30 @@
 
 using Gorgon.Configuration;
 
-namespace Gorgon.Graphics.Imaging.Codecs
+namespace Gorgon.Graphics.Imaging.Codecs;
+
+/// <summary>
+/// Provides options used when decoding a <see cref="IGorgonImage"/>.
+/// </summary>
+public interface IGorgonImageCodecDecodingOptions
 {
     /// <summary>
-    /// Provides options used when decoding a <see cref="IGorgonImage"/>.
+    /// Property to set or return whether to read all frames from an image.
     /// </summary>
-    public interface IGorgonImageCodecDecodingOptions
+    /// <remarks>
+    /// Some codecs do not use multiple frames in their image data. For those codecs, this flag will be ignored.
+    /// </remarks>
+    bool ReadAllFrames
     {
-        /// <summary>
-        /// Property to set or return whether to read all frames from an image.
-        /// </summary>
-        /// <remarks>
-        /// Some codecs do not use multiple frames in their image data. For those codecs, this flag will be ignored.
-        /// </remarks>
-        bool ReadAllFrames
-        {
-            get;
-            set;
-        }
+        get;
+        set;
+    }
 
-        /// <summary>
-        /// Property to return the list of options available to the codec.
-        /// </summary>
-        IGorgonOptionBag Options
-        {
-            get;
-        }
+    /// <summary>
+    /// Property to return the list of options available to the codec.
+    /// </summary>
+    IGorgonOptionBag Options
+    {
+        get;
     }
 }

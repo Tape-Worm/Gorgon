@@ -28,37 +28,36 @@ using System.Collections.ObjectModel;
 using Gorgon.Editor.ProjectData;
 using Gorgon.Editor.UI;
 
-namespace Gorgon.Editor.ViewModels
+namespace Gorgon.Editor.ViewModels;
+
+/// <summary>
+/// View model for the recent files list.
+/// </summary>
+internal interface IRecent
+    : IViewModel
 {
     /// <summary>
-    /// View model for the recent files list.
+    /// Property to return the list of recent files.
     /// </summary>
-    internal interface IRecent
-        : IViewModel
+    ObservableCollection<RecentItem> Files
     {
-        /// <summary>
-        /// Property to return the list of recent files.
-        /// </summary>
-        ObservableCollection<RecentItem> Files
-        {
-            get;
-        }
+        get;
+    }
 
-        /// <summary>
-        /// Property to set or return the command used to open a project.
-        /// </summary>
-        IEditorCommand<RecentItem> OpenProjectCommand
-        {
-            get;
-            set;
-        }
+    /// <summary>
+    /// Property to set or return the command used to open a project.
+    /// </summary>
+    IEditorCommand<RecentItem> OpenProjectCommand
+    {
+        get;
+        set;
+    }
 
-        /// <summary>
-        /// Property to set or return the command used to delete a project.
-        /// </summary>
-        IEditorCommand<RecentItem> DeleteItemCommand
-        {
-            get;
-        }
+    /// <summary>
+    /// Property to set or return the command used to delete a project.
+    /// </summary>
+    IEditorCommand<RecentItem> DeleteItemCommand
+    {
+        get;
     }
 }

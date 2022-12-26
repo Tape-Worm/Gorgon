@@ -24,62 +24,61 @@
 // 
 #endregion
 
-namespace Gorgon.Editor.PlugIns
+namespace Gorgon.Editor.PlugIns;
+
+/// <summary>
+/// The reason code for disabling the plug in.
+/// </summary>
+public enum DisabledReasonCode
 {
     /// <summary>
-    /// The reason code for disabling the plug in.
+    /// User manually disabled plug in.
     /// </summary>
-    public enum DisabledReasonCode
+    User = 0,
+    /// <summary>
+    /// An error occurred when loading the plug in.
+    /// </summary>
+    Error = 1,
+    /// <summary>
+    /// A validation error occurred after the plug in was loaded.
+    /// </summary>
+    ValidationError = 2
+}
+
+/// <summary>
+/// A plug in that was disabled for a reason.
+/// </summary>
+public interface IDisabledPlugIn
+{
+    /// <summary>
+    /// Property to return a description that explains why a plug in was disabled.
+    /// </summary>
+    string Description
     {
-        /// <summary>
-        /// User manually disabled plug in.
-        /// </summary>
-        User = 0,
-        /// <summary>
-        /// An error occurred when loading the plug in.
-        /// </summary>
-        Error = 1,
-        /// <summary>
-        /// A validation error occurred after the plug in was loaded.
-        /// </summary>
-        ValidationError = 2
+        get;
     }
 
     /// <summary>
-    /// A plug in that was disabled for a reason.
+    /// Property to return the name of the disabled plug in.
     /// </summary>
-    public interface IDisabledPlugIn
+    string PlugInName
     {
-        /// <summary>
-        /// Property to return a description that explains why a plug in was disabled.
-        /// </summary>
-        string Description
-        {
-            get;
-        }
+        get;
+    }
 
-        /// <summary>
-        /// Property to return the name of the disabled plug in.
-        /// </summary>
-        string PlugInName
-        {
-            get;
-        }
+    /// <summary>
+    /// Property to return the code to indicate how the plug in was disabled.
+    /// </summary>
+    DisabledReasonCode ReasonCode
+    {
+        get;
+    }
 
-        /// <summary>
-        /// Property to return the code to indicate how the plug in was disabled.
-        /// </summary>
-        DisabledReasonCode ReasonCode
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to return the assembly path.
-        /// </summary>
-        string Path
-        {
-            get;
-        }
+    /// <summary>
+    /// Property to return the assembly path.
+    /// </summary>
+    string Path
+    {
+        get;
     }
 }

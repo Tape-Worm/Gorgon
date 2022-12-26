@@ -25,36 +25,35 @@
 #endregion
 
 
-namespace Gorgon.Graphics.Core
+namespace Gorgon.Graphics.Core;
+
+/// <summary>
+/// A query for performing occlusion predicate testing.
+/// </summary>
+public class GorgonOcclusionPredicateQuery
+    : GorgonQuery<bool>
 {
+    #region Properties.
+    /// <summary>Property to return the type of query to execute.</summary>
+    public override QueryType QueryType => QueryType.OcclusionPredicate;
+    #endregion
+
+    #region Methods.
     /// <summary>
-    /// A query for performing occlusion predicate testing.
+    /// Function to retrieve the result data for the query.
     /// </summary>
-    public class GorgonOcclusionPredicateQuery
-        : GorgonQuery<bool>
+    /// <param name="result">The result of the query.</param>
+    /// <returns><b>true</b> if the query results are ready to be consumed, or <b>false</b> if not.</returns>
+    protected override bool OnGetData(out bool result) => Graphics.D3DDeviceContext.GetData(D3dQuery, out result);
+    #endregion
+
+    #region Constructor/Finalizer.
+    /// <summary>Initializes a new instance of the <see cref="GorgonOcclusionQuery" /> class.</summary>
+    /// <param name="graphics">The graphics interface used to build the query.</param>
+    /// <param name="name">[Optional] The name for the query.</param>
+    public GorgonOcclusionPredicateQuery(GorgonGraphics graphics, string name = null)
+        : base(graphics, name)
     {
-        #region Properties.
-        /// <summary>Property to return the type of query to execute.</summary>
-        public override QueryType QueryType => QueryType.OcclusionPredicate;
-        #endregion
-
-        #region Methods.
-        /// <summary>
-        /// Function to retrieve the result data for the query.
-        /// </summary>
-        /// <param name="result">The result of the query.</param>
-        /// <returns><b>true</b> if the query results are ready to be consumed, or <b>false</b> if not.</returns>
-        protected override bool OnGetData(out bool result) => Graphics.D3DDeviceContext.GetData(D3dQuery, out result);
-        #endregion
-
-        #region Constructor/Finalizer.
-        /// <summary>Initializes a new instance of the <see cref="GorgonOcclusionQuery" /> class.</summary>
-        /// <param name="graphics">The graphics interface used to build the query.</param>
-        /// <param name="name">[Optional] The name for the query.</param>
-        public GorgonOcclusionPredicateQuery(GorgonGraphics graphics, string name = null)
-            : base(graphics, name)
-        {
-        }
-        #endregion
     }
+    #endregion
 }

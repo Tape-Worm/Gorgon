@@ -37,24 +37,24 @@ using D3D11 = SharpDX.Direct3D11;
 using DX = SharpDX;
 using DXGI = SharpDX.DXGI;
 
-namespace Gorgon.Graphics.Core
-{
-    /// <summary>
-    /// A view to allow 2D texture based render targets to be bound to the pipeline.
-    /// </summary>
-    /// <remarks>
-    /// <para>
-    /// A render target view allows a render target (such as a <see cref="GorgonSwapChain"/> or a texture to be bound to the GPU pipeline as a render target resource.
-    /// </para>
-    /// <para>
-    /// The view can bind the entire resource, or a sub section of the resource as required. It will also allow for casting of the format to allow for reinterpreting the data stored within the the render 
-    /// target. 
-    /// </para>
-    /// </remarks>
-    /// <seealso cref="GorgonSwapChain"/>
-    /// <seealso cref="GorgonTexture2D"/>
-    /// <seealso cref="GorgonTexture3D"/>
-    public sealed class GorgonRenderTarget2DView
+namespace Gorgon.Graphics.Core;
+
+/// <summary>
+/// A view to allow 2D texture based render targets to be bound to the pipeline.
+/// </summary>
+/// <remarks>
+/// <para>
+/// A render target view allows a render target (such as a <see cref="GorgonSwapChain"/> or a texture to be bound to the GPU pipeline as a render target resource.
+/// </para>
+/// <para>
+/// The view can bind the entire resource, or a sub section of the resource as required. It will also allow for casting of the format to allow for reinterpreting the data stored within the the render 
+/// target. 
+/// </para>
+/// </remarks>
+/// <seealso cref="GorgonSwapChain"/>
+/// <seealso cref="GorgonTexture2D"/>
+/// <seealso cref="GorgonTexture3D"/>
+public sealed class GorgonRenderTarget2DView
 		: GorgonRenderTargetView, IGorgonTexture2DInfo, IGorgonImageInfo
 	{
 		#region Properties.
@@ -246,10 +246,10 @@ namespace Gorgon.Graphics.Core
 		/// <param name="isMultisampled"><b>true</b> if the texture is multisampled, <b>false</b> if not.</param>
 		/// <returns>The view description.</returns>
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0046:Convert to conditional expression", Justification = "<Pending>")]
-        private D3D11.RenderTargetViewDescription1 GetDesc2D(bool isMultisampled)
+    private D3D11.RenderTargetViewDescription1 GetDesc2D(bool isMultisampled)
 		{
-            // Set up for arrayed and multisampled texture.
-            if (Texture.ArrayCount > 1)
+        // Set up for arrayed and multisampled texture.
+        if (Texture.ArrayCount > 1)
 			{
 				return new D3D11.RenderTargetViewDescription1
 				{
@@ -268,7 +268,7 @@ namespace Gorgon.Graphics.Core
 				};
 			}
 
-            return new D3D11.RenderTargetViewDescription1
+        return new D3D11.RenderTargetViewDescription1
 			{
 				Format = (DXGI.Format)Format,
 				Dimension = isMultisampled
@@ -538,27 +538,27 @@ namespace Gorgon.Graphics.Core
 		}
 
 		/// <summary>
-        /// Function to create a render target used to interoperate with external rendering systems (e.g. WPF).
-        /// </summary>
-        /// <param name="graphics">The graphics interface used to create the objects for the render target view.</param>
-        /// <param name="surface">A pointer to a surface that Gorgon can render into.</param>
-        /// <param name="name">[Optional] The name to use for the render target texture resource.</param>
-        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="graphics"/>, or the <paramref name="surface"/> parameter is <b>null</b>.</exception>
-        /// <exception cref="GorgonException">Thrown if the <paramref name="surface"/> pointer could not be interpreted as a 2D Texture.</exception>
-        /// <returns>The new render target view.</returns>
-        /// <remarks>
-        /// <para>
-        /// This method is used to wrap a surface from an external rendering system such as WPF (which is based on Direct3D 9) into a Gorgon render target view. This allows Gorgon to render into the 
-        /// external surface.
-        /// </para>
-        /// <para>
-        /// <note type="important">
-        /// <para>
-        /// This render target view takes ownership of its underlying texture. Disposal of the render target view will also dispose the underlying texture resource.
-        /// </para>
-        /// </note>
-        /// </para>
-        /// </remarks>
+    /// Function to create a render target used to interoperate with external rendering systems (e.g. WPF).
+    /// </summary>
+    /// <param name="graphics">The graphics interface used to create the objects for the render target view.</param>
+    /// <param name="surface">A pointer to a surface that Gorgon can render into.</param>
+    /// <param name="name">[Optional] The name to use for the render target texture resource.</param>
+    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="graphics"/>, or the <paramref name="surface"/> parameter is <b>null</b>.</exception>
+    /// <exception cref="GorgonException">Thrown if the <paramref name="surface"/> pointer could not be interpreted as a 2D Texture.</exception>
+    /// <returns>The new render target view.</returns>
+    /// <remarks>
+    /// <para>
+    /// This method is used to wrap a surface from an external rendering system such as WPF (which is based on Direct3D 9) into a Gorgon render target view. This allows Gorgon to render into the 
+    /// external surface.
+    /// </para>
+    /// <para>
+    /// <note type="important">
+    /// <para>
+    /// This render target view takes ownership of its underlying texture. Disposal of the render target view will also dispose the underlying texture resource.
+    /// </para>
+    /// </note>
+    /// </para>
+    /// </remarks>
 		public static GorgonRenderTarget2DView CreateInteropRenderTarget(GorgonGraphics graphics, nint surface, string name)
 		{
 			if (graphics is null)
@@ -603,4 +603,3 @@ namespace Gorgon.Graphics.Core
 		}
 		#endregion
 	}
-}

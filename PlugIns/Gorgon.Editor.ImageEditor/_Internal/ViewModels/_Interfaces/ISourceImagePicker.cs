@@ -27,88 +27,87 @@
 using Gorgon.Editor.UI;
 using Gorgon.Graphics.Imaging;
 
-namespace Gorgon.Editor.ImageEditor
+namespace Gorgon.Editor.ImageEditor;
+
+/// <summary>
+/// The view model for picking a source image subresource.
+/// </summary>
+internal interface ISourceImagePicker
+    : IViewModel
 {
     /// <summary>
-    /// The view model for picking a source image subresource.
+    /// Property to set or return the name of the image.
     /// </summary>
-    internal interface ISourceImagePicker
-        : IViewModel
+    string ImageName
     {
-        /// <summary>
-        /// Property to set or return the name of the image.
-        /// </summary>
-        string ImageName
-        {
-            get;
-            set;
-        }
+        get;
+        set;
+    }
 
-        /// <summary>
-        /// Property to set or return the source image being imported.
-        /// </summary>
-        IGorgonImage SourceImage
-        {
-            get;
-            set;
-        }
+    /// <summary>
+    /// Property to set or return the source image being imported.
+    /// </summary>
+    IGorgonImage SourceImage
+    {
+        get;
+        set;
+    }
 
-        /// <summary>
-        /// Property to return the number of array indices.
-        /// </summary>
-        int ArrayCount
-        {
-            get;
-        }
+    /// <summary>
+    /// Property to return the number of array indices.
+    /// </summary>
+    int ArrayCount
+    {
+        get;
+    }
 
-        /// <summary>
-        /// Property to return the number of mip levels.
-        /// </summary>
-        int MipCount
-        {
-            get;
-        }
+    /// <summary>
+    /// Property to return the number of mip levels.
+    /// </summary>
+    int MipCount
+    {
+        get;
+    }
 
-        /// <summary>
-        /// Property to return the width of the image at the current mip level.
-        /// </summary>
-        int MipWidth
-        {
-            get;
-        }
+    /// <summary>
+    /// Property to return the width of the image at the current mip level.
+    /// </summary>
+    int MipWidth
+    {
+        get;
+    }
 
-        /// <summary>
-        /// Property to return the height of the image at the current mip level.
-        /// </summary>
-        int MipHeight
-        {
-            get;
-        }
+    /// <summary>
+    /// Property to return the height of the image at the current mip level.
+    /// </summary>
+    int MipHeight
+    {
+        get;
+    }
 
-        /// <summary>
-        /// Property to return the depth of the 3D image at the current mip level.
-        /// </summary>
-        int MipDepth
-        {
-            get;
-        }
+    /// <summary>
+    /// Property to return the depth of the 3D image at the current mip level.
+    /// </summary>
+    int MipDepth
+    {
+        get;
+    }
 
-        /// <summary>
-        /// Property to return the current array index (for 2D images), or the current depth slice (for 3D images).
-        /// </summary>
-        int CurrentArrayIndexDepthSlice
-        {
-            get;
-            set;
-        }
+    /// <summary>
+    /// Property to return the current array index (for 2D images), or the current depth slice (for 3D images).
+    /// </summary>
+    int CurrentArrayIndexDepthSlice
+    {
+        get;
+        set;
+    }
 
-        /// <summary>
-        /// Property to return the current mip map level.
-        /// </summary>
-        int CurrentMipLevel
-        {
-            get;
-            set;
-        }
+    /// <summary>
+    /// Property to return the current mip map level.
+    /// </summary>
+    int CurrentMipLevel
+    {
+        get;
+        set;
     }
 }

@@ -26,33 +26,32 @@
 
 using System;
 
-namespace Gorgon.Editor.ViewModels
+namespace Gorgon.Editor.ViewModels;
+
+/// <summary>
+/// The arguments to pass to the <see cref="IFileExplorer.DeleteDirectoryCommand"/>, or the <see cref="IFileExplorer.DeleteFileCommand"/>.
+/// </summary>
+internal class DeleteArgs
+    : EventArgs
 {
     /// <summary>
-    /// The arguments to pass to the <see cref="IFileExplorer.DeleteDirectoryCommand"/>, or the <see cref="IFileExplorer.DeleteFileCommand"/>.
+    /// Property to return the ID of the directory or file to delete.
     /// </summary>
-    internal class DeleteArgs
-        : EventArgs
+    public string DeleteID
     {
-        /// <summary>
-        /// Property to return the ID of the directory or file to delete.
-        /// </summary>
-        public string DeleteID
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to set or return whether any items were deleted or not.
-        /// </summary>
-        public bool ItemsDeleted
-        {
-            get;
-            set;
-        }
-
-        /// <summary>Initializes a new instance of the <see cref="DeleteArgs"/> class.</summary>
-        /// <param name="id">The ID of the directory or file to delete.</param>
-        public DeleteArgs(string id) => DeleteID = id;
+        get;
     }
+
+    /// <summary>
+    /// Property to set or return whether any items were deleted or not.
+    /// </summary>
+    public bool ItemsDeleted
+    {
+        get;
+        set;
+    }
+
+    /// <summary>Initializes a new instance of the <see cref="DeleteArgs"/> class.</summary>
+    /// <param name="id">The ID of the directory or file to delete.</param>
+    public DeleteArgs(string id) => DeleteID = id;
 }

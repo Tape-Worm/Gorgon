@@ -27,34 +27,33 @@
 using Gorgon.Editor.PlugIns;
 using Gorgon.Editor.Services;
 
-namespace Gorgon.Editor.ViewModels
+namespace Gorgon.Editor.ViewModels;
+
+/// <summary>
+/// Parameters for the <see cref="INewProject"/> view model.
+/// </summary>
+internal class NewProjectParameters
+    : ViewModelCommonParameters
 {
     /// <summary>
-    /// Parameters for the <see cref="INewProject"/> view model.
+    /// Property to set or return the directory locator service.
     /// </summary>
-    internal class NewProjectParameters
-        : ViewModelCommonParameters
+    public IDirectoryLocateService DirectoryLocator
     {
-        /// <summary>
-        /// Property to set or return the directory locator service.
-        /// </summary>
-        public IDirectoryLocateService DirectoryLocator
-        {
-            get;
-            set;
-        }
+        get;
+        set;
+    }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="NewProjectParameters"/> class.
-        /// </summary>
-        /// <param name="hostServices">The services from the host application.</param>
-        /// <param name="viewModelFactory">The view model factory for creating view models.</param>
-        /// <param name="settings">The settings for the editor.</param>
-        /// <param name="messageDisplay">The message display service to use.</param>
-        /// <param name="busyService">The busy state service to use.</param>
-        public NewProjectParameters(IHostContentServices hostServices, ViewModelFactory viewModelFactory)
-            : base(hostServices, viewModelFactory)
-        {            
-        }
+    /// <summary>
+    /// Initializes a new instance of the <see cref="NewProjectParameters"/> class.
+    /// </summary>
+    /// <param name="hostServices">The services from the host application.</param>
+    /// <param name="viewModelFactory">The view model factory for creating view models.</param>
+    /// <param name="settings">The settings for the editor.</param>
+    /// <param name="messageDisplay">The message display service to use.</param>
+    /// <param name="busyService">The busy state service to use.</param>
+    public NewProjectParameters(IHostContentServices hostServices, ViewModelFactory viewModelFactory)
+        : base(hostServices, viewModelFactory)
+    {            
     }
 }

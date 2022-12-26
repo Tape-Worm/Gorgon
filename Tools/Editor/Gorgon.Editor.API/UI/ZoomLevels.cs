@@ -24,60 +24,59 @@
 // 
 #endregion
 
-namespace Gorgon.Editor.UI
+namespace Gorgon.Editor.UI;
+
+/// <summary>
+/// The zoom levels for image magnification.
+/// </summary>
+public enum ZoomLevels
 {
     /// <summary>
-    /// The zoom levels for image magnification.
+    /// Custom resize value.
     /// </summary>
-    public enum ZoomLevels
-    {
-        /// <summary>
-        /// Custom resize value.
-        /// </summary>
-        Custom = 0,
-        /// <summary>
-        /// Resize to the client area of the window.
-        /// </summary>
-        ToWindow = 1,
-        /// <summary>
-        /// Shrink to 12% of normal size.
-        /// </summary>
-        Percent12 = 2,
-        /// <summary>
-        /// Shrink to 25% of normal size.
-        /// </summary>
-        Percent25 = 3,
-        /// <summary>
-        /// Shrink to 50% of normal size.
-        /// </summary>
-        Percent50 = 4,
-        /// <summary>
-        /// Set to full size.
-        /// </summary>
-        Percent100 = 5,
-        /// <summary>
-        /// Expand to 200% of normal size.
-        /// </summary>
-        Percent200 = 6,
-        /// <summary>
-        /// Expand to 400% of normal size.
-        /// </summary>
-        Percent400 = 7,
-        /// <summary>
-        /// Expand to 800% of normal size.
-        /// </summary>
-        Percent800 = 8,
-        /// <summary>
-        /// Expand to 1600% of normal size.
-        /// </summary>
-        Percent1600 = 9,
-        /// <summary>
-        /// Expand to 3200% of normal size.
-        /// </summary>
-        Percent3200 = 10,
-        /// <summary>
-        /// Expand to 6400% of normal size.
-        /// </summary>
-        Percent6400 = 11
-    }
+    Custom = 0,
+    /// <summary>
+    /// Resize to the client area of the window.
+    /// </summary>
+    ToWindow = 1,
+    /// <summary>
+    /// Shrink to 12% of normal size.
+    /// </summary>
+    Percent12 = 2,
+    /// <summary>
+    /// Shrink to 25% of normal size.
+    /// </summary>
+    Percent25 = 3,
+    /// <summary>
+    /// Shrink to 50% of normal size.
+    /// </summary>
+    Percent50 = 4,
+    /// <summary>
+    /// Set to full size.
+    /// </summary>
+    Percent100 = 5,
+    /// <summary>
+    /// Expand to 200% of normal size.
+    /// </summary>
+    Percent200 = 6,
+    /// <summary>
+    /// Expand to 400% of normal size.
+    /// </summary>
+    Percent400 = 7,
+    /// <summary>
+    /// Expand to 800% of normal size.
+    /// </summary>
+    Percent800 = 8,
+    /// <summary>
+    /// Expand to 1600% of normal size.
+    /// </summary>
+    Percent1600 = 9,
+    /// <summary>
+    /// Expand to 3200% of normal size.
+    /// </summary>
+    Percent3200 = 10,
+    /// <summary>
+    /// Expand to 6400% of normal size.
+    /// </summary>
+    Percent6400 = 11
 }

@@ -33,30 +33,29 @@ using Gorgon.Editor.UI;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Fonts;
 
-namespace Gorgon.Editor.FontEditor
+namespace Gorgon.Editor.FontEditor;
+
+/// <summary>
+/// The view model for creating a solid color brush.
+/// </summary>
+internal interface IFontSolidBrush
+    : IHostedPanelViewModel
 {
     /// <summary>
-    /// The view model for creating a solid color brush.
+    /// Property to set or return the currently selected solid color brush.
     /// </summary>
-    internal interface IFontSolidBrush
-        : IHostedPanelViewModel
+    GorgonGlyphSolidBrush Brush
     {
-        /// <summary>
-        /// Property to set or return the currently selected solid color brush.
-        /// </summary>
-        GorgonGlyphSolidBrush Brush
-        {
-            get;
-            set;
-        }
+        get;
+        set;
+    }
 
-        /// <summary>
-        /// Property to set or return the original color.
-        /// </summary>
-        GorgonColor OriginalColor
-        {
-            get;
-            set;
-        }
+    /// <summary>
+    /// Property to set or return the original color.
+    /// </summary>
+    GorgonColor OriginalColor
+    {
+        get;
+        set;
     }
 }

@@ -28,120 +28,119 @@ using System.Numerics;
 using Gorgon.Editor.UI;
 using Gorgon.Graphics;
 
-namespace Gorgon.Editor.AnimationEditor
+namespace Gorgon.Editor.AnimationEditor;
+
+/// <summary>
+/// The view model for editing the colors for a key.
+/// </summary>
+internal class ColorValueEditor
+    : KeyValueEditor, IColorValueEditor
 {
+    #region Variables.
+    // The original color for the sprite.
+    private GorgonColor _originalColor = GorgonColor.White;
+    #endregion
+
+    #region Properties.
     /// <summary>
-    /// The view model for editing the colors for a key.
+    /// Property to return whether to edit alpha values or color values.
     /// </summary>
-    internal class ColorValueEditor
-        : KeyValueEditor, IColorValueEditor
+    public bool AlphaOnly => (Track is not null) && (Track.Track.SpriteProperty == TrackSpriteProperty.Opacity);
+
+    /// <summary>Property to set or return the color to apply to the sprite.</summary>
+    public GorgonColor NewColor
     {
-        #region Variables.
-        // The original color for the sprite.
-        private GorgonColor _originalColor = GorgonColor.White;
-        #endregion
-
-        #region Properties.
-        /// <summary>
-        /// Property to return whether to edit alpha values or color values.
-        /// </summary>
-        public bool AlphaOnly => (Track is not null) && (Track.Track.SpriteProperty == TrackSpriteProperty.Opacity);
-
-        /// <summary>Property to set or return the color to apply to the sprite.</summary>
-        public GorgonColor NewColor
+        get
         {
-            get
-            {
-                Vector4 values = WorkingSprite?.GetFloatValues(Track.Track.SpriteProperty) ?? GorgonColor.White;
+            Vector4 values = WorkingSprite?.GetFloatValues(Track.Track.SpriteProperty) ?? GorgonColor.White;
 
-                return AlphaOnly ? new GorgonColor(0, 0, 0, values.X) : values;
-            }
-            set
-            {
-                if (Track is null)
-                {
-                    return;
-                }
-
-                GorgonColor color = WorkingSprite?.GetFloatValues(Track.Track.SpriteProperty) ?? GorgonColor.White;
-                if (color.Equals(in value))
-                {
-                    return;
-                }
-
-                OnPropertyChanging();
-                NotifyPropertyChanging(nameof(IKeyValueEditor.Value));
-                WorkingSprite.SetFloatValues(Track.Track.SpriteProperty, AlphaOnly ? new Vector4(value.Alpha, 0, 0, 0) : value);
-                OnPropertyChanged();
-                NotifyPropertyChanged(nameof(IKeyValueEditor.Value));
-            }
+            return AlphaOnly ? new GorgonColor(0, 0, 0, values.X) : values;
         }
-
-        /// <summary>Property to set or return the original color for the sprite.</summary>
-        public GorgonColor OriginalColor
+        set
         {
-            get => _originalColor;
-            set
+            if (Track is null)
             {
-                if (value.Equals(_originalColor))
-                {
-                    return;
-                }
-
-                OnPropertyChanging();
-                _originalColor = value;
-                OnPropertyChanged();
+                return;
             }
-        }
 
-        /// <summary>Property to set or return the value for the key frame.</summary>
-        Vector4 IKeyValueEditor.Value
-        {
-            get
+            GorgonColor color = WorkingSprite?.GetFloatValues(Track.Track.SpriteProperty) ?? GorgonColor.White;
+            if (color.Equals(in value))
             {
-                Vector4 values = WorkingSprite?.GetFloatValues(Track.Track.SpriteProperty) ?? Vector4.One;
-
-                return AlphaOnly ? new Vector4(values.X, 0, 0, 0) : values;
+                return;
             }
-            set
-            {
-                if (Track is null)
-                {
-                    return;
-                }
 
-                Vector4 colorValue = WorkingSprite?.GetFloatValues(Track.Track.SpriteProperty) ?? Vector4.One;
-                if (colorValue.Equals(value))
-                {
-                    return;
-                }
-
-                OnPropertyChanging();
-                NotifyPropertyChanging(nameof(NewColor));
-                WorkingSprite.SetFloatValues(Track.Track.SpriteProperty, AlphaOnly ? new Vector4(value.X, 0, 0, 0) : value);
-                OnPropertyChanged();
-                NotifyPropertyChanged(nameof(NewColor));
-            }
+            OnPropertyChanging();
+            NotifyPropertyChanging(nameof(IKeyValueEditor.Value));
+            WorkingSprite.SetFloatValues(Track.Track.SpriteProperty, AlphaOnly ? new Vector4(value.Alpha, 0, 0, 0) : value);
+            OnPropertyChanged();
+            NotifyPropertyChanged(nameof(IKeyValueEditor.Value));
         }
-        #endregion
-
-        #region Methods.
-        /// <summary>Function used to notify when the <see cref="KeyValueEditor{T}.Track"/> property is assigned.</summary>
-        protected override void OnTrackSet()
-        {
-            NotifyPropertyChanging(nameof(AlphaOnly));
-            NotifyPropertyChanged(nameof(AlphaOnly));
-        }
-
-        /// <summary>Function to inject dependencies for the view model.</summary>
-        /// <param name="injectionParameters">The parameters to inject.</param>
-        /// <remarks>
-        /// Applications should call this when setting up the view model for complex operations and/or dependency injection. The constructor should only be used for simple set up and initialization of objects.
-        /// </remarks>
-        protected override void OnInitialize(HostedPanelViewModelParameters injectionParameters)
-        {
-            // Nothing to inject.
-        }
-        #endregion
     }
+
+    /// <summary>Property to set or return the original color for the sprite.</summary>
+    public GorgonColor OriginalColor
+    {
+        get => _originalColor;
+        set
+        {
+            if (value.Equals(_originalColor))
+            {
+                return;
+            }
+
+            OnPropertyChanging();
+            _originalColor = value;
+            OnPropertyChanged();
+        }
+    }
+
+    /// <summary>Property to set or return the value for the key frame.</summary>
+    Vector4 IKeyValueEditor.Value
+    {
+        get
+        {
+            Vector4 values = WorkingSprite?.GetFloatValues(Track.Track.SpriteProperty) ?? Vector4.One;
+
+            return AlphaOnly ? new Vector4(values.X, 0, 0, 0) : values;
+        }
+        set
+        {
+            if (Track is null)
+            {
+                return;
+            }
+
+            Vector4 colorValue = WorkingSprite?.GetFloatValues(Track.Track.SpriteProperty) ?? Vector4.One;
+            if (colorValue.Equals(value))
+            {
+                return;
+            }
+
+            OnPropertyChanging();
+            NotifyPropertyChanging(nameof(NewColor));
+            WorkingSprite.SetFloatValues(Track.Track.SpriteProperty, AlphaOnly ? new Vector4(value.X, 0, 0, 0) : value);
+            OnPropertyChanged();
+            NotifyPropertyChanged(nameof(NewColor));
+        }
+    }
+    #endregion
+
+    #region Methods.
+    /// <summary>Function used to notify when the <see cref="KeyValueEditor{T}.Track"/> property is assigned.</summary>
+    protected override void OnTrackSet()
+    {
+        NotifyPropertyChanging(nameof(AlphaOnly));
+        NotifyPropertyChanged(nameof(AlphaOnly));
+    }
+
+    /// <summary>Function to inject dependencies for the view model.</summary>
+    /// <param name="injectionParameters">The parameters to inject.</param>
+    /// <remarks>
+    /// Applications should call this when setting up the view model for complex operations and/or dependency injection. The constructor should only be used for simple set up and initialization of objects.
+    /// </remarks>
+    protected override void OnInitialize(HostedPanelViewModelParameters injectionParameters)
+    {
+        // Nothing to inject.
+    }
+    #endregion
 }

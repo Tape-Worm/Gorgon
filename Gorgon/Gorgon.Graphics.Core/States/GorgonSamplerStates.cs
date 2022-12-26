@@ -30,63 +30,62 @@ using Gorgon.Collections;
 using Gorgon.Math;
 using D3D11 = SharpDX.Direct3D11;
 
-namespace Gorgon.Graphics.Core
+namespace Gorgon.Graphics.Core;
+
+/// <summary>
+/// A list of texture sampler states to apply to the pipeline.
+/// </summary>
+public sealed class GorgonSamplerStates
+    : GorgonArray<GorgonSamplerState>
 {
+    #region Constants.
     /// <summary>
-    /// A list of texture sampler states to apply to the pipeline.
+    /// The maximum number of allowed sampler states that can be bound at the same time.
     /// </summary>
-    public sealed class GorgonSamplerStates
-        : GorgonArray<GorgonSamplerState>
-    {
-        #region Constants.
-        /// <summary>
-        /// The maximum number of allowed sampler states that can be bound at the same time.
-        /// </summary>
-        public const int MaximumSamplerStateCount = D3D11.CommonShaderStage.SamplerSlotCount;
-        #endregion
+    public const int MaximumSamplerStateCount = D3D11.CommonShaderStage.SamplerSlotCount;
+    #endregion
 
-        #region Properties.
-        /// <summary>
-        /// Property to return the native samplers.
-        /// </summary>
+    #region Properties.
+    /// <summary>
+    /// Property to return the native samplers.
+    /// </summary>
 	    internal D3D11.SamplerState[] Native
+    {
+        get;
+    } = new D3D11.SamplerState[MaximumSamplerStateCount];
+    #endregion
+
+    #region Methods.
+    /// <summary>
+    /// Function called when a dirty item is found and added.
+    /// </summary>
+    /// <param name="dirtyIndex">The index that is considered dirty.</param>
+    /// <param name="value">The dirty value.</param>
+    protected override void OnAssignDirtyItem(int dirtyIndex, GorgonSamplerState value) => Native[dirtyIndex] = value?.Native;
+
+    /// <summary>
+    /// Function called when the array is cleared.
+    /// </summary>
+    protected override void OnClear() => Array.Clear(Native, 0, Native.Length);
+    #endregion
+
+    #region Constructor/Finalizer.
+    /// <summary>
+    /// Initializes a new instance of the <see cref="GorgonSamplerStates"/> class.
+    /// </summary>
+    /// <param name="states">[Optional] The list of sampler states to copy into this list.</param>
+    public GorgonSamplerStates(IReadOnlyList<GorgonSamplerState> states = null)
+        : base(MaximumSamplerStateCount)
+    {
+        if (states is null)
         {
-            get;
-        } = new D3D11.SamplerState[MaximumSamplerStateCount];
-        #endregion
-
-        #region Methods.
-        /// <summary>
-        /// Function called when a dirty item is found and added.
-        /// </summary>
-        /// <param name="dirtyIndex">The index that is considered dirty.</param>
-        /// <param name="value">The dirty value.</param>
-        protected override void OnAssignDirtyItem(int dirtyIndex, GorgonSamplerState value) => Native[dirtyIndex] = value?.Native;
-
-        /// <summary>
-        /// Function called when the array is cleared.
-        /// </summary>
-        protected override void OnClear() => Array.Clear(Native, 0, Native.Length);
-        #endregion
-
-        #region Constructor/Finalizer.
-        /// <summary>
-        /// Initializes a new instance of the <see cref="GorgonSamplerStates"/> class.
-        /// </summary>
-        /// <param name="states">[Optional] The list of sampler states to copy into this list.</param>
-        public GorgonSamplerStates(IReadOnlyList<GorgonSamplerState> states = null)
-            : base(MaximumSamplerStateCount)
-        {
-            if (states is null)
-            {
-                return;
-            }
-
-            for (int i = 0; i < states.Count.Min(MaximumSamplerStateCount); ++i)
-            {
-                this[i] = states[i];
-            }
+            return;
         }
-        #endregion
+
+        for (int i = 0; i < states.Count.Min(MaximumSamplerStateCount); ++i)
+        {
+            this[i] = states[i];
+        }
     }
+    #endregion
 }

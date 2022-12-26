@@ -24,49 +24,48 @@
 // 
 #endregion
 
-namespace Gorgon.Input
+namespace Gorgon.Input;
+
+/// <summary>
+/// Provides capability information about a keyboard device.
+/// </summary>
+public interface IGorgonKeyboardInfo
+    : IGorgonRawInputDeviceInfo
 {
     /// <summary>
-    /// Provides capability information about a keyboard device.
+    /// Property to return the total number of keys present on the keyboard.
     /// </summary>
-    public interface IGorgonKeyboardInfo
-        : IGorgonRawInputDeviceInfo
+    /// <remarks>
+    /// <para>
+    /// This value may or may not be accurate depending on the implementation. That is, for some systems, this will be an estimate, and for others this will be accurate.
+    /// </para> 
+    /// </remarks>
+    int KeyCount
     {
-        /// <summary>
-        /// Property to return the total number of keys present on the keyboard.
-        /// </summary>
-        /// <remarks>
-        /// <para>
-        /// This value may or may not be accurate depending on the implementation. That is, for some systems, this will be an estimate, and for others this will be accurate.
-        /// </para> 
-        /// </remarks>
-        int KeyCount
-        {
-            get;
-        }
+        get;
+    }
 
-        /// <summary>
-        /// Property to return the number of LED indicators on the keyboard.
-        /// </summary>
-        int IndicatorCount
-        {
-            get;
-        }
+    /// <summary>
+    /// Property to return the number of LED indicators on the keyboard.
+    /// </summary>
+    int IndicatorCount
+    {
+        get;
+    }
 
-        /// <summary>
-        /// Property to return the number of function keys on the keyboard.
-        /// </summary>
-        int FunctionKeyCount
-        {
-            get;
-        }
+    /// <summary>
+    /// Property to return the number of function keys on the keyboard.
+    /// </summary>
+    int FunctionKeyCount
+    {
+        get;
+    }
 
-        /// <summary>
-        /// Property to return the type of keyboard.
-        /// </summary>
-        KeyboardType KeyboardType
-        {
-            get;
-        }
+    /// <summary>
+    /// Property to return the type of keyboard.
+    /// </summary>
+    KeyboardType KeyboardType
+    {
+        get;
     }
 }

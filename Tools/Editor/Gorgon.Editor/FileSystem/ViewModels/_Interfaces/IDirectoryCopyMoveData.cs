@@ -26,64 +26,63 @@
 
 using System;
 
-namespace Gorgon.Editor.ViewModels
+namespace Gorgon.Editor.ViewModels;
+
+/// <summary>
+/// The type of operation being performed when copying/moving data.
+/// </summary>
+[Flags()]
+internal enum CopyMoveOperation
 {
     /// <summary>
-    /// The type of operation being performed when copying/moving data.
+    /// Unknown operation.
     /// </summary>
-    [Flags()]
-    internal enum CopyMoveOperation
+    Unknown = 0,
+    /// <summary>
+    /// Copy operation.
+    /// </summary>
+    Copy = 1,
+    /// <summary>
+    /// Move operation.
+    /// </summary>
+    Move = 2
+}
+
+/// <summary>
+/// Information used for moving/copying directories.
+/// </summary>
+internal interface IDirectoryCopyMoveData
+{
+    /// <summary>
+    /// Property to return the path of the directory being copied/moved.
+    /// </summary>
+    string SourceDirectory
     {
-        /// <summary>
-        /// Unknown operation.
-        /// </summary>
-        Unknown = 0,
-        /// <summary>
-        /// Copy operation.
-        /// </summary>
-        Copy = 1,
-        /// <summary>
-        /// Move operation.
-        /// </summary>
-        Move = 2
+        get;
     }
 
     /// <summary>
-    /// Information used for moving/copying directories.
+    /// Property to return the path of the directory that is the target for the copy/move operation.
     /// </summary>
-    internal interface IDirectoryCopyMoveData
+    string DestinationDirectory
     {
-        /// <summary>
-        /// Property to return the path of the directory being copied/moved.
-        /// </summary>
-        string SourceDirectory
-        {
-            get;
-        }
+        get;
+    }
 
-        /// <summary>
-        /// Property to return the path of the directory that is the target for the copy/move operation.
-        /// </summary>
-        string DestinationDirectory
-        {
-            get;
-        }
+    /// <summary>
+    /// Property to return the type of operation to be performed.
+    /// </summary>
+    CopyMoveOperation Operation
+    {
+        get;
+    }
 
-        /// <summary>
-        /// Property to return the type of operation to be performed.
-        /// </summary>
-        CopyMoveOperation Operation
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to set to return whether any directories or files were copied.
-        /// </summary>
-        bool DirectoriesCopied
-        {
-            get;
-            set;
-        }
+    /// <summary>
+    /// Property to set to return whether any directories or files were copied.
+    /// </summary>
+    bool DirectoriesCopied
+    {
+        get;
+        set;
     }
 }

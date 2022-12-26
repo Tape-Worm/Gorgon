@@ -26,20 +26,19 @@
 
 using Gorgon.Editor.UI;
 
-namespace Gorgon.Editor.SpriteEditor
+namespace Gorgon.Editor.SpriteEditor;
+
+/// <summary>
+/// Defines a controller to update a sprite array index.
+/// </summary>
+internal interface IArrayUpdate
+    : ISpriteInfo
 {
     /// <summary>
-    /// Defines a controller to update a sprite array index.
+    /// Property to return the command used to update the array index.
     /// </summary>
-    internal interface IArrayUpdate
-        : ISpriteInfo
+    IEditorCommand<int> UpdateArrayIndexCommand
     {
-        /// <summary>
-        /// Property to return the command used to update the array index.
-        /// </summary>
-        IEditorCommand<int> UpdateArrayIndexCommand
-        {
-            get;
-        }
+        get;
     }
 }

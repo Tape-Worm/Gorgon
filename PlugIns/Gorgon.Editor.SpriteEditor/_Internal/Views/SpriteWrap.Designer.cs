@@ -1,40 +1,40 @@
-﻿namespace Gorgon.Editor.SpriteEditor
+﻿namespace Gorgon.Editor.SpriteEditor;
+
+partial class SpriteWrap
 {
-    partial class SpriteWrap
+    /// <summary> 
+    /// Required designer variable.
+    /// </summary>
+    private System.ComponentModel.IContainer components = null;
+
+    /// <summary> 
+    /// Clean up any resources being used.
+    /// </summary>
+    /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+    protected override void Dispose(bool disposing)
     {
-        /// <summary> 
-        /// Required designer variable.
-        /// </summary>
-        private System.ComponentModel.IContainer components = null;
-
-        /// <summary> 
-        /// Clean up any resources being used.
-        /// </summary>
-        /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
-        protected override void Dispose(bool disposing)
+        if (disposing && (components != null))
         {
-            if (disposing && (components != null))
-            {
-                components.Dispose();
-            }
-
-            if (disposing)
-            {
-                UnassignEvents();
-                DataContext?.Unload();
-            }
-
-            base.Dispose(disposing);
+            components.Dispose();
         }
 
-        #region Component Designer generated code
-
-        /// <summary> 
-        /// Required method for Designer support - do not modify 
-        /// the contents of this method with the code editor.
-        /// </summary>
-        private void InitializeComponent()
+        if (disposing)
         {
+            UnassignEvents();
+            DataContext?.Unload();
+        }
+
+        base.Dispose(disposing);
+    }
+
+    #region Component Designer generated code
+
+    /// <summary> 
+    /// Required method for Designer support - do not modify 
+    /// the contents of this method with the code editor.
+    /// </summary>
+    private void InitializeComponent()
+    {
 			this.Picker = new Gorgon.Editor.UI.Controls.ColorPicker();
 			this.TableHWrapping = new System.Windows.Forms.TableLayoutPanel();
 			this.RadioHBorder = new System.Windows.Forms.RadioButton();
@@ -327,26 +327,25 @@
 			this.ResumeLayout(false);
 			this.PerformLayout();
 
-        }
-
-        #endregion
-
-        private UI.Controls.ColorPicker Picker;
-        private System.Windows.Forms.TableLayoutPanel TableHWrapping;
-        private System.Windows.Forms.Label LabelBorderColor;
-        private System.Windows.Forms.RadioButton RadioHBorder;
-        private System.Windows.Forms.RadioButton RadioHMirrorOnce;
-        private System.Windows.Forms.RadioButton RadioHMirror;
-        private System.Windows.Forms.RadioButton RadioHWrap;
-        private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.RadioButton RadioHClamp;
-        private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.RadioButton RadioVClamp;
-        private System.Windows.Forms.RadioButton RadioVWrap;
-        private System.Windows.Forms.RadioButton RadioVMirror;
-        private System.Windows.Forms.RadioButton RadioVMirrorOnce;
-        private System.Windows.Forms.RadioButton RadioVBorder;
-        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel2;
-        private System.Windows.Forms.TableLayoutPanel TableVWrapping;
     }
+
+    #endregion
+
+    private UI.Controls.ColorPicker Picker;
+    private System.Windows.Forms.TableLayoutPanel TableHWrapping;
+    private System.Windows.Forms.Label LabelBorderColor;
+    private System.Windows.Forms.RadioButton RadioHBorder;
+    private System.Windows.Forms.RadioButton RadioHMirrorOnce;
+    private System.Windows.Forms.RadioButton RadioHMirror;
+    private System.Windows.Forms.RadioButton RadioHWrap;
+    private System.Windows.Forms.Label label1;
+    private System.Windows.Forms.RadioButton RadioHClamp;
+    private System.Windows.Forms.Label label2;
+    private System.Windows.Forms.RadioButton RadioVClamp;
+    private System.Windows.Forms.RadioButton RadioVWrap;
+    private System.Windows.Forms.RadioButton RadioVMirror;
+    private System.Windows.Forms.RadioButton RadioVMirrorOnce;
+    private System.Windows.Forms.RadioButton RadioVBorder;
+    private System.Windows.Forms.TableLayoutPanel tableLayoutPanel2;
+    private System.Windows.Forms.TableLayoutPanel TableVWrapping;
 }

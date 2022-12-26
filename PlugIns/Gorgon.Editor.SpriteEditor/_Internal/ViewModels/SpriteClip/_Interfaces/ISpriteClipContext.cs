@@ -27,62 +27,61 @@
 using Gorgon.Editor.UI;
 using DX = SharpDX;
 
-namespace Gorgon.Editor.SpriteEditor
+namespace Gorgon.Editor.SpriteEditor;
+
+/// <summary>
+/// The context view model for the sprite clipping context options.
+/// </summary>
+internal interface ISpriteClipContext
+    : IEditorContext, IArrayUpdate
 {
     /// <summary>
-    /// The context view model for the sprite clipping context options.
+    /// Property to set or return the rectangle representing the sprite.
     /// </summary>
-    internal interface ISpriteClipContext
-        : IEditorContext, IArrayUpdate
+    DX.RectangleF SpriteRectangle
     {
-        /// <summary>
-        /// Property to set or return the rectangle representing the sprite.
-        /// </summary>
-        DX.RectangleF SpriteRectangle
-        {
-            get;
-            set;
-        }
+        get;
+        set;
+    }
 
-        /// <summary>
-        /// Property to return the size of the fixed width and height for sprite clipping.
-        /// </summary>
-        DX.Size2F? FixedSize
-        {
-            get;
-        }
+    /// <summary>
+    /// Property to return the size of the fixed width and height for sprite clipping.
+    /// </summary>
+    DX.Size2F? FixedSize
+    {
+        get;
+    }
 
-        /// <summary>
-        /// Property to return the command used to set the sprite size to the full size of the sprite texture.
-        /// </summary>
-        IEditorCommand<object> FullSizeCommand
-        {
-            get;
-        }
+    /// <summary>
+    /// Property to return the command used to set the sprite size to the full size of the sprite texture.
+    /// </summary>
+    IEditorCommand<object> FullSizeCommand
+    {
+        get;
+    }
 
-        /// <summary>
-        /// Property to return the command used to enable or disable fixed size clipping.
-        /// </summary>
-        IEditorCommand<DX.Size2F?> FixedSizeCommand
-        {
-            get;
-        }
+    /// <summary>
+    /// Property to return the command used to enable or disable fixed size clipping.
+    /// </summary>
+    IEditorCommand<DX.Size2F?> FixedSizeCommand
+    {
+        get;
+    }
 
-        /// <summary>
-        /// Property to set or return the command used to apply the updated clipping coordinates.
-        /// </summary>
-        IEditorCommand<object> ApplyCommand
-        {
-            get;
-            set;
-        }
+    /// <summary>
+    /// Property to set or return the command used to apply the updated clipping coordinates.
+    /// </summary>
+    IEditorCommand<object> ApplyCommand
+    {
+        get;
+        set;
+    }
 
-        /// <summary>
-        /// Property to return the command used to cancel the sprite clipping operation.
-        /// </summary>
-        IEditorCommand<object> CancelCommand
-        {
-            get;
-        }
+    /// <summary>
+    /// Property to return the command used to cancel the sprite clipping operation.
+    /// </summary>
+    IEditorCommand<object> CancelCommand
+    {
+        get;
     }
 }

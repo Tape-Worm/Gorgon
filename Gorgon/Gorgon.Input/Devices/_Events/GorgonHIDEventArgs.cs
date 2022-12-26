@@ -27,53 +27,52 @@
 using System;
 using Gorgon.Native;
 
-namespace Gorgon.Input
+namespace Gorgon.Input;
+
+/// <summary>
+/// Event arguments for an <see cref="GorgonRawHID.DataReceived"/> event.
+/// </summary>
+public class GorgonHIDEventArgs
+    : EventArgs
 {
+    #region Properties.
     /// <summary>
-    /// Event arguments for an <see cref="GorgonRawHID.DataReceived"/> event.
+    /// Property to return the data buffer storing the HID data.
     /// </summary>
-    public class GorgonHIDEventArgs
-        : EventArgs
+    public GorgonPtr<byte> Data
     {
-        #region Properties.
-        /// <summary>
-        /// Property to return the data buffer storing the HID data.
-        /// </summary>
-        public GorgonPtr<byte> Data
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to return the size of an individual HID input in the <see cref="Data"/>, in bytes.
-        /// </summary>
-        public int HIDSize
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to return the number of HID inputs within the <see cref="Data"/>
-        /// </summary>
-        public int Count
-        {
-            get;
-        }
-        #endregion
-
-        #region Constructor/Finalizer.
-        /// <summary>
-        /// Initializes a new instance of the <see cref="GorgonHIDEventArgs"/> class.
-        /// </summary>
-        /// <param name="data">The HID data.</param>
-        /// <param name="size">The size of an individual HID input.</param>
-        /// <param name="count">The number of HID inputs.</param>
-        public GorgonHIDEventArgs(GorgonPtr<byte> data, int size, int count)
-        {
-            Data = data;
-            HIDSize = size;
-            Count = count;
-        }
-        #endregion
+        get;
     }
+
+    /// <summary>
+    /// Property to return the size of an individual HID input in the <see cref="Data"/>, in bytes.
+    /// </summary>
+    public int HIDSize
+    {
+        get;
+    }
+
+    /// <summary>
+    /// Property to return the number of HID inputs within the <see cref="Data"/>
+    /// </summary>
+    public int Count
+    {
+        get;
+    }
+    #endregion
+
+    #region Constructor/Finalizer.
+    /// <summary>
+    /// Initializes a new instance of the <see cref="GorgonHIDEventArgs"/> class.
+    /// </summary>
+    /// <param name="data">The HID data.</param>
+    /// <param name="size">The size of an individual HID input.</param>
+    /// <param name="count">The number of HID inputs.</param>
+    public GorgonHIDEventArgs(GorgonPtr<byte> data, int size, int count)
+    {
+        Data = data;
+        HIDSize = size;
+        Count = count;
+    }
+    #endregion
 }

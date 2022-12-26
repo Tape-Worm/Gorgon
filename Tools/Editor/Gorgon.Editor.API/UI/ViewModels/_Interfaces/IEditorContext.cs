@@ -25,23 +25,22 @@
 #endregion
 
 
-namespace Gorgon.Editor.UI
+namespace Gorgon.Editor.UI;
+
+/// <summary>
+/// A view model for setting the context for an editor operation.
+/// </summary>
+public interface IEditorContext
+    : IViewModel
 {
     /// <summary>
-    /// A view model for setting the context for an editor operation.
+    /// Property to return the context name.
     /// </summary>
-    public interface IEditorContext
-        : IViewModel
+    /// <remarks>
+    /// This value is used as a unique ID for the context.
+    /// </remarks>
+    string Name
     {
-        /// <summary>
-        /// Property to return the context name.
-        /// </summary>
-        /// <remarks>
-        /// This value is used as a unique ID for the context.
-        /// </remarks>
-        string Name
-        {
-            get;
-        }
+        get;
     }
 }

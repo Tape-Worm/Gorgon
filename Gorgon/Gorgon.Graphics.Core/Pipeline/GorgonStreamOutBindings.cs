@@ -30,109 +30,108 @@ using Gorgon.Collections;
 using Gorgon.Math;
 using D3D11 = SharpDX.Direct3D11;
 
-namespace Gorgon.Graphics.Core
+namespace Gorgon.Graphics.Core;
+
+/// <summary>
+/// A list of <see cref="GorgonStreamOutBinding"/> values.
+/// </summary>
+/// <remarks>
+/// <para>
+/// A <see cref="GorgonStreamOutBinding"/> is used to bind a vertex buffer to the GPU pipeline so that it may be used for rendering.
+/// </para>
+/// </remarks>
+public sealed class GorgonStreamOutBindings
+    : GorgonArray<GorgonStreamOutBinding>
 {
+    #region Constants.
     /// <summary>
-    /// A list of <see cref="GorgonStreamOutBinding"/> values.
+    /// The maximum number of vertex buffers allow to be bound at the same time.
     /// </summary>
+    public const int MaximumStreamOutCount = 4;
+    #endregion
+
+    #region Properties.
+    /// <summary>
+    /// Property to return the native items wrapped by this list.
+    /// </summary>
+    internal D3D11.StreamOutputBufferBinding[] Native
+    {
+        get;
+    }
+    #endregion
+
+    #region Methods.
+    /// <summary>
+    /// Function called when a dirty item is found and added.
+    /// </summary>
+    /// <param name="dirtyIndex">The index that is considered dirty.</param>
+    /// <param name="value">The dirty value.</param>
+    protected override void OnAssignDirtyItem(int dirtyIndex, GorgonStreamOutBinding value)
+    {
+        D3D11.StreamOutputBufferBinding binding = default;
+
+        if (value.Buffer is not null)
+        {
+            binding = new D3D11.StreamOutputBufferBinding(value.Buffer?.Native, value.Offset);
+        }
+
+        Native[dirtyIndex] = binding;
+    }
+
+    /// <summary>
+    /// Function called when the array is cleared.
+    /// </summary>
+    protected override void OnClear() => Array.Clear(Native, 0, Native.Length);
+
+    /// <summary>
+    /// Function to find the index of a <see cref="GorgonStreamOutBinding"/> with the specified buffer.
+    /// </summary>
+    /// <param name="buffer">The buffer to look up.</param>
+    /// <returns>The index of the <see cref="GorgonStreamOutBinding"/>, or -1 if not found.</returns>
     /// <remarks>
     /// <para>
-    /// A <see cref="GorgonStreamOutBinding"/> is used to bind a vertex buffer to the GPU pipeline so that it may be used for rendering.
+    /// For the sake of efficiency, this checks the dirty items in the list only.
     /// </para>
     /// </remarks>
-    public sealed class GorgonStreamOutBindings
-        : GorgonArray<GorgonStreamOutBinding>
-    {
-        #region Constants.
-        /// <summary>
-        /// The maximum number of vertex buffers allow to be bound at the same time.
-        /// </summary>
-        public const int MaximumStreamOutCount = 4;
-        #endregion
-
-        #region Properties.
-        /// <summary>
-        /// Property to return the native items wrapped by this list.
-        /// </summary>
-        internal D3D11.StreamOutputBufferBinding[] Native
-        {
-            get;
-        }
-        #endregion
-
-        #region Methods.
-        /// <summary>
-        /// Function called when a dirty item is found and added.
-        /// </summary>
-        /// <param name="dirtyIndex">The index that is considered dirty.</param>
-        /// <param name="value">The dirty value.</param>
-        protected override void OnAssignDirtyItem(int dirtyIndex, GorgonStreamOutBinding value)
-        {
-            D3D11.StreamOutputBufferBinding binding = default;
-
-            if (value.Buffer is not null)
-            {
-                binding = new D3D11.StreamOutputBufferBinding(value.Buffer?.Native, value.Offset);
-            }
-
-            Native[dirtyIndex] = binding;
-        }
-
-        /// <summary>
-        /// Function called when the array is cleared.
-        /// </summary>
-        protected override void OnClear() => Array.Clear(Native, 0, Native.Length);
-
-        /// <summary>
-        /// Function to find the index of a <see cref="GorgonStreamOutBinding"/> with the specified buffer.
-        /// </summary>
-        /// <param name="buffer">The buffer to look up.</param>
-        /// <returns>The index of the <see cref="GorgonStreamOutBinding"/>, or -1 if not found.</returns>
-        /// <remarks>
-        /// <para>
-        /// For the sake of efficiency, this checks the dirty items in the list only.
-        /// </para>
-        /// </remarks>
 	    internal int IndexOf(GorgonGraphicsResource buffer)
+    {
+        (int start, int count) = GetDirtyItems(true);
+
+        for (int i = 0; i < count; ++i)
         {
-            (int start, int count) = GetDirtyItems(true);
+            GorgonStreamOutBinding binding = BackingArray[i + start];
 
-            for (int i = 0; i < count; ++i)
+            if (binding.Buffer != buffer)
             {
-                GorgonStreamOutBinding binding = BackingArray[i + start];
-
-                if (binding.Buffer != buffer)
-                {
-                    continue;
-                }
-
-                return i + start;
+                continue;
             }
 
-            return -1;
+            return i + start;
         }
-        #endregion
 
-        #region Constructor
-        /// <summary>
-        /// Initializes a new instance of the <see cref="GorgonStreamOutBindings"/> class.
-        /// </summary>
-        /// <param name="bindings">[Optional] The list of bindings to copy.</param>
-        public GorgonStreamOutBindings(IReadOnlyList<GorgonStreamOutBinding> bindings = null)
-            : base(MaximumStreamOutCount)
-        {
-            Native = new D3D11.StreamOutputBufferBinding[MaximumStreamOutCount];
-
-            if (bindings is null)
-            {
-                return;
-            }
-
-            for (int i = 0; i < bindings.Count.Min(Length); ++i)
-            {
-                this[i] = bindings[i];
-            }
-        }
-        #endregion
+        return -1;
     }
+    #endregion
+
+    #region Constructor
+    /// <summary>
+    /// Initializes a new instance of the <see cref="GorgonStreamOutBindings"/> class.
+    /// </summary>
+    /// <param name="bindings">[Optional] The list of bindings to copy.</param>
+    public GorgonStreamOutBindings(IReadOnlyList<GorgonStreamOutBinding> bindings = null)
+        : base(MaximumStreamOutCount)
+    {
+        Native = new D3D11.StreamOutputBufferBinding[MaximumStreamOutCount];
+
+        if (bindings is null)
+        {
+            return;
+        }
+
+        for (int i = 0; i < bindings.Count.Min(Length); ++i)
+        {
+            this[i] = bindings[i];
+        }
+    }
+    #endregion
 }

@@ -27,55 +27,54 @@
 using System.Drawing;
 using Gorgon.Graphics;
 
-namespace Gorgon.Editor.FontEditor
+namespace Gorgon.Editor.FontEditor;
+
+/// <summary>
+/// Represents the handle for a node on the gradient fill control.
+/// </summary>
+internal class WeightHandle
 {
+    #region Properties.
     /// <summary>
-    /// Represents the handle for a node on the gradient fill control.
+    /// Property to return the index of the interpolation value.
     /// </summary>
-    internal class WeightHandle
+    public int Index
     {
-        #region Properties.
-        /// <summary>
-        /// Property to return the index of the interpolation value.
-        /// </summary>
-        public int Index
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// Property to set or return the color for the weight node.
-        /// </summary>
-        public GorgonColor Color
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// Property to set or return the weight for the node.
-        /// </summary>
-        public float Weight
-        {
-            get;
-            set;
-        }
-        #endregion
-
-        #region Constructor/Destructor.
-        /// <summary>
-        /// Initializes a new instance of the <see cref="WeightHandle"/> class.
-        /// </summary>
-        /// <param name="weight">The weight of the node.</param>
-        /// <param name="color">Color for the node.</param>
-        /// <param name="index">The index of the corresponding interpolation value.</param>
-        public WeightHandle(float weight, GorgonColor color, int index)
-        {
-            Weight = weight;
-            Color = color;
-            Index = index;
-        }
-        #endregion
+        get;
+        set;
     }
+
+    /// <summary>
+    /// Property to set or return the color for the weight node.
+    /// </summary>
+    public GorgonColor Color
+    {
+        get;
+        set;
+    }
+
+    /// <summary>
+    /// Property to set or return the weight for the node.
+    /// </summary>
+    public float Weight
+    {
+        get;
+        set;
+    }
+    #endregion
+
+    #region Constructor/Destructor.
+    /// <summary>
+    /// Initializes a new instance of the <see cref="WeightHandle"/> class.
+    /// </summary>
+    /// <param name="weight">The weight of the node.</param>
+    /// <param name="color">Color for the node.</param>
+    /// <param name="index">The index of the corresponding interpolation value.</param>
+    public WeightHandle(float weight, GorgonColor color, int index)
+    {
+        Weight = weight;
+        Color = color;
+        Index = index;
+    }
+    #endregion
 }

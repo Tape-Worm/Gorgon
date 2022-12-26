@@ -26,46 +26,45 @@
 
 using D3D11 = SharpDX.Direct3D11;
 
-namespace Gorgon.Graphics.Core
+namespace Gorgon.Graphics.Core;
+
+/// <summary>
+/// A query for performing occlusion testing.
+/// </summary>
+public class GorgonTimestampDisjointQuery
+    : GorgonQuery<GorgonTimestampDisjointResult>
 {
+    #region Properties.
+    /// <summary>Property to return the type of query to execute.</summary>
+    public override QueryType QueryType => QueryType.TimestampDisjoint;
+    #endregion
+
+    #region Methods.
     /// <summary>
-    /// A query for performing occlusion testing.
+    /// Function to retrieve the result data for the query.
     /// </summary>
-    public class GorgonTimestampDisjointQuery
-        : GorgonQuery<GorgonTimestampDisjointResult>
-    {
-        #region Properties.
-        /// <summary>Property to return the type of query to execute.</summary>
-        public override QueryType QueryType => QueryType.TimestampDisjoint;
-        #endregion
-
-        #region Methods.
-        /// <summary>
-        /// Function to retrieve the result data for the query.
-        /// </summary>
-        /// <param name="result">The result of the query.</param>
-        /// <returns><b>true</b> if the query results are ready to be consumed, or <b>false</b> if not.</returns>
-        protected override bool OnGetData(out GorgonTimestampDisjointResult result)
-        {            
-            if (!Graphics.D3DDeviceContext.GetData(D3dQuery, out D3D11.QueryDataTimestampDisjoint data))
-            {
-                result = default;
-                return false;
-            }
-
-            result = new GorgonTimestampDisjointResult(data);
-            return true;
-        }
-        #endregion
-
-        #region Constructor/Finalizer.
-        /// <summary>Initializes a new instance of the <see cref="GorgonTimestampDisjointQuery" /> class.</summary>
-        /// <param name="graphics">The graphics interface used to build the query.</param>
-        /// <param name="name">[Optional] The name for the query.</param>
-        public GorgonTimestampDisjointQuery(GorgonGraphics graphics, string name = null)
-            : base(graphics, name)
+    /// <param name="result">The result of the query.</param>
+    /// <returns><b>true</b> if the query results are ready to be consumed, or <b>false</b> if not.</returns>
+    protected override bool OnGetData(out GorgonTimestampDisjointResult result)
+    {            
+        if (!Graphics.D3DDeviceContext.GetData(D3dQuery, out D3D11.QueryDataTimestampDisjoint data))
         {
+            result = default;
+            return false;
         }
-        #endregion
+
+        result = new GorgonTimestampDisjointResult(data);
+        return true;
     }
+    #endregion
+
+    #region Constructor/Finalizer.
+    /// <summary>Initializes a new instance of the <see cref="GorgonTimestampDisjointQuery" /> class.</summary>
+    /// <param name="graphics">The graphics interface used to build the query.</param>
+    /// <param name="name">[Optional] The name for the query.</param>
+    public GorgonTimestampDisjointQuery(GorgonGraphics graphics, string name = null)
+        : base(graphics, name)
+    {
+    }
+    #endregion
 }

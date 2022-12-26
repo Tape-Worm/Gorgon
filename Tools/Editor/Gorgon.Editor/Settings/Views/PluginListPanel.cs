@@ -34,183 +34,182 @@ using Gorgon.Editor.UI;
 using Gorgon.Editor.UI.Views;
 using Gorgon.Editor.ViewModels;
 
-namespace Gorgon.Editor.Views
+namespace Gorgon.Editor.Views;
+
+/// <summary>
+/// General settings for the application.
+/// </summary>
+internal partial class PlugInListPanel
+    : SettingsBaseControl, IDataContext<ISettingsPlugInsList>
 {
-    /// <summary>
-    /// General settings for the application.
-    /// </summary>
-    internal partial class PlugInListPanel
-        : SettingsBaseControl, IDataContext<ISettingsPlugInsList>
+    #region Properties.
+    /// <summary>Property to return the ID of the panel.</summary>
+    [Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+    public override string PanelID => DataContext?.ID.ToString() ?? Guid.Empty.ToString();
+
+    /// <summary>Property to return the data context assigned to this view.</summary>
+    [Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+    public ISettingsPlugInsList DataContext
     {
-        #region Properties.
-        /// <summary>Property to return the ID of the panel.</summary>
-        [Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-        public override string PanelID => DataContext?.ID.ToString() ?? Guid.Empty.ToString();
+        get;
+        private set;
+    }
+    #endregion
 
-        /// <summary>Property to return the data context assigned to this view.</summary>
-        [Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-        public ISettingsPlugInsList DataContext
+    #region Methods.
+    /// <summary>Handles the PropertyChanged event of the DataContext control.</summary>
+    /// <param name="sender">The source of the event.</param>
+    /// <param name="e">The <see cref="PropertyChangedEventArgs"/> instance containing the event data.</param>
+    private void DataContext_PropertyChanged(object sender, PropertyChangedEventArgs e)
+    {
+        switch (e.PropertyName)
         {
-            get;
-            private set;
+            case nameof(ISettingsPlugInsList.Current):
+                TextStatus.Text = DataContext.Current?.DisabledReason ?? string.Empty;
+                break;
         }
-        #endregion
+    }
 
-        #region Methods.
-        /// <summary>Handles the PropertyChanged event of the DataContext control.</summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="PropertyChangedEventArgs"/> instance containing the event data.</param>
-        private void DataContext_PropertyChanged(object sender, PropertyChangedEventArgs e)
+    /// <summary>Handles the SelectedIndexChanged event of the ListPlugIns control.</summary>
+    /// <param name="sender">The source of the event.</param>
+    /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+    private void ListPlugIns_SelectedIndexChanged(object sender, EventArgs e)
+    {
+        int selectedIndex = ListPlugIns.SelectedIndices.Count > 0 ? ListPlugIns.SelectedIndices[0] : -1;
+        if ((DataContext?.SelectPlugInCommand is null) || (!DataContext.SelectPlugInCommand.CanExecute(selectedIndex)))
         {
-            switch (e.PropertyName)
-            {
-                case nameof(ISettingsPlugInsList.Current):
-                    TextStatus.Text = DataContext.Current?.DisabledReason ?? string.Empty;
-                    break;
-            }
-        }
-
-        /// <summary>Handles the SelectedIndexChanged event of the ListPlugIns control.</summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
-        private void ListPlugIns_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            int selectedIndex = ListPlugIns.SelectedIndices.Count > 0 ? ListPlugIns.SelectedIndices[0] : -1;
-            if ((DataContext?.SelectPlugInCommand is null) || (!DataContext.SelectPlugInCommand.CanExecute(selectedIndex)))
-            {
-                return;
-            }
-
-            DataContext.SelectPlugInCommand.Execute(selectedIndex);
+            return;
         }
 
-        /// <summary>
-        /// Function to fill the list with plug in information.
-        /// </summary>
-        /// <param name="dataContext">The data context containing the information.</param>
-        private void FillPlugInList(ISettingsPlugInsList dataContext)
-        {
-            ListPlugIns.BeginUpdate();
+        DataContext.SelectPlugInCommand.Execute(selectedIndex);
+    }
 
-            try
-            {
-                ListPlugIns.Items.Clear();
-                ListViewItem selected = null;
+    /// <summary>
+    /// Function to fill the list with plug in information.
+    /// </summary>
+    /// <param name="dataContext">The data context containing the information.</param>
+    private void FillPlugInList(ISettingsPlugInsList dataContext)
+    {
+        ListPlugIns.BeginUpdate();
 
-                foreach (ISettingsPlugInListItem item in dataContext.PlugIns)
-                {
-                    var listItem = new ListViewItem()
-                    {
-                        Name = item.Name,
-                        Text = item.Name
-                    };
-
-                    listItem.SubItems.Add(item.Type.GetDescription());
-                    listItem.SubItems.Add(item.State);
-                    listItem.SubItems.Add(item.Path);
-
-                    if (!string.Equals(item.State, Resources.GOREDIT_PLUGIN_STATE_LOADED, StringComparison.CurrentCulture))
-                    {
-                        listItem.ForeColor = Color.DarkRed;
-                    }
-
-                    if ((dataContext.Current == item) && (selected is null))
-                    {
-                        selected = listItem;
-                    }
-
-                    ListPlugIns.Items.Add(listItem);
-                }
-
-                if (ListPlugIns.Items.Count == 0)
-                {
-                    return;
-                }
-
-                ListPlugIns.Select();
-
-                if (selected is null)
-                {
-                    selected = ListPlugIns.Items[0];
-                }
-
-                selected.Selected = true;
-                ListPlugIns.SelectedIndices.Add(selected.Index);
-
-                if ((dataContext?.SelectPlugInCommand is null) || (!dataContext.SelectPlugInCommand.CanExecute(selected.Index)))
-                {
-                    return;
-                }
-
-                dataContext.SelectPlugInCommand.Execute(selected.Index);
-            }
-            finally
-            {
-                ListPlugIns.AutoResizeColumns(ColumnHeaderAutoResizeStyle.HeaderSize);
-                ListPlugIns.EndUpdate();
-            }
-        }
-
-        /// <summary>
-        /// Function to unassign events on the data context.
-        /// </summary>
-        private void UnassignEvents()
-        {
-            if (DataContext is null)
-            {
-                return;
-            }
-
-            DataContext.PropertyChanged -= DataContext_PropertyChanged;
-        }
-
-        /// <summary>
-        /// Function to reset the control back to its original state.
-        /// </summary>
-        private void ResetDataContext()
+        try
         {
             ListPlugIns.Items.Clear();
-            TextStatus.Text = string.Empty;
-        }
+            ListViewItem selected = null;
 
-        /// <summary>
-        /// Function to initialize the control from the data context.
-        /// </summary>
-        /// <param name="dataContext">The current data context.</param>
-        private void InitializeFromDataContext(ISettingsPlugInsList dataContext)
-        {
-            if (dataContext is null)
+            foreach (ISettingsPlugInListItem item in dataContext.PlugIns)
             {
-                ResetDataContext();
-                return;
+                var listItem = new ListViewItem()
+                {
+                    Name = item.Name,
+                    Text = item.Name
+                };
+
+                listItem.SubItems.Add(item.Type.GetDescription());
+                listItem.SubItems.Add(item.State);
+                listItem.SubItems.Add(item.Path);
+
+                if (!string.Equals(item.State, Resources.GOREDIT_PLUGIN_STATE_LOADED, StringComparison.CurrentCulture))
+                {
+                    listItem.ForeColor = Color.DarkRed;
+                }
+
+                if ((dataContext.Current == item) && (selected is null))
+                {
+                    selected = listItem;
+                }
+
+                ListPlugIns.Items.Add(listItem);
             }
 
-            FillPlugInList(dataContext);
-            TextStatus.Text = dataContext.Current?.DisabledReason ?? string.Empty;
-        }
-
-        /// <summary>Function to assign a data context to the view as a view model.</summary>
-        /// <param name="dataContext">The data context to assign.</param>
-        /// <remarks>Data contexts should be nullable, in that, they should reset the view back to its original state when the context is null.</remarks>
-        public void SetDataContext(ISettingsPlugInsList dataContext)
-        {
-            UnassignEvents();
-
-            InitializeFromDataContext(dataContext);
-            DataContext = dataContext;
-
-            if (DataContext is null)
+            if (ListPlugIns.Items.Count == 0)
             {
                 return;
             }
 
-            DataContext.PropertyChanged += DataContext_PropertyChanged;
-        }
-        #endregion
+            ListPlugIns.Select();
 
-        #region Constructor/Finalizer.
-        /// <summary>Initializes a new instance of the <see cref="PlugInListPanel"/> class.</summary>
-        public PlugInListPanel() => InitializeComponent();
-        #endregion
+            if (selected is null)
+            {
+                selected = ListPlugIns.Items[0];
+            }
+
+            selected.Selected = true;
+            ListPlugIns.SelectedIndices.Add(selected.Index);
+
+            if ((dataContext?.SelectPlugInCommand is null) || (!dataContext.SelectPlugInCommand.CanExecute(selected.Index)))
+            {
+                return;
+            }
+
+            dataContext.SelectPlugInCommand.Execute(selected.Index);
+        }
+        finally
+        {
+            ListPlugIns.AutoResizeColumns(ColumnHeaderAutoResizeStyle.HeaderSize);
+            ListPlugIns.EndUpdate();
+        }
     }
+
+    /// <summary>
+    /// Function to unassign events on the data context.
+    /// </summary>
+    private void UnassignEvents()
+    {
+        if (DataContext is null)
+        {
+            return;
+        }
+
+        DataContext.PropertyChanged -= DataContext_PropertyChanged;
+    }
+
+    /// <summary>
+    /// Function to reset the control back to its original state.
+    /// </summary>
+    private void ResetDataContext()
+    {
+        ListPlugIns.Items.Clear();
+        TextStatus.Text = string.Empty;
+    }
+
+    /// <summary>
+    /// Function to initialize the control from the data context.
+    /// </summary>
+    /// <param name="dataContext">The current data context.</param>
+    private void InitializeFromDataContext(ISettingsPlugInsList dataContext)
+    {
+        if (dataContext is null)
+        {
+            ResetDataContext();
+            return;
+        }
+
+        FillPlugInList(dataContext);
+        TextStatus.Text = dataContext.Current?.DisabledReason ?? string.Empty;
+    }
+
+    /// <summary>Function to assign a data context to the view as a view model.</summary>
+    /// <param name="dataContext">The data context to assign.</param>
+    /// <remarks>Data contexts should be nullable, in that, they should reset the view back to its original state when the context is null.</remarks>
+    public void SetDataContext(ISettingsPlugInsList dataContext)
+    {
+        UnassignEvents();
+
+        InitializeFromDataContext(dataContext);
+        DataContext = dataContext;
+
+        if (DataContext is null)
+        {
+            return;
+        }
+
+        DataContext.PropertyChanged += DataContext_PropertyChanged;
+    }
+    #endregion
+
+    #region Constructor/Finalizer.
+    /// <summary>Initializes a new instance of the <see cref="PlugInListPanel"/> class.</summary>
+    public PlugInListPanel() => InitializeComponent();
+    #endregion
 }

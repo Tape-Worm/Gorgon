@@ -26,43 +26,42 @@
 
 using System;
 
-namespace Gorgon.Editor.UI
+namespace Gorgon.Editor.UI;
+
+/// <summary>
+/// Event arguments for the <see cref="IViewModel.WaitPanelActivated"/> event.
+/// </summary>
+public class WaitPanelActivateArgs
+    : EventArgs
 {
+    #region Properties.
     /// <summary>
-    /// Event arguments for the <see cref="IViewModel.WaitPanelActivated"/> event.
+    /// Property to return the message for the wait panel overlay.
     /// </summary>
-    public class WaitPanelActivateArgs
-        : EventArgs
+    public string Message
     {
-        #region Properties.
-        /// <summary>
-        /// Property to return the message for the wait panel overlay.
-        /// </summary>
-        public string Message
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to return the title for the wait panel overlay.
-        /// </summary>
-        public string Title
-        {
-            get;
-        }
-        #endregion
-
-        #region Constructor/Finalizer.
-        /// <summary>
-        /// Initializes a new instance of the <see cref="WaitPanelActivateArgs"/> class.
-        /// </summary>
-        /// <param name="message">The message to display on the wait panel overlay.</param>
-        /// <param name="title">The title for the for wait panel overlay.</param>
-        public WaitPanelActivateArgs(string message, string title)
-        {
-            Message = message ?? string.Empty;
-            Title = title ?? string.Empty;
-        }
-        #endregion
+        get;
     }
+
+    /// <summary>
+    /// Property to return the title for the wait panel overlay.
+    /// </summary>
+    public string Title
+    {
+        get;
+    }
+    #endregion
+
+    #region Constructor/Finalizer.
+    /// <summary>
+    /// Initializes a new instance of the <see cref="WaitPanelActivateArgs"/> class.
+    /// </summary>
+    /// <param name="message">The message to display on the wait panel overlay.</param>
+    /// <param name="title">The title for the for wait panel overlay.</param>
+    public WaitPanelActivateArgs(string message, string title)
+    {
+        Message = message ?? string.Empty;
+        Title = title ?? string.Empty;
+    }
+    #endregion
 }

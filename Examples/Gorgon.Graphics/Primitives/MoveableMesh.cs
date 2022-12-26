@@ -29,142 +29,141 @@ using Gorgon.Graphics.Core;
 using Gorgon.Math;
 using DX = SharpDX;
 
-namespace Gorgon.Examples
+namespace Gorgon.Examples;
+
+/// <summary>
+/// Defines a mesh that can be transformed.
+/// </summary>
+internal abstract class MoveableMesh
+    : Mesh
 {
+    #region Variables.
+    // Position of the triangle.
+    private Vector3 _position = Vector3.Zero;
+
+    // Angle of the triangle.
+    private Vector3 _rotation = Vector3.Zero;
+
+    // Scale of the triangle.
+    private Vector3 _scale = new(1);
+
+    // Cached position matrix.
+    private Matrix4x4 _posMatrix = Matrix4x4.Identity;
+
+    // Cached rotation matrix.
+    private Matrix4x4 _rotMatrix = Matrix4x4.Identity;
+
+    // Cached scale matrix.
+    private Matrix4x4 _scaleMatrix = Matrix4x4.Identity;
+
+    // Cached world matrix.
+    private Matrix4x4 _world = Matrix4x4.Identity;
+
+    // Flags to indicate that the object needs to update its transform.
+    private bool _needsPosTransform;
+
+    private bool _needsSclTransform;
+    private bool _needsRotTransform;
+    private bool _needsWorldUpdate;
+    #endregion
+
+    #region Properties.
     /// <summary>
-    /// Defines a mesh that can be transformed.
+    /// Property to set or return the current position of the triangle.
     /// </summary>
-    internal abstract class MoveableMesh
-        : Mesh
+    public Vector3 Position
     {
-        #region Variables.
-        // Position of the triangle.
-        private Vector3 _position = Vector3.Zero;
-
-        // Angle of the triangle.
-        private Vector3 _rotation = Vector3.Zero;
-
-        // Scale of the triangle.
-        private Vector3 _scale = new(1);
-
-        // Cached position matrix.
-        private Matrix4x4 _posMatrix = Matrix4x4.Identity;
-
-        // Cached rotation matrix.
-        private Matrix4x4 _rotMatrix = Matrix4x4.Identity;
-
-        // Cached scale matrix.
-        private Matrix4x4 _scaleMatrix = Matrix4x4.Identity;
-
-        // Cached world matrix.
-        private Matrix4x4 _world = Matrix4x4.Identity;
-
-        // Flags to indicate that the object needs to update its transform.
-        private bool _needsPosTransform;
-
-        private bool _needsSclTransform;
-        private bool _needsRotTransform;
-        private bool _needsWorldUpdate;
-        #endregion
-
-        #region Properties.
-        /// <summary>
-        /// Property to set or return the current position of the triangle.
-        /// </summary>
-        public Vector3 Position
+        get => _position;
+        set
         {
-            get => _position;
-            set
-            {
-                _position = value;
-                _needsPosTransform = true;
-                _needsWorldUpdate = true;
-            }
+            _position = value;
+            _needsPosTransform = true;
+            _needsWorldUpdate = true;
         }
+    }
 
-        /// <summary>
-        /// Property to set or return the angle of rotation for the triangle (in degrees).
-        /// </summary>
-        public Vector3 Rotation
+    /// <summary>
+    /// Property to set or return the angle of rotation for the triangle (in degrees).
+    /// </summary>
+    public Vector3 Rotation
+    {
+        get => _rotation;
+        set
         {
-            get => _rotation;
-            set
-            {
-                _rotation = value;
-                _needsRotTransform = true;
-                _needsWorldUpdate = true;
-            }
+            _rotation = value;
+            _needsRotTransform = true;
+            _needsWorldUpdate = true;
         }
+    }
 
-        /// <summary>
-        /// Property to set or return the scale of the transform.
-        /// </summary>
-        public Vector3 Scale
+    /// <summary>
+    /// Property to set or return the scale of the transform.
+    /// </summary>
+    public Vector3 Scale
+    {
+        get => _scale;
+        set
         {
-            get => _scale;
-            set
-            {
-                _scale = value;
-                _needsSclTransform = true;
-                _needsWorldUpdate = true;
-            }
+            _scale = value;
+            _needsSclTransform = true;
+            _needsWorldUpdate = true;
         }
+    }
 
-        /// <summary>
-        /// Property to return the world matrix for this triangle.
-        /// </summary>
-        public ref readonly Matrix4x4 WorldMatrix
+    /// <summary>
+    /// Property to return the world matrix for this triangle.
+    /// </summary>
+    public ref readonly Matrix4x4 WorldMatrix
+    {
+        get
         {
-            get
+            if (!_needsWorldUpdate)
             {
-                if (!_needsWorldUpdate)
-                {
-                    return ref _world;
-                }
-
-                if (_needsPosTransform)
-                {
-                    _posMatrix = Matrix4x4.CreateTranslation(_position);
-                    _needsPosTransform = false;
-                }
-
-                if (_needsRotTransform)
-                {
-                    _rotMatrix = Matrix4x4.CreateFromYawPitchRoll(_rotation.Y.ToRadians(), _rotation.X.ToRadians(), _rotation.Z.ToRadians());
-                    _needsRotTransform = false;
-                }
-
-                if (_needsSclTransform)
-                {
-                    _scaleMatrix = Matrix4x4.CreateScale(_scale);
-                    _needsSclTransform = false;
-                }
-
-                _world = Matrix4x4.Multiply(_rotMatrix, _scaleMatrix);
-                _world = Matrix4x4.Multiply(_world, _posMatrix);
-
                 return ref _world;
             }
-        }
-        #endregion
 
-        #region Methods.
-        /// <summary>
-        /// Function to retrieve the 2D axis aligned bounding box for the mesh.
-        /// </summary>
-        /// <returns>The rectangle that represents a 2D axis aligned bounding box.</returns>
-        public virtual DX.RectangleF GetAABB() => DX.RectangleF.Empty;
-        #endregion
+            if (_needsPosTransform)
+            {
+                _posMatrix = Matrix4x4.CreateTranslation(_position);
+                _needsPosTransform = false;
+            }
 
-        #region Constructor.
-        /// <summary>
-        /// Initializes a new instance of the <see cref="MoveableMesh" /> class.
-        /// </summary>
-        /// <param name="graphics">The graphics interface that owns this object.</param>
-        protected MoveableMesh(GorgonGraphics graphics)
-            : base(graphics)
-        {
+            if (_needsRotTransform)
+            {
+                _rotMatrix = Matrix4x4.CreateFromYawPitchRoll(_rotation.Y.ToRadians(), _rotation.X.ToRadians(), _rotation.Z.ToRadians());
+                _needsRotTransform = false;
+            }
+
+            if (_needsSclTransform)
+            {
+                _scaleMatrix = Matrix4x4.CreateScale(_scale);
+                _needsSclTransform = false;
+            }
+
+            _world = Matrix4x4.Multiply(_rotMatrix, _scaleMatrix);
+            _world = Matrix4x4.Multiply(_world, _posMatrix);
+
+            return ref _world;
         }
-        #endregion
     }
+    #endregion
+
+    #region Methods.
+    /// <summary>
+    /// Function to retrieve the 2D axis aligned bounding box for the mesh.
+    /// </summary>
+    /// <returns>The rectangle that represents a 2D axis aligned bounding box.</returns>
+    public virtual DX.RectangleF GetAABB() => DX.RectangleF.Empty;
+    #endregion
+
+    #region Constructor.
+    /// <summary>
+    /// Initializes a new instance of the <see cref="MoveableMesh" /> class.
+    /// </summary>
+    /// <param name="graphics">The graphics interface that owns this object.</param>
+    protected MoveableMesh(GorgonGraphics graphics)
+        : base(graphics)
+    {
+    }
+    #endregion
 }

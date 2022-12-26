@@ -28,33 +28,32 @@ using System;
 using System.Windows.Forms;
 using Gorgon.UI;
 
-namespace Gorgon.Examples
+namespace Gorgon.Examples;
+
+/// <summary>
+/// An example using the Gorgon Compute Engine to generate a sobel edge detected image.
+/// </summary>
+internal static class Program
 {
     /// <summary>
-    /// An example using the Gorgon Compute Engine to generate a sobel edge detected image.
+    /// The main entry point for the application.
     /// </summary>
-    internal static class Program
+    [STAThread]
+    private static void Main()
     {
-        /// <summary>
-        /// The main entry point for the application.
-        /// </summary>
-        [STAThread]
-        private static void Main()
-        {
 #if NET6_0_OR_GREATER
-            Application.SetHighDpiMode(HighDpiMode.PerMonitorV2);
+        Application.SetHighDpiMode(HighDpiMode.PerMonitorV2);
 #endif
-            Application.EnableVisualStyles();
-            Application.SetCompatibleTextRenderingDefault(false);
+        Application.EnableVisualStyles();
+        Application.SetCompatibleTextRenderingDefault(false);
 
-            try
-            {
-                GorgonApplication.Run(new Form());
-            }
-            catch (Exception ex)
-            {
-                GorgonExample.HandleException(ex);
-            }
+        try
+        {
+            GorgonApplication.Run(new Form());
+        }
+        catch (Exception ex)
+        {
+            GorgonExample.HandleException(ex);
         }
     }
 }

@@ -33,314 +33,313 @@ using Gorgon.Collections;
 using Gorgon.Graphics;
 using Gorgon.Math;
 
-namespace Gorgon.UI
+namespace Gorgon.UI;
+
+/// <summary>
+/// Functionality to display a translucent (like plexi-glass) panel on top of a control or form.
+/// </summary>
+public class GorgonOverlay
 {
+    #region Variables.
+    // The form used to display the overlay.
+    private FormOverlay _overlayForm;        
+
+    // The parent control for the overlay.
+    private WeakReference<Control> _parent;
+
+    // The form containing the parent control.
+    private WeakReference<Form> _parentForm;
+
+    // The amount of transparency.
+    private int _transparencyPercent = 50;
+    #endregion
+
+    #region Properties.
     /// <summary>
-    /// Functionality to display a translucent (like plexi-glass) panel on top of a control or form.
+    /// Property to return whether the overlay is active or not.
     /// </summary>
-    public class GorgonOverlay
+    public bool IsActive => _overlayForm is not null;
+
+    /// <summary>
+    /// Property to set or return the amount of transparency.
+    /// </summary>
+    public int TransparencyPercent
     {
-        #region Variables.
-        // The form used to display the overlay.
-        private FormOverlay _overlayForm;        
+        get => _transparencyPercent;
+        set => _transparencyPercent = value.Min(100).Max(1);
+    }
 
-        // The parent control for the overlay.
-        private WeakReference<Control> _parent;
+    /// <summary>
+    /// Property to set or return the color of the overlay.
+    /// </summary>
+    public GorgonColor OverlayColor
+    {
+        get;
+        set;
+    } = GorgonColor.Black;
+    #endregion
 
-        // The form containing the parent control.
-        private WeakReference<Form> _parentForm;
-
-        // The amount of transparency.
-        private int _transparencyPercent = 50;
-        #endregion
-
-        #region Properties.
-        /// <summary>
-        /// Property to return whether the overlay is active or not.
-        /// </summary>
-        public bool IsActive => _overlayForm is not null;
-
-        /// <summary>
-        /// Property to set or return the amount of transparency.
-        /// </summary>
-        public int TransparencyPercent
+    #region Methods.
+    /// <summary>Handles the GotFocus event of the Parent control.</summary>
+    /// <param name="sender">The source of the event.</param>
+    /// <param name="e">The <see cref="EventArgs" /> instance containing the event data.</param>
+    private void Parent_GotFocus(object sender, EventArgs e)
+    {
+        if ((_overlayForm is null)
+            || (_parentForm is null)
+            || (_parent is null)
+            || (!_parentForm.TryGetTarget(out Form parentForm))
+            || (!_parent.TryGetTarget(out Control parent)))
         {
-            get => _transparencyPercent;
-            set => _transparencyPercent = value.Min(100).Max(1);
+            return;
         }
 
-        /// <summary>
-        /// Property to set or return the color of the overlay.
-        /// </summary>
-        public GorgonColor OverlayColor
+        if (parentForm.ActiveControl is null)
         {
-            get;
-            set;
-        } = GorgonColor.Black;
-        #endregion
-
-        #region Methods.
-        /// <summary>Handles the GotFocus event of the Parent control.</summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="EventArgs" /> instance containing the event data.</param>
-        private void Parent_GotFocus(object sender, EventArgs e)
-        {
-            if ((_overlayForm is null)
-                || (_parentForm is null)
-                || (_parent is null)
-                || (!_parentForm.TryGetTarget(out Form parentForm))
-                || (!_parent.TryGetTarget(out Control parent)))
-            {
-                return;
-            }
-
-            if (parentForm.ActiveControl is null)
-            {
-                return;
-            }
-
-            if (parent == parentForm)
-            {
-                parentForm.ActiveControl = null;
-                return;
-            }
-
-            // For controls that are overlaid, we need to skip them when moving focus. This helps defeat using the keyboard (via Tab) to set control focus.
-            parentForm.SelectNextControl(parentForm, (Control.ModifierKeys & Keys.Shift) != Keys.Shift, true, true, true);
+            return;
         }
 
-        /// <summary>Handles the HandleDestroyed event of the Parent control.</summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="EventArgs" /> instance containing the event data.</param>
-        private void Parent_HandleDestroyed(object sender, EventArgs e) => Hide();
-
-        /// <summary>Handles the FormClosed event of the ParentForm control.</summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="FormClosedEventArgs" /> instance containing the event data.</param>
-        private void ParentForm_FormClosed(object sender, FormClosedEventArgs e) => Hide();
-
-        /// <summary>Handles the Resize event of the ParentForm control.</summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="EventArgs" /> instance containing the event data.</param>
-        private void ParentForm_Layout(object sender, LayoutEventArgs e)
+        if (parent == parentForm)
         {
-            if ((_overlayForm is null) || (_parentForm is null) || (!_parentForm.TryGetTarget(out Form form)))
-            {
-                return;
-            }
-
-            if ((_overlayForm.Disposing) || (_overlayForm.IsDisposed))
-            {
-                return;
-            }
-
-            _overlayForm.Visible = form.WindowState switch
-            {
-                FormWindowState.Minimized => false,
-                _ => true,
-            };
+            parentForm.ActiveControl = null;
+            return;
         }
 
-        /// <summary>Handles the EnabledChanged event of the Parent control.</summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="EventArgs" /> instance containing the event data.</param>
-        private void Parent_EnabledChanged(object sender, EventArgs e)
+        // For controls that are overlaid, we need to skip them when moving focus. This helps defeat using the keyboard (via Tab) to set control focus.
+        parentForm.SelectNextControl(parentForm, (Control.ModifierKeys & Keys.Shift) != Keys.Shift, true, true, true);
+    }
+
+    /// <summary>Handles the HandleDestroyed event of the Parent control.</summary>
+    /// <param name="sender">The source of the event.</param>
+    /// <param name="e">The <see cref="EventArgs" /> instance containing the event data.</param>
+    private void Parent_HandleDestroyed(object sender, EventArgs e) => Hide();
+
+    /// <summary>Handles the FormClosed event of the ParentForm control.</summary>
+    /// <param name="sender">The source of the event.</param>
+    /// <param name="e">The <see cref="FormClosedEventArgs" /> instance containing the event data.</param>
+    private void ParentForm_FormClosed(object sender, FormClosedEventArgs e) => Hide();
+
+    /// <summary>Handles the Resize event of the ParentForm control.</summary>
+    /// <param name="sender">The source of the event.</param>
+    /// <param name="e">The <see cref="EventArgs" /> instance containing the event data.</param>
+    private void ParentForm_Layout(object sender, LayoutEventArgs e)
+    {
+        if ((_overlayForm is null) || (_parentForm is null) || (!_parentForm.TryGetTarget(out Form form)))
         {
-            if ((_overlayForm is null) || (_parent is null) || (!_parent.TryGetTarget(out Control parent)))
-            {
-                return;
-            }
-
-            if ((_overlayForm.Disposing) || (_overlayForm.IsDisposed))
-            {
-                return;
-            }
-
-            _overlayForm.Enabled = parent.Enabled;
+            return;
         }
 
-        /// <summary>Handles the VisibleChanged event of the Parent control.</summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="EventArgs" /> instance containing the event data.</param>
-        private void Parent_VisibleChanged(object sender, EventArgs e)
+        if ((_overlayForm.Disposing) || (_overlayForm.IsDisposed))
         {
-            if ((_overlayForm is null) || (_parent is null) || (!_parent.TryGetTarget(out Control parent)))
-            {
-                return;
-            }
-
-            if ((_overlayForm.Disposing) || (_overlayForm.IsDisposed))
-            {
-                return;
-            }
-
-            _overlayForm.Visible = parent.Visible;
+            return;
         }
 
-        /// <summary>Handles the Resize event of the Parent control.</summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="EventArgs" /> instance containing the event data.</param>
-        private void Parent_Layout(object sender, LayoutEventArgs e)
+        _overlayForm.Visible = form.WindowState switch
         {
-            if ((_overlayForm is null) || (_parent is null) || (!_parent.TryGetTarget(out Control parent)))
-            {
-                return;
-            }
+            FormWindowState.Minimized => false,
+            _ => true,
+        };
+    }
 
-            if ((_overlayForm.Disposing) || (_overlayForm.IsDisposed))
-            {
-                return;
-            }
-
-            _overlayForm.Location = parent.PointToScreen(new Point(0, 0));
-            _overlayForm.Size = parent.ClientSize;
+    /// <summary>Handles the EnabledChanged event of the Parent control.</summary>
+    /// <param name="sender">The source of the event.</param>
+    /// <param name="e">The <see cref="EventArgs" /> instance containing the event data.</param>
+    private void Parent_EnabledChanged(object sender, EventArgs e)
+    {
+        if ((_overlayForm is null) || (_parent is null) || (!_parent.TryGetTarget(out Control parent)))
+        {
+            return;
         }
 
-        /// <summary>Handles the Move event of the ParentForm control.</summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="EventArgs" /> instance containing the event data.</param>
-        private void ParentForm_Move(object sender, EventArgs e)
+        if ((_overlayForm.Disposing) || (_overlayForm.IsDisposed))
         {
-            if ((_overlayForm is null) || (_parent is null) || (!_parent.TryGetTarget(out Control parent)))
-            {
-                return;
-            }
-
-            if ((_overlayForm.Disposing) || (_overlayForm.IsDisposed))
-            {
-                return;
-            }
-
-            _overlayForm.Location = parent.PointToScreen(new Point(0, 0));
+            return;
         }
 
-        /// <summary>Handles the Activated event of the OverlayForm control.</summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="EventArgs" /> instance containing the event data.</param>
-        private void OverlayForm_Activated(object sender, EventArgs e)
-        {
-            if ((_parentForm is null) || (_parent is null) || (!_parentForm.TryGetTarget(out Form form)))
-            {
-                return;
-            }
+        _overlayForm.Enabled = parent.Enabled;
+    }
 
-            form.Activate();
+    /// <summary>Handles the VisibleChanged event of the Parent control.</summary>
+    /// <param name="sender">The source of the event.</param>
+    /// <param name="e">The <see cref="EventArgs" /> instance containing the event data.</param>
+    private void Parent_VisibleChanged(object sender, EventArgs e)
+    {
+        if ((_overlayForm is null) || (_parent is null) || (!_parent.TryGetTarget(out Control parent)))
+        {
+            return;
         }
 
-        /// <summary>
-        /// Function to show the overlay on top of a control/form.
-        /// </summary>
-        /// <param name="parentWindow">The control or form to use as the parent.</param>
-        /// <returns>The handle for the overlay.</returns>
-        /// <remarks>
-        /// <para>
-        /// This will only show a single overlay at a time, and multiple overlays are not supported.
-        /// </para>
-        /// <para>
-        /// Passing <b>null</b> to the <paramref name="parentWindow"/> parameter is the same as calling <see cref="Hide"/>.
-        /// </para>
-        /// </remarks>
-        public IWin32Window Show(IWin32Window parentWindow)
+        if ((_overlayForm.Disposing) || (_overlayForm.IsDisposed))
         {
-            Hide();
+            return;
+        }
 
-            if (parentWindow is not Control parent)
-            {
-                return null;
-            }
+        _overlayForm.Visible = parent.Visible;
+    }
 
-            _overlayForm = new FormOverlay
-            {
-                Location = parent.PointToScreen(new Point(0, 0)),
-                Size = parent.ClientSize,
-                BackColor = OverlayColor
-            };
+    /// <summary>Handles the Resize event of the Parent control.</summary>
+    /// <param name="sender">The source of the event.</param>
+    /// <param name="e">The <see cref="EventArgs" /> instance containing the event data.</param>
+    private void Parent_Layout(object sender, LayoutEventArgs e)
+    {
+        if ((_overlayForm is null) || (_parent is null) || (!_parent.TryGetTarget(out Control parent)))
+        {
+            return;
+        }
 
-            _parent = new WeakReference<Control>(parent);
-            Form parentForm = parent.FindForm();
+        if ((_overlayForm.Disposing) || (_overlayForm.IsDisposed))
+        {
+            return;
+        }
 
-            if (parentForm is not null)
-            {
-                _parentForm = new WeakReference<Form>(parentForm);
-            }
+        _overlayForm.Location = parent.PointToScreen(new Point(0, 0));
+        _overlayForm.Size = parent.ClientSize;
+    }
 
-            _overlayForm.Activated += OverlayForm_Activated;
+    /// <summary>Handles the Move event of the ParentForm control.</summary>
+    /// <param name="sender">The source of the event.</param>
+    /// <param name="e">The <see cref="EventArgs" /> instance containing the event data.</param>
+    private void ParentForm_Move(object sender, EventArgs e)
+    {
+        if ((_overlayForm is null) || (_parent is null) || (!_parent.TryGetTarget(out Control parent)))
+        {
+            return;
+        }
 
-            parent.Move += ParentForm_Move;
-            parent.Layout += Parent_Layout;
-            parent.VisibleChanged += Parent_VisibleChanged;
-            parent.EnabledChanged += Parent_EnabledChanged;
-            parent.HandleDestroyed += Parent_HandleDestroyed;
-            parent.GotFocus += Parent_GotFocus;
+        if ((_overlayForm.Disposing) || (_overlayForm.IsDisposed))
+        {
+            return;
+        }
 
+        _overlayForm.Location = parent.PointToScreen(new Point(0, 0));
+    }
+
+    /// <summary>Handles the Activated event of the OverlayForm control.</summary>
+    /// <param name="sender">The source of the event.</param>
+    /// <param name="e">The <see cref="EventArgs" /> instance containing the event data.</param>
+    private void OverlayForm_Activated(object sender, EventArgs e)
+    {
+        if ((_parentForm is null) || (_parent is null) || (!_parentForm.TryGetTarget(out Form form)))
+        {
+            return;
+        }
+
+        form.Activate();
+    }
+
+    /// <summary>
+    /// Function to show the overlay on top of a control/form.
+    /// </summary>
+    /// <param name="parentWindow">The control or form to use as the parent.</param>
+    /// <returns>The handle for the overlay.</returns>
+    /// <remarks>
+    /// <para>
+    /// This will only show a single overlay at a time, and multiple overlays are not supported.
+    /// </para>
+    /// <para>
+    /// Passing <b>null</b> to the <paramref name="parentWindow"/> parameter is the same as calling <see cref="Hide"/>.
+    /// </para>
+    /// </remarks>
+    public IWin32Window Show(IWin32Window parentWindow)
+    {
+        Hide();
+
+        if (parentWindow is not Control parent)
+        {
+            return null;
+        }
+
+        _overlayForm = new FormOverlay
+        {
+            Location = parent.PointToScreen(new Point(0, 0)),
+            Size = parent.ClientSize,
+            BackColor = OverlayColor
+        };
+
+        _parent = new WeakReference<Control>(parent);
+        Form parentForm = parent.FindForm();
+
+        if (parentForm is not null)
+        {
+            _parentForm = new WeakReference<Form>(parentForm);
+        }
+
+        _overlayForm.Activated += OverlayForm_Activated;
+
+        parent.Move += ParentForm_Move;
+        parent.Layout += Parent_Layout;
+        parent.VisibleChanged += Parent_VisibleChanged;
+        parent.EnabledChanged += Parent_EnabledChanged;
+        parent.HandleDestroyed += Parent_HandleDestroyed;
+        parent.GotFocus += Parent_GotFocus;
+
+        foreach (Control child in parent.Controls.OfType<Control>().Traverse(c => c.Controls.OfType<Control>()))
+        {
+            child.GotFocus += Parent_GotFocus;
+        }
+
+        if ((parentForm is not null) && (parentForm != parent))
+        {
+            parentForm.FormClosed += ParentForm_FormClosed;
+            parentForm.Move += ParentForm_Move;
+            parentForm.Layout += ParentForm_Layout;
+        }
+                                
+        _overlayForm.Show(parentForm ?? parent);
+        _overlayForm.Opacity = TransparencyPercent / 100.0;
+
+        return _overlayForm;
+    }
+
+    /// <summary>
+    /// Function to hide an active overlay.
+    /// </summary>
+    public void Hide()
+    {
+        FormOverlay overlayForm = Interlocked.Exchange(ref _overlayForm, null);
+        WeakReference<Form> formRef = Interlocked.Exchange(ref _parentForm, null);
+        WeakReference<Control> controlRef = Interlocked.Exchange(ref _parent, null);
+        Form parentForm = null;
+        Control parent = null;
+
+        if (formRef is not null)
+        {
+            formRef.TryGetTarget(out parentForm);
+        }
+
+        if (controlRef is not null)
+        {
+            controlRef.TryGetTarget(out parent);
+        }
+
+        if (overlayForm is not null)
+        {
+            overlayForm.Activated -= OverlayForm_Activated;
+        }
+
+        if (parentForm is not null)
+        {
+            parentForm.Layout -= ParentForm_Layout;
+            parentForm.Move -= ParentForm_Move;
+            parentForm.FormClosed -= ParentForm_FormClosed;
+        }
+
+        if (parent is not null)
+        {
             foreach (Control child in parent.Controls.OfType<Control>().Traverse(c => c.Controls.OfType<Control>()))
             {
-                child.GotFocus += Parent_GotFocus;
+                child.GotFocus -= Parent_GotFocus;
             }
 
-            if ((parentForm is not null) && (parentForm != parent))
-            {
-                parentForm.FormClosed += ParentForm_FormClosed;
-                parentForm.Move += ParentForm_Move;
-                parentForm.Layout += ParentForm_Layout;
-            }
-                                    
-            _overlayForm.Show(parentForm ?? parent);
-            _overlayForm.Opacity = TransparencyPercent / 100.0;
-
-            return _overlayForm;
+            parent.GotFocus -= Parent_GotFocus;
+            parent.HandleDestroyed -= Parent_HandleDestroyed;
+            parent.EnabledChanged -= Parent_EnabledChanged;
+            parent.VisibleChanged -= Parent_VisibleChanged;
+            parent.Layout -= Parent_Layout;
+            parent.Move -= ParentForm_Move;
         }
 
-        /// <summary>
-        /// Function to hide an active overlay.
-        /// </summary>
-        public void Hide()
-        {
-            FormOverlay overlayForm = Interlocked.Exchange(ref _overlayForm, null);
-            WeakReference<Form> formRef = Interlocked.Exchange(ref _parentForm, null);
-            WeakReference<Control> controlRef = Interlocked.Exchange(ref _parent, null);
-            Form parentForm = null;
-            Control parent = null;
-
-            if (formRef is not null)
-            {
-                formRef.TryGetTarget(out parentForm);
-            }
-
-            if (controlRef is not null)
-            {
-                controlRef.TryGetTarget(out parent);
-            }
-
-            if (overlayForm is not null)
-            {
-                overlayForm.Activated -= OverlayForm_Activated;
-            }
-
-            if (parentForm is not null)
-            {
-                parentForm.Layout -= ParentForm_Layout;
-                parentForm.Move -= ParentForm_Move;
-                parentForm.FormClosed -= ParentForm_FormClosed;
-            }
-
-            if (parent is not null)
-            {
-                foreach (Control child in parent.Controls.OfType<Control>().Traverse(c => c.Controls.OfType<Control>()))
-                {
-                    child.GotFocus -= Parent_GotFocus;
-                }
-
-                parent.GotFocus -= Parent_GotFocus;
-                parent.HandleDestroyed -= Parent_HandleDestroyed;
-                parent.EnabledChanged -= Parent_EnabledChanged;
-                parent.VisibleChanged -= Parent_VisibleChanged;
-                parent.Layout -= Parent_Layout;
-                parent.Move -= ParentForm_Move;
-            }
-
-            overlayForm?.Dispose();
-        }
-        #endregion
+        overlayForm?.Dispose();
     }
+    #endregion
 }

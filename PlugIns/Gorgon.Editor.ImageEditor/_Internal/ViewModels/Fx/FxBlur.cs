@@ -28,57 +28,56 @@ using System.Linq;
 using Gorgon.Editor.UI;
 using Gorgon.Math;
 
-namespace Gorgon.Editor.ImageEditor.Fx
+namespace Gorgon.Editor.ImageEditor.Fx;
+
+/// <summary>
+/// The view model for the gaussian blur effect settings.
+/// </summary>
+internal class FxBlur
+    : HostedPanelViewModelBase<HostedPanelViewModelParameters>, IFxBlur
 {
+    #region Variables.
+    // The amount of blur to apply.
+    private int _blurAmount = 1;
+    #endregion
+
+    #region Properties.
+    /// <summary>Property to return whether the panel is modal.</summary>
+    public override bool IsModal => false;
+
     /// <summary>
-    /// The view model for the gaussian blur effect settings.
+    /// Property to set or return the amount of blur to apply.
     /// </summary>
-    internal class FxBlur
-        : HostedPanelViewModelBase<HostedPanelViewModelParameters>, IFxBlur
+    public int BlurAmount
     {
-        #region Variables.
-        // The amount of blur to apply.
-        private int _blurAmount = 1;
-        #endregion
-
-        #region Properties.
-        /// <summary>Property to return whether the panel is modal.</summary>
-        public override bool IsModal => false;
-
-        /// <summary>
-        /// Property to set or return the amount of blur to apply.
-        /// </summary>
-        public int BlurAmount
+        get => _blurAmount.Max(1).Min(200);
+        set
         {
-            get => _blurAmount.Max(1).Min(200);
-            set
+            if (_blurAmount == value)
             {
-                if (_blurAmount == value)
-                {
-                    return;
-                }
-
-                OnPropertyChanging();
-                _blurAmount = value;
-                OnPropertyChanged();
+                return;
             }
-        }
-        #endregion
 
-        #region Methods.
-        /// <summary>Function to inject dependencies for the view model.</summary>
-        /// <param name="injectionParameters">The parameters to inject.</param>
-        /// <remarks>
-        ///   <para>
-        /// Applications should call this when setting up the view model for complex operations and/or dependency injection. The constructor should only be used for simple set up and initialization of objects.
-        /// </para>
-        ///   <para>
-        /// This method is only ever called after the view model has been created, and never again during the lifetime of the view model.
-        /// </para>
-        /// </remarks>
-        protected override void OnInitialize(HostedPanelViewModelParameters injectionParameters)
-        {
+            OnPropertyChanging();
+            _blurAmount = value;
+            OnPropertyChanged();
         }
-        #endregion
     }
+    #endregion
+
+    #region Methods.
+    /// <summary>Function to inject dependencies for the view model.</summary>
+    /// <param name="injectionParameters">The parameters to inject.</param>
+    /// <remarks>
+    ///   <para>
+    /// Applications should call this when setting up the view model for complex operations and/or dependency injection. The constructor should only be used for simple set up and initialization of objects.
+    /// </para>
+    ///   <para>
+    /// This method is only ever called after the view model has been created, and never again during the lifetime of the view model.
+    /// </para>
+    /// </remarks>
+    protected override void OnInitialize(HostedPanelViewModelParameters injectionParameters)
+    {
+    }
+    #endregion
 }

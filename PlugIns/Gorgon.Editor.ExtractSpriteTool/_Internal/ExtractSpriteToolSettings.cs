@@ -27,61 +27,60 @@
 using Newtonsoft.Json;
 using DX = SharpDX;
 
-namespace Gorgon.Editor.ExtractSpriteTool
+namespace Gorgon.Editor.ExtractSpriteTool;
+
+/// <summary>
+/// The settings for the plug in.
+/// </summary>
+internal class ExtractSpriteToolSettings
 {
     /// <summary>
-    /// The settings for the plug in.
+    /// Property to set or return whether to allow the skipping of empty sprites.
     /// </summary>
-    internal class ExtractSpriteToolSettings
+    [JsonProperty]
+    public bool AllowEmptySpriteSkip
     {
-        /// <summary>
-        /// Property to set or return whether to allow the skipping of empty sprites.
-        /// </summary>
-        [JsonProperty]
-        public bool AllowEmptySpriteSkip
-        {
-            get;
-            set;
-        } = true;
+        get;
+        set;
+    } = true;
 
-        /// <summary>
-        /// Property to set or return the color to use when skipping empty sprites.
-        /// </summary>
-        [JsonProperty]
-        public int SkipColor
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// Property to set or return the last directory path used to output sprites into.
-        /// </summary>
-        [JsonProperty]
-        public string LastOutputDir
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// Property to set or return whether the window is in a maximized state or not.
-        /// </summary>
-        [JsonProperty]
-        public bool IsMaximized
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// Property to set or return the size, in pixels, of a single cell in the grid.
-        /// </summary>
-        [JsonProperty]
-        public DX.Size2 GridCellSize
-        {
-            get;
-            set;
-        } = new DX.Size2(32, 32);
+    /// <summary>
+    /// Property to set or return the color to use when skipping empty sprites.
+    /// </summary>
+    [JsonProperty]
+    public int SkipColor
+    {
+        get;
+        set;
     }
+
+    /// <summary>
+    /// Property to set or return the last directory path used to output sprites into.
+    /// </summary>
+    [JsonProperty]
+    public string LastOutputDir
+    {
+        get;
+        set;
+    }
+
+    /// <summary>
+    /// Property to set or return whether the window is in a maximized state or not.
+    /// </summary>
+    [JsonProperty]
+    public bool IsMaximized
+    {
+        get;
+        set;
+    }
+
+    /// <summary>
+    /// Property to set or return the size, in pixels, of a single cell in the grid.
+    /// </summary>
+    [JsonProperty]
+    public DX.Size2 GridCellSize
+    {
+        get;
+        set;
+    } = new DX.Size2(32, 32);
 }

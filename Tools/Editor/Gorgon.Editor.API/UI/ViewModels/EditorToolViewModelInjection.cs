@@ -28,35 +28,34 @@ using System;
 using Gorgon.Editor.Content;
 using Gorgon.Editor.PlugIns;
 
-namespace Gorgon.Editor.UI.ViewModels
-{
-    /// <summary>
-    /// Common editor tool view model parameters.
-    /// </summary>
-    /// <remarks>
-    /// <para>
-    /// These parameters are meant to be passed to a view model based on the <see cref="EditorToolViewModelBase{T}"/> type and will contain services from the host application, and any other information 
-    /// required for editor tool plug in view models.
-    /// </para>
-    /// <para>
-    /// Tool plug in developers will use types derived from this type to pass custom initialization parameters to their tool plug in view models. 
-    /// </para>
-    /// </remarks>
-    /// <seealso cref="EditorToolViewModelBase{T}"/>
-    public class EditorToolViewModelInjection
-        : ViewModelInjection<IHostContentServices>, IEditorToolViewModelInjection
-    {
-        /// <summary>Property to return the file manager for content files.</summary>
-        public IContentFileManager ContentFileManager
-        {
-            get;
-        }
+namespace Gorgon.Editor.UI.ViewModels;
 
-        /// <summary>Initializes a new instance of the <see cref="EditorToolViewModelInjection"/> class.</summary>
-        /// <param name="contentFileManager">The content file manager.</param>
-        /// <param name="hostServices">The host services.</param>
-        /// <exception cref="ArgumentNullException">Thown when the <paramref name="contentFileManager"/>, or the <paramref name="hostServices"/> parameter is <b>null</b>.</exception>
-        public EditorToolViewModelInjection(IContentFileManager contentFileManager, IHostContentServices hostServices)
-            : base(hostServices) => ContentFileManager = contentFileManager ?? throw new ArgumentNullException(nameof(contentFileManager));
+/// <summary>
+/// Common editor tool view model parameters.
+/// </summary>
+/// <remarks>
+/// <para>
+/// These parameters are meant to be passed to a view model based on the <see cref="EditorToolViewModelBase{T}"/> type and will contain services from the host application, and any other information 
+/// required for editor tool plug in view models.
+/// </para>
+/// <para>
+/// Tool plug in developers will use types derived from this type to pass custom initialization parameters to their tool plug in view models. 
+/// </para>
+/// </remarks>
+/// <seealso cref="EditorToolViewModelBase{T}"/>
+public class EditorToolViewModelInjection
+    : ViewModelInjection<IHostContentServices>, IEditorToolViewModelInjection
+{
+    /// <summary>Property to return the file manager for content files.</summary>
+    public IContentFileManager ContentFileManager
+    {
+        get;
     }
+
+    /// <summary>Initializes a new instance of the <see cref="EditorToolViewModelInjection"/> class.</summary>
+    /// <param name="contentFileManager">The content file manager.</param>
+    /// <param name="hostServices">The host services.</param>
+    /// <exception cref="ArgumentNullException">Thown when the <paramref name="contentFileManager"/>, or the <paramref name="hostServices"/> parameter is <b>null</b>.</exception>
+    public EditorToolViewModelInjection(IContentFileManager contentFileManager, IHostContentServices hostServices)
+        : base(hostServices) => ContentFileManager = contentFileManager ?? throw new ArgumentNullException(nameof(contentFileManager));
 }

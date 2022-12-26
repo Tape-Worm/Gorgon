@@ -27,42 +27,41 @@
 using System.Collections.Generic;
 using Gorgon.Math;
 
-namespace Gorgon.Animation
+namespace Gorgon.Animation;
+
+/// <summary>
+/// A comparer used to sort the indices of a key frame list based on frame time.
+/// </summary>
+internal class KeyframeIndexComparer<T>
+    : IComparer<T>
+    where T : IGorgonKeyFrame
 {
+    #region Methods.
     /// <summary>
-    /// A comparer used to sort the indices of a key frame list based on frame time.
+    /// Compares two objects and returns a value indicating whether one is less than, equal to, or greater than the other.
     /// </summary>
-    internal class KeyframeIndexComparer<T>
-        : IComparer<T>
-        where T : IGorgonKeyFrame
+    /// <param name="x">The first object to compare.</param>
+    /// <param name="y">The second object to compare.</param>
+    /// <returns>A signed integer that indicates the relative values of <paramref name="x" /> and <paramref name="y" />, as shown in the following table.Value Meaning Less than zero
+    /// <paramref name="x" /> is less than <paramref name="y" />.Zero
+    /// <paramref name="x" /> equals <paramref name="y" />.Greater than zero
+    /// <paramref name="x" /> is greater than <paramref name="y" />.</returns>
+    public int Compare(T x, T y)
     {
-        #region Methods.
-        /// <summary>
-        /// Compares two objects and returns a value indicating whether one is less than, equal to, or greater than the other.
-        /// </summary>
-        /// <param name="x">The first object to compare.</param>
-        /// <param name="y">The second object to compare.</param>
-        /// <returns>A signed integer that indicates the relative values of <paramref name="x" /> and <paramref name="y" />, as shown in the following table.Value Meaning Less than zero
-        /// <paramref name="x" /> is less than <paramref name="y" />.Zero
-        /// <paramref name="x" /> equals <paramref name="y" />.Greater than zero
-        /// <paramref name="x" /> is greater than <paramref name="y" />.</returns>
-        public int Compare(T x, T y)
+        if ((x == null)
+            || (y == null))
         {
-            if ((x == null)
-                || (y == null))
-            {
-                return -1;
-            }
+            return -1;
+        }
 
 #pragma warning disable IDE0046 // Convert to conditional expression
-            if (x.Time.EqualsEpsilon(y.Time))
-            {
-                return 0;
-            }
-
-            return x.Time < y.Time ? -1 : 1;
-#pragma warning restore IDE0046 // Convert to conditional expression
+        if (x.Time.EqualsEpsilon(y.Time))
+        {
+            return 0;
         }
-        #endregion
+
+        return x.Time < y.Time ? -1 : 1;
+#pragma warning restore IDE0046 // Convert to conditional expression
     }
+    #endregion
 }

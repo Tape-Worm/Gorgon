@@ -12,11 +12,12 @@
     <PackageTags>Color Winforms Dialog</PackageTags>
     <EmbeddedResourceUseDependentUponConvention>true</EmbeddedResourceUseDependentUponConvention>
     <Company>Adam</Company>
-    <PackageReleaseNotes>Adapted for use by Gorgon.</PackageReleaseNotes>
+    <PackageReleaseNotes>Adapted for use in Gorgon.</PackageReleaseNotes>
     <SignAssembly>false</SignAssembly>
     <AssemblyOriginatorKeyFile>
     </AssemblyOriginatorKeyFile>
     <DelaySign>false</DelaySign>
+    <LangVersion>10</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>

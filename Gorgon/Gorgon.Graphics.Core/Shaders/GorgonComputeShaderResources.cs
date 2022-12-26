@@ -26,58 +26,57 @@
 
 using Gorgon.Collections;
 
-namespace Gorgon.Graphics.Core
+namespace Gorgon.Graphics.Core;
+
+/// <summary>
+/// A grouping of resource states for a compute shader.
+/// </summary>
+public sealed class GorgonComputeShaderResources
 {
+    #region Properties.
     /// <summary>
-    /// A grouping of resource states for a compute shader.
+    /// Property to return the samplers for the shader.
     /// </summary>
-    public sealed class GorgonComputeShaderResources
+    public IGorgonReadOnlyArray<GorgonSamplerState> Samplers
     {
-        #region Properties.
-        /// <summary>
-        /// Property to return the samplers for the shader.
-        /// </summary>
-        public IGorgonReadOnlyArray<GorgonSamplerState> Samplers
-        {
-            get;
-            internal set;
-        }
-
-        /// <summary>
-        /// Property to return the constant buffers for the shader.
-        /// </summary>
-        public IGorgonReadOnlyArray<GorgonConstantBufferView> ConstantBuffers
-        {
-            get;
-            internal set;
-        }
-
-        /// <summary>
-        /// Property to return the list of shader resources for the shader.
-        /// </summary>
-        public IGorgonReadOnlyArray<GorgonShaderResourceView> ShaderResources
-        {
-            get;
-            internal set;
-        }
-
-        /// <summary>
-        /// Property to return the list of read/write (unordered access) views for the compute shader.
-        /// </summary>
-        public IGorgonReadOnlyArray<GorgonReadWriteViewBinding> ReadWriteViews
-        {
-            get;
-            internal set;
-        }
-        #endregion
-
-        #region Constructor.
-        /// <summary>
-        /// Initializes a new instance of the <see cref="GorgonComputeShaderResources"/> class.
-        /// </summary>
-        internal GorgonComputeShaderResources()
-        {
-        }
-        #endregion
+        get;
+        internal set;
     }
+
+    /// <summary>
+    /// Property to return the constant buffers for the shader.
+    /// </summary>
+    public IGorgonReadOnlyArray<GorgonConstantBufferView> ConstantBuffers
+    {
+        get;
+        internal set;
+    }
+
+    /// <summary>
+    /// Property to return the list of shader resources for the shader.
+    /// </summary>
+    public IGorgonReadOnlyArray<GorgonShaderResourceView> ShaderResources
+    {
+        get;
+        internal set;
+    }
+
+    /// <summary>
+    /// Property to return the list of read/write (unordered access) views for the compute shader.
+    /// </summary>
+    public IGorgonReadOnlyArray<GorgonReadWriteViewBinding> ReadWriteViews
+    {
+        get;
+        internal set;
+    }
+    #endregion
+
+    #region Constructor.
+    /// <summary>
+    /// Initializes a new instance of the <see cref="GorgonComputeShaderResources"/> class.
+    /// </summary>
+    internal GorgonComputeShaderResources()
+    {
+    }
+    #endregion
 }

@@ -28,114 +28,113 @@ using Gorgon.Editor.UI;
 using Gorgon.Graphics;
 using Gorgon.Math;
 
-namespace Gorgon.Editor.ImageEditor
+namespace Gorgon.Editor.ImageEditor;
+
+/// <summary>
+/// The settings view model for the edge detect effect.
+/// </summary>
+internal class FxEdgeDetect
+    : HostedPanelViewModelBase<HostedPanelViewModelParameters>, IFxEdgeDetect
 {
-    /// <summary>
-    /// The settings view model for the edge detect effect.
-    /// </summary>
-    internal class FxEdgeDetect
-        : HostedPanelViewModelBase<HostedPanelViewModelParameters>, IFxEdgeDetect
+    #region Variables.
+    // The threshold for the edge detection.
+    private int _threshold = 50;
+    // The offset for the edge line width.
+    private float _offset = 1.0f;
+    // The color of the edge line.
+    private GorgonColor _lineColor = GorgonColor.Black;
+    // Flag to indicate that the edges should be overlaid on top of the original image or not.
+    private bool _overlay = true;
+    #endregion
+
+    #region Properties.
+    /// <summary>Property to return whether the panel is modal.</summary>
+    public override bool IsModal => false;
+
+    /// <summary>Property to set or return the threshold for detecting edges (as a percentage).</summary>
+    public int Threshold
     {
-        #region Variables.
-        // The threshold for the edge detection.
-        private int _threshold = 50;
-        // The offset for the edge line width.
-        private float _offset = 1.0f;
-        // The color of the edge line.
-        private GorgonColor _lineColor = GorgonColor.Black;
-        // Flag to indicate that the edges should be overlaid on top of the original image or not.
-        private bool _overlay = true;
-        #endregion
-
-        #region Properties.
-        /// <summary>Property to return whether the panel is modal.</summary>
-        public override bool IsModal => false;
-
-        /// <summary>Property to set or return the threshold for detecting edges (as a percentage).</summary>
-        public int Threshold
+        get => _threshold;
+        set
         {
-            get => _threshold;
-            set
+            if (_threshold == value)
             {
-                if (_threshold == value)
-                {
-                    return;
-                }
-
-                OnPropertyChanging();
-                _threshold = value;
-                OnPropertyChanged();
+                return;
             }
+
+            OnPropertyChanging();
+            _threshold = value;
+            OnPropertyChanged();
         }
-
-        /// <summary>Property to set or return the amount to offset the edge line widths.</summary>
-        public float Offset
-        {
-            get => _offset;
-            set
-            {
-                if (_offset.EqualsEpsilon(value))
-                {
-                    return;
-                }
-
-                OnPropertyChanging();
-                _offset = value;
-                OnPropertyChanged();
-            }
-        }
-
-        /// <summary>Property to set or return the color of the edge lines.</summary>
-        public GorgonColor LineColor
-        {
-            get => _lineColor;
-            set
-            {
-                if (GorgonColor.Equals(in _lineColor, in value))
-                {
-                    return;
-                }
-
-                OnPropertyChanging();
-                _lineColor = value;
-                OnPropertyChanged();
-            }
-        }
-
-        /// <summary>
-        /// Property to set or return whether the edges should be overlaid on top of the original image or not.
-        /// </summary>
-        public bool Overlay
-        {
-            get => _overlay;
-            set
-            {
-                if (_overlay == value)
-                {
-                    return;
-                }
-
-                OnPropertyChanging();
-                _overlay = value;
-                OnPropertyChanged();
-            }
-        }
-        #endregion
-
-        #region Methods.
-        /// <summary>Function to inject dependencies for the view model.</summary>
-        /// <param name="injectionParameters">The parameters to inject.</param>
-        /// <remarks>
-        ///   <para>
-        /// Applications should call this when setting up the view model for complex operations and/or dependency injection. The constructor should only be used for simple set up and initialization of objects.
-        /// </para>
-        ///   <para>
-        /// This method is only ever called after the view model has been created, and never again during the lifetime of the view model.
-        /// </para>
-        /// </remarks>
-        protected override void OnInitialize(HostedPanelViewModelParameters injectionParameters)
-        {
-        }
-        #endregion
     }
+
+    /// <summary>Property to set or return the amount to offset the edge line widths.</summary>
+    public float Offset
+    {
+        get => _offset;
+        set
+        {
+            if (_offset.EqualsEpsilon(value))
+            {
+                return;
+            }
+
+            OnPropertyChanging();
+            _offset = value;
+            OnPropertyChanged();
+        }
+    }
+
+    /// <summary>Property to set or return the color of the edge lines.</summary>
+    public GorgonColor LineColor
+    {
+        get => _lineColor;
+        set
+        {
+            if (GorgonColor.Equals(in _lineColor, in value))
+            {
+                return;
+            }
+
+            OnPropertyChanging();
+            _lineColor = value;
+            OnPropertyChanged();
+        }
+    }
+
+    /// <summary>
+    /// Property to set or return whether the edges should be overlaid on top of the original image or not.
+    /// </summary>
+    public bool Overlay
+    {
+        get => _overlay;
+        set
+        {
+            if (_overlay == value)
+            {
+                return;
+            }
+
+            OnPropertyChanging();
+            _overlay = value;
+            OnPropertyChanged();
+        }
+    }
+    #endregion
+
+    #region Methods.
+    /// <summary>Function to inject dependencies for the view model.</summary>
+    /// <param name="injectionParameters">The parameters to inject.</param>
+    /// <remarks>
+    ///   <para>
+    /// Applications should call this when setting up the view model for complex operations and/or dependency injection. The constructor should only be used for simple set up and initialization of objects.
+    /// </para>
+    ///   <para>
+    /// This method is only ever called after the view model has been created, and never again during the lifetime of the view model.
+    /// </para>
+    /// </remarks>
+    protected override void OnInitialize(HostedPanelViewModelParameters injectionParameters)
+    {
+    }
+    #endregion
 }

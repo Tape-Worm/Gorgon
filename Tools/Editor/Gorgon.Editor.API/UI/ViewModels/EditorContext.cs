@@ -26,21 +26,20 @@
 
 using Gorgon.Editor.PlugIns;
 
-namespace Gorgon.Editor.UI
+namespace Gorgon.Editor.UI;
+
+/// <summary>
+/// A view model for setting the context for an editor operation.
+/// </summary>
+/// <typeparam name="T">The type of parameters to inject into the view model. Must implement <see cref="IViewModelInjection{T}"/></typeparam>
+public abstract class EditorContext<T>
+    : ViewModelBase<T, IHostContentServices>, IEditorContext
+    where T : class, IViewModelInjection<IHostContentServices>
 {
-    /// <summary>
-    /// A view model for setting the context for an editor operation.
-    /// </summary>
-    /// <typeparam name="T">The type of parameters to inject into the view model. Must implement <see cref="IViewModelInjection{T}"/></typeparam>
-    public abstract class EditorContext<T>
-        : ViewModelBase<T, IHostContentServices>, IEditorContext
-        where T : class, IViewModelInjection<IHostContentServices>
+    /// <summary>Property to return the context name.</summary>
+    /// <remarks>This value is used as a unique ID for the context.</remarks>
+    public abstract string Name
     {
-        /// <summary>Property to return the context name.</summary>
-        /// <remarks>This value is used as a unique ID for the context.</remarks>
-        public abstract string Name
-        {
-            get;
-        }
+        get;
     }
 }

@@ -27,52 +27,51 @@
 using System.Collections.ObjectModel;
 using Gorgon.Editor.UI;
 
-namespace Gorgon.Editor.SpriteEditor
+namespace Gorgon.Editor.SpriteEditor;
+
+/// <summary>
+/// The view model for the importer plug in settings.
+/// </summary>
+internal interface IImportSettings
+    : ISettingsCategory
 {
     /// <summary>
-    /// The view model for the importer plug in settings.
+    /// Property to return the list of selected codecs.
     /// </summary>
-    internal interface IImportSettings
-        : ISettingsCategory
+    ObservableCollection<CodecSetting> SelectedCodecs
     {
-        /// <summary>
-        /// Property to return the list of selected codecs.
-        /// </summary>
-        ObservableCollection<CodecSetting> SelectedCodecs
-        {
-            get;
-        }
+        get;
+    }
 
-        /// <summary>
-        /// Propery to return the paths to the codec plug ins.
-        /// </summary>
-        ObservableCollection<CodecSetting> CodecPlugInPaths
-        {
-            get;
-        }
+    /// <summary>
+    /// Propery to return the paths to the codec plug ins.
+    /// </summary>
+    ObservableCollection<CodecSetting> CodecPlugInPaths
+    {
+        get;
+    }
 
-        /// <summary>
-        /// Property to return the command for writing setting data.
-        /// </summary>
-        IEditorCommand<object> WriteSettingsCommand
-        {
-            get;
-        }
+    /// <summary>
+    /// Property to return the command for writing setting data.
+    /// </summary>
+    IEditorCommand<object> WriteSettingsCommand
+    {
+        get;
+    }
 
-        /// <summary>
-        /// Property to return the command for loading a plug in assembly.
-        /// </summary>
-        IEditorCommand<object> LoadPlugInAssemblyCommand
-        {
-            get;
-        }
+    /// <summary>
+    /// Property to return the command for loading a plug in assembly.
+    /// </summary>
+    IEditorCommand<object> LoadPlugInAssemblyCommand
+    {
+        get;
+    }
 
-        /// <summary>
-        /// Property to return the command to unloading a plug in assembly.
-        /// </summary>
-        IEditorCommand<object> UnloadPlugInAssembliesCommand
-        {
-            get;
-        }
+    /// <summary>
+    /// Property to return the command to unloading a plug in assembly.
+    /// </summary>
+    IEditorCommand<object> UnloadPlugInAssembliesCommand
+    {
+        get;
     }
 }

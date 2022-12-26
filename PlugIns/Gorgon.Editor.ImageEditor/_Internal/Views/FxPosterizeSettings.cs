@@ -29,134 +29,133 @@ using System.ComponentModel;
 using Gorgon.Editor.UI;
 using Gorgon.Editor.UI.Controls;
 
-namespace Gorgon.Editor.ImageEditor
+namespace Gorgon.Editor.ImageEditor;
+
+/// <summary>
+/// Settings for the posterizer effect.
+/// </summary>
+internal partial class FxPosterizeSettings 
+    : EditorSubPanelCommon, IDataContext<IFxPosterize>
 {
-    /// <summary>
-    /// Settings for the posterizer effect.
-    /// </summary>
-    internal partial class FxPosterizeSettings 
-        : EditorSubPanelCommon, IDataContext<IFxPosterize>
+    #region Properties.
+    /// <summary>Property to return the data context assigned to this view.</summary>
+    public IFxPosterize DataContext
     {
-        #region Properties.
-        /// <summary>Property to return the data context assigned to this view.</summary>
-        public IFxPosterize DataContext
-        {
-            get;
-            private set;
-        }
-        #endregion
-
-        #region Methods.
-        /// <summary>Handles the ValueChanged event of the TrackAmount control.</summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
-        private void TrackAmount_ValueChanged(object sender, EventArgs e) => NumericAmount.Value = TrackAmount.Value;
-
-        /// <summary>Handles the ValueChanged event of the NumericAmount control.</summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
-        private void NumericAmount_ValueChanged(object sender, EventArgs e)
-        {
-            if (DataContext is null)
-            {
-                return;
-            }
-
-            TrackAmount.Value = DataContext.Amount = (int)NumericAmount.Value;
-        }
-
-        /// <summary>Function to submit the change.</summary>
-        protected override void OnSubmit()
-        {
-            base.OnSubmit();
-
-            if ((DataContext?.OkCommand is null) || (!DataContext.OkCommand.CanExecute(null)))
-            {
-                return;
-            }
-
-            DataContext.OkCommand.Execute(null);
-        }
-
-        /// <summary>Function to cancel the change.</summary>
-        protected override void OnCancel()
-        {
-            base.OnCancel();
-
-            if ((DataContext?.CancelCommand is null) || (!DataContext.CancelCommand.CanExecute(null)))
-            {
-                return;
-            }
-
-            DataContext.CancelCommand.Execute(null);
-        }
-
-        /// <summary>Handles the PropertyChanged event of the DataContext control.</summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="PropertyChangedEventArgs"/> instance containing the event data.</param>
-        private void DataContext_PropertyChanged(object sender, PropertyChangedEventArgs e)
-        {
-            switch (e.PropertyName)
-            {
-                case nameof(IFxSharpen.Amount):
-                    NumericAmount.Value = DataContext.Amount;
-                    break;
-            }
-        }
-
-        /// <summary>
-        /// Function to unassign the events from the data context.
-        /// </summary>
-        private void UnassignEvents()
-        {
-            if (DataContext is null)
-            {
-                return;
-            }
-
-            DataContext.PropertyChanged -= DataContext_PropertyChanged;
-        }
-
-        /// <summary>
-        /// Function to initialize the control from the data context.
-        /// </summary>
-        /// <param name="dataContext">The current data context.</param>
-        private void InitializeFromDataContext(IFxPosterize dataContext)
-        {
-            if (dataContext is null)
-            {
-                NumericAmount.ValueChanged -= NumericAmount_ValueChanged;
-                NumericAmount.Value = TrackAmount.Value = 32;
-                NumericAmount.ValueChanged += NumericAmount_ValueChanged;
-                return;
-            }
-
-            NumericAmount.Value = TrackAmount.Value = dataContext.Amount;
-        }
-
-        /// <summary>Function to assign a data context to the view as a view model.</summary>
-        /// <param name="dataContext">The data context to assign.</param>
-        /// <remarks>Data contexts should be nullable, in that, they should reset the view back to its original state when the context is null.</remarks>
-        public void SetDataContext(IFxPosterize dataContext)
-        {
-            UnassignEvents();
-
-            InitializeFromDataContext(dataContext);
-
-            DataContext = dataContext;
-
-            if (dataContext is null)
-            {
-                return;
-            }
-
-            DataContext.PropertyChanged += DataContext_PropertyChanged;
-        }
-        #endregion
-
-        #region Constructor/Finalizer.
-        /// <summary>Initializes a new instance of the <see cref="FxPosterizeSettings"/> class.</summary>
-        public FxPosterizeSettings() => InitializeComponent();
-        #endregion
+        get;
+        private set;
     }
+    #endregion
+
+    #region Methods.
+    /// <summary>Handles the ValueChanged event of the TrackAmount control.</summary>
+    /// <param name="sender">The source of the event.</param>
+    /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+    private void TrackAmount_ValueChanged(object sender, EventArgs e) => NumericAmount.Value = TrackAmount.Value;
+
+    /// <summary>Handles the ValueChanged event of the NumericAmount control.</summary>
+    /// <param name="sender">The source of the event.</param>
+    /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+    private void NumericAmount_ValueChanged(object sender, EventArgs e)
+    {
+        if (DataContext is null)
+        {
+            return;
+        }
+
+        TrackAmount.Value = DataContext.Amount = (int)NumericAmount.Value;
+    }
+
+    /// <summary>Function to submit the change.</summary>
+    protected override void OnSubmit()
+    {
+        base.OnSubmit();
+
+        if ((DataContext?.OkCommand is null) || (!DataContext.OkCommand.CanExecute(null)))
+        {
+            return;
+        }
+
+        DataContext.OkCommand.Execute(null);
+    }
+
+    /// <summary>Function to cancel the change.</summary>
+    protected override void OnCancel()
+    {
+        base.OnCancel();
+
+        if ((DataContext?.CancelCommand is null) || (!DataContext.CancelCommand.CanExecute(null)))
+        {
+            return;
+        }
+
+        DataContext.CancelCommand.Execute(null);
+    }
+
+    /// <summary>Handles the PropertyChanged event of the DataContext control.</summary>
+    /// <param name="sender">The source of the event.</param>
+    /// <param name="e">The <see cref="PropertyChangedEventArgs"/> instance containing the event data.</param>
+    private void DataContext_PropertyChanged(object sender, PropertyChangedEventArgs e)
+    {
+        switch (e.PropertyName)
+        {
+            case nameof(IFxSharpen.Amount):
+                NumericAmount.Value = DataContext.Amount;
+                break;
+        }
+    }
+
+    /// <summary>
+    /// Function to unassign the events from the data context.
+    /// </summary>
+    private void UnassignEvents()
+    {
+        if (DataContext is null)
+        {
+            return;
+        }
+
+        DataContext.PropertyChanged -= DataContext_PropertyChanged;
+    }
+
+    /// <summary>
+    /// Function to initialize the control from the data context.
+    /// </summary>
+    /// <param name="dataContext">The current data context.</param>
+    private void InitializeFromDataContext(IFxPosterize dataContext)
+    {
+        if (dataContext is null)
+        {
+            NumericAmount.ValueChanged -= NumericAmount_ValueChanged;
+            NumericAmount.Value = TrackAmount.Value = 32;
+            NumericAmount.ValueChanged += NumericAmount_ValueChanged;
+            return;
+        }
+
+        NumericAmount.Value = TrackAmount.Value = dataContext.Amount;
+    }
+
+    /// <summary>Function to assign a data context to the view as a view model.</summary>
+    /// <param name="dataContext">The data context to assign.</param>
+    /// <remarks>Data contexts should be nullable, in that, they should reset the view back to its original state when the context is null.</remarks>
+    public void SetDataContext(IFxPosterize dataContext)
+    {
+        UnassignEvents();
+
+        InitializeFromDataContext(dataContext);
+
+        DataContext = dataContext;
+
+        if (dataContext is null)
+        {
+            return;
+        }
+
+        DataContext.PropertyChanged += DataContext_PropertyChanged;
+    }
+    #endregion
+
+    #region Constructor/Finalizer.
+    /// <summary>Initializes a new instance of the <see cref="FxPosterizeSettings"/> class.</summary>
+    public FxPosterizeSettings() => InitializeComponent();
+    #endregion
 }

@@ -26,41 +26,40 @@
 
 using System;
 
-namespace Gorgon.IO
+namespace Gorgon.IO;
+
+/// <summary>
+/// Event arguments for the <see cref="IGorgonFileSystemWriter{T}.FileImported"/>.
+/// </summary>
+public class FileImportedArgs
+    : EventArgs
 {
+    #region Properties.
     /// <summary>
-    /// Event arguments for the <see cref="IGorgonFileSystemWriter{T}.FileImported"/>.
+    /// Property to return the physical file path of the file being imported.
     /// </summary>
-    public class FileImportedArgs
-        : EventArgs
+    public string PhysicalFilePath
     {
-        #region Properties.
-        /// <summary>
-        /// Property to return the physical file path of the file being imported.
-        /// </summary>
-        public string PhysicalFilePath
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to return the virtual file representing the imported physical file.
-        /// </summary>
-        public IGorgonVirtualFile VirtualFile
-        {
-            get;
-        }
-        #endregion
-
-        #region Constructor.
-        /// <summary>Initializes a new instance of the <see cref="FileImportedArgs"/> class.</summary>
-        /// <param name="physicalFilePath">The physical file path to the file being imported.</param>
-        /// <param name="virtualFile">The virtual file representing the physical file that was imported into the file system.</param>
-        public FileImportedArgs(string physicalFilePath, IGorgonVirtualFile virtualFile)
-        {
-            PhysicalFilePath = physicalFilePath;
-            VirtualFile = virtualFile;
-        }
-        #endregion
+        get;
     }
+
+    /// <summary>
+    /// Property to return the virtual file representing the imported physical file.
+    /// </summary>
+    public IGorgonVirtualFile VirtualFile
+    {
+        get;
+    }
+    #endregion
+
+    #region Constructor.
+    /// <summary>Initializes a new instance of the <see cref="FileImportedArgs"/> class.</summary>
+    /// <param name="physicalFilePath">The physical file path to the file being imported.</param>
+    /// <param name="virtualFile">The virtual file representing the physical file that was imported into the file system.</param>
+    public FileImportedArgs(string physicalFilePath, IGorgonVirtualFile virtualFile)
+    {
+        PhysicalFilePath = physicalFilePath;
+        VirtualFile = virtualFile;
+    }
+    #endregion
 }

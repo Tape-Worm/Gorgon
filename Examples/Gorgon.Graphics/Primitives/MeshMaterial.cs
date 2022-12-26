@@ -29,78 +29,77 @@ using Gorgon.Collections;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 
-namespace Gorgon.Examples
+namespace Gorgon.Examples;
+
+/// <summary>
+/// A material for a mesh.
+/// </summary>
+internal class MeshMaterial
 {
+    #region Properties.
     /// <summary>
-    /// A material for a mesh.
+    /// Property to return the textures for this mesh.
     /// </summary>
-    internal class MeshMaterial
+    public GorgonArray<string> Textures
     {
-        #region Properties.
-        /// <summary>
-        /// Property to return the textures for this mesh.
-        /// </summary>
-        public GorgonArray<string> Textures
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to set or return an offset for the textures.
-        /// </summary>
-        public Vector2 TextureOffset
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// Property to set or return the specular power.
-        /// </summary>
-        public float SpecularPower
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// Property to set or return the vertex shader for this mesh.
-        /// </summary>
-        public string VertexShader
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// Property to set or return the pixel shader for this mesh.
-        /// </summary>
-        public string PixelShader
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// Property to set or return the blending state for this mesh.
-        /// </summary>
-        public GorgonBlendState BlendState
-        {
-            get;
-            set;
-        }
-        #endregion
-
-        #region Constructor/Finalizer.
-        /// <summary>
-        /// Initializes a new instance of the <see cref="MeshMaterial"/> class.
-        /// </summary>
-        public MeshMaterial()
-        {
-            SpecularPower = 1.0f;
-            Textures = new GorgonArray<string>(3);
-            BlendState = GorgonBlendState.NoBlending;
-        }
-        #endregion
+        get;
     }
+
+    /// <summary>
+    /// Property to set or return an offset for the textures.
+    /// </summary>
+    public Vector2 TextureOffset
+    {
+        get;
+        set;
+    }
+
+    /// <summary>
+    /// Property to set or return the specular power.
+    /// </summary>
+    public float SpecularPower
+    {
+        get;
+        set;
+    }
+
+    /// <summary>
+    /// Property to set or return the vertex shader for this mesh.
+    /// </summary>
+    public string VertexShader
+    {
+        get;
+        set;
+    }
+
+    /// <summary>
+    /// Property to set or return the pixel shader for this mesh.
+    /// </summary>
+    public string PixelShader
+    {
+        get;
+        set;
+    }
+
+    /// <summary>
+    /// Property to set or return the blending state for this mesh.
+    /// </summary>
+    public GorgonBlendState BlendState
+    {
+        get;
+        set;
+    }
+    #endregion
+
+    #region Constructor/Finalizer.
+    /// <summary>
+    /// Initializes a new instance of the <see cref="MeshMaterial"/> class.
+    /// </summary>
+    public MeshMaterial()
+    {
+        SpecularPower = 1.0f;
+        Textures = new GorgonArray<string>(3);
+        BlendState = GorgonBlendState.NoBlending;
+    }
+    #endregion
 }

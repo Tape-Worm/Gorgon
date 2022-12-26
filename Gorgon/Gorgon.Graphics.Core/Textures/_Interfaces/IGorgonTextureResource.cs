@@ -28,30 +28,29 @@ using System;
 using Gorgon.Core;
 using Gorgon.Graphics.Imaging;
 
-namespace Gorgon.Graphics.Core
-{
-    /// <summary>
-    /// Defines a texture resource.
-    /// </summary>
-    public interface IGorgonTextureResource
-        : IGorgonNamedObject, IGorgonGraphicsObject, IGorgonImageInfo, IDisposable
-    {
-        #region Properties.
-        /// <summary>
-        /// Property to return the ID for this texture.
-        /// </summary>
-        int TextureID
-        {
-            get;
-        }
-        #endregion
+namespace Gorgon.Graphics.Core;
 
-        #region Methods.
-        /// <summary>
-        /// Function to retrieve a default shader resource view.
-        /// </summary>
-        /// <returns>The default shader resource view for the texture.</returns>
-        GorgonShaderResourceView GetShaderResourceView();
-        #endregion
+/// <summary>
+/// Defines a texture resource.
+/// </summary>
+public interface IGorgonTextureResource
+    : IGorgonNamedObject, IGorgonGraphicsObject, IGorgonImageInfo, IDisposable
+{
+    #region Properties.
+    /// <summary>
+    /// Property to return the ID for this texture.
+    /// </summary>
+    int TextureID
+    {
+        get;
     }
+    #endregion
+
+    #region Methods.
+    /// <summary>
+    /// Function to retrieve a default shader resource view.
+    /// </summary>
+    /// <returns>The default shader resource view for the texture.</returns>
+    GorgonShaderResourceView GetShaderResourceView();
+    #endregion
 }

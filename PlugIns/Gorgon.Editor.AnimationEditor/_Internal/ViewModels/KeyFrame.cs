@@ -30,108 +30,107 @@ using Gorgon.Editor.PlugIns;
 using Gorgon.Editor.UI;
 using Gorgon.Math;
 
-namespace Gorgon.Editor.AnimationEditor
+namespace Gorgon.Editor.AnimationEditor;
+
+/// <summary>
+/// A view model for a key frame.
+/// </summary>
+internal class KeyFrame
+    : ViewModelBase<KeyFrameParameters, IHostContentServices>, IKeyFrame
 {
-    /// <summary>
-    /// A view model for a key frame.
-    /// </summary>
-    internal class KeyFrame
-        : ViewModelBase<KeyFrameParameters, IHostContentServices>, IKeyFrame
+    #region Variables.
+    // The key frame time index.
+    private float _time;
+    // The texture value for the key.
+    private TextureValue _texture;
+    // The floating point values for the key.
+    private Vector4 _floatValues;
+    #endregion
+
+    #region Properties.
+    /// <summary>Property to set or return the time index for the key frame.</summary>
+    public float Time
     {
-        #region Variables.
-        // The key frame time index.
-        private float _time;
-        // The texture value for the key.
-        private TextureValue _texture;
-        // The floating point values for the key.
-        private Vector4 _floatValues;
-        #endregion
-
-        #region Properties.
-        /// <summary>Property to set or return the time index for the key frame.</summary>
-        public float Time
+        get => _time;
+        set
         {
-            get => _time;
-            set
+            if (value.EqualsEpsilon(_time))
             {
-                if (value.EqualsEpsilon(_time))
-                {
-                    return;
-                }
-
-                OnPropertyChanging();
-                _time = value;
-                OnPropertyChanged();
+                return;
             }
+
+            OnPropertyChanging();
+            _time = value;
+            OnPropertyChanged();
         }
-
-        /// <summary>Property to return the type of data for this key frame.</summary>
-        public AnimationTrackKeyType DataType
-        {
-            get;
-            private set;
-        }
-
-        /// <summary>Property to set or return a texture value for the key frame.</summary>
-        public TextureValue TextureValue
-        {
-            get => _texture;
-            set
-            {
-                if (_texture.Equals(in value))
-                {
-                    return;
-                }
-
-                OnPropertyChanging();
-                _texture = value;
-                OnPropertyChanged();
-            }
-        }
-
-        /// <summary>Property to return one to four floating point values for the key frame.</summary>
-        public Vector4 FloatValue
-        {
-            get => _floatValues;
-            set
-            {
-                if (_floatValues.Equals(value))
-                {
-                    return;
-                }
-
-                OnPropertyChanging();
-                _floatValues = value;
-                OnPropertyChanged();
-            }
-        }
-        #endregion
-
-        #region Methods.
-        /// <summary>Function to inject dependencies for the view model.</summary>
-        /// <param name="injectionParameters">The parameters to inject.</param>
-        /// <remarks>
-        ///   <para>
-        /// Applications should call this when setting up the view model for complex operations and/or dependency injection. The constructor should only be used for simple set up and initialization of objects.
-        /// </para>
-        ///   <para>
-        /// This method is only ever called after the view model has been created, and never again during the lifetime of the view model.
-        /// </para>
-        /// </remarks>
-        protected override void OnInitialize(KeyFrameParameters injectionParameters)
-        {
-            _time = injectionParameters.Time;
-            DataType = injectionParameters.KeyType;
-
-            if ((DataType == AnimationTrackKeyType.Texture2D) && (injectionParameters.TextureValue is not null))
-            {
-                _texture = injectionParameters.TextureValue.Value;
-            }
-            else if (injectionParameters.FloatValues is not null)
-            {
-                _floatValues = injectionParameters.FloatValues.Value;
-            }
-        }
-        #endregion
     }
+
+    /// <summary>Property to return the type of data for this key frame.</summary>
+    public AnimationTrackKeyType DataType
+    {
+        get;
+        private set;
+    }
+
+    /// <summary>Property to set or return a texture value for the key frame.</summary>
+    public TextureValue TextureValue
+    {
+        get => _texture;
+        set
+        {
+            if (_texture.Equals(in value))
+            {
+                return;
+            }
+
+            OnPropertyChanging();
+            _texture = value;
+            OnPropertyChanged();
+        }
+    }
+
+    /// <summary>Property to return one to four floating point values for the key frame.</summary>
+    public Vector4 FloatValue
+    {
+        get => _floatValues;
+        set
+        {
+            if (_floatValues.Equals(value))
+            {
+                return;
+            }
+
+            OnPropertyChanging();
+            _floatValues = value;
+            OnPropertyChanged();
+        }
+    }
+    #endregion
+
+    #region Methods.
+    /// <summary>Function to inject dependencies for the view model.</summary>
+    /// <param name="injectionParameters">The parameters to inject.</param>
+    /// <remarks>
+    ///   <para>
+    /// Applications should call this when setting up the view model for complex operations and/or dependency injection. The constructor should only be used for simple set up and initialization of objects.
+    /// </para>
+    ///   <para>
+    /// This method is only ever called after the view model has been created, and never again during the lifetime of the view model.
+    /// </para>
+    /// </remarks>
+    protected override void OnInitialize(KeyFrameParameters injectionParameters)
+    {
+        _time = injectionParameters.Time;
+        DataType = injectionParameters.KeyType;
+
+        if ((DataType == AnimationTrackKeyType.Texture2D) && (injectionParameters.TextureValue is not null))
+        {
+            _texture = injectionParameters.TextureValue.Value;
+        }
+        else if (injectionParameters.FloatValues is not null)
+        {
+            _floatValues = injectionParameters.FloatValues.Value;
+        }
+    }
+    #endregion
 }

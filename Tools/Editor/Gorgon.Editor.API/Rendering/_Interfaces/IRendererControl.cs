@@ -27,42 +27,41 @@
 using Gorgon.Core;
 using Gorgon.Graphics.Core;
 
-namespace Gorgon.Editor.Rendering
+namespace Gorgon.Editor.Rendering;
+
+/// <summary>
+/// A control that uses Gorgon rendering.
+/// </summary>
+public interface IRendererControl
+    : IGorgonNamedObject
 {
+    #region Properties.
     /// <summary>
-    /// A control that uses Gorgon rendering.
+    /// Property to return the graphics context.
     /// </summary>
-    public interface IRendererControl
-        : IGorgonNamedObject
+    IGraphicsContext GraphicsContext
     {
-        #region Properties.
-        /// <summary>
-        /// Property to return the graphics context.
-        /// </summary>
-        IGraphicsContext GraphicsContext
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to return the swap chain assigned to the control.
-        /// </summary>
-        GorgonSwapChain SwapChain
-        {
-            get;
-        }
-        #endregion
-
-        #region Methods.
-        /// <summary>
-        /// Function to begin rendering on the control.
-        /// </summary>
-        void Start();
-
-        /// <summary>
-        /// Function to cease rendering on the control.
-        /// </summary>
-        void Stop();
-        #endregion
+        get;
     }
+
+    /// <summary>
+    /// Property to return the swap chain assigned to the control.
+    /// </summary>
+    GorgonSwapChain SwapChain
+    {
+        get;
+    }
+    #endregion
+
+    #region Methods.
+    /// <summary>
+    /// Function to begin rendering on the control.
+    /// </summary>
+    void Start();
+
+    /// <summary>
+    /// Function to cease rendering on the control.
+    /// </summary>
+    void Stop();
+    #endregion
 }

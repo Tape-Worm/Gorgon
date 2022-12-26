@@ -25,32 +25,31 @@
 #endregion
 
 
-namespace Gorgon.Editor.ViewModels
+namespace Gorgon.Editor.ViewModels;
+
+/// <summary>
+/// The arguments to pass to the <see cref="IDirectory.GetSizeInBytesCommand"/>
+/// </summary>
+internal class GetSizeInBytesCommandArgs
 {
     /// <summary>
-    /// The arguments to pass to the <see cref="IDirectory.GetSizeInBytesCommand"/>
+    /// Property to return the flag that indicates the directory should recursively get the size.
     /// </summary>
-    internal class GetSizeInBytesCommandArgs
+    public bool Recursive
     {
-        /// <summary>
-        /// Property to return the flag that indicates the directory should recursively get the size.
-        /// </summary>
-        public bool Recursive
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to set or return the total size, in bytes, of the files (and, optionally, files in any subdirectories) contained within this directory.
-        /// </summary>
-        public long SizeInBytes
-        {
-            get;
-            set;
-        }
-
-        /// <summary>Initializes a new instance of the <see cref="GetSizeInBytesCommandArgs"/> class.</summary>
-        /// <param name="recursive"><b>true</b> to retrieve the size for all files plus all files within any subdirectories, <b>false</b> to only get the size of the files within the directory.</param>
-        public GetSizeInBytesCommandArgs(bool recursive) => Recursive = recursive;
+        get;
     }
+
+    /// <summary>
+    /// Property to set or return the total size, in bytes, of the files (and, optionally, files in any subdirectories) contained within this directory.
+    /// </summary>
+    public long SizeInBytes
+    {
+        get;
+        set;
+    }
+
+    /// <summary>Initializes a new instance of the <see cref="GetSizeInBytesCommandArgs"/> class.</summary>
+    /// <param name="recursive"><b>true</b> to retrieve the size for all files plus all files within any subdirectories, <b>false</b> to only get the size of the files within the directory.</param>
+    public GetSizeInBytesCommandArgs(bool recursive) => Recursive = recursive;
 }

@@ -27,27 +27,26 @@
 using System.Runtime.InteropServices;
 // ReSharper disable All
 
-namespace Gorgon.Native
+namespace Gorgon.Native;
+
+[StructLayout(LayoutKind.Sequential)]
+internal struct IMAGELISTDRAWPARAMS
 {
-    [StructLayout(LayoutKind.Sequential)]
-    internal struct IMAGELISTDRAWPARAMS
-    {
-        internal int cbSize;
-        internal nint himl;
-        internal int i;
-        internal nint hdcDst;
-        internal int x;
-        internal int y;
-        internal int cx;
-        internal int cy;
-        internal int xBitmap; // x offest from the upperleft of bitmap
-        internal int yBitmap; // y offset from the upperleft of bitmap
-        internal int rgbBk;
-        internal int rgbFg;
-        internal int fStyle;
-        internal int dwRop;
-        internal int fState;
-        internal int Frame;
-        internal int crEffect;
-    }
+    internal int cbSize;
+    internal nint himl;
+    internal int i;
+    internal nint hdcDst;
+    internal int x;
+    internal int y;
+    internal int cx;
+    internal int cy;
+    internal int xBitmap; // x offest from the upperleft of bitmap
+    internal int yBitmap; // y offset from the upperleft of bitmap
+    internal int rgbBk;
+    internal int rgbFg;
+    internal int fStyle;
+    internal int dwRop;
+    internal int fState;
+    internal int Frame;
+    internal int crEffect;
 }

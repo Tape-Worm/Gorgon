@@ -27,23 +27,22 @@
 using System;
 using SharpDX.Direct3D11;
 
-namespace Gorgon.Graphics.Core
+namespace Gorgon.Graphics.Core;
+
+/// <summary>
+/// Defines the type of logical operations to perform while blending a render target.
+/// </summary>
+[Flags]
+public enum WriteMask
 {
-    /// <summary>
-    /// Defines the type of logical operations to perform while blending a render target.
-    /// </summary>
-    [Flags]
-    public enum WriteMask
-    {
-        /// <summary>The red channel will be written.</summary>
-        Red = ColorWriteMaskFlags.Red,
-        /// <summary>The green channel will be written.</summary>
-        Green = ColorWriteMaskFlags.Green,
-        /// <summary>The blue channel will be written.</summary>
-        Blue = ColorWriteMaskFlags.Blue,
-        /// <summary>The alpha channel will be written.</summary>
-        Alpha = ColorWriteMaskFlags.Alpha,
-        /// <summary>All channels will be written.</summary>
-        All = ColorWriteMaskFlags.All
-    }
+    /// <summary>The red channel will be written.</summary>
+    Red = ColorWriteMaskFlags.Red,
+    /// <summary>The green channel will be written.</summary>
+    Green = ColorWriteMaskFlags.Green,
+    /// <summary>The blue channel will be written.</summary>
+    Blue = ColorWriteMaskFlags.Blue,
+    /// <summary>The alpha channel will be written.</summary>
+    Alpha = ColorWriteMaskFlags.Alpha,
+    /// <summary>All channels will be written.</summary>
+    All = ColorWriteMaskFlags.All
 }

@@ -27,28 +27,27 @@
 using Gorgon.Editor.Content;
 using Gorgon.Editor.PlugIns;
 
-namespace Gorgon.Editor.UI
+namespace Gorgon.Editor.UI;
+
+/// <summary>
+/// Defines values to inject into content view models.
+/// </summary>
+public interface IContentViewModelInjection
+    : IViewModelInjection<IHostContentServices>
 {
     /// <summary>
-    /// Defines values to inject into content view models.
+    /// Property to return the content file.
     /// </summary>
-    public interface IContentViewModelInjection
-        : IViewModelInjection<IHostContentServices>
+    IContentFile File
     {
-        /// <summary>
-        /// Property to return the content file.
-        /// </summary>
-        IContentFile File
-        {
-            get;
-        }
+        get;
+    }
 
-        /// <summary>
-        /// Property to return the file manager for content files.
-        /// </summary>
-        IContentFileManager ContentFileManager
-        {
-            get;
-        }
+    /// <summary>
+    /// Property to return the file manager for content files.
+    /// </summary>
+    IContentFileManager ContentFileManager
+    {
+        get;
     }
 }

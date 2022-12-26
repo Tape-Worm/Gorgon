@@ -31,21 +31,20 @@ using System.Text;
 using System.Threading.Tasks;
 using Gorgon.Editor.UI;
 
-namespace Gorgon.Editor.FontEditor
+namespace Gorgon.Editor.FontEditor;
+
+/// <summary>
+/// View model for the glyph padding interface.
+/// </summary>
+internal interface IFontPadding
+    : IHostedPanelViewModel
 {
     /// <summary>
-    /// View model for the glyph padding interface.
+    /// Property to set or return the padding around each glyph, in pixels.
     /// </summary>
-    internal interface IFontPadding
-        : IHostedPanelViewModel
+    int Padding
     {
-        /// <summary>
-        /// Property to set or return the padding around each glyph, in pixels.
-        /// </summary>
-        int Padding
-        {
-            get;
-            set;
-        }
+        get;
+        set;
     }
 }

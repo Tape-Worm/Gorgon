@@ -28,90 +28,89 @@ using System;
 using Gorgon.Core;
 using Gorgon.Editor.Metadata;
 
-namespace Gorgon.Editor.Content
+namespace Gorgon.Editor.Content;
+
+/// <summary>
+/// A data structure representing a file containing content.
+/// </summary>
+public interface IContentFile
+    : IGorgonNamedObject
 {
+    #region Events.
     /// <summary>
-    /// A data structure representing a file containing content.
+    /// Event triggered if this content file was renamed.
     /// </summary>
-    public interface IContentFile
-        : IGorgonNamedObject
+    event EventHandler<ContentFileRenamedEventArgs> Renamed;
+    #endregion
+
+    #region Properties.
+    /// <summary>
+    /// Property to set or return whether the file has changes.
+    /// </summary>
+    bool IsChanged
     {
-        #region Events.
-        /// <summary>
-        /// Event triggered if this content file was renamed.
-        /// </summary>
-        event EventHandler<ContentFileRenamedEventArgs> Renamed;
-        #endregion
-
-        #region Properties.
-        /// <summary>
-        /// Property to set or return whether the file has changes.
-        /// </summary>
-        bool IsChanged
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// Property to return the path to the file.
-        /// </summary>
-        string Path
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to return the extension for the file.
-        /// </summary>
-        string Extension
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to return the metadata associated with the file.
-        /// </summary>
-        ProjectItemMetadata Metadata
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to set or return whether the file is open for editing or not.
-        /// </summary>
-        bool IsOpen
-        {
-            get;
-            set;
-        }
-        #endregion
-
-        #region Methods.  
-        /// <summary>
-        /// Function to link a content file to be dependant upon this content.
-        /// </summary>
-        /// <param name="file">The file to link to this content.</param>
-        void LinkContent(IContentFile file);
-
-        /// <summary>
-        /// Function to unlink a content file from being dependant upon this content.
-        /// </summary>
-        /// <param name="file">The file to unlink from this content.</param>
-        void UnlinkContent(IContentFile file);
-
-        /// <summary>
-        /// Function to remove all child dependency links from this content.
-        /// </summary>
-        void ClearLinks();
-
-        /// <summary>
-        /// Function to notify that the metadata should be refreshed.
-        /// </summary>
-        void RefreshMetadata();
-
-        /// <summary>Function called to refresh the information about the file.</summary>
-        void Refresh();
-        #endregion
+        get;
+        set;
     }
+
+    /// <summary>
+    /// Property to return the path to the file.
+    /// </summary>
+    string Path
+    {
+        get;
+    }
+
+    /// <summary>
+    /// Property to return the extension for the file.
+    /// </summary>
+    string Extension
+    {
+        get;
+    }
+
+    /// <summary>
+    /// Property to return the metadata associated with the file.
+    /// </summary>
+    ProjectItemMetadata Metadata
+    {
+        get;
+    }
+
+    /// <summary>
+    /// Property to set or return whether the file is open for editing or not.
+    /// </summary>
+    bool IsOpen
+    {
+        get;
+        set;
+    }
+    #endregion
+
+    #region Methods.  
+    /// <summary>
+    /// Function to link a content file to be dependant upon this content.
+    /// </summary>
+    /// <param name="file">The file to link to this content.</param>
+    void LinkContent(IContentFile file);
+
+    /// <summary>
+    /// Function to unlink a content file from being dependant upon this content.
+    /// </summary>
+    /// <param name="file">The file to unlink from this content.</param>
+    void UnlinkContent(IContentFile file);
+
+    /// <summary>
+    /// Function to remove all child dependency links from this content.
+    /// </summary>
+    void ClearLinks();
+
+    /// <summary>
+    /// Function to notify that the metadata should be refreshed.
+    /// </summary>
+    void RefreshMetadata();
+
+    /// <summary>Function called to refresh the information about the file.</summary>
+    void Refresh();
+    #endregion
 }

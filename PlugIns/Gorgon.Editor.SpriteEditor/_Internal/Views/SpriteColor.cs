@@ -30,85 +30,101 @@ using Gorgon.Editor.UI;
 using Gorgon.Editor.UI.Controls;
 using Gorgon.Graphics;
 
-namespace Gorgon.Editor.SpriteEditor
+namespace Gorgon.Editor.SpriteEditor;
+
+/// <summary>
+/// A color selection control for the sprite.
+/// </summary>
+internal partial class SpriteColor
+    : EditorSubPanelCommon, IDataContext<ISpriteColorEdit>
 {
+    #region Variables.
+    // The list of vertices that were selected.
+    private readonly GorgonColor[] _selectedColors = new GorgonColor[4];
+    #endregion
+
+    #region Properties.
     /// <summary>
-    /// A color selection control for the sprite.
+    /// Property to return the data context for the view.
     /// </summary>
-    internal partial class SpriteColor
-        : EditorSubPanelCommon, IDataContext<ISpriteColorEdit>
+    [Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+    public ISpriteColorEdit DataContext
     {
-        #region Variables.
-        // The list of vertices that were selected.
-        private readonly GorgonColor[] _selectedColors = new GorgonColor[4];
-        #endregion
+        get;
+        private set;
+    }
+    #endregion
 
-        #region Properties.
-        /// <summary>
-        /// Property to return the data context for the view.
-        /// </summary>
-        [Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-        public ISpriteColorEdit DataContext
+    #region Methods.
+    /// <summary>Handles the ColorChanged event of the Picker control.</summary>
+    /// <param name="sender">The source of the event.</param>
+    /// <param name="e">The <see cref="ColorChangedEventArgs"/> instance containing the event data.</param>
+    private void Picker_ColorChanged(object sender, ColorChangedEventArgs e)
+    {
+        if (DataContext is null)
         {
-            get;
-            private set;
+            return;
         }
-        #endregion
 
-        #region Methods.
-        /// <summary>Handles the ColorChanged event of the Picker control.</summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="ColorChangedEventArgs"/> instance containing the event data.</param>
-        private void Picker_ColorChanged(object sender, ColorChangedEventArgs e)
+        for (int i = 0; i < DataContext.SelectedVertices.Count; ++i)
         {
-            if (DataContext is null)
+            if (DataContext.SelectedVertices[i])
             {
-                return;
+                _selectedColors[i] = e.Color;
             }
-
-            for (int i = 0; i < DataContext.SelectedVertices.Count; ++i)
+            else
             {
-                if (DataContext.SelectedVertices[i])
+                _selectedColors[i] = DataContext.SpriteColor[i];
+            }
+        }
+
+        DataContext.SpriteColor = _selectedColors;
+        DataContext.SelectedColor = e.Color;
+        ValidateOk();
+    }
+
+    /// <summary>
+    /// Function to unassign the events from the data context.
+    /// </summary>
+    private void UnassignEvents()
+    {
+        if (DataContext is null)
+        {
+            return;
+        }
+
+        DataContext.PropertyChanged -= DataContext_PropertyChanged;
+    }
+
+    /// <summary>Handles the PropertyChanged event of the DataContext control.</summary>
+    /// <param name="sender">The source of the event.</param>
+    /// <param name="e">The <see cref="PropertyChangedEventArgs"/> instance containing the event data.</param>
+    private void DataContext_PropertyChanged(object sender, PropertyChangedEventArgs e)
+    {
+        int firstSelected = 0;
+
+        switch (e.PropertyName)
+        {
+            case nameof(ISpriteColorEdit.SelectedColor):
+                Picker.SelectedColor = DataContext.SelectedColor;
+                break;
+            case nameof(ISpriteColorEdit.OriginalSpriteColor):
+                for (int i = 0; i < DataContext.SelectedVertices.Count; ++i)
                 {
-                    _selectedColors[i] = e.Color;
+                    if (DataContext.SelectedVertices[i])
+                    {
+                        firstSelected = i;
+                        break;
+                    }
                 }
-                else
+
+                Picker.OriginalColor = DataContext.OriginalSpriteColor[firstSelected];
+                break;
+            case nameof(ISpriteColorEdit.SelectedVertices):
+            case nameof(ISpriteColorEdit.SpriteColor):
+                Picker.ColorChanged -= Picker_ColorChanged;
+                try
                 {
-                    _selectedColors[i] = DataContext.SpriteColor[i];
-                }
-            }
-
-            DataContext.SpriteColor = _selectedColors;
-            DataContext.SelectedColor = e.Color;
-            ValidateOk();
-        }
-
-        /// <summary>
-        /// Function to unassign the events from the data context.
-        /// </summary>
-        private void UnassignEvents()
-        {
-            if (DataContext is null)
-            {
-                return;
-            }
-
-            DataContext.PropertyChanged -= DataContext_PropertyChanged;
-        }
-
-        /// <summary>Handles the PropertyChanged event of the DataContext control.</summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="PropertyChangedEventArgs"/> instance containing the event data.</param>
-        private void DataContext_PropertyChanged(object sender, PropertyChangedEventArgs e)
-        {
-            int firstSelected = 0;
-
-            switch (e.PropertyName)
-            {
-                case nameof(ISpriteColorEdit.SelectedColor):
-                    Picker.SelectedColor = DataContext.SelectedColor;
-                    break;
-                case nameof(ISpriteColorEdit.OriginalSpriteColor):
                     for (int i = 0; i < DataContext.SelectedVertices.Count; ++i)
                     {
                         if (DataContext.SelectedVertices[i])
@@ -117,135 +133,118 @@ namespace Gorgon.Editor.SpriteEditor
                             break;
                         }
                     }
-
+                    Picker.SelectedColor = DataContext.SpriteColor[firstSelected];
                     Picker.OriginalColor = DataContext.OriginalSpriteColor[firstSelected];
-                    break;
-                case nameof(ISpriteColorEdit.SelectedVertices):
-                case nameof(ISpriteColorEdit.SpriteColor):
-                    Picker.ColorChanged -= Picker_ColorChanged;
-                    try
-                    {
-                        for (int i = 0; i < DataContext.SelectedVertices.Count; ++i)
-                        {
-                            if (DataContext.SelectedVertices[i])
-                            {
-                                firstSelected = i;
-                                break;
-                            }
-                        }
-                        Picker.SelectedColor = DataContext.SpriteColor[firstSelected];
-                        Picker.OriginalColor = DataContext.OriginalSpriteColor[firstSelected];
-                    }
-                    finally
-                    {
-                        Picker.ColorChanged += Picker_ColorChanged;
-                    }
-                    break;
-            }
-        }
-
-        /// <summary>
-        /// Function to reset the values on the control for a null data context.
-        /// </summary>
-        private void ResetDataContext()
-        {
-            UnassignEvents();
-            Picker.OriginalColor = Picker.SelectedColor = GorgonColor.BlackTransparent;
-        }
-        
-        /// <summary>
-        /// Function to initialize the control with the data context.
-        /// </summary>
-        /// <param name="dataContext">The data context to assign.</param>
-        private void InitializeFromDataContext(ISpriteColorEdit dataContext)
-        {
-            if (dataContext is null)
-            {
-                ResetDataContext();
-                return;
-            }
-
-            int firstSelected = 0;
-            for (int i = 0; i < dataContext.SelectedVertices.Count; ++i)
-            {
-                if (dataContext.SelectedVertices[i])
-                {
-                    firstSelected = i;
-                    break;
                 }
-            }
-
-            Picker.OriginalColor = dataContext.OriginalSpriteColor[firstSelected];
-            Picker.SelectedColor = dataContext.SpriteColor[firstSelected];
+                finally
+                {
+                    Picker.ColorChanged += Picker_ColorChanged;
+                }
+                break;
         }
-
-        /// <summary>Function to submit the change.</summary>
-        protected override void OnSubmit()
-        {
-            base.OnSubmit();
-
-            if ((DataContext?.OkCommand is null) || (!DataContext.OkCommand.CanExecute(null)))
-            {
-                return;
-            }
-
-            DataContext.OkCommand.Execute(null);
-        }
-
-        /// <summary>Function to cancel the change.</summary>
-        protected override void OnCancel()
-        {
-            base.OnCancel();
-
-            if ((DataContext?.CancelCommand is null) || (!DataContext.CancelCommand.CanExecute(null)))
-            {
-                return;
-            }
-
-            DataContext.CancelCommand.Execute(null);
-        }
-
-        /// <summary>
-        /// Function to validate the state of the OK button.
-        /// </summary>
-        /// <returns><b>true</b> if the OK button is valid, <b>false</b> if not.</returns>
-        protected override bool OnValidateOk() => (DataContext?.OkCommand is not null) && (DataContext.OkCommand.CanExecute(null));
-
-        /// <summary>Raises the <see cref="E:System.Windows.Forms.UserControl.Load"/> event.</summary>
-        /// <param name="e">An <see cref="EventArgs"/> that contains the event data.</param>
-        protected override void OnLoad(EventArgs e)
-        {
-            base.OnLoad(e);
-
-            if (IsDesignTime)
-            {
-                return;
-            }
-
-            DataContext?.Load();
-        }
-        
-        /// <summary>Function to assign a data context to the view as a view model.</summary>
-        /// <param name="dataContext">The data context to assign.</param>
-        /// <remarks>Data contexts should be nullable, in that, they should reset the view back to its original state when the context is null.</remarks>
-        public void SetDataContext(ISpriteColorEdit dataContext)
-        {
-            InitializeFromDataContext(dataContext);
-
-            DataContext = dataContext;
-
-            if (DataContext is null)
-            {
-                return;
-            }
-
-            DataContext.PropertyChanged += DataContext_PropertyChanged;
-        }
-        #endregion
-
-        #region Constructor/Finalizer.
-        /// <summary>Initializes a new instance of the <see cref="SpriteColor"/> class.</summary>
-        public SpriteColor() => InitializeComponent();
-        #endregion
     }
+
+    /// <summary>
+    /// Function to reset the values on the control for a null data context.
+    /// </summary>
+    private void ResetDataContext()
+    {
+        UnassignEvents();
+        Picker.OriginalColor = Picker.SelectedColor = GorgonColor.BlackTransparent;
+    }
+    
+    /// <summary>
+    /// Function to initialize the control with the data context.
+    /// </summary>
+    /// <param name="dataContext">The data context to assign.</param>
+    private void InitializeFromDataContext(ISpriteColorEdit dataContext)
+    {
+        if (dataContext is null)
+        {
+            ResetDataContext();
+            return;
+        }
+
+        int firstSelected = 0;
+        for (int i = 0; i < dataContext.SelectedVertices.Count; ++i)
+        {
+            if (dataContext.SelectedVertices[i])
+            {
+                firstSelected = i;
+                break;
+            }
+        }
+
+        Picker.OriginalColor = dataContext.OriginalSpriteColor[firstSelected];
+        Picker.SelectedColor = dataContext.SpriteColor[firstSelected];
+    }
+
+    /// <summary>Function to submit the change.</summary>
+    protected override void OnSubmit()
+    {
+        base.OnSubmit();
+
+        if ((DataContext?.OkCommand is null) || (!DataContext.OkCommand.CanExecute(null)))
+        {
+            return;
+        }
+
+        DataContext.OkCommand.Execute(null);
+    }
+
+    /// <summary>Function to cancel the change.</summary>
+    protected override void OnCancel()
+    {
+        base.OnCancel();
+
+        if ((DataContext?.CancelCommand is null) || (!DataContext.CancelCommand.CanExecute(null)))
+        {
+            return;
+        }
+
+        DataContext.CancelCommand.Execute(null);
+    }
+
+    /// <summary>
+    /// Function to validate the state of the OK button.
+    /// </summary>
+    /// <returns><b>true</b> if the OK button is valid, <b>false</b> if not.</returns>
+    protected override bool OnValidateOk() => (DataContext?.OkCommand is not null) && (DataContext.OkCommand.CanExecute(null));
+
+    /// <summary>Raises the <see cref="E:System.Windows.Forms.UserControl.Load"/> event.</summary>
+    /// <param name="e">An <see cref="EventArgs"/> that contains the event data.</param>
+    protected override void OnLoad(EventArgs e)
+    {
+        base.OnLoad(e);
+
+        if (IsDesignTime)
+        {
+            return;
+        }
+
+        DataContext?.Load();
+    }
+    
+    /// <summary>Function to assign a data context to the view as a view model.</summary>
+    /// <param name="dataContext">The data context to assign.</param>
+    /// <remarks>Data contexts should be nullable, in that, they should reset the view back to its original state when the context is null.</remarks>
+    public void SetDataContext(ISpriteColorEdit dataContext)
+    {
+        InitializeFromDataContext(dataContext);
+
+        DataContext = dataContext;
+
+        if (DataContext is null)
+        {
+            return;
+        }
+
+        DataContext.PropertyChanged += DataContext_PropertyChanged;
+    }
+    #endregion
+
+    #region Constructor/Finalizer.
+    /// <summary>Initializes a new instance of the <see cref="SpriteColor"/> class.</summary>
+    public SpriteColor() => InitializeComponent();
+    #endregion
 }

@@ -28,181 +28,180 @@ using Gorgon.Editor.ImageEditor.Fx;
 using Gorgon.Editor.UI;
 using Gorgon.Graphics.Imaging;
 
-namespace Gorgon.Editor.ImageEditor
+namespace Gorgon.Editor.ImageEditor;
+
+/// <summary>
+/// The context view model for the effects context options.
+/// </summary>
+internal interface IFxContext
+    : IEditorContext
 {
     /// <summary>
-    /// The context view model for the effects context options.
+    /// Property to return whether effects have been applied to the image.
     /// </summary>
-    internal interface IFxContext
-        : IEditorContext
+    bool EffectsUpdated
     {
-        /// <summary>
-        /// Property to return whether effects have been applied to the image.
-        /// </summary>
-        bool EffectsUpdated
-        {
-            get;
-        }
+        get;
+    }
 
-        /// <summary>
-        /// Property to return the service used to apply effects and generate previews for effects.
-        /// </summary>
-        IFxService FxService
-        {
-            get;
-        }
+    /// <summary>
+    /// Property to return the service used to apply effects and generate previews for effects.
+    /// </summary>
+    IFxService FxService
+    {
+        get;
+    }
 
-        /// <summary>
-        /// Property to return the view model for the blur fx settings.
-        /// </summary>
-        IFxBlur BlurSettings
-        {
-            get;
-        }
+    /// <summary>
+    /// Property to return the view model for the blur fx settings.
+    /// </summary>
+    IFxBlur BlurSettings
+    {
+        get;
+    }
 
-        /// <summary>
-        /// Property to return the view model for the sharpen effect settings.
-        /// </summary>
-        IFxSharpen SharpenSettings
-        {
-            get;
-        }
+    /// <summary>
+    /// Property to return the view model for the sharpen effect settings.
+    /// </summary>
+    IFxSharpen SharpenSettings
+    {
+        get;
+    }
 
-        /// <summary>
-        /// Property to return the view model for the emboss effect settings.
-        /// </summary>
-        IFxEmboss EmbossSettings
-        {
-            get;
-        }
+    /// <summary>
+    /// Property to return the view model for the emboss effect settings.
+    /// </summary>
+    IFxEmboss EmbossSettings
+    {
+        get;
+    }
 
-        /// <summary>
-        /// Property to return the view model for the edge detection effect settings.
-        /// </summary>
-        IFxEdgeDetect EdgeDetectSettings
-        {
-            get;
-        }
+    /// <summary>
+    /// Property to return the view model for the edge detection effect settings.
+    /// </summary>
+    IFxEdgeDetect EdgeDetectSettings
+    {
+        get;
+    }
 
-        /// <summary>
-        /// Property to return the view model for the posterize effect settings.
-        /// </summary>
-        IFxPosterize PosterizeSettings
-        {
-            get;
-        }
+    /// <summary>
+    /// Property to return the view model for the posterize effect settings.
+    /// </summary>
+    IFxPosterize PosterizeSettings
+    {
+        get;
+    }
 
-        /// <summary>
-        /// Property to return the view model for the one bit effect settings.
-        /// </summary>
-        IFxOneBit OneBitSettings
-        {
-            get;
-        }
+    /// <summary>
+    /// Property to return the view model for the one bit effect settings.
+    /// </summary>
+    IFxOneBit OneBitSettings
+    {
+        get;
+    }
 
-        /// <summary>
-        /// Property to return the command used to assign the working image
-        /// </summary>
-        IEditorCommand<IGorgonImage> SetImageCommand
-        {
-            get;
-        }
+    /// <summary>
+    /// Property to return the command used to assign the working image
+    /// </summary>
+    IEditorCommand<IGorgonImage> SetImageCommand
+    {
+        get;
+    }
 
-        /// <summary>
-        /// Property to return the command used to show the blur settings.
-        /// </summary>
-        IEditorCommand<object> ShowBlurCommand
-        {
-            get;
-        }
+    /// <summary>
+    /// Property to return the command used to show the blur settings.
+    /// </summary>
+    IEditorCommand<object> ShowBlurCommand
+    {
+        get;
+    }
 
-        /// <summary>
-        /// Property to set or return the command to apply the effects to the final image.
-        /// </summary>
-        IEditorCommand<object> ApplyCommand
-        {
-            get;
-            set;
-        }
+    /// <summary>
+    /// Property to set or return the command to apply the effects to the final image.
+    /// </summary>
+    IEditorCommand<object> ApplyCommand
+    {
+        get;
+        set;
+    }
 
-        /// <summary>
-        /// Property to return the command to cancel the effects operations.
-        /// </summary>
-        IEditorCommand<object> CancelCommand
-        {
-            get;
-        }
+    /// <summary>
+    /// Property to return the command to cancel the effects operations.
+    /// </summary>
+    IEditorCommand<object> CancelCommand
+    {
+        get;
+    }
 
-        /// <summary>
-        /// Property to return the command to apply the grayscale effect.
-        /// </summary>
-        IEditorCommand<object> GrayScaleCommand
-        {
-            get;
-        }
+    /// <summary>
+    /// Property to return the command to apply the grayscale effect.
+    /// </summary>
+    IEditorCommand<object> GrayScaleCommand
+    {
+        get;
+    }
 
-        /// <summary>
-        /// Property to return the command to apply the invert effect.
-        /// </summary>
-        IEditorCommand<object> InvertCommand
-        {
-            get;
-        }
+    /// <summary>
+    /// Property to return the command to apply the invert effect.
+    /// </summary>
+    IEditorCommand<object> InvertCommand
+    {
+        get;
+    }
 
-        /// <summary>
-        /// Property to return the command to show the sharpen effect settings.
-        /// </summary>
-        IEditorCommand<object> ShowSharpenCommand
-        {
-            get;
-        }
+    /// <summary>
+    /// Property to return the command to show the sharpen effect settings.
+    /// </summary>
+    IEditorCommand<object> ShowSharpenCommand
+    {
+        get;
+    }
 
-        /// <summary>
-        /// Property to return the command to show the emboss effect settings.
-        /// </summary>
-        IEditorCommand<object> ShowEmbossCommand
-        {
-            get;
-        }
+    /// <summary>
+    /// Property to return the command to show the emboss effect settings.
+    /// </summary>
+    IEditorCommand<object> ShowEmbossCommand
+    {
+        get;
+    }
 
-        /// <summary>
-        /// Property to return the command to show the edge detection settings.
-        /// </summary>
-        IEditorCommand<object> ShowEdgeDetectCommand
-        {
-            get;
-        }
+    /// <summary>
+    /// Property to return the command to show the edge detection settings.
+    /// </summary>
+    IEditorCommand<object> ShowEdgeDetectCommand
+    {
+        get;
+    }
 
-        /// <summary>
-        /// Property to return the command to show the posterize settings.
-        /// </summary>
-        IEditorCommand<object> ShowPosterizeCommand
-        {
-            get;
-        }
+    /// <summary>
+    /// Property to return the command to show the posterize settings.
+    /// </summary>
+    IEditorCommand<object> ShowPosterizeCommand
+    {
+        get;
+    }
 
-        /// <summary>
-        /// Property to return the command to show the one bit effect settings.
-        /// </summary>
-        IEditorCommand<object> ShowOneBitCommand
-        {
-            get;
-        }
+    /// <summary>
+    /// Property to return the command to show the one bit effect settings.
+    /// </summary>
+    IEditorCommand<object> ShowOneBitCommand
+    {
+        get;
+    }
 
-        /// <summary>
-        /// Property to return the command to apply the burn effect.
-        /// </summary>
-        IEditorCommand<object> BurnCommand
-        {
-            get;
-        }
+    /// <summary>
+    /// Property to return the command to apply the burn effect.
+    /// </summary>
+    IEditorCommand<object> BurnCommand
+    {
+        get;
+    }
 
-        /// <summary>
-        /// Property to return the command to apply the dodge effect.
-        /// </summary>
-        IEditorCommand<object> DodgeCommand
-        {
-            get;
-        }
+    /// <summary>
+    /// Property to return the command to apply the dodge effect.
+    /// </summary>
+    IEditorCommand<object> DodgeCommand
+    {
+        get;
     }
 }

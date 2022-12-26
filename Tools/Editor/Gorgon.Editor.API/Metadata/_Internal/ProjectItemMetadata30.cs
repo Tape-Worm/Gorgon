@@ -29,47 +29,46 @@ using System;
 using System.Collections.Generic;
 using Newtonsoft.Json;
 
-namespace Gorgon.Editor.Metadata
+namespace Gorgon.Editor.Metadata;
+
+/// <summary>
+/// Metadata for a project item that is included in the project.
+/// </summary>
+[JsonObject(MemberSerialization = MemberSerialization.OptIn)]
+internal class ProjectItemMetadata30
 {
+    #region Properties.        
     /// <summary>
-    /// Metadata for a project item that is included in the project.
+    /// Property to set or return the name of the plugin associated with the metadata file path.
     /// </summary>
-    [JsonObject(MemberSerialization = MemberSerialization.OptIn)]
-    internal class ProjectItemMetadata30
+    /// <remarks>
+    /// If this value is <b>null</b>, then the plugin hasn't been set.  If it's an empty string, then no plugin is associated with this metadata.
+    /// </remarks>
+    [JsonProperty]
+    public string PlugInName
     {
-        #region Properties.        
-        /// <summary>
-        /// Property to set or return the name of the plugin associated with the metadata file path.
-        /// </summary>
-        /// <remarks>
-        /// If this value is <b>null</b>, then the plugin hasn't been set.  If it's an empty string, then no plugin is associated with this metadata.
-        /// </remarks>
-        [JsonProperty]
-        public string PlugInName
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// Property to return the custom attributes for this metadata.
-        /// </summary>
-        [JsonProperty]
-        public Dictionary<string, string> Attributes
-        {
-            get;
-            private set;
-        } = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
-
-        /// <summary>
-        /// Property to return the list of item paths that this item depends on.
-        /// </summary>
-        [JsonProperty(PropertyName = "Dependencies")]
-        public Dictionary<string, string> DependsOn
-        {
-            get;
-            private set;
-        } = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
-        #endregion
+        get;
+        set;
     }
+
+    /// <summary>
+    /// Property to return the custom attributes for this metadata.
+    /// </summary>
+    [JsonProperty]
+    public Dictionary<string, string> Attributes
+    {
+        get;
+        private set;
+    } = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+
+    /// <summary>
+    /// Property to return the list of item paths that this item depends on.
+    /// </summary>
+    [JsonProperty(PropertyName = "Dependencies")]
+    public Dictionary<string, string> DependsOn
+    {
+        get;
+        private set;
+    } = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+    #endregion
 }

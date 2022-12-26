@@ -27,8 +27,8 @@
 using System.ComponentModel;
 using System.Windows.Forms;
 
-namespace Gorgon.UI
-{
+namespace Gorgon.UI;
+
 	partial class ConfirmationDialogEx
 	{
 		/// <summary>
@@ -105,8 +105,7 @@ namespace Gorgon.UI
 
 		}
 
-        #endregion
+    #endregion
 
-        private CheckBox checkToAll;
-    }
+    private CheckBox checkToAll;
 }

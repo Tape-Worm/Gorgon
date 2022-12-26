@@ -26,25 +26,24 @@
 
 using Newtonsoft.Json;
 
-namespace Gorgon.Editor.FontEditor
+namespace Gorgon.Editor.FontEditor;
+
+/// <summary>
+/// The settings for the animation importer plug in.
+/// </summary>
+/// <remarks>
+/// This is our settings for the plug in. The settings should contain simple primitive types so they can be serialized into/deserialized from 
+/// JSON data.
+/// </remarks>
+internal class FontEditorSettings
 {
     /// <summary>
-    /// The settings for the animation importer plug in.
+    /// Property to set or return the default font for the text.
     /// </summary>
-    /// <remarks>
-    /// This is our settings for the plug in. The settings should contain simple primitive types so they can be serialized into/deserialized from 
-    /// JSON data.
-    /// </remarks>
-    internal class FontEditorSettings
+    [JsonProperty]
+    public string DefaultFont
     {
-        /// <summary>
-        /// Property to set or return the default font for the text.
-        /// </summary>
-        [JsonProperty]
-        public string DefaultFont
-        {
-            get;
-            set;
-        } = "Arial";
-    }
+        get;
+        set;
+    } = "Arial";
 }

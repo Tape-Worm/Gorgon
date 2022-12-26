@@ -30,114 +30,113 @@ using Gorgon.Core;
 using Gorgon.Math;
 using Newtonsoft.Json;
 
-namespace Gorgon.Animation
+namespace Gorgon.Animation;
+
+/// <summary>
+/// Interpolation mode for animating between key frames.
+/// </summary>
+[Flags]
+public enum TrackInterpolationMode
 {
     /// <summary>
-    /// Interpolation mode for animating between key frames.
+    /// No interpolation.
     /// </summary>
-    [Flags]
-    public enum TrackInterpolationMode
+    None = 0,
+    /// <summary>
+    /// Linear interpolation.
+    /// </summary>
+    Linear = 1,
+    /// <summary>
+    /// Spline interpolation.
+    /// </summary>
+    Spline = 2
+}
+
+/// <summary>
+/// A track for a <see cref="IGorgonAnimation"/>.
+/// </summary>
+/// <typeparam name="T">The type of key frame, must implement <see cref="IGorgonKeyFrame"/></typeparam>
+/// <remarks>
+/// <para>
+/// Tracks contain a list of values in time, called key frames. These key frames tell the animation what the value for a property should be at the specified time.
+/// </para>
+/// </remarks>
+/// <seealso cref="IGorgonKeyFrame"/>
+public interface IGorgonAnimationTrack<out T>
+    : IGorgonNamedObject
+    where T : IGorgonKeyFrame
+{
+    #region Properties.
+    /// <summary>
+    /// Property to return the spline controller (if applicable) for the track.
+    /// </summary>
+    [JsonIgnore]
+    IGorgonSplineCalculation SplineController
     {
-        /// <summary>
-        /// No interpolation.
-        /// </summary>
-        None = 0,
-        /// <summary>
-        /// Linear interpolation.
-        /// </summary>
-        Linear = 1,
-        /// <summary>
-        /// Spline interpolation.
-        /// </summary>
-        Spline = 2
+        get;
     }
 
     /// <summary>
-    /// A track for a <see cref="IGorgonAnimation"/>.
+    /// Property to return the type of interpolation supported by the track.
     /// </summary>
-    /// <typeparam name="T">The type of key frame, must implement <see cref="IGorgonKeyFrame"/></typeparam>
+    [JsonIgnore]
+    TrackInterpolationMode SupportsInterpolation
+    {
+        get;
+    }
+
+    /// <summary>
+    /// Property to set or return the interpolation mode.
+    /// </summary>
+    /// <remarks>
+    /// If the value assigned is not supported by the track (use the <see cref="SupportsInterpolation"/> property), then the original value is kept.
+    /// </remarks>
+    TrackInterpolationMode InterpolationMode
+    {
+        get;
+        set;
+    }
+
+    /// <summary>
+    /// Property to return the type of key frame data stored in this track.
+    /// </summary>
+    [JsonIgnore]
+    AnimationTrackKeyType KeyFrameDataType
+    {
+        get;
+    }
+
+    /// <summary>
+    /// Property to return the key frames for the track.
+    /// </summary>
+    [JsonProperty("keyframes")]
+    IReadOnlyList<T> KeyFrames
+    {
+        get;
+    }
+
+    /// <summary>
+    /// Property to set or return whether this track is enabled during animation.
+    /// </summary>
+    [JsonProperty("isEnabled")]
+    bool IsEnabled
+    {
+        get;
+        set;
+    }
+    #endregion
+
+    #region Methods.
+    /// <summary>
+    /// Function to retrieve the value at the specified time index.
+    /// </summary>
+    /// <param name="timeIndex">The time index, in seconds, within the track to retrieve the value from.</param>
+    /// <returns>The value at the specified time index.</returns>
     /// <remarks>
     /// <para>
-    /// Tracks contain a list of values in time, called key frames. These key frames tell the animation what the value for a property should be at the specified time.
+    /// The value returned by this method may or may not be interpolated based on the value in <see cref="InterpolationMode"/>.  
     /// </para>
     /// </remarks>
-    /// <seealso cref="IGorgonKeyFrame"/>
-    public interface IGorgonAnimationTrack<out T>
-        : IGorgonNamedObject
-        where T : IGorgonKeyFrame
-    {
-        #region Properties.
-        /// <summary>
-        /// Property to return the spline controller (if applicable) for the track.
-        /// </summary>
-        [JsonIgnore]
-        IGorgonSplineCalculation SplineController
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to return the type of interpolation supported by the track.
-        /// </summary>
-        [JsonIgnore]
-        TrackInterpolationMode SupportsInterpolation
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to set or return the interpolation mode.
-        /// </summary>
-        /// <remarks>
-        /// If the value assigned is not supported by the track (use the <see cref="SupportsInterpolation"/> property), then the original value is kept.
-        /// </remarks>
-        TrackInterpolationMode InterpolationMode
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// Property to return the type of key frame data stored in this track.
-        /// </summary>
-        [JsonIgnore]
-        AnimationTrackKeyType KeyFrameDataType
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to return the key frames for the track.
-        /// </summary>
-        [JsonProperty("keyframes")]
-        IReadOnlyList<T> KeyFrames
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to set or return whether this track is enabled during animation.
-        /// </summary>
-        [JsonProperty("isEnabled")]
-        bool IsEnabled
-        {
-            get;
-            set;
-        }
-        #endregion
-
-        #region Methods.
-        /// <summary>
-        /// Function to retrieve the value at the specified time index.
-        /// </summary>
-        /// <param name="timeIndex">The time index, in seconds, within the track to retrieve the value from.</param>
-        /// <returns>The value at the specified time index.</returns>
-        /// <remarks>
-        /// <para>
-        /// The value returned by this method may or may not be interpolated based on the value in <see cref="InterpolationMode"/>.  
-        /// </para>
-        /// </remarks>
-        T GetValueAtTime(float timeIndex);
-        #endregion
-    }
+    T GetValueAtTime(float timeIndex);
+    #endregion
 }

@@ -26,18 +26,17 @@
 
 using Gorgon.Graphics;
 
-namespace Gorgon.Editor.Services
+namespace Gorgon.Editor.Services;
+
+/// <summary>
+/// The service used to allow picking of colors.
+/// </summary>
+public interface IColorPickerService
 {
     /// <summary>
-    /// The service used to allow picking of colors.
+    /// Function to retrieve a color.
     /// </summary>
-    public interface IColorPickerService
-    {
-        /// <summary>
-        /// Function to retrieve a color.
-        /// </summary>
-        /// <param name="originalColor">The original color being changed.</param>
-        /// <returns>The new color, or <b>null</b> if cancelled.</returns>
-        GorgonColor? GetColor(GorgonColor originalColor);
-    }
+    /// <param name="originalColor">The original color being changed.</param>
+    /// <returns>The new color, or <b>null</b> if cancelled.</returns>
+    GorgonColor? GetColor(GorgonColor originalColor);
 }

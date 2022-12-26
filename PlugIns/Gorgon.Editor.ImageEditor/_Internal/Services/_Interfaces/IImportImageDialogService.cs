@@ -27,20 +27,19 @@
 using Gorgon.Editor.Services;
 using Gorgon.Graphics.Imaging.Codecs;
 
-namespace Gorgon.Editor.ImageEditor
+namespace Gorgon.Editor.ImageEditor;
+
+/// <summary>
+/// Dialog serivce used for retrieving paths for importing image data.
+/// </summary>
+internal interface IImportImageDialogService
+    : IFileDialogService
 {
     /// <summary>
-    /// Dialog serivce used for retrieving paths for importing image data.
+    /// Property to return the codec used for importing.
     /// </summary>
-    internal interface IImportImageDialogService
-        : IFileDialogService
+    IGorgonImageCodec SelectedCodec
     {
-        /// <summary>
-        /// Property to return the codec used for importing.
-        /// </summary>
-        IGorgonImageCodec SelectedCodec
-        {
-            get;
-        }
+        get;
     }
 }

@@ -30,46 +30,45 @@ using Gorgon.Editor.Services;
 using Gorgon.Editor.UI;
 using Gorgon.PlugIns;
 
-namespace Gorgon.Editor.SpriteEditor
+namespace Gorgon.Editor.SpriteEditor;
+
+/// <summary>
+/// The parameters to pass to the <see cref="Settings"/> view model.
+/// </summary>
+internal class ImportSettingsParameters
+    : PlugInsCategoryViewModelParameters
 {
+    #region Properties.
     /// <summary>
-    /// The parameters to pass to the <see cref="Settings"/> view model.
+    /// Property to return the settings for the plug in.
     /// </summary>
-    internal class ImportSettingsParameters
-        : PlugInsCategoryViewModelParameters
+    public SpriteImportSettings Settings
     {
-        #region Properties.
-        /// <summary>
-        /// Property to return the settings for the plug in.
-        /// </summary>
-        public SpriteImportSettings Settings
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to return the codec registry.
-        /// </summary>
-        public CodecRegistry Codecs
-        {
-            get;
-        }
-        #endregion
-
-        #region Constructor/Finalizer.
-        /// <summary>Initializes a new instance of the <see cref="ImportSettingsParameters"/> class.</summary>
-        /// <param name="settings">The plug in settings.</param>
-        /// <param name="codecs">The codec registry.</param>
-        /// <param name="openCodecDialog">The service used to locate plug in assemblies for loading.</param>
-        /// <param name="plugInCache">The cache for plug in assemblies.</param>
-        /// <param name="hostServices">Common application services.</param>
-        /// <exception cref="ArgumentNullException">Thrown when any parameter is <strong>null</strong>.</exception>
-        public ImportSettingsParameters(SpriteImportSettings settings, CodecRegistry codecs, IFileDialogService openCodecDialog, GorgonMefPlugInCache plugInCache, IHostContentServices hostServices)
-            : base(openCodecDialog, plugInCache, hostServices)
-        {
-            Settings = settings ?? throw new ArgumentNullException(nameof(settings));
-            Codecs = codecs ?? throw new ArgumentNullException(nameof(settings));            
-        }
-        #endregion
+        get;
     }
+
+    /// <summary>
+    /// Property to return the codec registry.
+    /// </summary>
+    public CodecRegistry Codecs
+    {
+        get;
+    }
+    #endregion
+
+    #region Constructor/Finalizer.
+    /// <summary>Initializes a new instance of the <see cref="ImportSettingsParameters"/> class.</summary>
+    /// <param name="settings">The plug in settings.</param>
+    /// <param name="codecs">The codec registry.</param>
+    /// <param name="openCodecDialog">The service used to locate plug in assemblies for loading.</param>
+    /// <param name="plugInCache">The cache for plug in assemblies.</param>
+    /// <param name="hostServices">Common application services.</param>
+    /// <exception cref="ArgumentNullException">Thrown when any parameter is <strong>null</strong>.</exception>
+    public ImportSettingsParameters(SpriteImportSettings settings, CodecRegistry codecs, IFileDialogService openCodecDialog, GorgonMefPlugInCache plugInCache, IHostContentServices hostServices)
+        : base(openCodecDialog, plugInCache, hostServices)
+    {
+        Settings = settings ?? throw new ArgumentNullException(nameof(settings));
+        Codecs = codecs ?? throw new ArgumentNullException(nameof(settings));            
+    }
+    #endregion
 }

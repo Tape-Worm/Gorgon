@@ -25,68 +25,67 @@
 #endregion
 
 #if NET48
-namespace System
+namespace System;
+
+/// <summary>
+/// A placeholder to allow the .NET 4.8 functionality to compile. <b>DO NOT USE!</b>
+/// </summary>
+public struct Index
+    : IEquatable<Index>
 {
-    /// <summary>
-    /// A placeholder to allow the .NET 4.8 functionality to compile. <b>DO NOT USE!</b>
-    /// </summary>
-    public struct Index
-        : IEquatable<Index>
-    {
 #pragma warning disable IDE0060 // Remove unused parameter
-        /// <summary>
-        /// Dummy property.
-        /// </summary>
-        public int End => int.MaxValue;
-        /// <summary>
-        /// Dummy property.
-        /// </summary>
-        public bool IsFromEnd => false;
-        /// <summary>
-        /// Dummy property.
-        /// </summary>
-        public int Start => 0;
-        /// <summary>
-        /// Dummy property.
-        /// </summary>
-        public int Value => 0;
+    /// <summary>
+    /// Dummy property.
+    /// </summary>
+    public int End => int.MaxValue;
+    /// <summary>
+    /// Dummy property.
+    /// </summary>
+    public bool IsFromEnd => false;
+    /// <summary>
+    /// Dummy property.
+    /// </summary>
+    public int Start => 0;
+    /// <summary>
+    /// Dummy property.
+    /// </summary>
+    public int Value => 0;
 
-        /// <summary>
-        /// Performs an implicit conversion from <see cref="int"/> to <see cref="Index"/>.
-        /// </summary>
-        /// <param name="value">The value.</param>
-        /// <returns>The result of the conversion.</returns>
-        public static implicit operator Index(int value) => default;
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="int"/> to <see cref="Index"/>.
+    /// </summary>
+    /// <param name="value">The value.</param>
+    /// <returns>The result of the conversion.</returns>
+    public static implicit operator Index(int value) => default;
 
-        /// <summary>
-        /// Gets the offset.
-        /// </summary>
-        /// <param name="length">The length.</param>
-        /// <returns>int.</returns>
-        public int GetOffset(int length) => 0;
+    /// <summary>
+    /// Gets the offset.
+    /// </summary>
+    /// <param name="length">The length.</param>
+    /// <returns>int.</returns>
+    public int GetOffset(int length) => 0;
 
-        /// <summary>Initializes a new instance of the <see cref="T:System.Index">Index</see> struct.</summary>
-        /// <param name="p1">The p1.</param>
-        /// <param name="p2">if set to <c>true</c> [p2].</param>
-        public Index(int p1, bool p2)
-        {
-        }
-
-        /// <summary>Indicates whether the current object is equal to another object of the same type.</summary>
-        /// <param name="other">An object to compare with this object.</param>
-        /// <returns>
-        ///   <span class="keyword">
-        ///     <span class="languageSpecificText">
-        ///       <span class="cs">true</span>
-        ///       <span class="vb">True</span>
-        ///       <span class="cpp">true</span>
-        ///     </span>
-        ///   </span>
-        ///   <span class="nu">
-        ///     <span class="keyword">true</span> (<span class="keyword">True</span> in Visual Basic)</span> if the current object is equal to the <paramref name="other" /> parameter; otherwise, <span class="keyword"><span class="languageSpecificText"><span class="cs">false</span><span class="vb">False</span><span class="cpp">false</span></span></span><span class="nu"><span class="keyword">false</span> (<span class="keyword">False</span> in Visual Basic)</span>.
-        /// </returns>
-        public bool Equals(Index other) => true;
-#pragma warning restore IDE0060 // Remove unused parameter
+    /// <summary>Initializes a new instance of the <see cref="T:System.Index">Index</see> struct.</summary>
+    /// <param name="p1">The p1.</param>
+    /// <param name="p2">if set to <c>true</c> [p2].</param>
+    public Index(int p1, bool p2)
+    {
     }
+
+    /// <summary>Indicates whether the current object is equal to another object of the same type.</summary>
+    /// <param name="other">An object to compare with this object.</param>
+    /// <returns>
+    ///   <span class="keyword">
+    ///     <span class="languageSpecificText">
+    ///       <span class="cs">true</span>
+    ///       <span class="vb">True</span>
+    ///       <span class="cpp">true</span>
+    ///     </span>
+    ///   </span>
+    ///   <span class="nu">
+    ///     <span class="keyword">true</span> (<span class="keyword">True</span> in Visual Basic)</span> if the current object is equal to the <paramref name="other" /> parameter; otherwise, <span class="keyword"><span class="languageSpecificText"><span class="cs">false</span><span class="vb">False</span><span class="cpp">false</span></span></span><span class="nu"><span class="keyword">false</span> (<span class="keyword">False</span> in Visual Basic)</span>.
+    /// </returns>
+    public bool Equals(Index other) => true;
+#pragma warning restore IDE0060 // Remove unused parameter
 }
 #endif

@@ -28,43 +28,42 @@ using System;
 using Gorgon.Editor.PlugIns;
 using Gorgon.IO;
 
-namespace Gorgon.Editor.ViewModels
+namespace Gorgon.Editor.ViewModels;
+
+/// <summary>
+/// Parameters for the <see cref="RootDirectory"/> view model.
+/// </summary>
+internal class RootDirectoryParameters
+    : ViewModelCommonParameters
 {
+    #region Properties.
     /// <summary>
-    /// Parameters for the <see cref="RootDirectory"/> view model.
+    /// Property to set or return the virtual root directory.
     /// </summary>
-    internal class RootDirectoryParameters
-        : ViewModelCommonParameters
+    public IGorgonVirtualDirectory RootDirectory
     {
-        #region Properties.
-        /// <summary>
-        /// Property to set or return the virtual root directory.
-        /// </summary>
-        public IGorgonVirtualDirectory RootDirectory
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// Property to set or return the path to the directory on the physical file system that represents the root of the virtual file system.
-        /// </summary>
-        public string Path
-        {
-            get;
-            set;
-        }
-        #endregion
-
-        #region Constructor.
-        /// <summary>Initializes a new instance of the <see cref="RootDirectoryParameters"/> class.</summary>
-        /// <param name="hostServices">The services from the host application.</param>
-        /// <param name="factory">The factory used to create view models.</param>
-        /// <exception cref="ArgumentNullException">Thrown when any of the required parameters are <b>null</b>.</exception>
-        public RootDirectoryParameters(IHostContentServices hostServices, ViewModelFactory factory)
-            : base(hostServices, factory)
-        {
-        }
-        #endregion
+        get;
+        set;
     }
+
+    /// <summary>
+    /// Property to set or return the path to the directory on the physical file system that represents the root of the virtual file system.
+    /// </summary>
+    public string Path
+    {
+        get;
+        set;
+    }
+    #endregion
+
+    #region Constructor.
+    /// <summary>Initializes a new instance of the <see cref="RootDirectoryParameters"/> class.</summary>
+    /// <param name="hostServices">The services from the host application.</param>
+    /// <param name="factory">The factory used to create view models.</param>
+    /// <exception cref="ArgumentNullException">Thrown when any of the required parameters are <b>null</b>.</exception>
+    public RootDirectoryParameters(IHostContentServices hostServices, ViewModelFactory factory)
+        : base(hostServices, factory)
+    {
+    }
+    #endregion
 }

@@ -24,46 +24,45 @@
 // 
 #endregion
 
-namespace Gorgon.Editor.UI
+namespace Gorgon.Editor.UI;
+
+/// <summary>
+/// A view model for hosted panels.
+/// </summary>
+public interface IHostedPanelViewModel
+    : IViewModel
 {
     /// <summary>
-    /// A view model for hosted panels.
+    /// Property to set or return whether the crop/resize settings is active or not.
     /// </summary>
-    public interface IHostedPanelViewModel
-        : IViewModel
+    bool IsActive
     {
-        /// <summary>
-        /// Property to set or return whether the crop/resize settings is active or not.
-        /// </summary>
-        bool IsActive
-        {
-            get;
-            set;
-        }
+        get;
+        set;
+    }
 
-        /// <summary>
-        /// Property to return whether the panel is modal.
-        /// </summary>
-        bool IsModal
-        {
-            get;
-        }
+    /// <summary>
+    /// Property to return whether the panel is modal.
+    /// </summary>
+    bool IsModal
+    {
+        get;
+    }
 
-        /// <summary>
-        /// Property to return the command used to cancel the operation.
-        /// </summary>
-        IEditorCommand<object> CancelCommand
-        {
-            get;
-        }
+    /// <summary>
+    /// Property to return the command used to cancel the operation.
+    /// </summary>
+    IEditorCommand<object> CancelCommand
+    {
+        get;
+    }
 
-        /// <summary>
-        /// Property to set or return the command used to apply the operation.
-        /// </summary>
-        IEditorCommand<object> OkCommand
-        {
-            get;
-            set;
-        }
+    /// <summary>
+    /// Property to set or return the command used to apply the operation.
+    /// </summary>
+    IEditorCommand<object> OkCommand
+    {
+        get;
+        set;
     }
 }

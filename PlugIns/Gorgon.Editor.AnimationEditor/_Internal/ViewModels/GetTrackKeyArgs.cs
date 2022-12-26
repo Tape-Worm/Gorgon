@@ -25,49 +25,48 @@
 #endregion
 
 
-namespace Gorgon.Editor.AnimationEditor
+namespace Gorgon.Editor.AnimationEditor;
+
+/// <summary>
+/// Arguments for the <see cref="IAnimationContent.GetTrackKeyCommand"/>.
+/// </summary>
+internal class GetTrackKeyArgs
 {
+    #region Properties.
     /// <summary>
-    /// Arguments for the <see cref="IAnimationContent.GetTrackKeyCommand"/>.
+    /// Property to set or return whether there's key data in the track.
     /// </summary>
-    internal class GetTrackKeyArgs
+    public IKeyFrame Key
     {
-        #region Properties.
-        /// <summary>
-        /// Property to set or return whether there's key data in the track.
-        /// </summary>
-        public IKeyFrame Key
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// Property to return the index of the key to look up.
-        /// </summary>
-        public int KeyIndex
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to return the index of the track to look into.
-        /// </summary>
-        public int TrackIndex
-        {
-            get;
-        }
-        #endregion
-
-        #region Constructor/Finalizer.
-        /// <summary>Initializes a new instance of the <see cref="GetTrackKeyArgs"/> class.</summary>
-        /// <param name="keyIndex">The index of the key.</param>
-        /// <param name="trackIndex">The index of the track.</param>
-        public GetTrackKeyArgs(int keyIndex, int trackIndex)
-        {
-            KeyIndex = keyIndex;
-            TrackIndex = trackIndex;
-        }
-        #endregion
+        get;
+        set;
     }
+
+    /// <summary>
+    /// Property to return the index of the key to look up.
+    /// </summary>
+    public int KeyIndex
+    {
+        get;
+    }
+
+    /// <summary>
+    /// Property to return the index of the track to look into.
+    /// </summary>
+    public int TrackIndex
+    {
+        get;
+    }
+    #endregion
+
+    #region Constructor/Finalizer.
+    /// <summary>Initializes a new instance of the <see cref="GetTrackKeyArgs"/> class.</summary>
+    /// <param name="keyIndex">The index of the key.</param>
+    /// <param name="trackIndex">The index of the track.</param>
+    public GetTrackKeyArgs(int keyIndex, int trackIndex)
+    {
+        KeyIndex = keyIndex;
+        TrackIndex = trackIndex;
+    }
+    #endregion
 }

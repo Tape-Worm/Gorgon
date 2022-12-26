@@ -28,77 +28,76 @@ using Gorgon.Diagnostics;
 using Gorgon.Editor.Rendering;
 using Gorgon.Editor.Services;
 
-namespace Gorgon.Editor.PlugIns
+namespace Gorgon.Editor.PlugIns;
+
+/// <summary>
+/// Services from the host application for content plug ins.
+/// </summary>
+internal class HostContentServices
+    : IHostContentServices
 {
-    /// <summary>
-    /// Services from the host application for content plug ins.
-    /// </summary>
-    internal class HostContentServices
-        : IHostContentServices
+    /// <summary>Property to set or return the service that allows a content plug in to access other content plug ins.</summary>
+    public IContentPlugInService ContentPlugInService
     {
-        /// <summary>Property to set or return the service that allows a content plug in to access other content plug ins.</summary>
-        public IContentPlugInService ContentPlugInService
-        {
-            get;
-            set;
-        }
+        get;
+        set;
+    }
 
-        /// <summary>Property to set or return the service that allows a conetnt plug in to access tool content plug ins.</summary>
-        public IToolPlugInService ToolPlugInService
-        {
-            get;
-            set;
-        }
+    /// <summary>Property to set or return the service that allows a conetnt plug in to access tool content plug ins.</summary>
+    public IToolPlugInService ToolPlugInService
+    {
+        get;
+        set;
+    }
 
-        /// <summary>Property to set or return the service used to browse through directories on the file system.</summary>
-        public IFileSystemFolderBrowseService FolderBrowser
-        {
-            get;
-            set;
-        }
+    /// <summary>Property to set or return the service used to browse through directories on the file system.</summary>
+    public IFileSystemFolderBrowseService FolderBrowser
+    {
+        get;
+        set;
+    }
 
-        /// <summary>Property to set or return the log for debug messages.</summary>
-        public IGorgonLog Log
-        {
-            get;
-            set;
-        }
+    /// <summary>Property to set or return the log for debug messages.</summary>
+    public IGorgonLog Log
+    {
+        get;
+        set;
+    }
 
-        /// <summary>Property to set or return the serivce used to show busy states.</summary>
-        public IBusyStateService BusyService
-        {
-            get;
-            set;
-        }
+    /// <summary>Property to set or return the serivce used to show busy states.</summary>
+    public IBusyStateService BusyService
+    {
+        get;
+        set;
+    }
 
-        /// <summary>Property to set or return the service used to show message dialogs.</summary>
-        public IMessageDisplayService MessageDisplay
-        {
-            get;
-            set;
-        }
+    /// <summary>Property to set or return the service used to show message dialogs.</summary>
+    public IMessageDisplayService MessageDisplay
+    {
+        get;
+        set;
+    }
 
-        /// <summary>Property to set or return the graphics and the 2D renderer used by the host application.</summary>
-        public IGraphicsContext GraphicsContext
-        {
-            get;
-            set;
-        }
+    /// <summary>Property to set or return the graphics and the 2D renderer used by the host application.</summary>
+    public IGraphicsContext GraphicsContext
+    {
+        get;
+        set;
+    }
 
-        /// <summary>
-        /// Property to set or return the service used to send and retrieve data to and from the clipboard.
-        /// </summary>
-        public IClipboardService ClipboardService
-        {
-            get;
-            set;
-        }
+    /// <summary>
+    /// Property to set or return the service used to send and retrieve data to and from the clipboard.
+    /// </summary>
+    public IClipboardService ClipboardService
+    {
+        get;
+        set;
+    }
 
-        /// <summary>Property to set or return the service used to pick colors.</summary>
-        public IColorPickerService ColorPicker
-        {
-            get;
-            set;
-        }
+    /// <summary>Property to set or return the service used to pick colors.</summary>
+    public IColorPickerService ColorPicker
+    {
+        get;
+        set;
     }
 }

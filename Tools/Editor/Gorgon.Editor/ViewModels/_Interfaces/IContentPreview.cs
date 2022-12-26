@@ -28,69 +28,68 @@ using System.Threading.Tasks;
 using Gorgon.Editor.UI;
 using Gorgon.Graphics.Imaging;
 
-namespace Gorgon.Editor.ViewModels
+namespace Gorgon.Editor.ViewModels;
+
+/// <summary>
+/// The view model for the content preview panel.
+/// </summary>
+internal interface IContentPreview
+    : IViewModel
 {
     /// <summary>
-    /// The view model for the content preview panel.
+    /// Property to return the task used for loading the image preview.
     /// </summary>
-    internal interface IContentPreview
-        : IViewModel
+    Task LoadingTask
     {
-        /// <summary>
-        /// Property to return the task used for loading the image preview.
-        /// </summary>
-        Task LoadingTask
-        {
-            get;
-        }
+        get;
+    }
 
-        /// <summary>
-        /// Property to return the preview image to display.
-        /// </summary>
-        IGorgonImage PreviewImage
-        {
-            get;
-        }
+    /// <summary>
+    /// Property to return the preview image to display.
+    /// </summary>
+    IGorgonImage PreviewImage
+    {
+        get;
+    }
 
-        /// <summary>
-        /// Property to return the title for the previewed content.
-        /// </summary>
-        string Title
-        {
-            get;
-        }
+    /// <summary>
+    /// Property to return the title for the previewed content.
+    /// </summary>
+    string Title
+    {
+        get;
+    }
 
-        /// <summary>
-        /// Property to return whether the preview is loading or not.
-        /// </summary>
-        bool IsLoading
-        {
-            get;
-        }
+    /// <summary>
+    /// Property to return whether the preview is loading or not.
+    /// </summary>
+    bool IsLoading
+    {
+        get;
+    }
 
-        /// <summary>
-        /// Property to return the command used to refresh the preview image.
-        /// </summary>
-        IEditorAsyncCommand<string> RefreshPreviewCommand
-        {
-            get;
-        }
+    /// <summary>
+    /// Property to return the command used to refresh the preview image.
+    /// </summary>
+    IEditorAsyncCommand<string> RefreshPreviewCommand
+    {
+        get;
+    }
 
-        /// <summary>
-        /// Property to return the command used to reset the preview back to its inital state.
-        /// </summary>
-        IEditorAsyncCommand<object> ResetPreviewCommand
-        {
-            get;
-        }
+    /// <summary>
+    /// Property to return the command used to reset the preview back to its inital state.
+    /// </summary>
+    IEditorAsyncCommand<object> ResetPreviewCommand
+    {
+        get;
+    }
 
-        /// <summary>
-        /// Property to set or return whether the preview is enabled.
-        /// </summary>
-        bool IsEnabled
-        {
-            get;
-            set;
-        }
+    /// <summary>
+    /// Property to set or return whether the preview is enabled.
+    /// </summary>
+    bool IsEnabled
+    {
+        get;
+        set;
     }
 }

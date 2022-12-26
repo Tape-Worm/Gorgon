@@ -26,58 +26,57 @@
 
 using System.ComponentModel;
 
-namespace Gorgon.Editor.UI
+namespace Gorgon.Editor.UI;
+
+/// <summary>
+/// A data context for a view and <see cref="IViewModel"/>
+/// </summary>
+/// <typeparam name="T">The type of view model to use with the view. Ideally an interface for the view model type should be used here.</typeparam>
+/// <remarks>
+/// <para>
+/// A data context is used to make the view react to changes to data. This is done by hooking the <see cref="INotifyPropertyChanged.PropertyChanged"/>, and 
+/// <see cref="INotifyPropertyChanging.PropertyChanging"/> events and retrieving the name of the property that has been changed and updating the view by modifying one or more controls on the view. 
+/// This is the cornerstone of MVVM (Model-View-ViewModel), and the Gorgon Editor uses (a rather bastardized version of) MVVM so the view can react to users changes. 
+/// </para>
+/// <para>
+/// <note type="important">
+/// <para>
+/// This pattern is not completely correct in the editor since WinForms is not really designed to use it, so some liberties have been taken. And, unfortunately, makes the job of building 
+/// a control for a plug in a little more work. The results are worth it however as the communication lines between view model and view are rigidly enforced and make it easier to maintain for larger 
+/// code bases.
+/// </para>
+/// </note>
+/// </para>
+/// <para>
+/// If you wish to know more about MVVM, please visit <a href="https://docs.microsoft.com/en-us/xamarin/xamarin-forms/enterprise-application-patterns/mvvm">here</a>. 
+/// </para>
+/// <para>
+/// This interface must be applied to views that wish to use a <see cref="IViewModel"/> as a data context. 
+/// </para>
+/// </remarks>
+public interface IDataContext<T>
+    where T : class, IViewModel
 {
+    #region Properties.
     /// <summary>
-    /// A data context for a view and <see cref="IViewModel"/>
+    /// Property to return the data context assigned to this view.
     /// </summary>
-    /// <typeparam name="T">The type of view model to use with the view. Ideally an interface for the view model type should be used here.</typeparam>
+    T DataContext
+    {
+        get;
+    }
+    #endregion
+
+    #region Methods.
+    /// <summary>
+    /// Function to assign a data context to the view as a view model.
+    /// </summary>
+    /// <param name="dataContext">The data context to assign.</param>
     /// <remarks>
     /// <para>
-    /// A data context is used to make the view react to changes to data. This is done by hooking the <see cref="INotifyPropertyChanged.PropertyChanged"/>, and 
-    /// <see cref="INotifyPropertyChanging.PropertyChanging"/> events and retrieving the name of the property that has been changed and updating the view by modifying one or more controls on the view. 
-    /// This is the cornerstone of MVVM (Model-View-ViewModel), and the Gorgon Editor uses (a rather bastardized version of) MVVM so the view can react to users changes. 
-    /// </para>
-    /// <para>
-    /// <note type="important">
-    /// <para>
-    /// This pattern is not completely correct in the editor since WinForms is not really designed to use it, so some liberties have been taken. And, unfortunately, makes the job of building 
-    /// a control for a plug in a little more work. The results are worth it however as the communication lines between view model and view are rigidly enforced and make it easier to maintain for larger 
-    /// code bases.
-    /// </para>
-    /// </note>
-    /// </para>
-    /// <para>
-    /// If you wish to know more about MVVM, please visit <a href="https://docs.microsoft.com/en-us/xamarin/xamarin-forms/enterprise-application-patterns/mvvm">here</a>. 
-    /// </para>
-    /// <para>
-    /// This interface must be applied to views that wish to use a <see cref="IViewModel"/> as a data context. 
+    /// Data contexts should be nullable, in that, they should reset the view back to its original state when the context is null.
     /// </para>
     /// </remarks>
-    public interface IDataContext<T>
-        where T : class, IViewModel
-    {
-        #region Properties.
-        /// <summary>
-        /// Property to return the data context assigned to this view.
-        /// </summary>
-        T DataContext
-        {
-            get;
-        }
-        #endregion
-
-        #region Methods.
-        /// <summary>
-        /// Function to assign a data context to the view as a view model.
-        /// </summary>
-        /// <param name="dataContext">The data context to assign.</param>
-        /// <remarks>
-        /// <para>
-        /// Data contexts should be nullable, in that, they should reset the view back to its original state when the context is null.
-        /// </para>
-        /// </remarks>
-        void SetDataContext(T dataContext);
-        #endregion
-    }
+    void SetDataContext(T dataContext);
+    #endregion
 }

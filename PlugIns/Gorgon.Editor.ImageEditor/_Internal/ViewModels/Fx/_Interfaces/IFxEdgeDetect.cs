@@ -27,48 +27,47 @@
 using Gorgon.Editor.UI;
 using Gorgon.Graphics;
 
-namespace Gorgon.Editor.ImageEditor
+namespace Gorgon.Editor.ImageEditor;
+
+/// <summary>
+/// The settings view model for the edge detect effect.
+/// </summary>
+internal interface IFxEdgeDetect
+    : IHostedPanelViewModel
 {
     /// <summary>
-    /// The settings view model for the edge detect effect.
+    /// Property to set or return the threshold for detecting edges (as a percentage).
     /// </summary>
-    internal interface IFxEdgeDetect
-        : IHostedPanelViewModel
+    int Threshold
     {
-        /// <summary>
-        /// Property to set or return the threshold for detecting edges (as a percentage).
-        /// </summary>
-        int Threshold
-        {
-            get;
-            set;
-        }
+        get;
+        set;
+    }
 
-        /// <summary>
-        /// Property to set or return the amount to offset the edge line widths.
-        /// </summary>
-        float Offset
-        {
-            get;
-            set;
-        }
+    /// <summary>
+    /// Property to set or return the amount to offset the edge line widths.
+    /// </summary>
+    float Offset
+    {
+        get;
+        set;
+    }
 
-        /// <summary>
-        /// Property to set or return the color of the edge lines.
-        /// </summary>
-        GorgonColor LineColor
-        {
-            get;
-            set;
-        }
+    /// <summary>
+    /// Property to set or return the color of the edge lines.
+    /// </summary>
+    GorgonColor LineColor
+    {
+        get;
+        set;
+    }
 
-        /// <summary>
-        /// Property to set or return whether the edges should be overlaid on top of the original image or not.
-        /// </summary>
-        bool Overlay
-        {
-            get;
-            set;
-        }
+    /// <summary>
+    /// Property to set or return whether the edges should be overlaid on top of the original image or not.
+    /// </summary>
+    bool Overlay
+    {
+        get;
+        set;
     }
 }

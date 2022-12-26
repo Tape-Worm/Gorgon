@@ -27,24 +27,23 @@
 using System;
 using System.Collections.Generic;
 
-namespace Gorgon.Editor.UI.Controls
+namespace Gorgon.Editor.UI.Controls;
+
+/// <summary>
+/// Event arguments for the <see cref="ContentFileExplorer.FileEntriesFocused"/> event.
+/// </summary>
+public class ContentFileEntriesFocusedArgs
+    : EventArgs
 {
     /// <summary>
-    /// Event arguments for the <see cref="ContentFileExplorer.FileEntriesFocused"/> event.
+    /// Property to return the files that were focused in the file selector.
     /// </summary>
-    public class ContentFileEntriesFocusedArgs
-        : EventArgs
+    public IReadOnlyList<ContentFileExplorerFileEntry> FocusedFiles
     {
-        /// <summary>
-        /// Property to return the files that were focused in the file selector.
-        /// </summary>
-        public IReadOnlyList<ContentFileExplorerFileEntry> FocusedFiles
-        {
-            get;
-        }
-
-        /// <summary>Initializes a new instance of the <see cref="ContentFileEntriesFocusedArgs"/> class.</summary>
-        /// <param name="focusedFiles">The focused files.</param>
-        public ContentFileEntriesFocusedArgs(IReadOnlyList<ContentFileExplorerFileEntry> focusedFiles) => FocusedFiles = focusedFiles ?? Array.Empty<ContentFileExplorerFileEntry>();
+        get;
     }
+
+    /// <summary>Initializes a new instance of the <see cref="ContentFileEntriesFocusedArgs"/> class.</summary>
+    /// <param name="focusedFiles">The focused files.</param>
+    public ContentFileEntriesFocusedArgs(IReadOnlyList<ContentFileExplorerFileEntry> focusedFiles) => FocusedFiles = focusedFiles ?? Array.Empty<ContentFileExplorerFileEntry>();
 }

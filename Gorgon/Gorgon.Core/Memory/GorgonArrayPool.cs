@@ -26,71 +26,70 @@
 
 using System.Buffers;
 
-namespace Gorgon.Memory
+namespace Gorgon.Memory;
+
+/// <summary>
+/// Class to return array pools with a specific maximum size for the arrays that are pooled.
+/// </summary>
+public static class GorgonArrayPool<T>
 {
+    #region Properties.
     /// <summary>
-    /// Class to return array pools with a specific maximum size for the arrays that are pooled.
+    /// Property to return an array pool with a maximum size of 1,048,576 items per array.
     /// </summary>
-    public static class GorgonArrayPool<T>
+    /// <remarks>
+    /// This is the same as using <see cref="ArrayPool{T}.Shared"/>.
+    /// </remarks>
+    public static ArrayPool<T> SharedTiny => ArrayPool<T>.Shared;
+
+    /// <summary>
+    /// Property to return an array pool with a maximum size of 16,777,216 items per array.
+    /// </summary>
+    public static ArrayPool<T> SharedSmall { get; } = ArrayPool<T>.Create(16_777_216, 50);
+
+    /// <summary>
+    /// Property to return an array pool with a maximum size of 67,108,864 items per array.
+    /// </summary>
+    public static ArrayPool<T> SharedMedium { get; } = ArrayPool<T>.Create(67_108_864, 25);
+
+    /// <summary>
+    /// Property to return an array pool with a maximum size of 134,217,728 items per array.
+    /// </summary>
+    public static ArrayPool<T> SharedLarge { get; } = ArrayPool<T>.Create(134_217_728, 11);
+
+    /// <summary>
+    /// Property to return an array pool with a maximum size of 1,073,741,824 items per array.
+    /// </summary>
+    public static ArrayPool<T> SharedHuge { get; } = ArrayPool<T>.Create(1_073_741_824, 5);
+    #endregion
+
+    #region Methods.
+    /// <summary>
+    /// Function to return the best suited pool based on the requested array size.
+    /// </summary>
+    /// <param name="size">The size of the requested array.</param>
+    /// <returns>The best suited array pool.</returns>
+    public static ArrayPool<T> GetBestPool(int size)
     {
-        #region Properties.
-        /// <summary>
-        /// Property to return an array pool with a maximum size of 1,048,576 items per array.
-        /// </summary>
-        /// <remarks>
-        /// This is the same as using <see cref="ArrayPool{T}.Shared"/>.
-        /// </remarks>
-        public static ArrayPool<T> SharedTiny => ArrayPool<T>.Shared;
-
-        /// <summary>
-        /// Property to return an array pool with a maximum size of 16,777,216 items per array.
-        /// </summary>
-        public static ArrayPool<T> SharedSmall { get; } = ArrayPool<T>.Create(16_777_216, 50);
-
-        /// <summary>
-        /// Property to return an array pool with a maximum size of 67,108,864 items per array.
-        /// </summary>
-        public static ArrayPool<T> SharedMedium { get; } = ArrayPool<T>.Create(67_108_864, 25);
-
-        /// <summary>
-        /// Property to return an array pool with a maximum size of 134,217,728 items per array.
-        /// </summary>
-        public static ArrayPool<T> SharedLarge { get; } = ArrayPool<T>.Create(134_217_728, 11);
-
-        /// <summary>
-        /// Property to return an array pool with a maximum size of 1,073,741,824 items per array.
-        /// </summary>
-        public static ArrayPool<T> SharedHuge { get; } = ArrayPool<T>.Create(1_073_741_824, 5);
-        #endregion
-
-        #region Methods.
-        /// <summary>
-        /// Function to return the best suited pool based on the requested array size.
-        /// </summary>
-        /// <param name="size">The size of the requested array.</param>
-        /// <returns>The best suited array pool.</returns>
-        public static ArrayPool<T> GetBestPool(int size)
-        {
 #pragma warning disable IDE0046 // Convert to conditional expression
-            if (size <= 1_048_576)
-            {
-                return SharedTiny;
-            }
+        if (size <= 1_048_576)
+        {
+            return SharedTiny;
+        }
 
-            if (size <= 16_777_216)
-            {
-                return SharedSmall;
-            }
+        if (size <= 16_777_216)
+        {
+            return SharedSmall;
+        }
 
-            if (size <= 67_108_864)
-            {
-                return SharedMedium;
-            }
+        if (size <= 67_108_864)
+        {
+            return SharedMedium;
+        }
 
-            return size <= 131_217_728 ? SharedLarge : SharedHuge;
+        return size <= 131_217_728 ? SharedLarge : SharedHuge;
 #pragma warning restore IDE0046 // Convert to conditional expression
 
-        }
-        #endregion
     }
+    #endregion
 }

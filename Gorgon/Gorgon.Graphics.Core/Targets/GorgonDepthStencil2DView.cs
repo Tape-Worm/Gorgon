@@ -36,17 +36,17 @@ using D3D11 = SharpDX.Direct3D11;
 using DX = SharpDX;
 using DXGI = SharpDX.DXGI;
 
-namespace Gorgon.Graphics.Core
-{
-    /// <summary>
-    /// Defines options for using a depth/stencil view.
-    /// </summary>
-    /// <remarks>
-    /// <para>
-    /// Limiting a depth-stencil buffer to read-only access allows more than one depth-stencil view to be bound to the pipeline.
-    /// </para>
-    /// </remarks>
-    [Flags]
+namespace Gorgon.Graphics.Core;
+
+/// <summary>
+/// Defines options for using a depth/stencil view.
+/// </summary>
+/// <remarks>
+/// <para>
+/// Limiting a depth-stencil buffer to read-only access allows more than one depth-stencil view to be bound to the pipeline.
+/// </para>
+/// </remarks>
+[Flags]
 	public enum DepthStencilViewFlags
 	{
 		/// <summary>
@@ -290,23 +290,23 @@ namespace Gorgon.Graphics.Core
 		public TextureBinding Binding => Texture?.Binding ?? TextureBinding.None;
 
 		/// <summary>
-        /// Property to return whether the resource used by this view can be shared or not.
-        /// </summary>
-        public bool Shared => Texture.Shared;
-        #endregion
+    /// Property to return whether the resource used by this view can be shared or not.
+    /// </summary>
+    public bool Shared => Texture.Shared;
+    #endregion
 
-        #region Methods.
-        /// <summary>
-        /// Function to retrieve the description for a 2D depth/stencil view.
-        /// </summary>
-        /// <returns>The direct 3D 2D depth/stencil view description.</returns>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0046:Convert to conditional expression", Justification = "<Pending>")]
-        private D3D11.DepthStencilViewDescription GetDesc2D()
+    #region Methods.
+    /// <summary>
+    /// Function to retrieve the description for a 2D depth/stencil view.
+    /// </summary>
+    /// <returns>The direct 3D 2D depth/stencil view description.</returns>
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0046:Convert to conditional expression", Justification = "<Pending>")]
+    private D3D11.DepthStencilViewDescription GetDesc2D()
 		{
 			bool isMultisampled = Texture.MultisampleInfo != GorgonMultisampleInfo.NoMultiSampling;
 
-            // Set up for arrayed and multisampled texture.
-            if (Texture.ArrayCount > 1)
+        // Set up for arrayed and multisampled texture.
+        if (Texture.ArrayCount > 1)
 			{
 				return new D3D11.DepthStencilViewDescription
 				{
@@ -323,7 +323,7 @@ namespace Gorgon.Graphics.Core
 				};
 			}
 
-            return new D3D11.DepthStencilViewDescription
+        return new D3D11.DepthStencilViewDescription
 			{
 				Format = (DXGI.Format)Format,
 				Dimension = isMultisampled
@@ -772,4 +772,3 @@ namespace Gorgon.Graphics.Core
 		}
 		#endregion
 	}
-}

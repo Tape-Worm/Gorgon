@@ -29,52 +29,51 @@ using Gorgon.Editor.Metadata;
 using Gorgon.Editor.PlugIns;
 using Gorgon.IO;
 
-namespace Gorgon.Editor.ViewModels
+namespace Gorgon.Editor.ViewModels;
+
+/// <summary>
+/// Parameters for the <see cref="IFile"/> view model.
+/// </summary>
+internal class FileParameters
+    : ViewModelCommonParameters
 {
+    #region Properties.
     /// <summary>
-    /// Parameters for the <see cref="IFile"/> view model.
+    /// Property to set or return the virtual file wrapped by the view model.
     /// </summary>
-    internal class FileParameters
-        : ViewModelCommonParameters
+    public IGorgonVirtualFile VirtualFile
     {
-        #region Properties.
-        /// <summary>
-        /// Property to set or return the virtual file wrapped by the view model.
-        /// </summary>
-        public IGorgonVirtualFile VirtualFile
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// Property to set or return the parent directory for the file.
-        /// </summary>
-        public IDirectory Parent
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// Property to set or return the metadata for the file.
-        /// </summary>
-        public ProjectItemMetadata Metadata
-        {
-            get;
-            set;
-        }
-        #endregion
-
-        #region Constructor/Finalizer.
-        /// <summary>Initializes a new instance of the <see cref="FileParameters"/> class.</summary>
-        /// <param name="hostServices">The services from the host application.</param>
-        /// <param name="factory">The view model factory used to create this view model.</param>
-        /// <exception cref="ArgumentNullException">Thrown when any of the parameters are <b>null</b>.</exception>
-        public FileParameters(IHostContentServices hostServices, ViewModelFactory factory)
-            : base(hostServices, factory)
-        {
-        }
-        #endregion
+        get;
+        set;
     }
+
+    /// <summary>
+    /// Property to set or return the parent directory for the file.
+    /// </summary>
+    public IDirectory Parent
+    {
+        get;
+        set;
+    }
+
+    /// <summary>
+    /// Property to set or return the metadata for the file.
+    /// </summary>
+    public ProjectItemMetadata Metadata
+    {
+        get;
+        set;
+    }
+    #endregion
+
+    #region Constructor/Finalizer.
+    /// <summary>Initializes a new instance of the <see cref="FileParameters"/> class.</summary>
+    /// <param name="hostServices">The services from the host application.</param>
+    /// <param name="factory">The view model factory used to create this view model.</param>
+    /// <exception cref="ArgumentNullException">Thrown when any of the parameters are <b>null</b>.</exception>
+    public FileParameters(IHostContentServices hostServices, ViewModelFactory factory)
+        : base(hostServices, factory)
+    {
+    }
+    #endregion
 }

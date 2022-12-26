@@ -28,35 +28,34 @@ using System.Windows.Forms;
 using Gorgon.Graphics;
 using Gorgon.UI;
 
-namespace Gorgon.Editor.Services
+namespace Gorgon.Editor.Services;
+
+/// <summary>
+/// The service used to allow picking of colors.
+/// </summary>
+public class ColorPickerService
+    : IColorPickerService
 {
-    /// <summary>
-    /// The service used to allow picking of colors.
-    /// </summary>
-    public class ColorPickerService
-        : IColorPickerService
+    /// <summary>Function to retrieve a color.</summary>
+    /// <param name="originalColor">The original color being changed.</param>
+    /// <returns>The new color, or <b>null</b> if cancelled.</returns>
+    public GorgonColor? GetColor(GorgonColor originalColor)
     {
-        /// <summary>Function to retrieve a color.</summary>
-        /// <param name="originalColor">The original color being changed.</param>
-        /// <returns>The new color, or <b>null</b> if cancelled.</returns>
-        public GorgonColor? GetColor(GorgonColor originalColor)
+        FormColorPicker picker = null;
+
+        try
         {
-            FormColorPicker picker = null;
-
-            try
+            picker = new FormColorPicker
             {
-                picker = new FormColorPicker
-                {
-                    OriginalColor = originalColor,
-                    Color = originalColor
-                };
+                OriginalColor = originalColor,
+                Color = originalColor
+            };
 
-                return picker.ShowDialog(GorgonApplication.MainForm) == DialogResult.Cancel ? null : picker.Color;
-            }
-            finally
-            {
-                picker?.Dispose();
-            }
+            return picker.ShowDialog(GorgonApplication.MainForm) == DialogResult.Cancel ? null : picker.Color;
+        }
+        finally
+        {
+            picker?.Dispose();
         }
     }
 }

@@ -29,70 +29,69 @@ using System.Collections.Generic;
 using Gorgon.Graphics.Imaging.Properties;
 using SharpDX.WIC;
 
-namespace Gorgon.Graphics.Imaging.Codecs
+namespace Gorgon.Graphics.Imaging.Codecs;
+
+/// <summary>
+/// A codec to handle read/writing of PNG files.
+/// </summary>
+/// <remarks>
+/// <para>
+/// This codec will read and write lossless compressed files using the Portable Network Graphics (PNG) format.
+/// </para>
+/// <para>
+/// This codec supports the following pixel formats:
+/// <list type="bullet">
+///		<item>
+///			<description><c>R8G8B8A8_UNorm</c></description>
+///		</item>
+///		<item>
+///			<description><c>B8G8R8A8_UNorm</c></description>
+///		</item>
+///		<item>
+///			<description><c>B8G8R8X8_UNorm</c></description>
+///		</item>
+///		<item>
+///			<description><c>R16G16B16A16_UNorm</c></description>
+///		</item>
+/// </list>
+/// </para>
+/// <para>
+/// <note type="important">
+/// <para>
+/// This codec requires the Windows Imaging Components (WIC) to be installed for the operating system.
+/// </para>
+/// </note>
+/// </para>
+/// </remarks>
+public sealed class GorgonCodecPng
+    : GorgonCodecWic<GorgonPngEncodingOptions, IGorgonWicDecodingOptions>
 {
-    /// <summary>
-    /// A codec to handle read/writing of PNG files.
-    /// </summary>
-    /// <remarks>
-    /// <para>
-    /// This codec will read and write lossless compressed files using the Portable Network Graphics (PNG) format.
-    /// </para>
-    /// <para>
-    /// This codec supports the following pixel formats:
-    /// <list type="bullet">
-    ///		<item>
-    ///			<description><c>R8G8B8A8_UNorm</c></description>
-    ///		</item>
-    ///		<item>
-    ///			<description><c>B8G8R8A8_UNorm</c></description>
-    ///		</item>
-    ///		<item>
-    ///			<description><c>B8G8R8X8_UNorm</c></description>
-    ///		</item>
-    ///		<item>
-    ///			<description><c>R16G16B16A16_UNorm</c></description>
-    ///		</item>
-    /// </list>
-    /// </para>
-    /// <para>
-    /// <note type="important">
-    /// <para>
-    /// This codec requires the Windows Imaging Components (WIC) to be installed for the operating system.
-    /// </para>
-    /// </note>
-    /// </para>
-    /// </remarks>
-    public sealed class GorgonCodecPng
-        : GorgonCodecWic<GorgonPngEncodingOptions, IGorgonWicDecodingOptions>
+    #region Variables.
+    // Supported formats.
+    private readonly BufferFormat[] _supportedPixelFormats =
     {
-        #region Variables.
-        // Supported formats.
-        private readonly BufferFormat[] _supportedPixelFormats =
-        {
-            BufferFormat.R8G8B8A8_UNorm,
-            BufferFormat.B8G8R8A8_UNorm,
-            BufferFormat.B8G8R8X8_UNorm,
-            BufferFormat.R16G16B16A16_UNorm
-        };
-        #endregion
+        BufferFormat.R8G8B8A8_UNorm,
+        BufferFormat.B8G8R8A8_UNorm,
+        BufferFormat.B8G8R8X8_UNorm,
+        BufferFormat.R16G16B16A16_UNorm
+    };
+    #endregion
 
-        #region Properties.
-        /// <summary>
-        /// Property to return the supported pixel formats for this codec.
-        /// </summary>
-        public override IReadOnlyList<BufferFormat> SupportedPixelFormats => _supportedPixelFormats;
-        #endregion
+    #region Properties.
+    /// <summary>
+    /// Property to return the supported pixel formats for this codec.
+    /// </summary>
+    public override IReadOnlyList<BufferFormat> SupportedPixelFormats => _supportedPixelFormats;
+    #endregion
 
-        #region Constructor/Destructor.
-        /// <summary>
-        /// Initializes a new instance of the <see cref="GorgonCodecPng"/> class.
-        /// </summary>
-        /// <param name="encodingOptions">[Optional] Options used when encoding the image data.</param>
-        public GorgonCodecPng(GorgonPngEncodingOptions encodingOptions = null)
-            : base("PNG", Resources.GORIMG_DESC_PNG_CODEC, new[] { "png" }, ContainerFormatGuids.Png, encodingOptions, null)
-        {
-        }
-        #endregion
+    #region Constructor/Destructor.
+    /// <summary>
+    /// Initializes a new instance of the <see cref="GorgonCodecPng"/> class.
+    /// </summary>
+    /// <param name="encodingOptions">[Optional] Options used when encoding the image data.</param>
+    public GorgonCodecPng(GorgonPngEncodingOptions encodingOptions = null)
+        : base("PNG", Resources.GORIMG_DESC_PNG_CODEC, new[] { "png" }, ContainerFormatGuids.Png, encodingOptions, null)
+    {
     }
+    #endregion
 }

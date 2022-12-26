@@ -28,172 +28,171 @@ using Gorgon.Editor.UI;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Fonts;
 
-namespace Gorgon.Editor.FontEditor
+namespace Gorgon.Editor.FontEditor;
+
+/// <summary>
+/// This is the interface for our view model that we use to present data back to the font content view.
+/// </summary>
+internal interface IFontContent
+    : IVisualEditorContent
 {
     /// <summary>
-    /// This is the interface for our view model that we use to present data back to the font content view.
+    /// Property to return the outline interface view model.
     /// </summary>
-    internal interface IFontContent
-        : IVisualEditorContent
+    IFontOutline FontOutline
     {
-        /// <summary>
-        /// Property to return the outline interface view model.
-        /// </summary>
-        IFontOutline FontOutline
-        {
-            get;
-        }
+        get;
+    }
 
-        /// <summary>
-        /// Property to return the font character selection view model.
-        /// </summary>
-        IFontCharacterSelection FontCharacterSelection
-        {
-            get;
-        }
+    /// <summary>
+    /// Property to return the font character selection view model.
+    /// </summary>
+    IFontCharacterSelection FontCharacterSelection
+    {
+        get;
+    }
 
-        /// <summary>
-        /// Property to return the texture editor context.
-        /// </summary>
-        ITextureEditorContext TextureEditor
-        {
-            get;
-        }
+    /// <summary>
+    /// Property to return the texture editor context.
+    /// </summary>
+    ITextureEditorContext TextureEditor
+    {
+        get;
+    }
 
-        /// <summary>
-        /// Property to return the working font.
-        /// </summary>
-        GorgonFont WorkingFont
-        {
-            get;
-        }
+    /// <summary>
+    /// Property to return the working font.
+    /// </summary>
+    GorgonFont WorkingFont
+    {
+        get;
+    }
 
-        /// <summary>
-        /// Property to return the font family.
-        /// </summary>
-        string FontFamily
-        {
-            get;            
-        }
+    /// <summary>
+    /// Property to return the font family.
+    /// </summary>
+    string FontFamily
+    {
+        get;            
+    }
 
-        /// <summary>
-        /// Property to return the font size.
-        /// </summary>
-        float FontSize
-        {
-            get;
-        }
+    /// <summary>
+    /// Property to return the font size.
+    /// </summary>
+    float FontSize
+    {
+        get;
+    }
 
-        /// <summary>
-        /// Property to return the units for the font size.
-        /// </summary>
-        FontHeightMode FontUnits
-        {
-            get;
-        }
+    /// <summary>
+    /// Property to return the units for the font size.
+    /// </summary>
+    FontHeightMode FontUnits
+    {
+        get;
+    }
 
-        /// <summary>
-        /// Property to return whether the font is bold or not.
-        /// </summary>
-        bool IsBold
-        {
-            get;
-        }
+    /// <summary>
+    /// Property to return whether the font is bold or not.
+    /// </summary>
+    bool IsBold
+    {
+        get;
+    }
 
-        /// <summary>
-        /// Property to return whether the font is italic or not.
-        /// </summary>
-        bool IsItalic
-        {
-            get;
-        }
+    /// <summary>
+    /// Property to return whether the font is italic or not.
+    /// </summary>
+    bool IsItalic
+    {
+        get;
+    }
 
-        /// <summary>
-        /// Property to return whether the sprite is antialiased or not.
-        /// </summary>
-        bool IsAntiAliased
-        {
-            get;
-        }
+    /// <summary>
+    /// Property to return whether the sprite is antialiased or not.
+    /// </summary>
+    bool IsAntiAliased
+    {
+        get;
+    }
 
-        /// <summary>
-        /// Property to return the command used to set the font family.
-        /// </summary>
-        IEditorAsyncCommand<string> SetFontFamilyCommand
-        {
-            get;
-        }
+    /// <summary>
+    /// Property to return the command used to set the font family.
+    /// </summary>
+    IEditorAsyncCommand<string> SetFontFamilyCommand
+    {
+        get;
+    }
 
-        /// <summary>
-        /// Property to return the command used to set the font size.
-        /// </summary>
-        IEditorAsyncCommand<float> SetSizeCommand
-        {
-            get;
-        }
+    /// <summary>
+    /// Property to return the command used to set the font size.
+    /// </summary>
+    IEditorAsyncCommand<float> SetSizeCommand
+    {
+        get;
+    }
 
-        /// <summary>
-        /// Property to return the command used to set the font style to Bold.
-        /// </summary>
-        IEditorAsyncCommand<bool> SetBoldCommand
-        {
-            get;
-        }
+    /// <summary>
+    /// Property to return the command used to set the font style to Bold.
+    /// </summary>
+    IEditorAsyncCommand<bool> SetBoldCommand
+    {
+        get;
+    }
 
-        /// <summary>
-        /// Property to return the command used to set the font style to Italic.
-        /// </summary>
-        IEditorAsyncCommand<bool> SetItalicCommand
-        {
-            get;
-        }
+    /// <summary>
+    /// Property to return the command used to set the font style to Italic.
+    /// </summary>
+    IEditorAsyncCommand<bool> SetItalicCommand
+    {
+        get;
+    }
 
-        /// <summary>
-        /// Property to return the command used to set the font glyphs to be antialiased or not.
-        /// </summary>
-        IEditorAsyncCommand<bool> SetAntiAliasCommand
-        {
-            get;
-        }
+    /// <summary>
+    /// Property to return the command used to set the font glyphs to be antialiased or not.
+    /// </summary>
+    IEditorAsyncCommand<bool> SetAntiAliasCommand
+    {
+        get;
+    }
 
-        /// <summary>
-        /// Property to return the command used to set the font measure units.
-        /// </summary>
-        IEditorAsyncCommand<bool> SetFontUnitsCommand
-        {
-            get;
-        }
+    /// <summary>
+    /// Property to return the command used to set the font measure units.
+    /// </summary>
+    IEditorAsyncCommand<bool> SetFontUnitsCommand
+    {
+        get;
+    }
 
-        /// <summary>
-        /// Property to return the command used to activate the outline interface.
-        /// </summary>
-        IEditorCommand<bool> ActivateOutlineCommand
-        {
-            get;
-        }
+    /// <summary>
+    /// Property to return the command used to activate the outline interface.
+    /// </summary>
+    IEditorCommand<bool> ActivateOutlineCommand
+    {
+        get;
+    }
 
-        /// <summary>
-        /// Property to return the command used to activate the texture context.
-        /// </summary>
-        IEditorCommand<object> ActivateTextureContextCommand
-        {
-            get;
-        }
+    /// <summary>
+    /// Property to return the command used to activate the texture context.
+    /// </summary>
+    IEditorCommand<object> ActivateTextureContextCommand
+    {
+        get;
+    }
 
-        /// <summary>
-        /// Property to return the command used to activate the character selection interface.
-        /// </summary>
-        IEditorCommand<object> ActivateCharacterSelectionCommand
-        {
-            get;
-        }
+    /// <summary>
+    /// Property to return the command used to activate the character selection interface.
+    /// </summary>
+    IEditorCommand<object> ActivateCharacterSelectionCommand
+    {
+        get;
+    }
 
-        /// <summary>
-        /// Property to return the command used to create a new font derived from the current font.
-        /// </summary>
-        IEditorAsyncCommand<object> NewFontCommand
-        {
-            get;
-        }
+    /// <summary>
+    /// Property to return the command used to create a new font derived from the current font.
+    /// </summary>
+    IEditorAsyncCommand<object> NewFontCommand
+    {
+        get;
     }
 }

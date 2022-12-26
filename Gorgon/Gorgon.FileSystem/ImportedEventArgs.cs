@@ -27,49 +27,48 @@
 using System;
 using System.Collections.Generic;
 
-namespace Gorgon.IO
+namespace Gorgon.IO;
+
+/// <summary>
+/// Event arguments for the <see cref="IGorgonFileSystemWriter{T}.Imported"/> event.
+/// </summary>
+public class ImportedEventArgs
+    : EventArgs
 {
     /// <summary>
-    /// Event arguments for the <see cref="IGorgonFileSystemWriter{T}.Imported"/> event.
+    /// Property to return the virtual directories that were imported.
     /// </summary>
-    public class ImportedEventArgs
-        : EventArgs
+    public IReadOnlyList<IGorgonVirtualDirectory> VirtualDirectories
     {
-        /// <summary>
-        /// Property to return the virtual directories that were imported.
-        /// </summary>
-        public IReadOnlyList<IGorgonVirtualDirectory> VirtualDirectories
-        {
-            get;
-        }
+        get;
+    }
 
-        /// <summary>
-        /// Property to return the virtual files that were imported.
-        /// </summary>
-        public IReadOnlyList<IGorgonVirtualFile> VirtualFiles
-        {
-            get;
-        }              
+    /// <summary>
+    /// Property to return the virtual files that were imported.
+    /// </summary>
+    public IReadOnlyList<IGorgonVirtualFile> VirtualFiles
+    {
+        get;
+    }              
 
-        /// <summary>
-        /// Property to return the destination directory for the import operation.
-        /// </summary>
-        public IGorgonVirtualDirectory Destination
-        {
-            get;
-        }
+    /// <summary>
+    /// Property to return the destination directory for the import operation.
+    /// </summary>
+    public IGorgonVirtualDirectory Destination
+    {
+        get;
+    }
 
-        /// <summary>Initializes a new instance of the <see cref="ImportedEventArgs"/> class.</summary>
-        /// <param name="dest">The destination directory for the import.</param>
-        /// <param name="directories">The list of virtual directories that were imported.</param>
-        /// <param name="files">The list of virtual files that were imported.</param>
-        internal ImportedEventArgs(IGorgonVirtualDirectory dest, 
-                                                IReadOnlyList<IGorgonVirtualDirectory> directories, 
-                                                IReadOnlyList<IGorgonVirtualFile> files)
-        {
-            Destination = dest;
-            VirtualDirectories = directories;
-            VirtualFiles = files;
-        }
+    /// <summary>Initializes a new instance of the <see cref="ImportedEventArgs"/> class.</summary>
+    /// <param name="dest">The destination directory for the import.</param>
+    /// <param name="directories">The list of virtual directories that were imported.</param>
+    /// <param name="files">The list of virtual files that were imported.</param>
+    internal ImportedEventArgs(IGorgonVirtualDirectory dest, 
+                                            IReadOnlyList<IGorgonVirtualDirectory> directories, 
+                                            IReadOnlyList<IGorgonVirtualFile> files)
+    {
+        Destination = dest;
+        VirtualDirectories = directories;
+        VirtualFiles = files;
     }
 }

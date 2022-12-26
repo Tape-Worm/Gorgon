@@ -24,29 +24,28 @@
 // 
 #endregion
 
-namespace Gorgon.Editor.Services
+namespace Gorgon.Editor.Services;
+
+/// <summary>
+/// Value type used to relay progress back to a subscriber.
+/// </summary>
+public readonly struct ProgressData
 {
     /// <summary>
-    /// Value type used to relay progress back to a subscriber.
+    /// The current value being processed.
     /// </summary>
-    public readonly struct ProgressData
-    {
-        /// <summary>
-        /// The current value being processed.
-        /// </summary>
-        public readonly int Current;
-        /// <summary>
-        /// The total number of items to process.
-        /// </summary>
-        public readonly int Total;
+    public readonly int Current;
+    /// <summary>
+    /// The total number of items to process.
+    /// </summary>
+    public readonly int Total;
 
-        /// <summary>Initializes a new instance of the <see cref="ProgressData"/> struct.</summary>
-        /// <param name="current">The current item.</param>
-        /// <param name="total">The total number of items.</param>
-        public ProgressData(int current, int total)
-        {
-            Current = current;
-            Total = total;
-        }
+    /// <summary>Initializes a new instance of the <see cref="ProgressData"/> struct.</summary>
+    /// <param name="current">The current item.</param>
+    /// <param name="total">The total number of items.</param>
+    public ProgressData(int current, int total)
+    {
+        Current = current;
+        Total = total;
     }
 }

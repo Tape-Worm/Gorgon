@@ -27,47 +27,46 @@
 using System.ComponentModel;
 using System.Windows.Forms;
 
-namespace Gorgon.Editor.UI.Views
+namespace Gorgon.Editor.UI.Views;
+
+/// <summary>
+/// The base control used for settings panels.
+/// </summary>
+public partial class SettingsBaseControl
+    : EditorBaseControl
 {
+    #region Variables.
     /// <summary>
-    /// The base control used for settings panels.
+    /// The panel that will contain the controls for the settings.
     /// </summary>
-    public partial class SettingsBaseControl
-        : EditorBaseControl
+    protected Panel PanelBody;
+    #endregion
+
+    #region Properties.
+    /// <summary>
+    /// Property to return the ID of the panel.
+    /// </summary>
+    [Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+    public virtual string PanelID
     {
-        #region Variables.
-        /// <summary>
-        /// The panel that will contain the controls for the settings.
-        /// </summary>
-        protected Panel PanelBody;
-        #endregion
-
-        #region Properties.
-        /// <summary>
-        /// Property to return the ID of the panel.
-        /// </summary>
-        [Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-        public virtual string PanelID
-        {
-            get;
-        }
-
-        /// <summary>Gets or sets the text associated with this control.</summary>
-        [Browsable(true), Category("Appearance"), Description("Sets the caption for the panel."), DesignerSerializationVisibility(DesignerSerializationVisibility.Visible), Localizable(true)]
-        public new string Text
-        {
-            get => base.Text;
-            set => LabelCaption.Text = base.Text = value;
-        }
-        #endregion
-
-        #region Methods.
-
-        #endregion
-
-        #region Constructor/Finalizer.
-        /// <summary>Initializes a new instance of the <see cref="SettingsBaseControl"/> class.</summary>
-        public SettingsBaseControl() => InitializeComponent();
-        #endregion
+        get;
     }
+
+    /// <summary>Gets or sets the text associated with this control.</summary>
+    [Browsable(true), Category("Appearance"), Description("Sets the caption for the panel."), DesignerSerializationVisibility(DesignerSerializationVisibility.Visible), Localizable(true)]
+    public new string Text
+    {
+        get => base.Text;
+        set => LabelCaption.Text = base.Text = value;
+    }
+    #endregion
+
+    #region Methods.
+
+    #endregion
+
+    #region Constructor/Finalizer.
+    /// <summary>Initializes a new instance of the <see cref="SettingsBaseControl"/> class.</summary>
+    public SettingsBaseControl() => InitializeComponent();
+    #endregion
 }

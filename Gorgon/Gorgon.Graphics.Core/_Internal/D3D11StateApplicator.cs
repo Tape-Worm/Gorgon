@@ -37,13 +37,13 @@ using D3D11 = SharpDX.Direct3D11;
 using DX = SharpDX;
 using DXGI = SharpDX.DXGI;
 
-namespace Gorgon.Graphics.Core
+namespace Gorgon.Graphics.Core;
+
+/// <summary>
+/// Functionality to apply Direct3D 11 states and resources.
+/// </summary>
+internal class D3D11StateApplicator
 {
-    /// <summary>
-    /// Functionality to apply Direct3D 11 states and resources.
-    /// </summary>
-    internal class D3D11StateApplicator
-    {
 		#region Variables.
 		// An empty UAV count to get around an idiotic design decision (no count exposed on the method) for UAVs on compute shaders
 		private static readonly int[] _emptyUavCounts = new int[GorgonReadWriteViewBindings.MaximumReadWriteViewCount];
@@ -245,10 +245,10 @@ namespace Gorgon.Graphics.Core
 		}
 
 		/// <summary>
-        /// Function to bind stream buffer resources to the pipeline.
-        /// </summary>
-        /// <param name="streamOutBindings">The bindings to bind to the pipeline.</param>
-        /// <param name="indices">The indices that were modified.</param>
+    /// Function to bind stream buffer resources to the pipeline.
+    /// </summary>
+    /// <param name="streamOutBindings">The bindings to bind to the pipeline.</param>
+    /// <param name="indices">The indices that were modified.</param>
 		private void BindStreamOutBuffers(GorgonStreamOutBindings streamOutBindings, in (int Start, int Count) indices)
 		{
 			if ((indices.Count <= 0) || (_setStreamOutTargets is null))
@@ -374,7 +374,7 @@ namespace Gorgon.Graphics.Core
 		/// </summary>
 		/// <param name="shaderStage">The shader stage to use.</param>
 		/// <param name="samplers">The samplers to apply.</param>
-        /// <param name="indices">The indices in the resource array that have been updated.</param>
+    /// <param name="indices">The indices in the resource array that have been updated.</param>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		private static void BindSamplers(D3D11.CommonShaderStage shaderStage, GorgonSamplerStates samplers, in (int Start, int Count) indices)
 		{
@@ -472,7 +472,7 @@ namespace Gorgon.Graphics.Core
 		/// <param name="shaderStage">The shader stage to update.</param>
 		/// <param name="srvs">The shader resource views to bind.</param>
 		/// <param name="indices">The indices in the resource array that have been updated.</param>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
 		private void BindSrvs(D3D11.CommonShaderStage shaderStage, GorgonShaderResourceViews srvs, in (int Start, int Count) indices)
 		{
 			if ((srvs is null) || (indices.Count == 0))
@@ -628,11 +628,11 @@ namespace Gorgon.Graphics.Core
 		}
 
 		/// <summary>
-        /// Function to bind a list of render target views and, optionally, a depth/stencil buffer to the pipeline.
-        /// </summary>
-        /// <param name="renderTargets">The render targets to bind.</param>
-        /// <param name="depthStencil">The depth stencil to bind.</param>
-        /// <param name="changes">Flags to indicate which items have changed.</param>
+    /// Function to bind a list of render target views and, optionally, a depth/stencil buffer to the pipeline.
+    /// </summary>
+    /// <param name="renderTargets">The render targets to bind.</param>
+    /// <param name="depthStencil">The depth stencil to bind.</param>
+    /// <param name="changes">Flags to indicate which items have changed.</param>
 		public void BindRenderTargets(ReadOnlySpan<GorgonRenderTargetView> renderTargets, GorgonDepthStencil2DView depthStencil, in (bool RtvsChanged, bool DsvChanged) changes)
 		{
 			if ((!changes.RtvsChanged) && (!changes.DsvChanged))
@@ -692,11 +692,11 @@ namespace Gorgon.Graphics.Core
 		/// <param name="blendSampleMask">The mask used to define which samples get updated in the active render targets.</param>
 		/// <param name="stencilRef">The stencil reference value used when performing a stencil test.</param>
 		public void ApplyPipelineState(GorgonPipelineState state, PipelineStateChanges changes, in GorgonColor blendFactor, int blendSampleMask, int stencilRef)
+    {
+        if (changes == PipelineStateChanges.None)
         {
-            if (changes == PipelineStateChanges.None)
-            {
-                return;
-            }
+            return;
+        }
 
 			if ((changes & PipelineStateChanges.BlendFactor) == PipelineStateChanges.BlendFactor)
 			{
@@ -760,9 +760,9 @@ namespace Gorgon.Graphics.Core
 		}
 
 		/// <summary>
-        /// Function to bind viewports to the pipeline.
-        /// </summary>
-        /// <param name="viewports">The list of viewports to bind.</param>
+    /// Function to bind viewports to the pipeline.
+    /// </summary>
+    /// <param name="viewports">The list of viewports to bind.</param>
 		public void BindViewports(ReadOnlySpan<DX.ViewportF> viewports)
 		{
 			if (viewports.IsEmpty)
@@ -835,6 +835,5 @@ namespace Gorgon.Graphics.Core
 			FixSetRenderTargets();
 			FixSetScissorRects();
 		}
-        #endregion
-    }
+    #endregion
 }

@@ -27,53 +27,52 @@
 using System;
 using Gorgon.Graphics.Imaging;
 
-namespace Gorgon.Editor.ImageEditor
+namespace Gorgon.Editor.ImageEditor;
+
+/// <summary>
+/// The service used to apply effects and generate previews for effects.
+/// </summary>
+internal interface IFxService
+    : IDisposable
 {
+    #region Properties.
     /// <summary>
-    /// The service used to apply effects and generate previews for effects.
+    /// Property to return the image that will contain the effect output.
     /// </summary>
-    internal interface IFxService
-        : IDisposable
+    IGorgonImage EffectImage
     {
-        #region Properties.
-        /// <summary>
-        /// Property to return the image that will contain the effect output.
-        /// </summary>
-        IGorgonImage EffectImage
-        {
-            get;
-        }
-        #endregion
-
-        #region Methods.
-        /// <summary>
-        /// Function to apply the current effect that is using a preview.
-        /// </summary>
-        void ApplyPreviewedEffect();
-
-        /// <summary>
-        /// Function to apply the invert effect.
-        /// </summary>
-        void ApplyInvert();
-
-        /// <summary>
-        /// Function to apply the grayscale effect.
-        /// </summary>
-        void ApplyGrayScale();
-
-        /// <summary>
-        /// Function to apply the burn effect.
-        /// </summary>
-        /// <param name="useDodge"><b>true</b> to apply the dodge effect, <b>false</b> to apply the burn effect.</param>
-        void ApplyDodgeBurn(bool useDodge);
-
-        /// <summary>
-        /// Function to assign an image for editing.
-        /// </summary>
-        /// <param name="image">The image to edit.</param>        
-        /// <param name="arrayDepth">The selected array index or depth slice (volume textures).</param>
-        /// <param name="mipLevel">The currently selected mip map level.</param>
-        void SetImage(IGorgonImage image, int arrayDepth, int mipLevel);
-        #endregion
+        get;
     }
+    #endregion
+
+    #region Methods.
+    /// <summary>
+    /// Function to apply the current effect that is using a preview.
+    /// </summary>
+    void ApplyPreviewedEffect();
+
+    /// <summary>
+    /// Function to apply the invert effect.
+    /// </summary>
+    void ApplyInvert();
+
+    /// <summary>
+    /// Function to apply the grayscale effect.
+    /// </summary>
+    void ApplyGrayScale();
+
+    /// <summary>
+    /// Function to apply the burn effect.
+    /// </summary>
+    /// <param name="useDodge"><b>true</b> to apply the dodge effect, <b>false</b> to apply the burn effect.</param>
+    void ApplyDodgeBurn(bool useDodge);
+
+    /// <summary>
+    /// Function to assign an image for editing.
+    /// </summary>
+    /// <param name="image">The image to edit.</param>        
+    /// <param name="arrayDepth">The selected array index or depth slice (volume textures).</param>
+    /// <param name="mipLevel">The currently selected mip map level.</param>
+    void SetImage(IGorgonImage image, int arrayDepth, int mipLevel);
+    #endregion
 }

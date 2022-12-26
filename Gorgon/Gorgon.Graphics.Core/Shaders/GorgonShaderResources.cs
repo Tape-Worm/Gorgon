@@ -26,49 +26,48 @@
 
 using Gorgon.Collections;
 
-namespace Gorgon.Graphics.Core
+namespace Gorgon.Graphics.Core;
+
+/// <summary>
+/// A grouping of resource states for a shader.
+/// </summary>
+public sealed class GorgonShaderResources
 {
+    #region Properties.
     /// <summary>
-    /// A grouping of resource states for a shader.
+    /// Property to return the samplers for the shader.
     /// </summary>
-    public sealed class GorgonShaderResources
+    public IGorgonReadOnlyArray<GorgonSamplerState> Samplers
     {
-        #region Properties.
-        /// <summary>
-        /// Property to return the samplers for the shader.
-        /// </summary>
-        public IGorgonReadOnlyArray<GorgonSamplerState> Samplers
-        {
-            get;
-            internal set;
-        }
-
-        /// <summary>
-        /// Property to return the constant buffers for the shader.
-        /// </summary>
-        public IGorgonReadOnlyArray<GorgonConstantBufferView> ConstantBuffers
-        {
-            get;
-            internal set;
-        }
-
-        /// <summary>
-        /// Property to return the list of shader resources for the shader.
-        /// </summary>
-        public IGorgonReadOnlyArray<GorgonShaderResourceView> ShaderResources
-        {
-            get;
-            internal set;
-        }
-        #endregion
-
-        #region Constructor.
-        /// <summary>
-        /// Initializes a new instance of the <see cref="GorgonShaderResources"/> class.
-        /// </summary>
-        internal GorgonShaderResources()
-        {
-        }
-        #endregion
+        get;
+        internal set;
     }
+
+    /// <summary>
+    /// Property to return the constant buffers for the shader.
+    /// </summary>
+    public IGorgonReadOnlyArray<GorgonConstantBufferView> ConstantBuffers
+    {
+        get;
+        internal set;
+    }
+
+    /// <summary>
+    /// Property to return the list of shader resources for the shader.
+    /// </summary>
+    public IGorgonReadOnlyArray<GorgonShaderResourceView> ShaderResources
+    {
+        get;
+        internal set;
+    }
+    #endregion
+
+    #region Constructor.
+    /// <summary>
+    /// Initializes a new instance of the <see cref="GorgonShaderResources"/> class.
+    /// </summary>
+    internal GorgonShaderResources()
+    {
+    }
+    #endregion
 }

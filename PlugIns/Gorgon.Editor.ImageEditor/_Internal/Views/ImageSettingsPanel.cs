@@ -32,110 +32,109 @@ using Gorgon.Editor.UI;
 using Gorgon.Editor.UI.Views;
 using Gorgon.UI;
 
-namespace Gorgon.Editor.ImageEditor
+namespace Gorgon.Editor.ImageEditor;
+
+/// <summary>
+/// The panel used to display settings for image codec support.
+/// </summary>
+internal partial class ImageSettingsPanel
+    : SettingsBaseControl, IDataContext<ISettings>
 {
-    /// <summary>
-    /// The panel used to display settings for image codec support.
-    /// </summary>
-    internal partial class ImageSettingsPanel
-        : SettingsBaseControl, IDataContext<ISettings>
+    #region Properties.
+    /// <summary>Property to return the ID of the panel.</summary>
+    [Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+    public override string PanelID => DataContext?.ID.ToString() ?? Guid.Empty.ToString();
+
+    /// <summary>Property to return the data context assigned to this view.</summary>
+    [Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+    public ISettings DataContext
     {
-        #region Properties.
-        /// <summary>Property to return the ID of the panel.</summary>
-        [Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-        public override string PanelID => DataContext?.ID.ToString() ?? Guid.Empty.ToString();
-
-        /// <summary>Property to return the data context assigned to this view.</summary>
-        [Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-        public ISettings DataContext
-        {
-            get;
-            private set;
-        }
-        #endregion
-
-        #region Methods.        
-        /// <summary>Handles the Click event of the ButtonClear control.</summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="T:System.EventArgs">EventArgs</see> instance containing the event data.</param>
-        private void ButtonClear_Click(object sender, EventArgs e) => TextPath.Text = string.Empty;
-
-        /// <summary>Handles the Click event of the ButtonPath control.</summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="T:System.EventArgs">EventArgs</see> instance containing the event data.</param>
-        private void ButtonPath_Click(object sender, EventArgs e)
-        {
-            try
-            {
-                DialogFileOpen.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles);
-
-                if (DialogFileOpen.ShowDialog() == DialogResult.Cancel)
-                {
-                    return;
-                }
-
-                TextPath.Text = DialogFileOpen.FileName;
-            }
-            catch (Exception ex)
-            {
-                GorgonDialogs.ErrorBox(ParentForm, ex);
-            }
-        }
-
-        /// <summary>
-        /// Function to validate the commands on the view.
-        /// </summary>
-        private void ValidateCommands() => ButtonClear.Enabled = !string.IsNullOrWhiteSpace(TextPath.Text);
-
-        /// <summary>
-        /// Function to restore the control to its default state.
-        /// </summary>
-        private void ResetDataContext() => TextPath.Text = string.Empty;
-
-        /// <summary>Handles the TextChanged event of the TextPath control.</summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="T:System.EventArgs">EventArgs</see> instance containing the event data.</param>
-        private void TextPath_TextChanged(object sender, EventArgs e)
-        {
-            if ((DataContext?.UpdatePathCommand is null) || (!DataContext.UpdatePathCommand.CanExecute(TextPath.Text)))
-            {
-                return;
-            }
-
-            DataContext.UpdatePathCommand.Execute(TextPath.Text);
-            ValidateCommands();
-        }
-
-        /// <summary>
-        /// Function to initialize the control from the specified data context.
-        /// </summary>
-        /// <param name="dataContext">The data context to apply.</param>
-        private void InitializeFromDataContext(ISettings dataContext)
-        {
-            if (dataContext is null)
-            {
-                ResetDataContext();
-                return;
-            }
-
-            TextPath.Text = dataContext?.ImageEditorApplicationPath ?? string.Empty;            
-        }        
-
-        /// <summary>Function to assign a data context to the view as a view model.</summary>
-        /// <param name="dataContext">The data context to assign.</param>
-        /// <remarks>Data contexts should be nullable, in that, they should reset the view back to its original state when the context is null.</remarks>
-        public void SetDataContext(ISettings dataContext)
-        {
-            InitializeFromDataContext(dataContext);
-            DataContext = dataContext;
-
-            ValidateCommands();
-        }
-        #endregion
-
-        #region Constructor/Finalizer.
-        /// <summary>Initializes a new instance of the <see cref="ImageSettingsPanel"/> class.</summary>
-        public ImageSettingsPanel() => InitializeComponent();
-        #endregion
+        get;
+        private set;
     }
+    #endregion
+
+    #region Methods.        
+    /// <summary>Handles the Click event of the ButtonClear control.</summary>
+    /// <param name="sender">The source of the event.</param>
+    /// <param name="e">The <see cref="T:System.EventArgs">EventArgs</see> instance containing the event data.</param>
+    private void ButtonClear_Click(object sender, EventArgs e) => TextPath.Text = string.Empty;
+
+    /// <summary>Handles the Click event of the ButtonPath control.</summary>
+    /// <param name="sender">The source of the event.</param>
+    /// <param name="e">The <see cref="T:System.EventArgs">EventArgs</see> instance containing the event data.</param>
+    private void ButtonPath_Click(object sender, EventArgs e)
+    {
+        try
+        {
+            DialogFileOpen.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles);
+
+            if (DialogFileOpen.ShowDialog() == DialogResult.Cancel)
+            {
+                return;
+            }
+
+            TextPath.Text = DialogFileOpen.FileName;
+        }
+        catch (Exception ex)
+        {
+            GorgonDialogs.ErrorBox(ParentForm, ex);
+        }
+    }
+
+    /// <summary>
+    /// Function to validate the commands on the view.
+    /// </summary>
+    private void ValidateCommands() => ButtonClear.Enabled = !string.IsNullOrWhiteSpace(TextPath.Text);
+
+    /// <summary>
+    /// Function to restore the control to its default state.
+    /// </summary>
+    private void ResetDataContext() => TextPath.Text = string.Empty;
+
+    /// <summary>Handles the TextChanged event of the TextPath control.</summary>
+    /// <param name="sender">The source of the event.</param>
+    /// <param name="e">The <see cref="T:System.EventArgs">EventArgs</see> instance containing the event data.</param>
+    private void TextPath_TextChanged(object sender, EventArgs e)
+    {
+        if ((DataContext?.UpdatePathCommand is null) || (!DataContext.UpdatePathCommand.CanExecute(TextPath.Text)))
+        {
+            return;
+        }
+
+        DataContext.UpdatePathCommand.Execute(TextPath.Text);
+        ValidateCommands();
+    }
+
+    /// <summary>
+    /// Function to initialize the control from the specified data context.
+    /// </summary>
+    /// <param name="dataContext">The data context to apply.</param>
+    private void InitializeFromDataContext(ISettings dataContext)
+    {
+        if (dataContext is null)
+        {
+            ResetDataContext();
+            return;
+        }
+
+        TextPath.Text = dataContext?.ImageEditorApplicationPath ?? string.Empty;            
+    }        
+
+    /// <summary>Function to assign a data context to the view as a view model.</summary>
+    /// <param name="dataContext">The data context to assign.</param>
+    /// <remarks>Data contexts should be nullable, in that, they should reset the view back to its original state when the context is null.</remarks>
+    public void SetDataContext(ISettings dataContext)
+    {
+        InitializeFromDataContext(dataContext);
+        DataContext = dataContext;
+
+        ValidateCommands();
+    }
+    #endregion
+
+    #region Constructor/Finalizer.
+    /// <summary>Initializes a new instance of the <see cref="ImageSettingsPanel"/> class.</summary>
+    public ImageSettingsPanel() => InitializeComponent();
+    #endregion
 }

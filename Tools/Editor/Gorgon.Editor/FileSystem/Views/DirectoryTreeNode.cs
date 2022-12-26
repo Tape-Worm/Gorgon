@@ -31,140 +31,139 @@ using System.Windows.Forms;
 using Gorgon.Editor.UI;
 using Gorgon.Editor.ViewModels;
 
-namespace Gorgon.Editor.Views
+namespace Gorgon.Editor.Views;
+
+/// <summary>
+/// An tree node, representing a directory, for the <see cref="TreeEx"/> control.
+/// </summary>
+internal class DirectoryTreeNode
+    : TreeNode, IDataContext<IDirectory>
 {
-    /// <summary>
-    /// An tree node, representing a directory, for the <see cref="TreeEx"/> control.
-    /// </summary>
-    internal class DirectoryTreeNode
-        : TreeNode, IDataContext<IDirectory>
+    #region Properties.
+    /// <summary>Property to return the data context assigned to this view.</summary>
+    public IDirectory DataContext
     {
-        #region Properties.
-        /// <summary>Property to return the data context assigned to this view.</summary>
-        public IDirectory DataContext
+        get;
+        private set;
+    }
+
+    /// <summary>Gets or sets the foreground color of the tree node.</summary>
+    public new Color ForeColor
+    {
+        get => (DataContext is IExcludable excluded)
+                && (!DataContext.IsCut)
+                && (excluded.IsExcluded)
+                ? DarkFormsRenderer.ExcludedColor
+                : base.ForeColor;
+        set => base.ForeColor = value;
+    }
+    #endregion
+
+    #region Methods.
+    /// <summary>Handles the PropertyChanged event of the DataContext control.</summary>
+    /// <param name="sender">The source of the event.</param>
+    /// <param name="e">The <see cref="PropertyChangedEventArgs"/> instance containing the event data.</param>
+    private void DataContext_PropertyChanged(object sender, PropertyChangedEventArgs e)
+    {
+        switch (e.PropertyName)
         {
-            get;
-            private set;
+            case nameof(IDirectory.Name):
+                if (!string.Equals(Text, DataContext.Name, StringComparison.CurrentCultureIgnoreCase))
+                {
+                    Text = DataContext.Name;
+                }
+                break;
+            case nameof(IDirectory.ID):
+                if (!string.Equals(Name, DataContext.ID, StringComparison.CurrentCultureIgnoreCase))
+                {
+                    Name = DataContext.ID;
+                }
+                break;
+            case nameof(IDirectory.ImageName):
+                if (!string.Equals(ImageKey, DataContext.ImageName, StringComparison.CurrentCultureIgnoreCase))
+                {
+                    ImageKey = DataContext.ImageName;
+                }
+                break;
+            case nameof(IExcludable.IsExcluded):
+                TreeView.Invalidate();
+                break;
+        }
+    }
+
+    /// <summary>
+    /// Function to unassign events on the current data context.
+    /// </summary>
+    private void UnassignEvents()
+    {
+        if (DataContext is null)
+        {
+            return;
         }
 
-        /// <summary>Gets or sets the foreground color of the tree node.</summary>
-        public new Color ForeColor
-        {
-            get => (DataContext is IExcludable excluded)
-                    && (!DataContext.IsCut)
-                    && (excluded.IsExcluded)
-                    ? DarkFormsRenderer.ExcludedColor
-                    : base.ForeColor;
-            set => base.ForeColor = value;
-        }
-        #endregion
+        DataContext.PropertyChanged -= DataContext_PropertyChanged;
+    }
 
-        #region Methods.
-        /// <summary>Handles the PropertyChanged event of the DataContext control.</summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="PropertyChangedEventArgs"/> instance containing the event data.</param>
-        private void DataContext_PropertyChanged(object sender, PropertyChangedEventArgs e)
+    /// <summary>
+    /// Function to set up events for the data context.
+    /// </summary>
+    /// <param name="dataContext">The data context to assign events on.</param>
+    private void AssignEvents(IDirectory dataContext)
+    {
+        if (dataContext is null)
         {
-            switch (e.PropertyName)
-            {
-                case nameof(IDirectory.Name):
-                    if (!string.Equals(Text, DataContext.Name, StringComparison.CurrentCultureIgnoreCase))
-                    {
-                        Text = DataContext.Name;
-                    }
-                    break;
-                case nameof(IDirectory.ID):
-                    if (!string.Equals(Name, DataContext.ID, StringComparison.CurrentCultureIgnoreCase))
-                    {
-                        Name = DataContext.ID;
-                    }
-                    break;
-                case nameof(IDirectory.ImageName):
-                    if (!string.Equals(ImageKey, DataContext.ImageName, StringComparison.CurrentCultureIgnoreCase))
-                    {
-                        ImageKey = DataContext.ImageName;
-                    }
-                    break;
-                case nameof(IExcludable.IsExcluded):
-                    TreeView.Invalidate();
-                    break;
-            }
-        }
-
-        /// <summary>
-        /// Function to unassign events on the current data context.
-        /// </summary>
-        private void UnassignEvents()
-        {
-            if (DataContext is null)
-            {
-                return;
-            }
-
-            DataContext.PropertyChanged -= DataContext_PropertyChanged;
-        }
-
-        /// <summary>
-        /// Function to set up events for the data context.
-        /// </summary>
-        /// <param name="dataContext">The data context to assign events on.</param>
-        private void AssignEvents(IDirectory dataContext)
-        {
-            if (dataContext is null)
-            {
-                return;
-            }
-            
-            dataContext.PropertyChanged += DataContext_PropertyChanged;
+            return;
         }
         
-        /// <summary>
-        /// Function to revert the control back to the default state when the data context is not assigned.
-        /// </summary>
-        private void ResetDataContext()
-        {
-            if (DataContext is null)
-            {
-                return;
-            }
-
-            UnassignEvents();
-            DataContext.Unload();
-            DataContext = null;
-
-            ImageKey = string.Empty;
-            Name = string.Empty;
-            Text = string.Empty;
-        }
-
-        /// <summary>
-        /// Function to initialize the control with the specified data context.
-        /// </summary>
-        /// <param name="dataContext">The data context to initialize from.</param>
-        private void InitializeFromDataContext(IDirectory dataContext)
-        {
-            if (dataContext is null)
-            {
-                ResetDataContext();
-                return;
-            }
-
-            ImageKey = dataContext.ImageName ?? string.Empty;
-            Name = dataContext.ID;
-            Text = dataContext.Name;
-        }
-
-        /// <summary>Function to assign a data context to the view as a view model.</summary>
-        /// <param name="dataContext">The data context to assign.</param>
-        /// <remarks>Data contexts should be nullable, in that, they should reset the view back to its original state when the context is null.</remarks>
-        public void SetDataContext(IDirectory dataContext)
-        {
-            InitializeFromDataContext(dataContext);
-
-            AssignEvents(dataContext);
-            
-            DataContext = dataContext;
-        }
-        #endregion
+        dataContext.PropertyChanged += DataContext_PropertyChanged;
     }
+    
+    /// <summary>
+    /// Function to revert the control back to the default state when the data context is not assigned.
+    /// </summary>
+    private void ResetDataContext()
+    {
+        if (DataContext is null)
+        {
+            return;
+        }
+
+        UnassignEvents();
+        DataContext.Unload();
+        DataContext = null;
+
+        ImageKey = string.Empty;
+        Name = string.Empty;
+        Text = string.Empty;
+    }
+
+    /// <summary>
+    /// Function to initialize the control with the specified data context.
+    /// </summary>
+    /// <param name="dataContext">The data context to initialize from.</param>
+    private void InitializeFromDataContext(IDirectory dataContext)
+    {
+        if (dataContext is null)
+        {
+            ResetDataContext();
+            return;
+        }
+
+        ImageKey = dataContext.ImageName ?? string.Empty;
+        Name = dataContext.ID;
+        Text = dataContext.Name;
+    }
+
+    /// <summary>Function to assign a data context to the view as a view model.</summary>
+    /// <param name="dataContext">The data context to assign.</param>
+    /// <remarks>Data contexts should be nullable, in that, they should reset the view back to its original state when the context is null.</remarks>
+    public void SetDataContext(IDirectory dataContext)
+    {
+        InitializeFromDataContext(dataContext);
+
+        AssignEvents(dataContext);
+        
+        DataContext = dataContext;
+    }
+    #endregion
 }

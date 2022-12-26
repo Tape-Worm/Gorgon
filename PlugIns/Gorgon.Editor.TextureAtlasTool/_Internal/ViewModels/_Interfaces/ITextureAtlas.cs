@@ -30,136 +30,135 @@ using Gorgon.Editor.UI;
 using Gorgon.Renderers.Services;
 using DX = SharpDX;
 
-namespace Gorgon.Editor.TextureAtlasTool
+namespace Gorgon.Editor.TextureAtlasTool;
+
+/// <summary>
+/// The view model for the main UI.
+/// </summary>
+internal interface ITextureAtlas
+    : IEditorTool
 {
     /// <summary>
-    /// The view model for the main UI.
+    /// Property to return the view model for the sprite file loader.
     /// </summary>
-    internal interface ITextureAtlas
-        : IEditorTool
+    ISpriteFiles SpriteFiles
     {
-        /// <summary>
-        /// Property to return the view model for the sprite file loader.
-        /// </summary>
-        ISpriteFiles SpriteFiles
-        {
-            get;
-        }
+        get;
+    }
 
-        /// <summary>
-        /// Property to return the number of sprites that were loaded.
-        /// </summary>
-        int LoadedSpriteCount
-        {
-            get;
-        }
+    /// <summary>
+    /// Property to return the number of sprites that were loaded.
+    /// </summary>
+    int LoadedSpriteCount
+    {
+        get;
+    }
 
-        /// <summary>Property to return the path for the output files.</summary>
-        string OutputPath
-        {
-            get;
-        }
+    /// <summary>Property to return the path for the output files.</summary>
+    string OutputPath
+    {
+        get;
+    }
 
-        /// <summary>Property to set or return the maximum size for the atlas texture.</summary>
-        DX.Size2 MaxTextureSize
-        {
-            get;
-            set;
-        }
+    /// <summary>Property to set or return the maximum size for the atlas texture.</summary>
+    DX.Size2 MaxTextureSize
+    {
+        get;
+        set;
+    }
 
-        /// <summary>Property to set or return the maximum number of array indices for the atlas texture.</summary>
-        int MaxArrayCount
-        {
-            get;
-            set;
-        }
+    /// <summary>Property to set or return the maximum number of array indices for the atlas texture.</summary>
+    int MaxArrayCount
+    {
+        get;
+        set;
+    }
 
-        /// <summary>
-        /// Property to set or return the amount of padding, in pixels around each sprite on the texture.
-        /// </summary>
-        int Padding
-        {
-            get;
-            set;
-        }
+    /// <summary>
+    /// Property to set or return the amount of padding, in pixels around each sprite on the texture.
+    /// </summary>
+    int Padding
+    {
+        get;
+        set;
+    }
 
-        /// <summary>
-        /// Property to return the base atlas texture name.
-        /// </summary>
-        string BaseTextureName
-        {
-            get;
-            set;
-        }
+    /// <summary>
+    /// Property to return the base atlas texture name.
+    /// </summary>
+    string BaseTextureName
+    {
+        get;
+        set;
+    }
 
-        /// <summary>
-        /// Property to return the atlas after it's been generated.
-        /// </summary>
-        GorgonTextureAtlas Atlas
-        {
-            get;
-        }
+    /// <summary>
+    /// Property to return the atlas after it's been generated.
+    /// </summary>
+    GorgonTextureAtlas Atlas
+    {
+        get;
+    }
 
-        /// <summary>
-        /// Property to return the preview array index.
-        /// </summary>
-        int PreviewArrayIndex
-        {
-            get;
-        }
+    /// <summary>
+    /// Property to return the preview array index.
+    /// </summary>
+    int PreviewArrayIndex
+    {
+        get;
+    }
 
-        /// <summary>
-        /// Property to return the preview texture index.
-        /// </summary>
-        int PreviewTextureIndex
-        {
-            get;
-        }
+    /// <summary>
+    /// Property to return the preview texture index.
+    /// </summary>
+    int PreviewTextureIndex
+    {
+        get;
+    }
 
-        /// <summary>
-        /// Property to return the command used to calculate best fit sizes.
-        /// </summary>
-        IEditorCommand<object> CalculateSizesCommand
-        {
-            get;
-        }
+    /// <summary>
+    /// Property to return the command used to calculate best fit sizes.
+    /// </summary>
+    IEditorCommand<object> CalculateSizesCommand
+    {
+        get;
+    }
 
-        /// <summary>Property to return the folder selection command.</summary>
-        IEditorCommand<object> SelectFolderCommand
-        {
-            get;
-        }
+    /// <summary>Property to return the folder selection command.</summary>
+    IEditorCommand<object> SelectFolderCommand
+    {
+        get;
+    }
 
-        /// <summary>
-        /// Property to return the command used to generate the atlas.
-        /// </summary>
-        IEditorCommand<object> GenerateCommand
-        {
-            get;
-        }
+    /// <summary>
+    /// Property to return the command used to generate the atlas.
+    /// </summary>
+    IEditorCommand<object> GenerateCommand
+    {
+        get;
+    }
 
-        /// <summary>
-        /// Property to return the command to move to the next preview item.
-        /// </summary>
-        IEditorCommand<object> NextPreviewCommand
-        {
-            get;
-        }
+    /// <summary>
+    /// Property to return the command to move to the next preview item.
+    /// </summary>
+    IEditorCommand<object> NextPreviewCommand
+    {
+        get;
+    }
 
-        /// <summary>
-        /// Property to return the command to move to the previous preview item.
-        /// </summary>
-        IEditorCommand<object> PrevPreviewCommand
-        {
-            get;
-        }
+    /// <summary>
+    /// Property to return the command to move to the previous preview item.
+    /// </summary>
+    IEditorCommand<object> PrevPreviewCommand
+    {
+        get;
+    }
 
-        /// <summary>
-        /// Property to return the command used to commit the atlas data back to the file system.
-        /// </summary>
-        IEditorCommand<CancelEventArgs> CommitAtlasCommand
-        {
-            get;
-        }
+    /// <summary>
+    /// Property to return the command used to commit the atlas data back to the file system.
+    /// </summary>
+    IEditorCommand<CancelEventArgs> CommitAtlasCommand
+    {
+        get;
     }
 }

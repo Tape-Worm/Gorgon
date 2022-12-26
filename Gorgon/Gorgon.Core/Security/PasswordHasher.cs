@@ -28,25 +28,27 @@ using System;
 using System.Security.Cryptography;
 using Gorgon.Core;
 
-namespace Gorgon.Security
-{
-    /// <summary>
-    /// Provides functionality for hashing and salting password strings.
-    /// </summary>
-    /// <remarks>
-    /// <para>
-    /// This class provides functionality to create hashed and salted passwords using an SHA1 hash algorithm.
-    /// </para>
-    /// </remarks>
-    public static class PasswordHasher
+namespace Gorgon.Security;
+
+/// <summary>
+/// Provides functionality for hashing and salting password strings.
+/// </summary>
+/// <remarks>
+/// <para>
+/// This class provides functionality to create hashed and salted passwords using an SHA1 hash algorithm.
+/// </para>
+/// </remarks>
+public static class PasswordHasher
 	{
 		#region Constants.
 		// The number of iterations to use when hashing (for key stretching).
 		private const int PasswordHashIterations = 20000;
 		// The size, in bytes, of the SHA1 hash.
 		private const int HashSize = 20;
+#if NET6_0_OR_GREATER
 		// The length of the salt.
 		private const int SaltLength = 64;
+#endif
 
 		/// <summary>
 		/// The maximum unhashed password length.
@@ -55,9 +57,9 @@ namespace Gorgon.Security
 		/// If the password supplied exceeds this value, then it will be cropped to this length before hashing.
 		/// </remarks>
 		public const int MaxiumumPasswordLength = 256;
-		#endregion
+#endregion
 
-		#region Methods.
+#region Methods.
 #if NET6_0_OR_GREATER
 		/// <summary>
 		/// Function to generate a salt value.
@@ -70,7 +72,7 @@ namespace Gorgon.Security
 		/// Function to hash and salt a password and return a base-64 encoded string containing encrypted hash and salt values.
 		/// </summary>
 		/// <param name="password">The password to hash and salt.</param>
-        /// <param name="salt">The salt to use with the hashed password.</param>
+    /// <param name="salt">The salt to use with the hashed password.</param>
 		/// <returns>The encrypted hashed and salted password as a base-64 encoded string, or <b>null</b> if the hash and salt operation fails.</returns>
 		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="password"/>, or the <paramref name="salt"/> parameter is <b>null</b>.</exception>
 		/// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="password"/> parameter is empty.</exception>
@@ -107,9 +109,9 @@ namespace Gorgon.Security
 				password = password[..MaxiumumPasswordLength];
 			}
 
-            using var hashProvider = new Rfc2898DeriveBytes(password, salt, PasswordHashIterations);
-            return Convert.ToBase64String(hashProvider.GetBytes(HashSize));
-        }
+        using var hashProvider = new Rfc2898DeriveBytes(password, salt, PasswordHashIterations);
+        return Convert.ToBase64String(hashProvider.GetBytes(HashSize));
+    }
 
 		/// <summary>
 		/// Function to generate a initialization vector and key based on the application password.
@@ -119,12 +121,11 @@ namespace Gorgon.Security
 		/// <returns>A tuple containing the initialization vector and key.</returns>
 		public static (byte[] IV, byte[] key) GenerateIvKey(string password, byte[] salt)
 		{
-            using var hashProvider = new Rfc2898DeriveBytes(password, salt, PasswordHashIterations);
-            byte[] key = hashProvider.GetBytes(32);
-            byte[] iv = hashProvider.GetBytes(16);
+        using var hashProvider = new Rfc2898DeriveBytes(password, salt, PasswordHashIterations);
+        byte[] key = hashProvider.GetBytes(32);
+        byte[] iv = hashProvider.GetBytes(16);
 
-            return (iv, key);
-        }
-		#endregion
+        return (iv, key);
+    }
+#endregion
 	}
-}

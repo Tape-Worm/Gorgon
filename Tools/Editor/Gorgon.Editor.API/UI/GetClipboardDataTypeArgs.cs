@@ -26,28 +26,27 @@
 
 using System;
 
-namespace Gorgon.Editor.UI
+namespace Gorgon.Editor.UI;
+
+/// <summary>
+/// Arguments for the <see cref="IClipboardHandler.GetClipboardDataTypeCommand"/>.
+/// </summary>
+public class GetClipboardDataTypeArgs
 {
     /// <summary>
-    /// Arguments for the <see cref="IClipboardHandler.GetClipboardDataTypeCommand"/>.
+    /// Property to return whether the clipboard has any data.
     /// </summary>
-    public class GetClipboardDataTypeArgs
-    {
-        /// <summary>
-        /// Property to return whether the clipboard has any data.
-        /// </summary>
-        public bool HasData => DataType is not null;
+    public bool HasData => DataType is not null;
 
-        /// <summary>
-        /// Property to set or return the type of data on the clipboard.
-        /// </summary>
-        /// <remarks>
-        /// This value will be <b>null</b> if <see cref="HasData"/> is <b>false</b>.
-        /// </remarks>
-        public Type DataType
-        {
-            get;
-            set;
-        }
+    /// <summary>
+    /// Property to set or return the type of data on the clipboard.
+    /// </summary>
+    /// <remarks>
+    /// This value will be <b>null</b> if <see cref="HasData"/> is <b>false</b>.
+    /// </remarks>
+    public Type DataType
+    {
+        get;
+        set;
     }
 }

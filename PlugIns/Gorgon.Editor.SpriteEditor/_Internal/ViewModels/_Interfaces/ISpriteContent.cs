@@ -31,215 +31,214 @@ using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using DX = SharpDX;
 
-namespace Gorgon.Editor.SpriteEditor
+namespace Gorgon.Editor.SpriteEditor;
+
+/// <summary>
+/// The view model for sprite content.
+/// </summary>
+internal interface ISpriteContent
+    : IVisualEditorContent, IUndoHandler, ISpriteInfo
 {
+    #region Properties.
     /// <summary>
-    /// The view model for sprite content.
+    /// Property to return the editor used to modify the texture wrapping state for a sprite.
     /// </summary>
-    internal interface ISpriteContent
-        : IVisualEditorContent, IUndoHandler, ISpriteInfo
+    ISpriteTextureWrapEdit WrappingEditor
     {
-        #region Properties.
-        /// <summary>
-        /// Property to return the editor used to modify the texture wrapping state for a sprite.
-        /// </summary>
-        ISpriteTextureWrapEdit WrappingEditor
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to return the sprite color editor.
-        /// </summary>
-        ISpriteColorEdit ColorEditor
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to return the sprite anchor editor.
-        /// </summary>
-        ISpriteAnchorEdit AnchorEditor
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to return the view model for the plug in settings.
-        /// </summary>
-        ISettings Settings
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to return the context for the sprite clipper.
-        /// </summary>
-        ISpriteClipContext SpriteClipContext
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to return the context for the sprite picker.
-        /// </summary>
-        ISpritePickContext SpritePickContext
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to return the view model for the vertex editor interface.
-        /// </summary>
-        ISpriteVertexEditContext SpriteVertexEditContext
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to return the texture associated with the sprite.
-        /// </summary>
-        GorgonTexture2DView Texture
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to set or return the texture coordinates used by the sprite.
-        /// </summary>
-        DX.RectangleF TextureCoordinates
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to return the size of the sprite.
-        /// </summary>
-        DX.Size2F Size
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to set or return the color of each sprite vertex.
-        /// </summary>
-        IReadOnlyList<GorgonColor> VertexColors
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// Property to return offsets for each vertex in the sprite.
-        /// </summary>
-        IReadOnlyList<Vector3> VertexOffsets
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to return the anchor position for for the sprite.
-        /// </summary>
-        Vector2 Anchor
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to return whether the sprite will use nearest neighbour filtering, or bilinear filtering.
-        /// </summary>
-        bool IsPixellated
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to return the current sampler state for the sprite.
-        /// </summary>
-        GorgonSamplerState SamplerState
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to return the command to execute when picking a sprite.
-        /// </summary>
-        IEditorCommand<object> SpritePickCommand
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to return the command to execute when clipping a sprite.
-        /// </summary>
-        IEditorCommand<object> SpriteClipCommand
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to return the command to execute when creating a new sprite.
-        /// </summary>
-        IEditorAsyncCommand<object> NewSpriteCommand
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to return the command used to show the sprite color editor.
-        /// </summary>
-        IEditorCommand<object> ShowColorEditorCommand
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to return the command used to show the sprite anchor editor.
-        /// </summary>
-        IEditorCommand<object> ShowAnchorEditorCommand
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to return the command used to show the sprite texture wrapping editor.
-        /// </summary>
-        IEditorCommand<object> ShowWrappingEditorCommand
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to return the command used to execut when adjusting the sprite vertex offsets.
-        /// </summary>
-        IEditorCommand<object> SpriteVertexOffsetCommand
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to return the command used to apply the vertex offsets to the sprite.
-        /// </summary>
-        IEditorCommand<IReadOnlyList<Vector3>> SetVertexOffsetsCommand
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to return the command used to apply texture filtering to the sprite.
-        /// </summary>
-        IEditorCommand<SampleFilter> SetTextureFilteringCommand
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to return the command used to set the texture on the sprite.
-        /// </summary>
-        IEditorAsyncCommand<SetTextureArgs> SetTextureCommand
-        {
-            get;
-        }
-        #endregion
+        get;
     }
+
+    /// <summary>
+    /// Property to return the sprite color editor.
+    /// </summary>
+    ISpriteColorEdit ColorEditor
+    {
+        get;
+    }
+
+    /// <summary>
+    /// Property to return the sprite anchor editor.
+    /// </summary>
+    ISpriteAnchorEdit AnchorEditor
+    {
+        get;
+    }
+
+    /// <summary>
+    /// Property to return the view model for the plug in settings.
+    /// </summary>
+    ISettings Settings
+    {
+        get;
+    }
+
+    /// <summary>
+    /// Property to return the context for the sprite clipper.
+    /// </summary>
+    ISpriteClipContext SpriteClipContext
+    {
+        get;
+    }
+
+    /// <summary>
+    /// Property to return the context for the sprite picker.
+    /// </summary>
+    ISpritePickContext SpritePickContext
+    {
+        get;
+    }
+
+    /// <summary>
+    /// Property to return the view model for the vertex editor interface.
+    /// </summary>
+    ISpriteVertexEditContext SpriteVertexEditContext
+    {
+        get;
+    }
+
+    /// <summary>
+    /// Property to return the texture associated with the sprite.
+    /// </summary>
+    GorgonTexture2DView Texture
+    {
+        get;
+    }
+
+    /// <summary>
+    /// Property to set or return the texture coordinates used by the sprite.
+    /// </summary>
+    DX.RectangleF TextureCoordinates
+    {
+        get;
+    }
+
+    /// <summary>
+    /// Property to return the size of the sprite.
+    /// </summary>
+    DX.Size2F Size
+    {
+        get;
+    }
+
+    /// <summary>
+    /// Property to set or return the color of each sprite vertex.
+    /// </summary>
+    IReadOnlyList<GorgonColor> VertexColors
+    {
+        get;
+        set;
+    }
+
+    /// <summary>
+    /// Property to return offsets for each vertex in the sprite.
+    /// </summary>
+    IReadOnlyList<Vector3> VertexOffsets
+    {
+        get;
+    }
+
+    /// <summary>
+    /// Property to return the anchor position for for the sprite.
+    /// </summary>
+    Vector2 Anchor
+    {
+        get;
+    }
+
+    /// <summary>
+    /// Property to return whether the sprite will use nearest neighbour filtering, or bilinear filtering.
+    /// </summary>
+    bool IsPixellated
+    {
+        get;
+    }
+
+    /// <summary>
+    /// Property to return the current sampler state for the sprite.
+    /// </summary>
+    GorgonSamplerState SamplerState
+    {
+        get;
+    }
+
+    /// <summary>
+    /// Property to return the command to execute when picking a sprite.
+    /// </summary>
+    IEditorCommand<object> SpritePickCommand
+    {
+        get;
+    }
+
+    /// <summary>
+    /// Property to return the command to execute when clipping a sprite.
+    /// </summary>
+    IEditorCommand<object> SpriteClipCommand
+    {
+        get;
+    }
+
+    /// <summary>
+    /// Property to return the command to execute when creating a new sprite.
+    /// </summary>
+    IEditorAsyncCommand<object> NewSpriteCommand
+    {
+        get;
+    }
+
+    /// <summary>
+    /// Property to return the command used to show the sprite color editor.
+    /// </summary>
+    IEditorCommand<object> ShowColorEditorCommand
+    {
+        get;
+    }
+
+    /// <summary>
+    /// Property to return the command used to show the sprite anchor editor.
+    /// </summary>
+    IEditorCommand<object> ShowAnchorEditorCommand
+    {
+        get;
+    }
+
+    /// <summary>
+    /// Property to return the command used to show the sprite texture wrapping editor.
+    /// </summary>
+    IEditorCommand<object> ShowWrappingEditorCommand
+    {
+        get;
+    }
+
+    /// <summary>
+    /// Property to return the command used to execut when adjusting the sprite vertex offsets.
+    /// </summary>
+    IEditorCommand<object> SpriteVertexOffsetCommand
+    {
+        get;
+    }
+
+    /// <summary>
+    /// Property to return the command used to apply the vertex offsets to the sprite.
+    /// </summary>
+    IEditorCommand<IReadOnlyList<Vector3>> SetVertexOffsetsCommand
+    {
+        get;
+    }
+
+    /// <summary>
+    /// Property to return the command used to apply texture filtering to the sprite.
+    /// </summary>
+    IEditorCommand<SampleFilter> SetTextureFilteringCommand
+    {
+        get;
+    }
+
+    /// <summary>
+    /// Property to return the command used to set the texture on the sprite.
+    /// </summary>
+    IEditorAsyncCommand<SetTextureArgs> SetTextureCommand
+    {
+        get;
+    }
+    #endregion
 }

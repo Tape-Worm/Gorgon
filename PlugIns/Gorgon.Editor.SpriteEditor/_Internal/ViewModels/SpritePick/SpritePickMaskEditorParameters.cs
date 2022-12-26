@@ -28,30 +28,29 @@ using System;
 using Gorgon.Editor.PlugIns;
 using Gorgon.Editor.UI;
 
-namespace Gorgon.Editor.SpriteEditor
-{
-    /// <summary>
-    /// Parameters for the <see cref="ISpritePickMaskEditor"/> view model.
-    /// </summary>
-    internal class SpritePickMaskEditorParameters
-        : HostedPanelViewModelParameters
-    {
-        #region Properties.
-        /// <summary>
-        /// Property to return the plug in settings.
-        /// </summary>
-        public ISettings PluginSettings
-        {
-            get;
-        }
-        #endregion
+namespace Gorgon.Editor.SpriteEditor;
 
-        #region Constructor/Finalizer.
-        /// <summary>Initializes a new instance of the <see cref="SpritePickMaskEditorParameters"/> class.</summary>
-        /// <param name="pluginSettings">The plugin settings.</param>
-        /// <param name="hostServices">The host application services.</param>
-        public SpritePickMaskEditorParameters(ISettings pluginSettings, IHostContentServices hostServices) 
-            : base(hostServices) => PluginSettings = pluginSettings ?? throw new ArgumentNullException(nameof(pluginSettings));
-        #endregion
+/// <summary>
+/// Parameters for the <see cref="ISpritePickMaskEditor"/> view model.
+/// </summary>
+internal class SpritePickMaskEditorParameters
+    : HostedPanelViewModelParameters
+{
+    #region Properties.
+    /// <summary>
+    /// Property to return the plug in settings.
+    /// </summary>
+    public ISettings PluginSettings
+    {
+        get;
     }
+    #endregion
+
+    #region Constructor/Finalizer.
+    /// <summary>Initializes a new instance of the <see cref="SpritePickMaskEditorParameters"/> class.</summary>
+    /// <param name="pluginSettings">The plugin settings.</param>
+    /// <param name="hostServices">The host application services.</param>
+    public SpritePickMaskEditorParameters(ISettings pluginSettings, IHostContentServices hostServices) 
+        : base(hostServices) => PluginSettings = pluginSettings ?? throw new ArgumentNullException(nameof(pluginSettings));
+    #endregion
 }

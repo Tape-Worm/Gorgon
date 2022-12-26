@@ -28,36 +28,35 @@ using System;
 using System.Windows.Forms;
 using Gorgon.UI;
 
-namespace Gorgon.Examples
+namespace Gorgon.Examples;
+
+/// <summary>
+/// Entry point class.
+/// </summary>
+internal class Program
 {
     /// <summary>
-    /// Entry point class.
+    /// The entry point for the application.
     /// </summary>
-    internal class Program
+    [STAThread()]
+    private static void Main()
     {
-        /// <summary>
-        /// The entry point for the application.
-        /// </summary>
-        [STAThread()]
-        private static void Main()
-        {
 #if NET6_0_OR_GREATER
-            Application.SetHighDpiMode(HighDpiMode.PerMonitorV2);
+        Application.SetHighDpiMode(HighDpiMode.PerMonitorV2);
 #endif
-            // This is here for any windows forms elements that get displayed.
-            // Without this, the elements will not use the visual styles and will 
-            // default to older styles.
-            Application.EnableVisualStyles();
-            Application.SetCompatibleTextRenderingDefault(false);
+        // This is here for any windows forms elements that get displayed.
+        // Without this, the elements will not use the visual styles and will 
+        // default to older styles.
+        Application.EnableVisualStyles();
+        Application.SetCompatibleTextRenderingDefault(false);
 
-            try
-            {
-                GorgonApplication.Run(new FormMain());
-            }
-            catch(Exception ex)
-            {
-                GorgonDialogs.ErrorBox(null, ex);
-            }
-        }        
-    }
+        try
+        {
+            GorgonApplication.Run(new FormMain());
+        }
+        catch(Exception ex)
+        {
+            GorgonDialogs.ErrorBox(null, ex);
+        }
+    }        
 }

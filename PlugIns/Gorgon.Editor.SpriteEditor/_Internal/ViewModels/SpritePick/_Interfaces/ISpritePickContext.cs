@@ -28,79 +28,78 @@ using Gorgon.Editor.UI;
 using Gorgon.Graphics.Imaging;
 using DX = SharpDX;
 
-namespace Gorgon.Editor.SpriteEditor
+namespace Gorgon.Editor.SpriteEditor;
+
+/// <summary>
+/// The context view model for the sprite picking context options.
+/// </summary>
+internal interface ISpritePickContext
+    : IEditorContext, IArrayUpdate
 {
     /// <summary>
-    /// The context view model for the sprite picking context options.
+    /// Property to set or return the rectangle representing the sprite.
     /// </summary>
-    internal interface ISpritePickContext
-        : IEditorContext, IArrayUpdate
+    DX.RectangleF SpriteRectangle
     {
-        /// <summary>
-        /// Property to set or return the rectangle representing the sprite.
-        /// </summary>
-        DX.RectangleF SpriteRectangle
-        {
-            get;
-            set;
-        }
+        get;
+        set;
+    }
 
-        /// <summary>
-        /// Property tor return the view model for the sprite picker mask color editor.
-        /// </summary>
-        ISpritePickMaskEditor SpritePickMaskEditor
-        {
-            get;
-        }
+    /// <summary>
+    /// Property tor return the view model for the sprite picker mask color editor.
+    /// </summary>
+    ISpritePickMaskEditor SpritePickMaskEditor
+    {
+        get;
+    }
 
-        /// <summary>
-        /// Property to set or return the padding for the picked rectangle.
-        /// </summary>
-        int Padding
-        {
-            get;
-            set;
-        }
+    /// <summary>
+    /// Property to set or return the padding for the picked rectangle.
+    /// </summary>
+    int Padding
+    {
+        get;
+        set;
+    }
 
-        /// <summary>
-        /// Property to return the image data for the sprite texture.
-        /// </summary>
-        IGorgonImage ImageData
-        {
-            get;
-        }
+    /// <summary>
+    /// Property to return the image data for the sprite texture.
+    /// </summary>
+    IGorgonImage ImageData
+    {
+        get;
+    }
 
-        /// <summary>
-        /// Property to return the command used to extract image data from the sprite texture.
-        /// </summary>
-        IEditorAsyncCommand<object> GetImageDataCommand
-        {
-            get;
-        }
+    /// <summary>
+    /// Property to return the command used to extract image data from the sprite texture.
+    /// </summary>
+    IEditorAsyncCommand<object> GetImageDataCommand
+    {
+        get;
+    }
 
-        /// <summary>
-        /// Property to return the command used to show the sprite sprite picker mask color editor.
-        /// </summary>
-        IEditorCommand<object> ShowSpritePickMaskEditorCommand
-        {
-            get;
-        }
+    /// <summary>
+    /// Property to return the command used to show the sprite sprite picker mask color editor.
+    /// </summary>
+    IEditorCommand<object> ShowSpritePickMaskEditorCommand
+    {
+        get;
+    }
 
-        /// <summary>
-        /// Property to set or return the command used to apply the updated clipping coordinates.
-        /// </summary>
-        IEditorCommand<object> ApplyCommand
-        {
-            get;
-            set;
-        }
+    /// <summary>
+    /// Property to set or return the command used to apply the updated clipping coordinates.
+    /// </summary>
+    IEditorCommand<object> ApplyCommand
+    {
+        get;
+        set;
+    }
 
-        /// <summary>
-        /// Property to return the command used to cancel the sprite clipping operation.
-        /// </summary>
-        IEditorCommand<object> CancelCommand
-        {
-            get;
-        }
+    /// <summary>
+    /// Property to return the command used to cancel the sprite clipping operation.
+    /// </summary>
+    IEditorCommand<object> CancelCommand
+    {
+        get;
     }
 }

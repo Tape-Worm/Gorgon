@@ -26,21 +26,20 @@
 
 using Gorgon.Editor.UI;
 
-namespace Gorgon.Editor.ImageEditor
+namespace Gorgon.Editor.ImageEditor;
+
+/// <summary>
+/// The settings view model for the sharpen effects.
+/// </summary>
+internal interface IFxSharpen
+    : IHostedPanelViewModel
 {
     /// <summary>
-    /// The settings view model for the sharpen effects.
+    /// Property to set or return the amount to sharpen.
     /// </summary>
-    internal interface IFxSharpen
-        : IHostedPanelViewModel
+    int Amount
     {
-        /// <summary>
-        /// Property to set or return the amount to sharpen.
-        /// </summary>
-        int Amount
-        {
-            get;
-            set;
-        }
+        get;
+        set;
     }
 }

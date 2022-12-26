@@ -6,9 +6,9 @@ using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 
-namespace Fetze.WinFormsColor
-{
-    public class ColorShowBox : UserControl
+namespace Fetze.WinFormsColor;
+
+public class ColorShowBox : UserControl
 	{
 		private	Color	upperColor	= Color.Transparent;
 		private	Color	lowerColor	= Color.Transparent;
@@ -19,56 +19,56 @@ namespace Fetze.WinFormsColor
 
 
 		public Color Color
+    {
+        get => upperColor;
+        set
         {
-            get => upperColor;
-            set
-            {
-                upperColor = lowerColor = value;
-                Invalidate();
-            }
+            upperColor = lowerColor = value;
+            Invalidate();
         }
-        public Color UpperColor
+    }
+    public Color UpperColor
+    {
+        get => upperColor;
+        set
         {
-            get => upperColor;
-            set
-            {
-                upperColor = value;
-                Invalidate();
-            }
+            upperColor = value;
+            Invalidate();
         }
-        public Color LowerColor
+    }
+    public Color LowerColor
+    {
+        get => lowerColor;
+        set
         {
-            get => lowerColor;
-            set
-            {
-                lowerColor = value;
-                Invalidate();
-            }
+            lowerColor = value;
+            Invalidate();
         }
+    }
 
 
-        public ColorShowBox()
+    public ColorShowBox()
 		{
 			DoubleBuffered = true;
 			SetStyle(ControlStyles.ResizeRedraw, true);
 			BorderStyle = BorderStyle.FixedSingle;
 		}
 
-        protected void OnUpperClick() => UpperClick?.Invoke(this, null);
-        protected void OnLowerClick() => LowerClick?.Invoke(this, null);
+    protected void OnUpperClick() => UpperClick?.Invoke(this, null);
+    protected void OnLowerClick() => LowerClick?.Invoke(this, null);
 
-        protected override void OnMouseClick(MouseEventArgs e)
+    protected override void OnMouseClick(MouseEventArgs e)
 		{
 			base.OnMouseClick(e);
 			if (e.Y > (ClientRectangle.Top + ClientRectangle.Bottom) / 2)
-            {
-                OnLowerClick();
-            }
-            else
-            {
-                OnUpperClick();
-            }
+        {
+            OnLowerClick();
         }
+        else
+        {
+            OnUpperClick();
+        }
+    }
 		protected override void OnPaint(PaintEventArgs e)
 		{
 			base.OnPaint(e);
@@ -87,4 +87,3 @@ namespace Fetze.WinFormsColor
 				ClientRectangle.Height / 2);
 		}
 	}
-}

@@ -28,28 +28,27 @@ using System.Collections.Generic;
 using Gorgon.Editor.PlugIns;
 using Gorgon.Editor.UI.ViewModels;
 
-namespace Gorgon.Editor.ViewModels
+namespace Gorgon.Editor.ViewModels;
+
+/// <summary>
+/// The parameters for the <see cref="ISettingsPlugInsList"/> view model.
+/// </summary>
+internal class SettingsPlugInsListParameters
+    : ViewModelInjection<IHostServices>
 {
     /// <summary>
-    /// The parameters for the <see cref="ISettingsPlugInsList"/> view model.
+    /// Property to set or return the list of plugins.
     /// </summary>
-    internal class SettingsPlugInsListParameters
-        : ViewModelInjection<IHostServices>
+    public IEnumerable<ISettingsPlugInListItem> PlugIns
     {
-        /// <summary>
-        /// Property to set or return the list of plugins.
-        /// </summary>
-        public IEnumerable<ISettingsPlugInListItem> PlugIns
-        {
-            get;
-            set;
-        }
+        get;
+        set;
+    }
 
-        /// <summary>Initializes a new instance of the <see cref="SettingsPlugInsListParameters"/> class.</summary>
-        /// <param name="hostServices">The host application services.</param>
-        public SettingsPlugInsListParameters(IHostServices hostServices)
-            : base(hostServices)
-        {        
-        }
+    /// <summary>Initializes a new instance of the <see cref="SettingsPlugInsListParameters"/> class.</summary>
+    /// <param name="hostServices">The host application services.</param>
+    public SettingsPlugInsListParameters(IHostServices hostServices)
+        : base(hostServices)
+    {        
     }
 }

@@ -31,103 +31,102 @@ using Gorgon.Graphics.Core;
 using Gorgon.Math;
 using DX = SharpDX;
 
-namespace Gorgon.Animation
+namespace Gorgon.Animation;
+
+/// <summary>
+/// A track that stores 2D texture values to apply to an object in an animation.
+/// </summary>
+internal class Texture2DViewTrack
+    : GorgonNamedObject, IGorgonAnimationTrack<GorgonKeyTexture2D>
 {
+    #region Properties.
+    /// <summary>Property to return the type of key frame data stored in this track.</summary>
+    public AnimationTrackKeyType KeyFrameDataType => AnimationTrackKeyType.Texture2D;
+
     /// <summary>
-    /// A track that stores 2D texture values to apply to an object in an animation.
+    /// Property to return the type of interpolation supported by the track.
     /// </summary>
-    internal class Texture2DViewTrack
-        : GorgonNamedObject, IGorgonAnimationTrack<GorgonKeyTexture2D>
+    public TrackInterpolationMode SupportsInterpolation => TrackInterpolationMode.None;
+
+    /// <summary>
+    /// Property to return the spline controller (if applicable) for the track.
+    /// </summary>
+    public IGorgonSplineCalculation SplineController => null;
+
+    /// <summary>
+    /// Property to set or return the interpolation mode.
+    /// </summary>
+    /// <remarks>
+    /// If the value assigned is not supported by the track (use the <see cref="SupportsInterpolation"/> property), then the original value is kept.
+    /// </remarks>
+    public TrackInterpolationMode InterpolationMode
     {
-        #region Properties.
-        /// <summary>Property to return the type of key frame data stored in this track.</summary>
-        public AnimationTrackKeyType KeyFrameDataType => AnimationTrackKeyType.Texture2D;
-
-        /// <summary>
-        /// Property to return the type of interpolation supported by the track.
-        /// </summary>
-        public TrackInterpolationMode SupportsInterpolation => TrackInterpolationMode.None;
-
-        /// <summary>
-        /// Property to return the spline controller (if applicable) for the track.
-        /// </summary>
-        public IGorgonSplineCalculation SplineController => null;
-
-        /// <summary>
-        /// Property to set or return the interpolation mode.
-        /// </summary>
-        /// <remarks>
-        /// If the value assigned is not supported by the track (use the <see cref="SupportsInterpolation"/> property), then the original value is kept.
-        /// </remarks>
-        public TrackInterpolationMode InterpolationMode
+        get => TrackInterpolationMode.None;
+        set
         {
-            get => TrackInterpolationMode.None;
-            set
-            {
-                // Do nothing, we don't support changing modes here.
-            }
+            // Do nothing, we don't support changing modes here.
         }
-
-        /// <summary>
-        /// Property to return the key frames for the track.
-        /// </summary>
-        public IReadOnlyList<GorgonKeyTexture2D> KeyFrames
-        {
-            get;
-        }
-
-        /// <summary>Property to set or return whether this track is enabled during animation.</summary>
-        public bool IsEnabled
-        {
-            get;
-            set;
-        } = true;
-        #endregion
-
-        #region Methods.
-        /// <summary>
-        /// Function to retrieve the value at the specified time index.
-        /// </summary>
-        /// <param name="timeIndex">The time, in seconds, within the animation.</param>
-        /// <returns>The value at the specified time index.</returns>
-        /// <remarks>
-        /// <para>
-        /// The value returned by this method may or may not be interpolated based on the value in <see cref="InterpolationMode"/>.  
-        /// </para>
-        /// </remarks>
-        public GorgonKeyTexture2D GetValueAtTime(float timeIndex)
-        {
-            if (KeyFrames.Count == 0)
-            {
-                return null;
-            }
-
-            if (KeyFrames.Count == 1)
-            {
-                return KeyFrames[0];
-            }
-
-            GorgonKeyTexture2D result = KeyFrames.FirstOrDefault(item => item.Time == timeIndex);
-
-            if (result is not null)
-            {
-                return result;
-            }
-
-            TrackKeyProcessor.TryUpdateTexture2D(this, timeIndex, out GorgonTexture2DView view, out DX.RectangleF texCoords, out int arrayIndex);
-
-            return new GorgonKeyTexture2D(timeIndex, view, texCoords, arrayIndex);
-        }
-        #endregion
-
-        #region Constructor/Finalizer.
-        /// <summary>
-        /// Initializes a new instance of the <see cref="Texture2DViewTrack"/> class.
-        /// </summary>
-        /// <param name="keyFrames">The list of key frames for the track.</param>
-        /// <param name="name">The name of the track.</param>
-        internal Texture2DViewTrack(IReadOnlyList<GorgonKeyTexture2D> keyFrames, string name)
-            : base(name) => KeyFrames = keyFrames;
-        #endregion
     }
+
+    /// <summary>
+    /// Property to return the key frames for the track.
+    /// </summary>
+    public IReadOnlyList<GorgonKeyTexture2D> KeyFrames
+    {
+        get;
+    }
+
+    /// <summary>Property to set or return whether this track is enabled during animation.</summary>
+    public bool IsEnabled
+    {
+        get;
+        set;
+    } = true;
+    #endregion
+
+    #region Methods.
+    /// <summary>
+    /// Function to retrieve the value at the specified time index.
+    /// </summary>
+    /// <param name="timeIndex">The time, in seconds, within the animation.</param>
+    /// <returns>The value at the specified time index.</returns>
+    /// <remarks>
+    /// <para>
+    /// The value returned by this method may or may not be interpolated based on the value in <see cref="InterpolationMode"/>.  
+    /// </para>
+    /// </remarks>
+    public GorgonKeyTexture2D GetValueAtTime(float timeIndex)
+    {
+        if (KeyFrames.Count == 0)
+        {
+            return null;
+        }
+
+        if (KeyFrames.Count == 1)
+        {
+            return KeyFrames[0];
+        }
+
+        GorgonKeyTexture2D result = KeyFrames.FirstOrDefault(item => item.Time == timeIndex);
+
+        if (result is not null)
+        {
+            return result;
+        }
+
+        TrackKeyProcessor.TryUpdateTexture2D(this, timeIndex, out GorgonTexture2DView view, out DX.RectangleF texCoords, out int arrayIndex);
+
+        return new GorgonKeyTexture2D(timeIndex, view, texCoords, arrayIndex);
+    }
+    #endregion
+
+    #region Constructor/Finalizer.
+    /// <summary>
+    /// Initializes a new instance of the <see cref="Texture2DViewTrack"/> class.
+    /// </summary>
+    /// <param name="keyFrames">The list of key frames for the track.</param>
+    /// <param name="name">The name of the track.</param>
+    internal Texture2DViewTrack(IReadOnlyList<GorgonKeyTexture2D> keyFrames, string name)
+        : base(name) => KeyFrames = keyFrames;
+    #endregion
 }

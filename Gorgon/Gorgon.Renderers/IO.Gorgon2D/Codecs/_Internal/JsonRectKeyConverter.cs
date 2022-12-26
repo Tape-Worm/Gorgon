@@ -29,92 +29,91 @@ using Gorgon.Animation;
 using Newtonsoft.Json;
 using DX = SharpDX;
 
-namespace Gorgon.IO
+namespace Gorgon.IO;
+
+/// <summary>
+/// A JSON converter for a <see cref="GorgonKeyRectangle"/>
+/// </summary>
+class JsonRectKeyConverter
+    : JsonConverter<GorgonKeyRectangle>
 {
-    /// <summary>
-    /// A JSON converter for a <see cref="GorgonKeyRectangle"/>
-    /// </summary>
-    class JsonRectKeyConverter
-        : JsonConverter<GorgonKeyRectangle>
+    /// <summary>Writes the JSON representation of the object.</summary>
+    /// <param name="writer">The <see cref="JsonWriter" /> to write to.</param>
+    /// <param name="value">The value.</param>
+    /// <param name="serializer">The calling serializer.</param>
+    public override void WriteJson(JsonWriter writer, GorgonKeyRectangle value, JsonSerializer serializer)
     {
-        /// <summary>Writes the JSON representation of the object.</summary>
-        /// <param name="writer">The <see cref="JsonWriter" /> to write to.</param>
-        /// <param name="value">The value.</param>
-        /// <param name="serializer">The calling serializer.</param>
-        public override void WriteJson(JsonWriter writer, GorgonKeyRectangle value, JsonSerializer serializer)
+        if (value is null)
         {
-            if (value is null)
-            {
-                writer.WriteNull();
-                return;
-            }
-
-            writer.WriteStartObject();
-            writer.WritePropertyName("time");
-            writer.WriteValue(value.Time);
-            writer.WritePropertyName("l");
-            writer.WriteValue(value.Value.Left);
-            writer.WritePropertyName("t");
-            writer.WriteValue(value.Value.Top);
-            writer.WritePropertyName("r");
-            writer.WriteValue(value.Value.Right);
-            writer.WritePropertyName("b");
-            writer.WriteValue(value.Value.Bottom);
-            writer.WriteEnd();
+            writer.WriteNull();
+            return;
         }
 
-        /// <summary>Reads the JSON representation of the object.</summary>
-        /// <param name="reader">The <see cref="JsonReader" /> to read from.</param>
-        /// <param name="objectType">Type of the object.</param>
-        /// <param name="existingValue">The existing value of object being read. If there is no existing value then <c>null</c> will be used.</param>
-        /// <param name="hasExistingValue">The existing value has a value.</param>
-        /// <param name="serializer">The calling serializer.</param>
-        /// <returns>The object value.</returns>
-        public override GorgonKeyRectangle ReadJson(JsonReader reader, Type objectType, GorgonKeyRectangle existingValue, bool hasExistingValue, JsonSerializer serializer)
+        writer.WriteStartObject();
+        writer.WritePropertyName("time");
+        writer.WriteValue(value.Time);
+        writer.WritePropertyName("l");
+        writer.WriteValue(value.Value.Left);
+        writer.WritePropertyName("t");
+        writer.WriteValue(value.Value.Top);
+        writer.WritePropertyName("r");
+        writer.WriteValue(value.Value.Right);
+        writer.WritePropertyName("b");
+        writer.WriteValue(value.Value.Bottom);
+        writer.WriteEnd();
+    }
+
+    /// <summary>Reads the JSON representation of the object.</summary>
+    /// <param name="reader">The <see cref="JsonReader" /> to read from.</param>
+    /// <param name="objectType">Type of the object.</param>
+    /// <param name="existingValue">The existing value of object being read. If there is no existing value then <c>null</c> will be used.</param>
+    /// <param name="hasExistingValue">The existing value has a value.</param>
+    /// <param name="serializer">The calling serializer.</param>
+    /// <returns>The object value.</returns>
+    public override GorgonKeyRectangle ReadJson(JsonReader reader, Type objectType, GorgonKeyRectangle existingValue, bool hasExistingValue, JsonSerializer serializer)
+    {
+        float left = 0;
+        float top = 0;
+        float right = 0;
+        float bottom = 0;
+        float time = 0;
+
+        while ((reader.Read()) && (reader.TokenType != JsonToken.EndObject))
         {
-            float left = 0;
-            float top = 0;
-            float right = 0;
-            float bottom = 0;
-            float time = 0;
-
-            while ((reader.Read()) && (reader.TokenType != JsonToken.EndObject))
+            if (reader.TokenType != JsonToken.PropertyName)
             {
-                if (reader.TokenType != JsonToken.PropertyName)
-                {
-                    continue;
-                }
-
-                string propName = reader.Value.ToString().ToUpperInvariant();
-
-                switch (propName)
-                {
-                    case "TIME":
-                        time = (float?)reader.ReadAsDecimal() ?? 0;
-                        break;
-                    case "L":
-                        left = (float?)reader.ReadAsDecimal() ?? 0;
-                        break;
-                    case "T":
-                        top = (float?)reader.ReadAsDecimal() ?? 0;
-                        break;
-                    case "R":
-                        right = (float?)reader.ReadAsDecimal() ?? 0;
-                        break;
-                    case "B":
-                        bottom = (float?)reader.ReadAsDecimal() ?? 0;
-                        break;
-                }
+                continue;
             }
 
-            return new GorgonKeyRectangle(time,
-                                          new DX.RectangleF
-                                          {
-                                              Left = left,
-                                              Top = top,
-                                              Right = right,
-                                              Bottom = bottom
-                                          });
+            string propName = reader.Value.ToString().ToUpperInvariant();
+
+            switch (propName)
+            {
+                case "TIME":
+                    time = (float?)reader.ReadAsDecimal() ?? 0;
+                    break;
+                case "L":
+                    left = (float?)reader.ReadAsDecimal() ?? 0;
+                    break;
+                case "T":
+                    top = (float?)reader.ReadAsDecimal() ?? 0;
+                    break;
+                case "R":
+                    right = (float?)reader.ReadAsDecimal() ?? 0;
+                    break;
+                case "B":
+                    bottom = (float?)reader.ReadAsDecimal() ?? 0;
+                    break;
+            }
         }
+
+        return new GorgonKeyRectangle(time,
+                                      new DX.RectangleF
+                                      {
+                                          Left = left,
+                                          Top = top,
+                                          Right = right,
+                                          Bottom = bottom
+                                      });
     }
 }

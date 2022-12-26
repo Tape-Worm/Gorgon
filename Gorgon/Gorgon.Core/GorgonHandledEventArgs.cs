@@ -26,23 +26,22 @@
 
 using System;
 
-namespace Gorgon.Core
+namespace Gorgon.Core;
+
+/// <summary>
+/// Event arguments used when an event can indicate to other events that it has been handled by another subscriber.
+/// </summary>
+public class GorgonHandledEventArgs
+    : EventArgs
 {
+    #region Properties.
     /// <summary>
-    /// Event arguments used when an event can indicate to other events that it has been handled by another subscriber.
+    /// Property to set or return whether the event was handled or not.
     /// </summary>
-    public class GorgonHandledEventArgs
-        : EventArgs
+    public bool IsHandled
     {
-        #region Properties.
-        /// <summary>
-        /// Property to set or return whether the event was handled or not.
-        /// </summary>
-        public bool IsHandled
-        {
-            get;
-            set;
-        }
-        #endregion
+        get;
+        set;
     }
+    #endregion
 }

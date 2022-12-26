@@ -27,12 +27,11 @@
 using System.Runtime.InteropServices;
 
 // ReSharper disable InconsistentNaming
-namespace Gorgon.Native
+namespace Gorgon.Native;
+
+[StructLayout(LayoutKind.Sequential)]
+internal struct POINT
 {
-    [StructLayout(LayoutKind.Sequential)]
-    internal struct POINT
-    {
-        public int X;
-        public int Y;
-    }
+    public int X;
+    public int Y;
 }

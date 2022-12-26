@@ -24,29 +24,28 @@
 // 
 #endregion
 
-namespace Gorgon.Editor.UI
-{
-    /// <summary>
-    /// Provides undo functionality to a view.
-    /// </summary>
-    public interface IUndoHandler
-    {
-        #region Properties.
-        /// <summary>
-        /// Property to return the command to undo an operation.
-        /// </summary>
-        IEditorCommand<object> UndoCommand
-        {
-            get;
-        }
+namespace Gorgon.Editor.UI;
 
-        /// <summary>
-        /// Property to return the command to redo an operation.
-        /// </summary>
-        IEditorCommand<object> RedoCommand
-        {
-            get;
-        }
-        #endregion
+/// <summary>
+/// Provides undo functionality to a view.
+/// </summary>
+public interface IUndoHandler
+{
+    #region Properties.
+    /// <summary>
+    /// Property to return the command to undo an operation.
+    /// </summary>
+    IEditorCommand<object> UndoCommand
+    {
+        get;
     }
+
+    /// <summary>
+    /// Property to return the command to redo an operation.
+    /// </summary>
+    IEditorCommand<object> RedoCommand
+    {
+        get;
+    }
+    #endregion
 }

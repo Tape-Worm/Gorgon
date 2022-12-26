@@ -26,38 +26,37 @@
 
 using Gorgon.Graphics;
 
-namespace Gorgon.Editor.AnimationEditor
+namespace Gorgon.Editor.AnimationEditor;
+
+/// <summary>
+/// The view model for editing the colors for a key.
+/// </summary>
+internal interface IColorValueEditor
+    : IKeyValueEditor
 {
     /// <summary>
-    /// The view model for editing the colors for a key.
+    /// Property to set or return the original color.
     /// </summary>
-    internal interface IColorValueEditor
-        : IKeyValueEditor
+    GorgonColor OriginalColor
     {
-        /// <summary>
-        /// Property to set or return the original color.
-        /// </summary>
-        GorgonColor OriginalColor
-        {
-            get;
-            set;
-        }
+        get;
+        set;
+    }
 
-        /// <summary>
-        /// Property to set or return the color to apply.
-        /// </summary>
-        GorgonColor NewColor
-        {
-            get;
-            set;
-        }
+    /// <summary>
+    /// Property to set or return the color to apply.
+    /// </summary>
+    GorgonColor NewColor
+    {
+        get;
+        set;
+    }
 
-        /// <summary>
-        /// Property to return whether to edit alpha values or color values.
-        /// </summary>
-        bool AlphaOnly
-        {
-            get;
-        }
+    /// <summary>
+    /// Property to return whether to edit alpha values or color values.
+    /// </summary>
+    bool AlphaOnly
+    {
+        get;
     }
 }

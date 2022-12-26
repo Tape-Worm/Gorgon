@@ -30,217 +30,216 @@ using Gorgon.Graphics.Imaging;
 using Gorgon.UI;
 using DX = SharpDX;
 
-namespace Gorgon.Editor.ImageEditor.ViewModels
+namespace Gorgon.Editor.ImageEditor.ViewModels;
+
+/// <summary>
+/// The view model for the image cropping/resizing settings view.
+/// </summary>
+internal class CropResizeSettings
+    : HostedPanelViewModelBase<HostedPanelViewModelParameters>, ICropResizeSettings
 {
+    #region Variables.
+    // The file being imported.
+    private string _importFile;
+    // The imported image.
+    private IGorgonImage _importImage;
+    // The size of the target image.
+    private DX.Size2 _targetImageSize;
+    // Flag to indicate which modes are allowed.
+    private CropResizeMode _allowedModes = CropResizeMode.Crop | CropResizeMode.Resize;
+    // Flag to indicate that resizing is allowed.
+    private CropResizeMode _currentMode = CropResizeMode.Crop;
+    // The currently selected alignment.
+    private Alignment _currentAlignment = Alignment.Center;
+    // Flag to indicate that the aspect ratio should be preserved.
+    private bool _preserveAspect;
+    // The image filter to apply when resizing.
+    private ImageFilter _imageFilter = ImageFilter.Point;
+    // The directory for the imported file.
+    private string _importFileDirectory;
+    #endregion
+
+    #region Properties.
+    /// <summary>Property to return whether the panel is modal.</summary>
+    public override bool IsModal => true;
+
     /// <summary>
-    /// The view model for the image cropping/resizing settings view.
+    /// Property to set or return whether to preserve the aspect ratio of the image being resized.
     /// </summary>
-    internal class CropResizeSettings
-        : HostedPanelViewModelBase<HostedPanelViewModelParameters>, ICropResizeSettings
+    public bool PreserveAspect
     {
-        #region Variables.
-        // The file being imported.
-        private string _importFile;
-        // The imported image.
-        private IGorgonImage _importImage;
-        // The size of the target image.
-        private DX.Size2 _targetImageSize;
-        // Flag to indicate which modes are allowed.
-        private CropResizeMode _allowedModes = CropResizeMode.Crop | CropResizeMode.Resize;
-        // Flag to indicate that resizing is allowed.
-        private CropResizeMode _currentMode = CropResizeMode.Crop;
-        // The currently selected alignment.
-        private Alignment _currentAlignment = Alignment.Center;
-        // Flag to indicate that the aspect ratio should be preserved.
-        private bool _preserveAspect;
-        // The image filter to apply when resizing.
-        private ImageFilter _imageFilter = ImageFilter.Point;
-        // The directory for the imported file.
-        private string _importFileDirectory;
-        #endregion
-
-        #region Properties.
-        /// <summary>Property to return whether the panel is modal.</summary>
-        public override bool IsModal => true;
-
-        /// <summary>
-        /// Property to set or return whether to preserve the aspect ratio of the image being resized.
-        /// </summary>
-        public bool PreserveAspect
+        get => _preserveAspect;
+        set
         {
-            get => _preserveAspect;
-            set
+            if (_preserveAspect == value)
             {
-                if (_preserveAspect == value)
-                {
-                    return;
-                }
-
-                OnPropertyChanging();
-                _preserveAspect = value;
-                OnPropertyChanged();
+                return;
             }
+
+            OnPropertyChanging();
+            _preserveAspect = value;
+            OnPropertyChanged();
         }
-
-        /// <summary>
-        /// Property to set or return the image filter to use when resizing.
-        /// </summary>
-        public ImageFilter ImageFilter
-        {
-            get => _imageFilter;
-            set
-            {
-                if (_imageFilter == value)
-                {
-                    return;
-                }
-
-                OnPropertyChanging();
-                _imageFilter = value;
-                OnPropertyChanged();
-            }
-        }
-
-        /// <summary>Property to set or return the file being imported.</summary>
-        /// <value>The import file.</value>
-        public string ImportFile
-        {
-            get => _importFile;
-            set
-            {
-                if (_importFile == value)
-                {
-                    return;
-                }
-
-                OnPropertyChanging();
-                _importFile = value;
-                OnPropertyChanged();
-            }
-        }
-
-        /// <summary>
-        /// Property to set or return the directory containing the file being imported.
-        /// </summary>
-        public string ImportFileDirectory
-        {
-            get => _importFileDirectory;
-            set
-            {
-                if (string.Equals(_importFileDirectory, value, StringComparison.OrdinalIgnoreCase))
-                {
-                    return;
-                }
-
-                OnPropertyChanging();
-                _importFileDirectory = value;
-                OnPropertyChanged();
-            }
-        }
-
-        /// <summary>
-        /// Property to set or return the image being imported.
-        /// </summary>
-        public IGorgonImage ImportImage
-        {
-            get => _importImage;
-            set
-            {
-                if (_importImage == value)
-                {
-                    return;
-                }
-
-                OnPropertyChanging();
-                _importImage = value;
-                OnPropertyChanged();
-            }
-        }
-
-        /// <summary>Property to set or return the width/height of the target image.</summary>
-        public DX.Size2 TargetImageSize
-        {
-            get => _targetImageSize;
-            set
-            {
-                if (value.Equals(_targetImageSize))
-                {
-                    return;
-                }
-
-                OnPropertyChanging();
-                _targetImageSize = value;
-                OnPropertyChanged();
-            }
-        }
-
-        /// <summary>
-        /// Property to set or return which modes are allowed.
-        /// </summary>
-        public CropResizeMode AllowedModes
-        {
-            get => _allowedModes;
-            set
-            {
-                if (_allowedModes == value)
-                {
-                    return;
-                }
-
-                OnPropertyChanging();
-                _allowedModes = value;
-                OnPropertyChanged();
-            }
-        }
-
-        /// <summary>
-        /// Property to set or return which mode is active.
-        /// </summary>
-        public CropResizeMode CurrentMode
-        {
-            get => _currentMode;
-            set
-            {
-                if (_currentMode == value)
-                {
-                    return;
-                }
-
-                OnPropertyChanging();
-                _currentMode = value;
-                OnPropertyChanged();
-            }
-        }
-
-        /// <summary>
-        /// Property to set or return the currently selected alignment.
-        /// </summary>
-        public Alignment CurrentAlignment
-        {
-            get => _currentAlignment;
-            set
-            {
-                if (_currentAlignment == value)
-                {
-                    return;
-                }
-
-                OnPropertyChanging();
-                _currentAlignment = value;
-                OnPropertyChanged();
-            }
-        }
-        #endregion
-
-        #region Methods.
-        /// <summary>Function to inject dependencies for the view model.</summary>
-        /// <param name="injectionParameters">The parameters to inject.</param>
-        /// <remarks>
-        /// Applications should call this when setting up the view model for complex operations and/or dependency injection. The constructor should only be used for simple set up and initialization of objects.
-        /// </remarks>
-        protected override void OnInitialize(HostedPanelViewModelParameters injectionParameters)
-        {
-        }
-        #endregion
     }
+
+    /// <summary>
+    /// Property to set or return the image filter to use when resizing.
+    /// </summary>
+    public ImageFilter ImageFilter
+    {
+        get => _imageFilter;
+        set
+        {
+            if (_imageFilter == value)
+            {
+                return;
+            }
+
+            OnPropertyChanging();
+            _imageFilter = value;
+            OnPropertyChanged();
+        }
+    }
+
+    /// <summary>Property to set or return the file being imported.</summary>
+    /// <value>The import file.</value>
+    public string ImportFile
+    {
+        get => _importFile;
+        set
+        {
+            if (_importFile == value)
+            {
+                return;
+            }
+
+            OnPropertyChanging();
+            _importFile = value;
+            OnPropertyChanged();
+        }
+    }
+
+    /// <summary>
+    /// Property to set or return the directory containing the file being imported.
+    /// </summary>
+    public string ImportFileDirectory
+    {
+        get => _importFileDirectory;
+        set
+        {
+            if (string.Equals(_importFileDirectory, value, StringComparison.OrdinalIgnoreCase))
+            {
+                return;
+            }
+
+            OnPropertyChanging();
+            _importFileDirectory = value;
+            OnPropertyChanged();
+        }
+    }
+
+    /// <summary>
+    /// Property to set or return the image being imported.
+    /// </summary>
+    public IGorgonImage ImportImage
+    {
+        get => _importImage;
+        set
+        {
+            if (_importImage == value)
+            {
+                return;
+            }
+
+            OnPropertyChanging();
+            _importImage = value;
+            OnPropertyChanged();
+        }
+    }
+
+    /// <summary>Property to set or return the width/height of the target image.</summary>
+    public DX.Size2 TargetImageSize
+    {
+        get => _targetImageSize;
+        set
+        {
+            if (value.Equals(_targetImageSize))
+            {
+                return;
+            }
+
+            OnPropertyChanging();
+            _targetImageSize = value;
+            OnPropertyChanged();
+        }
+    }
+
+    /// <summary>
+    /// Property to set or return which modes are allowed.
+    /// </summary>
+    public CropResizeMode AllowedModes
+    {
+        get => _allowedModes;
+        set
+        {
+            if (_allowedModes == value)
+            {
+                return;
+            }
+
+            OnPropertyChanging();
+            _allowedModes = value;
+            OnPropertyChanged();
+        }
+    }
+
+    /// <summary>
+    /// Property to set or return which mode is active.
+    /// </summary>
+    public CropResizeMode CurrentMode
+    {
+        get => _currentMode;
+        set
+        {
+            if (_currentMode == value)
+            {
+                return;
+            }
+
+            OnPropertyChanging();
+            _currentMode = value;
+            OnPropertyChanged();
+        }
+    }
+
+    /// <summary>
+    /// Property to set or return the currently selected alignment.
+    /// </summary>
+    public Alignment CurrentAlignment
+    {
+        get => _currentAlignment;
+        set
+        {
+            if (_currentAlignment == value)
+            {
+                return;
+            }
+
+            OnPropertyChanging();
+            _currentAlignment = value;
+            OnPropertyChanged();
+        }
+    }
+    #endregion
+
+    #region Methods.
+    /// <summary>Function to inject dependencies for the view model.</summary>
+    /// <param name="injectionParameters">The parameters to inject.</param>
+    /// <remarks>
+    /// Applications should call this when setting up the view model for complex operations and/or dependency injection. The constructor should only be used for simple set up and initialization of objects.
+    /// </remarks>
+    protected override void OnInitialize(HostedPanelViewModelParameters injectionParameters)
+    {
+    }
+    #endregion
 }

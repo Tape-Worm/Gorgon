@@ -32,20 +32,19 @@ using System.Threading.Tasks;
 using Gorgon.Editor;
 using Gorgon.Editor.Content;
 
-namespace Gorgon.Editor.Services
+namespace Gorgon.Editor.Services;
+
+/// <summary>
+/// A service used to present a save as dialog for the project file system.
+/// </summary>
+public interface ISaveAsService
 {
     /// <summary>
-    /// A service used to present a save as dialog for the project file system.
+    /// Function to present a means of providing a path for a save as operation.
     /// </summary>
-    public interface ISaveAsService
-    {
-        /// <summary>
-        /// Function to present a means of providing a path for a save as operation.
-        /// </summary>
-        /// <param name="currentFileName">The current file name.</param>
-        /// <param name="filesOfType">The extension to search for.</param>
-        /// <param name="typeKey">[Optional] The key to check in the file metadata for the file type.</param>
-        /// <returns>The selected file path to save the file as.</returns>
-        string SaveAs(string currentFileName, string filesOfType, string typeKey = CommonEditorConstants.ContentTypeAttr);
-    }
+    /// <param name="currentFileName">The current file name.</param>
+    /// <param name="filesOfType">The extension to search for.</param>
+    /// <param name="typeKey">[Optional] The key to check in the file metadata for the file type.</param>
+    /// <returns>The selected file path to save the file as.</returns>
+    string SaveAs(string currentFileName, string filesOfType, string typeKey = CommonEditorConstants.ContentTypeAttr);
 }

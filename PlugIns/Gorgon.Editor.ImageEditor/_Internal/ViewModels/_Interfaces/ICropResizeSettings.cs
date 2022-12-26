@@ -30,113 +30,112 @@ using Gorgon.Graphics.Imaging;
 using Gorgon.UI;
 using DX = SharpDX;
 
-namespace Gorgon.Editor.ImageEditor
+namespace Gorgon.Editor.ImageEditor;
+
+/// <summary>
+/// The mode for the cropping/resizing of an image.
+/// </summary>
+[Flags]
+internal enum CropResizeMode
 {
     /// <summary>
-    /// The mode for the cropping/resizing of an image.
+    /// No mode selected.
     /// </summary>
-    [Flags]
-    internal enum CropResizeMode
+    None = 0,
+    /// <summary>
+    /// Image should be cropped.
+    /// </summary>
+    Crop = 1,
+    /// <summary>
+    /// Image should be resized.
+    /// </summary>
+    Resize = 2
+}
+
+/// <summary>
+/// The view model for the image cropping/resizing settings view.
+/// </summary>
+internal interface ICropResizeSettings
+    : IHostedPanelViewModel
+{
+    /// <summary>
+    /// Property to set or return the file being imported.
+    /// </summary>
+    string ImportFile
     {
-        /// <summary>
-        /// No mode selected.
-        /// </summary>
-        None = 0,
-        /// <summary>
-        /// Image should be cropped.
-        /// </summary>
-        Crop = 1,
-        /// <summary>
-        /// Image should be resized.
-        /// </summary>
-        Resize = 2
+        get;
+        set;
     }
 
     /// <summary>
-    /// The view model for the image cropping/resizing settings view.
+    /// Property to set or return the directory containing the file being imported.
     /// </summary>
-    internal interface ICropResizeSettings
-        : IHostedPanelViewModel
+    string ImportFileDirectory
     {
-        /// <summary>
-        /// Property to set or return the file being imported.
-        /// </summary>
-        string ImportFile
-        {
-            get;
-            set;
-        }
+        get;
+        set;
+    }
 
-        /// <summary>
-        /// Property to set or return the directory containing the file being imported.
-        /// </summary>
-        string ImportFileDirectory
-        {
-            get;
-            set;
-        }
+    /// <summary>
+    /// Property to set or return the image being imported.
+    /// </summary>
+    IGorgonImage ImportImage
+    {
+        get;
+        set;
+    }
 
-        /// <summary>
-        /// Property to set or return the image being imported.
-        /// </summary>
-        IGorgonImage ImportImage
-        {
-            get;
-            set;
-        }
+    /// <summary>
+    /// Property to set or return the width/height of the target image.
+    /// </summary>
+    DX.Size2 TargetImageSize
+    {
+        get;
+        set;
+    }
 
-        /// <summary>
-        /// Property to set or return the width/height of the target image.
-        /// </summary>
-        DX.Size2 TargetImageSize
-        {
-            get;
-            set;
-        }
+    /// <summary>
+    /// Property to set or return which modes are allowed.
+    /// </summary>
+    CropResizeMode AllowedModes
+    {
+        get;
+        set;
+    }
 
-        /// <summary>
-        /// Property to set or return which modes are allowed.
-        /// </summary>
-        CropResizeMode AllowedModes
-        {
-            get;
-            set;
-        }
+    /// <summary>
+    /// Property to set or return which mode is active.
+    /// </summary>
+    CropResizeMode CurrentMode
+    {
+        get;
+        set;
+    }
 
-        /// <summary>
-        /// Property to set or return which mode is active.
-        /// </summary>
-        CropResizeMode CurrentMode
-        {
-            get;
-            set;
-        }
+    /// <summary>
+    /// Property to set or return the currently selected alignment.
+    /// </summary>
+    Alignment CurrentAlignment
+    {
+        get;
+        set;
+    }
 
-        /// <summary>
-        /// Property to set or return the currently selected alignment.
-        /// </summary>
-        Alignment CurrentAlignment
-        {
-            get;
-            set;
-        }
+    /// <summary>
+    /// Property to set or return whether to preserve the aspect ratio of the image being resized.
+    /// </summary>
+    bool PreserveAspect
+    {
+        get;
+        set;
+    }
 
-        /// <summary>
-        /// Property to set or return whether to preserve the aspect ratio of the image being resized.
-        /// </summary>
-        bool PreserveAspect
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// Property to set or return the image filter to use when resizing.
-        /// </summary>
-        ImageFilter ImageFilter
-        {
-            get;
-            set;
-        }
+    /// <summary>
+    /// Property to set or return the image filter to use when resizing.
+    /// </summary>
+    ImageFilter ImageFilter
+    {
+        get;
+        set;
     }
 }

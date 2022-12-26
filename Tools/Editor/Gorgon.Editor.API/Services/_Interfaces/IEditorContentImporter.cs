@@ -27,24 +27,23 @@
 using System.Threading;
 using Gorgon.IO;
 
-namespace Gorgon.Editor.Services
+namespace Gorgon.Editor.Services;
+
+/// <summary>
+/// A custom importer for content data.
+/// </summary>
+public interface IEditorContentImporter
 {
     /// <summary>
-    /// A custom importer for content data.
+    /// Function to import content.
     /// </summary>
-    public interface IEditorContentImporter
-    {
-        /// <summary>
-        /// Function to import content.
-        /// </summary>
-        /// <param name="physicalFilePath">The path to the physical file to import into the virtual file system.</param>
-        /// <param name="cancelToken">The token used to cancel the operation.</param>
-        /// <returns>A new virtual file object pointing to the imported file data.</returns>
-        IGorgonVirtualFile ImportData(string physicalFilePath, CancellationToken cancelToken);
+    /// <param name="physicalFilePath">The path to the physical file to import into the virtual file system.</param>
+    /// <param name="cancelToken">The token used to cancel the operation.</param>
+    /// <returns>A new virtual file object pointing to the imported file data.</returns>
+    IGorgonVirtualFile ImportData(string physicalFilePath, CancellationToken cancelToken);
 
-        /// <summary>
-        /// Function to clean up any temporary working data.
-        /// </summary>
-        void CleanUp();
-    }
+    /// <summary>
+    /// Function to clean up any temporary working data.
+    /// </summary>
+    void CleanUp();
 }

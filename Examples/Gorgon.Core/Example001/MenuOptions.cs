@@ -31,135 +31,134 @@ using Gorgon.Core;
 using Gorgon.Diagnostics;
 using Gorgon.UI;
 
-namespace Gorgon.Examples
+namespace Gorgon.Examples;
+
+/// <summary>
+/// Used to handle the menu options for the application.
+/// </summary>
+internal static class MenuOptions
 {
+    #region Variables.
+    // Computer information.
+    private static readonly IGorgonComputerInfo _computerInfo = new GorgonComputerInfo();
+    #endregion
+
+    #region Methods.
     /// <summary>
-    /// Used to handle the menu options for the application.
+    /// Function to throw the inner exception.
     /// </summary>
-    internal static class MenuOptions
+    private static void InnerException()
     {
-        #region Variables.
-        // Computer information.
-        private static readonly IGorgonComputerInfo _computerInfo = new GorgonComputerInfo();
-        #endregion
-
-        #region Methods.
-        /// <summary>
-        /// Function to throw the inner exception.
-        /// </summary>
-        private static void InnerException()
+        try
         {
-            try
-            {
-                throw new NullReferenceException("This is a NULL reference exception.  It will be the inner exception.");
-            }
-            catch (Exception ex)
-            {
-                throw new ArgumentNullException("This is an Argument NULL exception.", ex);
-            }
+            throw new NullReferenceException("This is a NULL reference exception.  It will be the inner exception.");
         }
-
-        /// <summary>
-        /// Function to throw the outer exception.
-        /// </summary>
-        /// <param name="inner">Inner exception.</param>
-        private static void OuterException(Exception inner) => throw inner.Repackage("This will be the outer exception.\n\nLook at the 'Details' to see the full exception stack.");
-
-        /// <summary>
-        /// Function to display information about the computer.
-        /// </summary>
-        public static void DisplaySystemInfo()
+        catch (Exception ex)
         {
-            Console.Clear();
-
-            while (!Console.KeyAvailable)
-            {
-                Console.BackgroundColor = ConsoleColor.DarkBlue;
-                Console.ForegroundColor = ConsoleColor.White;
-
-                Console.CursorLeft = 0;
-                Console.CursorTop = 0;
-
-                Console.WriteLine($"Gorgon architecture:  {_computerInfo.PlatformArchitecture}");
-                Console.WriteLine();
-                Console.WriteLine($"Computer name:        {_computerInfo.ComputerName}");
-                Console.WriteLine($"# of processors:      {_computerInfo.ProcessorCount}");
-                Console.WriteLine($"Total RAM:            {_computerInfo.TotalPhysicalRAM.FormatMemory()} ({_computerInfo.TotalPhysicalRAM:#,###} bytes)");
-                Console.WriteLine($"Available RAM:        {_computerInfo.AvailablePhysicalRAM.FormatMemory()} ({_computerInfo.AvailablePhysicalRAM:#,###} bytes)");
-                Console.WriteLine();
-                Console.WriteLine($"Windows version:      {_computerInfo.OperatingSystemVersionText} {(string.IsNullOrEmpty(_computerInfo.OperatingSystemServicePack) ? string.Empty : _computerInfo.OperatingSystemServicePack)}");
-                Console.WriteLine($"Windows architecture: {_computerInfo.OperatingSystemArchitecture}");
-                Console.WriteLine($"System path:          {_computerInfo.SystemDirectory}");
-
-                // Display exit.
-                Console.CursorLeft = 0;
-                Console.CursorTop = Console.WindowHeight - 1;
-                Console.BackgroundColor = ConsoleColor.Black;
-                Console.ForegroundColor = ConsoleColor.Yellow;
-
-                Console.Write("Press any key to return...".PadRight(Console.WindowWidth - 1));
-
-                // Give up CPU time.
-                Thread.Sleep(100);
-            }
+            throw new ArgumentNullException("This is an Argument NULL exception.", ex);
         }
+    }
 
-        /// <summary>
-        /// Function to display the environment strings.
-        /// </summary>
-        public static void DisplayEnvironmentStrings()
+    /// <summary>
+    /// Function to throw the outer exception.
+    /// </summary>
+    /// <param name="inner">Inner exception.</param>
+    private static void OuterException(Exception inner) => throw inner.Repackage("This will be the outer exception.\n\nLook at the 'Details' to see the full exception stack.");
+
+    /// <summary>
+    /// Function to display information about the computer.
+    /// </summary>
+    public static void DisplaySystemInfo()
+    {
+        Console.Clear();
+
+        while (!Console.KeyAvailable)
         {
-            Console.Clear();
+            Console.BackgroundColor = ConsoleColor.DarkBlue;
+            Console.ForegroundColor = ConsoleColor.White;
 
-            foreach (KeyValuePair<string, string> envString in _computerInfo.MachineEnvironmentVariables)
-            {
-                Console.WriteLine($"{envString.Key} = {envString.Value}");
-            }
+            Console.CursorLeft = 0;
+            Console.CursorTop = 0;
 
+            Console.WriteLine($"Gorgon architecture:  {_computerInfo.PlatformArchitecture}");
+            Console.WriteLine();
+            Console.WriteLine($"Computer name:        {_computerInfo.ComputerName}");
+            Console.WriteLine($"# of processors:      {_computerInfo.ProcessorCount}");
+            Console.WriteLine($"Total RAM:            {_computerInfo.TotalPhysicalRAM.FormatMemory()} ({_computerInfo.TotalPhysicalRAM:#,###} bytes)");
+            Console.WriteLine($"Available RAM:        {_computerInfo.AvailablePhysicalRAM.FormatMemory()} ({_computerInfo.AvailablePhysicalRAM:#,###} bytes)");
+            Console.WriteLine();
+            Console.WriteLine($"Windows version:      {_computerInfo.OperatingSystemVersionText} {(string.IsNullOrEmpty(_computerInfo.OperatingSystemServicePack) ? string.Empty : _computerInfo.OperatingSystemServicePack)}");
+            Console.WriteLine($"Windows architecture: {_computerInfo.OperatingSystemArchitecture}");
+            Console.WriteLine($"System path:          {_computerInfo.SystemDirectory}");
+
+            // Display exit.
+            Console.CursorLeft = 0;
+            Console.CursorTop = Console.WindowHeight - 1;
             Console.BackgroundColor = ConsoleColor.Black;
             Console.ForegroundColor = ConsoleColor.Yellow;
+
             Console.Write("Press any key to return...".PadRight(Console.WindowWidth - 1));
-            Console.ReadKey(true);
-        }
 
-        /// <summary>
-        /// Function to display an information dialog.
-        /// </summary>
-        /// <param name="infoMessage">Message to display.</param>
-        public static void DisplayInfo(string infoMessage)
+            // Give up CPU time.
+            Thread.Sleep(100);
+        }
+    }
+
+    /// <summary>
+    /// Function to display the environment strings.
+    /// </summary>
+    public static void DisplayEnvironmentStrings()
+    {
+        Console.Clear();
+
+        foreach (KeyValuePair<string, string> envString in _computerInfo.MachineEnvironmentVariables)
         {
-            GorgonDialogs.ConfirmBox(null, "This is a question", allowCancel: true, allowToAll: true);
-            GorgonDialogs.ConfirmBox(null, "This is a question", allowCancel: true);
-            GorgonDialogs.InfoBox(null, infoMessage);
+            Console.WriteLine($"{envString.Key} = {envString.Value}");
         }
 
-        /// <summary>
-        /// Function to display the warning dialog.
-        /// </summary>
-        public static void DisplayWarning() => GorgonDialogs.WarningBox(null, "This is a warning!");
+        Console.BackgroundColor = ConsoleColor.Black;
+        Console.ForegroundColor = ConsoleColor.Yellow;
+        Console.Write("Press any key to return...".PadRight(Console.WindowWidth - 1));
+        Console.ReadKey(true);
+    }
 
-        /// <summary>
-        /// Function to throw, catch and display exception information.
-        /// </summary>
-        /// <remarks>This will show how to </remarks>
-        public static void DisplayException()
+    /// <summary>
+    /// Function to display an information dialog.
+    /// </summary>
+    /// <param name="infoMessage">Message to display.</param>
+    public static void DisplayInfo(string infoMessage)
+    {
+        GorgonDialogs.ConfirmBox(null, "This is a question", allowCancel: true, allowToAll: true);
+        GorgonDialogs.ConfirmBox(null, "This is a question", allowCancel: true);
+        GorgonDialogs.InfoBox(null, infoMessage);
+    }
+
+    /// <summary>
+    /// Function to display the warning dialog.
+    /// </summary>
+    public static void DisplayWarning() => GorgonDialogs.WarningBox(null, "This is a warning!");
+
+    /// <summary>
+    /// Function to throw, catch and display exception information.
+    /// </summary>
+    /// <remarks>This will show how to </remarks>
+    public static void DisplayException()
+    {
+        try
         {
             try
             {
-                try
-                {
-                    InnerException();
-                }
-                catch (Exception ex)
-                {
-                    OuterException(ex);
-                }
+                InnerException();
             }
             catch (Exception ex)
             {
-                GorgonDialogs.ErrorBox(null, ex);
+                OuterException(ex);
             }
         }
-        #endregion
+        catch (Exception ex)
+        {
+            GorgonDialogs.ErrorBox(null, ex);
+        }
     }
+    #endregion
 }

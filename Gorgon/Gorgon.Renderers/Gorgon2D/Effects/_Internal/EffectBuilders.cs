@@ -26,30 +26,29 @@
 
 using Gorgon.Graphics.Core;
 
-namespace Gorgon.Renderers
+namespace Gorgon.Renderers;
+
+/// <summary>
+/// The concrete implementation of <see cref="IGorgon2DEffectBuilders"/>.
+/// </summary>
+internal class EffectBuilders
+    : IGorgon2DEffectBuilders
 {
-    /// <summary>
-    /// The concrete implementation of <see cref="IGorgon2DEffectBuilders"/>.
-    /// </summary>
-    internal class EffectBuilders
-        : IGorgon2DEffectBuilders
+    /// <summary>Property to return the batch state builder.</summary>
+    public Gorgon2DBatchStateBuilder BatchBuilder
     {
-        /// <summary>Property to return the batch state builder.</summary>
-        public Gorgon2DBatchStateBuilder BatchBuilder
-        {
-            get;
-        } = new Gorgon2DBatchStateBuilder();
+        get;
+    } = new Gorgon2DBatchStateBuilder();
 
-        /// <summary>Property to return the vertex shader state builder.</summary>
-        public Gorgon2DShaderStateBuilder<GorgonVertexShader> VertexShaderBuilder
-        {
-            get;
-        } = new Gorgon2DShaderStateBuilder<GorgonVertexShader>();
+    /// <summary>Property to return the vertex shader state builder.</summary>
+    public Gorgon2DShaderStateBuilder<GorgonVertexShader> VertexShaderBuilder
+    {
+        get;
+    } = new Gorgon2DShaderStateBuilder<GorgonVertexShader>();
 
-        /// <summary>Property to return the pixel shader state builder.</summary>
-        public Gorgon2DShaderStateBuilder<GorgonPixelShader> PixelShaderBuilder
-        {
-            get;
-        } = new Gorgon2DShaderStateBuilder<GorgonPixelShader>();
-    }
+    /// <summary>Property to return the pixel shader state builder.</summary>
+    public Gorgon2DShaderStateBuilder<GorgonPixelShader> PixelShaderBuilder
+    {
+        get;
+    } = new Gorgon2DShaderStateBuilder<GorgonPixelShader>();
 }

@@ -1,5 +1,5 @@
-﻿namespace Fetze.WinFormsColor
-{
+﻿namespace Fetze.WinFormsColor;
+
 	partial class ColorPickerDialog
 	{
 		/// <summary>
@@ -112,26 +112,26 @@
 			// numHue
 			// 
 			this.numHue.Increment = new decimal(new int[] {
-            15,
-            0,
-            0,
-            0});
+        15,
+        0,
+        0,
+        0});
 			resources.ApplyResources(this.numHue, "numHue");
 			this.numHue.Maximum = new decimal(new int[] {
-            360,
-            0,
-            0,
-            0});
+        360,
+        0,
+        0,
+        0});
 			this.numHue.Name = "numHue";
 			this.numHue.ValueChanged += new System.EventHandler(this.numHue_ValueChanged);
 			// 
 			// numSaturation
 			// 
 			this.numSaturation.Increment = new decimal(new int[] {
-            5,
-            0,
-            0,
-            0});
+        5,
+        0,
+        0,
+        0});
 			resources.ApplyResources(this.numSaturation, "numSaturation");
 			this.numSaturation.Name = "numSaturation";
 			this.numSaturation.ValueChanged += new System.EventHandler(this.numSaturation_ValueChanged);
@@ -139,10 +139,10 @@
 			// numValue
 			// 
 			this.numValue.Increment = new decimal(new int[] {
-            5,
-            0,
-            0,
-            0});
+        5,
+        0,
+        0,
+        0});
 			resources.ApplyResources(this.numValue, "numValue");
 			this.numValue.Name = "numValue";
 			this.numValue.ValueChanged += new System.EventHandler(this.numValue_ValueChanged);
@@ -151,10 +151,10 @@
 			// 
 			resources.ApplyResources(this.numRed, "numRed");
 			this.numRed.Maximum = new decimal(new int[] {
-            255,
-            0,
-            0,
-            0});
+        255,
+        0,
+        0,
+        0});
 			this.numRed.Name = "numRed";
 			this.numRed.ValueChanged += new System.EventHandler(this.numRed_ValueChanged);
 			// 
@@ -162,10 +162,10 @@
 			// 
 			resources.ApplyResources(this.numGreen, "numGreen");
 			this.numGreen.Maximum = new decimal(new int[] {
-            255,
-            0,
-            0,
-            0});
+        255,
+        0,
+        0,
+        0});
 			this.numGreen.Name = "numGreen";
 			this.numGreen.ValueChanged += new System.EventHandler(this.numGreen_ValueChanged);
 			// 
@@ -173,10 +173,10 @@
 			// 
 			resources.ApplyResources(this.numBlue, "numBlue");
 			this.numBlue.Maximum = new decimal(new int[] {
-            255,
-            0,
-            0,
-            0});
+        255,
+        0,
+        0,
+        0});
 			this.numBlue.Name = "numBlue";
 			this.numBlue.ValueChanged += new System.EventHandler(this.numBlue_ValueChanged);
 			// 
@@ -219,10 +219,10 @@
 			// 
 			resources.ApplyResources(this.numAlpha, "numAlpha");
 			this.numAlpha.Maximum = new decimal(new int[] {
-            255,
-            0,
-            0,
-            0});
+        255,
+        0,
+        0,
+        0});
 			this.numAlpha.Name = "numAlpha";
 			this.numAlpha.ValueChanged += new System.EventHandler(this.numAlpha_ValueChanged);
 			// 
@@ -363,4 +363,3 @@
 		private System.Windows.Forms.Label labelSaturationUnit;
 		private System.Windows.Forms.Label labelValueUnit;
 	}
-}

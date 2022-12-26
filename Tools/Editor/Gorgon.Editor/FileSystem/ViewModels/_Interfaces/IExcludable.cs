@@ -25,20 +25,19 @@
 #endregion
 
 
-namespace Gorgon.Editor.ViewModels
+namespace Gorgon.Editor.ViewModels;
+
+/// <summary>
+/// Indicates that a directory can be excluded from a packed file.
+/// </summary>
+internal interface IExcludable
 {
     /// <summary>
-    /// Indicates that a directory can be excluded from a packed file.
+    /// Property to set or return a flag to indicate that the directory can be excluded from a packed file system.
     /// </summary>
-    internal interface IExcludable
+    bool IsExcluded
     {
-        /// <summary>
-        /// Property to set or return a flag to indicate that the directory can be excluded from a packed file system.
-        /// </summary>
-        bool IsExcluded
-        {
-            get;
-            set;
-        }
+        get;
+        set;
     }
 }

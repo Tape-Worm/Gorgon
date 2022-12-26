@@ -27,126 +27,125 @@
 using System;
 using System.Collections.Generic;
 
-namespace Gorgon.Graphics.Core
+namespace Gorgon.Graphics.Core;
+
+/// <summary>
+/// Allows tracking of objects that implement IDisposable.
+/// </summary>
+internal static class DisposableRegistrar
 {
+    #region Variables.
+    // The list of disposable objects.
+    private static readonly Dictionary<GorgonGraphics, List<WeakReference<IDisposable>>> _disposables = new();
+    // Synchronization object for multiple threads.
+    private static readonly object _syncLock = new();
+    #endregion
+
+    #region Methods.
     /// <summary>
-    /// Allows tracking of objects that implement IDisposable.
+    /// Function to retrieve the list of disposables for a given graphics instance.
     /// </summary>
-    internal static class DisposableRegistrar
+    /// <param name="graphics">The graphics instance that owns the disposable resources.</param>
+    /// <returns>An enumerable containing the list of resources for the graphics instance.</returns>
+    public static IEnumerable<WeakReference<IDisposable>> GetDisposables(this GorgonGraphics graphics)
     {
-        #region Variables.
-        // The list of disposable objects.
-        private static readonly Dictionary<GorgonGraphics, List<WeakReference<IDisposable>>> _disposables = new();
-        // Synchronization object for multiple threads.
-        private static readonly object _syncLock = new();
-        #endregion
-
-        #region Methods.
-        /// <summary>
-        /// Function to retrieve the list of disposables for a given graphics instance.
-        /// </summary>
-        /// <param name="graphics">The graphics instance that owns the disposable resources.</param>
-        /// <returns>An enumerable containing the list of resources for the graphics instance.</returns>
-        public static IEnumerable<WeakReference<IDisposable>> GetDisposables(this GorgonGraphics graphics)
+        lock (_syncLock)
         {
-            lock (_syncLock)
-            {
-                return _disposables[graphics];
-            }
+            return _disposables[graphics];
         }
-
-        /// <summary>
-        /// Function to register a disposable object with the graphics interface.
-        /// </summary>
-        /// <param name="disposable">The disposable object to register.</param>
-        /// <param name="graphics">The graphics object that the IDisposable belongs with.</param>
-        public static void RegisterDisposable(this IDisposable disposable, GorgonGraphics graphics)
-        {
-            if ((disposable is null)
-                || (graphics is null))
-            {
-                return;
-            }
-
-            lock (_syncLock)
-            {
-                if (!_disposables.TryGetValue(graphics, out List<WeakReference<IDisposable>> disposables))
-                {
-                    _disposables[graphics] = disposables = new List<WeakReference<IDisposable>>();
-                }
-
-                disposables.Add(new WeakReference<IDisposable>(disposable));
-            }
-        }
-
-        /// <summary>
-        /// Function to unregister a disposable object from a graphics interface.
-        /// </summary>
-        /// <param name="disposable">The disposable object to unregister.</param>
-        /// <param name="graphics">The graphics object that the IDisposable belonged to.</param>
-        public static void UnregisterDisposable(this IDisposable disposable, GorgonGraphics graphics)
-        {
-            if ((disposable is null)
-                || (graphics is null))
-            {
-                return;
-            }
-
-            lock (_syncLock)
-            {
-                if (!_disposables.TryGetValue(graphics, out List<WeakReference<IDisposable>> disposables))
-                {
-                    return;
-                }
-
-                if ((disposables is null)
-                    || (disposables.Count == 0))
-                {
-                    _disposables.Remove(graphics);
-                    return;
-                }
-
-                disposables.RemoveAll(weakRef =>
-                                          // Remove any dead references.
-                                          !weakRef.TryGetTarget(out IDisposable disposeRef) || disposeRef == disposable);
-            }
-        }
-
-        /// <summary>
-        /// Function to dispose all IDisposable objects registered to the graphics interface.
-        /// </summary>
-        /// <param name="graphics">The graphics interface that holds all the IDisposable objects.</param>
-        public static void DisposeAll(this GorgonGraphics graphics)
-        {
-            lock (_syncLock)
-            {
-                if ((!_disposables.TryGetValue(graphics, out List<WeakReference<IDisposable>> disposables))
-                    || (disposables is null))
-                {
-                    return;
-                }
-
-                if (disposables.Count == 0)
-                {
-                    _disposables.Remove(graphics);
-                    return;
-                }
-
-                while (disposables.Count > 0)
-                {
-                    if (!disposables[0].TryGetTarget(out IDisposable disposeRef))
-                    {
-                        disposables.RemoveAt(0);
-                        continue;
-                    }
-
-                    disposeRef.Dispose();
-                }
-
-                disposables.Clear();
-                _disposables.Remove(graphics);
-            }
-        }
-        #endregion
     }
+
+    /// <summary>
+    /// Function to register a disposable object with the graphics interface.
+    /// </summary>
+    /// <param name="disposable">The disposable object to register.</param>
+    /// <param name="graphics">The graphics object that the IDisposable belongs with.</param>
+    public static void RegisterDisposable(this IDisposable disposable, GorgonGraphics graphics)
+    {
+        if ((disposable is null)
+            || (graphics is null))
+        {
+            return;
+        }
+
+        lock (_syncLock)
+        {
+            if (!_disposables.TryGetValue(graphics, out List<WeakReference<IDisposable>> disposables))
+            {
+                _disposables[graphics] = disposables = new List<WeakReference<IDisposable>>();
+            }
+
+            disposables.Add(new WeakReference<IDisposable>(disposable));
+        }
+    }
+
+    /// <summary>
+    /// Function to unregister a disposable object from a graphics interface.
+    /// </summary>
+    /// <param name="disposable">The disposable object to unregister.</param>
+    /// <param name="graphics">The graphics object that the IDisposable belonged to.</param>
+    public static void UnregisterDisposable(this IDisposable disposable, GorgonGraphics graphics)
+    {
+        if ((disposable is null)
+            || (graphics is null))
+        {
+            return;
+        }
+
+        lock (_syncLock)
+        {
+            if (!_disposables.TryGetValue(graphics, out List<WeakReference<IDisposable>> disposables))
+            {
+                return;
+            }
+
+            if ((disposables is null)
+                || (disposables.Count == 0))
+            {
+                _disposables.Remove(graphics);
+                return;
+            }
+
+            disposables.RemoveAll(weakRef =>
+                                      // Remove any dead references.
+                                      !weakRef.TryGetTarget(out IDisposable disposeRef) || disposeRef == disposable);
+        }
+    }
+
+    /// <summary>
+    /// Function to dispose all IDisposable objects registered to the graphics interface.
+    /// </summary>
+    /// <param name="graphics">The graphics interface that holds all the IDisposable objects.</param>
+    public static void DisposeAll(this GorgonGraphics graphics)
+    {
+        lock (_syncLock)
+        {
+            if ((!_disposables.TryGetValue(graphics, out List<WeakReference<IDisposable>> disposables))
+                || (disposables is null))
+            {
+                return;
+            }
+
+            if (disposables.Count == 0)
+            {
+                _disposables.Remove(graphics);
+                return;
+            }
+
+            while (disposables.Count > 0)
+            {
+                if (!disposables[0].TryGetTarget(out IDisposable disposeRef))
+                {
+                    disposables.RemoveAt(0);
+                    continue;
+                }
+
+                disposeRef.Dispose();
+            }
+
+            disposables.Clear();
+            _disposables.Remove(graphics);
+        }
+    }
+    #endregion
 }

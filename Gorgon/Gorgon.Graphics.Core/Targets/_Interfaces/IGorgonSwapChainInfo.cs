@@ -26,55 +26,54 @@
 
 using Gorgon.Core;
 
-namespace Gorgon.Graphics.Core
+namespace Gorgon.Graphics.Core;
+
+/// <summary> 
+/// Settings for defining the set up for a swap chain.
+/// </summary>
+/// <remarks>
+/// <para>
+/// This provides an immutable view of the swap chain information so that it cannot be modified after the buffer is created.
+/// </para>
+/// </remarks>
+public interface IGorgonSwapChainInfo
+    : IGorgonNamedObject
 {
-    /// <summary> 
-    /// Settings for defining the set up for a swap chain.
+    /// <summary>
+    /// Property to return whether the back buffer contents will be stretched to fit the size of the presentation target area (typically the client area of the window).
     /// </summary>
     /// <remarks>
-    /// <para>
-    /// This provides an immutable view of the swap chain information so that it cannot be modified after the buffer is created.
-    /// </para>
+    /// The default value for this value is <b>true</b>.
     /// </remarks>
-    public interface IGorgonSwapChainInfo
-        : IGorgonNamedObject
+    bool StretchBackBuffer
     {
-        /// <summary>
-        /// Property to return whether the back buffer contents will be stretched to fit the size of the presentation target area (typically the client area of the window).
-        /// </summary>
-        /// <remarks>
-        /// The default value for this value is <b>true</b>.
-        /// </remarks>
-        bool StretchBackBuffer
-        {
-            get;
-        }
+        get;
+    }
 
-        /// <summary>
-        /// Property to return the format of the swap chain back buffer.
-        /// </summary>
-        /// <remarks>
-        /// The default value is <see cref="BufferFormat.R8G8B8A8_UNorm"/>
-        /// </remarks>
-        BufferFormat Format
-        {
-            get;
-        }
+    /// <summary>
+    /// Property to return the format of the swap chain back buffer.
+    /// </summary>
+    /// <remarks>
+    /// The default value is <see cref="BufferFormat.R8G8B8A8_UNorm"/>
+    /// </remarks>
+    BufferFormat Format
+    {
+        get;
+    }
 
-        /// <summary>
-        /// Property to return the width of the swap chain back buffer.
-        /// </summary>
-        int Width
-        {
-            get;
-        }
+    /// <summary>
+    /// Property to return the width of the swap chain back buffer.
+    /// </summary>
+    int Width
+    {
+        get;
+    }
 
-        /// <summary>
-        /// Property to return the height of the swap chain back buffer.
-        /// </summary>
-        int Height
-        {
-            get;
-        }
+    /// <summary>
+    /// Property to return the height of the swap chain back buffer.
+    /// </summary>
+    int Height
+    {
+        get;
     }
 }

@@ -26,93 +26,92 @@
 
 using System.Numerics;
 
-namespace Gorgon.Examples
+namespace Gorgon.Examples;
+
+/// <summary>
+/// Another space ship object.
+/// </summary>
+/// <remarks>
+/// This is a prop space ship that we'll use to add more variety to the scene.
+/// </remarks>
+internal class BigShip
 {
+    #region Variables.
+    // The ship sprite.
+    private SpriteEntity _ship;
+    // The ship sprite illumination map.
+    private SpriteEntity _shipIllum;
+    // The layer containing the sprite(s) for this ship.
+    private readonly SpritesLayer _layer;
+    // The angle of rotation.
+    private float _angle;
+    // Position of the ship.
+    private Vector2 _position;
+    #endregion
+
+    #region Properties.
     /// <summary>
-    /// Another space ship object.
+    /// Property to set or return the angle of rotation, in degrees, for the ship.
     /// </summary>
-    /// <remarks>
-    /// This is a prop space ship that we'll use to add more variety to the scene.
-    /// </remarks>
-    internal class BigShip
+    public float Angle
     {
-        #region Variables.
-        // The ship sprite.
-        private SpriteEntity _ship;
-        // The ship sprite illumination map.
-        private SpriteEntity _shipIllum;
-        // The layer containing the sprite(s) for this ship.
-        private readonly SpritesLayer _layer;
-        // The angle of rotation.
-        private float _angle;
-        // Position of the ship.
-        private Vector2 _position;
-        #endregion
-
-        #region Properties.
-        /// <summary>
-        /// Property to set or return the angle of rotation, in degrees, for the ship.
-        /// </summary>
-        public float Angle
+        get => _angle;
+        set
         {
-            get => _angle;
-            set
-            {
-                _angle = value;
-                UpdateEntityPositions();
-            }
-        }
-
-        /// <summary>
-        /// Property to set or return the position of the ship, in space.
-        /// </summary>
-        public Vector2 Position
-        {
-            get => _position;
-            set
-            {
-                _position = value;
-                UpdateEntityPositions();
-            }
-        }
-        #endregion
-
-        #region Methods.		
-        /// <summary>
-        /// Function to update the entity positions to match the position of the ship.
-        /// </summary>
-        private void UpdateEntityPositions()
-        {
-            if (_ship is null)
-            {
-                return;
-            }
-
-            _shipIllum.Rotation = _ship.Rotation = _angle;
-            _shipIllum.LocalPosition = _ship.LocalPosition = _position;
-        }
-
-        /// <summary>
-        /// Function to load the resources required for this ship.
-        /// </summary>
-        public void LoadResources()
-        {
-            // We'll need our sprite entities for this object so we can update their position and rotation.
-            _ship = _layer.GetSpriteByName("BigShip");
-            _shipIllum = _layer.GetSpriteByName("BigShip_Illum");
-
-            _ship.Visible = true;
-            _shipIllum.Visible = true;
-            _ship.Scale = 4;
-            _shipIllum.Scale = 4;
+            _angle = value;
             UpdateEntityPositions();
         }
-        #endregion
-
-        #region Constructor/Finalizer.
-        /// <summary>Initializes a new instance of the <see cref="BigShip"/> class.</summary>
-        /// <param name="layer">The layer.</param>
-        public BigShip(SpritesLayer layer) => _layer = layer;
-        #endregion
     }
+
+    /// <summary>
+    /// Property to set or return the position of the ship, in space.
+    /// </summary>
+    public Vector2 Position
+    {
+        get => _position;
+        set
+        {
+            _position = value;
+            UpdateEntityPositions();
+        }
+    }
+    #endregion
+
+    #region Methods.		
+    /// <summary>
+    /// Function to update the entity positions to match the position of the ship.
+    /// </summary>
+    private void UpdateEntityPositions()
+    {
+        if (_ship is null)
+        {
+            return;
+        }
+
+        _shipIllum.Rotation = _ship.Rotation = _angle;
+        _shipIllum.LocalPosition = _ship.LocalPosition = _position;
+    }
+
+    /// <summary>
+    /// Function to load the resources required for this ship.
+    /// </summary>
+    public void LoadResources()
+    {
+        // We'll need our sprite entities for this object so we can update their position and rotation.
+        _ship = _layer.GetSpriteByName("BigShip");
+        _shipIllum = _layer.GetSpriteByName("BigShip_Illum");
+
+        _ship.Visible = true;
+        _shipIllum.Visible = true;
+        _ship.Scale = 4;
+        _shipIllum.Scale = 4;
+        UpdateEntityPositions();
+    }
+    #endregion
+
+    #region Constructor/Finalizer.
+    /// <summary>Initializes a new instance of the <see cref="BigShip"/> class.</summary>
+    /// <param name="layer">The layer.</param>
+    public BigShip(SpritesLayer layer) => _layer = layer;
+    #endregion
 }

@@ -29,50 +29,49 @@ using Gorgon.Graphics.Core;
 using Gorgon.Renderers;
 using DX = SharpDX;
 
-namespace Gorgon.Examples
+namespace Gorgon.Examples;
+
+/// <summary>
+/// Represents a layer used for 2D drawing.
+/// </summary>
+internal abstract class Layer2D
+    : Layer
 {
+    #region Properties.
     /// <summary>
-    /// Represents a layer used for 2D drawing.
+    /// Property to return the graphics interface for the applicaton.
     /// </summary>
-    internal abstract class Layer2D
-        : Layer
+    protected GorgonGraphics Graphics => Renderer?.Graphics;
+
+    /// <summary>
+    /// Property to return the 2D renderer for the application.
+    /// </summary>
+    protected Gorgon2D Renderer
     {
-        #region Properties.
-        /// <summary>
-        /// Property to return the graphics interface for the applicaton.
-        /// </summary>
-        protected GorgonGraphics Graphics => Renderer?.Graphics;
-
-        /// <summary>
-        /// Property to return the 2D renderer for the application.
-        /// </summary>
-        protected Gorgon2D Renderer
-        {
-            get;
-        }
-        #endregion
-
-        #region Methods.
-        /// <summary>
-        /// Function to blit the specified texture into the current output target.
-        /// </summary>
-        /// <param name="texture">The texture to blit.</param>
-        /// <param name="textureCoordinates">[Optional] The texture coordinates to use on the source texture.</param>
-        /// <param name="samplerState">[Optional] The sampler state to apply.</param>
-        protected void Blit(GorgonTexture2DView texture, DX.RectangleF? textureCoordinates = null, GorgonSamplerState samplerState = null) =>
-            Renderer.DrawFilledRectangle(new DX.RectangleF(0, 0, OutputSize.Width, OutputSize.Height),
-                GorgonColor.White,
-                texture,
-                textureCoordinates ?? new DX.RectangleF(0, 0, 1, 1),
-                textureSampler: samplerState ?? GorgonSamplerState.Default,
-                depth: 0.1f);
-        #endregion
-
-        #region Constructor/Finalizer.
-        /// <summary>Initializes a new instance of the <see cref="Layer2D"/> class.</summary>
-        /// <param name="renderer">The 2D renderer for the application.</param>
-        protected Layer2D(Gorgon2D renderer) => Renderer = renderer;
-        #endregion
-
+        get;
     }
+    #endregion
+
+    #region Methods.
+    /// <summary>
+    /// Function to blit the specified texture into the current output target.
+    /// </summary>
+    /// <param name="texture">The texture to blit.</param>
+    /// <param name="textureCoordinates">[Optional] The texture coordinates to use on the source texture.</param>
+    /// <param name="samplerState">[Optional] The sampler state to apply.</param>
+    protected void Blit(GorgonTexture2DView texture, DX.RectangleF? textureCoordinates = null, GorgonSamplerState samplerState = null) =>
+        Renderer.DrawFilledRectangle(new DX.RectangleF(0, 0, OutputSize.Width, OutputSize.Height),
+            GorgonColor.White,
+            texture,
+            textureCoordinates ?? new DX.RectangleF(0, 0, 1, 1),
+            textureSampler: samplerState ?? GorgonSamplerState.Default,
+            depth: 0.1f);
+    #endregion
+
+    #region Constructor/Finalizer.
+    /// <summary>Initializes a new instance of the <see cref="Layer2D"/> class.</summary>
+    /// <param name="renderer">The 2D renderer for the application.</param>
+    protected Layer2D(Gorgon2D renderer) => Renderer = renderer;
+    #endregion
+
 }

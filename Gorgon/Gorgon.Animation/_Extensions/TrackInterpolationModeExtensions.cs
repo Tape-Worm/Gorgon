@@ -28,71 +28,70 @@ using System;
 using System.Collections.Generic;
 using Gorgon.Animation.Properties;
 
-namespace Gorgon.Animation
+namespace Gorgon.Animation;
+
+/// <summary>
+/// Extension methods for the <see cref="TrackInterpolationMode"/> values.
+/// </summary>
+public static class TrackInterpolationModeExtensions
 {
+    // The declared values.
+    private static readonly TrackInterpolationMode[] _values = (TrackInterpolationMode[])Enum.GetValues(typeof(TrackInterpolationMode));
+
     /// <summary>
-    /// Extension methods for the <see cref="TrackInterpolationMode"/> values.
+    /// Function to get a culture sensitive string representing a <see cref="TrackInterpolationMode"/> value.
     /// </summary>
-    public static class TrackInterpolationModeExtensions
+    /// <param name="mode">The mode to evaluate.</param>
+    /// <returns>The string representation.</returns>
+    public static string GetDescription(this TrackInterpolationMode mode) => mode switch
     {
-        // The declared values.
-        private static readonly TrackInterpolationMode[] _values = (TrackInterpolationMode[])Enum.GetValues(typeof(TrackInterpolationMode));
+        TrackInterpolationMode.Linear => Resources.GORANM_DESC_INTERP_LINEAR,
+        TrackInterpolationMode.Spline => Resources.GORANM_DESC_INTERP_SPLINE,
+        _ => Resources.GORANM_DESC_INTERP_NONE,
+    };
 
-        /// <summary>
-        /// Function to get a culture sensitive string representing a <see cref="TrackInterpolationMode"/> value.
-        /// </summary>
-        /// <param name="mode">The mode to evaluate.</param>
-        /// <returns>The string representation.</returns>
-        public static string GetDescription(this TrackInterpolationMode mode) => mode switch
+    /// <summary>
+    /// Function to retrieve a list of explicit values in the <see cref="TrackInterpolationMode"/> passed in.
+    /// </summary>
+    /// <param name="mode">The interpolation mode(s) to evaluate.</param>
+    /// <returns>The list of explicitly declared values.</returns>
+    public static IEnumerable<TrackInterpolationMode> GetExplicitValues(this TrackInterpolationMode mode)
+    {
+        for (int i = 0; i < _values.Length; ++i)
         {
-            TrackInterpolationMode.Linear => Resources.GORANM_DESC_INTERP_LINEAR,
-            TrackInterpolationMode.Spline => Resources.GORANM_DESC_INTERP_SPLINE,
-            _ => Resources.GORANM_DESC_INTERP_NONE,
-        };
+            TrackInterpolationMode modeItem = _values[i];
 
-        /// <summary>
-        /// Function to retrieve a list of explicit values in the <see cref="TrackInterpolationMode"/> passed in.
-        /// </summary>
-        /// <param name="mode">The interpolation mode(s) to evaluate.</param>
-        /// <returns>The list of explicitly declared values.</returns>
-        public static IEnumerable<TrackInterpolationMode> GetExplicitValues(this TrackInterpolationMode mode)
-        {
-            for (int i = 0; i < _values.Length; ++i)
+            if ((mode & modeItem) == modeItem)
             {
-                TrackInterpolationMode modeItem = _values[i];
-
-                if ((mode & modeItem) == modeItem)
-                {
-                    yield return modeItem;
-                }
+                yield return modeItem;
             }
         }
+    }
 
 
-        /// <summary>
-        /// Function to get a the <see cref="TrackInterpolationMode"/> from a culture sensitive string.
-        /// </summary>
-        /// <param name="mode">The string value to evaluate.</param>
-        /// <returns>The enum value.</returns>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0046:Convert to conditional expression", Justification = "<Pending>")]
-        public static TrackInterpolationMode GetTrackInterpolationMode(this string mode)
+    /// <summary>
+    /// Function to get a the <see cref="TrackInterpolationMode"/> from a culture sensitive string.
+    /// </summary>
+    /// <param name="mode">The string value to evaluate.</param>
+    /// <returns>The enum value.</returns>
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0046:Convert to conditional expression", Justification = "<Pending>")]
+    public static TrackInterpolationMode GetTrackInterpolationMode(this string mode)
+    {
+        if (string.IsNullOrWhiteSpace(mode))
         {
-            if (string.IsNullOrWhiteSpace(mode))
-            {
-                return TrackInterpolationMode.None;
-            }
-
-            if (string.Equals(mode, Resources.GORANM_DESC_INTERP_LINEAR, StringComparison.CurrentCultureIgnoreCase))
-            {
-                return TrackInterpolationMode.Linear;
-            }
-
-            if (string.Equals(mode, Resources.GORANM_DESC_INTERP_SPLINE, StringComparison.CurrentCultureIgnoreCase))
-            {
-                return TrackInterpolationMode.Spline;
-            }
-
             return TrackInterpolationMode.None;
         }
+
+        if (string.Equals(mode, Resources.GORANM_DESC_INTERP_LINEAR, StringComparison.CurrentCultureIgnoreCase))
+        {
+            return TrackInterpolationMode.Linear;
+        }
+
+        if (string.Equals(mode, Resources.GORANM_DESC_INTERP_SPLINE, StringComparison.CurrentCultureIgnoreCase))
+        {
+            return TrackInterpolationMode.Spline;
+        }
+
+        return TrackInterpolationMode.None;
     }
 }

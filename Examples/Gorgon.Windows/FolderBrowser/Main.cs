@@ -30,77 +30,76 @@ using System.Windows.Forms;
 using Gorgon.IO;
 using Gorgon.UI;
 
-namespace Gorgon.Examples
+namespace Gorgon.Examples;
+
+/// <summary>
+/// Main example window.
+/// </summary>
+/// <remarks>
+/// <para>
+/// This example shows the Gorgon folder browser control. This is meant as a replacement for the awful folder selector that has been included with WinForms since the dawn 
+/// of .NET.  
+/// 
+/// With this browser you can not only select a folder, but rename, add and delete folders. It also supports setting a virtual root so that the browser cannot go above a 
+/// certain directory level.
+/// 
+/// Finally the directory selector can be configured to use the Gorgon File System by setting the root directory to the physical file system path and the directory separator 
+/// character ('/'), and then handling any events triggered to translate back and forth.
+/// </para>
+/// </remarks>
+public partial class Main
+    : Form
 {
-    /// <summary>
-    /// Main example window.
-    /// </summary>
-    /// <remarks>
-    /// <para>
-    /// This example shows the Gorgon folder browser control. This is meant as a replacement for the awful folder selector that has been included with WinForms since the dawn 
-    /// of .NET.  
-    /// 
-    /// With this browser you can not only select a folder, but rename, add and delete folders. It also supports setting a virtual root so that the browser cannot go above a 
-    /// certain directory level.
-    /// 
-    /// Finally the directory selector can be configured to use the Gorgon File System by setting the root directory to the physical file system path and the directory separator 
-    /// character ('/'), and then handling any events triggered to translate back and forth.
-    /// </para>
-    /// </remarks>
-    public partial class Main
-        : Form
+    #region Variables.
+    // The area where we can make changes (our resource area).
+    private DirectoryInfo _writeArea;
+    #endregion
+
+    #region Methods.
+    /// <summary>Function called when the browser enters a new folder.</summary>
+    /// <param name="sender">The sender of the event.</param>
+    /// <param name="e">The event parameters.</param>
+    private void Browser_FolderEntered(object sender, FolderSelectedArgs e)
     {
-        #region Variables.
-        // The area where we can make changes (our resource area).
-        private DirectoryInfo _writeArea;
-        #endregion
-
-        #region Methods.
-        /// <summary>Function called when the browser enters a new folder.</summary>
-        /// <param name="sender">The sender of the event.</param>
-        /// <param name="e">The event parameters.</param>
-        private void Browser_FolderEntered(object sender, FolderSelectedArgs e)
+        // If we are under the writable area, then allow us to add/remove/rename directories.
+        if ((_writeArea.Exists) && (e.FolderPath.StartsWith(_writeArea.FullName.FormatDirectory(Path.DirectorySeparatorChar), StringComparison.OrdinalIgnoreCase)))
         {
-            // If we are under the writable area, then allow us to add/remove/rename directories.
-            if ((_writeArea.Exists) && (e.FolderPath.StartsWith(_writeArea.FullName.FormatDirectory(Path.DirectorySeparatorChar), StringComparison.OrdinalIgnoreCase)))
-            {
-                Browser.IsReadOnly = false;
-                Browser.Text = "Double click on a folder to change it. Click the '+' to create a folder and '-' to delete one.";
-            }
-            else
-            {
-                // Otherwise, be safe and don't allow any changes.
-                Browser.IsReadOnly = true;
-                Browser.Text = "Double click on a folder to change it.";
-            }
+            Browser.IsReadOnly = false;
+            Browser.Text = "Double click on a folder to change it. Click the '+' to create a folder and '-' to delete one.";
         }
-
-        /// <summary>Raises the <see cref="Form.Load">Load</see> event.</summary>
-        /// <param name="e">An <see cref="EventArgs">EventArgs</see> that contains the event data.</param>
-        protected override void OnLoad(EventArgs e)
+        else
         {
-            base.OnLoad(e);
-
-            _writeArea = new DirectoryInfo(Path.Combine(Path.GetFullPath(ExampleConfig.Default.ResourceLocation), "FolderBrowser"));
-
-            // Set the root to the example folder so we can keep things safe.
-            if (_writeArea.Exists)
-            {
-                Browser.AssignInitialDirectory(_writeArea);
-            }
-            else
-            {
-                // If we didn't get the resource directory, then we'll show the entire file system, but with our 
-                // add/remove directory functionality disabled - We don't want to mess up your drive right?
-                Browser.IsReadOnly = true;
-                Browser.Text = "Double click on a folder to change it.";
-            }
+            // Otherwise, be safe and don't allow any changes.
+            Browser.IsReadOnly = true;
+            Browser.Text = "Double click on a folder to change it.";
         }
-        #endregion
-
-        #region Constructor/Finalizer.
-        /// <summary>Initializes a new instance of the <see cref="Main" /> class.</summary>
-        public Main() => InitializeComponent();
-        #endregion
     }
+
+    /// <summary>Raises the <see cref="Form.Load">Load</see> event.</summary>
+    /// <param name="e">An <see cref="EventArgs">EventArgs</see> that contains the event data.</param>
+    protected override void OnLoad(EventArgs e)
+    {
+        base.OnLoad(e);
+
+        _writeArea = new DirectoryInfo(Path.Combine(Path.GetFullPath(ExampleConfig.Default.ResourceLocation), "FolderBrowser"));
+
+        // Set the root to the example folder so we can keep things safe.
+        if (_writeArea.Exists)
+        {
+            Browser.AssignInitialDirectory(_writeArea);
+        }
+        else
+        {
+            // If we didn't get the resource directory, then we'll show the entire file system, but with our 
+            // add/remove directory functionality disabled - We don't want to mess up your drive right?
+            Browser.IsReadOnly = true;
+            Browser.Text = "Double click on a folder to change it.";
+        }
+    }
+    #endregion
+
+    #region Constructor/Finalizer.
+    /// <summary>Initializes a new instance of the <see cref="Main" /> class.</summary>
+    public Main() => InitializeComponent();
+    #endregion
 }

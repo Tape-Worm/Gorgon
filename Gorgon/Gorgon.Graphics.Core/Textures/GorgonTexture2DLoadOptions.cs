@@ -26,38 +26,37 @@
 
 using Gorgon.Graphics.Imaging;
 
-namespace Gorgon.Graphics.Core
+namespace Gorgon.Graphics.Core;
+
+/// <summary>
+/// Options to pass when loading a texture from a stream or the file system.
+/// </summary>
+public class GorgonTexture2DLoadOptions
+    : GorgonTextureLoadOptions
 {
     /// <summary>
-    /// Options to pass when loading a texture from a stream or the file system.
+    /// Property to set or return whether the texture is a texture cube.
     /// </summary>
-    public class GorgonTexture2DLoadOptions
-        : GorgonTextureLoadOptions
+    /// <remarks>
+    /// <para>
+    /// This is for <see cref="GorgonTexture2D"/> only, and the texture must have an <see cref="IGorgonTexture2DInfo.ArrayCount"/> that is a multiple of 6.
+    /// </para>
+    /// <para>
+    /// Set this value to <b>null</b> to let the source image <see cref="IGorgonImageInfo.ImageType"/> determine whether to use this texture as a texture cube.
+    /// </para>
+    /// </remarks>
+    public bool? IsTextureCube
     {
-        /// <summary>
-        /// Property to set or return whether the texture is a texture cube.
-        /// </summary>
-        /// <remarks>
-        /// <para>
-        /// This is for <see cref="GorgonTexture2D"/> only, and the texture must have an <see cref="IGorgonTexture2DInfo.ArrayCount"/> that is a multiple of 6.
-        /// </para>
-        /// <para>
-        /// Set this value to <b>null</b> to let the source image <see cref="IGorgonImageInfo.ImageType"/> determine whether to use this texture as a texture cube.
-        /// </para>
-        /// </remarks>
-        public bool? IsTextureCube
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// Property to set or return the multisampling information to apply to the texture.
-        /// </summary>
-        public GorgonMultisampleInfo MultisampleInfo
-        {
-            get;
-            set;
-        } = GorgonMultisampleInfo.NoMultiSampling;
+        get;
+        set;
     }
+
+    /// <summary>
+    /// Property to set or return the multisampling information to apply to the texture.
+    /// </summary>
+    public GorgonMultisampleInfo MultisampleInfo
+    {
+        get;
+        set;
+    } = GorgonMultisampleInfo.NoMultiSampling;
 }

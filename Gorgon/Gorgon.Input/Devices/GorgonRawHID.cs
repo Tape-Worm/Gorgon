@@ -27,143 +27,142 @@
 using System;
 using Gorgon.Native;
 
-namespace Gorgon.Input
+namespace Gorgon.Input;
+
+/// <summary>
+/// Provides state for human interface data returned from Raw Input.
+/// </summary>
+/// <remarks>
+/// <para>
+/// This allows a user to read, and parse human interface device data from an aribtrary device. It is recommended that this object be wrapped by an actual object that will be used to present the data 
+/// in an easy to manipulate format.
+/// </para>
+/// <para>
+/// This object implements <see cref="IDisposable"/> because it manipulates native memory. It is necessary to call the <see cref="IDisposable.Dispose"/> method in order to ensure there is no memory leak 
+/// when finished with this object.
+/// </para>
+/// </remarks>
+public class GorgonRawHID
+    : IGorgonRawHID
 {
+    #region Variables.
+    // Pre parsed data for this device.
+    private GorgonNativeBuffer<byte> _preParsedData;
+    // Synchronization for multiple threads.
+    private readonly object _syncLock = new();
+    #endregion
+
+    #region Events.
     /// <summary>
-    /// Provides state for human interface data returned from Raw Input.
+    /// Event triggered when Raw Input receives data from the device.
     /// </summary>
-    /// <remarks>
-    /// <para>
-    /// This allows a user to read, and parse human interface device data from an aribtrary device. It is recommended that this object be wrapped by an actual object that will be used to present the data 
-    /// in an easy to manipulate format.
-    /// </para>
-    /// <para>
-    /// This object implements <see cref="IDisposable"/> because it manipulates native memory. It is necessary to call the <see cref="IDisposable.Dispose"/> method in order to ensure there is no memory leak 
-    /// when finished with this object.
-    /// </para>
-    /// </remarks>
-    public class GorgonRawHID
-        : IGorgonRawHID
+    public event EventHandler<GorgonHIDEventArgs> DataReceived;
+    #endregion
+
+    #region Properties.
+    /// <summary>
+    /// Property to return the handle for the device.
+    /// </summary>
+    public nint Handle => Info.Handle;
+
+    /// <summary>
+    /// Property to return the type of device.
+    /// </summary>
+    public RawInputType DeviceType => RawInputType.HID;
+
+    /// <summary>
+    /// Property to return the HID usage code for this device.
+    /// </summary>
+    HIDUsage IGorgonRawInputDevice.DeviceUsage => Info.Usage;
+
+    /// <summary>
+    /// Property to return information about the Raw Input Human Interface Device.
+    /// </summary>
+    public IGorgonRawHIDInfo Info
     {
-        #region Variables.
-        // Pre parsed data for this device.
-        private GorgonNativeBuffer<byte> _preParsedData;
-        // Synchronization for multiple threads.
-        private readonly object _syncLock = new();
-        #endregion
-
-        #region Events.
-        /// <summary>
-        /// Event triggered when Raw Input receives data from the device.
-        /// </summary>
-        public event EventHandler<GorgonHIDEventArgs> DataReceived;
-        #endregion
-
-        #region Properties.
-        /// <summary>
-        /// Property to return the handle for the device.
-        /// </summary>
-        public nint Handle => Info.Handle;
-
-        /// <summary>
-        /// Property to return the type of device.
-        /// </summary>
-        public RawInputType DeviceType => RawInputType.HID;
-
-        /// <summary>
-        /// Property to return the HID usage code for this device.
-        /// </summary>
-        HIDUsage IGorgonRawInputDevice.DeviceUsage => Info.Usage;
-
-        /// <summary>
-        /// Property to return information about the Raw Input Human Interface Device.
-        /// </summary>
-        public IGorgonRawHIDInfo Info
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to return a pointer to the block of memory that stores the HID data.
-        /// </summary>
-        public GorgonPtr<byte> Data
-        {
-            get;
-            private set;
-        }
-
-        /// <summary>
-        /// Property to return the size of an individual HID input, in bytes.
-        /// </summary>
-        public int HIDSize
-        {
-            get;
-            private set;
-        }
-
-        /// <summary>
-        /// Property to return the number of inputs in the <see cref="IGorgonRawHID.Data"/>.
-        /// </summary>
-        public int Count
-        {
-            get;
-            private set;
-        }
-
-        /// <summary>
-        /// Property to return the pre-parsed data for this HID.
-        /// </summary>
-        public GorgonPtr<byte> PreParsedData
-        {
-            get
-            {
-                lock (_syncLock)
-                {
-                    if (_preParsedData is null)
-                    {
-                        _preParsedData = RawInputApi.GetPreparsedDeviceInfoData(Handle);
-                    }
-                }
-
-                return _preParsedData;
-            }
-        }
-        #endregion
-
-        #region Methods.
-
-        /// <summary>
-        /// Function to process the Gorgon raw input data into device state data and appropriate events.
-        /// </summary>
-        /// <param name="rawInputData">The data to process.</param>
-        void IGorgonRawInputDeviceData<GorgonRawHIDData>.ProcessData(in GorgonRawHIDData rawInputData)
-        {
-            Data = rawInputData.HidData;
-            HIDSize = rawInputData.HIDDataSize;
-            Count = rawInputData.ItemCount;
-
-            DataReceived?.Invoke(this, new GorgonHIDEventArgs(rawInputData.HidData, rawInputData.HIDDataSize, rawInputData.ItemCount));
-        }
-
-        /// <summary>
-        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-        /// </summary>
-        public void Dispose()
-        {
-            _preParsedData?.Dispose();
-            _preParsedData = null;
-
-            GC.SuppressFinalize(this);
-        }
-        #endregion
-
-        #region Constructor/Finalizer.
-        /// <summary>
-        /// Initializes a new instance of the <see cref="GorgonRawHID"/> class.
-        /// </summary>
-        /// <param name="hidInfo">The human interface device information used to determine which keyboard to use.</param>
-        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="hidInfo"/> is <b>null</b>.</exception>
-        public GorgonRawHID(GorgonRawHIDInfo hidInfo) => Info = hidInfo ?? throw new ArgumentNullException(nameof(hidInfo));
-        #endregion
+        get;
     }
+
+    /// <summary>
+    /// Property to return a pointer to the block of memory that stores the HID data.
+    /// </summary>
+    public GorgonPtr<byte> Data
+    {
+        get;
+        private set;
+    }
+
+    /// <summary>
+    /// Property to return the size of an individual HID input, in bytes.
+    /// </summary>
+    public int HIDSize
+    {
+        get;
+        private set;
+    }
+
+    /// <summary>
+    /// Property to return the number of inputs in the <see cref="IGorgonRawHID.Data"/>.
+    /// </summary>
+    public int Count
+    {
+        get;
+        private set;
+    }
+
+    /// <summary>
+    /// Property to return the pre-parsed data for this HID.
+    /// </summary>
+    public GorgonPtr<byte> PreParsedData
+    {
+        get
+        {
+            lock (_syncLock)
+            {
+                if (_preParsedData is null)
+                {
+                    _preParsedData = RawInputApi.GetPreparsedDeviceInfoData(Handle);
+                }
+            }
+
+            return _preParsedData;
+        }
+    }
+    #endregion
+
+    #region Methods.
+
+    /// <summary>
+    /// Function to process the Gorgon raw input data into device state data and appropriate events.
+    /// </summary>
+    /// <param name="rawInputData">The data to process.</param>
+    void IGorgonRawInputDeviceData<GorgonRawHIDData>.ProcessData(in GorgonRawHIDData rawInputData)
+    {
+        Data = rawInputData.HidData;
+        HIDSize = rawInputData.HIDDataSize;
+        Count = rawInputData.ItemCount;
+
+        DataReceived?.Invoke(this, new GorgonHIDEventArgs(rawInputData.HidData, rawInputData.HIDDataSize, rawInputData.ItemCount));
+    }
+
+    /// <summary>
+    /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+    /// </summary>
+    public void Dispose()
+    {
+        _preParsedData?.Dispose();
+        _preParsedData = null;
+
+        GC.SuppressFinalize(this);
+    }
+    #endregion
+
+    #region Constructor/Finalizer.
+    /// <summary>
+    /// Initializes a new instance of the <see cref="GorgonRawHID"/> class.
+    /// </summary>
+    /// <param name="hidInfo">The human interface device information used to determine which keyboard to use.</param>
+    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="hidInfo"/> is <b>null</b>.</exception>
+    public GorgonRawHID(GorgonRawHIDInfo hidInfo) => Info = hidInfo ?? throw new ArgumentNullException(nameof(hidInfo));
+    #endregion
 }

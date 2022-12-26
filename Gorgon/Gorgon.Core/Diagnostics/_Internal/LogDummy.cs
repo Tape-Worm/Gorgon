@@ -28,92 +28,91 @@ using System;
 using System.Threading;
 using Gorgon.Diagnostics.LogProviders;
 
-namespace Gorgon.Diagnostics
+namespace Gorgon.Diagnostics;
+
+/// <summary>
+/// An implementation of the <see cref="IGorgonThreadedLog"/> type that does nothing.
+/// </summary>
+internal class LogDummy
+    : IGorgonThreadedLog
 {
+    #region Properties.
     /// <summary>
-    /// An implementation of the <see cref="IGorgonThreadedLog"/> type that does nothing.
+    /// Property to return the ID of the thread that created the log object.
     /// </summary>
-    internal class LogDummy
-        : IGorgonThreadedLog
+    public int ThreadID
     {
-        #region Properties.
-        /// <summary>
-        /// Property to return the ID of the thread that created the log object.
-        /// </summary>
-        public int ThreadID
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to set or return the filtering level of this log.
-        /// </summary>
-        public LoggingLevel LogFilterLevel
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// Property to return the name of the application that is being logged.
-        /// </summary>
-        public string LogApplication => string.Empty;
-
-        /// <summary>
-        /// Property to return the provider for this log.
-        /// </summary>
-        public IGorgonLogProvider Provider => null;
-        #endregion
-
-        #region Methods.
-        /// <summary>
-        /// Function to send an exception to the log.
-        /// </summary>
-        /// <param name="ex">The exception to log.</param>
-        /// <remarks>
-        /// <para>
-        /// If the <see cref="GorgonLog.LogFilterLevel"/> is set to <c>LoggingLevel.NoLogging</c>, then the exception will not be logged. If the filter is set to any other setting, it will be logged 
-        /// regardless of filter level.
-        /// </para>
-        /// </remarks>
-        public void LogException(Exception ex)
-        {
-            // Intentionally left blank.
-        }
-
-        /// <summary>
-        /// Function to print a formatted line of text to the log.
-        /// </summary>
-        /// <param name="formatSpecifier">Format specifier for the line.</param>
-        /// <param name="level">Level that this message falls under.</param>
-        /// <param name="arguments">List of optional arguments.</param>
-        public void Print(string formatSpecifier, LoggingLevel level, params object[] arguments)
-        {
-            // Intentionally left blank.
-        }
-
-        /// <summary>
-        /// Function to perform any one time inital logging.
-        /// </summary>
-        public void LogStart()
-        {
-            // Intentionally left blank.
-        }
-
-        /// <summary>
-        /// Function to perform any one time final logging.
-        /// </summary>
-        public void LogEnd()
-        {
-            // Intentionally left blank.
-        }
-        #endregion
-
-        #region Constructor.
-        /// <summary>
-        /// Initializes a new instance of the <see cref="LogDummy"/> class.
-        /// </summary>
-        public LogDummy() => ThreadID = Thread.CurrentThread.ManagedThreadId;
-        #endregion
+        get;
     }
+
+    /// <summary>
+    /// Property to set or return the filtering level of this log.
+    /// </summary>
+    public LoggingLevel LogFilterLevel
+    {
+        get;
+        set;
+    }
+
+    /// <summary>
+    /// Property to return the name of the application that is being logged.
+    /// </summary>
+    public string LogApplication => string.Empty;
+
+    /// <summary>
+    /// Property to return the provider for this log.
+    /// </summary>
+    public IGorgonLogProvider Provider => null;
+    #endregion
+
+    #region Methods.
+    /// <summary>
+    /// Function to send an exception to the log.
+    /// </summary>
+    /// <param name="ex">The exception to log.</param>
+    /// <remarks>
+    /// <para>
+    /// If the <see cref="GorgonLog.LogFilterLevel"/> is set to <c>LoggingLevel.NoLogging</c>, then the exception will not be logged. If the filter is set to any other setting, it will be logged 
+    /// regardless of filter level.
+    /// </para>
+    /// </remarks>
+    public void LogException(Exception ex)
+    {
+        // Intentionally left blank.
+    }
+
+    /// <summary>
+    /// Function to print a formatted line of text to the log.
+    /// </summary>
+    /// <param name="formatSpecifier">Format specifier for the line.</param>
+    /// <param name="level">Level that this message falls under.</param>
+    /// <param name="arguments">List of optional arguments.</param>
+    public void Print(string formatSpecifier, LoggingLevel level, params object[] arguments)
+    {
+        // Intentionally left blank.
+    }
+
+    /// <summary>
+    /// Function to perform any one time inital logging.
+    /// </summary>
+    public void LogStart()
+    {
+        // Intentionally left blank.
+    }
+
+    /// <summary>
+    /// Function to perform any one time final logging.
+    /// </summary>
+    public void LogEnd()
+    {
+        // Intentionally left blank.
+    }
+    #endregion
+
+    #region Constructor.
+    /// <summary>
+    /// Initializes a new instance of the <see cref="LogDummy"/> class.
+    /// </summary>
+    public LogDummy() => ThreadID = Thread.CurrentThread.ManagedThreadId;
+    #endregion
 }

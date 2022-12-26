@@ -28,98 +28,97 @@ using System.Linq;
 using Gorgon.Editor.UI;
 using Gorgon.Math;
 
-namespace Gorgon.Editor.ImageEditor
+namespace Gorgon.Editor.ImageEditor;
+
+/// <summary>
+/// The settings view model for the one bit effect.
+/// </summary>
+internal class FxOneBit
+    : HostedPanelViewModelBase<HostedPanelViewModelParameters>, IFxOneBit
 {
+    #region Variables.
+    // The min and max threshold for white pixels.
+    private int _minThreshold = 127;
+    private int _maxThreshold = 255;
+    // The flag used to invert the black/white values.
+    private bool _invert;
+    #endregion
+
+    #region Properties.
     /// <summary>
-    /// The settings view model for the one bit effect.
+    /// Property to set or return the maximum threshold to convert to white (or black if inverted).
     /// </summary>
-    internal class FxOneBit
-        : HostedPanelViewModelBase<HostedPanelViewModelParameters>, IFxOneBit
+    public int MaxWhiteThreshold
     {
-        #region Variables.
-        // The min and max threshold for white pixels.
-        private int _minThreshold = 127;
-        private int _maxThreshold = 255;
-        // The flag used to invert the black/white values.
-        private bool _invert;
-        #endregion
-
-        #region Properties.
-        /// <summary>
-        /// Property to set or return the maximum threshold to convert to white (or black if inverted).
-        /// </summary>
-        public int MaxWhiteThreshold
+        get => _maxThreshold;
+        set
         {
-            get => _maxThreshold;
-            set
+            if (_maxThreshold == value)
             {
-                if (_maxThreshold == value)
-                {
-                    return;
-                }
-
-                OnPropertyChanging();
-                _maxThreshold = value.Min(255).Max(0);
-                OnPropertyChanged();
+                return;
             }
+
+            OnPropertyChanging();
+            _maxThreshold = value.Min(255).Max(0);
+            OnPropertyChanged();
         }
-
-        /// <summary>
-        /// Property to set or return the minimum threshold to convert to white (or black if inverted).
-        /// </summary>
-        public int MinWhiteThreshold
-        {
-            get => _minThreshold;
-            set
-            {
-                if (_minThreshold == value)
-                {
-                    return;
-                }
-
-                OnPropertyChanging();
-                _minThreshold = value.Min(255).Max(0);
-                OnPropertyChanged();
-            }
-        }
-
-        /// <summary>
-        /// Property to set or return the flag used to invert the black/white values.
-        /// </summary>
-        public bool Invert
-        {
-            get => _invert;
-            set
-            {
-                if (_invert == value)
-                {
-                    return;
-                }
-
-                OnPropertyChanging();
-                _invert = value;
-                OnPropertyChanged();
-            }
-        }
-
-        /// <summary>Property to return whether the panel is modal.</summary>
-        public override bool IsModal => false;
-        #endregion
-
-        #region Methods.
-        /// <summary>Function to inject dependencies for the view model.</summary>
-        /// <param name="injectionParameters">The parameters to inject.</param>
-        /// <remarks>
-        ///   <para>
-        /// Applications should call this when setting up the view model for complex operations and/or dependency injection. The constructor should only be used for simple set up and initialization of objects.
-        /// </para>
-        ///   <para>
-        /// This method is only ever called after the view model has been created, and never again during the lifetime of the view model.
-        /// </para>
-        /// </remarks>
-        protected override void OnInitialize(HostedPanelViewModelParameters injectionParameters)
-        {
-        }
-        #endregion
     }
+
+    /// <summary>
+    /// Property to set or return the minimum threshold to convert to white (or black if inverted).
+    /// </summary>
+    public int MinWhiteThreshold
+    {
+        get => _minThreshold;
+        set
+        {
+            if (_minThreshold == value)
+            {
+                return;
+            }
+
+            OnPropertyChanging();
+            _minThreshold = value.Min(255).Max(0);
+            OnPropertyChanged();
+        }
+    }
+
+    /// <summary>
+    /// Property to set or return the flag used to invert the black/white values.
+    /// </summary>
+    public bool Invert
+    {
+        get => _invert;
+        set
+        {
+            if (_invert == value)
+            {
+                return;
+            }
+
+            OnPropertyChanging();
+            _invert = value;
+            OnPropertyChanged();
+        }
+    }
+
+    /// <summary>Property to return whether the panel is modal.</summary>
+    public override bool IsModal => false;
+    #endregion
+
+    #region Methods.
+    /// <summary>Function to inject dependencies for the view model.</summary>
+    /// <param name="injectionParameters">The parameters to inject.</param>
+    /// <remarks>
+    ///   <para>
+    /// Applications should call this when setting up the view model for complex operations and/or dependency injection. The constructor should only be used for simple set up and initialization of objects.
+    /// </para>
+    ///   <para>
+    /// This method is only ever called after the view model has been created, and never again during the lifetime of the view model.
+    /// </para>
+    /// </remarks>
+    protected override void OnInitialize(HostedPanelViewModelParameters injectionParameters)
+    {
+    }
+    #endregion
 }

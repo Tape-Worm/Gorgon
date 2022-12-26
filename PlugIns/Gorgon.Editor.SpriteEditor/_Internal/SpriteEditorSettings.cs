@@ -30,87 +30,86 @@ using Gorgon.Graphics;
 using Newtonsoft.Json;
 using DX = SharpDX;
 
-namespace Gorgon.Editor.SpriteEditor
+namespace Gorgon.Editor.SpriteEditor;
+
+/// <summary>
+/// The settings for the sprite importer plug in.
+/// </summary>
+internal class SpriteImportSettings
 {
     /// <summary>
-    /// The settings for the sprite importer plug in.
+    /// Property to return the list of additional sprite codec plug ins to load.
     /// </summary>
-    internal class SpriteImportSettings
+    [JsonProperty]
+    public Dictionary<string, string> CodecPlugInPaths
     {
-        /// <summary>
-        /// Property to return the list of additional sprite codec plug ins to load.
-        /// </summary>
-        [JsonProperty]
-        public Dictionary<string, string> CodecPlugInPaths
-        {
-            get;
-            private set;
-        } = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+        get;
+        private set;
+    } = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 
-        /// <summary>
-        /// Property to set or return the last codec plug in path.
-        /// </summary>
-        [JsonProperty]
-        public string LastCodecPlugInPath
-        {
-            get;
-            set;
-        }
+    /// <summary>
+    /// Property to set or return the last codec plug in path.
+    /// </summary>
+    [JsonProperty]
+    public string LastCodecPlugInPath
+    {
+        get;
+        set;
+    }
+}
+
+/// <summary>
+/// The settings for the sprite editor plug in.
+/// </summary>
+internal class SpriteEditorSettings
+{
+    /// <summary>
+    /// Property to set or return the position of the manual rectangle editor window.
+    /// </summary>
+    [JsonProperty]
+    public DX.Rectangle? ManualRectangleEditorBounds
+    {
+        get;
+        set;
     }
 
     /// <summary>
-    /// The settings for the sprite editor plug in.
+    /// Property to set or return the position of the manual vertex editor window.
     /// </summary>
-    internal class SpriteEditorSettings
+    [JsonProperty]
+    public DX.Rectangle? ManualVertexEditorBounds
     {
-        /// <summary>
-        /// Property to set or return the position of the manual rectangle editor window.
-        /// </summary>
-        [JsonProperty]
-        public DX.Rectangle? ManualRectangleEditorBounds
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// Property to set or return the position of the manual vertex editor window.
-        /// </summary>
-        [JsonProperty]
-        public DX.Rectangle? ManualVertexEditorBounds
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// Property to set or return whether to show a warning dialog for large images.
-        /// </summary>
-        [JsonProperty]
-        public bool ShowImageSizeWarning
-        {
-            get;
-            set;
-        } = true;
-
-        /// <summary>
-        /// Property to set or return the type of masking to perform when picking and clipping.
-        /// </summary>
-        [JsonProperty]
-        public ClipMask ClipMaskType
-        {
-            get;
-            set;
-        } = ClipMask.Alpha;
-
-        /// <summary>
-        /// Property to set or return the sprite picker mask color.
-        /// </summary>
-        [JsonProperty]
-        public int ClipMaskValue
-        {
-            get;
-            set;
-        } = new GorgonColor(1, 0, 1, 0).ToRGBA();
+        get;
+        set;
     }
+
+    /// <summary>
+    /// Property to set or return whether to show a warning dialog for large images.
+    /// </summary>
+    [JsonProperty]
+    public bool ShowImageSizeWarning
+    {
+        get;
+        set;
+    } = true;
+
+    /// <summary>
+    /// Property to set or return the type of masking to perform when picking and clipping.
+    /// </summary>
+    [JsonProperty]
+    public ClipMask ClipMaskType
+    {
+        get;
+        set;
+    } = ClipMask.Alpha;
+
+    /// <summary>
+    /// Property to set or return the sprite picker mask color.
+    /// </summary>
+    [JsonProperty]
+    public int ClipMaskValue
+    {
+        get;
+        set;
+    } = new GorgonColor(1, 0, 1, 0).ToRGBA();
 }

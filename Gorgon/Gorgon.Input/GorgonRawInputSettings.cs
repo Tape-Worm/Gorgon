@@ -25,39 +25,38 @@
 #endregion
 
 
-namespace Gorgon.Input
+namespace Gorgon.Input;
+
+/// <summary>
+/// Settings to pass to the <see cref="GorgonRawInput"/> interface.
+/// </summary>
+public struct GorgonRawInputSettings
 {
     /// <summary>
-    /// Settings to pass to the <see cref="GorgonRawInput"/> interface.
+    /// Flag to indicate whether to allow the application to receive raw input while in the background.
     /// </summary>
-    public struct GorgonRawInputSettings
-    {
-        /// <summary>
-        /// Flag to indicate whether to allow the application to receive raw input while in the background.
-        /// </summary>
-        /// <remarks>
-        /// <para>
-        /// When set to <b>true</b>, raw input messages will be sent to the application regardless of whether it is in the foreground or not, otherwise it will only receive messages 
-        /// while in the foreground.
-        /// </para>
-        /// <para>
-        /// This setting requires that the <see cref="TargetWindow"/> be set, if it is not, then the primary application window will be used.
-        /// </para>
-        /// </remarks>
-        public bool AllowBackground;
+    /// <remarks>
+    /// <para>
+    /// When set to <b>true</b>, raw input messages will be sent to the application regardless of whether it is in the foreground or not, otherwise it will only receive messages 
+    /// while in the foreground.
+    /// </para>
+    /// <para>
+    /// This setting requires that the <see cref="TargetWindow"/> be set, if it is not, then the primary application window will be used.
+    /// </para>
+    /// </remarks>
+    public bool AllowBackground;
 
-        /// <summary>
-        /// The target window handle for raw input messages.
-        /// </summary>
-        /// <remarks>
-        /// <para>
-        /// This is used to target Raw Input messages to a specific window in the application. If this value is left at <b>null</b>, then the messages will be sent to which ever 
-        /// window has keyboard focus in the application.
-        /// </para>
-        /// <para>
-        /// If the <see cref="AllowBackground"/> is set to <b>true</b>, then this value must be set.
-        /// </para>
-        /// </remarks>
-        public nint TargetWindow;
-    }
+    /// <summary>
+    /// The target window handle for raw input messages.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// This is used to target Raw Input messages to a specific window in the application. If this value is left at <b>null</b>, then the messages will be sent to which ever 
+    /// window has keyboard focus in the application.
+    /// </para>
+    /// <para>
+    /// If the <see cref="AllowBackground"/> is set to <b>true</b>, then this value must be set.
+    /// </para>
+    /// </remarks>
+    public nint TargetWindow;
 }

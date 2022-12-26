@@ -26,28 +26,27 @@
 
 using System.Collections.Generic;
 
-namespace Gorgon.Editor.UI
+namespace Gorgon.Editor.UI;
+
+/// <summary>
+/// Data used for drag and drop of a content file.
+/// </summary>
+public interface IContentFileDragData
 {
     /// <summary>
-    /// Data used for drag and drop of a content file.
+    /// Property to return the paths to the content files being dragged and dropped.
     /// </summary>
-    public interface IContentFileDragData
+    IReadOnlyList<string> FilePaths
     {
-        /// <summary>
-        /// Property to return the paths to the content files being dragged and dropped.
-        /// </summary>
-        IReadOnlyList<string> FilePaths
-        {
-            get;
-        }
+        get;
+    }
 
-        /// <summary>
-        /// Property to set or return whether to cancel the drag/drop operation.
-        /// </summary>
-        bool Cancel
-        {
-            get;
-            set;
-        }
+    /// <summary>
+    /// Property to set or return whether to cancel the drag/drop operation.
+    /// </summary>
+    bool Cancel
+    {
+        get;
+        set;
     }
 }

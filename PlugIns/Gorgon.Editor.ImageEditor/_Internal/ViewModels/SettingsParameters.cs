@@ -28,35 +28,34 @@ using System;
 using Gorgon.Editor.PlugIns;
 using Gorgon.Editor.UI;
 
-namespace Gorgon.Editor.ImageEditor
-{
-    /// <summary>
-    /// Parameters to pass to the <see cref="ISettings"/> view model.
-    /// </summary>
-    internal class SettingsParameters
-        : SettingsCategoryViewModelParameters
-    {
-        #region Properties.
-        /// <summary>
-        /// Property to return the settings for the image editor plugin.
-        /// </summary>
-        public ImageEditorSettings Settings
-        {
-            get;
-        }
-        #endregion
+namespace Gorgon.Editor.ImageEditor;
 
-        #region Constructor/Finalizer.
-        /// <summary>Initializes a new instance of the ImageContentVmParameters class.</summary>
-        /// <param name="settings">The settings for the image editor.</param>
-        /// <param name="codecs">The codecs loaded into the system.</param>
-        /// <param name="openCodecDialog">The file dialog used to locate codec assemblies.</param>
-        /// <param name="plugInCache">The cache for plug in assemblies.</param>
-        /// <param name="hostServices">Common application services.</param>
-        /// <exception cref="ArgumentNullException">Thrown when any of the parameters are <b>null</b>.</exception>
-        public SettingsParameters(ImageEditorSettings settings, IHostContentServices hostServices)            
-            : base(hostServices)
-            => Settings = settings ?? throw new ArgumentNullException(nameof(settings));
-        #endregion
+/// <summary>
+/// Parameters to pass to the <see cref="ISettings"/> view model.
+/// </summary>
+internal class SettingsParameters
+    : SettingsCategoryViewModelParameters
+{
+    #region Properties.
+    /// <summary>
+    /// Property to return the settings for the image editor plugin.
+    /// </summary>
+    public ImageEditorSettings Settings
+    {
+        get;
     }
+    #endregion
+
+    #region Constructor/Finalizer.
+    /// <summary>Initializes a new instance of the ImageContentVmParameters class.</summary>
+    /// <param name="settings">The settings for the image editor.</param>
+    /// <param name="codecs">The codecs loaded into the system.</param>
+    /// <param name="openCodecDialog">The file dialog used to locate codec assemblies.</param>
+    /// <param name="plugInCache">The cache for plug in assemblies.</param>
+    /// <param name="hostServices">Common application services.</param>
+    /// <exception cref="ArgumentNullException">Thrown when any of the parameters are <b>null</b>.</exception>
+    public SettingsParameters(ImageEditorSettings settings, IHostContentServices hostServices)            
+        : base(hostServices)
+        => Settings = settings ?? throw new ArgumentNullException(nameof(settings));
+    #endregion
 }

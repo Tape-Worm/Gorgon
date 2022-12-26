@@ -32,29 +32,28 @@ using System.Text;
 using System.Threading.Tasks;
 using Gorgon.Editor.UI;
 
-namespace Gorgon.Editor.FontEditor
+namespace Gorgon.Editor.FontEditor;
+
+/// <summary>
+/// The view model for the font character selection view.
+/// </summary>
+internal interface IFontCharacterSelection
+    : IHostedPanelViewModel
 {
     /// <summary>
-    /// The view model for the font character selection view.
+    /// Property to set or return the characters to use as the font glyphs.
     /// </summary>
-    internal interface IFontCharacterSelection
-        : IHostedPanelViewModel
+    IEnumerable<char> Characters
     {
-        /// <summary>
-        /// Property to set or return the characters to use as the font glyphs.
-        /// </summary>
-        IEnumerable<char> Characters
-        {
-            get;
-            set;
-        }
+        get;
+        set;
+    }
 
-        /// <summary>
-        /// Property to return the current font.
-        /// </summary>
-        Drawing.Font CurrentFont
-        {
-            get;
-        }
+    /// <summary>
+    /// Property to return the current font.
+    /// </summary>
+    Drawing.Font CurrentFont
+    {
+        get;
     }
 }

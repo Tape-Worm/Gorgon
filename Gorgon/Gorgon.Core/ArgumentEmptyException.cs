@@ -28,45 +28,44 @@ using System;
 using System.Runtime.Serialization;
 using Gorgon.Properties;
 
-namespace Gorgon.Core
+namespace Gorgon.Core;
+
+/// <summary>
+/// An exception that should be thrown when a non-null parameter (e.g. <see cref="string"/>) requires a value, and does not.  
+/// </summary>
+[Serializable]
+public class ArgumentEmptyException
+    : ArgumentException
 {
     /// <summary>
-    /// An exception that should be thrown when a non-null parameter (e.g. <see cref="string"/>) requires a value, and does not.  
+    /// Initializes a new instance of the <see cref="ArgumentEmptyException"/> class.
     /// </summary>
-    [Serializable]
-    public class ArgumentEmptyException
-        : ArgumentException
+    /// <param name="parameterName">The name of the parameter that caused the exception.</param>
+    public ArgumentEmptyException(string parameterName)
+        : base(Resources.GOR_ERR_PARAMETER_MUST_NOT_BE_EMPTY, parameterName)
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ArgumentEmptyException"/> class.
-        /// </summary>
-        /// <param name="parameterName">The name of the parameter that caused the exception.</param>
-        public ArgumentEmptyException(string parameterName)
-            : base(Resources.GOR_ERR_PARAMETER_MUST_NOT_BE_EMPTY, parameterName)
-        {
 
-        }
+    }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ArgumentEmptyException"/> class.
-        /// </summary>
-        /// <param name="parameterName">The name of the parameter that caused the exception.</param>
-        /// <param name="innerException">The inner exception for this exception.</param>
-        public ArgumentEmptyException(string parameterName, Exception innerException)
-            : base(Resources.GOR_ERR_PARAMETER_MUST_NOT_BE_EMPTY, parameterName, innerException)
-        {
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ArgumentEmptyException"/> class.
+    /// </summary>
+    /// <param name="parameterName">The name of the parameter that caused the exception.</param>
+    /// <param name="innerException">The inner exception for this exception.</param>
+    public ArgumentEmptyException(string parameterName, Exception innerException)
+        : base(Resources.GOR_ERR_PARAMETER_MUST_NOT_BE_EMPTY, parameterName, innerException)
+    {
 
-        }
+    }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ArgumentEmptyException"/> class.
-        /// </summary>
-        /// <param name="info">The object that holds the serialized object data.</param>
-        /// <param name="context">The contextual information about the source or destination.</param>
-        protected ArgumentEmptyException(SerializationInfo info, StreamingContext context)
-            : base(info, context)
-        {
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ArgumentEmptyException"/> class.
+    /// </summary>
+    /// <param name="info">The object that holds the serialized object data.</param>
+    /// <param name="context">The contextual information about the source or destination.</param>
+    protected ArgumentEmptyException(SerializationInfo info, StreamingContext context)
+        : base(info, context)
+    {
 
-        }
     }
 }

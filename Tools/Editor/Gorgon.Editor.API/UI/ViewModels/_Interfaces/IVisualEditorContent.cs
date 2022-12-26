@@ -26,32 +26,31 @@
 
 using Gorgon.Editor.UI.Views;
 
-namespace Gorgon.Editor.UI
+namespace Gorgon.Editor.UI;
+
+/// <summary>
+/// The view model for a visual content editor.
+/// </summary>
+/// <remarks>
+/// <para>
+/// When implementing a view model for a <see cref="VisualContentBaseControl"/>, the class must implement this interface to represent content data.
+/// </para>
+/// </remarks>
+public interface IVisualEditorContent
+    : IEditorContent, IUndoHandler
 {
     /// <summary>
-    /// The view model for a visual content editor.
+    /// Property to set or return the currently active hosted panel.
     /// </summary>
     /// <remarks>
     /// <para>
-    /// When implementing a view model for a <see cref="VisualContentBaseControl"/>, the class must implement this interface to represent content data.
+    /// This property holds the view model for the currently active hosted panel which can be used for parameters for an operation on the content. Setting this value will bring the panel up on the UI and 
+    /// setting it to <b>null</b> will remove it.
     /// </para>
     /// </remarks>
-    public interface IVisualEditorContent
-        : IEditorContent, IUndoHandler
+    IHostedPanelViewModel CurrentPanel
     {
-        /// <summary>
-        /// Property to set or return the currently active hosted panel.
-        /// </summary>
-        /// <remarks>
-        /// <para>
-        /// This property holds the view model for the currently active hosted panel which can be used for parameters for an operation on the content. Setting this value will bring the panel up on the UI and 
-        /// setting it to <b>null</b> will remove it.
-        /// </para>
-        /// </remarks>
-        IHostedPanelViewModel CurrentPanel
-        {
-            get;
-            set;
-        }
+        get;
+        set;
     }
 }

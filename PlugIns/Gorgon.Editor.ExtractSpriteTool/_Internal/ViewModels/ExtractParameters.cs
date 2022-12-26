@@ -30,61 +30,60 @@ using Gorgon.Editor.PlugIns;
 using Gorgon.Editor.Services;
 using Gorgon.Editor.UI.ViewModels;
 
-namespace Gorgon.Editor.ExtractSpriteTool
+namespace Gorgon.Editor.ExtractSpriteTool;
+
+/// <summary>
+/// Parameters for the <see cref="IExtract"/> view model.
+/// </summary>
+internal class ExtractParameters
+    : EditorToolViewModelInjection
 {
     /// <summary>
-    /// Parameters for the <see cref="IExtract"/> view model.
+    /// Property to return the data used for extraction.
     /// </summary>
-    internal class ExtractParameters
-        : EditorToolViewModelInjection
+    public SpriteExtractionData ExtractionData
     {
-        /// <summary>
-        /// Property to return the data used for extraction.
-        /// </summary>
-        public SpriteExtractionData ExtractionData
-        {
-            get;
-        }
+        get;
+    }
 
-        /// <summary>
-        /// Property to return the settings for the plug in.
-        /// </summary>
-        public ExtractSpriteToolSettings Settings
-        {
-            get;
-        }
+    /// <summary>
+    /// Property to return the settings for the plug in.
+    /// </summary>
+    public ExtractSpriteToolSettings Settings
+    {
+        get;
+    }
 
-        /// <summary>
-        /// Property to return the sprite extractor service used to create the sprites.
-        /// </summary>
-        public ISpriteExtractorService Extractor
-        {
-            get;
-        }
+    /// <summary>
+    /// Property to return the sprite extractor service used to create the sprites.
+    /// </summary>
+    public ISpriteExtractorService Extractor
+    {
+        get;
+    }
 
-        /// <summary>
-        /// Property to return the file that contains the texture to extract from.
-        /// </summary>
-        public IContentFile TextureFile
-        {
-            get;
-        }
+    /// <summary>
+    /// Property to return the file that contains the texture to extract from.
+    /// </summary>
+    public IContentFile TextureFile
+    {
+        get;
+    }
 
-        /// <summary>Initializes a new instance of the <see cref="ExtractParameters"/> class.</summary>
-        /// <param name="settings">The plug in settings.</param>
-        /// <param name="extractData">The data used for extraction.</param>
-        /// <param name="extractor">The sprite extractor service used to create the sprites.</param>
-        /// <param name="textureFile">The file that contains the texture to extract from.</param>
-        /// <param name="fileManager">The file manager for the project file system.</param>
-        /// <param name="toolServices">The common tool services from the host application.</param>
-        /// <exception cref="ArgumentNullException">Thrown when any of the parameters are <b>null</b>.</exception>
-        public ExtractParameters(ExtractSpriteToolSettings settings, SpriteExtractionData extractData, ISpriteExtractorService extractor, IContentFile textureFile, IContentFileManager fileManager, IHostContentServices toolServices)
-            : base(fileManager, toolServices)
-        {
-            Settings = settings ?? throw new ArgumentNullException(nameof(settings));
-            ExtractionData = extractData ?? throw new ArgumentNullException(nameof(extractData));
-            Extractor = extractor ?? throw new ArgumentNullException(nameof(extractor));
-            TextureFile = textureFile ?? throw new ArgumentNullException(nameof(textureFile));
-        }
+    /// <summary>Initializes a new instance of the <see cref="ExtractParameters"/> class.</summary>
+    /// <param name="settings">The plug in settings.</param>
+    /// <param name="extractData">The data used for extraction.</param>
+    /// <param name="extractor">The sprite extractor service used to create the sprites.</param>
+    /// <param name="textureFile">The file that contains the texture to extract from.</param>
+    /// <param name="fileManager">The file manager for the project file system.</param>
+    /// <param name="toolServices">The common tool services from the host application.</param>
+    /// <exception cref="ArgumentNullException">Thrown when any of the parameters are <b>null</b>.</exception>
+    public ExtractParameters(ExtractSpriteToolSettings settings, SpriteExtractionData extractData, ISpriteExtractorService extractor, IContentFile textureFile, IContentFileManager fileManager, IHostContentServices toolServices)
+        : base(fileManager, toolServices)
+    {
+        Settings = settings ?? throw new ArgumentNullException(nameof(settings));
+        ExtractionData = extractData ?? throw new ArgumentNullException(nameof(extractData));
+        Extractor = extractor ?? throw new ArgumentNullException(nameof(extractor));
+        TextureFile = textureFile ?? throw new ArgumentNullException(nameof(textureFile));
     }
 }

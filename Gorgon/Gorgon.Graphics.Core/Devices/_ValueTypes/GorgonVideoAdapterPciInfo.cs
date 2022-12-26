@@ -24,50 +24,49 @@
 // 
 #endregion
 
-namespace Gorgon.Graphics.Core
+namespace Gorgon.Graphics.Core;
+
+/// <summary>
+/// PCI slot information for a <see cref="IGorgonVideoAdapterInfo"/>.
+/// </summary>
+public readonly struct GorgonVideoAdapterPciInfo
 {
+    #region Variables.
     /// <summary>
-    /// PCI slot information for a <see cref="IGorgonVideoAdapterInfo"/>.
+    /// The PCI device ID for the adapter.
     /// </summary>
-    public readonly struct GorgonVideoAdapterPciInfo
+    public readonly int DeviceID;
+
+    /// <summary>
+    /// The PCI ID revision number for the adapter.
+    /// </summary>
+    public readonly int Revision;
+
+    /// <summary>
+    /// The PCI sub system ID for the adapter.
+    /// </summary>
+    public readonly int SubSystemID;
+
+    /// <summary>
+    /// The PCI vendor ID for the adapter.
+    /// </summary>
+    public readonly int VendorID;
+    #endregion
+
+    #region Constructor/Finalizer.
+    /// <summary>
+    /// Initializes a new instance of the <see cref="GorgonVideoAdapterPciInfo"/> struct.
+    /// </summary>
+    /// <param name="deviceID">The device identifier.</param>
+    /// <param name="revision">The revision of the device.</param>
+    /// <param name="subsystemID">The subsystem identifier.</param>
+    /// <param name="vendorID">The vendor identifier.</param>
+    internal GorgonVideoAdapterPciInfo(int deviceID, int revision, int subsystemID, int vendorID)
     {
-        #region Variables.
-        /// <summary>
-        /// The PCI device ID for the adapter.
-        /// </summary>
-        public readonly int DeviceID;
-
-        /// <summary>
-        /// The PCI ID revision number for the adapter.
-        /// </summary>
-        public readonly int Revision;
-
-        /// <summary>
-        /// The PCI sub system ID for the adapter.
-        /// </summary>
-        public readonly int SubSystemID;
-
-        /// <summary>
-        /// The PCI vendor ID for the adapter.
-        /// </summary>
-        public readonly int VendorID;
-        #endregion
-
-        #region Constructor/Finalizer.
-        /// <summary>
-        /// Initializes a new instance of the <see cref="GorgonVideoAdapterPciInfo"/> struct.
-        /// </summary>
-        /// <param name="deviceID">The device identifier.</param>
-        /// <param name="revision">The revision of the device.</param>
-        /// <param name="subsystemID">The subsystem identifier.</param>
-        /// <param name="vendorID">The vendor identifier.</param>
-        internal GorgonVideoAdapterPciInfo(int deviceID, int revision, int subsystemID, int vendorID)
-        {
-            DeviceID = deviceID;
-            Revision = revision;
-            SubSystemID = subsystemID;
-            VendorID = vendorID;
-        }
-        #endregion
+        DeviceID = deviceID;
+        Revision = revision;
+        SubSystemID = subsystemID;
+        VendorID = vendorID;
     }
+    #endregion
 }

@@ -31,72 +31,71 @@ using Gorgon.Collections;
 using Gorgon.Math;
 using D3D11 = SharpDX.Direct3D11;
 
-namespace Gorgon.Graphics.Core
+namespace Gorgon.Graphics.Core;
+
+/// <summary>
+/// A list of shader resource views to apply to the pipeline.
+/// </summary>
+/// <remarks>
+/// <para>
+/// The shader resource view list is used to bind resources like textures and structured buffers to the GPU pipeline so that shaders can make use of them.
+/// </para>
+/// <para>
+/// If a resource being bound is bound to the <see cref="GorgonGraphics.RenderTargets"/> list, then the render target view will be unbound from the pipeline and rebound as a shader resource. This is
+/// because the render target cannot be used as a shader resource and a render target at the same time.
+/// </para>
+/// </remarks>
+public sealed class GorgonShaderResourceViews
+    : GorgonArray<GorgonShaderResourceView>
 {
+    #region Constants.
     /// <summary>
-    /// A list of shader resource views to apply to the pipeline.
+    /// The maximum size for a shader resource view binding list.
     /// </summary>
-    /// <remarks>
-    /// <para>
-    /// The shader resource view list is used to bind resources like textures and structured buffers to the GPU pipeline so that shaders can make use of them.
-    /// </para>
-    /// <para>
-    /// If a resource being bound is bound to the <see cref="GorgonGraphics.RenderTargets"/> list, then the render target view will be unbound from the pipeline and rebound as a shader resource. This is
-    /// because the render target cannot be used as a shader resource and a render target at the same time.
-    /// </para>
-    /// </remarks>
-    public sealed class GorgonShaderResourceViews
-        : GorgonArray<GorgonShaderResourceView>
+    public const int MaximumShaderResourceViewCount = 64;
+    #endregion
+
+    #region Properties.
+    /// <summary>
+    /// Property to return the native buffers.
+    /// </summary>
+    internal D3D11.ShaderResourceView[] Native
     {
-        #region Constants.
-        /// <summary>
-        /// The maximum size for a shader resource view binding list.
-        /// </summary>
-        public const int MaximumShaderResourceViewCount = 64;
-        #endregion
+        get;
+    } = new D3D11.ShaderResourceView[MaximumShaderResourceViewCount];
+    #endregion
 
-        #region Properties.
-        /// <summary>
-        /// Property to return the native buffers.
-        /// </summary>
-        internal D3D11.ShaderResourceView[] Native
+    #region Methods.
+    /// <summary>
+    /// Function called when a dirty item is found and added.
+    /// </summary>
+    /// <param name="dirtyIndex">The index that is considered dirty.</param>
+    /// <param name="value">The dirty value.</param>
+    protected override void OnAssignDirtyItem(int dirtyIndex, GorgonShaderResourceView value) => Native[dirtyIndex] = value?.Native;
+
+    /// <summary>
+    /// Function called when the array is cleared.
+    /// </summary>
+    protected override void OnClear() => Array.Clear(Native, 0, Native.Length);
+    #endregion
+
+    #region Constructor
+    /// <summary>
+    /// Initializes a new instance of the <see cref="GorgonShaderResourceViews"/> class.
+    /// </summary>
+    /// <param name="bufferViews">[Optional] A list of buffer views to copy into the the list.</param>
+    public GorgonShaderResourceViews(IReadOnlyList<GorgonShaderResourceView> bufferViews = null)
+        : base(MaximumShaderResourceViewCount)
+    {
+        if (bufferViews is null)
         {
-            get;
-        } = new D3D11.ShaderResourceView[MaximumShaderResourceViewCount];
-        #endregion
-
-        #region Methods.
-        /// <summary>
-        /// Function called when a dirty item is found and added.
-        /// </summary>
-        /// <param name="dirtyIndex">The index that is considered dirty.</param>
-        /// <param name="value">The dirty value.</param>
-        protected override void OnAssignDirtyItem(int dirtyIndex, GorgonShaderResourceView value) => Native[dirtyIndex] = value?.Native;
-
-        /// <summary>
-        /// Function called when the array is cleared.
-        /// </summary>
-        protected override void OnClear() => Array.Clear(Native, 0, Native.Length);
-        #endregion
-
-        #region Constructor
-        /// <summary>
-        /// Initializes a new instance of the <see cref="GorgonShaderResourceViews"/> class.
-        /// </summary>
-        /// <param name="bufferViews">[Optional] A list of buffer views to copy into the the list.</param>
-        public GorgonShaderResourceViews(IReadOnlyList<GorgonShaderResourceView> bufferViews = null)
-            : base(MaximumShaderResourceViewCount)
-        {
-            if (bufferViews is null)
-            {
-                return;
-            }
-
-            for (int i = 0; i < bufferViews.Count.Min(Length); ++i)
-            {
-                this[i] = bufferViews[i];
-            }
+            return;
         }
-        #endregion
+
+        for (int i = 0; i < bufferViews.Count.Min(Length); ++i)
+        {
+            this[i] = bufferViews[i];
+        }
     }
+    #endregion
 }

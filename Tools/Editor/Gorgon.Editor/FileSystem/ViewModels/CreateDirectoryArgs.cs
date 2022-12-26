@@ -26,38 +26,37 @@
 
 using Gorgon.Editor.Properties;
 
-namespace Gorgon.Editor.ViewModels
+namespace Gorgon.Editor.ViewModels;
+
+/// <summary>
+/// Arguments for the <see cref="IFileExplorer.CreateDirectoryCommand"/>.
+/// </summary>
+internal class CreateDirectoryArgs
 {
     /// <summary>
-    /// Arguments for the <see cref="IFileExplorer.CreateDirectoryCommand"/>.
+    /// Property to return the original name of the directory.
     /// </summary>
-    internal class CreateDirectoryArgs
+    public string Name
     {
-        /// <summary>
-        /// Property to return the original name of the directory.
-        /// </summary>
-        public string Name
-        {
-            get;
-            set;
-        } = Resources.GOREDIT_NEW_DIR_NAME;
+        get;
+        set;
+    } = Resources.GOREDIT_NEW_DIR_NAME;
 
-        /// <summary>
-        /// Property to set or return the parent for the directory.
-        /// </summary>
-        public IDirectory ParentDirectory
-        {
-            get;
-            set;
-        }
+    /// <summary>
+    /// Property to set or return the parent for the directory.
+    /// </summary>
+    public IDirectory ParentDirectory
+    {
+        get;
+        set;
+    }
 
-        /// <summary>
-        /// Property to set or return the directory that was created.
-        /// </summary>
-        public IDirectory Directory
-        {
-            get;
-            set;
-        }
+    /// <summary>
+    /// Property to set or return the directory that was created.
+    /// </summary>
+    public IDirectory Directory
+    {
+        get;
+        set;
     }
 }

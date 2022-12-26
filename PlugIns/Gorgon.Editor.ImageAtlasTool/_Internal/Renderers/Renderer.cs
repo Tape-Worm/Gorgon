@@ -34,12 +34,12 @@ using Gorgon.Renderers;
 using Gorgon.Renderers.Cameras;
 using DX = SharpDX;
 
-namespace Gorgon.Editor.ImageAtlasTool
-{
-    /// <summary>
-    /// The renderer used to draw the texture and sprites.
-    /// </summary>
-    internal class Renderer
+namespace Gorgon.Editor.ImageAtlasTool;
+
+/// <summary>
+/// The renderer used to draw the texture and sprites.
+/// </summary>
+internal class Renderer
 		: DefaultToolRenderer<IImageAtlas>
 	{
 		#region Variables.
@@ -53,8 +53,8 @@ namespace Gorgon.Editor.ImageAtlasTool
 
 		#region Methods.
 		/// <summary>
-        /// Function to build a texture for the current image.
-        /// </summary>
+    /// Function to build a texture for the current image.
+    /// </summary>
 		private void GetTexture()
 		{
 			_texture?.Dispose();
@@ -89,15 +89,15 @@ namespace Gorgon.Editor.ImageAtlasTool
 		}
 
 		/// <summary>
-        /// Function to draw the selected image.
-        /// </summary>
+    /// Function to draw the selected image.
+    /// </summary>
 		private void DrawImage()
 		{
 			string text = DataContext.CurrentImage.file?.Name ?? string.Empty;
 			DX.Size2F textSize = text.MeasureText(Renderer.DefaultFont, false);
 
 			float scale = CalculateScaling(new DX.Size2F(_texture.Width + 8, _texture.Height + 8), new DX.Size2F(MainRenderTarget.Width, MainRenderTarget.Height));
-            DX.Size2F size = new DX.Size2F(scale * _texture.Width, scale * _texture.Height).Truncate();
+        DX.Size2F size = new DX.Size2F(scale * _texture.Width, scale * _texture.Height).Truncate();
 			Vector2 position = new Vector2(-size.Width * 0.5f, -size.Height * 0.5f).Truncate();
 
 			Renderer.Begin(camera: _camera);
@@ -142,9 +142,9 @@ namespace Gorgon.Editor.ImageAtlasTool
 			}
 		}
 
-        /// <summary>Function to render the content.</summary>
-        /// <remarks>This is the method that developers should override in order to draw their content to the view.</remarks>
-        protected override void OnRenderContent()
+    /// <summary>Function to render the content.</summary>
+    /// <remarks>This is the method that developers should override in order to draw their content to the view.</remarks>
+    protected override void OnRenderContent()
 		{            
 			OnRenderBackground();
 
@@ -174,10 +174,10 @@ namespace Gorgon.Editor.ImageAtlasTool
 			Renderer.End();
 		}
 
-        /// <summary>Releases unmanaged and - optionally - managed resources.</summary>
-        /// <param name="disposing">
-        ///   <c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
-        protected override void Dispose(bool disposing)
+    /// <summary>Releases unmanaged and - optionally - managed resources.</summary>
+    /// <param name="disposing">
+    ///   <c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
+    protected override void Dispose(bool disposing)
 		{
 			if (disposing)
 			{
@@ -187,12 +187,12 @@ namespace Gorgon.Editor.ImageAtlasTool
 			base.Dispose(disposing);
 		}
 
-        /// <summary>Function called when the renderer needs to load any resource data.</summary>
-        /// <remarks>
-        /// Developers can override this method to set up their own resources specific to their renderer. Any resources set up in this method should be cleaned up in the associated
-        /// <see cref="DefaultToolRenderer{T}.OnUnload"/> method.
-        /// </remarks>
-        protected override void OnLoad() 
+    /// <summary>Function called when the renderer needs to load any resource data.</summary>
+    /// <remarks>
+    /// Developers can override this method to set up their own resources specific to their renderer. Any resources set up in this method should be cleaned up in the associated
+    /// <see cref="DefaultToolRenderer{T}.OnUnload"/> method.
+    /// </remarks>
+    protected override void OnLoad() 
 		{
 			base.OnLoad();
 
@@ -224,4 +224,3 @@ namespace Gorgon.Editor.ImageAtlasTool
 		}
 		#endregion
 	}
-}

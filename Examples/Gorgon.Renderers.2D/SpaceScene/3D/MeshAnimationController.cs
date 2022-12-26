@@ -30,97 +30,96 @@ using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using DX = SharpDX;
 
-namespace Gorgon.Examples
+namespace Gorgon.Examples;
+
+/// <summary>
+/// An animation controller for animating our 3D entitis.
+/// </summary>
+/// <remarks>
+/// <para>
+/// This shows how we can use Gorgon's animation system with a 3D object. By overriding the methods and telling the controller which property or properties to update, the system will continuously 
+/// update the object with each call to the Update method.
+/// </para>
+/// </remarks>
+internal class MeshAnimationController
+    : GorgonAnimationController<MoveableMesh>
 {
-    /// <summary>
-    /// An animation controller for animating our 3D entitis.
-    /// </summary>
-    /// <remarks>
-    /// <para>
-    /// This shows how we can use Gorgon's animation system with a 3D object. By overriding the methods and telling the controller which property or properties to update, the system will continuously 
-    /// update the object with each call to the Update method.
-    /// </para>
-    /// </remarks>
-    internal class MeshAnimationController
-        : GorgonAnimationController<MoveableMesh>
+    // Track used for rotating the mesh.
+    private static readonly GorgonTrackRegistration _rotationTrack = new("Rotation", null, AnimationTrackKeyType.Vector3);
+
+    /// <summary>Function called when a texture needs to be updated on the object.</summary>
+    /// <param name="track">The track currently being processed.</param>
+    /// <param name="animObject">The object to update.</param>
+    /// <param name="texture">The texture to switch to.</param>
+    /// <param name="textureCoordinates">The new texture coordinates to apply.</param>
+    /// <param name="textureArrayIndex">The texture array index.</param>
+    protected override void OnTexture2DUpdate(GorgonTrackRegistration track, MoveableMesh animObject, GorgonTexture2DView texture, DX.RectangleF textureCoordinates, int textureArrayIndex)
     {
-        // Track used for rotating the mesh.
-        private static readonly GorgonTrackRegistration _rotationTrack = new("Rotation", null, AnimationTrackKeyType.Vector3);
-
-        /// <summary>Function called when a texture needs to be updated on the object.</summary>
-        /// <param name="track">The track currently being processed.</param>
-        /// <param name="animObject">The object to update.</param>
-        /// <param name="texture">The texture to switch to.</param>
-        /// <param name="textureCoordinates">The new texture coordinates to apply.</param>
-        /// <param name="textureArrayIndex">The texture array index.</param>
-        protected override void OnTexture2DUpdate(GorgonTrackRegistration track, MoveableMesh animObject, GorgonTexture2DView texture, DX.RectangleF textureCoordinates, int textureArrayIndex)
-        {
-        }
-
-        /// <summary>Function called when a 2D vector value needs to be updated on the animated object.</summary>
-        /// <param name="track">The track currently being processed.</param>
-        /// <param name="animObject">The object to update.</param>
-        /// <param name="value">The value to apply.</param>
-        protected override void OnVector2ValueUpdate(GorgonTrackRegistration track, MoveableMesh animObject, Vector2 value)
-        {
-        }
-
-        /// <summary>Function called when a 3D vector value needs to be updated on the animated object.</summary>
-        /// <param name="track">The track currently being processed.</param>
-        /// <param name="animObject">The object to update.</param>
-        /// <param name="value">The value to apply.</param>
-        protected override void OnVector3ValueUpdate(GorgonTrackRegistration track, MoveableMesh animObject, Vector3 value)
-        {
-            // Check the track ID against the registered ID. This will avoid updating the wrong property while the animation is running.
-            if (track.ID != _rotationTrack.ID)
-            {
-                return;
-            }
-            
-            animObject.Rotation = value;
-        }
-
-        /// <summary>Function called when a 4D vector value needs to be updated on the animated object.</summary>
-        /// <param name="track">The track currently being processed.</param>
-        /// <param name="animObject">The object to update.</param>
-        /// <param name="value">The value to apply.</param>
-        protected override void OnVector4ValueUpdate(GorgonTrackRegistration track, MoveableMesh animObject, Vector4 value)
-        {
-        }
-
-        /// <summary>Function called when a <see cref="GorgonColor"/> value needs to be updated on the animated object.</summary>
-        /// <param name="track">The track currently being processed.</param>
-        /// <param name="animObject">The object to update.</param>
-        /// <param name="value">The value to apply.</param>
-        protected override void OnColorUpdate(GorgonTrackRegistration track, MoveableMesh animObject, GorgonColor value)
-        {        
-        }
-
-        /// <summary>Function called when a SharpDX <c>RectangleF</c> value needs to be updated on the animated object.</summary>
-        /// <param name="track">The track currently being processed.</param>
-        /// <param name="animObject">The object to update.</param>
-        /// <param name="value">The value to apply.</param>
-        protected override void OnRectangleUpdate(GorgonTrackRegistration track, MoveableMesh animObject, DX.RectangleF value)
-        {        
-        }
-
-        /// <summary>Function called when a single floating point value needs to be updated on the animated object.</summary>
-        /// <param name="track">The track currently being processed.</param>
-        /// <param name="animObject">The object to update.</param>
-        /// <param name="value">The value to apply.</param>
-        protected override void OnSingleValueUpdate(GorgonTrackRegistration track, MoveableMesh animObject, float value)
-        {
-        }
-
-        /// <summary>Function called when a Quaternion value needs to be updated on the animated object.</summary>
-        /// <param name="track">The track currently being processed.</param>
-        /// <param name="animObject">The object to update.</param>
-        /// <param name="value">The value to apply.</param>
-        protected override void OnQuaternionValueUpdate(GorgonTrackRegistration track, MoveableMesh animObject, Quaternion value)
-        {
-        }
-
-        /// <summary>Initializes a new instance of the <see cref="MeshAnimationController"/> class.</summary>
-        public MeshAnimationController() => RegisterTrack(_rotationTrack);
     }
+
+    /// <summary>Function called when a 2D vector value needs to be updated on the animated object.</summary>
+    /// <param name="track">The track currently being processed.</param>
+    /// <param name="animObject">The object to update.</param>
+    /// <param name="value">The value to apply.</param>
+    protected override void OnVector2ValueUpdate(GorgonTrackRegistration track, MoveableMesh animObject, Vector2 value)
+    {
+    }
+
+    /// <summary>Function called when a 3D vector value needs to be updated on the animated object.</summary>
+    /// <param name="track">The track currently being processed.</param>
+    /// <param name="animObject">The object to update.</param>
+    /// <param name="value">The value to apply.</param>
+    protected override void OnVector3ValueUpdate(GorgonTrackRegistration track, MoveableMesh animObject, Vector3 value)
+    {
+        // Check the track ID against the registered ID. This will avoid updating the wrong property while the animation is running.
+        if (track.ID != _rotationTrack.ID)
+        {
+            return;
+        }
+        
+        animObject.Rotation = value;
+    }
+
+    /// <summary>Function called when a 4D vector value needs to be updated on the animated object.</summary>
+    /// <param name="track">The track currently being processed.</param>
+    /// <param name="animObject">The object to update.</param>
+    /// <param name="value">The value to apply.</param>
+    protected override void OnVector4ValueUpdate(GorgonTrackRegistration track, MoveableMesh animObject, Vector4 value)
+    {
+    }
+
+    /// <summary>Function called when a <see cref="GorgonColor"/> value needs to be updated on the animated object.</summary>
+    /// <param name="track">The track currently being processed.</param>
+    /// <param name="animObject">The object to update.</param>
+    /// <param name="value">The value to apply.</param>
+    protected override void OnColorUpdate(GorgonTrackRegistration track, MoveableMesh animObject, GorgonColor value)
+    {        
+    }
+
+    /// <summary>Function called when a SharpDX <c>RectangleF</c> value needs to be updated on the animated object.</summary>
+    /// <param name="track">The track currently being processed.</param>
+    /// <param name="animObject">The object to update.</param>
+    /// <param name="value">The value to apply.</param>
+    protected override void OnRectangleUpdate(GorgonTrackRegistration track, MoveableMesh animObject, DX.RectangleF value)
+    {        
+    }
+
+    /// <summary>Function called when a single floating point value needs to be updated on the animated object.</summary>
+    /// <param name="track">The track currently being processed.</param>
+    /// <param name="animObject">The object to update.</param>
+    /// <param name="value">The value to apply.</param>
+    protected override void OnSingleValueUpdate(GorgonTrackRegistration track, MoveableMesh animObject, float value)
+    {
+    }
+
+    /// <summary>Function called when a Quaternion value needs to be updated on the animated object.</summary>
+    /// <param name="track">The track currently being processed.</param>
+    /// <param name="animObject">The object to update.</param>
+    /// <param name="value">The value to apply.</param>
+    protected override void OnQuaternionValueUpdate(GorgonTrackRegistration track, MoveableMesh animObject, Quaternion value)
+    {
+    }
+
+    /// <summary>Initializes a new instance of the <see cref="MeshAnimationController"/> class.</summary>
+    public MeshAnimationController() => RegisterTrack(_rotationTrack);
 }

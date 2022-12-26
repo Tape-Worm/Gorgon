@@ -26,30 +26,29 @@
 
 using SharpDX.Direct3D11;
 
-namespace Gorgon.Graphics.Core
+namespace Gorgon.Graphics.Core;
+
+/// <summary>
+/// Defines how a triangle primitive should be culled from rendering.
+/// </summary>
+public enum CullingMode
 {
     /// <summary>
-    /// Defines how a triangle primitive should be culled from rendering.
+    /// <para>
+    /// Always draw all triangles.
+    /// </para>
     /// </summary>
-    public enum CullingMode
-    {
-        /// <summary>
-        /// <para>
-        /// Always draw all triangles.
-        /// </para>
-        /// </summary>
-        None = CullMode.None,
-        /// <summary>
-        /// <para>
-        /// Do not draw triangles that are front-facing.
-        /// </para>
-        /// </summary>
-        Front = CullMode.Front,
-        /// <summary>
-        /// <para>
-        /// Do not draw triangles that are back-facing.
-        /// </para>
-        /// </summary>
-        Back = CullMode.Back
-    }
+    None = CullMode.None,
+    /// <summary>
+    /// <para>
+    /// Do not draw triangles that are front-facing.
+    /// </para>
+    /// </summary>
+    Front = CullMode.Front,
+    /// <summary>
+    /// <para>
+    /// Do not draw triangles that are back-facing.
+    /// </para>
+    /// </summary>
+    Back = CullMode.Back
 }

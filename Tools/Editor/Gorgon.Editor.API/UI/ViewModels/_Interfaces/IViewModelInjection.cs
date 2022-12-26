@@ -26,28 +26,27 @@
 
 using Gorgon.Editor.PlugIns;
 
-namespace Gorgon.Editor.UI
+namespace Gorgon.Editor.UI;
+
+/// <summary>
+/// This object is used to inject common host application services into view models as parameters.
+/// </summary>
+/// <typeparam name="T">The type of host services. Must implement <see cref="IHostServices"/>.</typeparam>
+/// <remarks>
+/// <para>
+/// When creating view models, developers should pass custom data used for initialization by inheriting this type. For content, settings, etc... or other built in view model types, there are other 
+/// base classes for the parameters that should be used.
+/// </para>
+/// </remarks>
+/// <seealso cref="IHostServices"/>
+public interface IViewModelInjection<out T>
+    where T : IHostServices
 {
     /// <summary>
-    /// This object is used to inject common host application services into view models as parameters.
+    /// Property to return the common services passed from host application.
     /// </summary>
-    /// <typeparam name="T">The type of host services. Must implement <see cref="IHostServices"/>.</typeparam>
-    /// <remarks>
-    /// <para>
-    /// When creating view models, developers should pass custom data used for initialization by inheriting this type. For content, settings, etc... or other built in view model types, there are other 
-    /// base classes for the parameters that should be used.
-    /// </para>
-    /// </remarks>
-    /// <seealso cref="IHostServices"/>
-    public interface IViewModelInjection<out T>
-        where T : IHostServices
+    T HostServices
     {
-        /// <summary>
-        /// Property to return the common services passed from host application.
-        /// </summary>
-        T HostServices
-        {
-            get;
-        }
+        get;
     }
 }

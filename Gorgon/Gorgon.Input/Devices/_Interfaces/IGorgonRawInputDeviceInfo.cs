@@ -25,46 +25,45 @@
 #endregion
 
 
-namespace Gorgon.Input
+namespace Gorgon.Input;
+
+/// <summary>
+/// Common information for a Raw Input device.
+/// </summary>
+/// <remarks>
+/// This interface is not meant to be used within an application and should only be used internally by Gorgon.
+/// </remarks>
+public interface IGorgonRawInputDeviceInfo
 {
     /// <summary>
-    /// Common information for a Raw Input device.
+    /// Property to return the device handle.
     /// </summary>
-    /// <remarks>
-    /// This interface is not meant to be used within an application and should only be used internally by Gorgon.
-    /// </remarks>
-    public interface IGorgonRawInputDeviceInfo
+    nint Handle
     {
-        /// <summary>
-        /// Property to return the device handle.
-        /// </summary>
-        nint Handle
-        {
-            get;
-        }
+        get;
+    }
 
-        /// <summary>
-        /// Property to return a human friendly description of the device.
-        /// </summary>
-        string Description
-        {
-            get;
-        }
+    /// <summary>
+    /// Property to return a human friendly description of the device.
+    /// </summary>
+    string Description
+    {
+        get;
+    }
 
-        /// <summary>
-        /// Property to return human interface device path for the device.
-        /// </summary>
-        string HIDPath
-        {
-            get;
-        }
+    /// <summary>
+    /// Property to return human interface device path for the device.
+    /// </summary>
+    string HIDPath
+    {
+        get;
+    }
 
-        /// <summary>
-        /// Property to return the device class name.
-        /// </summary>
-        string DeviceClass
-        {
-            get;
-        }
+    /// <summary>
+    /// Property to return the device class name.
+    /// </summary>
+    string DeviceClass
+    {
+        get;
     }
 }

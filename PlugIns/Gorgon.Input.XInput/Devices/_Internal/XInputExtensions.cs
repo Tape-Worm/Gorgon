@@ -27,58 +27,57 @@
 using System;
 using XI = SharpDX.XInput;
 
-namespace Gorgon.Input.XInput
+namespace Gorgon.Input.XInput;
+
+/// <summary>
+/// Extension methods for XInput.
+/// </summary>
+internal static class XInputExtensions
 {
+    // Mappings for the GUIDs -> user indices.
+    private static readonly Guid _one = new(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1);
+    private static readonly Guid _two = new(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2);
+    private static readonly Guid _three = new(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3);
+    private static readonly Guid _four = new(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4);
+
     /// <summary>
-    /// Extension methods for XInput.
+    /// Function to convert an XInput user index into a GUID.
     /// </summary>
-    internal static class XInputExtensions
+    /// <param name="userindex">The user index to convert.</param>
+    /// <returns>The guid associated with the user index.</returns>
+    public static Guid ToGuid(this XI.UserIndex userindex) => userindex switch
     {
-        // Mappings for the GUIDs -> user indices.
-        private static readonly Guid _one = new(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1);
-        private static readonly Guid _two = new(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2);
-        private static readonly Guid _three = new(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3);
-        private static readonly Guid _four = new(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4);
+        XI.UserIndex.One => _one,
+        XI.UserIndex.Two => _two,
+        XI.UserIndex.Three => _three,
+        XI.UserIndex.Four => _four,
+        _ => Guid.Empty,
+    };
 
-        /// <summary>
-        /// Function to convert an XInput user index into a GUID.
-        /// </summary>
-        /// <param name="userindex">The user index to convert.</param>
-        /// <returns>The guid associated with the user index.</returns>
-        public static Guid ToGuid(this XI.UserIndex userindex) => userindex switch
-        {
-            XI.UserIndex.One => _one,
-            XI.UserIndex.Two => _two,
-            XI.UserIndex.Three => _three,
-            XI.UserIndex.Four => _four,
-            _ => Guid.Empty,
-        };
-
-        /// <summary>
-        /// Function to conver a GUID to an XInput user index.
-        /// </summary>
-        /// <param name="guid">The guid to evaluate.</param>
-        /// <returns>The XInput user index.</returns>
-        public static XI.UserIndex ToUserIndex(this Guid guid)
-        {
+    /// <summary>
+    /// Function to conver a GUID to an XInput user index.
+    /// </summary>
+    /// <param name="guid">The guid to evaluate.</param>
+    /// <returns>The XInput user index.</returns>
+    public static XI.UserIndex ToUserIndex(this Guid guid)
+    {
 #pragma warning disable IDE0046 // Convert to conditional expression
-            if (guid.Equals(_one))
-            {
-                return XI.UserIndex.One;
-            }
-
-            if (guid.Equals(_two))
-            {
-                return XI.UserIndex.Two;
-            }
-
-            if (guid.Equals(_three))
-            {
-                return XI.UserIndex.Three;
-            }
-
-            return guid.Equals(_four) ? XI.UserIndex.Four : XI.UserIndex.Any;
-#pragma warning restore IDE0046 // Convert to conditional expression
+        if (guid.Equals(_one))
+        {
+            return XI.UserIndex.One;
         }
+
+        if (guid.Equals(_two))
+        {
+            return XI.UserIndex.Two;
+        }
+
+        if (guid.Equals(_three))
+        {
+            return XI.UserIndex.Three;
+        }
+
+        return guid.Equals(_four) ? XI.UserIndex.Four : XI.UserIndex.Any;
+#pragma warning restore IDE0046 // Convert to conditional expression
     }
 }

@@ -26,37 +26,36 @@
 
 using System;
 
-namespace Gorgon.IO
+namespace Gorgon.IO;
+
+/// <summary>
+/// Event arguments for the <see cref="IGorgonFileSystemWriter{T}.VirtualFileClosed"/> event.
+/// </summary>
+public class VirtualFileClosedEventArgs
+    : EventArgs
 {
     /// <summary>
-    /// Event arguments for the <see cref="IGorgonFileSystemWriter{T}.VirtualFileClosed"/> event.
+    /// Property to return the virtual file that represents the physical file.
     /// </summary>
-    public class VirtualFileClosedEventArgs
-        : EventArgs
+    public IGorgonVirtualFile VirtualFile
     {
-        /// <summary>
-        /// Property to return the virtual file that represents the physical file.
-        /// </summary>
-        public IGorgonVirtualFile VirtualFile
-        {
-            get;
-        }
+        get;
+    }
 
-        /// <summary>
-        /// Property to return whether the file was created, or updated.
-        /// </summary>
-        public bool Created
-        {
-            get;
-        }
+    /// <summary>
+    /// Property to return whether the file was created, or updated.
+    /// </summary>
+    public bool Created
+    {
+        get;
+    }
 
-        /// <summary>Initializes a new instance of the <see cref="VirtualFileClosedEventArgs"/> class.</summary>
-        /// <param name="file">The virtual file that was opened.</param>
-        /// <param name="created"><b>true</b> if the file is a new file, or <b>false</b> if it is an existing file.</param>
-        internal VirtualFileClosedEventArgs(IGorgonVirtualFile file, bool created)
-        {
-            VirtualFile = file;
-            Created = created;
-        }
+    /// <summary>Initializes a new instance of the <see cref="VirtualFileClosedEventArgs"/> class.</summary>
+    /// <param name="file">The virtual file that was opened.</param>
+    /// <param name="created"><b>true</b> if the file is a new file, or <b>false</b> if it is an existing file.</param>
+    internal VirtualFileClosedEventArgs(IGorgonVirtualFile file, bool created)
+    {
+        VirtualFile = file;
+        Created = created;
     }
 }

@@ -34,204 +34,203 @@ using Gorgon.Editor.UI;
 using Gorgon.Editor.UI.Controls;
 using Gorgon.Math;
 
-namespace Gorgon.Editor.ImageEditor
+namespace Gorgon.Editor.ImageEditor;
+
+/// <summary>
+/// The panel used to provide settings for setting image alpha.
+/// </summary>
+internal partial class SetAlphaSettings
+    : EditorSubPanelCommon, IDataContext<IAlphaSettings>
 {
-    /// <summary>
-    /// The panel used to provide settings for setting image alpha.
-    /// </summary>
-    internal partial class SetAlphaSettings
-        : EditorSubPanelCommon, IDataContext<IAlphaSettings>
+    #region Properties.
+    /// <summary>Property to return the data context assigned to this view.</summary>
+    /// <value>The data context.</value>
+    [Browsable(false)]
+    public IAlphaSettings DataContext
     {
-        #region Properties.
-        /// <summary>Property to return the data context assigned to this view.</summary>
-        /// <value>The data context.</value>
-        [Browsable(false)]
-        public IAlphaSettings DataContext
-        {
-            get;
-            private set;
-        }
-        #endregion
-
-        #region Methods.
-        /// <summary>Handles the PropertyChanged event of the DataContext control.</summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="PropertyChangedEventArgs"/> instance containing the event data.</param>
-        private void DataContext_PropertyChanged(object sender, PropertyChangedEventArgs e)
-        {
-            switch (e.PropertyName)
-            {
-                case nameof(IAlphaSettings.AlphaValue):
-                    NumericAlphaValue.Value = DataContext.AlphaValue;
-                    ImageAlpha.Refresh();
-                    break;
-                case nameof(IAlphaSettings.UpdateRange):
-                    NumericMinAlpha.Value = DataContext.UpdateRange.Minimum;
-                    NumericMaxAlpha.Value = DataContext.UpdateRange.Maximum;
-                    break;
-            }
-
-            ValidateOk();
-        }
-
-        /// <summary>Handles the ValueChanged event of the NumericMinAlpha control.</summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
-        private void NumericMinAlpha_ValueChanged(object sender, EventArgs e)
-        {
-            if (DataContext is null)
-            {
-                return;
-            }
-
-            DataContext.UpdateRange = new GorgonRange((int)NumericMinAlpha.Value, DataContext.UpdateRange.Maximum);
-        }
-
-        /// <summary>Handles the ValueChanged event of the NumericMaxAlpha control.</summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
-        private void NumericMaxAlpha_ValueChanged(object sender, EventArgs e)
-        {
-            if (DataContext is null)
-            {
-                return;
-            }
-
-            DataContext.UpdateRange = new GorgonRange(DataContext.UpdateRange.Minimum, (int)NumericMaxAlpha.Value);
-        }
-
-        /// <summary>Handles the ValueChanged event of the NumericMipLevels control.</summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
-        private void NumericAlphaValue_ValueChanged(object sender, EventArgs e)
-        {
-            if (DataContext is null)
-            {
-                return;
-            }
-
-            DataContext.AlphaValue = (int)NumericAlphaValue.Value;
-            ImageAlpha.Refresh();
-        }
-
-
-        /// <summary>Handles the Paint event of the ImageAlpha control.</summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="PaintEventArgs"/> instance containing the event data.</param>
-        private void ImageAlpha_Paint(object sender, PaintEventArgs e)
-        {
-            using var brush = new SolidBrush(Color.FromArgb((255 - (int)NumericAlphaValue.Value).Max(0).Min(255), 255, 255, 255));
-            e.Graphics.FillRectangle(brush, ImageAlpha.ClientRectangle);
-        }
-
-        /// <summary>
-        /// Function to unassign the events assigned to the datacontext.
-        /// </summary>
-        private void UnassignEvents()
-        {
-            if (DataContext is null)
-            {
-                return;
-            }
-
-            DataContext.PropertyChanged -= DataContext_PropertyChanged;
-        }
-
-
-        /// <summary>
-        /// Function called when the view should be reset by a <b>null</b> data context.
-        /// </summary>
-        private void ResetDataContext()
-        {
-            NumericAlphaValue.Value = 255;
-            NumericMinAlpha.Value = 0;
-            NumericMaxAlpha.Value = 255;
-        }
-
-        /// <summary>
-        /// Function to initialize the view from the current data context.
-        /// </summary>
-        /// <param name="dataContext">The data context being assigned.</param>
-        private void InitializeFromDataContext(IAlphaSettings dataContext)
-        {
-            if (dataContext is null)
-            {
-                ResetDataContext();
-                return;
-            }
-
-            NumericAlphaValue.Value = dataContext.AlphaValue;
-            NumericMinAlpha.Value = dataContext.UpdateRange.Minimum;
-            NumericMaxAlpha.Value = dataContext.UpdateRange.Maximum;
-        }
-
-        /// <summary>Function to cancel the change.</summary>
-        protected override void OnCancel()
-        {
-            base.OnCancel();
-
-            if ((DataContext?.CancelCommand is null) || (!DataContext.CancelCommand.CanExecute(null)))
-            {
-                return;
-            }
-
-            DataContext.CancelCommand.Execute(null);
-        }
-
-        /// <summary>Function to submit the change.</summary>
-        protected override void OnSubmit()
-        {
-            base.OnSubmit();
-
-            if ((DataContext?.OkCommand is null) || (!DataContext.OkCommand.CanExecute(null)))
-            {
-                return;
-            }
-
-            DataContext.OkCommand.Execute(null);
-        }
-
-        /// <summary>Function called to validate the OK button.</summary>
-        /// <returns>
-        ///   <b>true</b> if the OK button is valid, <b>false</b> if not.</returns>
-        protected override bool OnValidateOk() => (DataContext?.OkCommand is not null) && (DataContext.OkCommand.CanExecute(null));
-
-        /// <summary>Raises the <see cref="E:System.Windows.Forms.UserControl.Load"/> event.</summary>
-        /// <param name="e">An <see cref="EventArgs"/> that contains the event data.</param>
-        protected override void OnLoad(EventArgs e)
-        {
-            base.OnLoad(e);
-
-            if (IsDesignTime)
-            {
-                return;
-            }
-
-            ValidateOk();
-        }
-
-        /// <summary>Function to assign a data context to the view as a view model.</summary>
-        /// <param name="dataContext">The data context to assign.</param>
-        /// <remarks>Data contexts should be nullable, in that, they should reset the view back to its original state when the context is null.</remarks>
-        public void SetDataContext(IAlphaSettings dataContext)
-        {
-            UnassignEvents();
-
-            InitializeFromDataContext(dataContext);
-            DataContext = dataContext;
-
-            if (DataContext is null)
-            {
-                return;
-            }
-
-            DataContext.PropertyChanged += DataContext_PropertyChanged;
-        }
-        #endregion
-
-        #region Constructor/Finalizer.
-        /// <summary>Initializes a new instance of the <see cref="SetAlphaSettings"/> class.</summary>
-        public SetAlphaSettings() => InitializeComponent();
-        #endregion
+        get;
+        private set;
     }
+    #endregion
+
+    #region Methods.
+    /// <summary>Handles the PropertyChanged event of the DataContext control.</summary>
+    /// <param name="sender">The source of the event.</param>
+    /// <param name="e">The <see cref="PropertyChangedEventArgs"/> instance containing the event data.</param>
+    private void DataContext_PropertyChanged(object sender, PropertyChangedEventArgs e)
+    {
+        switch (e.PropertyName)
+        {
+            case nameof(IAlphaSettings.AlphaValue):
+                NumericAlphaValue.Value = DataContext.AlphaValue;
+                ImageAlpha.Refresh();
+                break;
+            case nameof(IAlphaSettings.UpdateRange):
+                NumericMinAlpha.Value = DataContext.UpdateRange.Minimum;
+                NumericMaxAlpha.Value = DataContext.UpdateRange.Maximum;
+                break;
+        }
+
+        ValidateOk();
+    }
+
+    /// <summary>Handles the ValueChanged event of the NumericMinAlpha control.</summary>
+    /// <param name="sender">The source of the event.</param>
+    /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+    private void NumericMinAlpha_ValueChanged(object sender, EventArgs e)
+    {
+        if (DataContext is null)
+        {
+            return;
+        }
+
+        DataContext.UpdateRange = new GorgonRange((int)NumericMinAlpha.Value, DataContext.UpdateRange.Maximum);
+    }
+
+    /// <summary>Handles the ValueChanged event of the NumericMaxAlpha control.</summary>
+    /// <param name="sender">The source of the event.</param>
+    /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+    private void NumericMaxAlpha_ValueChanged(object sender, EventArgs e)
+    {
+        if (DataContext is null)
+        {
+            return;
+        }
+
+        DataContext.UpdateRange = new GorgonRange(DataContext.UpdateRange.Minimum, (int)NumericMaxAlpha.Value);
+    }
+
+    /// <summary>Handles the ValueChanged event of the NumericMipLevels control.</summary>
+    /// <param name="sender">The source of the event.</param>
+    /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+    private void NumericAlphaValue_ValueChanged(object sender, EventArgs e)
+    {
+        if (DataContext is null)
+        {
+            return;
+        }
+
+        DataContext.AlphaValue = (int)NumericAlphaValue.Value;
+        ImageAlpha.Refresh();
+    }
+
+
+    /// <summary>Handles the Paint event of the ImageAlpha control.</summary>
+    /// <param name="sender">The source of the event.</param>
+    /// <param name="e">The <see cref="PaintEventArgs"/> instance containing the event data.</param>
+    private void ImageAlpha_Paint(object sender, PaintEventArgs e)
+    {
+        using var brush = new SolidBrush(Color.FromArgb((255 - (int)NumericAlphaValue.Value).Max(0).Min(255), 255, 255, 255));
+        e.Graphics.FillRectangle(brush, ImageAlpha.ClientRectangle);
+    }
+
+    /// <summary>
+    /// Function to unassign the events assigned to the datacontext.
+    /// </summary>
+    private void UnassignEvents()
+    {
+        if (DataContext is null)
+        {
+            return;
+        }
+
+        DataContext.PropertyChanged -= DataContext_PropertyChanged;
+    }
+
+
+    /// <summary>
+    /// Function called when the view should be reset by a <b>null</b> data context.
+    /// </summary>
+    private void ResetDataContext()
+    {
+        NumericAlphaValue.Value = 255;
+        NumericMinAlpha.Value = 0;
+        NumericMaxAlpha.Value = 255;
+    }
+
+    /// <summary>
+    /// Function to initialize the view from the current data context.
+    /// </summary>
+    /// <param name="dataContext">The data context being assigned.</param>
+    private void InitializeFromDataContext(IAlphaSettings dataContext)
+    {
+        if (dataContext is null)
+        {
+            ResetDataContext();
+            return;
+        }
+
+        NumericAlphaValue.Value = dataContext.AlphaValue;
+        NumericMinAlpha.Value = dataContext.UpdateRange.Minimum;
+        NumericMaxAlpha.Value = dataContext.UpdateRange.Maximum;
+    }
+
+    /// <summary>Function to cancel the change.</summary>
+    protected override void OnCancel()
+    {
+        base.OnCancel();
+
+        if ((DataContext?.CancelCommand is null) || (!DataContext.CancelCommand.CanExecute(null)))
+        {
+            return;
+        }
+
+        DataContext.CancelCommand.Execute(null);
+    }
+
+    /// <summary>Function to submit the change.</summary>
+    protected override void OnSubmit()
+    {
+        base.OnSubmit();
+
+        if ((DataContext?.OkCommand is null) || (!DataContext.OkCommand.CanExecute(null)))
+        {
+            return;
+        }
+
+        DataContext.OkCommand.Execute(null);
+    }
+
+    /// <summary>Function called to validate the OK button.</summary>
+    /// <returns>
+    ///   <b>true</b> if the OK button is valid, <b>false</b> if not.</returns>
+    protected override bool OnValidateOk() => (DataContext?.OkCommand is not null) && (DataContext.OkCommand.CanExecute(null));
+
+    /// <summary>Raises the <see cref="E:System.Windows.Forms.UserControl.Load"/> event.</summary>
+    /// <param name="e">An <see cref="EventArgs"/> that contains the event data.</param>
+    protected override void OnLoad(EventArgs e)
+    {
+        base.OnLoad(e);
+
+        if (IsDesignTime)
+        {
+            return;
+        }
+
+        ValidateOk();
+    }
+
+    /// <summary>Function to assign a data context to the view as a view model.</summary>
+    /// <param name="dataContext">The data context to assign.</param>
+    /// <remarks>Data contexts should be nullable, in that, they should reset the view back to its original state when the context is null.</remarks>
+    public void SetDataContext(IAlphaSettings dataContext)
+    {
+        UnassignEvents();
+
+        InitializeFromDataContext(dataContext);
+        DataContext = dataContext;
+
+        if (DataContext is null)
+        {
+            return;
+        }
+
+        DataContext.PropertyChanged += DataContext_PropertyChanged;
+    }
+    #endregion
+
+    #region Constructor/Finalizer.
+    /// <summary>Initializes a new instance of the <see cref="SetAlphaSettings"/> class.</summary>
+    public SetAlphaSettings() => InitializeComponent();
+    #endregion
 }

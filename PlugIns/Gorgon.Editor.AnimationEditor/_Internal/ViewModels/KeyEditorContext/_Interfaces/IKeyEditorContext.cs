@@ -26,68 +26,67 @@
 
 using Gorgon.Editor.UI;
 
-namespace Gorgon.Editor.AnimationEditor
+namespace Gorgon.Editor.AnimationEditor;
+
+/// <summary>
+/// The view model for the key editing context.
+/// </summary>
+internal interface IKeyEditorContext
+    : IEditorContext, IUndoHandler, ISpriteLoader, IClipboardHandler
 {
     /// <summary>
-    /// The view model for the key editing context.
+    /// Property to return the key value editor for floating point values.
     /// </summary>
-    internal interface IKeyEditorContext
-        : IEditorContext, IUndoHandler, ISpriteLoader, IClipboardHandler
+    IKeyValueEditor FloatKeysEditor
     {
-        /// <summary>
-        /// Property to return the key value editor for floating point values.
-        /// </summary>
-        IKeyValueEditor FloatKeysEditor
-        {
-            get;
-        }
+        get;
+    }
 
-        /// <summary>
-        /// Property to return the key value editor for color values.
-        /// </summary>
-        IColorValueEditor ColorKeysEditor
-        {
-            get;
-        }
+    /// <summary>
+    /// Property to return the key value editor for color values.
+    /// </summary>
+    IColorValueEditor ColorKeysEditor
+    {
+        get;
+    }
 
-        /// <summary>
-        /// Property to return the currently active editor.
-        /// </summary>
-        IKeyValueEditor CurrentEditor
-        {
-            get;
-        }
+    /// <summary>
+    /// Property to return the currently active editor.
+    /// </summary>
+    IKeyValueEditor CurrentEditor
+    {
+        get;
+    }
 
-        /// <summary>
-        /// Property to return the command used to copy/move key frames.
-        /// </summary>
-        IEditorAsyncCommand<KeyFrameCopyMoveData> CopyMoveFramesCommand
-        {
-            get;
-        }
+    /// <summary>
+    /// Property to return the command used to copy/move key frames.
+    /// </summary>
+    IEditorAsyncCommand<KeyFrameCopyMoveData> CopyMoveFramesCommand
+    {
+        get;
+    }
 
-        /// <summary>
-        /// Property to return the command to set the key value.
-        /// </summary>
-        IEditorAsyncCommand<object> SetKeyCommand
-        {
-            get;
-        }
+    /// <summary>
+    /// Property to return the command to set the key value.
+    /// </summary>
+    IEditorAsyncCommand<object> SetKeyCommand
+    {
+        get;
+    }
 
-        /// <summary>
-        /// Property to return the command to remove selected keyframes.
-        /// </summary>
-        IEditorCommand<object> RemoveKeyCommand
-        {
-            get;
-        }
+    /// <summary>
+    /// Property to return the command to remove selected keyframes.
+    /// </summary>
+    IEditorCommand<object> RemoveKeyCommand
+    {
+        get;
+    }
 
-        /// <summary>
-        /// Property to return the command to clear all key frames.
-        /// </summary>
-        IEditorCommand<object> ClearKeysCommand
-        {
-            get;
-        }
+    /// <summary>
+    /// Property to return the command to clear all key frames.
+    /// </summary>
+    IEditorCommand<object> ClearKeysCommand
+    {
+        get;
     }
 }

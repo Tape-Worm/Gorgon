@@ -29,150 +29,149 @@ using System.Linq;
 using Gorgon.Editor.UI;
 using Gorgon.Graphics;
 
-namespace Gorgon.Editor.SpriteEditor
+namespace Gorgon.Editor.SpriteEditor;
+
+/// <summary>
+/// The view model for the sprite color editor.
+/// </summary>
+internal class SpriteColorEdit
+    : HostedPanelViewModelBase<HostedPanelViewModelParameters>, ISpriteColorEdit
 {
+    #region Variables.
+    // The original color for the sprite.
+    private readonly GorgonColor[] _originalColor = new GorgonColor[4];
+    // The current color for the sprite.
+    private readonly GorgonColor[] _color = new GorgonColor[4];
+    // The currently selected vertex.
+    private readonly bool[] _selectedVertex = new bool[4];
+    // The currently selected color.
+    private GorgonColor _selectedColor = GorgonColor.BlackTransparent;
+    #endregion
+
+    #region Properties.
     /// <summary>
-    /// The view model for the sprite color editor.
+    /// Property to set or return the currently selected color for an individual vertex.
     /// </summary>
-    internal class SpriteColorEdit
-        : HostedPanelViewModelBase<HostedPanelViewModelParameters>, ISpriteColorEdit
+    public GorgonColor SelectedColor
     {
-        #region Variables.
-        // The original color for the sprite.
-        private readonly GorgonColor[] _originalColor = new GorgonColor[4];
-        // The current color for the sprite.
-        private readonly GorgonColor[] _color = new GorgonColor[4];
-        // The currently selected vertex.
-        private readonly bool[] _selectedVertex = new bool[4];
-        // The currently selected color.
-        private GorgonColor _selectedColor = GorgonColor.BlackTransparent;
-        #endregion
-
-        #region Properties.
-        /// <summary>
-        /// Property to set or return the currently selected color for an individual vertex.
-        /// </summary>
-        public GorgonColor SelectedColor
+        get => _selectedColor;
+        set
         {
-            get => _selectedColor;
-            set
+            if (_selectedColor.Equals(in value))
             {
-                if (_selectedColor.Equals(in value))
-                {
-                    return;
-                }
-
-                OnPropertyChanging();
-                _selectedColor = value;
-                OnPropertyChanged();
+                return;
             }
+
+            OnPropertyChanging();
+            _selectedColor = value;
+            OnPropertyChanged();
         }
+    }
 
-        /// <summary>Property to set or return the selected vertex.</summary>
-        public IReadOnlyList<bool> SelectedVertices
+    /// <summary>Property to set or return the selected vertex.</summary>
+    public IReadOnlyList<bool> SelectedVertices
+    {
+        get => _selectedVertex;
+        set
         {
-            get => _selectedVertex;
-            set
+            if (value is null)
             {
-                if (value is null)
-                {
-                    for (int i = 0; i < _selectedVertex.Length; ++i)
-                    {
-                        _selectedVertex[i] = false;
-                    }
-                    return;
-                }
-
-                if (value.SequenceEqual(_selectedVertex))
-                {
-                    return;
-                }
-
-                OnPropertyChanging();
                 for (int i = 0; i < _selectedVertex.Length; ++i)
                 {
-                    _selectedVertex[i] = (i < value.Count) && (value[i]);
+                    _selectedVertex[i] = false;
                 }
-                OnPropertyChanged();
+                return;
             }
-        }
 
-        /// <summary>Property to set or return the color to apply to the sprite.</summary>
-        public IReadOnlyList<GorgonColor> SpriteColor
-        {
-            get => _color;
-            set
+            if (value.SequenceEqual(_selectedVertex))
             {
-                if (value is null)
-                {
-                    return;
-                }
-
-                if (_color.SequenceEqual(value))
-                {
-                    return;
-                }
-
-                OnPropertyChanging();
-                for (int i = 0; i < _color.Length; ++i)
-                {
-                    _color[i] = i < value.Count ? value[i] : GorgonColor.BlackTransparent;
-                }
-                OnPropertyChanged();
+                return;
             }
-        }
 
-        /// <summary>Property to set or return the original color for the sprite.</summary>
-        public IReadOnlyList<GorgonColor> OriginalSpriteColor
-        {
-            get => _originalColor;
-            set
+            OnPropertyChanging();
+            for (int i = 0; i < _selectedVertex.Length; ++i)
             {
-                if (value is null)
-                {
-                    return;
-                }
-
-                if (_originalColor.SequenceEqual(value))
-                {
-                    return;
-                }
-
-                OnPropertyChanging();
-                for (int i = 0; i < _originalColor.Length; ++i)
-                {
-                    _originalColor[i] = i < value.Count ? value[i] : GorgonColor.BlackTransparent;
-                }
-                OnPropertyChanged();
+                _selectedVertex[i] = (i < value.Count) && (value[i]);
             }
+            OnPropertyChanged();
         }
-
-        /// <summary>Property to return whether the panel is modal.</summary>
-        public override bool IsModal => true;
-        #endregion
-
-        #region Methods.
-        /// <summary>Function to inject dependencies for the view model.</summary>
-        /// <param name="injectionParameters">The parameters to inject.</param>
-        /// <remarks>
-        /// Applications should call this when setting up the view model for complex operations and/or dependency injection. The constructor should only be used for simple set up and initialization of objects.
-        /// </remarks>
-        protected override void OnInitialize(HostedPanelViewModelParameters injectionParameters)
-        {
-            // Nothing to inject.
-        }
-        #endregion
-
-        #region Constructor.
-        /// <summary>Initializes a new instance of the <see cref="SpriteColorEdit"/> class.</summary>
-        public SpriteColorEdit()
-        {
-            for (int i = 0; i < 4; ++i)
-            {
-                _selectedVertex[i] = true;
-                _color[i] = _originalColor[i] = GorgonColor.BlackTransparent;
-            }
-        }
-        #endregion
     }
+
+    /// <summary>Property to set or return the color to apply to the sprite.</summary>
+    public IReadOnlyList<GorgonColor> SpriteColor
+    {
+        get => _color;
+        set
+        {
+            if (value is null)
+            {
+                return;
+            }
+
+            if (_color.SequenceEqual(value))
+            {
+                return;
+            }
+
+            OnPropertyChanging();
+            for (int i = 0; i < _color.Length; ++i)
+            {
+                _color[i] = i < value.Count ? value[i] : GorgonColor.BlackTransparent;
+            }
+            OnPropertyChanged();
+        }
+    }
+
+    /// <summary>Property to set or return the original color for the sprite.</summary>
+    public IReadOnlyList<GorgonColor> OriginalSpriteColor
+    {
+        get => _originalColor;
+        set
+        {
+            if (value is null)
+            {
+                return;
+            }
+
+            if (_originalColor.SequenceEqual(value))
+            {
+                return;
+            }
+
+            OnPropertyChanging();
+            for (int i = 0; i < _originalColor.Length; ++i)
+            {
+                _originalColor[i] = i < value.Count ? value[i] : GorgonColor.BlackTransparent;
+            }
+            OnPropertyChanged();
+        }
+    }
+
+    /// <summary>Property to return whether the panel is modal.</summary>
+    public override bool IsModal => true;
+    #endregion
+
+    #region Methods.
+    /// <summary>Function to inject dependencies for the view model.</summary>
+    /// <param name="injectionParameters">The parameters to inject.</param>
+    /// <remarks>
+    /// Applications should call this when setting up the view model for complex operations and/or dependency injection. The constructor should only be used for simple set up and initialization of objects.
+    /// </remarks>
+    protected override void OnInitialize(HostedPanelViewModelParameters injectionParameters)
+    {
+        // Nothing to inject.
+    }
+    #endregion
+
+    #region Constructor.
+    /// <summary>Initializes a new instance of the <see cref="SpriteColorEdit"/> class.</summary>
+    public SpriteColorEdit()
+    {
+        for (int i = 0; i < 4; ++i)
+        {
+            _selectedVertex[i] = true;
+            _color[i] = _originalColor[i] = GorgonColor.BlackTransparent;
+        }
+    }
+    #endregion
 }

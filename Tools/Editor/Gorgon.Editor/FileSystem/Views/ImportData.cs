@@ -27,39 +27,38 @@
 using System.Collections.Generic;
 using Gorgon.Editor.ViewModels;
 
-namespace Gorgon.Editor.Views
+namespace Gorgon.Editor.Views;
+
+/// <summary>
+/// Data used to import physical file system paths to the virtual file system.
+/// </summary>
+internal class ImportData
+    : IImportData
 {
-    /// <summary>
-    /// Data used to import physical file system paths to the virtual file system.
-    /// </summary>
-    internal class ImportData
-        : IImportData
+    /// <summary>Property to return the list of files/directories from the physical file system..</summary>
+    public List<string> PhysicalPaths
     {
-        /// <summary>Property to return the list of files/directories from the physical file system..</summary>
-        public List<string> PhysicalPaths
-        {
-            get;
-        } = new List<string>();
+        get;
+    } = new List<string>();
 
-        /// <summary>
-        /// Property to set or return the directory to import into.
-        /// </summary>
-        public IDirectory Destination
-        {
-            get;
-            set;
-        }
+    /// <summary>
+    /// Property to set or return the directory to import into.
+    /// </summary>
+    public IDirectory Destination
+    {
+        get;
+        set;
+    }
 
-        /// <summary>
-        /// Property to return the ID to the destination.
-        /// </summary>
-        public string DestinationDirectory => Destination?.ID ?? string.Empty;
+    /// <summary>
+    /// Property to return the ID to the destination.
+    /// </summary>
+    public string DestinationDirectory => Destination?.ID ?? string.Empty;
 
-        /// <summary>Property to set or return whether any files or directories were successfully imported.</summary>
-        public bool ItemsImported
-        {
-            get;
-            set;
-        }
+    /// <summary>Property to set or return whether any files or directories were successfully imported.</summary>
+    public bool ItemsImported
+    {
+        get;
+        set;
     }
 }

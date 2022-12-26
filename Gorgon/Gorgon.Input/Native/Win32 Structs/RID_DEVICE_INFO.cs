@@ -28,23 +28,22 @@ using System.Runtime.InteropServices;
 using Gorgon.Input;
 
 // ReSharper disable InconsistentNaming
-namespace Gorgon.Native
+namespace Gorgon.Native;
+
+/// <summary>
+/// Device information.
+/// </summary>
+[StructLayout(LayoutKind.Explicit)]
+internal struct RID_DEVICE_INFO
 {
-    /// <summary>
-    /// Device information.
-    /// </summary>
-    [StructLayout(LayoutKind.Explicit)]
-    internal struct RID_DEVICE_INFO
-    {
-        [FieldOffset(0)]
-        public int cbSize;
-        [FieldOffset(4)]
-        public RawInputType dwType;
-        [FieldOffset(8)]
-        public RID_DEVICE_INFO_MOUSE mouse;
-        [FieldOffset(8)]
-        public RID_DEVICE_INFO_KEYBOARD keyboard;
-        [FieldOffset(8)]
-        public RID_DEVICE_INFO_HID hid;
-    }
+    [FieldOffset(0)]
+    public int cbSize;
+    [FieldOffset(4)]
+    public RawInputType dwType;
+    [FieldOffset(8)]
+    public RID_DEVICE_INFO_MOUSE mouse;
+    [FieldOffset(8)]
+    public RID_DEVICE_INFO_KEYBOARD keyboard;
+    [FieldOffset(8)]
+    public RID_DEVICE_INFO_HID hid;
 }

@@ -31,19 +31,18 @@ using System.Text;
 using System.Threading.Tasks;
 using Gorgon.Graphics.Fonts;
 
-namespace Gorgon.Editor.FontEditor
+namespace Gorgon.Editor.FontEditor;
+
+/// <summary>
+/// A common interface for all brushes.
+/// </summary>
+internal interface IFontBrush
 {
     /// <summary>
-    /// A common interface for all brushes.
+    /// Property to return the generic glyph brush.
     /// </summary>
-    internal interface IFontBrush
+    GorgonGlyphBrush Brush
     {
-        /// <summary>
-        /// Property to return the generic glyph brush.
-        /// </summary>
-        GorgonGlyphBrush Brush
-        {
-            get;
-        }
+        get;
     }
 }

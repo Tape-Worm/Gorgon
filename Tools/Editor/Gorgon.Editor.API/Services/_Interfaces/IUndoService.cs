@@ -29,80 +29,79 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Gorgon.Editor.Services
+namespace Gorgon.Editor.Services;
+
+/// <summary>
+/// The service used to supply undo/redo functionality.
+/// </summary>
+public interface IUndoService
 {
+    #region Properties.
     /// <summary>
-    /// The service used to supply undo/redo functionality.
+    /// Property to return whether or not the service can undo.
     /// </summary>
-    public interface IUndoService
+    bool CanUndo
     {
-        #region Properties.
-        /// <summary>
-        /// Property to return whether or not the service can undo.
-        /// </summary>
-        bool CanUndo
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to return whether or not the service can redo.
-        /// </summary>
-        bool CanRedo
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to return the undo items in the undo stack.
-        /// </summary>
-        IEnumerable<string> UndoItems
-        {
-            get;
-        }
-        #endregion
-
-        #region Methods.
-        /// <summary>
-        /// Function to cancel the currently executing undo/redo operation.
-        /// </summary>
-        void Cancel();
-
-        /// <summary>
-        /// Function to perform an undo operation.
-        /// </summary>
-        /// <returns>A task representing the currently executing undo operation.</returns>
-        Task Undo();
-
-        /// <summary>
-        /// Function to perform a redo operation.
-        /// </summary>
-        /// <returns>A task representing the currently executing redo operation.</returns>
-        Task Redo();
-
-        /// <summary>
-        /// Function to record an undo/redo state.
-        /// </summary>
-        /// <typeparam name="TU">The type of undo parameters to pass. Must be a reference type.</typeparam>
-        /// <typeparam name="TR">The type of redo parameters to pass. Must be a reference type.</typeparam>
-        /// <param name="desc">The description of the action being recorded.</param>
-        /// <param name="undoAction">The action to execute when undoing.</param>
-        /// <param name="redoAction">The action to execute when redoing.</param>
-        /// <param name="undoArgs">The parameters to pass to the undo operation.</param>
-        /// <param name="redoArgs">The parameters to pass to the redo oprtation.</param>
-        /// <remarks>
-        /// <para>
-        /// This method will do nothing if an undo or redo operation is executing.
-        /// </para>
-        /// </remarks>
-        void Record<TU, TR>(string desc, Func<TU, CancellationToken, Task> undoAction, Func<TR, CancellationToken, Task> redoAction, TU undoArgs, TR redoArgs)
-            where TU : class
-            where TR : class;
-
-        /// <summary>
-        /// Function to clear the undo/redo stacks.
-        /// </summary>
-        void ClearStack();
-        #endregion
+        get;
     }
+
+    /// <summary>
+    /// Property to return whether or not the service can redo.
+    /// </summary>
+    bool CanRedo
+    {
+        get;
+    }
+
+    /// <summary>
+    /// Property to return the undo items in the undo stack.
+    /// </summary>
+    IEnumerable<string> UndoItems
+    {
+        get;
+    }
+    #endregion
+
+    #region Methods.
+    /// <summary>
+    /// Function to cancel the currently executing undo/redo operation.
+    /// </summary>
+    void Cancel();
+
+    /// <summary>
+    /// Function to perform an undo operation.
+    /// </summary>
+    /// <returns>A task representing the currently executing undo operation.</returns>
+    Task Undo();
+
+    /// <summary>
+    /// Function to perform a redo operation.
+    /// </summary>
+    /// <returns>A task representing the currently executing redo operation.</returns>
+    Task Redo();
+
+    /// <summary>
+    /// Function to record an undo/redo state.
+    /// </summary>
+    /// <typeparam name="TU">The type of undo parameters to pass. Must be a reference type.</typeparam>
+    /// <typeparam name="TR">The type of redo parameters to pass. Must be a reference type.</typeparam>
+    /// <param name="desc">The description of the action being recorded.</param>
+    /// <param name="undoAction">The action to execute when undoing.</param>
+    /// <param name="redoAction">The action to execute when redoing.</param>
+    /// <param name="undoArgs">The parameters to pass to the undo operation.</param>
+    /// <param name="redoArgs">The parameters to pass to the redo oprtation.</param>
+    /// <remarks>
+    /// <para>
+    /// This method will do nothing if an undo or redo operation is executing.
+    /// </para>
+    /// </remarks>
+    void Record<TU, TR>(string desc, Func<TU, CancellationToken, Task> undoAction, Func<TR, CancellationToken, Task> redoAction, TU undoArgs, TR redoArgs)
+        where TU : class
+        where TR : class;
+
+    /// <summary>
+    /// Function to clear the undo/redo stacks.
+    /// </summary>
+    void ClearStack();
+    #endregion
 }

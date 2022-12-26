@@ -27,43 +27,42 @@
 using System;
 using DX = SharpDX;
 
-namespace Gorgon.Graphics.Core
+namespace Gorgon.Graphics.Core;
+
+/// <summary>
+/// Event arguments for the <see cref="GorgonSwapChain.SwapChainResized"/> event.
+/// </summary>
+public class SwapChainResizedEventArgs
+    : EventArgs
 {
+    #region Properties.
     /// <summary>
-    /// Event arguments for the <see cref="GorgonSwapChain.SwapChainResized"/> event.
+    /// Property to return the size of the swap chain backbuffers.
     /// </summary>
-    public class SwapChainResizedEventArgs
-        : EventArgs
+    public DX.Size2 Size
     {
-        #region Properties.
-        /// <summary>
-        /// Property to return the size of the swap chain backbuffers.
-        /// </summary>
-        public DX.Size2 Size
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to return the previous size of the swap chain backbuffers.
-        /// </summary>
-        public DX.Size2 OldSize
-        {
-            get;
-        }
-        #endregion
-
-        #region Constructor/Finalizer.
-        /// <summary>
-        /// Initializes a new instance of the <see cref="SwapChainResizingEventArgs"/> class.
-        /// </summary>
-        /// <param name="newSize">The new size.</param>
-        /// <param name="oldSize">The old size.</param>
-        public SwapChainResizedEventArgs(DX.Size2 newSize, DX.Size2 oldSize)
-        {
-            Size = newSize;
-            OldSize = oldSize;
-        }
-        #endregion
+        get;
     }
+
+    /// <summary>
+    /// Property to return the previous size of the swap chain backbuffers.
+    /// </summary>
+    public DX.Size2 OldSize
+    {
+        get;
+    }
+    #endregion
+
+    #region Constructor/Finalizer.
+    /// <summary>
+    /// Initializes a new instance of the <see cref="SwapChainResizingEventArgs"/> class.
+    /// </summary>
+    /// <param name="newSize">The new size.</param>
+    /// <param name="oldSize">The old size.</param>
+    public SwapChainResizedEventArgs(DX.Size2 newSize, DX.Size2 oldSize)
+    {
+        Size = newSize;
+        OldSize = oldSize;
+    }
+    #endregion
 }

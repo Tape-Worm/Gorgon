@@ -1,40 +1,40 @@
-﻿namespace Gorgon.Editor.SpriteEditor
+﻿namespace Gorgon.Editor.SpriteEditor;
+
+partial class SpritePickMaskColor
 {
-    partial class SpritePickMaskColor
+    /// <summary> 
+    /// Required designer variable.
+    /// </summary>
+    private System.ComponentModel.IContainer components = null;
+
+    /// <summary> 
+    /// Clean up any resources being used.
+    /// </summary>
+    /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+    protected override void Dispose(bool disposing)
     {
-        /// <summary> 
-        /// Required designer variable.
-        /// </summary>
-        private System.ComponentModel.IContainer components = null;
-
-        /// <summary> 
-        /// Clean up any resources being used.
-        /// </summary>
-        /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
-        protected override void Dispose(bool disposing)
+        if (disposing && (components != null))
         {
-            if (disposing && (components != null))
-            {
-                components.Dispose();
-            }
-
-            if (disposing)
-            {
-                UnassignEvents();
-                DataContext?.Unload();
-            }
-
-            base.Dispose(disposing);
+            components.Dispose();
         }
 
-        #region Component Designer generated code
-
-        /// <summary> 
-        /// Required method for Designer support - do not modify 
-        /// the contents of this method with the code editor.
-        /// </summary>
-        private void InitializeComponent()
+        if (disposing)
         {
+            UnassignEvents();
+            DataContext?.Unload();
+        }
+
+        base.Dispose(disposing);
+    }
+
+    #region Component Designer generated code
+
+    /// <summary> 
+    /// Required method for Designer support - do not modify 
+    /// the contents of this method with the code editor.
+    /// </summary>
+    private void InitializeComponent()
+    {
 			this.Picker = new Gorgon.Editor.UI.Controls.ColorPicker();
 			this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
 			this.RadioColorAlpha = new System.Windows.Forms.RadioButton();
@@ -121,8 +121,8 @@
 			// TableAlphaOnly
 			// 
 			this.TableAlphaOnly.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
+        | System.Windows.Forms.AnchorStyles.Left) 
+        | System.Windows.Forms.AnchorStyles.Right)));
 			this.TableAlphaOnly.AutoSize = true;
 			this.TableAlphaOnly.ColumnCount = 3;
 			this.TableAlphaOnly.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
@@ -196,10 +196,10 @@
 			this.NumericAlpha.ForeColor = System.Drawing.Color.Black;
 			this.NumericAlpha.Location = new System.Drawing.Point(174, 124);
 			this.NumericAlpha.Maximum = new decimal(new int[] {
-            255,
-            0,
-            0,
-            0});
+        255,
+        0,
+        0,
+        0});
 			this.NumericAlpha.Name = "NumericAlpha";
 			this.NumericAlpha.Size = new System.Drawing.Size(70, 23);
 			this.NumericAlpha.TabIndex = 1;
@@ -226,7 +226,7 @@
 			this.label3.Size = new System.Drawing.Size(383, 60);
 			this.label3.TabIndex = 4;
 			this.label3.Text = "Note: \r\n\r\nYou can still use the picker tool to select sprites while this panel is" +
-    " open.\r\nThis will allow you to test the settings prior to committing them.";
+" open.\r\nThis will allow you to test the settings prior to committing them.";
 			// 
 			// SpritePickMaskColor
 			// 
@@ -246,21 +246,20 @@
 			this.ResumeLayout(false);
 			this.PerformLayout();
 
-        }
-
-        #endregion
-
-        private UI.Controls.ColorPicker Picker;
-        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
-        private System.Windows.Forms.RadioButton RadioAlpha;
-        private System.Windows.Forms.RadioButton RadioColorAlpha;
-        private System.Windows.Forms.TableLayoutPanel TableAlphaOnly;
-        private Fetze.WinFormsColor.ColorSlider SliderAlpha;
-        private Fetze.WinFormsColor.ColorShowBox ColorShow;
-        private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.Label LabelAlpha;
-        private System.Windows.Forms.NumericUpDown NumericAlpha;
-        private System.Windows.Forms.Label label3;
     }
+
+    #endregion
+
+    private UI.Controls.ColorPicker Picker;
+    private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
+    private System.Windows.Forms.RadioButton RadioAlpha;
+    private System.Windows.Forms.RadioButton RadioColorAlpha;
+    private System.Windows.Forms.TableLayoutPanel TableAlphaOnly;
+    private Fetze.WinFormsColor.ColorSlider SliderAlpha;
+    private Fetze.WinFormsColor.ColorShowBox ColorShow;
+    private System.Windows.Forms.Label label1;
+    private System.Windows.Forms.Label label2;
+    private System.Windows.Forms.Label LabelAlpha;
+    private System.Windows.Forms.NumericUpDown NumericAlpha;
+    private System.Windows.Forms.Label label3;
 }

@@ -35,83 +35,82 @@ using Gorgon.Renderers;
 using Gorgon.Timing;
 using DX = SharpDX;
 
-namespace Gorgon.Editor.Rendering
+namespace Gorgon.Editor.Rendering;
+
+/// <summary>
+/// Draws a marching ants effect for a rectangle.
+/// </summary>
+public class MarchingAnts
+    : IDisposable, IMarchingAnts
 {
-    /// <summary>
-    /// Draws a marching ants effect for a rectangle.
-    /// </summary>
-    public class MarchingAnts
-        : IDisposable, IMarchingAnts
+    #region Variables.
+    // The texture used for the marching ants.
+    private Lazy<GorgonTexture2DView> _marchAntsTexture;
+    // The renderer to use.
+    private readonly Gorgon2D _renderer;
+    // The step for each movement of the ants.
+    private float _step;
+    #endregion
+
+    #region Methods.
+    /// <summary>Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.</summary>
+    public void Dispose()
     {
-        #region Variables.
-        // The texture used for the marching ants.
-        private Lazy<GorgonTexture2DView> _marchAntsTexture;
-        // The renderer to use.
-        private readonly Gorgon2D _renderer;
-        // The step for each movement of the ants.
-        private float _step;
-        #endregion
+        Lazy<GorgonTexture2DView> ants = Interlocked.Exchange(ref _marchAntsTexture, null);
 
-        #region Methods.
-        /// <summary>Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.</summary>
-        public void Dispose()
+        if ((ants is null) || (!ants.IsValueCreated))
         {
-            Lazy<GorgonTexture2DView> ants = Interlocked.Exchange(ref _marchAntsTexture, null);
-
-            if ((ants is null) || (!ants.IsValueCreated))
-            {
-                return;
-            }
-
-            ants.Value.Dispose();
+            return;
         }
 
-        /// <summary>
-        /// Function to animate the marching ants.
-        /// </summary>
-        public void Animate()
-        {
-            _step += _marchAntsTexture.Value.Width * (GorgonTiming.Delta * 0.4f);
-
-            if (_step > _marchAntsTexture.Value.Width)
-            {
-                _step -= _marchAntsTexture.Value.Width;
-            }
-        }
-
-        /// <summary>
-        /// Function to draw the marching ants rectangle.
-        /// </summary>
-        /// <param name="rect">The rectangular region to draw in.</param>
-        public void Draw(DX.RectangleF rect) => _renderer.DrawRectangle(rect, GorgonColor.White,
-                                                                        texture: _marchAntsTexture.Value,
-                                                                        textureRegion: _marchAntsTexture.Value.ToTexel(new DX.Rectangle((int)-_step, 0, (int)rect.Width, (int)rect.Height)),
-                                                                        textureSampler: GorgonSamplerState.PointFilteringWrapping);
-
-        /// <summary>
-        /// Function to build an instance of the marching ants texture.
-        /// </summary>
-        /// <returns>A new instance of the marching ants texture.</returns>
-        private GorgonTexture2DView Build()
-        {
-            using MemoryStream image = CommonEditorResources.MemoryStreamManager.GetStream(Resources.march_ants_diag_32x32);
-            return GorgonTexture2DView.FromStream(_renderer.Graphics, image, new GorgonCodecDds(),
-                options: new GorgonTexture2DLoadOptions
-                {
-                    Name = "MarchingAntsTexture",
-                    Usage = ResourceUsage.Immutable
-                });
-        }
-        #endregion
-
-        #region Constructor/Finalizer.
-        /// <summary>Initializes a new instance of the <see cref="MarchingAnts"/> class.</summary>
-        /// <param name="renderer">The 2D renderer for the application.</param>
-        public MarchingAnts(Gorgon2D renderer)
-        {
-            _renderer = renderer;
-            _marchAntsTexture = new Lazy<GorgonTexture2DView>(Build, true);
-        }
-        #endregion
+        ants.Value.Dispose();
     }
+
+    /// <summary>
+    /// Function to animate the marching ants.
+    /// </summary>
+    public void Animate()
+    {
+        _step += _marchAntsTexture.Value.Width * (GorgonTiming.Delta * 0.4f);
+
+        if (_step > _marchAntsTexture.Value.Width)
+        {
+            _step -= _marchAntsTexture.Value.Width;
+        }
+    }
+
+    /// <summary>
+    /// Function to draw the marching ants rectangle.
+    /// </summary>
+    /// <param name="rect">The rectangular region to draw in.</param>
+    public void Draw(DX.RectangleF rect) => _renderer.DrawRectangle(rect, GorgonColor.White,
+                                                                    texture: _marchAntsTexture.Value,
+                                                                    textureRegion: _marchAntsTexture.Value.ToTexel(new DX.Rectangle((int)-_step, 0, (int)rect.Width, (int)rect.Height)),
+                                                                    textureSampler: GorgonSamplerState.PointFilteringWrapping);
+
+    /// <summary>
+    /// Function to build an instance of the marching ants texture.
+    /// </summary>
+    /// <returns>A new instance of the marching ants texture.</returns>
+    private GorgonTexture2DView Build()
+    {
+        using MemoryStream image = CommonEditorResources.MemoryStreamManager.GetStream(Resources.march_ants_diag_32x32);
+        return GorgonTexture2DView.FromStream(_renderer.Graphics, image, new GorgonCodecDds(),
+            options: new GorgonTexture2DLoadOptions
+            {
+                Name = "MarchingAntsTexture",
+                Usage = ResourceUsage.Immutable
+            });
+    }
+    #endregion
+
+    #region Constructor/Finalizer.
+    /// <summary>Initializes a new instance of the <see cref="MarchingAnts"/> class.</summary>
+    /// <param name="renderer">The 2D renderer for the application.</param>
+    public MarchingAnts(Gorgon2D renderer)
+    {
+        _renderer = renderer;
+        _marchAntsTexture = new Lazy<GorgonTexture2DView>(Build, true);
+    }
+    #endregion
 }

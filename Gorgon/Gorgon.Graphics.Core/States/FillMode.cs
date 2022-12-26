@@ -25,24 +25,23 @@
 #endregion
 
 
-namespace Gorgon.Graphics.Core
+namespace Gorgon.Graphics.Core;
+
+/// <summary>
+/// Defines how a triangle primitive should be rendered.
+/// </summary>
+public enum FillMode
 {
     /// <summary>
-    /// Defines how a triangle primitive should be rendered.
+    /// <para>
+    /// Draw lines connecting the vertices. Adjacent vertices are not drawn.
+    /// </para>
     /// </summary>
-    public enum FillMode
-    {
-        /// <summary>
-        /// <para>
-        /// Draw lines connecting the vertices. Adjacent vertices are not drawn.
-        /// </para>
-        /// </summary>
-        Wireframe = SharpDX.Direct3D11.FillMode.Wireframe,
-        /// <summary>
-        /// <para>
-        /// Fill the triangles formed by the vertices. Adjacent vertices are not drawn.
-        /// </para>
-        /// </summary>
-        Solid = SharpDX.Direct3D11.FillMode.Solid
-    }
+    Wireframe = SharpDX.Direct3D11.FillMode.Wireframe,
+    /// <summary>
+    /// <para>
+    /// Fill the triangles formed by the vertices. Adjacent vertices are not drawn.
+    /// </para>
+    /// </summary>
+    Solid = SharpDX.Direct3D11.FillMode.Solid
 }

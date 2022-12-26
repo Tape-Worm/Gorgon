@@ -26,34 +26,33 @@
 
 using System.Windows.Forms;
 
-namespace Gorgon.UI
+namespace Gorgon.UI;
+
+/// <summary>
+/// The form used to display the translucent overlay.
+/// </summary>
+public partial class FormOverlay 
+    : Form
 {
-    /// <summary>
-    /// The form used to display the translucent overlay.
-    /// </summary>
-    public partial class FormOverlay 
-        : Form
+    #region Properties.
+    /// <summary>Gets the required creation parameters when the control handle is created.</summary>
+    protected override CreateParams CreateParams
     {
-        #region Properties.
-        /// <summary>Gets the required creation parameters when the control handle is created.</summary>
-        protected override CreateParams CreateParams
+        get
         {
-            get
-            {
-                CreateParams baseParams = base.CreateParams;
+            CreateParams baseParams = base.CreateParams;
 
-                const int wsExNoActivate = 0x08000000;
+            const int wsExNoActivate = 0x08000000;
 
-                baseParams.ExStyle |= wsExNoActivate;
+            baseParams.ExStyle |= wsExNoActivate;
 
-                return baseParams;
-            }
+            return baseParams;
         }
-        #endregion
-
-        #region Constructor/Finalizer.
-        /// <summary>Initializes a new instance of the <see cref="FormOverlay" /> class.</summary>
-        public FormOverlay() => InitializeComponent();
-        #endregion
     }
+    #endregion
+
+    #region Constructor/Finalizer.
+    /// <summary>Initializes a new instance of the <see cref="FormOverlay" /> class.</summary>
+    public FormOverlay() => InitializeComponent();
+    #endregion
 }

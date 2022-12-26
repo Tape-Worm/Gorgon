@@ -31,128 +31,127 @@ using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Renderers;
 
-namespace Gorgon.Examples
+namespace Gorgon.Examples;
+
+/// <summary>
+/// An entity for a sprite layer.
+/// </summary>
+public class SpriteEntity
+    : GorgonNamedObject
 {
+    #region Properties.
     /// <summary>
-    /// An entity for a sprite layer.
+    /// Property to set or return the sprite attached to this entity.
     /// </summary>
-    public class SpriteEntity
-        : GorgonNamedObject
+    public GorgonSprite Sprite
     {
-        #region Properties.
-        /// <summary>
-        /// Property to set or return the sprite attached to this entity.
-        /// </summary>
-        public GorgonSprite Sprite
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// Property to set or return the scaling amount for the entity.
-        /// </summary>
-        public float Scale
-        {
-            get;
-            set;
-        } = 1.0f;
-
-        /// <summary>
-        /// Property to set or return the position of the entity.
-        /// </summary>
-        /// <remarks>
-        /// This is the position of the entity in camera space, after transformation.
-        /// </remarks>
-        public Vector2 Position
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// Property to set or return the local position of the entity.
-        /// </summary>
-        /// <remarks>
-        /// This is the position of the entity in world space, prior to transformation.
-        /// </remarks>
-        public Vector2 LocalPosition
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// Property to set or return the rotation of the entity.
-        /// </summary>
-        public float Rotation
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// Property to set or return the anchor point for the entity.
-        /// </summary>
-        public Vector2 Anchor
-        {
-            get;
-            set;
-        } = new Vector2(0.5f, 0.5f);
-
-        /// <summary>
-        /// Property to set or return the color of the sprite.
-        /// </summary>
-        public GorgonColor Color
-        {
-            get;
-            set;
-        } = GorgonColor.White;
-
-        /// <summary>
-        /// Property to set or return whether the sprite is lit by deferred lighting.
-        /// </summary>
-        public bool IsLit
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// Property to set or return the animation for the sprite.
-        /// </summary>
-        public IGorgonAnimation Animation
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// Property to set or return the blending state to apply.
-        /// </summary>
-        public GorgonBlendState BlendState
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// Property to set or return whether this entity is visible or not.
-        /// </summary>
-        public bool Visible
-        {
-            get;
-            set;
-        } = true;
-        #endregion
-
-        #region Constructor
-        /// <summary>Initializes a new instance of the <see cref="SpriteEntity"/> class.</summary>
-        /// <param name="name">The name of this object.</param>
-        public SpriteEntity(string name)
-            : base(name)
-        {
-        }
-        #endregion
+        get;
+        set;
     }
+
+    /// <summary>
+    /// Property to set or return the scaling amount for the entity.
+    /// </summary>
+    public float Scale
+    {
+        get;
+        set;
+    } = 1.0f;
+
+    /// <summary>
+    /// Property to set or return the position of the entity.
+    /// </summary>
+    /// <remarks>
+    /// This is the position of the entity in camera space, after transformation.
+    /// </remarks>
+    public Vector2 Position
+    {
+        get;
+        set;
+    }
+
+    /// <summary>
+    /// Property to set or return the local position of the entity.
+    /// </summary>
+    /// <remarks>
+    /// This is the position of the entity in world space, prior to transformation.
+    /// </remarks>
+    public Vector2 LocalPosition
+    {
+        get;
+        set;
+    }
+
+    /// <summary>
+    /// Property to set or return the rotation of the entity.
+    /// </summary>
+    public float Rotation
+    {
+        get;
+        set;
+    }
+
+    /// <summary>
+    /// Property to set or return the anchor point for the entity.
+    /// </summary>
+    public Vector2 Anchor
+    {
+        get;
+        set;
+    } = new Vector2(0.5f, 0.5f);
+
+    /// <summary>
+    /// Property to set or return the color of the sprite.
+    /// </summary>
+    public GorgonColor Color
+    {
+        get;
+        set;
+    } = GorgonColor.White;
+
+    /// <summary>
+    /// Property to set or return whether the sprite is lit by deferred lighting.
+    /// </summary>
+    public bool IsLit
+    {
+        get;
+        set;
+    }
+
+    /// <summary>
+    /// Property to set or return the animation for the sprite.
+    /// </summary>
+    public IGorgonAnimation Animation
+    {
+        get;
+        set;
+    }
+
+    /// <summary>
+    /// Property to set or return the blending state to apply.
+    /// </summary>
+    public GorgonBlendState BlendState
+    {
+        get;
+        set;
+    }
+
+    /// <summary>
+    /// Property to set or return whether this entity is visible or not.
+    /// </summary>
+    public bool Visible
+    {
+        get;
+        set;
+    } = true;
+    #endregion
+
+    #region Constructor
+    /// <summary>Initializes a new instance of the <see cref="SpriteEntity"/> class.</summary>
+    /// <param name="name">The name of this object.</param>
+    public SpriteEntity(string name)
+        : base(name)
+    {
+    }
+    #endregion
 }

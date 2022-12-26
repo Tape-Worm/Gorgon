@@ -28,50 +28,49 @@ using System;
 using System.Runtime.Serialization;
 using Gorgon.Properties;
 
-namespace Gorgon
+namespace Gorgon;
+
+/// <summary>
+/// Exception to be thrown when an argument is missing.
+/// </summary>
+/// <remarks>
+/// <para>
+/// The ideal use case for this exception is when a method expects a structure of data with specific members and a required member is not initialized (e.g. <b>null</b>).
+/// </para>
+/// </remarks>
+[Serializable]
+public class ArgumentMissingException
+    : Exception
 {
     /// <summary>
-    /// Exception to be thrown when an argument is missing.
+    /// Initializes a new instance of the <see cref="ArgumentMissingException"/> class.
     /// </summary>
-    /// <remarks>
-    /// <para>
-    /// The ideal use case for this exception is when a method expects a structure of data with specific members and a required member is not initialized (e.g. <b>null</b>).
-    /// </para>
-    /// </remarks>
-    [Serializable]
-    public class ArgumentMissingException
-        : Exception
+    /// <param name="memberName">The name of the member that is missing.</param>
+    /// <param name="parameterName">The name of the parameter that is in error.</param>
+    public ArgumentMissingException(string memberName, string parameterName)
+        : base(string.Format(Resources.GOR_ERR_ARGUMENT_MISSING, memberName, parameterName))
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ArgumentMissingException"/> class.
-        /// </summary>
-        /// <param name="memberName">The name of the member that is missing.</param>
-        /// <param name="parameterName">The name of the parameter that is in error.</param>
-        public ArgumentMissingException(string memberName, string parameterName)
-            : base(string.Format(Resources.GOR_ERR_ARGUMENT_MISSING, memberName, parameterName))
-        {
 
-        }
+    }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ArgumentMissingException"/> class.
-        /// </summary>
-        /// <param name="memberName">The name of the member that is missing.</param>
-        /// <param name="parameterName">The name of the parameter that is in error.</param>
-        /// <param name="innerException">The exception that is the cause of the current exception, or a <b>null</b> reference if no inner exception is specified. </param>
-        public ArgumentMissingException(string memberName, string parameterName, Exception innerException)
-            : base(string.Format(Resources.GOR_ERR_ARGUMENT_MISSING, memberName, parameterName), innerException)
-        {
-        }
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ArgumentMissingException"/> class.
+    /// </summary>
+    /// <param name="memberName">The name of the member that is missing.</param>
+    /// <param name="parameterName">The name of the parameter that is in error.</param>
+    /// <param name="innerException">The exception that is the cause of the current exception, or a <b>null</b> reference if no inner exception is specified. </param>
+    public ArgumentMissingException(string memberName, string parameterName, Exception innerException)
+        : base(string.Format(Resources.GOR_ERR_ARGUMENT_MISSING, memberName, parameterName), innerException)
+    {
+    }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ArgumentMissingException"/> class.
-        /// </summary>
-        /// <param name="info">The object that holds the serialized object data.</param>
-        /// <param name="context">The contextual information about the source or destination.</param>
-        protected ArgumentMissingException(SerializationInfo info, StreamingContext context)
-            : base(info, context)
-        {
-        }
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ArgumentMissingException"/> class.
+    /// </summary>
+    /// <param name="info">The object that holds the serialized object data.</param>
+    /// <param name="context">The contextual information about the source or destination.</param>
+    protected ArgumentMissingException(SerializationInfo info, StreamingContext context)
+        : base(info, context)
+    {
     }
 }

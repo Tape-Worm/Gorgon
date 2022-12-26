@@ -30,118 +30,117 @@ using Gorgon.Graphics.Core;
 using Gorgon.Math;
 using DX = SharpDX;
 
-namespace Gorgon.Editor.Services
+namespace Gorgon.Editor.Services;
+
+/// <summary>
+/// Data used to extract sprites from a texture using a grid.
+/// </summary>
+/// <remarks>
+/// <para>
+/// Developers can use this to extract sprite information using a fixed size grid to retrieve texture coordinates from a texture passed to the service.
+/// </para>
+/// </remarks>
+/// <seealso cref="ISpriteExtractorService"/>
+public class SpriteExtractionData
 {
+    #region Variables.
+    // A weak reference to the texture so we don't hang onto it for eternity.
+    private WeakReference<GorgonTexture2DView> _textureRef;
+    #endregion
+
+    #region Properties.
     /// <summary>
-    /// Data used to extract sprites from a texture using a grid.
+    /// Property to set or return whether to skip empty sprites.
     /// </summary>
-    /// <remarks>
-    /// <para>
-    /// Developers can use this to extract sprite information using a fixed size grid to retrieve texture coordinates from a texture passed to the service.
-    /// </para>
-    /// </remarks>
-    /// <seealso cref="ISpriteExtractorService"/>
-    public class SpriteExtractionData
+    public bool SkipEmpty
     {
-        #region Variables.
-        // A weak reference to the texture so we don't hang onto it for eternity.
-        private WeakReference<GorgonTexture2DView> _textureRef;
-        #endregion
+        get;
+        set;
+    } = true;
 
-        #region Properties.
-        /// <summary>
-        /// Property to set or return whether to skip empty sprites.
-        /// </summary>
-        public bool SkipEmpty
-        {
-            get;
-            set;
-        } = true;
+    /// <summary>
+    /// Property to set or return the color to use when skipping empty sprites.
+    /// </summary>
+    public GorgonColor SkipColor
+    {
+        get;
+        set;
+    } = GorgonColor.BlackTransparent;
 
-        /// <summary>
-        /// Property to set or return the color to use when skipping empty sprites.
-        /// </summary>
-        public GorgonColor SkipColor
+    /// <summary>
+    /// Property to set or return the texture that is to be rendered.
+    /// </summary>
+    public GorgonTexture2DView Texture
+    {
+        get => !_textureRef.TryGetTarget(out GorgonTexture2DView result) ? null : result;
+        set
         {
-            get;
-            set;
-        } = GorgonColor.BlackTransparent;
-
-        /// <summary>
-        /// Property to set or return the texture that is to be rendered.
-        /// </summary>
-        public GorgonTexture2DView Texture
-        {
-            get => !_textureRef.TryGetTarget(out GorgonTexture2DView result) ? null : result;
-            set
+            if (value is null)
             {
-                if (value is null)
-                {
-                    _textureRef = null;
-                    return;
-                }
-
-                _textureRef = new WeakReference<GorgonTexture2DView>(value);
+                _textureRef = null;
+                return;
             }
+
+            _textureRef = new WeakReference<GorgonTexture2DView>(value);
         }
-
-        /// <summary>
-        /// Property to set or return the offset of the grid, in pixels.
-        /// </summary>
-        public DX.Point GridOffset
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// Property to set or return the size of a grid cell.
-        /// </summary>
-        public DX.Size2 CellSize
-        {
-            get;
-            set;
-        } = new DX.Size2(32, 32);
-
-        /// <summary>
-        /// Property to set or return the number of columns/rows in the grid.
-        /// </summary>
-        public DX.Size2 GridSize
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// Property to set or return the number of array indices used.
-        /// </summary>
-        public int ArrayCount
-        {
-            get;
-            set;
-        } = 1;
-
-        /// <summary>
-        /// Property to set or return the starting array index to use.
-        /// </summary>
-        public int StartArrayIndex
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// Property to return the maximum columns and rows allowed in the grid.
-        /// </summary>
-        public DX.Size2 MaxGridSize => ((!_textureRef.TryGetTarget(out GorgonTexture2DView texture))
-                    || (CellSize.Width == 0) || (CellSize.Height == 0))
-                    ? new DX.Size2(1, 1)
-                    : new DX.Size2((texture.Width - GridOffset.X) / CellSize.Width, (texture.Height - GridOffset.Y) / CellSize.Height);
-
-        /// <summary>
-        /// Property to return the number of sprites that will be extracted.
-        /// </summary>
-        public int SpriteCount => _textureRef is null ? 0 : (GridSize.Width.Min(MaxGridSize.Width).Max(1) * GridSize.Height.Min(MaxGridSize.Height).Max(1)) * ArrayCount;
-        #endregion
     }
+
+    /// <summary>
+    /// Property to set or return the offset of the grid, in pixels.
+    /// </summary>
+    public DX.Point GridOffset
+    {
+        get;
+        set;
+    }
+
+    /// <summary>
+    /// Property to set or return the size of a grid cell.
+    /// </summary>
+    public DX.Size2 CellSize
+    {
+        get;
+        set;
+    } = new DX.Size2(32, 32);
+
+    /// <summary>
+    /// Property to set or return the number of columns/rows in the grid.
+    /// </summary>
+    public DX.Size2 GridSize
+    {
+        get;
+        set;
+    }
+
+    /// <summary>
+    /// Property to set or return the number of array indices used.
+    /// </summary>
+    public int ArrayCount
+    {
+        get;
+        set;
+    } = 1;
+
+    /// <summary>
+    /// Property to set or return the starting array index to use.
+    /// </summary>
+    public int StartArrayIndex
+    {
+        get;
+        set;
+    }
+
+    /// <summary>
+    /// Property to return the maximum columns and rows allowed in the grid.
+    /// </summary>
+    public DX.Size2 MaxGridSize => ((!_textureRef.TryGetTarget(out GorgonTexture2DView texture))
+                || (CellSize.Width == 0) || (CellSize.Height == 0))
+                ? new DX.Size2(1, 1)
+                : new DX.Size2((texture.Width - GridOffset.X) / CellSize.Width, (texture.Height - GridOffset.Y) / CellSize.Height);
+
+    /// <summary>
+    /// Property to return the number of sprites that will be extracted.
+    /// </summary>
+    public int SpriteCount => _textureRef is null ? 0 : (GridSize.Width.Min(MaxGridSize.Width).Max(1) * GridSize.Height.Min(MaxGridSize.Height).Max(1)) * ArrayCount;
+    #endregion
 }

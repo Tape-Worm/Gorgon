@@ -33,94 +33,93 @@ using Gorgon.Editor.UI;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Fonts;
 
-namespace Gorgon.Editor.FontEditor
+namespace Gorgon.Editor.FontEditor;
+
+/// <summary>
+/// The view model for the <see cref="FontPatternBrushView"/>.
+/// </summary>
+internal class FontPatternBrush
+    : HostedPanelViewModelBase<HostedPanelViewModelParameters>, IFontPatternBrush, IFontBrush
 {
+    #region Variables.
     /// <summary>
-    /// The view model for the <see cref="FontPatternBrushView"/>.
+    /// The default pattern brush.
     /// </summary>
-    internal class FontPatternBrush
-        : HostedPanelViewModelBase<HostedPanelViewModelParameters>, IFontPatternBrush, IFontBrush
+    public static readonly GorgonGlyphHatchBrush DefaultBrush = new()
     {
-        #region Variables.
-        /// <summary>
-        /// The default pattern brush.
-        /// </summary>
-        public static readonly GorgonGlyphHatchBrush DefaultBrush = new()
+        HatchStyle = GlyphBrushHatchStyle.BackwardDiagonal,
+        BackgroundColor = GorgonColor.BlackTransparent,
+        ForegroundColor = GorgonColor.Black
+    };
+
+    // The brush to edit.
+    private GorgonGlyphHatchBrush _brush = DefaultBrush;
+    // The original colors for the brush.
+    private (GorgonColor Foreground, GorgonColor Background) _originalColors;
+    #endregion
+
+    #region Properties.
+    /// <summary>Property to return whether the panel is modal.</summary>
+    public override bool IsModal => true;
+
+    /// <summary>Property to set or return the original foreground and background colors.</summary>
+    public (GorgonColor Foreground, GorgonColor Background) OriginalColor
+    {
+        get => _originalColors;
+        set
         {
-            HatchStyle = GlyphBrushHatchStyle.BackwardDiagonal,
-            BackgroundColor = GorgonColor.BlackTransparent,
-            ForegroundColor = GorgonColor.Black
-        };
-
-        // The brush to edit.
-        private GorgonGlyphHatchBrush _brush = DefaultBrush;
-        // The original colors for the brush.
-        private (GorgonColor Foreground, GorgonColor Background) _originalColors;
-        #endregion
-
-        #region Properties.
-        /// <summary>Property to return whether the panel is modal.</summary>
-        public override bool IsModal => true;
-
-        /// <summary>Property to set or return the original foreground and background colors.</summary>
-        public (GorgonColor Foreground, GorgonColor Background) OriginalColor
-        {
-            get => _originalColors;
-            set
+            if (value.Equals(_originalColors))
             {
-                if (value.Equals(_originalColors))
-                {
-                    return;
-                }
-
-                OnPropertyChanging();
-                _originalColors = value;
-                OnPropertyChanged();
+                return;
             }
+
+            OnPropertyChanging();
+            _originalColors = value;
+            OnPropertyChanged();
         }
-
-        /// <summary>Property to set or return the current brush.</summary>
-        public GorgonGlyphHatchBrush Brush
-        {
-            get => _brush;
-            set
-            {
-                if (value is null)
-                {
-                    value = DefaultBrush;
-                }
-
-                if ((_brush == value) || (_brush.Equals(value)))
-                {
-                    return;
-                }
-
-                OnPropertyChanging();
-                _brush = value;
-                OnPropertyChanged();
-            }
-        }
-
-        /// <summary>
-        /// Property to return the generic glyph brush.
-        /// </summary>
-        GorgonGlyphBrush IFontBrush.Brush => Brush;
-        #endregion
-
-        #region Methods.
-        /// <summary>Function to inject dependencies for the view model.</summary>
-        /// <param name="injectionParameters">The parameters to inject.</param>
-        protected override void OnInitialize(HostedPanelViewModelParameters injectionParameters)
-        {
-        }
-
-        /// <summary>Function called when the associated view is unloaded.</summary>
-        /// <remarks>This method is used to perform tear down and clean up of resources.</remarks>
-        protected override void OnUnload()
-        {
-            _brush = DefaultBrush;
-            base.Unload();
-        }
-        #endregion
     }
+
+    /// <summary>Property to set or return the current brush.</summary>
+    public GorgonGlyphHatchBrush Brush
+    {
+        get => _brush;
+        set
+        {
+            if (value is null)
+            {
+                value = DefaultBrush;
+            }
+
+            if ((_brush == value) || (_brush.Equals(value)))
+            {
+                return;
+            }
+
+            OnPropertyChanging();
+            _brush = value;
+            OnPropertyChanged();
+        }
+    }
+
+    /// <summary>
+    /// Property to return the generic glyph brush.
+    /// </summary>
+    GorgonGlyphBrush IFontBrush.Brush => Brush;
+    #endregion
+
+    #region Methods.
+    /// <summary>Function to inject dependencies for the view model.</summary>
+    /// <param name="injectionParameters">The parameters to inject.</param>
+    protected override void OnInitialize(HostedPanelViewModelParameters injectionParameters)
+    {
+    }
+
+    /// <summary>Function called when the associated view is unloaded.</summary>
+    /// <remarks>This method is used to perform tear down and clean up of resources.</remarks>
+    protected override void OnUnload()
+    {
+        _brush = DefaultBrush;
+        base.Unload();
+    }
+    #endregion
 }

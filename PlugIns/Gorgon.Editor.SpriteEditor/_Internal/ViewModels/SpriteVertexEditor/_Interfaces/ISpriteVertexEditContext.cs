@@ -28,64 +28,63 @@ using System.Collections.Generic;
 using System.Numerics;
 using Gorgon.Editor.UI;
 
-namespace Gorgon.Editor.SpriteEditor
+namespace Gorgon.Editor.SpriteEditor;
+
+/// <summary>
+/// The view model for the vertex editor.
+/// </summary>
+internal interface ISpriteVertexEditContext
+    : IEditorContext
 {
     /// <summary>
-    /// The view model for the vertex editor.
+    /// Property to set or return the vertex offset for the selected vertex.
     /// </summary>
-    internal interface ISpriteVertexEditContext
-        : IEditorContext
+    Vector2 Offset
     {
-        /// <summary>
-        /// Property to set or return the vertex offset for the selected vertex.
-        /// </summary>
-        Vector2 Offset
-        {
-            get;
-            set;
-        }
+        get;
+        set;
+    }
 
-        /// <summary>
-        /// Property to set or return the vertex index.
-        /// </summary>
-        int SelectedVertexIndex
-        {
-            get;
-            set;
-        }
+    /// <summary>
+    /// Property to set or return the vertex index.
+    /// </summary>
+    int SelectedVertexIndex
+    {
+        get;
+        set;
+    }
 
-        /// <summary>
-        /// Property to return the command used to reset the vertex offset back to 0x0.
-        /// </summary>
-        IEditorCommand<object> ResetOffsetCommand
-        {
-            get;
-        }
+    /// <summary>
+    /// Property to return the command used to reset the vertex offset back to 0x0.
+    /// </summary>
+    IEditorCommand<object> ResetOffsetCommand
+    {
+        get;
+    }
 
-        /// <summary>
-        /// Property to set or return the command used to apply the updated clipping coordinates.
-        /// </summary>
-        IEditorCommand<object> ApplyCommand
-        {
-            get;
-            set;
-        }
+    /// <summary>
+    /// Property to set or return the command used to apply the updated clipping coordinates.
+    /// </summary>
+    IEditorCommand<object> ApplyCommand
+    {
+        get;
+        set;
+    }
 
-        /// <summary>
-        /// Property to return the command used to cancel the sprite clipping operation.
-        /// </summary>
-        IEditorCommand<object> CancelCommand
-        {
-            get;
-        }
+    /// <summary>
+    /// Property to return the command used to cancel the sprite clipping operation.
+    /// </summary>
+    IEditorCommand<object> CancelCommand
+    {
+        get;
+    }
 
-        /// <summary>
-        /// Property to set or return the vertices that are being edited.
-        /// </summary>
-        IReadOnlyList<Vector2> Vertices
-        {
-            get;
-            set;
-        }
+    /// <summary>
+    /// Property to set or return the vertices that are being edited.
+    /// </summary>
+    IReadOnlyList<Vector2> Vertices
+    {
+        get;
+        set;
     }
 }

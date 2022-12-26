@@ -26,30 +26,29 @@
 
 using Gorgon.Editor.UI;
 
-namespace Gorgon.Editor.FontEditor
+namespace Gorgon.Editor.FontEditor;
+
+/// <summary>
+/// The view model for the text color panel.
+/// </summary>
+internal interface IFontTextureSize
+    : IHostedPanelViewModel
 {
     /// <summary>
-    /// The view model for the text color panel.
+    /// Property to set or return the width of the font textures.
     /// </summary>
-    internal interface IFontTextureSize
-        : IHostedPanelViewModel
+    int TextureWidth
     {
-        /// <summary>
-        /// Property to set or return the width of the font textures.
-        /// </summary>
-        int TextureWidth
-        {
-            get;
-            set;
-        }
+        get;
+        set;
+    }
 
-        /// <summary>
-        /// Property to set or return the height of the font textures.
-        /// </summary>
-        int TextureHeight
-        {
-            get;
-            set;
-        }
+    /// <summary>
+    /// Property to set or return the height of the font textures.
+    /// </summary>
+    int TextureHeight
+    {
+        get;
+        set;
     }
 }

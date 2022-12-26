@@ -27,43 +27,42 @@
 using System.Runtime.InteropServices;
 
 // ReSharper disable InconsistentNaming
-namespace Gorgon.Native
+namespace Gorgon.Native;
+
+/// <summary>
+/// Keyboard device information.
+/// </summary>
+[StructLayout(LayoutKind.Sequential)]
+internal struct RID_DEVICE_INFO_KEYBOARD
 {
     /// <summary>
-    /// Keyboard device information.
+    /// Type.
     /// </summary>
-    [StructLayout(LayoutKind.Sequential)]
-    internal struct RID_DEVICE_INFO_KEYBOARD
-    {
-        /// <summary>
-        /// Type.
-        /// </summary>
-        [MarshalAs(UnmanagedType.U4)]
-        public int dwType;
-        /// <summary>
-        /// Subtype.
-        /// </summary>
-        [MarshalAs(UnmanagedType.U4)]
-        public int dwSubType;
-        /// <summary>
-        /// Keyboard mode.
-        /// </summary>
-        [MarshalAs(UnmanagedType.U4)]
-        public int dwKeyboardMode;
-        /// <summary>
-        /// Number of function keys.
-        /// </summary>
-        [MarshalAs(UnmanagedType.U4)]
-        public int dwNumberOfFunctionKeys;
-        /// <summary>
-        /// Number of indicators.
-        /// </summary>
-        [MarshalAs(UnmanagedType.U4)]
-        public int dwNumberOfIndicators;
-        /// <summary>
-        /// Number of total keys.
-        /// </summary>
-        [MarshalAs(UnmanagedType.U4)]
-        public int dwNumberOfKeysTotal;
-    }
+    [MarshalAs(UnmanagedType.U4)]
+    public int dwType;
+    /// <summary>
+    /// Subtype.
+    /// </summary>
+    [MarshalAs(UnmanagedType.U4)]
+    public int dwSubType;
+    /// <summary>
+    /// Keyboard mode.
+    /// </summary>
+    [MarshalAs(UnmanagedType.U4)]
+    public int dwKeyboardMode;
+    /// <summary>
+    /// Number of function keys.
+    /// </summary>
+    [MarshalAs(UnmanagedType.U4)]
+    public int dwNumberOfFunctionKeys;
+    /// <summary>
+    /// Number of indicators.
+    /// </summary>
+    [MarshalAs(UnmanagedType.U4)]
+    public int dwNumberOfIndicators;
+    /// <summary>
+    /// Number of total keys.
+    /// </summary>
+    [MarshalAs(UnmanagedType.U4)]
+    public int dwNumberOfKeysTotal;
 }

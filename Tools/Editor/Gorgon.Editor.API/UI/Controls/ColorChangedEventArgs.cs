@@ -27,41 +27,40 @@
 using System;
 using Gorgon.Graphics;
 
-namespace Gorgon.Editor.UI.Controls
+namespace Gorgon.Editor.UI.Controls;
+
+/// <summary>
+/// Event arguments for the <see cref="ColorPicker.ColorChanged"/> event.
+/// </summary>
+public class ColorChangedEventArgs
+    : EventArgs
 {
+    #region Properties.
     /// <summary>
-    /// Event arguments for the <see cref="ColorPicker.ColorChanged"/> event.
+    /// Property to return the selected color.
     /// </summary>
-    public class ColorChangedEventArgs
-        : EventArgs
+    public GorgonColor Color
     {
-        #region Properties.
-        /// <summary>
-        /// Property to return the selected color.
-        /// </summary>
-        public GorgonColor Color
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to return the original color.
-        /// </summary>
-        public GorgonColor OriginalColor
-        {
-            get;
-        }
-        #endregion
-
-        #region Constructor/Finalizer.
-        /// <summary>Initializes a new instance of the <see cref="ColorChangedEventArgs"/> class.</summary>
-        /// <param name="newColor">The new color.</param>
-        /// <param name="originalColor">The original color.</param>
-        public ColorChangedEventArgs(GorgonColor newColor, GorgonColor originalColor)
-        {
-            Color = newColor;
-            OriginalColor = originalColor;
-        }
-        #endregion
+        get;
     }
+
+    /// <summary>
+    /// Property to return the original color.
+    /// </summary>
+    public GorgonColor OriginalColor
+    {
+        get;
+    }
+    #endregion
+
+    #region Constructor/Finalizer.
+    /// <summary>Initializes a new instance of the <see cref="ColorChangedEventArgs"/> class.</summary>
+    /// <param name="newColor">The new color.</param>
+    /// <param name="originalColor">The original color.</param>
+    public ColorChangedEventArgs(GorgonColor newColor, GorgonColor originalColor)
+    {
+        Color = newColor;
+        OriginalColor = originalColor;
+    }
+    #endregion
 }

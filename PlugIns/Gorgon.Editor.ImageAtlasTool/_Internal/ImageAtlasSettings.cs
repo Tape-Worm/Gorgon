@@ -27,71 +27,70 @@
 using Newtonsoft.Json;
 using DX = SharpDX;
 
-namespace Gorgon.Editor.ImageAtlasTool
+namespace Gorgon.Editor.ImageAtlasTool;
+
+/// <summary>
+/// The settings for the plug in.
+/// </summary>
+internal class TextureAtlasSettings
 {
     /// <summary>
-    /// The settings for the plug in.
+    /// Property to set or return the last directory path used to output sprites into.
     /// </summary>
-    internal class TextureAtlasSettings
+    [JsonProperty]
+    public string LastOutputDir
     {
-        /// <summary>
-        /// Property to set or return the last directory path used to output sprites into.
-        /// </summary>
-        [JsonProperty]
-        public string LastOutputDir
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// Property to set or return whether the window is in a maximized state or not.
-        /// </summary>
-        [JsonProperty]
-        public bool IsMaximized
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// Property to set or return the maximum texture size.
-        /// </summary>
-        [JsonProperty]
-        public DX.Size2 MaxTextureSize
-        {
-            get;
-            set;
-        } = new DX.Size2(1024, 1024);
-
-        /// <summary>
-        /// Property to set or return the maximum array count.
-        /// </summary>
-        [JsonProperty]
-        public int MaxArrayCount
-        {
-            get;
-            set;
-        } = 1;
-
-        /// <summary>
-        /// Property to set or return the amount of padding around each sprite.
-        /// </summary>
-        [JsonProperty]
-        public int Padding
-        {
-            get;
-            set;
-        } = 2;
-
-        /// <summary>
-        /// Property to set or return whether to generate sprites when generating the atlas.
-        /// </summary>
-        [JsonProperty]
-        public bool GenerateSprites
-        {
-            get;
-            set;
-        } = true;
+        get;
+        set;
     }
+
+    /// <summary>
+    /// Property to set or return whether the window is in a maximized state or not.
+    /// </summary>
+    [JsonProperty]
+    public bool IsMaximized
+    {
+        get;
+        set;
+    }
+
+    /// <summary>
+    /// Property to set or return the maximum texture size.
+    /// </summary>
+    [JsonProperty]
+    public DX.Size2 MaxTextureSize
+    {
+        get;
+        set;
+    } = new DX.Size2(1024, 1024);
+
+    /// <summary>
+    /// Property to set or return the maximum array count.
+    /// </summary>
+    [JsonProperty]
+    public int MaxArrayCount
+    {
+        get;
+        set;
+    } = 1;
+
+    /// <summary>
+    /// Property to set or return the amount of padding around each sprite.
+    /// </summary>
+    [JsonProperty]
+    public int Padding
+    {
+        get;
+        set;
+    } = 2;
+
+    /// <summary>
+    /// Property to set or return whether to generate sprites when generating the atlas.
+    /// </summary>
+    [JsonProperty]
+    public bool GenerateSprites
+    {
+        get;
+        set;
+    } = true;
 }

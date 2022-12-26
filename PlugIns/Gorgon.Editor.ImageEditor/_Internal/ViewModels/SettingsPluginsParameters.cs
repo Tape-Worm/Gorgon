@@ -30,46 +30,45 @@ using Gorgon.Editor.Services;
 using Gorgon.Editor.UI;
 using Gorgon.PlugIns;
 
-namespace Gorgon.Editor.ImageEditor
+namespace Gorgon.Editor.ImageEditor;
+
+/// <summary>
+/// Parameters to pass to the <see cref="ISettingsPlugins"/> view model.
+/// </summary>
+internal class SettingsPluginsParameters
+    : PlugInsCategoryViewModelParameters
 {
+    #region Properties.
     /// <summary>
-    /// Parameters to pass to the <see cref="ISettingsPlugins"/> view model.
+    /// Property to return the settings for the image editor plugin.
     /// </summary>
-    internal class SettingsPluginsParameters
-        : PlugInsCategoryViewModelParameters
+    public ImageEditorSettings Settings
     {
-        #region Properties.
-        /// <summary>
-        /// Property to return the settings for the image editor plugin.
-        /// </summary>
-        public ImageEditorSettings Settings
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to return the codecs loaded into the system.
-        /// </summary>
-        public ICodecRegistry Codecs
-        {
-            get;
-        }
-        #endregion
-
-        #region Constructor/Finalizer.
-        /// <summary>Initializes a new instance of the ImageContentVmParameters class.</summary>
-        /// <param name="settings">The settings for the image editor.</param>
-        /// <param name="codecs">The codecs loaded into the system.</param>
-        /// <param name="openCodecDialog">The file dialog used to locate codec assemblies.</param>
-        /// <param name="plugInCache">The cache for plug in assemblies.</param>
-        /// <param name="hostServices">Common application services.</param>
-        /// <exception cref="ArgumentNullException">Thrown when any of the parameters are <b>null</b>.</exception>
-        public SettingsPluginsParameters(ImageEditorSettings settings, ICodecRegistry codecs, IFileDialogService openCodecDialog, GorgonMefPlugInCache plugInCache, IHostContentServices hostServices)            
-            : base(openCodecDialog, plugInCache, hostServices)
-        {
-            Settings = settings ?? throw new ArgumentNullException(nameof(settings));
-            Codecs = codecs ?? throw new ArgumentNullException(nameof(codecs));
-        }
-        #endregion
+        get;
     }
+
+    /// <summary>
+    /// Property to return the codecs loaded into the system.
+    /// </summary>
+    public ICodecRegistry Codecs
+    {
+        get;
+    }
+    #endregion
+
+    #region Constructor/Finalizer.
+    /// <summary>Initializes a new instance of the ImageContentVmParameters class.</summary>
+    /// <param name="settings">The settings for the image editor.</param>
+    /// <param name="codecs">The codecs loaded into the system.</param>
+    /// <param name="openCodecDialog">The file dialog used to locate codec assemblies.</param>
+    /// <param name="plugInCache">The cache for plug in assemblies.</param>
+    /// <param name="hostServices">Common application services.</param>
+    /// <exception cref="ArgumentNullException">Thrown when any of the parameters are <b>null</b>.</exception>
+    public SettingsPluginsParameters(ImageEditorSettings settings, ICodecRegistry codecs, IFileDialogService openCodecDialog, GorgonMefPlugInCache plugInCache, IHostContentServices hostServices)            
+        : base(openCodecDialog, plugInCache, hostServices)
+    {
+        Settings = settings ?? throw new ArgumentNullException(nameof(settings));
+        Codecs = codecs ?? throw new ArgumentNullException(nameof(codecs));
+    }
+    #endregion
 }

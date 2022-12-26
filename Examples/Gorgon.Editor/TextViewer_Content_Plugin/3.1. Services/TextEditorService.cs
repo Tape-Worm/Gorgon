@@ -27,32 +27,31 @@
 using System.Windows.Forms;
 using Gorgon.UI;
 
-namespace Gorgon.Examples
+namespace Gorgon.Examples;
+
+/// <summary>
+/// A service used to present a text editor to the user.
+/// </summary>
+internal class TextEditorService
 {
+    // This is an example of a service. It allows us a means of providing functionality to the view model without violating the 
+    // rule that the view model shouldn't know anything about the view.
+    //
+    // By providing this service we can wrap up this functionality in an agnostic way. For example, this particular implementation 
+    // uses a form to allow the user to input text. But, what if we wanted another means of input? By wrapping this in a service 
+    // we can define any means we'd like to retrieve the input. All the view model cares about is that we get text back from some 
+    // external means. How we get that text is irrelevant.
+
     /// <summary>
-    /// A service used to present a text editor to the user.
+    /// Function to retrieve the text from the service.
     /// </summary>
-    internal class TextEditorService
+    /// <param name="currentText">The current text.</param>
+    /// <returns>The new text, or <b>null</b> if cancelled.</returns>
+    public string GetText(string currentText)
     {
-        // This is an example of a service. It allows us a means of providing functionality to the view model without violating the 
-        // rule that the view model shouldn't know anything about the view.
-        //
-        // By providing this service we can wrap up this functionality in an agnostic way. For example, this particular implementation 
-        // uses a form to allow the user to input text. But, what if we wanted another means of input? By wrapping this in a service 
-        // we can define any means we'd like to retrieve the input. All the view model cares about is that we get text back from some 
-        // external means. How we get that text is irrelevant.
+        using var textEditor = new FormTextEditor();
+        textEditor.ContentText = textEditor.OriginalText = currentText;
 
-        /// <summary>
-        /// Function to retrieve the text from the service.
-        /// </summary>
-        /// <param name="currentText">The current text.</param>
-        /// <returns>The new text, or <b>null</b> if cancelled.</returns>
-        public string GetText(string currentText)
-        {
-            using var textEditor = new FormTextEditor();
-            textEditor.ContentText = textEditor.OriginalText = currentText;
-
-            return textEditor.ShowDialog(GorgonApplication.MainForm) == DialogResult.Cancel ? null : textEditor.ContentText;
-        }
+        return textEditor.ShowDialog(GorgonApplication.MainForm) == DialogResult.Cancel ? null : textEditor.ContentText;
     }
 }

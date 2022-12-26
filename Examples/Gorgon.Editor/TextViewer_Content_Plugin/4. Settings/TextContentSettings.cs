@@ -26,25 +26,24 @@
 
 using Newtonsoft.Json;
 
-namespace Gorgon.Examples
+namespace Gorgon.Examples;
+
+/// <summary>
+/// The settings for the animation importer plug in.
+/// </summary>
+/// <remarks>
+/// This is our settings for the plug in. The settings should contain simple primitive types so they can be serialized into/deserialized from 
+/// JSON data.
+/// </remarks>
+internal class TextContentSettings
 {
     /// <summary>
-    /// The settings for the animation importer plug in.
+    /// Property to set or return the default font for the text.
     /// </summary>
-    /// <remarks>
-    /// This is our settings for the plug in. The settings should contain simple primitive types so they can be serialized into/deserialized from 
-    /// JSON data.
-    /// </remarks>
-    internal class TextContentSettings
+    [JsonProperty]
+    public FontFace DefaultFont
     {
-        /// <summary>
-        /// Property to set or return the default font for the text.
-        /// </summary>
-        [JsonProperty]
-        public FontFace DefaultFont
-        {
-            get;
-            set;
-        } = FontFace.Arial;
-    }
+        get;
+        set;
+    } = FontFace.Arial;
 }

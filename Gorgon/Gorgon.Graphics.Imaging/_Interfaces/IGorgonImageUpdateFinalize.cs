@@ -25,18 +25,17 @@
 #endregion
 
 
-namespace Gorgon.Graphics.Imaging
+namespace Gorgon.Graphics.Imaging;
+
+/// <summary>
+/// Functionality for editing the image using a fluent interface.
+/// </summary>
+public interface IGorgonImageUpdateFinalize
 {
     /// <summary>
-    /// Functionality for editing the image using a fluent interface.
+    /// Function to finalize the update of the image and apply all changes.
     /// </summary>
-    public interface IGorgonImageUpdateFinalize
-    {
-        /// <summary>
-        /// Function to finalize the update of the image and apply all changes.
-        /// </summary>
-        /// <param name="cancel">[Optional] <b>true</b> to cancel the operations, or <b>false</b> to commit them.</param>
-        /// <returns>The original interface for the image that was updated.</returns>
-        IGorgonImage EndUpdate(bool cancel = false);
-    }
+    /// <param name="cancel">[Optional] <b>true</b> to cancel the operations, or <b>false</b> to commit them.</param>
+    /// <returns>The original interface for the image that was updated.</returns>
+    IGorgonImage EndUpdate(bool cancel = false);
 }

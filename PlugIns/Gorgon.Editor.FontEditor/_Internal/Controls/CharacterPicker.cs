@@ -37,14 +37,14 @@ using Gorgon.Editor.FontEditor.Properties;
 using Gorgon.Editor.UI.Views;
 using Gorgon.UI;
 
-namespace Gorgon.Editor.FontEditor
-{
-    /// <summary>
-    /// A control that allows the user to select specific characters for font generation.
-    /// </summary>
-    public partial class CharacterPicker 
+namespace Gorgon.Editor.FontEditor;
+
+/// <summary>
+/// A control that allows the user to select specific characters for font generation.
+/// </summary>
+public partial class CharacterPicker 
 		: EditorBaseControl
-    {
+{
 		#region Variables.
 		// Page for characters.
 		private int _page;
@@ -72,8 +72,8 @@ namespace Gorgon.Editor.FontEditor
 		private EventHandler _characterChangedEvent;
 
 		/// <summary>
-        /// Event triggered when the characters property is updated.
-        /// </summary>
+    /// Event triggered when the characters property is updated.
+    /// </summary>
 		[Category("Property Changed"), Description("Event triggered when the characters property is updated.")]
 		public event EventHandler CharactersChanged
 		{
@@ -155,9 +155,9 @@ namespace Gorgon.Editor.FontEditor
 
 		#region Properties.
 		/// <summary>
-        /// Property to set or return whether the OK/Cancel buttons are visible.
-        /// </summary>
-        [Category("Behavior"), Description("Shows or hides the OK and Cancel buttons."), 
+    /// Property to set or return whether the OK/Cancel buttons are visible.
+    /// </summary>
+    [Category("Behavior"), Description("Shows or hides the OK and Cancel buttons."), 
 		Browsable(true), DesignerSerializationVisibility(DesignerSerializationVisibility.Visible), DefaultValue(true)]
 		public bool ShowOkCancel
 		{
@@ -407,8 +407,8 @@ namespace Gorgon.Editor.FontEditor
 		}
 
 		/// <summary>
-        /// Function to update the final character list.
-        /// </summary>
+    /// Function to update the final character list.
+    /// </summary>
 		private void UpdateCharacters()
 		{
 			if (TextSelectedCharacters.Text.IndexOf(" ", StringComparison.Ordinal) < 0)
@@ -612,8 +612,8 @@ namespace Gorgon.Editor.FontEditor
 		}
 
 		/// <summary>
-        /// Function to handle a font change.
-        /// </summary>
+    /// Function to handle a font change.
+    /// </summary>
 		private void CurrentFontChanged()
 		{
 			if (CurrentFont is null)
@@ -675,6 +675,5 @@ namespace Gorgon.Editor.FontEditor
 				ScrollVertical.Width = (int)(ScrollVertical.Width * (DeviceDpi / 96.0));
 			}
 		}
-        #endregion
-    }
+    #endregion
 }

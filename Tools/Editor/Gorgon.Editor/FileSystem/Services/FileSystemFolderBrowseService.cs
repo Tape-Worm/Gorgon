@@ -35,75 +35,74 @@ using Gorgon.Editor.ViewModels;
 using Gorgon.IO;
 using Gorgon.UI;
 
-namespace Gorgon.Editor.Services
+namespace Gorgon.Editor.Services;
+
+/// <summary>
+/// An interface used to browse the file system folder structure.
+/// </summary>
+internal class FileSystemFolderBrowseService
+    : IFileSystemFolderBrowseService
 {
+    #region Variables.
+    // The main view model for the application.
+    private readonly IMain _mainViewModel;
+    #endregion
+
+    #region Methods.
     /// <summary>
-    /// An interface used to browse the file system folder structure.
+    /// Function to retrieve the parent form for the message box.
     /// </summary>
-    internal class FileSystemFolderBrowseService
-        : IFileSystemFolderBrowseService
+    /// <returns>The form to use as the owner.</returns>
+    private static Form GetParentForm() => Form.ActiveForm ?? (Application.OpenForms.Count > 1 ? Application.OpenForms[Application.OpenForms.Count - 1] : GorgonApplication.MainForm);
+
+    /// <summary>Function to retrieve a path from the file system.</summary>
+    /// <param name="initialPath">The starting path to select.</param>
+    /// <param name="caption">The caption for the dialog.</param>
+    /// <param name="description">The description of what the browser is supposed to be doing.</param>
+    /// <returns>The selected path, or <b>null</b> if canceled.</returns>
+    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="initialPath"/> parameter is <b>null</b>.</exception>
+    /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="initialPath"/> parameter is emtpy.</exception>
+    /// <exception cref="IOException">Thrown if no <see cref="FileSystemRoot"/> is set.</exception>
+    public string GetFolderPath(string initialPath, string caption, string description)
     {
-        #region Variables.
-        // The main view model for the application.
-        private readonly IMain _mainViewModel;
-        #endregion
-
-        #region Methods.
-        /// <summary>
-        /// Function to retrieve the parent form for the message box.
-        /// </summary>
-        /// <returns>The form to use as the owner.</returns>
-        private static Form GetParentForm() => Form.ActiveForm ?? (Application.OpenForms.Count > 1 ? Application.OpenForms[Application.OpenForms.Count - 1] : GorgonApplication.MainForm);
-
-        /// <summary>Function to retrieve a path from the file system.</summary>
-        /// <param name="initialPath">The starting path to select.</param>
-        /// <param name="caption">The caption for the dialog.</param>
-        /// <param name="description">The description of what the browser is supposed to be doing.</param>
-        /// <returns>The selected path, or <b>null</b> if canceled.</returns>
-        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="initialPath"/> parameter is <b>null</b>.</exception>
-        /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="initialPath"/> parameter is emtpy.</exception>
-        /// <exception cref="IOException">Thrown if no <see cref="FileSystemRoot"/> is set.</exception>
-        public string GetFolderPath(string initialPath, string caption, string description)
+        if (initialPath is null)
         {
-            if (initialPath is null)
-            {
-                throw new ArgumentNullException(nameof(initialPath));
-            }
-
-            if (string.IsNullOrWhiteSpace(initialPath))
-            {
-                throw new ArgumentEmptyException(nameof(initialPath));
-            }
-
-            if (_mainViewModel.CurrentProject?.FileExplorer is null)
-            {
-                throw new IOException(Resources.GOREDIT_ERR_NO_ROOT);
-            }
-
-            IDirectory initialDirectory = initialPath == "/" ? _mainViewModel.CurrentProject?.FileExplorer.Root 
-                                                             : _mainViewModel.CurrentProject?.FileExplorer.Root.Directories.Traverse(d => d.Directories)
-                                                                    .FirstOrDefault(d => string.Equals(d.FullPath, initialPath, StringComparison.OrdinalIgnoreCase));
-
-            if (initialDirectory is null)
-            {
-                initialDirectory = _mainViewModel.CurrentProject?.FileExplorer.Root;
-            }
-
-            using var browser = new FormFileSystemFolderBrowser()
-            {
-                Text = caption,
-                Description = description
-            };
-            browser.SetDataContext(_mainViewModel.CurrentProject?.FileExplorer);
-            browser.SetInitialPath(initialDirectory);
-            return browser.ShowDialog(GetParentForm()) != DialogResult.OK ? null : browser.CurrentDirectory.FormatDirectory('/');
+            throw new ArgumentNullException(nameof(initialPath));
         }
-        #endregion
 
-        #region Constructor.
-        /// <summary>Initializes a new instance of the <see cref="FileSystemFolderBrowseService"/> class.</summary>
-        /// <param name="mainViewModel">The main view model for the application.</param>
-        public FileSystemFolderBrowseService(IMain mainViewModel) => _mainViewModel = mainViewModel ?? throw new ArgumentNullException(nameof(mainViewModel));
-        #endregion
+        if (string.IsNullOrWhiteSpace(initialPath))
+        {
+            throw new ArgumentEmptyException(nameof(initialPath));
+        }
+
+        if (_mainViewModel.CurrentProject?.FileExplorer is null)
+        {
+            throw new IOException(Resources.GOREDIT_ERR_NO_ROOT);
+        }
+
+        IDirectory initialDirectory = initialPath == "/" ? _mainViewModel.CurrentProject?.FileExplorer.Root 
+                                                         : _mainViewModel.CurrentProject?.FileExplorer.Root.Directories.Traverse(d => d.Directories)
+                                                                .FirstOrDefault(d => string.Equals(d.FullPath, initialPath, StringComparison.OrdinalIgnoreCase));
+
+        if (initialDirectory is null)
+        {
+            initialDirectory = _mainViewModel.CurrentProject?.FileExplorer.Root;
+        }
+
+        using var browser = new FormFileSystemFolderBrowser()
+        {
+            Text = caption,
+            Description = description
+        };
+        browser.SetDataContext(_mainViewModel.CurrentProject?.FileExplorer);
+        browser.SetInitialPath(initialDirectory);
+        return browser.ShowDialog(GetParentForm()) != DialogResult.OK ? null : browser.CurrentDirectory.FormatDirectory('/');
     }
+    #endregion
+
+    #region Constructor.
+    /// <summary>Initializes a new instance of the <see cref="FileSystemFolderBrowseService"/> class.</summary>
+    /// <param name="mainViewModel">The main view model for the application.</param>
+    public FileSystemFolderBrowseService(IMain mainViewModel) => _mainViewModel = mainViewModel ?? throw new ArgumentNullException(nameof(mainViewModel));
+    #endregion
 }

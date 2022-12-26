@@ -27,20 +27,19 @@
 using System.Runtime.InteropServices;
 // ReSharper disable All
 
-namespace Gorgon.Native
+namespace Gorgon.Native;
+
+[StructLayout(LayoutKind.Sequential)]
+internal struct SHFILEINFO
 {
-    [StructLayout(LayoutKind.Sequential)]
-    internal struct SHFILEINFO
-    {
-        internal const int NAMESIZE = 80;
-        internal nint hIcon;
-        internal int iIcon;
-        internal uint dwAttributes;
+    internal const int NAMESIZE = 80;
+    internal nint hIcon;
+    internal int iIcon;
+    internal uint dwAttributes;
 
-        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 260)]
-        internal string szDisplayName;
+    [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 260)]
+    internal string szDisplayName;
 
-        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 80)]
-        internal string szTypeName;
-    };
-}
+    [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 80)]
+    internal string szTypeName;
+};

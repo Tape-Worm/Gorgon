@@ -1,8 +1,8 @@
 ﻿using System.ComponentModel;
 using System.Windows.Forms;
 
-namespace Gorgon.Examples
-{
+namespace Gorgon.Examples;
+
 	partial class FormSplash
 	{
 		/// <summary>
@@ -90,4 +90,3 @@ namespace Gorgon.Examples
 		private Label labelText;
 
 	}
-}

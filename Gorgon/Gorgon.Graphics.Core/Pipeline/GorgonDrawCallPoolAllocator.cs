@@ -28,37 +28,36 @@ using System;
 using Gorgon.Memory;
 using Gorgon.Reflection;
 
-namespace Gorgon.Graphics.Core
+namespace Gorgon.Graphics.Core;
+
+/// <summary>
+/// An allocator used to retrieve draw calls from a pool.
+/// </summary>
+/// <typeparam name="T">The type of draw call.</typeparam>
+public class GorgonDrawCallPoolAllocator<T>
+    : GorgonRingPool<T>
+    where T : GorgonDrawCallCommon
 {
+    #region Variables.
+    // The object creator.
+    private static readonly Lazy<ObjectActivator<T>> _creator;
+    #endregion
+
+    #region Constructor/Finalizer.
     /// <summary>
-    /// An allocator used to retrieve draw calls from a pool.
+    /// Initializes a new instance of the <see cref="GorgonLinearPool{T}"/> class.
     /// </summary>
-    /// <typeparam name="T">The type of draw call.</typeparam>
-    public class GorgonDrawCallPoolAllocator<T>
-        : GorgonRingPool<T>
-        where T : GorgonDrawCallCommon
+    /// <param name="objectCount">The number of total objects available to the allocator.</param>
+    /// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="objectCount"/> parameter is less than 1.</exception>
+    public GorgonDrawCallPoolAllocator(int objectCount)
+        : base(objectCount, () => _creator.Value())
     {
-        #region Variables.
-        // The object creator.
-        private static readonly Lazy<ObjectActivator<T>> _creator;
-        #endregion
-
-        #region Constructor/Finalizer.
-        /// <summary>
-        /// Initializes a new instance of the <see cref="GorgonLinearPool{T}"/> class.
-        /// </summary>
-        /// <param name="objectCount">The number of total objects available to the allocator.</param>
-        /// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="objectCount"/> parameter is less than 1.</exception>
-        public GorgonDrawCallPoolAllocator(int objectCount)
-            : base(objectCount, () => _creator.Value())
-        {
-        }
-
-        /// <summary>
-        /// Initializes static members of the <see cref="GorgonDrawCallPoolAllocator{T}"/> class.
-        /// </summary>
-        static GorgonDrawCallPoolAllocator() => _creator = new Lazy<ObjectActivator<T>>(() => typeof(T).CreateActivator<T>(), true);
-        #endregion
-
     }
+
+    /// <summary>
+    /// Initializes static members of the <see cref="GorgonDrawCallPoolAllocator{T}"/> class.
+    /// </summary>
+    static GorgonDrawCallPoolAllocator() => _creator = new Lazy<ObjectActivator<T>>(() => typeof(T).CreateActivator<T>(), true);
+    #endregion
+
 }

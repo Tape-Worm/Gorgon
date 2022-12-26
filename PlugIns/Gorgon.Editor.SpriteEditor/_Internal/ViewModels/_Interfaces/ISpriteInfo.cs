@@ -25,43 +25,42 @@
 #endregion
 
 
-namespace Gorgon.Editor.SpriteEditor
+namespace Gorgon.Editor.SpriteEditor;
+
+/// <summary>
+/// Provides information to the UI about a sprite.
+/// </summary>
+internal interface ISpriteInfo
 {
     /// <summary>
-    /// Provides information to the UI about a sprite.
+    /// Property to return the index of the texture array that the sprite uses.
     /// </summary>
-    internal interface ISpriteInfo
+    int ArrayIndex
     {
-        /// <summary>
-        /// Property to return the index of the texture array that the sprite uses.
-        /// </summary>
-        int ArrayIndex
-        {
-            get;
-        }
+        get;
+    }
 
-        /// <summary>
-        /// Property to return whether the currently loaded texture supports array changes.
-        /// </summary>
-        bool SupportsArrayChange
-        {
-            get;
-        }
+    /// <summary>
+    /// Property to return whether the currently loaded texture supports array changes.
+    /// </summary>
+    bool SupportsArrayChange
+    {
+        get;
+    }
 
-        /// <summary>
-        /// Property to return the total number of array indices in the sprite texture.
-        /// </summary>
-        int ArrayCount
-        {
-            get;
-        }
+    /// <summary>
+    /// Property to return the total number of array indices in the sprite texture.
+    /// </summary>
+    int ArrayCount
+    {
+        get;
+    }
 
-        /// <summary>
-        /// Property to return information about the sprite.
-        /// </summary>
-        string SpriteInfo
-        {
-            get;
-        }
+    /// <summary>
+    /// Property to return information about the sprite.
+    /// </summary>
+    string SpriteInfo
+    {
+        get;
     }
 }

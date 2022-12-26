@@ -29,48 +29,47 @@ using Gorgon.Editor.Content;
 using Gorgon.Editor.PlugIns;
 using Gorgon.Editor.UI.ViewModels;
 
-namespace Gorgon.Editor.UI
+namespace Gorgon.Editor.UI;
+
+/// <summary>
+/// Common content view model parameters.
+/// </summary>
+/// <remarks>
+/// <para>
+/// These parameters are meant to be passed to a view model based on the <see cref="ContentEditorViewModelBase{T}"/> type and will contain services from the host application, and any other information 
+/// required for content editor view models.
+/// </para>
+/// <para>
+/// Content editor developers will use types derived from this type to pass custom initialization parameters to their content view models. 
+/// </para>
+/// </remarks>
+/// <seealso cref="ContentEditorViewModelBase{T}"/>
+public class ContentViewModelInjection
+    : ViewModelInjection<IHostContentServices>, IContentViewModelInjection
 {
     /// <summary>
-    /// Common content view model parameters.
+    /// Property to return the content file.
     /// </summary>
-    /// <remarks>
-    /// <para>
-    /// These parameters are meant to be passed to a view model based on the <see cref="ContentEditorViewModelBase{T}"/> type and will contain services from the host application, and any other information 
-    /// required for content editor view models.
-    /// </para>
-    /// <para>
-    /// Content editor developers will use types derived from this type to pass custom initialization parameters to their content view models. 
-    /// </para>
-    /// </remarks>
-    /// <seealso cref="ContentEditorViewModelBase{T}"/>
-    public class ContentViewModelInjection
-        : ViewModelInjection<IHostContentServices>, IContentViewModelInjection
+    public IContentFile File
     {
-        /// <summary>
-        /// Property to return the content file.
-        /// </summary>
-        public IContentFile File
-        {
-            get;
-        }
+        get;
+    }
 
-        /// <summary>Property to return the file manager for content files.</summary>
-        public IContentFileManager ContentFileManager
-        {
-            get;
-        }
+    /// <summary>Property to return the file manager for content files.</summary>
+    public IContentFileManager ContentFileManager
+    {
+        get;
+    }
 
-        /// <summary>Initializes a new instance of the ContentViewModelInjectionCommon class.</summary>
-        /// <param name="fileManager">The file manager for content files.</param>
-        /// <param name="file">The file that contains the content.</param>        
-        /// <param name="commonServices">The common services for the application.</param>
-        /// <exception cref="ArgumentNullException">Thrown any of the parameters are <b>null</b></exception>
-        public ContentViewModelInjection(IContentFileManager fileManager, IContentFile file, IHostContentServices commonServices)
-            : base(commonServices)
-        {
-            ContentFileManager = fileManager ?? throw new ArgumentNullException(nameof(fileManager));
-            File = file ?? throw new ArgumentNullException(nameof(file));
-        }
+    /// <summary>Initializes a new instance of the ContentViewModelInjectionCommon class.</summary>
+    /// <param name="fileManager">The file manager for content files.</param>
+    /// <param name="file">The file that contains the content.</param>        
+    /// <param name="commonServices">The common services for the application.</param>
+    /// <exception cref="ArgumentNullException">Thrown any of the parameters are <b>null</b></exception>
+    public ContentViewModelInjection(IContentFileManager fileManager, IContentFile file, IHostContentServices commonServices)
+        : base(commonServices)
+    {
+        ContentFileManager = fileManager ?? throw new ArgumentNullException(nameof(fileManager));
+        File = file ?? throw new ArgumentNullException(nameof(file));
     }
 }

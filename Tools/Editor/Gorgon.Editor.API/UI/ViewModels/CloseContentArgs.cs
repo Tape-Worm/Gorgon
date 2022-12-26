@@ -26,29 +26,28 @@
 
 using System.ComponentModel;
 
-namespace Gorgon.Editor.UI
+namespace Gorgon.Editor.UI;
+
+/// <summary>
+/// Arguments for the <see cref="IEditorContent.CloseContentCommand"/>.
+/// </summary>
+public class CloseContentArgs
+    : CancelEventArgs
 {
+    #region Properties.
     /// <summary>
-    /// Arguments for the <see cref="IEditorContent.CloseContentCommand"/>.
+    /// Property to return whether or not to check the content for changes prior to closing.
     /// </summary>
-    public class CloseContentArgs
-        : CancelEventArgs
+    public bool CheckChanges
     {
-        #region Properties.
-        /// <summary>
-        /// Property to return whether or not to check the content for changes prior to closing.
-        /// </summary>
-        public bool CheckChanges
-        {
-            get;
-        }
-        #endregion
-
-        #region Constructor.
-
-        /// <summary>Initializes a new instance of the <see cref="CloseContentArgs"/> class.</summary>
-        /// <param name="checkForChanges"><b>true</b> to check for changes prior to closing, <b>false</b> to skip the check and force a close.</param>
-        public CloseContentArgs(bool checkForChanges) => CheckChanges = checkForChanges;
-        #endregion
+        get;
     }
+    #endregion
+
+    #region Constructor.
+
+    /// <summary>Initializes a new instance of the <see cref="CloseContentArgs"/> class.</summary>
+    /// <param name="checkForChanges"><b>true</b> to check for changes prior to closing, <b>false</b> to skip the check and force a close.</param>
+    public CloseContentArgs(bool checkForChanges) => CheckChanges = checkForChanges;
+    #endregion
 }

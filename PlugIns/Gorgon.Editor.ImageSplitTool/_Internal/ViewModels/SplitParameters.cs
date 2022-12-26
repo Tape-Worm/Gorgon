@@ -34,86 +34,85 @@ using Gorgon.Editor.UI.Controls;
 using Gorgon.Editor.UI.ViewModels;
 using Gorgon.IO;
 
-namespace Gorgon.Editor.ImageSplitTool
+namespace Gorgon.Editor.ImageSplitTool;
+
+/// <summary>
+/// The parameters for the <see cref="ISplit"/> view model.
+/// </summary>
+internal class SplitParameters
+    : ViewModelInjection<IHostContentServices>
 {
     /// <summary>
-    /// The parameters for the <see cref="ISplit"/> view model.
+    /// Property to return the settings for the plug in.
     /// </summary>
-    internal class SplitParameters
-        : ViewModelInjection<IHostContentServices>
+    public ImageSplitToolSettings Settings
     {
-        /// <summary>
-        /// Property to return the settings for the plug in.
-        /// </summary>
-        public ImageSplitToolSettings Settings
-        {
-            get;
-        }
+        get;
+    }
 
-        /// <summary>
-        /// Property to return the host application file manager.
-        /// </summary>
-        public IContentFileManager FileManager
-        {
-            get;
-        }
+    /// <summary>
+    /// Property to return the host application file manager.
+    /// </summary>
+    public IContentFileManager FileManager
+    {
+        get;
+    }
 
-        /// <summary>
-        /// Property to return the service to search through the content files.
-        /// </summary>
-        public ISearchService<IContentFileExplorerSearchEntry> SearchService
-        {
-            get;
-        }
+    /// <summary>
+    /// Property to return the service to search through the content files.
+    /// </summary>
+    public ISearchService<IContentFileExplorerSearchEntry> SearchService
+    {
+        get;
+    }
 
-        /// <summary>
-        /// Property to return the entries for the file system.
-        /// </summary>
-        public IReadOnlyList<ContentFileExplorerDirectoryEntry> Entries
-        {
-            get;
-        }
+    /// <summary>
+    /// Property to return the entries for the file system.
+    /// </summary>
+    public IReadOnlyList<ContentFileExplorerDirectoryEntry> Entries
+    {
+        get;
+    }
 
-        /// <summary>
-        /// Property to return the temporary file system used to write data.
-        /// </summary>
-        public IGorgonFileSystemWriter<Stream> TempFileSystem
-        {
-            get;
-        }
+    /// <summary>
+    /// Property to return the temporary file system used to write data.
+    /// </summary>
+    public IGorgonFileSystemWriter<Stream> TempFileSystem
+    {
+        get;
+    }
 
-        /// <summary>
-        /// Property to return the texture splitter service.
-        /// </summary>
-        public TextureAtlasSplitter TextureSplitService
-        {
-            get;
-        }
+    /// <summary>
+    /// Property to return the texture splitter service.
+    /// </summary>
+    public TextureAtlasSplitter TextureSplitService
+    {
+        get;
+    }
 
-        /// <summary>Initializes a new instance of the <see cref="SplitParameters"/> class.</summary>
-        /// <param name="entries">The file system image entries.</param>
-        /// <param name="searchService">The search service used to search through the image entries.</param>        
-        /// <param name="fileManager">The host application file manager.</param>
-        /// <param name="tempFileSystem">The file system for the temporary storage area.</param>
-        /// <param name="settings">The settings for the plug in.</param>
-        /// <param name="textureSplitService">The service used to actually split the files.</param>
-        /// <param name="hostServices">The services from the host application.</param>        
-        /// <exception cref="ArgumentNullException">Thrown when any of the parameters are <b>null</b>.</exception>
-        public SplitParameters(IReadOnlyList<ContentFileExplorerDirectoryEntry> entries, 
-                               ISearchService<IContentFileExplorerSearchEntry> searchService,
-                               IContentFileManager fileManager,
-                               IGorgonFileSystemWriter<Stream> tempFileSystem,
-                               ImageSplitToolSettings settings,
-                               TextureAtlasSplitter textureSplitService,
-                               IHostContentServices hostServices)
-            : base(hostServices)
-        {
-            Entries = entries ?? throw new ArgumentNullException(nameof(entries));
-            SearchService = searchService ?? throw new ArgumentNullException(nameof(searchService));
-            FileManager = fileManager ?? throw new ArgumentNullException(nameof(fileManager));
-            TempFileSystem = tempFileSystem ?? throw new ArgumentNullException(nameof(tempFileSystem));
-            Settings = settings ?? throw new ArgumentNullException(nameof(settings));
-            TextureSplitService = textureSplitService ?? throw new ArgumentNullException(nameof(textureSplitService));
-        }
+    /// <summary>Initializes a new instance of the <see cref="SplitParameters"/> class.</summary>
+    /// <param name="entries">The file system image entries.</param>
+    /// <param name="searchService">The search service used to search through the image entries.</param>        
+    /// <param name="fileManager">The host application file manager.</param>
+    /// <param name="tempFileSystem">The file system for the temporary storage area.</param>
+    /// <param name="settings">The settings for the plug in.</param>
+    /// <param name="textureSplitService">The service used to actually split the files.</param>
+    /// <param name="hostServices">The services from the host application.</param>        
+    /// <exception cref="ArgumentNullException">Thrown when any of the parameters are <b>null</b>.</exception>
+    public SplitParameters(IReadOnlyList<ContentFileExplorerDirectoryEntry> entries, 
+                           ISearchService<IContentFileExplorerSearchEntry> searchService,
+                           IContentFileManager fileManager,
+                           IGorgonFileSystemWriter<Stream> tempFileSystem,
+                           ImageSplitToolSettings settings,
+                           TextureAtlasSplitter textureSplitService,
+                           IHostContentServices hostServices)
+        : base(hostServices)
+    {
+        Entries = entries ?? throw new ArgumentNullException(nameof(entries));
+        SearchService = searchService ?? throw new ArgumentNullException(nameof(searchService));
+        FileManager = fileManager ?? throw new ArgumentNullException(nameof(fileManager));
+        TempFileSystem = tempFileSystem ?? throw new ArgumentNullException(nameof(tempFileSystem));
+        Settings = settings ?? throw new ArgumentNullException(nameof(settings));
+        TextureSplitService = textureSplitService ?? throw new ArgumentNullException(nameof(textureSplitService));
     }
 }

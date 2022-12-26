@@ -29,68 +29,67 @@ using Gorgon.Graphics.Core;
 using Gorgon.Graphics.Fonts;
 using Gorgon.Renderers;
 
-namespace Gorgon.Editor.Rendering
+namespace Gorgon.Editor.Rendering;
+
+/// <summary>
+/// A graphics context for passing the graphics interfaces to various views.
+/// </summary>
+public interface IGraphicsContext
 {
+    #region Properties.
     /// <summary>
-    /// A graphics context for passing the graphics interfaces to various views.
+    /// Property to return information about the video adapter selected.
     /// </summary>
-    public interface IGraphicsContext
+    IGorgonVideoAdapterInfo VideoAdapter
     {
-        #region Properties.
-        /// <summary>
-        /// Property to return information about the video adapter selected.
-        /// </summary>
-        IGorgonVideoAdapterInfo VideoAdapter
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to return the blitter used to arbitrarily render a full texture.
-        /// </summary>
-        GorgonTextureBlitter Blitter
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to return the factory used to create fonts.
-        /// </summary>
-        GorgonFontFactory FontFactory
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to return the graphics interface.
-        /// </summary>
-        GorgonGraphics Graphics
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to return the 2D renderer.
-        /// </summary>
-        Gorgon2D Renderer2D
-        {
-            get;
-        }
-        #endregion
-
-        #region Methods.
-        /// <summary>
-        /// Function to return a leased out swap chain.
-        /// </summary>
-        /// <param name="swapChain">The swap chain to return.</param>        
-        void ReturnSwapPresenter(ref GorgonSwapChain swapChain);
-
-        /// <summary>
-        /// Function to retrieve the swap chain for a specific control.
-        /// </summary>
-        /// <param name="control">The control that will be bound to the swap chain.</param>
-        /// <returns>A new swap chain bound to the control.</returns>
-        GorgonSwapChain LeaseSwapPresenter(Control control);
-        #endregion
+        get;
     }
+
+    /// <summary>
+    /// Property to return the blitter used to arbitrarily render a full texture.
+    /// </summary>
+    GorgonTextureBlitter Blitter
+    {
+        get;
+    }
+
+    /// <summary>
+    /// Property to return the factory used to create fonts.
+    /// </summary>
+    GorgonFontFactory FontFactory
+    {
+        get;
+    }
+
+    /// <summary>
+    /// Property to return the graphics interface.
+    /// </summary>
+    GorgonGraphics Graphics
+    {
+        get;
+    }
+
+    /// <summary>
+    /// Property to return the 2D renderer.
+    /// </summary>
+    Gorgon2D Renderer2D
+    {
+        get;
+    }
+    #endregion
+
+    #region Methods.
+    /// <summary>
+    /// Function to return a leased out swap chain.
+    /// </summary>
+    /// <param name="swapChain">The swap chain to return.</param>        
+    void ReturnSwapPresenter(ref GorgonSwapChain swapChain);
+
+    /// <summary>
+    /// Function to retrieve the swap chain for a specific control.
+    /// </summary>
+    /// <param name="control">The control that will be bound to the swap chain.</param>
+    /// <returns>A new swap chain bound to the control.</returns>
+    GorgonSwapChain LeaseSwapPresenter(Control control);
+    #endregion
 }

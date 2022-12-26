@@ -6,10 +6,10 @@ using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 
-namespace Fetze.WinFormsColor
-{
+namespace Fetze.WinFormsColor;
+
 #pragma warning disable IDE0090 // Use 'new(...)'
-    public partial class ColorPickerDialog : Form
+public partial class ColorPickerDialog : Form
 	{
 		public enum PrimaryAttrib
 		{
@@ -43,8 +43,8 @@ namespace Fetze.WinFormsColor
 				a = c.A / 255.0f;
 			}
 
-            public Color ToColor() => Color.FromArgb((int)Math.Round(a * 255.0f), ExtMethodsSystemDrawingColor.ColorFromHSV(h, s, v));
-        }
+        public Color ToColor() => Color.FromArgb((int)Math.Round(a * 255.0f), ExtMethodsSystemDrawingColor.ColorFromHSV(h, s, v));
+    }
 
 		private	bool			alphaEnabled		= true;
 		private	InternalColor	oldColor			= new InternalColor(Color.Red);
@@ -53,46 +53,46 @@ namespace Fetze.WinFormsColor
 		private	bool			suspendTextEvents	= false;
 
 		public bool AlphaEnabled
+    {
+        get => alphaEnabled;
+        set
         {
-            get => alphaEnabled;
-            set
-            {
-                alphaEnabled = value;
-                alphaSlider.Enabled = alphaEnabled;
-                numAlpha.Enabled = alphaEnabled;
-            }
+            alphaEnabled = value;
+            alphaSlider.Enabled = alphaEnabled;
+            numAlpha.Enabled = alphaEnabled;
         }
-        public Color OldColor
+    }
+    public Color OldColor
+    {
+        get => oldColor.ToColor();
+        set
         {
-            get => oldColor.ToColor();
-            set
-            {
-                oldColor = new InternalColor(value);
-                UpdateColorShowBox();
-            }
+            oldColor = new InternalColor(value);
+            UpdateColorShowBox();
         }
-        public Color SelectedColor
+    }
+    public Color SelectedColor
+    {
+        get => selColor.ToColor();
+        set
         {
-            get => selColor.ToColor();
-            set
-            {
-                selColor = new InternalColor(value);
-                UpdateColorControls();
-            }
+            selColor = new InternalColor(value);
+            UpdateColorControls();
         }
-        public PrimaryAttrib PrimaryAttribute
+    }
+    public PrimaryAttrib PrimaryAttribute
+    {
+        get => primAttrib;
+        set
         {
-            get => primAttrib;
-            set
-            {
-                primAttrib = value;
-                UpdateColorControls();
-            }
+            primAttrib = value;
+            UpdateColorControls();
         }
+    }
 
-        public ColorPickerDialog() => InitializeComponent();
+    public ColorPickerDialog() => InitializeComponent();
 
-        private void UpdateColorControls()
+    private void UpdateColorControls()
 		{
 			UpdatePrimaryAttributeRadioBox();
 			UpdateText();
@@ -309,10 +309,10 @@ namespace Fetze.WinFormsColor
 					break;
 			}
 		}
-        private void UpdateAlphaSliderGradient() => alphaSlider.SetupGradient(Color.Transparent, Color.FromArgb(255, selColor.ToColor()));
-        private void UpdateAlphaSliderValue() => alphaSlider.ValuePercentual = selColor.a;
+    private void UpdateAlphaSliderGradient() => alphaSlider.SetupGradient(Color.Transparent, Color.FromArgb(255, selColor.ToColor()));
+    private void UpdateAlphaSliderValue() => alphaSlider.ValuePercentual = selColor.a;
 
-        private void UpdateSelectedColorFromSliderValue()
+    private void UpdateSelectedColorFromSliderValue()
 		{
 			Color tmp;
 			switch (primAttrib)
@@ -397,9 +397,9 @@ namespace Fetze.WinFormsColor
 					break;
 			}
 		}
-        private void UpdateSelectedColorFromAlphaValue() => selColor.a = alphaSlider.ValuePercentual;
+    private void UpdateSelectedColorFromAlphaValue() => selColor.a = alphaSlider.ValuePercentual;
 
-        protected override void OnShown(EventArgs e)
+    protected override void OnShown(EventArgs e)
 		{
 			base.OnShown(e);
 			selColor = oldColor;
@@ -409,54 +409,54 @@ namespace Fetze.WinFormsColor
 		private void radioHue_CheckedChanged(object sender, EventArgs e)
 		{
 			if (radioHue.Checked)
-            {
-                PrimaryAttribute = PrimaryAttrib.Hue;
-            }
+        {
+            PrimaryAttribute = PrimaryAttrib.Hue;
         }
+    }
 		private void radioSaturation_CheckedChanged(object sender, EventArgs e)
 		{
 			if (radioSaturation.Checked)
-            {
-                PrimaryAttribute = PrimaryAttrib.Saturation;
-            }
+        {
+            PrimaryAttribute = PrimaryAttrib.Saturation;
         }
+    }
 		private void radioValue_CheckedChanged(object sender, EventArgs e)
 		{
 			if (radioValue.Checked)
-            {
-                PrimaryAttribute = PrimaryAttrib.Brightness;
-            }
+        {
+            PrimaryAttribute = PrimaryAttrib.Brightness;
         }
+    }
 		private void radioRed_CheckedChanged(object sender, EventArgs e)
 		{
 			if (radioRed.Checked)
-            {
-                PrimaryAttribute = PrimaryAttrib.Red;
-            }
+        {
+            PrimaryAttribute = PrimaryAttrib.Red;
         }
+    }
 		private void radioGreen_CheckedChanged(object sender, EventArgs e)
 		{
 			if (radioGreen.Checked)
-            {
-                PrimaryAttribute = PrimaryAttrib.Green;
-            }
+        {
+            PrimaryAttribute = PrimaryAttrib.Green;
         }
+    }
 		private void radioBlue_CheckedChanged(object sender, EventArgs e)
 		{
 			if (radioBlue.Checked)
-            {
-                PrimaryAttribute = PrimaryAttrib.Blue;
-            }
+        {
+            PrimaryAttribute = PrimaryAttrib.Blue;
         }
+    }
 
 		private void colorPanel_PercentualValueChanged(object sender, EventArgs e)
 		{
 			if (ContainsFocus)
-            {
-                UpdateSelectedColorFromPanelValue();
-            }
+        {
+            UpdateSelectedColorFromPanelValue();
+        }
 
-            UpdateColorSliderGradient();
+        UpdateColorSliderGradient();
 			UpdateAlphaSliderGradient();
 			UpdateColorShowBox();
 			UpdateText();
@@ -464,11 +464,11 @@ namespace Fetze.WinFormsColor
 		private void colorSlider_PercentualValueChanged(object sender, EventArgs e)
 		{
 			if (ContainsFocus)
-            {
-                UpdateSelectedColorFromSliderValue();
-            }
+        {
+            UpdateSelectedColorFromSliderValue();
+        }
 
-            UpdateColorPanelGradient();
+        UpdateColorPanelGradient();
 			UpdateAlphaSliderGradient();
 			UpdateColorShowBox();
 			UpdateText();
@@ -476,11 +476,11 @@ namespace Fetze.WinFormsColor
 		private void alphaSlider_PercentualValueChanged(object sender, EventArgs e)
 		{
 			if (ContainsFocus)
-            {
-                UpdateSelectedColorFromAlphaValue();
-            }
+        {
+            UpdateSelectedColorFromAlphaValue();
+        }
 
-            UpdateColorSliderGradient();
+        UpdateColorSliderGradient();
 			UpdateColorPanelGradient();
 			UpdateColorShowBox();
 			UpdateText();
@@ -489,41 +489,41 @@ namespace Fetze.WinFormsColor
 		private void numHue_ValueChanged(object sender, EventArgs e)
 		{
 			if (suspendTextEvents)
-            {
-                return;
-            }
+        {
+            return;
+        }
 
-            selColor.h = (float)numHue.Value / 360.0f;
+        selColor.h = (float)numHue.Value / 360.0f;
 			UpdateColorControls();
 		}
 		private void numSaturation_ValueChanged(object sender, EventArgs e)
 		{
 			if (suspendTextEvents)
-            {
-                return;
-            }
+        {
+            return;
+        }
 
-            selColor.s = (float)numSaturation.Value / 100.0f;
+        selColor.s = (float)numSaturation.Value / 100.0f;
 			UpdateColorControls();
 		}
 		private void numValue_ValueChanged(object sender, EventArgs e)
 		{
 			if (suspendTextEvents)
-            {
-                return;
-            }
+        {
+            return;
+        }
 
-            selColor.v = (float)numValue.Value / 100.0f;
+        selColor.v = (float)numValue.Value / 100.0f;
 			UpdateColorControls();
 		}
 		private void numRed_ValueChanged(object sender, EventArgs e)
 		{
 			if (suspendTextEvents)
-            {
-                return;
-            }
+        {
+            return;
+        }
 
-            var tmp = selColor.ToColor();
+        var tmp = selColor.ToColor();
 			selColor = new InternalColor(Color.FromArgb(
 				tmp.A,
 				(byte)numRed.Value,
@@ -534,11 +534,11 @@ namespace Fetze.WinFormsColor
 		private void numGreen_ValueChanged(object sender, EventArgs e)
 		{
 			if (suspendTextEvents)
-            {
-                return;
-            }
+        {
+            return;
+        }
 
-            var tmp = selColor.ToColor();
+        var tmp = selColor.ToColor();
 			selColor = new InternalColor(Color.FromArgb(
 				tmp.A,
 				tmp.R,
@@ -549,11 +549,11 @@ namespace Fetze.WinFormsColor
 		private void numBlue_ValueChanged(object sender, EventArgs e)
 		{
 			if (suspendTextEvents)
-            {
-                return;
-            }
+        {
+            return;
+        }
 
-            var tmp = selColor.ToColor();
+        var tmp = selColor.ToColor();
 			selColor = new InternalColor(Color.FromArgb(
 				tmp.A,
 				tmp.R,
@@ -564,11 +564,11 @@ namespace Fetze.WinFormsColor
 		private void numAlpha_ValueChanged(object sender, EventArgs e)
 		{
 			if (suspendTextEvents)
-            {
-                return;
-            }
+        {
+            return;
+        }
 
-            var tmp = selColor.ToColor();
+        var tmp = selColor.ToColor();
 			selColor = new InternalColor(Color.FromArgb(
 				(byte)numAlpha.Value,
 				tmp.R,
@@ -579,11 +579,11 @@ namespace Fetze.WinFormsColor
 		private void textBoxHex_TextChanged(object sender, EventArgs e)
 		{
 			if (suspendTextEvents)
-            {
-                return;
-            }
+        {
+            return;
+        }
 
-            int argb;
+        int argb;
 			if (int.TryParse(textBoxHex.Text, System.Globalization.NumberStyles.HexNumber, System.Globalization.CultureInfo.CurrentUICulture, out argb))
 			{
 				var tmp = Color.FromArgb(argb);
@@ -606,14 +606,13 @@ namespace Fetze.WinFormsColor
 		private void ColorPickerDialog_FormClosed(object sender, FormClosedEventArgs e)
 		{
 			if (DialogResult == DialogResult.Cancel)
-            {
-                SelectedColor = OldColor;
-            }
-            else
-            {
-                OldColor = SelectedColor;
-            }
+        {
+            SelectedColor = OldColor;
         }
+        else
+        {
+            OldColor = SelectedColor;
+        }
+    }
 	}
-}
 #pragma warning restore IDE0090 // Use 'new(...)'

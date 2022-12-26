@@ -26,43 +26,42 @@
 
 using Gorgon.Memory;
 
-namespace Gorgon.Core
+namespace Gorgon.Core;
+
+/// <summary>
+/// An interface that defines a standard set of functionality for a builder pattern object.
+/// </summary>
+/// <typeparam name="TB">The type of builder. Used to return a fluent interface for the builder.</typeparam>
+/// <typeparam name="TBo">The type of object produced by the builder.</typeparam>
+/// <typeparam name="TBa">The type of optional allocator to use for building objects. Must derive from <see cref="GorgonRingPool{T}"/>.</typeparam>
+/// <remarks>
+/// <para>
+/// This interface is used to define a fluent builder pattern for creating objects.  
+/// </para>
+/// <para>
+/// Unlike the <see cref="IGorgonFluentBuilder{TB, TBo}"/> interface, this one defines an allocator type <typeparamref name="TBa"/>.
+/// </para>
+/// </remarks>
+/// <seealso cref="GorgonRingPool{T}"/>
+public interface IGorgonFluentBuilderAllocator<out TB, TBo, in TBa>
+    : IGorgonFluentBuilder<TB, TBo>
+    where TB : class
+    where TBo : class
+    where TBa : IGorgonAllocator<TBo>
 {
     /// <summary>
-    /// An interface that defines a standard set of functionality for a builder pattern object.
+    /// Function to return the object.
     /// </summary>
-    /// <typeparam name="TB">The type of builder. Used to return a fluent interface for the builder.</typeparam>
-    /// <typeparam name="TBo">The type of object produced by the builder.</typeparam>
-    /// <typeparam name="TBa">The type of optional allocator to use for building objects. Must derive from <see cref="GorgonRingPool{T}"/>.</typeparam>
+    /// <param name="allocator">The allocator used to create an instance of the object</param>
+    /// <returns>The object created or updated by this builder.</returns>
     /// <remarks>
     /// <para>
-    /// This interface is used to define a fluent builder pattern for creating objects.  
+    /// Using an <paramref name="allocator"/> can provide different strategies when building objects.  If omitted, the object will be created using the standard <see langword="new"/> keyword.
     /// </para>
     /// <para>
-    /// Unlike the <see cref="IGorgonFluentBuilder{TB, TBo}"/> interface, this one defines an allocator type <typeparamref name="TBa"/>.
+    /// A custom allocator can be beneficial because it allows us to use a pool for allocating the objects, and thus allows for recycling of objects. This keeps the garbage collector happy by keeping objects
+    /// around for as long as we need them, instead of creating objects that can potentially end up in the large object heap or in Gen 2.
     /// </para>
     /// </remarks>
-    /// <seealso cref="GorgonRingPool{T}"/>
-    public interface IGorgonFluentBuilderAllocator<out TB, TBo, in TBa>
-        : IGorgonFluentBuilder<TB, TBo>
-        where TB : class
-        where TBo : class
-        where TBa : IGorgonAllocator<TBo>
-    {
-        /// <summary>
-        /// Function to return the object.
-        /// </summary>
-        /// <param name="allocator">The allocator used to create an instance of the object</param>
-        /// <returns>The object created or updated by this builder.</returns>
-        /// <remarks>
-        /// <para>
-        /// Using an <paramref name="allocator"/> can provide different strategies when building objects.  If omitted, the object will be created using the standard <see langword="new"/> keyword.
-        /// </para>
-        /// <para>
-        /// A custom allocator can be beneficial because it allows us to use a pool for allocating the objects, and thus allows for recycling of objects. This keeps the garbage collector happy by keeping objects
-        /// around for as long as we need them, instead of creating objects that can potentially end up in the large object heap or in Gen 2.
-        /// </para>
-        /// </remarks>
-        TBo Build(TBa allocator);
-    }
+    TBo Build(TBa allocator);
 }

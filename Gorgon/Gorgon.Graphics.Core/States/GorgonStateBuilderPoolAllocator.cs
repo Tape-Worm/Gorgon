@@ -28,33 +28,32 @@ using System;
 using Gorgon.Memory;
 using Gorgon.Reflection;
 
-namespace Gorgon.Graphics.Core
+namespace Gorgon.Graphics.Core;
+
+/// <summary>
+/// An allocator used to retrieve states from a pool.
+/// </summary>
+/// <typeparam name="T">The type of state</typeparam>
+public class GorgonStateBuilderPoolAllocator<T>
+    : GorgonRingPool<T>
+    where T : class, IEquatable<T>
 {
-    /// <summary>
-    /// An allocator used to retrieve states from a pool.
-    /// </summary>
-    /// <typeparam name="T">The type of state</typeparam>
-    public class GorgonStateBuilderPoolAllocator<T>
-        : GorgonRingPool<T>
-        where T : class, IEquatable<T>
+    #region Variables.
+    // The object creator.
+    private static readonly Lazy<ObjectActivator<T>> _creator;
+    #endregion
+
+    #region Constructor/Finalizer.
+    /// <summary>Initializes a new instance of the <see cref="GorgonStateBuilderPoolAllocator{T}"/> class.</summary>
+    /// <param name="size">[Optional] The number of items that can be stored in this pool.</param>
+    public GorgonStateBuilderPoolAllocator(int size = 4096)
+        : base(size, () => _creator.Value())
     {
-        #region Variables.
-        // The object creator.
-        private static readonly Lazy<ObjectActivator<T>> _creator;
-        #endregion
-
-        #region Constructor/Finalizer.
-        /// <summary>Initializes a new instance of the <see cref="GorgonStateBuilderPoolAllocator{T}"/> class.</summary>
-        /// <param name="size">[Optional] The number of items that can be stored in this pool.</param>
-        public GorgonStateBuilderPoolAllocator(int size = 4096)
-            : base(size, () => _creator.Value())
-        {
-        }
-
-        /// <summary>
-        /// Initializes static members of the <see cref="GorgonDrawCallPoolAllocator{T}"/> class.
-        /// </summary>
-        static GorgonStateBuilderPoolAllocator() => _creator = new Lazy<ObjectActivator<T>>(() => typeof(T).CreateActivator<T>(), true);
-        #endregion
     }
+
+    /// <summary>
+    /// Initializes static members of the <see cref="GorgonDrawCallPoolAllocator{T}"/> class.
+    /// </summary>
+    static GorgonStateBuilderPoolAllocator() => _creator = new Lazy<ObjectActivator<T>>(() => typeof(T).CreateActivator<T>(), true);
+    #endregion
 }

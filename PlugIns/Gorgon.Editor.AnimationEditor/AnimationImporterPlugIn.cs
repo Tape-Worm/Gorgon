@@ -35,151 +35,150 @@ using Gorgon.Editor.UI;
 using Gorgon.IO;
 using Gorgon.PlugIns;
 
-namespace Gorgon.Editor.AnimationEditor
+namespace Gorgon.Editor.AnimationEditor;
+
+/// <summary>
+/// A plugin used to build an importer for animation data.
+/// </summary>
+internal class AnimationImporterPlugIn
+    : ContentImportPlugIn
 {
+    #region Variables.
+    // The image editor settings.
+    private IImportSettings _settings;
+
+    // The codecs registered with the plug in.
+    private CodecRegistry _codecs;
+
+    // The plug in cache for image codecs.
+    private GorgonMefPlugInCache _pluginCache;
+
     /// <summary>
-    /// A plugin used to build an importer for animation data.
+    /// The file name for the file that stores the settings.
     /// </summary>
-    internal class AnimationImporterPlugIn
-        : ContentImportPlugIn
+    public readonly static string SettingsFilename = typeof(AnimationImporterPlugIn).FullName;
+    #endregion
+
+    #region Methods.
+    /// <summary>
+    /// Function to retrieve the codec used by the sprite.
+    /// </summary>
+    /// <param name="filePath">Path to the file containing the image content.</param>
+    /// <returns>The codec used to read the file.</returns>
+    public static IGorgonAnimationCodec GetCodec(string filePath, CodecRegistry codecs)
     {
-        #region Variables.
-        // The image editor settings.
-        private IImportSettings _settings;
+        string fileExtension = Path.GetExtension(filePath);
 
-        // The codecs registered with the plug in.
-        private CodecRegistry _codecs;
-
-        // The plug in cache for image codecs.
-        private GorgonMefPlugInCache _pluginCache;
-
-        /// <summary>
-        /// The file name for the file that stores the settings.
-        /// </summary>
-        public readonly static string SettingsFilename = typeof(AnimationImporterPlugIn).FullName;
-        #endregion
-
-        #region Methods.
-        /// <summary>
-        /// Function to retrieve the codec used by the sprite.
-        /// </summary>
-        /// <param name="filePath">Path to the file containing the image content.</param>
-        /// <returns>The codec used to read the file.</returns>
-        public static IGorgonAnimationCodec GetCodec(string filePath, CodecRegistry codecs)
+        // Locate the file extension.
+        if (string.IsNullOrWhiteSpace(fileExtension))
         {
-            string fileExtension = Path.GetExtension(filePath);
-
-            // Locate the file extension.
-            if (string.IsNullOrWhiteSpace(fileExtension))
-            {
-                return null;
-            }
-
-            var extension = new GorgonFileExtension(fileExtension);
-
-            // Since all Gorgon's sprite files use the same extension, we'll have to be a little more aggressive when determining type.
-            (GorgonFileExtension, IGorgonAnimationCodec codec)[] results = codecs.CodecFileTypes.Where(item => item.extension == extension).ToArray();
-
-            if (results.Length == 0)
-            {
-                return null;
-            }
-
-            using Stream stream = File.Open(filePath, FileMode.Open, FileAccess.Read, FileShare.Read);
-            return results.Select(item => item.codec).FirstOrDefault(item => item.IsReadable(stream));
+            return null;
         }
 
-        /// <summary>Function to retrieve the settings interface for this plug in.</summary>
-        /// <param name="injector">Objects to inject into the view model.</param>
-        /// <returns>The settings interface view model.</returns>
-        /// <remarks>
-        ///   <para>
-        /// Implementors who wish to supply customizable settings for their plug ins from the main "Settings" area in the application can override this method and return a new view model based on
-        /// the base <see cref="ISettingsCategoryViewModel"/> type.
-        /// </para>
-        ///   <para>
-        /// Plug ins must register the view associated with their settings panel via the <see cref="ViewFactory.Register{T}(Func{System.Windows.Forms.Control})"/> method in the
-        /// <see cref="OnInitialize()"/> method or the settings will not display.
-        /// </para>
-        /// </remarks>
-        protected override ISettingsCategory OnGetSettings() => _settings;
+        var extension = new GorgonFileExtension(fileExtension);
 
-        /// <summary>Function to provide initialization for the plugin.</summary>
-        /// <param name="pluginService">The plugin service used to access other plugins.</param>
-        /// <remarks>This method is only called when the plugin is loaded at startup.</remarks>
-        protected override void OnInitialize()
+        // Since all Gorgon's sprite files use the same extension, we'll have to be a little more aggressive when determining type.
+        (GorgonFileExtension, IGorgonAnimationCodec codec)[] results = codecs.CodecFileTypes.Where(item => item.extension == extension).ToArray();
+
+        if (results.Length == 0)
         {
-            ViewFactory.Register<IImportSettings>(() => new AnimationCodecSettingsPanel());
-
-            _pluginCache = new GorgonMefPlugInCache(HostContentServices.Log);
-
-            AnimationImportSettings settings = HostContentServices.ContentPlugInService.ReadContentSettings<AnimationImportSettings>(SettingsFilename);
-
-            if (settings is null)
-            {
-                settings = new AnimationImportSettings();
-            }
-
-            _codecs = new CodecRegistry(_pluginCache, HostContentServices.GraphicsContext.Renderer2D, HostContentServices.Log);
-            _codecs.LoadFromSettings(settings);
-
-            var settingsVm = new ImportSettings();
-            settingsVm.Initialize(new ImportSettingsParameters(settings, _codecs, new FileOpenDialogService(), _pluginCache, HostContentServices));
-            _settings = settingsVm;
+            return null;
         }
 
-        /// <summary>Function to provide clean up for the plugin.</summary>
-        protected override void OnShutdown()
-        {
-            try
-            {
-                if ((_settings?.WriteSettingsCommand is not null) && (_settings.WriteSettingsCommand.CanExecute(null)))
-                {
-                    // Persist any settings.
-                    _settings.WriteSettingsCommand.Execute(null);
-                }
-
-                ViewFactory.Unregister<IImportSettings>();
-
-                _pluginCache?.Dispose();
-            }
-            catch (Exception ex)
-            {
-                // We don't care if it crashes. The worst thing that'll happen is your settings won't persist.
-                HostContentServices.Log.LogException(ex);
-            }
-        }
-
-        /// <summary>Function to determine if the content plugin can open the specified file.</summary>
-        /// <param name="filePath">The path to the file to evaluate.</param>
-        /// <returns>
-        ///   <b>true</b> if the plugin can open the file, or <b>false</b> if not.</returns>
-        /// <remarks>
-        ///   <para>
-        /// This method is used to determine if the file specified by the <paramref name="filePath" /> passed to the method can be opened by this plug in. If the method returns <b>true</b>, then the host
-        /// application will convert the file using the importer produced by this plug in. Otherwise, if the method returns <b>false</b>, then the file is skipped.
-        /// </para>
-        ///   <para>
-        /// The <paramref name="filePath" /> is a path to the file on the project virtual file system.
-        /// </para>
-        ///   <para>
-        /// Implementors may use whatever method they desire to determine if the file can be opened (e.g. checking file extensions, examining file headers, etc...).
-        /// </para>
-        /// </remarks>
-        protected override bool OnCanOpenContent(string filePath) => GetCodec(filePath, _codecs) is not null;
-
-        /// <summary>Function to open a content object from this plugin.</summary>
-        /// <returns>A new <see cref="IEditorContentImporter"/> object.</returns>
-        /// <remarks>This method creates an instance of the custom content importer. The application will use the object returned to perform the actual import process.</remarks>
-        protected override IEditorContentImporter OnCreateImporter() => new GorgonAnimationImporter(ProjectFileSystem, TemporaryFileSystem, _codecs, HostContentServices.GraphicsContext.Renderer2D, HostContentServices.Log);
-        #endregion
-
-        #region Constructor/Finalizer.
-        /// <summary>Initializes a new instance of the <see cref="AnimationImporterPlugIn"/> class.</summary>
-        public AnimationImporterPlugIn()
-            : base(Resources.GORANM_IMPORT_DESC)
-        {
-        }
-        #endregion
+        using Stream stream = File.Open(filePath, FileMode.Open, FileAccess.Read, FileShare.Read);
+        return results.Select(item => item.codec).FirstOrDefault(item => item.IsReadable(stream));
     }
+
+    /// <summary>Function to retrieve the settings interface for this plug in.</summary>
+    /// <param name="injector">Objects to inject into the view model.</param>
+    /// <returns>The settings interface view model.</returns>
+    /// <remarks>
+    ///   <para>
+    /// Implementors who wish to supply customizable settings for their plug ins from the main "Settings" area in the application can override this method and return a new view model based on
+    /// the base <see cref="ISettingsCategoryViewModel"/> type.
+    /// </para>
+    ///   <para>
+    /// Plug ins must register the view associated with their settings panel via the <see cref="ViewFactory.Register{T}(Func{System.Windows.Forms.Control})"/> method in the
+    /// <see cref="OnInitialize()"/> method or the settings will not display.
+    /// </para>
+    /// </remarks>
+    protected override ISettingsCategory OnGetSettings() => _settings;
+
+    /// <summary>Function to provide initialization for the plugin.</summary>
+    /// <param name="pluginService">The plugin service used to access other plugins.</param>
+    /// <remarks>This method is only called when the plugin is loaded at startup.</remarks>
+    protected override void OnInitialize()
+    {
+        ViewFactory.Register<IImportSettings>(() => new AnimationCodecSettingsPanel());
+
+        _pluginCache = new GorgonMefPlugInCache(HostContentServices.Log);
+
+        AnimationImportSettings settings = HostContentServices.ContentPlugInService.ReadContentSettings<AnimationImportSettings>(SettingsFilename);
+
+        if (settings is null)
+        {
+            settings = new AnimationImportSettings();
+        }
+
+        _codecs = new CodecRegistry(_pluginCache, HostContentServices.GraphicsContext.Renderer2D, HostContentServices.Log);
+        _codecs.LoadFromSettings(settings);
+
+        var settingsVm = new ImportSettings();
+        settingsVm.Initialize(new ImportSettingsParameters(settings, _codecs, new FileOpenDialogService(), _pluginCache, HostContentServices));
+        _settings = settingsVm;
+    }
+
+    /// <summary>Function to provide clean up for the plugin.</summary>
+    protected override void OnShutdown()
+    {
+        try
+        {
+            if ((_settings?.WriteSettingsCommand is not null) && (_settings.WriteSettingsCommand.CanExecute(null)))
+            {
+                // Persist any settings.
+                _settings.WriteSettingsCommand.Execute(null);
+            }
+
+            ViewFactory.Unregister<IImportSettings>();
+
+            _pluginCache?.Dispose();
+        }
+        catch (Exception ex)
+        {
+            // We don't care if it crashes. The worst thing that'll happen is your settings won't persist.
+            HostContentServices.Log.LogException(ex);
+        }
+    }
+
+    /// <summary>Function to determine if the content plugin can open the specified file.</summary>
+    /// <param name="filePath">The path to the file to evaluate.</param>
+    /// <returns>
+    ///   <b>true</b> if the plugin can open the file, or <b>false</b> if not.</returns>
+    /// <remarks>
+    ///   <para>
+    /// This method is used to determine if the file specified by the <paramref name="filePath" /> passed to the method can be opened by this plug in. If the method returns <b>true</b>, then the host
+    /// application will convert the file using the importer produced by this plug in. Otherwise, if the method returns <b>false</b>, then the file is skipped.
+    /// </para>
+    ///   <para>
+    /// The <paramref name="filePath" /> is a path to the file on the project virtual file system.
+    /// </para>
+    ///   <para>
+    /// Implementors may use whatever method they desire to determine if the file can be opened (e.g. checking file extensions, examining file headers, etc...).
+    /// </para>
+    /// </remarks>
+    protected override bool OnCanOpenContent(string filePath) => GetCodec(filePath, _codecs) is not null;
+
+    /// <summary>Function to open a content object from this plugin.</summary>
+    /// <returns>A new <see cref="IEditorContentImporter"/> object.</returns>
+    /// <remarks>This method creates an instance of the custom content importer. The application will use the object returned to perform the actual import process.</remarks>
+    protected override IEditorContentImporter OnCreateImporter() => new GorgonAnimationImporter(ProjectFileSystem, TemporaryFileSystem, _codecs, HostContentServices.GraphicsContext.Renderer2D, HostContentServices.Log);
+    #endregion
+
+    #region Constructor/Finalizer.
+    /// <summary>Initializes a new instance of the <see cref="AnimationImporterPlugIn"/> class.</summary>
+    public AnimationImporterPlugIn()
+        : base(Resources.GORANM_IMPORT_DESC)
+    {
+    }
+    #endregion
 }

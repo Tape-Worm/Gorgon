@@ -37,201 +37,200 @@ using Gorgon.Editor.UI;
 using Gorgon.Graphics.Imaging.Codecs;
 using Gorgon.IO;
 
-namespace Gorgon.Editor.ImageEditor
+namespace Gorgon.Editor.ImageEditor;
+
+/// <summary>
+/// Settings view model for image codecs.
+/// </summary>
+internal class Settings
+    : SettingsCategoryBase<SettingsParameters>, ISettings
 {
+    #region Variables.
+    // The underlying settings for the plug in.
+    private ImageEditorSettings _settings;
+    // The range for the alpha setting funtionality.
+    private GorgonRange _alphaRange;
+    #endregion
+
+    #region Properties.
+    /// <summary>Gets the name.</summary>
+    public override string Name => Resources.GORIMG_SETTINGS_DESC;
+
     /// <summary>
-    /// Settings view model for image codecs.
+    /// Property to set or return the path to the image editor to use when editing the texture.
     /// </summary>
-    internal class Settings
-        : SettingsCategoryBase<SettingsParameters>, ISettings
+    public string ImageEditorApplicationPath
     {
-        #region Variables.
-        // The underlying settings for the plug in.
-        private ImageEditorSettings _settings;
-        // The range for the alpha setting funtionality.
-        private GorgonRange _alphaRange;
-        #endregion
-
-        #region Properties.
-        /// <summary>Gets the name.</summary>
-        public override string Name => Resources.GORIMG_SETTINGS_DESC;
-
-        /// <summary>
-        /// Property to set or return the path to the image editor to use when editing the texture.
-        /// </summary>
-        public string ImageEditorApplicationPath
+        get => _settings.ImageEditorApplicationPath;
+        private set
         {
-            get => _settings.ImageEditorApplicationPath;
-            private set
+            if (string.Equals(_settings.ImageEditorApplicationPath, value, StringComparison.OrdinalIgnoreCase))
             {
-                if (string.Equals(_settings.ImageEditorApplicationPath, value, StringComparison.OrdinalIgnoreCase))
-                {
-                    return;
-                }
-
-                OnPropertyChanging();
-                _settings.ImageEditorApplicationPath = value;
-                OnPropertyChanged();
+                return;
             }
+
+            OnPropertyChanging();
+            _settings.ImageEditorApplicationPath = value;
+            OnPropertyChanged();
         }
-
-        /// <summary>
-        /// Property to return the last used alpha value when setting the alpha channel on an image.
-        /// </summary>
-        public int LastAlphaValue
-        {
-            get => _settings.AlphaValue;
-            set
-            {
-                if (_settings.AlphaValue == value)
-                {
-                    return;
-                }
-
-                OnPropertyChanging();
-                _settings.AlphaValue = value;
-                OnPropertyChanged();
-            }
-        }
-            
-
-        /// <summary>
-        /// Property to return the last used alpha value when setting the alpha channel on an image.
-        /// </summary>
-        public GorgonRange LastAlphaRange
-        {
-            get => _alphaRange;
-            set
-            {
-                if (_alphaRange.Equals(value))
-                {
-                    return;
-                }
-
-                OnPropertyChanging();
-                 _alphaRange = new GorgonRange(value.Minimum, value.Maximum);
-                _settings.AlphaRangeMin = value.Minimum;
-                _settings.AlphaRangeMax = value.Maximum;
-                OnPropertyChanged();
-            }
-        }
-
-        /// <summary>
-        /// Property to set or return the to the directory that was last used for importing/exporting.
-        /// </summary>
-        public string LastImportExportPath
-        {
-            get => _settings.LastImportExportPath;
-            set
-            {
-                if (string.Equals(_settings.LastImportExportPath, value, StringComparison.OrdinalIgnoreCase))
-                {
-                    return;
-                }
-
-                OnPropertyChanging();
-                _settings.LastImportExportPath = value;
-                OnPropertyChanged();
-            }
-        }
-
-        /// <summary>Property to set or return the width of the picker window.</summary>
-        public int PickerWidth
-        {
-            get => _settings.PickerWidth;
-            set
-            {
-                if (_settings.PickerWidth == value)
-                {
-                    return;
-                }
-
-                OnPropertyChanging();
-                _settings.PickerWidth = value;
-                OnPropertyChanged();
-            }
-        }
-
-        /// <summary>Property to set or return the height of the picker window.</summary>
-        public int PickerHeight
-        {
-            get => _settings.PickerHeight;
-            set
-            {
-                if (_settings.PickerHeight == value)
-                {
-                    return;
-                }
-
-                OnPropertyChanging();
-                _settings.PickerHeight = value;
-                OnPropertyChanged();
-            }
-        }
-
-        /// <summary>Property to set or return the state of the picker window.</summary>
-        public int PickerWindowState
-        {
-            get => _settings.PickerWindowState;
-            set
-            {
-                if (_settings.PickerWindowState == value)
-                {
-                    return;
-                }
-
-                OnPropertyChanging();
-                _settings.PickerWindowState = value;
-                OnPropertyChanged();
-            }
-        }
-
-        /// <summary>
-        /// Property to return the command used to update the path.
-        /// </summary>
-        public IEditorCommand<string> UpdatePathCommand
-        {
-            get;
-        }
-        #endregion
-
-        #region Methods.
-        /// <summary>
-        /// Function to assign the exe path.
-        /// </summary>
-        /// <param name="newPath">The path to assign.</param>
-        private void DoSetPath(string newPath)
-        {
-            try
-            {
-                if (string.Equals(newPath, ImageEditorApplicationPath, StringComparison.OrdinalIgnoreCase))
-                {
-                    return;
-                }
-
-                ImageEditorApplicationPath = newPath;
-            }
-            catch (Exception ex)
-            {
-                HostServices.MessageDisplay.ShowError(ex, Resources.GORIMG_ERR_SETTING_EXE_PATH);
-            }
-        }
-
-        /// <summary>Function to inject dependencies for the view model.</summary>
-        /// <param name="injectionParameters">The parameters to inject.</param>
-        /// <remarks>
-        /// Applications should call this when setting up the view model for complex operations and/or dependency injection. The constructor should only be used for simple set up and initialization of objects.
-        /// </remarks>
-        protected override void OnInitialize(SettingsParameters injectionParameters)            
-        {
-            _settings = injectionParameters.Settings;
-            _alphaRange = new GorgonRange(_settings.AlphaRangeMin, _settings.AlphaRangeMax);            
-        }
-        #endregion
-
-        #region Constructor
-        /// <summary>Initializes a new instance of the <see cref="Settings" /> class.</summary>
-        public Settings() => UpdatePathCommand = new EditorCommand<string>(DoSetPath);
-        #endregion
     }
+
+    /// <summary>
+    /// Property to return the last used alpha value when setting the alpha channel on an image.
+    /// </summary>
+    public int LastAlphaValue
+    {
+        get => _settings.AlphaValue;
+        set
+        {
+            if (_settings.AlphaValue == value)
+            {
+                return;
+            }
+
+            OnPropertyChanging();
+            _settings.AlphaValue = value;
+            OnPropertyChanged();
+        }
+    }
+        
+
+    /// <summary>
+    /// Property to return the last used alpha value when setting the alpha channel on an image.
+    /// </summary>
+    public GorgonRange LastAlphaRange
+    {
+        get => _alphaRange;
+        set
+        {
+            if (_alphaRange.Equals(value))
+            {
+                return;
+            }
+
+            OnPropertyChanging();
+             _alphaRange = new GorgonRange(value.Minimum, value.Maximum);
+            _settings.AlphaRangeMin = value.Minimum;
+            _settings.AlphaRangeMax = value.Maximum;
+            OnPropertyChanged();
+        }
+    }
+
+    /// <summary>
+    /// Property to set or return the to the directory that was last used for importing/exporting.
+    /// </summary>
+    public string LastImportExportPath
+    {
+        get => _settings.LastImportExportPath;
+        set
+        {
+            if (string.Equals(_settings.LastImportExportPath, value, StringComparison.OrdinalIgnoreCase))
+            {
+                return;
+            }
+
+            OnPropertyChanging();
+            _settings.LastImportExportPath = value;
+            OnPropertyChanged();
+        }
+    }
+
+    /// <summary>Property to set or return the width of the picker window.</summary>
+    public int PickerWidth
+    {
+        get => _settings.PickerWidth;
+        set
+        {
+            if (_settings.PickerWidth == value)
+            {
+                return;
+            }
+
+            OnPropertyChanging();
+            _settings.PickerWidth = value;
+            OnPropertyChanged();
+        }
+    }
+
+    /// <summary>Property to set or return the height of the picker window.</summary>
+    public int PickerHeight
+    {
+        get => _settings.PickerHeight;
+        set
+        {
+            if (_settings.PickerHeight == value)
+            {
+                return;
+            }
+
+            OnPropertyChanging();
+            _settings.PickerHeight = value;
+            OnPropertyChanged();
+        }
+    }
+
+    /// <summary>Property to set or return the state of the picker window.</summary>
+    public int PickerWindowState
+    {
+        get => _settings.PickerWindowState;
+        set
+        {
+            if (_settings.PickerWindowState == value)
+            {
+                return;
+            }
+
+            OnPropertyChanging();
+            _settings.PickerWindowState = value;
+            OnPropertyChanged();
+        }
+    }
+
+    /// <summary>
+    /// Property to return the command used to update the path.
+    /// </summary>
+    public IEditorCommand<string> UpdatePathCommand
+    {
+        get;
+    }
+    #endregion
+
+    #region Methods.
+    /// <summary>
+    /// Function to assign the exe path.
+    /// </summary>
+    /// <param name="newPath">The path to assign.</param>
+    private void DoSetPath(string newPath)
+    {
+        try
+        {
+            if (string.Equals(newPath, ImageEditorApplicationPath, StringComparison.OrdinalIgnoreCase))
+            {
+                return;
+            }
+
+            ImageEditorApplicationPath = newPath;
+        }
+        catch (Exception ex)
+        {
+            HostServices.MessageDisplay.ShowError(ex, Resources.GORIMG_ERR_SETTING_EXE_PATH);
+        }
+    }
+
+    /// <summary>Function to inject dependencies for the view model.</summary>
+    /// <param name="injectionParameters">The parameters to inject.</param>
+    /// <remarks>
+    /// Applications should call this when setting up the view model for complex operations and/or dependency injection. The constructor should only be used for simple set up and initialization of objects.
+    /// </remarks>
+    protected override void OnInitialize(SettingsParameters injectionParameters)            
+    {
+        _settings = injectionParameters.Settings;
+        _alphaRange = new GorgonRange(_settings.AlphaRangeMin, _settings.AlphaRangeMax);            
+    }
+    #endregion
+
+    #region Constructor
+    /// <summary>Initializes a new instance of the <see cref="Settings" /> class.</summary>
+    public Settings() => UpdatePathCommand = new EditorCommand<string>(DoSetPath);
+    #endregion
 }

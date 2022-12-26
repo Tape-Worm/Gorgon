@@ -27,30 +27,29 @@
 using Gorgon.Editor.UI;
 using Gorgon.Graphics;
 
-namespace Gorgon.Examples
+namespace Gorgon.Examples;
+
+/// <summary>
+/// The view model for the text color panel.
+/// </summary>
+internal interface ITextColor
+    : IHostedPanelViewModel
 {
     /// <summary>
-    /// The view model for the text color panel.
+    /// Property to set or return the original color for the text.
     /// </summary>
-    internal interface ITextColor
-        : IHostedPanelViewModel
+    GorgonColor OriginalColor
     {
-        /// <summary>
-        /// Property to set or return the original color for the text.
-        /// </summary>
-        GorgonColor OriginalColor
-        {
-            get;
-            set;
-        }
+        get;
+        set;
+    }
 
-        /// <summary>
-        /// Property to set or return the currently selected color.
-        /// </summary>
-        GorgonColor SelectedColor
-        {
-            get;
-            set;
-        }
+    /// <summary>
+    /// Property to set or return the currently selected color.
+    /// </summary>
+    GorgonColor SelectedColor
+    {
+        get;
+        set;
     }
 }

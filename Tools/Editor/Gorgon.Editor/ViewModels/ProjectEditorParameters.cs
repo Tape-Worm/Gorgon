@@ -29,67 +29,66 @@ using Gorgon.Editor.Content;
 using Gorgon.Editor.PlugIns;
 using Gorgon.Editor.Services;
 
-namespace Gorgon.Editor.ViewModels
+namespace Gorgon.Editor.ViewModels;
+
+/// <summary>
+/// Parameters for the <see cref="IProjectEditor"/> view model.
+/// </summary>
+internal class ProjectEditorParameters
+    : ViewModelCommonParameters
 {
     /// <summary>
-    /// Parameters for the <see cref="IProjectEditor"/> view model.
+    /// Property to set or return the file explorer view model.
     /// </summary>
-    internal class ProjectEditorParameters
-        : ViewModelCommonParameters
+    public IFileExplorer FileExplorer
     {
-        /// <summary>
-        /// Property to set or return the file explorer view model.
-        /// </summary>
-        public IFileExplorer FileExplorer
-        {
-            get;
-            set;
-        }
+        get;
+        set;
+    }
 
-        /// <summary>
-        /// Property to set or return the file manager for content plug ins.
-        /// </summary>
-        public IContentFileManager ContentFileManager
-        {
-            get;
-            set;
-        }
+    /// <summary>
+    /// Property to set or return the file manager for content plug ins.
+    /// </summary>
+    public IContentFileManager ContentFileManager
+    {
+        get;
+        set;
+    }
 
-        /// <summary>
-        /// Property to set or return the content previewer for content files.
-        /// </summary>
-        public IContentPreview ContentPreviewer
-        {
-            get;
-            set;
-        }
+    /// <summary>
+    /// Property to set or return the content previewer for content files.
+    /// </summary>
+    public IContentPreview ContentPreviewer
+    {
+        get;
+        set;
+    }
 
-        /// <summary>
-        /// Property to set or return the dialog for saving projects.
-        /// </summary>
-        public EditorFileSaveDialogService SaveDialog
-        {
-            get;
-            set;
-        }
+    /// <summary>
+    /// Property to set or return the dialog for saving projects.
+    /// </summary>
+    public EditorFileSaveDialogService SaveDialog
+    {
+        get;
+        set;
+    }
 
-        /// <summary>
-        /// Property to set or return the list of content creator plug ins.
-        /// </summary>
-        public IReadOnlyList<IContentPlugInMetadata> ContentCreators
-        {
-            get;
-            set;
-        }
+    /// <summary>
+    /// Property to set or return the list of content creator plug ins.
+    /// </summary>
+    public IReadOnlyList<IContentPlugInMetadata> ContentCreators
+    {
+        get;
+        set;
+    }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ProjectEditorParameters" /> class.
-        /// </summary>
-        /// <param name="hostServices">The services from the host application.</param>
-        /// <param name="viewModelFactory">The view model factory.</param>
-        public ProjectEditorParameters(IHostContentServices hostServices, ViewModelFactory viewModelFactory)
-            : base(hostServices, viewModelFactory)
-        {        
-        }
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ProjectEditorParameters" /> class.
+    /// </summary>
+    /// <param name="hostServices">The services from the host application.</param>
+    /// <param name="viewModelFactory">The view model factory.</param>
+    public ProjectEditorParameters(IHostContentServices hostServices, ViewModelFactory viewModelFactory)
+        : base(hostServices, viewModelFactory)
+    {        
     }
 }

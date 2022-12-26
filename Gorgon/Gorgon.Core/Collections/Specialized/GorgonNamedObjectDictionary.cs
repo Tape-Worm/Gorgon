@@ -27,96 +27,95 @@
 using System.Collections.Generic;
 using Gorgon.Core;
 
-namespace Gorgon.Collections.Specialized
+namespace Gorgon.Collections.Specialized;
+
+/// <summary>
+/// A dictionary to contain <see cref="IGorgonNamedObject"/> types.
+/// </summary>
+/// <typeparam name="T">The type of object to store in the list. Must implement the <see cref="IGorgonNamedObject"/> interface.</typeparam>
+/// <remarks>
+/// <para>
+/// This is a concrete implementation of the <see cref="GorgonBaseNamedObjectDictionary{T}"/> type.
+/// </para>
+/// <para>
+/// This collection is <b><i>not</i></b> thread safe.
+/// </para>
+/// </remarks>
+public class GorgonNamedObjectDictionary<T>
+    : GorgonBaseNamedObjectDictionary<T>
+    where T : IGorgonNamedObject
 {
+    #region Properties.
     /// <summary>
-    /// A dictionary to contain <see cref="IGorgonNamedObject"/> types.
+    /// Property to return an item in this list by name.
     /// </summary>
-    /// <typeparam name="T">The type of object to store in the list. Must implement the <see cref="IGorgonNamedObject"/> interface.</typeparam>
-    /// <remarks>
-    /// <para>
-    /// This is a concrete implementation of the <see cref="GorgonBaseNamedObjectDictionary{T}"/> type.
-    /// </para>
-    /// <para>
-    /// This collection is <b><i>not</i></b> thread safe.
-    /// </para>
-    /// </remarks>
-    public class GorgonNamedObjectDictionary<T>
-        : GorgonBaseNamedObjectDictionary<T>
-        where T : IGorgonNamedObject
+    public T this[string name]
     {
-        #region Properties.
-        /// <summary>
-        /// Property to return an item in this list by name.
-        /// </summary>
-        public T this[string name]
+        get => Items[name];
+        set
         {
-            get => Items[name];
-            set
+            if (!Items.ContainsKey(name))
             {
-                if (!Items.ContainsKey(name))
+                if (value is not null)
                 {
-                    if (value is not null)
-                    {
-                        Items[value.Name] = value;
-                    }
-
-                    return;
+                    Items[value.Name] = value;
                 }
 
-                if (value == null)
-                {
-                    Items.Remove(name);
-                    return;
-                }
-
-                UpdateItem(name, value);
+                return;
             }
+
+            if (value == null)
+            {
+                Items.Remove(name);
+                return;
+            }
+
+            UpdateItem(name, value);
         }
-        #endregion
-
-        #region Methods.
-        /// <summary>
-        /// Function to clear the items from the list.
-        /// </summary>
-        public void Clear() => Items.Clear();
-
-        /// <summary>
-        /// Function to add an item to the list.
-        /// </summary>
-        /// <param name="item">Item to add to the list.</param>
-        public void Add(T item) => Items.Add(item.Name, item);
-
-        /// <summary>
-        /// Function to add a list of items to this list.
-        /// </summary>
-        /// <param name="items">The items to add to this list.</param>
-        public void AddRange(IEnumerable<T> items) => AddItems(items);
-
-        /// <summary>
-        /// Function to remove an item from this list.
-        /// </summary>
-        /// <param name="item">Item to remove from the list.</param>
-        public void Remove(T item) => Items.Remove(item.Name);
-
-        /// <summary>
-        /// Function to remove an item with the specified name from this list.
-        /// </summary>
-        /// <param name="name">Name of the item to remove.</param>
-        /// <exception cref="KeyNotFoundException">Thrown when no item with the specified <paramref name="name"/> can be found.</exception>
-        public void Remove(string name) => Items.Remove(name);
-        #endregion
-
-        #region Constructor/Finalizer.
-        /// <summary>
-        /// Initializes a new instance of the <see cref="GorgonNamedObjectDictionary{T}"/> class.
-        /// </summary>
-        /// <param name="caseSensitive">[Optional] <b>true</b> to use case sensitive keys, <b>false</b> to ignore casing.</param>
-        public GorgonNamedObjectDictionary(bool caseSensitive = true)
-            : base(caseSensitive)
-        {
-        }
-        #endregion
-
     }
+    #endregion
+
+    #region Methods.
+    /// <summary>
+    /// Function to clear the items from the list.
+    /// </summary>
+    public void Clear() => Items.Clear();
+
+    /// <summary>
+    /// Function to add an item to the list.
+    /// </summary>
+    /// <param name="item">Item to add to the list.</param>
+    public void Add(T item) => Items.Add(item.Name, item);
+
+    /// <summary>
+    /// Function to add a list of items to this list.
+    /// </summary>
+    /// <param name="items">The items to add to this list.</param>
+    public void AddRange(IEnumerable<T> items) => AddItems(items);
+
+    /// <summary>
+    /// Function to remove an item from this list.
+    /// </summary>
+    /// <param name="item">Item to remove from the list.</param>
+    public void Remove(T item) => Items.Remove(item.Name);
+
+    /// <summary>
+    /// Function to remove an item with the specified name from this list.
+    /// </summary>
+    /// <param name="name">Name of the item to remove.</param>
+    /// <exception cref="KeyNotFoundException">Thrown when no item with the specified <paramref name="name"/> can be found.</exception>
+    public void Remove(string name) => Items.Remove(name);
+    #endregion
+
+    #region Constructor/Finalizer.
+    /// <summary>
+    /// Initializes a new instance of the <see cref="GorgonNamedObjectDictionary{T}"/> class.
+    /// </summary>
+    /// <param name="caseSensitive">[Optional] <b>true</b> to use case sensitive keys, <b>false</b> to ignore casing.</param>
+    public GorgonNamedObjectDictionary(bool caseSensitive = true)
+        : base(caseSensitive)
+    {
+    }
+    #endregion
+
 }

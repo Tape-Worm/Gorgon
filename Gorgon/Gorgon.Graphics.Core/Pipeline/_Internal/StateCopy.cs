@@ -28,183 +28,182 @@ using System.Collections.Generic;
 using Gorgon.Collections;
 using Gorgon.Math;
 
-namespace Gorgon.Graphics.Core
+namespace Gorgon.Graphics.Core;
+
+/// <summary>
+/// Functions to assist with copying state in collections.
+/// </summary>
+internal static class StateCopy
 {
     /// <summary>
-    /// Functions to assist with copying state in collections.
+    /// Function to copy a list of blend states to the list provided.
     /// </summary>
-    internal static class StateCopy
+    /// <param name="dest">The destination list.</param>
+    /// <param name="src">The source list.</param>
+    /// <param name="startSlot">The starting index.</param>
+    public static void CopyBlendStates(GorgonArray<GorgonBlendState> dest, IReadOnlyList<GorgonBlendState> src, int startSlot)
     {
-        /// <summary>
-        /// Function to copy a list of blend states to the list provided.
-        /// </summary>
-        /// <param name="dest">The destination list.</param>
-        /// <param name="src">The source list.</param>
-        /// <param name="startSlot">The starting index.</param>
-        public static void CopyBlendStates(GorgonArray<GorgonBlendState> dest, IReadOnlyList<GorgonBlendState> src, int startSlot)
+        dest.Clear();
+
+        if (src is null)
         {
-            dest.Clear();
-
-            if (src is null)
-            {
-                return;
-            }
-
-            int length = src.Count.Min(dest.Length - startSlot);
-
-            for (int i = 0; i < length; ++i)
-            {
-                dest[i + startSlot] = src[i];
-            }
+            return;
         }
 
-        /// <summary>
-        /// Function to copy shader resource views.
-        /// </summary>
-        /// <param name="destStates">The destination shader resource views.</param>
-        /// <param name="srcStates">The shader resource views to copy.</param>
-        public static void CopySrvs(GorgonShaderResourceViews destStates, GorgonShaderResourceViews srcStates)
+        int length = src.Count.Min(dest.Length - startSlot);
+
+        for (int i = 0; i < length; ++i)
         {
-            destStates.Clear();
-            srcStates?.CopyTo(destStates);
+            dest[i + startSlot] = src[i];
+        }
+    }
+
+    /// <summary>
+    /// Function to copy shader resource views.
+    /// </summary>
+    /// <param name="destStates">The destination shader resource views.</param>
+    /// <param name="srcStates">The shader resource views to copy.</param>
+    public static void CopySrvs(GorgonShaderResourceViews destStates, GorgonShaderResourceViews srcStates)
+    {
+        destStates.Clear();
+        srcStates?.CopyTo(destStates);
+    }
+
+    /// <summary>
+    /// Function to copy shader resource views.
+    /// </summary>
+    /// <param name="destStates">The destination shader resource views.</param>
+    /// <param name="srcStates">The shader resource views to copy.</param>
+    /// <param name="startSlot">The slot to start copying into.</param>
+    public static void CopySrvs(GorgonShaderResourceViews destStates, IReadOnlyList<GorgonShaderResourceView> srcStates, int startSlot)
+    {
+        destStates.Clear();
+
+        if (srcStates is null)
+        {
+            return;
         }
 
-        /// <summary>
-        /// Function to copy shader resource views.
-        /// </summary>
-        /// <param name="destStates">The destination shader resource views.</param>
-        /// <param name="srcStates">The shader resource views to copy.</param>
-        /// <param name="startSlot">The slot to start copying into.</param>
-        public static void CopySrvs(GorgonShaderResourceViews destStates, IReadOnlyList<GorgonShaderResourceView> srcStates, int startSlot)
+        int length = srcStates.Count.Min(destStates.Length - startSlot);
+
+        for (int i = 0; i < length; ++i)
         {
-            destStates.Clear();
+            destStates[i + startSlot] = srcStates[i];
+        }
+    }
 
-            if (srcStates is null)
-            {
-                return;
-            }
+    /// <summary>
+    /// Function to copy unordered access resource views.
+    /// </summary>
+    /// <param name="destStates">The destination unordered access views.</param>
+    /// <param name="srcStates">The unordered access views to copy.</param>
+    /// <param name="startSlot">The slot to start copying into.</param>
+    public static void CopyReadWriteViews(GorgonReadWriteViewBindings destStates, IReadOnlyList<GorgonReadWriteViewBinding> srcStates, int startSlot)
+    {
+        destStates.Clear();
 
-            int length = srcStates.Count.Min(destStates.Length - startSlot);
-
-            for (int i = 0; i < length; ++i)
-            {
-                destStates[i + startSlot] = srcStates[i];
-            }
+        if (srcStates is null)
+        {
+            return;
         }
 
-        /// <summary>
-        /// Function to copy unordered access resource views.
-        /// </summary>
-        /// <param name="destStates">The destination unordered access views.</param>
-        /// <param name="srcStates">The unordered access views to copy.</param>
-        /// <param name="startSlot">The slot to start copying into.</param>
-        public static void CopyReadWriteViews(GorgonReadWriteViewBindings destStates, IReadOnlyList<GorgonReadWriteViewBinding> srcStates, int startSlot)
+        int length = srcStates.Count.Min(destStates.Length - startSlot);
+
+        for (int i = 0; i < length; ++i)
         {
-            destStates.Clear();
+            destStates[i + startSlot] = srcStates[i];
+        }
+    }
 
-            if (srcStates is null)
-            {
-                return;
-            }
+    /// <summary>
+    /// Function to copy samplers.
+    /// </summary>
+    /// <param name="destStates">The destination sampler states.</param>
+    /// <param name="srcStates">The sampler states to copy.</param>
+    /// <param name="startSlot">The slot to start copying into.</param>
+    public static void CopySamplers(GorgonSamplerStates destStates, IReadOnlyList<GorgonSamplerState> srcStates, int startSlot)
+    {
+        destStates.Clear();
 
-            int length = srcStates.Count.Min(destStates.Length - startSlot);
-
-            for (int i = 0; i < length; ++i)
-            {
-                destStates[i + startSlot] = srcStates[i];
-            }
+        if (srcStates is null)
+        {
+            return;
         }
 
-        /// <summary>
-        /// Function to copy samplers.
-        /// </summary>
-        /// <param name="destStates">The destination sampler states.</param>
-        /// <param name="srcStates">The sampler states to copy.</param>
-        /// <param name="startSlot">The slot to start copying into.</param>
-        public static void CopySamplers(GorgonSamplerStates destStates, IReadOnlyList<GorgonSamplerState> srcStates, int startSlot)
+        int length = srcStates.Count.Min(destStates.Length - startSlot);
+
+        for (int i = 0; i < length; ++i)
         {
-            destStates.Clear();
+            destStates[i] = srcStates[i];
+        }
+    }
 
-            if (srcStates is null)
-            {
-                return;
-            }
+    /// <summary>
+    /// Function to copy a list of constant buffers to the list provided.
+    /// </summary>
+    /// <param name="dest">The destination list.</param>
+    /// <param name="src">The source list.</param>
+    /// <param name="startSlot">The starting index.</param>
+    public static void CopyConstantBuffers(GorgonConstantBuffers dest, IReadOnlyList<GorgonConstantBufferView> src, int startSlot)
+    {
+        dest.Clear();
 
-            int length = srcStates.Count.Min(destStates.Length - startSlot);
-
-            for (int i = 0; i < length; ++i)
-            {
-                destStates[i] = srcStates[i];
-            }
+        if (src is null)
+        {
+            return;
         }
 
-        /// <summary>
-        /// Function to copy a list of constant buffers to the list provided.
-        /// </summary>
-        /// <param name="dest">The destination list.</param>
-        /// <param name="src">The source list.</param>
-        /// <param name="startSlot">The starting index.</param>
-        public static void CopyConstantBuffers(GorgonConstantBuffers dest, IReadOnlyList<GorgonConstantBufferView> src, int startSlot)
+        int length = src.Count.Min(dest.Length - startSlot);
+
+        for (int i = 0; i < length; ++i)
         {
-            dest.Clear();
+            dest[i + startSlot] = src[i];
+        }
+    }
 
-            if (src is null)
-            {
-                return;
-            }
+    /// <summary>
+    /// Function to copy stream output buffer bindings from one draw call to another
+    /// </summary>
+    /// <param name="destBindings">The bindings to update.</param>
+    /// <param name="srcBindings">The bindings to copy.</param>
+    public static void CopyStreamOutBuffers(GorgonStreamOutBindings destBindings, IReadOnlyList<GorgonStreamOutBinding> srcBindings)
+    {
+        destBindings.Clear();
 
-            int length = src.Count.Min(dest.Length - startSlot);
-
-            for (int i = 0; i < length; ++i)
-            {
-                dest[i + startSlot] = src[i];
-            }
+        if (srcBindings is null)
+        {
+            return;
         }
 
-        /// <summary>
-        /// Function to copy stream output buffer bindings from one draw call to another
-        /// </summary>
-        /// <param name="destBindings">The bindings to update.</param>
-        /// <param name="srcBindings">The bindings to copy.</param>
-        public static void CopyStreamOutBuffers(GorgonStreamOutBindings destBindings, IReadOnlyList<GorgonStreamOutBinding> srcBindings)
+        int count = srcBindings.Count.Min(GorgonStreamOutBindings.MaximumStreamOutCount);
+
+        for (int i = 0; i < count; ++i)
         {
-            destBindings.Clear();
+            destBindings[i] = srcBindings[i];
+        }
+    }
 
-            if (srcBindings is null)
-            {
-                return;
-            }
+    /// <summary>
+    /// Function to copy vertex buffer bindings from one draw call to another
+    /// </summary>
+    /// <param name="destBindings">The bindings to update.</param>
+    /// <param name="srcBindings">The bindings to copy.</param>
+    /// <param name="layout">The input layout.</param>
+    public static void CopyVertexBuffers(GorgonVertexBufferBindings destBindings, IReadOnlyList<GorgonVertexBufferBinding> srcBindings, GorgonInputLayout layout)
+    {
+        destBindings.Clear();
+        destBindings.InputLayout = layout;
 
-            int count = srcBindings.Count.Min(GorgonStreamOutBindings.MaximumStreamOutCount);
-
-            for (int i = 0; i < count; ++i)
-            {
-                destBindings[i] = srcBindings[i];
-            }
+        if (srcBindings is null)
+        {
+            return;
         }
 
-        /// <summary>
-        /// Function to copy vertex buffer bindings from one draw call to another
-        /// </summary>
-        /// <param name="destBindings">The bindings to update.</param>
-        /// <param name="srcBindings">The bindings to copy.</param>
-        /// <param name="layout">The input layout.</param>
-        public static void CopyVertexBuffers(GorgonVertexBufferBindings destBindings, IReadOnlyList<GorgonVertexBufferBinding> srcBindings, GorgonInputLayout layout)
+        int count = srcBindings.Count.Min(GorgonVertexBufferBindings.MaximumVertexBufferCount);
+
+        for (int i = 0; i < count; ++i)
         {
-            destBindings.Clear();
-            destBindings.InputLayout = layout;
-
-            if (srcBindings is null)
-            {
-                return;
-            }
-
-            int count = srcBindings.Count.Min(GorgonVertexBufferBindings.MaximumVertexBufferCount);
-
-            for (int i = 0; i < count; ++i)
-            {
-                destBindings[i] = srcBindings[i];
-            }
+            destBindings[i] = srcBindings[i];
         }
     }
 }

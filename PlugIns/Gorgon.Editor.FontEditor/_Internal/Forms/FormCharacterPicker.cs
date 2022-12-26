@@ -34,8 +34,8 @@ using Gorgon.Core;
 using Gorgon.Editor.FontEditor.Properties;
 using Gorgon.UI;
 
-namespace Gorgon.Editor.FontEditor
-{
+namespace Gorgon.Editor.FontEditor;
+
 	/// <summary>
 	/// Dialog to pick characters for conversion into bitmap glyphs.
 	/// </summary>
@@ -60,18 +60,18 @@ namespace Gorgon.Editor.FontEditor
 			get => CharPicker.Characters;
 			set => CharPicker.Characters = value;
 		}
-        #endregion
+    #endregion
 
-        #region Methods.
-        /// <summary>Handles the OkClicked event of the CharPicker control.</summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="EventArgs" /> instance containing the event data.</param>
-        private void CharPicker_OkClicked(object sender, EventArgs e) => DialogResult = DialogResult.OK;
+    #region Methods.
+    /// <summary>Handles the OkClicked event of the CharPicker control.</summary>
+    /// <param name="sender">The source of the event.</param>
+    /// <param name="e">The <see cref="EventArgs" /> instance containing the event data.</param>
+    private void CharPicker_OkClicked(object sender, EventArgs e) => DialogResult = DialogResult.OK;
 
-        /// <summary>Handles the CancelClicked event of the CharPicker control.</summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="EventArgs" /> instance containing the event data.</param>
-        private void CharPicker_CancelClicked(object sender, EventArgs e) => DialogResult = DialogResult.Cancel;
+    /// <summary>Handles the CancelClicked event of the CharPicker control.</summary>
+    /// <param name="sender">The source of the event.</param>
+    /// <param name="e">The <see cref="EventArgs" /> instance containing the event data.</param>
+    private void CharPicker_CancelClicked(object sender, EventArgs e) => DialogResult = DialogResult.Cancel;
 		#endregion
 
 		#region Constructor/Destructor.
@@ -80,5 +80,4 @@ namespace Gorgon.Editor.FontEditor
 		/// </summary>
 		public FormCharacterPicker() =>  InitializeComponent();
 		#endregion		
-    }
 }

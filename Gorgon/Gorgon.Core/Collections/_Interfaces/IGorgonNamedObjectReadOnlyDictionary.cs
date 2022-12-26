@@ -27,49 +27,48 @@
 using System.Collections.Generic;
 using Gorgon.Core;
 
-namespace Gorgon.Collections
+namespace Gorgon.Collections;
+
+/// <summary>
+/// A generic interface for a read only dictionary of named objects that can be indexed by name.
+/// </summary>
+/// <typeparam name="T">The type of object to store in the collection. Must implement the <see cref="IGorgonNamedObject"/> interface.</typeparam>
+public interface IGorgonNamedObjectReadOnlyDictionary<T>
+    : IReadOnlyCollection<T>
+    where T : IGorgonNamedObject
 {
+    #region Properties.
     /// <summary>
-    /// A generic interface for a read only dictionary of named objects that can be indexed by name.
+    /// Property to return whether the keys are case sensitive.
     /// </summary>
-    /// <typeparam name="T">The type of object to store in the collection. Must implement the <see cref="IGorgonNamedObject"/> interface.</typeparam>
-    public interface IGorgonNamedObjectReadOnlyDictionary<T>
-        : IReadOnlyCollection<T>
-        where T : IGorgonNamedObject
+    bool KeysAreCaseSensitive
     {
-        #region Properties.
-        /// <summary>
-        /// Property to return whether the keys are case sensitive.
-        /// </summary>
-        bool KeysAreCaseSensitive
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to return an item in the dictionary by its name.
-        /// </summary>
-        T this[string name]
-        {
-            get;
-        }
-        #endregion
-
-        #region Methods.
-        /// <summary>
-        /// Function to return whether an item with the specified name exists in this collection.
-        /// </summary>
-        /// <param name="name">Name of the item to find.</param>
-        /// <returns><b>true</b>if found, <b>false</b> if not.</returns>
-        bool Contains(string name);
-
-        /// <summary>
-        /// Function to return an item from the collection.
-        /// </summary>
-        /// <param name="name">The name of the item to look up.</param>
-        /// <param name="value">The item, if found, or the default value for the type if not.</param>
-        /// <returns><b>true</b> if the item was found, <b>false</b> if not.</returns>
-        bool TryGetValue(string name, out T value);
-        #endregion
+        get;
     }
+
+    /// <summary>
+    /// Property to return an item in the dictionary by its name.
+    /// </summary>
+    T this[string name]
+    {
+        get;
+    }
+    #endregion
+
+    #region Methods.
+    /// <summary>
+    /// Function to return whether an item with the specified name exists in this collection.
+    /// </summary>
+    /// <param name="name">Name of the item to find.</param>
+    /// <returns><b>true</b>if found, <b>false</b> if not.</returns>
+    bool Contains(string name);
+
+    /// <summary>
+    /// Function to return an item from the collection.
+    /// </summary>
+    /// <param name="name">The name of the item to look up.</param>
+    /// <param name="value">The item, if found, or the default value for the type if not.</param>
+    /// <returns><b>true</b> if the item was found, <b>false</b> if not.</returns>
+    bool TryGetValue(string name, out T value);
+    #endregion
 }

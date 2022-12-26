@@ -8,120 +8,120 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Windows.Forms;
 
-namespace Fetze.WinFormsColor
+namespace Fetze.WinFormsColor;
+
+public class ColorPanel : UserControl
 {
-    public class ColorPanel : UserControl
-    {
 #pragma warning disable IDE0090 // Use 'new(...)'
-        private Bitmap	srcImage		= null;        
-        private	int		pickerSize		= 8;
-        private	PointF	pickerPos		= new PointF(0.5f, 0.5f);
-        private	Color	clrTopLeft		= Color.Transparent;
+    private Bitmap	srcImage		= null;        
+    private	int		pickerSize		= 8;
+    private	PointF	pickerPos		= new PointF(0.5f, 0.5f);
+    private	Color	clrTopLeft		= Color.Transparent;
 		private	Color	clrTopRight		= Color.Transparent;
 		private	Color	clrBottomLeft	= Color.Transparent;
 		private	Color	clrBottomRight	= Color.Transparent;
 		private	bool	designSerializeColor = false;
-        private int _dragState;
+    private int _dragState;
 
 
 		public event EventHandler ValueChanged = null;
 		public event EventHandler PercentualValueChanged = null;
 
 
-        [Browsable(false)]
-        public Rectangle ColorAreaRectangle => new Rectangle(
-                ClientRectangle.X + 2,
-                ClientRectangle.Y + 2,
-                ClientRectangle.Width - 4,
-                ClientRectangle.Height - 4);
+    [Browsable(false)]
+    public Rectangle ColorAreaRectangle => new Rectangle(
+            ClientRectangle.X + 2,
+            ClientRectangle.Y + 2,
+            ClientRectangle.Width - 4,
+            ClientRectangle.Height - 4);
 
-        [Browsable(false)]
-        public bool IsDragging => _dragState == 1;
+    [Browsable(false)]
+    public bool IsDragging => _dragState == 1;
 
-        [DefaultValue(8)]
-        public int PickerSize
+    [DefaultValue(8)]
+    public int PickerSize
+    {
+        get => pickerSize;
+        set
         {
-            get => pickerSize;
-            set
+            pickerSize = value;
+            Invalidate();
+        }
+    }
+    [DefaultValue(0.5f)]
+    public PointF ValuePercentual
+    {
+        get => pickerPos;
+        set
+        {
+            var last = pickerPos;
+            pickerPos = new PointF(
+                Math.Min(1.0f, Math.Max(0.0f, value.X)),
+                Math.Min(1.0f, Math.Max(0.0f, value.Y)));
+            if ((pickerPos != last) || (_dragState == 2))
             {
-                pickerSize = value;
+                OnPercentualValueChanged();
+                UpdateColorValue();
                 Invalidate();
             }
         }
-        [DefaultValue(0.5f)]
-        public PointF ValuePercentual
+    }
+    [Browsable(false)]
+    public Color Value { get;
+        private set;
+    }
+    public Color TopLeftColor
+    {
+        get => clrTopLeft;
+        set
         {
-            get => pickerPos;
-            set
+            if (clrTopLeft != value)
             {
-                var last = pickerPos;
-                pickerPos = new PointF(
-                    Math.Min(1.0f, Math.Max(0.0f, value.X)),
-                    Math.Min(1.0f, Math.Max(0.0f, value.Y)));
-                if ((pickerPos != last) || (_dragState == 2))
-                {
-                    OnPercentualValueChanged();
-                    UpdateColorValue();
-                    Invalidate();
-                }
+                SetupGradient(value, clrTopRight, clrBottomLeft, clrBottomRight);
+                designSerializeColor = true;
             }
         }
-        [Browsable(false)]
-        public Color Value { get;
-            private set;
-        }
-        public Color TopLeftColor
+    }
+    public Color TopRightColor
+    {
+        get => clrTopRight;
+        set
         {
-            get => clrTopLeft;
-            set
+            if (clrTopRight != value)
             {
-                if (clrTopLeft != value)
-                {
-                    SetupGradient(value, clrTopRight, clrBottomLeft, clrBottomRight);
-                    designSerializeColor = true;
-                }
+                SetupGradient(clrTopLeft, value, clrBottomLeft, clrBottomRight);
+                designSerializeColor = true;
             }
         }
-        public Color TopRightColor
+    }
+    public Color BottomLeftColor
+    {
+        get => clrBottomLeft;
+        set
         {
-            get => clrTopRight;
-            set
+            if (clrBottomLeft != value)
             {
-                if (clrTopRight != value)
-                {
-                    SetupGradient(clrTopLeft, value, clrBottomLeft, clrBottomRight);
-                    designSerializeColor = true;
-                }
+                SetupGradient(clrTopLeft, clrTopRight, value, clrBottomRight);
+                designSerializeColor = true;
             }
         }
-        public Color BottomLeftColor
+    }
+    public Color BottomRightColor
+    {
+        get => clrBottomRight;
+        set
         {
-            get => clrBottomLeft;
-            set
+            if (clrBottomRight != value)
             {
-                if (clrBottomLeft != value)
-                {
-                    SetupGradient(clrTopLeft, clrTopRight, value, clrBottomRight);
-                    designSerializeColor = true;
-                }
+                SetupGradient(clrTopLeft, clrTopRight, clrBottomLeft, value);
+                designSerializeColor = true;
             }
         }
-        public Color BottomRightColor
-        {
-            get => clrBottomRight;
-            set
-            {
-                if (clrBottomRight != value)
-                {
-                    SetupGradient(clrTopLeft, clrTopRight, clrBottomLeft, value);
-                    designSerializeColor = true;
-                }
-            }
-        }
+    }
 
 
-        public ColorPanel()
-        {
+    public ColorPanel()
+    {
 			SetStyle(ControlStyles.UserPaint, true);
 			SetStyle(ControlStyles.AllPaintingInWmPaint, true);
 			SetStyle(ControlStyles.Opaque, true);
@@ -129,7 +129,7 @@ namespace Fetze.WinFormsColor
 			SetStyle(ControlStyles.OptimizedDoubleBuffer, true);
 			SetStyle(ControlStyles.ResizeRedraw, true);
 			SetupHueBrightnessGradient();
-        }
+    }
 		
 		public void SetupGradient(Color tl, Color tr, Color bl, Color br, int accuracy = 256)
 		{
@@ -195,24 +195,24 @@ namespace Fetze.WinFormsColor
 			using (var g = Graphics.FromImage(srcImage))
 			{
 				LinearGradientBrush gradient;
-                gradient = new LinearGradientBrush(
-                    new Point(0, 0),
-                    new Point(srcImage.Width - 1, 0),
-                    Color.Transparent,
-                    Color.Transparent)
-                {
-                    InterpolationColors = blendX
-                };
-                g.FillRectangle(gradient, g.ClipBounds);
-                gradient = new LinearGradientBrush(
-                    new Point(0, srcImage.Height - 1),
-                    new Point(0, 0),
-                    Color.Transparent,
-                    Color.Transparent)
-                {
-                    InterpolationColors = blendY
-                };
-                g.FillRectangle(gradient, g.ClipBounds);
+            gradient = new LinearGradientBrush(
+                new Point(0, 0),
+                new Point(srcImage.Width - 1, 0),
+                Color.Transparent,
+                Color.Transparent)
+            {
+                InterpolationColors = blendX
+            };
+            g.FillRectangle(gradient, g.ClipBounds);
+            gradient = new LinearGradientBrush(
+                new Point(0, srcImage.Height - 1),
+                new Point(0, 0),
+                Color.Transparent,
+                Color.Transparent)
+            {
+                InterpolationColors = blendY
+            };
+            g.FillRectangle(gradient, g.ClipBounds);
 			}
 			clrTopLeft		= srcImage.GetPixel(0, 0);
 			clrTopRight	= srcImage.GetPixel(srcImage.Width - 1, 0);
@@ -223,111 +223,111 @@ namespace Fetze.WinFormsColor
 		}
 		public void SetupHueBrightnessGradient(float saturation = 1.0f, int accuracy = 256)
 		{
-            var blendX = new ColorBlend
-            {
-                Colors = new Color[] {
-                ExtMethodsSystemDrawingColor.ColorFromHSV(0.0f, saturation, 1.0f),
-                ExtMethodsSystemDrawingColor.ColorFromHSV(1.0f / 6.0f, saturation, 1.0f),
-                ExtMethodsSystemDrawingColor.ColorFromHSV(2.0f / 6.0f, saturation, 1.0f),
-                ExtMethodsSystemDrawingColor.ColorFromHSV(3.0f / 6.0f, saturation, 1.0f),
-                ExtMethodsSystemDrawingColor.ColorFromHSV(4.0f / 6.0f, saturation, 1.0f),
-                ExtMethodsSystemDrawingColor.ColorFromHSV(5.0f / 6.0f, saturation, 1.0f),
-                ExtMethodsSystemDrawingColor.ColorFromHSV(1.0f, saturation, 1.0f) },
-                Positions = new float[] {
-                0.0f,
-                1.0f / 6.0f,
-                2.0f / 6.0f,
-                3.0f / 6.0f,
-                4.0f / 6.0f,
-                5.0f / 6.0f,
-                1.0f}
-            };
+        var blendX = new ColorBlend
+        {
+            Colors = new Color[] {
+            ExtMethodsSystemDrawingColor.ColorFromHSV(0.0f, saturation, 1.0f),
+            ExtMethodsSystemDrawingColor.ColorFromHSV(1.0f / 6.0f, saturation, 1.0f),
+            ExtMethodsSystemDrawingColor.ColorFromHSV(2.0f / 6.0f, saturation, 1.0f),
+            ExtMethodsSystemDrawingColor.ColorFromHSV(3.0f / 6.0f, saturation, 1.0f),
+            ExtMethodsSystemDrawingColor.ColorFromHSV(4.0f / 6.0f, saturation, 1.0f),
+            ExtMethodsSystemDrawingColor.ColorFromHSV(5.0f / 6.0f, saturation, 1.0f),
+            ExtMethodsSystemDrawingColor.ColorFromHSV(1.0f, saturation, 1.0f) },
+            Positions = new float[] {
+            0.0f,
+            1.0f / 6.0f,
+            2.0f / 6.0f,
+            3.0f / 6.0f,
+            4.0f / 6.0f,
+            5.0f / 6.0f,
+            1.0f}
+        };
 
-            var blendY = new ColorBlend
-            {
-                Colors = new Color[] {
-                Color.FromArgb(0, 0, 0),
-                Color.Transparent },
-                Positions = new float[] {
-                0.0f,
-                1.0f}
-            };
-            SetupXYGradient(blendX, blendY, accuracy);
+        var blendY = new ColorBlend
+        {
+            Colors = new Color[] {
+            Color.FromArgb(0, 0, 0),
+            Color.Transparent },
+            Positions = new float[] {
+            0.0f,
+            1.0f}
+        };
+        SetupXYGradient(blendX, blendY, accuracy);
 		}
 		public void SetupHueSaturationGradient(float brightness = 1.0f, int accuracy = 256)
 		{
-            var blendX = new ColorBlend
-            {
-                Colors = new Color[] {
-                ExtMethodsSystemDrawingColor.ColorFromHSV(0.0f, 1.0f, brightness),
-                ExtMethodsSystemDrawingColor.ColorFromHSV(1.0f / 6.0f, 1.0f, brightness),
-                ExtMethodsSystemDrawingColor.ColorFromHSV(2.0f / 6.0f, 1.0f, brightness),
-                ExtMethodsSystemDrawingColor.ColorFromHSV(3.0f / 6.0f, 1.0f, brightness),
-                ExtMethodsSystemDrawingColor.ColorFromHSV(4.0f / 6.0f, 1.0f, brightness),
-                ExtMethodsSystemDrawingColor.ColorFromHSV(5.0f / 6.0f, 1.0f, brightness),
-                ExtMethodsSystemDrawingColor.ColorFromHSV(1.0f, 1.0f, brightness) },
-                Positions = new float[] {
-                0.0f,
-                1.0f / 6.0f,
-                2.0f / 6.0f,
-                3.0f / 6.0f,
-                4.0f / 6.0f,
-                5.0f / 6.0f,
-                1.0f}
-            };
+        var blendX = new ColorBlend
+        {
+            Colors = new Color[] {
+            ExtMethodsSystemDrawingColor.ColorFromHSV(0.0f, 1.0f, brightness),
+            ExtMethodsSystemDrawingColor.ColorFromHSV(1.0f / 6.0f, 1.0f, brightness),
+            ExtMethodsSystemDrawingColor.ColorFromHSV(2.0f / 6.0f, 1.0f, brightness),
+            ExtMethodsSystemDrawingColor.ColorFromHSV(3.0f / 6.0f, 1.0f, brightness),
+            ExtMethodsSystemDrawingColor.ColorFromHSV(4.0f / 6.0f, 1.0f, brightness),
+            ExtMethodsSystemDrawingColor.ColorFromHSV(5.0f / 6.0f, 1.0f, brightness),
+            ExtMethodsSystemDrawingColor.ColorFromHSV(1.0f, 1.0f, brightness) },
+            Positions = new float[] {
+            0.0f,
+            1.0f / 6.0f,
+            2.0f / 6.0f,
+            3.0f / 6.0f,
+            4.0f / 6.0f,
+            5.0f / 6.0f,
+            1.0f}
+        };
 
-            var blendY = new ColorBlend
-            {
-                Colors = new Color[] {
-                Color.FromArgb((int)Math.Round(255.0f * brightness), (int)Math.Round(255.0f * brightness), (int)Math.Round(255.0f * brightness)),
-                Color.Transparent },
-                Positions = new float[] {
-                0.0f,
-                1.0f}
-            };
-            SetupXYGradient(blendX, blendY, accuracy);
+        var blendY = new ColorBlend
+        {
+            Colors = new Color[] {
+            Color.FromArgb((int)Math.Round(255.0f * brightness), (int)Math.Round(255.0f * brightness), (int)Math.Round(255.0f * brightness)),
+            Color.Transparent },
+            Positions = new float[] {
+            0.0f,
+            1.0f}
+        };
+        SetupXYGradient(blendX, blendY, accuracy);
 		}
 
-        protected void UpdateColorValue()
-        {
+    protected void UpdateColorValue()
+    {
 			var oldVal = Value;
-            Value = srcImage.GetPixel(
-                (int)Math.Round((srcImage.Width - 1) * pickerPos.X), 
-                (int)Math.Round((srcImage.Height - 1) * (1.0f - pickerPos.Y)));
+        Value = srcImage.GetPixel(
+            (int)Math.Round((srcImage.Width - 1) * pickerPos.X), 
+            (int)Math.Round((srcImage.Height - 1) * (1.0f - pickerPos.Y)));
 			if ((oldVal != Value) && (_dragState != 1))
-            {
-                OnValueChanged();
-            }
-        }
-
-        protected void OnValueChanged() => ValueChanged?.Invoke(this, null);
-        protected void OnPercentualValueChanged() => PercentualValueChanged?.Invoke(this, null);
-
-        protected override void OnPaint(PaintEventArgs e)
         {
-            base.OnPaint(e);
+            OnValueChanged();
+        }
+    }
 
-            var colorBoxOuter = new Rectangle(
-                ClientRectangle.X,
-                ClientRectangle.Y,
-                ClientRectangle.Width - 1,
-                ClientRectangle.Height - 1);
-            var colorBoxInner = new Rectangle(
-                colorBoxOuter.X + 1,
-                colorBoxOuter.Y + 1,
-                colorBoxOuter.Width - 2,
-                colorBoxOuter.Height - 2);
-            var colorArea = ColorAreaRectangle;
-            var pickerVisualPos = new Point(
+    protected void OnValueChanged() => ValueChanged?.Invoke(this, null);
+    protected void OnPercentualValueChanged() => PercentualValueChanged?.Invoke(this, null);
+
+    protected override void OnPaint(PaintEventArgs e)
+    {
+        base.OnPaint(e);
+
+        var colorBoxOuter = new Rectangle(
+            ClientRectangle.X,
+            ClientRectangle.Y,
+            ClientRectangle.Width - 1,
+            ClientRectangle.Height - 1);
+        var colorBoxInner = new Rectangle(
+            colorBoxOuter.X + 1,
+            colorBoxOuter.Y + 1,
+            colorBoxOuter.Width - 2,
+            colorBoxOuter.Height - 2);
+        var colorArea = ColorAreaRectangle;
+        var pickerVisualPos = new Point(
 				colorArea.X + (int)Math.Round(pickerPos.X * colorArea.Width),
 				colorArea.Y + (int)Math.Round((1.0f - pickerPos.Y) * colorArea.Height));
 
 			if (clrBottomLeft.A < 255 || clrBottomRight.A < 255 || clrTopLeft.A < 255 || clrTopRight.A < 255)
-            {
-                e.Graphics.FillRectangle(new HatchBrush(HatchStyle.LargeCheckerBoard, Color.LightGray, Color.Gray), colorArea);
-            }
+        {
+            e.Graphics.FillRectangle(new HatchBrush(HatchStyle.LargeCheckerBoard, Color.LightGray, Color.Gray), colorArea);
+        }
 
-            e.Graphics.DrawImage(srcImage, colorArea, 0, 0, srcImage.Width - 1, srcImage.Height - 1, GraphicsUnit.Pixel);
+        e.Graphics.DrawImage(srcImage, colorArea, 0, 0, srcImage.Width - 1, srcImage.Height - 1, GraphicsUnit.Pixel);
 
 			var innerPickerPen = Value.GetLuminance() > 0.5f ? Pens.Black : Pens.White;
 			if (Enabled)
@@ -352,58 +352,58 @@ namespace Fetze.WinFormsColor
 				e.Graphics.FillRectangle(new SolidBrush(Color.FromArgb(128, SystemColors.Control)), colorArea);
 			}
 
-            e.Graphics.DrawRectangle(SystemPens.ControlDark, colorBoxOuter);
-            e.Graphics.DrawRectangle(SystemPens.ControlLightLight, colorBoxInner);
-        }
-        protected override void OnMouseDown(MouseEventArgs e)
+        e.Graphics.DrawRectangle(SystemPens.ControlDark, colorBoxOuter);
+        e.Graphics.DrawRectangle(SystemPens.ControlLightLight, colorBoxInner);
+    }
+    protected override void OnMouseDown(MouseEventArgs e)
+    {
+        base.OnMouseDown(e);
+        if (e.Button == MouseButtons.Left)
         {
-            base.OnMouseDown(e);
-            if (e.Button == MouseButtons.Left)
-            {
-                _dragState = 1;
-                Focus();
-                ValuePercentual = new PointF(
-                    (e.X - ColorAreaRectangle.X) / (float)ColorAreaRectangle.Width,
+            _dragState = 1;
+            Focus();
+            ValuePercentual = new PointF(
+                (e.X - ColorAreaRectangle.X) / (float)ColorAreaRectangle.Width,
 					1.0f - (e.Y - ColorAreaRectangle.Y) / (float)ColorAreaRectangle.Height);
-            }
         }
+    }
 
-        protected override void OnMouseMove(MouseEventArgs e)
+    protected override void OnMouseMove(MouseEventArgs e)
+    {
+        base.OnMouseMove(e);
+
+        if (_dragState != 1)
         {
-            base.OnMouseMove(e);
-
-            if (_dragState != 1)
-            {
-                return;
-            }
-            
-            ValuePercentual = new PointF(
-                (e.X - ColorAreaRectangle.X) / (float)ColorAreaRectangle.Width,
-                1.0f - (e.Y - ColorAreaRectangle.Y) / (float)ColorAreaRectangle.Height);
-        }
-        protected override void OnMouseUp(MouseEventArgs e)
-        {
-            base.OnMouseUp(e);
-            _dragState = 2;
-
-            ValuePercentual = new PointF(
-                (e.X - ColorAreaRectangle.X) / (float)ColorAreaRectangle.Width,
-                1.0f - (e.Y - ColorAreaRectangle.Y) / (float)ColorAreaRectangle.Height);
-
-            _dragState = 0;
+            return;
         }
         
-        protected override void OnLostFocus(EventArgs e)
-        {
-            base.OnLostFocus(e);
-            _dragState = 0;
-            Invalidate();
-        }
-        protected override void OnGotFocus(EventArgs e)
-        {
-            base.OnGotFocus(e);
-            Invalidate();
-        }
+        ValuePercentual = new PointF(
+            (e.X - ColorAreaRectangle.X) / (float)ColorAreaRectangle.Width,
+            1.0f - (e.Y - ColorAreaRectangle.Y) / (float)ColorAreaRectangle.Height);
+    }
+    protected override void OnMouseUp(MouseEventArgs e)
+    {
+        base.OnMouseUp(e);
+        _dragState = 2;
+
+        ValuePercentual = new PointF(
+            (e.X - ColorAreaRectangle.X) / (float)ColorAreaRectangle.Width,
+            1.0f - (e.Y - ColorAreaRectangle.Y) / (float)ColorAreaRectangle.Height);
+
+        _dragState = 0;
+    }
+    
+    protected override void OnLostFocus(EventArgs e)
+    {
+        base.OnLostFocus(e);
+        _dragState = 0;
+        Invalidate();
+    }
+    protected override void OnGotFocus(EventArgs e)
+    {
+        base.OnGotFocus(e);
+        Invalidate();
+    }
 
 		private void ResetTopLeftColor()
 		{
@@ -425,11 +425,10 @@ namespace Fetze.WinFormsColor
 			SetupHueBrightnessGradient();
 			designSerializeColor = false;
 		}
-        private bool ShouldSerializeTopLeftColor() => designSerializeColor;
-        private bool ShouldSerializeTopRightColor() => designSerializeColor;
-        private bool ShouldSerializeBottomLeftColor() => designSerializeColor;
-        private bool ShouldSerializeBottomRightColor() => designSerializeColor;
+    private bool ShouldSerializeTopLeftColor() => designSerializeColor;
+    private bool ShouldSerializeTopRightColor() => designSerializeColor;
+    private bool ShouldSerializeBottomLeftColor() => designSerializeColor;
+    private bool ShouldSerializeBottomRightColor() => designSerializeColor;
 #pragma warning restore IDE0090 // Use 'new(...)'
 
-    }
 }

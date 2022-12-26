@@ -33,50 +33,49 @@ using Gorgon.Editor.UI.Controls;
 using Gorgon.Editor.UI.ViewModels;
 using Gorgon.IO;
 
-namespace Gorgon.Editor.ImageAtlasTool
+namespace Gorgon.Editor.ImageAtlasTool;
+
+/// <summary>
+/// The parameters for the <see cref="IImageFiles"/> view model.
+/// </summary>
+internal class ImageFilesParameters
+    : ViewModelInjection<IHostContentServices>
 {
     /// <summary>
-    /// The parameters for the <see cref="IImageFiles"/> view model.
+    /// Property to reeturn the service to search through the content files.
     /// </summary>
-    internal class ImageFilesParameters
-        : ViewModelInjection<IHostContentServices>
+    public ISearchService<IContentFileExplorerSearchEntry> SearchService
     {
-        /// <summary>
-        /// Property to reeturn the service to search through the content files.
-        /// </summary>
-        public ISearchService<IContentFileExplorerSearchEntry> SearchService
-        {
-            get;
-        }
+        get;
+    }
 
-        /// <summary>
-        /// Property to return the entries for the file system.
-        /// </summary>
-        public IReadOnlyList<ContentFileExplorerDirectoryEntry> Entries
-        {
-            get;
-        }
+    /// <summary>
+    /// Property to return the entries for the file system.
+    /// </summary>
+    public IReadOnlyList<ContentFileExplorerDirectoryEntry> Entries
+    {
+        get;
+    }
 
-        /// <summary>
-        /// Property to return the temporary file system used to write data.
-        /// </summary>
-        public IGorgonFileSystemWriter<Stream> TempFileSystem
-        {
-            get;
-        }
+    /// <summary>
+    /// Property to return the temporary file system used to write data.
+    /// </summary>
+    public IGorgonFileSystemWriter<Stream> TempFileSystem
+    {
+        get;
+    }
 
-        /// <summary>Initializes a new instance of the <see cref="ImageFilesParameters"/> class.</summary>
-        /// <param name="entries">The file system image entries.</param>
-        /// <param name="tempFileSystem">The temporary file system used to write temporary data.</param>
-        /// <param name="searchService">The search service used to search through the image entries.</param>        
-        /// <param name="hostServices">The services from the host application.</param>
-        /// <exception cref="ArgumentNullException">Thrown when any of the parameters are <b>null</b>.</exception>
-        public ImageFilesParameters(IReadOnlyList<ContentFileExplorerDirectoryEntry> entries, IGorgonFileSystemWriter<Stream> tempFileSystem, ISearchService<IContentFileExplorerSearchEntry> searchService, IHostContentServices hostServices)
-            : base(hostServices)
-        {
-            Entries = entries ?? throw new ArgumentNullException(nameof(entries));
-            SearchService = searchService ?? throw new ArgumentNullException(nameof(searchService));
-            TempFileSystem = tempFileSystem ?? throw new ArgumentNullException(nameof(tempFileSystem));
-        }
+    /// <summary>Initializes a new instance of the <see cref="ImageFilesParameters"/> class.</summary>
+    /// <param name="entries">The file system image entries.</param>
+    /// <param name="tempFileSystem">The temporary file system used to write temporary data.</param>
+    /// <param name="searchService">The search service used to search through the image entries.</param>        
+    /// <param name="hostServices">The services from the host application.</param>
+    /// <exception cref="ArgumentNullException">Thrown when any of the parameters are <b>null</b>.</exception>
+    public ImageFilesParameters(IReadOnlyList<ContentFileExplorerDirectoryEntry> entries, IGorgonFileSystemWriter<Stream> tempFileSystem, ISearchService<IContentFileExplorerSearchEntry> searchService, IHostContentServices hostServices)
+        : base(hostServices)
+    {
+        Entries = entries ?? throw new ArgumentNullException(nameof(entries));
+        SearchService = searchService ?? throw new ArgumentNullException(nameof(searchService));
+        TempFileSystem = tempFileSystem ?? throw new ArgumentNullException(nameof(tempFileSystem));
     }
 }

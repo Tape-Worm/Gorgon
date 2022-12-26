@@ -25,59 +25,58 @@
 #endregion
 
 
-namespace Gorgon.Editor.Services
+namespace Gorgon.Editor.Services;
+
+/// <summary>
+/// An interface for accessing or storing data on the clipboard.
+/// </summary>
+public interface IClipboardService
 {
+    #region Properties.
     /// <summary>
-    /// An interface for accessing or storing data on the clipboard.
+    /// Property to return whether or not there is data on the clipboard.
     /// </summary>
-    public interface IClipboardService
+    bool HasData
     {
-        #region Properties.
-        /// <summary>
-        /// Property to return whether or not there is data on the clipboard.
-        /// </summary>
-        bool HasData
-        {
-            get;
-        }
-        #endregion
-
-        #region Methods.
-        /// <summary>
-        /// Function to return whether or not the data on the clipboard is of the type specified.
-        /// </summary>
-        /// <typeparam name="T">The type to check.</typeparam>
-        /// <returns><b>true</b> if the data is of the type specified, <b>false</b> if not.</returns>
-        /// <remarks>
-        /// <para>
-        /// If there is no data on the clipboard, then this should always return <b>false</b>.
-        /// </para>
-        /// </remarks>
-        bool IsType<T>();
-
-        /// <summary>
-        /// Function to return the data from the clipboard as the specified type.
-        /// </summary>
-        /// <typeparam name="T">The type of data to return.</typeparam>
-        /// <returns>The data as the specified type.</returns>
-        /// <remarks>
-        /// <para>
-        /// If there is no data of the specified type on the clipboard, then this method should throw an exception. Check for data of the specified type using the <see cref="IsType{T}"/> method prior to 
-        /// calling this method.
-        /// </para>
-        /// </remarks>
-        T GetData<T>();
-
-        /// <summary>
-        /// Function to clear the clipboard contents.
-        /// </summary>
-        void Clear();
-
-        /// <summary>
-        /// Function to place an item on the clipboard for copying.
-        /// </summary>
-        /// <param name="item">The item to copy.</param>
-        void CopyItem(object item);
-        #endregion
+        get;
     }
+    #endregion
+
+    #region Methods.
+    /// <summary>
+    /// Function to return whether or not the data on the clipboard is of the type specified.
+    /// </summary>
+    /// <typeparam name="T">The type to check.</typeparam>
+    /// <returns><b>true</b> if the data is of the type specified, <b>false</b> if not.</returns>
+    /// <remarks>
+    /// <para>
+    /// If there is no data on the clipboard, then this should always return <b>false</b>.
+    /// </para>
+    /// </remarks>
+    bool IsType<T>();
+
+    /// <summary>
+    /// Function to return the data from the clipboard as the specified type.
+    /// </summary>
+    /// <typeparam name="T">The type of data to return.</typeparam>
+    /// <returns>The data as the specified type.</returns>
+    /// <remarks>
+    /// <para>
+    /// If there is no data of the specified type on the clipboard, then this method should throw an exception. Check for data of the specified type using the <see cref="IsType{T}"/> method prior to 
+    /// calling this method.
+    /// </para>
+    /// </remarks>
+    T GetData<T>();
+
+    /// <summary>
+    /// Function to clear the clipboard contents.
+    /// </summary>
+    void Clear();
+
+    /// <summary>
+    /// Function to place an item on the clipboard for copying.
+    /// </summary>
+    /// <param name="item">The item to copy.</param>
+    void CopyItem(object item);
+    #endregion
 }

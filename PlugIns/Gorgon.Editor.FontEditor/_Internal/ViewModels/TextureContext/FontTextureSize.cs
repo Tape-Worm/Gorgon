@@ -31,74 +31,73 @@ using System.Text;
 using System.Threading.Tasks;
 using Gorgon.Editor.UI;
 
-namespace Gorgon.Editor.FontEditor
+namespace Gorgon.Editor.FontEditor;
+
+/// <summary>
+/// View model for the texture size editor.
+/// </summary>
+internal class FontTextureSize
+    : HostedPanelViewModelBase<HostedPanelViewModelParameters>, IFontTextureSize
 {
-    /// <summary>
-    /// View model for the texture size editor.
-    /// </summary>
-    internal class FontTextureSize
-        : HostedPanelViewModelBase<HostedPanelViewModelParameters>, IFontTextureSize
+    #region Variables.
+    // The texture size.
+    private int _textureWidth = 512;
+    private int _textureHeight = 512;
+    #endregion
+
+    #region Properties.
+    /// <summary>Property to set or return the width of the font textures.</summary>
+    public int TextureWidth
     {
-        #region Variables.
-        // The texture size.
-        private int _textureWidth = 512;
-        private int _textureHeight = 512;
-        #endregion
-
-        #region Properties.
-        /// <summary>Property to set or return the width of the font textures.</summary>
-        public int TextureWidth
+        get => _textureWidth;
+        set
         {
-            get => _textureWidth;
-            set
+            if (_textureWidth == value)
             {
-                if (_textureWidth == value)
-                {
-                    return;
-                }
-
-                OnPropertyChanging();
-                _textureWidth = value;
-                OnPropertyChanged();
+                return;
             }
+
+            OnPropertyChanging();
+            _textureWidth = value;
+            OnPropertyChanged();
         }
-
-        /// <summary>Property to set or return the height of the font textures.</summary>
-        public int TextureHeight
-        {
-            get => _textureHeight;
-            set
-            {
-                if (_textureHeight == value)
-                {
-                    return;
-                }
-
-                OnPropertyChanging();
-                _textureHeight = value;
-                OnPropertyChanged();
-            }
-        }
-
-        /// <summary>Property to return whether the panel is modal.</summary>
-        public override bool IsModal => true;
-        #endregion
-
-        #region Methods.
-        /// <summary>Function to inject dependencies for the view model.</summary>
-        /// <param name="injectionParameters">The parameters to inject.</param>
-        /// <remarks>
-        ///   <para>
-        /// Applications should call this when setting up the view model for complex operations and/or dependency injection. The constructor should only be used for simple set up and initialization of objects.
-        /// </para>
-        ///   <para>
-        /// This method is only ever called after the view model has been created, and never again during the lifetime of the view model.
-        /// </para>
-        /// </remarks>
-        protected override void OnInitialize(HostedPanelViewModelParameters injectionParameters)
-        {
-            // Empty on purpose.
-        }
-        #endregion
     }
+
+    /// <summary>Property to set or return the height of the font textures.</summary>
+    public int TextureHeight
+    {
+        get => _textureHeight;
+        set
+        {
+            if (_textureHeight == value)
+            {
+                return;
+            }
+
+            OnPropertyChanging();
+            _textureHeight = value;
+            OnPropertyChanged();
+        }
+    }
+
+    /// <summary>Property to return whether the panel is modal.</summary>
+    public override bool IsModal => true;
+    #endregion
+
+    #region Methods.
+    /// <summary>Function to inject dependencies for the view model.</summary>
+    /// <param name="injectionParameters">The parameters to inject.</param>
+    /// <remarks>
+    ///   <para>
+    /// Applications should call this when setting up the view model for complex operations and/or dependency injection. The constructor should only be used for simple set up and initialization of objects.
+    /// </para>
+    ///   <para>
+    /// This method is only ever called after the view model has been created, and never again during the lifetime of the view model.
+    /// </para>
+    /// </remarks>
+    protected override void OnInitialize(HostedPanelViewModelParameters injectionParameters)
+    {
+        // Empty on purpose.
+    }
+    #endregion
 }

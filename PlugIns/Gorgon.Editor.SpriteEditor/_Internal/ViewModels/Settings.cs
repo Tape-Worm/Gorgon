@@ -29,124 +29,123 @@ using Gorgon.Editor.UI;
 using Gorgon.Graphics;
 using DX = SharpDX;
 
-namespace Gorgon.Editor.SpriteEditor
+namespace Gorgon.Editor.SpriteEditor;
+
+/// <summary>
+/// The view model used to manipulate the settings for the plug in.
+/// </summary>
+internal class Settings
+    : ViewModelBase<SettingsParameters, IHostContentServices>, ISettings
 {
+    #region Variables.
+    // The plug in settings.
+    private SpriteEditorSettings _settings;
+    #endregion
+
+    #region Properties.
     /// <summary>
-    /// The view model used to manipulate the settings for the plug in.
+    /// Property to set or return the type of masking to perform when picking a sprite using the <see cref="SpriteEditTool.SpritePick"/> tool.
     /// </summary>
-    internal class Settings
-        : ViewModelBase<SettingsParameters, IHostContentServices>, ISettings
+    public ClipMask ClipMaskType
     {
-        #region Variables.
-        // The plug in settings.
-        private SpriteEditorSettings _settings;
-        #endregion
-
-        #region Properties.
-        /// <summary>
-        /// Property to set or return the type of masking to perform when picking a sprite using the <see cref="SpriteEditTool.SpritePick"/> tool.
-        /// </summary>
-        public ClipMask ClipMaskType
+        get => _settings.ClipMaskType;
+        set
         {
-            get => _settings.ClipMaskType;
-            set
+            if (_settings.ClipMaskType == value)
             {
-                if (_settings.ClipMaskType == value)
-                {
-                    return;
-                }
-
-                OnPropertyChanging();
-                _settings.ClipMaskType = value;
-                OnPropertyChanged();
+                return;
             }
+
+            OnPropertyChanging();
+            _settings.ClipMaskType = value;
+            OnPropertyChanged();
         }
-
-        /// <summary>
-        /// Property to set or return the sprite picker mask color.
-        /// </summary>
-        public GorgonColor ClipMaskValue
-        {
-            get => GorgonColor.FromRGBA(_settings.ClipMaskValue);
-            set
-            {
-                int intValue = value.ToRGBA();
-
-                if (intValue == _settings.ClipMaskValue)
-                {
-                    return;
-                }
-
-                OnPropertyChanging();
-                _settings.ClipMaskValue = intValue;
-                OnPropertyChanged();
-            }
-        }
-
-        /// <summary>
-        /// Property to set or return the position of the manual input window.
-        /// </summary>
-        public DX.Rectangle? ManualRectangleEditorBounds
-        {
-            get => _settings.ManualRectangleEditorBounds;
-            set
-            {
-                if (_settings.ManualRectangleEditorBounds == value)
-                {
-                    return;
-                }
-
-                OnPropertyChanging();
-                _settings.ManualRectangleEditorBounds = value;
-                OnPropertyChanged();
-            }
-        }
-
-        /// <summary>property to set or return the position of the manual vertex editor window.</summary>
-        public DX.Rectangle? ManualVertexEditorBounds
-        {
-            get => _settings.ManualVertexEditorBounds;
-            set
-            {
-                if (_settings.ManualVertexEditorBounds == value)
-                {
-                    return;
-                }
-
-                OnPropertyChanging();
-                _settings.ManualVertexEditorBounds = value;
-                OnPropertyChanged();
-            }
-        }
-
-        /// <summary>
-        /// Property to set or return the flag used to show a warning when a large image is being used with the sprite picker tool.
-        /// </summary>
-        public bool ShowImageSizeWarning
-        {
-            get => _settings.ShowImageSizeWarning;
-            set
-            {
-                if (_settings.ShowImageSizeWarning == value)
-                {
-                    return;
-                }
-
-                OnPropertyChanging();
-                _settings.ShowImageSizeWarning = value;
-                OnPropertyChanged();
-            }
-        }
-        #endregion
-
-        #region Methods.
-        /// <summary>Function to inject dependencies for the view model.</summary>
-        /// <param name="injectionParameters">The parameters to inject.</param>
-        /// <exception cref="ArgumentMissingException">Thrown when required parameters are missing.</exception>
-        /// <remarks>
-        /// Applications should call this when setting up the view model for complex operations and/or dependency injection. The constructor should only be used for simple set up and initialization of objects.
-        /// </remarks>
-        protected override void OnInitialize(SettingsParameters injectionParameters) => _settings = injectionParameters.Settings ?? throw new ArgumentMissingException(nameof(SettingsParameters.Settings), nameof(injectionParameters));
-        #endregion
     }
+
+    /// <summary>
+    /// Property to set or return the sprite picker mask color.
+    /// </summary>
+    public GorgonColor ClipMaskValue
+    {
+        get => GorgonColor.FromRGBA(_settings.ClipMaskValue);
+        set
+        {
+            int intValue = value.ToRGBA();
+
+            if (intValue == _settings.ClipMaskValue)
+            {
+                return;
+            }
+
+            OnPropertyChanging();
+            _settings.ClipMaskValue = intValue;
+            OnPropertyChanged();
+        }
+    }
+
+    /// <summary>
+    /// Property to set or return the position of the manual input window.
+    /// </summary>
+    public DX.Rectangle? ManualRectangleEditorBounds
+    {
+        get => _settings.ManualRectangleEditorBounds;
+        set
+        {
+            if (_settings.ManualRectangleEditorBounds == value)
+            {
+                return;
+            }
+
+            OnPropertyChanging();
+            _settings.ManualRectangleEditorBounds = value;
+            OnPropertyChanged();
+        }
+    }
+
+    /// <summary>property to set or return the position of the manual vertex editor window.</summary>
+    public DX.Rectangle? ManualVertexEditorBounds
+    {
+        get => _settings.ManualVertexEditorBounds;
+        set
+        {
+            if (_settings.ManualVertexEditorBounds == value)
+            {
+                return;
+            }
+
+            OnPropertyChanging();
+            _settings.ManualVertexEditorBounds = value;
+            OnPropertyChanged();
+        }
+    }
+
+    /// <summary>
+    /// Property to set or return the flag used to show a warning when a large image is being used with the sprite picker tool.
+    /// </summary>
+    public bool ShowImageSizeWarning
+    {
+        get => _settings.ShowImageSizeWarning;
+        set
+        {
+            if (_settings.ShowImageSizeWarning == value)
+            {
+                return;
+            }
+
+            OnPropertyChanging();
+            _settings.ShowImageSizeWarning = value;
+            OnPropertyChanged();
+        }
+    }
+    #endregion
+
+    #region Methods.
+    /// <summary>Function to inject dependencies for the view model.</summary>
+    /// <param name="injectionParameters">The parameters to inject.</param>
+    /// <exception cref="ArgumentMissingException">Thrown when required parameters are missing.</exception>
+    /// <remarks>
+    /// Applications should call this when setting up the view model for complex operations and/or dependency injection. The constructor should only be used for simple set up and initialization of objects.
+    /// </remarks>
+    protected override void OnInitialize(SettingsParameters injectionParameters) => _settings = injectionParameters.Settings ?? throw new ArgumentMissingException(nameof(SettingsParameters.Settings), nameof(injectionParameters));
+    #endregion
 }

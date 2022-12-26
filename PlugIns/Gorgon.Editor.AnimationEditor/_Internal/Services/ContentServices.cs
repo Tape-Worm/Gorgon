@@ -29,78 +29,77 @@ using Gorgon.Editor.AnimationEditor.Services;
 using Gorgon.Editor.Rendering;
 using Gorgon.Editor.Services;
 
-namespace Gorgon.Editor.AnimationEditor
+namespace Gorgon.Editor.AnimationEditor;
+
+/// <summary>
+/// A list of services for for the content.
+/// </summary>
+internal class ContentServices
 {
     /// <summary>
-    /// A list of services for for the content.
+    /// Property to return the IO service for the content.
     /// </summary>
-    internal class ContentServices
+    public AnimationIOService IOService
     {
-        /// <summary>
-        /// Property to return the IO service for the content.
-        /// </summary>
-        public AnimationIOService IOService
-        {
-            get;
-        }
+        get;
+    }
 
-        /// <summary>
-        /// Property to return the factory used to create view models.
-        /// </summary>
-        public IViewModelFactory ViewModelFactory
-        {
-            get;
-        }
+    /// <summary>
+    /// Property to return the factory used to create view models.
+    /// </summary>
+    public IViewModelFactory ViewModelFactory
+    {
+        get;
+    }
 
-        /// <summary>
-        /// Property to return the service used for undo/redo functionality.
-        /// </summary>
-        public IUndoService UndoService
-        {
-            get;
-        }
+    /// <summary>
+    /// Property to return the service used for undo/redo functionality.
+    /// </summary>
+    public IUndoService UndoService
+    {
+        get;
+    }
 
-        /// <summary>
-        /// Property to return the texture cache.
-        /// </summary>
-        public ITextureCache TextureCache
-        {
-            get;
-        }
+    /// <summary>
+    /// Property to return the texture cache.
+    /// </summary>
+    public ITextureCache TextureCache
+    {
+        get;
+    }
 
-        /// <summary>
-        /// Property to return the key frame processor service.
-        /// </summary>
-        public KeyProcessorService KeyProcessor
-        {
-            get;
-        }
+    /// <summary>
+    /// Property to return the key frame processor service.
+    /// </summary>
+    public KeyProcessorService KeyProcessor
+    {
+        get;
+    }
 
-        /// <summary>
-        /// Property to return the service used set up a new animation.
-        /// </summary>
-        public NewAnimationService NewAnimation
-        {
-            get;
-        }
+    /// <summary>
+    /// Property to return the service used set up a new animation.
+    /// </summary>
+    public NewAnimationService NewAnimation
+    {
+        get;
+    }
 
-        /// <summary>Initializes a new instance of the <see cref="ContentServices"/> class.</summary>
-        /// <param name="clipboard">The service used to access the clipboard.</param>
-        /// <param name="ioService">The io service.</param>
-        /// <param name="textureCache">The texture cache for the plug in.</param>
-        /// <param name="undoService">The service used for undo/redo functionality.</param>
-        /// <param name="keyProcessor">The key frame processor service.</param>
-        /// <param name="newAnimation">The service used to set up a new animation.</param>
-        /// <param name="factory">The factory.</param>
-        /// <exception cref="ArgumentNullException">Thrown when any of the parameters are <b>null</b>.</exception>
-        public ContentServices(AnimationIOService ioService, ITextureCache textureCache, IUndoService undoService, KeyProcessorService keyProcessor, NewAnimationService newAnimation, IViewModelFactory factory)
-        {
-            IOService = ioService ?? throw new ArgumentNullException(nameof(ioService));
-            ViewModelFactory = factory ?? throw new ArgumentNullException(nameof(factory));
-            UndoService = undoService ?? throw new ArgumentNullException(nameof(undoService));
-            TextureCache = textureCache ?? throw new ArgumentNullException(nameof(textureCache));
-            KeyProcessor = keyProcessor ?? throw new ArgumentNullException(nameof(keyProcessor));
-            NewAnimation = newAnimation ?? throw new ArgumentNullException(nameof(newAnimation));
-        }
+    /// <summary>Initializes a new instance of the <see cref="ContentServices"/> class.</summary>
+    /// <param name="clipboard">The service used to access the clipboard.</param>
+    /// <param name="ioService">The io service.</param>
+    /// <param name="textureCache">The texture cache for the plug in.</param>
+    /// <param name="undoService">The service used for undo/redo functionality.</param>
+    /// <param name="keyProcessor">The key frame processor service.</param>
+    /// <param name="newAnimation">The service used to set up a new animation.</param>
+    /// <param name="factory">The factory.</param>
+    /// <exception cref="ArgumentNullException">Thrown when any of the parameters are <b>null</b>.</exception>
+    public ContentServices(AnimationIOService ioService, ITextureCache textureCache, IUndoService undoService, KeyProcessorService keyProcessor, NewAnimationService newAnimation, IViewModelFactory factory)
+    {
+        IOService = ioService ?? throw new ArgumentNullException(nameof(ioService));
+        ViewModelFactory = factory ?? throw new ArgumentNullException(nameof(factory));
+        UndoService = undoService ?? throw new ArgumentNullException(nameof(undoService));
+        TextureCache = textureCache ?? throw new ArgumentNullException(nameof(textureCache));
+        KeyProcessor = keyProcessor ?? throw new ArgumentNullException(nameof(keyProcessor));
+        NewAnimation = newAnimation ?? throw new ArgumentNullException(nameof(newAnimation));
     }
 }

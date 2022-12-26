@@ -27,30 +27,29 @@
 using Gorgon.Core;
 using Gorgon.Editor.UI;
 
-namespace Gorgon.Editor.ImageEditor.ViewModels
+namespace Gorgon.Editor.ImageEditor.ViewModels;
+
+/// <summary>
+/// The view model for the set alpha settings view.
+/// </summary>
+internal interface IAlphaSettings
+    : IHostedPanelViewModel
 {
     /// <summary>
-    /// The view model for the set alpha settings view.
+    /// Property to set or return the alpha value to set.
     /// </summary>
-    internal interface IAlphaSettings
-        : IHostedPanelViewModel
+    int AlphaValue
     {
-        /// <summary>
-        /// Property to set or return the alpha value to set.
-        /// </summary>
-        int AlphaValue
-        {
-            get;
-            set;
-        }
+        get;
+        set;
+    }
 
-        /// <summary>
-        /// Property to set or return the lower and upper bounds of the alpha range to update.
-        /// </summary>
-        GorgonRange UpdateRange
-        {
-            get;
-            set;
-        }
+    /// <summary>
+    /// Property to set or return the lower and upper bounds of the alpha range to update.
+    /// </summary>
+    GorgonRange UpdateRange
+    {
+        get;
+        set;
     }
 }

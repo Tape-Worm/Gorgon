@@ -29,107 +29,106 @@ using System.Windows.Forms;
 using Gorgon.Editor.Properties;
 using Gorgon.UI;
 
-namespace Gorgon.Editor.Services
+namespace Gorgon.Editor.Services;
+
+/// <summary>
+/// A service used to show a dialog for opening a file.
+/// </summary>
+public class FileOpenDialogService
+    : IFileDialogService
 {
+    #region Properties.
     /// <summary>
-    /// A service used to show a dialog for opening a file.
-    /// </summary>
-    public class FileOpenDialogService
-        : IFileDialogService
+    /// Property to set or return a file filter.
+    /// </summary>        
+    public string FileFilter
     {
-        #region Properties.
-        /// <summary>
-        /// Property to set or return a file filter.
-        /// </summary>        
-        public string FileFilter
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// Property to set or return the initial directory.
-        /// </summary>        
-        public DirectoryInfo InitialDirectory
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// Property to set or return the title for the dialog.
-        /// </summary>        
-        public string DialogTitle
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// Property to set or return the initial file path to use.
-        /// </summary>        
-        public string InitialFilePath
-        {
-            get;
-            set;
-        }
-        #endregion
-
-        #region Methods.
-        /// <summary>
-        /// Function to retrieve the parent form for the message box.
-        /// </summary>
-        /// <returns>The form to use as the owner.</returns>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0046:Convert to conditional expression", Justification = "<Pending>")]
-        private static Form GetParentForm()
-        {
-            if (Form.ActiveForm is not null)
-            {
-                return Form.ActiveForm;
-            }
-
-            return Application.OpenForms.Count > 1 ? Application.OpenForms[Application.OpenForms.Count - 1] : GorgonApplication.MainForm;
-        }
-
-        /// <summary>
-        /// Function to return the dialog.
-        /// </summary>
-        /// <param name="allowMultiSelect"><b>true</b> to allow multiple file selection, or <b>false</b> to only allow single selection.</param>
-        /// <returns>The open file dialog.</returns>
-        private OpenFileDialog GetDialog(bool allowMultiSelect) => new()
-        {
-            Title = string.IsNullOrWhiteSpace(DialogTitle) ? Resources.GOREDIT_TITLE_OPEN_FILE : DialogTitle,
-            ValidateNames = true,
-            SupportMultiDottedExtensions = true,
-            Multiselect = allowMultiSelect,
-            AutoUpgradeEnabled = true,
-            CheckFileExists = true,
-            CheckPathExists = true,
-            Filter = FileFilter ?? string.Empty,
-            InitialDirectory = InitialDirectory?.FullName,
-            RestoreDirectory = true,
-            FileName = InitialFilePath
-        };
-
-        /// <summary>
-        /// Function to retrieve a single file name.
-        /// </summary>
-        /// <returns>The selected file path, or <b>null</b> if cancelled.</returns>
-        public virtual string GetFilename()
-        {
-            OpenFileDialog dialog = null;
-
-            try
-            {
-                dialog = GetDialog(false);
-
-                return dialog.ShowDialog(GetParentForm()) == DialogResult.Cancel ? null : dialog.FileName;
-            }
-            finally
-            {
-                dialog?.Dispose();
-            }
-        }
-        #endregion
+        get;
+        set;
     }
+
+    /// <summary>
+    /// Property to set or return the initial directory.
+    /// </summary>        
+    public DirectoryInfo InitialDirectory
+    {
+        get;
+        set;
+    }
+
+    /// <summary>
+    /// Property to set or return the title for the dialog.
+    /// </summary>        
+    public string DialogTitle
+    {
+        get;
+        set;
+    }
+
+    /// <summary>
+    /// Property to set or return the initial file path to use.
+    /// </summary>        
+    public string InitialFilePath
+    {
+        get;
+        set;
+    }
+    #endregion
+
+    #region Methods.
+    /// <summary>
+    /// Function to retrieve the parent form for the message box.
+    /// </summary>
+    /// <returns>The form to use as the owner.</returns>
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0046:Convert to conditional expression", Justification = "<Pending>")]
+    private static Form GetParentForm()
+    {
+        if (Form.ActiveForm is not null)
+        {
+            return Form.ActiveForm;
+        }
+
+        return Application.OpenForms.Count > 1 ? Application.OpenForms[Application.OpenForms.Count - 1] : GorgonApplication.MainForm;
+    }
+
+    /// <summary>
+    /// Function to return the dialog.
+    /// </summary>
+    /// <param name="allowMultiSelect"><b>true</b> to allow multiple file selection, or <b>false</b> to only allow single selection.</param>
+    /// <returns>The open file dialog.</returns>
+    private OpenFileDialog GetDialog(bool allowMultiSelect) => new()
+    {
+        Title = string.IsNullOrWhiteSpace(DialogTitle) ? Resources.GOREDIT_TITLE_OPEN_FILE : DialogTitle,
+        ValidateNames = true,
+        SupportMultiDottedExtensions = true,
+        Multiselect = allowMultiSelect,
+        AutoUpgradeEnabled = true,
+        CheckFileExists = true,
+        CheckPathExists = true,
+        Filter = FileFilter ?? string.Empty,
+        InitialDirectory = InitialDirectory?.FullName,
+        RestoreDirectory = true,
+        FileName = InitialFilePath
+    };
+
+    /// <summary>
+    /// Function to retrieve a single file name.
+    /// </summary>
+    /// <returns>The selected file path, or <b>null</b> if cancelled.</returns>
+    public virtual string GetFilename()
+    {
+        OpenFileDialog dialog = null;
+
+        try
+        {
+            dialog = GetDialog(false);
+
+            return dialog.ShowDialog(GetParentForm()) == DialogResult.Cancel ? null : dialog.FileName;
+        }
+        finally
+        {
+            dialog?.Dispose();
+        }
+    }
+    #endregion
 }

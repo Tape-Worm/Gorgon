@@ -26,43 +26,42 @@
 
 using System;
 
-namespace Gorgon.Editor.Services
+namespace Gorgon.Editor.Services;
+
+/// <summary>
+/// A service that notifies the user of a busy state.
+/// </summary>
+public interface IBusyStateService
 {
+    #region Events.
     /// <summary>
-    /// A service that notifies the user of a busy state.
+    /// Event triggered when the busy state changes.
     /// </summary>
-    public interface IBusyStateService
+    event EventHandler BusyStateChanged;
+    #endregion
+
+    #region Properties.
+    /// <summary>
+    /// Property to return whether or not there's a busy state.
+    /// </summary>
+    bool IsBusy
     {
-        #region Events.
-        /// <summary>
-        /// Event triggered when the busy state changes.
-        /// </summary>
-        event EventHandler BusyStateChanged;
-        #endregion
-
-        #region Properties.
-        /// <summary>
-        /// Property to return whether or not there's a busy state.
-        /// </summary>
-        bool IsBusy
-        {
-            get;
-        }
-        #endregion
-
-        #region Methods.
-        /// <summary>
-        /// Function to forcefully reset the busy state back to an idle state.
-        /// </summary>
-        void Reset();
-        /// <summary>
-        /// Function to set busy state.
-        /// </summary>
-        void SetBusy();
-        /// <summary>
-        /// Function to set idle state (canceling busy state).
-        /// </summary>
-        void SetIdle();
-        #endregion
+        get;
     }
+    #endregion
+
+    #region Methods.
+    /// <summary>
+    /// Function to forcefully reset the busy state back to an idle state.
+    /// </summary>
+    void Reset();
+    /// <summary>
+    /// Function to set busy state.
+    /// </summary>
+    void SetBusy();
+    /// <summary>
+    /// Function to set idle state (canceling busy state).
+    /// </summary>
+    void SetIdle();
+    #endregion
 }

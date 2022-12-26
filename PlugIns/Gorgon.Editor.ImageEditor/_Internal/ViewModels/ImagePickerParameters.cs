@@ -29,62 +29,61 @@ using Gorgon.Editor.Content;
 using Gorgon.Editor.PlugIns;
 using Gorgon.Editor.UI;
 
-namespace Gorgon.Editor.ImageEditor
+namespace Gorgon.Editor.ImageEditor;
+
+/// <summary>
+/// Parameters for the <see cref="IImagePicker"/> view model.
+/// </summary>
+internal class ImagePickerParameters
+    : ContentViewModelInjection
 {
+    #region Properties.
     /// <summary>
-    /// Parameters for the <see cref="IImagePicker"/> view model.
+    /// Property to set or return the image editor services.
     /// </summary>
-    internal class ImagePickerParameters
-        : ContentViewModelInjection
+    public ImageEditorServices ImageServices
     {
-        #region Properties.
-        /// <summary>
-        /// Property to set or return the image editor services.
-        /// </summary>
-        public ImageEditorServices ImageServices
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// Property to set or return the settings for cropping/resizing/aligning imported images.
-        /// </summary>
-        public ICropResizeSettings CropResizeSettings
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// Property to set or return the view model for the sub resource picker for import images.
-        /// </summary>
-        public ISourceImagePicker SourceImagePicker
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// Property to set or return the settings for the editor plug in.
-        /// </summary>
-        public ISettings Settings
-        {
-            get;
-            set;
-        }
-        #endregion
-
-        #region Constructor/Finalizer.
-        /// <summary>Initializes a new instance of the ContentViewModelInjectionCommon class.</summary>
-        /// <param name="fileManager">The file manager for content files.</param>
-        /// <param name="file">The file that contains the content.</param>
-        /// <param name="commonServices">The common services for the application.</param>
-        /// <exception cref="ArgumentNullException">Thrown when any of the required parameters are <b>null</b>.</exception>
-        public ImagePickerParameters(IContentFileManager fileManager, IContentFile file, IHostContentServices commonServices)
-            : base(fileManager, file, commonServices)
-        {
-        }
-        #endregion
+        get;
+        set;
     }
+
+    /// <summary>
+    /// Property to set or return the settings for cropping/resizing/aligning imported images.
+    /// </summary>
+    public ICropResizeSettings CropResizeSettings
+    {
+        get;
+        set;
+    }
+
+    /// <summary>
+    /// Property to set or return the view model for the sub resource picker for import images.
+    /// </summary>
+    public ISourceImagePicker SourceImagePicker
+    {
+        get;
+        set;
+    }
+
+    /// <summary>
+    /// Property to set or return the settings for the editor plug in.
+    /// </summary>
+    public ISettings Settings
+    {
+        get;
+        set;
+    }
+    #endregion
+
+    #region Constructor/Finalizer.
+    /// <summary>Initializes a new instance of the ContentViewModelInjectionCommon class.</summary>
+    /// <param name="fileManager">The file manager for content files.</param>
+    /// <param name="file">The file that contains the content.</param>
+    /// <param name="commonServices">The common services for the application.</param>
+    /// <exception cref="ArgumentNullException">Thrown when any of the required parameters are <b>null</b>.</exception>
+    public ImagePickerParameters(IContentFileManager fileManager, IContentFile file, IHostContentServices commonServices)
+        : base(fileManager, file, commonServices)
+    {
+    }
+    #endregion
 }

@@ -28,25 +28,24 @@ using System.Drawing;
 using System.Runtime.InteropServices;
 
 // ReSharper disable InconsistentNaming
-namespace Gorgon.Native
+namespace Gorgon.Native;
+
+/// <summary>
+/// Value type representing a Window message.
+/// </summary>
+/// <remarks>
+/// See the MSDN documentation for more detail.
+/// <para>
+/// Used to pass various messages back and forth between the OS and the app.
+/// </para>
+/// </remarks>
+[StructLayout(LayoutKind.Sequential)]
+internal struct MSG
 {
-    /// <summary>
-    /// Value type representing a Window message.
-    /// </summary>
-    /// <remarks>
-    /// See the MSDN documentation for more detail.
-    /// <para>
-    /// Used to pass various messages back and forth between the OS and the app.
-    /// </para>
-    /// </remarks>
-    [StructLayout(LayoutKind.Sequential)]
-    internal struct MSG
-    {
-        public nint hwnd;
-        public uint Message;
-        public nint wParam;
-        public nint lParam;
-        public uint time;
-        public Point pt;
-    }
+    public nint hwnd;
+    public uint Message;
+    public nint wParam;
+    public nint lParam;
+    public uint time;
+    public Point pt;
 }

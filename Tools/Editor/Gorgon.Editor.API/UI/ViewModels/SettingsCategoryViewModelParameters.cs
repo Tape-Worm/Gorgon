@@ -28,20 +28,19 @@ using System;
 using Gorgon.Editor.PlugIns;
 using Gorgon.Editor.UI.ViewModels;
 
-namespace Gorgon.Editor.UI
+namespace Gorgon.Editor.UI;
+
+/// <summary>
+/// Parameters for a <see cref="ISettingsCategory"/>
+/// </summary>
+public class SettingsCategoryViewModelParameters
+    : ViewModelInjection<IHostContentServices>
 {
-    /// <summary>
-    /// Parameters for a <see cref="ISettingsCategory"/>
-    /// </summary>
-    public class SettingsCategoryViewModelParameters
-        : ViewModelInjection<IHostContentServices>
+    /// <summary>Initializes a new instance of the <see cref="SettingsCategoryViewModelParameters"/> class.</summary>
+    /// <param name="hostServices">Services passed down from the host application.</param>
+    /// <exception cref="ArgumentNullException">Thrown when any of the parameters are <b>null</b>.</exception>
+    public SettingsCategoryViewModelParameters(IHostContentServices hostServices)
+        : base(hostServices)
     {
-        /// <summary>Initializes a new instance of the <see cref="SettingsCategoryViewModelParameters"/> class.</summary>
-        /// <param name="hostServices">Services passed down from the host application.</param>
-        /// <exception cref="ArgumentNullException">Thrown when any of the parameters are <b>null</b>.</exception>
-        public SettingsCategoryViewModelParameters(IHostContentServices hostServices)
-            : base(hostServices)
-        {
-        }
     }
 }

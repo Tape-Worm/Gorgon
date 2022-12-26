@@ -35,106 +35,105 @@ using Gorgon.Graphics;
 using Gorgon.Graphics.Imaging;
 using Gorgon.Graphics.Imaging.Codecs;
 
-namespace Gorgon.Editor.FontEditor
+namespace Gorgon.Editor.FontEditor;
+
+/// <summary>
+/// A service for loading images.
+/// </summary>
+internal class ImageLoadService
 {
+    #region Variables.
+    // The file manager for the application.
+    private readonly IContentFileManager _fileManager;
+    // The codec for the images.
+    private readonly IGorgonImageCodec _codec;
+    #endregion
+
+    #region Methods.
     /// <summary>
-    /// A service for loading images.
+    /// Function to return whether the file in the path is an image file or not.
     /// </summary>
-    internal class ImageLoadService
+    /// <param name="filePath">The path to the file.</param>
+    /// <returns><b>true</b> if the file is an image, <b>false</b> if not.</returns>
+    public bool IsImageFile(string filePath)
     {
-        #region Variables.
-        // The file manager for the application.
-        private readonly IContentFileManager _fileManager;
-        // The codec for the images.
-        private readonly IGorgonImageCodec _codec;
-        #endregion
-
-        #region Methods.
-        /// <summary>
-        /// Function to return whether the file in the path is an image file or not.
-        /// </summary>
-        /// <param name="filePath">The path to the file.</param>
-        /// <returns><b>true</b> if the file is an image, <b>false</b> if not.</returns>
-        public bool IsImageFile(string filePath)
+        if (!_fileManager.FileExists(filePath))
         {
-            if (!_fileManager.FileExists(filePath))
-            {
-                return false;
-            }
-
-            // Is this an image file?
-            IContentFile imageFile = _fileManager.GetFile(filePath);
-
-            return ((imageFile.Metadata.Attributes.TryGetValue(CommonEditorConstants.ContentTypeAttr, out string contentType))
-                    && (string.Equals(contentType, CommonEditorContentTypes.ImageType, StringComparison.OrdinalIgnoreCase)));
+            return false;
         }
 
-        /// <summary>
-        /// Function to determine if the file can be used as a texture for a texture glyph brush.
-        /// </summary>
-        /// <param name="filePath">The path to the file to evaluate.</param>
-        /// <returns><b>true</b> if the file is suitable for use, <b>false</b> if not.</returns>
-        public bool CanBeUsedForGlyphBrush(string filePath)
-        {
-            if (!IsImageFile(filePath))
-            {
-                return false;
-            }
+        // Is this an image file?
+        IContentFile imageFile = _fileManager.GetFile(filePath);
 
-            using Stream stream = _fileManager.OpenStream(filePath, FileMode.Open);
-
-            if (!_codec.IsReadable(stream))
-            {
-                return false;
-            }
-
-            IGorgonImageInfo metadata = _codec.GetMetaData(stream);
-
-            stream.Close();
-
-            GorgonFormatInfo formatInfo = new(metadata.Format);
-
-            return ((metadata.Format == BufferFormat.R8G8B8A8_UNorm_SRgb)
-                || (metadata.Format == BufferFormat.R8G8B8A8_UNorm)
-                || (metadata.Format == BufferFormat.B8G8R8A8_UNorm)
-                || (metadata.Format == BufferFormat.B8G8R8A8_UNorm_SRgb)
-                || (formatInfo.IsCompressed));
-        }
-
-        /// <summary>
-        /// Function to load an image.
-        /// </summary>
-        /// <param name="filePath">The path to the image to load.</param>
-        /// <returns>The image data.</returns>
-        public Task<IGorgonImage> LoadImageAsync(string filePath)
-        {
-            IGorgonImage LoadImage()
-            {
-                using Stream stream = _fileManager.OpenStream(filePath, FileMode.Open);
-                IGorgonImage result = _codec.FromStream(stream);
-
-                // Convert from compressed should we be using compression on this image.
-                if (result.FormatInfo.IsCompressed)
-                {
-                    result.Decompress(true);
-                }
-
-                return result;
-            }
-
-            return Task.Run(LoadImage);
-        }
-        #endregion
-
-        #region Constructor/Finalizer.
-        /// <summary>Initializes a new instance of the <see cref="ImageLoadService" /> class.</summary>
-        /// <param name="codec">The codec.</param>
-        /// <param name="fileManager">The file manager.</param>
-        public ImageLoadService(IGorgonImageCodec codec, IContentFileManager fileManager)
-        {
-            _codec = codec;
-            _fileManager = fileManager;
-        }
-        #endregion
+        return ((imageFile.Metadata.Attributes.TryGetValue(CommonEditorConstants.ContentTypeAttr, out string contentType))
+                && (string.Equals(contentType, CommonEditorContentTypes.ImageType, StringComparison.OrdinalIgnoreCase)));
     }
+
+    /// <summary>
+    /// Function to determine if the file can be used as a texture for a texture glyph brush.
+    /// </summary>
+    /// <param name="filePath">The path to the file to evaluate.</param>
+    /// <returns><b>true</b> if the file is suitable for use, <b>false</b> if not.</returns>
+    public bool CanBeUsedForGlyphBrush(string filePath)
+    {
+        if (!IsImageFile(filePath))
+        {
+            return false;
+        }
+
+        using Stream stream = _fileManager.OpenStream(filePath, FileMode.Open);
+
+        if (!_codec.IsReadable(stream))
+        {
+            return false;
+        }
+
+        IGorgonImageInfo metadata = _codec.GetMetaData(stream);
+
+        stream.Close();
+
+        GorgonFormatInfo formatInfo = new(metadata.Format);
+
+        return ((metadata.Format == BufferFormat.R8G8B8A8_UNorm_SRgb)
+            || (metadata.Format == BufferFormat.R8G8B8A8_UNorm)
+            || (metadata.Format == BufferFormat.B8G8R8A8_UNorm)
+            || (metadata.Format == BufferFormat.B8G8R8A8_UNorm_SRgb)
+            || (formatInfo.IsCompressed));
+    }
+
+    /// <summary>
+    /// Function to load an image.
+    /// </summary>
+    /// <param name="filePath">The path to the image to load.</param>
+    /// <returns>The image data.</returns>
+    public Task<IGorgonImage> LoadImageAsync(string filePath)
+    {
+        IGorgonImage LoadImage()
+        {
+            using Stream stream = _fileManager.OpenStream(filePath, FileMode.Open);
+            IGorgonImage result = _codec.FromStream(stream);
+
+            // Convert from compressed should we be using compression on this image.
+            if (result.FormatInfo.IsCompressed)
+            {
+                result.Decompress(true);
+            }
+
+            return result;
+        }
+
+        return Task.Run(LoadImage);
+    }
+    #endregion
+
+    #region Constructor/Finalizer.
+    /// <summary>Initializes a new instance of the <see cref="ImageLoadService" /> class.</summary>
+    /// <param name="codec">The codec.</param>
+    /// <param name="fileManager">The file manager.</param>
+    public ImageLoadService(IGorgonImageCodec codec, IContentFileManager fileManager)
+    {
+        _codec = codec;
+        _fileManager = fileManager;
+    }
+    #endregion
 }

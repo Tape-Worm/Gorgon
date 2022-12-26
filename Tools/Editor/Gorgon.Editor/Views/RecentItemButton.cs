@@ -32,184 +32,183 @@ using System.Windows.Forms;
 using Gorgon.Editor.ProjectData;
 using Gorgon.Editor.UI;
 
-namespace Gorgon.Editor.Views
+namespace Gorgon.Editor.Views;
+
+/// <summary>
+/// A button for the <see cref="RecentFilesControl"/>
+/// </summary>
+internal partial class RecentItemButton
+    : UserControl
 {
+    #region Variables.
+    // The recent item object for this button.
+    private RecentItem _recentItem;
+    // Flag to indicate that the mouse is over this item.
+    private bool _isOver;
+    // Flag to indicate that a mouse button is down.
+    private bool _isMouseDown;
+    #endregion
+
+    #region Events.
     /// <summary>
-    /// A button for the <see cref="RecentFilesControl"/>
+    /// Event fired to determine if the button should be deleted or not.
     /// </summary>
-    internal partial class RecentItemButton
-        : UserControl
+    public event EventHandler DeleteItem;
+    #endregion
+
+    #region Properties.
+    /// <summary>
+    /// Property to set or return the recent item object for this button.
+    /// </summary>
+    [Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+    public RecentItem RecentItem
     {
-        #region Variables.
-        // The recent item object for this button.
-        private RecentItem _recentItem;
-        // Flag to indicate that the mouse is over this item.
-        private bool _isOver;
-        // Flag to indicate that a mouse button is down.
-        private bool _isMouseDown;
-        #endregion
-
-        #region Events.
-        /// <summary>
-        /// Event fired to determine if the button should be deleted or not.
-        /// </summary>
-        public event EventHandler DeleteItem;
-        #endregion
-
-        #region Properties.
-        /// <summary>
-        /// Property to set or return the recent item object for this button.
-        /// </summary>
-        [Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-        public RecentItem RecentItem
+        get => _recentItem;
+        set
         {
-            get => _recentItem;
-            set
+            if (_recentItem == value)
             {
-                if (_recentItem == value)
-                {
-                    return;
-                }
-
-                _recentItem = value;
-                UpdateRecentItem();
-            }
-        }
-        #endregion
-
-        #region Methods.
-        /// <summary>
-        /// Function to determine if the mouse is over the control or not.
-        /// </summary>
-        private void CheckCursorState()
-        {
-            Point p = Cursor.Position;
-            p = PointToClient(p);
-
-            if (DisplayRectangle.Contains(p))
-            {
-                _isOver = true;
-            }
-            else
-            {
-                _isOver = false;
-            }
-
-            UpdateBackColor();
-        }
-
-        /// <summary>Handles the MouseDown event of the RecentItemButton control.</summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="MouseEventArgs"/> instance containing the event data.</param>
-        private void RecentItemButton_MouseDown(object sender, MouseEventArgs e)
-        {
-            _isOver = true;
-            _isMouseDown = true;
-            UpdateBackColor();
-        }
-
-        /// <summary>Handles the MouseUp event of the RecentItemButton control.</summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="MouseEventArgs"/> instance containing the event data.</param>
-        private void RecentItemButton_MouseUp(object sender, MouseEventArgs e)
-        {
-            _isOver = true;
-            _isMouseDown = false;
-            UpdateBackColor();
-
-            if (e.Button == MouseButtons.Left)
-            {
-                OnClick(EventArgs.Empty);
-            }
-        }
-
-        /// <summary>Handles the Click event of the ButtonDelete control.</summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
-        private void ButtonDelete_Click(object sender, EventArgs e)
-        {
-            EventHandler handler = DeleteItem;
-            handler?.Invoke(this, EventArgs.Empty);
-        }
-
-        /// <summary>Handles the MouseMove event of the RecentItemButton control.</summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="MouseEventArgs"/> instance containing the event data.</param>
-        private void RecentItemButton_MouseMove(object sender, MouseEventArgs e) => CheckCursorState();
-
-        /// <summary>Handles the MouseEnter event of the RecentItemButton control.</summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
-        private void RecentItemButton_MouseEnter(object sender, EventArgs e) => CheckCursorState();
-
-        /// <summary>Handles the MouseLeave event of the RecentItemButton control.</summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
-        private void RecentItemButton_MouseLeave(object sender, EventArgs e) => CheckCursorState();
-
-        /// <summary>
-        /// Function to update the control with the contents of the recent item object.
-        /// </summary>
-        private void UpdateRecentItem()
-        {
-            if (_recentItem is null)
-            {
-                LabelTitle.Text =
-                LabelPath.Text =
-                LabelDateTime.Text = string.Empty;
                 return;
             }
 
-            var dir = new DirectoryInfo(_recentItem.FilePath);
-            LabelTitle.Text = dir.Name;
-            LabelPath.Text = dir.FullName;
-            LabelDateTime.Text = _recentItem.LastUsedDate.ToString();
+            _recentItem = value;
+            UpdateRecentItem();
+        }
+    }
+    #endregion
+
+    #region Methods.
+    /// <summary>
+    /// Function to determine if the mouse is over the control or not.
+    /// </summary>
+    private void CheckCursorState()
+    {
+        Point p = Cursor.Position;
+        p = PointToClient(p);
+
+        if (DisplayRectangle.Contains(p))
+        {
+            _isOver = true;
+        }
+        else
+        {
+            _isOver = false;
         }
 
-        /// <summary>
-        /// Function to update the background color.
-        /// </summary>
-        private void UpdateBackColor()
-        {
-            if (_isOver)
-            {
-                ButtonDelete.Visible = true;
-                if (_isMouseDown)
-                {
-                    BackColor = DarkFormsRenderer.FocusedBackground;
-                }
-                else
-                {
-                    BackColor = DarkFormsRenderer.MenuHilightBackground;
-                }
+        UpdateBackColor();
+    }
 
-                PanelFileDate.BackColor = Color.FromArgb((int)(BackColor.R * 0.75f), (int)(BackColor.G * 0.75f), (int)(BackColor.B * 0.75f));
+    /// <summary>Handles the MouseDown event of the RecentItemButton control.</summary>
+    /// <param name="sender">The source of the event.</param>
+    /// <param name="e">The <see cref="MouseEventArgs"/> instance containing the event data.</param>
+    private void RecentItemButton_MouseDown(object sender, MouseEventArgs e)
+    {
+        _isOver = true;
+        _isMouseDown = true;
+        UpdateBackColor();
+    }
+
+    /// <summary>Handles the MouseUp event of the RecentItemButton control.</summary>
+    /// <param name="sender">The source of the event.</param>
+    /// <param name="e">The <see cref="MouseEventArgs"/> instance containing the event data.</param>
+    private void RecentItemButton_MouseUp(object sender, MouseEventArgs e)
+    {
+        _isOver = true;
+        _isMouseDown = false;
+        UpdateBackColor();
+
+        if (e.Button == MouseButtons.Left)
+        {
+            OnClick(EventArgs.Empty);
+        }
+    }
+
+    /// <summary>Handles the Click event of the ButtonDelete control.</summary>
+    /// <param name="sender">The source of the event.</param>
+    /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+    private void ButtonDelete_Click(object sender, EventArgs e)
+    {
+        EventHandler handler = DeleteItem;
+        handler?.Invoke(this, EventArgs.Empty);
+    }
+
+    /// <summary>Handles the MouseMove event of the RecentItemButton control.</summary>
+    /// <param name="sender">The source of the event.</param>
+    /// <param name="e">The <see cref="MouseEventArgs"/> instance containing the event data.</param>
+    private void RecentItemButton_MouseMove(object sender, MouseEventArgs e) => CheckCursorState();
+
+    /// <summary>Handles the MouseEnter event of the RecentItemButton control.</summary>
+    /// <param name="sender">The source of the event.</param>
+    /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+    private void RecentItemButton_MouseEnter(object sender, EventArgs e) => CheckCursorState();
+
+    /// <summary>Handles the MouseLeave event of the RecentItemButton control.</summary>
+    /// <param name="sender">The source of the event.</param>
+    /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+    private void RecentItemButton_MouseLeave(object sender, EventArgs e) => CheckCursorState();
+
+    /// <summary>
+    /// Function to update the control with the contents of the recent item object.
+    /// </summary>
+    private void UpdateRecentItem()
+    {
+        if (_recentItem is null)
+        {
+            LabelTitle.Text =
+            LabelPath.Text =
+            LabelDateTime.Text = string.Empty;
+            return;
+        }
+
+        var dir = new DirectoryInfo(_recentItem.FilePath);
+        LabelTitle.Text = dir.Name;
+        LabelPath.Text = dir.FullName;
+        LabelDateTime.Text = _recentItem.LastUsedDate.ToString();
+    }
+
+    /// <summary>
+    /// Function to update the background color.
+    /// </summary>
+    private void UpdateBackColor()
+    {
+        if (_isOver)
+        {
+            ButtonDelete.Visible = true;
+            if (_isMouseDown)
+            {
+                BackColor = DarkFormsRenderer.FocusedBackground;
             }
             else
             {
-                ButtonDelete.Visible = false;
-                BackColor = DarkFormsRenderer.DarkBackground;
-                PanelFileDate.BackColor = DarkFormsRenderer.WindowBackground;
-            }            
-        }
+                BackColor = DarkFormsRenderer.MenuHilightBackground;
+            }
 
-        /// <summary>Raises the <see cref="E:System.Windows.Forms.UserControl.Load"/> event.</summary>
-        /// <param name="e">An <see cref="EventArgs"/> that contains the event data.</param>
-        protected override void OnLoad(EventArgs e)
+            PanelFileDate.BackColor = Color.FromArgb((int)(BackColor.R * 0.75f), (int)(BackColor.G * 0.75f), (int)(BackColor.B * 0.75f));
+        }
+        else
         {
-            base.OnLoad(e);
-
-            UpdateRecentItem();
-        }
-        #endregion
-
-        #region Constructor/Finalizer.
-        /// <summary>Initializes a new instance of the <see cref="UI._Internal.RecentItemButton"/> class.</summary>
-        public RecentItemButton()
-        {
-            SetStyle(ControlStyles.OptimizedDoubleBuffer, true);
-            InitializeComponent();
-        }
-        #endregion
+            ButtonDelete.Visible = false;
+            BackColor = DarkFormsRenderer.DarkBackground;
+            PanelFileDate.BackColor = DarkFormsRenderer.WindowBackground;
+        }            
     }
+
+    /// <summary>Raises the <see cref="E:System.Windows.Forms.UserControl.Load"/> event.</summary>
+    /// <param name="e">An <see cref="EventArgs"/> that contains the event data.</param>
+    protected override void OnLoad(EventArgs e)
+    {
+        base.OnLoad(e);
+
+        UpdateRecentItem();
+    }
+    #endregion
+
+    #region Constructor/Finalizer.
+    /// <summary>Initializes a new instance of the <see cref="UI._Internal.RecentItemButton"/> class.</summary>
+    public RecentItemButton()
+    {
+        SetStyle(ControlStyles.OptimizedDoubleBuffer, true);
+        InitializeComponent();
+    }
+    #endregion
 }

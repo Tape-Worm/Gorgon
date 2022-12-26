@@ -28,59 +28,58 @@ using System.Collections.Generic;
 using Gorgon.Graphics.Imaging.Codecs;
 using Gorgon.IO;
 
-namespace Gorgon.Editor.ImageEditor
+namespace Gorgon.Editor.ImageEditor;
+
+/// <summary>
+/// A registry for the image codecs used by the plug ins in this assembly.
+/// </summary>
+internal interface ICodecRegistry
 {
+    #region Properties.
     /// <summary>
-    /// A registry for the image codecs used by the plug ins in this assembly.
+    /// Property to return the codecs cross referenced with known file extension types.
     /// </summary>
-    internal interface ICodecRegistry
+    IList<(GorgonFileExtension extension, IGorgonImageCodec codec)> CodecFileTypes
     {
-        #region Properties.
-        /// <summary>
-        /// Property to return the codecs cross referenced with known file extension types.
-        /// </summary>
-        IList<(GorgonFileExtension extension, IGorgonImageCodec codec)> CodecFileTypes
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to return the list of image codec plug ins.
-        /// </summary>
-        IList<GorgonImageCodecPlugIn> CodecPlugIns
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to return the list of codecs.
-        /// </summary>
-        IList<IGorgonImageCodec> Codecs
-        {
-            get;
-        }
-        #endregion
-
-        #region Methods.
-        /// <summary>
-        /// Function to add a codec to the registry.
-        /// </summary>
-        /// <param name="path">The path to the codec assembly.</param>
-        /// <param name="errors">A list of errors if the plug in fails to load.</param>
-        /// <returns>A list of codec plugs ins that were loaded.</returns>
-        IReadOnlyList<GorgonImageCodecPlugIn> AddCodecPlugIn(string path, out IReadOnlyList<string> errors);
-
-        /// <summary>
-        /// Function to load the codecs from our settings data.
-        /// </summary>
-        /// <param name="settings">The settings containing the plug in paths.</param>
-        void LoadFromSettings(ImageEditorSettings settings);
-
-        /// <summary>
-        /// Function to remove an image codec plug in from the registry.
-        /// </summary>
-        /// <param name="plugin">The plug in to remove.</param>
-        void RemoveCodecPlugIn(GorgonImageCodecPlugIn plugin);
-        #endregion
+        get;
     }
+
+    /// <summary>
+    /// Property to return the list of image codec plug ins.
+    /// </summary>
+    IList<GorgonImageCodecPlugIn> CodecPlugIns
+    {
+        get;
+    }
+
+    /// <summary>
+    /// Property to return the list of codecs.
+    /// </summary>
+    IList<IGorgonImageCodec> Codecs
+    {
+        get;
+    }
+    #endregion
+
+    #region Methods.
+    /// <summary>
+    /// Function to add a codec to the registry.
+    /// </summary>
+    /// <param name="path">The path to the codec assembly.</param>
+    /// <param name="errors">A list of errors if the plug in fails to load.</param>
+    /// <returns>A list of codec plugs ins that were loaded.</returns>
+    IReadOnlyList<GorgonImageCodecPlugIn> AddCodecPlugIn(string path, out IReadOnlyList<string> errors);
+
+    /// <summary>
+    /// Function to load the codecs from our settings data.
+    /// </summary>
+    /// <param name="settings">The settings containing the plug in paths.</param>
+    void LoadFromSettings(ImageEditorSettings settings);
+
+    /// <summary>
+    /// Function to remove an image codec plug in from the registry.
+    /// </summary>
+    /// <param name="plugin">The plug in to remove.</param>
+    void RemoveCodecPlugIn(GorgonImageCodecPlugIn plugin);
+    #endregion
 }

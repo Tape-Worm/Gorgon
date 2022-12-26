@@ -31,139 +31,138 @@ using Gorgon.Renderers.Cameras;
 using Gorgon.Renderers.Properties;
 using DX = SharpDX;
 
-namespace Gorgon.Renderers
+namespace Gorgon.Renderers;
+
+/// <summary>
+/// An effect that renders as gray scale.
+/// </summary>
+public class Gorgon2DGrayScaleEffect
+    : Gorgon2DEffect, IGorgon2DCompositorEffect
 {
+    #region Variables.
+    // The batch state to use when rendering.
+    private Gorgon2DBatchState _batchState;
+    // The shader used to render grayscale images.
+    private GorgonPixelShader _grayScaleShader;
+    private Gorgon2DShaderState<GorgonPixelShader> _grayScaleState;
+    #endregion
+
+    #region Methods.
     /// <summary>
-    /// An effect that renders as gray scale.
+    /// Function called when the effect is being initialized.
     /// </summary>
-    public class Gorgon2DGrayScaleEffect
-        : Gorgon2DEffect, IGorgon2DCompositorEffect
+    /// <remarks>
+    /// Use this method to set up the effect upon its creation.  For example, this method could be used to create the required shaders for the effect.
+    /// </remarks>
+    protected override void OnInitialize() => _grayScaleShader = CompileShader<GorgonPixelShader>(Resources.BasicSprite, "GorgonPixelShaderGrayScale");
+
+    /// <summary>
+    /// Releases unmanaged and - optionally - managed resources
+    /// </summary>
+    /// <param name="disposing"><b>true</b> to release both managed and unmanaged resources; <b>false</b> to release only unmanaged resources.</param>
+    protected override void Dispose(bool disposing)
     {
-        #region Variables.
-        // The batch state to use when rendering.
-        private Gorgon2DBatchState _batchState;
-        // The shader used to render grayscale images.
-        private GorgonPixelShader _grayScaleShader;
-        private Gorgon2DShaderState<GorgonPixelShader> _grayScaleState;
-        #endregion
-
-        #region Methods.
-        /// <summary>
-        /// Function called when the effect is being initialized.
-        /// </summary>
-        /// <remarks>
-        /// Use this method to set up the effect upon its creation.  For example, this method could be used to create the required shaders for the effect.
-        /// </remarks>
-        protected override void OnInitialize() => _grayScaleShader = CompileShader<GorgonPixelShader>(Resources.BasicSprite, "GorgonPixelShaderGrayScale");
-
-        /// <summary>
-        /// Releases unmanaged and - optionally - managed resources
-        /// </summary>
-        /// <param name="disposing"><b>true</b> to release both managed and unmanaged resources; <b>false</b> to release only unmanaged resources.</param>
-        protected override void Dispose(bool disposing)
+        if (!disposing)
         {
-            if (!disposing)
-            {
-                return;
-            }
-
-            GorgonPixelShader shader = Interlocked.Exchange(ref _grayScaleShader, null);
-            shader?.Dispose();
+            return;
         }
 
-        /// <summary>
-        /// Function called to build a new (or return an existing) 2D batch state.
-        /// </summary>
-        /// <param name="passIndex">The index of the current rendering pass.</param>
-        /// <param name="builders">The builder types that will manage the state of the effect.</param>
-        /// <param name="statesChanged"><b>true</b> if the blend, raster, or depth/stencil state was changed. <b>false</b> if not.</param>
-        /// <returns>The 2D batch state.</returns>
-        protected override Gorgon2DBatchState OnGetBatchState(int passIndex, IGorgon2DEffectBuilders builders, bool statesChanged)
-        {
-            if ((_batchState is null) || (statesChanged))
-            {
-                if (_grayScaleState is null)
-                {
-                    _grayScaleState = builders.PixelShaderBuilder
-                                       .Shader(_grayScaleShader)
-                                       .Build();
-                }
-
-                _batchState = builders.BatchBuilder
-                              .PixelShaderState(_grayScaleState)
-                              .Build(BatchStateAllocator);
-            }
-
-            return _batchState;
-        }
-
-        /// <summary>
-        /// Function to begin rendering the effect.
-        /// </summary>
-        /// <param name="blendState">[Optional] A user defined blend state to apply when rendering.</param>
-        /// <param name="depthStencilState">[Optional] A user defined depth/stencil state to apply when rendering.</param>
-        /// <param name="rasterState">[Optional] A user defined rasterizer state to apply when rendering.</param>
-        /// <param name="camera">[Optional] The camera to use when rendering.</param>
-        public void Begin(GorgonBlendState blendState = null, GorgonDepthStencilState depthStencilState = null, GorgonRasterState rasterState = null, GorgonCameraCommon camera = null)
-        {
-            GorgonRenderTargetView target = Graphics.RenderTargets[0];
-
-            if (target is null)
-            {
-                return;
-            }
-
-            BeginRender(target, blendState, depthStencilState, rasterState);
-            BeginPass(0, target, camera);
-        }
-
-        /// <summary>
-        /// Function to end the effect rendering.
-        /// </summary>
-        public void End()
-        {
-            GorgonRenderTargetView target = Graphics.RenderTargets[0];
-
-            if (target is null)
-            {
-                return;
-            }
-
-            EndPass(0, target);
-            EndRender(target);
-        }
-
-        /// <summary>Function to render an effect under the <see cref="Gorgon2DCompositor"/>.</summary>
-        /// <param name="texture">The texture to render into the next target.</param>
-        /// <param name="output">The render target that will receive the final output.</param>
-        public void Render(GorgonTexture2DView texture, GorgonRenderTargetView output)
-        {
-            if ((texture is null) || (output is null))
-            {
-                return;
-            }
-
-            Graphics.SetRenderTarget(output);
-
-            Begin(GorgonBlendState.Default, GorgonDepthStencilState.Default, GorgonRasterState.Default, null);
-
-            Renderer.DrawFilledRectangle(new DX.RectangleF(0, 0, output.Width, output.Height),
-                                            GorgonColor.White,
-                                            texture,
-                                            new DX.RectangleF(0, 0, 1, 1));
-            End();
-        }
-        #endregion
-
-        #region Constructor/Destructor.
-        /// <summary>
-        /// Initializes a new instance of the <see cref="Gorgon2DGrayScaleEffect" /> class.
-        /// </summary>
-        /// <param name="renderer">The renderer used to render this effect.</param>
-        public Gorgon2DGrayScaleEffect(Gorgon2D renderer)
-            : base(renderer, Resources.GOR2D_EFFECT_GRAYSCALE, Resources.GOR2D_EFFECT_GRAYSCALE_DESC, 1) =>
-            // A macro used to define the size of the kernel weight data structure.
-            Macros.Add(new GorgonShaderMacro("GRAYSCALE_EFFECT"));
-        #endregion
+        GorgonPixelShader shader = Interlocked.Exchange(ref _grayScaleShader, null);
+        shader?.Dispose();
     }
+
+    /// <summary>
+    /// Function called to build a new (or return an existing) 2D batch state.
+    /// </summary>
+    /// <param name="passIndex">The index of the current rendering pass.</param>
+    /// <param name="builders">The builder types that will manage the state of the effect.</param>
+    /// <param name="statesChanged"><b>true</b> if the blend, raster, or depth/stencil state was changed. <b>false</b> if not.</param>
+    /// <returns>The 2D batch state.</returns>
+    protected override Gorgon2DBatchState OnGetBatchState(int passIndex, IGorgon2DEffectBuilders builders, bool statesChanged)
+    {
+        if ((_batchState is null) || (statesChanged))
+        {
+            if (_grayScaleState is null)
+            {
+                _grayScaleState = builders.PixelShaderBuilder
+                                   .Shader(_grayScaleShader)
+                                   .Build();
+            }
+
+            _batchState = builders.BatchBuilder
+                          .PixelShaderState(_grayScaleState)
+                          .Build(BatchStateAllocator);
+        }
+
+        return _batchState;
+    }
+
+    /// <summary>
+    /// Function to begin rendering the effect.
+    /// </summary>
+    /// <param name="blendState">[Optional] A user defined blend state to apply when rendering.</param>
+    /// <param name="depthStencilState">[Optional] A user defined depth/stencil state to apply when rendering.</param>
+    /// <param name="rasterState">[Optional] A user defined rasterizer state to apply when rendering.</param>
+    /// <param name="camera">[Optional] The camera to use when rendering.</param>
+    public void Begin(GorgonBlendState blendState = null, GorgonDepthStencilState depthStencilState = null, GorgonRasterState rasterState = null, GorgonCameraCommon camera = null)
+    {
+        GorgonRenderTargetView target = Graphics.RenderTargets[0];
+
+        if (target is null)
+        {
+            return;
+        }
+
+        BeginRender(target, blendState, depthStencilState, rasterState);
+        BeginPass(0, target, camera);
+    }
+
+    /// <summary>
+    /// Function to end the effect rendering.
+    /// </summary>
+    public void End()
+    {
+        GorgonRenderTargetView target = Graphics.RenderTargets[0];
+
+        if (target is null)
+        {
+            return;
+        }
+
+        EndPass(0, target);
+        EndRender(target);
+    }
+
+    /// <summary>Function to render an effect under the <see cref="Gorgon2DCompositor"/>.</summary>
+    /// <param name="texture">The texture to render into the next target.</param>
+    /// <param name="output">The render target that will receive the final output.</param>
+    public void Render(GorgonTexture2DView texture, GorgonRenderTargetView output)
+    {
+        if ((texture is null) || (output is null))
+        {
+            return;
+        }
+
+        Graphics.SetRenderTarget(output);
+
+        Begin(GorgonBlendState.Default, GorgonDepthStencilState.Default, GorgonRasterState.Default, null);
+
+        Renderer.DrawFilledRectangle(new DX.RectangleF(0, 0, output.Width, output.Height),
+                                        GorgonColor.White,
+                                        texture,
+                                        new DX.RectangleF(0, 0, 1, 1));
+        End();
+    }
+    #endregion
+
+    #region Constructor/Destructor.
+    /// <summary>
+    /// Initializes a new instance of the <see cref="Gorgon2DGrayScaleEffect" /> class.
+    /// </summary>
+    /// <param name="renderer">The renderer used to render this effect.</param>
+    public Gorgon2DGrayScaleEffect(Gorgon2D renderer)
+        : base(renderer, Resources.GOR2D_EFFECT_GRAYSCALE, Resources.GOR2D_EFFECT_GRAYSCALE_DESC, 1) =>
+        // A macro used to define the size of the kernel weight data structure.
+        Macros.Add(new GorgonShaderMacro("GRAYSCALE_EFFECT"));
+    #endregion
 }

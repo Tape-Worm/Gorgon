@@ -28,38 +28,37 @@ using System.Windows.Forms;
 using Gorgon.Graphics.Core;
 using DX = SharpDX;
 
-namespace Gorgon.Editor.Services
+namespace Gorgon.Editor.Services;
+
+/// <summary>
+/// A handle on a selection rectangle.
+/// </summary>
+public class RectHandle
 {
     /// <summary>
-    /// A handle on a selection rectangle.
+    /// Property to return the boundaries for the handle.
     /// </summary>
-    public class RectHandle
+    public DX.RectangleF HandleBounds
     {
-        /// <summary>
-        /// Property to return the boundaries for the handle.
-        /// </summary>
-        public DX.RectangleF HandleBounds
-        {
-            get;
-            set;
-        }
+        get;
+        set;
+    }
 
-        /// <summary>
-        /// Property to return the cursor to use for the handle.
-        /// </summary>
-        public Cursor HandleCursor
-        {
-            get;
-            set;
-        }
+    /// <summary>
+    /// Property to return the cursor to use for the handle.
+    /// </summary>
+    public Cursor HandleCursor
+    {
+        get;
+        set;
+    }
 
-        /// <summary>
-        /// Property to assign a texture to the handle instead of an empty rectangle.
-        /// </summary>
-        public GorgonTexture2DView Texture
-        {
-            get;
-            set;
-        }
+    /// <summary>
+    /// Property to assign a texture to the handle instead of an empty rectangle.
+    /// </summary>
+    public GorgonTexture2DView Texture
+    {
+        get;
+        set;
     }
 }

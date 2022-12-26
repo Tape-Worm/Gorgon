@@ -29,31 +29,30 @@ using Gorgon.Editor.PlugIns;
 using Gorgon.Editor.UI;
 using Gorgon.Graphics.Core;
 
-namespace Gorgon.Editor.ImageEditor.ViewModels
+namespace Gorgon.Editor.ImageEditor.ViewModels;
+
+/// <summary>
+/// Parameters for the <see cref="IDimensionSettings"/> view model.
+/// </summary>
+internal class DimensionSettingsParameters
+    : HostedPanelViewModelParameters
 {
+    #region Properties.
     /// <summary>
-    /// Parameters for the <see cref="IDimensionSettings"/> view model.
+    /// Property to return the video adapter used by the application.
     /// </summary>
-    internal class DimensionSettingsParameters
-        : HostedPanelViewModelParameters
+    public IGorgonVideoAdapterInfo VideoAdapter
     {
-        #region Properties.
-        /// <summary>
-        /// Property to return the video adapter used by the application.
-        /// </summary>
-        public IGorgonVideoAdapterInfo VideoAdapter
-        {
-            get;
-        }
-        #endregion
-
-        #region Constructor/Finalizer.
-        /// <summary>Initializes a new instance of the <see cref="DimensionSettingsParameters"/> class.</summary>
-        /// <param name="hostServices">Services from the host application.</param>
-        /// <exception cref="ArgumentNullException">Thrown when any parameter is <b>null</b>.</exception>
-        public DimensionSettingsParameters(IHostContentServices hostServices)
-            : base(hostServices) => VideoAdapter = hostServices.GraphicsContext.Graphics.VideoAdapter;
-        #endregion
-
+        get;
     }
+    #endregion
+
+    #region Constructor/Finalizer.
+    /// <summary>Initializes a new instance of the <see cref="DimensionSettingsParameters"/> class.</summary>
+    /// <param name="hostServices">Services from the host application.</param>
+    /// <exception cref="ArgumentNullException">Thrown when any parameter is <b>null</b>.</exception>
+    public DimensionSettingsParameters(IHostContentServices hostServices)
+        : base(hostServices) => VideoAdapter = hostServices.GraphicsContext.Graphics.VideoAdapter;
+    #endregion
+
 }

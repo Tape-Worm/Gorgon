@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFrameworks>net48;net6.0</TargetFrameworks>
     <ApplicationIcon>Gorgon2.ico</ApplicationIcon>

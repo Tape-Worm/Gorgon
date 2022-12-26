@@ -27,97 +27,20 @@
 using System;
 using System.Collections.Generic;
 
-namespace Gorgon.Editor.AnimationEditor
+namespace Gorgon.Editor.AnimationEditor;
+
+/// <summary>
+/// A type that contains the track and keyframes that are selected for work.
+/// </summary>
+internal class TrackKeySelection
 {
     /// <summary>
-    /// A type that contains the track and keyframes that are selected for work.
+    /// A keyframe selection.
     /// </summary>
-    internal class TrackKeySelection
+    internal class KeySelection
     {
         /// <summary>
-        /// A keyframe selection.
-        /// </summary>
-        internal class KeySelection
-        {
-            /// <summary>
-            /// Property to return the track that contains the key.
-            /// </summary>
-            public ITrack Track
-            {
-                get;
-            }
-
-            /// <summary>
-            /// Property to return the index of the key within its track.
-            /// </summary>
-            public int KeyIndex
-            {
-                get;
-            }
-
-            /// <summary>
-            /// Property to return the time, in seconds, for the key (regardless of whether the key actually exists or not).
-            /// </summary>
-            public float TimeIndex
-            {
-                get;
-            }
-
-            /// <summary>
-            /// Property to set or return the selected keyframe.
-            /// </summary>
-            /// <remarks>
-            /// This value may be <b>null</b> if no keyframe was assigned at the <see cref="KeyIndex"/>.
-            /// </remarks>
-            public IKeyFrame KeyFrame 
-            {
-                get;
-                set;
-            }
-
-            /// <summary>Initializes a new instance of the <see cref="KeySelection"/> class.</summary>
-            /// <param name="track">The track.</param>
-            /// <param name="keyIndex">Index of the key.</param>
-            /// <param name="keyFrame">The keyframe to store.</param>
-            /// <param name="fps">The FPS.</param>
-            public KeySelection(ITrack track, int keyIndex, IKeyFrame keyFrame, float fps)
-            {
-                Track = track;
-                KeyIndex = keyIndex;
-                KeyFrame = keyFrame;
-                TimeIndex = KeyFrame?.Time ?? keyIndex / fps;
-            }
-
-            /// <summary>Initializes a new instance of the <see cref="KeySelection"/> class.</summary>
-            /// <param name="track">The track.</param>
-            /// <param name="keyIndex">Index of the key.</param>
-            /// <param name="fps">The FPS.</param>
-            public KeySelection(ITrack track, int keyIndex, float fps)
-                : this(track, keyIndex, track.KeyFrames[keyIndex], fps)
-            {
-            }
-
-            /// <summary>Initializes a new instance of the <see cref="KeySelection"/> class.</summary>
-            /// <param name="copy">The selection to copy.</param>
-            public KeySelection(KeySelection copy)
-            {
-                Track = copy.Track;
-                KeyIndex = copy.KeyIndex;
-                KeyFrame = copy.KeyFrame;
-                TimeIndex = copy.TimeIndex;
-            }
-        }
-
-        /// <summary>
-        /// Property to return the index of the track.
-        /// </summary>
-        public int TrackIndex
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to return the track that has selected keyframes.
+        /// Property to return the track that contains the key.
         /// </summary>
         public ITrack Track
         {
@@ -125,22 +48,98 @@ namespace Gorgon.Editor.AnimationEditor
         }
 
         /// <summary>
-        /// Property to return the list of keys that were selected within the track.
+        /// Property to return the index of the key within its track.
         /// </summary>
-        public IReadOnlyList<KeySelection> SelectedKeys
+        public int KeyIndex
         {
             get;
         }
 
-        /// <summary>Initializes a new instance of the <see cref="TrackKeySelection"/> class.</summary>
-        /// <param name="trackIndex">Index of the track.</param>
-        /// <param name="track">The selected track.</param>
-        /// <param name="selectedKeys">The keys that were selected within the track.</param>
-        public TrackKeySelection(int trackIndex, ITrack track, IReadOnlyList<KeySelection> selectedKeys)
+        /// <summary>
+        /// Property to return the time, in seconds, for the key (regardless of whether the key actually exists or not).
+        /// </summary>
+        public float TimeIndex
         {
-            TrackIndex = trackIndex;
-            Track = track;
-            SelectedKeys = selectedKeys ?? Array.Empty<KeySelection>();
+            get;
         }
+
+        /// <summary>
+        /// Property to set or return the selected keyframe.
+        /// </summary>
+        /// <remarks>
+        /// This value may be <b>null</b> if no keyframe was assigned at the <see cref="KeyIndex"/>.
+        /// </remarks>
+        public IKeyFrame KeyFrame 
+        {
+            get;
+            set;
+        }
+
+        /// <summary>Initializes a new instance of the <see cref="KeySelection"/> class.</summary>
+        /// <param name="track">The track.</param>
+        /// <param name="keyIndex">Index of the key.</param>
+        /// <param name="keyFrame">The keyframe to store.</param>
+        /// <param name="fps">The FPS.</param>
+        public KeySelection(ITrack track, int keyIndex, IKeyFrame keyFrame, float fps)
+        {
+            Track = track;
+            KeyIndex = keyIndex;
+            KeyFrame = keyFrame;
+            TimeIndex = KeyFrame?.Time ?? keyIndex / fps;
+        }
+
+        /// <summary>Initializes a new instance of the <see cref="KeySelection"/> class.</summary>
+        /// <param name="track">The track.</param>
+        /// <param name="keyIndex">Index of the key.</param>
+        /// <param name="fps">The FPS.</param>
+        public KeySelection(ITrack track, int keyIndex, float fps)
+            : this(track, keyIndex, track.KeyFrames[keyIndex], fps)
+        {
+        }
+
+        /// <summary>Initializes a new instance of the <see cref="KeySelection"/> class.</summary>
+        /// <param name="copy">The selection to copy.</param>
+        public KeySelection(KeySelection copy)
+        {
+            Track = copy.Track;
+            KeyIndex = copy.KeyIndex;
+            KeyFrame = copy.KeyFrame;
+            TimeIndex = copy.TimeIndex;
+        }
+    }
+
+    /// <summary>
+    /// Property to return the index of the track.
+    /// </summary>
+    public int TrackIndex
+    {
+        get;
+    }
+
+    /// <summary>
+    /// Property to return the track that has selected keyframes.
+    /// </summary>
+    public ITrack Track
+    {
+        get;
+    }
+
+    /// <summary>
+    /// Property to return the list of keys that were selected within the track.
+    /// </summary>
+    public IReadOnlyList<KeySelection> SelectedKeys
+    {
+        get;
+    }
+
+    /// <summary>Initializes a new instance of the <see cref="TrackKeySelection"/> class.</summary>
+    /// <param name="trackIndex">Index of the track.</param>
+    /// <param name="track">The selected track.</param>
+    /// <param name="selectedKeys">The keys that were selected within the track.</param>
+    public TrackKeySelection(int trackIndex, ITrack track, IReadOnlyList<KeySelection> selectedKeys)
+    {
+        TrackIndex = trackIndex;
+        Track = track;
+        SelectedKeys = selectedKeys ?? Array.Empty<KeySelection>();
     }
 }

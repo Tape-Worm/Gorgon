@@ -26,38 +26,37 @@
 
 using System.Collections.Generic;
 
-namespace Gorgon.Editor.AnimationEditor
+namespace Gorgon.Editor.AnimationEditor;
+
+/// <summary>
+/// A data structure used to copy keyframe data.
+/// </summary>
+internal class KeyFrameCopyMoveData : IKeyFrameCopyMoveData
 {
     /// <summary>
-    /// A data structure used to copy keyframe data.
+    /// Property to set or return the index of the key that will receive the copied data.
     /// </summary>
-    internal class KeyFrameCopyMoveData : IKeyFrameCopyMoveData
+    public int DestinationKeyIndex
     {
-        /// <summary>
-        /// Property to set or return the index of the key that will receive the copied data.
-        /// </summary>
-        public int DestinationKeyIndex
-        {
-            get;
-            set;
-        }
+        get;
+        set;
+    }
 
-        /// <summary>
-        /// Property to set or return the type of operation.
-        /// </summary>
-        public CopyMoveOperation Operation
-        {
-            get;
-            set;
-        }
+    /// <summary>
+    /// Property to set or return the type of operation.
+    /// </summary>
+    public CopyMoveOperation Operation
+    {
+        get;
+        set;
+    }
 
-        /// <summary>
-        /// Property to set or return the keyframes to copy.
-        /// </summary>
-        public IReadOnlyList<TrackKeySelection> KeyFrames
-        {
-            get;
-            set;
-        }
+    /// <summary>
+    /// Property to set or return the keyframes to copy.
+    /// </summary>
+    public IReadOnlyList<TrackKeySelection> KeyFrames
+    {
+        get;
+        set;
     }
 }

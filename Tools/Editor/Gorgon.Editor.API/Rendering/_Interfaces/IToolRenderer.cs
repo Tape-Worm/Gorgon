@@ -29,82 +29,81 @@ using Gorgon.Core;
 using Gorgon.Graphics;
 using DX = SharpDX;
 
-namespace Gorgon.Editor.Rendering
+namespace Gorgon.Editor.Rendering;
+
+/// <summary>
+/// Defines a rendering interface for rendering content in content editor plug in views.
+/// </summary>
+/// <remarks>
+/// <para>
+/// See the <see cref="DefaultContentRenderer{T}"/> class for more information on a base rendering class that developers can inherit in order to implement their own renderer(s).
+/// </para>
+/// </remarks>
+/// <seealso cref="DefaultContentRenderer{T}"/>
+public interface IToolRenderer
+    : IGorgonNamedObject, IDisposable
 {
+    #region Properties.
     /// <summary>
-    /// Defines a rendering interface for rendering content in content editor plug in views.
+    /// Property to return the size of the view client area.
+    /// </summary>
+    DX.Size2 ClientSize
+    {
+        get;
+    }
+
+    /// <summary>
+    /// Property to set or return the color to use when clearing the swap chain.
+    /// </summary>
+    /// <remarks>
+    /// This value defaults to the background color of the view.
+    /// </remarks>
+    GorgonColor BackgroundColor
+    {
+        get;
+        set;
+    }
+
+    /// <summary>
+    /// Property to set or return whether the renderer is enabled.
+    /// </summary>
+    bool IsEnabled
+    {
+        get;
+        set;
+    }
+    #endregion
+
+    #region Methods.
+    /// <summary>
+    /// Function to render the content.
     /// </summary>
     /// <remarks>
     /// <para>
-    /// See the <see cref="DefaultContentRenderer{T}"/> class for more information on a base rendering class that developers can inherit in order to implement their own renderer(s).
+    /// This method is called by the view to render the content.
     /// </para>
     /// </remarks>
-    /// <seealso cref="DefaultContentRenderer{T}"/>
-    public interface IToolRenderer
-        : IGorgonNamedObject, IDisposable
-    {
-        #region Properties.
-        /// <summary>
-        /// Property to return the size of the view client area.
-        /// </summary>
-        DX.Size2 ClientSize
-        {
-            get;
-        }
+    void Render();
 
-        /// <summary>
-        /// Property to set or return the color to use when clearing the swap chain.
-        /// </summary>
-        /// <remarks>
-        /// This value defaults to the background color of the view.
-        /// </remarks>
-        GorgonColor BackgroundColor
-        {
-            get;
-            set;
-        }
+    /// <summary>
+    /// Function to load resources for the renderer.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// This method is used to load any required temporary resources for the renderer prior to rendering content. This must be paired with a call to <see cref="UnloadResources"/> when the renderer is 
+    /// no longer in use to ensure efficient memory usage.
+    /// </para>
+    /// </remarks>
+    void LoadResources();
 
-        /// <summary>
-        /// Property to set or return whether the renderer is enabled.
-        /// </summary>
-        bool IsEnabled
-        {
-            get;
-            set;
-        }
-        #endregion
-
-        #region Methods.
-        /// <summary>
-        /// Function to render the content.
-        /// </summary>
-        /// <remarks>
-        /// <para>
-        /// This method is called by the view to render the content.
-        /// </para>
-        /// </remarks>
-        void Render();
-
-        /// <summary>
-        /// Function to load resources for the renderer.
-        /// </summary>
-        /// <remarks>
-        /// <para>
-        /// This method is used to load any required temporary resources for the renderer prior to rendering content. This must be paired with a call to <see cref="UnloadResources"/> when the renderer is 
-        /// no longer in use to ensure efficient memory usage.
-        /// </para>
-        /// </remarks>
-        void LoadResources();
-
-        /// <summary>
-        /// Function to unload resources from the renderer.
-        /// </summary>
-        /// <remarks>
-        /// <para>
-        /// This method is used to unload temporary resources for the renderer when it is no longer needed. Failure to call this may result in memory leakage.
-        /// </para>
-        /// </remarks>
-        void UnloadResources();
-        #endregion
-    }
+    /// <summary>
+    /// Function to unload resources from the renderer.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// This method is used to unload temporary resources for the renderer when it is no longer needed. Failure to call this may result in memory leakage.
+    /// </para>
+    /// </remarks>
+    void UnloadResources();
+    #endregion
 }

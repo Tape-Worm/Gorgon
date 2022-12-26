@@ -41,12 +41,12 @@ using Gorgon.Renderers;
 using Gorgon.Renderers.Services;
 using DX = SharpDX;
 
-namespace Gorgon.Editor.TextureAtlasTool
-{
-    /// <summary>
-    /// The view model for the main UI.
-    /// </summary>
-    internal class TextureAtlas
+namespace Gorgon.Editor.TextureAtlasTool;
+
+/// <summary>
+/// The view model for the main UI.
+/// </summary>
+internal class TextureAtlas
 		: EditorToolViewModelBase<TextureAtlasParameters>, ITextureAtlas
 	{
 		#region Variables.
@@ -419,8 +419,8 @@ namespace Gorgon.Editor.TextureAtlasTool
 		private bool CanGenerate() => (LoadedSpriteCount > 1) && (!string.IsNullOrWhiteSpace(OutputPath)) && (!string.IsNullOrWhiteSpace(BaseTextureName));
 
 		/// <summary>
-        /// Function to perform the atlas generation.
-        /// </summary>
+    /// Function to perform the atlas generation.
+    /// </summary>
 		private GorgonTextureAtlas GenerateAtlas()
 		{
 			GorgonTextureAtlas atlas;
@@ -727,4 +727,3 @@ namespace Gorgon.Editor.TextureAtlasTool
 		}
 		#endregion
 	}
-}

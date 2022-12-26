@@ -30,89 +30,88 @@ using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Renderers.Cameras;
 
-namespace Gorgon.Renderers
+namespace Gorgon.Renderers;
+
+/// <summary>
+/// Defines the a composition pass for the <see cref="Gorgon2DCompositor"/>.
+/// </summary>
+internal class CompositionPass
+    : GorgonNamedObject, IGorgon2DCompositorPass
 {
+    #region Properties.
     /// <summary>
-    /// Defines the a composition pass for the <see cref="Gorgon2DCompositor"/>.
+    /// Property to set or return the method to call when rendering without an effect.
     /// </summary>
-    internal class CompositionPass
-        : GorgonNamedObject, IGorgon2DCompositorPass
+    public Action<Gorgon2D, GorgonTexture2DView, GorgonRenderTargetView> NoEffectRenderMethod
     {
-        #region Properties.
-        /// <summary>
-        /// Property to set or return the method to call when rendering without an effect.
-        /// </summary>
-        public Action<Gorgon2D, GorgonTexture2DView, GorgonRenderTargetView> NoEffectRenderMethod
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// Property to set or return the batch state for rendering without an effect.
-        /// </summary>
-        public Gorgon2DBatchState BatchState
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// Property to set or return the camera for rendering without an effect.
-        /// </summary>
-        public GorgonCameraCommon Camera
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// Property to set or return the effect for the pass.
-        /// </summary>
-        public IGorgon2DCompositorEffect Effect
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// Property to set or return the color to use when clearing the active render target.
-        /// </summary>
-        /// <remarks>
-        /// <para>
-        ///  If this value is set to <b>null</b>, then the current target will not be cleared.
-        /// </para>
-        /// <para>
-        /// The default value is <b>null</b>.
-        /// </para>
-        /// </remarks>
-        public GorgonColor? ClearColor
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// Property to set or return whether the effect is enabled or not.
-        /// </summary>
-        public bool Enabled
-        {
-            get;
-            set;
-        } = true;
-        #endregion
-
-        #region Constructor/Finalizer.
-        /// <summary>
-        /// Initializes a new instance of the <see cref="CompositionPass"/> class.
-        /// </summary>
-        /// <param name="name">The name of this object.</param>
-        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="name"/> is <b>null</b>.</exception>
-        /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="name"/> parameter is empty.</exception>
-        public CompositionPass(string name)
-            : base(name)
-        {        
-        }
-        #endregion
+        get;
+        set;
     }
+
+    /// <summary>
+    /// Property to set or return the batch state for rendering without an effect.
+    /// </summary>
+    public Gorgon2DBatchState BatchState
+    {
+        get;
+        set;
+    }
+
+    /// <summary>
+    /// Property to set or return the camera for rendering without an effect.
+    /// </summary>
+    public GorgonCameraCommon Camera
+    {
+        get;
+        set;
+    }
+
+    /// <summary>
+    /// Property to set or return the effect for the pass.
+    /// </summary>
+    public IGorgon2DCompositorEffect Effect
+    {
+        get;
+        set;
+    }
+
+    /// <summary>
+    /// Property to set or return the color to use when clearing the active render target.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    ///  If this value is set to <b>null</b>, then the current target will not be cleared.
+    /// </para>
+    /// <para>
+    /// The default value is <b>null</b>.
+    /// </para>
+    /// </remarks>
+    public GorgonColor? ClearColor
+    {
+        get;
+        set;
+    }
+
+    /// <summary>
+    /// Property to set or return whether the effect is enabled or not.
+    /// </summary>
+    public bool Enabled
+    {
+        get;
+        set;
+    } = true;
+    #endregion
+
+    #region Constructor/Finalizer.
+    /// <summary>
+    /// Initializes a new instance of the <see cref="CompositionPass"/> class.
+    /// </summary>
+    /// <param name="name">The name of this object.</param>
+    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="name"/> is <b>null</b>.</exception>
+    /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="name"/> parameter is empty.</exception>
+    public CompositionPass(string name)
+        : base(name)
+    {        
+    }
+    #endregion
 }

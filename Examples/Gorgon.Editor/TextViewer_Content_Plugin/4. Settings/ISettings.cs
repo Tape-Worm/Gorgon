@@ -26,21 +26,20 @@
 
 using Gorgon.Editor.UI;
 
-namespace Gorgon.Examples
+namespace Gorgon.Examples;
+
+/// <summary>
+/// The view model for the settings for the text content editor.
+/// </summary>
+internal interface ISettings
+    : ISettingsCategory
 {
     /// <summary>
-    /// The view model for the settings for the text content editor.
+    /// Property to set or return the default font face.
     /// </summary>
-    internal interface ISettings
-        : ISettingsCategory
+    FontFace DefaultFont
     {
-        /// <summary>
-        /// Property to set or return the default font face.
-        /// </summary>
-        FontFace DefaultFont
-        {
-            get;
-            set;
-        }
+        get;
+        set;
     }
 }

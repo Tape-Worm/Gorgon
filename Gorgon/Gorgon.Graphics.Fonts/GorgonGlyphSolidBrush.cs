@@ -27,91 +27,90 @@
 using System.Drawing;
 using Gorgon.IO;
 
-namespace Gorgon.Graphics.Fonts
+namespace Gorgon.Graphics.Fonts;
+
+/// <summary>
+/// A brush used to draw glyphs using a solid fill color.
+/// </summary>
+/// <remarks>
+/// <para>
+/// This is the default brush type used when no brush is specified when creating font glyphs.
+/// </para>
+/// </remarks>
+/// <seealso cref="GorgonGlyphTextureBrush"/>
+/// <seealso cref="GorgonGlyphHatchBrush"/>
+/// <seealso cref="GorgonGlyphLinearGradientBrush"/>
+/// <seealso cref="GorgonGlyphPathGradientBrush"/>
+public class GorgonGlyphSolidBrush
+    : GorgonGlyphBrush
 {
+    #region Properties.
     /// <summary>
-    /// A brush used to draw glyphs using a solid fill color.
+    /// Property to return the type of brush.
     /// </summary>
-    /// <remarks>
-    /// <para>
-    /// This is the default brush type used when no brush is specified when creating font glyphs.
-    /// </para>
-    /// </remarks>
-    /// <seealso cref="GorgonGlyphTextureBrush"/>
-    /// <seealso cref="GorgonGlyphHatchBrush"/>
-    /// <seealso cref="GorgonGlyphLinearGradientBrush"/>
-    /// <seealso cref="GorgonGlyphPathGradientBrush"/>
-    public class GorgonGlyphSolidBrush
-        : GorgonGlyphBrush
+    public override GlyphBrushType BrushType => GlyphBrushType.Solid;
+
+    /// <summary>
+    /// Property to set or return the color for the brush.
+    /// </summary>
+    public GorgonColor Color
     {
-        #region Properties.
-        /// <summary>
-        /// Property to return the type of brush.
-        /// </summary>
-        public override GlyphBrushType BrushType => GlyphBrushType.Solid;
-
-        /// <summary>
-        /// Property to set or return the color for the brush.
-        /// </summary>
-        public GorgonColor Color
-        {
-            get;
-            set;
-        }
-        #endregion
-
-        #region Methods.
-        /// <summary>Function to write out the specifics of the font brush data to a file writer.</summary>
-        /// <param name="writer">The writer used to write the brush data.</param>
-        internal override void WriteBrushData(GorgonBinaryWriter writer) => writer.Write(Color.ToARGB());
-
-        /// <summary>Function to read back the specifics of the font brush data from a file reader.</summary>
-        /// <param name="reader">The reader used to read the brush data.</param>
-        internal override void ReadBrushData(GorgonBinaryReader reader) => Color = new GorgonColor(reader.ReadInt32());
-
-        /// <summary>
-        /// Function to convert this brush to the equivalent GDI+ brush type.
-        /// </summary>
-        /// <returns>
-        /// The GDI+ brush type for this object.
-        /// </returns>
-        internal override Brush ToGDIBrush() => new SolidBrush(Color);
-
-        /// <summary>Function to clone an object.</summary>
-        /// <returns>The cloned object.</returns>
-        public override GorgonGlyphBrush Clone() => new GorgonGlyphSolidBrush
-        {
-            Color = Color
-        };
-
-
-        /// <summary>Indicates whether the current object is equal to another object of the same type.</summary>
-        /// <param name="other">An object to compare with this object.</param>
-        /// <returns>
-        ///   <span class="keyword">
-        ///     <span class="languageSpecificText">
-        ///       <span class="cs">true</span>
-        ///       <span class="vb">True</span>
-        ///       <span class="cpp">true</span>
-        ///     </span>
-        ///   </span>
-        ///   <span class="nu">
-        ///     <span class="keyword">true</span> (<span class="keyword">True</span> in Visual Basic)</span> if the current object is equal to the <paramref name="other" /> parameter; otherwise, <span class="keyword"><span class="languageSpecificText"><span class="cs">false</span><span class="vb">False</span><span class="cpp">false</span></span></span><span class="nu"><span class="keyword">false</span> (<span class="keyword">False</span> in Visual Basic)</span>.
-        /// </returns>
-        public override bool Equals(GorgonGlyphBrush other)
-        {
-            var brush = other as GorgonGlyphSolidBrush;
-
-            return ((brush == this) || ((brush is not null) && (brush.Color == Color)));
-        }
-
-        #endregion
-
-        #region Constructor.
-        /// <summary>
-        /// Initializes a new instance of the <see cref="GorgonGlyphSolidBrush"/> class.
-        /// </summary>
-        public GorgonGlyphSolidBrush() => Color = GorgonColor.White;
-        #endregion
+        get;
+        set;
     }
+    #endregion
+
+    #region Methods.
+    /// <summary>Function to write out the specifics of the font brush data to a file writer.</summary>
+    /// <param name="writer">The writer used to write the brush data.</param>
+    internal override void WriteBrushData(GorgonBinaryWriter writer) => writer.Write(Color.ToARGB());
+
+    /// <summary>Function to read back the specifics of the font brush data from a file reader.</summary>
+    /// <param name="reader">The reader used to read the brush data.</param>
+    internal override void ReadBrushData(GorgonBinaryReader reader) => Color = new GorgonColor(reader.ReadInt32());
+
+    /// <summary>
+    /// Function to convert this brush to the equivalent GDI+ brush type.
+    /// </summary>
+    /// <returns>
+    /// The GDI+ brush type for this object.
+    /// </returns>
+    internal override Brush ToGDIBrush() => new SolidBrush(Color);
+
+    /// <summary>Function to clone an object.</summary>
+    /// <returns>The cloned object.</returns>
+    public override GorgonGlyphBrush Clone() => new GorgonGlyphSolidBrush
+    {
+        Color = Color
+    };
+
+
+    /// <summary>Indicates whether the current object is equal to another object of the same type.</summary>
+    /// <param name="other">An object to compare with this object.</param>
+    /// <returns>
+    ///   <span class="keyword">
+    ///     <span class="languageSpecificText">
+    ///       <span class="cs">true</span>
+    ///       <span class="vb">True</span>
+    ///       <span class="cpp">true</span>
+    ///     </span>
+    ///   </span>
+    ///   <span class="nu">
+    ///     <span class="keyword">true</span> (<span class="keyword">True</span> in Visual Basic)</span> if the current object is equal to the <paramref name="other" /> parameter; otherwise, <span class="keyword"><span class="languageSpecificText"><span class="cs">false</span><span class="vb">False</span><span class="cpp">false</span></span></span><span class="nu"><span class="keyword">false</span> (<span class="keyword">False</span> in Visual Basic)</span>.
+    /// </returns>
+    public override bool Equals(GorgonGlyphBrush other)
+    {
+        var brush = other as GorgonGlyphSolidBrush;
+
+        return ((brush == this) || ((brush is not null) && (brush.Color == Color)));
+    }
+
+    #endregion
+
+    #region Constructor.
+    /// <summary>
+    /// Initializes a new instance of the <see cref="GorgonGlyphSolidBrush"/> class.
+    /// </summary>
+    public GorgonGlyphSolidBrush() => Color = GorgonColor.White;
+    #endregion
 }

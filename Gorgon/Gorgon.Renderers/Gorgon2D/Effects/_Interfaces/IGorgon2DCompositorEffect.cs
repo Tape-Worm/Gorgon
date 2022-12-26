@@ -26,18 +26,17 @@
 
 using Gorgon.Graphics.Core;
 
-namespace Gorgon.Renderers
+namespace Gorgon.Renderers;
+
+/// <summary>
+/// Defines an effect that can be used in a <see cref="Gorgon2DCompositor"/>.
+/// </summary>
+public interface IGorgon2DCompositorEffect
 {
     /// <summary>
-    /// Defines an effect that can be used in a <see cref="Gorgon2DCompositor"/>.
+    /// Function to render an effect under the <see cref="Gorgon2DCompositor"/>.
     /// </summary>
-    public interface IGorgon2DCompositorEffect
-    {
-        /// <summary>
-        /// Function to render an effect under the <see cref="Gorgon2DCompositor"/>.
-        /// </summary>
-        /// <param name="texture">The texture to render into the next target.</param>
-        /// <param name="output">The render target that will receive the final output.</param>
-        void Render(GorgonTexture2DView texture, GorgonRenderTargetView output);    
-    }
+    /// <param name="texture">The texture to render into the next target.</param>
+    /// <param name="output">The render target that will receive the final output.</param>
+    void Render(GorgonTexture2DView texture, GorgonRenderTargetView output);    
 }

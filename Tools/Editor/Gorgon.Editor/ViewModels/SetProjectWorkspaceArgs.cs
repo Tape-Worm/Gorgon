@@ -24,23 +24,22 @@
 // 
 #endregion
 
-namespace Gorgon.Editor.ViewModels
+namespace Gorgon.Editor.ViewModels;
+
+/// <summary>
+/// Arguments for the <see cref="INewProject.SetProjectWorkspaceCommand"/>.
+/// </summary>
+internal class SetProjectWorkspaceArgs
 {
     /// <summary>
-    /// Arguments for the <see cref="INewProject.SetProjectWorkspaceCommand"/>.
+    /// Property to return the path to the project workspace.
     /// </summary>
-    internal class SetProjectWorkspaceArgs
+    public string WorkspacePath
     {
-        /// <summary>
-        /// Property to return the path to the project workspace.
-        /// </summary>
-        public string WorkspacePath
-        {
-            get;
-        }
-
-        /// <summary>Initializes a new instance of the <see cref="SetProjectWorkspaceArgs"/> class.</summary>
-        /// <param name="projectWorkspace">The path to the project workspace.</param>
-        public SetProjectWorkspaceArgs(string projectWorkspace) => WorkspacePath = projectWorkspace;
+        get;
     }
+
+    /// <summary>Initializes a new instance of the <see cref="SetProjectWorkspaceArgs"/> class.</summary>
+    /// <param name="projectWorkspace">The path to the project workspace.</param>
+    public SetProjectWorkspaceArgs(string projectWorkspace) => WorkspacePath = projectWorkspace;
 }

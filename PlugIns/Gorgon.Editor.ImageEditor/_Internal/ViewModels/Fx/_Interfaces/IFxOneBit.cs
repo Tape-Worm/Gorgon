@@ -26,39 +26,38 @@
 
 using Gorgon.Editor.UI;
 
-namespace Gorgon.Editor.ImageEditor
+namespace Gorgon.Editor.ImageEditor;
+
+/// <summary>
+/// The settings view model for the one bit effect.
+/// </summary>
+internal interface IFxOneBit
+    : IHostedPanelViewModel
 {
     /// <summary>
-    /// The settings view model for the one bit effect.
+    /// Property to set or return the maximum threshold to convert to white (or black if inverted).
     /// </summary>
-    internal interface IFxOneBit
-        : IHostedPanelViewModel
+    int MaxWhiteThreshold
     {
-        /// <summary>
-        /// Property to set or return the maximum threshold to convert to white (or black if inverted).
-        /// </summary>
-        int MaxWhiteThreshold
-        {
-            get;
-            set;
-        }
+        get;
+        set;
+    }
 
-        /// <summary>
-        /// Property to set or return the minimum threshold to convert to white (or black if inverted).
-        /// </summary>
-        int MinWhiteThreshold
-        {
-            get;
-            set;
-        }
+    /// <summary>
+    /// Property to set or return the minimum threshold to convert to white (or black if inverted).
+    /// </summary>
+    int MinWhiteThreshold
+    {
+        get;
+        set;
+    }
 
-        /// <summary>
-        /// Property to set or return the flag used to invert the black/white values.
-        /// </summary>
-        bool Invert
-        {
-            get;
-            set;
-        }
+    /// <summary>
+    /// Property to set or return the flag used to invert the black/white values.
+    /// </summary>
+    bool Invert
+    {
+        get;
+        set;
     }
 }

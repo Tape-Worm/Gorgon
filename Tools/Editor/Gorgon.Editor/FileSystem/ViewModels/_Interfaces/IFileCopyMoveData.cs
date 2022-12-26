@@ -26,44 +26,43 @@
 
 using System.Collections.Generic;
 
-namespace Gorgon.Editor.ViewModels
+namespace Gorgon.Editor.ViewModels;
+
+/// <summary>
+/// Information used for moving/copying files.
+/// </summary>
+internal interface IFileCopyMoveData
 {
     /// <summary>
-    /// Information used for moving/copying files.
+    /// Property to return the list of files being copied/moved.
     /// </summary>
-    internal interface IFileCopyMoveData
+    IReadOnlyList<string> SourceFiles
     {
-        /// <summary>
-        /// Property to return the list of files being copied/moved.
-        /// </summary>
-        IReadOnlyList<string> SourceFiles
-        {
-            get;
-        }        
+        get;
+    }        
 
-        /// <summary>
-        /// Property to return the path of the directory that is the target for the copy/move operation.
-        /// </summary>
-        string DestinationDirectory
-        {
-            get;
-        }
+    /// <summary>
+    /// Property to return the path of the directory that is the target for the copy/move operation.
+    /// </summary>
+    string DestinationDirectory
+    {
+        get;
+    }
 
-        /// <summary>
-        /// Property to return the type of operation to be performed.
-        /// </summary>
-        CopyMoveOperation Operation
-        {
-            get;
-        }
+    /// <summary>
+    /// Property to return the type of operation to be performed.
+    /// </summary>
+    CopyMoveOperation Operation
+    {
+        get;
+    }
 
-        /// <summary>
-        /// Property to set or return whether any files were copied or not.
-        /// </summary>
-        bool FilesCopied
-        {
-            get;
-            set;
-        }
+    /// <summary>
+    /// Property to set or return whether any files were copied or not.
+    /// </summary>
+    bool FilesCopied
+    {
+        get;
+        set;
     }
 }

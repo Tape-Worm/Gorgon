@@ -36,69 +36,68 @@ using Gorgon.Graphics.Core;
 using Gorgon.Graphics.Fonts;
 using Gorgon.Graphics.Imaging;
 
-namespace Gorgon.Editor.FontEditor
+namespace Gorgon.Editor.FontEditor;
+
+/// <summary>
+/// The view model for the texture brush editing interface.
+/// </summary>
+internal interface IFontTextureBrush
+    : IHostedPanelViewModel
 {
     /// <summary>
-    /// The view model for the texture brush editing interface.
+    /// Property to set or return the brush used to render the glyphs.
     /// </summary>
-    internal interface IFontTextureBrush
-        : IHostedPanelViewModel
+    GorgonGlyphTextureBrush Brush
     {
-        /// <summary>
-        /// Property to set or return the brush used to render the glyphs.
-        /// </summary>
-        GorgonGlyphTextureBrush Brush
-        {
-            get;
-            set;
-        }
+        get;
+        set;
+    }
 
-        /// <summary>
-        /// Property to return the texture rendered into the glyphs.
-        /// </summary>
-        IGorgonImage Texture
-        {
-            get;
-        }
+    /// <summary>
+    /// Property to return the texture rendered into the glyphs.
+    /// </summary>
+    IGorgonImage Texture
+    {
+        get;
+    }
 
-        /// <summary>
-        /// Property to return the region on the texture.
-        /// </summary>
-        DX.RectangleF Region
-        {
-            get;
-        }
+    /// <summary>
+    /// Property to return the region on the texture.
+    /// </summary>
+    DX.RectangleF Region
+    {
+        get;
+    }
 
-        /// <summary>
-        /// Property to return the wrapping mode for the glyph brush.
-        /// </summary>
-        GlyphBrushWrapMode WrapMode
-        {
-            get;
-        }
+    /// <summary>
+    /// Property to return the wrapping mode for the glyph brush.
+    /// </summary>
+    GlyphBrushWrapMode WrapMode
+    {
+        get;
+    }
 
-        /// <summary>
-        /// Property to return the command used to assign the boundaries for the texture.
-        /// </summary>
-        IEditorCommand<DX.RectangleF> SetRegionCommand
-        {
-            get;
-        }
+    /// <summary>
+    /// Property to return the command used to assign the boundaries for the texture.
+    /// </summary>
+    IEditorCommand<DX.RectangleF> SetRegionCommand
+    {
+        get;
+    }
 
-        /// <summary>
-        /// Property to return the command used to assign the wrapping mode.
-        /// </summary>
-        IEditorCommand<GlyphBrushWrapMode> SetWrappingModeCommand
-        {
-            get;
-        }
+    /// <summary>
+    /// Property to return the command used to assign the wrapping mode.
+    /// </summary>
+    IEditorCommand<GlyphBrushWrapMode> SetWrappingModeCommand
+    {
+        get;
+    }
 
-        /// <summary>
-        /// Property to return the command used to load the texture to use for the brush.
-        /// </summary>
-        IEditorAsyncCommand<SetTextureArgs> LoadTextureCommand
-        {
-            get;
-        }
+    /// <summary>
+    /// Property to return the command used to load the texture to use for the brush.
+    /// </summary>
+    IEditorAsyncCommand<SetTextureArgs> LoadTextureCommand
+    {
+        get;
     }
 }

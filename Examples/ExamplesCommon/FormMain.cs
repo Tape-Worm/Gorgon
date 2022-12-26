@@ -28,78 +28,77 @@ using System;
 using System.Threading;
 using System.Windows.Forms;
 
-namespace Gorgon.Examples
+namespace Gorgon.Examples;
+
+/// <summary>
+/// The main form for the example application.
+/// </summary>
+public partial class FormMain : Form
 {
+    #region Properties.
     /// <summary>
-    /// The main form for the example application.
+    /// Property to return the synchronization context for this window.
     /// </summary>
-    public partial class FormMain : Form
+    public SynchronizationContext CurrentSyncContext
     {
-        #region Properties.
-        /// <summary>
-        /// Property to return the synchronization context for this window.
-        /// </summary>
-        public SynchronizationContext CurrentSyncContext
-        {
-            get;
-        }
+        get;
+    }
 
-        /// <summary>
-        /// Property to set or return whether the please wait label is visible.
-        /// </summary>
-        public bool IsLoaded
-        {
-            get => !LabelPleaseWait.Visible;
-            set
-            {
-                if (InvokeRequired)
-                {
-                    CurrentSyncContext.Post(arg => IsLoaded = value, null);
-                    return;
-                }
-                LabelPleaseWait.Visible = !value;
-            }
-        }
-        #endregion
-
-        #region Methods.
-        /// <summary>Raises the <see cref="E:System.Windows.Forms.Form.Load" /> event.</summary>
-        /// <param name="e">An <see cref="EventArgs" /> that contains the event data. </param>
-        protected override void OnLoad(EventArgs e)
-        {
-            base.OnLoad(e);
-
-            CenterToScreen();
-        }
-
-        /// <summary>
-        /// Function to update the text of the status label.
-        /// </summary>
-        /// <param name="newText">The new text to apply.</param>
-        public void UpdateStatus(string newText)
+    /// <summary>
+    /// Property to set or return whether the please wait label is visible.
+    /// </summary>
+    public bool IsLoaded
+    {
+        get => !LabelPleaseWait.Visible;
+        set
         {
             if (InvokeRequired)
             {
-                CurrentSyncContext.Post(arg => UpdateStatus(arg?.ToString()), newText);
+                CurrentSyncContext.Post(arg => IsLoaded = value, null);
                 return;
             }
-            LabelPleaseWait.Text = string.IsNullOrWhiteSpace(newText) ? "Example is loading, please wait..." : newText;
-
-            LabelPleaseWait.Refresh();
-            Application.DoEvents();
+            LabelPleaseWait.Visible = !value;
         }
-        #endregion
-
-        #region Constructor/Finalizer.
-        /// <summary>
-        /// Initializes a new instance of the <see cref="FormMain"/> class.
-        /// </summary>
-        public FormMain()
-        {
-            InitializeComponent();
-
-            CurrentSyncContext = SynchronizationContext.Current;
-        }
-        #endregion
     }
+    #endregion
+
+    #region Methods.
+    /// <summary>Raises the <see cref="E:System.Windows.Forms.Form.Load" /> event.</summary>
+    /// <param name="e">An <see cref="EventArgs" /> that contains the event data. </param>
+    protected override void OnLoad(EventArgs e)
+    {
+        base.OnLoad(e);
+
+        CenterToScreen();
+    }
+
+    /// <summary>
+    /// Function to update the text of the status label.
+    /// </summary>
+    /// <param name="newText">The new text to apply.</param>
+    public void UpdateStatus(string newText)
+    {
+        if (InvokeRequired)
+        {
+            CurrentSyncContext.Post(arg => UpdateStatus(arg?.ToString()), newText);
+            return;
+        }
+        LabelPleaseWait.Text = string.IsNullOrWhiteSpace(newText) ? "Example is loading, please wait..." : newText;
+
+        LabelPleaseWait.Refresh();
+        Application.DoEvents();
+    }
+    #endregion
+
+    #region Constructor/Finalizer.
+    /// <summary>
+    /// Initializes a new instance of the <see cref="FormMain"/> class.
+    /// </summary>
+    public FormMain()
+    {
+        InitializeComponent();
+
+        CurrentSyncContext = SynchronizationContext.Current;
+    }
+    #endregion
 }

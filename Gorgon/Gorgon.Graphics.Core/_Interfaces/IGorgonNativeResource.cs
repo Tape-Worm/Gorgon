@@ -25,28 +25,27 @@
 #endregion
 
 
-namespace Gorgon.Graphics
+namespace Gorgon.Graphics;
+
+/// <summary>
+/// Provides access to native pointers for resource objects (e.g. textures, devices, etc...).
+/// </summary>
+/// <remarks>
+/// <para>
+/// External APIs to Gorgon sometimes require access to the underlying texture objects, device objects, etc...  This interface provides those items as native pointers so that they can be wrapped 
+/// directly by the external calls (including SharpDX).
+/// </para>
+/// </remarks>
+public interface IGorgonNativeResource
 {
     /// <summary>
-    /// Provides access to native pointers for resource objects (e.g. textures, devices, etc...).
+    /// Property to return the native handle for the underlying resource object.
     /// </summary>
     /// <remarks>
-    /// <para>
-    /// External APIs to Gorgon sometimes require access to the underlying texture objects, device objects, etc...  This interface provides those items as native pointers so that they can be wrapped 
-    /// directly by the external calls (including SharpDX).
-    /// </para>
-    /// </remarks>
-    public interface IGorgonNativeResource
+    /// The property can be used to interoperate with functionality that require direct access to Direct 3D objects.
+    /// </remarks>        
+    nint Handle
     {
-        /// <summary>
-        /// Property to return the native handle for the underlying resource object.
-        /// </summary>
-        /// <remarks>
-        /// The property can be used to interoperate with functionality that require direct access to Direct 3D objects.
-        /// </remarks>        
-        nint Handle
-        {
-            get;
-        }
+        get;
     }
 }

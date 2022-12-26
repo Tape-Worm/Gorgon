@@ -26,86 +26,85 @@
 
 using Gorgon.Collections;
 
-namespace Gorgon.Graphics.Core
+namespace Gorgon.Graphics.Core;
+
+/// <summary>
+/// Provides information used to execute a call on the <see cref="GorgonComputeEngine"/>.
+/// </summary>
+/// <seealso cref="GorgonComputeEngine"/>
+public class GorgonDispatchCall
 {
+    #region Properties.
     /// <summary>
-    /// Provides information used to execute a call on the <see cref="GorgonComputeEngine"/>.
+    /// Property to return the current Direct3D state.
     /// </summary>
-    /// <seealso cref="GorgonComputeEngine"/>
-    public class GorgonDispatchCall
+    internal D3DState D3DState
     {
-        #region Properties.
-        /// <summary>
-        /// Property to return the current Direct3D state.
-        /// </summary>
-        internal D3DState D3DState
-        {
-            get;
-        } = new D3DState();
+        get;
+    } = new D3DState();
 
-        /// <summary>
-        /// Property to return the compute shader used for this dispatch.
-        /// </summary>
-        public GorgonComputeShader ComputeShader => D3DState.ComputeShader;
+    /// <summary>
+    /// Property to return the compute shader used for this dispatch.
+    /// </summary>
+    public GorgonComputeShader ComputeShader => D3DState.ComputeShader;
 
-        /// <summary>
-        /// Property to return the read/write (unordered access) views to use.
-        /// </summary>
-        public IGorgonReadOnlyArray<GorgonReadWriteViewBinding> ReadWriteViews => D3DState.CsReadWriteViews;
+    /// <summary>
+    /// Property to return the read/write (unordered access) views to use.
+    /// </summary>
+    public IGorgonReadOnlyArray<GorgonReadWriteViewBinding> ReadWriteViews => D3DState.CsReadWriteViews;
 
-        /// <summary>
-        /// Property to return the shader resource views to use.
-        /// </summary>
-        public IGorgonReadOnlyArray<GorgonShaderResourceView> ShaderResources => D3DState.CsSrvs;
+    /// <summary>
+    /// Property to return the shader resource views to use.
+    /// </summary>
+    public IGorgonReadOnlyArray<GorgonShaderResourceView> ShaderResources => D3DState.CsSrvs;
 
-        /// <summary>
-        /// Property to return the texture samplers to use.
-        /// </summary>
-        public IGorgonReadOnlyArray<GorgonSamplerState> Samplers => D3DState.CsSamplers;
+    /// <summary>
+    /// Property to return the texture samplers to use.
+    /// </summary>
+    public IGorgonReadOnlyArray<GorgonSamplerState> Samplers => D3DState.CsSamplers;
 
-        /// <summary>
-        /// Property to return the constant buffers to use.
-        /// </summary>
-        public IGorgonReadOnlyArray<GorgonConstantBufferView> ConstantBuffers => D3DState.CsConstantBuffers;
-        #endregion
+    /// <summary>
+    /// Property to return the constant buffers to use.
+    /// </summary>
+    public IGorgonReadOnlyArray<GorgonConstantBufferView> ConstantBuffers => D3DState.CsConstantBuffers;
+    #endregion
 
-        #region Methods.
-        /// <summary>
-        /// Function to set up the data structure with initialized values.
-        /// </summary>
-        internal void Setup()
-        {
-            D3DState.CsReadWriteViews = new GorgonReadWriteViewBindings();
-            D3DState.CsSrvs = new GorgonShaderResourceViews();
-            D3DState.CsSamplers = new GorgonSamplerStates();
-            D3DState.CsConstantBuffers = new GorgonConstantBuffers();
-        }
-        #endregion
-
-        #region Constructor.
-        /// <summary>
-        /// Initializes a new instance of the <see cref="GorgonDispatchCall"/> class.
-        /// </summary>
-        internal GorgonDispatchCall()
-        {
-            D3DState.VertexBuffers = new GorgonVertexBufferBindings();
-            D3DState.StreamOutBindings = new GorgonStreamOutBindings();
-            D3DState.PipelineState = new GorgonPipelineState
-            {
-                RasterState = GorgonRasterState.Default,
-                DepthStencilState = GorgonDepthStencilState.Default
-            };
-            D3DState.PsConstantBuffers = D3DState.VsConstantBuffers =
-                                               D3DState.GsConstantBuffers =
-                                                   D3DState.DsConstantBuffers = D3DState.HsConstantBuffers = new GorgonConstantBuffers();
-            D3DState.PsSamplers = D3DState.VsSamplers =
-                                        D3DState.GsSamplers =
-                                            D3DState.DsSamplers = D3DState.HsSamplers = new GorgonSamplerStates();
-            D3DState.PsSrvs = D3DState.VsSrvs =
-                                    D3DState.GsSrvs =
-                                        D3DState.DsSrvs = D3DState.HsSrvs = new GorgonShaderResourceViews();
-            D3DState.ReadWriteViews = new GorgonReadWriteViewBindings();
-        }
-        #endregion
+    #region Methods.
+    /// <summary>
+    /// Function to set up the data structure with initialized values.
+    /// </summary>
+    internal void Setup()
+    {
+        D3DState.CsReadWriteViews = new GorgonReadWriteViewBindings();
+        D3DState.CsSrvs = new GorgonShaderResourceViews();
+        D3DState.CsSamplers = new GorgonSamplerStates();
+        D3DState.CsConstantBuffers = new GorgonConstantBuffers();
     }
+    #endregion
+
+    #region Constructor.
+    /// <summary>
+    /// Initializes a new instance of the <see cref="GorgonDispatchCall"/> class.
+    /// </summary>
+    internal GorgonDispatchCall()
+    {
+        D3DState.VertexBuffers = new GorgonVertexBufferBindings();
+        D3DState.StreamOutBindings = new GorgonStreamOutBindings();
+        D3DState.PipelineState = new GorgonPipelineState
+        {
+            RasterState = GorgonRasterState.Default,
+            DepthStencilState = GorgonDepthStencilState.Default
+        };
+        D3DState.PsConstantBuffers = D3DState.VsConstantBuffers =
+                                           D3DState.GsConstantBuffers =
+                                               D3DState.DsConstantBuffers = D3DState.HsConstantBuffers = new GorgonConstantBuffers();
+        D3DState.PsSamplers = D3DState.VsSamplers =
+                                    D3DState.GsSamplers =
+                                        D3DState.DsSamplers = D3DState.HsSamplers = new GorgonSamplerStates();
+        D3DState.PsSrvs = D3DState.VsSrvs =
+                                D3DState.GsSrvs =
+                                    D3DState.DsSrvs = D3DState.HsSrvs = new GorgonShaderResourceViews();
+        D3DState.ReadWriteViews = new GorgonReadWriteViewBindings();
+    }
+    #endregion
 }

@@ -28,13 +28,13 @@ using System;
 using Gorgon.Core;
 using Gorgon.Graphics.Core.Properties;
 
-namespace Gorgon.Graphics.Core
+namespace Gorgon.Graphics.Core;
+
+/// <summary>
+/// Provides validation functionality.
+/// </summary>
+internal class Validator
 {
-    /// <summary>
-    /// Provides validation functionality.
-    /// </summary>
-    internal class Validator
-    {
 		/// <summary>
 		/// Function to validate the depth/stencil view.
 		/// </summary>
@@ -150,4 +150,3 @@ namespace Gorgon.Graphics.Core
 			}
 		}
 	}
-}

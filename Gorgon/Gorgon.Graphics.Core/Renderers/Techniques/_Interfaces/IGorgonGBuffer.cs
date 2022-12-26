@@ -26,97 +26,96 @@
 
 using Gorgon.Graphics.Core;
 
-namespace Gorgon.Renderers.Techniques
+namespace Gorgon.Renderers.Techniques;
+
+/// <summary>
+/// Defines a gbuffer for use with deferred rendering scenarios.
+/// </summary>
+public interface IGorgonGBuffer
 {
     /// <summary>
-    /// Defines a gbuffer for use with deferred rendering scenarios.
+    /// Property to return the position texture for the gbuffer.
     /// </summary>
-    public interface IGorgonGBuffer
+    GorgonTexture2DView Position
     {
-        /// <summary>
-        /// Property to return the position texture for the gbuffer.
-        /// </summary>
-        GorgonTexture2DView Position
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to return the position render target for the gbuffer.
-        /// </summary>
-        GorgonRenderTarget2DView PositionTarget
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to return the diffuse texture for the gbuffer.
-        /// </summary>
-        GorgonTexture2DView Diffuse
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to return the diffuse render target for the gbuffer.
-        /// </summary>
-        GorgonRenderTarget2DView DiffuseTarget
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to return the entire gbuffer texture (all array indices).
-        /// </summary>
-        GorgonTexture2DView GBufferTexture
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to return the normal map texture for the gbuffer.
-        /// </summary>
-        GorgonTexture2DView Normal
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to return the normal map render target for the gbuffer.
-        /// </summary>
-        GorgonRenderTarget2DView NormalTarget
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to return the specular texture for the gbuffer.
-        /// </summary>
-        GorgonTexture2DView Specular
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to return the specular render target for the gbuffer.
-        /// </summary>
-        GorgonRenderTarget2DView SpecularTarget
-        {
-            get;
-        }
-
-        #region Methods.
-        /// <summary>
-        /// Function to clear the GBuffer.
-        /// </summary>
-        void ClearGBuffer();
-
-        /// <summary>
-        /// Function to update the gbuffer to a new width and height.
-        /// </summary>
-        /// <param name="width">The width of the gbuffer texture.</param>
-        /// <param name="height">The height of the gbuffer texture.</param>
-        void Resize(int width, int height);
-        #endregion
+        get;
     }
+
+    /// <summary>
+    /// Property to return the position render target for the gbuffer.
+    /// </summary>
+    GorgonRenderTarget2DView PositionTarget
+    {
+        get;
+    }
+
+    /// <summary>
+    /// Property to return the diffuse texture for the gbuffer.
+    /// </summary>
+    GorgonTexture2DView Diffuse
+    {
+        get;
+    }
+
+    /// <summary>
+    /// Property to return the diffuse render target for the gbuffer.
+    /// </summary>
+    GorgonRenderTarget2DView DiffuseTarget
+    {
+        get;
+    }
+
+    /// <summary>
+    /// Property to return the entire gbuffer texture (all array indices).
+    /// </summary>
+    GorgonTexture2DView GBufferTexture
+    {
+        get;
+    }
+
+    /// <summary>
+    /// Property to return the normal map texture for the gbuffer.
+    /// </summary>
+    GorgonTexture2DView Normal
+    {
+        get;
+    }
+
+    /// <summary>
+    /// Property to return the normal map render target for the gbuffer.
+    /// </summary>
+    GorgonRenderTarget2DView NormalTarget
+    {
+        get;
+    }
+
+    /// <summary>
+    /// Property to return the specular texture for the gbuffer.
+    /// </summary>
+    GorgonTexture2DView Specular
+    {
+        get;
+    }
+
+    /// <summary>
+    /// Property to return the specular render target for the gbuffer.
+    /// </summary>
+    GorgonRenderTarget2DView SpecularTarget
+    {
+        get;
+    }
+
+    #region Methods.
+    /// <summary>
+    /// Function to clear the GBuffer.
+    /// </summary>
+    void ClearGBuffer();
+
+    /// <summary>
+    /// Function to update the gbuffer to a new width and height.
+    /// </summary>
+    /// <param name="width">The width of the gbuffer texture.</param>
+    /// <param name="height">The height of the gbuffer texture.</param>
+    void Resize(int width, int height);
+    #endregion
 }

@@ -28,175 +28,174 @@ using System;
 using System.Drawing;
 using Gorgon.Core;
 
-namespace Gorgon.Editor.PlugIns
+namespace Gorgon.Editor.PlugIns;
+
+/// <summary>
+/// Defines a button to display on the ribbon bar, in the tools area.
+/// </summary>
+public class ToolPlugInRibbonButton
+    : GorgonNamedObject, IDisposable, IToolPlugInRibbonButton
 {
+    #region Variables.
+    // Flag to indicate that we own the large image and are repsonsible for its lifetime.
+    private bool _ownsLargeImage;
+    // Flag to indicate that we own the small image and are repsonsible for its lifetime.
+    private bool _ownsSmallImage;
+    #endregion
+
+    #region Properties.
     /// <summary>
-    /// Defines a button to display on the ribbon bar, in the tools area.
+    /// Property to set or return the action to perform when the button is clicked.
     /// </summary>
-    public class ToolPlugInRibbonButton
-        : GorgonNamedObject, IDisposable, IToolPlugInRibbonButton
+    public Action ClickCallback
     {
-        #region Variables.
-        // Flag to indicate that we own the large image and are repsonsible for its lifetime.
-        private bool _ownsLargeImage;
-        // Flag to indicate that we own the small image and are repsonsible for its lifetime.
-        private bool _ownsSmallImage;
-        #endregion
-
-        #region Properties.
-        /// <summary>
-        /// Property to set or return the action to perform when the button is clicked.
-        /// </summary>
-        public Action ClickCallback
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// Property to return the function to determine if the button can be clicked.
-        /// </summary>
-        public Func<bool> CanExecute
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// Property to return the display text for the button.
-        /// </summary>
-        public string DisplayText
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to return the 48x48 large icon.
-        /// </summary>
-        public Image LargeIcon
-        {
-            get;
-            private set;
-        }
-
-        /// <summary>
-        /// Property to return the 16x16 small icon.
-        /// </summary>
-        public Image SmallIcon
-        {
-            get;
-            private set;
-        }
-
-        /// <summary>
-        /// Property to return the group that owns this button.
-        /// </summary>
-        public string GroupName
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to set or return whether to use the small icon, or large icon on the ribbon.
-        /// </summary>
-        public bool IsSmall
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// Property to set or return whether this button should start a separator.
-        /// </summary>
-        public bool IsSeparator
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// Property to set or return the description for the button.
-        /// </summary>
-        public string Description
-        {
-            get;
-            set;
-        }
-        #endregion
-
-        #region Methods.
-        /// <summary>
-        /// Function to validate the button to ensure it'll be displayed correctly on the ribbon.
-        /// </summary>
-        public void ValidateButton()
-        {
-            if ((LargeIcon.Width != 48) || (LargeIcon.Height != 48))
-            {
-                LargeIcon = new Bitmap(LargeIcon, new Size(48, 48));
-                _ownsLargeImage = true;
-            }
-
-            if ((SmallIcon.Width != 16) || (SmallIcon.Height != 16))
-            {
-                SmallIcon = new Bitmap(SmallIcon, new Size(16, 16));
-                _ownsSmallImage = true;
-            }
-        }
-
-        /// <summary>Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.</summary>
-        public void Dispose()
-        {
-            CanExecute = null;
-            ClickCallback = null;
-
-            if (_ownsLargeImage)
-            {
-                LargeIcon.Dispose();
-            }
-
-            if (_ownsSmallImage)
-            {
-                SmallIcon.Dispose();
-            }
-        }
-        #endregion
-
-        #region Constructor/Finalizer.
-        /// <summary>Initializes a new instance of the <see cref="ToolPlugInRibbonButton"/> class.</summary>
-        /// <param name="displayText">The display text.</param>
-        /// <param name="largeIcon">The large icon.</param>
-        /// <param name="smallIcon">The small icon.</param>
-        /// <param name="groupName">Name of the group.</param>
-        /// <exception cref="ArgumentNullException">Thrown when any of the parameters are <b>null</b>.</exception>
-        /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="displayText"/>, or the <paramref name="groupName"/> parameter is empty.</exception>
-        public ToolPlugInRibbonButton(string displayText, Image largeIcon, Image smallIcon, string groupName)
-            : base(Guid.NewGuid().ToString("N"))
-        {
-            if (displayText is null)
-            {
-                throw new ArgumentNullException(nameof(displayText));
-            }
-
-            if (string.IsNullOrWhiteSpace(displayText))
-            {
-                throw new ArgumentEmptyException(nameof(displayText));
-            }
-
-            if (groupName is null)
-            {
-                throw new ArgumentNullException(nameof(groupName));
-            }
-
-            if (string.IsNullOrWhiteSpace(groupName))
-            {
-                throw new ArgumentEmptyException(nameof(groupName));
-            }
-
-            DisplayText = displayText;
-            LargeIcon = largeIcon ?? throw new ArgumentNullException(nameof(largeIcon));
-            SmallIcon = smallIcon ?? throw new ArgumentNullException(nameof(smallIcon));
-            GroupName = groupName;
-        }
-        #endregion
+        get;
+        set;
     }
+
+    /// <summary>
+    /// Property to return the function to determine if the button can be clicked.
+    /// </summary>
+    public Func<bool> CanExecute
+    {
+        get;
+        set;
+    }
+
+    /// <summary>
+    /// Property to return the display text for the button.
+    /// </summary>
+    public string DisplayText
+    {
+        get;
+    }
+
+    /// <summary>
+    /// Property to return the 48x48 large icon.
+    /// </summary>
+    public Image LargeIcon
+    {
+        get;
+        private set;
+    }
+
+    /// <summary>
+    /// Property to return the 16x16 small icon.
+    /// </summary>
+    public Image SmallIcon
+    {
+        get;
+        private set;
+    }
+
+    /// <summary>
+    /// Property to return the group that owns this button.
+    /// </summary>
+    public string GroupName
+    {
+        get;
+    }
+
+    /// <summary>
+    /// Property to set or return whether to use the small icon, or large icon on the ribbon.
+    /// </summary>
+    public bool IsSmall
+    {
+        get;
+        set;
+    }
+
+    /// <summary>
+    /// Property to set or return whether this button should start a separator.
+    /// </summary>
+    public bool IsSeparator
+    {
+        get;
+        set;
+    }
+
+    /// <summary>
+    /// Property to set or return the description for the button.
+    /// </summary>
+    public string Description
+    {
+        get;
+        set;
+    }
+    #endregion
+
+    #region Methods.
+    /// <summary>
+    /// Function to validate the button to ensure it'll be displayed correctly on the ribbon.
+    /// </summary>
+    public void ValidateButton()
+    {
+        if ((LargeIcon.Width != 48) || (LargeIcon.Height != 48))
+        {
+            LargeIcon = new Bitmap(LargeIcon, new Size(48, 48));
+            _ownsLargeImage = true;
+        }
+
+        if ((SmallIcon.Width != 16) || (SmallIcon.Height != 16))
+        {
+            SmallIcon = new Bitmap(SmallIcon, new Size(16, 16));
+            _ownsSmallImage = true;
+        }
+    }
+
+    /// <summary>Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.</summary>
+    public void Dispose()
+    {
+        CanExecute = null;
+        ClickCallback = null;
+
+        if (_ownsLargeImage)
+        {
+            LargeIcon.Dispose();
+        }
+
+        if (_ownsSmallImage)
+        {
+            SmallIcon.Dispose();
+        }
+    }
+    #endregion
+
+    #region Constructor/Finalizer.
+    /// <summary>Initializes a new instance of the <see cref="ToolPlugInRibbonButton"/> class.</summary>
+    /// <param name="displayText">The display text.</param>
+    /// <param name="largeIcon">The large icon.</param>
+    /// <param name="smallIcon">The small icon.</param>
+    /// <param name="groupName">Name of the group.</param>
+    /// <exception cref="ArgumentNullException">Thrown when any of the parameters are <b>null</b>.</exception>
+    /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="displayText"/>, or the <paramref name="groupName"/> parameter is empty.</exception>
+    public ToolPlugInRibbonButton(string displayText, Image largeIcon, Image smallIcon, string groupName)
+        : base(Guid.NewGuid().ToString("N"))
+    {
+        if (displayText is null)
+        {
+            throw new ArgumentNullException(nameof(displayText));
+        }
+
+        if (string.IsNullOrWhiteSpace(displayText))
+        {
+            throw new ArgumentEmptyException(nameof(displayText));
+        }
+
+        if (groupName is null)
+        {
+            throw new ArgumentNullException(nameof(groupName));
+        }
+
+        if (string.IsNullOrWhiteSpace(groupName))
+        {
+            throw new ArgumentEmptyException(nameof(groupName));
+        }
+
+        DisplayText = displayText;
+        LargeIcon = largeIcon ?? throw new ArgumentNullException(nameof(largeIcon));
+        SmallIcon = smallIcon ?? throw new ArgumentNullException(nameof(smallIcon));
+        GroupName = groupName;
+    }
+    #endregion
 }

@@ -31,103 +31,102 @@ using Gorgon.Editor.Rendering;
 using Gorgon.Renderers;
 using Gorgon.Renderers.Cameras;
 
-namespace Gorgon.Editor.Services
+namespace Gorgon.Editor.Services;
+
+/// <summary>
+/// A service used to edit an anchor point on a sprite.
+/// </summary>
+/// <remarks>
+/// <para>
+/// Use this service when rendering the UI for editing the <see cref="GorgonSprite.Anchor"/> on a <see cref="GorgonSprite"/>. Plug in developers should use this to provide interaction with the anchor 
+/// point. 
+/// </para>
+/// </remarks>
+public interface IAnchorEditService
 {
+    #region Events.
     /// <summary>
-    /// A service used to edit an anchor point on a sprite.
+    /// Event triggered when the anchor position is updated.
     /// </summary>
-    /// <remarks>
-    /// <para>
-    /// Use this service when rendering the UI for editing the <see cref="GorgonSprite.Anchor"/> on a <see cref="GorgonSprite"/>. Plug in developers should use this to provide interaction with the anchor 
-    /// point. 
-    /// </para>
-    /// </remarks>
-    public interface IAnchorEditService
+    event EventHandler AnchorChanged;
+    #endregion
+
+    #region Properties.
+    /// <summary>
+    /// Property to set or return the position of the sprite anchor.
+    /// </summary>
+    Vector2 AnchorPosition
     {
-        #region Events.
-        /// <summary>
-        /// Event triggered when the anchor position is updated.
-        /// </summary>
-        event EventHandler AnchorChanged;
-        #endregion
-
-        #region Properties.
-        /// <summary>
-        /// Property to set or return the position of the sprite anchor.
-        /// </summary>
-        Vector2 AnchorPosition
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// Property to set or return the center position of the sprite.
-        /// </summary>
-        Vector2 CenterPosition
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// Property to set or return the camera for the renderer.
-        /// </summary>
-        GorgonOrthoCamera Camera
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// Property to return whether we're in the middle of a drag operation or not.
-        /// </summary>
-        bool IsDragging
-        {
-            get;
-        }
-
-        
-        #endregion
-
-        #region Methods.
-        /// <summary>
-        /// Function to intercept keyboard key presses.
-        /// </summary>
-        /// <param name="e">The event arguments.</param>
-        /// <returns><b>true</b> if the event is handled, <b>false</b> if not.</returns>
-        bool KeyDown(PreviewKeyDownEventArgs e);
-
-        /// <summary>
-        /// Function called when the mouse button is pressed.
-        /// </summary>
-        /// <param name="args">The mouse event arguments.</param>
-        /// <returns><b>true</b> if the mouse event was handled, <b>false</b> if it was not.</returns>
-        bool MouseDown(MouseArgs args);
-
-        /// <summary>
-        /// Function called when the mouse button is moved.
-        /// </summary>
-        /// <param name="args">The mouse event arguments.</param>
-        /// <returns><b>true</b> if the mouse event was handled, <b>false</b> if it was not.</returns>
-        bool MouseMove(MouseArgs args);
-
-        /// <summary>
-        /// Function called when the mouse button is released.
-        /// </summary>
-        /// <param name="args">The event arguments..</param>
-        /// <returns><b>true</b> if the mouse event was handled, <b>false</b> if it was not.</returns>
-        bool MouseUp(MouseArgs args);
-
-        /// <summary>
-        /// Function to reset the anchor value.
-        /// </summary>
-        void Reset();
-
-        /// <summary>
-        /// Function to render the anchor UI.
-        /// </summary>
-        void Render();
-        #endregion
+        get;
+        set;
     }
+
+    /// <summary>
+    /// Property to set or return the center position of the sprite.
+    /// </summary>
+    Vector2 CenterPosition
+    {
+        get;
+        set;
+    }
+
+    /// <summary>
+    /// Property to set or return the camera for the renderer.
+    /// </summary>
+    GorgonOrthoCamera Camera
+    {
+        get;
+        set;
+    }
+
+    /// <summary>
+    /// Property to return whether we're in the middle of a drag operation or not.
+    /// </summary>
+    bool IsDragging
+    {
+        get;
+    }
+
+    
+    #endregion
+
+    #region Methods.
+    /// <summary>
+    /// Function to intercept keyboard key presses.
+    /// </summary>
+    /// <param name="e">The event arguments.</param>
+    /// <returns><b>true</b> if the event is handled, <b>false</b> if not.</returns>
+    bool KeyDown(PreviewKeyDownEventArgs e);
+
+    /// <summary>
+    /// Function called when the mouse button is pressed.
+    /// </summary>
+    /// <param name="args">The mouse event arguments.</param>
+    /// <returns><b>true</b> if the mouse event was handled, <b>false</b> if it was not.</returns>
+    bool MouseDown(MouseArgs args);
+
+    /// <summary>
+    /// Function called when the mouse button is moved.
+    /// </summary>
+    /// <param name="args">The mouse event arguments.</param>
+    /// <returns><b>true</b> if the mouse event was handled, <b>false</b> if it was not.</returns>
+    bool MouseMove(MouseArgs args);
+
+    /// <summary>
+    /// Function called when the mouse button is released.
+    /// </summary>
+    /// <param name="args">The event arguments..</param>
+    /// <returns><b>true</b> if the mouse event was handled, <b>false</b> if it was not.</returns>
+    bool MouseUp(MouseArgs args);
+
+    /// <summary>
+    /// Function to reset the anchor value.
+    /// </summary>
+    void Reset();
+
+    /// <summary>
+    /// Function to render the anchor UI.
+    /// </summary>
+    void Render();
+    #endregion
 }

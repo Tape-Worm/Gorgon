@@ -27,73 +27,72 @@
 using System;
 using Gorgon.Properties;
 
-namespace Gorgon.Core
+namespace Gorgon.Core;
+
+/// <summary>
+/// Abstract implementation of the <see cref="IGorgonNamedObject"/> interface. 
+/// </summary>
+/// <remarks>
+/// This abstract implementation of <see cref="IGorgonNamedObject"/> is provided as a convenience when an object requires a name.
+/// </remarks>
+public abstract class GorgonNamedObject
+    : IGorgonNamedObject
 {
+    #region Variables.
+    // The name.
+    private string _name;
+    #endregion
+
+    #region Methods.
     /// <summary>
-    /// Abstract implementation of the <see cref="IGorgonNamedObject"/> interface. 
+    /// Returns a hash code for this instance.
+    /// </summary>
+    /// <returns>A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table.</returns>
+    public override int GetHashCode() => HashCode.Combine(Name);
+
+    /// <summary>
+    /// Returns a <see cref="string"/> that represents the current <see cref="GorgonNamedObject"/>.
+    /// </summary>
+    /// <returns>
+    /// A <see cref="string"/> that represents the current <see cref="GorgonNamedObject"/>.
+    /// </returns>
+    public override string ToString() => string.Format(Resources.GOR_TOSTR_NAMEDOBJECT, Name);
+    #endregion
+
+    #region Constructor/Destructor.
+    /// <summary>
+    /// Initializes a new instance of the <see cref="GorgonNamedObject"/> class.
+    /// </summary>
+    /// <param name="name">The name of this object.</param>
+    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="name"/> parameter is <b>null</b>.</exception>
+    /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="name"/> parameter is an empty string.</exception>
+    protected GorgonNamedObject(string name)
+    {
+        if (name is null)
+        {
+            throw new ArgumentNullException(nameof(name));
+        }
+
+        if (string.IsNullOrWhiteSpace(name))
+        {
+            throw new ArgumentEmptyException(nameof(name));
+        }
+
+        _name = name;
+    }
+    #endregion
+
+    #region IGorgonNamedObject Members
+    /// <summary>
+    /// Property to return the name of this object.
     /// </summary>
     /// <remarks>
-    /// This abstract implementation of <see cref="IGorgonNamedObject"/> is provided as a convenience when an object requires a name.
+    /// Unlike the interface this property is derived from, this property has a protected setter to assign the name at a later stage during an objects initialization. 
     /// </remarks>
-    public abstract class GorgonNamedObject
-        : IGorgonNamedObject
+    public virtual string Name
     {
-        #region Variables.
-        // The name.
-        private string _name;
-        #endregion
-
-        #region Methods.
-        /// <summary>
-        /// Returns a hash code for this instance.
-        /// </summary>
-        /// <returns>A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table.</returns>
-        public override int GetHashCode() => HashCode.Combine(Name);
-
-        /// <summary>
-        /// Returns a <see cref="string"/> that represents the current <see cref="GorgonNamedObject"/>.
-        /// </summary>
-        /// <returns>
-        /// A <see cref="string"/> that represents the current <see cref="GorgonNamedObject"/>.
-        /// </returns>
-        public override string ToString() => string.Format(Resources.GOR_TOSTR_NAMEDOBJECT, Name);
-        #endregion
-
-        #region Constructor/Destructor.
-        /// <summary>
-        /// Initializes a new instance of the <see cref="GorgonNamedObject"/> class.
-        /// </summary>
-        /// <param name="name">The name of this object.</param>
-        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="name"/> parameter is <b>null</b>.</exception>
-        /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="name"/> parameter is an empty string.</exception>
-        protected GorgonNamedObject(string name)
-        {
-            if (name is null)
-            {
-                throw new ArgumentNullException(nameof(name));
-            }
-
-            if (string.IsNullOrWhiteSpace(name))
-            {
-                throw new ArgumentEmptyException(nameof(name));
-            }
-
-            _name = name;
-        }
-        #endregion
-
-        #region IGorgonNamedObject Members
-        /// <summary>
-        /// Property to return the name of this object.
-        /// </summary>
-        /// <remarks>
-        /// Unlike the interface this property is derived from, this property has a protected setter to assign the name at a later stage during an objects initialization. 
-        /// </remarks>
-        public virtual string Name
-        {
-            get => _name;
-            protected set => _name = value;
-        }
-        #endregion
+        get => _name;
+        protected set => _name = value;
     }
+    #endregion
 }

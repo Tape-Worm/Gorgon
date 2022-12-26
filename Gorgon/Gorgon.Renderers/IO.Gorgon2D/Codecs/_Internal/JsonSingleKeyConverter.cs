@@ -28,67 +28,66 @@ using System;
 using Gorgon.Animation;
 using Newtonsoft.Json;
 
-namespace Gorgon.IO
+namespace Gorgon.IO;
+
+/// <summary>
+/// A JSON converter for a <see cref="GorgonKeySingle"/>
+/// </summary>
+class JsonSingleKeyConverter
+    : JsonConverter<GorgonKeySingle>
 {
-    /// <summary>
-    /// A JSON converter for a <see cref="GorgonKeySingle"/>
-    /// </summary>
-    class JsonSingleKeyConverter
-        : JsonConverter<GorgonKeySingle>
+    /// <summary>Writes the JSON representation of the object.</summary>
+    /// <param name="writer">The <see cref="JsonWriter" /> to write to.</param>
+    /// <param name="value">The value.</param>
+    /// <param name="serializer">The calling serializer.</param>
+    public override void WriteJson(JsonWriter writer, GorgonKeySingle value, JsonSerializer serializer)
     {
-        /// <summary>Writes the JSON representation of the object.</summary>
-        /// <param name="writer">The <see cref="JsonWriter" /> to write to.</param>
-        /// <param name="value">The value.</param>
-        /// <param name="serializer">The calling serializer.</param>
-        public override void WriteJson(JsonWriter writer, GorgonKeySingle value, JsonSerializer serializer)
+        if (value is null)
         {
-            if (value is null)
-            {
-                writer.WriteNull();
-                return;
-            }
-
-            writer.WriteStartObject();
-            writer.WritePropertyName("time");
-            writer.WriteValue(value.Time);
-            writer.WritePropertyName("value");
-            writer.WriteValue(value.Value);
-            writer.WriteEnd();
+            writer.WriteNull();
+            return;
         }
 
-        /// <summary>Reads the JSON representation of the object.</summary>
-        /// <param name="reader">The <see cref="JsonReader" /> to read from.</param>
-        /// <param name="objectType">Type of the object.</param>
-        /// <param name="existingValue">The existing value of object being read. If there is no existing value then <c>null</c> will be used.</param>
-        /// <param name="hasExistingValue">The existing value has a value.</param>
-        /// <param name="serializer">The calling serializer.</param>
-        /// <returns>The object value.</returns>
-        public override GorgonKeySingle ReadJson(JsonReader reader, Type objectType, GorgonKeySingle existingValue, bool hasExistingValue, JsonSerializer serializer)
+        writer.WriteStartObject();
+        writer.WritePropertyName("time");
+        writer.WriteValue(value.Time);
+        writer.WritePropertyName("value");
+        writer.WriteValue(value.Value);
+        writer.WriteEnd();
+    }
+
+    /// <summary>Reads the JSON representation of the object.</summary>
+    /// <param name="reader">The <see cref="JsonReader" /> to read from.</param>
+    /// <param name="objectType">Type of the object.</param>
+    /// <param name="existingValue">The existing value of object being read. If there is no existing value then <c>null</c> will be used.</param>
+    /// <param name="hasExistingValue">The existing value has a value.</param>
+    /// <param name="serializer">The calling serializer.</param>
+    /// <returns>The object value.</returns>
+    public override GorgonKeySingle ReadJson(JsonReader reader, Type objectType, GorgonKeySingle existingValue, bool hasExistingValue, JsonSerializer serializer)
+    {
+        float time = 0;
+        float value = 0;
+
+        while ((reader.Read()) && (reader.TokenType != JsonToken.EndObject))
         {
-            float time = 0;
-            float value = 0;
-
-            while ((reader.Read()) && (reader.TokenType != JsonToken.EndObject))
+            if (reader.TokenType != JsonToken.PropertyName)
             {
-                if (reader.TokenType != JsonToken.PropertyName)
-                {
-                    continue;
-                }
-
-                string propName = reader.Value.ToString().ToUpperInvariant();
-
-                switch (propName)
-                {
-                    case "TIME":
-                        time = (float?)reader.ReadAsDecimal() ?? 0;
-                        break;
-                    case "VALUE":
-                        value = (float?)reader.ReadAsDecimal() ?? 0;
-                        break;
-                }
+                continue;
             }
 
-            return new GorgonKeySingle(time, value);
+            string propName = reader.Value.ToString().ToUpperInvariant();
+
+            switch (propName)
+            {
+                case "TIME":
+                    time = (float?)reader.ReadAsDecimal() ?? 0;
+                    break;
+                case "VALUE":
+                    value = (float?)reader.ReadAsDecimal() ?? 0;
+                    break;
+            }
         }
+
+        return new GorgonKeySingle(time, value);
     }
 }

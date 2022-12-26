@@ -30,195 +30,194 @@ using Gorgon.Graphics;
 using Gorgon.Math;
 using Gorgon.Renderers.Data;
 
-namespace Gorgon.Renderers.Lights
+namespace Gorgon.Renderers.Lights;
+
+/// <summary>
+/// Defines the type of light used when rendering.
+/// </summary>
+public enum LightType
 {
     /// <summary>
-    /// Defines the type of light used when rendering.
+    /// Light is disabled.
     /// </summary>
-    public enum LightType
+    Disabled = 0,
+    /// <summary>
+    /// A point light.
+    /// </summary>
+    Point = 1,
+    /// <summary>
+    /// A directional light.
+    /// </summary>
+    Directional = 2
+}
+
+/// <summary>
+/// Base common properties for a light.
+/// </summary>
+	public abstract class GorgonLightCommon
+    : IGorgonNamedObject
+{
+    #region Variables.
+    // The color for a light.
+    private GorgonColor _color = GorgonColor.White;
+    // Flag to indicate whether the specular reflection is enabled.
+    private bool _specularEnabled;
+    // The specular power.
+    private float _specularPower = 64.0f;
+    // The specular intensity.
+    private float _specIntensity = 1.0f;
+    // The intensity of the light.
+    private float _intensity = 1.0f;
+    #endregion
+
+    #region Properties.
+    /// <summary>
+    /// Property to return whether the light was updated or not.
+    /// </summary>
+    public bool IsUpdated 
+    { 
+        get; 
+        protected set; 
+    } = true;
+
+    /// <summary>
+    /// Property to set or return the type of light to render.
+    /// </summary>
+    public abstract LightType LightType
     {
-        /// <summary>
-        /// Light is disabled.
-        /// </summary>
-        Disabled = 0,
-        /// <summary>
-        /// A point light.
-        /// </summary>
-        Point = 1,
-        /// <summary>
-        /// A directional light.
-        /// </summary>
-        Directional = 2
+        get;
     }
 
     /// <summary>
-    /// Base common properties for a light.
+    /// Property to set or return the color of the light.
     /// </summary>
-	public abstract class GorgonLightCommon
-        : IGorgonNamedObject
+    public GorgonColor Color
     {
-        #region Variables.
-        // The color for a light.
-        private GorgonColor _color = GorgonColor.White;
-        // Flag to indicate whether the specular reflection is enabled.
-        private bool _specularEnabled;
-        // The specular power.
-        private float _specularPower = 64.0f;
-        // The specular intensity.
-        private float _specIntensity = 1.0f;
-        // The intensity of the light.
-        private float _intensity = 1.0f;
-        #endregion
-
-        #region Properties.
-        /// <summary>
-        /// Property to return whether the light was updated or not.
-        /// </summary>
-        public bool IsUpdated 
-        { 
-            get; 
-            protected set; 
-        } = true;
-
-        /// <summary>
-        /// Property to set or return the type of light to render.
-        /// </summary>
-        public abstract LightType LightType
+        get => _color;
+        set
         {
-            get;
-        }
-
-        /// <summary>
-        /// Property to set or return the color of the light.
-        /// </summary>
-        public GorgonColor Color
-        {
-            get => _color;
-            set
+            if (_color.Equals(value))
             {
-                if (_color.Equals(value))
-                {
-                    return;
-                }
-
-                _color = value;
-                IsUpdated = true;
-            }
-        }
-
-        /// <summary>
-        /// Property to set or return whether to enable specular highlights.
-        /// </summary>
-        public bool SpecularEnabled
-        {
-            get => _specularEnabled;
-            set
-            {
-                if (_specularEnabled == value)
-                {
-                    return;
-                }
-
-                _specularEnabled = value;
-                IsUpdated = true;
-            }
-        }
-
-        /// <summary>
-        /// Property to set or return the intensity of the specular highlight.
-        /// </summary>
-        public float SpecularPower
-        {
-            get => _specularPower;
-            set
-            {
-                if (_specularPower.EqualsEpsilon(value))
-                {
-                    return;
-                }
-
-                _specularPower = value;
-                IsUpdated = true;
-            }
-        }
-
-        /// <summary>
-        /// Property to set or return the intensity of the specular highlight.
-        /// </summary>
-        public float SpecularIntensity
-        {
-            get => _specIntensity;
-            set
-            {
-                if (_specIntensity.EqualsEpsilon(value))
-                {
-                    return;
-                }
-
-                _specIntensity = value;
-                IsUpdated = true;
-            }
-        }
-
-        /// <summary>
-        /// Property to set or return how bright the light will be.
-        /// </summary>
-        public float Intensity
-        {
-            get => _intensity;
-            set
-            {
-                if (_intensity.EqualsEpsilon(value))
-                {
-                    return;
-                }
-
-                _intensity = value;
-                IsUpdated = true;
-            }
-        }
-
-        /// <summary>
-        /// Property to return the name of the light.
-        /// </summary>
-        public string Name
-        {
-            get;
-        }
-        #endregion
-
-        #region Methods.
-        /// <summary>
-        /// Function to return data that can be updated to the GPU for use in shaders.
-        /// </summary>
-        /// <returns>A reference to the data to send to the GPU.</returns>
-        public abstract ref readonly GorgonGpuLightData GetGpuData();
-        #endregion
-
-        #region Constructor/Destructor.
-        /// <summary>
-        /// Initializes a new instance of the <see cref="GorgonLightCommon"/> class.
-        /// </summary>
-        /// <param name="name">[Optional] The name of the light.</param>
-        protected GorgonLightCommon(string name = null) => Name = string.IsNullOrWhiteSpace(name) ? $"{GetType().Name}_{Guid.NewGuid():N}" : name;
-
-        /// <summary>Initializes a new instance of the <see cref="GorgonLightCommon"/> class.</summary>
-        /// <param name="copy">The light data to copy.</param>
-        /// <param name="newName">[Optional] The new name for the light.</param>
-        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="copy"/> parameter is <strong>null</strong>.</exception>
-        protected GorgonLightCommon(GorgonLightCommon copy, string newName = null)
-        {
-            if (copy is null)
-            {
-                throw new ArgumentNullException(nameof(copy));
+                return;
             }
 
-            Name = string.IsNullOrWhiteSpace(newName) ? copy.Name : newName;
-            Color = copy.Color;
-            SpecularEnabled = copy.SpecularEnabled;
-            SpecularPower = copy.SpecularPower;
-            Intensity = copy.Intensity;
+            _color = value;
+            IsUpdated = true;
         }
-        #endregion
     }
+
+    /// <summary>
+    /// Property to set or return whether to enable specular highlights.
+    /// </summary>
+    public bool SpecularEnabled
+    {
+        get => _specularEnabled;
+        set
+        {
+            if (_specularEnabled == value)
+            {
+                return;
+            }
+
+            _specularEnabled = value;
+            IsUpdated = true;
+        }
+    }
+
+    /// <summary>
+    /// Property to set or return the intensity of the specular highlight.
+    /// </summary>
+    public float SpecularPower
+    {
+        get => _specularPower;
+        set
+        {
+            if (_specularPower.EqualsEpsilon(value))
+            {
+                return;
+            }
+
+            _specularPower = value;
+            IsUpdated = true;
+        }
+    }
+
+    /// <summary>
+    /// Property to set or return the intensity of the specular highlight.
+    /// </summary>
+    public float SpecularIntensity
+    {
+        get => _specIntensity;
+        set
+        {
+            if (_specIntensity.EqualsEpsilon(value))
+            {
+                return;
+            }
+
+            _specIntensity = value;
+            IsUpdated = true;
+        }
+    }
+
+    /// <summary>
+    /// Property to set or return how bright the light will be.
+    /// </summary>
+    public float Intensity
+    {
+        get => _intensity;
+        set
+        {
+            if (_intensity.EqualsEpsilon(value))
+            {
+                return;
+            }
+
+            _intensity = value;
+            IsUpdated = true;
+        }
+    }
+
+    /// <summary>
+    /// Property to return the name of the light.
+    /// </summary>
+    public string Name
+    {
+        get;
+    }
+    #endregion
+
+    #region Methods.
+    /// <summary>
+    /// Function to return data that can be updated to the GPU for use in shaders.
+    /// </summary>
+    /// <returns>A reference to the data to send to the GPU.</returns>
+    public abstract ref readonly GorgonGpuLightData GetGpuData();
+    #endregion
+
+    #region Constructor/Destructor.
+    /// <summary>
+    /// Initializes a new instance of the <see cref="GorgonLightCommon"/> class.
+    /// </summary>
+    /// <param name="name">[Optional] The name of the light.</param>
+    protected GorgonLightCommon(string name = null) => Name = string.IsNullOrWhiteSpace(name) ? $"{GetType().Name}_{Guid.NewGuid():N}" : name;
+
+    /// <summary>Initializes a new instance of the <see cref="GorgonLightCommon"/> class.</summary>
+    /// <param name="copy">The light data to copy.</param>
+    /// <param name="newName">[Optional] The new name for the light.</param>
+    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="copy"/> parameter is <strong>null</strong>.</exception>
+    protected GorgonLightCommon(GorgonLightCommon copy, string newName = null)
+    {
+        if (copy is null)
+        {
+            throw new ArgumentNullException(nameof(copy));
+        }
+
+        Name = string.IsNullOrWhiteSpace(newName) ? copy.Name : newName;
+        Color = copy.Color;
+        SpecularEnabled = copy.SpecularEnabled;
+        SpecularPower = copy.SpecularPower;
+        Intensity = copy.Intensity;
+    }
+    #endregion
 }

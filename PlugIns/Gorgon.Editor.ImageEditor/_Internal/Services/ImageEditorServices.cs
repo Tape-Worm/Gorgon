@@ -27,56 +27,55 @@
 using Gorgon.Editor.PlugIns;
 using Gorgon.Editor.Services;
 
-namespace Gorgon.Editor.ImageEditor
+namespace Gorgon.Editor.ImageEditor;
+
+/// <summary>
+/// A list of services required for the image plug in.
+/// </summary>
+internal class ImageEditorServices
 {
     /// <summary>
-    /// A list of services required for the image plug in.
+    /// Property to return the application common services.
     /// </summary>
-    internal class ImageEditorServices
+    public IHostContentServices HostContentServices
     {
-        /// <summary>
-        /// Property to return the application common services.
-        /// </summary>
-        public IHostContentServices HostContentServices
-        {
-            get;
-            set;
-        }
+        get;
+        set;
+    }
 
-        /// <summary>
-        /// Property to set or return the undo service.
-        /// </summary>
-        public IUndoService UndoService
-        {
-            get;
-            set;
-        }
+    /// <summary>
+    /// Property to set or return the undo service.
+    /// </summary>
+    public IUndoService UndoService
+    {
+        get;
+        set;
+    }
 
-        /// <summary>
-        /// Property to set or return the image I/O service.
-        /// </summary>
-        public IImageIOService ImageIO
-        {
-            get;
-            set;
-        }
+    /// <summary>
+    /// Property to set or return the image I/O service.
+    /// </summary>
+    public IImageIOService ImageIO
+    {
+        get;
+        set;
+    }
 
-        /// <summary>
-        /// Property to set or return the external image editor service.
-        /// </summary>
-        public IImageExternalEditService ExternalEditorService
-        {
-            get;
-            set;
-        }
+    /// <summary>
+    /// Property to set or return the external image editor service.
+    /// </summary>
+    public IImageExternalEditService ExternalEditorService
+    {
+        get;
+        set;
+    }
 
-        /// <summary>
-        /// Property to set or return the image update service.
-        /// </summary>
-        public IImageUpdaterService ImageUpdater
-        {
-            get;
-            set;
-        }
+    /// <summary>
+    /// Property to set or return the image update service.
+    /// </summary>
+    public IImageUpdaterService ImageUpdater
+    {
+        get;
+        set;
     }
 }

@@ -30,141 +30,140 @@ using System.Collections.Generic;
 using Gorgon.Editor.PlugIns;
 using Newtonsoft.Json;
 
-namespace Gorgon.Editor.Metadata
+namespace Gorgon.Editor.Metadata;
+
+/// <summary>
+/// Metadata for a project item that is included in the project.
+/// </summary>
+[JsonObject(MemberSerialization = MemberSerialization.OptIn)]
+public class ProjectItemMetadata
 {
+    #region Variables.
+    // The metadata for a content plugin.
+    private IContentPlugInMetadata _contentMetadata;
+    #endregion
+
+    #region Properties.        
     /// <summary>
-    /// Metadata for a project item that is included in the project.
-    /// </summary>
-    [JsonObject(MemberSerialization = MemberSerialization.OptIn)]
-    public class ProjectItemMetadata
+    /// Property to return the ID for the item.
+    /// </summary>        
+    public string ID
     {
-        #region Variables.
-        // The metadata for a content plugin.
-        private IContentPlugInMetadata _contentMetadata;
-        #endregion
-
-        #region Properties.        
-        /// <summary>
-        /// Property to return the ID for the item.
-        /// </summary>        
-        public string ID
-        {
-            get;
-            private set;
-        }
-
-        /// <summary>
-        /// Property to set or return the name of the plugin associated with the metadata file path.
-        /// </summary>
-        /// <remarks>
-        /// If this value is <b>null</b>, then the plugin hasn't been set.  If it's an empty string, then no plugin is associated with this metadata.
-        /// </remarks>
-        [JsonProperty]
-        public string PlugInName
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// Property to return the custom attributes for this metadata.
-        /// </summary>
-        [JsonProperty]
-        public Dictionary<string, string> Attributes
-        {
-            get;
-            private set;
-        } = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
-
-        /// <summary>
-        /// Property to return the list of item paths that this item depends on.
-        /// </summary>
-        [JsonProperty(PropertyName = "Dependencies")]
-        public Dictionary<string, List<string>> DependsOn
-        {
-            get;
-            private set;
-        } = new Dictionary<string, List<string>>(StringComparer.OrdinalIgnoreCase);
-
-        /// <summary>
-        /// Property to set or return the name of the thumbnail associated with the project item.
-        /// </summary>
-        public string Thumbnail
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// Property to return the content plugin metadata associated with this project item.
-        /// </summary>
-        /// <remarks>
-        /// <para>
-        /// Setting this value will set the value for <see cref="PlugInName"/>.
-        /// </para>
-        /// </remarks>        
-        public IContentPlugInMetadata ContentMetadata
-        {
-            get => _contentMetadata;
-            set
-            {
-                PlugInName = value?.PlugInName;
-                _contentMetadata = value;
-            }
-        }
-        #endregion
-
-        #region Constructor.
-        /// <summary>Initializes a new instance of the <see cref="ProjectItemMetadata"/> class.</summary>
-        /// <param name="oldVersion">The old version of project metadata.</param>
-        internal ProjectItemMetadata(ProjectItemMetadata30 oldVersion)
-        {
-            PlugInName = oldVersion.PlugInName;
-
-            foreach (KeyValuePair<string, string> attr in oldVersion.Attributes)
-            {
-                Attributes[attr.Key] = attr.Value;
-            }
-
-            foreach (KeyValuePair<string, string> dependency in oldVersion.DependsOn)
-            {
-                DependsOn[dependency.Key] = new List<string>
-                {
-                    dependency.Value
-                };
-            }
-        }
-
-        /// <summary>Initializes a new instance of the ProjectItemMetadata class.</summary>
-        /// <param name="metadata">The metadata to copy.</param>
-        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="metadata"/> parameter is <b>null</b>.</exception>
-        public ProjectItemMetadata(ProjectItemMetadata metadata)
-            : this()
-        {
-            if (metadata is null)
-            {
-                throw new ArgumentNullException(nameof(metadata));
-            }
-
-            _contentMetadata = metadata.ContentMetadata;
-            PlugInName = metadata.PlugInName;
-
-            foreach (KeyValuePair<string, string> attribute in metadata.Attributes)
-            {
-                Attributes[attribute.Key] = attribute.Value;
-            }
-
-            // Copy the dependency data for each file.
-            foreach (KeyValuePair<string, List<string>> dependency in metadata.DependsOn)
-            {
-                DependsOn[dependency.Key] = new List<string>(dependency.Value);
-            }
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ProjectItemMetadata"/> class.
-        /// </summary>
-        public ProjectItemMetadata() => ID = Guid.NewGuid().ToString("N");
-        #endregion
+        get;
+        private set;
     }
+
+    /// <summary>
+    /// Property to set or return the name of the plugin associated with the metadata file path.
+    /// </summary>
+    /// <remarks>
+    /// If this value is <b>null</b>, then the plugin hasn't been set.  If it's an empty string, then no plugin is associated with this metadata.
+    /// </remarks>
+    [JsonProperty]
+    public string PlugInName
+    {
+        get;
+        set;
+    }
+
+    /// <summary>
+    /// Property to return the custom attributes for this metadata.
+    /// </summary>
+    [JsonProperty]
+    public Dictionary<string, string> Attributes
+    {
+        get;
+        private set;
+    } = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+
+    /// <summary>
+    /// Property to return the list of item paths that this item depends on.
+    /// </summary>
+    [JsonProperty(PropertyName = "Dependencies")]
+    public Dictionary<string, List<string>> DependsOn
+    {
+        get;
+        private set;
+    } = new Dictionary<string, List<string>>(StringComparer.OrdinalIgnoreCase);
+
+    /// <summary>
+    /// Property to set or return the name of the thumbnail associated with the project item.
+    /// </summary>
+    public string Thumbnail
+    {
+        get;
+        set;
+    }
+
+    /// <summary>
+    /// Property to return the content plugin metadata associated with this project item.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// Setting this value will set the value for <see cref="PlugInName"/>.
+    /// </para>
+    /// </remarks>        
+    public IContentPlugInMetadata ContentMetadata
+    {
+        get => _contentMetadata;
+        set
+        {
+            PlugInName = value?.PlugInName;
+            _contentMetadata = value;
+        }
+    }
+    #endregion
+
+    #region Constructor.
+    /// <summary>Initializes a new instance of the <see cref="ProjectItemMetadata"/> class.</summary>
+    /// <param name="oldVersion">The old version of project metadata.</param>
+    internal ProjectItemMetadata(ProjectItemMetadata30 oldVersion)
+    {
+        PlugInName = oldVersion.PlugInName;
+
+        foreach (KeyValuePair<string, string> attr in oldVersion.Attributes)
+        {
+            Attributes[attr.Key] = attr.Value;
+        }
+
+        foreach (KeyValuePair<string, string> dependency in oldVersion.DependsOn)
+        {
+            DependsOn[dependency.Key] = new List<string>
+            {
+                dependency.Value
+            };
+        }
+    }
+
+    /// <summary>Initializes a new instance of the ProjectItemMetadata class.</summary>
+    /// <param name="metadata">The metadata to copy.</param>
+    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="metadata"/> parameter is <b>null</b>.</exception>
+    public ProjectItemMetadata(ProjectItemMetadata metadata)
+        : this()
+    {
+        if (metadata is null)
+        {
+            throw new ArgumentNullException(nameof(metadata));
+        }
+
+        _contentMetadata = metadata.ContentMetadata;
+        PlugInName = metadata.PlugInName;
+
+        foreach (KeyValuePair<string, string> attribute in metadata.Attributes)
+        {
+            Attributes[attribute.Key] = attribute.Value;
+        }
+
+        // Copy the dependency data for each file.
+        foreach (KeyValuePair<string, List<string>> dependency in metadata.DependsOn)
+        {
+            DependsOn[dependency.Key] = new List<string>(dependency.Value);
+        }
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ProjectItemMetadata"/> class.
+    /// </summary>
+    public ProjectItemMetadata() => ID = Guid.NewGuid().ToString("N");
+    #endregion
 }

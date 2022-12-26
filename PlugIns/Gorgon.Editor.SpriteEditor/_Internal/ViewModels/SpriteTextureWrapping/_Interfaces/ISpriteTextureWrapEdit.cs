@@ -28,42 +28,41 @@ using Gorgon.Editor.UI;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 
-namespace Gorgon.Editor.SpriteEditor
+namespace Gorgon.Editor.SpriteEditor;
+
+/// <summary>
+/// The view model for the sprite texture wrap editor.
+/// </summary>
+internal interface ISpriteTextureWrapEdit
+    : IHostedPanelViewModel
 {
-    /// <summary>
-    /// The view model for the sprite texture wrap editor.
-    /// </summary>
-    internal interface ISpriteTextureWrapEdit
-        : IHostedPanelViewModel
+    /// <summary>Property to set or return the current horizontal wrapping state.</summary>
+    TextureWrap HorizontalWrapping
     {
-        /// <summary>Property to set or return the current horizontal wrapping state.</summary>
-        TextureWrap HorizontalWrapping
-        {
-            get;
-            set;
-        }
+        get;
+        set;
+    }
 
-        /// <summary>Property to set or return the current vertical wrapping state.</summary>
-        TextureWrap VerticalWrapping
-        {
-            get;
-            set;
-        }
+    /// <summary>Property to set or return the current vertical wrapping state.</summary>
+    TextureWrap VerticalWrapping
+    {
+        get;
+        set;
+    }
 
-        /// <summary>Property to set or return the current border color.</summary>
-        GorgonColor BorderColor
-        {
-            get;
-            set;
-        }
+    /// <summary>Property to set or return the current border color.</summary>
+    GorgonColor BorderColor
+    {
+        get;
+        set;
+    }
 
-        /// <summary>
-        /// Property to return the set or return the current sampler state for the sprite.
-        /// </summary>
-        GorgonSamplerState CurrentSampler
-        {
-            get;
-            set;
-        }
+    /// <summary>
+    /// Property to return the set or return the current sampler state for the sprite.
+    /// </summary>
+    GorgonSamplerState CurrentSampler
+    {
+        get;
+        set;
     }
 }

@@ -28,21 +28,20 @@ using System.Runtime.InteropServices;
 using Gorgon.Input;
 
 // ReSharper disable InconsistentNaming
-namespace Gorgon.Native
+namespace Gorgon.Native;
+
+/// <summary>
+/// Value type for a raw input header.
+/// </summary>
+[StructLayout(LayoutKind.Sequential)]
+internal struct RAWINPUTHEADER
 {
-    /// <summary>
-    /// Value type for a raw input header.
-    /// </summary>
-    [StructLayout(LayoutKind.Sequential)]
-    internal struct RAWINPUTHEADER
-    {
-        /// <summary>Type of device the input is coming from.</summary>
-        public RawInputType Type;
-        /// <summary>Size of the packet of data.</summary>
-        public int Size;
-        /// <summary>Handle to the device sending the data.</summary>
-        public nint Device;
-        /// <summary>wParam from the window message.</summary>
-        public nint wParam;
-    }
+    /// <summary>Type of device the input is coming from.</summary>
+    public RawInputType Type;
+    /// <summary>Size of the packet of data.</summary>
+    public int Size;
+    /// <summary>Handle to the device sending the data.</summary>
+    public nint Device;
+    /// <summary>wParam from the window message.</summary>
+    public nint wParam;
 }

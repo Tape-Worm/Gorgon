@@ -26,23 +26,22 @@
 
 using Gorgon.Editor.UI;
 
-namespace Gorgon.Editor.Tools
+namespace Gorgon.Editor.Tools;
+
+/// <summary>
+/// The base view model for a tool plug in UI.
+/// </summary>
+public interface IEditorTool
+    : IViewModel
 {
     /// <summary>
-    /// The base view model for a tool plug in UI.
+    /// Property to return the command used when the tool UI is about to be closed.
     /// </summary>
-    public interface IEditorTool
-        : IViewModel
+    /// <remarks>
+    /// This command will be executed when the user shuts down the tool via some UI element (e.g. the 'X' in a window). 
+    /// </remarks>
+    IEditorAsyncCommand<CloseToolArgs> CloseToolCommand
     {
-        /// <summary>
-        /// Property to return the command used when the tool UI is about to be closed.
-        /// </summary>
-        /// <remarks>
-        /// This command will be executed when the user shuts down the tool via some UI element (e.g. the 'X' in a window). 
-        /// </remarks>
-        IEditorAsyncCommand<CloseToolArgs> CloseToolCommand
-        {
-            get;
-        }
+        get;
     }
 }

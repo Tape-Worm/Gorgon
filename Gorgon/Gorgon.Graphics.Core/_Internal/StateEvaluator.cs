@@ -33,13 +33,13 @@ using Gorgon.Math;
 using D3D11 = SharpDX.Direct3D11;
 using DX = SharpDX;
 
-namespace Gorgon.Graphics.Core
+namespace Gorgon.Graphics.Core;
+
+/// <summary>
+/// Functionality for evaluating state changes.
+/// </summary>
+internal class StateEvaluator
 {
-    /// <summary>
-    /// Functionality for evaluating state changes.
-    /// </summary>
-    internal class StateEvaluator
-    {
 		#region Variables.
 		// The previous stencil reference value.
 		private int _stencilReference;
@@ -54,16 +54,16 @@ namespace Gorgon.Graphics.Core
 
 		// The previously assigned pipeline state.
 		private readonly GorgonPipelineState _prevPipelineState = new()
-        {
-            PrimitiveType = PrimitiveType.None
-        };
+    {
+        PrimitiveType = PrimitiveType.None
+    };
 
 		// The ranges of resource arrays that were updated.
 		private readonly ResourceRanges _ranges = new();
 
-        // The previously assigned resource state.
-        private readonly D3DState _prevResourceState = new()
-        {
+    // The previously assigned resource state.
+    private readonly D3DState _prevResourceState = new()
+    {
 			CsReadWriteViews = new GorgonReadWriteViewBindings(),
 			PsSamplers = new GorgonSamplerStates(),
 			VsSrvs = new GorgonShaderResourceViews(),
@@ -101,15 +101,15 @@ namespace Gorgon.Graphics.Core
 
 		// The currently bound depth/stencil buffer.
 		public GorgonDepthStencil2DView DepthStencil;
-        #endregion
+    #endregion
 
-        #region Methods.
-        /// <summary>
-        /// Function to compare the index buffer binding with stream out bindings.
-        /// </summary>
-        /// <param name="state">The state containing the index buffer to evaluate.</param>
-        /// <param name="streamOut">The current list of stream out buffers.</param>
-        private void CheckIndexBufferStreamOut(D3DState state, GorgonStreamOutBindings streamOut)
+    #region Methods.
+    /// <summary>
+    /// Function to compare the index buffer binding with stream out bindings.
+    /// </summary>
+    /// <param name="state">The state containing the index buffer to evaluate.</param>
+    /// <param name="streamOut">The current list of stream out buffers.</param>
+    private void CheckIndexBufferStreamOut(D3DState state, GorgonStreamOutBindings streamOut)
 		{
 			void ScanStreamOut(GorgonStreamOutBindings bindings, in (int Start, int Count) streamOutIndices)
 			{
@@ -224,9 +224,9 @@ namespace Gorgon.Graphics.Core
 		}
 
 		/// <summary>
-        /// Function to compare shader resource views with render target views.
-        /// </summary>
-        /// <param name="srvs">The shader resource views to compare.</param>
+    /// Function to compare shader resource views with render target views.
+    /// </summary>
+    /// <param name="srvs">The shader resource views to compare.</param>
 		private void CheckSrvsRtvs(GorgonArray<GorgonShaderResourceView> srvs)
 		{
 			ref readonly (int Start, int Count) indices = ref srvs.GetDirtyItems();
@@ -295,7 +295,7 @@ namespace Gorgon.Graphics.Core
 		/// Function to compare shader resource views with unordered access views.
 		/// </summary>
 		/// <param name="srvs">The shader resource views to compare.</param>
-        /// <param name="uavs">The unordered access views to compare.</param>
+    /// <param name="uavs">The unordered access views to compare.</param>
 		private void CheckSrvsUavs(GorgonArray<GorgonShaderResourceView> srvs, GorgonArray<GorgonReadWriteViewBinding> uavs)
 		{
 			ref readonly (int Start, int Count) uavIndices = ref uavs.GetDirtyItems();
@@ -364,11 +364,11 @@ namespace Gorgon.Graphics.Core
 		}
 
 		/// <summary>
-        /// Function to check the depth stencil view resource for bindings in the shader resource views.
-        /// </summary>
-        /// <param name="srvs">The list of shader resource views to evaluate.</param>
-        /// <param name="depth">The depth/stencil view to evaluate.</param>
-        /// <param name="shaderStage">The current shader stage being evaluated.</param>
+    /// Function to check the depth stencil view resource for bindings in the shader resource views.
+    /// </summary>
+    /// <param name="srvs">The list of shader resource views to evaluate.</param>
+    /// <param name="depth">The depth/stencil view to evaluate.</param>
+    /// <param name="shaderStage">The current shader stage being evaluated.</param>
 		private void CheckDsvSrvsHazards(GorgonArray<GorgonShaderResourceView> srvs, GorgonDepthStencil2DView depth, D3D11.CommonShaderStage shaderStage)
 		{
 			ref readonly (int Start, int Count) indices = ref srvs.GetDirtyItems();
@@ -616,7 +616,7 @@ namespace Gorgon.Graphics.Core
 		/// <param name="stencilReference">The stencil reference value used when performing a stencil test.</param>
 		/// <returns>The changed individual states as a combined set of flags.</returns>
 		public PipelineStateChanges GetPipelineStateChanges(GorgonPipelineState newState, in GorgonColor blendFactor, int blendSampleMask, int stencilReference)
-        {
+    {
 			PipelineStateChanges changes = PipelineStateChanges.None;
 
 			changes |= _prevPipelineState.PrimitiveType == newState.PrimitiveType ? PipelineStateChanges.None : PipelineStateChanges.Topology;
@@ -656,11 +656,11 @@ namespace Gorgon.Graphics.Core
 		}
 
 		/// <summary>
-        /// Function to determine if there are any changes between the current render target and depth/stencil buffer and new views.
-        /// </summary>
-        /// <param name="targets">The previous depth stencil to evaluate.</param>
-        /// <param name="depthStencil">The new depth stencil to evaluate.</param>
-        /// <returns>A tuple indicating whether rtvs/dsv has been changed.</returns>
+    /// Function to determine if there are any changes between the current render target and depth/stencil buffer and new views.
+    /// </summary>
+    /// <param name="targets">The previous depth stencil to evaluate.</param>
+    /// <param name="depthStencil">The new depth stencil to evaluate.</param>
+    /// <returns>A tuple indicating whether rtvs/dsv has been changed.</returns>
 		public (bool RtvsUpdated, bool DsvUpdated) GetRtvDsvChanges(ReadOnlySpan<GorgonRenderTargetView> targets, GorgonDepthStencil2DView depthStencil)
 		{			
 			bool needsDepthStencilUpdate = depthStencil != DepthStencil;
@@ -699,10 +699,10 @@ namespace Gorgon.Graphics.Core
 		}
 
 		/// <summary>
-        /// Function to determine if the viewports have changed.
-        /// </summary>
-        /// <param name="viewports">The new viewports to evaluate.</param>
-        /// <returns><b>true</b> if the view ports have changed, <b>false</b> if not.</returns>
+    /// Function to determine if the viewports have changed.
+    /// </summary>
+    /// <param name="viewports">The new viewports to evaluate.</param>
+    /// <returns><b>true</b> if the view ports have changed, <b>false</b> if not.</returns>
 		public bool GetViewportChange(ReadOnlySpan<DX.ViewportF> viewports)
 		{
 			int length = viewports.Length.Min(Viewports.Length);
@@ -839,4 +839,3 @@ namespace Gorgon.Graphics.Core
 		}
 		#endregion
 	}
-}

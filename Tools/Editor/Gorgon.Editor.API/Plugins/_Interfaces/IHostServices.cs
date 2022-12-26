@@ -27,43 +27,42 @@
 using Gorgon.Diagnostics;
 using Gorgon.Editor.Services;
 
-namespace Gorgon.Editor.PlugIns
+namespace Gorgon.Editor.PlugIns;
+
+/// <summary>
+/// A list of services passed from the host application to plug ins.
+/// </summary>
+public interface IHostServices        
 {
     /// <summary>
-    /// A list of services passed from the host application to plug ins.
+    /// Property to return the log for debug messages.
     /// </summary>
-    public interface IHostServices        
+    IGorgonLog Log
     {
-        /// <summary>
-        /// Property to return the log for debug messages.
-        /// </summary>
-        IGorgonLog Log
-        {
-            get;
-        }
+        get;
+    }
 
-        /// <summary>
-        /// Property to return the serivce used to show busy states.
-        /// </summary>
-        IBusyStateService BusyService
-        {
-            get;
-        }
+    /// <summary>
+    /// Property to return the serivce used to show busy states.
+    /// </summary>
+    IBusyStateService BusyService
+    {
+        get;
+    }
 
-        /// <summary>
-        /// Property to return the service used to show message dialogs.
-        /// </summary>
-        IMessageDisplayService MessageDisplay
-        {
-            get;
-        }
+    /// <summary>
+    /// Property to return the service used to show message dialogs.
+    /// </summary>
+    IMessageDisplayService MessageDisplay
+    {
+        get;
+    }
 
-        /// <summary>
-        /// Property to return the service used to send and retrieve data to and from the clipboard.
-        /// </summary>
-        IClipboardService ClipboardService
-        {
-            get;
-        }
+    /// <summary>
+    /// Property to return the service used to send and retrieve data to and from the clipboard.
+    /// </summary>
+    IClipboardService ClipboardService
+    {
+        get;
     }
 }

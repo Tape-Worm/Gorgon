@@ -29,79 +29,78 @@ using Gorgon.Editor.UI;
 using Gorgon.Editor.UI.Controls;
 using Gorgon.Graphics.Imaging;
 
-namespace Gorgon.Editor.ImageAtlasTool
+namespace Gorgon.Editor.ImageAtlasTool;
+
+/// <summary>
+/// A view model for the sprite file explorer.
+/// </summary>
+internal interface IImageFiles
+    : IViewModel
 {
     /// <summary>
-    /// A view model for the sprite file explorer.
+    /// Property to set or return the name of the image that is currently loading.
     /// </summary>
-    internal interface IImageFiles
-        : IViewModel
+    string LoadingImage
     {
-        /// <summary>
-        /// Property to set or return the name of the image that is currently loading.
-        /// </summary>
-        string LoadingImage
-        {
-            get;
-            set;
-        }
+        get;
+        set;
+    }
 
-        /// <summary>
-        /// Property to return the image used for previewing.
-        /// </summary>
-        IGorgonImage PreviewImage
-        {
-            get;
-        }
+    /// <summary>
+    /// Property to return the image used for previewing.
+    /// </summary>
+    IGorgonImage PreviewImage
+    {
+        get;
+    }
 
-        /// <summary>
-        /// Property to return the sprite file entries.
-        /// </summary>
-        IReadOnlyList<ContentFileExplorerDirectoryEntry> ImageFileEntries
-        {
-            get;
-        }
+    /// <summary>
+    /// Property to return the sprite file entries.
+    /// </summary>
+    IReadOnlyList<ContentFileExplorerDirectoryEntry> ImageFileEntries
+    {
+        get;
+    }
 
-        /// <summary>
-        /// Property to return the list of selected files.
-        /// </summary>
-        IReadOnlyList<ContentFileExplorerFileEntry> SelectedFiles
-        {
-            get;
-        }
+    /// <summary>
+    /// Property to return the list of selected files.
+    /// </summary>
+    IReadOnlyList<ContentFileExplorerFileEntry> SelectedFiles
+    {
+        get;
+    }
 
-        /// <summary>
-        /// Property to return the command that will refresh the sprite preview data.
-        /// </summary>
-        IEditorAsyncCommand<IReadOnlyList<ContentFileExplorerFileEntry>> RefreshImagePreviewCommand
-        {
-            get;
-        }
+    /// <summary>
+    /// Property to return the command that will refresh the sprite preview data.
+    /// </summary>
+    IEditorAsyncCommand<IReadOnlyList<ContentFileExplorerFileEntry>> RefreshImagePreviewCommand
+    {
+        get;
+    }
 
-        /// <summary>
-        /// Property to return the command used to search through the file list.
-        /// </summary>
-        IEditorCommand<string> SearchCommand
-        {
-            get;
-        }
+    /// <summary>
+    /// Property to return the command used to search through the file list.
+    /// </summary>
+    IEditorCommand<string> SearchCommand
+    {
+        get;
+    }
 
-        /// <summary>
-        /// Property to set or return the command used confirm loading of the sprite files.
-        /// </summary>
-        IEditorAsyncCommand<object> ConfirmLoadCommand
-        {
-            get;
-            set;
-        }
+    /// <summary>
+    /// Property to set or return the command used confirm loading of the sprite files.
+    /// </summary>
+    IEditorAsyncCommand<object> ConfirmLoadCommand
+    {
+        get;
+        set;
+    }
 
-        /// <summary>
-        /// Property to set or return the command that is executed when selector is canceled.
-        /// </summary>
-        IEditorAsyncCommand<object> CancelCommand
-        {
-            get;
-            set;
-        }
+    /// <summary>
+    /// Property to set or return the command that is executed when selector is canceled.
+    /// </summary>
+    IEditorAsyncCommand<object> CancelCommand
+    {
+        get;
+        set;
     }
 }

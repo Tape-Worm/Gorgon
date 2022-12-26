@@ -29,36 +29,35 @@ using System.Numerics;
 using Gorgon.Graphics;
 using DX = SharpDX;
 
-namespace Gorgon.Editor.Rendering
+namespace Gorgon.Editor.Rendering;
+
+/// <summary>
+/// Used to render a selection rectangle on the UI.
+/// </summary>
+public interface ISelectionRectangle
+    : IDisposable
 {
     /// <summary>
-    /// Used to render a selection rectangle on the UI.
+    /// Property to set or return the color for the selection rectangle.
     /// </summary>
-    public interface ISelectionRectangle
-        : IDisposable
+    GorgonColor Color
     {
-        /// <summary>
-        /// Property to set or return the color for the selection rectangle.
-        /// </summary>
-        GorgonColor Color
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// Property to set or return the speed of the overlay animation.
-        /// </summary>
-        Vector2 Speed
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// Function to draw the selection region.
-        /// </summary>
-        /// <param name="region">The region to draw.</param>
-        void Draw(DX.RectangleF region);
+        get;
+        set;
     }
+
+    /// <summary>
+    /// Property to set or return the speed of the overlay animation.
+    /// </summary>
+    Vector2 Speed
+    {
+        get;
+        set;
+    }
+
+    /// <summary>
+    /// Function to draw the selection region.
+    /// </summary>
+    /// <param name="region">The region to draw.</param>
+    void Draw(DX.RectangleF region);
 }

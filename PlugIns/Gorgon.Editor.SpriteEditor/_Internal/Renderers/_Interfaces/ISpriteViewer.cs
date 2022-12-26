@@ -26,42 +26,41 @@
 
 using Gorgon.Editor.Rendering;
 
-namespace Gorgon.Editor.SpriteEditor
+namespace Gorgon.Editor.SpriteEditor;
+
+/// <summary>
+/// Provides rendering functionality for the sprite editor.
+/// </summary>
+internal interface ISpriteViewer
+    : IContentRenderer
 {
+    #region Properties.
     /// <summary>
-    /// Provides rendering functionality for the sprite editor.
+    /// Property to set or return the opacity of the content in the view.
     /// </summary>
-    internal interface ISpriteViewer
-        : IContentRenderer
+    float TextureOpacity
     {
-        #region Properties.
-        /// <summary>
-        /// Property to set or return the opacity of the content in the view.
-        /// </summary>
-        float TextureOpacity
-        {
-            get;
-            set;
-        }
-
-        /// <summary>Property to set or return the opacity of the sprite in the view.</summary>        
-        float SpriteOpacity
-        {
-            get;
-            set;
-        }
-        #endregion
-
-        #region Methods.
-        /// <summary>
-        /// Function to create resources required for the lifetime of the viewer.
-        /// </summary>
-        void CreateResources();
-
-        /// <summary>
-        /// Function to set the default zoom/offset for the viewer.
-        /// </summary>
-        void DefaultZoom();
-        #endregion
+        get;
+        set;
     }
+
+    /// <summary>Property to set or return the opacity of the sprite in the view.</summary>        
+    float SpriteOpacity
+    {
+        get;
+        set;
+    }
+    #endregion
+
+    #region Methods.
+    /// <summary>
+    /// Function to create resources required for the lifetime of the viewer.
+    /// </summary>
+    void CreateResources();
+
+    /// <summary>
+    /// Function to set the default zoom/offset for the viewer.
+    /// </summary>
+    void DefaultZoom();
+    #endregion
 }

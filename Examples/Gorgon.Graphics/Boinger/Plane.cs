@@ -29,75 +29,74 @@ using Gorgon.Graphics.Core;
 using Gorgon.Renderers.Geometry;
 using DX = SharpDX;
 
-namespace Gorgon.Examples
+namespace Gorgon.Examples;
+
+/// <summary>
+/// A plane object.
+/// </summary>
+internal class Plane
+    : Model
 {
+    #region Properties.
     /// <summary>
-    /// A plane object.
+    /// Property to return the size of the plane.
     /// </summary>
-    internal class Plane
-        : Model
+    public Vector2 Size
     {
-        #region Properties.
-        /// <summary>
-        /// Property to return the size of the plane.
-        /// </summary>
-        public Vector2 Size
-        {
-            get;
-        }
-        #endregion
-
-        #region Constructor/Destructor.
-        /// <summary>
-        /// Initializes a new instance of the <see cref="Plane" /> class.
-        /// </summary>
-        /// <param name="graphics">The graphics interface used to create the buffers for this object.</param>
-        /// <param name="inputLayout">The input layout for the vertices in this mesh.</param>
-        /// <param name="size">The width and height of the plane.</param>
-        /// <param name="textureCoordinates">Texture coordinates.</param>
-        public Plane(GorgonGraphics graphics, GorgonInputLayout inputLayout, Vector2 size, DX.RectangleF textureCoordinates)
-            : base(inputLayout)
-        {
-            Size = size;
-
-            // Create our vertices.
-            Vertices = new[]
-                       {
-                           new GorgonVertexPosUv(new Vector3(-size.X, size.Y, 0.0f), new Vector2(textureCoordinates.Left, textureCoordinates.Top)),
-                           new GorgonVertexPosUv(new Vector3(size.X, size.Y, 0.0f), new Vector2(textureCoordinates.Right, textureCoordinates.Top)),
-                           new GorgonVertexPosUv(new Vector3(-size.X, -size.Y, 0.0f), new Vector2(textureCoordinates.Left, textureCoordinates.Bottom)),
-                           new GorgonVertexPosUv(new Vector3(size.X, -size.Y, 0.0f), new Vector2(textureCoordinates.Right, textureCoordinates.Bottom))
-                       };
-
-            // Create our indices.
-            Indices = new ushort[]
-                      {
-                          0,
-                          1,
-                          2,
-                          2,
-                          1,
-                          3
-                      };
-
-            // Copy the above vertex/index data into a vertex and index buffer so we can render our plane.
-            VertexBufferBindings[0] = GorgonVertexBufferBinding.CreateVertexBuffer<GorgonVertexPosUv>(graphics,
-                                                                                    new GorgonVertexBufferInfo(Vertices.Length * GorgonVertexPosUv.SizeInBytes)
-                                                                                    {
-                                                                                        Name = "Plane Vertex Buffer",
-                                                                                        Usage = ResourceUsage.Immutable
-                                                                                    },
-                                                                                    Vertices);
-
-            IndexBuffer = new GorgonIndexBuffer(graphics,
-                                                new GorgonIndexBufferInfo(Indices.Length)
-                                                {
-                                                    Name = "Plane Index Buffer",
-                                                    Usage = ResourceUsage.Immutable,                                                    
-                                                    Use16BitIndices = true
-                                                },
-                                                Indices);
-        }
-        #endregion
+        get;
     }
+    #endregion
+
+    #region Constructor/Destructor.
+    /// <summary>
+    /// Initializes a new instance of the <see cref="Plane" /> class.
+    /// </summary>
+    /// <param name="graphics">The graphics interface used to create the buffers for this object.</param>
+    /// <param name="inputLayout">The input layout for the vertices in this mesh.</param>
+    /// <param name="size">The width and height of the plane.</param>
+    /// <param name="textureCoordinates">Texture coordinates.</param>
+    public Plane(GorgonGraphics graphics, GorgonInputLayout inputLayout, Vector2 size, DX.RectangleF textureCoordinates)
+        : base(inputLayout)
+    {
+        Size = size;
+
+        // Create our vertices.
+        Vertices = new[]
+                   {
+                       new GorgonVertexPosUv(new Vector3(-size.X, size.Y, 0.0f), new Vector2(textureCoordinates.Left, textureCoordinates.Top)),
+                       new GorgonVertexPosUv(new Vector3(size.X, size.Y, 0.0f), new Vector2(textureCoordinates.Right, textureCoordinates.Top)),
+                       new GorgonVertexPosUv(new Vector3(-size.X, -size.Y, 0.0f), new Vector2(textureCoordinates.Left, textureCoordinates.Bottom)),
+                       new GorgonVertexPosUv(new Vector3(size.X, -size.Y, 0.0f), new Vector2(textureCoordinates.Right, textureCoordinates.Bottom))
+                   };
+
+        // Create our indices.
+        Indices = new ushort[]
+                  {
+                      0,
+                      1,
+                      2,
+                      2,
+                      1,
+                      3
+                  };
+
+        // Copy the above vertex/index data into a vertex and index buffer so we can render our plane.
+        VertexBufferBindings[0] = GorgonVertexBufferBinding.CreateVertexBuffer<GorgonVertexPosUv>(graphics,
+                                                                                new GorgonVertexBufferInfo(Vertices.Length * GorgonVertexPosUv.SizeInBytes)
+                                                                                {
+                                                                                    Name = "Plane Vertex Buffer",
+                                                                                    Usage = ResourceUsage.Immutable
+                                                                                },
+                                                                                Vertices);
+
+        IndexBuffer = new GorgonIndexBuffer(graphics,
+                                            new GorgonIndexBufferInfo(Indices.Length)
+                                            {
+                                                Name = "Plane Index Buffer",
+                                                Usage = ResourceUsage.Immutable,                                                    
+                                                Use16BitIndices = true
+                                            },
+                                            Indices);
+    }
+    #endregion
 }

@@ -40,312 +40,311 @@ using Gorgon.UI;
 using DX = SharpDX;
 using FontStyle = Gorgon.Graphics.Fonts.FontStyle;
 
-namespace Gorgon.Examples
+namespace Gorgon.Examples;
+
+/// <summary>
+/// Main application form.
+/// </summary>
+public partial class Form
+    : System.Windows.Forms.Form
 {
+    #region Variables.
+    // Our primary graphics interface.
+    private GorgonGraphics _graphics;
+    // The swap chain for the left panel.
+    private GorgonSwapChain _leftPanel;
+    // The swap chain for the right panel.
+    private GorgonSwapChain _rightPanel;
+    // The 2D renderer to use.
+    private Gorgon2D _renderer;
+    // The font for the application.
+    private GorgonFont _appFont;
+    // The texture containing the animation frames.
+    private GorgonTexture2DView _torusTexture;
+    // The left torus to animate.
+    private GorgonSprite _torusLeft;
+    // The right torus to animate.
+    private GorgonSprite _torusRight;
+    // The left animation for the torus.
+    private IGorgonAnimation _torusAnim;
+    // The controller for the animation on the left.
+    private GorgonSpriteAnimationController _controllerLeft;
+    // The controller for the animation on the right.
+    private GorgonSpriteAnimationController _controllerRight;
+    // The scale of the left sprite.
+    private Vector2 _scale = new(2, 2);
+    // The original size of the left panel.
+    private Vector2 _originalSize;
+    #endregion
+
+    #region Methods.
     /// <summary>
-    /// Main application form.
+    /// Handles the SplitterMoved event of the SplitViews control.
     /// </summary>
-    public partial class Form
-        : System.Windows.Forms.Form
+    /// <param name="sender">The source of the event.</param>
+    /// <param name="e">The <see cref="SplitterEventArgs"/> instance containing the event data.</param>
+    private void SplitViews_SplitterMoved(object sender, SplitterEventArgs e)
     {
-        #region Variables.
-        // Our primary graphics interface.
-        private GorgonGraphics _graphics;
-        // The swap chain for the left panel.
-        private GorgonSwapChain _leftPanel;
-        // The swap chain for the right panel.
-        private GorgonSwapChain _rightPanel;
-        // The 2D renderer to use.
-        private Gorgon2D _renderer;
-        // The font for the application.
-        private GorgonFont _appFont;
-        // The texture containing the animation frames.
-        private GorgonTexture2DView _torusTexture;
-        // The left torus to animate.
-        private GorgonSprite _torusLeft;
-        // The right torus to animate.
-        private GorgonSprite _torusRight;
-        // The left animation for the torus.
-        private IGorgonAnimation _torusAnim;
-        // The controller for the animation on the left.
-        private GorgonSpriteAnimationController _controllerLeft;
-        // The controller for the animation on the right.
-        private GorgonSpriteAnimationController _controllerRight;
-        // The scale of the left sprite.
-        private Vector2 _scale = new(2, 2);
-        // The original size of the left panel.
-        private Vector2 _originalSize;
-        #endregion
-
-        #region Methods.
-        /// <summary>
-        /// Handles the SplitterMoved event of the SplitViews control.
-        /// </summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="SplitterEventArgs"/> instance containing the event data.</param>
-        private void SplitViews_SplitterMoved(object sender, SplitterEventArgs e)
+        if (_graphics is null)
         {
-            if (_graphics is null)
-            {
-                return;
-            }
-
-            _scale = new Vector2((GroupControl1.ClientSize.Width / _originalSize.X) * 2, (GroupControl1.ClientSize.Width / _originalSize.X) * 2);
+            return;
         }
 
-        /// <summary>
-        /// Handles the Click event of the ButtonAnimation control.
-        /// </summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
-        private void ButtonAnimation_Click(object sender, EventArgs e)
+        _scale = new Vector2((GroupControl1.ClientSize.Width / _originalSize.X) * 2, (GroupControl1.ClientSize.Width / _originalSize.X) * 2);
+    }
+
+    /// <summary>
+    /// Handles the Click event of the ButtonAnimation control.
+    /// </summary>
+    /// <param name="sender">The source of the event.</param>
+    /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+    private void ButtonAnimation_Click(object sender, EventArgs e)
+    {
+        if (_controllerRight.State != AnimationState.Playing)
         {
-            if (_controllerRight.State != AnimationState.Playing)
-            {
-                _controllerRight.Resume();
-            }
-            else
-            {
-                _controllerRight.Pause();
-            }
+            _controllerRight.Resume();
         }
-
-        /// <summary>
-        /// Function to build up an animation for the torus.
-        /// </summary>
-        private void BuildAnimation()
+        else
         {
-            var builder = new GorgonAnimationBuilder();
-
-            IGorgonTrackKeyBuilder<GorgonKeyTexture2D> track = builder.Edit2DTexture("Texture");
-
-            float time = 0;
-            int frameCount = 0;
-            float frameTime = 1 / 30f;
-            for (int y = 0; y < _torusTexture.Height && frameCount < 60; y += 64)
-            {
-                for (int x = 0; x < _torusTexture.Width && frameCount < 60; x += 64, frameCount++)
-                {
-                    DX.RectangleF texCoords = _torusTexture.ToTexel(new DX.Rectangle(x, y, 64, 64));
-
-                    track.SetKey(new GorgonKeyTexture2D(time, _torusTexture, texCoords, 0));
-
-                    // 30 FPS.
-                    time += frameTime;
-                }
-            }
-
-            track.EndEdit();
-
-            _torusAnim = builder.Build("Torus Animation", 30);
-            _torusAnim.IsLooped = true;
-
-            _controllerLeft = new GorgonSpriteAnimationController();
-            _controllerRight = new GorgonSpriteAnimationController();
-
-            _controllerLeft.Play(_torusLeft, _torusAnim);
-            _controllerRight.Play(_torusRight, _torusAnim);
             _controllerRight.Pause();
         }
-
-        /// <summary>
-        /// Function to initialize the example.
-        /// </summary>
-        private void Initialize()
-        {
-            GorgonExample.ResourceBaseDirectory = new DirectoryInfo(ExampleConfig.Default.ResourceLocation);
-
-            IReadOnlyList<IGorgonVideoAdapterInfo> adapters = GorgonGraphics.EnumerateAdapters(log: GorgonApplication.Log);
-
-            if (adapters.Count == 0)
-            {
-                throw new GorgonException(GorgonResult.CannotCreate, "This example requires a Direct3D 11.2 capable video card.\nThe application will now close.");
-            }
-
-            _graphics = new GorgonGraphics(adapters[0]);
-
-            _leftPanel = new GorgonSwapChain(_graphics,
-                                             GroupControl1,
-                                             new GorgonSwapChainInfo(GroupControl1.ClientSize.Width, GroupControl1.ClientSize.Height, BufferFormat.R8G8B8A8_UNorm)
-                                             {
-                                                 Name = "Left Panel SwapChain"
-                                             });
-
-            _rightPanel = new GorgonSwapChain(_graphics,
-                                              GroupControl2,
-                                              new GorgonSwapChainInfo(_leftPanel, "Right Panel SwapChain")
-                                              {                                                  
-                                                  Width = GroupControl2.ClientSize.Width,
-                                                  Height = GroupControl2.ClientSize.Height
-                                              });
-
-            _renderer = new Gorgon2D(_graphics);
-
-            _torusTexture = GorgonTexture2DView.FromFile(_graphics,
-                                                         Path.Combine(GorgonExample.GetResourcePath(@"Textures\GiveMeSomeControl\").FullName, "Torus.png"),
-                                                         new GorgonCodecPng(),
-                                                         new GorgonTexture2DLoadOptions
-                                                         {
-                                                             Binding = TextureBinding.ShaderResource,
-                                                             Name = "Torus Animation Sheet",
-                                                             Usage = ResourceUsage.Immutable
-                                                         });
-
-            _torusLeft = new GorgonSprite
-            {
-                Anchor = new Vector2(0.5f, 0.5f),
-                Size = new DX.Size2F(64, 64),
-                TextureSampler = GorgonSamplerState.PointFiltering
-            };
-            _torusRight = new GorgonSprite
-            {
-                Anchor = new Vector2(0.5f, 0.5f),
-                Size = new DX.Size2F(64, 64),
-                TextureSampler = GorgonSamplerState.PointFiltering
-            };
-
-            BuildAnimation();
-
-            GorgonExample.LoadResources(_graphics);
-
-            _appFont = GorgonExample.Fonts.GetFont(new GorgonFontInfo(Font.FontFamily.Name, Font.Size * 1.33333f, FontHeightMode.Points)
-            {
-                Name = "Form Font",
-                Characters = "SpdtoxDrag me!\u2190:1234567890.",
-                TextureWidth = 128,
-                TextureHeight = 128,
-                OutlineSize = 2,
-                FontStyle = FontStyle.Bold,
-                OutlineColor1 = GorgonColor.Black,
-                OutlineColor2 = GorgonColor.Black
-            });
-        }
-
-        /// <summary>
-        /// Function to process the example functionality during idle time.
-        /// </summary>
-        /// <returns><b>true</b> to continue, <b>false</b> to stop.</returns>
-        private bool Idle()
-        {
-            _leftPanel.RenderTargetView.Clear(GroupControl1.BackColor);
-            _rightPanel.RenderTargetView.Clear(GroupControl2.BackColor);
-
-            _graphics.SetRenderTarget(_leftPanel.RenderTargetView);
-
-            _renderer.Begin();
-            _torusLeft.Scale = _scale;
-            _torusLeft.Position = new Vector2(_leftPanel.Width / 2.0f, _leftPanel.Height / 2.0f);
-            _renderer.DrawSprite(_torusLeft);
-            _renderer.End();
-
-            GorgonExample.DrawStatsAndLogo(_renderer);
-
-            _graphics.SetRenderTarget(_rightPanel.RenderTargetView);
-
-            _renderer.Begin();
-            _torusLeft.Scale = Vector2.One;
-
-            _torusRight.Color = GorgonColor.RedPure;
-            _torusRight.Position = new Vector2((_rightPanel.Width / 2.0f) - 64, (_rightPanel.Height / 2.0f) - 64);
-            _renderer.DrawSprite(_torusRight);
-
-            _torusRight.Color = GorgonColor.GreenPure;
-            _torusRight.Position = new Vector2((_rightPanel.Width / 2.0f) + 64, (_rightPanel.Height / 2.0f) - 64);
-            _renderer.DrawSprite(_torusRight);
-
-            _torusRight.Color = GorgonColor.BluePure;
-            _torusRight.Position = new Vector2((_rightPanel.Width / 2.0f) - 64, (_rightPanel.Height / 2.0f) + 64);
-            _renderer.DrawSprite(_torusRight);
-
-            _torusRight.Color = GorgonColor.White;
-            _torusRight.Position = new Vector2((_rightPanel.Width / 2.0f) + 64, (_rightPanel.Height / 2.0f) + 64);
-            _renderer.DrawSprite(_torusRight);
-
-            _renderer.DrawString("\u2190Drag me!", new Vector2(0, _rightPanel.Height / 4.0f), _appFont, GorgonColor.White);
-
-            if (_controllerRight.State != AnimationState.Playing)
-            {
-                _renderer.DrawString("Speed: Stopped", new Vector2(0, 64), _appFont, GorgonColor.White);
-            }
-            else
-            {
-                _renderer.DrawString($"Speed: {TrackSpeed.Value / 5.0f:0.0#}", new Vector2(0, 64), _appFont, GorgonColor.White);
-            }
-
-            _renderer.End();
-
-            GorgonExample.DrawStatsAndLogo(_renderer);
-
-            _leftPanel.Present(1);
-            _rightPanel.Present(1);
-
-            _torusAnim.Speed = -1.0f;
-            _controllerLeft.Update();
-
-            if (_controllerRight.State != AnimationState.Playing)
-            {
-                _controllerRight.Resume();
-                _controllerRight.Time = (TrackSpeed.Value / 10.0f) * _torusAnim.Length;
-                _controllerRight.Pause();
-            }
-            else
-            {
-                _torusAnim.Speed = TrackSpeed.Value / 5.0f;
-                _controllerRight.Update();
-            }
-
-            return true;
-        }
-
-        /// <summary>Raises the <see cref="E:System.Windows.Forms.Form.FormClosing" /> event.</summary>
-        /// <param name="e">A <see cref="FormClosingEventArgs" /> that contains the event data. </param>
-        protected override void OnFormClosing(FormClosingEventArgs e)
-        {
-            base.OnFormClosing(e);
-
-            GorgonExample.UnloadResources();
-
-            _renderer?.Dispose();
-            _leftPanel?.Dispose();
-            _rightPanel?.Dispose();
-            _graphics?.Dispose();
-        }
-
-        /// <summary>Raises the <see cref="E:System.Windows.Forms.Form.Load" /> event.</summary>
-        /// <param name="e">An <see cref="EventArgs" /> that contains the event data. </param>
-        protected override void OnLoad(EventArgs e)
-        {
-            base.OnLoad(e);
-
-            try
-            {
-                Show();
-
-                Cursor.Current = Cursors.WaitCursor;
-
-                Initialize();
-
-                _originalSize = new Vector2(GroupControl1.ClientSize.Width, GroupControl2.ClientSize.Height);
-
-                GorgonApplication.IdleMethod = Idle;
-            }
-            catch (Exception ex)
-            {
-                GorgonExample.HandleException(ex);
-                GorgonApplication.Quit();
-            }
-            finally
-            {
-                Cursor.Current = Cursors.Default;
-            }
-        }
-        #endregion
-
-        #region Constructor/Finalizer.
-        /// <summary>
-        /// Initializes a new instance of the <see cref="Form"/> class.
-        /// </summary>
-        public Form() => InitializeComponent();
-        #endregion
     }
+
+    /// <summary>
+    /// Function to build up an animation for the torus.
+    /// </summary>
+    private void BuildAnimation()
+    {
+        var builder = new GorgonAnimationBuilder();
+
+        IGorgonTrackKeyBuilder<GorgonKeyTexture2D> track = builder.Edit2DTexture("Texture");
+
+        float time = 0;
+        int frameCount = 0;
+        float frameTime = 1 / 30f;
+        for (int y = 0; y < _torusTexture.Height && frameCount < 60; y += 64)
+        {
+            for (int x = 0; x < _torusTexture.Width && frameCount < 60; x += 64, frameCount++)
+            {
+                DX.RectangleF texCoords = _torusTexture.ToTexel(new DX.Rectangle(x, y, 64, 64));
+
+                track.SetKey(new GorgonKeyTexture2D(time, _torusTexture, texCoords, 0));
+
+                // 30 FPS.
+                time += frameTime;
+            }
+        }
+
+        track.EndEdit();
+
+        _torusAnim = builder.Build("Torus Animation", 30);
+        _torusAnim.IsLooped = true;
+
+        _controllerLeft = new GorgonSpriteAnimationController();
+        _controllerRight = new GorgonSpriteAnimationController();
+
+        _controllerLeft.Play(_torusLeft, _torusAnim);
+        _controllerRight.Play(_torusRight, _torusAnim);
+        _controllerRight.Pause();
+    }
+
+    /// <summary>
+    /// Function to initialize the example.
+    /// </summary>
+    private void Initialize()
+    {
+        GorgonExample.ResourceBaseDirectory = new DirectoryInfo(ExampleConfig.Default.ResourceLocation);
+
+        IReadOnlyList<IGorgonVideoAdapterInfo> adapters = GorgonGraphics.EnumerateAdapters(log: GorgonApplication.Log);
+
+        if (adapters.Count == 0)
+        {
+            throw new GorgonException(GorgonResult.CannotCreate, "This example requires a Direct3D 11.2 capable video card.\nThe application will now close.");
+        }
+
+        _graphics = new GorgonGraphics(adapters[0]);
+
+        _leftPanel = new GorgonSwapChain(_graphics,
+                                         GroupControl1,
+                                         new GorgonSwapChainInfo(GroupControl1.ClientSize.Width, GroupControl1.ClientSize.Height, BufferFormat.R8G8B8A8_UNorm)
+                                         {
+                                             Name = "Left Panel SwapChain"
+                                         });
+
+        _rightPanel = new GorgonSwapChain(_graphics,
+                                          GroupControl2,
+                                          new GorgonSwapChainInfo(_leftPanel, "Right Panel SwapChain")
+                                          {                                                  
+                                              Width = GroupControl2.ClientSize.Width,
+                                              Height = GroupControl2.ClientSize.Height
+                                          });
+
+        _renderer = new Gorgon2D(_graphics);
+
+        _torusTexture = GorgonTexture2DView.FromFile(_graphics,
+                                                     Path.Combine(GorgonExample.GetResourcePath(@"Textures\GiveMeSomeControl\").FullName, "Torus.png"),
+                                                     new GorgonCodecPng(),
+                                                     new GorgonTexture2DLoadOptions
+                                                     {
+                                                         Binding = TextureBinding.ShaderResource,
+                                                         Name = "Torus Animation Sheet",
+                                                         Usage = ResourceUsage.Immutable
+                                                     });
+
+        _torusLeft = new GorgonSprite
+        {
+            Anchor = new Vector2(0.5f, 0.5f),
+            Size = new DX.Size2F(64, 64),
+            TextureSampler = GorgonSamplerState.PointFiltering
+        };
+        _torusRight = new GorgonSprite
+        {
+            Anchor = new Vector2(0.5f, 0.5f),
+            Size = new DX.Size2F(64, 64),
+            TextureSampler = GorgonSamplerState.PointFiltering
+        };
+
+        BuildAnimation();
+
+        GorgonExample.LoadResources(_graphics);
+
+        _appFont = GorgonExample.Fonts.GetFont(new GorgonFontInfo(Font.FontFamily.Name, Font.Size * 1.33333f, FontHeightMode.Points)
+        {
+            Name = "Form Font",
+            Characters = "SpdtoxDrag me!\u2190:1234567890.",
+            TextureWidth = 128,
+            TextureHeight = 128,
+            OutlineSize = 2,
+            FontStyle = FontStyle.Bold,
+            OutlineColor1 = GorgonColor.Black,
+            OutlineColor2 = GorgonColor.Black
+        });
+    }
+
+    /// <summary>
+    /// Function to process the example functionality during idle time.
+    /// </summary>
+    /// <returns><b>true</b> to continue, <b>false</b> to stop.</returns>
+    private bool Idle()
+    {
+        _leftPanel.RenderTargetView.Clear(GroupControl1.BackColor);
+        _rightPanel.RenderTargetView.Clear(GroupControl2.BackColor);
+
+        _graphics.SetRenderTarget(_leftPanel.RenderTargetView);
+
+        _renderer.Begin();
+        _torusLeft.Scale = _scale;
+        _torusLeft.Position = new Vector2(_leftPanel.Width / 2.0f, _leftPanel.Height / 2.0f);
+        _renderer.DrawSprite(_torusLeft);
+        _renderer.End();
+
+        GorgonExample.DrawStatsAndLogo(_renderer);
+
+        _graphics.SetRenderTarget(_rightPanel.RenderTargetView);
+
+        _renderer.Begin();
+        _torusLeft.Scale = Vector2.One;
+
+        _torusRight.Color = GorgonColor.RedPure;
+        _torusRight.Position = new Vector2((_rightPanel.Width / 2.0f) - 64, (_rightPanel.Height / 2.0f) - 64);
+        _renderer.DrawSprite(_torusRight);
+
+        _torusRight.Color = GorgonColor.GreenPure;
+        _torusRight.Position = new Vector2((_rightPanel.Width / 2.0f) + 64, (_rightPanel.Height / 2.0f) - 64);
+        _renderer.DrawSprite(_torusRight);
+
+        _torusRight.Color = GorgonColor.BluePure;
+        _torusRight.Position = new Vector2((_rightPanel.Width / 2.0f) - 64, (_rightPanel.Height / 2.0f) + 64);
+        _renderer.DrawSprite(_torusRight);
+
+        _torusRight.Color = GorgonColor.White;
+        _torusRight.Position = new Vector2((_rightPanel.Width / 2.0f) + 64, (_rightPanel.Height / 2.0f) + 64);
+        _renderer.DrawSprite(_torusRight);
+
+        _renderer.DrawString("\u2190Drag me!", new Vector2(0, _rightPanel.Height / 4.0f), _appFont, GorgonColor.White);
+
+        if (_controllerRight.State != AnimationState.Playing)
+        {
+            _renderer.DrawString("Speed: Stopped", new Vector2(0, 64), _appFont, GorgonColor.White);
+        }
+        else
+        {
+            _renderer.DrawString($"Speed: {TrackSpeed.Value / 5.0f:0.0#}", new Vector2(0, 64), _appFont, GorgonColor.White);
+        }
+
+        _renderer.End();
+
+        GorgonExample.DrawStatsAndLogo(_renderer);
+
+        _leftPanel.Present(1);
+        _rightPanel.Present(1);
+
+        _torusAnim.Speed = -1.0f;
+        _controllerLeft.Update();
+
+        if (_controllerRight.State != AnimationState.Playing)
+        {
+            _controllerRight.Resume();
+            _controllerRight.Time = (TrackSpeed.Value / 10.0f) * _torusAnim.Length;
+            _controllerRight.Pause();
+        }
+        else
+        {
+            _torusAnim.Speed = TrackSpeed.Value / 5.0f;
+            _controllerRight.Update();
+        }
+
+        return true;
+    }
+
+    /// <summary>Raises the <see cref="E:System.Windows.Forms.Form.FormClosing" /> event.</summary>
+    /// <param name="e">A <see cref="FormClosingEventArgs" /> that contains the event data. </param>
+    protected override void OnFormClosing(FormClosingEventArgs e)
+    {
+        base.OnFormClosing(e);
+
+        GorgonExample.UnloadResources();
+
+        _renderer?.Dispose();
+        _leftPanel?.Dispose();
+        _rightPanel?.Dispose();
+        _graphics?.Dispose();
+    }
+
+    /// <summary>Raises the <see cref="E:System.Windows.Forms.Form.Load" /> event.</summary>
+    /// <param name="e">An <see cref="EventArgs" /> that contains the event data. </param>
+    protected override void OnLoad(EventArgs e)
+    {
+        base.OnLoad(e);
+
+        try
+        {
+            Show();
+
+            Cursor.Current = Cursors.WaitCursor;
+
+            Initialize();
+
+            _originalSize = new Vector2(GroupControl1.ClientSize.Width, GroupControl2.ClientSize.Height);
+
+            GorgonApplication.IdleMethod = Idle;
+        }
+        catch (Exception ex)
+        {
+            GorgonExample.HandleException(ex);
+            GorgonApplication.Quit();
+        }
+        finally
+        {
+            Cursor.Current = Cursors.Default;
+        }
+    }
+    #endregion
+
+    #region Constructor/Finalizer.
+    /// <summary>
+    /// Initializes a new instance of the <see cref="Form"/> class.
+    /// </summary>
+    public Form() => InitializeComponent();
+    #endregion
 }

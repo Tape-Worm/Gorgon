@@ -33,50 +33,49 @@ using Gorgon.Editor.UI.Controls;
 using Gorgon.Editor.UI.ViewModels;
 using Gorgon.IO;
 
-namespace Gorgon.Editor.TextureAtlasTool
+namespace Gorgon.Editor.TextureAtlasTool;
+
+/// <summary>
+/// The parameters for the <see cref="ISpriteFiles"/> view model.
+/// </summary>
+internal class SpriteFilesParameters
+    : ViewModelInjection<IHostContentServices>
 {
     /// <summary>
-    /// The parameters for the <see cref="ISpriteFiles"/> view model.
+    /// Property to reeturn the service to search through the content files.
     /// </summary>
-    internal class SpriteFilesParameters
-        : ViewModelInjection<IHostContentServices>
+    public ISearchService<IContentFileExplorerSearchEntry> SearchService
     {
-        /// <summary>
-        /// Property to reeturn the service to search through the content files.
-        /// </summary>
-        public ISearchService<IContentFileExplorerSearchEntry> SearchService
-        {
-            get;
-        }
+        get;
+    }
 
-        /// <summary>
-        /// Property to return the entries for the file system.
-        /// </summary>
-        public IReadOnlyList<ContentFileExplorerDirectoryEntry> Entries
-        {
-            get;
-        }
+    /// <summary>
+    /// Property to return the entries for the file system.
+    /// </summary>
+    public IReadOnlyList<ContentFileExplorerDirectoryEntry> Entries
+    {
+        get;
+    }
 
-        /// <summary>
-        /// Property to return the temporary file system used to write data.
-        /// </summary>
-        public IGorgonFileSystemWriter<Stream> TempFileSystem
-        {
-            get;
-        }
+    /// <summary>
+    /// Property to return the temporary file system used to write data.
+    /// </summary>
+    public IGorgonFileSystemWriter<Stream> TempFileSystem
+    {
+        get;
+    }
 
-        /// <summary>Initializes a new instance of the <see cref="SpriteFilesParameters"/> class.</summary>
-        /// <param name="entries">The file system sprite entries.</param>
-        /// <param name="tempFileSystem">The temporary file system used to write temporary data.</param>
-        /// <param name="searchService">The search service used to search through the sprite entries.</param>        
-        /// <param name="hostServices">The services from the host application.</param>
-        /// <exception cref="ArgumentNullException">Thrown when any of the parameters are <b>null</b>.</exception>
-        public SpriteFilesParameters(IReadOnlyList<ContentFileExplorerDirectoryEntry> entries, IGorgonFileSystemWriter<Stream> tempFileSystem, ISearchService<IContentFileExplorerSearchEntry> searchService, IHostContentServices hostServices)
-            : base(hostServices)
-        {
-            Entries = entries ?? throw new ArgumentNullException(nameof(entries));
-            SearchService = searchService ?? throw new ArgumentNullException(nameof(searchService));
-            TempFileSystem = tempFileSystem ?? throw new ArgumentNullException(nameof(tempFileSystem));
-        }
+    /// <summary>Initializes a new instance of the <see cref="SpriteFilesParameters"/> class.</summary>
+    /// <param name="entries">The file system sprite entries.</param>
+    /// <param name="tempFileSystem">The temporary file system used to write temporary data.</param>
+    /// <param name="searchService">The search service used to search through the sprite entries.</param>        
+    /// <param name="hostServices">The services from the host application.</param>
+    /// <exception cref="ArgumentNullException">Thrown when any of the parameters are <b>null</b>.</exception>
+    public SpriteFilesParameters(IReadOnlyList<ContentFileExplorerDirectoryEntry> entries, IGorgonFileSystemWriter<Stream> tempFileSystem, ISearchService<IContentFileExplorerSearchEntry> searchService, IHostContentServices hostServices)
+        : base(hostServices)
+    {
+        Entries = entries ?? throw new ArgumentNullException(nameof(entries));
+        SearchService = searchService ?? throw new ArgumentNullException(nameof(searchService));
+        TempFileSystem = tempFileSystem ?? throw new ArgumentNullException(nameof(tempFileSystem));
     }
 }

@@ -28,69 +28,68 @@ using System;
 using Gorgon.Core;
 using Gorgon.Memory;
 
-namespace Gorgon.Graphics.Core
+namespace Gorgon.Graphics.Core;
+
+/// <summary>
+/// Common functionality for the a state fluent builder, which allows creation of state objects using <see cref="GorgonStateBuilderPoolAllocator{T}"/>.
+/// </summary>
+/// <typeparam name="TB">The type of builder.</typeparam>
+/// <typeparam name="TRs">The type of state.</typeparam>
+/// <remarks>
+/// <para>
+/// This is the same as the <see cref="GorgonStateBuilderCommon{TB, TRs}"/> base class, only it exposes functionality to provide object allocation via a <see cref="GorgonStateBuilderPoolAllocator{T}"/>. 
+/// The provides efficient reuse of objects to minimize garbage collection and improve performance. All state builder classes will descend from this unless they implement their own caching strategy.
+/// </para>
+/// </remarks>
+/// <seealso cref="GorgonStateBuilderCommon{TB, TRs}"/>
+/// <seealso cref="GorgonStateBuilderPoolAllocator{T}"/>
+public abstract class GorgonStateBuilderAllocator<TB, TRs>
+    : GorgonStateBuilderCommon<TB, TRs>, IGorgonFluentBuilderAllocator<TB, TRs, IGorgonAllocator<TRs>>
+    where TB : GorgonStateBuilderCommon<TB, TRs>
+    where TRs : class, IEquatable<TRs>
 {
+    #region Methods.
     /// <summary>
-    /// Common functionality for the a state fluent builder, which allows creation of state objects using <see cref="GorgonStateBuilderPoolAllocator{T}"/>.
+    /// Function to update the properties of the state, allocated from an allocator, from the working copy.
     /// </summary>
-    /// <typeparam name="TB">The type of builder.</typeparam>
-    /// <typeparam name="TRs">The type of state.</typeparam>
+    /// <param name="state">The state to update.</param>
+    protected abstract void OnUpdate(TRs state);
+
+    /// <summary>Function to return the object.</summary>
+    /// <param name="allocator">The allocator used to create an instance of the object</param>
+    /// <returns>The object created or updated by this builder.</returns>
     /// <remarks>
-    /// <para>
-    /// This is the same as the <see cref="GorgonStateBuilderCommon{TB, TRs}"/> base class, only it exposes functionality to provide object allocation via a <see cref="GorgonStateBuilderPoolAllocator{T}"/>. 
-    /// The provides efficient reuse of objects to minimize garbage collection and improve performance. All state builder classes will descend from this unless they implement their own caching strategy.
+    ///   <para>
+    /// Using an <paramref name="allocator" /> can provide different strategies when building objects.  If omitted, the object will be created using the standard <span class="keyword">new</span> keyword.
+    /// </para>
+    ///   <para>
+    /// A custom allocator can be beneficial because it allows us to use a pool for allocating the objects, and thus allows for recycling of objects. This keeps the garbage collector happy by keeping objects
+    /// around for as long as we need them, instead of creating objects that can potentially end up in the large object heap or in Gen 2.
     /// </para>
     /// </remarks>
-    /// <seealso cref="GorgonStateBuilderCommon{TB, TRs}"/>
-    /// <seealso cref="GorgonStateBuilderPoolAllocator{T}"/>
-    public abstract class GorgonStateBuilderAllocator<TB, TRs>
-        : GorgonStateBuilderCommon<TB, TRs>, IGorgonFluentBuilderAllocator<TB, TRs, IGorgonAllocator<TRs>>
-        where TB : GorgonStateBuilderCommon<TB, TRs>
-        where TRs : class, IEquatable<TRs>
+    public TRs Build(IGorgonAllocator<TRs> allocator)
     {
-        #region Methods.
-        /// <summary>
-        /// Function to update the properties of the state, allocated from an allocator, from the working copy.
-        /// </summary>
-        /// <param name="state">The state to update.</param>
-        protected abstract void OnUpdate(TRs state);
-
-        /// <summary>Function to return the object.</summary>
-        /// <param name="allocator">The allocator used to create an instance of the object</param>
-        /// <returns>The object created or updated by this builder.</returns>
-        /// <remarks>
-        ///   <para>
-        /// Using an <paramref name="allocator" /> can provide different strategies when building objects.  If omitted, the object will be created using the standard <span class="keyword">new</span> keyword.
-        /// </para>
-        ///   <para>
-        /// A custom allocator can be beneficial because it allows us to use a pool for allocating the objects, and thus allows for recycling of objects. This keeps the garbage collector happy by keeping objects
-        /// around for as long as we need them, instead of creating objects that can potentially end up in the large object heap or in Gen 2.
-        /// </para>
-        /// </remarks>
-        public TRs Build(IGorgonAllocator<TRs> allocator)
+        if (allocator is null)
         {
-            if (allocator is null)
-            {
-                return OnCreateState();
-            }
-
-            TRs state = allocator.Allocate();
-
-            OnUpdate(state);
-
-            return state;
+            return OnCreateState();
         }
-        #endregion
 
-        #region Constructor/Finalizer.
-        /// <summary>
-        /// Initializes a new instance of the <see cref="GorgonStateBuilderAllocator{TB,TRs}"/> class.
-        /// </summary>
-        /// <param name="renderState">The render state to use as a worker.</param>
-        private protected GorgonStateBuilderAllocator(TRs renderState)
-            : base(renderState)
-        {
-        }
-        #endregion
+        TRs state = allocator.Allocate();
+
+        OnUpdate(state);
+
+        return state;
     }
+    #endregion
+
+    #region Constructor/Finalizer.
+    /// <summary>
+    /// Initializes a new instance of the <see cref="GorgonStateBuilderAllocator{TB,TRs}"/> class.
+    /// </summary>
+    /// <param name="renderState">The render state to use as a worker.</param>
+    private protected GorgonStateBuilderAllocator(TRs renderState)
+        : base(renderState)
+    {
+    }
+    #endregion
 }

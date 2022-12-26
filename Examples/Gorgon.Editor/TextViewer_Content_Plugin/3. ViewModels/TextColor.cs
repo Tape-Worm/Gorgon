@@ -27,69 +27,68 @@
 using Gorgon.Editor.UI;
 using Gorgon.Graphics;
 
-namespace Gorgon.Examples
+namespace Gorgon.Examples;
+
+/// <summary>
+/// The view model for the text color editor.
+/// </summary>
+internal class TextColor
+    : HostedPanelViewModelBase<HostedPanelViewModelParameters>, ITextColor
 {
-    /// <summary>
-    /// The view model for the text color editor.
-    /// </summary>
-    internal class TextColor
-        : HostedPanelViewModelBase<HostedPanelViewModelParameters>, ITextColor
+    #region Variables.
+    // The original color for the sprite.
+    private GorgonColor _originalColor = GorgonColor.Black;
+    // The current color for the sprite.
+    private GorgonColor _color = GorgonColor.Black;
+    #endregion
+
+    #region Properties.
+    /// <summary>Property to set or return the currently selected color.</summary>
+    public GorgonColor SelectedColor
     {
-        #region Variables.
-        // The original color for the sprite.
-        private GorgonColor _originalColor = GorgonColor.Black;
-        // The current color for the sprite.
-        private GorgonColor _color = GorgonColor.Black;
-        #endregion
-
-        #region Properties.
-        /// <summary>Property to set or return the currently selected color.</summary>
-        public GorgonColor SelectedColor
+        get => _color;
+        set
         {
-            get => _color;
-            set
+            if (_color.Equals(in value))
             {
-                if (_color.Equals(in value))
-                {
-                    return;
-                }
-
-                OnPropertyChanging();
-                _color = value;
-                OnPropertyChanged();
+                return;
             }
+
+            OnPropertyChanging();
+            _color = value;
+            OnPropertyChanged();
         }
-
-        public GorgonColor OriginalColor
-        {
-            get => _originalColor;
-            set
-            {
-                if (_originalColor.Equals(in value))
-                {
-                    return;
-                }
-
-                OnPropertyChanging();
-                _originalColor = value;
-                OnPropertyChanged();
-            }
-        }
-
-        /// <summary>Property to return whether the panel is modal.</summary>
-        public override bool IsModal => true;
-        #endregion
-
-        #region Methods.
-        /// <summary>Function to inject dependencies for the view model.</summary>
-        /// <param name="injectionParameters">The parameters to inject.</param>
-        /// <remarks>
-        /// Applications should call this when setting up the view model for complex operations and/or dependency injection. The constructor should only be used for simple set up and initialization of objects.
-        /// </remarks>
-        protected override void OnInitialize(HostedPanelViewModelParameters injectionParameters)
-        {
-            // Nothing to inject.
-        }
-        #endregion
     }
+
+    public GorgonColor OriginalColor
+    {
+        get => _originalColor;
+        set
+        {
+            if (_originalColor.Equals(in value))
+            {
+                return;
+            }
+
+            OnPropertyChanging();
+            _originalColor = value;
+            OnPropertyChanged();
+        }
+    }
+
+    /// <summary>Property to return whether the panel is modal.</summary>
+    public override bool IsModal => true;
+    #endregion
+
+    #region Methods.
+    /// <summary>Function to inject dependencies for the view model.</summary>
+    /// <param name="injectionParameters">The parameters to inject.</param>
+    /// <remarks>
+    /// Applications should call this when setting up the view model for complex operations and/or dependency injection. The constructor should only be used for simple set up and initialization of objects.
+    /// </remarks>
+    protected override void OnInitialize(HostedPanelViewModelParameters injectionParameters)
+    {
+        // Nothing to inject.
+    }
+    #endregion
 }

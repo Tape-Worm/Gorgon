@@ -28,48 +28,47 @@ using System.Collections.Generic;
 using Gorgon.Editor.UI;
 using Gorgon.Graphics;
 
-namespace Gorgon.Editor.SpriteEditor
+namespace Gorgon.Editor.SpriteEditor;
+
+/// <summary>
+/// The view model for the sprite color panel.
+/// </summary>
+internal interface ISpriteColorEdit
+    : IHostedPanelViewModel
 {
     /// <summary>
-    /// The view model for the sprite color panel.
+    /// Property to set or return the selected vertex.
     /// </summary>
-    internal interface ISpriteColorEdit
-        : IHostedPanelViewModel
+    IReadOnlyList<bool> SelectedVertices
     {
-        /// <summary>
-        /// Property to set or return the selected vertex.
-        /// </summary>
-        IReadOnlyList<bool> SelectedVertices
-        {
-            get;
-            set;
-        }
+        get;
+        set;
+    }
 
-        /// <summary>
-        /// Property to set or return the original color for the sprite.
-        /// </summary>
-        IReadOnlyList<GorgonColor> OriginalSpriteColor
-        {
-            get;
-            set;
-        }
+    /// <summary>
+    /// Property to set or return the original color for the sprite.
+    /// </summary>
+    IReadOnlyList<GorgonColor> OriginalSpriteColor
+    {
+        get;
+        set;
+    }
 
-        /// <summary>
-        /// Property to set or return the color to apply to the sprite.
-        /// </summary>
-        IReadOnlyList<GorgonColor> SpriteColor
-        {
-            get;
-            set;
-        }
+    /// <summary>
+    /// Property to set or return the color to apply to the sprite.
+    /// </summary>
+    IReadOnlyList<GorgonColor> SpriteColor
+    {
+        get;
+        set;
+    }
 
-        /// <summary>
-        /// Property to set or return the currently selected color for an individual vertex.
-        /// </summary>
-        GorgonColor SelectedColor
-        {
-            get;
-            set;
-        }
+    /// <summary>
+    /// Property to set or return the currently selected color for an individual vertex.
+    /// </summary>
+    GorgonColor SelectedColor
+    {
+        get;
+        set;
     }
 }

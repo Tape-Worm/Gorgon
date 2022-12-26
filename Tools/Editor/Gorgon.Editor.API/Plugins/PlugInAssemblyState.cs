@@ -27,67 +27,66 @@
 using System;
 using Gorgon.Core;
 
-namespace Gorgon.Editor.PlugIns
+namespace Gorgon.Editor.PlugIns;
+
+/// <summary>
+/// A record providing plug in state information.
+/// </summary>
+public class PlugInAssemblyState
 {
     /// <summary>
-    /// A record providing plug in state information.
+    /// Property to returnt he path to the plug in.
     /// </summary>
-    public class PlugInAssemblyState
+    public string Path
     {
-        /// <summary>
-        /// Property to returnt he path to the plug in.
-        /// </summary>
-        public string Path
+        get;
+    }
+
+    /// <summary>
+    /// Property to return whether the assembly was loaded.
+    /// </summary>
+    public bool IsAssemblyLoaded
+    {
+        get;
+    }
+
+    /// <summary>
+    /// Property to return whether the assembly is a managed assembly or not.
+    /// </summary>
+    public bool IsManaged
+    {
+        get;
+    }
+
+    /// <summary>
+    /// Property to return the reason why the assembly was not loaded.
+    /// </summary>
+    public string LoadFailureReason
+    {
+        get;
+    }
+
+    /// <summary>Initializes a new instance of the <see cref="PlugInAssemblyState"/> class.</summary>
+    /// <param name="pluginAssemblyPath">The plugin assembly path.</param>
+    /// <param name="loadFailure">The reason why the assembly was not loaded.</param>
+    /// <param name="isManaged"><b>true</b> if the assembly DLL is managed, <b>false</b> if not.</param>
+    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="pluginAssemblyPath"/> is <b>null</b>.</exception>
+    /// <exception cref="ArgumentEmptyException">Thrownw hen the <paramref name="pluginAssemblyPath"/> is empty.</exception>
+    public PlugInAssemblyState(string pluginAssemblyPath, string loadFailure, bool isManaged)
+    {
+        if (pluginAssemblyPath is null)
         {
-            get;
+            throw new ArgumentNullException(nameof(pluginAssemblyPath));
         }
 
-        /// <summary>
-        /// Property to return whether the assembly was loaded.
-        /// </summary>
-        public bool IsAssemblyLoaded
+        if (string.IsNullOrWhiteSpace(pluginAssemblyPath))
         {
-            get;
+            throw new ArgumentEmptyException(nameof(pluginAssemblyPath));
         }
 
-        /// <summary>
-        /// Property to return whether the assembly is a managed assembly or not.
-        /// </summary>
-        public bool IsManaged
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to return the reason why the assembly was not loaded.
-        /// </summary>
-        public string LoadFailureReason
-        {
-            get;
-        }
-
-        /// <summary>Initializes a new instance of the <see cref="PlugInAssemblyState"/> class.</summary>
-        /// <param name="pluginAssemblyPath">The plugin assembly path.</param>
-        /// <param name="loadFailure">The reason why the assembly was not loaded.</param>
-        /// <param name="isManaged"><b>true</b> if the assembly DLL is managed, <b>false</b> if not.</param>
-        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="pluginAssemblyPath"/> is <b>null</b>.</exception>
-        /// <exception cref="ArgumentEmptyException">Thrownw hen the <paramref name="pluginAssemblyPath"/> is empty.</exception>
-        public PlugInAssemblyState(string pluginAssemblyPath, string loadFailure, bool isManaged)
-        {
-            if (pluginAssemblyPath is null)
-            {
-                throw new ArgumentNullException(nameof(pluginAssemblyPath));
-            }
-
-            if (string.IsNullOrWhiteSpace(pluginAssemblyPath))
-            {
-                throw new ArgumentEmptyException(nameof(pluginAssemblyPath));
-            }
-
-            Path = pluginAssemblyPath;
-            IsAssemblyLoaded = string.IsNullOrWhiteSpace(loadFailure);
-            LoadFailureReason = loadFailure ?? string.Empty;
-            IsManaged = isManaged;
-        }
+        Path = pluginAssemblyPath;
+        IsAssemblyLoaded = string.IsNullOrWhiteSpace(loadFailure);
+        LoadFailureReason = loadFailure ?? string.Empty;
+        IsManaged = isManaged;
     }
 }

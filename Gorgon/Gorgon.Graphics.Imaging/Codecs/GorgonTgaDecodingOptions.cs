@@ -27,69 +27,68 @@
 using Gorgon.Configuration;
 using Gorgon.Graphics.Imaging.Properties;
 
-namespace Gorgon.Graphics.Imaging.Codecs
+namespace Gorgon.Graphics.Imaging.Codecs;
+
+/// <summary>
+/// Options used when decoding an image from a stream as a TGA file.
+/// </summary>
+public class GorgonTgaDecodingOptions
+    : IGorgonImageCodecDecodingOptions
 {
+    #region Properties.
     /// <summary>
-    /// Options used when decoding an image from a stream as a TGA file.
+    /// Property to return the list of options available to the codec.
     /// </summary>
-    public class GorgonTgaDecodingOptions
-        : IGorgonImageCodecDecodingOptions
+    public IGorgonOptionBag Options
     {
-        #region Properties.
-        /// <summary>
-        /// Property to return the list of options available to the codec.
-        /// </summary>
-        public IGorgonOptionBag Options
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to set or return whether to read all frames from an image.
-        /// </summary>
-        /// <remarks>
-        /// Some codecs do not use multiple frames in their image data. For those codecs, this flag will be ignored.
-        /// </remarks>
-        bool IGorgonImageCodecDecodingOptions.ReadAllFrames
-        {
-            get => false;
-            set
-            {
-                // Intentionally left blank.
-            }
-        }
-
-        /// <summary>
-        /// Property to set or return whether the to force alpha values of 0 in the image to be fully opaque.
-        /// </summary>
-        /// <remarks>
-        /// <para>
-        /// Some TGA encoded images write out 32 bit images with an alpha value of 0 even though the image has fully opaque color data. This causes an image to appear to be completely transparent when it 
-        /// shouldn't be. Use this flag to force the image to set the alpha channel to fully opaque in such cases.
-        /// </para>
-        /// <para>
-        /// Note that this only works on images where all the alpha values are set to 0. If there is a mix of alpha values in the image, then this option will have no effect.
-        /// </para>
-        /// <para>
-        /// The default value is <b>true</b>.
-        /// </para>
-        /// </remarks>
-        public bool SetZeroAlphaAsOpaque
-        {
-            get => Options.GetOptionValue<bool>(nameof(SetZeroAlphaAsOpaque));
-
-            set => Options.SetOptionValue(nameof(SetZeroAlphaAsOpaque), value);
-        }
-        #endregion
-
-        #region Constructor/Finalizer.
-        /// <summary>
-        /// Initializes a new instance of the <see cref="GorgonTgaDecodingOptions"/> class.
-        /// </summary>
-        public GorgonTgaDecodingOptions() => Options = new GorgonOptionBag(new[]
-                                          {
-                                              GorgonOption.CreateOption(nameof(SetZeroAlphaAsOpaque), true, Resources.GORIMG_OPT_TGA_SETZEROALPHA_OPAQUE)
-                                          });
-        #endregion
+        get;
     }
+
+    /// <summary>
+    /// Property to set or return whether to read all frames from an image.
+    /// </summary>
+    /// <remarks>
+    /// Some codecs do not use multiple frames in their image data. For those codecs, this flag will be ignored.
+    /// </remarks>
+    bool IGorgonImageCodecDecodingOptions.ReadAllFrames
+    {
+        get => false;
+        set
+        {
+            // Intentionally left blank.
+        }
+    }
+
+    /// <summary>
+    /// Property to set or return whether the to force alpha values of 0 in the image to be fully opaque.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// Some TGA encoded images write out 32 bit images with an alpha value of 0 even though the image has fully opaque color data. This causes an image to appear to be completely transparent when it 
+    /// shouldn't be. Use this flag to force the image to set the alpha channel to fully opaque in such cases.
+    /// </para>
+    /// <para>
+    /// Note that this only works on images where all the alpha values are set to 0. If there is a mix of alpha values in the image, then this option will have no effect.
+    /// </para>
+    /// <para>
+    /// The default value is <b>true</b>.
+    /// </para>
+    /// </remarks>
+    public bool SetZeroAlphaAsOpaque
+    {
+        get => Options.GetOptionValue<bool>(nameof(SetZeroAlphaAsOpaque));
+
+        set => Options.SetOptionValue(nameof(SetZeroAlphaAsOpaque), value);
+    }
+    #endregion
+
+    #region Constructor/Finalizer.
+    /// <summary>
+    /// Initializes a new instance of the <see cref="GorgonTgaDecodingOptions"/> class.
+    /// </summary>
+    public GorgonTgaDecodingOptions() => Options = new GorgonOptionBag(new[]
+                                      {
+                                          GorgonOption.CreateOption(nameof(SetZeroAlphaAsOpaque), true, Resources.GORIMG_OPT_TGA_SETZEROALPHA_OPAQUE)
+                                      });
+    #endregion
 }

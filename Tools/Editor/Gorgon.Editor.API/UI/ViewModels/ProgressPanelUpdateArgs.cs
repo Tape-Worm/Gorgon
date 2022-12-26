@@ -26,57 +26,56 @@
 
 using System;
 
-namespace Gorgon.Editor.UI
+namespace Gorgon.Editor.UI;
+
+/// <summary>
+/// Arguments used for the 
+/// </summary>
+public class ProgressPanelUpdateArgs
+    : EventArgs
 {
     /// <summary>
-    /// Arguments used for the 
+    /// Property to set or return the method to execute when the operation is cancelled from the panel.
     /// </summary>
-    public class ProgressPanelUpdateArgs
-        : EventArgs
+    public Action CancelAction
     {
-        /// <summary>
-        /// Property to set or return the method to execute when the operation is cancelled from the panel.
-        /// </summary>
-        public Action CancelAction
-        {
-            get;
-            set;
-        }
+        get;
+        set;
+    }
 
-        /// <summary>
-        /// Property to set or return the title for the panel.
-        /// </summary>
-        public string Title
-        {
-            get;
-            set;
-        }
+    /// <summary>
+    /// Property to set or return the title for the panel.
+    /// </summary>
+    public string Title
+    {
+        get;
+        set;
+    }
 
-        /// <summary>
-        /// Property to set or return the message for the panel.
-        /// </summary>
-        public string Message
-        {
-            get;
-            set;
-        }
+    /// <summary>
+    /// Property to set or return the message for the panel.
+    /// </summary>
+    public string Message
+    {
+        get;
+        set;
+    }
 
-        /// <summary>
-        /// Property to set or return the percentage complete as a normalized (0..1) value.
-        /// </summary>
-        public float PercentageComplete
-        {
-            get;
-            set;
-        }
+    /// <summary>
+    /// Property to set or return the percentage complete as a normalized (0..1) value.
+    /// </summary>
+    public float PercentageComplete
+    {
+        get;
+        set;
+    }
 
-        /// <summary>
-        /// Property to set or return whether to use a marquee for the progress bar.
-        /// </summary>
-        public bool IsMarquee
-        {
-            get;
-            set;
-        }
+    /// <summary>
+    /// Property to set or return whether to use a marquee for the progress bar.
+    /// </summary>
+    public bool IsMarquee
+    {
+        get;
+        set;
     }
 }

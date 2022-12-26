@@ -35,33 +35,32 @@ using Gorgon.Editor.Services;
 using Gorgon.Editor.UI;
 using Gorgon.Editor.UI.ViewModels;
 
-namespace Gorgon.Editor.FontEditor
+namespace Gorgon.Editor.FontEditor;
+
+/// <summary>
+/// Parameters for the <see cref="FontTextureBrush"/> view model.
+/// </summary>
+internal class FontTextureBrushParameters
+    : HostedPanelViewModelParameters
 {
+    #region Properties.
     /// <summary>
-    /// Parameters for the <see cref="FontTextureBrush"/> view model.
+    /// Property to return the service used to load texture images.
     /// </summary>
-    internal class FontTextureBrushParameters
-        : HostedPanelViewModelParameters
+    public ImageLoadService ImageLoader
     {
-        #region Properties.
-        /// <summary>
-        /// Property to return the service used to load texture images.
-        /// </summary>
-        public ImageLoadService ImageLoader
-        {
-            get;
-        }
-        #endregion
-
-        #region Constructor/Finalizer.
-        /// <summary>Initializes a new instance of the <see cref="FontTextureBrushParameters" /> class.</summary>
-        /// <param name="imageLoader">The service used to load images.</param>
-        /// <param name="hostServices">The services from the host application.</param>
-        /// <exception cref="ArgumentNullException">Thrown when any of the parameters are <b>null</b>.</exception>
-        public FontTextureBrushParameters(ImageLoadService imageLoader, IHostContentServices hostServices)
-            : base(hostServices)
-                => ImageLoader = imageLoader ?? throw new ArgumentNullException(nameof(imageLoader));
-        #endregion
-
+        get;
     }
+    #endregion
+
+    #region Constructor/Finalizer.
+    /// <summary>Initializes a new instance of the <see cref="FontTextureBrushParameters" /> class.</summary>
+    /// <param name="imageLoader">The service used to load images.</param>
+    /// <param name="hostServices">The services from the host application.</param>
+    /// <exception cref="ArgumentNullException">Thrown when any of the parameters are <b>null</b>.</exception>
+    public FontTextureBrushParameters(ImageLoadService imageLoader, IHostContentServices hostServices)
+        : base(hostServices)
+            => ImageLoader = imageLoader ?? throw new ArgumentNullException(nameof(imageLoader));
+    #endregion
+
 }

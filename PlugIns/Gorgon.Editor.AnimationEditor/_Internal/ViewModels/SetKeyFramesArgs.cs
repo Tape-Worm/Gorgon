@@ -26,29 +26,28 @@
 
 using System.Collections.Generic;
 
-namespace Gorgon.Editor.AnimationEditor
+namespace Gorgon.Editor.AnimationEditor;
+
+/// <summary>
+/// The arguments for the <see cref="ITrack.SetKeyFramesCommand"/>.
+/// </summary>
+internal class SetKeyFramesArgs
 {
     /// <summary>
-    /// The arguments for the <see cref="ITrack.SetKeyFramesCommand"/>.
+    /// Property to set or return the key frames to set.
     /// </summary>
-    internal class SetKeyFramesArgs
+    public IReadOnlyList<IKeyFrame> KeyFrames
     {
-        /// <summary>
-        /// Property to set or return the key frames to set.
-        /// </summary>
-        public IReadOnlyList<IKeyFrame> KeyFrames
-        {
-            get;
-            set;
-        }
+        get;
+        set;
+    }
 
-        /// <summary>
-        /// Property to set or return the maximum number of key frames in the track.
-        /// </summary>
-        public int MaxKeyFrameCount
-        {
-            get;
-            set;
-        }
+    /// <summary>
+    /// Property to set or return the maximum number of key frames in the track.
+    /// </summary>
+    public int MaxKeyFrameCount
+    {
+        get;
+        set;
     }
 }

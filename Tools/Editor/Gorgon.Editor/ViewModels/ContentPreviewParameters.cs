@@ -30,52 +30,51 @@ using Gorgon.Editor.Content;
 using Gorgon.Editor.PlugIns;
 using Gorgon.IO;
 
-namespace Gorgon.Editor.ViewModels
+namespace Gorgon.Editor.ViewModels;
+
+/// <summary>
+/// Parameters for the <see cref="IContentPreview"/> view model.
+/// </summary>
+internal class ContentPreviewParameters
+    : ViewModelCommonParameters
 {
+    #region Properties.
     /// <summary>
-    /// Parameters for the <see cref="IContentPreview"/> view model.
+    /// Property to set or return the file explorer view model.
     /// </summary>
-    internal class ContentPreviewParameters
-        : ViewModelCommonParameters
+    public IFileExplorer FileExplorer
     {
-        #region Properties.
-        /// <summary>
-        /// Property to set or return the file explorer view model.
-        /// </summary>
-        public IFileExplorer FileExplorer
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// Property to set or return the file manager for content.
-        /// </summary>
-        public IContentFileManager ContentFileManager
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// Property to set or return the file system to the temporary area in the project.
-        /// </summary>
-        public IGorgonFileSystemWriter<Stream> TempFileSystem
-        {
-            get;
-            set;
-        }
-        #endregion
-
-        #region Constructor/Finalizer.
-        /// <summary>Initializes a new instance of the <see cref="ContentPreviewParameters"/> class.</summary>
-        /// <param name="hostServices">The services from the host application.</param>
-        /// <param name="viewModelFactory">The view model factory for creating view models.</param>
-        /// <exception cref="ArgumentNullException">Thrown when any of the parameters are <b>null</b>.</exception>
-        public ContentPreviewParameters(IHostContentServices hostServices, ViewModelFactory viewModelFactory)
-            : base(hostServices, viewModelFactory)
-        {
-        }
-        #endregion
+        get;
+        set;
     }
+
+    /// <summary>
+    /// Property to set or return the file manager for content.
+    /// </summary>
+    public IContentFileManager ContentFileManager
+    {
+        get;
+        set;
+    }
+
+    /// <summary>
+    /// Property to set or return the file system to the temporary area in the project.
+    /// </summary>
+    public IGorgonFileSystemWriter<Stream> TempFileSystem
+    {
+        get;
+        set;
+    }
+    #endregion
+
+    #region Constructor/Finalizer.
+    /// <summary>Initializes a new instance of the <see cref="ContentPreviewParameters"/> class.</summary>
+    /// <param name="hostServices">The services from the host application.</param>
+    /// <param name="viewModelFactory">The view model factory for creating view models.</param>
+    /// <exception cref="ArgumentNullException">Thrown when any of the parameters are <b>null</b>.</exception>
+    public ContentPreviewParameters(IHostContentServices hostServices, ViewModelFactory viewModelFactory)
+        : base(hostServices, viewModelFactory)
+    {
+    }
+    #endregion
 }

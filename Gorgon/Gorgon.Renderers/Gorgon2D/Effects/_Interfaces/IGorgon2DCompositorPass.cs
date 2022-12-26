@@ -27,38 +27,37 @@
 using Gorgon.Core;
 using Gorgon.Graphics;
 
-namespace Gorgon.Renderers
+namespace Gorgon.Renderers;
+
+/// <summary>
+/// Information about a single pass in a <see cref="Gorgon2DCompositor"/>.
+/// </summary>
+public interface IGorgon2DCompositorPass
+    : IGorgonNamedObject
 {
     /// <summary>
-    /// Information about a single pass in a <see cref="Gorgon2DCompositor"/>.
+    /// Property to set or return the color to use when clearing the active render target.
     /// </summary>
-    public interface IGorgon2DCompositorPass
-        : IGorgonNamedObject
+    /// <remarks>
+    /// <para>
+    ///  If this value is set to <b>null</b>, then the current target will not be cleared.
+    /// </para>
+    /// <para>
+    /// The default value is <b>null</b>.
+    /// </para>
+    /// </remarks>
+    GorgonColor? ClearColor
     {
-        /// <summary>
-        /// Property to set or return the color to use when clearing the active render target.
-        /// </summary>
-        /// <remarks>
-        /// <para>
-        ///  If this value is set to <b>null</b>, then the current target will not be cleared.
-        /// </para>
-        /// <para>
-        /// The default value is <b>null</b>.
-        /// </para>
-        /// </remarks>
-        GorgonColor? ClearColor
-        {
-            get;
-            set;
-        }
+        get;
+        set;
+    }
 
-        /// <summary>
-        /// Property to set or return whether the effect is enabled or not.
-        /// </summary>
-        bool Enabled
-        {
-            get;
-            set;
-        }
+    /// <summary>
+    /// Property to set or return whether the effect is enabled or not.
+    /// </summary>
+    bool Enabled
+    {
+        get;
+        set;
     }
 }

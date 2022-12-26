@@ -29,116 +29,115 @@ using System.Windows.Forms;
 using Gorgon.Editor.ProjectData;
 using DX = SharpDX;
 
-namespace Gorgon.Editor
+namespace Gorgon.Editor;
+
+/// <summary>
+/// The settings used by the editor.
+/// </summary>
+internal class EditorSettings
 {
     /// <summary>
-    /// The settings used by the editor.
+    /// Property to set or return the window boundaries.
     /// </summary>
-    internal class EditorSettings
+    public DX.Rectangle? WindowBounds
     {
-        /// <summary>
-        /// Property to set or return the window boundaries.
-        /// </summary>
-        public DX.Rectangle? WindowBounds
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// Property to set or return the path used for the application plug ins.
-        /// </summary>
-        public string PlugInPath
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// Property to set or return the last file open/save path.
-        /// </summary>
-        public string LastOpenSavePath
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// Property to set or return the previous project working directory.
-        /// </summary>
-        public string LastProjectWorkingDirectory
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// Property to set or return the last window state.
-        /// </summary>
-        public int WindowState
-        {
-            get;
-            set;
-        } = (int)FormWindowState.Maximized;
-
-        /// <summary>
-        /// Property to return the list of recent file items.
-        /// </summary>
-        public List<RecentItem> RecentFiles
-        {
-            get;
-            private set;
-        } = new List<RecentItem>();
-
-        /// <summary>
-        /// Property to set or return the flag to indicate that the file explorer is visible.
-        /// </summary>
-        public bool ShowFileExplorer
-        {
-            get;
-            set;
-        } = true;
-
-        /// <summary>
-        /// Property to set or return the flag to indicate that the content preview is visible.
-        /// </summary>
-        public bool ShowContentPreview
-        {
-            get;
-            set;
-        } = true;
-
-        /// <summary>
-        /// Property to set or return the distance between the main content panel, and the file explorer.
-        /// </summary>
-        /// <remarks>
-        /// This value is a percentage value between 1 - 99.
-        /// </remarks>
-        public int SplitMainDistance
-        {
-            get;
-            set;
-        } = 80;
-
-        /// <summary>
-        /// Property to set or return the distance between the file explorer and the preview panel.
-        /// </summary>
-        /// <remarks>
-        /// This value is a percentage value between 1 - 99.
-        /// </remarks>
-        public int SplitPreviewDistance
-        {
-            get;
-            set;
-        } = 60;
-
-        /// <summary>
-        /// Property to set or return the distance between the directory listing and the file listing in the file explorer panel.
-        /// </summary>
-        public int SplitDirFileDistance
-        {
-            get;
-            set;
-        } = 40;
+        get;
+        set;
     }
+
+    /// <summary>
+    /// Property to set or return the path used for the application plug ins.
+    /// </summary>
+    public string PlugInPath
+    {
+        get;
+        set;
+    }
+
+    /// <summary>
+    /// Property to set or return the last file open/save path.
+    /// </summary>
+    public string LastOpenSavePath
+    {
+        get;
+        set;
+    }
+
+    /// <summary>
+    /// Property to set or return the previous project working directory.
+    /// </summary>
+    public string LastProjectWorkingDirectory
+    {
+        get;
+        set;
+    }
+
+    /// <summary>
+    /// Property to set or return the last window state.
+    /// </summary>
+    public int WindowState
+    {
+        get;
+        set;
+    } = (int)FormWindowState.Maximized;
+
+    /// <summary>
+    /// Property to return the list of recent file items.
+    /// </summary>
+    public List<RecentItem> RecentFiles
+    {
+        get;
+        private set;
+    } = new List<RecentItem>();
+
+    /// <summary>
+    /// Property to set or return the flag to indicate that the file explorer is visible.
+    /// </summary>
+    public bool ShowFileExplorer
+    {
+        get;
+        set;
+    } = true;
+
+    /// <summary>
+    /// Property to set or return the flag to indicate that the content preview is visible.
+    /// </summary>
+    public bool ShowContentPreview
+    {
+        get;
+        set;
+    } = true;
+
+    /// <summary>
+    /// Property to set or return the distance between the main content panel, and the file explorer.
+    /// </summary>
+    /// <remarks>
+    /// This value is a percentage value between 1 - 99.
+    /// </remarks>
+    public int SplitMainDistance
+    {
+        get;
+        set;
+    } = 80;
+
+    /// <summary>
+    /// Property to set or return the distance between the file explorer and the preview panel.
+    /// </summary>
+    /// <remarks>
+    /// This value is a percentage value between 1 - 99.
+    /// </remarks>
+    public int SplitPreviewDistance
+    {
+        get;
+        set;
+    } = 60;
+
+    /// <summary>
+    /// Property to set or return the distance between the directory listing and the file listing in the file explorer panel.
+    /// </summary>
+    public int SplitDirFileDistance
+    {
+        get;
+        set;
+    } = 40;
 }

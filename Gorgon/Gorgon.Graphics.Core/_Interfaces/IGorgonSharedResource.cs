@@ -25,23 +25,22 @@
 #endregion
 
 
-namespace Gorgon.Graphics
+namespace Gorgon.Graphics;
+
+/// <summary>
+/// Provides the ability return a shared resource for passing objects to other APIs.
+/// </summary>
+public interface IGorgonSharedResource
+    : IGorgonNativeResource
 {
     /// <summary>
-    /// Provides the ability return a shared resource for passing objects to other APIs.
+    /// Function to retrieve the shared resource handle for this resource.
     /// </summary>
-    public interface IGorgonSharedResource
-        : IGorgonNativeResource
-    {
-        /// <summary>
-        /// Function to retrieve the shared resource handle for this resource.
-        /// </summary>
-        /// <returns>A pointer representing a handle for sharing the resource data with other interfaces.</returns>
-        /// <remarks>
-        /// <para>
-        /// This is used to retrieve a handle to the shared resource that allows applications to share the resource with other APIs (e.g. Direct 2D). 
-        /// </para>
-        /// </remarks>        
-        nint GetSharedHandle();
-    }
+    /// <returns>A pointer representing a handle for sharing the resource data with other interfaces.</returns>
+    /// <remarks>
+    /// <para>
+    /// This is used to retrieve a handle to the shared resource that allows applications to share the resource with other APIs (e.g. Direct 2D). 
+    /// </para>
+    /// </remarks>        
+    nint GetSharedHandle();
 }

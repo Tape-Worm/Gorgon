@@ -31,102 +31,101 @@ using Drawing = System.Drawing;
 using Gorgon.Editor.UI;
 using System.ComponentModel.DataAnnotations;
 
-namespace Gorgon.Editor.FontEditor
+namespace Gorgon.Editor.FontEditor;
+
+/// <summary>
+/// View model for the font character selection view.
+/// </summary>
+internal class FontCharacterSelection
+    : HostedPanelViewModelBase<FontCharacterSelectionParameters>, IFontCharacterSelection
 {
-    /// <summary>
-    /// View model for the font character selection view.
-    /// </summary>
-    internal class FontCharacterSelection
-        : HostedPanelViewModelBase<FontCharacterSelectionParameters>, IFontCharacterSelection
+    #region Variables.
+    // The characters to use as glyphs.
+    private IEnumerable<char> _characters = FontService.DefaultCharacters;
+    // The font generation service.
+    private FontService _fontService;
+    // The current font.
+    private Drawing.Font _currentFont;
+    #endregion
+
+    #region Properties.
+    /// <summary>Property to set or return the characters to use as the font glyphs.</summary>
+    public IEnumerable<char> Characters
     {
-        #region Variables.
-        // The characters to use as glyphs.
-        private IEnumerable<char> _characters = FontService.DefaultCharacters;
-        // The font generation service.
-        private FontService _fontService;
-        // The current font.
-        private Drawing.Font _currentFont;
-        #endregion
-
-        #region Properties.
-        /// <summary>Property to set or return the characters to use as the font glyphs.</summary>
-        public IEnumerable<char> Characters
+        get => _characters;
+        set
         {
-            get => _characters;
-            set
+            if (value is null)
             {
-                if (value is null)
-                {
-                    value = Array.Empty<char>();
-                }
-
-                if ((_characters == value) || (_characters.SequenceEqual(value)))
-                {
-                    return;
-                }
-
-                OnPropertyChanging();
-                _characters = value;
-                OnPropertyChanged();
+                value = Array.Empty<char>();
             }
-        }
 
-        /// <summary>
-        /// Property to return the current font.
-        /// </summary>
-        public Drawing.Font CurrentFont
-        {
-            get => _currentFont;
-            private set
+            if ((_characters == value) || (_characters.SequenceEqual(value)))
             {
-                if (_currentFont == value)
-                {
-                    return;
-                }
-
-                OnPropertyChanging();
-                _currentFont = value;
-                OnPropertyChanged();
+                return;
             }
+
+            OnPropertyChanging();
+            _characters = value;
+            OnPropertyChanged();
         }
-
-        /// <summary>Property to return whether the panel is modal.</summary>
-        public override bool IsModal => true;
-        #endregion
-
-        #region Methods.
-        /// <summary>Function to inject dependencies for the view model.</summary>
-        /// <param name="injectionParameters">The parameters to inject.</param>
-        /// <remarks>
-        ///   <para>
-        /// Applications should call this when setting up the view model for complex operations and/or dependency injection. The constructor should only be used for simple set up and initialization of objects.
-        /// </para>
-        ///   <para>
-        /// This method is only ever called after the view model has been created, and never again during the lifetime of the view model.
-        /// </para>
-        /// </remarks>
-        protected override void OnInitialize(FontCharacterSelectionParameters injectionParameters)
-            => _fontService = injectionParameters.FontService;
-
-        /// <summary>Function called when the associated view is loaded.</summary>
-        protected override void OnLoad()
-        {
-            base.OnLoad();
-
-            if (CurrentFont is null)
-            {
-                CurrentFont = new Drawing.Font(_fontService.WorkerFont.FontFamilyName, 16.0f, Drawing.GraphicsUnit.Pixel);
-            }
-        }
-
-        /// <summary>Function called when the associated view is unloaded.</summary>
-        /// <remarks>This method is used to perform tear down and clean up of resources.</remarks>
-        protected override void OnUnload()
-        {
-            _currentFont?.Dispose();
-
-            base.OnUnload();
-        }
-        #endregion
     }
+
+    /// <summary>
+    /// Property to return the current font.
+    /// </summary>
+    public Drawing.Font CurrentFont
+    {
+        get => _currentFont;
+        private set
+        {
+            if (_currentFont == value)
+            {
+                return;
+            }
+
+            OnPropertyChanging();
+            _currentFont = value;
+            OnPropertyChanged();
+        }
+    }
+
+    /// <summary>Property to return whether the panel is modal.</summary>
+    public override bool IsModal => true;
+    #endregion
+
+    #region Methods.
+    /// <summary>Function to inject dependencies for the view model.</summary>
+    /// <param name="injectionParameters">The parameters to inject.</param>
+    /// <remarks>
+    ///   <para>
+    /// Applications should call this when setting up the view model for complex operations and/or dependency injection. The constructor should only be used for simple set up and initialization of objects.
+    /// </para>
+    ///   <para>
+    /// This method is only ever called after the view model has been created, and never again during the lifetime of the view model.
+    /// </para>
+    /// </remarks>
+    protected override void OnInitialize(FontCharacterSelectionParameters injectionParameters)
+        => _fontService = injectionParameters.FontService;
+
+    /// <summary>Function called when the associated view is loaded.</summary>
+    protected override void OnLoad()
+    {
+        base.OnLoad();
+
+        if (CurrentFont is null)
+        {
+            CurrentFont = new Drawing.Font(_fontService.WorkerFont.FontFamilyName, 16.0f, Drawing.GraphicsUnit.Pixel);
+        }
+    }
+
+    /// <summary>Function called when the associated view is unloaded.</summary>
+    /// <remarks>This method is used to perform tear down and clean up of resources.</remarks>
+    protected override void OnUnload()
+    {
+        _currentFont?.Dispose();
+
+        base.OnUnload();
+    }
+    #endregion
 }

@@ -26,74 +26,73 @@
 
 using Gorgon.Core;
 
-namespace Gorgon.Graphics.Core
+namespace Gorgon.Graphics.Core;
+
+/// <summary>
+/// Common functionality for the a state fluent builder.
+/// </summary>
+/// <typeparam name="TB">The type of builder.</typeparam>
+/// <typeparam name="TRs">The type of state.</typeparam>
+public abstract class GorgonStateBuilderCommon<TB, TRs>
+    : IGorgonFluentBuilder<TB, TRs>
+    where TB : GorgonStateBuilderCommon<TB, TRs>
+    where TRs : class
 {
+    #region Properties.
     /// <summary>
-    /// Common functionality for the a state fluent builder.
+    /// Property to set or return the state being edited.
     /// </summary>
-    /// <typeparam name="TB">The type of builder.</typeparam>
-    /// <typeparam name="TRs">The type of state.</typeparam>
-    public abstract class GorgonStateBuilderCommon<TB, TRs>
-        : IGorgonFluentBuilder<TB, TRs>
-        where TB : GorgonStateBuilderCommon<TB, TRs>
-        where TRs : class
+    protected TRs WorkingState
     {
-        #region Properties.
-        /// <summary>
-        /// Property to set or return the state being edited.
-        /// </summary>
-        protected TRs WorkingState
-        {
-            get;
-        }
-        #endregion
-
-        #region Methods.
-        /// <summary>
-        /// Function to create a new state with the properties copied from the working copy.
-        /// </summary>
-        /// <returns>The new render state.</returns>
-        protected abstract TRs OnCreateState();
-
-        /// <summary>
-        /// Function to reset the builder to the specified state.
-        /// </summary>
-        /// <param name="state">The state to copy from.</param>
-        /// <returns>The fluent builder interface.</returns>
-        protected abstract TB OnResetTo(TRs state);
-
-        /// <summary>
-        /// Function to clear the working state for the builder.
-        /// </summary>
-        /// <returns>The fluent builder interface.</returns>
-        protected abstract TB OnClearState();
-
-        /// <summary>
-        /// Function to return the state.
-        /// </summary>
-        /// <returns>The state created or updated by this builder.</returns>
-        public TRs Build() => OnCreateState();
-
-        /// <summary>
-        /// Function to reset the builder to the specified state.
-        /// </summary>
-        /// <param name="state">[Optional] The specified state to copy.</param>
-        /// <returns>The fluent builder interface.</returns>
-        public TB ResetTo(TRs state = null) => state is null ? Clear() : OnResetTo(state);
-
-        /// <summary>
-        /// Function to clear the builder to a default state.
-        /// </summary>
-        /// <returns>The fluent builder interface.</returns>
-        public TB Clear() => OnClearState();
-        #endregion
-
-        #region Constructor/Finalizer.
-        /// <summary>
-        /// Initializes a new instance of the <see cref="GorgonStateBuilderCommon{TB,TRs}"/> class.
-        /// </summary>
-        /// <param name="renderState">The render state to use as a worker.</param>
-        private protected GorgonStateBuilderCommon(TRs renderState) => WorkingState = renderState;
-        #endregion
+        get;
     }
+    #endregion
+
+    #region Methods.
+    /// <summary>
+    /// Function to create a new state with the properties copied from the working copy.
+    /// </summary>
+    /// <returns>The new render state.</returns>
+    protected abstract TRs OnCreateState();
+
+    /// <summary>
+    /// Function to reset the builder to the specified state.
+    /// </summary>
+    /// <param name="state">The state to copy from.</param>
+    /// <returns>The fluent builder interface.</returns>
+    protected abstract TB OnResetTo(TRs state);
+
+    /// <summary>
+    /// Function to clear the working state for the builder.
+    /// </summary>
+    /// <returns>The fluent builder interface.</returns>
+    protected abstract TB OnClearState();
+
+    /// <summary>
+    /// Function to return the state.
+    /// </summary>
+    /// <returns>The state created or updated by this builder.</returns>
+    public TRs Build() => OnCreateState();
+
+    /// <summary>
+    /// Function to reset the builder to the specified state.
+    /// </summary>
+    /// <param name="state">[Optional] The specified state to copy.</param>
+    /// <returns>The fluent builder interface.</returns>
+    public TB ResetTo(TRs state = null) => state is null ? Clear() : OnResetTo(state);
+
+    /// <summary>
+    /// Function to clear the builder to a default state.
+    /// </summary>
+    /// <returns>The fluent builder interface.</returns>
+    public TB Clear() => OnClearState();
+    #endregion
+
+    #region Constructor/Finalizer.
+    /// <summary>
+    /// Initializes a new instance of the <see cref="GorgonStateBuilderCommon{TB,TRs}"/> class.
+    /// </summary>
+    /// <param name="renderState">The render state to use as a worker.</param>
+    private protected GorgonStateBuilderCommon(TRs renderState) => WorkingState = renderState;
+    #endregion
 }

@@ -28,135 +28,134 @@ using Gorgon.Editor.UI;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Fonts;
 
-namespace Gorgon.Editor.FontEditor
+namespace Gorgon.Editor.FontEditor;
+
+/// <summary>
+/// The view model for the text color editor.
+/// </summary>
+internal class FontOutline
+    : HostedPanelViewModelBase<HostedPanelViewModelParameters>, IFontOutline
 {
+    #region Variables.
+    // The original color for the sprite.
+    private GorgonColor _originalStartColor = GorgonColor.Black;
+    // The current color for the sprite.
+    private GorgonColor _startColor = GorgonColor.Black;
+    // The original color for the sprite.
+    private GorgonColor _originalEndColor = GorgonColor.Black;
+    // The current color for the sprite.
+    private GorgonColor _endColor = GorgonColor.Black;
+    // The size of the outline.
+    private int _outlineSize;
+    #endregion
+
+    #region Properties.
     /// <summary>
-    /// The view model for the text color editor.
+    /// Property to set or return the size of the outline.
     /// </summary>
-    internal class FontOutline
-        : HostedPanelViewModelBase<HostedPanelViewModelParameters>, IFontOutline
+    public int OutlineSize
     {
-        #region Variables.
-        // The original color for the sprite.
-        private GorgonColor _originalStartColor = GorgonColor.Black;
-        // The current color for the sprite.
-        private GorgonColor _startColor = GorgonColor.Black;
-        // The original color for the sprite.
-        private GorgonColor _originalEndColor = GorgonColor.Black;
-        // The current color for the sprite.
-        private GorgonColor _endColor = GorgonColor.Black;
-        // The size of the outline.
-        private int _outlineSize;
-        #endregion
-
-        #region Properties.
-        /// <summary>
-        /// Property to set or return the size of the outline.
-        /// </summary>
-        public int OutlineSize
+        get => _outlineSize;
+        set
         {
-            get => _outlineSize;
-            set
+            if (_outlineSize == value)
             {
-                if (_outlineSize == value)
-                {
-                    return;
-                }
-
-                OnPropertyChanging();
-                _outlineSize = value;
-                OnPropertyChanged();
+                return;
             }
+
+            OnPropertyChanging();
+            _outlineSize = value;
+            OnPropertyChanged();
         }
-
-        /// <summary>Property to set or return the currently selected start color.</summary>
-        public GorgonColor SelectedStartColor
-        {
-            get => _startColor;
-            set
-            {
-                if (_startColor.Equals(in value))
-                {
-                    return;
-                }
-
-                OnPropertyChanging();
-                _startColor = value;
-                OnPropertyChanged();
-            }
-        }
-
-        /// <summary>
-        /// Property to set or return the original start color.
-        /// </summary>
-        public GorgonColor OriginalStartColor
-        {
-            get => _originalStartColor;
-            set
-            {
-                if (_originalStartColor.Equals(in value))
-                {
-                    return;
-                }
-
-                OnPropertyChanging();
-                _originalStartColor = value;
-                OnPropertyChanged();
-            }
-        }
-
-        /// <summary>
-        /// Property to set or return the original color for the text.
-        /// </summary>
-        public GorgonColor OriginalEndColor
-        {
-            get => _originalEndColor;
-            set
-            {
-                if (_originalEndColor.Equals(in value))
-                {
-                    return;
-                }
-
-                OnPropertyChanging();
-                _originalEndColor = value;
-                OnPropertyChanged();
-            }
-        }
-
-        /// <summary>
-        /// Property to set or return the currently selected color.
-        /// </summary>
-        public GorgonColor SelectedEndColor
-        {
-            get => _outlineSize < 3 ? _startColor : _endColor;
-            set
-            {
-                if (_endColor.Equals(in value))
-                {
-                    return;
-                }
-
-                OnPropertyChanging();
-                _endColor = value;
-                OnPropertyChanged();
-            }
-        }
-
-        /// <summary>Property to return whether the panel is modal.</summary>
-        public override bool IsModal => true;
-        #endregion
-
-        #region Methods.
-        /// <summary>Function to inject dependencies for the view model.</summary>
-        /// <param name="injectionParameters">The parameters to inject.</param>
-        /// <remarks>
-        /// Applications should call this when setting up the view model for complex operations and/or dependency injection. The constructor should only be used for simple set up and initialization of objects.
-        /// </remarks>
-        protected override void OnInitialize(HostedPanelViewModelParameters injectionParameters)
-        {
-            // Nothing to inject.
-        }
-        #endregion
     }
+
+    /// <summary>Property to set or return the currently selected start color.</summary>
+    public GorgonColor SelectedStartColor
+    {
+        get => _startColor;
+        set
+        {
+            if (_startColor.Equals(in value))
+            {
+                return;
+            }
+
+            OnPropertyChanging();
+            _startColor = value;
+            OnPropertyChanged();
+        }
+    }
+
+    /// <summary>
+    /// Property to set or return the original start color.
+    /// </summary>
+    public GorgonColor OriginalStartColor
+    {
+        get => _originalStartColor;
+        set
+        {
+            if (_originalStartColor.Equals(in value))
+            {
+                return;
+            }
+
+            OnPropertyChanging();
+            _originalStartColor = value;
+            OnPropertyChanged();
+        }
+    }
+
+    /// <summary>
+    /// Property to set or return the original color for the text.
+    /// </summary>
+    public GorgonColor OriginalEndColor
+    {
+        get => _originalEndColor;
+        set
+        {
+            if (_originalEndColor.Equals(in value))
+            {
+                return;
+            }
+
+            OnPropertyChanging();
+            _originalEndColor = value;
+            OnPropertyChanged();
+        }
+    }
+
+    /// <summary>
+    /// Property to set or return the currently selected color.
+    /// </summary>
+    public GorgonColor SelectedEndColor
+    {
+        get => _outlineSize < 3 ? _startColor : _endColor;
+        set
+        {
+            if (_endColor.Equals(in value))
+            {
+                return;
+            }
+
+            OnPropertyChanging();
+            _endColor = value;
+            OnPropertyChanged();
+        }
+    }
+
+    /// <summary>Property to return whether the panel is modal.</summary>
+    public override bool IsModal => true;
+    #endregion
+
+    #region Methods.
+    /// <summary>Function to inject dependencies for the view model.</summary>
+    /// <param name="injectionParameters">The parameters to inject.</param>
+    /// <remarks>
+    /// Applications should call this when setting up the view model for complex operations and/or dependency injection. The constructor should only be used for simple set up and initialization of objects.
+    /// </remarks>
+    protected override void OnInitialize(HostedPanelViewModelParameters injectionParameters)
+    {
+        // Nothing to inject.
+    }
+    #endregion
 }

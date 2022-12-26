@@ -37,12 +37,12 @@ using Gorgon.Math;
 using Gorgon.Renderers;
 using DX = SharpDX;
 
-namespace Gorgon.Editor.ImageSplitTool
-{
-    /// <summary>
-    /// The renderer used to draw the preview for the selected image.
-    /// </summary>
-    internal class Renderer
+namespace Gorgon.Editor.ImageSplitTool;
+
+/// <summary>
+/// The renderer used to draw the preview for the selected image.
+/// </summary>
+internal class Renderer
 		: DefaultToolRenderer<ISplit>
 	{
 		#region Variables.
@@ -103,10 +103,10 @@ namespace Gorgon.Editor.ImageSplitTool
 			return new DX.Rectangle(left, top, size, size);
 		}
 
-        /// <summary>Releases unmanaged and - optionally - managed resources.</summary>
-        /// <param name="disposing">
-        ///   <c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
-        protected override void Dispose(bool disposing)
+    /// <summary>Releases unmanaged and - optionally - managed resources.</summary>
+    /// <param name="disposing">
+    ///   <c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
+    protected override void Dispose(bool disposing)
 		{
 			if (disposing)
 			{
@@ -130,10 +130,10 @@ namespace Gorgon.Editor.ImageSplitTool
 			}
 		}
 
-        /// <summary>Function called when a property on the <see cref="DefaultToolRenderer{T}.DataContext"/> has been changed.</summary>
-        /// <param name="propertyName">The name of the property that was changed.</param>
-        /// <remarks>Developers should override this method to detect changes on the content view model and reflect those changes in the rendering.</remarks>
-        protected override void OnPropertyChanged(string propertyName)
+    /// <summary>Function called when a property on the <see cref="DefaultToolRenderer{T}.DataContext"/> has been changed.</summary>
+    /// <param name="propertyName">The name of the property that was changed.</param>
+    /// <remarks>Developers should override this method to detect changes on the content view model and reflect those changes in the rendering.</remarks>
+    protected override void OnPropertyChanged(string propertyName)
 		{
 			switch (propertyName)
 			{
@@ -144,9 +144,9 @@ namespace Gorgon.Editor.ImageSplitTool
 			}
 		}
 
-        /// <summary>Function to render the background.</summary>
-        /// <remarks>Developers can override this method to render a custom background.</remarks>
-        protected override void OnRenderBackground()
+    /// <summary>Function to render the background.</summary>
+    /// <remarks>Developers can override this method to render a custom background.</remarks>
+    protected override void OnRenderBackground()
 		{
 			MainRenderTarget.Clear(DarkFormsRenderer.WindowBackground);
 
@@ -203,8 +203,8 @@ namespace Gorgon.Editor.ImageSplitTool
 		}
 
 		/// <summary>
-        /// Function to initialize the renderer.
-        /// </summary>
+    /// Function to initialize the renderer.
+    /// </summary>
 		public void Initialize()
 		{
 			using (IGorgonImage image = Resources.Transparency_Pattern.ToGorgonImage())
@@ -236,4 +236,3 @@ namespace Gorgon.Editor.ImageSplitTool
 		}
 		#endregion
 	}
-}

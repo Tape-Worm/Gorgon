@@ -28,90 +28,89 @@ using System;
 using Gorgon.Graphics.Core;
 using Gorgon.Math;
 
-namespace Gorgon.Examples
+namespace Gorgon.Examples;
+
+/// <summary>
+/// The sobel edge detection shader.
+/// </summary>
+internal class Sobel
+    : IDisposable
 {
+    #region Variables.
+    // The compute engine to use.
+    private readonly GorgonComputeEngine _compute;
+    // The sobel constant data.
+    private readonly GorgonConstantBuffer _sobelData;
+    // The options to send to the sobel shader.
+    private readonly float[] _sobelOptions = new float[2];
+    // The dispatch call.
+    private GorgonDispatchCall _dispatch;
+    // The dispatch call builder.
+    private readonly GorgonDispatchCallBuilder _dispatchBuilder;
+    #endregion
+
+    #region Methods.
     /// <summary>
-    /// The sobel edge detection shader.
+    /// Function to process a texture into the output texture.
     /// </summary>
-    internal class Sobel
-        : IDisposable
+    /// <param name="texture">The texture to process.</param>
+    /// <param name="outputTexture">The output texture that will receive the processed texture.</param>
+    /// <param name="thickness">The thickness of the sobel lines.</param>
+    /// <param name="threshold">The threshold used to determine an edge.</param>
+    public void Process(GorgonTexture2DView texture, GorgonTexture2DReadWriteView outputTexture, int thickness, float threshold)
     {
-        #region Variables.
-        // The compute engine to use.
-        private readonly GorgonComputeEngine _compute;
-        // The sobel constant data.
-        private readonly GorgonConstantBuffer _sobelData;
-        // The options to send to the sobel shader.
-        private readonly float[] _sobelOptions = new float[2];
-        // The dispatch call.
-        private GorgonDispatchCall _dispatch;
-        // The dispatch call builder.
-        private readonly GorgonDispatchCallBuilder _dispatchBuilder;
-        #endregion
-
-        #region Methods.
-        /// <summary>
-        /// Function to process a texture into the output texture.
-        /// </summary>
-        /// <param name="texture">The texture to process.</param>
-        /// <param name="outputTexture">The output texture that will receive the processed texture.</param>
-        /// <param name="thickness">The thickness of the sobel lines.</param>
-        /// <param name="threshold">The threshold used to determine an edge.</param>
-        public void Process(GorgonTexture2DView texture, GorgonTexture2DReadWriteView outputTexture, int thickness, float threshold)
+        if ((texture is null)
+            || (outputTexture is null))
         {
-            if ((texture is null)
-                || (outputTexture is null))
-            {
-                return;
-            }
-
-            if ((_dispatch is null) || (_dispatch.ShaderResources[0] != texture) || (_dispatch.ReadWriteViews[0].ReadWriteView != outputTexture))
-            {
-                _dispatch = _dispatchBuilder.ReadWriteView(new GorgonReadWriteViewBinding(outputTexture))
-                                            .ShaderResource(texture)
-                                            .Build();
-            }
-
-            _sobelOptions[0] = thickness;
-            _sobelOptions[1] = threshold;
-            _sobelData.SetData<float>(_sobelOptions);
-
-            // Send 32 threads per group.
-            _compute.Execute(_dispatch, (int)(texture.Width / 32.0f).FastCeiling(), (int)(texture.Height / 32.0f).FastCeiling(), 1);
+            return;
         }
 
-        /// <summary>
-        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-        /// </summary>
-        public void Dispose() => _sobelData?.Dispose();
-        #endregion
-
-        #region Constructor/Finalizer.
-        /// <summary>
-        /// Initializes a new instance of the <see cref="Sobel"/> class.
-        /// </summary>
-        /// <param name="graphics">The graphics interface to use.</param>
-        /// <param name="sobelShader">The shader for sobel edge detection.</param>
-        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="graphics"/>, or the <paramref name="sobelShader"/> parameter is <b>null</b>.</exception>
-        public Sobel(GorgonGraphics graphics, GorgonComputeShader sobelShader)
+        if ((_dispatch is null) || (_dispatch.ShaderResources[0] != texture) || (_dispatch.ReadWriteViews[0].ReadWriteView != outputTexture))
         {
-            if (sobelShader is null)
-            {
-                throw new ArgumentNullException(nameof(sobelShader));
-            }
-
-            _compute = new GorgonComputeEngine(graphics);
-            _sobelData = new GorgonConstantBuffer(graphics,
-                                                  new GorgonConstantBufferInfo(16)
-                                                  {
-                                                      Name = "SobelData",
-                                                      Usage = ResourceUsage.Dynamic
-                                                  });
-
-            _dispatchBuilder = new GorgonDispatchCallBuilder();
-            _dispatchBuilder.ConstantBuffer(_sobelData.GetView())
-                            .ComputeShader(sobelShader);
+            _dispatch = _dispatchBuilder.ReadWriteView(new GorgonReadWriteViewBinding(outputTexture))
+                                        .ShaderResource(texture)
+                                        .Build();
         }
-        #endregion
+
+        _sobelOptions[0] = thickness;
+        _sobelOptions[1] = threshold;
+        _sobelData.SetData<float>(_sobelOptions);
+
+        // Send 32 threads per group.
+        _compute.Execute(_dispatch, (int)(texture.Width / 32.0f).FastCeiling(), (int)(texture.Height / 32.0f).FastCeiling(), 1);
     }
+
+    /// <summary>
+    /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+    /// </summary>
+    public void Dispose() => _sobelData?.Dispose();
+    #endregion
+
+    #region Constructor/Finalizer.
+    /// <summary>
+    /// Initializes a new instance of the <see cref="Sobel"/> class.
+    /// </summary>
+    /// <param name="graphics">The graphics interface to use.</param>
+    /// <param name="sobelShader">The shader for sobel edge detection.</param>
+    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="graphics"/>, or the <paramref name="sobelShader"/> parameter is <b>null</b>.</exception>
+    public Sobel(GorgonGraphics graphics, GorgonComputeShader sobelShader)
+    {
+        if (sobelShader is null)
+        {
+            throw new ArgumentNullException(nameof(sobelShader));
+        }
+
+        _compute = new GorgonComputeEngine(graphics);
+        _sobelData = new GorgonConstantBuffer(graphics,
+                                              new GorgonConstantBufferInfo(16)
+                                              {
+                                                  Name = "SobelData",
+                                                  Usage = ResourceUsage.Dynamic
+                                              });
+
+        _dispatchBuilder = new GorgonDispatchCallBuilder();
+        _dispatchBuilder.ConstantBuffer(_sobelData.GetView())
+                        .ComputeShader(sobelShader);
+    }
+    #endregion
 }

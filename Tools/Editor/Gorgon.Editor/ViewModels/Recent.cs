@@ -37,166 +37,165 @@ using Gorgon.Editor.Properties;
 using Gorgon.Editor.Services;
 using Gorgon.Editor.UI;
 
-namespace Gorgon.Editor.ViewModels
+namespace Gorgon.Editor.ViewModels;
+
+/// <summary>
+/// The view model for the recent files list.
+/// </summary>
+internal class Recent
+    : ViewModelBase<ViewModelCommonParameters, IHostContentServices>, IRecent
 {
-    /// <summary>
-    /// The view model for the recent files list.
-    /// </summary>
-    internal class Recent
-        : ViewModelBase<ViewModelCommonParameters, IHostContentServices>, IRecent
+    #region Variables.
+    // The recent items from the editor settings.
+    private List<RecentItem> _recentItems;
+    // The project manager for the application.
+    private ProjectManager _projectManager;
+    #endregion
+
+    #region Properties.
+    /// <summary>Property to return the list of recent files.</summary>
+    public ObservableCollection<RecentItem> Files
     {
-        #region Variables.
-        // The recent items from the editor settings.
-        private List<RecentItem> _recentItems;
-        // The project manager for the application.
-        private ProjectManager _projectManager;
-        #endregion
+        get;
+        private set;
+    }
 
-        #region Properties.
-        /// <summary>Property to return the list of recent files.</summary>
-        public ObservableCollection<RecentItem> Files
-        {
-            get;
-            private set;
-        }
+    /// <summary>Property to set or return the command used to open a project.</summary>
+    public IEditorCommand<RecentItem> OpenProjectCommand
+    {
+        get;
+        set;
+    }
 
-        /// <summary>Property to set or return the command used to open a project.</summary>
-        public IEditorCommand<RecentItem> OpenProjectCommand
-        {
-            get;
-            set;
-        }
+    /// <summary>Property to set or return the command used to delete a project.</summary>        
+    public IEditorCommand<RecentItem> DeleteItemCommand
+    {
+        get;
+    }
+    #endregion
 
-        /// <summary>Property to set or return the command used to delete a project.</summary>        
-        public IEditorCommand<RecentItem> DeleteItemCommand
+    #region Methods.
+    /// <summary>
+    /// Function to delete a project item.
+    /// </summary>
+    /// <param name="args">The arguments for the command.</param>
+    private async void DoDeleteItemAsync(RecentItem args)
+    {
+        try
         {
-            get;
-        }
-        #endregion
-
-        #region Methods.
-        /// <summary>
-        /// Function to delete a project item.
-        /// </summary>
-        /// <param name="args">The arguments for the command.</param>
-        private async void DoDeleteItemAsync(RecentItem args)
-        {
-            try
+            if (HostServices.MessageDisplay.ShowConfirmation(string.Format(Resources.GOREDIT_CONFIRM_DELETE_PROJECT_ITEM, args.FilePath)) == MessageResponse.No)
             {
-                if (HostServices.MessageDisplay.ShowConfirmation(string.Format(Resources.GOREDIT_CONFIRM_DELETE_PROJECT_ITEM, args.FilePath)) == MessageResponse.No)
+                return;
+            }
+
+            ShowWaitPanel(string.Format(Resources.GOREDIT_TEXT_DELETING_PROJECT, args.FilePath.Ellipses(40, true)));
+
+            // We will send the project to the recycle bin so it can be recovered if need be.
+            await Task.Run(() => _projectManager.DeleteProject(args.FilePath));
+
+            Files.Remove(args);
+        }
+        catch (Exception ex)
+        {
+            HostServices.MessageDisplay.ShowError(ex, string.Format(Resources.GOREDIT_ERR_DELETING_PROJECT_ITEM, args.FilePath));
+        }
+        finally
+        {
+            HideWaitPanel();
+        }
+    }
+
+    /// <summary>Handles the CollectionChanged event of the Files list.</summary>
+    /// <param name="sender">The source of the event.</param>
+    /// <param name="e">The [NotifyCollectionChangedEventArgs] instance containing the event data.</param>
+    private void Files_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+    {
+        void AddItems()
+        {
+            foreach (RecentItem recentItem in e.NewItems.OfType<RecentItem>())
+            {
+                RecentItem listItem = _recentItems.FirstOrDefault(item => string.Equals(item.FilePath, recentItem.FilePath, StringComparison.OrdinalIgnoreCase));
+
+                if (listItem is not null)
                 {
                     return;
                 }
 
-                ShowWaitPanel(string.Format(Resources.GOREDIT_TEXT_DELETING_PROJECT, args.FilePath.Ellipses(40, true)));
-
-                // We will send the project to the recycle bin so it can be recovered if need be.
-                await Task.Run(() => _projectManager.DeleteProject(args.FilePath));
-
-                Files.Remove(args);
-            }
-            catch (Exception ex)
-            {
-                HostServices.MessageDisplay.ShowError(ex, string.Format(Resources.GOREDIT_ERR_DELETING_PROJECT_ITEM, args.FilePath));
-            }
-            finally
-            {
-                HideWaitPanel();
+                _recentItems.Add(recentItem);
             }
         }
 
-        /// <summary>Handles the CollectionChanged event of the Files list.</summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The [NotifyCollectionChangedEventArgs] instance containing the event data.</param>
-        private void Files_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+        void RemoveItems()
         {
-            void AddItems()
+            foreach (RecentItem recentItem in e.OldItems.OfType<RecentItem>())
             {
-                foreach (RecentItem recentItem in e.NewItems.OfType<RecentItem>())
+                RecentItem listItem = _recentItems.FirstOrDefault(item => string.Equals(item.FilePath, recentItem.FilePath, StringComparison.OrdinalIgnoreCase));
+
+                if (listItem is null)
                 {
-                    RecentItem listItem = _recentItems.FirstOrDefault(item => string.Equals(item.FilePath, recentItem.FilePath, StringComparison.OrdinalIgnoreCase));
-
-                    if (listItem is not null)
-                    {
-                        return;
-                    }
-
-                    _recentItems.Add(recentItem);
+                    continue;
                 }
-            }
 
-            void RemoveItems()
-            {
-                foreach (RecentItem recentItem in e.OldItems.OfType<RecentItem>())
-                {
-                    RecentItem listItem = _recentItems.FirstOrDefault(item => string.Equals(item.FilePath, recentItem.FilePath, StringComparison.OrdinalIgnoreCase));
-
-                    if (listItem is null)
-                    {
-                        continue;
-                    }
-
-                    _recentItems.Remove(listItem);
-                }
-            }
-
-            switch (e.Action)
-            {
-                case NotifyCollectionChangedAction.Add:
-                    AddItems();
-                    break;
-                case NotifyCollectionChangedAction.Remove:
-                    RemoveItems();
-                    break;
-                case NotifyCollectionChangedAction.Replace:
-                    RemoveItems();
-                    AddItems();
-                    break;
-                case NotifyCollectionChangedAction.Reset:
-                    _recentItems.Clear();
-
-                    foreach (RecentItem item in Files)
-                    {
-                        _recentItems.Add(item);
-                    }
-                    break;
+                _recentItems.Remove(listItem);
             }
         }
 
-        /// <summary>Function to inject dependencies for the view model.</summary>
-        /// <param name="injectionParameters">The parameters to inject.</param>
-        /// <remarks>
-        /// Applications should call this when setting up the view model for complex operations and/or dependency injection. The constructor should only be used for simple set up and initialization of objects.
-        /// </remarks>
-        protected override void OnInitialize(ViewModelCommonParameters injectionParameters)
+        switch (e.Action)
         {
-            _recentItems = injectionParameters.EditorSettings?.RecentFiles;
-            _projectManager = injectionParameters.ProjectManager;
-
-            // Only capture up to 150 items.
-            Files = new ObservableCollection<RecentItem>(_recentItems.OrderByDescending(item => item.LastUsedDate).Take(150));
-
-            // If there are more files in the settings than what we have in our list (due to the 150 item limit), then refresh the settings right now.
-            if (Files.Count < _recentItems.Count)
-            {
+            case NotifyCollectionChangedAction.Add:
+                AddItems();
+                break;
+            case NotifyCollectionChangedAction.Remove:
+                RemoveItems();
+                break;
+            case NotifyCollectionChangedAction.Replace:
+                RemoveItems();
+                AddItems();
+                break;
+            case NotifyCollectionChangedAction.Reset:
                 _recentItems.Clear();
-                _recentItems.AddRange(Files);
-            }
 
-            Files.CollectionChanged += Files_CollectionChanged;
+                foreach (RecentItem item in Files)
+                {
+                    _recentItems.Add(item);
+                }
+                break;
         }
-
-        /// <summary>Function called when the associated view is unloaded.</summary>
-        protected override void OnUnload()
-        {
-            base.Unload();
-            Files.CollectionChanged -= Files_CollectionChanged;
-        }
-        #endregion
-
-        #region Constructor.
-        /// <summary>Initializes a new instance of the <see cref="Recent"/> class.</summary>
-        public Recent() => DeleteItemCommand = new EditorCommand<RecentItem>(DoDeleteItemAsync, args => args is not null);
-        #endregion
     }
+
+    /// <summary>Function to inject dependencies for the view model.</summary>
+    /// <param name="injectionParameters">The parameters to inject.</param>
+    /// <remarks>
+    /// Applications should call this when setting up the view model for complex operations and/or dependency injection. The constructor should only be used for simple set up and initialization of objects.
+    /// </remarks>
+    protected override void OnInitialize(ViewModelCommonParameters injectionParameters)
+    {
+        _recentItems = injectionParameters.EditorSettings?.RecentFiles;
+        _projectManager = injectionParameters.ProjectManager;
+
+        // Only capture up to 150 items.
+        Files = new ObservableCollection<RecentItem>(_recentItems.OrderByDescending(item => item.LastUsedDate).Take(150));
+
+        // If there are more files in the settings than what we have in our list (due to the 150 item limit), then refresh the settings right now.
+        if (Files.Count < _recentItems.Count)
+        {
+            _recentItems.Clear();
+            _recentItems.AddRange(Files);
+        }
+
+        Files.CollectionChanged += Files_CollectionChanged;
+    }
+
+    /// <summary>Function called when the associated view is unloaded.</summary>
+    protected override void OnUnload()
+    {
+        base.Unload();
+        Files.CollectionChanged -= Files_CollectionChanged;
+    }
+    #endregion
+
+    #region Constructor.
+    /// <summary>Initializes a new instance of the <see cref="Recent"/> class.</summary>
+    public Recent() => DeleteItemCommand = new EditorCommand<RecentItem>(DoDeleteItemAsync, args => args is not null);
+    #endregion
 }

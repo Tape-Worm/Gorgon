@@ -31,164 +31,163 @@ using Gorgon.Diagnostics;
 using Gorgon.Timing;
 using Gorgon.UI;
 
-namespace Gorgon.Examples
+namespace Gorgon.Examples;
+
+/// <summary>
+/// The application context.
+/// </summary>
+/// <remarks>We'll use this to display our splash screen, and then our main form and still use the idle loop.</remarks>
+internal class Context
+    : ApplicationContext
 {
+    #region Variables.
+    // A timer for the splash screen.
+    private readonly IGorgonTimer _timer;
+    // A splash screen.
+    private FormSplash _splashScreen;
+    #endregion
+
+    #region Methods.
     /// <summary>
-    /// The application context.
+    /// Handles the KeyDown event of the MainForm control.
     /// </summary>
-    /// <remarks>We'll use this to display our splash screen, and then our main form and still use the idle loop.</remarks>
-    internal class Context
-        : ApplicationContext
+    /// <param name="sender">The source of the event.</param>
+    /// <param name="e">The <see cref="KeyEventArgs" /> instance containing the event data.</param>
+    /// <exception cref="NotSupportedException"></exception>
+    private void MainForm_KeyDown(object sender, KeyEventArgs e)
     {
-        #region Variables.
-        // A timer for the splash screen.
-        private readonly IGorgonTimer _timer;
-        // A splash screen.
-        private FormSplash _splashScreen;
-        #endregion
-
-        #region Methods.
-        /// <summary>
-        /// Handles the KeyDown event of the MainForm control.
-        /// </summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="KeyEventArgs" /> instance containing the event data.</param>
-        /// <exception cref="NotSupportedException"></exception>
-        private void MainForm_KeyDown(object sender, KeyEventArgs e)
+        if (e.KeyCode != Keys.Space)
         {
-            if (e.KeyCode != Keys.Space)
-            {
-                return;
-            }
-
-            ((FormMain)MainForm).Clear();
-
-            if (GorgonApplication.IdleMethod == Program.Idle)
-            {
-                GorgonApplication.IdleMethod = Program.NewIdle;
-            }
-            else
-            {
-                GorgonApplication.IdleMethod = Program.Idle;
-            }
+            return;
         }
 
-        /// <summary>
-        /// Calls <see cref="M:System.Windows.Forms.ApplicationContext.ExitThreadCore" />, which raises the <see cref="E:System.Windows.Forms.ApplicationContext.ThreadExit" /> event.
-        /// </summary>
-        /// <param name="sender">The object that raised the event.</param>
-        /// <param name="e">The <see cref="EventArgs" /> that contains the event data.</param>
-        protected override void OnMainFormClosed(object sender, EventArgs e)
+        ((FormMain)MainForm).Clear();
+
+        if (GorgonApplication.IdleMethod == Program.Idle)
         {
-            base.OnMainFormClosed(sender, e);
-            ExitThread();
+            GorgonApplication.IdleMethod = Program.NewIdle;
         }
-
-        /// <summary>
-        /// Function to begin the execution of the application context.
-        /// </summary>
-        public void RunMe()
+        else
         {
-            string annoyUser = "I'm going to delay you for a bit.";
-            int counter = 0;
-
-            try
-            {
-                _timer.Reset();
-                _splashScreen.Show();
-                _splashScreen.UpdateText("This is the splash screen.");
-
-                // Fade in the splash screen about 10% every 7 milliseconds.
-                while (_splashScreen.Opacity < 1)
-                {
-                    if (!(_timer.Milliseconds > 7))
-                    {
-                        continue;
-                    }
-
-                    _timer.Reset();
-                    _splashScreen.Opacity += 0.01;
-                }
-
-                // Annoy the user.  They're asking for it.
-                while (counter < 5)
-                {
-                    while (_timer.Seconds > 1)
-                    {
-                        if (annoyUser.Length < 50)
-                        {
-                            annoyUser += ".";
-                        }
-                        else
-                        {
-                            annoyUser = "I'm going to delay you for a bit.";
-                        }
-
-                        _splashScreen.UpdateText(annoyUser);
-                        _timer.Reset();
-                        counter++;
-                    }
-                }
-
-                // Fade it out.
-                while (_splashScreen.Opacity > 0.02)
-                {
-                    if (!(_timer.Milliseconds > 5))
-                    {
-                        continue;
-                    }
-
-                    _timer.Reset();
-                    _splashScreen.Opacity -= 0.01;
-                }
-
-                // Resize the main form to 640 x 480.
-                MainForm.KeyDown += MainForm_KeyDown;
-                MainForm.Deactivate += (sender, args) => GorgonApplication.Log.Print("Application is deactivated. Loops will pause.", LoggingLevel.All);
-                MainForm.Activated += (sender, args) => GorgonApplication.Log.Print("Application is activated. Loops will run.", LoggingLevel.All);
-                MainForm.ClientSize = new Size(640, 480);
-                MainForm.Show();
-            }
-            catch (Exception ex)
-            {
-                // If we get an error, then leave the application.
-                GorgonDialogs.ErrorBox(MainForm, ex);
-
-                MainForm?.Dispose();
-                MainForm = null;
-            }
-            finally
-            {
-                // We don't need this any more.
-                _splashScreen?.Dispose();
-                _splashScreen = null;
-            }
+            GorgonApplication.IdleMethod = Program.Idle;
         }
-        #endregion
-
-        #region Constructor/Destructor.
-        /// <summary>
-        /// Initializes a new instance of the <see cref="Context" /> class.
-        /// </summary>
-        public Context()
-        {
-            // Create our timer object.
-            if (GorgonTimerQpc.SupportsQpc())
-            {
-                _timer = new GorgonTimerQpc();
-            }
-            else
-            {
-                _timer = new GorgonTimerMultimedia();
-            }
-
-            // Create the splash screen and the main interface.
-            _splashScreen = new FormSplash();
-            MainForm = new FormMain();          // Note that we're assign this to the inherited property 'MainForm'.
-                                                // This how the application context knows which form controls the application.
-
-            RunMe();
-        }
-        #endregion
     }
+
+    /// <summary>
+    /// Calls <see cref="M:System.Windows.Forms.ApplicationContext.ExitThreadCore" />, which raises the <see cref="E:System.Windows.Forms.ApplicationContext.ThreadExit" /> event.
+    /// </summary>
+    /// <param name="sender">The object that raised the event.</param>
+    /// <param name="e">The <see cref="EventArgs" /> that contains the event data.</param>
+    protected override void OnMainFormClosed(object sender, EventArgs e)
+    {
+        base.OnMainFormClosed(sender, e);
+        ExitThread();
+    }
+
+    /// <summary>
+    /// Function to begin the execution of the application context.
+    /// </summary>
+    public void RunMe()
+    {
+        string annoyUser = "I'm going to delay you for a bit.";
+        int counter = 0;
+
+        try
+        {
+            _timer.Reset();
+            _splashScreen.Show();
+            _splashScreen.UpdateText("This is the splash screen.");
+
+            // Fade in the splash screen about 10% every 7 milliseconds.
+            while (_splashScreen.Opacity < 1)
+            {
+                if (!(_timer.Milliseconds > 7))
+                {
+                    continue;
+                }
+
+                _timer.Reset();
+                _splashScreen.Opacity += 0.01;
+            }
+
+            // Annoy the user.  They're asking for it.
+            while (counter < 5)
+            {
+                while (_timer.Seconds > 1)
+                {
+                    if (annoyUser.Length < 50)
+                    {
+                        annoyUser += ".";
+                    }
+                    else
+                    {
+                        annoyUser = "I'm going to delay you for a bit.";
+                    }
+
+                    _splashScreen.UpdateText(annoyUser);
+                    _timer.Reset();
+                    counter++;
+                }
+            }
+
+            // Fade it out.
+            while (_splashScreen.Opacity > 0.02)
+            {
+                if (!(_timer.Milliseconds > 5))
+                {
+                    continue;
+                }
+
+                _timer.Reset();
+                _splashScreen.Opacity -= 0.01;
+            }
+
+            // Resize the main form to 640 x 480.
+            MainForm.KeyDown += MainForm_KeyDown;
+            MainForm.Deactivate += (sender, args) => GorgonApplication.Log.Print("Application is deactivated. Loops will pause.", LoggingLevel.All);
+            MainForm.Activated += (sender, args) => GorgonApplication.Log.Print("Application is activated. Loops will run.", LoggingLevel.All);
+            MainForm.ClientSize = new Size(640, 480);
+            MainForm.Show();
+        }
+        catch (Exception ex)
+        {
+            // If we get an error, then leave the application.
+            GorgonDialogs.ErrorBox(MainForm, ex);
+
+            MainForm?.Dispose();
+            MainForm = null;
+        }
+        finally
+        {
+            // We don't need this any more.
+            _splashScreen?.Dispose();
+            _splashScreen = null;
+        }
+    }
+    #endregion
+
+    #region Constructor/Destructor.
+    /// <summary>
+    /// Initializes a new instance of the <see cref="Context" /> class.
+    /// </summary>
+    public Context()
+    {
+        // Create our timer object.
+        if (GorgonTimerQpc.SupportsQpc())
+        {
+            _timer = new GorgonTimerQpc();
+        }
+        else
+        {
+            _timer = new GorgonTimerMultimedia();
+        }
+
+        // Create the splash screen and the main interface.
+        _splashScreen = new FormSplash();
+        MainForm = new FormMain();          // Note that we're assign this to the inherited property 'MainForm'.
+                                            // This how the application context knows which form controls the application.
+
+        RunMe();
+    }
+    #endregion
 }

@@ -27,44 +27,43 @@
 using System.Collections.ObjectModel;
 using Gorgon.Editor.UI;
 
-namespace Gorgon.Editor.ViewModels
+namespace Gorgon.Editor.ViewModels;
+
+/// <summary>
+/// The view model for the editor settings panel.
+/// </summary>
+internal interface IEditorSettings
+    : IViewModel
 {
     /// <summary>
-    /// The view model for the editor settings panel.
+    /// Property to return the current category ID being used.
     /// </summary>
-    internal interface IEditorSettings
-        : IViewModel
+    ISettingsCategory CurrentCategory
     {
-        /// <summary>
-        /// Property to return the current category ID being used.
-        /// </summary>
-        ISettingsCategory CurrentCategory
-        {
-            get;
-        }
+        get;
+    }
 
-        /// <summary>
-        /// Property to return the list of categories available.
-        /// </summary>
-        ObservableCollection<ISettingsCategory> Categories
-        {
-            get;
-        }
+    /// <summary>
+    /// Property to return the list of categories available.
+    /// </summary>
+    ObservableCollection<ISettingsCategory> Categories
+    {
+        get;
+    }
 
-        /// <summary>
-        /// Property to return the list of plug ins for the fixed plug in list category.
-        /// </summary>
-        ISettingsPlugInsList PlugInsList
-        {
-            get;
-        }
+    /// <summary>
+    /// Property to return the list of plug ins for the fixed plug in list category.
+    /// </summary>
+    ISettingsPlugInsList PlugInsList
+    {
+        get;
+    }
 
-        /// <summary>
-        /// Property to return the command to execute to select a category.
-        /// </summary>
-        IEditorCommand<string> SetCategoryCommand
-        {
-            get;
-        }
+    /// <summary>
+    /// Property to return the command to execute to select a category.
+    /// </summary>
+    IEditorCommand<string> SetCategoryCommand
+    {
+        get;
     }
 }

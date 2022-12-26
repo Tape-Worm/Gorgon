@@ -29,42 +29,41 @@ using System.Collections.Generic;
 using Gorgon.Editor.Metadata;
 using Newtonsoft.Json;
 
-namespace Gorgon.Editor.ProjectData
+namespace Gorgon.Editor.ProjectData;
+
+/// <summary>
+/// The project data.
+/// </summary>
+internal class Project30
 {
+    #region Properties.
     /// <summary>
-    /// The project data.
+    /// Property to return the version for the project file.
     /// </summary>
-    internal class Project30
+    [JsonProperty]
+    public string Version
     {
-        #region Properties.
-        /// <summary>
-        /// Property to return the version for the project file.
-        /// </summary>
-        [JsonProperty]
-        public string Version
-        {
-            get;
-            private set;
-        } = CommonEditorConstants.EditorCurrentProjectVersion;
+        get;
+        private set;
+    } = CommonEditorConstants.EditorCurrentProjectVersion;
 
-        /// <summary>
-        /// Property to return the list of project items.
-        /// </summary>
-        [JsonProperty]
-        public Dictionary<string, Project30ItemMetadata> ProjectItems
-        {
-            get;
-            private set;
-        } = new Dictionary<string, Project30ItemMetadata>(StringComparer.OrdinalIgnoreCase);
-        #endregion
+    /// <summary>
+    /// Property to return the list of project items.
+    /// </summary>
+    [JsonProperty]
+    public Dictionary<string, Project30ItemMetadata> ProjectItems
+    {
+        get;
+        private set;
+    } = new Dictionary<string, Project30ItemMetadata>(StringComparer.OrdinalIgnoreCase);
+    #endregion
 
-        #region Constructor/Finalizer.        
-        /// <summary>Initializes a new instance of the Project class.</summary>
-        [JsonConstructor]
-        public Project30()
-        {
-            // Used by JSON.Net for deserialization.
-        }
-        #endregion
+    #region Constructor/Finalizer.        
+    /// <summary>Initializes a new instance of the Project class.</summary>
+    [JsonConstructor]
+    public Project30()
+    {
+        // Used by JSON.Net for deserialization.
     }
+    #endregion
 }

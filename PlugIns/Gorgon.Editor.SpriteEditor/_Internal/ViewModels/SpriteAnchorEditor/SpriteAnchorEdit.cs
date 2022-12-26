@@ -33,166 +33,165 @@ using Gorgon.Graphics;
 using Gorgon.Math;
 using DX = SharpDX;
 
-namespace Gorgon.Editor.SpriteEditor
+namespace Gorgon.Editor.SpriteEditor;
+
+/// <summary>
+/// The view model for the sprite anchor editor.
+/// </summary>
+internal class SpriteAnchorEdit
+    : HostedPanelViewModelBase<SpriteAnchorEditParameters>, ISpriteAnchorEdit
 {
+    #region Variables.
+    // The anchor point.
+    private Vector2 _anchor;
+    // The boundaries for the anchor.
+    private DX.Rectangle _bounds;
+    // The boundaries of the sprite vertices.
+    private readonly Vector2[] _spriteBounds = new Vector2[4];
+    // The mid point of the sprite.
+    private Vector2 _midPoint;
+    // Flag to indicate that preview scaling is active.
+    private bool _previewScaling;
+    // Flag to indicate that preview rotation is active.
+    private bool _previewRotation;
+    #endregion
+
+    #region Properties.
+    /// <summary>Property to return whether the panel is modal.</summary>
+    public override bool IsModal => true;
+
     /// <summary>
-    /// The view model for the sprite anchor editor.
+    /// Property to set or return whether to preview rotation with the current anchor setting.
     /// </summary>
-    internal class SpriteAnchorEdit
-        : HostedPanelViewModelBase<SpriteAnchorEditParameters>, ISpriteAnchorEdit
+    public bool PreviewRotation
     {
-        #region Variables.
-        // The anchor point.
-        private Vector2 _anchor;
-        // The boundaries for the anchor.
-        private DX.Rectangle _bounds;
-        // The boundaries of the sprite vertices.
-        private readonly Vector2[] _spriteBounds = new Vector2[4];
-        // The mid point of the sprite.
-        private Vector2 _midPoint;
-        // Flag to indicate that preview scaling is active.
-        private bool _previewScaling;
-        // Flag to indicate that preview rotation is active.
-        private bool _previewRotation;
-        #endregion
-
-        #region Properties.
-        /// <summary>Property to return whether the panel is modal.</summary>
-        public override bool IsModal => true;
-
-        /// <summary>
-        /// Property to set or return whether to preview rotation with the current anchor setting.
-        /// </summary>
-        public bool PreviewRotation
+        get => _previewRotation;
+        set
         {
-            get => _previewRotation;
-            set
+            if (_previewRotation == value)
             {
-                if (_previewRotation == value)
-                {
-                    return;
-                }
-
-                OnPropertyChanging();
-                _previewRotation = value;
-                OnPropertyChanged();
+                return;
             }
+
+            OnPropertyChanging();
+            _previewRotation = value;
+            OnPropertyChanged();
         }
-
-        /// <summary>
-        /// Property to set or return whether to preview scaling with the current anchor setting.
-        /// </summary>
-        public bool PreviewScale
-        {
-            get => _previewScaling;
-            set
-            {
-                if (_previewScaling == value)
-                {
-                    return;
-                }
-
-                OnPropertyChanging();
-                _previewScaling = value;
-                OnPropertyChanged();
-            }
-        }
-
-        /// <summary>Property to return the boundaries for the anchor point.</summary>
-        public DX.Rectangle Bounds 
-        {
-            get => _bounds;
-            set
-            {
-                if (_bounds.Equals(ref value))
-                {
-                    return;
-                }
-
-                OnPropertyChanging();
-                _bounds = value;
-                OnPropertyChanged();
-
-                Anchor = new Vector2(_anchor.X.Min(_bounds.Right).Max(_bounds.Left), _anchor.Y.Min(_bounds.Bottom).Max(_bounds.Top));
-            }
-        }
-
-        /// <summary>Property to set or return the anchor point.</summary>
-        public Vector2 Anchor
-        {
-            get => _anchor;
-            set
-            {
-                if (_anchor.Equals(value))
-                {
-                    return;
-                }
-
-                OnPropertyChanging();
-                _anchor = new Vector2(value.X.Min(_bounds.Right).Max(_bounds.Left), value.Y.Min(_bounds.Bottom).Max(_bounds.Top));
-                OnPropertyChanged();
-            }
-        }
-
-        /// <summary>
-        /// Property to return the mid point of the sprite, based on its vertices.
-        /// </summary>
-        public Vector2 MidPoint
-        {
-            get => _midPoint;
-            private set
-            {
-                if (_midPoint == value)
-                {
-                    return;
-                }
-
-                OnPropertyChanging();
-                _midPoint = value;
-                OnPropertyChanged();
-            }
-        }
-
-        /// <summary>Property to set or return the boundaries of the sprite (vertices).</summary>
-        public IReadOnlyList<Vector2> SpriteBounds
-        {
-            get => _spriteBounds;
-            set
-            {
-                if (value is null)
-                {
-                    OnPropertyChanging();
-                    Array.Clear(_spriteBounds, 0, _spriteBounds.Length);
-                    OnPropertyChanged();
-                    return;
-                }
-
-                OnPropertyChanging();
-                var range = new DX.RectangleF
-                {
-                    Left = float.MaxValue,
-                    Top = float.MaxValue,
-                    Right = float.MinValue,
-                    Bottom = float.MinValue
-                };
-                for (int i = 0; i < _spriteBounds.Length.Min(value.Count); ++i)
-                {
-                    range.Left = value[i].X.Min(range.Left);
-                    range.Top = value[i].Y.Min(range.Top);
-                    range.Right = value[i].X.Max(range.Right);
-                    range.Bottom = value[i].Y.Max(range.Bottom);
-                    _spriteBounds[i] = value[i].Truncate();
-                }
-                MidPoint = new Vector2(range.Left + range.Width * 0.5f, range.Top + range.Height * 0.5f).Truncate();
-                OnPropertyChanged();                
-            }
-        }
-        #endregion
-
-        #region Methods.
-        /// <summary>Function to inject dependencies for the view model.</summary>
-        /// <param name="injectionParameters">The parameters to inject.</param>
-        protected override void OnInitialize(SpriteAnchorEditParameters injectionParameters) => _bounds = injectionParameters.Bounds;
-        #endregion
     }
+
+    /// <summary>
+    /// Property to set or return whether to preview scaling with the current anchor setting.
+    /// </summary>
+    public bool PreviewScale
+    {
+        get => _previewScaling;
+        set
+        {
+            if (_previewScaling == value)
+            {
+                return;
+            }
+
+            OnPropertyChanging();
+            _previewScaling = value;
+            OnPropertyChanged();
+        }
+    }
+
+    /// <summary>Property to return the boundaries for the anchor point.</summary>
+    public DX.Rectangle Bounds 
+    {
+        get => _bounds;
+        set
+        {
+            if (_bounds.Equals(ref value))
+            {
+                return;
+            }
+
+            OnPropertyChanging();
+            _bounds = value;
+            OnPropertyChanged();
+
+            Anchor = new Vector2(_anchor.X.Min(_bounds.Right).Max(_bounds.Left), _anchor.Y.Min(_bounds.Bottom).Max(_bounds.Top));
+        }
+    }
+
+    /// <summary>Property to set or return the anchor point.</summary>
+    public Vector2 Anchor
+    {
+        get => _anchor;
+        set
+        {
+            if (_anchor.Equals(value))
+            {
+                return;
+            }
+
+            OnPropertyChanging();
+            _anchor = new Vector2(value.X.Min(_bounds.Right).Max(_bounds.Left), value.Y.Min(_bounds.Bottom).Max(_bounds.Top));
+            OnPropertyChanged();
+        }
+    }
+
+    /// <summary>
+    /// Property to return the mid point of the sprite, based on its vertices.
+    /// </summary>
+    public Vector2 MidPoint
+    {
+        get => _midPoint;
+        private set
+        {
+            if (_midPoint == value)
+            {
+                return;
+            }
+
+            OnPropertyChanging();
+            _midPoint = value;
+            OnPropertyChanged();
+        }
+    }
+
+    /// <summary>Property to set or return the boundaries of the sprite (vertices).</summary>
+    public IReadOnlyList<Vector2> SpriteBounds
+    {
+        get => _spriteBounds;
+        set
+        {
+            if (value is null)
+            {
+                OnPropertyChanging();
+                Array.Clear(_spriteBounds, 0, _spriteBounds.Length);
+                OnPropertyChanged();
+                return;
+            }
+
+            OnPropertyChanging();
+            var range = new DX.RectangleF
+            {
+                Left = float.MaxValue,
+                Top = float.MaxValue,
+                Right = float.MinValue,
+                Bottom = float.MinValue
+            };
+            for (int i = 0; i < _spriteBounds.Length.Min(value.Count); ++i)
+            {
+                range.Left = value[i].X.Min(range.Left);
+                range.Top = value[i].Y.Min(range.Top);
+                range.Right = value[i].X.Max(range.Right);
+                range.Bottom = value[i].Y.Max(range.Bottom);
+                _spriteBounds[i] = value[i].Truncate();
+            }
+            MidPoint = new Vector2(range.Left + range.Width * 0.5f, range.Top + range.Height * 0.5f).Truncate();
+            OnPropertyChanged();                
+        }
+    }
+    #endregion
+
+    #region Methods.
+    /// <summary>Function to inject dependencies for the view model.</summary>
+    /// <param name="injectionParameters">The parameters to inject.</param>
+    protected override void OnInitialize(SpriteAnchorEditParameters injectionParameters) => _bounds = injectionParameters.Bounds;
+    #endregion
 }

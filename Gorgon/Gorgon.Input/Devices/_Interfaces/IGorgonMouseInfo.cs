@@ -24,44 +24,43 @@
 // 
 #endregion
 
-namespace Gorgon.Input
+namespace Gorgon.Input;
+
+/// <summary>
+/// Provides capability information about a mouse device.
+/// </summary>
+public interface IGorgonMouseInfo
+    : IGorgonRawInputDeviceInfo
 {
     /// <summary>
-    /// Provides capability information about a mouse device.
+    /// Property to return the sampling rate for the mouse.
     /// </summary>
-    public interface IGorgonMouseInfo
-        : IGorgonRawInputDeviceInfo
+    int SampleRate
     {
-        /// <summary>
-        /// Property to return the sampling rate for the mouse.
-        /// </summary>
-        int SampleRate
-        {
-            get;
-        }
+        get;
+    }
 
-        /// <summary>
-        /// Property to return the number of buttons on the mouse.
-        /// </summary>
-        int ButtonCount
-        {
-            get;
-        }
+    /// <summary>
+    /// Property to return the number of buttons on the mouse.
+    /// </summary>
+    int ButtonCount
+    {
+        get;
+    }
 
-        /// <summary>
-        /// Property to return whether the mouse supports a horizontal wheel or not.
-        /// </summary>
-        bool HasHorizontalWheel
-        {
-            get;
-        }
+    /// <summary>
+    /// Property to return whether the mouse supports a horizontal wheel or not.
+    /// </summary>
+    bool HasHorizontalWheel
+    {
+        get;
+    }
 
-        /// <summary>
-        /// Property to return the mouse ID.
-        /// </summary>
-        int MouseID
-        {
-            get;
-        }
+    /// <summary>
+    /// Property to return the mouse ID.
+    /// </summary>
+    int MouseID
+    {
+        get;
     }
 }

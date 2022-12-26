@@ -7,10 +7,10 @@ using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 
-namespace Fetze.WinFormsColor
-{
+namespace Fetze.WinFormsColor;
+
 #pragma warning disable IDE0090 // Use 'new(...)'
-    public class ColorSlider : UserControl
+public class ColorSlider : UserControl
 	{
 		private Bitmap srcImage = null;
 		private int pickerSize = 5;
@@ -261,9 +261,9 @@ namespace Fetze.WinFormsColor
 				ValuePercentual = 1.0f - (e.Y - ColorAreaRectangle.Y) / (float)ColorAreaRectangle.Height;
 			}
 		}
-        protected override void OnMouseMove(MouseEventArgs e)
-        {
-            base.OnMouseMove(e);
+    protected override void OnMouseMove(MouseEventArgs e)
+    {
+        base.OnMouseMove(e);
 
 			if (_dragState != 1)
 			{
@@ -307,4 +307,4 @@ namespace Fetze.WinFormsColor
 		private bool ShouldSerializeMaximum() => designSerializeColor;
 	}
 #pragma warning restore IDE0090 // Use 'new(...)'
-}
+

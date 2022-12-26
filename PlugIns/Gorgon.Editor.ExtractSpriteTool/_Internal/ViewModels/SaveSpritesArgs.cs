@@ -24,20 +24,19 @@
 // 
 #endregion
 
-namespace Gorgon.Editor.ExtractSpriteTool
+namespace Gorgon.Editor.ExtractSpriteTool;
+
+/// <summary>
+/// Arguments for the <see cref="IExtract.SaveSpritesCommand"/>.
+/// </summary>
+internal class SaveSpritesArgs
 {
     /// <summary>
-    /// Arguments for the <see cref="IExtract.SaveSpritesCommand"/>.
+    /// Property to set or return whether the operation should be cancelled or not.
     /// </summary>
-    internal class SaveSpritesArgs
+    public bool Cancel
     {
-        /// <summary>
-        /// Property to set or return whether the operation should be cancelled or not.
-        /// </summary>
-        public bool Cancel
-        {
-            get;
-            set;
-        }
+        get;
+        set;
     }
 }

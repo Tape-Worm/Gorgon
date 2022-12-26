@@ -28,17 +28,16 @@ using System.Runtime.InteropServices;
 using Gorgon.Input;
 
 // ReSharper disable InconsistentNaming
-namespace Gorgon.Native
+namespace Gorgon.Native;
+
+/// <summary>
+/// Value type for raw input device list.
+/// </summary>
+[StructLayout(LayoutKind.Sequential)]
+internal struct RAWINPUTDEVICELIST
 {
-    /// <summary>
-    /// Value type for raw input device list.
-    /// </summary>
-    [StructLayout(LayoutKind.Sequential)]
-    internal struct RAWINPUTDEVICELIST
-    {
-        /// <summary>Device handle.</summary>
-        public nint Device;
-        /// <summary>Device type.</summary>
-        public RawInputType DeviceType;
-    }
+    /// <summary>Device handle.</summary>
+    public nint Device;
+    /// <summary>Device type.</summary>
+    public RawInputType DeviceType;
 }

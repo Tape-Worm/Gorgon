@@ -24,20 +24,19 @@
 // 
 #endregion
 
-namespace Gorgon.Editor.Services
+namespace Gorgon.Editor.Services;
+
+/// <summary>
+/// An interface used to browse the file system folder structure.
+/// </summary>
+public interface IFileSystemFolderBrowseService
 {
     /// <summary>
-    /// An interface used to browse the file system folder structure.
+    /// Function to retrieve a path from the file system.
     /// </summary>
-    public interface IFileSystemFolderBrowseService
-    {
-        /// <summary>
-        /// Function to retrieve a path from the file system.
-        /// </summary>
-        /// <param name="initialPath">The starting path to select.</param>
-        /// <param name="caption">The caption for the dialog.</param>
-        /// <param name="description">The description of what the browser is supposed to be doing.</param>
-        /// <returns>The selected path, or <b>null</b> if canceled.</returns>
-        string GetFolderPath(string initialPath, string caption, string description);
-    }
+    /// <param name="initialPath">The starting path to select.</param>
+    /// <param name="caption">The caption for the dialog.</param>
+    /// <param name="description">The description of what the browser is supposed to be doing.</param>
+    /// <returns>The selected path, or <b>null</b> if canceled.</returns>
+    string GetFolderPath(string initialPath, string caption, string description);
 }

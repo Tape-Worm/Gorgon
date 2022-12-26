@@ -27,30 +27,29 @@
 using System.Collections.Generic;
 using Gorgon.Collections;
 
-namespace Gorgon.Configuration
+namespace Gorgon.Configuration;
+
+/// <summary>
+/// Provides a functionality for setting and reading various options from a defined option bag.
+/// </summary>
+public interface IGorgonOptionBag
+    : IGorgonNamedObjectReadOnlyList<IGorgonOption>
 {
     /// <summary>
-    /// Provides a functionality for setting and reading various options from a defined option bag.
+    /// Function to retrieve the value for an option.
     /// </summary>
-    public interface IGorgonOptionBag
-        : IGorgonNamedObjectReadOnlyList<IGorgonOption>
-    {
-        /// <summary>
-        /// Function to retrieve the value for an option.
-        /// </summary>
-        /// <typeparam name="T">The type of data for the option.</typeparam>
-        /// <param name="optionName">The name of the option.</param>
-        /// <returns>The value stored with the option.</returns>
-        /// <exception cref="KeyNotFoundException">Thrown when the option specified by the <paramref name="optionName"/> was not found.</exception>
-        T GetOptionValue<T>(string optionName);
+    /// <typeparam name="T">The type of data for the option.</typeparam>
+    /// <param name="optionName">The name of the option.</param>
+    /// <returns>The value stored with the option.</returns>
+    /// <exception cref="KeyNotFoundException">Thrown when the option specified by the <paramref name="optionName"/> was not found.</exception>
+    T GetOptionValue<T>(string optionName);
 
-        /// <summary>
-        /// Function to assign a value for an option.
-        /// </summary>
-        /// <typeparam name="T">The type of data for the option.</typeparam>
-        /// <param name="optionName">The name of the option.</param>
-        /// <param name="value">The value to assign to the option.</param>
-        /// <exception cref="KeyNotFoundException">Thrown when the option specified by the <paramref name="optionName"/> was not found.</exception>
-        void SetOptionValue<T>(string optionName, T value);
-    }
+    /// <summary>
+    /// Function to assign a value for an option.
+    /// </summary>
+    /// <typeparam name="T">The type of data for the option.</typeparam>
+    /// <param name="optionName">The name of the option.</param>
+    /// <param name="value">The value to assign to the option.</param>
+    /// <exception cref="KeyNotFoundException">Thrown when the option specified by the <paramref name="optionName"/> was not found.</exception>
+    void SetOptionValue<T>(string optionName, T value);
 }

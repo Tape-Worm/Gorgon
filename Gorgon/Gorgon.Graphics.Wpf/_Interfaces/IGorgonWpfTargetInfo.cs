@@ -27,23 +27,22 @@
 using System.Windows.Controls;
 using Gorgon.Core;
 
-namespace Gorgon.Graphics.Wpf
+namespace Gorgon.Graphics.Wpf;
+
+/// <summary>
+/// Read only information used to define a WPF render target.
+/// </summary>
+public interface IGorgonWpfTargetInfo
+    : IGorgonNamedObject
 {
     /// <summary>
-    /// Read only information used to define a WPF render target.
+    /// Property to return the image that will receive the rendered data.
     /// </summary>
-    public interface IGorgonWpfTargetInfo
-        : IGorgonNamedObject
+    /// <remarks>
+    /// This is a WPF image control that Gorgon will render into. The image source for this must be set to a <c>D3D11Image</c> control.
+    /// </remarks>
+    Image RenderImage
     {
-        /// <summary>
-        /// Property to return the image that will receive the rendered data.
-        /// </summary>
-        /// <remarks>
-        /// This is a WPF image control that Gorgon will render into. The image source for this must be set to a <c>D3D11Image</c> control.
-        /// </remarks>
-        Image RenderImage
-        {
-            get;
-        }
+        get;
     }
 }

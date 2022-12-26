@@ -26,26 +26,25 @@
 
 using System.ComponentModel;
 
-namespace Gorgon.Editor.ViewModels
+namespace Gorgon.Editor.ViewModels;
+
+/// <summary>
+/// Arguments to pass to the <see cref="IMain.SavePackFileCommand"/>.
+/// </summary>
+internal class SavePackFileArgs
+    : CancelEventArgs
 {
     /// <summary>
-    /// Arguments to pass to the <see cref="IMain.SavePackFileCommand"/>.
+    /// Property to return the currently active project.
     /// </summary>
-    internal class SavePackFileArgs
-        : CancelEventArgs
+    public IProjectEditor CurrentProject
     {
-        /// <summary>
-        /// Property to return the currently active project.
-        /// </summary>
-        public IProjectEditor CurrentProject
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="SavePackFileArgs"/> class.
-        /// </summary>
-        /// <param name="currentProject">The currently active project.</param>
-        public SavePackFileArgs(IProjectEditor currentProject) => CurrentProject = currentProject;
+        get;
     }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="SavePackFileArgs"/> class.
+    /// </summary>
+    /// <param name="currentProject">The currently active project.</param>
+    public SavePackFileArgs(IProjectEditor currentProject) => CurrentProject = currentProject;
 }

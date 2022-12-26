@@ -27,90 +27,89 @@ using System.Drawing;
 using Gorgon.Graphics.Core;
 using DX = SharpDX;
 
-namespace Gorgon.Graphics.Fonts
+namespace Gorgon.Graphics.Fonts;
+
+/// <summary>
+/// Information about a glyph.
+/// </summary>
+internal class GlyphInfo
 {
+    #region Properties.
     /// <summary>
-    /// Information about a glyph.
+    /// Property to return the packed bitmap associated with the glyph.
     /// </summary>
-    internal class GlyphInfo
+    public Bitmap GlyphBitmap
     {
-        #region Properties.
-        /// <summary>
-        /// Property to return the packed bitmap associated with the glyph.
-        /// </summary>
-        public Bitmap GlyphBitmap
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to return the region for the glyph.
-        /// </summary>
-        public DX.Rectangle Region
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to return the region for the glyph outline (if applicable).
-        /// </summary>
-        public DX.Rectangle OutlineRegion
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to return the offset used to adjust the glyph when rendering an outline.
-        /// </summary>
-        public DX.Point OutlineOffset
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to return the offset used to adjust the glyph when rendering a string.
-        /// </summary>
-        public DX.Point Offset
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to set or return the texture assigned to the glyph.
-        /// </summary>
-        public GorgonTexture2D Texture
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// Property to set or return the texture array index assigned to the glyph.
-        /// </summary>
-        public int TextureArrayIndex
-        {
-            get;
-            set;
-        }
-        #endregion
-
-        #region Constructor/Finalizer.
-        /// <summary>
-        /// Initializes a new instance of the <see cref="GlyphInfo"/> class.
-        /// </summary>
-        /// <param name="glyphBitmap">The glyph bitmap.</param>
-        /// <param name="region">The region.</param>
-        /// <param name="offset">The offset.</param>
-        /// <param name="outlineRegion">The outline region.</param>
-        /// <param name="outlineOffset">The outline offset.</param>
-        public GlyphInfo(Bitmap glyphBitmap, DX.Rectangle region, DX.Point offset, DX.Rectangle outlineRegion, DX.Point outlineOffset)
-        {
-            GlyphBitmap = glyphBitmap;
-            Region = region;
-            Offset = offset;
-            OutlineRegion = outlineRegion;
-            OutlineOffset = outlineOffset;
-        }
-        #endregion
+        get;
     }
+
+    /// <summary>
+    /// Property to return the region for the glyph.
+    /// </summary>
+    public DX.Rectangle Region
+    {
+        get;
+    }
+
+    /// <summary>
+    /// Property to return the region for the glyph outline (if applicable).
+    /// </summary>
+    public DX.Rectangle OutlineRegion
+    {
+        get;
+    }
+
+    /// <summary>
+    /// Property to return the offset used to adjust the glyph when rendering an outline.
+    /// </summary>
+    public DX.Point OutlineOffset
+    {
+        get;
+    }
+
+    /// <summary>
+    /// Property to return the offset used to adjust the glyph when rendering a string.
+    /// </summary>
+    public DX.Point Offset
+    {
+        get;
+    }
+
+    /// <summary>
+    /// Property to set or return the texture assigned to the glyph.
+    /// </summary>
+    public GorgonTexture2D Texture
+    {
+        get;
+        set;
+    }
+
+    /// <summary>
+    /// Property to set or return the texture array index assigned to the glyph.
+    /// </summary>
+    public int TextureArrayIndex
+    {
+        get;
+        set;
+    }
+    #endregion
+
+    #region Constructor/Finalizer.
+    /// <summary>
+    /// Initializes a new instance of the <see cref="GlyphInfo"/> class.
+    /// </summary>
+    /// <param name="glyphBitmap">The glyph bitmap.</param>
+    /// <param name="region">The region.</param>
+    /// <param name="offset">The offset.</param>
+    /// <param name="outlineRegion">The outline region.</param>
+    /// <param name="outlineOffset">The outline offset.</param>
+    public GlyphInfo(Bitmap glyphBitmap, DX.Rectangle region, DX.Point offset, DX.Rectangle outlineRegion, DX.Point outlineOffset)
+    {
+        GlyphBitmap = glyphBitmap;
+        Region = region;
+        Offset = offset;
+        OutlineRegion = outlineRegion;
+        OutlineOffset = outlineOffset;
+    }
+    #endregion
 }

@@ -24,19 +24,18 @@
 // 
 #endregion
 
-namespace Gorgon.Graphics.Core
+namespace Gorgon.Graphics.Core;
+
+/// <summary>
+/// Defines an object that is built by a <see cref="GorgonGraphics"/> interface.
+/// </summary>
+public interface IGorgonGraphicsObject
 {
     /// <summary>
-    /// Defines an object that is built by a <see cref="GorgonGraphics"/> interface.
+    /// Property to return the graphics interface that built this object.
     /// </summary>
-    public interface IGorgonGraphicsObject
+    GorgonGraphics Graphics
     {
-        /// <summary>
-        /// Property to return the graphics interface that built this object.
-        /// </summary>
-        GorgonGraphics Graphics
-        {
-            get;
-        }
+        get;
     }
 }

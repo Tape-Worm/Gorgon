@@ -27,22 +27,21 @@
 using System.Runtime.InteropServices;
 
 // ReSharper disable InconsistentNaming
-namespace Gorgon.Native
+namespace Gorgon.Native;
+
+/// <summary>
+/// Used with GlobalMemoryStatusEx.
+/// </summary>
+[StructLayout(LayoutKind.Sequential)]
+internal struct MEMORYSTATUSEX
 {
-    /// <summary>
-    /// Used with GlobalMemoryStatusEx.
-    /// </summary>
-    [StructLayout(LayoutKind.Sequential)]
-    internal struct MEMORYSTATUSEX
-    {
-        public uint dwLength;
-        public uint dwMemoryLoad;
-        public long ullTotalPhysical;
-        public long ullAvailablePhysical;
-        public long ullTotalPageFile;
-        public long ullAvailablePageFile;
-        public long ullTotalVirtual;
-        public long ullAvailableVirtual;
-        public long ullAvailableExtendedVirtual;
-    }
+    public uint dwLength;
+    public uint dwMemoryLoad;
+    public long ullTotalPhysical;
+    public long ullAvailablePhysical;
+    public long ullTotalPageFile;
+    public long ullAvailablePageFile;
+    public long ullTotalVirtual;
+    public long ullAvailableVirtual;
+    public long ullAvailableExtendedVirtual;
 }

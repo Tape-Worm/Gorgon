@@ -26,36 +26,35 @@
 
 using System.Collections.Generic;
 
-namespace Gorgon.Editor.ViewModels
+namespace Gorgon.Editor.ViewModels;
+
+/// <summary>
+/// Data used to import files/directories from the physical file system to the virtual file system.
+/// </summary>
+internal interface IImportData
 {
     /// <summary>
-    /// Data used to import files/directories from the physical file system to the virtual file system.
+    /// Property to return the list of files/directories from the physical file system..
     /// </summary>
-    internal interface IImportData
+    List<string> PhysicalPaths
     {
-        /// <summary>
-        /// Property to return the list of files/directories from the physical file system..
-        /// </summary>
-        List<string> PhysicalPaths
-        {
-            get;
-        }
+        get;
+    }
 
-        /// <summary>
-        /// Property to return the ID to the virtual directory that will receive the imported files.
-        /// </summary>
-        string DestinationDirectory
-        {
-            get;
-        }
+    /// <summary>
+    /// Property to return the ID to the virtual directory that will receive the imported files.
+    /// </summary>
+    string DestinationDirectory
+    {
+        get;
+    }
 
-        /// <summary>
-        /// Property to set or return whether any files or directories were successfully imported.
-        /// </summary>
-        bool ItemsImported
-        {
-            get;
-            set;
-        }
+    /// <summary>
+    /// Property to set or return whether any files or directories were successfully imported.
+    /// </summary>
+    bool ItemsImported
+    {
+        get;
+        set;
     }
 }

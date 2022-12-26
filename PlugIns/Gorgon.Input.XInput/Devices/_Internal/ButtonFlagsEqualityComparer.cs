@@ -27,24 +27,23 @@
 using System.Collections.Generic;
 using XI = SharpDX.XInput;
 
-namespace Gorgon.Input.XInput
-{
-    internal class ButtonFlagsEqualityComparer
-        : IEqualityComparer<XI.GamepadButtonFlags>
-    {
-        /// <summary>
-        /// Equalses the specified x.
-        /// </summary>
-        /// <param name="x">The first object of type <see cref="XI.GamepadButtonFlags"/> to compare.</param>
-        /// <param name="y">The second object of type <see cref="XI.GamepadButtonFlags"/> to compare.</param>
-        /// <returns><b>true</b> if the specified objects are equal; otherwise, <b>false</b> if not.</returns>
-        public bool Equals(XI.GamepadButtonFlags x, XI.GamepadButtonFlags y) => x == y;
+namespace Gorgon.Input.XInput;
 
-        /// <summary>
-        /// Returns a hash code for this instance.
-        /// </summary>
-        /// <param name="obj">The object.</param>
-        /// <returns>A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table.</returns>
-        public int GetHashCode(XI.GamepadButtonFlags obj) => obj.GetHashCode();
-    }
+internal class ButtonFlagsEqualityComparer
+    : IEqualityComparer<XI.GamepadButtonFlags>
+{
+    /// <summary>
+    /// Equalses the specified x.
+    /// </summary>
+    /// <param name="x">The first object of type <see cref="XI.GamepadButtonFlags"/> to compare.</param>
+    /// <param name="y">The second object of type <see cref="XI.GamepadButtonFlags"/> to compare.</param>
+    /// <returns><b>true</b> if the specified objects are equal; otherwise, <b>false</b> if not.</returns>
+    public bool Equals(XI.GamepadButtonFlags x, XI.GamepadButtonFlags y) => x == y;
+
+    /// <summary>
+    /// Returns a hash code for this instance.
+    /// </summary>
+    /// <param name="obj">The object.</param>
+    /// <returns>A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table.</returns>
+    public int GetHashCode(XI.GamepadButtonFlags obj) => obj.GetHashCode();
 }

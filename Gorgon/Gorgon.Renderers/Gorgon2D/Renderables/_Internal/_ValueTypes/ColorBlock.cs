@@ -26,47 +26,46 @@
 
 using Gorgon.Graphics;
 
-namespace Gorgon.Renderers
+namespace Gorgon.Renderers;
+
+/// <summary>
+/// A key used to look up a color block.
+/// </summary>
+internal readonly struct ColorBlock
 {
+    #region Variables.
     /// <summary>
-    /// A key used to look up a color block.
+    /// The starting character index.
     /// </summary>
-    internal readonly struct ColorBlock
+    public readonly int Start;
+
+    /// <summary>
+    /// The ending character index.
+    /// </summary>
+    public readonly int End;
+
+    /// <summary>
+    /// The color for the block.
+    /// </summary>
+    public readonly GorgonColor Color;
+    #endregion
+
+    #region Methods.
+    #endregion
+
+    #region Constructor/Finalizer.
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ColorBlock"/> struct.
+    /// </summary>
+    /// <param name="start">The start character index.</param>
+    /// <param name="end">The end character index.</param>
+    /// <param name="color">The color for the block.</param>
+    public ColorBlock(int start, int end, GorgonColor color)
     {
-        #region Variables.
-        /// <summary>
-        /// The starting character index.
-        /// </summary>
-        public readonly int Start;
-
-        /// <summary>
-        /// The ending character index.
-        /// </summary>
-        public readonly int End;
-
-        /// <summary>
-        /// The color for the block.
-        /// </summary>
-        public readonly GorgonColor Color;
-        #endregion
-
-        #region Methods.
-        #endregion
-
-        #region Constructor/Finalizer.
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ColorBlock"/> struct.
-        /// </summary>
-        /// <param name="start">The start character index.</param>
-        /// <param name="end">The end character index.</param>
-        /// <param name="color">The color for the block.</param>
-        public ColorBlock(int start, int end, GorgonColor color)
-        {
-            Color = color;
-            Start = start;
-            End = end;
-        }
-        #endregion
-
+        Color = color;
+        Start = start;
+        End = end;
     }
+    #endregion
+
 }

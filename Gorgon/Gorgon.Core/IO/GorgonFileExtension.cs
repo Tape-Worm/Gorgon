@@ -28,20 +28,20 @@ using System;
 using Gorgon.Core;
 using Gorgon.Properties;
 
-namespace Gorgon.IO
-{
-    /// <summary>
-    /// An extension and description for a file.
-    /// </summary>
-    /// <remarks>
-    /// <para>
-    /// This type allows for easy manipulation of file extensions and their descriptions when populating a file dialog extension list.
-    /// </para>
-    /// <para>
-    /// The file extensions can be compared to each other to determine uniqueness. When comparing file extensions, the comparison is done with a case-insensitive comparer.
-    /// </para>
-    /// </remarks>
-    public readonly struct GorgonFileExtension
+namespace Gorgon.IO;
+
+/// <summary>
+/// An extension and description for a file.
+/// </summary>
+/// <remarks>
+/// <para>
+/// This type allows for easy manipulation of file extensions and their descriptions when populating a file dialog extension list.
+/// </para>
+/// <para>
+/// The file extensions can be compared to each other to determine uniqueness. When comparing file extensions, the comparison is done with a case-insensitive comparer.
+/// </para>
+/// </remarks>
+public readonly struct GorgonFileExtension
 		: IEquatable<GorgonFileExtension>, IComparable<GorgonFileExtension>, IEquatable<string>, IComparable<string>, IGorgonNamedObject
 	{
 		#region Variables.
@@ -68,11 +68,11 @@ namespace Gorgon.IO
 		public bool IsEmpty => string.IsNullOrWhiteSpace(Extension);
 
 		/// <summary>
-        /// Property to return the fully qualified extension.
-        /// </summary>
-        /// <remarks>
-        /// This property is the same as the <see cref="Extension"/> value, except it is prefixed with a period.
-        /// </remarks>
+    /// Property to return the fully qualified extension.
+    /// </summary>
+    /// <remarks>
+    /// This property is the same as the <see cref="Extension"/> value, except it is prefixed with a period.
+    /// </remarks>
 		public string FullExtension
 		{
 			get;
@@ -191,14 +191,14 @@ namespace Gorgon.IO
 		public bool Equals(string other)
 		{
 #pragma warning disable IDE0046 // Convert to conditional expression
-            if (string.IsNullOrWhiteSpace(other))
-            {
+        if (string.IsNullOrWhiteSpace(other))
+        {
 				return false;
 			}
 
-            return other.StartsWith(".", StringComparison.Ordinal)
-                ? string.Equals(FullExtension, other, StringComparison.OrdinalIgnoreCase)
-                : string.Equals(Extension, other, StringComparison.OrdinalIgnoreCase);
+        return other.StartsWith(".", StringComparison.Ordinal)
+            ? string.Equals(FullExtension, other, StringComparison.OrdinalIgnoreCase)
+            : string.Equals(Extension, other, StringComparison.OrdinalIgnoreCase);
 #pragma warning restore IDE0046 // Convert to conditional expression
 		}
 
@@ -213,14 +213,14 @@ namespace Gorgon.IO
 		public int CompareTo(string other)
 		{
 #pragma warning disable IDE0046 // Convert to conditional expression
-            if (string.IsNullOrWhiteSpace(other))
-            {
+        if (string.IsNullOrWhiteSpace(other))
+        {
 				return -1;
 			}
 
-            return other.StartsWith(".", StringComparison.Ordinal)
-                ? string.Compare(FullExtension, other, StringComparison.OrdinalIgnoreCase)
-                : string.Compare(Extension, other, StringComparison.OrdinalIgnoreCase);
+        return other.StartsWith(".", StringComparison.Ordinal)
+            ? string.Compare(FullExtension, other, StringComparison.OrdinalIgnoreCase)
+            : string.Compare(Extension, other, StringComparison.OrdinalIgnoreCase);
 #pragma warning restore IDE0046 // Convert to conditional expression
 		}
 		#endregion
@@ -263,4 +263,3 @@ namespace Gorgon.IO
 		}
 		#endregion
 	}
-}

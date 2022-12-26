@@ -24,53 +24,52 @@
 // 
 #endregion
 
-namespace Gorgon.Graphics.Imaging.Codecs
+namespace Gorgon.Graphics.Imaging.Codecs;
+
+/// <summary>
+/// Provides options used when encoding a <see cref="IGorgonImage"/> for persistence.
+/// </summary>
+/// <remarks>
+/// <para>
+/// This particular interface provides common WIC (Windows Imaging Component) specific options for use when encoding an image across multiple image formats.
+/// </para>
+/// </remarks>
+public interface IGorgonWicEncodingOptions
+    : IGorgonImageCodecEncodingOptions
 {
     /// <summary>
-    /// Provides options used when encoding a <see cref="IGorgonImage"/> for persistence.
+    /// Property to set or return the type of <see cref="ImageDithering"/> to use.
     /// </summary>
     /// <remarks>
     /// <para>
-    /// This particular interface provides common WIC (Windows Imaging Component) specific options for use when encoding an image across multiple image formats.
+    /// This flag is used to determine which type of dithering algorithm should be used when converting the bit depth for a pixel format to a lower bit depth. If the pixel format of the image is supported 
+    /// natively by the codec, then this value will be ignored.
+    /// </para> 
+    /// <para> 
+    /// With dithering applied, the image will visually appear closer to the original by using patterns to simulate a greater number of colors.
     /// </para>
     /// </remarks>
-    public interface IGorgonWicEncodingOptions
-        : IGorgonImageCodecEncodingOptions
+    ImageDithering Dithering
     {
-        /// <summary>
-        /// Property to set or return the type of <see cref="ImageDithering"/> to use.
-        /// </summary>
-        /// <remarks>
-        /// <para>
-        /// This flag is used to determine which type of dithering algorithm should be used when converting the bit depth for a pixel format to a lower bit depth. If the pixel format of the image is supported 
-        /// natively by the codec, then this value will be ignored.
-        /// </para> 
-        /// <para> 
-        /// With dithering applied, the image will visually appear closer to the original by using patterns to simulate a greater number of colors.
-        /// </para>
-        /// </remarks>
-        ImageDithering Dithering
-        {
-            get;
-            set;
-        }
+        get;
+        set;
+    }
 
-        /// <summary>
-        /// Property to set or return the horizontal dots-per-inch for the encoded image.
-        /// </summary>
-        double DpiX
-        {
-            get;
-            set;
-        }
+    /// <summary>
+    /// Property to set or return the horizontal dots-per-inch for the encoded image.
+    /// </summary>
+    double DpiX
+    {
+        get;
+        set;
+    }
 
-        /// <summary>
-        /// Property to set or return the vertical dots-per-index for the encoded image.
-        /// </summary>
-        double DpiY
-        {
-            get;
-            set;
-        }
+    /// <summary>
+    /// Property to set or return the vertical dots-per-index for the encoded image.
+    /// </summary>
+    double DpiY
+    {
+        get;
+        set;
     }
 }

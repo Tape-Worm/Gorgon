@@ -28,47 +28,46 @@ using System.Numerics;
 using Gorgon.Editor.UI;
 using Gorgon.Renderers;
 
-namespace Gorgon.Editor.AnimationEditor
+namespace Gorgon.Editor.AnimationEditor;
+
+/// <summary>
+/// A view model for the keyframe value editor.
+/// </summary>
+internal interface IKeyValueEditor
+    : IHostedPanelViewModel
 {
     /// <summary>
-    /// A view model for the keyframe value editor.
+    /// Property to return the title for the editor.
     /// </summary>
-    internal interface IKeyValueEditor
-        : IHostedPanelViewModel
+    string Title
     {
-        /// <summary>
-        /// Property to return the title for the editor.
-        /// </summary>
-        string Title
-        {
-            get;
-        }
+        get;
+    }
 
-        /// <summary>
-        /// Property to set or return the track being edited.
-        /// </summary>
-        TrackKeySelection Track
-        {
-            get;
-            set;
-        }
+    /// <summary>
+    /// Property to set or return the track being edited.
+    /// </summary>
+    TrackKeySelection Track
+    {
+        get;
+        set;
+    }
 
-        /// <summary>
-        /// Property to set or return the value for the key frame.
-        /// </summary>
-        Vector4 Value
-        {
-            get;
-            set;
-        }
+    /// <summary>
+    /// Property to set or return the value for the key frame.
+    /// </summary>
+    Vector4 Value
+    {
+        get;
+        set;
+    }
 
-        /// <summary>
-        /// Property to set or return the working sprite to update.
-        /// </summary>
-        GorgonSprite WorkingSprite
-        {
-            get;
-            set;
-        }
+    /// <summary>
+    /// Property to set or return the working sprite to update.
+    /// </summary>
+    GorgonSprite WorkingSprite
+    {
+        get;
+        set;
     }
 }

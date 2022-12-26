@@ -29,72 +29,71 @@ using System.IO;
 using System.Windows.Forms;
 using Gorgon.Diagnostics;
 
-namespace Gorgon.Examples
+namespace Gorgon.Examples;
+
+/// <summary>
+/// Example entry point.
+/// </summary>
+/// <remarks>To see a description of this example, look in formMain.cs</remarks>
+internal static class Program
 {
+    #region Properties.
     /// <summary>
-    /// Example entry point.
+    /// Property to return the application log file.
     /// </summary>
-    /// <remarks>To see a description of this example, look in formMain.cs</remarks>
-    internal static class Program
+    public static IGorgonLog Log
     {
-        #region Properties.
-        /// <summary>
-        /// Property to return the application log file.
-        /// </summary>
-        public static IGorgonLog Log
-        {
-            get;
-            private set;
-        }
-
-        /// <summary>
-        /// Property to return the directory where we'll be writing into.
-        /// </summary>
-	    public static DirectoryInfo WriteDirectory
-        {
-            get;
-            private set;
-        }
-        #endregion
-
-        #region Methods.
-        /// <summary>
-        /// The main entry point for the application.
-        /// </summary>
-        [STAThread]
-        private static void Main()
-        {
-            Log = new GorgonTextFileLog("Writing", "Tape_Worm");
-
-            Log.LogStart();
-
-            try
-            {
-#if NET6_0_OR_GREATER
-                Application.SetHighDpiMode(HighDpiMode.PerMonitorV2);
-#endif
-                Application.EnableVisualStyles();
-                Application.SetCompatibleTextRenderingDefault(false);
-
-                WriteDirectory = new DirectoryInfo(Path.Combine(Path.GetTempPath(), "Writing"));
-
-                if (!WriteDirectory.Exists)
-                {
-                    WriteDirectory.Create();
-                    WriteDirectory.Refresh();
-                }
-
-                Application.Run(new Form());
-            }
-            catch (Exception ex)
-            {
-                GorgonExample.HandleException(ex);
-            }
-            finally
-            {
-                Log.LogEnd();
-            }
-        }
-        #endregion
+        get;
+        private set;
     }
+
+    /// <summary>
+    /// Property to return the directory where we'll be writing into.
+    /// </summary>
+	    public static DirectoryInfo WriteDirectory
+    {
+        get;
+        private set;
+    }
+    #endregion
+
+    #region Methods.
+    /// <summary>
+    /// The main entry point for the application.
+    /// </summary>
+    [STAThread]
+    private static void Main()
+    {
+        Log = new GorgonTextFileLog("Writing", "Tape_Worm");
+
+        Log.LogStart();
+
+        try
+        {
+#if NET6_0_OR_GREATER
+            Application.SetHighDpiMode(HighDpiMode.PerMonitorV2);
+#endif
+            Application.EnableVisualStyles();
+            Application.SetCompatibleTextRenderingDefault(false);
+
+            WriteDirectory = new DirectoryInfo(Path.Combine(Path.GetTempPath(), "Writing"));
+
+            if (!WriteDirectory.Exists)
+            {
+                WriteDirectory.Create();
+                WriteDirectory.Refresh();
+            }
+
+            Application.Run(new Form());
+        }
+        catch (Exception ex)
+        {
+            GorgonExample.HandleException(ex);
+        }
+        finally
+        {
+            Log.LogEnd();
+        }
+    }
+    #endregion
 }

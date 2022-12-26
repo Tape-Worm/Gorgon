@@ -26,30 +26,29 @@
 
 using Gorgon.Editor.Rendering;
 
-namespace Gorgon.Editor.ImageEditor
-{
-    /// <summary>
-    /// The main interface for an image renderer.
-    /// </summary>
-    internal interface ITextureViewer
-        : IContentRenderer
-    {
-        #region Properties.
-        /// <summary>
-        /// Property to set or return the opacity of the content in the view.
-        /// </summary>
-        float Opacity
-        {
-            get;
-            set;
-        }
-        #endregion
+namespace Gorgon.Editor.ImageEditor;
 
-        #region Methods.
-        /// <summary>
-        /// Function to create resources required for the lifetime of the viewer.
-        /// </summary>
-        void CreateResources();
-        #endregion
+/// <summary>
+/// The main interface for an image renderer.
+/// </summary>
+internal interface ITextureViewer
+    : IContentRenderer
+{
+    #region Properties.
+    /// <summary>
+    /// Property to set or return the opacity of the content in the view.
+    /// </summary>
+    float Opacity
+    {
+        get;
+        set;
     }
+    #endregion
+
+    #region Methods.
+    /// <summary>
+    /// Function to create resources required for the lifetime of the viewer.
+    /// </summary>
+    void CreateResources();
+    #endregion
 }

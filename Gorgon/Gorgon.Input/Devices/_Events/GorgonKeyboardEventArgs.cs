@@ -27,69 +27,68 @@
 using System;
 using System.Windows.Forms;
 
-namespace Gorgon.Input
+namespace Gorgon.Input;
+
+/// <summary>
+/// Event arguments for the various events triggered on the <see cref="GorgonRawKeyboard"/> interface.
+/// </summary>
+public class GorgonKeyboardEventArgs
+    : EventArgs
 {
+    #region Properties.
     /// <summary>
-    /// Event arguments for the various events triggered on the <see cref="GorgonRawKeyboard"/> interface.
+    /// Property to return key that is pressed.
     /// </summary>
-    public class GorgonKeyboardEventArgs
-        : EventArgs
+    public Keys Key
     {
-        #region Properties.
-        /// <summary>
-        /// Property to return key that is pressed.
-        /// </summary>
-        public Keys Key
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to return the keys that are being held down during the event.
-        /// </summary>
-        public Keys ModifierKeys
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to return if ALT is pressed or not.
-        /// </summary>
-        public bool Alt => (ModifierKeys & Keys.Alt) == Keys.Alt;
-
-        /// <summary>
-        /// Property to return if Ctrl is pressed or not.
-        /// </summary>
-        public bool Ctrl => (ModifierKeys & Keys.Control) == Keys.Control;
-
-        /// <summary>
-        /// Property to return if Shift is pressed or not.
-        /// </summary>
-        public bool Shift => (ModifierKeys & Keys.Shift) == Keys.Shift;
-
-        /// <summary>
-        /// Property to return the scan code data.
-        /// </summary>
-        public int ScanCodeData
-        {
-            get;
-        }
-        #endregion
-
-        #region Constructor/Finalizer.
-        /// <summary>
-        /// Initializes a new instance of the <see cref="GorgonKeyboardEventArgs"/> class.
-        /// </summary>
-        /// <param name="key">Key that is pressed.</param>
-        /// <param name="modifierKey">Keys that are held down during the event.</param>
-        /// <param name="scanData">Scan code data.</param>
-        public GorgonKeyboardEventArgs(Keys key, Keys modifierKey, int scanData)
-        {
-            Key = key;
-            ModifierKeys = modifierKey;
-            ScanCodeData = scanData;
-        }
-        #endregion
-
+        get;
     }
+
+    /// <summary>
+    /// Property to return the keys that are being held down during the event.
+    /// </summary>
+    public Keys ModifierKeys
+    {
+        get;
+    }
+
+    /// <summary>
+    /// Property to return if ALT is pressed or not.
+    /// </summary>
+    public bool Alt => (ModifierKeys & Keys.Alt) == Keys.Alt;
+
+    /// <summary>
+    /// Property to return if Ctrl is pressed or not.
+    /// </summary>
+    public bool Ctrl => (ModifierKeys & Keys.Control) == Keys.Control;
+
+    /// <summary>
+    /// Property to return if Shift is pressed or not.
+    /// </summary>
+    public bool Shift => (ModifierKeys & Keys.Shift) == Keys.Shift;
+
+    /// <summary>
+    /// Property to return the scan code data.
+    /// </summary>
+    public int ScanCodeData
+    {
+        get;
+    }
+    #endregion
+
+    #region Constructor/Finalizer.
+    /// <summary>
+    /// Initializes a new instance of the <see cref="GorgonKeyboardEventArgs"/> class.
+    /// </summary>
+    /// <param name="key">Key that is pressed.</param>
+    /// <param name="modifierKey">Keys that are held down during the event.</param>
+    /// <param name="scanData">Scan code data.</param>
+    public GorgonKeyboardEventArgs(Keys key, Keys modifierKey, int scanData)
+    {
+        Key = key;
+        ModifierKeys = modifierKey;
+        ScanCodeData = scanData;
+    }
+    #endregion
+
 }

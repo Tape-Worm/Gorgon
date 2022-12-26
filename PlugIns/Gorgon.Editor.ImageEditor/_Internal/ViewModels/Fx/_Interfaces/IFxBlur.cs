@@ -26,21 +26,20 @@
 
 using Gorgon.Editor.UI;
 
-namespace Gorgon.Editor.ImageEditor.Fx
+namespace Gorgon.Editor.ImageEditor.Fx;
+
+/// <summary>
+/// The view model for the fx blur settings panel.
+/// </summary>
+internal interface IFxBlur
+    : IHostedPanelViewModel
 {
     /// <summary>
-    /// The view model for the fx blur settings panel.
+    /// Property to set or return the amount of blur to apply.
     /// </summary>
-    internal interface IFxBlur
-        : IHostedPanelViewModel
+    int BlurAmount
     {
-        /// <summary>
-        /// Property to set or return the amount of blur to apply.
-        /// </summary>
-        int BlurAmount
-        {
-            get;
-            set;
-        }
+        get;
+        set;
     }
 }

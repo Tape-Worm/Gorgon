@@ -1,39 +1,39 @@
-﻿namespace Gorgon.Editor.UI.Controls
+﻿namespace Gorgon.Editor.UI.Controls;
+
+partial class ColorPicker
 {
-    partial class ColorPicker
+    /// <summary> 
+    /// Required designer variable.
+    /// </summary>
+    private System.ComponentModel.IContainer components = null;
+
+    /// <summary> 
+    /// Clean up any resources being used.
+    /// </summary>
+    /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+    protected override void Dispose(bool disposing)
     {
-        /// <summary> 
-        /// Required designer variable.
-        /// </summary>
-        private System.ComponentModel.IContainer components = null;
-
-        /// <summary> 
-        /// Clean up any resources being used.
-        /// </summary>
-        /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
-        protected override void Dispose(bool disposing)
+        if (disposing && (components != null))
         {
-            if (disposing && (components != null))
-            {
-                components.Dispose();
-            }
-
-            if (disposing)
-            {
-                ColorChangedEvent = null;
-            }
-
-            base.Dispose(disposing);
+            components.Dispose();
         }
 
-        #region Component Designer generated code
-
-        /// <summary> 
-        /// Required method for Designer support - do not modify 
-        /// the contents of this method with the code editor.
-        /// </summary>
-        private void InitializeComponent()
+        if (disposing)
         {
+            ColorChangedEvent = null;
+        }
+
+        base.Dispose(disposing);
+    }
+
+    #region Component Designer generated code
+
+    /// <summary> 
+    /// Required method for Designer support - do not modify 
+    /// the contents of this method with the code editor.
+    /// </summary>
+    private void InitializeComponent()
+    {
 			this.Picker = new Fetze.WinFormsColor.ColorPickerPanel();
 			this.SuspendLayout();
 			// 
@@ -65,10 +65,9 @@
 			this.ResumeLayout(false);
 			this.PerformLayout();
 
-        }
-
-        #endregion
-
-        private Fetze.WinFormsColor.ColorPickerPanel Picker;
     }
+
+    #endregion
+
+    private Fetze.WinFormsColor.ColorPickerPanel Picker;
 }

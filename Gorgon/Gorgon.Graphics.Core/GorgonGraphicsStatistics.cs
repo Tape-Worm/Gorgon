@@ -24,12 +24,12 @@
 // 
 #endregion
 
-namespace Gorgon.Graphics.Core
-{
-    /// <summary>
-    /// Statistics gathered while rendering.
-    /// </summary>
-    public struct GorgonGraphicsStatistics
+namespace Gorgon.Graphics.Core;
+
+/// <summary>
+/// Statistics gathered while rendering.
+/// </summary>
+public struct GorgonGraphicsStatistics
 	{
 		#region Variables.
 		// The number of draw calls.
@@ -68,19 +68,18 @@ namespace Gorgon.Graphics.Core
 		public long DrawCallCount => _drawCallCount;
 
 		/// <summary>
-        /// Property to return the number of indirect calls submitted.
-        /// </summary>
+    /// Property to return the number of indirect calls submitted.
+    /// </summary>
 		public long IndirectCount => _indirectCount;
 
 		/// <summary>
-        /// Property to return the number of stream out calls submitted.
-        /// </summary>
+    /// Property to return the number of stream out calls submitted.
+    /// </summary>
 		public long StreamOutCount => _streamOutCount;
 
 		/// <summary>
-        /// Property to return the number of triangles submitted in the frame.
-        /// </summary>
+    /// Property to return the number of triangles submitted in the frame.
+    /// </summary>
 		public long TriangleCount => _triangleCount;
 		#endregion
 	}
-}

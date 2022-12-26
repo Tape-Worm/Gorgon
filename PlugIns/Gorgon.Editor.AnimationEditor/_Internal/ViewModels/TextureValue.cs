@@ -32,109 +32,108 @@ using Gorgon.Graphics.Core;
 using Gorgon.Math;
 using DX = SharpDX;
 
-namespace Gorgon.Editor.AnimationEditor
+namespace Gorgon.Editor.AnimationEditor;
+
+/// <summary>
+/// A value for a texture key frame.
+/// </summary>
+internal readonly struct TextureValue
+    : IGorgonEquatableByRef<TextureValue>
 {
+    #region Variables.
     /// <summary>
-    /// A value for a texture key frame.
+    /// The texture to use when rendering the key.
     /// </summary>
-    internal readonly struct TextureValue
-        : IGorgonEquatableByRef<TextureValue>
+    public readonly GorgonTexture2DView Texture;
+
+    /// <summary>
+    /// The array index to use on the texture.
+    /// </summary>
+    public readonly int ArrayIndex;
+
+    /// <summary>
+    /// The texture coordinates to use.
+    /// </summary>
+    public readonly DX.RectangleF TextureCoordinates;
+
+    /// <summary>
+    /// The file for the texture.
+    /// </summary>
+    public readonly IContentFile TextureFile;
+    #endregion
+
+    #region Methods.
+    /// <summary>Returns a hash code for this instance.</summary>
+    /// <returns>A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table.</returns>
+    public override int GetHashCode() => HashCode.Combine(ArrayIndex, TextureCoordinates, Texture);
+
+    /// <summary>Returns a <see cref="string"/> that represents this instance.</summary>
+    /// <returns>A <see cref="string"/> that represents this instance.</returns>
+    public override string ToString() => Resources.GORANM_TOSTR_TEXTURE_KEYFRAME;
+
+    /// <summary>
+    /// Function to determine if two values are equal.
+    /// </summary>
+    /// <param name="left">The left side value to compare.</param>
+    /// <param name="right">The right side value to compare.</param>
+    /// <returns><b>true</b> if the values are equal, <b>false</b> if not.</returns>
+    public static bool Equals(in TextureValue left, in TextureValue right) => (left.Texture == right.Texture)
+            && (left.ArrayIndex == right.ArrayIndex)
+            && (left.TextureCoordinates.Left.EqualsEpsilon(right.TextureCoordinates.Left))
+            && (left.TextureCoordinates.Top.EqualsEpsilon(right.TextureCoordinates.Top))
+            && (left.TextureCoordinates.Right.EqualsEpsilon(right.TextureCoordinates.Right))
+            && (left.TextureCoordinates.Bottom.EqualsEpsilon(right.TextureCoordinates.Bottom))
+            && (left.TextureFile == right.TextureFile);
+
+    /// <summary>Determines whether the specified <see cref="object"/> is equal to this instance.</summary>
+    /// <param name="obj">The object to compare with the current instance.</param>
+    /// <returns>
+    ///   <c>true</c> if the specified <see cref="object"/> is equal to this instance; otherwise, <c>false</c>.</returns>
+    public override bool Equals(object obj) => obj is TextureValue val ? Equals(in val, in this) : base.Equals(obj);
+
+    /// <summary>Indicates whether the current object is equal to another object of the same type.</summary>
+    /// <param name="other">An object to compare with this object.</param>
+    /// <returns>
+    ///   <span class="keyword">
+    ///     <span class="languageSpecificText">
+    ///       <span class="cs">true</span>
+    ///       <span class="vb">True</span>
+    ///       <span class="cpp">true</span>
+    ///     </span>
+    ///   </span>
+    ///   <span class="nu">
+    ///     <span class="keyword">true</span> (<span class="keyword">True</span> in Visual Basic)</span> if the current object is equal to the <paramref name="other" /> parameter; otherwise, <span class="keyword"><span class="languageSpecificText"><span class="cs">false</span><span class="vb">False</span><span class="cpp">false</span></span></span><span class="nu"><span class="keyword">false</span> (<span class="keyword">False</span> in Visual Basic)</span>.
+    /// </returns>
+    bool IEquatable<TextureValue>.Equals(TextureValue other) => Equals(in other, in this);
+
+    /// <summary>Indicates whether the current object is equal to another object of the same type.</summary>
+    /// <param name="other">An object to compare with this object.</param>
+    /// <returns>
+    ///   <span class="keyword">
+    ///     <span class="languageSpecificText">
+    ///       <span class="cs">true</span>
+    ///       <span class="vb">True</span>
+    ///       <span class="cpp">true</span>
+    ///     </span>
+    ///   </span>
+    ///   <span class="nu">
+    ///     <span class="keyword">true</span> (<span class="keyword">True</span> in Visual Basic)</span> if the current object is equal to the <paramref name="other" /> parameter; otherwise, <span class="keyword"><span class="languageSpecificText"><span class="cs">false</span><span class="vb">False</span><span class="cpp">false</span></span></span><span class="nu"><span class="keyword">false</span> (<span class="keyword">False</span> in Visual Basic)</span>.
+    /// </returns>
+    public bool Equals(in TextureValue other) => Equals(in other, in this);
+    #endregion
+
+    #region Constructor.
+    /// <summary>Initializes a new instance of the <see cref="TextureValue"/> struct.</summary>
+    /// <param name="texture">The texture used when rendering the key.</param>
+    /// <param name="textureFile">The file for the texture.</param>
+    /// <param name="arrayIndex">The array index to use on the texture.</param>
+    /// <param name="textureCoordinates">The texture coordinates to use.</param>
+    public TextureValue(GorgonTexture2DView texture, IContentFile textureFile, int arrayIndex, DX.RectangleF textureCoordinates)
     {
-        #region Variables.
-        /// <summary>
-        /// The texture to use when rendering the key.
-        /// </summary>
-        public readonly GorgonTexture2DView Texture;
-
-        /// <summary>
-        /// The array index to use on the texture.
-        /// </summary>
-        public readonly int ArrayIndex;
-
-        /// <summary>
-        /// The texture coordinates to use.
-        /// </summary>
-        public readonly DX.RectangleF TextureCoordinates;
-
-        /// <summary>
-        /// The file for the texture.
-        /// </summary>
-        public readonly IContentFile TextureFile;
-        #endregion
-
-        #region Methods.
-        /// <summary>Returns a hash code for this instance.</summary>
-        /// <returns>A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table.</returns>
-        public override int GetHashCode() => HashCode.Combine(ArrayIndex, TextureCoordinates, Texture);
-
-        /// <summary>Returns a <see cref="string"/> that represents this instance.</summary>
-        /// <returns>A <see cref="string"/> that represents this instance.</returns>
-        public override string ToString() => Resources.GORANM_TOSTR_TEXTURE_KEYFRAME;
-
-        /// <summary>
-        /// Function to determine if two values are equal.
-        /// </summary>
-        /// <param name="left">The left side value to compare.</param>
-        /// <param name="right">The right side value to compare.</param>
-        /// <returns><b>true</b> if the values are equal, <b>false</b> if not.</returns>
-        public static bool Equals(in TextureValue left, in TextureValue right) => (left.Texture == right.Texture)
-                && (left.ArrayIndex == right.ArrayIndex)
-                && (left.TextureCoordinates.Left.EqualsEpsilon(right.TextureCoordinates.Left))
-                && (left.TextureCoordinates.Top.EqualsEpsilon(right.TextureCoordinates.Top))
-                && (left.TextureCoordinates.Right.EqualsEpsilon(right.TextureCoordinates.Right))
-                && (left.TextureCoordinates.Bottom.EqualsEpsilon(right.TextureCoordinates.Bottom))
-                && (left.TextureFile == right.TextureFile);
-
-        /// <summary>Determines whether the specified <see cref="object"/> is equal to this instance.</summary>
-        /// <param name="obj">The object to compare with the current instance.</param>
-        /// <returns>
-        ///   <c>true</c> if the specified <see cref="object"/> is equal to this instance; otherwise, <c>false</c>.</returns>
-        public override bool Equals(object obj) => obj is TextureValue val ? Equals(in val, in this) : base.Equals(obj);
-
-        /// <summary>Indicates whether the current object is equal to another object of the same type.</summary>
-        /// <param name="other">An object to compare with this object.</param>
-        /// <returns>
-        ///   <span class="keyword">
-        ///     <span class="languageSpecificText">
-        ///       <span class="cs">true</span>
-        ///       <span class="vb">True</span>
-        ///       <span class="cpp">true</span>
-        ///     </span>
-        ///   </span>
-        ///   <span class="nu">
-        ///     <span class="keyword">true</span> (<span class="keyword">True</span> in Visual Basic)</span> if the current object is equal to the <paramref name="other" /> parameter; otherwise, <span class="keyword"><span class="languageSpecificText"><span class="cs">false</span><span class="vb">False</span><span class="cpp">false</span></span></span><span class="nu"><span class="keyword">false</span> (<span class="keyword">False</span> in Visual Basic)</span>.
-        /// </returns>
-        bool IEquatable<TextureValue>.Equals(TextureValue other) => Equals(in other, in this);
-
-        /// <summary>Indicates whether the current object is equal to another object of the same type.</summary>
-        /// <param name="other">An object to compare with this object.</param>
-        /// <returns>
-        ///   <span class="keyword">
-        ///     <span class="languageSpecificText">
-        ///       <span class="cs">true</span>
-        ///       <span class="vb">True</span>
-        ///       <span class="cpp">true</span>
-        ///     </span>
-        ///   </span>
-        ///   <span class="nu">
-        ///     <span class="keyword">true</span> (<span class="keyword">True</span> in Visual Basic)</span> if the current object is equal to the <paramref name="other" /> parameter; otherwise, <span class="keyword"><span class="languageSpecificText"><span class="cs">false</span><span class="vb">False</span><span class="cpp">false</span></span></span><span class="nu"><span class="keyword">false</span> (<span class="keyword">False</span> in Visual Basic)</span>.
-        /// </returns>
-        public bool Equals(in TextureValue other) => Equals(in other, in this);
-        #endregion
-
-        #region Constructor.
-        /// <summary>Initializes a new instance of the <see cref="TextureValue"/> struct.</summary>
-        /// <param name="texture">The texture used when rendering the key.</param>
-        /// <param name="textureFile">The file for the texture.</param>
-        /// <param name="arrayIndex">The array index to use on the texture.</param>
-        /// <param name="textureCoordinates">The texture coordinates to use.</param>
-        public TextureValue(GorgonTexture2DView texture, IContentFile textureFile, int arrayIndex, DX.RectangleF textureCoordinates)
-        {
-            Texture = texture;
-            TextureFile = textureFile;
-            ArrayIndex = arrayIndex;
-            TextureCoordinates = textureCoordinates;
-        }
-        #endregion
+        Texture = texture;
+        TextureFile = textureFile;
+        ArrayIndex = arrayIndex;
+        TextureCoordinates = textureCoordinates;
     }
+    #endregion
 }

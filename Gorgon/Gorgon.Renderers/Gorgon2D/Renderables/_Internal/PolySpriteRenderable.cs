@@ -27,32 +27,31 @@
 using System.Numerics;
 using Gorgon.Graphics.Core;
 
-namespace Gorgon.Renderers
+namespace Gorgon.Renderers;
+
+/// <summary>
+/// A renderable used by a polygon sprite.
+/// </summary>
+internal class PolySpriteRenderable
+    : BatchRenderable
 {
     /// <summary>
-    /// A renderable used by a polygon sprite.
+    /// The vertex buffer for the polygon renderable.
     /// </summary>
-    internal class PolySpriteRenderable
-        : BatchRenderable
-    {
-        /// <summary>
-        /// The vertex buffer for the polygon renderable.
-        /// </summary>
-        public GorgonVertexBufferBinding VertexBuffer;
+    public GorgonVertexBufferBinding VertexBuffer;
 
-        /// <summary>
-        /// The index buffer for the polygon renderable.
-        /// </summary>
-        public GorgonIndexBuffer IndexBuffer;
+    /// <summary>
+    /// The index buffer for the polygon renderable.
+    /// </summary>
+    public GorgonIndexBuffer IndexBuffer;
 
-        /// <summary>
-        /// The world matrix for the polygon renderable.
-        /// </summary>
-        public Matrix4x4 WorldMatrix;
+    /// <summary>
+    /// The world matrix for the polygon renderable.
+    /// </summary>
+    public Matrix4x4 WorldMatrix;
 
-        /// <summary>
-        /// The transformation data for textures.
-        /// </summary>
-        public Vector4 TextureTransform;
-    }
+    /// <summary>
+    /// The transformation data for textures.
+    /// </summary>
+    public Vector4 TextureTransform;
 }

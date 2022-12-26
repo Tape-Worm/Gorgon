@@ -27,64 +27,63 @@
 using System;
 using Gorgon.Core;
 
-namespace Gorgon.Graphics.Core
+namespace Gorgon.Graphics.Core;
+
+/// <summary>
+/// A vertex or index buffer binding.
+/// </summary>
+[Flags]
+public enum VertexIndexBufferBinding
 {
     /// <summary>
-    /// A vertex or index buffer binding.
+    /// No binding to the GPU is used.
     /// </summary>
-    [Flags]
-    public enum VertexIndexBufferBinding
+    None = BufferBinding.None,
+    /// <summary>
+    /// The buffer can be used for stream output.
+    /// </summary>
+    StreamOut = BufferBinding.StreamOut,
+    /// <summary>
+    /// The buffer can have unordered access views.
+    /// </summary>
+    UnorderedAccess = BufferBinding.ReadWrite
+}
+
+/// <summary>
+/// Provides the necessary information required to set up a vertex buffer.
+/// </summary>
+/// <remarks>
+/// <para>
+/// This provides an immutable view of the vertex buffer information so that it cannot be modified after the buffer is created.
+/// </para>
+/// </remarks>
+public interface IGorgonVertexBufferInfo
+    : IGorgonNamedObject
+{
+    /// <summary>
+    /// Property to return the intended usage for binding to the GPU.
+    /// </summary>
+    ResourceUsage Usage
     {
-        /// <summary>
-        /// No binding to the GPU is used.
-        /// </summary>
-        None = BufferBinding.None,
-        /// <summary>
-        /// The buffer can be used for stream output.
-        /// </summary>
-        StreamOut = BufferBinding.StreamOut,
-        /// <summary>
-        /// The buffer can have unordered access views.
-        /// </summary>
-        UnorderedAccess = BufferBinding.ReadWrite
+        get;
     }
 
     /// <summary>
-    /// Provides the necessary information required to set up a vertex buffer.
+    /// Property to return the size of the buffer, in bytes.
     /// </summary>
     /// <remarks>
-    /// <para>
-    /// This provides an immutable view of the vertex buffer information so that it cannot be modified after the buffer is created.
-    /// </para>
+    /// This value should be larger than 0, or else an exception will be thrown when the buffer is created.
     /// </remarks>
-    public interface IGorgonVertexBufferInfo
-        : IGorgonNamedObject
+    int SizeInBytes
     {
-        /// <summary>
-        /// Property to return the intended usage for binding to the GPU.
-        /// </summary>
-        ResourceUsage Usage
-        {
-            get;
-        }
+        get;
+    }
 
-        /// <summary>
-        /// Property to return the size of the buffer, in bytes.
-        /// </summary>
-        /// <remarks>
-        /// This value should be larger than 0, or else an exception will be thrown when the buffer is created.
-        /// </remarks>
-        int SizeInBytes
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to return the binding used to bind this buffer to the GPU.
-        /// </summary>
+    /// <summary>
+    /// Property to return the binding used to bind this buffer to the GPU.
+    /// </summary>
 	    VertexIndexBufferBinding Binding
-        {
-            get;
-        }
+    {
+        get;
     }
 }

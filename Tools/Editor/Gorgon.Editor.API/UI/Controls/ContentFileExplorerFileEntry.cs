@@ -28,121 +28,120 @@ using System;
 using System.Drawing;
 using Gorgon.Editor.Content;
 
-namespace Gorgon.Editor.UI.Controls
+namespace Gorgon.Editor.UI.Controls;
+
+/// <summary>
+/// An file system directory entry for the <see cref="ContentFileExplorer"/>.
+/// </summary>
+public class ContentFileExplorerFileEntry
+    : PropertyMonitor, IContentFileExplorerSearchEntry
 {
+    #region Variables.
+    // Flag to indicate that this entry is visible.
+    private bool _visible = true;
+    // Flag to indicate that the entry is selected.
+    private bool _isSelected;
+    #endregion
+
+    #region Properties.
     /// <summary>
-    /// An file system directory entry for the <see cref="ContentFileExplorer"/>.
+    /// Property to return the parent of this entry.
     /// </summary>
-    public class ContentFileExplorerFileEntry
-        : PropertyMonitor, IContentFileExplorerSearchEntry
+    public ContentFileExplorerDirectoryEntry Parent
     {
-        #region Variables.
-        // Flag to indicate that this entry is visible.
-        private bool _visible = true;
-        // Flag to indicate that the entry is selected.
-        private bool _isSelected;
-        #endregion
-
-        #region Properties.
-        /// <summary>
-        /// Property to return the parent of this entry.
-        /// </summary>
-        public ContentFileExplorerDirectoryEntry Parent
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to return the content file associated with this entry.
-        /// </summary>
-        public IContentFile File
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to set or return whether this entry is visible in the list or not.
-        /// </summary>
-        public bool IsVisible
-        {
-            get => ((Parent is null) || ((Parent.IsVisible) && (Parent.IsExpanded))) && _visible;
-            set
-            {
-                if (_visible == value)
-                {
-                    return;
-                }
-
-                OnPropertyChanging();
-                _visible = value;
-                OnPropertyChanged();
-            }
-        }
-
-        /// <summary>
-        /// Property to set or return whether the entry is selected or not.
-        /// </summary>
-        public bool IsSelected
-        {
-            get => _isSelected;
-            set
-            {
-                if (_isSelected == value)
-                {
-                    return;
-                }
-
-                OnPropertyChanging();
-                _isSelected = value;
-                OnPropertyChanged();
-            }
-        }
-
-        /// <summary>
-        /// Property to return the name of the entry.
-        /// </summary>
-        public string Name => File.Name;
-
-        /// <summary>
-        /// Property to return the full path to the entry.
-        /// </summary>
-        public string FullPath => File.Path;
-
-        /// <summary>
-        /// Property to return the icon for this image.
-        /// </summary>
-        public Image FileIcon => File.Metadata?.ContentMetadata?.GetSmallIcon();
-
-        /// <summary>
-        /// Property to return the file association type.
-        /// </summary>
-        public string AssociationType
-        {
-            get;
-        }
-
-        /// <summary>Property to return whether or not this entry is a directory.</summary>
-        bool IContentFileExplorerSearchEntry.IsDirectory => false;
-        #endregion
-
-        #region Constructor/Finalizer.
-        /// <summary>Initializes a new instance of the <see cref="ContentFileExplorerFileEntry"/> class.</summary>
-        /// <param name="contentFile">The content file associated with this entry.</param>
-        /// <param name="parent">The parent directory for this file.</param>
-        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="contentFile"/>, or the <paramref name="parent"/> parameter is <b>null</b>.</exception>
-        public ContentFileExplorerFileEntry(IContentFile contentFile, ContentFileExplorerDirectoryEntry parent)
-        {
-            File = contentFile ?? throw new ArgumentNullException(nameof(contentFile));
-            Parent = parent ?? throw new ArgumentNullException(nameof(parent));
-
-            AssociationType = string.Empty;
-
-            string contentType = string.Empty;
-            if (File.Metadata?.Attributes.TryGetValue(CommonEditorConstants.ContentTypeAttr, out contentType) ?? false)
-            {
-                AssociationType = contentType;
-            }
-        }
-        #endregion
+        get;
     }
+
+    /// <summary>
+    /// Property to return the content file associated with this entry.
+    /// </summary>
+    public IContentFile File
+    {
+        get;
+    }
+
+    /// <summary>
+    /// Property to set or return whether this entry is visible in the list or not.
+    /// </summary>
+    public bool IsVisible
+    {
+        get => ((Parent is null) || ((Parent.IsVisible) && (Parent.IsExpanded))) && _visible;
+        set
+        {
+            if (_visible == value)
+            {
+                return;
+            }
+
+            OnPropertyChanging();
+            _visible = value;
+            OnPropertyChanged();
+        }
+    }
+
+    /// <summary>
+    /// Property to set or return whether the entry is selected or not.
+    /// </summary>
+    public bool IsSelected
+    {
+        get => _isSelected;
+        set
+        {
+            if (_isSelected == value)
+            {
+                return;
+            }
+
+            OnPropertyChanging();
+            _isSelected = value;
+            OnPropertyChanged();
+        }
+    }
+
+    /// <summary>
+    /// Property to return the name of the entry.
+    /// </summary>
+    public string Name => File.Name;
+
+    /// <summary>
+    /// Property to return the full path to the entry.
+    /// </summary>
+    public string FullPath => File.Path;
+
+    /// <summary>
+    /// Property to return the icon for this image.
+    /// </summary>
+    public Image FileIcon => File.Metadata?.ContentMetadata?.GetSmallIcon();
+
+    /// <summary>
+    /// Property to return the file association type.
+    /// </summary>
+    public string AssociationType
+    {
+        get;
+    }
+
+    /// <summary>Property to return whether or not this entry is a directory.</summary>
+    bool IContentFileExplorerSearchEntry.IsDirectory => false;
+    #endregion
+
+    #region Constructor/Finalizer.
+    /// <summary>Initializes a new instance of the <see cref="ContentFileExplorerFileEntry"/> class.</summary>
+    /// <param name="contentFile">The content file associated with this entry.</param>
+    /// <param name="parent">The parent directory for this file.</param>
+    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="contentFile"/>, or the <paramref name="parent"/> parameter is <b>null</b>.</exception>
+    public ContentFileExplorerFileEntry(IContentFile contentFile, ContentFileExplorerDirectoryEntry parent)
+    {
+        File = contentFile ?? throw new ArgumentNullException(nameof(contentFile));
+        Parent = parent ?? throw new ArgumentNullException(nameof(parent));
+
+        AssociationType = string.Empty;
+
+        string contentType = string.Empty;
+        if (File.Metadata?.Attributes.TryGetValue(CommonEditorConstants.ContentTypeAttr, out contentType) ?? false)
+        {
+            AssociationType = contentType;
+        }
+    }
+    #endregion
 }

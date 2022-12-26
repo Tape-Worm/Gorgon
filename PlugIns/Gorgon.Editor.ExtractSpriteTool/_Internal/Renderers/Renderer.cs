@@ -35,12 +35,12 @@ using Gorgon.Renderers;
 using Gorgon.Renderers.Cameras;
 using DX = SharpDX;
 
-namespace Gorgon.Editor.ExtractSpriteTool
-{
-    /// <summary>
-    /// The renderer used to draw the texture and sprites.
-    /// </summary>
-    internal class Renderer
+namespace Gorgon.Editor.ExtractSpriteTool;
+
+/// <summary>
+/// The renderer used to draw the texture and sprites.
+/// </summary>
+internal class Renderer
 		: DefaultToolRenderer<IExtract>
 	{
 		#region Variables.
@@ -211,4 +211,3 @@ namespace Gorgon.Editor.ExtractSpriteTool
 		}
 		#endregion
 	}
-}

@@ -26,25 +26,24 @@
 
 using System;
 
-namespace Gorgon.Editor.UI.Controls
+namespace Gorgon.Editor.UI.Controls;
+
+/// <summary>
+/// Event arguments for content file selection or unselection.
+/// </summary>
+public class ContentFileEntrySelectedEventArgs
+    : EventArgs
 {
     /// <summary>
-    /// Event arguments for content file selection or unselection.
+    /// Property to set or return the file entry that was selected or unselected.
     /// </summary>
-    public class ContentFileEntrySelectedEventArgs
-        : EventArgs
+    public ContentFileExplorerFileEntry FileEntry
     {
-        /// <summary>
-        /// Property to set or return the file entry that was selected or unselected.
-        /// </summary>
-        public ContentFileExplorerFileEntry FileEntry
-        {
-            get;
-        }
-
-        /// <summary>Initializes a new instance of the <see cref="ContentFileEntrySelectedEventArgs"/> class.</summary>
-        /// <param name="entry">The file entry that was selected or unselected.</param>
-        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="entry"/> parameter is <b>null</b>.</exception>
-        public ContentFileEntrySelectedEventArgs(ContentFileExplorerFileEntry entry) => FileEntry = entry ?? throw new ArgumentNullException(nameof(entry));
+        get;
     }
+
+    /// <summary>Initializes a new instance of the <see cref="ContentFileEntrySelectedEventArgs"/> class.</summary>
+    /// <param name="entry">The file entry that was selected or unselected.</param>
+    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="entry"/> parameter is <b>null</b>.</exception>
+    public ContentFileEntrySelectedEventArgs(ContentFileExplorerFileEntry entry) => FileEntry = entry ?? throw new ArgumentNullException(nameof(entry));
 }

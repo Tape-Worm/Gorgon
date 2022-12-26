@@ -26,23 +26,22 @@
 
 using System;
 
-namespace Gorgon.IO
+namespace Gorgon.IO;
+
+/// <summary>
+/// Event arguments for the <see cref="IGorgonFileSystemWriter{T}.FileImporting"/>.
+/// </summary>
+public class FileImportingArgs
+    : EventArgs
 {
+    #region Properties.
     /// <summary>
-    /// Event arguments for the <see cref="IGorgonFileSystemWriter{T}.FileImporting"/>.
+    /// Property to set or return the physical file path of the file being imported.
     /// </summary>
-    public class FileImportingArgs
-        : EventArgs
+    public string PhysicalFilePath
     {
-        #region Properties.
-        /// <summary>
-        /// Property to set or return the physical file path of the file being imported.
-        /// </summary>
-        public string PhysicalFilePath
-        {
-            get;
-            set;
-        }
-        #endregion
+        get;
+        set;
     }
+    #endregion
 }

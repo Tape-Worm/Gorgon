@@ -27,45 +27,44 @@
 using System.Collections.Generic;
 using DX = SharpDX;
 
-namespace Gorgon.Renderers.Services
+namespace Gorgon.Renderers.Services;
+
+/// <summary>
+/// A list of rectangles for a sprite texture.
+/// </summary>
+internal class TextureRects
 {
     /// <summary>
-    /// A list of rectangles for a sprite texture.
+    /// Property to return the boundaries of the texture.
     /// </summary>
-    internal class TextureRects
+    public DX.Rectangle Bounds
     {
-        /// <summary>
-        /// Property to return the boundaries of the texture.
-        /// </summary>
-        public DX.Rectangle Bounds
-        {
-            get;
-        }
+        get;
+    }
 
-        /// <summary>
-        /// Property to return the list of occupied sprite regions on this texture.
-        /// </summary>
-        public Dictionary<GorgonSprite, DX.Rectangle> SpriteRegion
-        {
-            get;
-        } = new Dictionary<GorgonSprite, DX.Rectangle>();
+    /// <summary>
+    /// Property to return the list of occupied sprite regions on this texture.
+    /// </summary>
+    public Dictionary<GorgonSprite, DX.Rectangle> SpriteRegion
+    {
+        get;
+    } = new Dictionary<GorgonSprite, DX.Rectangle>();
 
-        /// <summary>
-        /// Property to set or return the array index for the texture.
-        /// </summary>
-        public int ArrayIndex
-        {
-            get;
-            set;
-        }
+    /// <summary>
+    /// Property to set or return the array index for the texture.
+    /// </summary>
+    public int ArrayIndex
+    {
+        get;
+        set;
+    }
 
-        /// <summary>Initializes a new instance of the <see cref="TextureRects"/> class.</summary>
-        /// <param name="textureBounds">The texture bounds.</param>
-        /// <param name="arrayIndex">Index of the texture array to use.</param>
-        public TextureRects(DX.Rectangle textureBounds, int arrayIndex)
-        {
-            Bounds = textureBounds;
-            ArrayIndex = arrayIndex;
-        }
+    /// <summary>Initializes a new instance of the <see cref="TextureRects"/> class.</summary>
+    /// <param name="textureBounds">The texture bounds.</param>
+    /// <param name="arrayIndex">Index of the texture array to use.</param>
+    public TextureRects(DX.Rectangle textureBounds, int arrayIndex)
+    {
+        Bounds = textureBounds;
+        ArrayIndex = arrayIndex;
     }
 }

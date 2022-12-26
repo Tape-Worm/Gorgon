@@ -28,34 +28,33 @@ using System;
 using System.Windows.Forms;
 using Gorgon.UI;
 
-namespace Gorgon.Examples
+namespace Gorgon.Examples;
+
+/// <summary>
+/// Example entry point.
+/// </summary>
+/// <remarks>To see a description of this example, look in formMain.cs</remarks>
+internal static class Program
 {
     /// <summary>
-    /// Example entry point.
+    /// The main entry point for the application.
     /// </summary>
-    /// <remarks>To see a description of this example, look in formMain.cs</remarks>
-    internal static class Program
+    [STAThread]
+    private static void Main()
     {
-        /// <summary>
-        /// The main entry point for the application.
-        /// </summary>
-        [STAThread]
-        private static void Main()
+        try
         {
-            try
-            {
 #if NET6_0_OR_GREATER
-                Application.SetHighDpiMode(HighDpiMode.PerMonitorV2);
+            Application.SetHighDpiMode(HighDpiMode.PerMonitorV2);
 #endif
-                Application.EnableVisualStyles();
-                Application.SetCompatibleTextRenderingDefault(false);
+            Application.EnableVisualStyles();
+            Application.SetCompatibleTextRenderingDefault(false);
 
-                GorgonApplication.Run(new Form());
-            }
-            catch (Exception ex)
-            {
-                GorgonExample.HandleException(ex);
-            }
+            GorgonApplication.Run(new Form());
+        }
+        catch (Exception ex)
+        {
+            GorgonExample.HandleException(ex);
         }
     }
 }

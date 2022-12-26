@@ -26,35 +26,34 @@
 
 using Gorgon.Graphics.Core;
 
-namespace Gorgon.Renderers
+namespace Gorgon.Renderers;
+
+/// <summary>
+/// Returns the builders that applications can use to build up states for an effect.
+/// </summary>
+public interface IGorgon2DEffectBuilders
 {
     /// <summary>
-    /// Returns the builders that applications can use to build up states for an effect.
+    /// Property to return the batch state builder.
     /// </summary>
-    public interface IGorgon2DEffectBuilders
+    Gorgon2DBatchStateBuilder BatchBuilder
     {
-        /// <summary>
-        /// Property to return the batch state builder.
-        /// </summary>
-        Gorgon2DBatchStateBuilder BatchBuilder
-        {
-            get;
-        }
+        get;
+    }
 
-        /// <summary>
-        /// Property to return the vertex shader state builder.
-        /// </summary>
-        Gorgon2DShaderStateBuilder<GorgonVertexShader> VertexShaderBuilder
-        {
-            get;
-        }
+    /// <summary>
+    /// Property to return the vertex shader state builder.
+    /// </summary>
+    Gorgon2DShaderStateBuilder<GorgonVertexShader> VertexShaderBuilder
+    {
+        get;
+    }
 
-        /// <summary>
-        /// Property to return the pixel shader state builder.
-        /// </summary>
-        Gorgon2DShaderStateBuilder<GorgonPixelShader> PixelShaderBuilder
-        {
-            get;
-        }
+    /// <summary>
+    /// Property to return the pixel shader state builder.
+    /// </summary>
+    Gorgon2DShaderStateBuilder<GorgonPixelShader> PixelShaderBuilder
+    {
+        get;
     }
 }

@@ -27,48 +27,47 @@
 
 using Gorgon.Core;
 
-namespace Gorgon.Graphics.Core
+namespace Gorgon.Graphics.Core;
+
+/// <summary>
+/// Provides information on how to set up a constant buffer.
+/// </summary>
+/// <remarks>
+/// <para>
+/// This provides an immutable view of the constant buffer information so that it cannot be modified after the buffer is created.
+/// </para>
+/// </remarks>
+public interface IGorgonConstantBufferInfo
+    : IGorgonNamedObject
 {
     /// <summary>
-    /// Provides information on how to set up a constant buffer.
+    /// Property to return the intended usage flags for this texture.
     /// </summary>
     /// <remarks>
-    /// <para>
-    /// This provides an immutable view of the constant buffer information so that it cannot be modified after the buffer is created.
-    /// </para>
+    /// This value is defaulted to <see cref="ResourceUsage.Default"/>.
     /// </remarks>
-    public interface IGorgonConstantBufferInfo
-        : IGorgonNamedObject
+    ResourceUsage Usage
     {
-        /// <summary>
-        /// Property to return the intended usage flags for this texture.
-        /// </summary>
-        /// <remarks>
-        /// This value is defaulted to <see cref="ResourceUsage.Default"/>.
-        /// </remarks>
-        ResourceUsage Usage
-        {
-            get;
-        }
+        get;
+    }
 
-        /// <summary>
-        /// Property to return the number of bytes to allocate for the buffer.
-        /// </summary>
-        /// <remarks>
-        /// <note type="important">
-        /// <para>
-        /// <para>
-        /// A <see cref="BufferType.Constant"/> buffer, must set the size to be a multiple of 16. Constant buffer alignment rules require that they be sized to the nearest 16 bytes.
-        /// </para>
-        /// <para>
-        /// If the buffer is not sized to a multiple of 16, Gorgon will attempt to adjust the size to fit the alignment requirement.
-        /// </para>
-        /// </para>
-        /// </note>
-        /// </remarks>
-        int SizeInBytes
-        {
-            get;
-        }
+    /// <summary>
+    /// Property to return the number of bytes to allocate for the buffer.
+    /// </summary>
+    /// <remarks>
+    /// <note type="important">
+    /// <para>
+    /// <para>
+    /// A <see cref="BufferType.Constant"/> buffer, must set the size to be a multiple of 16. Constant buffer alignment rules require that they be sized to the nearest 16 bytes.
+    /// </para>
+    /// <para>
+    /// If the buffer is not sized to a multiple of 16, Gorgon will attempt to adjust the size to fit the alignment requirement.
+    /// </para>
+    /// </para>
+    /// </note>
+    /// </remarks>
+    int SizeInBytes
+    {
+        get;
     }
 }

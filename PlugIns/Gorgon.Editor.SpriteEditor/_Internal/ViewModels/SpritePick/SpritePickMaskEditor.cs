@@ -27,70 +27,69 @@
 using Gorgon.Editor.UI;
 using Gorgon.Graphics;
 
-namespace Gorgon.Editor.SpriteEditor
+namespace Gorgon.Editor.SpriteEditor;
+
+/// <summary>
+/// The view model used to manipulate the sprite picker mask clipping type and color.
+/// </summary>
+internal class SpritePickMaskEditor
+    : HostedPanelViewModelBase<SpritePickMaskEditorParameters>, ISpritePickMaskEditor
 {
-    /// <summary>
-    /// The view model used to manipulate the sprite picker mask clipping type and color.
-    /// </summary>
-    internal class SpritePickMaskEditor
-        : HostedPanelViewModelBase<SpritePickMaskEditorParameters>, ISpritePickMaskEditor
+    #region Variables.
+    // The settings for the plug in.
+    private ISettings _pluginSettings;
+    #endregion
+
+    #region Properties.
+    /// <summary>Property to set or return the type of masking to perform when picking a sprite using the sprite picker tool.</summary>
+    public ClipMask ClipMaskType
     {
-        #region Variables.
-        // The settings for the plug in.
-        private ISettings _pluginSettings;
-        #endregion
-
-        #region Properties.
-        /// <summary>Property to set or return the type of masking to perform when picking a sprite using the sprite picker tool.</summary>
-        public ClipMask ClipMaskType
+        get => _pluginSettings.ClipMaskType;
+        set
         {
-            get => _pluginSettings.ClipMaskType;
-            set
+            if (_pluginSettings.ClipMaskType == value)
             {
-                if (_pluginSettings.ClipMaskType == value)
-                {
-                    return;
-                }
-
-                OnPropertyChanging();
-                _pluginSettings.ClipMaskType = value;
-                OnPropertyChanged();
+                return;
             }
+
+            OnPropertyChanging();
+            _pluginSettings.ClipMaskType = value;
+            OnPropertyChanged();
         }
-
-        /// <summary>Property to set or return the sprite picker mask color.</summary>
-        public GorgonColor ClipMaskValue
-        {
-            get => _pluginSettings.ClipMaskValue;
-            set
-            {
-                if (_pluginSettings.ClipMaskValue == value)
-                {
-                    return;
-                }
-
-                OnPropertyChanging();
-                _pluginSettings.ClipMaskValue = value;
-                OnPropertyChanged();
-            }
-        }
-
-        /// <summary>Property to return whether the panel is modal.</summary>
-        public override bool IsModal => false;
-        #endregion
-
-        #region Methods.
-        /// <summary>Function to inject dependencies for the view model.</summary>
-        /// <param name="injectionParameters">The parameters to inject.</param>
-        /// <remarks>
-        ///   <para>
-        /// Applications should call this when setting up the view model for complex operations and/or dependency injection. The constructor should only be used for simple set up and initialization of objects.
-        /// </para>
-        ///   <para>
-        /// This method is only ever called after the view model has been created, and never again during the lifetime of the view model.
-        /// </para>
-        /// </remarks>
-        protected override void OnInitialize(SpritePickMaskEditorParameters injectionParameters) => _pluginSettings = injectionParameters.PluginSettings;
-        #endregion
     }
+
+    /// <summary>Property to set or return the sprite picker mask color.</summary>
+    public GorgonColor ClipMaskValue
+    {
+        get => _pluginSettings.ClipMaskValue;
+        set
+        {
+            if (_pluginSettings.ClipMaskValue == value)
+            {
+                return;
+            }
+
+            OnPropertyChanging();
+            _pluginSettings.ClipMaskValue = value;
+            OnPropertyChanged();
+        }
+    }
+
+    /// <summary>Property to return whether the panel is modal.</summary>
+    public override bool IsModal => false;
+    #endregion
+
+    #region Methods.
+    /// <summary>Function to inject dependencies for the view model.</summary>
+    /// <param name="injectionParameters">The parameters to inject.</param>
+    /// <remarks>
+    ///   <para>
+    /// Applications should call this when setting up the view model for complex operations and/or dependency injection. The constructor should only be used for simple set up and initialization of objects.
+    /// </para>
+    ///   <para>
+    /// This method is only ever called after the view model has been created, and never again during the lifetime of the view model.
+    /// </para>
+    /// </remarks>
+    protected override void OnInitialize(SpritePickMaskEditorParameters injectionParameters) => _pluginSettings = injectionParameters.PluginSettings;
+    #endregion
 }

@@ -29,98 +29,97 @@ using System.Drawing;
 using Gorgon.Core;
 using Gorgon.IO;
 
-namespace Gorgon.Graphics.Fonts
+namespace Gorgon.Graphics.Fonts;
+
+/// <summary>
+/// The type of glyph brush to use when painting the glyphs for the font.
+/// </summary>
+public enum GlyphBrushType
 {
     /// <summary>
-    /// The type of glyph brush to use when painting the glyphs for the font.
+    /// A solid color.
     /// </summary>
-    public enum GlyphBrushType
+    Solid = 0,
+    /// <summary>
+    /// Texture.
+    /// </summary>
+    Texture = 1,
+    /// <summary>
+    /// Hatch pattern.
+    /// </summary>
+    Hatched = 2,
+    /// <summary>
+    /// Linear gradient colors.
+    /// </summary>
+    LinearGradient = 3,
+    /// <summary>
+    /// Path gradient colors.
+    /// </summary>
+    PathGradient = 4
+}
+
+/// <summary>
+/// A brush used to paint the glyphs when generating a font.
+/// </summary>
+public abstract class GorgonGlyphBrush
+    : IGorgonCloneable<GorgonGlyphBrush>, IEquatable<GorgonGlyphBrush>
+{
+    #region Properties.
+    /// <summary>
+    /// Property to return the type of brush.
+    /// </summary>
+    public abstract GlyphBrushType BrushType
     {
-        /// <summary>
-        /// A solid color.
-        /// </summary>
-        Solid = 0,
-        /// <summary>
-        /// Texture.
-        /// </summary>
-        Texture = 1,
-        /// <summary>
-        /// Hatch pattern.
-        /// </summary>
-        Hatched = 2,
-        /// <summary>
-        /// Linear gradient colors.
-        /// </summary>
-        LinearGradient = 3,
-        /// <summary>
-        /// Path gradient colors.
-        /// </summary>
-        PathGradient = 4
+        get;
     }
+    #endregion
+
+    #region Methods.
+    /// <summary>
+    /// Function to convert this brush to the equivalent GDI+ brush type.
+    /// </summary>
+    /// <returns>The GDI+ brush type for this object.</returns>
+    internal abstract Brush ToGDIBrush();
 
     /// <summary>
-    /// A brush used to paint the glyphs when generating a font.
+    /// Function to write out the specifics of the font brush data to a file writer.
     /// </summary>
-    public abstract class GorgonGlyphBrush
-        : IGorgonCloneable<GorgonGlyphBrush>, IEquatable<GorgonGlyphBrush>
-    {
-        #region Properties.
-        /// <summary>
-        /// Property to return the type of brush.
-        /// </summary>
-        public abstract GlyphBrushType BrushType
-        {
-            get;
-        }
-        #endregion
+    /// <param name="writer">The writer used to write the brush data.</param>
+    internal abstract void WriteBrushData(GorgonBinaryWriter writer);
 
-        #region Methods.
-        /// <summary>
-        /// Function to convert this brush to the equivalent GDI+ brush type.
-        /// </summary>
-        /// <returns>The GDI+ brush type for this object.</returns>
-        internal abstract Brush ToGDIBrush();
+    /// <summary>
+    /// Function to read back the specifics of the font brush data from a file reader.
+    /// </summary>
+    /// <param name="reader">The reader used to read the brush data.</param>
+    internal abstract void ReadBrushData(GorgonBinaryReader reader);
 
-        /// <summary>
-        /// Function to write out the specifics of the font brush data to a file writer.
-        /// </summary>
-        /// <param name="writer">The writer used to write the brush data.</param>
-        internal abstract void WriteBrushData(GorgonBinaryWriter writer);
+    /// <summary>Function to clone an object.</summary>
+    /// <returns>The cloned object.</returns>
+    public abstract GorgonGlyphBrush Clone();
 
-        /// <summary>
-        /// Function to read back the specifics of the font brush data from a file reader.
-        /// </summary>
-        /// <param name="reader">The reader used to read the brush data.</param>
-        internal abstract void ReadBrushData(GorgonBinaryReader reader);
+    /// <summary>Indicates whether the current object is equal to another object of the same type.</summary>
+    /// <param name="other">An object to compare with this object.</param>
+    /// <returns>
+    ///   <span class="keyword">
+    ///     <span class="languageSpecificText">
+    ///       <span class="cs">true</span>
+    ///       <span class="vb">True</span>
+    ///       <span class="cpp">true</span>
+    ///     </span>
+    ///   </span>
+    ///   <span class="nu">
+    ///     <span class="keyword">true</span> (<span class="keyword">True</span> in Visual Basic)</span> if the current object is equal to the <paramref name="other" /> parameter; otherwise, <span class="keyword"><span class="languageSpecificText"><span class="cs">false</span><span class="vb">False</span><span class="cpp">false</span></span></span><span class="nu"><span class="keyword">false</span> (<span class="keyword">False</span> in Visual Basic)</span>.
+    /// </returns>
+    public abstract bool Equals(GorgonGlyphBrush other);
 
-        /// <summary>Function to clone an object.</summary>
-        /// <returns>The cloned object.</returns>
-        public abstract GorgonGlyphBrush Clone();
+    /// <summary>Returns a hash code for this instance.</summary>
+    /// <returns>A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table.</returns>
+    public override int GetHashCode() => base.GetHashCode();
 
-        /// <summary>Indicates whether the current object is equal to another object of the same type.</summary>
-        /// <param name="other">An object to compare with this object.</param>
-        /// <returns>
-        ///   <span class="keyword">
-        ///     <span class="languageSpecificText">
-        ///       <span class="cs">true</span>
-        ///       <span class="vb">True</span>
-        ///       <span class="cpp">true</span>
-        ///     </span>
-        ///   </span>
-        ///   <span class="nu">
-        ///     <span class="keyword">true</span> (<span class="keyword">True</span> in Visual Basic)</span> if the current object is equal to the <paramref name="other" /> parameter; otherwise, <span class="keyword"><span class="languageSpecificText"><span class="cs">false</span><span class="vb">False</span><span class="cpp">false</span></span></span><span class="nu"><span class="keyword">false</span> (<span class="keyword">False</span> in Visual Basic)</span>.
-        /// </returns>
-        public abstract bool Equals(GorgonGlyphBrush other);
-
-        /// <summary>Returns a hash code for this instance.</summary>
-        /// <returns>A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table.</returns>
-        public override int GetHashCode() => base.GetHashCode();
-
-        /// <summary>Determines whether the specified <see cref="object"/> is equal to this instance.</summary>
-        /// <param name="obj">The object to compare with the current object.</param>
-        /// <returns>
-        ///   <c>true</c> if the specified <see cref="object"/> is equal to this instance; otherwise, <c>false</c>.</returns>
-        public override bool Equals(object obj) => (obj as GorgonGlyphBrush).Equals(this);
-        #endregion
-    }
+    /// <summary>Determines whether the specified <see cref="object"/> is equal to this instance.</summary>
+    /// <param name="obj">The object to compare with the current object.</param>
+    /// <returns>
+    ///   <c>true</c> if the specified <see cref="object"/> is equal to this instance; otherwise, <c>false</c>.</returns>
+    public override bool Equals(object obj) => (obj as GorgonGlyphBrush).Equals(this);
+    #endregion
 }

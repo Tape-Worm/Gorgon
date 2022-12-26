@@ -28,102 +28,101 @@ using System.Collections.Generic;
 using Gorgon.Editor.PlugIns;
 using Gorgon.Editor.UI;
 
-namespace Gorgon.Editor.ViewModels
+namespace Gorgon.Editor.ViewModels;
+
+/// <summary>
+/// The view model for the main window.
+/// </summary>
+internal interface IMain
+    : IViewModel
 {
+    #region Properties.
     /// <summary>
-    /// The view model for the main window.
+    /// Property to return the settings for the application.
     /// </summary>
-    internal interface IMain
-        : IViewModel
+    Editor.EditorSettings Settings
     {
-        #region Properties.
-        /// <summary>
-        /// Property to return the settings for the application.
-        /// </summary>
-        Editor.EditorSettings Settings
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to return a list of content plugins that can create their own content.
-        /// </summary>
-        IReadOnlyList<IContentPlugInMetadata> ContentCreators
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to return the current clipboard context.
-        /// </summary>
-        IClipboardHandler ClipboardContext
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to return the view model for the new project child view.
-        /// </summary>
-        INewProject NewProject
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to return the recent files view model for the recent files child view.
-        /// </summary>
-        IRecent RecentFiles
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to return the view model for the settings view.
-        /// </summary>
-        IEditorSettings SettingsViewModel
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to return the view model for the current project.
-        /// </summary>
-        IProjectEditor CurrentProject
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to return the text for the caption.
-        /// </summary>
-        string Text
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to return the command used to open a project.
-        /// </summary>
-        IEditorCommand<object> BrowseProjectCommand
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to return the command used to open a packed file.
-        /// </summary>
-        IEditorCommand<object> OpenPackFileCommand
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to return the command used to query before closing the application.
-        /// </summary>
-        IEditorAsyncCommand<AppCloseArgs> AppClosingAsyncCommand
-        {
-            get;
-        }
-        #endregion
+        get;
     }
+
+    /// <summary>
+    /// Property to return a list of content plugins that can create their own content.
+    /// </summary>
+    IReadOnlyList<IContentPlugInMetadata> ContentCreators
+    {
+        get;
+    }
+
+    /// <summary>
+    /// Property to return the current clipboard context.
+    /// </summary>
+    IClipboardHandler ClipboardContext
+    {
+        get;
+    }
+
+    /// <summary>
+    /// Property to return the view model for the new project child view.
+    /// </summary>
+    INewProject NewProject
+    {
+        get;
+    }
+
+    /// <summary>
+    /// Property to return the recent files view model for the recent files child view.
+    /// </summary>
+    IRecent RecentFiles
+    {
+        get;
+    }
+
+    /// <summary>
+    /// Property to return the view model for the settings view.
+    /// </summary>
+    IEditorSettings SettingsViewModel
+    {
+        get;
+    }
+
+    /// <summary>
+    /// Property to return the view model for the current project.
+    /// </summary>
+    IProjectEditor CurrentProject
+    {
+        get;
+    }
+
+    /// <summary>
+    /// Property to return the text for the caption.
+    /// </summary>
+    string Text
+    {
+        get;
+    }
+
+    /// <summary>
+    /// Property to return the command used to open a project.
+    /// </summary>
+    IEditorCommand<object> BrowseProjectCommand
+    {
+        get;
+    }
+
+    /// <summary>
+    /// Property to return the command used to open a packed file.
+    /// </summary>
+    IEditorCommand<object> OpenPackFileCommand
+    {
+        get;
+    }
+
+    /// <summary>
+    /// Property to return the command used to query before closing the application.
+    /// </summary>
+    IEditorAsyncCommand<AppCloseArgs> AppClosingAsyncCommand
+    {
+        get;
+    }
+    #endregion
 }

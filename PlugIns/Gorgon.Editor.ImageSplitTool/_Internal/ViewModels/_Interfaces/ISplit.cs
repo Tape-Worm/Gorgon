@@ -31,89 +31,88 @@ using Gorgon.Editor.UI;
 using Gorgon.Editor.UI.Controls;
 using Gorgon.Graphics.Imaging;
 
-namespace Gorgon.Editor.ImageSplitTool
+namespace Gorgon.Editor.ImageSplitTool;
+
+/// <summary>
+/// The view model used for selecting images to split.
+/// </summary>
+internal interface ISplit
+    : IEditorTool
 {
     /// <summary>
-    /// The view model used for selecting images to split.
+    /// Property to set or return the output directory for the resulting images/sprites.
     /// </summary>
-    internal interface ISplit
-        : IEditorTool
+    string OutputDirectory
     {
-        /// <summary>
-        /// Property to set or return the output directory for the resulting images/sprites.
-        /// </summary>
-        string OutputDirectory
-        {
-            get;
-            set;
-        }
+        get;
+        set;
+    }
 
-        /// <summary>
-        /// Property to return the progress for the splitting operation.
-        /// </summary>
-        string Progress
-        {
-            get;
-        }
+    /// <summary>
+    /// Property to return the progress for the splitting operation.
+    /// </summary>
+    string Progress
+    {
+        get;
+    }
 
-        /// <summary>
-        /// Property to return the sprite file entries.
-        /// </summary>
-        IReadOnlyList<ContentFileExplorerDirectoryEntry> SpriteFileEntries
-        {
-            get;
-        }
+    /// <summary>
+    /// Property to return the sprite file entries.
+    /// </summary>
+    IReadOnlyList<ContentFileExplorerDirectoryEntry> SpriteFileEntries
+    {
+        get;
+    }
 
-        /// <summary>
-        /// Property to return the list of selected files.
-        /// </summary>
-        IReadOnlyList<ContentFileExplorerFileEntry> SelectedFiles
-        {
-            get;
-        }
+    /// <summary>
+    /// Property to return the list of selected files.
+    /// </summary>
+    IReadOnlyList<ContentFileExplorerFileEntry> SelectedFiles
+    {
+        get;
+    }
 
-        /// <summary>Property to return the image used for previewing.</summary>
-        IGorgonImage PreviewImage
-        {
-            get;
-        }
+    /// <summary>Property to return the image used for previewing.</summary>
+    IGorgonImage PreviewImage
+    {
+        get;
+    }
 
-        /// <summary>
-        /// Property to return the command that will refresh the sprite preview data.
-        /// </summary>
-        IEditorAsyncCommand<IReadOnlyList<ContentFileExplorerFileEntry>> RefreshSpritePreviewCommand
-        {
-            get;
-        }
+    /// <summary>
+    /// Property to return the command that will refresh the sprite preview data.
+    /// </summary>
+    IEditorAsyncCommand<IReadOnlyList<ContentFileExplorerFileEntry>> RefreshSpritePreviewCommand
+    {
+        get;
+    }
 
-        /// <summary>
-        /// Property to return the command used to search through the file list.
-        /// </summary>
-        IEditorCommand<string> SearchCommand
-        {
-            get;
-        }
+    /// <summary>
+    /// Property to return the command used to search through the file list.
+    /// </summary>
+    IEditorCommand<string> SearchCommand
+    {
+        get;
+    }
 
-        /// <summary>Property to return the folder selection command.</summary>
-        IEditorCommand<object> SelectFolderCommand
-        {
-            get;
-        }
+    /// <summary>Property to return the folder selection command.</summary>
+    IEditorCommand<object> SelectFolderCommand
+    {
+        get;
+    }
 
-        /// <summary>
-        /// Function to split the images and write them to the file system.
-        /// </summary>
-        IEditorAsyncCommand<object> SplitImageCommand
-        {
-            get;
-        }
+    /// <summary>
+    /// Function to split the images and write them to the file system.
+    /// </summary>
+    IEditorAsyncCommand<object> SplitImageCommand
+    {
+        get;
+    }
 
-        /// <summary>
-        /// Property to return the command to cancel the operation.
-        /// </summary>
-        IEditorAsyncCommand<CancelEventArgs> CancelCommand
-        {
-            get;
-        }
+    /// <summary>
+    /// Property to return the command to cancel the operation.
+    /// </summary>
+    IEditorAsyncCommand<CancelEventArgs> CancelCommand
+    {
+        get;
     }
 }

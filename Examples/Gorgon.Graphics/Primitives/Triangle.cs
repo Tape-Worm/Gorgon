@@ -28,62 +28,61 @@ using System.Numerics;
 using Gorgon.Graphics.Core;
 using Gorgon.Renderers.Geometry;
 
-namespace Gorgon.Examples
+namespace Gorgon.Examples;
+
+/// <summary>
+/// A mesh representing a single triangle.
+/// </summary>
+internal class Triangle
+    : MoveableMesh
 {
+    #region Constructor/Destructor.
     /// <summary>
-    /// A mesh representing a single triangle.
+    /// Initializes a new instance of the <see cref="Triangle" /> class.
     /// </summary>
-    internal class Triangle
-        : MoveableMesh
+    /// <param name="graphics">The graphics interface.</param>
+    /// <param name="point1">The 1st point in the triangle.</param>
+    /// <param name="point2">The 2nd point in the triangle.</param>
+    /// <param name="point3">The 3rd point in the triangle.</param>
+    public Triangle(GorgonGraphics graphics, GorgonVertexPosNormUvTangent point1, GorgonVertexPosNormUvTangent point2, GorgonVertexPosNormUvTangent point3)
+        : base(graphics)
     {
-        #region Constructor/Destructor.
-        /// <summary>
-        /// Initializes a new instance of the <see cref="Triangle" /> class.
-        /// </summary>
-        /// <param name="graphics">The graphics interface.</param>
-        /// <param name="point1">The 1st point in the triangle.</param>
-        /// <param name="point2">The 2nd point in the triangle.</param>
-        /// <param name="point3">The 3rd point in the triangle.</param>
-        public Triangle(GorgonGraphics graphics, GorgonVertexPosNormUvTangent point1, GorgonVertexPosNormUvTangent point2, GorgonVertexPosNormUvTangent point3)
-            : base(graphics)
-        {
-            PrimitiveType = PrimitiveType.TriangleList;
-            VertexCount = 3;
-            IndexCount = 3;
-            TriangleCount = 1;
+        PrimitiveType = PrimitiveType.TriangleList;
+        VertexCount = 3;
+        IndexCount = 3;
+        TriangleCount = 1;
 
-            point1.Tangent = new Vector4(1.0f, 0, 0, 1.0f);
-            point2.Tangent = new Vector4(1.0f, 0, 0, 1.0f);
-            point3.Tangent = new Vector4(1.0f, 0, 0, 1.0f);
+        point1.Tangent = new Vector4(1.0f, 0, 0, 1.0f);
+        point2.Tangent = new Vector4(1.0f, 0, 0, 1.0f);
+        point3.Tangent = new Vector4(1.0f, 0, 0, 1.0f);
 
-            var points = new GorgonVertexPosNormUvTangent[3];
-            int[] indices = new int[3];
-            
-            points[0] = point1;
-            points[1] = point2;
-            points[2] = point3;
-            indices[0] = 0;
-            indices[1] = 1;
-            indices[2] = 2;
+        var points = new GorgonVertexPosNormUvTangent[3];
+        int[] indices = new int[3];
+        
+        points[0] = point1;
+        points[1] = point2;
+        points[2] = point3;
+        indices[0] = 0;
+        indices[1] = 1;
+        indices[2] = 2;
 
-            VertexBuffer = GorgonVertexBuffer.Create<GorgonVertexPosNormUvTangent>(graphics,
-                                                    new GorgonVertexBufferInfo(GorgonVertexPosNormUvTangent.SizeInBytes * 3)
-                                                    {
-                                                        Name = "TriVB",
-                                                        Usage = ResourceUsage.Immutable
-                                                    },
-                                                    points);
-
-            IndexBuffer = new GorgonIndexBuffer(graphics,
-                                                new GorgonIndexBufferInfo(3)
+        VertexBuffer = GorgonVertexBuffer.Create<GorgonVertexPosNormUvTangent>(graphics,
+                                                new GorgonVertexBufferInfo(GorgonVertexPosNormUvTangent.SizeInBytes * 3)
                                                 {
-                                                    Name = "TriIB",
-                                                    Usage = ResourceUsage.Dynamic
+                                                    Name = "TriVB",
+                                                    Usage = ResourceUsage.Immutable
                                                 },
-                                                indices);
+                                                points);
 
-            UpdateAabb(points);
-        }
-        #endregion
+        IndexBuffer = new GorgonIndexBuffer(graphics,
+                                            new GorgonIndexBufferInfo(3)
+                                            {
+                                                Name = "TriIB",
+                                                Usage = ResourceUsage.Dynamic
+                                            },
+                                            indices);
+
+        UpdateAabb(points);
     }
+    #endregion
 }

@@ -24,22 +24,21 @@
 // 
 #endregion
 
-namespace Gorgon.Input
+namespace Gorgon.Input;
+
+/// <summary>
+/// Receives Gorgon raw input data and allows processing of that data on the device object.
+/// </summary>
+/// <typeparam name="T">The type of data to process.</typeparam>
+/// <remarks>
+/// This interface is not meant to be used within an application and should only be used internally by Gorgon.
+/// </remarks>
+public interface IGorgonRawInputDeviceData<T>
+    where T : struct
 {
     /// <summary>
-    /// Receives Gorgon raw input data and allows processing of that data on the device object.
+    /// Function to process the Gorgon raw input data into device state data and appropriate events.
     /// </summary>
-    /// <typeparam name="T">The type of data to process.</typeparam>
-    /// <remarks>
-    /// This interface is not meant to be used within an application and should only be used internally by Gorgon.
-    /// </remarks>
-    public interface IGorgonRawInputDeviceData<T>
-        where T : struct
-    {
-        /// <summary>
-        /// Function to process the Gorgon raw input data into device state data and appropriate events.
-        /// </summary>
-        /// <param name="rawInputData">The data to process.</param>
-        void ProcessData(in T rawInputData);
-    }
+    /// <param name="rawInputData">The data to process.</param>
+    void ProcessData(in T rawInputData);
 }

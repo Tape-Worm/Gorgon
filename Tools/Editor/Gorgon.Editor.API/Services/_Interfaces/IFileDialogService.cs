@@ -26,57 +26,56 @@
 
 using System.IO;
 
-namespace Gorgon.Editor.Services
+namespace Gorgon.Editor.Services;
+
+/// <summary>
+/// Provides a service that displays a file open or save dialog.
+/// </summary>
+public interface IFileDialogService
 {
+    #region Properties.
     /// <summary>
-    /// Provides a service that displays a file open or save dialog.
+    /// Property to set or return a file filter.
     /// </summary>
-    public interface IFileDialogService
+    string FileFilter
     {
-        #region Properties.
-        /// <summary>
-        /// Property to set or return a file filter.
-        /// </summary>
-        string FileFilter
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// Property to set or return the initial directory.
-        /// </summary>
-        DirectoryInfo InitialDirectory
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// Property to set or return the initial file path to use.
-        /// </summary>
-        string InitialFilePath
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// Property to set or return the title for the dialog.
-        /// </summary>
-        string DialogTitle
-        {
-            get;
-            set;
-        }
-        #endregion
-
-        #region Methods.
-        /// <summary>
-        /// Function to retrieve a single file name.
-        /// </summary>
-        /// <returns>The selected file path, or <b>null</b> if cancelled.</returns>
-        string GetFilename();
-        #endregion
+        get;
+        set;
     }
+
+    /// <summary>
+    /// Property to set or return the initial directory.
+    /// </summary>
+    DirectoryInfo InitialDirectory
+    {
+        get;
+        set;
+    }
+
+    /// <summary>
+    /// Property to set or return the initial file path to use.
+    /// </summary>
+    string InitialFilePath
+    {
+        get;
+        set;
+    }
+
+    /// <summary>
+    /// Property to set or return the title for the dialog.
+    /// </summary>
+    string DialogTitle
+    {
+        get;
+        set;
+    }
+    #endregion
+
+    #region Methods.
+    /// <summary>
+    /// Function to retrieve a single file name.
+    /// </summary>
+    /// <returns>The selected file path, or <b>null</b> if cancelled.</returns>
+    string GetFilename();
+    #endregion
 }

@@ -28,34 +28,33 @@
 using System.ComponentModel;
 using System.Windows.Forms;
 
-namespace Gorgon.Editor.UI.Views
-{
-    /// <summary>
-    /// The base user control for editor UI panes.
-    /// </summary> 
-    public partial class EditorBaseControl
-        : UserControl
-    {
-        #region Properties.
-        /// <summary>
-        /// Property to return whether or not the control is being used in a designer.
-        /// </summary>
-        [Browsable(false)]
-        public bool IsDesignTime
-        {
-            get;
-        }
-        #endregion
+namespace Gorgon.Editor.UI.Views;
 
-        #region Constructor/Finalizer.
-        /// <summary>
-        /// Initializes a new instance of the <see cref="EditorBaseControl"/> class.
-        /// </summary>
-        public EditorBaseControl()
-        {
-            IsDesignTime = LicenseManager.UsageMode == LicenseUsageMode.Designtime;
-            InitializeComponent();
-        }
-        #endregion
+/// <summary>
+/// The base user control for editor UI panes.
+/// </summary> 
+public partial class EditorBaseControl
+    : UserControl
+{
+    #region Properties.
+    /// <summary>
+    /// Property to return whether or not the control is being used in a designer.
+    /// </summary>
+    [Browsable(false)]
+    public bool IsDesignTime
+    {
+        get;
     }
+    #endregion
+
+    #region Constructor/Finalizer.
+    /// <summary>
+    /// Initializes a new instance of the <see cref="EditorBaseControl"/> class.
+    /// </summary>
+    public EditorBaseControl()
+    {
+        IsDesignTime = LicenseManager.UsageMode == LicenseUsageMode.Designtime;
+        InitializeComponent();
+    }
+    #endregion
 }

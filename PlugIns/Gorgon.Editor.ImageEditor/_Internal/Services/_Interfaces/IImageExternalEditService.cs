@@ -26,19 +26,18 @@
 
 using Gorgon.IO;
 
-namespace Gorgon.Editor.ImageEditor
+namespace Gorgon.Editor.ImageEditor;
+
+/// <summary>
+/// Functionality to edit image data using an external program.
+/// </summary>
+internal interface IImageExternalEditService
 {
     /// <summary>
-    /// Functionality to edit image data using an external program.
+    /// Function to edit the image data in an external application.
     /// </summary>
-    internal interface IImageExternalEditService
-    {
-        /// <summary>
-        /// Function to edit the image data in an external application.
-        /// </summary>
-        /// <param name="workingFile">The file containing the image data to edit.</param>
-        /// <param name="exePath">Path to the executable.</param>
-        /// <returns><b>true</b> if the image data was changed, <b>false</b> if not.</returns>
-        bool EditImage(IGorgonVirtualFile workingFile, string exePath);
-    }
+    /// <param name="workingFile">The file containing the image data to edit.</param>
+    /// <param name="exePath">Path to the executable.</param>
+    /// <returns><b>true</b> if the image data was changed, <b>false</b> if not.</returns>
+    bool EditImage(IGorgonVirtualFile workingFile, string exePath);
 }

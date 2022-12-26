@@ -26,31 +26,30 @@
 
 using Newtonsoft.Json;
 
-namespace Gorgon.Editor.ImageSplitTool
+namespace Gorgon.Editor.ImageSplitTool;
+
+/// <summary>
+/// The settings for the plug in.
+/// </summary>
+internal class ImageSplitToolSettings
 {
     /// <summary>
-    /// The settings for the plug in.
+    /// Property to set or return the last directory path used to output images and sprites into.
     /// </summary>
-    internal class ImageSplitToolSettings
+    [JsonProperty]
+    public string LastOutputDir
     {
-        /// <summary>
-        /// Property to set or return the last directory path used to output images and sprites into.
-        /// </summary>
-        [JsonProperty]
-        public string LastOutputDir
-        {
-            get;
-            set;
-        }
+        get;
+        set;
+    }
 
-        /// <summary>
-        /// Property to set or return whether the window is in a maximized state or not.
-        /// </summary>
-        [JsonProperty]
-        public bool IsMaximized
-        {
-            get;
-            set;
-        }
+    /// <summary>
+    /// Property to set or return whether the window is in a maximized state or not.
+    /// </summary>
+    [JsonProperty]
+    public bool IsMaximized
+    {
+        get;
+        set;
     }
 }

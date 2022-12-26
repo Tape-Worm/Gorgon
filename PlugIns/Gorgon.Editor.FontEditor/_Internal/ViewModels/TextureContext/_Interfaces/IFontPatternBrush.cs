@@ -33,30 +33,29 @@ using Gorgon.Editor.UI;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Fonts;
 
-namespace Gorgon.Editor.FontEditor
+namespace Gorgon.Editor.FontEditor;
+
+/// <summary>
+/// View model for the pattern brush interface.
+/// </summary>
+internal interface IFontPatternBrush
+    : IHostedPanelViewModel
 {
     /// <summary>
-    /// View model for the pattern brush interface.
+    /// Property to set or return the original foreground and background colors.
     /// </summary>
-    internal interface IFontPatternBrush
-        : IHostedPanelViewModel
+    (GorgonColor Foreground, GorgonColor Background) OriginalColor
     {
-        /// <summary>
-        /// Property to set or return the original foreground and background colors.
-        /// </summary>
-        (GorgonColor Foreground, GorgonColor Background) OriginalColor
-        {
-            get;
-            set;
-        }
+        get;
+        set;
+    }
 
-        /// <summary>
-        /// Property to set or return the current brush.
-        /// </summary>
-        GorgonGlyphHatchBrush Brush
-        {
-            get;
-            set;
-        }
+    /// <summary>
+    /// Property to set or return the current brush.
+    /// </summary>
+    GorgonGlyphHatchBrush Brush
+    {
+        get;
+        set;
     }
 }

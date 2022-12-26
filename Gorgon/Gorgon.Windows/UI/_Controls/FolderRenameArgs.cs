@@ -26,70 +26,69 @@
 
 using System.ComponentModel;
 
-namespace Gorgon.UI
+namespace Gorgon.UI;
+
+/// <summary>
+/// Event arguments for the <see cref="GorgonFolderBrowser.FolderRenaming"/> event.
+/// </summary>
+public class FolderRenameArgs
+    : CancelEventArgs
 {
+    #region Properties.
     /// <summary>
-    /// Event arguments for the <see cref="GorgonFolderBrowser.FolderRenaming"/> event.
+    /// Property to return the path to the directory being renamed.
     /// </summary>
-    public class FolderRenameArgs
-        : CancelEventArgs
+    public string OldDirectoryPath
     {
-        #region Properties.
-        /// <summary>
-        /// Property to return the path to the directory being renamed.
-        /// </summary>
-        public string OldDirectoryPath
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to return the path to the new name for the directory.
-        /// </summary>
-        public string NewDirectoryPath
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to return the old name.
-        /// </summary>
-        public string OldName
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to return the new name.
-        /// </summary>
-        public string NewName
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to set or return whether this event has handled the renaming of the directory on our behalf.
-        /// </summary>
-        public bool RenameHandled
-        {
-            get;
-            set;
-        }
-        #endregion
-
-        #region Constructor/Finalizer.
-        /// <summary>Initializes a new instance of the <see cref="FolderRenameArgs"/> class.</summary>
-        /// <param name="oldDirPath">The path to the directory being renamed.</param>
-        /// <param name="oldName">The old name for the directory.</param>
-        /// <param name="newDirPath">The path to the new directory name.</param>
-        /// <param name="newName">The new name for the directory.</param>
-        internal FolderRenameArgs(string oldDirPath, string oldName, string newDirPath, string newName)
-        {
-            OldDirectoryPath = oldDirPath;
-            NewDirectoryPath = newDirPath;
-            OldName = oldName;
-            NewName = newName;
-        }
-        #endregion
+        get;
     }
+
+    /// <summary>
+    /// Property to return the path to the new name for the directory.
+    /// </summary>
+    public string NewDirectoryPath
+    {
+        get;
+    }
+
+    /// <summary>
+    /// Property to return the old name.
+    /// </summary>
+    public string OldName
+    {
+        get;
+    }
+
+    /// <summary>
+    /// Property to return the new name.
+    /// </summary>
+    public string NewName
+    {
+        get;
+    }
+
+    /// <summary>
+    /// Property to set or return whether this event has handled the renaming of the directory on our behalf.
+    /// </summary>
+    public bool RenameHandled
+    {
+        get;
+        set;
+    }
+    #endregion
+
+    #region Constructor/Finalizer.
+    /// <summary>Initializes a new instance of the <see cref="FolderRenameArgs"/> class.</summary>
+    /// <param name="oldDirPath">The path to the directory being renamed.</param>
+    /// <param name="oldName">The old name for the directory.</param>
+    /// <param name="newDirPath">The path to the new directory name.</param>
+    /// <param name="newName">The new name for the directory.</param>
+    internal FolderRenameArgs(string oldDirPath, string oldName, string newDirPath, string newName)
+    {
+        OldDirectoryPath = oldDirPath;
+        NewDirectoryPath = newDirPath;
+        OldName = oldName;
+        NewName = newName;
+    }
+    #endregion
 }

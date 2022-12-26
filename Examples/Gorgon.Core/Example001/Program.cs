@@ -29,176 +29,175 @@ using System.Threading;
 using System.Windows.Forms;
 using Gorgon.Timing;
 
-namespace Gorgon.Examples
+namespace Gorgon.Examples;
+
+/// <summary>
+/// Entry point class.
+/// </summary>
+internal class Program
 {
+    #region Variables.
+    private static bool _quit;          // Flag to quit the application.
+    #endregion
+
+    #region Methods.
     /// <summary>
-    /// Entry point class.
+    /// Function to draw the time at the bottom of the window.
     /// </summary>
-    internal class Program
+    private static void UpdateTime()
     {
-        #region Variables.
-        private static bool _quit;          // Flag to quit the application.
-        #endregion
+        var time = new TimeSpan(0, 0, (int)GorgonTiming.SecondsSinceStart);
 
-        #region Methods.
-        /// <summary>
-        /// Function to draw the time at the bottom of the window.
-        /// </summary>
-        private static void UpdateTime()
+        // Get the time.
+        string timeString = $"Application up time: {time.Hours}:{time.Minutes:00}:{time.Seconds:00}";
+
+        // Display the amount of time that the application has been running.
+        Console.BackgroundColor = ConsoleColor.Black;
+        Console.ForegroundColor = ConsoleColor.Yellow;
+        Console.CursorLeft = 0;
+        Console.CursorTop = Console.WindowHeight - 1;
+        Console.Write(timeString.PadRight(Console.WindowWidth - 1));
+
+        // Reset the colors.
+        Console.BackgroundColor = ConsoleColor.DarkBlue;
+        Console.ForegroundColor = ConsoleColor.White;
+
+        // Give up some CPU time.
+        Thread.Sleep(5);
+        GorgonTiming.Update();
+    }
+
+    /// <summary>
+    /// Function to write out the program options.
+    /// </summary>
+    private static void WriteOptions()
+    {
+        Console.BackgroundColor = ConsoleColor.DarkBlue;
+        Console.ForegroundColor = ConsoleColor.White;
+
+        Console.Clear();
+
+        Console.WriteLine("This is a small example of -some- of the functionality that's provided in the");
+        Console.ForegroundColor = ConsoleColor.Green;
+        Console.Write("Gorgon.Core");
+        Console.ForegroundColor = ConsoleColor.White;
+        Console.WriteLine(" library:");
+        Console.WriteLine();
+        Console.WriteLine("1.  Display an exception.");
+        Console.WriteLine("2.  Display a warning.");
+        Console.WriteLine("3.  Display some information.");
+        Console.WriteLine("4.  Display environment strings.");
+        Console.WriteLine("5.  Display system info.");
+        Console.WriteLine();
+        Console.WriteLine("Q.  Quit.");
+        Console.WriteLine();
+        Console.WriteLine("The common library houses several utility functions such as:\n\u00b7 Basic dialogs.\n\u00b7 System information.\n\u00b7 Various extensions.\n\u00b7 Debugging utilities.\n\u00b7 Plug-in support.\n\u00b7 Log files.\n\u00b7 Base named object collections.\n\u00b7 And functions to manipulate native memory.\n\nAnd a bunch of other junk that might be useful to you...");
+
+        Console.CursorTop = Console.WindowHeight - 2;
+        Console.Write("The ");
+        Console.ForegroundColor = ConsoleColor.Green;
+        Console.Write("GorgonDiagnostics.GorgonTiming");
+        Console.ForegroundColor = ConsoleColor.White;
+        Console.WriteLine(" class provides this timer:");
+    }
+
+    /// <summary>
+    /// Function to read a key value and launch the appropriate option.
+    /// </summary>
+    private static void ReadValue()
+    {
+        while (!_quit)
         {
-            var time = new TimeSpan(0, 0, (int)GorgonTiming.SecondsSinceStart);
+            ConsoleKeyInfo key = Console.KeyAvailable ? Console.ReadKey(true) : default;
 
-            // Get the time.
-            string timeString = $"Application up time: {time.Hours}:{time.Minutes:00}:{time.Seconds:00}";
-
-            // Display the amount of time that the application has been running.
-            Console.BackgroundColor = ConsoleColor.Black;
-            Console.ForegroundColor = ConsoleColor.Yellow;
-            Console.CursorLeft = 0;
-            Console.CursorTop = Console.WindowHeight - 1;
-            Console.Write(timeString.PadRight(Console.WindowWidth - 1));
-
-            // Reset the colors.
-            Console.BackgroundColor = ConsoleColor.DarkBlue;
-            Console.ForegroundColor = ConsoleColor.White;
-
-            // Give up some CPU time.
-            Thread.Sleep(5);
-            GorgonTiming.Update();
-        }
-
-        /// <summary>
-        /// Function to write out the program options.
-        /// </summary>
-        private static void WriteOptions()
-        {
-            Console.BackgroundColor = ConsoleColor.DarkBlue;
-            Console.ForegroundColor = ConsoleColor.White;
-
-            Console.Clear();
-
-            Console.WriteLine("This is a small example of -some- of the functionality that's provided in the");
-            Console.ForegroundColor = ConsoleColor.Green;
-            Console.Write("Gorgon.Core");
-            Console.ForegroundColor = ConsoleColor.White;
-            Console.WriteLine(" library:");
-            Console.WriteLine();
-            Console.WriteLine("1.  Display an exception.");
-            Console.WriteLine("2.  Display a warning.");
-            Console.WriteLine("3.  Display some information.");
-            Console.WriteLine("4.  Display environment strings.");
-            Console.WriteLine("5.  Display system info.");
-            Console.WriteLine();
-            Console.WriteLine("Q.  Quit.");
-            Console.WriteLine();
-            Console.WriteLine("The common library houses several utility functions such as:\n\u00b7 Basic dialogs.\n\u00b7 System information.\n\u00b7 Various extensions.\n\u00b7 Debugging utilities.\n\u00b7 Plug-in support.\n\u00b7 Log files.\n\u00b7 Base named object collections.\n\u00b7 And functions to manipulate native memory.\n\nAnd a bunch of other junk that might be useful to you...");
-
-            Console.CursorTop = Console.WindowHeight - 2;
-            Console.Write("The ");
-            Console.ForegroundColor = ConsoleColor.Green;
-            Console.Write("GorgonDiagnostics.GorgonTiming");
-            Console.ForegroundColor = ConsoleColor.White;
-            Console.WriteLine(" class provides this timer:");
-        }
-
-        /// <summary>
-        /// Function to read a key value and launch the appropriate option.
-        /// </summary>
-        private static void ReadValue()
-        {
-            while (!_quit)
+            switch (key.Key)
             {
-                ConsoleKeyInfo key = Console.KeyAvailable ? Console.ReadKey(true) : default;
+                case ConsoleKey.D1:
+                    MenuOptions.DisplayException();
+                    break;
+                case ConsoleKey.D2:
+                    MenuOptions.DisplayWarning();
+                    break;
+                case ConsoleKey.D3:
+                    Console.BackgroundColor = ConsoleColor.Black;
+                    Console.ForegroundColor = ConsoleColor.Yellow;
+                    Console.CursorVisible = true;
 
-                switch (key.Key)
-                {
-                    case ConsoleKey.D1:
-                        MenuOptions.DisplayException();
-                        break;
-                    case ConsoleKey.D2:
-                        MenuOptions.DisplayWarning();
-                        break;
-                    case ConsoleKey.D3:
-                        Console.BackgroundColor = ConsoleColor.Black;
-                        Console.ForegroundColor = ConsoleColor.Yellow;
-                        Console.CursorVisible = true;
+                    Console.CursorTop = Console.WindowHeight - 2;
+                    Console.CursorLeft = 0;
+                    // Display a bar at the bottom.
+                    Console.WriteLine("Type some text to display:".PadRight(Console.WindowWidth - 1));
+                    Console.ForegroundColor = ConsoleColor.Gray;
+                    Console.Write(new string(' ', Console.WindowWidth - 1));
 
-                        Console.CursorTop = Console.WindowHeight - 2;
-                        Console.CursorLeft = 0;
-                        // Display a bar at the bottom.
-                        Console.WriteLine("Type some text to display:".PadRight(Console.WindowWidth - 1));
-                        Console.ForegroundColor = ConsoleColor.Gray;
-                        Console.Write(new string(' ', Console.WindowWidth - 1));
+                    // Reset the cursor so we don't wrap off the end.
+                    Console.CursorTop = Console.WindowHeight - 1;
+                    Console.CursorLeft = 0;
 
-                        // Reset the cursor so we don't wrap off the end.
-                        Console.CursorTop = Console.WindowHeight - 1;
-                        Console.CursorLeft = 0;
+                    string infoText = Console.ReadLine();
 
-                        string infoText = Console.ReadLine();
+                    Console.CursorVisible = false;
 
-                        Console.CursorVisible = false;
+                    // Redraw the menu.
+                    WriteOptions();
 
-                        // Redraw the menu.
-                        WriteOptions();
+                    if (!string.IsNullOrEmpty(infoText))
+                    {
+                        MenuOptions.DisplayInfo(infoText);
+                    }
 
-                        if (!string.IsNullOrEmpty(infoText))
-                        {
-                            MenuOptions.DisplayInfo(infoText);
-                        }
-
-                        break;
-                    case ConsoleKey.D4:
-                        MenuOptions.DisplayEnvironmentStrings();
-                        WriteOptions();
-                        break;
-                    case ConsoleKey.D5:
-                        MenuOptions.DisplaySystemInfo();
-                        WriteOptions();
-                        break;
-                    case ConsoleKey.Q:
-                        _quit = true;
-                        break;
-                }
-
-                // Update our timer.
-                UpdateTime();
+                    break;
+                case ConsoleKey.D4:
+                    MenuOptions.DisplayEnvironmentStrings();
+                    WriteOptions();
+                    break;
+                case ConsoleKey.D5:
+                    MenuOptions.DisplaySystemInfo();
+                    WriteOptions();
+                    break;
+                case ConsoleKey.Q:
+                    _quit = true;
+                    break;
             }
-        }
 
-        /// <summary>
-        /// The entry point for the application.
-        /// </summary>
-        private static void Main()
-        {
+            // Update our timer.
+            UpdateTime();
+        }
+    }
+
+    /// <summary>
+    /// The entry point for the application.
+    /// </summary>
+    private static void Main()
+    {
 #if NET6_0_OR_GREATER
-            Application.SetHighDpiMode(HighDpiMode.PerMonitorV2);
+        Application.SetHighDpiMode(HighDpiMode.PerMonitorV2);
 #endif
 
-            // This is here for any windows forms elements that get displayed.
-            // Without this, the elements will not use the visual styles and will 
-            // default to older styles.
-            Application.EnableVisualStyles();
-            Application.DoEvents();
+        // This is here for any windows forms elements that get displayed.
+        // Without this, the elements will not use the visual styles and will 
+        // default to older styles.
+        Application.EnableVisualStyles();
+        Application.DoEvents();
 
-            Console.Title = "Gorgon Example #1 - Core functionality";
-            Console.CursorVisible = false;
+        Console.Title = "Gorgon Example #1 - Core functionality";
+        Console.CursorVisible = false;
 
-            try
-            {
-                // In order to use the GorgonTiming class, we need to supply a timer to it.
-                GorgonTiming.StartTiming<GorgonTimerMultimedia>();
+        try
+        {
+            // In order to use the GorgonTiming class, we need to supply a timer to it.
+            GorgonTiming.StartTiming<GorgonTimerMultimedia>();
 
-                WriteOptions();
-                ReadValue();
-            }
-            finally
-            {
-                Console.CursorVisible = true;
-                Console.ResetColor();
-                Console.CursorLeft = 0;
-                Console.CursorTop = Console.WindowHeight - 1;
-            }
+            WriteOptions();
+            ReadValue();
         }
-        #endregion
+        finally
+        {
+            Console.CursorVisible = true;
+            Console.ResetColor();
+            Console.CursorLeft = 0;
+            Console.CursorTop = Console.WindowHeight - 1;
+        }
     }
+    #endregion
 }

@@ -27,46 +27,45 @@
 using Gorgon.Editor.UI;
 using Gorgon.Graphics.Imaging;
 
-namespace Gorgon.Editor.ImageEditor.ViewModels
+namespace Gorgon.Editor.ImageEditor.ViewModels;
+
+/// <summary>
+/// The view model for the generate mip map settings view.
+/// </summary>
+internal interface IMipMapSettings
+    : IHostedPanelViewModel
 {
     /// <summary>
-    /// The view model for the generate mip map settings view.
+    /// Property to set or return the number of mip map levels.
     /// </summary>
-    internal interface IMipMapSettings
-        : IHostedPanelViewModel
+    int MipLevels
     {
-        /// <summary>
-        /// Property to set or return the number of mip map levels.
-        /// </summary>
-        int MipLevels
-        {
-            get;
-            set;
-        }
+        get;
+        set;
+    }
 
-        /// <summary>
-        /// Property to return the maximum number of mip map levels based on the width, height and, if applicable, depth slices.
-        /// </summary>
-        int MaxMipLevels
-        {
-            get;
-        }
+    /// <summary>
+    /// Property to return the maximum number of mip map levels based on the width, height and, if applicable, depth slices.
+    /// </summary>
+    int MaxMipLevels
+    {
+        get;
+    }
 
-        /// <summary>
-        /// Property to set or return the mip map filter to use when creating the mip chain.
-        /// </summary>
-        ImageFilter MipFilter
-        {
-            get;
-            set;
-        }
+    /// <summary>
+    /// Property to set or return the mip map filter to use when creating the mip chain.
+    /// </summary>
+    ImageFilter MipFilter
+    {
+        get;
+        set;
+    }
 
-        /// <summary>
-        /// Property to return the command to execute for updating the current image information.
-        /// </summary>
-        IEditorCommand<IGorgonImage> UpdateImageInfoCommand
-        {
-            get;
-        }
+    /// <summary>
+    /// Property to return the command to execute for updating the current image information.
+    /// </summary>
+    IEditorCommand<IGorgonImage> UpdateImageInfoCommand
+    {
+        get;
     }
 }

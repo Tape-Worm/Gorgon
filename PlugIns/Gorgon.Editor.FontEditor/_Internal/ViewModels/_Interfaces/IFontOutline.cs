@@ -28,57 +28,56 @@ using Gorgon.Editor.UI;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Fonts;
 
-namespace Gorgon.Editor.FontEditor
+namespace Gorgon.Editor.FontEditor;
+
+/// <summary>
+/// The view model for the text color panel.
+/// </summary>
+internal interface IFontOutline
+    : IHostedPanelViewModel
 {
     /// <summary>
-    /// The view model for the text color panel.
+    /// Property to set or return the size of the outline.
     /// </summary>
-    internal interface IFontOutline
-        : IHostedPanelViewModel
+    int OutlineSize
     {
-        /// <summary>
-        /// Property to set or return the size of the outline.
-        /// </summary>
-        int OutlineSize
-        {
-            get;
-            set;
-        }
+        get;
+        set;
+    }
 
-        /// <summary>
-        /// Property to set or return the original color for the text.
-        /// </summary>
-        GorgonColor OriginalStartColor
-        {
-            get;
-            set;
-        }
+    /// <summary>
+    /// Property to set or return the original color for the text.
+    /// </summary>
+    GorgonColor OriginalStartColor
+    {
+        get;
+        set;
+    }
 
-        /// <summary>
-        /// Property to set or return the currently selected color.
-        /// </summary>
-        GorgonColor SelectedStartColor
-        {
-            get;
-            set;
-        }
+    /// <summary>
+    /// Property to set or return the currently selected color.
+    /// </summary>
+    GorgonColor SelectedStartColor
+    {
+        get;
+        set;
+    }
 
-        /// <summary>
-        /// Property to set or return the original color for the text.
-        /// </summary>
-        GorgonColor OriginalEndColor
-        {
-            get;
-            set;
-        }
+    /// <summary>
+    /// Property to set or return the original color for the text.
+    /// </summary>
+    GorgonColor OriginalEndColor
+    {
+        get;
+        set;
+    }
 
-        /// <summary>
-        /// Property to set or return the currently selected color.
-        /// </summary>
-        GorgonColor SelectedEndColor
-        {
-            get;
-            set;
-        }
+    /// <summary>
+    /// Property to set or return the currently selected color.
+    /// </summary>
+    GorgonColor SelectedEndColor
+    {
+        get;
+        set;
     }
 }

@@ -30,73 +30,72 @@ using Gorgon.Editor.ImageEditor.ViewModels;
 using Gorgon.Editor.UI;
 using Gorgon.Math;
 
-namespace Gorgon.Editor.ImageEditor
+namespace Gorgon.Editor.ImageEditor;
+
+/// <summary>
+/// The view model for the alpha settings view.
+/// </summary>
+internal class AlphaSettings
+    : HostedPanelViewModelBase<HostedPanelViewModelParameters>, IAlphaSettings
 {
+    #region Variables.
+    // The number of mip map levels in the image.
+    private int _alpha = 255;
+    // The range of alpha values to update.
+    private GorgonRange _alphaUpdateRange = new(0, 255);
+    #endregion
+
+    #region Properties.
+    /// <summary>Property to return whether the panel is modal.</summary>
+    public override bool IsModal => true;
+
     /// <summary>
-    /// The view model for the alpha settings view.
+    /// Property to set or return the lower and upper bounds of the alpha range to update.
     /// </summary>
-    internal class AlphaSettings
-        : HostedPanelViewModelBase<HostedPanelViewModelParameters>, IAlphaSettings
+    public GorgonRange UpdateRange
     {
-        #region Variables.
-        // The number of mip map levels in the image.
-        private int _alpha = 255;
-        // The range of alpha values to update.
-        private GorgonRange _alphaUpdateRange = new(0, 255);
-        #endregion
-
-        #region Properties.
-        /// <summary>Property to return whether the panel is modal.</summary>
-        public override bool IsModal => true;
-
-        /// <summary>
-        /// Property to set or return the lower and upper bounds of the alpha range to update.
-        /// </summary>
-        public GorgonRange UpdateRange
+        get => _alphaUpdateRange;
+        set
         {
-            get => _alphaUpdateRange;
-            set
+            if (_alphaUpdateRange.Equals(value))
             {
-                if (_alphaUpdateRange.Equals(value))
-                {
-                    return;
-                }
-
-                OnPropertyChanging();
-                _alphaUpdateRange = value;
-                OnPropertyChanged();
+                return;
             }
+
+            OnPropertyChanging();
+            _alphaUpdateRange = value;
+            OnPropertyChanged();
         }
-
-        /// <summary>Property to set or return the alpha value to set.</summary>
-        public int AlphaValue
-        {
-            get => _alpha;
-            set
-            {
-                value = value.Max(0).Min(255);
-
-                if (_alpha == value)
-                {
-                    return;
-                }
-
-                OnPropertyChanging();
-                _alpha = value;
-                OnPropertyChanged();
-            }
-        }
-        #endregion
-
-        #region Methods.
-        /// <summary>Function to inject dependencies for the view model.</summary>
-        /// <param name="injectionParameters">The parameters to inject.</param>
-        /// <remarks>
-        /// Applications should call this when setting up the view model for complex operations and/or dependency injection. The constructor should only be used for simple set up and initialization of objects.
-        /// </remarks>
-        protected override void OnInitialize(HostedPanelViewModelParameters injectionParameters)
-        {            
-        }
-        #endregion
     }
+
+    /// <summary>Property to set or return the alpha value to set.</summary>
+    public int AlphaValue
+    {
+        get => _alpha;
+        set
+        {
+            value = value.Max(0).Min(255);
+
+            if (_alpha == value)
+            {
+                return;
+            }
+
+            OnPropertyChanging();
+            _alpha = value;
+            OnPropertyChanged();
+        }
+    }
+    #endregion
+
+    #region Methods.
+    /// <summary>Function to inject dependencies for the view model.</summary>
+    /// <param name="injectionParameters">The parameters to inject.</param>
+    /// <remarks>
+    /// Applications should call this when setting up the view model for complex operations and/or dependency injection. The constructor should only be used for simple set up and initialization of objects.
+    /// </remarks>
+    protected override void OnInitialize(HostedPanelViewModelParameters injectionParameters)
+    {            
+    }
+    #endregion
 }

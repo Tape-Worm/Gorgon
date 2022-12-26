@@ -27,67 +27,66 @@
 using Gorgon.Collections;
 using D3D11 = SharpDX.Direct3D11;
 
-namespace Gorgon.Graphics.Core
+namespace Gorgon.Graphics.Core;
+
+/// <summary>
+/// The array for holding blend state information.
+/// </summary>
+internal class BlendStateArray
+    : GorgonArray<GorgonBlendState>
 {
+    #region Methods.
     /// <summary>
-    /// The array for holding blend state information.
+    /// Function to build the D3D11 blend state.
     /// </summary>
-    internal class BlendStateArray
-        : GorgonArray<GorgonBlendState>
+    /// <param name="device">The device used to create the blend state.</param>
+    /// <param name="isAlphaToCoverageEnabled">Flag to enable/disable alpha to coverage.</param>
+    /// <param name="isIndependentBlendEnabled">Flag to enable/disable independent blend targets.</param>
+    public D3D11.BlendState1 BuildD3D11BlendState(D3D11.Device5 device, bool isAlphaToCoverageEnabled, bool isIndependentBlendEnabled)
     {
-        #region Methods.
-        /// <summary>
-        /// Function to build the D3D11 blend state.
-        /// </summary>
-        /// <param name="device">The device used to create the blend state.</param>
-        /// <param name="isAlphaToCoverageEnabled">Flag to enable/disable alpha to coverage.</param>
-        /// <param name="isIndependentBlendEnabled">Flag to enable/disable independent blend targets.</param>
-        public D3D11.BlendState1 BuildD3D11BlendState(D3D11.Device5 device, bool isAlphaToCoverageEnabled, bool isIndependentBlendEnabled)
+        ref readonly (int start, int count) indices = ref GetDirtyItems();
+        var desc = new D3D11.BlendStateDescription1
         {
-            ref readonly (int start, int count) indices = ref GetDirtyItems();
-            var desc = new D3D11.BlendStateDescription1
+            AlphaToCoverageEnable = isAlphaToCoverageEnabled,
+            IndependentBlendEnable = isIndependentBlendEnabled
+        };
+
+        for (int i = 0; i < indices.count; ++i)
+        {
+            GorgonBlendState state = this[indices.start + i];
+
+            if (state is null)
             {
-                AlphaToCoverageEnable = isAlphaToCoverageEnabled,
-                IndependentBlendEnable = isIndependentBlendEnabled
-            };
-
-            for (int i = 0; i < indices.count; ++i)
-            {
-                GorgonBlendState state = this[indices.start + i];
-
-                if (state is null)
-                {
-                    continue;
-                }
-
-                desc.RenderTarget[i] = new D3D11.RenderTargetBlendDescription1
-                {
-                    AlphaBlendOperation = (D3D11.BlendOperation)state.AlphaBlendOperation,
-                    BlendOperation = (D3D11.BlendOperation)state.ColorBlendOperation,
-                    IsLogicOperationEnabled = state.LogicOperation != LogicOperation.Noop,
-                    IsBlendEnabled = state.IsBlendingEnabled,
-                    RenderTargetWriteMask = (D3D11.ColorWriteMaskFlags)state.WriteMask,
-                    LogicOperation = (D3D11.LogicOperation)state.LogicOperation,
-                    SourceAlphaBlend = (D3D11.BlendOption)state.SourceAlphaBlend,
-                    SourceBlend = (D3D11.BlendOption)state.SourceColorBlend,
-                    DestinationAlphaBlend = (D3D11.BlendOption)state.DestinationAlphaBlend,
-                    DestinationBlend = (D3D11.BlendOption)state.DestinationColorBlend
-                };
+                continue;
             }
 
-            return new D3D11.BlendState1(device, desc)
+            desc.RenderTarget[i] = new D3D11.RenderTargetBlendDescription1
             {
-                DebugName = nameof(GorgonBlendState)
+                AlphaBlendOperation = (D3D11.BlendOperation)state.AlphaBlendOperation,
+                BlendOperation = (D3D11.BlendOperation)state.ColorBlendOperation,
+                IsLogicOperationEnabled = state.LogicOperation != LogicOperation.Noop,
+                IsBlendEnabled = state.IsBlendingEnabled,
+                RenderTargetWriteMask = (D3D11.ColorWriteMaskFlags)state.WriteMask,
+                LogicOperation = (D3D11.LogicOperation)state.LogicOperation,
+                SourceAlphaBlend = (D3D11.BlendOption)state.SourceAlphaBlend,
+                SourceBlend = (D3D11.BlendOption)state.SourceColorBlend,
+                DestinationAlphaBlend = (D3D11.BlendOption)state.DestinationAlphaBlend,
+                DestinationBlend = (D3D11.BlendOption)state.DestinationColorBlend
             };
         }
-        #endregion
 
-        #region Constructor/Finalizer.
-        /// <summary>Initializes a new instance of the <see cref="BlendStateArray" /> class.</summary>
-        internal BlendStateArray()
-            : base(D3D11.OutputMergerStage.SimultaneousRenderTargetCount)
+        return new D3D11.BlendState1(device, desc)
         {
-        }
-        #endregion        
+            DebugName = nameof(GorgonBlendState)
+        };
     }
+    #endregion
+
+    #region Constructor/Finalizer.
+    /// <summary>Initializes a new instance of the <see cref="BlendStateArray" /> class.</summary>
+    internal BlendStateArray()
+        : base(D3D11.OutputMergerStage.SimultaneousRenderTargetCount)
+    {
+    }
+    #endregion        
 }

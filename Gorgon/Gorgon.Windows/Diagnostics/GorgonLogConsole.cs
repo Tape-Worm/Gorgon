@@ -28,24 +28,23 @@ using System;
 using Gorgon.Core;
 using Gorgon.Diagnostics.LogProviders;
 
-namespace Gorgon.Diagnostics
+namespace Gorgon.Diagnostics;
+
+/// <summary>
+/// Sends logging information into a Console window.
+/// </summary>
+public class GorgonLogConsole
+    : GorgonLog
 {
+    #region Constructor/Destructor.
     /// <summary>
-    /// Sends logging information into a Console window.
+    /// Initializes a new instance of the <see cref="GorgonLog"/> class.
     /// </summary>
-    public class GorgonLogConsole
-        : GorgonLog
-    {
-        #region Constructor/Destructor.
-        /// <summary>
-        /// Initializes a new instance of the <see cref="GorgonLog"/> class.
-        /// </summary>
-        /// <param name="appname">File name for the log file.</param>
-        /// <param name="version">[Optional] The version of the application that is logging.</param>
-        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="appname"/> parameter is <b>null</b>.</exception>
-        /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="appname"/> parameter is empty.</exception>
-        public GorgonLogConsole(string appname, Version version = null)
-            : base(appname, version) => Provider = new LogConsoleProvider();
-        #endregion
-    }
+    /// <param name="appname">File name for the log file.</param>
+    /// <param name="version">[Optional] The version of the application that is logging.</param>
+    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="appname"/> parameter is <b>null</b>.</exception>
+    /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="appname"/> parameter is empty.</exception>
+    public GorgonLogConsole(string appname, Version version = null)
+        : base(appname, version) => Provider = new LogConsoleProvider();
+    #endregion
 }

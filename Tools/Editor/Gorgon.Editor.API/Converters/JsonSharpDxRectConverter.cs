@@ -28,90 +28,89 @@ using System;
 using Newtonsoft.Json;
 using DX = SharpDX;
 
-namespace Gorgon.Editor.Converters
+namespace Gorgon.Editor.Converters;
+
+/// <summary>
+/// A JSON converter for a SharpDX rectangle type.
+/// </summary>
+public class JsonSharpDxRectConverter
+    : JsonConverter<DX.Rectangle?>
 {
-    /// <summary>
-    /// A JSON converter for a SharpDX rectangle type.
-    /// </summary>
-    public class JsonSharpDxRectConverter
-        : JsonConverter<DX.Rectangle?>
+    /// <summary>Writes the JSON representation of the object.</summary>
+    /// <param name="writer">The <see cref="JsonWriter" /> to write to.</param>
+    /// <param name="value">The value.</param>
+    /// <param name="serializer">The calling serializer.</param>
+    public override void WriteJson(JsonWriter writer, DX.Rectangle? value, JsonSerializer serializer)
     {
-        /// <summary>Writes the JSON representation of the object.</summary>
-        /// <param name="writer">The <see cref="JsonWriter" /> to write to.</param>
-        /// <param name="value">The value.</param>
-        /// <param name="serializer">The calling serializer.</param>
-        public override void WriteJson(JsonWriter writer, DX.Rectangle? value, JsonSerializer serializer)
+        if (value is null)
         {
-            if (value is null)
-            {
-                writer.WriteNull();
-                return;
-            }
-
-            writer.WriteStartObject();
-            writer.WritePropertyName("Left");
-            writer.WriteValue(value.Value.Left);
-            writer.WritePropertyName("Top");
-            writer.WriteValue(value.Value.Top);
-            writer.WritePropertyName("Right");
-            writer.WriteValue(value.Value.Right);
-            writer.WritePropertyName("Bottom");
-            writer.WriteValue(value.Value.Bottom);
-            writer.WriteEnd();
+            writer.WriteNull();
+            return;
         }
 
-        /// <summary>Reads the JSON representation of the object.</summary>
-        /// <param name="reader">The <see cref="JsonReader" /> to read from.</param>
-        /// <param name="objectType">Type of the object.</param>
-        /// <param name="existingValue">The existing value of object being read. If there is no existing value then <c>null</c> will be used.</param>
-        /// <param name="hasExistingValue">The existing value has a value.</param>
-        /// <param name="serializer">The calling serializer.</param>
-        /// <returns>The object value.</returns>
-        public override DX.Rectangle? ReadJson(JsonReader reader, Type objectType, DX.Rectangle? existingValue, bool hasExistingValue, JsonSerializer serializer)
+        writer.WriteStartObject();
+        writer.WritePropertyName("Left");
+        writer.WriteValue(value.Value.Left);
+        writer.WritePropertyName("Top");
+        writer.WriteValue(value.Value.Top);
+        writer.WritePropertyName("Right");
+        writer.WriteValue(value.Value.Right);
+        writer.WritePropertyName("Bottom");
+        writer.WriteValue(value.Value.Bottom);
+        writer.WriteEnd();
+    }
+
+    /// <summary>Reads the JSON representation of the object.</summary>
+    /// <param name="reader">The <see cref="JsonReader" /> to read from.</param>
+    /// <param name="objectType">Type of the object.</param>
+    /// <param name="existingValue">The existing value of object being read. If there is no existing value then <c>null</c> will be used.</param>
+    /// <param name="hasExistingValue">The existing value has a value.</param>
+    /// <param name="serializer">The calling serializer.</param>
+    /// <returns>The object value.</returns>
+    public override DX.Rectangle? ReadJson(JsonReader reader, Type objectType, DX.Rectangle? existingValue, bool hasExistingValue, JsonSerializer serializer)
+    {
+        int left = 0;
+        int top = 0;
+        int right = 0;
+        int bottom = 0;
+
+        if (reader.TokenType == JsonToken.Null)
         {
-            int left = 0;
-            int top = 0;
-            int right = 0;
-            int bottom = 0;
-
-            if (reader.TokenType == JsonToken.Null)
-            {
-                return null;
-            }
-
-            while ((reader.Read()) && (reader.TokenType != JsonToken.EndObject))
-            {
-                if (reader.TokenType != JsonToken.PropertyName)
-                {
-                    continue;
-                }
-
-                string propName = reader.Value.ToString().ToUpperInvariant();
-
-                switch (propName)
-                {
-                    case "LEFT":
-                        left = reader.ReadAsInt32() ?? 0;
-                        break;
-                    case "TOP":
-                        top = reader.ReadAsInt32() ?? 0;
-                        break;
-                    case "RIGHT":
-                        right = reader.ReadAsInt32() ?? 0;
-                        break;
-                    case "BOTTOM":
-                        bottom = reader.ReadAsInt32() ?? 0;
-                        break;
-                }
-            }
-
-            return new DX.Rectangle
-            {
-                Left = left,
-                Top = top,
-                Right = right,
-                Bottom = bottom
-            };
+            return null;
         }
+
+        while ((reader.Read()) && (reader.TokenType != JsonToken.EndObject))
+        {
+            if (reader.TokenType != JsonToken.PropertyName)
+            {
+                continue;
+            }
+
+            string propName = reader.Value.ToString().ToUpperInvariant();
+
+            switch (propName)
+            {
+                case "LEFT":
+                    left = reader.ReadAsInt32() ?? 0;
+                    break;
+                case "TOP":
+                    top = reader.ReadAsInt32() ?? 0;
+                    break;
+                case "RIGHT":
+                    right = reader.ReadAsInt32() ?? 0;
+                    break;
+                case "BOTTOM":
+                    bottom = reader.ReadAsInt32() ?? 0;
+                    break;
+            }
+        }
+
+        return new DX.Rectangle
+        {
+            Left = left,
+            Top = top,
+            Right = right,
+            Bottom = bottom
+        };
     }
 }

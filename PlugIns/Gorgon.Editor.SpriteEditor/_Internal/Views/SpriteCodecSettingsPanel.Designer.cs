@@ -1,40 +1,40 @@
-﻿namespace Gorgon.Editor.SpriteEditor
+﻿namespace Gorgon.Editor.SpriteEditor;
+
+partial class SpriteCodecSettingsPanel
 {
-    partial class SpriteCodecSettingsPanel
+    /// <summary> 
+    /// Required designer variable.
+    /// </summary>
+    private System.ComponentModel.IContainer components = null;
+
+    /// <summary> 
+    /// Clean up any resources being used.
+    /// </summary>
+    /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+    protected override void Dispose(bool disposing)
     {
-        /// <summary> 
-        /// Required designer variable.
-        /// </summary>
-        private System.ComponentModel.IContainer components = null;
-
-        /// <summary> 
-        /// Clean up any resources being used.
-        /// </summary>
-        /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
-        protected override void Dispose(bool disposing)
+        if (disposing && (components != null))
         {
-            if (disposing && (components != null))
-            {
-                components.Dispose();
-            }
-
-            if (disposing)
-            {
-                /*DataContext?.OnUnload();
-                UnassignEvents();*/
-            }
-
-            base.Dispose(disposing);
+            components.Dispose();
         }
 
-        #region Component Designer generated code
-
-        /// <summary> 
-        /// Required method for Designer support - do not modify 
-        /// the contents of this method with the code editor.
-        /// </summary>
-        private void InitializeComponent()
+        if (disposing)
         {
+            /*DataContext?.OnUnload();
+            UnassignEvents();*/
+        }
+
+        base.Dispose(disposing);
+    }
+
+    #region Component Designer generated code
+
+    /// <summary> 
+    /// Required method for Designer support - do not modify 
+    /// the contents of this method with the code editor.
+    /// </summary>
+    private void InitializeComponent()
+    {
 			this.StripMenu = new System.Windows.Forms.ToolStrip();
 			this.ButtonAddCodec = new System.Windows.Forms.ToolStripButton();
 			this.ButtonRemoveCodecs = new System.Windows.Forms.ToolStripButton();
@@ -55,8 +55,8 @@
 			this.StripMenu.Font = new System.Drawing.Font("Segoe UI", 9F);
 			this.StripMenu.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
 			this.StripMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.ButtonAddCodec,
-            this.ButtonRemoveCodecs});
+        this.ButtonAddCodec,
+        this.ButtonRemoveCodecs});
 			this.StripMenu.Location = new System.Drawing.Point(0, 0);
 			this.StripMenu.Name = "StripMenu";
 			this.StripMenu.Size = new System.Drawing.Size(600, 29);
@@ -91,8 +91,8 @@
 			this.ListCodecs.BackColor = System.Drawing.Color.White;
 			this.ListCodecs.BorderStyle = System.Windows.Forms.BorderStyle.None;
 			this.ListCodecs.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
-            this.ColumnCodec,
-            this.ColumnPath});
+        this.ColumnCodec,
+        this.ColumnPath});
 			this.ListCodecs.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.ListCodecs.ForeColor = System.Drawing.Color.Black;
 			this.ListCodecs.FullRowSelect = true;
@@ -127,15 +127,14 @@
 			this.ResumeLayout(false);
 			this.PerformLayout();
 
-        }
-
-        #endregion
-
-        private System.Windows.Forms.ToolStrip StripMenu;
-        private System.Windows.Forms.ListView ListCodecs;
-        private System.Windows.Forms.ColumnHeader ColumnCodec;
-        private System.Windows.Forms.ColumnHeader ColumnPath;
-        private System.Windows.Forms.ToolStripButton ButtonAddCodec;
-        private System.Windows.Forms.ToolStripButton ButtonRemoveCodecs;
     }
+
+    #endregion
+
+    private System.Windows.Forms.ToolStrip StripMenu;
+    private System.Windows.Forms.ListView ListCodecs;
+    private System.Windows.Forms.ColumnHeader ColumnCodec;
+    private System.Windows.Forms.ColumnHeader ColumnPath;
+    private System.Windows.Forms.ToolStripButton ButtonAddCodec;
+    private System.Windows.Forms.ToolStripButton ButtonRemoveCodecs;
 }

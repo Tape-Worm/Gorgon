@@ -26,42 +26,41 @@
 
 using System;
 
-namespace Gorgon.IO
+namespace Gorgon.IO;
+
+/// <summary>
+/// Event arguments for the <see cref="IGorgonFileSystemWriter{T}.VirtualDirectoryRenamed"/> event.
+/// </summary>
+public class VirtualDirectoryRenamedEventArgs
+    : EventArgs
 {
     /// <summary>
-    /// Event arguments for the <see cref="IGorgonFileSystemWriter{T}.VirtualDirectoryRenamed"/> event.
+    /// Property to return the virtual directory that represents the physical directory.
     /// </summary>
-    public class VirtualDirectoryRenamedEventArgs
-        : EventArgs
+    public IGorgonVirtualDirectory VirtualDirectory
     {
-        /// <summary>
-        /// Property to return the virtual directory that represents the physical directory.
-        /// </summary>
-        public IGorgonVirtualDirectory VirtualDirectory
-        {
-            get;
-        }
+        get;
+    }
 
-        /// <summary>
-        /// Property to return the new name for the directory.
-        /// </summary>
-        public string NewName => VirtualDirectory.Name;
+    /// <summary>
+    /// Property to return the new name for the directory.
+    /// </summary>
+    public string NewName => VirtualDirectory.Name;
 
-        /// <summary>
-        /// Property to return the old name for the directory.
-        /// </summary>
-        public string OldName
-        {
-            get;
-        }
+    /// <summary>
+    /// Property to return the old name for the directory.
+    /// </summary>
+    public string OldName
+    {
+        get;
+    }
 
-        /// <summary>Initializes a new instance of the <see cref="VirtualDirectoryRenamedEventArgs"/> class.</summary>
-        /// <param name="directory">The virtual directory that was renamed.</param>
-        /// <param name="oldName">The original name for the directory.</param>
-        internal VirtualDirectoryRenamedEventArgs(IGorgonVirtualDirectory directory, string oldName)
-        {
-            VirtualDirectory = directory;
-            OldName = oldName;
-        }
+    /// <summary>Initializes a new instance of the <see cref="VirtualDirectoryRenamedEventArgs"/> class.</summary>
+    /// <param name="directory">The virtual directory that was renamed.</param>
+    /// <param name="oldName">The original name for the directory.</param>
+    internal VirtualDirectoryRenamedEventArgs(IGorgonVirtualDirectory directory, string oldName)
+    {
+        VirtualDirectory = directory;
+        OldName = oldName;
     }
 }

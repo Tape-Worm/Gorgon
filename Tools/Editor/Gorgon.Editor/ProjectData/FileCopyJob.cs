@@ -27,28 +27,27 @@
 using System.Collections.Generic;
 using Gorgon.IO;
 
-namespace Gorgon.Editor.ProjectData
+namespace Gorgon.Editor.ProjectData;
+
+/// <summary>
+/// Data to pass to a file copy job.
+/// </summary>
+internal class FileCopyJob
 {
     /// <summary>
-    /// Data to pass to a file copy job.
+    /// Property to return the buffer used to read the data.
     /// </summary>
-    internal class FileCopyJob
+    public byte[] ReadBuffer
     {
-        /// <summary>
-        /// Property to return the buffer used to read the data.
-        /// </summary>
-        public byte[] ReadBuffer
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// Property to return the list of files to decompress.
-        /// </summary>
-        public List<IGorgonVirtualFile> Files
-        {
-            get;
-        } = new List<IGorgonVirtualFile>();
+        get;
+        set;
     }
+
+    /// <summary>
+    /// Property to return the list of files to decompress.
+    /// </summary>
+    public List<IGorgonVirtualFile> Files
+    {
+        get;
+    } = new List<IGorgonVirtualFile>();
 }

@@ -27,65 +27,64 @@
 using System;
 using System.Windows.Controls;
 
-namespace Gorgon.Graphics.Wpf
+namespace Gorgon.Graphics.Wpf;
+
+/// <summary>
+/// Information used to define a WPF render target.
+/// </summary>
+public class GorgonWpfTargetInfo 
+    : IGorgonWpfTargetInfo
 {
+    #region Properties.
     /// <summary>
-    /// Information used to define a WPF render target.
+    /// Property to return the name of the WPF target.
     /// </summary>
-    public class GorgonWpfTargetInfo 
-        : IGorgonWpfTargetInfo
+    public string Name
     {
-        #region Properties.
-        /// <summary>
-        /// Property to return the name of the WPF target.
-        /// </summary>
-        public string Name
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to return the image that will receive the rendered data.
-        /// </summary>
-        /// <remarks>
-        /// This is a WPF image control that Gorgon will render into. The image source for this must be set to a <c>D3D11Image</c> control.
-        /// </remarks>
-        public Image RenderImage
-        {
-            get;
-        }
-        #endregion
-
-        #region Constructor/Finalizer.
-        /// <summary>Initializes a new instance of the <see cref="GorgonWpfTargetInfo" /> class.</summary>
-        /// <param name="info">The information object to clone.</param>
-        /// <param name="newName">[Optional] The new name to assign to the target.</param>
-        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="info"/> parameter is <b>null</b>.</exception>
-        public GorgonWpfTargetInfo(IGorgonWpfTargetInfo info, string newName = null)
-        {
-            if (info is null)
-            {
-                throw new ArgumentNullException(nameof(info));
-            }
-
-            Name = string.IsNullOrEmpty(newName) ? info.Name : newName;
-            RenderImage = info.RenderImage;
-        }
-
-        /// <summary>Initializes a new instance of the <see cref="GorgonWpfTargetInfo" /> class.</summary>
-        /// <param name="renderImage">The image that will receive the rendered data.</param>
-        /// <param name="name">[Optional] The name of this object.</param>
-        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="renderImage"/> parameter is <b>null</b>.</exception>
-        /// <remarks>
-        /// <para>
-        /// The <paramref name="renderImage"/> parameter is a WPF image control. The image source for the image control must be a <c>D3D11Image</c> control.
-        /// </para>
-        /// </remarks>
-        public GorgonWpfTargetInfo(Image renderImage, string name = null)
-        {
-            RenderImage = renderImage ?? throw new ArgumentNullException(nameof(renderImage));
-            Name = string.IsNullOrEmpty(name) ? $"WPF_RenderTarget_{Guid.NewGuid():N}" : name;
-        }
-        #endregion
+        get;
     }
+
+    /// <summary>
+    /// Property to return the image that will receive the rendered data.
+    /// </summary>
+    /// <remarks>
+    /// This is a WPF image control that Gorgon will render into. The image source for this must be set to a <c>D3D11Image</c> control.
+    /// </remarks>
+    public Image RenderImage
+    {
+        get;
+    }
+    #endregion
+
+    #region Constructor/Finalizer.
+    /// <summary>Initializes a new instance of the <see cref="GorgonWpfTargetInfo" /> class.</summary>
+    /// <param name="info">The information object to clone.</param>
+    /// <param name="newName">[Optional] The new name to assign to the target.</param>
+    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="info"/> parameter is <b>null</b>.</exception>
+    public GorgonWpfTargetInfo(IGorgonWpfTargetInfo info, string newName = null)
+    {
+        if (info is null)
+        {
+            throw new ArgumentNullException(nameof(info));
+        }
+
+        Name = string.IsNullOrEmpty(newName) ? info.Name : newName;
+        RenderImage = info.RenderImage;
+    }
+
+    /// <summary>Initializes a new instance of the <see cref="GorgonWpfTargetInfo" /> class.</summary>
+    /// <param name="renderImage">The image that will receive the rendered data.</param>
+    /// <param name="name">[Optional] The name of this object.</param>
+    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="renderImage"/> parameter is <b>null</b>.</exception>
+    /// <remarks>
+    /// <para>
+    /// The <paramref name="renderImage"/> parameter is a WPF image control. The image source for the image control must be a <c>D3D11Image</c> control.
+    /// </para>
+    /// </remarks>
+    public GorgonWpfTargetInfo(Image renderImage, string name = null)
+    {
+        RenderImage = renderImage ?? throw new ArgumentNullException(nameof(renderImage));
+        Name = string.IsNullOrEmpty(name) ? $"WPF_RenderTarget_{Guid.NewGuid():N}" : name;
+    }
+    #endregion
 }

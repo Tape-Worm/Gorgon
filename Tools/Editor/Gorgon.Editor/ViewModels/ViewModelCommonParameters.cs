@@ -29,65 +29,64 @@ using Gorgon.Editor.PlugIns;
 using Gorgon.Editor.ProjectData;
 using Gorgon.Editor.UI;
 
-namespace Gorgon.Editor.ViewModels
+namespace Gorgon.Editor.ViewModels;
+
+/// <summary>
+/// Common injection parameters for all view models.
+/// </summary>
+internal class ViewModelCommonParameters
+    : IViewModelInjection<IHostContentServices>
 {
     /// <summary>
-    /// Common injection parameters for all view models.
+    /// Property to set or return the current project.
     /// </summary>
-    internal class ViewModelCommonParameters
-        : IViewModelInjection<IHostContentServices>
+    public IProject Project
     {
-        /// <summary>
-        /// Property to set or return the current project.
-        /// </summary>
-        public IProject Project
-        {
-            get;
-            set;
-        }
+        get;
+        set;
+    }
 
-        /// <summary>
-        /// Property to set or return the project manager.
-        /// </summary>
-        public ProjectManager ProjectManager
-        {
-            get;
-            set;
-        }
+    /// <summary>
+    /// Property to set or return the project manager.
+    /// </summary>
+    public ProjectManager ProjectManager
+    {
+        get;
+        set;
+    }
 
-        /// <summary>
-        /// Property to set or return the settings for the application.
-        /// </summary>
-        public Editor.EditorSettings EditorSettings
-        {
-            get;
-            set;
-        }
+    /// <summary>
+    /// Property to set or return the settings for the application.
+    /// </summary>
+    public Editor.EditorSettings EditorSettings
+    {
+        get;
+        set;
+    }
 
-        /// <summary>
-        /// Property to return the view model factory.
-        /// </summary>
-        public ViewModelFactory ViewModelFactory
-        {
-            get;
-        }
+    /// <summary>
+    /// Property to return the view model factory.
+    /// </summary>
+    public ViewModelFactory ViewModelFactory
+    {
+        get;
+    }
 
-        /// <summary>Property to return the services passed from host application.</summary>
-        public IHostContentServices HostServices
-        {
-            get;
-        }
+    /// <summary>Property to return the services passed from host application.</summary>
+    public IHostContentServices HostServices
+    {
+        get;
+    }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ViewModelCommonParameters"/> class.
-        /// </summary>
-        /// <param name="hostServices">The services from the host application.</param>
-        /// <param name="viewModelFactory">The view model factory for creating view models.</param>
-        /// <exception cref="ArgumentNullException">Thrown when <paramref name="hostServices"/>, or the <paramref name="viewModelFactory"/> parameter is <b>null</b>.</exception>
-        public ViewModelCommonParameters(IHostContentServices hostServices, ViewModelFactory viewModelFactory)
-        {
-            HostServices = hostServices ?? throw new ArgumentNullException(nameof(hostServices));
-            ViewModelFactory = viewModelFactory ?? throw new ArgumentNullException(nameof(viewModelFactory));
-        }
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ViewModelCommonParameters"/> class.
+    /// </summary>
+    /// <param name="hostServices">The services from the host application.</param>
+    /// <param name="viewModelFactory">The view model factory for creating view models.</param>
+    /// <exception cref="ArgumentNullException">Thrown when <paramref name="hostServices"/>, or the <paramref name="viewModelFactory"/> parameter is <b>null</b>.</exception>
+    public ViewModelCommonParameters(IHostContentServices hostServices, ViewModelFactory viewModelFactory)
+    {
+        HostServices = hostServices ?? throw new ArgumentNullException(nameof(hostServices));
+        ViewModelFactory = viewModelFactory ?? throw new ArgumentNullException(nameof(viewModelFactory));
     }
 }

@@ -26,35 +26,34 @@
 
 using System;
 
-namespace Gorgon.UI
+namespace Gorgon.UI;
+
+/// <summary>
+/// Arguments for the <see cref="GorgonFolderBrowser.FolderEntered"/> and <see cref="GorgonFolderBrowser.FolderSelected"/> events.
+/// </summary>
+/// <seealso cref="GorgonFolderBrowser"/>
+public class FolderSelectedArgs
+    : EventArgs
 {
+    #region Properties.
     /// <summary>
-    /// Arguments for the <see cref="GorgonFolderBrowser.FolderEntered"/> and <see cref="GorgonFolderBrowser.FolderSelected"/> events.
+    /// Property to return the path to the folder.
     /// </summary>
-    /// <seealso cref="GorgonFolderBrowser"/>
-    public class FolderSelectedArgs
-        : EventArgs
+    /// <remarks>
+    /// If this value is empty, then the selector is at the drive selection area.
+    /// </remarks>
+    public string FolderPath
     {
-        #region Properties.
-        /// <summary>
-        /// Property to return the path to the folder.
-        /// </summary>
-        /// <remarks>
-        /// If this value is empty, then the selector is at the drive selection area.
-        /// </remarks>
-        public string FolderPath
-        {
-            get;
-        }
-        #endregion
-
-        #region Constructor/Finalizer.
-        /// <summary>
-        /// Initializes a new instance of the <see cref="FolderSelectedArgs"/> class.
-        /// </summary>
-        /// <param name="folder">The folder that was selected.</param>
-        public FolderSelectedArgs(string folder) => FolderPath = folder ?? string.Empty;
-        #endregion
-
+        get;
     }
+    #endregion
+
+    #region Constructor/Finalizer.
+    /// <summary>
+    /// Initializes a new instance of the <see cref="FolderSelectedArgs"/> class.
+    /// </summary>
+    /// <param name="folder">The folder that was selected.</param>
+    public FolderSelectedArgs(string folder) => FolderPath = folder ?? string.Empty;
+    #endregion
+
 }

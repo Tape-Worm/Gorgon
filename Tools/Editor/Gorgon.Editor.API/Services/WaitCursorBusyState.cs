@@ -29,143 +29,142 @@ using System.Threading;
 using System.Windows.Forms;
 using Gorgon.Math;
 
-namespace Gorgon.Editor.Services
+namespace Gorgon.Editor.Services;
+
+/// <summary>
+/// An implementation of <see cref="IBusyStateService"/> that shows a wait cursor when an application main thread is busy.
+/// </summary>
+/// <remarks>
+/// <para>
+/// This implementation is reference counted. That is, a call to <see cref="SetBusy"/> increments an internal counter.
+/// </para>
+/// </remarks>
+public class WaitCursorBusyState
+    : IBusyStateService
 {
+    #region Variables.
+    // Synchronization lock for the event.
+    private readonly object _eventLock = new();
+    // The number of times the SetBusy method has been called.
+    private int _busyStateCounter;
+    #endregion
+
+    #region Events.
+    // Event triggered when the busy state changes.
+    private event EventHandler BusyStateChangedEvent;
+
     /// <summary>
-    /// An implementation of <see cref="IBusyStateService"/> that shows a wait cursor when an application main thread is busy.
+    /// Event triggered when the busy state changes.
     /// </summary>
-    /// <remarks>
-    /// <para>
-    /// This implementation is reference counted. That is, a call to <see cref="SetBusy"/> increments an internal counter.
-    /// </para>
-    /// </remarks>
-    public class WaitCursorBusyState
-        : IBusyStateService
+    public event EventHandler BusyStateChanged
     {
-        #region Variables.
-        // Synchronization lock for the event.
-        private readonly object _eventLock = new();
-        // The number of times the SetBusy method has been called.
-        private int _busyStateCounter;
-        #endregion
-
-        #region Events.
-        // Event triggered when the busy state changes.
-        private event EventHandler BusyStateChangedEvent;
-
-        /// <summary>
-        /// Event triggered when the busy state changes.
-        /// </summary>
-        public event EventHandler BusyStateChanged
+        add
         {
-            add
-            {
-                lock (_eventLock)
-                {
-                    if (value is null)
-                    {
-                        BusyStateChangedEvent = null;
-                        return;
-                    }
-
-                    BusyStateChangedEvent += value;
-                }
-            }
-            remove
-            {
-                lock (_eventLock)
-                {
-                    if (value is null)
-                    {
-                        return;
-                    }
-
-                    BusyStateChangedEvent -= value;
-                }
-            }
-        }
-        #endregion
-
-        #region Properties.
-        /// <summary>
-        /// Property to return whether or not there's a busy state.
-        /// </summary>
-        public bool IsBusy
-        {
-            get;
-            private set;
-        }
-        #endregion
-
-        #region Methods.
-        /// <summary>
-        /// Function to trigger the busy state change event.
-        /// </summary>
-        private void OnBusyStateChanged()
-        {
-            EventHandler handler = null;
-
             lock (_eventLock)
             {
-                handler = BusyStateChangedEvent;
+                if (value is null)
+                {
+                    BusyStateChangedEvent = null;
+                    return;
+                }
+
+                BusyStateChangedEvent += value;
             }
-
-            handler?.Invoke(this, EventArgs.Empty);
         }
-
-        /// <summary>
-        /// Function to forcefully reset the busy state back to an idle state.
-        /// </summary>
-        public void Reset()
+        remove
         {
-            if (Interlocked.Exchange(ref _busyStateCounter, 0) == 0)
+            lock (_eventLock)
             {
-                return;
+                if (value is null)
+                {
+                    return;
+                }
+
+                BusyStateChangedEvent -= value;
             }
-
-            Application.UseWaitCursor = false;
-            Cursor.Current = Cursors.Default;
-            IsBusy = false;
-
-            OnBusyStateChanged();
         }
-
-        /// <summary>
-        /// Function to set busy state.
-        /// </summary>
-        public void SetBusy()
-        {
-            if (Interlocked.Increment(ref _busyStateCounter) > 1)
-            {
-                return;
-            }
-
-            Application.UseWaitCursor = true;
-            Cursor.Current = Cursors.WaitCursor;
-            IsBusy = true;
-
-            OnBusyStateChanged();
-        }
-
-        /// <summary>
-        /// Function to hide the busy state.
-        /// </summary>
-        public void SetIdle()
-        {
-            if (Interlocked.Decrement(ref _busyStateCounter) > 0)
-            {
-                return;
-            }
-
-            // Ensure that we don't get a negative count.
-            _busyStateCounter = _busyStateCounter.Max(0);
-
-            Application.UseWaitCursor = false;
-            Cursor.Current = Cursors.Default;
-            IsBusy = false;
-
-            OnBusyStateChanged();
-        }
-        #endregion
     }
+    #endregion
+
+    #region Properties.
+    /// <summary>
+    /// Property to return whether or not there's a busy state.
+    /// </summary>
+    public bool IsBusy
+    {
+        get;
+        private set;
+    }
+    #endregion
+
+    #region Methods.
+    /// <summary>
+    /// Function to trigger the busy state change event.
+    /// </summary>
+    private void OnBusyStateChanged()
+    {
+        EventHandler handler = null;
+
+        lock (_eventLock)
+        {
+            handler = BusyStateChangedEvent;
+        }
+
+        handler?.Invoke(this, EventArgs.Empty);
+    }
+
+    /// <summary>
+    /// Function to forcefully reset the busy state back to an idle state.
+    /// </summary>
+    public void Reset()
+    {
+        if (Interlocked.Exchange(ref _busyStateCounter, 0) == 0)
+        {
+            return;
+        }
+
+        Application.UseWaitCursor = false;
+        Cursor.Current = Cursors.Default;
+        IsBusy = false;
+
+        OnBusyStateChanged();
+    }
+
+    /// <summary>
+    /// Function to set busy state.
+    /// </summary>
+    public void SetBusy()
+    {
+        if (Interlocked.Increment(ref _busyStateCounter) > 1)
+        {
+            return;
+        }
+
+        Application.UseWaitCursor = true;
+        Cursor.Current = Cursors.WaitCursor;
+        IsBusy = true;
+
+        OnBusyStateChanged();
+    }
+
+    /// <summary>
+    /// Function to hide the busy state.
+    /// </summary>
+    public void SetIdle()
+    {
+        if (Interlocked.Decrement(ref _busyStateCounter) > 0)
+        {
+            return;
+        }
+
+        // Ensure that we don't get a negative count.
+        _busyStateCounter = _busyStateCounter.Max(0);
+
+        Application.UseWaitCursor = false;
+        Cursor.Current = Cursors.Default;
+        IsBusy = false;
+
+        OnBusyStateChanged();
+    }
+    #endregion
 }

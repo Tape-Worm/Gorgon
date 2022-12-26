@@ -30,124 +30,123 @@ using System.Numerics;
 using Gorgon.Core;
 using Gorgon.Math;
 
-namespace Gorgon.Animation
+namespace Gorgon.Animation;
+
+/// <summary>
+/// A track that stores single floating point values representing various properties in an animation.
+/// </summary>
+internal class SingleTrack
+    : GorgonNamedObject, IGorgonAnimationTrack<GorgonKeySingle>
 {
+    #region Variables.
+    // The interpolation mode for the track.
+    private TrackInterpolationMode _interpolationMode = TrackInterpolationMode.Linear;
+    // The spline controller for the track.
+    private readonly GorgonCatmullRomSpline _splineController = new();
+    #endregion
+
+    #region Properties.
+    /// <summary>Property to return the type of key frame data stored in this track.</summary>
+    public AnimationTrackKeyType KeyFrameDataType => AnimationTrackKeyType.Single;
+
     /// <summary>
-    /// A track that stores single floating point values representing various properties in an animation.
+    /// Property to return the type of interpolation supported by the track.
     /// </summary>
-    internal class SingleTrack
-        : GorgonNamedObject, IGorgonAnimationTrack<GorgonKeySingle>
+    public TrackInterpolationMode SupportsInterpolation => TrackInterpolationMode.Linear | TrackInterpolationMode.Spline;
+
+    /// <summary>
+    /// Property to return the spline controller (if applicable) for the track.
+    /// </summary>
+    public IGorgonSplineCalculation SplineController => _splineController;
+
+    /// <summary>
+    /// Property to set or return the interpolation mode.
+    /// </summary>
+    /// <remarks>
+    /// If the value assigned is not supported by the track (use the <see cref="SupportsInterpolation"/> property), then the original value is kept.
+    /// </remarks>
+    public TrackInterpolationMode InterpolationMode
     {
-        #region Variables.
-        // The interpolation mode for the track.
-        private TrackInterpolationMode _interpolationMode = TrackInterpolationMode.Linear;
-        // The spline controller for the track.
-        private readonly GorgonCatmullRomSpline _splineController = new();
-        #endregion
-
-        #region Properties.
-        /// <summary>Property to return the type of key frame data stored in this track.</summary>
-        public AnimationTrackKeyType KeyFrameDataType => AnimationTrackKeyType.Single;
-
-        /// <summary>
-        /// Property to return the type of interpolation supported by the track.
-        /// </summary>
-        public TrackInterpolationMode SupportsInterpolation => TrackInterpolationMode.Linear | TrackInterpolationMode.Spline;
-
-        /// <summary>
-        /// Property to return the spline controller (if applicable) for the track.
-        /// </summary>
-        public IGorgonSplineCalculation SplineController => _splineController;
-
-        /// <summary>
-        /// Property to set or return the interpolation mode.
-        /// </summary>
-        /// <remarks>
-        /// If the value assigned is not supported by the track (use the <see cref="SupportsInterpolation"/> property), then the original value is kept.
-        /// </remarks>
-        public TrackInterpolationMode InterpolationMode
+        get => _interpolationMode;
+        set
         {
-            get => _interpolationMode;
-            set
+            if ((SupportsInterpolation & value) != value)
             {
-                if ((SupportsInterpolation & value) != value)
-                {
-                    return;
-                }
-
-                _interpolationMode = value;
+                return;
             }
+
+            _interpolationMode = value;
         }
-
-        /// <summary>
-        /// Property to return the key frames for the track.
-        /// </summary>
-        public IReadOnlyList<GorgonKeySingle> KeyFrames
-        {
-            get;
-        }
-
-        /// <summary>Property to set or return whether this track is enabled during animation.</summary>
-        public bool IsEnabled
-        {
-            get;
-            set;
-        } = true;
-        #endregion
-
-        /// <summary>
-        /// Function to retrieve the value at the specified time index.
-        /// </summary>
-        /// <param name="timeIndex">The time index, in seconds, within the track to retrieve the value from.</param>
-        /// <returns>The value at the specified time index.</returns>
-        /// <remarks>
-        /// <para>
-        /// The value returned by this method may or may not be interpolated based on the value in <see cref="InterpolationMode"/>.  
-        /// </para>
-        /// </remarks>
-        public GorgonKeySingle GetValueAtTime(float timeIndex)
-        {
-            if (KeyFrames.Count == 0)
-            {
-                return null;
-            }
-
-            if (KeyFrames.Count == 1)
-            {
-                return KeyFrames[0];
-            }
-
-            GorgonKeySingle result = KeyFrames.FirstOrDefault(item => item.Time == timeIndex);
-
-            if (result is not null)
-            {
-                return result;
-            }
-
-            TrackKeyProcessor.TryUpdateSingle(this, timeIndex, out float value);
-
-            return new GorgonKeySingle(timeIndex, value);
-        }
-
-        #region Constructor/Finalizer.
-        /// <summary>
-        /// Initializes a new instance of the <see cref="Vector3Track"/> class.
-        /// </summary>
-        /// <param name="keyFrames">The list of key frames for the track.</param>
-        /// <param name="name">The name of the track.</param>
-        internal SingleTrack(IReadOnlyList<GorgonKeySingle> keyFrames, string name)
-            : base(name)
-        {
-            KeyFrames = keyFrames;
-
-            // Build the spline for the track.
-            for (int i = 0; i < keyFrames.Count; ++i)
-            {
-                _splineController.Points.Add(new Vector4(keyFrames[i].Value, 0, 0, 1.0f));
-            }
-
-            _splineController.UpdateTangents();
-        }
-        #endregion
     }
+
+    /// <summary>
+    /// Property to return the key frames for the track.
+    /// </summary>
+    public IReadOnlyList<GorgonKeySingle> KeyFrames
+    {
+        get;
+    }
+
+    /// <summary>Property to set or return whether this track is enabled during animation.</summary>
+    public bool IsEnabled
+    {
+        get;
+        set;
+    } = true;
+    #endregion
+
+    /// <summary>
+    /// Function to retrieve the value at the specified time index.
+    /// </summary>
+    /// <param name="timeIndex">The time index, in seconds, within the track to retrieve the value from.</param>
+    /// <returns>The value at the specified time index.</returns>
+    /// <remarks>
+    /// <para>
+    /// The value returned by this method may or may not be interpolated based on the value in <see cref="InterpolationMode"/>.  
+    /// </para>
+    /// </remarks>
+    public GorgonKeySingle GetValueAtTime(float timeIndex)
+    {
+        if (KeyFrames.Count == 0)
+        {
+            return null;
+        }
+
+        if (KeyFrames.Count == 1)
+        {
+            return KeyFrames[0];
+        }
+
+        GorgonKeySingle result = KeyFrames.FirstOrDefault(item => item.Time == timeIndex);
+
+        if (result is not null)
+        {
+            return result;
+        }
+
+        TrackKeyProcessor.TryUpdateSingle(this, timeIndex, out float value);
+
+        return new GorgonKeySingle(timeIndex, value);
+    }
+
+    #region Constructor/Finalizer.
+    /// <summary>
+    /// Initializes a new instance of the <see cref="Vector3Track"/> class.
+    /// </summary>
+    /// <param name="keyFrames">The list of key frames for the track.</param>
+    /// <param name="name">The name of the track.</param>
+    internal SingleTrack(IReadOnlyList<GorgonKeySingle> keyFrames, string name)
+        : base(name)
+    {
+        KeyFrames = keyFrames;
+
+        // Build the spline for the track.
+        for (int i = 0; i < keyFrames.Count; ++i)
+        {
+            _splineController.Points.Add(new Vector4(keyFrames[i].Value, 0, 0, 1.0f));
+        }
+
+        _splineController.UpdateTangents();
+    }
+    #endregion
 }

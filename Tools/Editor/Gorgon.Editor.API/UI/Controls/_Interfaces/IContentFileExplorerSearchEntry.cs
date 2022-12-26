@@ -26,37 +26,36 @@
 
 using Gorgon.Core;
 
-namespace Gorgon.Editor.UI.Controls
+namespace Gorgon.Editor.UI.Controls;
+
+/// <summary>
+/// Defines a content file explorer entry that can be searched.
+/// </summary>
+public interface IContentFileExplorerSearchEntry
+    : IGorgonNamedObject
 {
     /// <summary>
-    /// Defines a content file explorer entry that can be searched.
+    /// Property to set or return whether the entry is visible or not.
     /// </summary>
-    public interface IContentFileExplorerSearchEntry
-        : IGorgonNamedObject
+    bool IsVisible
     {
-        /// <summary>
-        /// Property to set or return whether the entry is visible or not.
-        /// </summary>
-        bool IsVisible
-        {
-            get;
-            set;
-        }
+        get;
+        set;
+    }
 
-        /// <summary>
-        /// Property to return the full path for the entry.
-        /// </summary>
-        string FullPath
-        {
-            get;
-        }
+    /// <summary>
+    /// Property to return the full path for the entry.
+    /// </summary>
+    string FullPath
+    {
+        get;
+    }
 
-        /// <summary>
-        /// Property to return whether or not this entry is a directory.
-        /// </summary>
-        bool IsDirectory
-        {
-            get;
-        }
+    /// <summary>
+    /// Property to return whether or not this entry is a directory.
+    /// </summary>
+    bool IsDirectory
+    {
+        get;
     }
 }

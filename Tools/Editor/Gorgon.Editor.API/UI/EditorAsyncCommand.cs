@@ -27,92 +27,91 @@
 using System;
 using System.Threading.Tasks;
 
-namespace Gorgon.Editor.UI
+namespace Gorgon.Editor.UI;
+
+/// <summary>
+/// An implementation of the <see cref="IEditorAsyncCommand{T}"/> interface.
+/// </summary>
+/// <typeparam name="T">The type of data to pass to the command.</typeparam>
+/// <remarks>
+/// <para>
+/// Commands are used to perform actions on a view model. They work similarly to events in that they are usually called in response to a UI action like a button click. 
+/// </para>
+/// <para>
+/// Unlike the <see cref="IEditorCommand{T}"/> type, this allows commands to execute asynchronously and await the results on the view so that order of execution can be guaranteed even on the view.
+/// </para>
+/// </remarks>
+/// <seealso cref="IEditorCommand{T}"/>
+public class EditorAsyncCommand<T>
+    : IEditorAsyncCommand<T>
 {
+    #region Variables.
+    // Function called to determine if a command can be executed or not.
+    private readonly Func<T, bool> _canExecute;
+    // Action called to execute the function.
+    private readonly Func<T, Task> _execute;
+    // Function called to determine if a command can be executed or not.
+    private readonly Func<bool> _canExecuteNoArgs;
+    // Action called to execute the function.
+    private readonly Func<Task> _executeNoArgs;
+    #endregion
+
+    #region Methods.
     /// <summary>
-    /// An implementation of the <see cref="IEditorAsyncCommand{T}"/> interface.
+    /// Function to execute the command.
     /// </summary>
-    /// <typeparam name="T">The type of data to pass to the command.</typeparam>
-    /// <remarks>
-    /// <para>
-    /// Commands are used to perform actions on a view model. They work similarly to events in that they are usually called in response to a UI action like a button click. 
-    /// </para>
-    /// <para>
-    /// Unlike the <see cref="IEditorCommand{T}"/> type, this allows commands to execute asynchronously and await the results on the view so that order of execution can be guaranteed even on the view.
-    /// </para>
-    /// </remarks>
-    /// <seealso cref="IEditorCommand{T}"/>
-    public class EditorAsyncCommand<T>
-        : IEditorAsyncCommand<T>
+    /// <param name="args">The arguments to pass to the command.</param>
+    public async void Execute(T args) => await ExecuteAsync(args);
+
+    /// <summary>
+    /// Function to execute the command.
+    /// </summary>
+    /// <param name="args">The arguments to pass to the command.</param>
+    /// <returns>A <see cref="Task"/> for asynchronous operation.</returns>
+    public Task ExecuteAsync(T args) => _execute is not null ? _execute(args) : _executeNoArgs();
+
+    /// <summary>
+    /// Function to determine if a command can be executed or not.
+    /// </summary>
+    /// <param name="args">The arguments to check.</param>
+    /// <returns><b>true</b> if the command can be executed, <b>false</b> if not.</returns>
+    public bool CanExecute(T args)
     {
-        #region Variables.
-        // Function called to determine if a command can be executed or not.
-        private readonly Func<T, bool> _canExecute;
-        // Action called to execute the function.
-        private readonly Func<T, Task> _execute;
-        // Function called to determine if a command can be executed or not.
-        private readonly Func<bool> _canExecuteNoArgs;
-        // Action called to execute the function.
-        private readonly Func<Task> _executeNoArgs;
-        #endregion
-
-        #region Methods.
-        /// <summary>
-        /// Function to execute the command.
-        /// </summary>
-        /// <param name="args">The arguments to pass to the command.</param>
-        public async void Execute(T args) => await ExecuteAsync(args);
-
-        /// <summary>
-        /// Function to execute the command.
-        /// </summary>
-        /// <param name="args">The arguments to pass to the command.</param>
-        /// <returns>A <see cref="Task"/> for asynchronous operation.</returns>
-        public Task ExecuteAsync(T args) => _execute is not null ? _execute(args) : _executeNoArgs();
-
-        /// <summary>
-        /// Function to determine if a command can be executed or not.
-        /// </summary>
-        /// <param name="args">The arguments to check.</param>
-        /// <returns><b>true</b> if the command can be executed, <b>false</b> if not.</returns>
-        public bool CanExecute(T args)
-        {
 #pragma warning disable IDE0046 // Convert to conditional expression
-            if ((_canExecute is null) && (_canExecuteNoArgs is null))
-            {
-                return true;
-            }
+        if ((_canExecute is null) && (_canExecuteNoArgs is null))
+        {
+            return true;
+        }
 
-            return _canExecute is not null ? _canExecute(args) : _canExecuteNoArgs();
+        return _canExecute is not null ? _canExecute(args) : _canExecuteNoArgs();
 #pragma warning restore IDE0046 // Convert to conditional expression
-        }
-        #endregion
-
-        #region Constructor/Finalizer.
-        /// <summary>
-        /// Initializes a new instance of the <see cref="EditorCommand{T}"/> class.
-        /// </summary>
-        /// <param name="execute">The method to execute when the command is executed.</param>
-        /// <param name="canExecute">The method used to determine if the command can execute.</param>
-        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="execute"/> parameter is <b>null</b>.</exception>
-        public EditorAsyncCommand(Func<T, Task> execute, Func<T, bool> canExecute = null)
-        {
-            _execute = execute ?? throw new ArgumentNullException(nameof(execute));
-            _canExecute = canExecute;
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="EditorCommand{T}"/> class.
-        /// </summary>
-        /// <param name="execute">The method to execute when the command is executed.</param>
-        /// <param name="canExecute">The method used to determine if the command can execute.</param>
-        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="execute"/> parameter is <b>null</b>.</exception>
-        public EditorAsyncCommand(Func<Task> execute, Func<bool> canExecute = null)
-        {
-            _executeNoArgs = execute ?? throw new ArgumentNullException(nameof(execute));
-            _canExecuteNoArgs = canExecute;
-        }
-        #endregion
-
     }
+    #endregion
+
+    #region Constructor/Finalizer.
+    /// <summary>
+    /// Initializes a new instance of the <see cref="EditorCommand{T}"/> class.
+    /// </summary>
+    /// <param name="execute">The method to execute when the command is executed.</param>
+    /// <param name="canExecute">The method used to determine if the command can execute.</param>
+    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="execute"/> parameter is <b>null</b>.</exception>
+    public EditorAsyncCommand(Func<T, Task> execute, Func<T, bool> canExecute = null)
+    {
+        _execute = execute ?? throw new ArgumentNullException(nameof(execute));
+        _canExecute = canExecute;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="EditorCommand{T}"/> class.
+    /// </summary>
+    /// <param name="execute">The method to execute when the command is executed.</param>
+    /// <param name="canExecute">The method used to determine if the command can execute.</param>
+    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="execute"/> parameter is <b>null</b>.</exception>
+    public EditorAsyncCommand(Func<Task> execute, Func<bool> canExecute = null)
+    {
+        _executeNoArgs = execute ?? throw new ArgumentNullException(nameof(execute));
+        _canExecuteNoArgs = canExecute;
+    }
+    #endregion
+
 }

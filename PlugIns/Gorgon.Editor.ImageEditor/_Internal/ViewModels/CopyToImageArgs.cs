@@ -27,37 +27,36 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 
-namespace Gorgon.Editor.ImageEditor.ViewModels
+namespace Gorgon.Editor.ImageEditor.ViewModels;
+
+/// <summary>
+/// Arguments for the <see cref="IImageContent.CopyToImage"/> command.
+/// </summary>
+internal class CopyToImageArgs
+    : CancelEventArgs
 {
     /// <summary>
-    /// Arguments for the <see cref="IImageContent.CopyToImage"/> command.
+    /// Property to return the paths to the files being copied into the image.
     /// </summary>
-    internal class CopyToImageArgs
-        : CancelEventArgs
+    public IReadOnlyList<string> ContentFilePaths
     {
-        /// <summary>
-        /// Property to return the paths to the files being copied into the image.
-        /// </summary>
-        public IReadOnlyList<string> ContentFilePaths
-        {
-            get;
-        }
+        get;
+    }
 
-        /// <summary>
-        /// Property to return the DPI for the thumbnails to use when displaying in the image picker.
-        /// </summary>
-        public float ThumbnailDpi
-        {
-            get;
-        }
+    /// <summary>
+    /// Property to return the DPI for the thumbnails to use when displaying in the image picker.
+    /// </summary>
+    public float ThumbnailDpi
+    {
+        get;
+    }
 
-        /// <summary>Initializes a new instance of the <see cref="CopyToImageArgs"/> class.</summary>
-        /// <param name="filePaths">The file paths.</param>
-        /// <param name="thumbnailDpi">The thumbnail dpi.</param>
-        public CopyToImageArgs(IReadOnlyList<string> filePaths, float thumbnailDpi)
-        {
-            ContentFilePaths = filePaths;
-            ThumbnailDpi = thumbnailDpi;
-        }
+    /// <summary>Initializes a new instance of the <see cref="CopyToImageArgs"/> class.</summary>
+    /// <param name="filePaths">The file paths.</param>
+    /// <param name="thumbnailDpi">The thumbnail dpi.</param>
+    public CopyToImageArgs(IReadOnlyList<string> filePaths, float thumbnailDpi)
+    {
+        ContentFilePaths = filePaths;
+        ThumbnailDpi = thumbnailDpi;
     }
 }

@@ -24,133 +24,132 @@
 // 
 #endregion
 
-namespace Gorgon.Graphics.Core
+namespace Gorgon.Graphics.Core;
+
+/// <summary>
+/// Information for creating temporary render targets.
+/// </summary>
+internal class TempTargetTextureInfo
+    : IGorgonTexture2DInfo
 {
-    /// <summary>
-    /// Information for creating temporary render targets.
-    /// </summary>
-    internal class TempTargetTextureInfo
-        : IGorgonTexture2DInfo
+    #region Properties.
+    /// <summary>Property to return the width of the texture, in pixels.</summary>
+    public int Width
     {
-        #region Properties.
-        /// <summary>Property to return the width of the texture, in pixels.</summary>
-        public int Width
-        {
-            get;
-            set;
-        }
-
-        /// <summary>Property to return the height of the texture, in pixels.</summary>
-        public int Height
-        {
-            get;
-            set;
-        }
-
-        /// <summary>Gets or sets the array count.</summary>
-        public int ArrayCount
-        {
-            get;
-            set;
-        }
-
-        /// <summary>Property to return whether this 2D texture is a cube map.</summary>
-        /// <remarks>
-        ///   <para>
-        /// When this value is set to <b>true</b>, then the texture is defined as a cube map using the <see cref="ArrayCount" /> as the number of faces. Because of this, the <see cref="P:Gorgon.Graphics.Core.TempTargetTextureInfo.ArrayCount" /> value
-        /// must be a multiple of 6. If it is not, then the array count will be adjusted to meet the requirement.
-        /// </para>
-        ///   <para>
-        /// This value is defaulted to <b>false</b>.
-        /// </para>
-        /// </remarks>
-        public bool IsCubeMap
-        {
-            get;
-            set;
-        }
-
-        /// <summary>Property to return the format of the texture.</summary>
-        public BufferFormat Format
-        {
-            get;
-            set;
-        }
-
-        /// <summary>Property to return the number of mip-map levels for the texture.</summary>
-        /// <remarks>
-        ///   <para>
-        /// If the texture is multisampled, this value must be set to 1.
-        /// </para>
-        ///   <para>
-        /// This value is defaulted to 1.
-        /// </para>
-        /// </remarks>
-        public int MipLevels
-        {
-            get;
-            set;
-        }
-
-        /// <summary>Property to return the multisample quality and count for this texture.</summary>
-        /// <remarks>This value is defaulted to <see cref="GorgonMultisampleInfo.NoMultiSampling" />.</remarks>
-        public GorgonMultisampleInfo MultisampleInfo
-        {
-            get;
-            set;
-        }
-
-        /// <summary>Property to return the intended usage flags for this texture.</summary>
-        /// <remarks>This value is defaulted to <see cref="ResourceUsage.Default" />.</remarks>
-        public ResourceUsage Usage => ResourceUsage.Default;
-
-        /// <summary>Property to return the flags to determine how the texture will be bound with the pipeline when rendering.</summary>
-        /// <remarks>
-        ///   <para>
-        /// If the <see cref="Usage" /> property is set to <see cref="ResourceUsage.Staging" />, then the texture must be created with a value of <see cref="TextureBinding.None" /> as staging textures do not
-        /// support bindings of any kind. If this value is set to anything other than <see cref="TextureBinding.None" />, an exception will be thrown.
-        /// </para>
-        ///   <para>
-        /// This value is defaulted to <see cref="TextureBinding.ShaderResource" />.
-        /// </para>
-        /// </remarks>
-        public TextureBinding Binding 
-        { 
-            get; 
-            private set; 
-        } = TextureBinding.ShaderResource | TextureBinding.RenderTarget;
-
-        /// <summary>Property to return whether this texture can be shared with other graphics interfaces.</summary>
-        /// <remarks>
-        /// Settings this flag to <b>true</b> allows the texture to be used with external graphics interfaces such as a Direct3D device. This is useful for providing interoperation between systems.
-        /// </remarks>
-        public bool Shared => false;
-
-        /// <summary>Property to return the name of this object.</summary>
-        public string Name
-        {
-            get;
-            set;
-        }
-        #endregion
-
-        #region Methods.
-        /// <summary>
-        /// Function to initialize the information data.
-        /// </summary>
-        /// <param name="info">The info to copy.</param>
-        public void Initialize(IGorgonTexture2DInfo info)
-        {
-            Name = info.Name;
-            Binding |= info.Binding;
-            MultisampleInfo = info.MultisampleInfo;
-            MipLevels = info.MipLevels;
-            Format = info.Format;
-            IsCubeMap = info.IsCubeMap;
-            ArrayCount = info.ArrayCount;
-            Width = info.Width;
-            Height = info.Height;
-        }
-        #endregion
+        get;
+        set;
     }
+
+    /// <summary>Property to return the height of the texture, in pixels.</summary>
+    public int Height
+    {
+        get;
+        set;
+    }
+
+    /// <summary>Gets or sets the array count.</summary>
+    public int ArrayCount
+    {
+        get;
+        set;
+    }
+
+    /// <summary>Property to return whether this 2D texture is a cube map.</summary>
+    /// <remarks>
+    ///   <para>
+    /// When this value is set to <b>true</b>, then the texture is defined as a cube map using the <see cref="ArrayCount" /> as the number of faces. Because of this, the <see cref="P:Gorgon.Graphics.Core.TempTargetTextureInfo.ArrayCount" /> value
+    /// must be a multiple of 6. If it is not, then the array count will be adjusted to meet the requirement.
+    /// </para>
+    ///   <para>
+    /// This value is defaulted to <b>false</b>.
+    /// </para>
+    /// </remarks>
+    public bool IsCubeMap
+    {
+        get;
+        set;
+    }
+
+    /// <summary>Property to return the format of the texture.</summary>
+    public BufferFormat Format
+    {
+        get;
+        set;
+    }
+
+    /// <summary>Property to return the number of mip-map levels for the texture.</summary>
+    /// <remarks>
+    ///   <para>
+    /// If the texture is multisampled, this value must be set to 1.
+    /// </para>
+    ///   <para>
+    /// This value is defaulted to 1.
+    /// </para>
+    /// </remarks>
+    public int MipLevels
+    {
+        get;
+        set;
+    }
+
+    /// <summary>Property to return the multisample quality and count for this texture.</summary>
+    /// <remarks>This value is defaulted to <see cref="GorgonMultisampleInfo.NoMultiSampling" />.</remarks>
+    public GorgonMultisampleInfo MultisampleInfo
+    {
+        get;
+        set;
+    }
+
+    /// <summary>Property to return the intended usage flags for this texture.</summary>
+    /// <remarks>This value is defaulted to <see cref="ResourceUsage.Default" />.</remarks>
+    public ResourceUsage Usage => ResourceUsage.Default;
+
+    /// <summary>Property to return the flags to determine how the texture will be bound with the pipeline when rendering.</summary>
+    /// <remarks>
+    ///   <para>
+    /// If the <see cref="Usage" /> property is set to <see cref="ResourceUsage.Staging" />, then the texture must be created with a value of <see cref="TextureBinding.None" /> as staging textures do not
+    /// support bindings of any kind. If this value is set to anything other than <see cref="TextureBinding.None" />, an exception will be thrown.
+    /// </para>
+    ///   <para>
+    /// This value is defaulted to <see cref="TextureBinding.ShaderResource" />.
+    /// </para>
+    /// </remarks>
+    public TextureBinding Binding 
+    { 
+        get; 
+        private set; 
+    } = TextureBinding.ShaderResource | TextureBinding.RenderTarget;
+
+    /// <summary>Property to return whether this texture can be shared with other graphics interfaces.</summary>
+    /// <remarks>
+    /// Settings this flag to <b>true</b> allows the texture to be used with external graphics interfaces such as a Direct3D device. This is useful for providing interoperation between systems.
+    /// </remarks>
+    public bool Shared => false;
+
+    /// <summary>Property to return the name of this object.</summary>
+    public string Name
+    {
+        get;
+        set;
+    }
+    #endregion
+
+    #region Methods.
+    /// <summary>
+    /// Function to initialize the information data.
+    /// </summary>
+    /// <param name="info">The info to copy.</param>
+    public void Initialize(IGorgonTexture2DInfo info)
+    {
+        Name = info.Name;
+        Binding |= info.Binding;
+        MultisampleInfo = info.MultisampleInfo;
+        MipLevels = info.MipLevels;
+        Format = info.Format;
+        IsCubeMap = info.IsCubeMap;
+        ArrayCount = info.ArrayCount;
+        Width = info.Width;
+        Height = info.Height;
+    }
+    #endregion
 }

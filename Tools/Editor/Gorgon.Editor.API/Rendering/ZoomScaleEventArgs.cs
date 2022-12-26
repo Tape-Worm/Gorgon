@@ -26,21 +26,20 @@
 
 using System;
 
-namespace Gorgon.Editor.Rendering
+namespace Gorgon.Editor.Rendering;
+
+/// <summary>
+/// Event arguments for the <see cref="IContentRenderer.ZoomScaleChanged"/> event.
+/// </summary>
+public class ZoomScaleEventArgs
+    : EventArgs
 {
     /// <summary>
-    /// Event arguments for the <see cref="IContentRenderer.ZoomScaleChanged"/> event.
+    /// Property to return zoom scale value.
     /// </summary>
-    public class ZoomScaleEventArgs
-        : EventArgs
+    public float ZoomScale
     {
-        /// <summary>
-        /// Property to return zoom scale value.
-        /// </summary>
-        public float ZoomScale
-        {
-            get;
-            internal set;
-        }
+        get;
+        internal set;
     }
 }

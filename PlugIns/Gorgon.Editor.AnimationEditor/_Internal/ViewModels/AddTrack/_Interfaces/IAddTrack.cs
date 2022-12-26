@@ -29,37 +29,36 @@ using System.Collections.ObjectModel;
 using Gorgon.Animation;
 using Gorgon.Editor.UI;
 
-namespace Gorgon.Editor.AnimationEditor
+namespace Gorgon.Editor.AnimationEditor;
+
+/// <summary>
+/// A view model for adding a new track to the animation.
+/// </summary>
+internal interface IAddTrack
+    : IHostedPanelViewModel
 {
     /// <summary>
-    /// A view model for adding a new track to the animation.
+    /// Property to return the list of available tracks to select.
     /// </summary>
-    internal interface IAddTrack
-        : IHostedPanelViewModel
+    ObservableCollection<GorgonTrackRegistration> AvailableTracks
     {
-        /// <summary>
-        /// Property to return the list of available tracks to select.
-        /// </summary>
-        ObservableCollection<GorgonTrackRegistration> AvailableTracks
-        {
-            get;
-        }
+        get;
+    }
 
-        /// <summary>
-        /// Property to set or return the list of selected tracks to add.
-        /// </summary>
-        IReadOnlyList<GorgonTrackRegistration> SelectedTracks
-        {
-            get;
-            set;
-        }
+    /// <summary>
+    /// Property to set or return the list of selected tracks to add.
+    /// </summary>
+    IReadOnlyList<GorgonTrackRegistration> SelectedTracks
+    {
+        get;
+        set;
+    }
 
-        /// <summary>
-        /// Property to return the command used to select tracks.
-        /// </summary>
-        IEditorCommand<IReadOnlyList<GorgonTrackRegistration>> SelectTracksCommand
-        {
-            get;
-        }
+    /// <summary>
+    /// Property to return the command used to select tracks.
+    /// </summary>
+    IEditorCommand<IReadOnlyList<GorgonTrackRegistration>> SelectTracksCommand
+    {
+        get;
     }
 }

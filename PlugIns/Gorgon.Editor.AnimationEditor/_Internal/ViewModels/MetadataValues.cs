@@ -26,38 +26,37 @@
 
 using Gorgon.Core;
 
-namespace Gorgon.Editor.AnimationEditor
+namespace Gorgon.Editor.AnimationEditor;
+
+/// <summary>
+/// The values for a <see cref="KeyValueMetadata"/> item.
+/// </summary>
+public class MetadataValues
 {
     /// <summary>
-    /// The values for a <see cref="KeyValueMetadata"/> item.
+    /// Property to set or return the display name for the metadata value.
     /// </summary>
-    public class MetadataValues
+    public string DisplayName
     {
-        /// <summary>
-        /// Property to set or return the display name for the metadata value.
-        /// </summary>
-        public string DisplayName
-        {
-            get;
-            set;
-        }
+        get;
+        set;
+    }
 
-        /// <summary>
-        /// Property to set or return the number of decimal places supported by the value.
-        /// </summary>
-        public int DecimalCount
-        {
-            get;
-            set;
-        }
+    /// <summary>
+    /// Property to set or return the number of decimal places supported by the value.
+    /// </summary>
+    public int DecimalCount
+    {
+        get;
+        set;
+    }
 
-        /// <summary>
-        /// Property to set or return the minimum/maximum values for the value.
-        /// </summary>
-        public GorgonRangeF MinMax
-        {
-            get;
-            set;
-        }
+    /// <summary>
+    /// Property to set or return the minimum/maximum values for the value.
+    /// </summary>
+    public GorgonRangeF MinMax
+    {
+        get;
+        set;
     }
 }

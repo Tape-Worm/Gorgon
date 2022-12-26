@@ -31,253 +31,252 @@ using Gorgon.Graphics.Core;
 using Gorgon.Renderers;
 using DX = SharpDX;
 
-namespace Gorgon.Examples
+namespace Gorgon.Examples;
+
+/// <summary>
+/// A layer used to display sprites.
+/// </summary>
+internal class SpritesLayer
+    : Layer2D
 {
+    #region Variables.
+    // The list of sprites that are lit.
+    private readonly List<Gorgon2DBatchState> _states = new();
+    // The list of sprites organized by name.
+    private readonly Dictionary<string, SpriteEntity> _spriteByName = new();
+    // A list of sprite entities to draw.
+    private readonly List<(int index, SpriteEntity entity)> _drawList = new();
+    #endregion
+
+    #region Properties.
     /// <summary>
-    /// A layer used to display sprites.
+    /// Property to return the effects for the system.
     /// </summary>
-    internal class SpritesLayer
-        : Layer2D
+    public IReadOnlyDictionary<string, Gorgon2DEffect> Effects
     {
-        #region Variables.
-        // The list of sprites that are lit.
-        private readonly List<Gorgon2DBatchState> _states = new();
-        // The list of sprites organized by name.
-        private readonly Dictionary<string, SpriteEntity> _spriteByName = new();
-        // A list of sprite entities to draw.
-        private readonly List<(int index, SpriteEntity entity)> _drawList = new();
-        #endregion
+        get;
+    }
 
-        #region Properties.
-        /// <summary>
-        /// Property to return the effects for the system.
-        /// </summary>
-        public IReadOnlyDictionary<string, Gorgon2DEffect> Effects
+    /// <summary>
+    /// Property to return the sprites for this layer.
+    /// </summary>
+    public List<SpriteEntity> Sprites
+    {
+        get;
+    } = new List<SpriteEntity>();
+
+    /// <summary>
+    /// Property to set or return the gbuffer for lighting.
+    /// </summary>
+    public Gorgon2DGBuffer GBuffer
+    {
+        get;
+        set;
+    }
+
+    /// <summary>
+    /// Property to set or return the deferred lighting effect.
+    /// </summary>
+    public Gorgon2DLightingEffect DeferredLighter
+    {
+        get;
+        set;
+    }
+    #endregion
+
+    #region Methods.
+    /// <summary>
+    /// Function to perform a culling pass to exclude objects that are not visible.
+    /// </summary>
+    /// <param name="index">The index of the entity.</param>
+    /// <param name="entity">The entity to evaluate.</param>
+    /// <returns><b>true</b> if the sprite was culled, <b>false</b> if not.</returns>
+    private bool DoCullingPass(int index, SpriteEntity entity)
+    {
+        GorgonSprite sprite = entity.Sprite;
+
+        sprite.Depth = 0.1f;
+        sprite.Position = entity.Position;
+        sprite.Angle = entity.Rotation;
+        sprite.Scale = new Vector2(entity.Scale);
+        sprite.Anchor = entity.Anchor;
+
+        DX.RectangleF bounds = Renderer.MeasureSprite(sprite);
+
+        if ((Camera.ViewableRegion.Intersects(bounds))
+            && (entity.Visible))
         {
-            get;
+            _drawList.Add((index, entity));
+            return false;
         }
 
-        /// <summary>
-        /// Property to return the sprites for this layer.
-        /// </summary>
-        public List<SpriteEntity> Sprites
-        {
-            get;
-        } = new List<SpriteEntity>();
+        return true;
+    }
 
-        /// <summary>
-        /// Property to set or return the gbuffer for lighting.
-        /// </summary>
-        public Gorgon2DGBuffer GBuffer
+    /// <summary>Function called to update items per frame on the layer.</summary>
+    protected override void OnUpdate()
+    {
+        if (DeferredLighter is not null)
         {
-            get;
-            set;
+            DeferredLighter.Lights.Clear();
+
+            for (int i = 0; i < ActiveLights.Count; ++i)
+            {
+                DeferredLighter.Lights.Add(ActiveLights[i].LightData);
+            }
         }
 
-        /// <summary>
-        /// Property to set or return the deferred lighting effect.
-        /// </summary>
-        public Gorgon2DLightingEffect DeferredLighter
-        {
-            get;
-            set;
-        }
-        #endregion
+        _drawList.Clear();
 
-        #region Methods.
-        /// <summary>
-        /// Function to perform a culling pass to exclude objects that are not visible.
-        /// </summary>
-        /// <param name="index">The index of the entity.</param>
-        /// <param name="entity">The entity to evaluate.</param>
-        /// <returns><b>true</b> if the sprite was culled, <b>false</b> if not.</returns>
-        private bool DoCullingPass(int index, SpriteEntity entity)
+        for (int i = 0; i < Sprites.Count; i++)
         {
+            SpriteEntity sprite = Sprites[i];
+
+            Vector2 transformed = sprite.LocalPosition + Offset;
+
+            sprite.Position = transformed / ParallaxLevel;
+
+            DoCullingPass(i, sprite);
+        }
+    }
+
+    /// <summary>Function used to render data into the layer.</summary>
+    public override void Render()
+    {
+        Gorgon2DBatchState lastState = null;
+
+        if (_drawList.Count == 0)
+        {
+            return;
+        }
+
+        bool wasLit = false;
+
+        GorgonRenderTargetView rtv = Graphics.RenderTargets[0];
+
+        if (rtv is null)
+        {
+            return;
+        }
+
+        if ((GBuffer is not null) && 
+            ((GBuffer.Diffuse.Width != rtv.Width) || (GBuffer.Diffuse.Height != rtv.Height)))
+        {
+            GBuffer.Resize(rtv.Width, rtv.Height);
+        }                       
+
+        for (int i = 0; i < _drawList.Count; ++i)
+        {
+            (int spriteIndex, SpriteEntity entity) = _drawList[i];
             GorgonSprite sprite = entity.Sprite;
+            Gorgon2DBatchState currentState = _states[spriteIndex];
+
+            bool needStateChange = (i == 0) || (lastState != currentState) || (wasLit != entity.IsLit);
+
+            if (needStateChange)
+            {
+                if ((!entity.IsLit) || (GBuffer is null))
+                {
+                    if ((wasLit) && (GBuffer is not null))
+                    {
+                        GBuffer.End();
+                        if ((DeferredLighter is not null) && (DeferredLighter.Lights.Count > 0))
+                        {
+                            DeferredLighter.Render(GBuffer, rtv);
+                        }
+                    }
+                    Renderer.End();
+                    Renderer.Begin(currentState, camera: Camera);
+                }
+                else
+                {
+                    if (wasLit)
+                    {
+                        GBuffer.End();                            
+                        if ((DeferredLighter is not null) && (DeferredLighter.Lights.Count > 0))
+                        {
+                            DeferredLighter.Render(GBuffer, rtv);
+                        }
+                    }
+                    Renderer.End();
+                    GBuffer.ClearGBuffer();
+                    GBuffer.Begin(2, 1, currentState?.BlendState, currentState?.DepthStencilState, camera: Camera);
+                }
+
+                wasLit = entity.IsLit;
+                lastState = currentState;
+            }
 
             sprite.Depth = 0.1f;
             sprite.Position = entity.Position;
             sprite.Angle = entity.Rotation;
             sprite.Scale = new Vector2(entity.Scale);
+            sprite.Color = entity.Color;
             sprite.Anchor = entity.Anchor;
 
-            DX.RectangleF bounds = Renderer.MeasureSprite(sprite);
-
-            if ((Camera.ViewableRegion.Intersects(bounds))
-                && (entity.Visible))
-            {
-                _drawList.Add((index, entity));
-                return false;
-            }
-
-            return true;
+            Renderer.DrawSprite(sprite);
         }
 
-        /// <summary>Function called to update items per frame on the layer.</summary>
-        protected override void OnUpdate()
+        GBuffer?.End();
+        if ((wasLit) && (DeferredLighter is not null) && (DeferredLighter.Lights.Count > 0))
         {
-            if (DeferredLighter is not null)
-            {
-                DeferredLighter.Lights.Clear();
-
-                for (int i = 0; i < ActiveLights.Count; ++i)
-                {
-                    DeferredLighter.Lights.Add(ActiveLights[i].LightData);
-                }
-            }
-
-            _drawList.Clear();
-
-            for (int i = 0; i < Sprites.Count; i++)
-            {
-                SpriteEntity sprite = Sprites[i];
-
-                Vector2 transformed = sprite.LocalPosition + Offset;
-
-                sprite.Position = transformed / ParallaxLevel;
-
-                DoCullingPass(i, sprite);
-            }
+            DeferredLighter.Render(GBuffer, rtv);
         }
-
-        /// <summary>Function used to render data into the layer.</summary>
-        public override void Render()
-        {
-            Gorgon2DBatchState lastState = null;
-
-            if (_drawList.Count == 0)
-            {
-                return;
-            }
-
-            bool wasLit = false;
-
-            GorgonRenderTargetView rtv = Graphics.RenderTargets[0];
-
-            if (rtv is null)
-            {
-                return;
-            }
-
-            if ((GBuffer is not null) && 
-                ((GBuffer.Diffuse.Width != rtv.Width) || (GBuffer.Diffuse.Height != rtv.Height)))
-            {
-                GBuffer.Resize(rtv.Width, rtv.Height);
-            }                       
-
-            for (int i = 0; i < _drawList.Count; ++i)
-            {
-                (int spriteIndex, SpriteEntity entity) = _drawList[i];
-                GorgonSprite sprite = entity.Sprite;
-                Gorgon2DBatchState currentState = _states[spriteIndex];
-
-                bool needStateChange = (i == 0) || (lastState != currentState) || (wasLit != entity.IsLit);
-
-                if (needStateChange)
-                {
-                    if ((!entity.IsLit) || (GBuffer is null))
-                    {
-                        if ((wasLit) && (GBuffer is not null))
-                        {
-                            GBuffer.End();
-                            if ((DeferredLighter is not null) && (DeferredLighter.Lights.Count > 0))
-                            {
-                                DeferredLighter.Render(GBuffer, rtv);
-                            }
-                        }
-                        Renderer.End();
-                        Renderer.Begin(currentState, camera: Camera);
-                    }
-                    else
-                    {
-                        if (wasLit)
-                        {
-                            GBuffer.End();                            
-                            if ((DeferredLighter is not null) && (DeferredLighter.Lights.Count > 0))
-                            {
-                                DeferredLighter.Render(GBuffer, rtv);
-                            }
-                        }
-                        Renderer.End();
-                        GBuffer.ClearGBuffer();
-                        GBuffer.Begin(2, 1, currentState?.BlendState, currentState?.DepthStencilState, camera: Camera);
-                    }
-
-                    wasLit = entity.IsLit;
-                    lastState = currentState;
-                }
-
-                sprite.Depth = 0.1f;
-                sprite.Position = entity.Position;
-                sprite.Angle = entity.Rotation;
-                sprite.Scale = new Vector2(entity.Scale);
-                sprite.Color = entity.Color;
-                sprite.Anchor = entity.Anchor;
-
-                Renderer.DrawSprite(sprite);
-            }
-
-            GBuffer?.End();
-            if ((wasLit) && (DeferredLighter is not null) && (DeferredLighter.Lights.Count > 0))
-            {
-                DeferredLighter.Render(GBuffer, rtv);
-            }
-            Renderer.End();
-        }
-
-        /// <summary>Function used to load in resources required by the layer.</summary>
-        public override void LoadResources()
-        {
-            var builder = new Gorgon2DBatchStateBuilder();
-
-            var batchStates = new Dictionary<GorgonBlendState, Gorgon2DBatchState>
-            {
-                { GorgonBlendState.Default, null }
-            };
-
-            foreach (GorgonBlendState blendState in Sprites.Select(item => item.BlendState).Distinct())
-            {
-                if ((blendState is null) || (blendState == GorgonBlendState.Default))
-                {
-                    continue;
-                }
-
-                batchStates.Add(blendState, builder.Clear()
-                                                   .BlendState(blendState)
-                                                   .Build());
-            }
-
-            foreach (SpriteEntity entity in Sprites)
-            {
-                GorgonBlendState currentState = entity.BlendState ?? GorgonBlendState.Default;
-
-                if (currentState == GorgonBlendState.Default)
-                {
-                    _states.Add(null);
-                }
-                else
-                {
-                    _states.Add(batchStates[currentState]);
-                }
-
-                _spriteByName.Add(entity.Name, entity);
-            }
-        }
-
-        /// <summary>
-        /// Function to retrieve a sprite from the layer by its name.
-        /// </summary>
-        /// <param name="name">The name of the sprite.</param>
-        /// <returns>The sprite entity with the specified name.</returns>
-        public SpriteEntity GetSpriteByName(string name) => _spriteByName[name];
-        #endregion
-
-        #region Constructor/Finalizer.
-        /// <summary>Initializes a new instance of the <see cref="SpritesLayer"/> class.</summary>
-        /// <param name="renderer">The 2D renderer for the application.</param>
-        public SpritesLayer(Gorgon2D renderer, IReadOnlyDictionary<string, Gorgon2DEffect> effects)
-            : base(renderer)
-            => Effects = effects;
-        #endregion
+        Renderer.End();
     }
+
+    /// <summary>Function used to load in resources required by the layer.</summary>
+    public override void LoadResources()
+    {
+        var builder = new Gorgon2DBatchStateBuilder();
+
+        var batchStates = new Dictionary<GorgonBlendState, Gorgon2DBatchState>
+        {
+            { GorgonBlendState.Default, null }
+        };
+
+        foreach (GorgonBlendState blendState in Sprites.Select(item => item.BlendState).Distinct())
+        {
+            if ((blendState is null) || (blendState == GorgonBlendState.Default))
+            {
+                continue;
+            }
+
+            batchStates.Add(blendState, builder.Clear()
+                                               .BlendState(blendState)
+                                               .Build());
+        }
+
+        foreach (SpriteEntity entity in Sprites)
+        {
+            GorgonBlendState currentState = entity.BlendState ?? GorgonBlendState.Default;
+
+            if (currentState == GorgonBlendState.Default)
+            {
+                _states.Add(null);
+            }
+            else
+            {
+                _states.Add(batchStates[currentState]);
+            }
+
+            _spriteByName.Add(entity.Name, entity);
+        }
+    }
+
+    /// <summary>
+    /// Function to retrieve a sprite from the layer by its name.
+    /// </summary>
+    /// <param name="name">The name of the sprite.</param>
+    /// <returns>The sprite entity with the specified name.</returns>
+    public SpriteEntity GetSpriteByName(string name) => _spriteByName[name];
+    #endregion
+
+    #region Constructor/Finalizer.
+    /// <summary>Initializes a new instance of the <see cref="SpritesLayer"/> class.</summary>
+    /// <param name="renderer">The 2D renderer for the application.</param>
+    public SpritesLayer(Gorgon2D renderer, IReadOnlyDictionary<string, Gorgon2DEffect> effects)
+        : base(renderer)
+        => Effects = effects;
+    #endregion
 }

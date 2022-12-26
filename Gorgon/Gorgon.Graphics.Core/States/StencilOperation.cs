@@ -25,60 +25,59 @@
 #endregion
 
 
-namespace Gorgon.Graphics.Core
+namespace Gorgon.Graphics.Core;
+
+/// <summary>
+/// Defines a type of operation to perform when masking using the stencil buffer.
+/// </summary>
+public enum StencilOperation
 {
     /// <summary>
-    /// Defines a type of operation to perform when masking using the stencil buffer.
+    /// <para>
+    /// Keep the existing stencil data.
+    /// </para>
     /// </summary>
-    public enum StencilOperation
-    {
-        /// <summary>
-        /// <para>
-        /// Keep the existing stencil data.
-        /// </para>
-        /// </summary>
-        Keep = SharpDX.Direct3D11.StencilOperation.Keep,
-        /// <summary>
-        /// <para>
-        /// Set the stencil data to 0.
-        /// </para>
-        /// </summary>
-        Zero = SharpDX.Direct3D11.StencilOperation.Zero,
-        /// <summary>
-        /// <para>
-        /// Set the stencil data to the reference value set by calling ID3D11DeviceContext::OMSetDepthStencilState.
-        /// </para>
-        /// </summary>
-        Replace = SharpDX.Direct3D11.StencilOperation.Replace,
-        /// <summary>
-        /// <para>
-        /// Increment the stencil value by 1, and clamp the result.
-        /// </para>
-        /// </summary>
-        IncrementClamp = SharpDX.Direct3D11.StencilOperation.IncrementAndClamp,
-        /// <summary>
-        /// <para>
-        /// Decrement the stencil value by 1, and clamp the result.
-        /// </para>
-        /// </summary>
-        DecrementClamp = SharpDX.Direct3D11.StencilOperation.DecrementAndClamp,
-        /// <summary>
-        /// <para>
-        /// Invert the stencil data.
-        /// </para>
-        /// </summary>
-        Invert = SharpDX.Direct3D11.StencilOperation.Invert,
-        /// <summary>
-        /// <para>
-        /// Increment the stencil value by 1, and wrap the result if necessary.
-        /// </para>
-        /// </summary>
-        Increment = SharpDX.Direct3D11.StencilOperation.Increment,
-        /// <summary>
-        /// <para>
-        /// Decrement the stencil value by 1, and wrap the result if necessary.
-        /// </para>
-        /// </summary>
-        Decrement = SharpDX.Direct3D11.StencilOperation.Decrement
-    }
+    Keep = SharpDX.Direct3D11.StencilOperation.Keep,
+    /// <summary>
+    /// <para>
+    /// Set the stencil data to 0.
+    /// </para>
+    /// </summary>
+    Zero = SharpDX.Direct3D11.StencilOperation.Zero,
+    /// <summary>
+    /// <para>
+    /// Set the stencil data to the reference value set by calling ID3D11DeviceContext::OMSetDepthStencilState.
+    /// </para>
+    /// </summary>
+    Replace = SharpDX.Direct3D11.StencilOperation.Replace,
+    /// <summary>
+    /// <para>
+    /// Increment the stencil value by 1, and clamp the result.
+    /// </para>
+    /// </summary>
+    IncrementClamp = SharpDX.Direct3D11.StencilOperation.IncrementAndClamp,
+    /// <summary>
+    /// <para>
+    /// Decrement the stencil value by 1, and clamp the result.
+    /// </para>
+    /// </summary>
+    DecrementClamp = SharpDX.Direct3D11.StencilOperation.DecrementAndClamp,
+    /// <summary>
+    /// <para>
+    /// Invert the stencil data.
+    /// </para>
+    /// </summary>
+    Invert = SharpDX.Direct3D11.StencilOperation.Invert,
+    /// <summary>
+    /// <para>
+    /// Increment the stencil value by 1, and wrap the result if necessary.
+    /// </para>
+    /// </summary>
+    Increment = SharpDX.Direct3D11.StencilOperation.Increment,
+    /// <summary>
+    /// <para>
+    /// Decrement the stencil value by 1, and wrap the result if necessary.
+    /// </para>
+    /// </summary>
+    Decrement = SharpDX.Direct3D11.StencilOperation.Decrement
 }

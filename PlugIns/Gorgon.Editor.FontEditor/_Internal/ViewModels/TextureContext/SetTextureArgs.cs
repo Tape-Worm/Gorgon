@@ -26,24 +26,23 @@
 
 using System.ComponentModel;
 
-namespace Gorgon.Editor.FontEditor
+namespace Gorgon.Editor.FontEditor;
+
+/// <summary>
+/// The arguments for the SetTextureCommand.
+/// </summary>
+internal class SetTextureArgs
+    : CancelEventArgs
 {
     /// <summary>
-    /// The arguments for the SetTextureCommand.
+    /// Property to return the file containing the texture data.
     /// </summary>
-    internal class SetTextureArgs
-        : CancelEventArgs
+    public string TextureFilePath
     {
-        /// <summary>
-        /// Property to return the file containing the texture data.
-        /// </summary>
-        public string TextureFilePath
-        {
-            get;
-        }
-
-        /// <summary>Initializes a new instance of the <see cref="SetTextureArgs"/> class.</summary>
-        /// <param name="textureFilePath">The path to the file containing the texture data.</param>
-        public SetTextureArgs(string textureFilePath) => TextureFilePath = textureFilePath;
+        get;
     }
+
+    /// <summary>Initializes a new instance of the <see cref="SetTextureArgs"/> class.</summary>
+    /// <param name="textureFilePath">The path to the file containing the texture data.</param>
+    public SetTextureArgs(string textureFilePath) => TextureFilePath = textureFilePath;
 }

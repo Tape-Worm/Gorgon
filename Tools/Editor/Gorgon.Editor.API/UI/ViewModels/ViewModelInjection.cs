@@ -27,53 +27,52 @@
 using System;
 using Gorgon.Editor.PlugIns;
 
-namespace Gorgon.Editor.UI.ViewModels
+namespace Gorgon.Editor.UI.ViewModels;
+
+/// <summary>
+/// This object is used to inject common host application services into view models as parameters.
+/// </summary>
+/// <typeparam name="T">The type of host services. Must implement <see cref="IHostServices"/>.</typeparam>
+/// <remarks>
+/// <para>
+/// When creating view models, developers should pass custom data used for initialization by inheriting this type. For content, settings, etc... or other built in view model types, there are other 
+/// base classes for the parameters that should be used.
+/// </para>
+/// </remarks>
+/// <seealso cref="IHostServices"/>
+public class ViewModelInjection<T>
+    : IViewModelInjection<T>
+    where T : IHostServices
 {
-    /// <summary>
-    /// This object is used to inject common host application services into view models as parameters.
-    /// </summary>
-    /// <typeparam name="T">The type of host services. Must implement <see cref="IHostServices"/>.</typeparam>
-    /// <remarks>
-    /// <para>
-    /// When creating view models, developers should pass custom data used for initialization by inheriting this type. For content, settings, etc... or other built in view model types, there are other 
-    /// base classes for the parameters that should be used.
-    /// </para>
-    /// </remarks>
-    /// <seealso cref="IHostServices"/>
-    public class ViewModelInjection<T>
-        : IViewModelInjection<T>
-        where T : IHostServices
+    /// <summary>Property to return the common services passed from host application.</summary>
+    public T HostServices
     {
-        /// <summary>Property to return the common services passed from host application.</summary>
-        public T HostServices
+        get;
+    }
+
+    /// <summary>Initializes a new instance of the <see cref="ViewModelInjection{T}"/> class.</summary>
+    /// <param name="copy">The injection parameter object to copy.</param>
+    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="copy"/> parameter is <b>null</b>.</exception>
+    protected ViewModelInjection(IViewModelInjection<T> copy)
+    {
+        if (copy is null)
         {
-            get;
+            throw new ArgumentNullException(nameof(copy));
         }
 
-        /// <summary>Initializes a new instance of the <see cref="ViewModelInjection{T}"/> class.</summary>
-        /// <param name="copy">The injection parameter object to copy.</param>
-        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="copy"/> parameter is <b>null</b>.</exception>
-        protected ViewModelInjection(IViewModelInjection<T> copy)
-        {
-            if (copy is null)
-            {
-                throw new ArgumentNullException(nameof(copy));
-            }
+        HostServices = copy.HostServices;
+    }
 
-            HostServices = copy.HostServices;
+    /// <summary>Initializes a new instance of the <see cref="ViewModelInjection{T}"/> class.</summary>
+    /// <param name="hostServices">The services from the host application.</param>
+    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="hostServices"/> parameter is <b>null</b>.</exception>
+    public ViewModelInjection(T hostServices)
+    {
+        if (hostServices == null)
+        {
+            throw new ArgumentNullException(nameof(hostServices));
         }
 
-        /// <summary>Initializes a new instance of the <see cref="ViewModelInjection{T}"/> class.</summary>
-        /// <param name="hostServices">The services from the host application.</param>
-        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="hostServices"/> parameter is <b>null</b>.</exception>
-        public ViewModelInjection(T hostServices)
-        {
-            if (hostServices == null)
-            {
-                throw new ArgumentNullException(nameof(hostServices));
-            }
-
-            HostServices = hostServices;
-        }
+        HostServices = hostServices;
     }
 }

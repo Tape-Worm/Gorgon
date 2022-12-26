@@ -26,101 +26,100 @@
 
 using Gorgon.Native;
 
-namespace Gorgon.Input
+namespace Gorgon.Input;
+
+/// <summary>
+/// Provides information about a Raw Input mouse device.
+/// </summary>
+internal class RawMouseInfo
+    : IGorgonMouseInfo
 {
+    #region Properties.
     /// <summary>
-    /// Provides information about a Raw Input mouse device.
+    /// Property to return a human friendly description of the device.
     /// </summary>
-    internal class RawMouseInfo
-        : IGorgonMouseInfo
+    public string Description
     {
-        #region Properties.
-        /// <summary>
-        /// Property to return a human friendly description of the device.
-        /// </summary>
-        public string Description
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to return human interface device path for the device.
-        /// </summary>
-        public string HIDPath
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to return the device class name.
-        /// </summary>
-        public string DeviceClass
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to return the device handle.
-        /// </summary>
-        public nint Handle
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to return the sampling rate for the mouse.
-        /// </summary>
-        public int SampleRate
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to return the number of buttons on the mouse.
-        /// </summary>
-        public int ButtonCount
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to return whether the mouse supports a horizontal wheel or not.
-        /// </summary>
-        public bool HasHorizontalWheel
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to return the mouse ID.
-        /// </summary>
-        public int MouseID
-        {
-            get;
-        }
-        #endregion
-
-        #region Constructor/Finalizer.
-        /// <summary>
-        /// Initializes a new instance of the <see cref="RawMouseInfo"/> class.
-        /// </summary>
-        /// <param name="deviceHandle">The device handle.</param>
-        /// <param name="hidPath">The human interface device path.</param>
-        /// <param name="className">The class of device.</param>
-        /// <param name="description">The human readable description of this device.</param>
-        /// <param name="deviceInfo">The data about the device.</param>
-        public RawMouseInfo(nint deviceHandle, string hidPath, string className, string description, RID_DEVICE_INFO_MOUSE deviceInfo)
-        {
-            Handle = deviceHandle;
-            Description = description;
-            HIDPath = hidPath;
-            DeviceClass = className;
-
-            ButtonCount = deviceInfo.dwNumberOfButtons;
-            SampleRate = deviceInfo.dwSampleRate;
-            HasHorizontalWheel = deviceInfo.fHasHorizontalWheel;
-            MouseID = deviceInfo.dwId;
-        }
-        #endregion
+        get;
     }
+
+    /// <summary>
+    /// Property to return human interface device path for the device.
+    /// </summary>
+    public string HIDPath
+    {
+        get;
+    }
+
+    /// <summary>
+    /// Property to return the device class name.
+    /// </summary>
+    public string DeviceClass
+    {
+        get;
+    }
+
+    /// <summary>
+    /// Property to return the device handle.
+    /// </summary>
+    public nint Handle
+    {
+        get;
+    }
+
+    /// <summary>
+    /// Property to return the sampling rate for the mouse.
+    /// </summary>
+    public int SampleRate
+    {
+        get;
+    }
+
+    /// <summary>
+    /// Property to return the number of buttons on the mouse.
+    /// </summary>
+    public int ButtonCount
+    {
+        get;
+    }
+
+    /// <summary>
+    /// Property to return whether the mouse supports a horizontal wheel or not.
+    /// </summary>
+    public bool HasHorizontalWheel
+    {
+        get;
+    }
+
+    /// <summary>
+    /// Property to return the mouse ID.
+    /// </summary>
+    public int MouseID
+    {
+        get;
+    }
+    #endregion
+
+    #region Constructor/Finalizer.
+    /// <summary>
+    /// Initializes a new instance of the <see cref="RawMouseInfo"/> class.
+    /// </summary>
+    /// <param name="deviceHandle">The device handle.</param>
+    /// <param name="hidPath">The human interface device path.</param>
+    /// <param name="className">The class of device.</param>
+    /// <param name="description">The human readable description of this device.</param>
+    /// <param name="deviceInfo">The data about the device.</param>
+    public RawMouseInfo(nint deviceHandle, string hidPath, string className, string description, RID_DEVICE_INFO_MOUSE deviceInfo)
+    {
+        Handle = deviceHandle;
+        Description = description;
+        HIDPath = hidPath;
+        DeviceClass = className;
+
+        ButtonCount = deviceInfo.dwNumberOfButtons;
+        SampleRate = deviceInfo.dwSampleRate;
+        HasHorizontalWheel = deviceInfo.fHasHorizontalWheel;
+        MouseID = deviceInfo.dwId;
+    }
+    #endregion
 }

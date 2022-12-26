@@ -25,37 +25,36 @@
 #endregion
 
 
-namespace Gorgon.Editor
+namespace Gorgon.Editor;
+
+/// <summary>
+/// Defines type names for the most common content types used in Gorgon.
+/// </summary>
+/// <remarks>
+/// <para>
+/// These are the most common types of content data used by Gorgon as-is.  Users can specify their own types for the own data.  However, if a new content editor plug in replaces the stock editors, then 
+/// the plug in author should use these type names to ensure compatibility between their plug in and the other stock plug ins for Gorgon.
+/// </para>
+/// </remarks>
+public static class CommonEditorContentTypes
 {
     /// <summary>
-    /// Defines type names for the most common content types used in Gorgon.
+    /// The common type name for sprite data.
     /// </summary>
-    /// <remarks>
-    /// <para>
-    /// These are the most common types of content data used by Gorgon as-is.  Users can specify their own types for the own data.  However, if a new content editor plug in replaces the stock editors, then 
-    /// the plug in author should use these type names to ensure compatibility between their plug in and the other stock plug ins for Gorgon.
-    /// </para>
-    /// </remarks>
-    public static class CommonEditorContentTypes
-    {
-        /// <summary>
-        /// The common type name for sprite data.
-        /// </summary>
-        public const string SpriteType = "Sprite";
+    public const string SpriteType = "Sprite";
 
-        /// <summary>
-        /// The common type name for image data.
-        /// </summary>
-        public const string ImageType = "Image";
+    /// <summary>
+    /// The common type name for image data.
+    /// </summary>
+    public const string ImageType = "Image";
 
-        /// <summary>
-        /// The common type name for animation data.
-        /// </summary>
-        public const string AnimationType = "Animation";
+    /// <summary>
+    /// The common type name for animation data.
+    /// </summary>
+    public const string AnimationType = "Animation";
 
-        /// <summary>
-        /// The common type name for font data.
-        /// </summary>
-        public const string FontType = "Font";
-    }
+    /// <summary>
+    /// The common type name for font data.
+    /// </summary>
+    public const string FontType = "Font";
 }

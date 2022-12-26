@@ -28,50 +28,49 @@ using System;
 using Gorgon.Editor.PlugIns;
 using Gorgon.Editor.UI.ViewModels;
 
-namespace Gorgon.Editor.SpriteEditor
+namespace Gorgon.Editor.SpriteEditor;
+
+/// <summary>
+/// Parameters for the <see cref="ISpritePickContext"/> view model.
+/// </summary>
+internal class SpritePickContextParameters
+    : ViewModelInjection<IHostContentServices>
 {
     /// <summary>
-    /// Parameters for the <see cref="ISpritePickContext"/> view model.
+    /// Property to return the sprite content for the currently being edited.
     /// </summary>
-    internal class SpritePickContextParameters
-        : ViewModelInjection<IHostContentServices>
+    public ISpriteContent SpriteContent
     {
-        /// <summary>
-        /// Property to return the sprite content for the currently being edited.
-        /// </summary>
-        public ISpriteContent SpriteContent
-        {
-            get;
-        }
+        get;
+    }
 
-        /// <summary>
-        /// Property tor return the view model for the sprite picker mask color editor.
-        /// </summary>
-        public ISpritePickMaskEditor SpritePickMaskEditor
-        {
-            get;
-        }
+    /// <summary>
+    /// Property tor return the view model for the sprite picker mask color editor.
+    /// </summary>
+    public ISpritePickMaskEditor SpritePickMaskEditor
+    {
+        get;
+    }
 
-        /// <summary>
-        /// Property to return the sprite texture management service.
-        /// </summary>
-        public SpriteTextureService TextureService
-        {
-            get;
-        }
+    /// <summary>
+    /// Property to return the sprite texture management service.
+    /// </summary>
+    public SpriteTextureService TextureService
+    {
+        get;
+    }
 
-        /// <summary>Initializes a new instance of the <see cref="SpritePickContextParameters"/> class.</summary>
-        /// <param name="spriteContent">The image content being edited.</param>
-        /// <param name="spritePickMaskEditor">The view model for the sprite picker mask color editor.</param>
-        /// <param name="textureService">The sprite texture management service.</param>
-        /// <param name="hostServices">The services from the host application.</param>
-        /// <exception cref="ArgumentNullException">Thrown when the parameters are <b>null</b>.</exception>
-        public SpritePickContextParameters(ISpriteContent spriteContent, ISpritePickMaskEditor spritePickMaskEditor, SpriteTextureService textureService, IHostContentServices hostServices)
-            : base(hostServices)
-        {
-            SpriteContent = spriteContent ?? throw new ArgumentNullException(nameof(spriteContent));
-            TextureService = textureService ?? throw new ArgumentNullException(nameof(textureService));
-            SpritePickMaskEditor = spritePickMaskEditor ?? throw new ArgumentNullException(nameof(spritePickMaskEditor));
-        }
+    /// <summary>Initializes a new instance of the <see cref="SpritePickContextParameters"/> class.</summary>
+    /// <param name="spriteContent">The image content being edited.</param>
+    /// <param name="spritePickMaskEditor">The view model for the sprite picker mask color editor.</param>
+    /// <param name="textureService">The sprite texture management service.</param>
+    /// <param name="hostServices">The services from the host application.</param>
+    /// <exception cref="ArgumentNullException">Thrown when the parameters are <b>null</b>.</exception>
+    public SpritePickContextParameters(ISpriteContent spriteContent, ISpritePickMaskEditor spritePickMaskEditor, SpriteTextureService textureService, IHostContentServices hostServices)
+        : base(hostServices)
+    {
+        SpriteContent = spriteContent ?? throw new ArgumentNullException(nameof(spriteContent));
+        TextureService = textureService ?? throw new ArgumentNullException(nameof(textureService));
+        SpritePickMaskEditor = spritePickMaskEditor ?? throw new ArgumentNullException(nameof(spritePickMaskEditor));
     }
 }

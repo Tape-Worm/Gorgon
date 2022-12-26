@@ -28,31 +28,30 @@ using System;
 using Gorgon.Editor.PlugIns;
 using Gorgon.Editor.UI;
 
-namespace Gorgon.Editor.FontEditor
-{
-    /// <summary>
-    /// The parameters to pass to the <see cref="ISettings"/> view model.
-    /// </summary>
-    internal class SettingsParameters
-        : SettingsCategoryViewModelParameters
-    {
-        #region Properties.
-        /// <summary>
-        /// Property to return the settings for the plug in.
-        /// </summary>
-        public FontEditorSettings Settings
-        {
-            get;
-        }
-        #endregion
+namespace Gorgon.Editor.FontEditor;
 
-        #region Constructor/Finalizer.
-        /// <summary>Initializes a new instance of the <see cref="SettingsParameters"/> class.</summary>
-        /// <param name="settings">The plug in settings.</param>
-        /// <param name="hostServices">Common application services.</param>
-        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="settings" /> parameter is <strong>null</strong>.</exception>
-        public SettingsParameters(FontEditorSettings settings, IHostContentServices hostServices)
-            : base(hostServices) => Settings = settings ?? throw new ArgumentNullException(nameof(settings));
-        #endregion
+/// <summary>
+/// The parameters to pass to the <see cref="ISettings"/> view model.
+/// </summary>
+internal class SettingsParameters
+    : SettingsCategoryViewModelParameters
+{
+    #region Properties.
+    /// <summary>
+    /// Property to return the settings for the plug in.
+    /// </summary>
+    public FontEditorSettings Settings
+    {
+        get;
     }
+    #endregion
+
+    #region Constructor/Finalizer.
+    /// <summary>Initializes a new instance of the <see cref="SettingsParameters"/> class.</summary>
+    /// <param name="settings">The plug in settings.</param>
+    /// <param name="hostServices">Common application services.</param>
+    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="settings" /> parameter is <strong>null</strong>.</exception>
+    public SettingsParameters(FontEditorSettings settings, IHostContentServices hostServices)
+        : base(hostServices) => Settings = settings ?? throw new ArgumentNullException(nameof(settings));
+    #endregion
 }

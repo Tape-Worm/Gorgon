@@ -29,26 +29,25 @@ using System.Collections.Generic;
 using Gorgon.Editor.Metadata;
 using Newtonsoft.Json;
 
-namespace Gorgon.Editor.Support
-{
-    /// <summary>
-    /// The project data for an editor project.
-    /// </summary>        
-    internal class EditorProjectMetadata30
-    {
-        /// <summary>Property to return the version for the project file.</summary>                
-        [JsonProperty]
-        public string Version
-        {
-            get;
-            private set;
-        }
+namespace Gorgon.Editor.Support;
 
-        /// <summary>Property to return the list of project items.</summary>        
-        [JsonProperty]
-        public Dictionary<string, ProjectItemMetadata30> ProjectItems
-        {
-            get;
-        } = new Dictionary<string, ProjectItemMetadata30>(StringComparer.OrdinalIgnoreCase);
+/// <summary>
+/// The project data for an editor project.
+/// </summary>        
+internal class EditorProjectMetadata30
+{
+    /// <summary>Property to return the version for the project file.</summary>                
+    [JsonProperty]
+    public string Version
+    {
+        get;
+        private set;
     }
+
+    /// <summary>Property to return the list of project items.</summary>        
+    [JsonProperty]
+    public Dictionary<string, ProjectItemMetadata30> ProjectItems
+    {
+        get;
+    } = new Dictionary<string, ProjectItemMetadata30>(StringComparer.OrdinalIgnoreCase);
 }

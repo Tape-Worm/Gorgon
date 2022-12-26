@@ -27,24 +27,23 @@
 using System.Collections.Generic;
 using Gorgon.Editor.PlugIns;
 
-namespace Gorgon.Editor.Services
+namespace Gorgon.Editor.Services;
+
+/// <summary>
+/// Provides a list of plug ins that were disabled on application start up.
+/// </summary>
+/// <remarks>
+/// <para>
+/// Use this interface to determine if a plug in is available for use or not.
+/// </para>
+/// </remarks>
+public interface IDisabledPlugInService
 {
     /// <summary>
-    /// Provides a list of plug ins that were disabled on application start up.
+    /// Property to return the list of disabled plug ins.
     /// </summary>
-    /// <remarks>
-    /// <para>
-    /// Use this interface to determine if a plug in is available for use or not.
-    /// </para>
-    /// </remarks>
-    public interface IDisabledPlugInService
+    IReadOnlyDictionary<string, IDisabledPlugIn> DisabledPlugIns
     {
-        /// <summary>
-        /// Property to return the list of disabled plug ins.
-        /// </summary>
-        IReadOnlyDictionary<string, IDisabledPlugIn> DisabledPlugIns
-        {
-            get;
-        }
+        get;
     }
 }

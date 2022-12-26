@@ -29,61 +29,60 @@ using Gorgon.Editor.UI;
 using Gorgon.Editor.UI.Controls;
 using Gorgon.Graphics.Imaging;
 
-namespace Gorgon.Editor.TextureAtlasTool
+namespace Gorgon.Editor.TextureAtlasTool;
+
+/// <summary>
+/// A view model for the sprite file explorer.
+/// </summary>
+internal interface ISpriteFiles
+    : IViewModel
 {
     /// <summary>
-    /// A view model for the sprite file explorer.
+    /// Property to return the image used for previewing.
     /// </summary>
-    internal interface ISpriteFiles
-        : IViewModel
+    IGorgonImage PreviewImage
     {
-        /// <summary>
-        /// Property to return the image used for previewing.
-        /// </summary>
-        IGorgonImage PreviewImage
-        {
-            get;
-        }
+        get;
+    }
 
-        /// <summary>
-        /// Property to return the sprite file entries.
-        /// </summary>
-        IReadOnlyList<ContentFileExplorerDirectoryEntry> SpriteFileEntries
-        {
-            get;
-        }
+    /// <summary>
+    /// Property to return the sprite file entries.
+    /// </summary>
+    IReadOnlyList<ContentFileExplorerDirectoryEntry> SpriteFileEntries
+    {
+        get;
+    }
 
-        /// <summary>
-        /// Property to return the list of selected files.
-        /// </summary>
-        IReadOnlyList<ContentFileExplorerFileEntry> SelectedFiles
-        {
-            get;
-        }
+    /// <summary>
+    /// Property to return the list of selected files.
+    /// </summary>
+    IReadOnlyList<ContentFileExplorerFileEntry> SelectedFiles
+    {
+        get;
+    }
 
-        /// <summary>
-        /// Property to return the command that will refresh the sprite preview data.
-        /// </summary>
-        IEditorAsyncCommand<IReadOnlyList<ContentFileExplorerFileEntry>> RefreshSpritePreviewCommand
-        {
-            get;
-        }
+    /// <summary>
+    /// Property to return the command that will refresh the sprite preview data.
+    /// </summary>
+    IEditorAsyncCommand<IReadOnlyList<ContentFileExplorerFileEntry>> RefreshSpritePreviewCommand
+    {
+        get;
+    }
 
-        /// <summary>
-        /// Property to return the command used to search through the file list.
-        /// </summary>
-        IEditorCommand<string> SearchCommand
-        {
-            get;
-        }
+    /// <summary>
+    /// Property to return the command used to search through the file list.
+    /// </summary>
+    IEditorCommand<string> SearchCommand
+    {
+        get;
+    }
 
-        /// <summary>
-        /// Property to set or return the command used confirm loading of the sprite files.
-        /// </summary>
-        IEditorCommand<object> ConfirmLoadCommand
-        {
-            get;
-            set;
-        }
+    /// <summary>
+    /// Property to set or return the command used confirm loading of the sprite files.
+    /// </summary>
+    IEditorCommand<object> ConfirmLoadCommand
+    {
+        get;
+        set;
     }
 }

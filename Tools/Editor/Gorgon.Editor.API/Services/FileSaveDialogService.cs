@@ -29,101 +29,100 @@ using System.Windows.Forms;
 using Gorgon.Editor.Properties;
 using Gorgon.UI;
 
-namespace Gorgon.Editor.Services
+namespace Gorgon.Editor.Services;
+
+/// <summary>
+/// A service used to show a dialog for saving a file.
+/// </summary>
+public class FileSaveDialogService
+    : IFileDialogService
 {
+    #region Properties.
     /// <summary>
-    /// A service used to show a dialog for saving a file.
-    /// </summary>
-    public class FileSaveDialogService
-        : IFileDialogService
+    /// Property to set or return a file filter.
+    /// </summary>        
+    public string FileFilter
     {
-        #region Properties.
-        /// <summary>
-        /// Property to set or return a file filter.
-        /// </summary>        
-        public string FileFilter
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// Property to set or return the initial file path to use.
-        /// </summary>
-        public string InitialFilePath
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// Property to set or return the initial directory.
-        /// </summary>        
-        public DirectoryInfo InitialDirectory
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// Property to set or return the title for the dialog.
-        /// </summary>
-        /// <value>The dialog title.</value>
-        public string DialogTitle
-        {
-            get;
-            set;
-        }
-        #endregion
-
-        #region Methods.
-
-        /// <summary>
-        /// Function to retrieve the parent form for the message box.
-        /// </summary>
-        /// <returns>The form to use as the owner.</returns>
-        private static Form GetParentForm() => Form.ActiveForm ?? (Application.OpenForms.Count > 1 ? Application.OpenForms[Application.OpenForms.Count - 1] : GorgonApplication.MainForm);
-
-        /// <summary>
-        /// Function to return the dialog.
-        /// </summary>
-        /// <returns>The save file dialog.</returns>
-        private SaveFileDialog GetDialog() => new()
-        {
-            Title = string.IsNullOrWhiteSpace(DialogTitle) ? Resources.GOREDIT_TITLE_SAVE_FILE : DialogTitle,
-            FileName = string.IsNullOrWhiteSpace(InitialFilePath) ? string.Empty : InitialFilePath,
-            ValidateNames = true,
-            SupportMultiDottedExtensions = true,
-            AutoUpgradeEnabled = true,
-            Filter = FileFilter ?? string.Empty,
-            InitialDirectory = InitialDirectory?.FullName,
-            RestoreDirectory = true,
-            AddExtension = false,
-            CreatePrompt = false,
-            OverwritePrompt = true,
-            CheckPathExists = false,
-            CheckFileExists = false
-        };
-
-        /// <summary>
-        /// Function to retrieve a single file name.
-        /// </summary>
-        /// <returns>The selected file path, or <b>null</b> if cancelled.</returns>
-        public virtual string GetFilename()
-        {
-            SaveFileDialog dialog = null;
-
-            try
-            {
-                dialog = GetDialog();
-
-                return dialog.ShowDialog(GetParentForm()) == DialogResult.Cancel ? null : dialog.FileName;
-            }
-            finally
-            {
-                dialog?.Dispose();
-            }
-        }
-        #endregion
+        get;
+        set;
     }
+
+    /// <summary>
+    /// Property to set or return the initial file path to use.
+    /// </summary>
+    public string InitialFilePath
+    {
+        get;
+        set;
+    }
+
+    /// <summary>
+    /// Property to set or return the initial directory.
+    /// </summary>        
+    public DirectoryInfo InitialDirectory
+    {
+        get;
+        set;
+    }
+
+    /// <summary>
+    /// Property to set or return the title for the dialog.
+    /// </summary>
+    /// <value>The dialog title.</value>
+    public string DialogTitle
+    {
+        get;
+        set;
+    }
+    #endregion
+
+    #region Methods.
+
+    /// <summary>
+    /// Function to retrieve the parent form for the message box.
+    /// </summary>
+    /// <returns>The form to use as the owner.</returns>
+    private static Form GetParentForm() => Form.ActiveForm ?? (Application.OpenForms.Count > 1 ? Application.OpenForms[Application.OpenForms.Count - 1] : GorgonApplication.MainForm);
+
+    /// <summary>
+    /// Function to return the dialog.
+    /// </summary>
+    /// <returns>The save file dialog.</returns>
+    private SaveFileDialog GetDialog() => new()
+    {
+        Title = string.IsNullOrWhiteSpace(DialogTitle) ? Resources.GOREDIT_TITLE_SAVE_FILE : DialogTitle,
+        FileName = string.IsNullOrWhiteSpace(InitialFilePath) ? string.Empty : InitialFilePath,
+        ValidateNames = true,
+        SupportMultiDottedExtensions = true,
+        AutoUpgradeEnabled = true,
+        Filter = FileFilter ?? string.Empty,
+        InitialDirectory = InitialDirectory?.FullName,
+        RestoreDirectory = true,
+        AddExtension = false,
+        CreatePrompt = false,
+        OverwritePrompt = true,
+        CheckPathExists = false,
+        CheckFileExists = false
+    };
+
+    /// <summary>
+    /// Function to retrieve a single file name.
+    /// </summary>
+    /// <returns>The selected file path, or <b>null</b> if cancelled.</returns>
+    public virtual string GetFilename()
+    {
+        SaveFileDialog dialog = null;
+
+        try
+        {
+            dialog = GetDialog();
+
+            return dialog.ShowDialog(GetParentForm()) == DialogResult.Cancel ? null : dialog.FileName;
+        }
+        finally
+        {
+            dialog?.Dispose();
+        }
+    }
+    #endregion
 }

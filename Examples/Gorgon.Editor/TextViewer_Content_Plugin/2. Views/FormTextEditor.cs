@@ -27,52 +27,51 @@
 using System;
 using System.Windows.Forms;
 
-namespace Gorgon.Examples
+namespace Gorgon.Examples;
+
+/// <summary>
+/// Our form used to modify the text.
+/// </summary>
+/// <remarks>
+/// This is just a standard control. No view model or MVVM support. It's used to support the text editor service.
+/// </remarks>
+internal partial class FormTextEditor 
+    : Form
 {
+    #region Properties.
     /// <summary>
-    /// Our form used to modify the text.
+    /// Property to set or return the original text.
     /// </summary>
-    /// <remarks>
-    /// This is just a standard control. No view model or MVVM support. It's used to support the text editor service.
-    /// </remarks>
-    internal partial class FormTextEditor 
-        : Form
+    public string OriginalText
     {
-        #region Properties.
-        /// <summary>
-        /// Property to set or return the original text.
-        /// </summary>
-        public string OriginalText
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// Property to set or return the text on the textbox.
-        /// </summary>        
-        public string ContentText
-        {
-            get => TextContent.Text;
-            set => TextContent.Text = value ?? string.Empty;
-        }
-        #endregion
-
-        #region Methods.
-        /// <summary>
-        /// Function to validate the OK button state.
-        /// </summary>
-        private void ValidateOk() => ButtonOK.Enabled = (!string.IsNullOrWhiteSpace(TextContent.Text)) && (!string.Equals(TextContent.Text, OriginalText, StringComparison.CurrentCulture));
-
-        /// <summary>Handles the TextChanged event of the TextContent control.</summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
-        private void TextContent_TextChanged(object sender, EventArgs e) => ValidateOk();
-        #endregion
-
-        #region Constructor/Finalizer.
-        /// <summary>Initializes a new instance of the <see cref="FormTextEditor"/> class.</summary>
-        public FormTextEditor() => InitializeComponent();
-        #endregion
+        get;
+        set;
     }
+
+    /// <summary>
+    /// Property to set or return the text on the textbox.
+    /// </summary>        
+    public string ContentText
+    {
+        get => TextContent.Text;
+        set => TextContent.Text = value ?? string.Empty;
+    }
+    #endregion
+
+    #region Methods.
+    /// <summary>
+    /// Function to validate the OK button state.
+    /// </summary>
+    private void ValidateOk() => ButtonOK.Enabled = (!string.IsNullOrWhiteSpace(TextContent.Text)) && (!string.Equals(TextContent.Text, OriginalText, StringComparison.CurrentCulture));
+
+    /// <summary>Handles the TextChanged event of the TextContent control.</summary>
+    /// <param name="sender">The source of the event.</param>
+    /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+    private void TextContent_TextChanged(object sender, EventArgs e) => ValidateOk();
+    #endregion
+
+    #region Constructor/Finalizer.
+    /// <summary>Initializes a new instance of the <see cref="FormTextEditor"/> class.</summary>
+    public FormTextEditor() => InitializeComponent();
+    #endregion
 }

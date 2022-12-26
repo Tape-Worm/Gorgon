@@ -27,56 +27,55 @@
 using System;
 using System.Collections.Generic;
 
-namespace Gorgon.IO
+namespace Gorgon.IO;
+
+/// <summary>
+/// A comparer used to perform a comparison on two instances of <see cref="GorgonFileExtension"/>.
+/// </summary>
+public class GorgonFileExtensionComparer
+    : IComparer<GorgonFileExtension>
 {
+    #region IComparer<GorgonFileExtension> Members
     /// <summary>
-    /// A comparer used to perform a comparison on two instances of <see cref="GorgonFileExtension"/>.
+    /// Compares two objects and returns a value indicating whether one is less than, equal to, or greater than the other.
     /// </summary>
-    public class GorgonFileExtensionComparer
-        : IComparer<GorgonFileExtension>
-    {
-        #region IComparer<GorgonFileExtension> Members
-        /// <summary>
-        /// Compares two objects and returns a value indicating whether one is less than, equal to, or greater than the other.
-        /// </summary>
-        /// <param name="x">The first object to compare.</param>
-        /// <param name="y">The second object to compare.</param>
-        /// <returns>
-        /// <para>
-        /// A signed integer that indicates the relative values of <paramref name="x" /> and <paramref name="y" />, as shown in the following table.
-        /// </para>
-        /// <list type="table">
-        ///		<listheader>
-        ///			<term>Value</term>
-        ///			<term>Meaning</term>
-        ///		</listheader>
-        ///		<item>
-        ///			<term>
-        ///			Less than zero
-        ///			</term>
-        ///			<term>
-        ///			<paramref name="x" /> is less than <paramref name="y" />.
-        ///			</term>			
-        ///		</item>
-        ///		<item>
-        ///			<term>
-        ///			Zero
-        ///			</term>
-        ///			<term>
-        ///			<paramref name="x" /> equals <paramref name="y" />.
-        ///			</term>
-        ///		</item>
-        ///		<item>
-        ///			<term>
-        ///			Greater than zero
-        ///			</term>
-        ///			<term>
-        ///			<paramref name="x" /> is greater than <paramref name="y" />.
-        ///			</term>
-        ///		</item>
-        /// </list>
-        /// </returns>
-        public int Compare(GorgonFileExtension x, GorgonFileExtension y) => string.Compare(x.Extension, y.Extension, StringComparison.OrdinalIgnoreCase);
-        #endregion
-    }
+    /// <param name="x">The first object to compare.</param>
+    /// <param name="y">The second object to compare.</param>
+    /// <returns>
+    /// <para>
+    /// A signed integer that indicates the relative values of <paramref name="x" /> and <paramref name="y" />, as shown in the following table.
+    /// </para>
+    /// <list type="table">
+    ///		<listheader>
+    ///			<term>Value</term>
+    ///			<term>Meaning</term>
+    ///		</listheader>
+    ///		<item>
+    ///			<term>
+    ///			Less than zero
+    ///			</term>
+    ///			<term>
+    ///			<paramref name="x" /> is less than <paramref name="y" />.
+    ///			</term>			
+    ///		</item>
+    ///		<item>
+    ///			<term>
+    ///			Zero
+    ///			</term>
+    ///			<term>
+    ///			<paramref name="x" /> equals <paramref name="y" />.
+    ///			</term>
+    ///		</item>
+    ///		<item>
+    ///			<term>
+    ///			Greater than zero
+    ///			</term>
+    ///			<term>
+    ///			<paramref name="x" /> is greater than <paramref name="y" />.
+    ///			</term>
+    ///		</item>
+    /// </list>
+    /// </returns>
+    public int Compare(GorgonFileExtension x, GorgonFileExtension y) => string.Compare(x.Extension, y.Extension, StringComparison.OrdinalIgnoreCase);
+    #endregion
 }

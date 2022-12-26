@@ -28,31 +28,30 @@ using System;
 using Gorgon.Editor.PlugIns;
 using Gorgon.Editor.UI.ViewModels;
 
-namespace Gorgon.Editor.SpriteEditor
-{
-    /// <summary>
-    /// The parameters to pass to the <see cref="IEditorPlugInSettings"/> view model.
-    /// </summary>
-    internal class SettingsParameters
-        : ViewModelInjection<IHostContentServices>
-    {
-        #region Properties.
-        /// <summary>
-        /// Property to return the settings for the plug in.
-        /// </summary>
-        public SpriteEditorSettings Settings
-        {
-            get;
-        }
-        #endregion
+namespace Gorgon.Editor.SpriteEditor;
 
-        #region Constructor/Finalizer.
-        /// <summary>Initializes a new instance of the <see cref="SettingsParameters"/> class.</summary>
-        /// <param name="settings">The plug in settings.</param>
-        /// <param name="hostServices">Common application services.</param>
-        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="settings" /> parameter is <strong>null</strong>.</exception>
-        public SettingsParameters(SpriteEditorSettings settings, IHostContentServices hostServices)
-            : base(hostServices) => Settings = settings ?? throw new ArgumentNullException(nameof(settings));
-        #endregion
+/// <summary>
+/// The parameters to pass to the <see cref="IEditorPlugInSettings"/> view model.
+/// </summary>
+internal class SettingsParameters
+    : ViewModelInjection<IHostContentServices>
+{
+    #region Properties.
+    /// <summary>
+    /// Property to return the settings for the plug in.
+    /// </summary>
+    public SpriteEditorSettings Settings
+    {
+        get;
     }
+    #endregion
+
+    #region Constructor/Finalizer.
+    /// <summary>Initializes a new instance of the <see cref="SettingsParameters"/> class.</summary>
+    /// <param name="settings">The plug in settings.</param>
+    /// <param name="hostServices">Common application services.</param>
+    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="settings" /> parameter is <strong>null</strong>.</exception>
+    public SettingsParameters(SpriteEditorSettings settings, IHostContentServices hostServices)
+        : base(hostServices) => Settings = settings ?? throw new ArgumentNullException(nameof(settings));
+    #endregion
 }

@@ -29,86 +29,85 @@ using System.Windows.Forms;
 using Gorgon.Diagnostics;
 using Gorgon.Editor.Properties;
 
-namespace Gorgon.Editor
+namespace Gorgon.Editor;
+
+/// <summary>
+/// Splash screen form.
+/// </summary>
+partial class FormSplash
+    : Form
 {
+    #region Variables.
+    // The application version number.
+    private readonly Version _appVersion;
+    #endregion
+
+    #region Properties.
     /// <summary>
-    /// Splash screen form.
+    /// Property to set or return the text shown in the information label.
     /// </summary>
-    partial class FormSplash
-        : Form
+    public string InfoText
     {
-        #region Variables.
-        // The application version number.
-        private readonly Version _appVersion;
-        #endregion
-
-        #region Properties.
-        /// <summary>
-        /// Property to set or return the text shown in the information label.
-        /// </summary>
-        public string InfoText
+        get => labelInfo.Text;
+        set
         {
-            get => labelInfo.Text;
-            set
-            {
-                labelInfo.Text = value;
+            labelInfo.Text = value;
 
-                // Print any text to the log.
-                Program.Log.Print("AppStart: {0}", LoggingLevel.Intermediate, value);
+            // Print any text to the log.
+            Program.Log.Print("AppStart: {0}", LoggingLevel.Intermediate, value);
 
-                labelInfo.Refresh();
-            }
+            labelInfo.Refresh();
         }
-        #endregion
-
-        #region Methods.
-        /// <summary>
-        /// Function to update the version text.
-        /// </summary>
-        private void UpdateVersion()
-        {
-            labelVersionNumber.Text = _appVersion.ToString();
-            labelVersionNumber.Refresh();
-        }
-
-        /// <summary>
-        /// Raises the <see cref="E:System.Windows.Forms.Form.FormClosing" /> event.
-        /// </summary>
-        /// <param name="e">A <see cref="FormClosingEventArgs" /> that contains the event data.</param>
-        protected override void OnFormClosing(FormClosingEventArgs e)
-        {
-            base.OnFormClosing(e);
-
-            if (e.CloseReason == CloseReason.UserClosing)
-            {
-                e.Cancel = true;
-            }
-        }
-
-        /// <summary>
-        /// Raises the <see cref="E:System.Windows.Forms.Form.Load"/> event.
-        /// </summary>
-        /// <param name="e">An <see cref="EventArgs"/> that contains the event data.</param>
-        protected override void OnLoad(EventArgs e)
-        {
-            base.OnLoad(e);
-
-            UpdateVersion();
-
-            InfoText = Resources.GOREDIT_TEXT_INITIALIZING;
-        }
-        #endregion
-
-        #region Constructor.
-        /// <summary>
-        /// Initializes a new instance of the <see cref="FormSplash"/> class.
-        /// </summary>
-        public FormSplash()
-        {
-            InitializeComponent();
-
-            _appVersion = GetType().Assembly.GetName().Version;
-        }
-        #endregion
     }
+    #endregion
+
+    #region Methods.
+    /// <summary>
+    /// Function to update the version text.
+    /// </summary>
+    private void UpdateVersion()
+    {
+        labelVersionNumber.Text = _appVersion.ToString();
+        labelVersionNumber.Refresh();
+    }
+
+    /// <summary>
+    /// Raises the <see cref="E:System.Windows.Forms.Form.FormClosing" /> event.
+    /// </summary>
+    /// <param name="e">A <see cref="FormClosingEventArgs" /> that contains the event data.</param>
+    protected override void OnFormClosing(FormClosingEventArgs e)
+    {
+        base.OnFormClosing(e);
+
+        if (e.CloseReason == CloseReason.UserClosing)
+        {
+            e.Cancel = true;
+        }
+    }
+
+    /// <summary>
+    /// Raises the <see cref="E:System.Windows.Forms.Form.Load"/> event.
+    /// </summary>
+    /// <param name="e">An <see cref="EventArgs"/> that contains the event data.</param>
+    protected override void OnLoad(EventArgs e)
+    {
+        base.OnLoad(e);
+
+        UpdateVersion();
+
+        InfoText = Resources.GOREDIT_TEXT_INITIALIZING;
+    }
+    #endregion
+
+    #region Constructor.
+    /// <summary>
+    /// Initializes a new instance of the <see cref="FormSplash"/> class.
+    /// </summary>
+    public FormSplash()
+    {
+        InitializeComponent();
+
+        _appVersion = GetType().Assembly.GetName().Version;
+    }
+    #endregion
 }

@@ -27,43 +27,42 @@
 using System;
 using DX = SharpDX;
 
-namespace Gorgon.Graphics.Core
+namespace Gorgon.Graphics.Core;
+
+/// <summary>
+/// Event arguments for the <see cref="GorgonSwapChain.SwapChainResizing"/> event.
+/// </summary>
+public class SwapChainResizingEventArgs
+    : EventArgs
 {
+    #region Properties.
     /// <summary>
-    /// Event arguments for the <see cref="GorgonSwapChain.SwapChainResizing"/> event.
+    /// Property to return the old size of the swap chain backbuffers.
     /// </summary>
-    public class SwapChainResizingEventArgs
-        : EventArgs
+    public DX.Size2 OldSize
     {
-        #region Properties.
-        /// <summary>
-        /// Property to return the old size of the swap chain backbuffers.
-        /// </summary>
-        public DX.Size2 OldSize
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to return the new size of the swap chain backbuffers.
-        /// </summary>
-        public DX.Size2 NewSize
-        {
-            get;
-        }
-        #endregion
-
-        #region Constructor/Finalizer.
-        /// <summary>
-        /// Initializes a new instance of the <see cref="SwapChainResizingEventArgs"/> class.
-        /// </summary>
-        /// <param name="oldSize">The old size.</param>
-        /// <param name="newSize">The new size.</param>
-        public SwapChainResizingEventArgs(DX.Size2 oldSize, DX.Size2 newSize)
-        {
-            OldSize = oldSize;
-            NewSize = newSize;
-        }
-        #endregion
+        get;
     }
+
+    /// <summary>
+    /// Property to return the new size of the swap chain backbuffers.
+    /// </summary>
+    public DX.Size2 NewSize
+    {
+        get;
+    }
+    #endregion
+
+    #region Constructor/Finalizer.
+    /// <summary>
+    /// Initializes a new instance of the <see cref="SwapChainResizingEventArgs"/> class.
+    /// </summary>
+    /// <param name="oldSize">The old size.</param>
+    /// <param name="newSize">The new size.</param>
+    public SwapChainResizingEventArgs(DX.Size2 oldSize, DX.Size2 newSize)
+    {
+        OldSize = oldSize;
+        NewSize = newSize;
+    }
+    #endregion
 }

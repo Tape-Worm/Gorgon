@@ -27,24 +27,23 @@
 using System;
 using Krypton.Ribbon;
 
-namespace Gorgon.Editor
+namespace Gorgon.Editor;
+
+/// <summary>
+/// Event parameters used to indicate when a content ribbon is added to or removed from the project view.
+/// </summary>
+internal class ContentRibbonEventArgs
+    : EventArgs
 {
     /// <summary>
-    /// Event parameters used to indicate when a content ribbon is added to or removed from the project view.
+    /// Property to return the ribbon that was added.
     /// </summary>
-    internal class ContentRibbonEventArgs
-        : EventArgs
+    public KryptonRibbon Ribbon
     {
-        /// <summary>
-        /// Property to return the ribbon that was added.
-        /// </summary>
-        public KryptonRibbon Ribbon
-        {
-            get;
-        }
-
-        /// <summary>Initializes a new instance of the ContentRibbonAddedEventArgs class.</summary>
-        /// <param name="ribbon">The ribbon.</param>
-        public ContentRibbonEventArgs(KryptonRibbon ribbon) => Ribbon = ribbon;
+        get;
     }
+
+    /// <summary>Initializes a new instance of the ContentRibbonAddedEventArgs class.</summary>
+    /// <param name="ribbon">The ribbon.</param>
+    public ContentRibbonEventArgs(KryptonRibbon ribbon) => Ribbon = ribbon;
 }

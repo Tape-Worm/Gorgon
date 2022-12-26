@@ -27,34 +27,33 @@
 using System.Runtime.InteropServices;
 
 // ReSharper disable InconsistentNaming
-namespace Gorgon.Native
+namespace Gorgon.Native;
+
+/// <summary>
+/// Value type for raw input from a mouse.
+/// </summary>
+[StructLayout(LayoutKind.Explicit)]
+internal struct RAWINPUTMOUSE
 {
-    /// <summary>
-    /// Value type for raw input from a mouse.
-    /// </summary>
-    [StructLayout(LayoutKind.Explicit)]
-    internal struct RAWINPUTMOUSE
-    {
-        /// <summary>Flags for the event.</summary>
-        [FieldOffset(0)]
-        public RawMouseFlags Flags;
-        /// <summary>Flags for the event.</summary>
-        [FieldOffset(4)]
-        public RawMouseButtons ButtonFlags;
-        /// <summary>If the mouse wheel is moved, this will contain the delta amount.</summary>
-        [FieldOffset(6)]
-        public ushort ButtonData;
-        /// <summary>Raw button data.</summary>
-        [FieldOffset(8)]
-        public uint RawButtons;
-        /// <summary>Relative direction of motion, depending on flags.</summary>
-        [FieldOffset(12)]
-        public int LastX;
-        /// <summary>Relative direction of motion, depending on flags.</summary>
-        [FieldOffset(16)]
-        public int LastY;
-        /// <summary>Extra information.</summary>
-        [FieldOffset(20)]
-        public uint ExtraInformation;
-    }
+    /// <summary>Flags for the event.</summary>
+    [FieldOffset(0)]
+    public RawMouseFlags Flags;
+    /// <summary>Flags for the event.</summary>
+    [FieldOffset(4)]
+    public RawMouseButtons ButtonFlags;
+    /// <summary>If the mouse wheel is moved, this will contain the delta amount.</summary>
+    [FieldOffset(6)]
+    public ushort ButtonData;
+    /// <summary>Raw button data.</summary>
+    [FieldOffset(8)]
+    public uint RawButtons;
+    /// <summary>Relative direction of motion, depending on flags.</summary>
+    [FieldOffset(12)]
+    public int LastX;
+    /// <summary>Relative direction of motion, depending on flags.</summary>
+    [FieldOffset(16)]
+    public int LastY;
+    /// <summary>Extra information.</summary>
+    [FieldOffset(20)]
+    public uint ExtraInformation;
 }

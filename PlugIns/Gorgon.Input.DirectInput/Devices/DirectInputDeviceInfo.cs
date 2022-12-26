@@ -31,199 +31,198 @@ using Gorgon.Core;
 using Gorgon.Native;
 using DI = SharpDX.DirectInput;
 
-namespace Gorgon.Input.DirectInput
+namespace Gorgon.Input.DirectInput;
+
+/// <summary>
+/// Device information for a DirectInput gaming device.
+/// </summary>
+internal class DirectInputDeviceInfo
+    : IGorgonGamingDeviceInfo
 {
+    #region Properties.
     /// <summary>
-    /// Device information for a DirectInput gaming device.
+    /// Property to return the <see cref="GorgonGamingDeviceAxisInfo"/> values for each axis on the gaming device.
     /// </summary>
-    internal class DirectInputDeviceInfo
-        : IGorgonGamingDeviceInfo
+    /// <remarks>
+    /// Use this value to retrieve the number of axes the gaming device supports by checking its <see cref="GorgonGamingDeviceAxisList{T}.Count"/> property.
+    /// </remarks>
+    public IReadOnlyDictionary<GamingDeviceAxis, GorgonGamingDeviceAxisInfo> AxisInfo
     {
-        #region Properties.
-        /// <summary>
-        /// Property to return the <see cref="GorgonGamingDeviceAxisInfo"/> values for each axis on the gaming device.
-        /// </summary>
-        /// <remarks>
-        /// Use this value to retrieve the number of axes the gaming device supports by checking its <see cref="GorgonGamingDeviceAxisList{T}.Count"/> property.
-        /// </remarks>
-        public IReadOnlyDictionary<GamingDeviceAxis, GorgonGamingDeviceAxisInfo> AxisInfo
+        get;
+        private set;
+    }
+
+    /// <summary>
+    /// Property to return the number of buttons available on the gaming device.
+    /// </summary>
+    public int ButtonCount
+    {
+        get;
+        private set;
+    }
+
+    /// <summary>
+    /// Property to return the capabilities supported by the gaming device.
+    /// </summary>
+    public GamingDeviceCapabilityFlags Capabilities
+    {
+        get;
+        private set;
+    }
+
+    /// <summary>
+    /// Property to return a human readable description for the gaming device.
+    /// </summary>
+    public string Description
+    {
+        get;
+    }
+
+    /// <summary>
+    /// Property to return the ID for the manufacturer of the gaming device.
+    /// </summary>
+    public int ManufacturerID
+    {
+        get;
+        private set;
+    }
+
+    /// <summary>
+    /// Property to return the ID of the product.
+    /// </summary>
+    public int ProductID
+    {
+        get;
+        private set;
+    }
+
+    /// <summary>
+    /// Property to return the tolerances for each of the vibration motors in the gaming device.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// Use this value to retrieve the number of vibration motors the gaming device supports by checking its <see cref="IReadOnlyCollection{T}.Count"/> property.
+    /// </para>
+    /// <para>
+    /// If the device does not support vibration, then this list will be empty.
+    /// </para>
+    /// </remarks>
+    public IReadOnlyList<GorgonRange> VibrationMotorRanges
+    {
+        get;
+    }
+
+    /// <summary>
+    /// Property to return the number of point of view controls on the gaming device.
+    /// </summary>
+    public int POVCount
+    {
+        get;
+        private set;
+    }
+
+    /// <summary>Property to return the unique ID for the device.</summary>
+    public Guid DeviceID
+    {
+        get;
+    }
+    #endregion
+
+    #region Methods.
+
+    /// <summary>
+    /// Function to retrieve the capabilities from the DirectInput joystick.
+    /// </summary>
+    /// <param name="joystick">The DirectInput joystick to evaluate.</param>
+    public IReadOnlyDictionary<GamingDeviceAxis, DI.DeviceObjectId> GetDeviceCaps(DI.Joystick joystick)
+    {
+        var defaults = new Dictionary<GamingDeviceAxis, int>();
+        var axisRanges = new Dictionary<GamingDeviceAxis, GorgonRange>();
+
+        ProductID = joystick.Properties.ProductId;
+        ManufacturerID = joystick.Properties.VendorId;
+        ButtonCount = joystick.Capabilities.ButtonCount;
+        POVCount = joystick.Capabilities.PovCount;
+        Capabilities = POVCount > 0 ? GamingDeviceCapabilityFlags.SupportsPOV : GamingDeviceCapabilityFlags.None;
+
+        IList<DI.DeviceObjectInstance> axisInfo = joystick.GetObjects(DI.DeviceObjectTypeFlags.Axis);
+        var axisMappings = new Dictionary<GamingDeviceAxis, DI.DeviceObjectId>();
+
+        foreach (DI.DeviceObjectInstance axis in axisInfo)
         {
-            get;
-            private set;
-        }
+            var usage = (HIDUsage)axis.Usage;
+            DI.ObjectProperties properties = joystick.GetObjectPropertiesById(axis.ObjectId);
 
-        /// <summary>
-        /// Property to return the number of buttons available on the gaming device.
-        /// </summary>
-        public int ButtonCount
-        {
-            get;
-            private set;
-        }
-
-        /// <summary>
-        /// Property to return the capabilities supported by the gaming device.
-        /// </summary>
-        public GamingDeviceCapabilityFlags Capabilities
-        {
-            get;
-            private set;
-        }
-
-        /// <summary>
-        /// Property to return a human readable description for the gaming device.
-        /// </summary>
-        public string Description
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to return the ID for the manufacturer of the gaming device.
-        /// </summary>
-        public int ManufacturerID
-        {
-            get;
-            private set;
-        }
-
-        /// <summary>
-        /// Property to return the ID of the product.
-        /// </summary>
-        public int ProductID
-        {
-            get;
-            private set;
-        }
-
-        /// <summary>
-        /// Property to return the tolerances for each of the vibration motors in the gaming device.
-        /// </summary>
-        /// <remarks>
-        /// <para>
-        /// Use this value to retrieve the number of vibration motors the gaming device supports by checking its <see cref="IReadOnlyCollection{T}.Count"/> property.
-        /// </para>
-        /// <para>
-        /// If the device does not support vibration, then this list will be empty.
-        /// </para>
-        /// </remarks>
-        public IReadOnlyList<GorgonRange> VibrationMotorRanges
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to return the number of point of view controls on the gaming device.
-        /// </summary>
-        public int POVCount
-        {
-            get;
-            private set;
-        }
-
-        /// <summary>Property to return the unique ID for the device.</summary>
-        public Guid DeviceID
-        {
-            get;
-        }
-        #endregion
-
-        #region Methods.
-
-        /// <summary>
-        /// Function to retrieve the capabilities from the DirectInput joystick.
-        /// </summary>
-        /// <param name="joystick">The DirectInput joystick to evaluate.</param>
-        public IReadOnlyDictionary<GamingDeviceAxis, DI.DeviceObjectId> GetDeviceCaps(DI.Joystick joystick)
-        {
-            var defaults = new Dictionary<GamingDeviceAxis, int>();
-            var axisRanges = new Dictionary<GamingDeviceAxis, GorgonRange>();
-
-            ProductID = joystick.Properties.ProductId;
-            ManufacturerID = joystick.Properties.VendorId;
-            ButtonCount = joystick.Capabilities.ButtonCount;
-            POVCount = joystick.Capabilities.PovCount;
-            Capabilities = POVCount > 0 ? GamingDeviceCapabilityFlags.SupportsPOV : GamingDeviceCapabilityFlags.None;
-
-            IList<DI.DeviceObjectInstance> axisInfo = joystick.GetObjects(DI.DeviceObjectTypeFlags.Axis);
-            var axisMappings = new Dictionary<GamingDeviceAxis, DI.DeviceObjectId>();
-
-            foreach (DI.DeviceObjectInstance axis in axisInfo)
+            // Skip this axis if retrieving the properties results in failure.
+            if (properties is null)
             {
-                var usage = (HIDUsage)axis.Usage;
-                DI.ObjectProperties properties = joystick.GetObjectPropertiesById(axis.ObjectId);
-
-                // Skip this axis if retrieving the properties results in failure.
-                if (properties is null)
-                {
-                    continue;
-                }
-
-                var range = new GorgonRange(properties.Range.Minimum, properties.Range.Maximum);
-                int midPoint = ((range.Range + 1) / 2) + range.Minimum;
-
-                switch (usage)
-                {
-                    case HIDUsage.X:
-                        axisMappings[GamingDeviceAxis.XAxis] = axis.ObjectId;
-                        axisRanges[GamingDeviceAxis.XAxis] = range;
-                        defaults[GamingDeviceAxis.XAxis] = range.Minimum < 0 ? 0 : midPoint;
-                        break;
-                    case HIDUsage.Y:
-                        axisMappings[GamingDeviceAxis.YAxis] = axis.ObjectId;
-                        axisRanges[GamingDeviceAxis.YAxis] = range;
-                        defaults[GamingDeviceAxis.YAxis] = range.Minimum < 0 ? 0 : midPoint;
-                        break;
-                    case HIDUsage.Slider:
-                        axisMappings[GamingDeviceAxis.Throttle] = axis.ObjectId;
-                        axisRanges[GamingDeviceAxis.Throttle] = range;
-                        defaults[GamingDeviceAxis.Throttle] = 0;
-                        Capabilities |= GamingDeviceCapabilityFlags.SupportsThrottle;
-                        break;
-                    case HIDUsage.Z:
-                        axisMappings[GamingDeviceAxis.ZAxis] = axis.ObjectId;
-                        axisRanges[GamingDeviceAxis.ZAxis] = range;
-                        defaults[GamingDeviceAxis.ZAxis] = range.Minimum < 0 ? 0 : midPoint;
-                        Capabilities |= GamingDeviceCapabilityFlags.SupportsZAxis;
-                        break;
-                    case HIDUsage.RelativeX:
-                        axisMappings[GamingDeviceAxis.XAxis2] = axis.ObjectId;
-                        axisRanges[GamingDeviceAxis.XAxis2] = range;
-                        Capabilities |= GamingDeviceCapabilityFlags.SupportsSecondaryXAxis;
-                        defaults[GamingDeviceAxis.XAxis2] = midPoint;
-                        break;
-                    case HIDUsage.RelativeY:
-                        axisMappings[GamingDeviceAxis.YAxis2] = axis.ObjectId;
-                        axisRanges[GamingDeviceAxis.YAxis2] = range;
-                        Capabilities |= GamingDeviceCapabilityFlags.SupportsSecondaryYAxis;
-                        defaults[GamingDeviceAxis.YAxis2] = midPoint;
-                        break;
-                    case HIDUsage.RelativeZ:
-                        axisMappings[GamingDeviceAxis.ZAxis2] = axis.ObjectId;
-                        axisRanges[GamingDeviceAxis.ZAxis2] = range;
-                        Capabilities |= GamingDeviceCapabilityFlags.SupportsRudder;
-                        defaults[GamingDeviceAxis.ZAxis2] = 0;
-                        break;
-                }
+                continue;
             }
 
-            AxisInfo = axisRanges.Select(item => new GorgonGamingDeviceAxisInfo(item.Key, item.Value, defaults[item.Key])).ToDictionary(k => k.Axis, v => v);
+            var range = new GorgonRange(properties.Range.Minimum, properties.Range.Maximum);
+            int midPoint = ((range.Range + 1) / 2) + range.Minimum;
 
-            return axisMappings;
+            switch (usage)
+            {
+                case HIDUsage.X:
+                    axisMappings[GamingDeviceAxis.XAxis] = axis.ObjectId;
+                    axisRanges[GamingDeviceAxis.XAxis] = range;
+                    defaults[GamingDeviceAxis.XAxis] = range.Minimum < 0 ? 0 : midPoint;
+                    break;
+                case HIDUsage.Y:
+                    axisMappings[GamingDeviceAxis.YAxis] = axis.ObjectId;
+                    axisRanges[GamingDeviceAxis.YAxis] = range;
+                    defaults[GamingDeviceAxis.YAxis] = range.Minimum < 0 ? 0 : midPoint;
+                    break;
+                case HIDUsage.Slider:
+                    axisMappings[GamingDeviceAxis.Throttle] = axis.ObjectId;
+                    axisRanges[GamingDeviceAxis.Throttle] = range;
+                    defaults[GamingDeviceAxis.Throttle] = 0;
+                    Capabilities |= GamingDeviceCapabilityFlags.SupportsThrottle;
+                    break;
+                case HIDUsage.Z:
+                    axisMappings[GamingDeviceAxis.ZAxis] = axis.ObjectId;
+                    axisRanges[GamingDeviceAxis.ZAxis] = range;
+                    defaults[GamingDeviceAxis.ZAxis] = range.Minimum < 0 ? 0 : midPoint;
+                    Capabilities |= GamingDeviceCapabilityFlags.SupportsZAxis;
+                    break;
+                case HIDUsage.RelativeX:
+                    axisMappings[GamingDeviceAxis.XAxis2] = axis.ObjectId;
+                    axisRanges[GamingDeviceAxis.XAxis2] = range;
+                    Capabilities |= GamingDeviceCapabilityFlags.SupportsSecondaryXAxis;
+                    defaults[GamingDeviceAxis.XAxis2] = midPoint;
+                    break;
+                case HIDUsage.RelativeY:
+                    axisMappings[GamingDeviceAxis.YAxis2] = axis.ObjectId;
+                    axisRanges[GamingDeviceAxis.YAxis2] = range;
+                    Capabilities |= GamingDeviceCapabilityFlags.SupportsSecondaryYAxis;
+                    defaults[GamingDeviceAxis.YAxis2] = midPoint;
+                    break;
+                case HIDUsage.RelativeZ:
+                    axisMappings[GamingDeviceAxis.ZAxis2] = axis.ObjectId;
+                    axisRanges[GamingDeviceAxis.ZAxis2] = range;
+                    Capabilities |= GamingDeviceCapabilityFlags.SupportsRudder;
+                    defaults[GamingDeviceAxis.ZAxis2] = 0;
+                    break;
+            }
         }
-        #endregion
 
-        #region Constructor.
-        /// <summary>
-        /// Initializes a new instance of the <see cref="DirectInputDeviceInfo"/> class.
-        /// </summary>
-        /// <param name="devInstance">The DirectInput device instance.</param>
-        public DirectInputDeviceInfo(DI.DeviceInstance devInstance)
-        {
-            VibrationMotorRanges = Array.Empty<GorgonRange>();
-            DeviceID = devInstance.InstanceGuid;
-            Description = devInstance.ProductName;
-        }
-        #endregion
+        AxisInfo = axisRanges.Select(item => new GorgonGamingDeviceAxisInfo(item.Key, item.Value, defaults[item.Key])).ToDictionary(k => k.Axis, v => v);
+
+        return axisMappings;
     }
+    #endregion
+
+    #region Constructor.
+    /// <summary>
+    /// Initializes a new instance of the <see cref="DirectInputDeviceInfo"/> class.
+    /// </summary>
+    /// <param name="devInstance">The DirectInput device instance.</param>
+    public DirectInputDeviceInfo(DI.DeviceInstance devInstance)
+    {
+        VibrationMotorRanges = Array.Empty<GorgonRange>();
+        DeviceID = devInstance.InstanceGuid;
+        Description = devInstance.ProductName;
+    }
+    #endregion
 }

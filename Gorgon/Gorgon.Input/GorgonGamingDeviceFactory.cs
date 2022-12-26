@@ -32,133 +32,132 @@ using Gorgon.Diagnostics;
 using Gorgon.Input.Properties;
 using Gorgon.PlugIns;
 
-namespace Gorgon.Input
+namespace Gorgon.Input;
+
+/// <summary>
+/// A factory used to load gaming device drivers.
+/// </summary>
+public sealed class GorgonGamingDeviceDriverFactory
+    : IGorgonGamingDeviceDriverFactory
 {
+    #region Variables.
+    // The logger used for debugging.
+    private readonly IGorgonLog _log;
+    // The plug in service to use when loading drivers.
+    private readonly IGorgonPlugInService _plugInService;
+    // The cache holding the plug in assemblies.
+    private readonly GorgonMefPlugInCache _plugInCache;
+    #endregion
+
+    #region Methods.
     /// <summary>
-    /// A factory used to load gaming device drivers.
+    /// Function to load all drivers from the plug in assemblies that are currently loaded.
     /// </summary>
-    public sealed class GorgonGamingDeviceDriverFactory
-        : IGorgonGamingDeviceDriverFactory
+    /// <param name="assemblyPath">The path to the assembly containing the gaming driver plug ins.</param>
+    /// <returns>A read only list containing an instance of each driver.</returns>
+    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="assemblyPath"/> parameter is <b>null</b></exception>
+    /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="assemblyPath"/> parameter is empty.</exception>
+    /// <exception cref="ArgumentException">Thrown when the <paramref name="assemblyPath"/> was invalid.</exception>
+    public IReadOnlyList<IGorgonGamingDeviceDriver> LoadAllDrivers(string assemblyPath)
     {
-        #region Variables.
-        // The logger used for debugging.
-        private readonly IGorgonLog _log;
-        // The plug in service to use when loading drivers.
-        private readonly IGorgonPlugInService _plugInService;
-        // The cache holding the plug in assemblies.
-        private readonly GorgonMefPlugInCache _plugInCache;
-        #endregion
-
-        #region Methods.
-        /// <summary>
-        /// Function to load all drivers from the plug in assemblies that are currently loaded.
-        /// </summary>
-        /// <param name="assemblyPath">The path to the assembly containing the gaming driver plug ins.</param>
-        /// <returns>A read only list containing an instance of each driver.</returns>
-        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="assemblyPath"/> parameter is <b>null</b></exception>
-        /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="assemblyPath"/> parameter is empty.</exception>
-        /// <exception cref="ArgumentException">Thrown when the <paramref name="assemblyPath"/> was invalid.</exception>
-        public IReadOnlyList<IGorgonGamingDeviceDriver> LoadAllDrivers(string assemblyPath)
+        if (assemblyPath is null)
         {
-            if (assemblyPath is null)
-            {
-                throw new ArgumentNullException(nameof(assemblyPath));
-            }
-
-            if (string.IsNullOrWhiteSpace(assemblyPath))
-            {
-                throw new ArgumentEmptyException(nameof(assemblyPath));
-            }
-
-            string dirName = Path.GetDirectoryName(assemblyPath);
-            if (string.IsNullOrWhiteSpace(dirName))
-            {
-                dirName = Directory.GetCurrentDirectory();
-            }
-
-            string fileName = Path.GetFileName(assemblyPath);
-            if (string.IsNullOrWhiteSpace(fileName))
-            {
-                throw new ArgumentException(string.Format(Resources.GORINP_ERR_INVALID_PATH, assemblyPath), nameof(assemblyPath));
-            }
-
-            _plugInCache.LoadPlugInAssemblies(dirName, fileName);
-            return _plugInService.GetPlugIns<GorgonGamingDeviceDriver>();
+            throw new ArgumentNullException(nameof(assemblyPath));
         }
 
-        /// <summary>
-        /// Function to load a gaming device driver from any loaded plug in assembly.
-        /// </summary>
-        /// <param name="assemblyPath">The path to the assembly containing the gaming driver plug ins.</param>
-        /// <param name="driverType">The fully qualified type name of the driver to load.</param>
-        /// <returns>The gaming device driver plug in.</returns>
-        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="assemblyPath"/>, or the <paramref name="driverType"/> parameter is <b>null</b></exception>
-        /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="assemblyPath"/>, or the <paramref name="driverType"/> parameter is empty.</exception>
-        /// <exception cref="ArgumentException">Thrown when the driver type name specified by <paramref name="driverType"/> was not found in any of the loaded plug in assemblies.
-        /// <para>-or-</para>
-        /// <para>Thrown when the <paramref name="assemblyPath"/> was invalid.</para>
-        /// </exception>
-        public IGorgonGamingDeviceDriver LoadDriver(string assemblyPath, string driverType)
+        if (string.IsNullOrWhiteSpace(assemblyPath))
         {
-            if (assemblyPath is null)
-            {
-                throw new ArgumentNullException(nameof(assemblyPath));
-            }
-
-            if (string.IsNullOrWhiteSpace(assemblyPath))
-            {
-                throw new ArgumentEmptyException(nameof(assemblyPath));
-            }
-
-            if (driverType is null)
-            {
-                throw new ArgumentNullException(nameof(driverType));
-            }
-
-            if (string.IsNullOrWhiteSpace(driverType))
-            {
-                throw new ArgumentEmptyException(nameof(driverType));
-            }
-
-            string dirName = Path.GetDirectoryName(assemblyPath);
-            if (string.IsNullOrWhiteSpace(dirName))
-            {
-                dirName = Directory.GetCurrentDirectory();
-            }
-
-            string fileName = Path.GetFileName(assemblyPath);
-            if (string.IsNullOrWhiteSpace(fileName))
-            {
-                throw new ArgumentException(string.Format(Resources.GORINP_ERR_INVALID_PATH, assemblyPath), nameof(assemblyPath));
-            }
-
-            _plugInCache.LoadPlugInAssemblies(dirName, fileName);
-            GorgonGamingDeviceDriver result = _plugInService.GetPlugIn<GorgonGamingDeviceDriver>(driverType);
-
-            if (result is null)
-            {
-                throw new ArgumentException(string.Format(Resources.GORINP_ERR_DRIVER_NOT_FOUND, driverType));
-            }
-
-            result.Log = _log;
-
-            return result;
+            throw new ArgumentEmptyException(nameof(assemblyPath));
         }
-        #endregion
 
-        #region Constructor/Finalizer.
-        /// <summary>
-        /// Initializes a new instance of the <see cref="GorgonGamingDeviceDriverFactory"/> class.
-        /// </summary>
-        /// <param name="pluginCache">The plug in cache that will hold the plug in assemblies.</param>
-        /// <param name="log">[Optional] The logger used for debugging.</param>
-        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="pluginCache"/> is <b>null</b>.</exception>
-        public GorgonGamingDeviceDriverFactory(GorgonMefPlugInCache pluginCache, IGorgonLog log = null)
+        string dirName = Path.GetDirectoryName(assemblyPath);
+        if (string.IsNullOrWhiteSpace(dirName))
         {
-            _plugInCache = pluginCache ?? throw new ArgumentNullException(nameof(pluginCache));
-            _plugInService = new GorgonMefPlugInService(pluginCache);
-            _log = log ?? GorgonLog.NullLog;
+            dirName = Directory.GetCurrentDirectory();
         }
-        #endregion
+
+        string fileName = Path.GetFileName(assemblyPath);
+        if (string.IsNullOrWhiteSpace(fileName))
+        {
+            throw new ArgumentException(string.Format(Resources.GORINP_ERR_INVALID_PATH, assemblyPath), nameof(assemblyPath));
+        }
+
+        _plugInCache.LoadPlugInAssemblies(dirName, fileName);
+        return _plugInService.GetPlugIns<GorgonGamingDeviceDriver>();
     }
+
+    /// <summary>
+    /// Function to load a gaming device driver from any loaded plug in assembly.
+    /// </summary>
+    /// <param name="assemblyPath">The path to the assembly containing the gaming driver plug ins.</param>
+    /// <param name="driverType">The fully qualified type name of the driver to load.</param>
+    /// <returns>The gaming device driver plug in.</returns>
+    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="assemblyPath"/>, or the <paramref name="driverType"/> parameter is <b>null</b></exception>
+    /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="assemblyPath"/>, or the <paramref name="driverType"/> parameter is empty.</exception>
+    /// <exception cref="ArgumentException">Thrown when the driver type name specified by <paramref name="driverType"/> was not found in any of the loaded plug in assemblies.
+    /// <para>-or-</para>
+    /// <para>Thrown when the <paramref name="assemblyPath"/> was invalid.</para>
+    /// </exception>
+    public IGorgonGamingDeviceDriver LoadDriver(string assemblyPath, string driverType)
+    {
+        if (assemblyPath is null)
+        {
+            throw new ArgumentNullException(nameof(assemblyPath));
+        }
+
+        if (string.IsNullOrWhiteSpace(assemblyPath))
+        {
+            throw new ArgumentEmptyException(nameof(assemblyPath));
+        }
+
+        if (driverType is null)
+        {
+            throw new ArgumentNullException(nameof(driverType));
+        }
+
+        if (string.IsNullOrWhiteSpace(driverType))
+        {
+            throw new ArgumentEmptyException(nameof(driverType));
+        }
+
+        string dirName = Path.GetDirectoryName(assemblyPath);
+        if (string.IsNullOrWhiteSpace(dirName))
+        {
+            dirName = Directory.GetCurrentDirectory();
+        }
+
+        string fileName = Path.GetFileName(assemblyPath);
+        if (string.IsNullOrWhiteSpace(fileName))
+        {
+            throw new ArgumentException(string.Format(Resources.GORINP_ERR_INVALID_PATH, assemblyPath), nameof(assemblyPath));
+        }
+
+        _plugInCache.LoadPlugInAssemblies(dirName, fileName);
+        GorgonGamingDeviceDriver result = _plugInService.GetPlugIn<GorgonGamingDeviceDriver>(driverType);
+
+        if (result is null)
+        {
+            throw new ArgumentException(string.Format(Resources.GORINP_ERR_DRIVER_NOT_FOUND, driverType));
+        }
+
+        result.Log = _log;
+
+        return result;
+    }
+    #endregion
+
+    #region Constructor/Finalizer.
+    /// <summary>
+    /// Initializes a new instance of the <see cref="GorgonGamingDeviceDriverFactory"/> class.
+    /// </summary>
+    /// <param name="pluginCache">The plug in cache that will hold the plug in assemblies.</param>
+    /// <param name="log">[Optional] The logger used for debugging.</param>
+    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="pluginCache"/> is <b>null</b>.</exception>
+    public GorgonGamingDeviceDriverFactory(GorgonMefPlugInCache pluginCache, IGorgonLog log = null)
+    {
+        _plugInCache = pluginCache ?? throw new ArgumentNullException(nameof(pluginCache));
+        _plugInService = new GorgonMefPlugInService(pluginCache);
+        _log = log ?? GorgonLog.NullLog;
+    }
+    #endregion
 }

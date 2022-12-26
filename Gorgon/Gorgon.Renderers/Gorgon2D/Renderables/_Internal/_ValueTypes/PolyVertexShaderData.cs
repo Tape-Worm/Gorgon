@@ -29,38 +29,37 @@ using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using Gorgon.Graphics;
 
-namespace Gorgon.Renderers
+namespace Gorgon.Renderers;
+
+/// <summary>
+/// Provides vertex shader data for polygon sprites.
+/// </summary>
+[StructLayout(LayoutKind.Sequential)]
+internal struct PolyVertexShaderData
 {
     /// <summary>
-    /// Provides vertex shader data for polygon sprites.
+    /// The size of the data structure, in bytes.
     /// </summary>
-    [StructLayout(LayoutKind.Sequential)]
-    internal struct PolyVertexShaderData
-    {
-        /// <summary>
-        /// The size of the data structure, in bytes.
-        /// </summary>
-        public static readonly int SizeInBytes = Unsafe.SizeOf<PolyVertexShaderData>();
+    public static readonly int SizeInBytes = Unsafe.SizeOf<PolyVertexShaderData>();
 
-        /// <summary>
-        /// World matrix.
-        /// </summary>
-        public Matrix4x4 World;
-        /// <summary>
-        /// Color information.
-        /// </summary>
-        public GorgonColor Color;
-        /// <summary>
-        /// Texture transformation data.
-        /// </summary>
-        public Vector4 TextureTransform;
-        /// <summary>
-        /// Flags used for flipping the texture and rotation values.
-        /// </summary>
-        public Vector4 MiscInfo;
-        /// <summary>
-        /// The texture array index to use.
-        /// </summary>
-        public float TextureArrayIndex;
-    }
+    /// <summary>
+    /// World matrix.
+    /// </summary>
+    public Matrix4x4 World;
+    /// <summary>
+    /// Color information.
+    /// </summary>
+    public GorgonColor Color;
+    /// <summary>
+    /// Texture transformation data.
+    /// </summary>
+    public Vector4 TextureTransform;
+    /// <summary>
+    /// Flags used for flipping the texture and rotation values.
+    /// </summary>
+    public Vector4 MiscInfo;
+    /// <summary>
+    /// The texture array index to use.
+    /// </summary>
+    public float TextureArrayIndex;
 }

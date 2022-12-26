@@ -27,112 +27,111 @@
 using System;
 using Gorgon.Math;
 
-namespace Gorgon.Animation
+namespace Gorgon.Animation;
+
+/// <summary>
+/// Value type containing information about the nearest keys for a time position.
+/// </summary>
+public static class TweenKey
 {
+    #region Methods.
     /// <summary>
-    /// Value type containing information about the nearest keys for a time position.
+    /// Function to search for the previous and next key for a specific time code.
     /// </summary>
-    public static class TweenKey
+    /// <typeparam name="T">The type of key.</typeparam>
+    /// <param name="requestedTime">The time code to look up.</param>
+    /// <param name="track">The track containing the keys to enumerate.</param>
+    /// <param name="startIndex">The starting index to search from.</param>
+    /// <param name="endIndex">The end index to search up to.</param>
+    /// <returns>A tuple containing the previous and next key frame value, and the index of the previous key.</returns>
+    private static (T prev, T next, int prevKeyIndex) PrevNextSearch<T>(float requestedTime, IGorgonAnimationTrack<T> track, int startIndex, int endIndex)
+        where T : class, IGorgonKeyFrame
     {
-        #region Methods.
-        /// <summary>
-        /// Function to search for the previous and next key for a specific time code.
-        /// </summary>
-        /// <typeparam name="T">The type of key.</typeparam>
-        /// <param name="requestedTime">The time code to look up.</param>
-        /// <param name="track">The track containing the keys to enumerate.</param>
-        /// <param name="startIndex">The starting index to search from.</param>
-        /// <param name="endIndex">The end index to search up to.</param>
-        /// <returns>A tuple containing the previous and next key frame value, and the index of the previous key.</returns>
-        private static (T prev, T next, int prevKeyIndex) PrevNextSearch<T>(float requestedTime, IGorgonAnimationTrack<T> track, int startIndex, int endIndex)
-            where T : class, IGorgonKeyFrame
+        while (true)
         {
-            while (true)
+            T firstKey = track.KeyFrames[startIndex];
+            T lastKey = track.KeyFrames[endIndex];
+
+            switch (track.KeyFrames.Count)
             {
-                T firstKey = track.KeyFrames[startIndex];
-                T lastKey = track.KeyFrames[endIndex];
+                case 1:
+                    return (firstKey, firstKey, startIndex);
+                case 2:
+                    return (firstKey, lastKey, startIndex);
+            }
 
-                switch (track.KeyFrames.Count)
-                {
-                    case 1:
-                        return (firstKey, firstKey, startIndex);
-                    case 2:
-                        return (firstKey, lastKey, startIndex);
-                }
+            // If we're actually on the key frame, then there's no need to continue.
+            if (requestedTime.EqualsEpsilon(firstKey.Time))
+            {
+                return (startIndex < track.KeyFrames.Count - 1)
+                           ? (firstKey, track.KeyFrames[startIndex + 1], startIndex)
+                           : (track.KeyFrames[startIndex - 1], firstKey, startIndex - 1);
+            }
 
-                // If we're actually on the key frame, then there's no need to continue.
-                if (requestedTime.EqualsEpsilon(firstKey.Time))
-                {
-                    return (startIndex < track.KeyFrames.Count - 1)
-                               ? (firstKey, track.KeyFrames[startIndex + 1], startIndex)
-                               : (track.KeyFrames[startIndex - 1], firstKey, startIndex - 1);
-                }
+            if (requestedTime.EqualsEpsilon(lastKey.Time))
+            {
+                return (endIndex > 0) ? (track.KeyFrames[endIndex - 1], lastKey, endIndex - 1) : (lastKey, track.KeyFrames[endIndex + 1], endIndex);
+            }
 
-                if (requestedTime.EqualsEpsilon(lastKey.Time))
-                {
-                    return (endIndex > 0) ? (track.KeyFrames[endIndex - 1], lastKey, endIndex - 1) : (lastKey, track.KeyFrames[endIndex + 1], endIndex);
-                }
+            int midIndex = (int)((endIndex - startIndex) / 2.0f) + startIndex;
+            T midKey = track.KeyFrames[midIndex];
 
-                int midIndex = (int)((endIndex - startIndex) / 2.0f) + startIndex;
-                T midKey = track.KeyFrames[midIndex];
-
-                // The time is in the first part of the collection.
-                if ((requestedTime >= firstKey.Time) && (requestedTime < midKey.Time))
-                {
-                    endIndex = midIndex;
-
-                    // The indices should have a distance of 1 if we want to locate our begin and end.
-                    if ((endIndex - startIndex) <= 1)
-                    {
-                        return (firstKey, midKey, startIndex);
-                    }
-
-                    continue;
-                }
-
-                startIndex = midIndex;
+            // The time is in the first part of the collection.
+            if ((requestedTime >= firstKey.Time) && (requestedTime < midKey.Time))
+            {
+                endIndex = midIndex;
 
                 // The indices should have a distance of 1 if we want to locate our begin and end.
                 if ((endIndex - startIndex) <= 1)
                 {
-                    return (midKey, lastKey, midIndex);
+                    return (firstKey, midKey, startIndex);
                 }
-            }
-        }
 
-        /// <summary>
-        /// Function to return the nearest keys to the requested time.
-        /// </summary>
-        /// <typeparam name="T">The type of key in the track. Must implement <see cref="IGorgonKeyFrame"/> and be a reference type.</typeparam>
-        /// <param name="track">The track to evaluate.</param>
-        /// <param name="requestedTime">Track time requested.</param>
-        /// <param name="animationLength">The total animation time for the track that the keys belong to.</param>
-        /// <returns>A tuple containing the previous and next key that falls on or outside of the requested time, the index of the first key and the delta time between the start frame and the requested time.</returns>
-        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="track"/> parameter is <b>null</b>.</exception>
-        public static (T previous, T next, int prevKeyIndex, float timeDelta) GetNearestKeys<T>(
-            IGorgonAnimationTrack<T> track,
-            float requestedTime,
-            float animationLength)
-            where T : class, IGorgonKeyFrame
-        {
-            if (track is null)
+                continue;
+            }
+
+            startIndex = midIndex;
+
+            // The indices should have a distance of 1 if we want to locate our begin and end.
+            if ((endIndex - startIndex) <= 1)
             {
-                throw new ArgumentNullException(nameof(track));
+                return (midKey, lastKey, midIndex);
             }
-
-            // Don't extend beyond the maximum amount of time for the track.
-            requestedTime = requestedTime.Min(animationLength);
-
-            (T prevKey, T nextKey, int prevKeyIndex) = PrevNextSearch(requestedTime, track, 0, track.KeyFrames.Count - 1);
-
-            // Ensure that we clip to the animation length.
-            float keyDelta = (nextKey.Time > animationLength ? animationLength : nextKey.Time) - prevKey.Time;
-
-            // Calculate the delta time.
-            return prevKey.Time.EqualsEpsilon(requestedTime)
-                       ? (prevKey, nextKey, prevKeyIndex, 0.0f)
-                       : (prevKey, nextKey, prevKeyIndex, ((requestedTime - prevKey.Time) / keyDelta).Min(1.0f).Max(0));
         }
-        #endregion
     }
+
+    /// <summary>
+    /// Function to return the nearest keys to the requested time.
+    /// </summary>
+    /// <typeparam name="T">The type of key in the track. Must implement <see cref="IGorgonKeyFrame"/> and be a reference type.</typeparam>
+    /// <param name="track">The track to evaluate.</param>
+    /// <param name="requestedTime">Track time requested.</param>
+    /// <param name="animationLength">The total animation time for the track that the keys belong to.</param>
+    /// <returns>A tuple containing the previous and next key that falls on or outside of the requested time, the index of the first key and the delta time between the start frame and the requested time.</returns>
+    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="track"/> parameter is <b>null</b>.</exception>
+    public static (T previous, T next, int prevKeyIndex, float timeDelta) GetNearestKeys<T>(
+        IGorgonAnimationTrack<T> track,
+        float requestedTime,
+        float animationLength)
+        where T : class, IGorgonKeyFrame
+    {
+        if (track is null)
+        {
+            throw new ArgumentNullException(nameof(track));
+        }
+
+        // Don't extend beyond the maximum amount of time for the track.
+        requestedTime = requestedTime.Min(animationLength);
+
+        (T prevKey, T nextKey, int prevKeyIndex) = PrevNextSearch(requestedTime, track, 0, track.KeyFrames.Count - 1);
+
+        // Ensure that we clip to the animation length.
+        float keyDelta = (nextKey.Time > animationLength ? animationLength : nextKey.Time) - prevKey.Time;
+
+        // Calculate the delta time.
+        return prevKey.Time.EqualsEpsilon(requestedTime)
+                   ? (prevKey, nextKey, prevKeyIndex, 0.0f)
+                   : (prevKey, nextKey, prevKeyIndex, ((requestedTime - prevKey.Time) / keyDelta).Min(1.0f).Max(0));
+    }
+    #endregion
 }

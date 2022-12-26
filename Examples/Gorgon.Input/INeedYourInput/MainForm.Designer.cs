@@ -26,8 +26,8 @@
 
 using System.ComponentModel;
 
-namespace Gorgon.Examples
-{
+namespace Gorgon.Examples;
+
 	partial class MainForm
 	{
 		/// <summary>
@@ -75,5 +75,4 @@ namespace Gorgon.Examples
 
 		#endregion
 	}
-}
 

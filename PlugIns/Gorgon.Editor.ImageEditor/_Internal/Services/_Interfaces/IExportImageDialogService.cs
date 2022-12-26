@@ -28,30 +28,29 @@ using Gorgon.Editor.Content;
 using Gorgon.Editor.Services;
 using Gorgon.Graphics.Imaging.Codecs;
 
-namespace Gorgon.Editor.ImageEditor
+namespace Gorgon.Editor.ImageEditor;
+
+/// <summary>
+/// Dialog serivce used for retrieving paths for exporting image data.
+/// </summary>
+internal interface IExportImageDialogService
+    : IFileDialogService
 {
     /// <summary>
-    /// Dialog serivce used for retrieving paths for exporting image data.
+    /// Property to set or return the content image file being exported.
     /// </summary>
-    internal interface IExportImageDialogService
-        : IFileDialogService
+    IContentFile ContentFile
     {
-        /// <summary>
-        /// Property to set or return the content image file being exported.
-        /// </summary>
-        IContentFile ContentFile
-        {
-            get;
-            set;
-        }
+        get;
+        set;
+    }
 
-        /// <summary>
-        /// Property to set or return the codec used for exporting.
-        /// </summary>
-        IGorgonImageCodec SelectedCodec
-        {
-            get;
-            set;
-        }
+    /// <summary>
+    /// Property to set or return the codec used for exporting.
+    /// </summary>
+    IGorgonImageCodec SelectedCodec
+    {
+        get;
+        set;
     }
 }

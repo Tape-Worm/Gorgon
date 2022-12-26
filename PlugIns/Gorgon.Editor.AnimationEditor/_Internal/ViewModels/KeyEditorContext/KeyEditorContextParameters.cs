@@ -30,79 +30,78 @@ using Gorgon.Editor.Content;
 using Gorgon.Editor.PlugIns;
 using Gorgon.Editor.UI.ViewModels;
 
-namespace Gorgon.Editor.AnimationEditor
+namespace Gorgon.Editor.AnimationEditor;
+
+/// <summary>
+/// The parameters for the <see cref="IKeyEditorContext"/> context view model.
+/// </summary>
+internal class KeyEditorContextParameters
+    : ViewModelInjection<IHostContentServices>
 {
     /// <summary>
-    /// The parameters for the <see cref="IKeyEditorContext"/> context view model.
+    /// Property to return the content view model that owns the view model.
     /// </summary>
-    internal class KeyEditorContextParameters
-        : ViewModelInjection<IHostContentServices>
+    public IAnimationContent Content
     {
-        /// <summary>
-        /// Property to return the content view model that owns the view model.
-        /// </summary>
-        public IAnimationContent Content
-        {
-            get;
-        }
+        get;
+    }
 
-        /// <summary>
-        /// Property to return the file manager.
-        /// </summary>
-        public IContentFileManager FileManager
-        {
-            get;
-        }
+    /// <summary>
+    /// Property to return the file manager.
+    /// </summary>
+    public IContentFileManager FileManager
+    {
+        get;
+    }
 
-        /// <summary>
-        /// Property to return the services hosted by the plug in.
-        /// </summary>
-        public ContentServices ContentServices
-        {
-            get;
-        }
+    /// <summary>
+    /// Property to return the services hosted by the plug in.
+    /// </summary>
+    public ContentServices ContentServices
+    {
+        get;
+    }
 
-        /// <summary>
-        /// Property to return the key editor for floating point values.
-        /// </summary>
-        public IKeyValueEditor FloatValueKeyEditor
-        {
-            get;
-        }
+    /// <summary>
+    /// Property to return the key editor for floating point values.
+    /// </summary>
+    public IKeyValueEditor FloatValueKeyEditor
+    {
+        get;
+    }
 
-        /// <summary>
-        /// Property to return the key value editor for color values.
-        /// </summary>
-        public IColorValueEditor ColorValueKeyEditor
-        {
-            get;
-        }
+    /// <summary>
+    /// Property to return the key value editor for color values.
+    /// </summary>
+    public IColorValueEditor ColorValueKeyEditor
+    {
+        get;
+    }
 
-        /// <summary>
-        /// Property to return the controller for sprite animations.
-        /// </summary>
-        public GorgonSpriteAnimationController AnimationController
-        {
-            get;
-        }
+    /// <summary>
+    /// Property to return the controller for sprite animations.
+    /// </summary>
+    public GorgonSpriteAnimationController AnimationController
+    {
+        get;
+    }
 
-        /// <summary>Initializes a new instance of the <see cref="KeyEditorContextParameters"/> class.</summary>
-        /// <param name="content">The animation content that owns the view model.</param>
-        /// <param name="fileManager">The file manager for the project.</param>
-        /// <param name="floatValueKeyEditor">The key editor for floating point values</param>
-        /// <param name="controller">The sprite animation controller.</param>
-        /// <param name="contentServices">The services hosted by the plug in.</param>
-        /// <param name="hostServices">The services from the host application.</param>
-        /// <exception cref="ArgumentNullException">Thrown when any of the parameters are <b>null</b>.</exception>
-        public KeyEditorContextParameters(IAnimationContent content, IContentFileManager fileManager, IKeyValueEditor floatValueKeyEditor, IColorValueEditor colorValueKeyEditor, GorgonSpriteAnimationController controller, ContentServices contentServices, IHostContentServices hostServices)
-            : base(hostServices)
-        {
-            Content = content ?? throw new ArgumentNullException(nameof(content));
-            FileManager = fileManager ?? throw new ArgumentNullException(nameof(fileManager));
-            ContentServices = contentServices ?? throw new ArgumentNullException(nameof(contentServices));
-            FloatValueKeyEditor = floatValueKeyEditor ?? throw new ArgumentNullException(nameof(floatValueKeyEditor));
-            ColorValueKeyEditor = colorValueKeyEditor ?? throw new ArgumentNullException(nameof(colorValueKeyEditor));
-            AnimationController = controller ?? throw new ArgumentNullException(nameof(controller));
-        }
+    /// <summary>Initializes a new instance of the <see cref="KeyEditorContextParameters"/> class.</summary>
+    /// <param name="content">The animation content that owns the view model.</param>
+    /// <param name="fileManager">The file manager for the project.</param>
+    /// <param name="floatValueKeyEditor">The key editor for floating point values</param>
+    /// <param name="controller">The sprite animation controller.</param>
+    /// <param name="contentServices">The services hosted by the plug in.</param>
+    /// <param name="hostServices">The services from the host application.</param>
+    /// <exception cref="ArgumentNullException">Thrown when any of the parameters are <b>null</b>.</exception>
+    public KeyEditorContextParameters(IAnimationContent content, IContentFileManager fileManager, IKeyValueEditor floatValueKeyEditor, IColorValueEditor colorValueKeyEditor, GorgonSpriteAnimationController controller, ContentServices contentServices, IHostContentServices hostServices)
+        : base(hostServices)
+    {
+        Content = content ?? throw new ArgumentNullException(nameof(content));
+        FileManager = fileManager ?? throw new ArgumentNullException(nameof(fileManager));
+        ContentServices = contentServices ?? throw new ArgumentNullException(nameof(contentServices));
+        FloatValueKeyEditor = floatValueKeyEditor ?? throw new ArgumentNullException(nameof(floatValueKeyEditor));
+        ColorValueKeyEditor = colorValueKeyEditor ?? throw new ArgumentNullException(nameof(colorValueKeyEditor));
+        AnimationController = controller ?? throw new ArgumentNullException(nameof(controller));
     }
 }

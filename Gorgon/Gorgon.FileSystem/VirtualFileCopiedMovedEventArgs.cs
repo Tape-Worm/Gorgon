@@ -27,38 +27,37 @@
 using System;
 using System.Collections.Generic;
 
-namespace Gorgon.IO
+namespace Gorgon.IO;
+
+/// <summary>
+/// Event arguments for the <see cref="IGorgonFileSystemWriter{T}.VirtualFileMoved"/> and the <see cref="IGorgonFileSystemWriter{T}.VirtualDirectoryCopied"/> event.
+/// </summary>
+public class VirtualFileCopiedMovedEventArgs
+    : EventArgs
 {
     /// <summary>
-    /// Event arguments for the <see cref="IGorgonFileSystemWriter{T}.VirtualFileMoved"/> and the <see cref="IGorgonFileSystemWriter{T}.VirtualDirectoryCopied"/> event.
+    /// Property to return the virtual files that were moved.
     /// </summary>
-    public class VirtualFileCopiedMovedEventArgs
-        : EventArgs
+    public IReadOnlyList<(IGorgonVirtualFile src, IGorgonVirtualFile dest)> VirtualFiles
     {
-        /// <summary>
-        /// Property to return the virtual files that were moved.
-        /// </summary>
-        public IReadOnlyList<(IGorgonVirtualFile src, IGorgonVirtualFile dest)> VirtualFiles
-        {
-            get;
-        }
-               
+        get;
+    }
+           
 
-        /// <summary>
-        /// Property to return the destination directory for the copy operation.
-        /// </summary>
-        public IGorgonVirtualDirectory Destination
-        {
-            get;
-        }
+    /// <summary>
+    /// Property to return the destination directory for the copy operation.
+    /// </summary>
+    public IGorgonVirtualDirectory Destination
+    {
+        get;
+    }
 
-        /// <summary>Initializes a new instance of the <see cref="VirtualFileCopiedMovedEventArgs"/> class.</summary>
-        /// <param name="dest">The destination directory for the copy.</param>
-        /// <param name="files">The list of virtual files that were moved.</param>
-        internal VirtualFileCopiedMovedEventArgs(IGorgonVirtualDirectory dest, IReadOnlyList<(IGorgonVirtualFile src, IGorgonVirtualFile dest)> files)
-        {
-            Destination = dest;
-            VirtualFiles = files;
-        }
+    /// <summary>Initializes a new instance of the <see cref="VirtualFileCopiedMovedEventArgs"/> class.</summary>
+    /// <param name="dest">The destination directory for the copy.</param>
+    /// <param name="files">The list of virtual files that were moved.</param>
+    internal VirtualFileCopiedMovedEventArgs(IGorgonVirtualDirectory dest, IReadOnlyList<(IGorgonVirtualFile src, IGorgonVirtualFile dest)> files)
+    {
+        Destination = dest;
+        VirtualFiles = files;
     }
 }

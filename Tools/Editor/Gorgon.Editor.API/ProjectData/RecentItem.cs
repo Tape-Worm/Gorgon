@@ -26,29 +26,28 @@
 
 using System;
 
-namespace Gorgon.Editor.ProjectData
+namespace Gorgon.Editor.ProjectData;
+
+/// <summary>
+/// A recent item value.
+/// </summary>
+public class RecentItem
 {
     /// <summary>
-    /// A recent item value.
+    /// Property to set or return the last time the file was used.
     /// </summary>
-    public class RecentItem
+    public DateTime LastUsedDate
     {
-        /// <summary>
-        /// Property to set or return the last time the file was used.
-        /// </summary>
-        public DateTime LastUsedDate
-        {
-            get;
-            set;
-        }
+        get;
+        set;
+    }
 
-        /// <summary>
-        /// Property to set or return the file path.
-        /// </summary>
-        public string FilePath
-        {
-            get;
-            set;
-        }
+    /// <summary>
+    /// Property to set or return the file path.
+    /// </summary>
+    public string FilePath
+    {
+        get;
+        set;
     }
 }

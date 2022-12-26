@@ -24,39 +24,38 @@
 // 
 #endregion
 
-namespace Gorgon.Core
+namespace Gorgon.Core;
+
+/// <summary>
+/// An interface that defines a standard set of functionality for a builder pattern object.
+/// </summary>
+/// <typeparam name="TB">The type of builder. Used to return a fluent interface for the builder.</typeparam>
+/// <typeparam name="TBo">The type of object produced by the builder.</typeparam>
+/// <remarks>
+/// <para>
+/// This interface is used to define a fluent builder pattern for creating objects.  
+/// </para>
+/// </remarks>
+public interface IGorgonFluentBuilder<out TB, TBo>
+    where TB : class
+    where TBo : class
 {
     /// <summary>
-    /// An interface that defines a standard set of functionality for a builder pattern object.
+    /// Function to return the object.
     /// </summary>
-    /// <typeparam name="TB">The type of builder. Used to return a fluent interface for the builder.</typeparam>
-    /// <typeparam name="TBo">The type of object produced by the builder.</typeparam>
-    /// <remarks>
-    /// <para>
-    /// This interface is used to define a fluent builder pattern for creating objects.  
-    /// </para>
-    /// </remarks>
-    public interface IGorgonFluentBuilder<out TB, TBo>
-        where TB : class
-        where TBo : class
-    {
-        /// <summary>
-        /// Function to return the object.
-        /// </summary>
-        /// <returns>The object created or updated by this builder.</returns>
-        TBo Build();
+    /// <returns>The object created or updated by this builder.</returns>
+    TBo Build();
 
-        /// <summary>
-        /// Function to reset the builder to the specified object state.
-        /// </summary>
-        /// <param name="builderObject">[Optional] The specified object state to copy.</param>
-        /// <returns>The fluent builder interface.</returns>
-        TB ResetTo(TBo builderObject = null);
+    /// <summary>
+    /// Function to reset the builder to the specified object state.
+    /// </summary>
+    /// <param name="builderObject">[Optional] The specified object state to copy.</param>
+    /// <returns>The fluent builder interface.</returns>
+    TB ResetTo(TBo builderObject = null);
 
-        /// <summary>
-        /// Function to clear the builder to a default state.
-        /// </summary>
-        /// <returns>The fluent builder interface.</returns>
-        TB Clear();
-    }
+    /// <summary>
+    /// Function to clear the builder to a default state.
+    /// </summary>
+    /// <returns>The fluent builder interface.</returns>
+    TB Clear();
 }

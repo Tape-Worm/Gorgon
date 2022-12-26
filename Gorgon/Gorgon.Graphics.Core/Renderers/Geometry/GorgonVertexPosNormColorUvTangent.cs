@@ -30,111 +30,110 @@ using System.Runtime.InteropServices;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 
-namespace Gorgon.Renderers.Geometry
+namespace Gorgon.Renderers.Geometry;
+
+/// <summary>
+/// A vertex with a position, normal, diffuse color, UV texture coordinate, and a tangent vector.
+/// </summary>
+[StructLayout(LayoutKind.Sequential, Pack = 1)]
+public struct GorgonVertexPosNormColorUvTangent
 {
+    #region Variables.
     /// <summary>
-    /// A vertex with a position, normal, diffuse color, UV texture coordinate, and a tangent vector.
+    /// The size of the vertex, in bytes.
     /// </summary>
-    [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    public struct GorgonVertexPosNormColorUvTangent
+    public static readonly int SizeInBytes = Unsafe.SizeOf<GorgonVertexPosNormColorUvTangent>();
+
+    /// <summary>
+    /// The position of the vertex.
+    /// </summary>
+    [InputElement(0, "SV_POSITION")]
+    public Vector4 Position;
+
+    /// <summary>
+    /// The normal for the vertex.
+    /// </summary>
+    [InputElement(1, "NORMAL")]
+    public Vector3 Normal;
+
+    /// <summary>
+    /// The color of the vertex.
+    /// </summary>
+    [InputElement(2, "COLOR")]
+    public GorgonColor Color;
+
+    /// <summary>
+    /// The texture coordinate for the vertex.
+    /// </summary>
+    [InputElement(3, "TEXCOORD")]
+    public Vector2 UV;
+
+    /// <summary>
+    /// The tangent vector.
+    /// </summary>
+    [InputElement(4, "TANGENT")]
+    public Vector4 Tangent;
+    #endregion
+
+    #region Methods.
+    /// <summary>
+    /// Deconstructs this instance into individual position values.
+    /// </summary>
+    /// <param name="x">The X coordinate of the <see cref="Position"/>.</param>
+    /// <param name="y">The Y coordinate of the <see cref="Position"/>.</param>
+    /// <param name="z">The Z coordinate of the <see cref="Position"/>.</param>
+    public void Deconstruct(out float x, out float y, out float z)
     {
-        #region Variables.
-        /// <summary>
-        /// The size of the vertex, in bytes.
-        /// </summary>
-        public static readonly int SizeInBytes = Unsafe.SizeOf<GorgonVertexPosNormColorUvTangent>();
-
-        /// <summary>
-        /// The position of the vertex.
-        /// </summary>
-        [InputElement(0, "SV_POSITION")]
-        public Vector4 Position;
-
-        /// <summary>
-        /// The normal for the vertex.
-        /// </summary>
-        [InputElement(1, "NORMAL")]
-        public Vector3 Normal;
-
-        /// <summary>
-        /// The color of the vertex.
-        /// </summary>
-        [InputElement(2, "COLOR")]
-        public GorgonColor Color;
-
-        /// <summary>
-        /// The texture coordinate for the vertex.
-        /// </summary>
-        [InputElement(3, "TEXCOORD")]
-        public Vector2 UV;
-
-        /// <summary>
-        /// The tangent vector.
-        /// </summary>
-        [InputElement(4, "TANGENT")]
-        public Vector4 Tangent;
-        #endregion
-
-        #region Methods.
-        /// <summary>
-        /// Deconstructs this instance into individual position values.
-        /// </summary>
-        /// <param name="x">The X coordinate of the <see cref="Position"/>.</param>
-        /// <param name="y">The Y coordinate of the <see cref="Position"/>.</param>
-        /// <param name="z">The Z coordinate of the <see cref="Position"/>.</param>
-        public void Deconstruct(out float x, out float y, out float z)
-        {
-            x = Position.X;
-            y = Position.Y;
-            z = Position.Z;
-        }
-
-        /// <summary>Deconstructs this instance into a tuple.</summary>
-        /// <param name="position">The position.</param>
-        /// <param name="normal">The normal.</param>
-        /// <param name="color">The color.</param>
-        /// <param name="uv">The texture coordinate.</param>
-        /// <param name="tangent">The tangent.</param>
-        public void Deconstruct(out Vector4 position, out Vector3 normal, out GorgonColor color, out Vector2 uv, out Vector4 tangent)
-        {
-            position = Position;
-            color = Color;
-            normal = Normal;
-            uv = UV;
-            tangent = Tangent;
-        }
-        #endregion
-
-        #region Constructor.
-        /// <summary>Initializes a new instance of the <see cref="GorgonVertexPosNormColorUvTangent" /> struct.</summary>
-        /// <param name="pos">The position.</param>
-        /// <param name="normal">The vertex normal.</param>
-        /// <param name="color">The diffuse color for the vertex.</param>
-        /// <param name="uv">The texture coordinates.</param>
-        /// <param name="tangent">The tangent for the vertex.</param>
-        public GorgonVertexPosNormColorUvTangent(Vector3 pos, Vector3 normal, GorgonColor color, Vector2 uv, Vector4 tangent)
-        {
-            Position = new Vector4(pos, 1);
-            UV = uv;
-            Normal = normal;
-            Color = color;
-            Tangent = tangent;
-        }
-
-        /// <summary>Initializes a new instance of the <see cref="GorgonVertexPosNormColorUvTangent" /> struct.</summary>
-        /// <param name="pos">The position.</param>
-        /// <param name="normal">The vertex normal.</param>
-        /// <param name="color">The diffuse color for the vertex.</param>
-        /// <param name="uv">The texture coordinates.</param>
-        /// <param name="tangent">The tangent for the vertex.</param>
-        public GorgonVertexPosNormColorUvTangent(Vector4 pos, Vector3 normal, GorgonColor color, Vector2 uv, Vector4 tangent)
-        {
-            Position = pos;
-            UV = uv;
-            Normal = normal;
-            Color = color;
-            Tangent = tangent;
-        }
-        #endregion
+        x = Position.X;
+        y = Position.Y;
+        z = Position.Z;
     }
+
+    /// <summary>Deconstructs this instance into a tuple.</summary>
+    /// <param name="position">The position.</param>
+    /// <param name="normal">The normal.</param>
+    /// <param name="color">The color.</param>
+    /// <param name="uv">The texture coordinate.</param>
+    /// <param name="tangent">The tangent.</param>
+    public void Deconstruct(out Vector4 position, out Vector3 normal, out GorgonColor color, out Vector2 uv, out Vector4 tangent)
+    {
+        position = Position;
+        color = Color;
+        normal = Normal;
+        uv = UV;
+        tangent = Tangent;
+    }
+    #endregion
+
+    #region Constructor.
+    /// <summary>Initializes a new instance of the <see cref="GorgonVertexPosNormColorUvTangent" /> struct.</summary>
+    /// <param name="pos">The position.</param>
+    /// <param name="normal">The vertex normal.</param>
+    /// <param name="color">The diffuse color for the vertex.</param>
+    /// <param name="uv">The texture coordinates.</param>
+    /// <param name="tangent">The tangent for the vertex.</param>
+    public GorgonVertexPosNormColorUvTangent(Vector3 pos, Vector3 normal, GorgonColor color, Vector2 uv, Vector4 tangent)
+    {
+        Position = new Vector4(pos, 1);
+        UV = uv;
+        Normal = normal;
+        Color = color;
+        Tangent = tangent;
+    }
+
+    /// <summary>Initializes a new instance of the <see cref="GorgonVertexPosNormColorUvTangent" /> struct.</summary>
+    /// <param name="pos">The position.</param>
+    /// <param name="normal">The vertex normal.</param>
+    /// <param name="color">The diffuse color for the vertex.</param>
+    /// <param name="uv">The texture coordinates.</param>
+    /// <param name="tangent">The tangent for the vertex.</param>
+    public GorgonVertexPosNormColorUvTangent(Vector4 pos, Vector3 normal, GorgonColor color, Vector2 uv, Vector4 tangent)
+    {
+        Position = pos;
+        UV = uv;
+        Normal = normal;
+        Color = color;
+        Tangent = tangent;
+    }
+    #endregion
 }

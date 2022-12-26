@@ -30,221 +30,220 @@ using System.Drawing;
 using System.Windows.Forms;
 using Gorgon.Windows.Properties;
 
-namespace Gorgon.UI
+namespace Gorgon.UI;
+
+/// <summary>
+/// A message panel to display on an overlay.
+/// </summary>
+public partial class GorgonWaitMessagePanel
+    : UserControl
 {
+    #region Variables.
+    // The image used for the wait icon.
+    private Image _waitIcon;
+    #endregion
+
+    #region Properties.
     /// <summary>
-    /// A message panel to display on an overlay.
+    /// Indicates the border style for the for wait message box.
     /// </summary>
-    public partial class GorgonWaitMessagePanel
-        : UserControl
+    [Browsable(true), Category("Appearance"), Description("Set whether there is a border on the wait message box."),
+    DefaultValue(true), RefreshProperties(RefreshProperties.Repaint)]
+    public bool WaitBoxHasBorder
     {
-        #region Variables.
-        // The image used for the wait icon.
-        private Image _waitIcon;
-        #endregion
+        get => BorderStyle == BorderStyle.FixedSingle;
+        // ReSharper disable once ValueParameterNotUsed
+        set => BorderStyle = value ? BorderStyle.FixedSingle : BorderStyle.None;
+    }
 
-        #region Properties.
-        /// <summary>
-        /// Indicates the border style for the for wait message box.
-        /// </summary>
-        [Browsable(true), Category("Appearance"), Description("Set whether there is a border on the wait message box."),
-        DefaultValue(true), RefreshProperties(RefreshProperties.Repaint)]
-        public bool WaitBoxHasBorder
-        {
-            get => BorderStyle == BorderStyle.FixedSingle;
-            // ReSharper disable once ValueParameterNotUsed
-            set => BorderStyle = value ? BorderStyle.FixedSingle : BorderStyle.None;
-        }
+    /// <summary>Gets or sets the foreground color of wait message box.</summary>
+    [Browsable(true),
+    Category("Appearance"),
+    Description("Sets the foreground color for the text in the wait message box"),
+    DefaultValue(typeof(Color), "Black"),
+     RefreshProperties(RefreshProperties.Repaint)]
+    public Color WaitBoxForeColor
+    {
+        get => LabelWaitMessage.ForeColor;
+        set => LabelWaitMessage.ForeColor = value;
+    }
 
-        /// <summary>Gets or sets the foreground color of wait message box.</summary>
-        [Browsable(true),
-        Category("Appearance"),
-        Description("Sets the foreground color for the text in the wait message box"),
-        DefaultValue(typeof(Color), "Black"),
-         RefreshProperties(RefreshProperties.Repaint)]
-        public Color WaitBoxForeColor
-        {
-            get => LabelWaitMessage.ForeColor;
-            set => LabelWaitMessage.ForeColor = value;
-        }
+    /// <summary>Gets or sets the foreground color of wait message box.</summary>
+    [Browsable(true),
+     Category("Appearance"),
+     Description("Sets the foreground color for the title text in the wait message box"),
+     DefaultValue(typeof(Color), "DimGray"),
+     RefreshProperties(RefreshProperties.Repaint)]
+    public Color WaitBoxTitleForeColor
+    {
+        get => LabelWaitTitle.ForeColor;
+        set => LabelWaitTitle.ForeColor = value;
+    }
 
-        /// <summary>Gets or sets the foreground color of wait message box.</summary>
-        [Browsable(true),
-         Category("Appearance"),
-         Description("Sets the foreground color for the title text in the wait message box"),
-         DefaultValue(typeof(Color), "DimGray"),
-         RefreshProperties(RefreshProperties.Repaint)]
-        public Color WaitBoxTitleForeColor
+    /// <summary>
+    /// Property to set or return the message to display in the wait box.
+    /// </summary>
+    [Browsable(true),
+     Category("Appearance"),
+     Description("Sets the message to display in the wait message box."),
+    RefreshProperties(RefreshProperties.Repaint)]
+    public string WaitMessage
+    {
+        get => LabelWaitMessage.Text;
+        set
         {
-            get => LabelWaitTitle.ForeColor;
-            set => LabelWaitTitle.ForeColor = value;
-        }
-
-        /// <summary>
-        /// Property to set or return the message to display in the wait box.
-        /// </summary>
-        [Browsable(true),
-         Category("Appearance"),
-         Description("Sets the message to display in the wait message box."),
-        RefreshProperties(RefreshProperties.Repaint)]
-        public string WaitMessage
-        {
-            get => LabelWaitMessage.Text;
-            set
+            if (string.Equals(value, LabelWaitMessage.Text, StringComparison.CurrentCulture))
             {
-                if (string.Equals(value, LabelWaitMessage.Text, StringComparison.CurrentCulture))
-                {
-                    return;
-                }
-
-                LabelWaitMessage.Text = value;
-
-                if (string.IsNullOrEmpty(LabelWaitMessage.Text))
-                {
-                    PanelWait.RowStyles[1].SizeType = SizeType.Absolute;
-                    PanelWait.RowStyles[1].Height = 0;
-
-                    if (string.IsNullOrEmpty(LabelWaitTitle.Text))
-                    {
-                        PanelWait.ColumnStyles[1].SizeType = SizeType.Absolute;
-                        PanelWait.ColumnStyles[1].Width = 0;
-                    }
-                    else if (PanelWait.ColumnStyles[1].SizeType != SizeType.AutoSize)
-                    {
-                        PanelWait.ColumnStyles[1].SizeType = SizeType.AutoSize;
-                    }
-                }
-                else
-                {
-                    PanelWait.RowStyles[1].SizeType = SizeType.AutoSize;
-                    PanelWait.ColumnStyles[1].SizeType = SizeType.AutoSize;
-                }
-
-                Invalidate();
+                return;
             }
-        }
 
-        /// <summary>
-        /// Property to set or return the title to display in the wait box.
-        /// </summary>
-        [Browsable(true),
-         Category("Appearance"),
-         Description("Sets the title to display in the wait message box."),
-         RefreshProperties(RefreshProperties.Repaint)]
-        public string WaitTitle
-        {
-            get => LabelWaitTitle.Text;
-            set
+            LabelWaitMessage.Text = value;
+
+            if (string.IsNullOrEmpty(LabelWaitMessage.Text))
             {
-                if (string.Equals(value, LabelWaitTitle.Text, StringComparison.CurrentCulture))
-                {
-                    return;
-                }
-
-                LabelWaitTitle.Text = value;
+                PanelWait.RowStyles[1].SizeType = SizeType.Absolute;
+                PanelWait.RowStyles[1].Height = 0;
 
                 if (string.IsNullOrEmpty(LabelWaitTitle.Text))
                 {
-                    LabelWaitMessage.Anchor = AnchorStyles.Left;
-                    PanelWait.RowStyles[0].SizeType = SizeType.Absolute;
-                    PanelWait.RowStyles[0].Height = 0;
-
-                    if (string.IsNullOrEmpty(LabelWaitMessage.Text))
-                    {
-                        PanelWait.ColumnStyles[1].SizeType = SizeType.Absolute;
-                        PanelWait.ColumnStyles[1].Width = 0;
-                    }
-                    else if (PanelWait.ColumnStyles[1].SizeType != SizeType.AutoSize)
-                    {
-                        PanelWait.ColumnStyles[1].SizeType = SizeType.AutoSize;
-                    }
+                    PanelWait.ColumnStyles[1].SizeType = SizeType.Absolute;
+                    PanelWait.ColumnStyles[1].Width = 0;
                 }
-                else
+                else if (PanelWait.ColumnStyles[1].SizeType != SizeType.AutoSize)
                 {
-                    LabelWaitMessage.Anchor = AnchorStyles.Left | AnchorStyles.Top;
-                    PanelWait.RowStyles[0].SizeType = SizeType.AutoSize;
                     PanelWait.ColumnStyles[1].SizeType = SizeType.AutoSize;
                 }
-
-                Invalidate();
             }
-        }
-
-        /// <summary>
-        /// Property to set or return the font to use for the wait message.
-        /// </summary>
-        [Browsable(true),
-         Category("Appearance"),
-         Description("Sets the font to use in the wait message box."),
-         RefreshProperties(RefreshProperties.Repaint),
-        DefaultValue(typeof(Font), "Segoe UI, 9pt")]
-        public Font WaitMessageFont
-        {
-            get => LabelWaitMessage.Font;
-            set
+            else
             {
-                LabelWaitMessage.Font = value;
-                Invalidate();
+                PanelWait.RowStyles[1].SizeType = SizeType.AutoSize;
+                PanelWait.ColumnStyles[1].SizeType = SizeType.AutoSize;
             }
+
+            Invalidate();
         }
-
-        /// <summary>
-        /// Property to set or return the font to use for the wait message title.
-        /// </summary>
-        [Browsable(true),
-         Category("Appearance"),
-         Description("Sets the font to use in the wait message box title."),
-         RefreshProperties(RefreshProperties.Repaint),
-         DefaultValue(typeof(Font), "Segoe UI, 12pt")]
-        public Font WaitTitleFont
-        {
-            get => LabelWaitTitle.Font;
-            set
-            {
-                LabelWaitTitle.Font = value;
-                Invalidate();
-            }
-        }
-
-        /// <summary>
-        /// Property to set or return the icon used for the wait message.
-        /// </summary>
-        /// <remarks>
-        /// Setting this value to <b>null</b> will reset the image to the original image for the control.
-        /// </remarks>
-        [Browsable(true),
-         Category("Appearance"),
-         Description("Sets the image to use in the wait message box."),
-         RefreshProperties(RefreshProperties.Repaint),
-         DefaultValue(typeof(Image), null)]
-        public Image WaitIcon
-        {
-            get => _waitIcon;
-            set
-            {
-                if (_waitIcon == value)
-                {
-                    return;
-                }
-
-                if (value is null)
-                {
-                    _waitIcon = null;
-                    ImageWait.Image = Resources.wait_48x48;
-                }
-                else
-                {
-                    ImageWait.Image = _waitIcon = value;
-                }
-            }
-        }
-        #endregion
-
-        #region Constructor/Finalizer.
-        /// <summary>
-        /// Initializes a new instance of the <see cref="GorgonWaitMessagePanel"/> class.
-        /// </summary>
-        public GorgonWaitMessagePanel() => InitializeComponent();
-        #endregion
     }
+
+    /// <summary>
+    /// Property to set or return the title to display in the wait box.
+    /// </summary>
+    [Browsable(true),
+     Category("Appearance"),
+     Description("Sets the title to display in the wait message box."),
+     RefreshProperties(RefreshProperties.Repaint)]
+    public string WaitTitle
+    {
+        get => LabelWaitTitle.Text;
+        set
+        {
+            if (string.Equals(value, LabelWaitTitle.Text, StringComparison.CurrentCulture))
+            {
+                return;
+            }
+
+            LabelWaitTitle.Text = value;
+
+            if (string.IsNullOrEmpty(LabelWaitTitle.Text))
+            {
+                LabelWaitMessage.Anchor = AnchorStyles.Left;
+                PanelWait.RowStyles[0].SizeType = SizeType.Absolute;
+                PanelWait.RowStyles[0].Height = 0;
+
+                if (string.IsNullOrEmpty(LabelWaitMessage.Text))
+                {
+                    PanelWait.ColumnStyles[1].SizeType = SizeType.Absolute;
+                    PanelWait.ColumnStyles[1].Width = 0;
+                }
+                else if (PanelWait.ColumnStyles[1].SizeType != SizeType.AutoSize)
+                {
+                    PanelWait.ColumnStyles[1].SizeType = SizeType.AutoSize;
+                }
+            }
+            else
+            {
+                LabelWaitMessage.Anchor = AnchorStyles.Left | AnchorStyles.Top;
+                PanelWait.RowStyles[0].SizeType = SizeType.AutoSize;
+                PanelWait.ColumnStyles[1].SizeType = SizeType.AutoSize;
+            }
+
+            Invalidate();
+        }
+    }
+
+    /// <summary>
+    /// Property to set or return the font to use for the wait message.
+    /// </summary>
+    [Browsable(true),
+     Category("Appearance"),
+     Description("Sets the font to use in the wait message box."),
+     RefreshProperties(RefreshProperties.Repaint),
+    DefaultValue(typeof(Font), "Segoe UI, 9pt")]
+    public Font WaitMessageFont
+    {
+        get => LabelWaitMessage.Font;
+        set
+        {
+            LabelWaitMessage.Font = value;
+            Invalidate();
+        }
+    }
+
+    /// <summary>
+    /// Property to set or return the font to use for the wait message title.
+    /// </summary>
+    [Browsable(true),
+     Category("Appearance"),
+     Description("Sets the font to use in the wait message box title."),
+     RefreshProperties(RefreshProperties.Repaint),
+     DefaultValue(typeof(Font), "Segoe UI, 12pt")]
+    public Font WaitTitleFont
+    {
+        get => LabelWaitTitle.Font;
+        set
+        {
+            LabelWaitTitle.Font = value;
+            Invalidate();
+        }
+    }
+
+    /// <summary>
+    /// Property to set or return the icon used for the wait message.
+    /// </summary>
+    /// <remarks>
+    /// Setting this value to <b>null</b> will reset the image to the original image for the control.
+    /// </remarks>
+    [Browsable(true),
+     Category("Appearance"),
+     Description("Sets the image to use in the wait message box."),
+     RefreshProperties(RefreshProperties.Repaint),
+     DefaultValue(typeof(Image), null)]
+    public Image WaitIcon
+    {
+        get => _waitIcon;
+        set
+        {
+            if (_waitIcon == value)
+            {
+                return;
+            }
+
+            if (value is null)
+            {
+                _waitIcon = null;
+                ImageWait.Image = Resources.wait_48x48;
+            }
+            else
+            {
+                ImageWait.Image = _waitIcon = value;
+            }
+        }
+    }
+    #endregion
+
+    #region Constructor/Finalizer.
+    /// <summary>
+    /// Initializes a new instance of the <see cref="GorgonWaitMessagePanel"/> class.
+    /// </summary>
+    public GorgonWaitMessagePanel() => InitializeComponent();
+    #endregion
 }

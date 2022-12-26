@@ -26,26 +26,25 @@
 
 using System;
 
-namespace Gorgon.Editor.Views
+namespace Gorgon.Editor.Views;
+
+/// <summary>
+/// Event arguments for the <see cref="StageLive.Save"/> event.
+/// </summary>
+internal class SaveEventArgs
+    : EventArgs
 {
     /// <summary>
-    /// Event arguments for the <see cref="StageLive.Save"/> event.
+    /// Property to return whether the application should prompt the user for a file type and file name.
     /// </summary>
-    internal class SaveEventArgs
-        : EventArgs
+    public bool SaveAs
     {
-        /// <summary>
-        /// Property to return whether the application should prompt the user for a file type and file name.
-        /// </summary>
-        public bool SaveAs
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="SaveEventArgs"/> class.
-        /// </summary>
-        /// <param name="saveAs"><b>true</b> to prompt for file type and file name, <b>false</b> to save with current file information (if possible).</param>
-        public SaveEventArgs(bool saveAs) => SaveAs = saveAs;
+        get;
     }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="SaveEventArgs"/> class.
+    /// </summary>
+    /// <param name="saveAs"><b>true</b> to prompt for file type and file name, <b>false</b> to save with current file information (if possible).</param>
+    public SaveEventArgs(bool saveAs) => SaveAs = saveAs;
 }

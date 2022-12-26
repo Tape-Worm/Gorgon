@@ -34,12 +34,12 @@ using Gorgon.Renderers;
 using Gorgon.Renderers.Cameras;
 using DX = SharpDX;
 
-namespace Gorgon.Editor.TextureAtlasTool
-{
-    /// <summary>
-    /// The renderer used to draw the texture and sprites.
-    /// </summary>
-    internal class Renderer
+namespace Gorgon.Editor.TextureAtlasTool;
+
+/// <summary>
+/// The renderer used to draw the texture and sprites.
+/// </summary>
+internal class Renderer
 		: DefaultToolRenderer<ITextureAtlas>
 	{
 		#region Variables.
@@ -125,4 +125,3 @@ namespace Gorgon.Editor.TextureAtlasTool
 		}
 		#endregion
 	}
-}

@@ -30,104 +30,103 @@ using Gorgon.Input.Properties;
 using Gorgon.Native;
 using Microsoft.Win32;
 
-namespace Gorgon.Input
+namespace Gorgon.Input;
+
+/// <summary>
+/// Retrieves device information from the windows registry for a given device name.
+/// </summary>
+internal static class RawInputDeviceRegistryInfo
 {
     /// <summary>
-    /// Retrieves device information from the windows registry for a given device name.
+    /// Function to retrieve the description of the raw input device from the registry.
     /// </summary>
-    internal static class RawInputDeviceRegistryInfo
+    /// <param name="deviceName">Path to the registry key that holds the device description.</param>
+    /// <param name="log">The debug log file to use when logging issues.</param>
+    /// <returns>The device description.</returns>
+    public static string GetDeviceDescription(string deviceName, IGorgonLog log)
     {
-        /// <summary>
-        /// Function to retrieve the description of the raw input device from the registry.
-        /// </summary>
-        /// <param name="deviceName">Path to the registry key that holds the device description.</param>
-        /// <param name="log">The debug log file to use when logging issues.</param>
-        /// <returns>The device description.</returns>
-        public static string GetDeviceDescription(string deviceName, IGorgonLog log)
+        if (string.IsNullOrWhiteSpace(deviceName))
         {
-            if (string.IsNullOrWhiteSpace(deviceName))
-            {
-                throw new ArgumentException(Resources.GORINP_RAW_ERR_CANNOT_READ_DEVICE_DATA, nameof(deviceName));
-            }
-
-            string[] regValue = deviceName.Split('#');
-
-            regValue[0] = regValue[0][4..];
-
-            // Don't add RDP devices.
-            if ((log is not null) &&
-                (regValue.Length > 0) &&
-                (regValue[1].StartsWith("RDP_", StringComparison.OrdinalIgnoreCase)))
-            {
-                log.Print("WARNING: This is an RDP device.  Raw input in Gorgon is not supported under RDP.  Skipping this device.", LoggingLevel.Verbose);
-                return string.Empty;
-            }
-
-            using RegistryKey deviceKey = Registry.LocalMachine.OpenSubKey($@"System\CurrentControlSet\Enum\{regValue[0]}\{regValue[1]}\{regValue[2]}",
-                                                                            false);
-            if (deviceKey?.GetValue("DeviceDesc") is null)
-            {
-                return string.Empty;
-            }
-
-            regValue = deviceKey.GetValue("DeviceDesc").ToString().Split(';');
-
-            return regValue[^1];
+            throw new ArgumentException(Resources.GORINP_RAW_ERR_CANNOT_READ_DEVICE_DATA, nameof(deviceName));
         }
 
-        /// <summary>
-        /// Function to return the class name for the device.
-        /// </summary>
-        /// <param name="deviceName">The name of the device from <see cref="RawInputApi.GetDeviceName"/>.</param>
-        /// <param name="log">The debug log file to use when logging issues.</param>
-        /// <returns>The device class name.</returns>
-        public static string GetDeviceClass(string deviceName, IGorgonLog log)
+        string[] regValue = deviceName.Split('#');
+
+        regValue[0] = regValue[0][4..];
+
+        // Don't add RDP devices.
+        if ((log is not null) &&
+            (regValue.Length > 0) &&
+            (regValue[1].StartsWith("RDP_", StringComparison.OrdinalIgnoreCase)))
         {
-            if (string.IsNullOrWhiteSpace(deviceName))
-            {
-                throw new ArgumentException(Resources.GORINP_RAW_ERR_CANNOT_READ_DEVICE_DATA, nameof(deviceName));
-            }
-
-            string[] regValue = deviceName.Split('#');
-
-            regValue[0] = regValue[0][4..];
-
-            // Don't add RDP devices.
-            if ((log is not null) &&
-                (regValue.Length > 0) &&
-                (regValue[1].StartsWith("RDP_", StringComparison.OrdinalIgnoreCase)))
-            {
-                log.Print("WARNING: This is an RDP device.  Raw input in Gorgon is not supported under RDP.  Skipping this device.", LoggingLevel.Verbose);
-                return string.Empty;
-            }
-
-            using RegistryKey deviceKey = Registry.LocalMachine.OpenSubKey($@"System\CurrentControlSet\Enum\{regValue[0]}\{regValue[1]}\{regValue[2]}",
-                                                                            false);
-            if (deviceKey?.GetValue("DeviceDesc") is null)
-            {
-                return string.Empty;
-            }
-
-            if (deviceKey.GetValue("Class") is not null)
-            {
-                return deviceKey.GetValue("Class").ToString();
-            }
-
-            // Windows 8 no longer has a "Class" value in this area, so we need to go elsewhere to get it.
-            if (deviceKey.GetValue("ClassGUID") is null)
-            {
-                return string.Empty;
-            }
-
-            string classGUID = deviceKey.GetValue("ClassGUID").ToString();
-
-            if (string.IsNullOrWhiteSpace(classGUID))
-            {
-                return string.Empty;
-            }
-
-            using RegistryKey classKey = Registry.LocalMachine.OpenSubKey($@"System\CurrentControlSet\Control\Class\{classGUID}");
-            return classKey?.GetValue("Class") is null ? string.Empty : classKey.GetValue("Class").ToString();
+            log.Print("WARNING: This is an RDP device.  Raw input in Gorgon is not supported under RDP.  Skipping this device.", LoggingLevel.Verbose);
+            return string.Empty;
         }
+
+        using RegistryKey deviceKey = Registry.LocalMachine.OpenSubKey($@"System\CurrentControlSet\Enum\{regValue[0]}\{regValue[1]}\{regValue[2]}",
+                                                                        false);
+        if (deviceKey?.GetValue("DeviceDesc") is null)
+        {
+            return string.Empty;
+        }
+
+        regValue = deviceKey.GetValue("DeviceDesc").ToString().Split(';');
+
+        return regValue[^1];
+    }
+
+    /// <summary>
+    /// Function to return the class name for the device.
+    /// </summary>
+    /// <param name="deviceName">The name of the device from <see cref="RawInputApi.GetDeviceName"/>.</param>
+    /// <param name="log">The debug log file to use when logging issues.</param>
+    /// <returns>The device class name.</returns>
+    public static string GetDeviceClass(string deviceName, IGorgonLog log)
+    {
+        if (string.IsNullOrWhiteSpace(deviceName))
+        {
+            throw new ArgumentException(Resources.GORINP_RAW_ERR_CANNOT_READ_DEVICE_DATA, nameof(deviceName));
+        }
+
+        string[] regValue = deviceName.Split('#');
+
+        regValue[0] = regValue[0][4..];
+
+        // Don't add RDP devices.
+        if ((log is not null) &&
+            (regValue.Length > 0) &&
+            (regValue[1].StartsWith("RDP_", StringComparison.OrdinalIgnoreCase)))
+        {
+            log.Print("WARNING: This is an RDP device.  Raw input in Gorgon is not supported under RDP.  Skipping this device.", LoggingLevel.Verbose);
+            return string.Empty;
+        }
+
+        using RegistryKey deviceKey = Registry.LocalMachine.OpenSubKey($@"System\CurrentControlSet\Enum\{regValue[0]}\{regValue[1]}\{regValue[2]}",
+                                                                        false);
+        if (deviceKey?.GetValue("DeviceDesc") is null)
+        {
+            return string.Empty;
+        }
+
+        if (deviceKey.GetValue("Class") is not null)
+        {
+            return deviceKey.GetValue("Class").ToString();
+        }
+
+        // Windows 8 no longer has a "Class" value in this area, so we need to go elsewhere to get it.
+        if (deviceKey.GetValue("ClassGUID") is null)
+        {
+            return string.Empty;
+        }
+
+        string classGUID = deviceKey.GetValue("ClassGUID").ToString();
+
+        if (string.IsNullOrWhiteSpace(classGUID))
+        {
+            return string.Empty;
+        }
+
+        using RegistryKey classKey = Registry.LocalMachine.OpenSubKey($@"System\CurrentControlSet\Control\Class\{classGUID}");
+        return classKey?.GetValue("Class") is null ? string.Empty : classKey.GetValue("Class").ToString();
     }
 }

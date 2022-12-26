@@ -26,75 +26,74 @@
 
 using D3D11 = SharpDX.Direct3D11;
 
-namespace Gorgon.Graphics.Core
+namespace Gorgon.Graphics.Core;
+
+/// <summary>
+/// Statistics for the pipeline from a query.
+/// </summary>
+public readonly struct GorgonPipelineStatsResult
 {
     /// <summary>
-    /// Statistics for the pipeline from a query.
+    /// Number of vertices read by input assembler.
     /// </summary>
-    public readonly struct GorgonPipelineStatsResult
-    {
-        /// <summary>
-        /// Number of vertices read by input assembler.
-        /// </summary>
-        public readonly long InputAssemblerVertexCount;
-        /// <summary>
-        /// Number of primitives read by the input assembler. This number can be different depending on the primitive topology used. For example, a triangle strip with 6 vertices will produce 4 
-        /// triangles, however a triangle list with 6 vertices will produce 2 triangles.
-        /// </summary>
-        public readonly long InputAssemblerPrimitiveCount;
-        /// <summary>
-        /// Number of times a vertex shader was invoked. 
-        /// </summary>
-        public readonly long VertexShaderInvocations;
-        /// <summary>
-        /// Number of times a geometry shader was invoked. When the geometry shader is set to <b>null</b>, this statistic may or may not increment depending on the hardware manufacturer.
-        /// </summary>
-        public readonly long GeometryShaderInvocations;
-        /// <summary>
-        /// Number of primitives output by a geometry shader.
-        /// </summary>
-        public readonly long GeometryShaderPrimitiveCount;
-        /// <summary>
-        /// Number of primitives that were sent to the rasterizer. When the rasterizer is disabled, this will not increment.
-        /// </summary>
-        public readonly long PrimitivesRasterized;
-        /// <summary>
-        /// Number of primitives that were rendered. This may be larger or smaller than <see cref="PrimitivesRasterized"/> because after a primitive is clipped sometimes it is either broken up into 
-        /// more than one primitive or completely culled.
-        /// </summary>
-        public readonly long PrimitivesRendered;
-        /// <summary>
-        /// Number of times a pixel shader was invoked.
-        /// </summary>
-        public readonly long PixelShaderInvocations;
-        /// <summary>
-        /// Number of times a hull shader was invoked.
-        /// </summary>
-        public readonly long HullShaderInvocations;
-        /// <summary>
-        /// Number of times a domain shader was invoked.
-        /// </summary>
-        public readonly long DomainShaderInvocations;
-        /// <summary>
-        /// Number of times a compute shader was invoked.
-        /// </summary>
-        public readonly long ComputeShaderInvocations;
+    public readonly long InputAssemblerVertexCount;
+    /// <summary>
+    /// Number of primitives read by the input assembler. This number can be different depending on the primitive topology used. For example, a triangle strip with 6 vertices will produce 4 
+    /// triangles, however a triangle list with 6 vertices will produce 2 triangles.
+    /// </summary>
+    public readonly long InputAssemblerPrimitiveCount;
+    /// <summary>
+    /// Number of times a vertex shader was invoked. 
+    /// </summary>
+    public readonly long VertexShaderInvocations;
+    /// <summary>
+    /// Number of times a geometry shader was invoked. When the geometry shader is set to <b>null</b>, this statistic may or may not increment depending on the hardware manufacturer.
+    /// </summary>
+    public readonly long GeometryShaderInvocations;
+    /// <summary>
+    /// Number of primitives output by a geometry shader.
+    /// </summary>
+    public readonly long GeometryShaderPrimitiveCount;
+    /// <summary>
+    /// Number of primitives that were sent to the rasterizer. When the rasterizer is disabled, this will not increment.
+    /// </summary>
+    public readonly long PrimitivesRasterized;
+    /// <summary>
+    /// Number of primitives that were rendered. This may be larger or smaller than <see cref="PrimitivesRasterized"/> because after a primitive is clipped sometimes it is either broken up into 
+    /// more than one primitive or completely culled.
+    /// </summary>
+    public readonly long PrimitivesRendered;
+    /// <summary>
+    /// Number of times a pixel shader was invoked.
+    /// </summary>
+    public readonly long PixelShaderInvocations;
+    /// <summary>
+    /// Number of times a hull shader was invoked.
+    /// </summary>
+    public readonly long HullShaderInvocations;
+    /// <summary>
+    /// Number of times a domain shader was invoked.
+    /// </summary>
+    public readonly long DomainShaderInvocations;
+    /// <summary>
+    /// Number of times a compute shader was invoked.
+    /// </summary>
+    public readonly long ComputeShaderInvocations;
 
-        /// <summary>Initializes a new instance of the <see cref="GorgonPipelineStatsResult" /> struct.</summary>
-        /// <param name="stats">The stats.</param>
-        internal GorgonPipelineStatsResult(ref D3D11.QueryDataPipelineStatistics stats)
-        {
-            InputAssemblerVertexCount = stats.IAVerticeCount;
-            InputAssemblerPrimitiveCount = stats.IAPrimitiveCount;
-            VertexShaderInvocations = stats.VSInvocationCount;
-            GeometryShaderInvocations = stats.GSInvocationCount;
-            GeometryShaderPrimitiveCount = stats.GSPrimitiveCount;
-            PrimitivesRasterized = stats.CInvocationCount;
-            PrimitivesRendered = stats.CPrimitiveCount;
-            PixelShaderInvocations = stats.PSInvocationCount;
-            HullShaderInvocations = stats.HSInvocationCount;
-            DomainShaderInvocations = stats.DSInvocationCount;
-            ComputeShaderInvocations = stats.CSInvocationCount;
-        }
+    /// <summary>Initializes a new instance of the <see cref="GorgonPipelineStatsResult" /> struct.</summary>
+    /// <param name="stats">The stats.</param>
+    internal GorgonPipelineStatsResult(ref D3D11.QueryDataPipelineStatistics stats)
+    {
+        InputAssemblerVertexCount = stats.IAVerticeCount;
+        InputAssemblerPrimitiveCount = stats.IAPrimitiveCount;
+        VertexShaderInvocations = stats.VSInvocationCount;
+        GeometryShaderInvocations = stats.GSInvocationCount;
+        GeometryShaderPrimitiveCount = stats.GSPrimitiveCount;
+        PrimitivesRasterized = stats.CInvocationCount;
+        PrimitivesRendered = stats.CPrimitiveCount;
+        PixelShaderInvocations = stats.PSInvocationCount;
+        HullShaderInvocations = stats.HSInvocationCount;
+        DomainShaderInvocations = stats.DSInvocationCount;
+        ComputeShaderInvocations = stats.CSInvocationCount;
     }
 }

@@ -34,251 +34,250 @@ using Gorgon.Renderers;
 using Gorgon.Renderers.Cameras;
 using DX = SharpDX;
 
-namespace Gorgon.Examples
+namespace Gorgon.Examples;
+
+/// <summary>
+/// Provides rendering functionality for the appilcation.
+/// </summary>
+internal class SceneRenderer
+    : IDisposable
 {
+    #region Variables.
+    // The main graphics interface.
+    private readonly GorgonGraphics _graphics;
+    // The 2D renderer.
+    private readonly Gorgon2D _renderer;
+    // The resource manager.
+    private readonly ResourceManagement _resources;
+    // The camera used for rendering.
+    private readonly GorgonOrthoCamera _camera;
+    // The screen buffer.
+    private GorgonRenderTarget2DView _screen;
+    // The list of layers to render.
+    private readonly List<Layer> _layers = new();
+    // Post processing groups.  Use to render specific layers with post processing effects.
+    private readonly List<(string name, Gorgon2DCompositor compositor)> _postProcessGroups = new();
+    private readonly Dictionary<string, List<Layer>> _postProcessLayers = new(StringComparer.OrdinalIgnoreCase);
+    #endregion
+
+    #region Methods.
     /// <summary>
-    /// Provides rendering functionality for the appilcation.
+    /// Function to copy the contents of a texture to the screen buffer.
     /// </summary>
-    internal class SceneRenderer
-        : IDisposable
+    /// <param name="src">The texture to copy.</param>
+    private void FlipToScreen(GorgonTexture2DView src)
     {
-        #region Variables.
-        // The main graphics interface.
-        private readonly GorgonGraphics _graphics;
-        // The 2D renderer.
-        private readonly Gorgon2D _renderer;
-        // The resource manager.
-        private readonly ResourceManagement _resources;
-        // The camera used for rendering.
-        private readonly GorgonOrthoCamera _camera;
-        // The screen buffer.
-        private GorgonRenderTarget2DView _screen;
-        // The list of layers to render.
-        private readonly List<Layer> _layers = new();
-        // Post processing groups.  Use to render specific layers with post processing effects.
-        private readonly List<(string name, Gorgon2DCompositor compositor)> _postProcessGroups = new();
-        private readonly Dictionary<string, List<Layer>> _postProcessLayers = new(StringComparer.OrdinalIgnoreCase);
-        #endregion
+        _graphics.SetRenderTarget(_screen);
+        _renderer.Begin();
+        _renderer.DrawFilledRectangle(new DX.RectangleF(0, 0, _screen.Width, _screen.Height),
+                                    GorgonColor.White,
+                                    src,
+                                    new DX.RectangleF(0, 0, 1, 1),
+                                    textureSampler: GorgonSamplerState.Default);
 
-        #region Methods.
-        /// <summary>
-        /// Function to copy the contents of a texture to the screen buffer.
-        /// </summary>
-        /// <param name="src">The texture to copy.</param>
-        private void FlipToScreen(GorgonTexture2DView src)
+        _renderer.End();
+    }
+
+    /// <summary>
+    /// Function to apply lighting to the layers.
+    /// </summary>
+    private void ApplyLightingToLayers()
+    {
+        // Turn off lighting before attempting to update the lights.
+        for (int i = 0; i < _layers.Count; ++i)
         {
-            _graphics.SetRenderTarget(_screen);
-            _renderer.Begin();
-            _renderer.DrawFilledRectangle(new DX.RectangleF(0, 0, _screen.Width, _screen.Height),
-                                        GorgonColor.White,
-                                        src,
-                                        new DX.RectangleF(0, 0, 1, 1),
-                                        textureSampler: GorgonSamplerState.Default);
-
-            _renderer.End();
+            _layers[i].ClearActiveLights();
         }
 
-        /// <summary>
-        /// Function to apply lighting to the layers.
-        /// </summary>
-        private void ApplyLightingToLayers()
+        for (int i = 0; i < _layers.Count; ++i)
         {
-            // Turn off lighting before attempting to update the lights.
-            for (int i = 0; i < _layers.Count; ++i)
-            {
-                _layers[i].ClearActiveLights();
-            }
+            Layer layer = _layers[i];
 
-            for (int i = 0; i < _layers.Count; ++i)
+            for (int j = 0; j < layer.Lights.Count; ++j)
             {
-                Layer layer = _layers[i];
+                Light light = layer.Lights[j];
 
-                for (int j = 0; j < layer.Lights.Count; ++j)
+                // If we don't specify layers to light up, assume all layers receive light.
+                if (light.Layers.Count == 0)
                 {
-                    Light light = layer.Lights[j];
-
-                    // If we don't specify layers to light up, assume all layers receive light.
-                    if (light.Layers.Count == 0)
+                    for (int k = 0; k < _layers.Count; ++k)
                     {
-                        for (int k = 0; k < _layers.Count; ++k)
-                        {
-                            _layers[k].ApplyLight(light);
-                        }
-
-                        continue;
+                        _layers[k].ApplyLight(light);
                     }
 
-                    foreach (Layer lightLayer in light.Layers)
-                    {
-                        lightLayer.ApplyLight(light);
-                    }
-                }
-            }
-        }
-
-        /// <summary>
-        /// Function to render the scene.
-        /// </summary>
-        public void Render()
-        {
-            GorgonRenderTarget2DView sceneBuffer = _graphics.TemporaryTargets.Rent(_screen, "Work Buffer", true);
-            GorgonTexture2DView sceneSrv = sceneBuffer.GetShaderResourceView();
-
-            _graphics.SetRenderTarget(sceneBuffer);
-
-            ApplyLightingToLayers();
-
-            _screen.Clear(GorgonColor.BlackTransparent);
-
-            // If we have no post processing, then just blit to the screen target.
-            if (_postProcessGroups.Count == 0)
-            {
-                for (int i = 0; i < _layers.Count; ++i)
-                {
-                    _layers[i].Render();
-                }
-
-                FlipToScreen(sceneSrv);
-            }            
-            else
-            {
-                for (int i = 0; i < _postProcessGroups.Count; ++i)
-                {
-                    (string name, Gorgon2DCompositor compositor) = _postProcessGroups[i];
-
-                    if ((!_postProcessLayers.TryGetValue(name, out List<Layer> layers))
-                        || (layers.Count == 0))
-                    {
-                        continue;
-                    }
-
-                    sceneBuffer.Clear(GorgonColor.BlackTransparent);
-                    _graphics.SetRenderTarget(sceneBuffer);
-
-                    // Render the data.
-                    for (int j = 0; j < layers.Count; ++j)
-                    {
-                        layers[j].Render();
-                    }
-
-                    if (compositor is null)
-                    {
-                        FlipToScreen(sceneSrv);
-                    }
-                    else
-                    {
-                        compositor.Render(sceneSrv, _screen);
-                    }
-                }
-            }
-
-            _graphics.TemporaryTargets.Return(sceneBuffer);
-        }
-
-        /// <summary>
-        /// Function called when the swap chain is resized.
-        /// </summary>
-        /// <param name="screen">The updated screen render target.</param>
-        public void OnResize(GorgonRenderTarget2DView screen)
-        {
-            _screen = screen;
-
-            if (_screen is null)
-            {
-                return;
-            }
-
-            Vector2 aspect;
-            if (_screen.Width > _screen.Height)
-            {
-                aspect = new Vector2((float)screen.Width / screen.Height, 1.0f);
-            }
-            else
-            {
-                aspect = new Vector2(1, (float)screen.Height / screen.Width);
-            }
-
-            // Adjust the viewable area to match our aspect ratio.
-            // This will give our view a range of -1x-1 - 1x1.
-            //_camera.ViewDimensions = new DX.Size2F(2 * aspect.X, 2 * aspect.Y);
-            _camera.ViewDimensions = new DX.Size2F(2 * aspect.X, 2 * aspect.Y);
-
-            // All of our sprites are in pixel size, in order to bring them into resolution independent space, we need to adjust their sizes
-            // (else they'll be massive).
-            foreach (GorgonSprite sprite in _resources.Sprites.Values)
-            {
-                // Since we're altering the size of the sprites, we'll need to get the original width/height from another place.
-                // This can be extracted from the sprite texture region (assuming the region is 1:1 with pixel space, scaling the texture coordinates will mess this up).
-                var size = sprite.Texture.ToPixel(sprite.TextureRegion.Size).ToSize2F();
-
-                // Scale the size of the sprite to match our base resolution of 1920x1080.
-                var newSize = new DX.Size2F(size.Width / screen.Width * _camera.ViewDimensions.Width * 0.75f, size.Height / screen.Height * _camera.ViewDimensions.Height * 0.75f);
-
-                sprite.Size = newSize;
-            }
-
-            foreach (Layer layer in _layers)
-            {
-                layer.OnResize(new DX.Size2(screen.Width, screen.Height));
-            }
-        }
-
-
-        /// <summary>
-        /// Function to load the resources for the renderer.
-        /// </summary>
-        public void LoadResources()
-        {
-            _postProcessLayers["__NULL__"] = new List<Layer>();
-            _postProcessGroups.Add(("Final Pass", _resources.PostProcessCompositors["Final Pass"]));
-            _postProcessGroups.Add(("Space Ships", null));
-
-            // Split layers into groups.
-            foreach (Layer layer in _layers)
-            {
-                if (string.IsNullOrWhiteSpace(layer.PostProcessGroup))
-                {
-                    _postProcessLayers["__NULL__"].Add(layer);
                     continue;
                 }
 
-                if (!_postProcessLayers.TryGetValue(layer.PostProcessGroup, out List<Layer> layers))
+                foreach (Layer lightLayer in light.Layers)
                 {
-                    _postProcessLayers[layer.PostProcessGroup] = layers = new List<Layer>();
+                    lightLayer.ApplyLight(light);
+                }
+            }
+        }
+    }
+
+    /// <summary>
+    /// Function to render the scene.
+    /// </summary>
+    public void Render()
+    {
+        GorgonRenderTarget2DView sceneBuffer = _graphics.TemporaryTargets.Rent(_screen, "Work Buffer", true);
+        GorgonTexture2DView sceneSrv = sceneBuffer.GetShaderResourceView();
+
+        _graphics.SetRenderTarget(sceneBuffer);
+
+        ApplyLightingToLayers();
+
+        _screen.Clear(GorgonColor.BlackTransparent);
+
+        // If we have no post processing, then just blit to the screen target.
+        if (_postProcessGroups.Count == 0)
+        {
+            for (int i = 0; i < _layers.Count; ++i)
+            {
+                _layers[i].Render();
+            }
+
+            FlipToScreen(sceneSrv);
+        }            
+        else
+        {
+            for (int i = 0; i < _postProcessGroups.Count; ++i)
+            {
+                (string name, Gorgon2DCompositor compositor) = _postProcessGroups[i];
+
+                if ((!_postProcessLayers.TryGetValue(name, out List<Layer> layers))
+                    || (layers.Count == 0))
+                {
+                    continue;
                 }
 
-                layers.Add(layer);
+                sceneBuffer.Clear(GorgonColor.BlackTransparent);
+                _graphics.SetRenderTarget(sceneBuffer);
+
+                // Render the data.
+                for (int j = 0; j < layers.Count; ++j)
+                {
+                    layers[j].Render();
+                }
+
+                if (compositor is null)
+                {
+                    FlipToScreen(sceneSrv);
+                }
+                else
+                {
+                    compositor.Render(sceneSrv, _screen);
+                }
             }
-
-            // Use this adjust the sprite data to our coordinate space.
-            OnResize(_screen);
         }
 
-        /// <summary>Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.</summary>
-        public void Dispose()
-        {
-            foreach (IDisposable layer in _layers.OfType<IDisposable>())
-            {
-                layer.Dispose();
-            }
-        }
-        #endregion
-
-        #region Constructor/Finalizer.
-        /// <summary>Initializes a new instance of the <see cref="Examples.Renderer"/> class.</summary>
-        /// <param name="renderer">The renderer.</param>
-        /// <param name="resources">The resources.</param>
-        /// <param name="screen">The main render target for the scene.</param>
-        /// <param name="camera">The camera for the scene.</param>
-        public SceneRenderer(Gorgon2D renderer, ResourceManagement resources, GorgonRenderTarget2DView screen, LayerCamera layerController, GorgonOrthoCamera camera)
-        {
-            _graphics = renderer.Graphics;
-            _renderer = renderer;
-            _resources = resources;
-            _screen = screen;
-            _layers.AddRange(layerController.Layers);
-            _camera = camera;
-        }
-        #endregion
+        _graphics.TemporaryTargets.Return(sceneBuffer);
     }
+
+    /// <summary>
+    /// Function called when the swap chain is resized.
+    /// </summary>
+    /// <param name="screen">The updated screen render target.</param>
+    public void OnResize(GorgonRenderTarget2DView screen)
+    {
+        _screen = screen;
+
+        if (_screen is null)
+        {
+            return;
+        }
+
+        Vector2 aspect;
+        if (_screen.Width > _screen.Height)
+        {
+            aspect = new Vector2((float)screen.Width / screen.Height, 1.0f);
+        }
+        else
+        {
+            aspect = new Vector2(1, (float)screen.Height / screen.Width);
+        }
+
+        // Adjust the viewable area to match our aspect ratio.
+        // This will give our view a range of -1x-1 - 1x1.
+        //_camera.ViewDimensions = new DX.Size2F(2 * aspect.X, 2 * aspect.Y);
+        _camera.ViewDimensions = new DX.Size2F(2 * aspect.X, 2 * aspect.Y);
+
+        // All of our sprites are in pixel size, in order to bring them into resolution independent space, we need to adjust their sizes
+        // (else they'll be massive).
+        foreach (GorgonSprite sprite in _resources.Sprites.Values)
+        {
+            // Since we're altering the size of the sprites, we'll need to get the original width/height from another place.
+            // This can be extracted from the sprite texture region (assuming the region is 1:1 with pixel space, scaling the texture coordinates will mess this up).
+            var size = sprite.Texture.ToPixel(sprite.TextureRegion.Size).ToSize2F();
+
+            // Scale the size of the sprite to match our base resolution of 1920x1080.
+            var newSize = new DX.Size2F(size.Width / screen.Width * _camera.ViewDimensions.Width * 0.75f, size.Height / screen.Height * _camera.ViewDimensions.Height * 0.75f);
+
+            sprite.Size = newSize;
+        }
+
+        foreach (Layer layer in _layers)
+        {
+            layer.OnResize(new DX.Size2(screen.Width, screen.Height));
+        }
+    }
+
+
+    /// <summary>
+    /// Function to load the resources for the renderer.
+    /// </summary>
+    public void LoadResources()
+    {
+        _postProcessLayers["__NULL__"] = new List<Layer>();
+        _postProcessGroups.Add(("Final Pass", _resources.PostProcessCompositors["Final Pass"]));
+        _postProcessGroups.Add(("Space Ships", null));
+
+        // Split layers into groups.
+        foreach (Layer layer in _layers)
+        {
+            if (string.IsNullOrWhiteSpace(layer.PostProcessGroup))
+            {
+                _postProcessLayers["__NULL__"].Add(layer);
+                continue;
+            }
+
+            if (!_postProcessLayers.TryGetValue(layer.PostProcessGroup, out List<Layer> layers))
+            {
+                _postProcessLayers[layer.PostProcessGroup] = layers = new List<Layer>();
+            }
+
+            layers.Add(layer);
+        }
+
+        // Use this adjust the sprite data to our coordinate space.
+        OnResize(_screen);
+    }
+
+    /// <summary>Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.</summary>
+    public void Dispose()
+    {
+        foreach (IDisposable layer in _layers.OfType<IDisposable>())
+        {
+            layer.Dispose();
+        }
+    }
+    #endregion
+
+    #region Constructor/Finalizer.
+    /// <summary>Initializes a new instance of the <see cref="Examples.Renderer"/> class.</summary>
+    /// <param name="renderer">The renderer.</param>
+    /// <param name="resources">The resources.</param>
+    /// <param name="screen">The main render target for the scene.</param>
+    /// <param name="camera">The camera for the scene.</param>
+    public SceneRenderer(Gorgon2D renderer, ResourceManagement resources, GorgonRenderTarget2DView screen, LayerCamera layerController, GorgonOrthoCamera camera)
+    {
+        _graphics = renderer.Graphics;
+        _renderer = renderer;
+        _resources = resources;
+        _screen = screen;
+        _layers.AddRange(layerController.Layers);
+        _camera = camera;
+    }
+    #endregion
 }

@@ -28,78 +28,77 @@ using System;
 using System.Numerics;
 using Newtonsoft.Json;
 
-namespace Gorgon.Renderers
+namespace Gorgon.Renderers;
+
+/// <summary>
+/// A converter used to convert a texture to and from a string.
+/// </summary>
+internal class JsonVector4Converter
+    : JsonConverter
 {
-    /// <summary>
-    /// A converter used to convert a texture to and from a string.
-    /// </summary>
-    internal class JsonVector4Converter
-        : JsonConverter
+    /// <summary>Writes the JSON representation of the object.</summary>
+    /// <param name="writer">The <see cref="JsonWriter" /> to write to.</param>
+    /// <param name="value">The value.</param>
+    /// <param name="serializer">The calling serializer.</param>
+    public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
     {
-        /// <summary>Writes the JSON representation of the object.</summary>
-        /// <param name="writer">The <see cref="JsonWriter" /> to write to.</param>
-        /// <param name="value">The value.</param>
-        /// <param name="serializer">The calling serializer.</param>
-        public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
-        {
-            var v4 = (Vector4)value;
-            writer.WriteStartObject();
-            writer.WritePropertyName("x");
-            writer.WriteValue(v4.X);
-            writer.WritePropertyName("y");
-            writer.WriteValue(v4.Y);
-            writer.WritePropertyName("z");
-            writer.WriteValue(v4.Z);
-            writer.WritePropertyName("w");
-            writer.WriteValue(v4.W);
-            writer.WriteEndObject();
-        }
-
-        /// <summary>Reads the JSON representation of the object.</summary>
-        /// <param name="reader">The <see cref="JsonReader" /> to read from.</param>
-        /// <param name="objectType">Type of the object.</param>
-        /// <param name="existingValue">The existing value of object being read.</param>
-        /// <param name="serializer">The calling serializer.</param>
-        /// <returns>The object value.</returns>
-        public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
-        {
-            if ((reader.TokenType != JsonToken.StartObject)
-                || (!reader.Read()))
-            {
-                return Vector4.Zero;
-            }
-
-            float x = (float)(reader.ReadAsDouble() ?? 0);
-            if (!reader.Read())
-            {
-                return new Vector4(x, 0, 0, 0);
-            }
-
-            float y = (float)(reader.ReadAsDouble() ?? 0);
-
-            if (!reader.Read())
-            {
-                return new Vector4(x, y, 0, 0);
-            }
-
-            float z = (float)(reader.ReadAsDouble() ?? 0);
-            if (!reader.Read())
-            {
-                return new Vector4(x, y, z, 0);
-            }
-
-            float w = (float)(reader.ReadAsDouble() ?? 0);
-
-            return new Vector4(x, y, z, w);
-        }
-
-        /// <summary>
-        /// Determines whether this instance can convert the specified object type.
-        /// </summary>
-        /// <param name="objectType">Type of the object.</param>
-        /// <returns>
-        /// 	<c>true</c> if this instance can convert the specified object type; otherwise, <c>false</c>.
-        /// </returns>
-        public override bool CanConvert(Type objectType) => (objectType == typeof(Vector4));
+        var v4 = (Vector4)value;
+        writer.WriteStartObject();
+        writer.WritePropertyName("x");
+        writer.WriteValue(v4.X);
+        writer.WritePropertyName("y");
+        writer.WriteValue(v4.Y);
+        writer.WritePropertyName("z");
+        writer.WriteValue(v4.Z);
+        writer.WritePropertyName("w");
+        writer.WriteValue(v4.W);
+        writer.WriteEndObject();
     }
+
+    /// <summary>Reads the JSON representation of the object.</summary>
+    /// <param name="reader">The <see cref="JsonReader" /> to read from.</param>
+    /// <param name="objectType">Type of the object.</param>
+    /// <param name="existingValue">The existing value of object being read.</param>
+    /// <param name="serializer">The calling serializer.</param>
+    /// <returns>The object value.</returns>
+    public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
+    {
+        if ((reader.TokenType != JsonToken.StartObject)
+            || (!reader.Read()))
+        {
+            return Vector4.Zero;
+        }
+
+        float x = (float)(reader.ReadAsDouble() ?? 0);
+        if (!reader.Read())
+        {
+            return new Vector4(x, 0, 0, 0);
+        }
+
+        float y = (float)(reader.ReadAsDouble() ?? 0);
+
+        if (!reader.Read())
+        {
+            return new Vector4(x, y, 0, 0);
+        }
+
+        float z = (float)(reader.ReadAsDouble() ?? 0);
+        if (!reader.Read())
+        {
+            return new Vector4(x, y, z, 0);
+        }
+
+        float w = (float)(reader.ReadAsDouble() ?? 0);
+
+        return new Vector4(x, y, z, w);
+    }
+
+    /// <summary>
+    /// Determines whether this instance can convert the specified object type.
+    /// </summary>
+    /// <param name="objectType">Type of the object.</param>
+    /// <returns>
+    /// 	<c>true</c> if this instance can convert the specified object type; otherwise, <c>false</c>.
+    /// </returns>
+    public override bool CanConvert(Type objectType) => (objectType == typeof(Vector4));
 }

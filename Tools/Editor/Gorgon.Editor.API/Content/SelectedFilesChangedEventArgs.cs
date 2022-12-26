@@ -25,21 +25,20 @@
 #endregion
 
 
-namespace Gorgon.Editor.Content
+namespace Gorgon.Editor.Content;
+
+/// <summary>
+/// The event parameters for the <see cref="IContentFileManager.SelectedFilesChanged"/> event.
+/// </summary>
+public class SelectedFilesChangedEventArgs
 {
     /// <summary>
-    /// The event parameters for the <see cref="IContentFileManager.SelectedFilesChanged"/> event.
+    /// Property to return the number of selected files.
     /// </summary>
-    public class SelectedFilesChangedEventArgs
+    public int SelectedCount
     {
-        /// <summary>
-        /// Property to return the number of selected files.
-        /// </summary>
-        public int SelectedCount
-        {
-            get;
-        }
-
-
+        get;
     }
+
+
 }

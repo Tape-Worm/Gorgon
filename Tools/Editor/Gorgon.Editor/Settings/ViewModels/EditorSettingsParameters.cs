@@ -28,37 +28,36 @@ using System.Collections.Generic;
 using Gorgon.Editor.PlugIns;
 using Gorgon.Editor.UI;
 
-namespace Gorgon.Editor.ViewModels
+namespace Gorgon.Editor.ViewModels;
+
+/// <summary>
+/// The parameters for the <see cref="IEditorSettings"/> view model.
+/// </summary>
+internal class EditorSettingsParameters
+    : IViewModelInjection<IHostServices>
 {
     /// <summary>
-    /// The parameters for the <see cref="IEditorSettings"/> view model.
+    /// Property to set or return the categories for the settings.
     /// </summary>
-    internal class EditorSettingsParameters
-        : IViewModelInjection<IHostServices>
+    public IEnumerable<ISettingsCategory> Categories
     {
-        /// <summary>
-        /// Property to set or return the categories for the settings.
-        /// </summary>
-        public IEnumerable<ISettingsCategory> Categories
-        {
-            get;
-            set;
-        }
+        get;
+        set;
+    }
 
-        /// <summary>
-        /// Property to set or return the list of plug ins for the fixed plug in list category.
-        /// </summary>
-        public ISettingsPlugInsList PlugInsList
-        {
-            get;
-            set;
-        }
+    /// <summary>
+    /// Property to set or return the list of plug ins for the fixed plug in list category.
+    /// </summary>
+    public ISettingsPlugInsList PlugInsList
+    {
+        get;
+        set;
+    }
 
-        /// <summary>Property to return the services passed from host application.</summary>
-        public IHostServices HostServices
-        {
-            get;
-            set;
-        }
+    /// <summary>Property to return the services passed from host application.</summary>
+    public IHostServices HostServices
+    {
+        get;
+        set;
     }
 }

@@ -28,47 +28,46 @@ using System.Numerics;
 using Gorgon.Animation;
 using Gorgon.Editor.UI;
 
-namespace Gorgon.Editor.AnimationEditor
+namespace Gorgon.Editor.AnimationEditor;
+
+/// <summary>
+/// A view model for a key frame value.
+/// </summary>
+internal interface IKeyFrame
+    : IViewModel
 {
     /// <summary>
-    /// A view model for a key frame value.
+    /// Property to set or return the time index for the key frame.
     /// </summary>
-    internal interface IKeyFrame
-        : IViewModel
+    float Time
     {
-        /// <summary>
-        /// Property to set or return the time index for the key frame.
-        /// </summary>
-        float Time
-        {
-            get;
-            set;
-        }
+        get;
+        set;
+    }
 
-        /// <summary>
-        /// Property to return the type of data for this key frame.
-        /// </summary>
-        AnimationTrackKeyType DataType
-        {
-            get;
-        }
+    /// <summary>
+    /// Property to return the type of data for this key frame.
+    /// </summary>
+    AnimationTrackKeyType DataType
+    {
+        get;
+    }
 
-        /// <summary>
-        /// Property to set or return a texture value for the key frame.
-        /// </summary>
-        TextureValue TextureValue
-        {
-            get;
-            set;
-        }
+    /// <summary>
+    /// Property to set or return a texture value for the key frame.
+    /// </summary>
+    TextureValue TextureValue
+    {
+        get;
+        set;
+    }
 
-        /// <summary>
-        /// Property to return one to four floating point values for the key frame.
-        /// </summary>
-        Vector4 FloatValue
-        {
-            get;
-            set;
-        }
+    /// <summary>
+    /// Property to return one to four floating point values for the key frame.
+    /// </summary>
+    Vector4 FloatValue
+    {
+        get;
+        set;
     }
 }

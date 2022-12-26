@@ -81,221 +81,220 @@ using Gorgon.Core;
 using Gorgon.Math;
 using Gorgon.Properties;
 
-namespace Gorgon.Renderers.Data
+namespace Gorgon.Renderers.Data;
+
+/// <summary>
+/// Represents a bounding sphere in three dimensional space.
+/// </summary>
+[StructLayout(LayoutKind.Sequential, Pack = 4)]
+public readonly struct GorgonBoundingSphere 
+    : IGorgonEquatableByRef<GorgonBoundingSphere>
 {
+    #region Variables.
     /// <summary>
-    /// Represents a bounding sphere in three dimensional space.
+    /// A default, empty, bounding sphere.
     /// </summary>
-    [StructLayout(LayoutKind.Sequential, Pack = 4)]
-    public readonly struct GorgonBoundingSphere 
-        : IGorgonEquatableByRef<GorgonBoundingSphere>
+    public static readonly GorgonBoundingSphere Empty = default;
+
+    /// <summary>
+    /// The center of the sphere in three dimensional space.
+    /// </summary>
+    public readonly Vector3 Center;
+
+    /// <summary>
+    /// The radius of the sphere.
+    /// </summary>
+    public readonly float Radius;
+    #endregion
+
+    #region Properties.
+    /// <summary>
+    /// Property to return whether this bounding sphere is empty or not.
+    /// </summary>
+    public bool IsEmpty => Radius.EqualsEpsilon(0);
+    #endregion
+
+    #region Methods.
+    /// <summary>
+    /// Constructs a <see cref="GorgonBoundingSphere" /> that fully contains the given points.
+    /// </summary>
+    /// <param name="points">The points that will be contained by the sphere.</param>
+    /// <param name="result">When the method completes, contains the newly constructed bounding sphere.</param>
+    public static void FromPoints(Span<Vector3> points, out GorgonBoundingSphere result)
     {
-        #region Variables.
-        /// <summary>
-        /// A default, empty, bounding sphere.
-        /// </summary>
-        public static readonly GorgonBoundingSphere Empty = default;
-
-        /// <summary>
-        /// The center of the sphere in three dimensional space.
-        /// </summary>
-        public readonly Vector3 Center;
-
-        /// <summary>
-        /// The radius of the sphere.
-        /// </summary>
-        public readonly float Radius;
-        #endregion
-
-        #region Properties.
-        /// <summary>
-        /// Property to return whether this bounding sphere is empty or not.
-        /// </summary>
-        public bool IsEmpty => Radius.EqualsEpsilon(0);
-        #endregion
-
-        #region Methods.
-        /// <summary>
-        /// Constructs a <see cref="GorgonBoundingSphere" /> that fully contains the given points.
-        /// </summary>
-        /// <param name="points">The points that will be contained by the sphere.</param>
-        /// <param name="result">When the method completes, contains the newly constructed bounding sphere.</param>
-        public static void FromPoints(Span<Vector3> points, out GorgonBoundingSphere result)
+        if (points.IsEmpty)
         {
-            if (points.IsEmpty)
+            result = default;
+            return;
+        }
+
+        //Find the center of all points.
+        Vector3 center = Vector3.Zero;
+        for (int i = 0; i < points.Length; ++i)
+        {
+            center = Vector3.Add(points[i], center);
+        }
+
+        //This is the center of our sphere.
+        center /= points.Length;
+
+        //Find the radius of the sphere
+        float radius = 0f;
+        for (int i = 0; i < points.Length; ++i)
+        {
+            //We are doing a relative distance comparison to find the maximum distance
+            //from the center of our sphere.
+            float distance = Vector3.DistanceSquared(center, points[i]);
+
+            if (distance > radius)
             {
-                result = default;
+                radius = distance;
+            }
+        }
+
+        //Construct the sphere.
+        result = new GorgonBoundingSphere(center, radius.Sqrt());
+    }
+
+    /// <summary>
+    /// Constructs a <see cref="GorgonBoundingSphere"/> from a given box.
+    /// </summary>
+    /// <param name="box">The box that will designate the extents of the sphere.</param>
+    /// <param name="result">When the method completes, the newly constructed bounding sphere.</param>
+    public static void FromBox(in GorgonBoundingBox box, out GorgonBoundingSphere result)
+    {
+        var center = Vector3.Lerp(box.Minimum, box.Maximum, 0.5f);
+
+        float x = box.Minimum.X - box.Maximum.X;
+        float y = box.Minimum.Y - box.Maximum.Y;
+        float z = box.Minimum.Z - box.Maximum.Z;
+
+        result = new GorgonBoundingSphere(center, ((x * x) + (y * y) + (z * z)).Sqrt() * 0.5f);
+    }
+
+    /// <summary>
+    /// Constructs a <see cref="GorgonBoundingSphere"/> that is the as large as the total combined area of the two specified spheres.
+    /// </summary>
+    /// <param name="value1">The first sphere to merge.</param>
+    /// <param name="value2">The second sphere to merge.</param>
+    /// <param name="result">When the method completes, contains the newly constructed bounding sphere.</param>
+    public static void Merge(in GorgonBoundingSphere value1, in GorgonBoundingSphere value2, out GorgonBoundingSphere result)
+    {
+        Vector3 difference = value2.Center - value1.Center;
+
+        float length = difference.Length();
+        float radius = value1.Radius;
+        float radius2 = value2.Radius;
+
+        if (radius + radius2 >= length)
+        {
+            if (radius - radius2 >= length)
+            {
+                result = value1;
                 return;
             }
 
-            //Find the center of all points.
-            Vector3 center = Vector3.Zero;
-            for (int i = 0; i < points.Length; ++i)
+            if (radius2 - radius >= length)
             {
-                center = Vector3.Add(points[i], center);
-            }
-
-            //This is the center of our sphere.
-            center /= points.Length;
-
-            //Find the radius of the sphere
-            float radius = 0f;
-            for (int i = 0; i < points.Length; ++i)
-            {
-                //We are doing a relative distance comparison to find the maximum distance
-                //from the center of our sphere.
-                float distance = Vector3.DistanceSquared(center, points[i]);
-
-                if (distance > radius)
-                {
-                    radius = distance;
-                }
-            }
-
-            //Construct the sphere.
-            result = new GorgonBoundingSphere(center, radius.Sqrt());
-        }
-
-        /// <summary>
-        /// Constructs a <see cref="GorgonBoundingSphere"/> from a given box.
-        /// </summary>
-        /// <param name="box">The box that will designate the extents of the sphere.</param>
-        /// <param name="result">When the method completes, the newly constructed bounding sphere.</param>
-        public static void FromBox(in GorgonBoundingBox box, out GorgonBoundingSphere result)
-        {
-            var center = Vector3.Lerp(box.Minimum, box.Maximum, 0.5f);
-
-            float x = box.Minimum.X - box.Maximum.X;
-            float y = box.Minimum.Y - box.Maximum.Y;
-            float z = box.Minimum.Z - box.Maximum.Z;
-
-            result = new GorgonBoundingSphere(center, ((x * x) + (y * y) + (z * z)).Sqrt() * 0.5f);
-        }
-
-        /// <summary>
-        /// Constructs a <see cref="GorgonBoundingSphere"/> that is the as large as the total combined area of the two specified spheres.
-        /// </summary>
-        /// <param name="value1">The first sphere to merge.</param>
-        /// <param name="value2">The second sphere to merge.</param>
-        /// <param name="result">When the method completes, contains the newly constructed bounding sphere.</param>
-        public static void Merge(in GorgonBoundingSphere value1, in GorgonBoundingSphere value2, out GorgonBoundingSphere result)
-        {
-            Vector3 difference = value2.Center - value1.Center;
-
-            float length = difference.Length();
-            float radius = value1.Radius;
-            float radius2 = value2.Radius;
-
-            if (radius + radius2 >= length)
-            {
-                if (radius - radius2 >= length)
-                {
-                    result = value1;
-                    return;
-                }
-
-                if (radius2 - radius >= length)
-                {
-                    result = value2;
-                    return;
-                }
-            }
-
-            Vector3 vector = difference * (1.0f / length);
-            float min = -radius.Min(length - radius2);
-            float max = (radius.Max(length + radius2) - min) * 0.5f;
-
-            result = new GorgonBoundingSphere(value1.Center + vector * (max + min), max);
-        }
-
-        /// <summary>
-        /// Tests for equality between two objects.
-        /// </summary>
-        /// <param name="left">The first value to compare.</param>
-        /// <param name="right">The second value to compare.</param>
-        /// <returns><c>true</c> if <paramref name="left"/> has the same value as <paramref name="right"/>; otherwise, <c>false</c>.</returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool operator ==(in GorgonBoundingSphere left, in GorgonBoundingSphere right) => left.Equals(in right);
-
-        /// <summary>
-        /// Tests for inequality between two objects.
-        /// </summary>
-        /// <param name="left">The first value to compare.</param>
-        /// <param name="right">The second value to compare.</param>
-        /// <returns><c>true</c> if <paramref name="left"/> has a different value than <paramref name="right"/>; otherwise, <c>false</c>.</returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool operator !=(in GorgonBoundingSphere left, in GorgonBoundingSphere right) => !left.Equals(in right);
-
-        /// <summary>
-        /// Returns a <see cref="string"/> that represents this instance.
-        /// </summary>
-        /// <returns>
-        /// A <see cref="string"/> that represents this instance.
-        /// </returns>
-        public override string ToString() => string.Format(CultureInfo.CurrentCulture, Resources.GOR_TOSTR_BOUNDING_SPHERE, Center.X, Center.Y, Center.Z, Radius);
-
-        /// <summary>
-        /// Returns a hash code for this instance.
-        /// </summary>
-        /// <returns>
-        /// A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table. 
-        /// </returns>
-        public override int GetHashCode()
-        {
-            unchecked
-            {
-                return HashCode.Combine(Center, Radius);                
+                result = value2;
+                return;
             }
         }
 
-        /// <summary>
-        /// Determines whether the specified <see cref="Vector4"/> is equal to this instance.
-        /// </summary>
-        /// <param name="value">The <see cref="Vector4"/> to compare with this instance.</param>
-        /// <returns>
-        /// <c>true</c> if the specified <see cref="Vector4"/> is equal to this instance; otherwise, <c>false</c>.
-        /// </returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public bool Equals(GorgonBoundingSphere value) => Equals(in value);
+        Vector3 vector = difference * (1.0f / length);
+        float min = -radius.Min(length - radius2);
+        float max = (radius.Max(length + radius2) - min) * 0.5f;
 
-        /// <summary>
-        /// Determines whether the specified <see cref="object"/> is equal to this instance.
-        /// </summary>
-        /// <param name="value">The <see cref="object"/> to compare with this instance.</param>
-        /// <returns>
-        /// <c>true</c> if the specified <see cref="object"/> is equal to this instance; otherwise, <c>false</c>.
-        /// </returns>
-        public override bool Equals(object value) => (value is GorgonBoundingSphere sphere) ? this.Equals(in sphere) : base.Equals(value);
-
-        /// <summary>Function to compare this instance with another.</summary>
-        /// <param name="other">The other instance to use for comparison.</param>
-        /// <returns>
-        ///   <b>true</b> if equal, <b>false</b> if not.</returns>
-        public bool Equals(in GorgonBoundingSphere other) => (Center.Equals(other.Center)) && (Radius == other.Radius);
-
-
-        /// <summary>Deconstructs this instance.</summary>
-        /// <param name="center">The center of the sphere.</param>
-        /// <param name="radius">The radius of the sphere.</param>
-        [EditorBrowsable(EditorBrowsableState.Never)]
-        public void Deconstruct(out Vector3 center, out float radius)
-        {
-            center = Center;
-            radius = Radius;
-        }
-        #endregion
-
-        #region Constructor.
-        /// <summary>
-        /// Initializes a new instance of the <see cref="GorgonBoundingSphere"/> struct.
-        /// </summary>
-        /// <param name="center">The center of the sphere in three dimensional space.</param>
-        /// <param name="radius">The radius of the sphere.</param>
-        public GorgonBoundingSphere(in Vector3 center, float radius)
-        {
-            Center = center;
-            Radius = radius;
-        }
-        #endregion
+        result = new GorgonBoundingSphere(value1.Center + vector * (max + min), max);
     }
+
+    /// <summary>
+    /// Tests for equality between two objects.
+    /// </summary>
+    /// <param name="left">The first value to compare.</param>
+    /// <param name="right">The second value to compare.</param>
+    /// <returns><c>true</c> if <paramref name="left"/> has the same value as <paramref name="right"/>; otherwise, <c>false</c>.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static bool operator ==(in GorgonBoundingSphere left, in GorgonBoundingSphere right) => left.Equals(in right);
+
+    /// <summary>
+    /// Tests for inequality between two objects.
+    /// </summary>
+    /// <param name="left">The first value to compare.</param>
+    /// <param name="right">The second value to compare.</param>
+    /// <returns><c>true</c> if <paramref name="left"/> has a different value than <paramref name="right"/>; otherwise, <c>false</c>.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static bool operator !=(in GorgonBoundingSphere left, in GorgonBoundingSphere right) => !left.Equals(in right);
+
+    /// <summary>
+    /// Returns a <see cref="string"/> that represents this instance.
+    /// </summary>
+    /// <returns>
+    /// A <see cref="string"/> that represents this instance.
+    /// </returns>
+    public override string ToString() => string.Format(CultureInfo.CurrentCulture, Resources.GOR_TOSTR_BOUNDING_SPHERE, Center.X, Center.Y, Center.Z, Radius);
+
+    /// <summary>
+    /// Returns a hash code for this instance.
+    /// </summary>
+    /// <returns>
+    /// A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table. 
+    /// </returns>
+    public override int GetHashCode()
+    {
+        unchecked
+        {
+            return HashCode.Combine(Center, Radius);                
+        }
+    }
+
+    /// <summary>
+    /// Determines whether the specified <see cref="Vector4"/> is equal to this instance.
+    /// </summary>
+    /// <param name="value">The <see cref="Vector4"/> to compare with this instance.</param>
+    /// <returns>
+    /// <c>true</c> if the specified <see cref="Vector4"/> is equal to this instance; otherwise, <c>false</c>.
+    /// </returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public bool Equals(GorgonBoundingSphere value) => Equals(in value);
+
+    /// <summary>
+    /// Determines whether the specified <see cref="object"/> is equal to this instance.
+    /// </summary>
+    /// <param name="value">The <see cref="object"/> to compare with this instance.</param>
+    /// <returns>
+    /// <c>true</c> if the specified <see cref="object"/> is equal to this instance; otherwise, <c>false</c>.
+    /// </returns>
+    public override bool Equals(object value) => (value is GorgonBoundingSphere sphere) ? this.Equals(in sphere) : base.Equals(value);
+
+    /// <summary>Function to compare this instance with another.</summary>
+    /// <param name="other">The other instance to use for comparison.</param>
+    /// <returns>
+    ///   <b>true</b> if equal, <b>false</b> if not.</returns>
+    public bool Equals(in GorgonBoundingSphere other) => (Center.Equals(other.Center)) && (Radius == other.Radius);
+
+
+    /// <summary>Deconstructs this instance.</summary>
+    /// <param name="center">The center of the sphere.</param>
+    /// <param name="radius">The radius of the sphere.</param>
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    public void Deconstruct(out Vector3 center, out float radius)
+    {
+        center = Center;
+        radius = Radius;
+    }
+    #endregion
+
+    #region Constructor.
+    /// <summary>
+    /// Initializes a new instance of the <see cref="GorgonBoundingSphere"/> struct.
+    /// </summary>
+    /// <param name="center">The center of the sphere in three dimensional space.</param>
+    /// <param name="radius">The radius of the sphere.</param>
+    public GorgonBoundingSphere(in Vector3 center, float radius)
+    {
+        Center = center;
+        Radius = radius;
+    }
+    #endregion
 }

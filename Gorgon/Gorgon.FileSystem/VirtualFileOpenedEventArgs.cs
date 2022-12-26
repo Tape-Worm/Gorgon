@@ -27,37 +27,36 @@
 using System;
 using System.IO;
 
-namespace Gorgon.IO
+namespace Gorgon.IO;
+
+/// <summary>
+/// Event arguments for the <see cref="IGorgonFileSystemWriter{T}.VirtualFileOpened"/> event.
+/// </summary>
+public class VirtualFileOpenedEventArgs
+    : EventArgs
 {
     /// <summary>
-    /// Event arguments for the <see cref="IGorgonFileSystemWriter{T}.VirtualFileOpened"/> event.
+    /// Property to return the virtual file that represents the physical file.
     /// </summary>
-    public class VirtualFileOpenedEventArgs
-        : EventArgs
+    public IGorgonVirtualFile VirtualFile
     {
-        /// <summary>
-        /// Property to return the virtual file that represents the physical file.
-        /// </summary>
-        public IGorgonVirtualFile VirtualFile
-        {
-            get;
-        }
+        get;
+    }
 
-        /// <summary>
-        /// Property to return the stream for the file.
-        /// </summary>
-        public Stream Stream
-        {
-            get;
-        }
+    /// <summary>
+    /// Property to return the stream for the file.
+    /// </summary>
+    public Stream Stream
+    {
+        get;
+    }
 
-        /// <summary>Initializes a new instance of the <see cref="VirtualFileOpenedEventArgs"/> class.</summary>
-        /// <param name="file">The virtual file that was opened.</param>
-        /// <param name="stream">The stream for the opened file.</param>
-        internal VirtualFileOpenedEventArgs(IGorgonVirtualFile file, Stream stream)
-        {
-            VirtualFile = file;
-            Stream = stream;
-        }
+    /// <summary>Initializes a new instance of the <see cref="VirtualFileOpenedEventArgs"/> class.</summary>
+    /// <param name="file">The virtual file that was opened.</param>
+    /// <param name="stream">The stream for the opened file.</param>
+    internal VirtualFileOpenedEventArgs(IGorgonVirtualFile file, Stream stream)
+    {
+        VirtualFile = file;
+        Stream = stream;
     }
 }

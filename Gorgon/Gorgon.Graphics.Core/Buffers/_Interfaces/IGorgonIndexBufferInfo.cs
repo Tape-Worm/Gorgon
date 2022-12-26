@@ -26,60 +26,59 @@
 
 using Gorgon.Core;
 
-namespace Gorgon.Graphics.Core
+namespace Gorgon.Graphics.Core;
+
+/// <summary>
+/// Provides the necessary information required to set up a index buffer.
+/// </summary>
+/// <remarks>
+/// <para>
+/// This provides an immutable view of the index buffer information so that it cannot be modified after the buffer is created.
+/// </para>
+/// </remarks>
+public interface IGorgonIndexBufferInfo
+    : IGorgonNamedObject
 {
     /// <summary>
-    /// Provides the necessary information required to set up a index buffer.
+    /// Property to return the binding used to bind this buffer to the GPU.
+    /// </summary>
+    VertexIndexBufferBinding Binding
+    {
+        get;
+    }
+
+    /// <summary>
+    /// Property to return the intended usage for binding to the GPU.
+    /// </summary>
+    ResourceUsage Usage
+    {
+        get;
+    }
+
+    /// <summary>
+    /// Property to return the number of indices to store.
+    /// </summary>
+    /// <remarks>
+    /// This value should be larger than 0, or else an exception will be thrown when the buffer is created.
+    /// </remarks>
+    int IndexCount
+    {
+        get;
+    }
+
+    /// <summary>
+    /// Property to return whether to use 16 bit values for indices.
     /// </summary>
     /// <remarks>
     /// <para>
-    /// This provides an immutable view of the index buffer information so that it cannot be modified after the buffer is created.
+    /// Specifying 16 bit indices might improve performance.
+    /// </para>
+    /// <para>
+    /// The default value is <b>true</b>.
     /// </para>
     /// </remarks>
-    public interface IGorgonIndexBufferInfo
-        : IGorgonNamedObject
+    bool Use16BitIndices
     {
-        /// <summary>
-        /// Property to return the binding used to bind this buffer to the GPU.
-        /// </summary>
-        VertexIndexBufferBinding Binding
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to return the intended usage for binding to the GPU.
-        /// </summary>
-        ResourceUsage Usage
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to return the number of indices to store.
-        /// </summary>
-        /// <remarks>
-        /// This value should be larger than 0, or else an exception will be thrown when the buffer is created.
-        /// </remarks>
-        int IndexCount
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to return whether to use 16 bit values for indices.
-        /// </summary>
-        /// <remarks>
-        /// <para>
-        /// Specifying 16 bit indices might improve performance.
-        /// </para>
-        /// <para>
-        /// The default value is <b>true</b>.
-        /// </para>
-        /// </remarks>
-        bool Use16BitIndices
-        {
-            get;
-        }
+        get;
     }
 }

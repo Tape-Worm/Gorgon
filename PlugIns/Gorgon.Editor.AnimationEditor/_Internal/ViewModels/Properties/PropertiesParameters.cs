@@ -29,31 +29,30 @@ using Gorgon.Animation;
 using Gorgon.Editor.PlugIns;
 using Gorgon.Editor.UI;
 
-namespace Gorgon.Editor.AnimationEditor
-{
-    /// <summary>
-    /// Parameters for the <see cref="IProperties"/> view model.
-    /// </summary>
-    internal class PropertiesParameters
-        : HostedPanelViewModelParameters
-    {
-        #region Properties.
-        /// <summary>
-        /// Property to return the animation being edited.
-        /// </summary>
-        public IGorgonAnimation Animation
-        {
-            get;
-        }
-        #endregion
+namespace Gorgon.Editor.AnimationEditor;
 
-        #region Constructor/Finalizer.
-        /// <summary>Initializes a new instance of the <see cref="PropertiesParameters"/> class.</summary>
-        /// <param name="animation">The animation being edited.</param>
-        /// <param name="hostServices">Common application services.</param>
-        /// <exception cref="ArgumentNullException">Thrown when any of the parameters are <b>null</b>.</exception>
-        public PropertiesParameters(IGorgonAnimation animation, IHostContentServices hostServices)
-            : base(hostServices) => Animation = animation;
-        #endregion
+/// <summary>
+/// Parameters for the <see cref="IProperties"/> view model.
+/// </summary>
+internal class PropertiesParameters
+    : HostedPanelViewModelParameters
+{
+    #region Properties.
+    /// <summary>
+    /// Property to return the animation being edited.
+    /// </summary>
+    public IGorgonAnimation Animation
+    {
+        get;
     }
+    #endregion
+
+    #region Constructor/Finalizer.
+    /// <summary>Initializes a new instance of the <see cref="PropertiesParameters"/> class.</summary>
+    /// <param name="animation">The animation being edited.</param>
+    /// <param name="hostServices">Common application services.</param>
+    /// <exception cref="ArgumentNullException">Thrown when any of the parameters are <b>null</b>.</exception>
+    public PropertiesParameters(IGorgonAnimation animation, IHostContentServices hostServices)
+        : base(hostServices) => Animation = animation;
+    #endregion
 }

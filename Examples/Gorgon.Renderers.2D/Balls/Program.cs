@@ -46,12 +46,12 @@ using Gorgon.UI;
 using DX = SharpDX;
 using FontStyle = Gorgon.Graphics.Fonts.FontStyle;
 
-namespace Gorgon.Examples
-{
-    /// <summary>
-    /// Main class for the application.
-    /// </summary>
-    static class Program
+namespace Gorgon.Examples;
+
+/// <summary>
+/// Main class for the application.
+/// </summary>
+static class Program
 	{
 		// Maximum FPS for our ball simulation.
 		private const float MaxSimulationFPS = 1 / 60.0f;
@@ -743,4 +743,3 @@ namespace Gorgon.Examples
 			}
 		}
 	}
-}

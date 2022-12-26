@@ -25,86 +25,85 @@
 #endregion
 
 
-namespace System.Windows.Forms
+namespace System.Windows.Forms;
+
+/// <summary>
+/// Extension methods for the <see cref="Control"/> base class.
+/// </summary>
+public static class GorgonControlExtensions
 {
     /// <summary>
-    /// Extension methods for the <see cref="Control"/> base class.
+    /// Function to retrieve the first ancestor of this control that matches the type specifier.
     /// </summary>
-    public static class GorgonControlExtensions
+    /// <typeparam name="T">The type of control to find. Must inherit from <see cref="Control"/>.</typeparam>
+    /// <param name="control">The control to start the search from.</param>
+    /// <returns>The very first ancestor of this control matching <typeparamref name="T"/>, or <b>null</b> if the control has no ancestor of the given type.</returns>
+    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="control"/> parameter is <b>null</b>.</exception>
+    public static T GetFirstAncestor<T>(this Control control)
+        where T : Control
     {
-        /// <summary>
-        /// Function to retrieve the first ancestor of this control that matches the type specifier.
-        /// </summary>
-        /// <typeparam name="T">The type of control to find. Must inherit from <see cref="Control"/>.</typeparam>
-        /// <param name="control">The control to start the search from.</param>
-        /// <returns>The very first ancestor of this control matching <typeparamref name="T"/>, or <b>null</b> if the control has no ancestor of the given type.</returns>
-        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="control"/> parameter is <b>null</b>.</exception>
-        public static T GetFirstAncestor<T>(this Control control)
-            where T : Control
+        if (control is null)
         {
-            if (control is null)
-            {
-                throw new ArgumentNullException(nameof(control));
-            }
-
-            Control parent = control.Parent;
-
-            while (parent is not null)
-            {
-                if ((parent.Parent is null) && (parent is T))
-                {
-                    break;
-                }
-
-                parent = parent.Parent;
-            }
-
-            return (T)parent;
+            throw new ArgumentNullException(nameof(control));
         }
 
-        /// <summary>
-        /// Function to retrieve the ancestor for this control that matches the type specifier.
-        /// </summary>
-        /// <typeparam name="T">The type of control to find. Must inherit from <see cref="Control"/>.</typeparam>
-        /// <param name="control">The control to start the search from.</param>
-        /// <returns>The very first ancestor of this control matching <typeparamref name="T"/>, or <b>null</b> if the control has no ancestor of the given type.</returns>
-        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="control"/> parameter is <b>null</b>.</exception>
-        public static T GetAncestor<T>(this Control control)
-            where T : Control
+        Control parent = control.Parent;
+
+        while (parent is not null)
         {
-            if (control is null)
+            if ((parent.Parent is null) && (parent is T))
             {
-                throw new ArgumentNullException(nameof(control));
+                break;
             }
 
-            Control parent = control.Parent;
-
-            while (parent is not null)
-            {
-                if (parent.Parent is null)
-                {
-                    return null;
-                }
-
-                if (parent is T)
-                {
-                    break;
-                }
-
-                parent = parent.Parent;
-            }
-
-            return (T)parent;
+            parent = parent.Parent;
         }
 
-        /// <summary>
-        /// Function to retrieve the form in which this control is contained.
-        /// </summary>
-        /// <typeparam name="T">Type of form. Must inherit from <see cref="Form"/>.</typeparam>
-        /// <param name="control">The control to start searching from.</param>
-        /// <returns>The <see cref="Form"/> of type <typeparamref name="T"/> if found, <b>null</b> if not.</returns>
-        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="control"/> parameter is <b>null</b>.</exception>
-        public static T GetForm<T>(this Control control)
-            where T : Form => control is null ? throw new ArgumentNullException(nameof(control)) : control.FindForm() as T;
+        return (T)parent;
     }
+
+    /// <summary>
+    /// Function to retrieve the ancestor for this control that matches the type specifier.
+    /// </summary>
+    /// <typeparam name="T">The type of control to find. Must inherit from <see cref="Control"/>.</typeparam>
+    /// <param name="control">The control to start the search from.</param>
+    /// <returns>The very first ancestor of this control matching <typeparamref name="T"/>, or <b>null</b> if the control has no ancestor of the given type.</returns>
+    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="control"/> parameter is <b>null</b>.</exception>
+    public static T GetAncestor<T>(this Control control)
+        where T : Control
+    {
+        if (control is null)
+        {
+            throw new ArgumentNullException(nameof(control));
+        }
+
+        Control parent = control.Parent;
+
+        while (parent is not null)
+        {
+            if (parent.Parent is null)
+            {
+                return null;
+            }
+
+            if (parent is T)
+            {
+                break;
+            }
+
+            parent = parent.Parent;
+        }
+
+        return (T)parent;
+    }
+
+    /// <summary>
+    /// Function to retrieve the form in which this control is contained.
+    /// </summary>
+    /// <typeparam name="T">Type of form. Must inherit from <see cref="Form"/>.</typeparam>
+    /// <param name="control">The control to start searching from.</param>
+    /// <returns>The <see cref="Form"/> of type <typeparamref name="T"/> if found, <b>null</b> if not.</returns>
+    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="control"/> parameter is <b>null</b>.</exception>
+    public static T GetForm<T>(this Control control)
+        where T : Form => control is null ? throw new ArgumentNullException(nameof(control)) : control.FindForm() as T;
 }

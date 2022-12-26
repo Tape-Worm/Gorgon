@@ -27,38 +27,37 @@
 using System.Collections.Generic;
 using Gorgon.Math;
 
-namespace Gorgon.Editor.FontEditor
+namespace Gorgon.Editor.FontEditor;
+
+/// <summary>
+/// Comparer class for sorting the weight nodes.
+/// </summary>
+internal class WeightHandleComparer
+    : IComparer<WeightHandle>
 {
+    #region IComparer<WeightHandle> Members
     /// <summary>
-    /// Comparer class for sorting the weight nodes.
+    /// Compares two objects and returns a value indicating whether one is less than, equal to, or greater than the other.
     /// </summary>
-    internal class WeightHandleComparer
-        : IComparer<WeightHandle>
+    /// <param name="x">The first object to compare.</param>
+    /// <param name="y">The second object to compare.</param>
+    /// <returns>
+    /// A signed integer that indicates the relative values of <paramref name="x" /> and <paramref name="y" />, as shown in the following table.Value Meaning Less than zero<paramref name="x" /> is less than <paramref name="y" />.Zero<paramref name="x" /> equals <paramref name="y" />.Greater than zero<paramref name="x" /> is greater than <paramref name="y" />.
+    /// </returns>
+    public int Compare(WeightHandle x, WeightHandle y)
     {
-        #region IComparer<WeightHandle> Members
-        /// <summary>
-        /// Compares two objects and returns a value indicating whether one is less than, equal to, or greater than the other.
-        /// </summary>
-        /// <param name="x">The first object to compare.</param>
-        /// <param name="y">The second object to compare.</param>
-        /// <returns>
-        /// A signed integer that indicates the relative values of <paramref name="x" /> and <paramref name="y" />, as shown in the following table.Value Meaning Less than zero<paramref name="x" /> is less than <paramref name="y" />.Zero<paramref name="x" /> equals <paramref name="y" />.Greater than zero<paramref name="x" /> is greater than <paramref name="y" />.
-        /// </returns>
-        public int Compare(WeightHandle x, WeightHandle y)
+        if ((x is null)
+            || (y is null))
         {
-            if ((x is null)
-                || (y is null))
-            {
-                return 0;
-            }
-
-            if (x.Weight.EqualsEpsilon(y.Weight))
-            {
-                return 0;
-            }
-
-            return x.Weight < y.Weight ? -1 : 1;
+            return 0;
         }
-        #endregion
+
+        if (x.Weight.EqualsEpsilon(y.Weight))
+        {
+            return 0;
+        }
+
+        return x.Weight < y.Weight ? -1 : 1;
     }
+    #endregion
 }

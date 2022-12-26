@@ -34,112 +34,111 @@ using Gorgon.Editor.Services;
 using Gorgon.Graphics.Imaging.Codecs;
 using Gorgon.IO;
 
-namespace Gorgon.Editor.ImageEditor
+namespace Gorgon.Editor.ImageEditor;
+
+/// <summary>
+/// Dialog serivce used for retrieving paths for exporting image data.
+/// </summary>
+internal class ExportImageDialogService
+    : FileSaveDialogService, IExportImageDialogService
 {
-    /// <summary>
-    /// Dialog serivce used for retrieving paths for exporting image data.
-    /// </summary>
-    internal class ExportImageDialogService
-        : FileSaveDialogService, IExportImageDialogService
+    #region Variables.
+    // The settings for the image editor.
+    private readonly ISettings _settings;
+    #endregion
+
+    #region Properties.
+    /// <summary>Property to set or return the codec used for exporting.</summary>
+    public IGorgonImageCodec SelectedCodec
     {
-        #region Variables.
-        // The settings for the image editor.
-        private readonly ISettings _settings;
-        #endregion
+        get;
+        set;
+    }
 
-        #region Properties.
-        /// <summary>Property to set or return the codec used for exporting.</summary>
-        public IGorgonImageCodec SelectedCodec
+    /// <summary>
+    /// Property to set or return the content image file being exported.
+    /// </summary>
+    public IContentFile ContentFile
+    {
+        get;
+        set;
+    }
+    #endregion
+
+    #region Methods.
+    /// <summary>
+    /// Function to retrieve the last directory path used for import/export.
+    /// </summary>
+    /// <returns>The directory last used for import/export.</returns>
+    private DirectoryInfo GetLastImportExportPath()
+    {
+        DirectoryInfo result;
+
+        string importExportPath = _settings.LastImportExportPath.FormatDirectory(Path.DirectorySeparatorChar);
+
+        if (string.IsNullOrWhiteSpace(importExportPath))
         {
-            get;
-            set;
+            result = new DirectoryInfo(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments));
         }
-
-        /// <summary>
-        /// Property to set or return the content image file being exported.
-        /// </summary>
-        public IContentFile ContentFile
+        else
         {
-            get;
-            set;
-        }
-        #endregion
-
-        #region Methods.
-        /// <summary>
-        /// Function to retrieve the last directory path used for import/export.
-        /// </summary>
-        /// <returns>The directory last used for import/export.</returns>
-        private DirectoryInfo GetLastImportExportPath()
-        {
-            DirectoryInfo result;
-
-            string importExportPath = _settings.LastImportExportPath.FormatDirectory(Path.DirectorySeparatorChar);
-
-            if (string.IsNullOrWhiteSpace(importExportPath))
-            {
-                result = new DirectoryInfo(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments));
-            }
-            else
-            {
-                result = new DirectoryInfo(importExportPath);
-
-                if (!result.Exists)
-                {
-                    result = new DirectoryInfo(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments));
-                }
-            }
+            result = new DirectoryInfo(importExportPath);
 
             if (!result.Exists)
             {
-                result = new DirectoryInfo(AppDomain.CurrentDomain.BaseDirectory);
+                result = new DirectoryInfo(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments));
             }
-
-            return result;
         }
 
-        /// <summary>
-        /// Function to configure the file dialog.
-        /// </summary>
-        private void ConfigureDialog()
+        if (!result.Exists)
         {
-            if ((SelectedCodec is null) || (ContentFile is null))
-            {
-                FileFilter = string.Empty;
-                DialogTitle = string.Empty;
-                InitialDirectory = new DirectoryInfo(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments));
-                InitialFilePath = string.Empty;
-                return;
-            }
-
-            string exportFileName = ContentFile.Name;
-
-            if (SelectedCodec.CodecCommonExtensions.Count > 0)
-            {
-                exportFileName = ContentFile.Name + "." + SelectedCodec.CodecCommonExtensions[0];
-            }
-
-            IEnumerable<string> extensions = SelectedCodec.CodecCommonExtensions.Distinct(StringComparer.CurrentCultureIgnoreCase).Select(item => $"*.{item}");
-            FileFilter = $"{SelectedCodec.CodecDescription} ({string.Join(", ", extensions)})|{string.Join(";", extensions)}";
-            DialogTitle = string.Format(Resources.GORIMG_CAPTION_EXPORT_IMAGE, SelectedCodec.Codec);
-            InitialDirectory = GetLastImportExportPath();
-            InitialFilePath = exportFileName;
+            result = new DirectoryInfo(AppDomain.CurrentDomain.BaseDirectory);
         }
 
-        /// <summary>Function to retrieve a single file name.</summary>
-        /// <returns>The selected file path, or <b>null</b> if cancelled.</returns>
-        public override string GetFilename()
-        {
-            ConfigureDialog();
-            return base.GetFilename();
-        }
-        #endregion
-
-        #region Constructor.
-        /// <summary>Initializes a new instance of the <see cref="ExportImageDialogService"/> class.</summary>
-        /// <param name="settings">The settings.</param>
-        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="settings" /> parameter is <strong>null</strong>.</exception>
-        public ExportImageDialogService(ISettings settings) => _settings = settings ?? throw new ArgumentNullException(nameof(settings));
-        #endregion
+        return result;
     }
+
+    /// <summary>
+    /// Function to configure the file dialog.
+    /// </summary>
+    private void ConfigureDialog()
+    {
+        if ((SelectedCodec is null) || (ContentFile is null))
+        {
+            FileFilter = string.Empty;
+            DialogTitle = string.Empty;
+            InitialDirectory = new DirectoryInfo(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments));
+            InitialFilePath = string.Empty;
+            return;
+        }
+
+        string exportFileName = ContentFile.Name;
+
+        if (SelectedCodec.CodecCommonExtensions.Count > 0)
+        {
+            exportFileName = ContentFile.Name + "." + SelectedCodec.CodecCommonExtensions[0];
+        }
+
+        IEnumerable<string> extensions = SelectedCodec.CodecCommonExtensions.Distinct(StringComparer.CurrentCultureIgnoreCase).Select(item => $"*.{item}");
+        FileFilter = $"{SelectedCodec.CodecDescription} ({string.Join(", ", extensions)})|{string.Join(";", extensions)}";
+        DialogTitle = string.Format(Resources.GORIMG_CAPTION_EXPORT_IMAGE, SelectedCodec.Codec);
+        InitialDirectory = GetLastImportExportPath();
+        InitialFilePath = exportFileName;
+    }
+
+    /// <summary>Function to retrieve a single file name.</summary>
+    /// <returns>The selected file path, or <b>null</b> if cancelled.</returns>
+    public override string GetFilename()
+    {
+        ConfigureDialog();
+        return base.GetFilename();
+    }
+    #endregion
+
+    #region Constructor.
+    /// <summary>Initializes a new instance of the <see cref="ExportImageDialogService"/> class.</summary>
+    /// <param name="settings">The settings.</param>
+    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="settings" /> parameter is <strong>null</strong>.</exception>
+    public ExportImageDialogService(ISettings settings) => _settings = settings ?? throw new ArgumentNullException(nameof(settings));
+    #endregion
 }

@@ -28,105 +28,104 @@ using System;
 using System.Collections.Generic;
 using Newtonsoft.Json;
 
-namespace Gorgon.Editor.ImageEditor
+namespace Gorgon.Editor.ImageEditor;
+
+/// <summary>
+/// The settings for the image editor plug in.
+/// </summary>
+internal class ImageEditorSettings
 {
     /// <summary>
-    /// The settings for the image editor plug in.
+    /// Property to return the list of additional image codec plug ins to load.
     /// </summary>
-    internal class ImageEditorSettings
+    [JsonProperty]
+    public Dictionary<string, string> CodecPlugInPaths
     {
-        /// <summary>
-        /// Property to return the list of additional image codec plug ins to load.
-        /// </summary>
-        [JsonProperty]
-        public Dictionary<string, string> CodecPlugInPaths
-        {
-            get;
-            private set;
-        } = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+        get;
+        private set;
+    } = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 
-        /// <summary>
-        /// Property to set or return the last codec plug in path.
-        /// </summary>
-        [JsonProperty]
-        public string LastCodecPlugInPath
-        {
-            get;
-            set;
-        }
+    /// <summary>
+    /// Property to set or return the last codec plug in path.
+    /// </summary>
+    [JsonProperty]
+    public string LastCodecPlugInPath
+    {
+        get;
+        set;
+    }
 
-        /// <summary>
-        /// Property to set or return the to the directory that was last used for importing/exporting.
-        /// </summary>
-        [JsonProperty]
-        public string LastImportExportPath
-        {
-            get;
-            set;
-        }
+    /// <summary>
+    /// Property to set or return the to the directory that was last used for importing/exporting.
+    /// </summary>
+    [JsonProperty]
+    public string LastImportExportPath
+    {
+        get;
+        set;
+    }
 
-        /// <summary>
-        /// Property to set or return the last used alpha value when setting an alpha channel.
-        /// </summary>
-        [JsonProperty]
-        public int AlphaValue
-        {
-            get;
-            set;
-        }
+    /// <summary>
+    /// Property to set or return the last used alpha value when setting an alpha channel.
+    /// </summary>
+    [JsonProperty]
+    public int AlphaValue
+    {
+        get;
+        set;
+    }
 
-        /// <summary>
-        /// Property to set or return the last used alpha value minimum when setting an alpha channel.
-        /// </summary>
-        [JsonProperty]
-        public int AlphaRangeMin
-        {
-            get;
-            set;
-        } = 0;
+    /// <summary>
+    /// Property to set or return the last used alpha value minimum when setting an alpha channel.
+    /// </summary>
+    [JsonProperty]
+    public int AlphaRangeMin
+    {
+        get;
+        set;
+    } = 0;
 
-        /// <summary>
-        /// Property to set or return the last used alpha value maximum when setting an alpha channel.
-        /// </summary>
-        [JsonProperty]
-        public int AlphaRangeMax
-        {
-            get;
-            set;
-        } = 255;
+    /// <summary>
+    /// Property to set or return the last used alpha value maximum when setting an alpha channel.
+    /// </summary>
+    [JsonProperty]
+    public int AlphaRangeMax
+    {
+        get;
+        set;
+    } = 255;
 
-        /// <summary>Property to set or return the width of the picker window.</summary>
-        [JsonProperty]
-        public int PickerWidth
-        {
-            get;
-            set;
-        } = 900;
+    /// <summary>Property to set or return the width of the picker window.</summary>
+    [JsonProperty]
+    public int PickerWidth
+    {
+        get;
+        set;
+    } = 900;
 
-        /// <summary>Property to set or return the height of the picker window.</summary>
-        [JsonProperty]
-        public int PickerHeight
-        {
-            get;
-            set;
-        } = 600;
+    /// <summary>Property to set or return the height of the picker window.</summary>
+    [JsonProperty]
+    public int PickerHeight
+    {
+        get;
+        set;
+    } = 600;
 
-        /// <summary>Property to set or return the state of the picker window.</summary>
-        [JsonProperty]
-        public int PickerWindowState
-        {
-            get;
-            set;
-        }
+    /// <summary>Property to set or return the state of the picker window.</summary>
+    [JsonProperty]
+    public int PickerWindowState
+    {
+        get;
+        set;
+    }
 
-        /// <summary>
-        /// Property to set or return the path to the image editor to use when editing the texture.
-        /// </summary>
-        [JsonProperty]
-        public string ImageEditorApplicationPath
-        {
-            get;
-            set;
-        }
+    /// <summary>
+    /// Property to set or return the path to the image editor to use when editing the texture.
+    /// </summary>
+    [JsonProperty]
+    public string ImageEditorApplicationPath
+    {
+        get;
+        set;
     }
 }

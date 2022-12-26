@@ -26,72 +26,71 @@
 
 using System;
 
-namespace Gorgon.Graphics.Imaging.Codecs
+namespace Gorgon.Graphics.Imaging.Codecs;
+
+/// <summary>
+/// Special case flags for decoding images.
+/// </summary>
+[Flags]
+public enum WICFlags
 {
     /// <summary>
-    /// Special case flags for decoding images.
+    /// No special flags.
     /// </summary>
-    [Flags]
-    public enum WICFlags
+    None = 0,
+    /// <summary>
+    /// Loads BGR formats as R8G8B8A8_UNorm.
+    /// </summary>
+    ForceRGB = 0x1,
+    /// <summary>
+    /// Loads R10G10B10_XR_BIAS_A2_UNorm as R10G10B10A2_UNorm.
+    /// </summary>
+    NoX2Bias = 0x2,
+    /// <summary>
+    /// Loads 565, 5551, and 4444 as R8G8B8A8_UNorm.
+    /// </summary>
+    No16BPP = 0x4,
+    /// <summary>
+    /// Loads 1-bit monochrome as 8 bit grayscale.
+    /// </summary>
+    AllowMono = 0x8
+}
+
+/// <summary>
+/// Provides options used when decoding a <see cref="IGorgonImage"/>.
+/// </summary>
+/// <remarks>
+/// <para>
+/// This particular interface provides common WIC (Windows Imaging Component) specific options for use when encoding an image across multiple image formats.
+/// </para>
+/// </remarks>
+public interface IGorgonWicDecodingOptions
+    : IGorgonImageCodecDecodingOptions
+{
+    /// <summary>
+    /// Property to set or return flags used to determine how to handle bit depth conversion for specific formats.
+    /// </summary>
+    WICFlags Flags
     {
-        /// <summary>
-        /// No special flags.
-        /// </summary>
-        None = 0,
-        /// <summary>
-        /// Loads BGR formats as R8G8B8A8_UNorm.
-        /// </summary>
-        ForceRGB = 0x1,
-        /// <summary>
-        /// Loads R10G10B10_XR_BIAS_A2_UNorm as R10G10B10A2_UNorm.
-        /// </summary>
-        NoX2Bias = 0x2,
-        /// <summary>
-        /// Loads 565, 5551, and 4444 as R8G8B8A8_UNorm.
-        /// </summary>
-        No16BPP = 0x4,
-        /// <summary>
-        /// Loads 1-bit monochrome as 8 bit grayscale.
-        /// </summary>
-        AllowMono = 0x8
+        get;
+        set;
     }
 
     /// <summary>
-    /// Provides options used when decoding a <see cref="IGorgonImage"/>.
+    /// Property to set or return the type of dithering to use if the codec needs to reduce the bit depth for a pixel format.
     /// </summary>
     /// <remarks>
     /// <para>
-    /// This particular interface provides common WIC (Windows Imaging Component) specific options for use when encoding an image across multiple image formats.
+    /// This flag is used to determine which type of dithering algorithm should be used when converting the bit depth for a pixel format to a lower bit depth. If the pixel format of the image is supported 
+    /// natively by the codec, then this value will be ignored.
+    /// </para> 
+    /// <para> 
+    /// With dithering applied, the image will visually appear closer to the original by using patterns to simulate a greater number of colors.
     /// </para>
     /// </remarks>
-    public interface IGorgonWicDecodingOptions
-        : IGorgonImageCodecDecodingOptions
+    ImageDithering Dithering
     {
-        /// <summary>
-        /// Property to set or return flags used to determine how to handle bit depth conversion for specific formats.
-        /// </summary>
-        WICFlags Flags
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// Property to set or return the type of dithering to use if the codec needs to reduce the bit depth for a pixel format.
-        /// </summary>
-        /// <remarks>
-        /// <para>
-        /// This flag is used to determine which type of dithering algorithm should be used when converting the bit depth for a pixel format to a lower bit depth. If the pixel format of the image is supported 
-        /// natively by the codec, then this value will be ignored.
-        /// </para> 
-        /// <para> 
-        /// With dithering applied, the image will visually appear closer to the original by using patterns to simulate a greater number of colors.
-        /// </para>
-        /// </remarks>
-        ImageDithering Dithering
-        {
-            get;
-            set;
-        }
+        get;
+        set;
     }
 }

@@ -29,27 +29,26 @@ using Gorgon.Editor.PlugIns;
 using Gorgon.Editor.UI;
 using Gorgon.Graphics.Core;
 
-namespace Gorgon.Editor.SpriteEditor
+namespace Gorgon.Editor.SpriteEditor;
+
+/// <summary>
+/// Parameters for the <see cref="ISpriteTextureWrapEdit"/> view model.
+/// </summary>
+internal class SpriteTextureWrapEditParameters
+    : HostedPanelViewModelParameters
 {
     /// <summary>
-    /// Parameters for the <see cref="ISpriteTextureWrapEdit"/> view model.
+    /// Property to return the builder to use for creating a sampler state.
     /// </summary>
-    internal class SpriteTextureWrapEditParameters
-        : HostedPanelViewModelParameters
+    public GorgonSamplerStateBuilder SamplerStateBuilder
     {
-        /// <summary>
-        /// Property to return the builder to use for creating a sampler state.
-        /// </summary>
-        public GorgonSamplerStateBuilder SamplerStateBuilder
-        {
-            get;
-        }
-
-        /// <summary>Initializes a new instance of the <see cref="SpriteTextureWrapEditParameters"/> class.</summary>
-        /// <param name="builder">The sampler state builder used to create the wrapping state.</param>
-        /// <param name="hostServices">The common services from the host application.</param>
-        /// <exception cref="ArgumentNullException">Thrown when any of the parameters are <b>null</b>.</exception>
-        public SpriteTextureWrapEditParameters(GorgonSamplerStateBuilder builder, IHostContentServices hostServices)
-            : base(hostServices) => SamplerStateBuilder = builder ?? throw new ArgumentNullException(nameof(builder));
+        get;
     }
+
+    /// <summary>Initializes a new instance of the <see cref="SpriteTextureWrapEditParameters"/> class.</summary>
+    /// <param name="builder">The sampler state builder used to create the wrapping state.</param>
+    /// <param name="hostServices">The common services from the host application.</param>
+    /// <exception cref="ArgumentNullException">Thrown when any of the parameters are <b>null</b>.</exception>
+    public SpriteTextureWrapEditParameters(GorgonSamplerStateBuilder builder, IHostContentServices hostServices)
+        : base(hostServices) => SamplerStateBuilder = builder ?? throw new ArgumentNullException(nameof(builder));
 }

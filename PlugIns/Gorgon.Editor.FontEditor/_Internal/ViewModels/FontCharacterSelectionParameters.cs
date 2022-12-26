@@ -34,31 +34,30 @@ using Gorgon.Editor.PlugIns;
 using Gorgon.Editor.UI;
 using Gorgon.Editor.UI.ViewModels;
 
-namespace Gorgon.Editor.FontEditor
-{
-    /// <summary>
-    /// The parameters for the font character selection viewmodel.
-    /// </summary>
-    internal class FontCharacterSelectionParameters
-        : HostedPanelViewModelParameters
-    {
-        #region Properties.
-        /// <summary>
-        /// Property to return the service used to generate fonts.
-        /// </summary>
-        public FontService FontService
-        {
-            get;
-        }
-        #endregion
+namespace Gorgon.Editor.FontEditor;
 
-        #region Constructor/Finalizer.
-        /// <summary>Initializes a new instance of the <see cref="FontCharacterSelectionParameters" /> class.</summary>
-        /// <param name="fontService">The service used to generate fonts.</param>
-        /// <param name="hostServices">The services from the host application.</param>
-        public FontCharacterSelectionParameters(FontService fontService, IHostContentServices hostServices)
-            : base(hostServices)
-            => FontService = fontService ?? throw new ArgumentNullException(nameof(fontService));
-        #endregion
+/// <summary>
+/// The parameters for the font character selection viewmodel.
+/// </summary>
+internal class FontCharacterSelectionParameters
+    : HostedPanelViewModelParameters
+{
+    #region Properties.
+    /// <summary>
+    /// Property to return the service used to generate fonts.
+    /// </summary>
+    public FontService FontService
+    {
+        get;
     }
+    #endregion
+
+    #region Constructor/Finalizer.
+    /// <summary>Initializes a new instance of the <see cref="FontCharacterSelectionParameters" /> class.</summary>
+    /// <param name="fontService">The service used to generate fonts.</param>
+    /// <param name="hostServices">The services from the host application.</param>
+    public FontCharacterSelectionParameters(FontService fontService, IHostContentServices hostServices)
+        : base(hostServices)
+        => FontService = fontService ?? throw new ArgumentNullException(nameof(fontService));
+    #endregion
 }

@@ -27,68 +27,67 @@
 using System;
 using Gorgon.Diagnostics;
 
-namespace Gorgon.Core
+namespace Gorgon.Core;
+
+/// <summary>
+/// Extension methods for the <see cref="Exception"/> type.
+/// </summary>
+public static class GorgonExceptionExtensions
 {
     /// <summary>
-    /// Extension methods for the <see cref="Exception"/> type.
+    /// Function to catch and handle an exception.
     /// </summary>
-    public static class GorgonExceptionExtensions
+    /// <typeparam name="T">The type of exception. This value must be or inherit from the <see cref="Exception"/> type.</typeparam>
+    /// <param name="ex">Exception to pass to the handler.</param>
+    /// <param name="handler">A method that is called to handle the exception.</param>
+    /// <param name="log">[Optional] A logger that will capture the exception, or <b>null</b> to disable logging of this exception.</param>
+    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="ex"/> parameter is <b>null</b>.</exception>
+    /// <remarks>
+    /// This is a convenience method used to catch an exception and then handle it with the supplied <paramref name="handler"/> method. The handler method must take a parameter 
+    /// that has a type that is or derives from <see cref="Exception"/>.
+    /// </remarks>
+    public static void Catch<T>(this T ex, Action<T> handler, IGorgonLog log = null)
+        where T : Exception
     {
-        /// <summary>
-        /// Function to catch and handle an exception.
-        /// </summary>
-        /// <typeparam name="T">The type of exception. This value must be or inherit from the <see cref="Exception"/> type.</typeparam>
-        /// <param name="ex">Exception to pass to the handler.</param>
-        /// <param name="handler">A method that is called to handle the exception.</param>
-        /// <param name="log">[Optional] A logger that will capture the exception, or <b>null</b> to disable logging of this exception.</param>
-        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="ex"/> parameter is <b>null</b>.</exception>
-        /// <remarks>
-        /// This is a convenience method used to catch an exception and then handle it with the supplied <paramref name="handler"/> method. The handler method must take a parameter 
-        /// that has a type that is or derives from <see cref="Exception"/>.
-        /// </remarks>
-        public static void Catch<T>(this T ex, Action<T> handler, IGorgonLog log = null)
-            where T : Exception
+        if ((ex is null)
+            || (handler is null))
         {
-            if ((ex is null)
-                || (handler is null))
-            {
-                return;
-            }
-
-            log?.LogException(ex);
-
-            handler(ex);
+            return;
         }
 
-        /// <summary>
-        /// Function to repackage an arbitrary exception as a <see cref="GorgonException"/>.
-        /// </summary>
-        /// <param name="ex">Exception to capture and rethrow.</param>
-        /// <param name="result">Result code to use.</param>
-        /// <param name="message">Message to append to the result.</param>
-        /// <returns>A new Gorgon exception to throw.</returns>
-        /// <remarks>The original exception will be the inner exception of the new <see cref="GorgonException"/>.</remarks>
-        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="ex"/> parameter is <b>null</b>.</exception>
-        public static GorgonException Repackage(this Exception ex, GorgonResult result, string message) => ex is null ? throw new ArgumentNullException(nameof(ex)) : new GorgonException(result, message, ex);
+        log?.LogException(ex);
 
-        /// <summary>
-        /// Function to repackage an arbitrary exception as an Gorgon exception.
-        /// </summary>
-        /// <param name="ex">Exception to capture and rethrow.</param>
-        /// <param name="result">Result code to use.</param>
-        /// <returns>A new Gorgon exception to throw.</returns>
-        /// <remarks>The original exception will be the inner exception of the new <see cref="GorgonException"/>.</remarks>
-        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="ex"/> parameter is <b>null</b>.</exception>
-        public static GorgonException Repackage(this Exception ex, GorgonResult result) => ex is null ? throw new ArgumentNullException(nameof(ex)) : new GorgonException(result, ex);
-
-        /// <summary>
-        /// Function to repackage an arbitrary exception as an Gorgon exception.
-        /// </summary>
-        /// <param name="ex">Exception to capture and rethrow.</param>
-        /// <param name="message">New message to pass to the new exception.</param>
-        /// <returns>A new Gorgon exception to throw.</returns>
-        /// <remarks>The original exception will be the inner exception of the new <see cref="GorgonException"/>.</remarks>
-        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="ex"/> parameter is <b>null</b>.</exception>
-        public static GorgonException Repackage(this Exception ex, string message) => ex is null ? throw new ArgumentNullException(nameof(ex)) : new GorgonException(message, ex);
+        handler(ex);
     }
+
+    /// <summary>
+    /// Function to repackage an arbitrary exception as a <see cref="GorgonException"/>.
+    /// </summary>
+    /// <param name="ex">Exception to capture and rethrow.</param>
+    /// <param name="result">Result code to use.</param>
+    /// <param name="message">Message to append to the result.</param>
+    /// <returns>A new Gorgon exception to throw.</returns>
+    /// <remarks>The original exception will be the inner exception of the new <see cref="GorgonException"/>.</remarks>
+    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="ex"/> parameter is <b>null</b>.</exception>
+    public static GorgonException Repackage(this Exception ex, GorgonResult result, string message) => ex is null ? throw new ArgumentNullException(nameof(ex)) : new GorgonException(result, message, ex);
+
+    /// <summary>
+    /// Function to repackage an arbitrary exception as an Gorgon exception.
+    /// </summary>
+    /// <param name="ex">Exception to capture and rethrow.</param>
+    /// <param name="result">Result code to use.</param>
+    /// <returns>A new Gorgon exception to throw.</returns>
+    /// <remarks>The original exception will be the inner exception of the new <see cref="GorgonException"/>.</remarks>
+    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="ex"/> parameter is <b>null</b>.</exception>
+    public static GorgonException Repackage(this Exception ex, GorgonResult result) => ex is null ? throw new ArgumentNullException(nameof(ex)) : new GorgonException(result, ex);
+
+    /// <summary>
+    /// Function to repackage an arbitrary exception as an Gorgon exception.
+    /// </summary>
+    /// <param name="ex">Exception to capture and rethrow.</param>
+    /// <param name="message">New message to pass to the new exception.</param>
+    /// <returns>A new Gorgon exception to throw.</returns>
+    /// <remarks>The original exception will be the inner exception of the new <see cref="GorgonException"/>.</remarks>
+    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="ex"/> parameter is <b>null</b>.</exception>
+    public static GorgonException Repackage(this Exception ex, string message) => ex is null ? throw new ArgumentNullException(nameof(ex)) : new GorgonException(message, ex);
 }

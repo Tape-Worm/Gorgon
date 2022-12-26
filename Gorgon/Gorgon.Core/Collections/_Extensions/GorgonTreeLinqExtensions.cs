@@ -27,92 +27,91 @@
 using System;
 using System.Collections.Generic;
 
-namespace Gorgon.Collections
+namespace Gorgon.Collections;
+
+/// <summary>
+/// LINQ extension methods for tree structures.
+/// </summary>
+public static class GorgonTreeLinqExtensions
 {
     /// <summary>
-    /// LINQ extension methods for tree structures.
+    /// Function to flatten a tree of objects into a flat traversable list using a depth first approach.
     /// </summary>
-    public static class GorgonTreeLinqExtensions
+    /// <typeparam name="T">The type of value in the tree.</typeparam>
+    /// <param name="children">The list of objects to evaluate.</param>
+    /// <param name="getChildren">The method to retrieve the next level of children.</param>
+    /// <returns>An enumerable containing the flattened list of objects.</returns>
+    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="children"/> parameter is <b>null</b>.</exception>
+    public static IEnumerable<T> TraverseDepthFirst<T>(this IEnumerable<T> children, Func<T, IEnumerable<T>> getChildren)
     {
-        /// <summary>
-        /// Function to flatten a tree of objects into a flat traversable list using a depth first approach.
-        /// </summary>
-        /// <typeparam name="T">The type of value in the tree.</typeparam>
-        /// <param name="children">The list of objects to evaluate.</param>
-        /// <param name="getChildren">The method to retrieve the next level of children.</param>
-        /// <returns>An enumerable containing the flattened list of objects.</returns>
-        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="children"/> parameter is <b>null</b>.</exception>
-        public static IEnumerable<T> TraverseDepthFirst<T>(this IEnumerable<T> children, Func<T, IEnumerable<T>> getChildren)
+        if (children is null)
         {
-            if (children is null)
+            throw new ArgumentNullException(nameof(children));
+        }
+
+        var queue = new Stack<T>();
+        foreach (T child in children)
+        {
+            queue.Push(child);
+        }
+
+        while (queue.Count > 0)
+        {
+            T node = queue.Pop();
+
+            yield return node;
+
+            IEnumerable<T> subChildren = getChildren?.Invoke(node);
+
+            if (subChildren is null)
             {
-                throw new ArgumentNullException(nameof(children));
+                continue;
             }
 
-            var queue = new Stack<T>();
-            foreach (T child in children)
+            foreach (T child in subChildren)
             {
                 queue.Push(child);
             }
+        }
+    }
 
-            while (queue.Count > 0)
-            {
-                T node = queue.Pop();
-
-                yield return node;
-
-                IEnumerable<T> subChildren = getChildren?.Invoke(node);
-
-                if (subChildren is null)
-                {
-                    continue;
-                }
-
-                foreach (T child in subChildren)
-                {
-                    queue.Push(child);
-                }
-            }
+    /// <summary>
+    /// Function to flatten a tree of objects into a flat traversable list using a breadth first approach.
+    /// </summary>
+    /// <typeparam name="T">The type of value in the tree.</typeparam>
+    /// <param name="children">The list of objects to evaluate.</param>
+    /// <param name="getChildren">The method to retrieve the next level of children.</param>
+    /// <returns>An enumerable containing the flattened list of objects.</returns>
+    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="children"/> parameter is <b>null</b>.</exception>
+    public static IEnumerable<T> Traverse<T>(this IEnumerable<T> children, Func<T, IEnumerable<T>> getChildren)
+    {
+        if (children is null)
+        {
+            throw new ArgumentNullException(nameof(children));
         }
 
-        /// <summary>
-        /// Function to flatten a tree of objects into a flat traversable list using a breadth first approach.
-        /// </summary>
-        /// <typeparam name="T">The type of value in the tree.</typeparam>
-        /// <param name="children">The list of objects to evaluate.</param>
-        /// <param name="getChildren">The method to retrieve the next level of children.</param>
-        /// <returns>An enumerable containing the flattened list of objects.</returns>
-        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="children"/> parameter is <b>null</b>.</exception>
-        public static IEnumerable<T> Traverse<T>(this IEnumerable<T> children, Func<T, IEnumerable<T>> getChildren)
+        var queue = new Queue<T>();
+        foreach (T child in children)
         {
-            if (children is null)
+            queue.Enqueue(child);
+        }
+
+        while (queue.Count > 0)
+        {
+            T node = queue.Dequeue();
+
+            yield return node;
+
+            IEnumerable<T> subChildren = getChildren?.Invoke(node);
+
+            if (subChildren is null)
             {
-                throw new ArgumentNullException(nameof(children));
+                continue;
             }
 
-            var queue = new Queue<T>();
-            foreach (T child in children)
+            foreach (T child in subChildren)
             {
                 queue.Enqueue(child);
-            }
-
-            while (queue.Count > 0)
-            {
-                T node = queue.Dequeue();
-
-                yield return node;
-
-                IEnumerable<T> subChildren = getChildren?.Invoke(node);
-
-                if (subChildren is null)
-                {
-                    continue;
-                }
-
-                foreach (T child in subChildren)
-                {
-                    queue.Enqueue(child);
-                }
             }
         }
     }

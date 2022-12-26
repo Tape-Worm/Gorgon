@@ -26,90 +26,89 @@
 
 using Gorgon.Graphics.Imaging;
 
-namespace Gorgon.Graphics.Core
+namespace Gorgon.Graphics.Core;
+
+/// <summary>
+/// Defines the support given to a specific <see cref="BufferFormat"/>.
+/// </summary>
+public interface IGorgonFormatSupportInfo
 {
     /// <summary>
-    /// Defines the support given to a specific <see cref="BufferFormat"/>.
+    /// Property to return the format that is being queried for support.
     /// </summary>
-    public interface IGorgonFormatSupportInfo
+    BufferFormat Format
     {
-        /// <summary>
-        /// Property to return the format that is being queried for support.
-        /// </summary>
-        BufferFormat Format
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to return the resource support for a format.
-        /// </summary>
-        BufferFormatSupport FormatSupport
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to return whether this format is suitable for use for presentation to the output device.
-        /// </summary>
-        bool IsDisplayFormat
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to return whether this format is suitable for use as a render target.
-        /// </summary>
-        bool IsRenderTargetFormat
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to return whether this format is suitable for use in a depth/stencil buffer.
-        /// </summary>
-        bool IsDepthBufferFormat
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to return whether this format is suitable for use in a vertex buffer.
-        /// </summary>
-        bool IsVertexBufferFormat
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to return whether this format is suitable for use in an index buffer.
-        /// </summary>
-        bool IsIndexBufferFormat
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to return the compute shader/uav support for a format.
-        /// </summary>
-        ComputeShaderFormatSupport ComputeSupport
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to return the maximum multisample count and quality level support for the format.
-        /// </summary>
-        GorgonMultisampleInfo MaxMultisampleCountQuality
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Function to determine if a format is suitable for the texture type specified by <see cref="ImageType"/>.
-        /// </summary>
-        /// <param name="imageType">The image type to evaluate.</param>
-        /// <returns><b>true</b> if suitable, <b>false</b> if not.</returns>
-        bool IsTextureFormat(ImageType imageType);
+        get;
     }
+
+    /// <summary>
+    /// Property to return the resource support for a format.
+    /// </summary>
+    BufferFormatSupport FormatSupport
+    {
+        get;
+    }
+
+    /// <summary>
+    /// Property to return whether this format is suitable for use for presentation to the output device.
+    /// </summary>
+    bool IsDisplayFormat
+    {
+        get;
+    }
+
+    /// <summary>
+    /// Property to return whether this format is suitable for use as a render target.
+    /// </summary>
+    bool IsRenderTargetFormat
+    {
+        get;
+    }
+
+    /// <summary>
+    /// Property to return whether this format is suitable for use in a depth/stencil buffer.
+    /// </summary>
+    bool IsDepthBufferFormat
+    {
+        get;
+    }
+
+    /// <summary>
+    /// Property to return whether this format is suitable for use in a vertex buffer.
+    /// </summary>
+    bool IsVertexBufferFormat
+    {
+        get;
+    }
+
+    /// <summary>
+    /// Property to return whether this format is suitable for use in an index buffer.
+    /// </summary>
+    bool IsIndexBufferFormat
+    {
+        get;
+    }
+
+    /// <summary>
+    /// Property to return the compute shader/uav support for a format.
+    /// </summary>
+    ComputeShaderFormatSupport ComputeSupport
+    {
+        get;
+    }
+
+    /// <summary>
+    /// Property to return the maximum multisample count and quality level support for the format.
+    /// </summary>
+    GorgonMultisampleInfo MaxMultisampleCountQuality
+    {
+        get;
+    }
+
+    /// <summary>
+    /// Function to determine if a format is suitable for the texture type specified by <see cref="ImageType"/>.
+    /// </summary>
+    /// <param name="imageType">The image type to evaluate.</param>
+    /// <returns><b>true</b> if suitable, <b>false</b> if not.</returns>
+    bool IsTextureFormat(ImageType imageType);
 }

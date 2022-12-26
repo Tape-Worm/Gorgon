@@ -31,119 +31,118 @@ using System.Threading.Tasks;
 using Mm = SharpDX.Multimedia;
 using Xa = SharpDX.XAudio2;
 
-namespace Gorgon.Examples
+namespace Gorgon.Examples;
+
+/// <summary>
+/// Provides audio playback for the example.
+/// </summary>
+internal class AudioPlayback
+    : IDisposable
 {
+    #region Variables.
+    // The main XAudio interface.
+    private readonly Xa.XAudio2 _audio;
+    // The master voice for playback.
+    private readonly Xa.MasteringVoice _masterVoice;
+    // Flag to indicate that the audio is playing.
+    private CancellationTokenSource _tokenSource;
+    // The currently playing track.
+    private Task _currentPlayback;
+    #endregion
+
+    #region Properties.
     /// <summary>
-    /// Provides audio playback for the example.
+    /// Property to return whether or not the audio is playing.
     /// </summary>
-    internal class AudioPlayback
-        : IDisposable
+    public bool IsPlaying => (_tokenSource is not null) && (_tokenSource.Token.IsCancellationRequested);
+    #endregion
+
+    #region Methods.
+    /// <summary>
+    /// Function to stop the audio.
+    /// </summary>
+    public void Stop()
     {
-        #region Variables.
-        // The main XAudio interface.
-        private readonly Xa.XAudio2 _audio;
-        // The master voice for playback.
-        private readonly Xa.MasteringVoice _masterVoice;
-        // Flag to indicate that the audio is playing.
-        private CancellationTokenSource _tokenSource;
-        // The currently playing track.
-        private Task _currentPlayback;
-        #endregion
-
-        #region Properties.
-        /// <summary>
-        /// Property to return whether or not the audio is playing.
-        /// </summary>
-        public bool IsPlaying => (_tokenSource is not null) && (_tokenSource.Token.IsCancellationRequested);
-        #endregion
-
-        #region Methods.
-        /// <summary>
-        /// Function to stop the audio.
-        /// </summary>
-        public void Stop()
+        if (_tokenSource is not null)
         {
-            if (_tokenSource is not null)
-            {
-                _tokenSource.Cancel();
-            }
-
-            _currentPlayback?.Wait();
-            _currentPlayback = null;
+            _tokenSource.Cancel();
         }
 
-        /// <summary>
-        /// Function to play an mp3.
-        /// </summary>
-        /// <param name="path">The path to the mp3 file.</param>
-        public async Task PlayMp3Async(string path)
-        {
-            if (_currentPlayback is not null)
-            {
-                await _currentPlayback;
-                return;
-            }
-                        
-            _tokenSource = new CancellationTokenSource();
-            _currentPlayback = Task.Run(() =>
-                               {
-                                   var stream = new Mm.SoundStream(File.Open(path, FileMode.Open, FileAccess.Read, FileShare.None));
-                                   Mm.WaveFormat format = stream.Format;
-                                   var buffer = new Xa.AudioBuffer
-                                   {
-                                       Stream = stream.ToDataStream(),
-                                       AudioBytes = (int)stream.Length,
-                                       Flags = Xa.BufferFlags.EndOfStream
-                                   };
-
-                                   stream.Close();
-
-                                   var source = new Xa.SourceVoice(_audio, format);
-                                   source.SubmitSourceBuffer(buffer, stream.DecodedPacketsInfo);
-                                   source.Start();
-
-                                   try
-                                   {
-                                       var waiter = new SpinWait();
-                                       while ((!_tokenSource.Token.IsCancellationRequested) && (!source.IsDisposed) && (source.State.BuffersQueued > 0))
-                                       {
-                                           waiter.SpinOnce();
-                                       }
-
-                                       source.Stop();
-                                   }
-                                   finally
-                                   {                                       
-                                       buffer.Stream?.Dispose();
-                                       source.Dispose();
-                                       stream?.Dispose();
-                                   }
-                               }, _tokenSource.Token);
-
-            await _currentPlayback;
-            _currentPlayback = null;
-            CancellationTokenSource tokenSource = Interlocked.Exchange(ref _tokenSource, null);
-            tokenSource?.Dispose();
-            tokenSource = null;
-        }
-
-        /// <summary>Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.</summary>
-        public void Dispose()
-        {
-            _masterVoice?.Dispose();
-            _audio?.Dispose();
-            _tokenSource?.Cancel();
-            _tokenSource?.Dispose();
-        }
-        #endregion
-
-        #region Constructor.
-        /// <summary>Initializes a new instance of the <see cref="AudioPlayback"/> class.</summary>
-        public AudioPlayback()
-        {
-            _audio = new Xa.XAudio2();
-            _masterVoice = new Xa.MasteringVoice(_audio);
-        }
-        #endregion
+        _currentPlayback?.Wait();
+        _currentPlayback = null;
     }
+
+    /// <summary>
+    /// Function to play an mp3.
+    /// </summary>
+    /// <param name="path">The path to the mp3 file.</param>
+    public async Task PlayMp3Async(string path)
+    {
+        if (_currentPlayback is not null)
+        {
+            await _currentPlayback;
+            return;
+        }
+                    
+        _tokenSource = new CancellationTokenSource();
+        _currentPlayback = Task.Run(() =>
+                           {
+                               var stream = new Mm.SoundStream(File.Open(path, FileMode.Open, FileAccess.Read, FileShare.None));
+                               Mm.WaveFormat format = stream.Format;
+                               var buffer = new Xa.AudioBuffer
+                               {
+                                   Stream = stream.ToDataStream(),
+                                   AudioBytes = (int)stream.Length,
+                                   Flags = Xa.BufferFlags.EndOfStream
+                               };
+
+                               stream.Close();
+
+                               var source = new Xa.SourceVoice(_audio, format);
+                               source.SubmitSourceBuffer(buffer, stream.DecodedPacketsInfo);
+                               source.Start();
+
+                               try
+                               {
+                                   var waiter = new SpinWait();
+                                   while ((!_tokenSource.Token.IsCancellationRequested) && (!source.IsDisposed) && (source.State.BuffersQueued > 0))
+                                   {
+                                       waiter.SpinOnce();
+                                   }
+
+                                   source.Stop();
+                               }
+                               finally
+                               {                                       
+                                   buffer.Stream?.Dispose();
+                                   source.Dispose();
+                                   stream?.Dispose();
+                               }
+                           }, _tokenSource.Token);
+
+        await _currentPlayback;
+        _currentPlayback = null;
+        CancellationTokenSource tokenSource = Interlocked.Exchange(ref _tokenSource, null);
+        tokenSource?.Dispose();
+        tokenSource = null;
+    }
+
+    /// <summary>Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.</summary>
+    public void Dispose()
+    {
+        _masterVoice?.Dispose();
+        _audio?.Dispose();
+        _tokenSource?.Cancel();
+        _tokenSource?.Dispose();
+    }
+    #endregion
+
+    #region Constructor.
+    /// <summary>Initializes a new instance of the <see cref="AudioPlayback"/> class.</summary>
+    public AudioPlayback()
+    {
+        _audio = new Xa.XAudio2();
+        _masterVoice = new Xa.MasteringVoice(_audio);
+    }
+    #endregion
 }

@@ -26,54 +26,53 @@
 
 using System.ComponentModel;
 
-namespace Gorgon.Editor.ViewModels
+namespace Gorgon.Editor.ViewModels;
+
+/// <summary>
+/// Arguments for the <see cref="IDirectory.RenameCommand"/>.
+/// </summary>
+internal class RenameArgs
+    : CancelEventArgs
 {
+    #region Properties.
     /// <summary>
-    /// Arguments for the <see cref="IDirectory.RenameCommand"/>.
+    /// Property to return the old name.
     /// </summary>
-    internal class RenameArgs
-        : CancelEventArgs
+    public string OldName
     {
-        #region Properties.
-        /// <summary>
-        /// Property to return the old name.
-        /// </summary>
-        public string OldName
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to set or return the ID of the file or directory being renamed.
-        /// </summary>
-        public string ID
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// Property to set or return the new name.
-        /// </summary>
-        public string NewName
-        {
-            get;
-            set;
-        }
-        #endregion
-
-        #region Constructor/Finalizer.
-        /// <summary>
-        /// Initializes a new instance of the <see cref="RenameArgs"/> class.
-        /// </summary>
-        /// <param name="oldName">The old name.</param>
-        /// <param name="newName">The new name.</param>
-        public RenameArgs(string oldName, string newName)
-            : base(false)
-        {
-            OldName = oldName;
-            NewName = newName;
-        }
-        #endregion
+        get;
     }
+
+    /// <summary>
+    /// Property to set or return the ID of the file or directory being renamed.
+    /// </summary>
+    public string ID
+    {
+        get;
+        set;
+    }
+
+    /// <summary>
+    /// Property to set or return the new name.
+    /// </summary>
+    public string NewName
+    {
+        get;
+        set;
+    }
+    #endregion
+
+    #region Constructor/Finalizer.
+    /// <summary>
+    /// Initializes a new instance of the <see cref="RenameArgs"/> class.
+    /// </summary>
+    /// <param name="oldName">The old name.</param>
+    /// <param name="newName">The new name.</param>
+    public RenameArgs(string oldName, string newName)
+        : base(false)
+    {
+        OldName = oldName;
+        NewName = newName;
+    }
+    #endregion
 }

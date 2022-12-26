@@ -29,67 +29,66 @@ using Gorgon.Core;
 using Gorgon.Graphics.Core.Properties;
 using D3D11 = SharpDX.Direct3D11;
 
-namespace Gorgon.Graphics.Core
+namespace Gorgon.Graphics.Core;
+
+/// <summary>
+/// The result from a <see cref="GorgonTimestampDisjointQuery"/>.
+/// </summary>    
+public readonly struct GorgonTimestampDisjointResult
+    : IGorgonEquatableByRef<GorgonTimestampDisjointResult>
 {
+    #region Variables.
     /// <summary>
-    /// The result from a <see cref="GorgonTimestampDisjointQuery"/>.
-    /// </summary>    
-    public readonly struct GorgonTimestampDisjointResult
-        : IGorgonEquatableByRef<GorgonTimestampDisjointResult>
+    /// The frequency that the counter increments at, in Hz.
+    /// </summary>
+    public readonly ulong Frequency;
+
+    /// <summary>
+    /// Flag to indicate that the timestamp is disjointed.
+    /// </summary>
+    /// <remarks>
+    /// If this is <b>true</b>, something occurred in between the <see cref="GorgonTimestampDisjointQuery"/> Begin and End calls that caused the timestamp counter to become discontinuous or 
+    /// disjoint, such as unplugging the AC cord on a laptop, overheating, or throttling up/down due to laptop savings events. The timestamp returned for a timestamp query is only reliable if 
+    /// Disjoint is <b>false</b>.
+    /// </remarks>
+    public readonly bool IsDisjoint;
+    #endregion
+
+    #region Methods.
+    /// <summary>Returns a hash code for this instance.</summary>
+    /// <returns>A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table.</returns>
+    public override int GetHashCode() => HashCode.Combine(Frequency, IsDisjoint);
+
+    /// <summary>Returns a <see cref="string" /> that represents this instance.</summary>
+    /// <returns>A <see cref="string" /> that represents this instance.</returns>
+    public override string ToString() => string.Format(Resources.GORGFX_TOSTR_TIMESTAMP_DISJOINT, Frequency, IsDisjoint);
+
+    /// <summary>Function to compare this instance with another.</summary>
+    /// <param name="other">The other instance to use for comparison.</param>
+    /// <returns>
+    ///   <b>true</b> if equal, <b>false</b> if not.</returns>
+    public bool Equals(in GorgonTimestampDisjointResult other) => (other.Frequency == Frequency) && (other.IsDisjoint == IsDisjoint);
+
+    /// <summary>Function to compare this instance with another.</summary>
+    /// <param name="other">The other instance to use for comparison.</param>
+    /// <returns>
+    ///   <b>true</b> if equal, <b>false</b> if not.</returns>
+    public bool Equals(GorgonTimestampDisjointResult other) => Equals(in other);
+
+    /// <summary>Determines whether the specified <see cref="object" /> is equal to this instance.</summary>
+    /// <param name="obj">The object to compare with the current instance.</param>
+    /// <returns>
+    ///   <c>true</c> if the specified <see cref="object" /> is equal to this instance; otherwise, <c>false</c>.</returns>
+    public override bool Equals(object obj) => (obj is GorgonTimestampDisjointResult result) ? result.Equals(in this) : base.Equals(obj);
+    #endregion
+
+    #region Constructor.
+    /// <summary>Initializes a new instance of the <see cref="GorgonTimestampDisjointResult" /> struct.</summary>
+    /// <param name="timestamp">The timestamp to evaluate.</param>
+    internal GorgonTimestampDisjointResult(D3D11.QueryDataTimestampDisjoint timestamp)
     {
-        #region Variables.
-        /// <summary>
-        /// The frequency that the counter increments at, in Hz.
-        /// </summary>
-        public readonly ulong Frequency;
-
-        /// <summary>
-        /// Flag to indicate that the timestamp is disjointed.
-        /// </summary>
-        /// <remarks>
-        /// If this is <b>true</b>, something occurred in between the <see cref="GorgonTimestampDisjointQuery"/> Begin and End calls that caused the timestamp counter to become discontinuous or 
-        /// disjoint, such as unplugging the AC cord on a laptop, overheating, or throttling up/down due to laptop savings events. The timestamp returned for a timestamp query is only reliable if 
-        /// Disjoint is <b>false</b>.
-        /// </remarks>
-        public readonly bool IsDisjoint;
-        #endregion
-
-        #region Methods.
-        /// <summary>Returns a hash code for this instance.</summary>
-        /// <returns>A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table.</returns>
-        public override int GetHashCode() => HashCode.Combine(Frequency, IsDisjoint);
-
-        /// <summary>Returns a <see cref="string" /> that represents this instance.</summary>
-        /// <returns>A <see cref="string" /> that represents this instance.</returns>
-        public override string ToString() => string.Format(Resources.GORGFX_TOSTR_TIMESTAMP_DISJOINT, Frequency, IsDisjoint);
-
-        /// <summary>Function to compare this instance with another.</summary>
-        /// <param name="other">The other instance to use for comparison.</param>
-        /// <returns>
-        ///   <b>true</b> if equal, <b>false</b> if not.</returns>
-        public bool Equals(in GorgonTimestampDisjointResult other) => (other.Frequency == Frequency) && (other.IsDisjoint == IsDisjoint);
-
-        /// <summary>Function to compare this instance with another.</summary>
-        /// <param name="other">The other instance to use for comparison.</param>
-        /// <returns>
-        ///   <b>true</b> if equal, <b>false</b> if not.</returns>
-        public bool Equals(GorgonTimestampDisjointResult other) => Equals(in other);
-
-        /// <summary>Determines whether the specified <see cref="object" /> is equal to this instance.</summary>
-        /// <param name="obj">The object to compare with the current instance.</param>
-        /// <returns>
-        ///   <c>true</c> if the specified <see cref="object" /> is equal to this instance; otherwise, <c>false</c>.</returns>
-        public override bool Equals(object obj) => (obj is GorgonTimestampDisjointResult result) ? result.Equals(in this) : base.Equals(obj);
-        #endregion
-
-        #region Constructor.
-        /// <summary>Initializes a new instance of the <see cref="GorgonTimestampDisjointResult" /> struct.</summary>
-        /// <param name="timestamp">The timestamp to evaluate.</param>
-        internal GorgonTimestampDisjointResult(D3D11.QueryDataTimestampDisjoint timestamp)
-        {
-            Frequency = (ulong)timestamp.Frequency;
-            IsDisjoint = timestamp.Disjoint;
-        }
-        #endregion
+        Frequency = (ulong)timestamp.Frequency;
+        IsDisjoint = timestamp.Disjoint;
     }
+    #endregion
 }

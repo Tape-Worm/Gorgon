@@ -26,21 +26,20 @@
 
 using Gorgon.Editor.UI;
 
-namespace Gorgon.Editor.ImageEditor
+namespace Gorgon.Editor.ImageEditor;
+
+/// <summary>
+/// The settings view model for the emboss effect.
+/// </summary>
+internal interface IFxPosterize
+    : IHostedPanelViewModel
 {
     /// <summary>
-    /// The settings view model for the emboss effect.
+    /// Property to set or return the amount to posterize.
     /// </summary>
-    internal interface IFxPosterize
-        : IHostedPanelViewModel
+    int Amount
     {
-        /// <summary>
-        /// Property to set or return the amount to posterize.
-        /// </summary>
-        int Amount
-        {
-            get;
-            set;
-        }
+        get;
+        set;
     }
 }
