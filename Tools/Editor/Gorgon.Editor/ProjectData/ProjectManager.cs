@@ -119,10 +119,7 @@ internal class ProjectManager
     {
         Stream lockStream = Interlocked.Exchange(ref _lockStream, null);
 
-        if (lockStream is not null)
-        {
-            lockStream.Dispose();
-        }
+        lockStream?.Dispose();
 
         string file = projectDir.FormatDirectory(Path.DirectorySeparatorChar) + ".gorlock";
 

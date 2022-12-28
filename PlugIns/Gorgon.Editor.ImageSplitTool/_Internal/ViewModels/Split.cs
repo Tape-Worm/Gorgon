@@ -519,15 +519,9 @@ internal class ImageSelection
             file.PropertyChanged -= File_PropertyChanged;
         }
 
-        if (_splitCancelSource is not null)
-        {
-            _splitCancelSource.Cancel();
-        }
+        _splitCancelSource?.Cancel();
 
-        if (_previewCancelSource is not null)
-        {
-            _previewCancelSource.Cancel();
-        }
+        _previewCancelSource?.Cancel();
 
         IGorgonImage currentImage = Interlocked.Exchange(ref _previewImage, null);
         Interlocked.Exchange(ref _loadPreviewTask, null);

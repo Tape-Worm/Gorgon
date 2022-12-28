@@ -24,8 +24,6 @@
 // 
 #endregion
 
-#pragma warning disable IDE0031
-
 using System;
 using Gorgon.Core;
 
@@ -245,8 +243,8 @@ public class GorgonOption
         return new GorgonOption(name,
                                 typeof(byte),
                                 defaultValue,
-                                minValue is null ? null : minValue.Value,
-                                maxValue is not null ? maxValue.Value : null,
+                                minValue ?? null,
+                                maxValue ?? null,
                                 description);
     }
 
@@ -282,8 +280,8 @@ public class GorgonOption
         return new GorgonOption(name,
                                 typeof(sbyte),
                                 defaultValue,
-                                minValue is not null ? minValue.Value : null,
-                                maxValue is not null ? maxValue.Value : null,
+                                minValue ?? null,
+                                maxValue ?? null,
                                 description);
     }
 
@@ -319,8 +317,8 @@ public class GorgonOption
         return new GorgonOption(name,
                                 typeof(short),
                                 defaultValue,
-                                minValue is not null ? minValue.Value : null,
-                                maxValue is not null ? maxValue.Value : null,
+                                minValue ?? null,
+                                maxValue ?? null,
                                 description);
     }
 
@@ -356,8 +354,8 @@ public class GorgonOption
         return new GorgonOption(name,
                                 typeof(ushort),
                                 defaultValue,
-                                minValue is not null ? minValue.Value : null,
-                                maxValue is not null ? maxValue.Value : null,
+                                minValue ?? null,
+                                maxValue ?? null,
                                 description);
     }
 
@@ -393,8 +391,8 @@ public class GorgonOption
         return new GorgonOption(name,
                                 typeof(int),
                                 defaultValue,
-                                minValue is not null ? minValue.Value : null,
-                                maxValue is not null ? maxValue.Value : null,
+                                minValue ?? null,
+                                maxValue ?? null,
                                 description);
     }
 
@@ -430,8 +428,8 @@ public class GorgonOption
         return new GorgonOption(name,
                                 typeof(uint),
                                 defaultValue,
-                                minValue is not null ? minValue.Value : null,
-                                maxValue is not null ? maxValue.Value : null,
+                                minValue ?? null,
+                                maxValue ?? null,
                                 description);
     }
 
@@ -467,8 +465,8 @@ public class GorgonOption
         return new GorgonOption(name,
                                 typeof(long),
                                 defaultValue,
-                                minValue is not null ? minValue.Value : null,
-                                maxValue is not null ? maxValue.Value : null,
+                                minValue ?? null,
+                                maxValue ?? null,
                                 description);
     }
 
@@ -504,8 +502,8 @@ public class GorgonOption
         return new GorgonOption(name,
                                 typeof(ulong),
                                 defaultValue,
-                                minValue is not null ? minValue.Value : null,
-                                maxValue is not null ? maxValue.Value : null,
+                                minValue ?? null,
+                                maxValue ?? null,
                                 description);
     }
 
@@ -538,7 +536,7 @@ public class GorgonOption
             defaultValue = maxValue.Value;
         }
 
-        return new GorgonOption(name, typeof(double), defaultValue, minValue is not null ? minValue.Value : null, maxValue is not null ? maxValue.Value : null, description);
+        return new GorgonOption(name, typeof(double), defaultValue, minValue ?? null, maxValue ?? null, description);
     }
 
     /// <summary>
@@ -573,8 +571,8 @@ public class GorgonOption
         return new GorgonOption(name,
                                 typeof(float),
                                 defaultValue,
-                                minValue is not null ? minValue.Value : null,
-                                maxValue is not null ? maxValue.Value : null,
+                                minValue ?? null,
+                                maxValue ?? null,
                                 description);
     }
 
@@ -610,8 +608,8 @@ public class GorgonOption
         return new GorgonOption(name,
                                 typeof(decimal),
                                 defaultValue,
-                                minValue is not null ? minValue.Value : null,
-                                maxValue is not null ? maxValue.Value : null,
+                                minValue ?? null,
+                                maxValue ?? null,
                                 description);
     }
 
@@ -644,7 +642,7 @@ public class GorgonOption
             defaultValue = maxValue.Value;
         }
 
-        return new GorgonOption(name, typeof(decimal), defaultValue, minValue is not null ? minValue.Value : null, maxValue is not null ? maxValue.Value : null, description);
+        return new GorgonOption(name, typeof(decimal), defaultValue, minValue ?? null, maxValue ?? null, description);
     }
 
     /// <summary>
@@ -727,4 +725,3 @@ public class GorgonOption
     }
     #endregion
 }
-#pragma warning restore IDE0031

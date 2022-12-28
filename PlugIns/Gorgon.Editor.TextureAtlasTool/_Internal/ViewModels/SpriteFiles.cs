@@ -342,10 +342,7 @@ internal class SpriteFiles
             file.PropertyChanged -= File_PropertyChanged;
         }
 
-        if (_cancelSource is not null)
-        {
-            _cancelSource.Cancel();
-        }
+        _cancelSource?.Cancel();
 
         IGorgonImage currentImage = Interlocked.Exchange(ref _previewImage, null);            
         Interlocked.Exchange(ref _loadPreviewTask, null);

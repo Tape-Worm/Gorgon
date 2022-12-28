@@ -272,15 +272,9 @@ public class GorgonProgressOverlay
         Control parent = null;
         Form parentForm = null;
 
-        if (controlRef is not null)
-        {
-            controlRef.TryGetTarget(out parent);
-        }
+        controlRef?.TryGetTarget(out parent);
 
-        if (formRef is not null)
-        {
-            formRef.TryGetTarget(out parentForm);
-        }
+        formRef?.TryGetTarget(out parentForm);
 
         if (parentForm is not null)
         {

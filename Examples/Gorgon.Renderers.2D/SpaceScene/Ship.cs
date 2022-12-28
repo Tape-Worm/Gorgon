@@ -168,10 +168,7 @@ internal class Ship
     /// </summary>
     private void UpdateEntityPositions()
     {
-        if (_layerController is not null)
-        {
-            _layerController.SetPosition(-_position);
-        }
+        _layerController?.SetPosition(-_position);
 
         if ((_ship is null) || (_engine is null))
         {

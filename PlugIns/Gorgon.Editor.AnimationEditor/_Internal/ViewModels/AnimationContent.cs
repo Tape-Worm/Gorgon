@@ -235,10 +235,7 @@ internal class AnimationContent
             OnPropertyChanging();
             _primarySprite = (value, _primarySprite.spriteFile, _primarySprite.textureFile);
             UpdatePrimarySprite();
-            if (value is not null)
-            {
-                value.CopyTo(WorkingSprite);
-            }
+            value?.CopyTo(WorkingSprite);
             OnPropertyChanged();                
         }
     }
@@ -2155,10 +2152,7 @@ internal class AnimationContent
         _animation = injectionParameters.Animation;
         Settings = injectionParameters.Settings;
         _primarySprite = (injectionParameters.PrimarySprite?.PrimarySprite, injectionParameters.PrimarySprite?.File, injectionParameters.PrimarySprite?.TextureFile);
-        if (_primarySprite.sprite is not null)
-        {
-            _primarySprite.sprite.CopyTo(WorkingSprite);
-        }
+        _primarySprite.sprite?.CopyTo(WorkingSprite);
         _controller = injectionParameters.Controller;
         _length = injectionParameters.Animation.Length;
         _fps = injectionParameters.Animation.Fps;

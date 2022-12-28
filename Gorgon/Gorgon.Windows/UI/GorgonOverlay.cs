@@ -302,15 +302,9 @@ public class GorgonOverlay
         Form parentForm = null;
         Control parent = null;
 
-        if (formRef is not null)
-        {
-            formRef.TryGetTarget(out parentForm);
-        }
+        formRef?.TryGetTarget(out parentForm);
 
-        if (controlRef is not null)
-        {
-            controlRef.TryGetTarget(out parent);
-        }
+        controlRef?.TryGetTarget(out parent);
 
         if (overlayForm is not null)
         {

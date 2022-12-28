@@ -353,10 +353,7 @@ static class Program
 
             GorgonApplication.Run(Initialize(), Idle);
 
-            if (_mp3Player is not null)
-            {
-                _mp3Player.Stop();
-            }
+            _mp3Player?.Stop();
         }
         catch (Exception ex)
         {

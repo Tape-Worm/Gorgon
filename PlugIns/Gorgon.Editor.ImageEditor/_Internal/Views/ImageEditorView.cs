@@ -360,10 +360,7 @@ internal partial class ImageEditorView
         switch (propertyName)
         {
             case nameof(IImageContent.CommandContext):
-                if (DataContext.CommandContext is not null)
-                {
-                    DataContext.CommandContext.Unload();
-                }
+                DataContext.CommandContext?.Unload();
                 break;
         }
     }

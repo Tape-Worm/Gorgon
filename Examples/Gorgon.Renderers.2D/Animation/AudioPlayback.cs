@@ -63,10 +63,7 @@ internal class AudioPlayback
     /// </summary>
     public void Stop()
     {
-        if (_tokenSource is not null)
-        {
-            _tokenSource.Cancel();
-        }
+        _tokenSource?.Cancel();
 
         _currentPlayback?.Wait();
         _currentPlayback = null;

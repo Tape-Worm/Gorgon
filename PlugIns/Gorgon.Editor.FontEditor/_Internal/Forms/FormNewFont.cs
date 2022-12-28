@@ -378,10 +378,7 @@ internal partial class FormNewFont
         Drawing.FontStyle style = Drawing.FontStyle.Regular;
 
         labelPreview.Font = Font;
-        if (_font != null)
-        {
-            _font.Dispose();
-        }
+        _font?.Dispose();
 
         _font = null;
 
@@ -446,15 +443,9 @@ internal partial class FormNewFont
         }
         finally
         {
-            if (currentFont != null)
-            {
-                currentFont.Dispose();
-            }
+            currentFont?.Dispose();
 
-            if (picker != null)
-            {
-                picker.Dispose();
-            }
+            picker?.Dispose();
         }
     }
 
