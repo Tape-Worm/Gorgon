@@ -1444,16 +1444,15 @@ public partial class GorgonFolderBrowser
             var item = new ListViewItem(drive.Name)
             {
                 Tag = drive.RootDirectory,
-                Font = Font
-            };
-
-            item.ImageIndex = drive.DriveType switch
-            {
-                DriveType.Network => 5,
-                DriveType.Ram => 4,
-                DriveType.CDRom => 3,
-                DriveType.Removable => 2,
-                _ => 1,
+                Font = Font,
+                ImageIndex = drive.DriveType switch
+                {
+                    DriveType.Network => 5,
+                    DriveType.Ram => 4,
+                    DriveType.CDRom => 3,
+                    DriveType.Removable => 2,
+                    _ => 1,
+                }
             };
 
             item.SubItems.Add($@"{drive.AvailableFreeSpace.FormatMemory()}");

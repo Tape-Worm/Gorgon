@@ -787,10 +787,9 @@ internal partial class FormRibbon
         ButtonAnimationClear.Enabled = DataContext.ClearAnimationCommand?.CanExecute(null) ?? false;
         var copyArgs = new KeyFrameCopyMoveData
         {
-            KeyFrames = DataContext.Selected
+            KeyFrames = DataContext.Selected,
+            Operation = CopyMoveOperation.Copy
         };
-
-        copyArgs.Operation = CopyMoveOperation.Copy;
         ButtonAnimationCopy.Enabled = DataContext?.KeyEditor?.CopyDataCommand?.CanExecute(copyArgs) ?? false;
         copyArgs.Operation = CopyMoveOperation.Move;
         ButtonAnimationCut.Enabled = DataContext?.KeyEditor?.CopyDataCommand?.CanExecute(copyArgs) ?? false;

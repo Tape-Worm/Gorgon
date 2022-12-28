@@ -217,10 +217,10 @@ static class Program
         // Because it's an Ortho camera, it doesn't really know how to handle aspect ratios, so we'll have to adjust for the current ratio.
         var camera = new GorgonOrthoCamera(_graphics, new DX.Size2F(2, 2), 0.1f, 5000)
         {
-            Anchor = new Vector2(0.5f, 0.5f)
+            Anchor = new Vector2(0.5f, 0.5f),
+            AllowUpdateOnResize = false    // Since we're using a custom coordinate set, we don't want to change it automatically when we resize the swap chain.
         };
-        camera.AllowUpdateOnResize = false;    // Since we're using a custom coordinate set, we don't want to change it automatically when we resize the swap chain.
-                                               // That means we are responsible for any adjustments required on resize.
+        // That means we are responsible for any adjustments required on resize.
 
         // Scenes are composed of layers, which are composed of sprites/meshes/etc...
         // Each layer is used to give an illusion of depth by employing parallax scrolling.  While we could use the Gorgon camera to do this, it will not give an illusion of depth 

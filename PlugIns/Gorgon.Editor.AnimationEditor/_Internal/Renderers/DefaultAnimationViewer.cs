@@ -127,10 +127,9 @@ internal class DefaultAnimationViewer
         {
             Alignment = Gorgon.UI.Alignment.LowerCenter,
             DrawMode = TextDrawMode.OutlinedGlyphs,
-            LayoutArea = new DX.Size2F(ClientSize.Width, ClientSize.Height),                
+            LayoutArea = new DX.Size2F(ClientSize.Width, ClientSize.Height),
+            Text = Resources.GORANM_TEXT_TEXTURE_KEY_ASSIGN.WordWrap(_font, ClientSize.Width)
         };
-
-        _instructions.Text = Resources.GORANM_TEXT_TEXTURE_KEY_ASSIGN.WordWrap(_font, ClientSize.Width);
         _textSize = _instructions.Text.MeasureText(_font, true, wordWrapWidth: ClientSize.Width);
 
         if (Clipper is not null)

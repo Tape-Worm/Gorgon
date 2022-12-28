@@ -77,10 +77,9 @@ public class DirectoryLocateService
         {
             locatorUI = new FormDirectoryLocator
             {
-                Text = string.IsNullOrWhiteSpace(caption) ? Resources.GOREDIT_TITLE_DEFAULT_DIR_LOCATOR : caption
+                Text = string.IsNullOrWhiteSpace(caption) ? Resources.GOREDIT_TITLE_DEFAULT_DIR_LOCATOR : caption,
+                CurrentDirectory = initialDir.FullName
             };
-
-            locatorUI.CurrentDirectory = initialDir.FullName;
 
             if (onSelected is not null)
             {

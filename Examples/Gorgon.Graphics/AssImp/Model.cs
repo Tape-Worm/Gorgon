@@ -138,13 +138,14 @@ internal class Model
         for (int m = 0; m < sceneMaterials.Count; ++m)
         {
             Assimp.Material mat = sceneMaterials[m];
-            Material material = new();
-
-            material.Diffuse = new GorgonColor(mat.ColorDiffuse.R, mat.ColorDiffuse.G, mat.ColorDiffuse.B, mat.ColorDiffuse.A);
-            material.Emissive = new GorgonColor(mat.ColorEmissive.R, mat.ColorEmissive.G, mat.ColorEmissive.B, 1.0f);
-            material.Specular = new GorgonColor(mat.ColorSpecular.R, mat.ColorSpecular.G, mat.ColorSpecular.B, 1.0f);
-            material.SpecularPower = mat.Shininess;
-            material.TextureSampler = GorgonSamplerState.Wrapping;
+            Material material = new()
+            {
+                Diffuse = new GorgonColor(mat.ColorDiffuse.R, mat.ColorDiffuse.G, mat.ColorDiffuse.B, mat.ColorDiffuse.A),
+                Emissive = new GorgonColor(mat.ColorEmissive.R, mat.ColorEmissive.G, mat.ColorEmissive.B, 1.0f),
+                Specular = new GorgonColor(mat.ColorSpecular.R, mat.ColorSpecular.G, mat.ColorSpecular.B, 1.0f),
+                SpecularPower = mat.Shininess,
+                TextureSampler = GorgonSamplerState.Wrapping
+            };
 
             materials.Add(material);
 
