@@ -338,7 +338,7 @@ public abstract class GorgonGamingDevice
             _povDirections[i] = Input.POVDirection.Center;
         }
 
-        foreach (GamingDeviceAxisProperties axis in Axis)
+        foreach (GamingDeviceAxisProperties axis in Axis.OfType<GamingDeviceAxisProperties>().Where(item => item is not null))
         {
             axis.Value = Info.AxisInfo[axis.Axis].DefaultValue;
         }

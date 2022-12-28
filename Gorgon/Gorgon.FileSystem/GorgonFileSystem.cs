@@ -703,7 +703,7 @@ public class GorgonFileSystem
 
         // All files have a physical link, and since that physical link is no longer valid, we need to update the physical path for each file under
         // the directory and any subdirectories.
-        foreach (VirtualDirectory subDir in dir.Directories.Traverse(d => d.Directories))
+        foreach (VirtualDirectory subDir in dir.Directories.Traverse(d => d.Directories).OfType<VirtualDirectory>().Where(item => item is not null))
         {
             if (subDir.MountPoint != mountPoint)
             {

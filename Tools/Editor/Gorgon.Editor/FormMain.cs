@@ -277,7 +277,10 @@ internal partial class FormMain
                 {
                     triple.Items.Add(newButton);
                 }
-                else lines?.Items.Add(newButton);
+                else
+                {
+                    lines?.Items.Add(newButton);
+                }
             }
         }
 

@@ -1025,8 +1025,8 @@ public sealed class GorgonTexture3D
     /// </para>
     /// </remarks>
     public GorgonTexture3D GetStagingTexture()
-    {
 #if NET6_0_OR_GREATER
+    {
         GorgonTexture3DInfo info = _info with
         {
             Name = $"{Name}_[Staging]",
@@ -1039,10 +1039,10 @@ public sealed class GorgonTexture3D
         CopyTo(staging);
 
         return staging;
-#else
-        return null;
-#endif
     }
+#else
+        => null;
+#endif
 
     /// <summary>
     /// Function to update the texture, or a sub section of the texture with data from a <see cref="IGorgonImageBuffer"/> contained within a <see cref="IGorgonImage"/>.
