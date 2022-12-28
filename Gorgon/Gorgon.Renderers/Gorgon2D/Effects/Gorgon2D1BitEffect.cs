@@ -53,7 +53,7 @@ public class Gorgon2D1BitEffect
     /// Settings for the effect shader.
     /// </summary>
     [StructLayout(LayoutKind.Explicit, Size = 32)]
-    private struct Settings
+    private readonly struct Settings
     {
         [FieldOffset(0)]
         private readonly int _useAverage;           // Flag to indicate that the average of the texel colors should be used.

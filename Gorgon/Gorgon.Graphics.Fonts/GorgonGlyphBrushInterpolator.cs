@@ -34,7 +34,7 @@ namespace Gorgon.Graphics.Fonts;
 /// <summary>
 /// An interpolation value used to weight the color blending in a gradient brush.
 /// </summary>
-public struct GorgonGlyphBrushInterpolator
+public readonly struct GorgonGlyphBrushInterpolator
     : IEquatable<GorgonGlyphBrushInterpolator>, IComparable<GorgonGlyphBrushInterpolator>
 {
     #region Properties.

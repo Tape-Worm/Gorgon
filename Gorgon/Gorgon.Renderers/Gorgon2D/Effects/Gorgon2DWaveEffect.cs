@@ -65,7 +65,7 @@ public class Gorgon2DWaveEffect
     /// Settings for the effect shader.
     /// </summary>
     [StructLayout(LayoutKind.Sequential, Size = 32)]
-    private struct Settings
+    private readonly struct Settings
     {
         /// <summary>
         /// Amplitude for the wave.

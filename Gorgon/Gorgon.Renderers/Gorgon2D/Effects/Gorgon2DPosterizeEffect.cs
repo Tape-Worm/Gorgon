@@ -52,7 +52,7 @@ public class Gorgon2DPosterizedEffect
     /// Settings for the effect shader.
     /// </summary>
     [StructLayout(LayoutKind.Sequential, Pack = 16)]
-    private struct Settings
+    private readonly struct Settings
     {
         // Flag to posterize the alpha channel.
         private readonly int _posterizeAlpha;                               

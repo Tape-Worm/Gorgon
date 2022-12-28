@@ -81,7 +81,7 @@ class WicUtilities
     /// <summary>
     /// A value to hold a WIC to Gorgon buffer format value.
     /// </summary>
-    private struct WICGorgonFormat
+    private readonly struct WICGorgonFormat
     {
         /// <summary>
         /// WIC GUID to convert from/to.
@@ -107,7 +107,7 @@ class WicUtilities
     /// <summary>
     /// A value to hold a nearest supported format conversion.
     /// </summary>
-    private struct WICNearest
+    private readonly struct WICNearest
     {
         /// <summary>
         /// Source format to convert from.

@@ -11,7 +11,7 @@ namespace GorgonTriangulator;
 /// <summary>
 /// A basic triangle structure that holds the three vertices that make up a given triangle.
 /// </summary>
-internal struct Triangle
+internal readonly struct Triangle
     : IEquatable<Triangle>
 {
     public readonly Vertex A;

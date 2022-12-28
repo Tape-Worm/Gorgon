@@ -47,7 +47,7 @@ public class Gorgon2DSobelEdgeDetectEffect
     /// Settings for the effect shader.
     /// </summary>
     [StructLayout(LayoutKind.Sequential, Pack = 4, Size = 32)]
-    private struct Settings
+    private readonly struct Settings
     {
         // Texel size and threshold.
         private readonly Vector4 _texelThreshold;

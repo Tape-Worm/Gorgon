@@ -252,7 +252,7 @@ internal enum DdsCaps2
 /// <summary>
 /// DDS legacy conversion type.
 /// </summary>
-internal struct DdsLegacyConversion
+internal readonly struct DdsLegacyConversion
 {
     /// <summary>
     /// Buffer format.
@@ -387,7 +387,7 @@ internal struct Dx10Header
 /// Pixel format descriptor.
 /// </summary>
 [StructLayout(LayoutKind.Sequential, Pack = 1)]
-internal struct DdsPixelFormat
+internal readonly struct DdsPixelFormat
 {
     /// <summary>
     /// Size of the format, in bytes.

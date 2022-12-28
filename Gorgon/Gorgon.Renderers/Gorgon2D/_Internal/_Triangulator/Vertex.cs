@@ -9,7 +9,7 @@ using System.Numerics;
 
 namespace GorgonTriangulator;
 
-internal struct Vertex
+internal readonly struct Vertex
     : IEquatable<Vertex>
 {
     public readonly Vector2 Position;
