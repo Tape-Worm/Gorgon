@@ -725,9 +725,7 @@ public class GorgonAnimationBuilder
             };
         }
 
-        if (length is null)
-        {
-            length = _singleTracks.SelectMany(item => item.Value.Keys.Cast<IGorgonKeyFrame>()).DefaultIfEmpty()
+        length ??= _singleTracks.SelectMany(item => item.Value.Keys.Cast<IGorgonKeyFrame>()).DefaultIfEmpty()
                                   .Concat(_vector2Tracks.SelectMany(item => item.Value.Keys).DefaultIfEmpty())
                                   .Concat(_vector3Tracks.SelectMany(item => item.Value.Keys).DefaultIfEmpty())
                                   .Concat(_vector4Tracks.SelectMany(item => item.Value.Keys).DefaultIfEmpty())
@@ -736,7 +734,6 @@ public class GorgonAnimationBuilder
                                   .Concat(_colorTracks.SelectMany(item => item.Value.Keys).DefaultIfEmpty())
                                   .Concat(_textureTracks.SelectMany(item => item.Value.Keys).DefaultIfEmpty())
                                   .Max(item => item?.Time ?? 0);
-        }
 
         return new AnimationData(name, fps, length.Value.Max(1 / fps))
         {

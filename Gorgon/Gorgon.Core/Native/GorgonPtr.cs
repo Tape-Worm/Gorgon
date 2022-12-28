@@ -589,10 +589,7 @@ public unsafe readonly struct GorgonPtr<T>
             throw new ArgumentOutOfRangeException(nameof(destIndex), Resources.GOR_ERR_DATABUFF_OFFSET_TOO_SMALL);
         }
 
-        if (count == null)
-        {
-            count = Length - sourceIndex;
-        }
+        count ??= Length - sourceIndex;
 
         if (count < 0)
         {
@@ -655,10 +652,7 @@ public unsafe readonly struct GorgonPtr<T>
             throw new ArgumentOutOfRangeException(nameof(destIndex), Resources.GOR_ERR_DATABUFF_OFFSET_TOO_SMALL);
         }
 
-        if (count == null)
-        {
-            count = Length - sourceIndex;
-        }
+        count ??= Length - sourceIndex;
 
         if (count < 0)
         {
@@ -721,10 +715,7 @@ public unsafe readonly struct GorgonPtr<T>
             throw new ArgumentOutOfRangeException(nameof(destIndex), Resources.GOR_ERR_DATABUFF_OFFSET_TOO_SMALL);
         }
 
-        if (count == null)
-        {
-            count = Length - sourceIndex;
-        }
+        count ??= Length - sourceIndex;
 
         if (count < 0)
         {
@@ -788,10 +779,7 @@ public unsafe readonly struct GorgonPtr<T>
             throw new ArgumentOutOfRangeException(nameof(startIndex), Resources.GOR_ERR_DATABUFF_OFFSET_TOO_SMALL);
         }
 
-        if (count == null)
-        {
-            count = Length - startIndex;
-        }
+        count ??= Length - startIndex;
 
         if (count < 0)
         {
@@ -843,10 +831,7 @@ public unsafe readonly struct GorgonPtr<T>
             throw new ArgumentOutOfRangeException(nameof(index), Resources.GOR_ERR_DATABUFF_OFFSET_TOO_SMALL);
         }
 
-        if (count == null)
-        {
-            count = Length - index;
-        }
+        count ??= Length - index;
 
         if (count < 0)
         {
@@ -975,10 +960,7 @@ public unsafe readonly struct GorgonPtr<T>
             throw new ArgumentOutOfRangeException(nameof(index), Resources.GOR_ERR_DATABUFF_OFFSET_TOO_SMALL);
         }
 
-        if (count == null)
-        {
-            count = Length - index;
-        }
+        count ??= Length - index;
 
         if (count < 0)
         {
@@ -1043,10 +1025,7 @@ public unsafe readonly struct GorgonPtr<T>
             throw new ArgumentOutOfRangeException(nameof(index), Resources.GOR_ERR_DATABUFF_OFFSET_TOO_SMALL);
         }
 
-        if (count == null)
-        {
-            count = Length - index;
-        }
+        count ??= Length - index;
 
         if (count < 0)
         {
@@ -1111,10 +1090,7 @@ public unsafe readonly struct GorgonPtr<T>
             throw new ArgumentOutOfRangeException(nameof(index), Resources.GOR_ERR_DATABUFF_OFFSET_TOO_SMALL);
         }
 
-        if (count == null)
-        {
-            count = Length - index;
-        }
+        count ??= Length - index;
 
         if (count < 0)
         {
@@ -1158,10 +1134,7 @@ public unsafe readonly struct GorgonPtr<T>
             throw new ArgumentOutOfRangeException(nameof(index), Resources.GOR_ERR_DATABUFF_OFFSET_TOO_SMALL);
         }
 
-        if (count == null)
-        {
-            count = Length - index;
-        }
+        count ??= Length - index;
 
         if (count < 0)
         {
@@ -1471,10 +1444,7 @@ public unsafe readonly struct GorgonPtr<T>
             throw new ArgumentOutOfRangeException(nameof(index), Resources.GOR_ERR_DATABUFF_OFFSET_TOO_SMALL);
         }
 
-        if (count == null)
-        {
-            count = buffer.Length - index;
-        }
+        count ??= buffer.Length - index;
 
         if (count <= 0)
         {

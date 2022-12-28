@@ -773,10 +773,7 @@ internal class SpriteEditorPlugIn
         string fileDirectoryPath = Path.GetDirectoryName(filePath).FormatDirectory('/');
         IGorgonVirtualDirectory directory = TemporaryFileSystem.FileSystem.GetDirectory(fileDirectoryPath);
 
-        if (directory is null)
-        {
-            directory = TemporaryFileSystem.CreateDirectory(fileDirectoryPath);
-        }
+        directory ??= TemporaryFileSystem.CreateDirectory(fileDirectoryPath);
 
         IGorgonImageCodec pngCodec = new GorgonCodecPng();
 

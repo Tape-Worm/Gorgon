@@ -240,10 +240,7 @@ internal class SpriteContent
                 return;
             }
 
-            if (value is null)
-            {
-                value = _defaultColor;
-            }
+            value ??= _defaultColor;
 
             if (_sprite.CornerColors.SequenceEqual(value))
             {

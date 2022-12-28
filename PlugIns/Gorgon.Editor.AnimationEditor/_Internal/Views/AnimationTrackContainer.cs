@@ -215,10 +215,7 @@ internal partial class AnimationTrackContainer
             return;
         }
 
-        if (keyCount is null)
-        {
-            keyCount = dataContext.MaxKeyCount;
-        }
+        keyCount ??= dataContext.MaxKeyCount;
 
         var columns = new DataGridViewColumn[keyCount.Value + 1];
         float weight = 1.0f / columns.Length;

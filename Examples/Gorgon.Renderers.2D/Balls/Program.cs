@@ -152,10 +152,7 @@ static class Program
 			}
 
 			// Create ball array.
-			if (_ballList is null)
-			{
-				_ballList = new Ball[1048576];
-			}
+			_ballList ??= new Ball[1048576];
 
 			// Generate balls.
 			for (int i = start; i < _ballCount; i++)

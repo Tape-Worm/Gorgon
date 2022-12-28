@@ -374,10 +374,7 @@ public class TextureCache
         // Ensure that the cache directory is available.
         _cacheDirectory = _tempWriter.FileSystem.GetDirectory(CacheDirectory);
 
-        if (_cacheDirectory is null)
-        {
-            _cacheDirectory = _tempWriter.CreateDirectory(CacheDirectory);
-        }
+        _cacheDirectory ??= _tempWriter.CreateDirectory(CacheDirectory);
 
         if (entry?.CachedFile is not null)
         {

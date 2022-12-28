@@ -275,14 +275,11 @@ public class Gorgon2DDisplacementEffect
     {
         if ((statesChanged) || (_displacementState is null) || (_batchState is null))
         {
-            if (_displacementState is null)
-            {
-                _displacementState = builders.PixelShaderBuilder.Clear()
+            _displacementState ??= builders.PixelShaderBuilder.Clear()
                                       .Shader(_displacementShader)
                                       .ConstantBuffer(_displacementSettingsBuffer, 1)
                                       .ShaderResource(_displaceTexture, 1)
                                       .Build(PixelShaderAllocator);
-            }
 
             _batchState = builders.BatchBuilder
                             .PixelShaderState(_displacementState)

@@ -378,20 +378,14 @@ public class Gorgon2DGaussBlurEffect
     /// <param name="builders">The builder types that will manage the state of the effect.</param>
     private void BuildState(IGorgon2DEffectBuilders builders)
     {
-        if (_blurState is null)
-        {
-            _blurState = builders.PixelShaderBuilder.SamplerState(GorgonSamplerState.Default)
+        _blurState ??= builders.PixelShaderBuilder.SamplerState(GorgonSamplerState.Default)
                                                     .ConstantBuffer(_blurBufferKernel, 1)
                                                     .ConstantBuffer(_blurBufferPass, 2)
                                                     .Shader(_blurShader)
                                                     .Build();
-        }
 
-        if (_blurStateNoAlpha is null)
-        {
-            _blurStateNoAlpha = builders.PixelShaderBuilder.Shader(_blurShaderNoAlpha)
+        _blurStateNoAlpha ??= builders.PixelShaderBuilder.Shader(_blurShaderNoAlpha)
                                                            .Build();
-        }
 
         _batchState = builders.BatchBuilder.Clear()
                       .BlendState(GorgonBlendState.NoBlending)

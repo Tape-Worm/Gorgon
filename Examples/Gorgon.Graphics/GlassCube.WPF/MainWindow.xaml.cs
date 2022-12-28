@@ -415,10 +415,7 @@ public partial class MainWindow
             return;
         }
 
-        if (_dragStart is null)
-        {
-            _dragStart = PointToScreen(e.GetPosition(this));
-        }
+        _dragStart ??= PointToScreen(e.GetPosition(this));
     }
 
     /// <summary>Handles the MouseMove event of the Window control.</summary>

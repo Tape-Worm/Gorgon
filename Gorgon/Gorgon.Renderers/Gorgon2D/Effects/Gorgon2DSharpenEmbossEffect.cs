@@ -140,21 +140,15 @@ public class Gorgon2DSharpenEmbossEffect
         // ReSharper disable once InvertIf
         if ((_sharpenBatchState is null) || (_embossBatchState is null) || (statesChanged))
         {
-            if (_sharpenState is null)
-            {
-                _sharpenState = builders.PixelShaderBuilder
+            _sharpenState ??= builders.PixelShaderBuilder
                                  .ConstantBuffer(_sharpenEmbossBuffer, 1)
                                  .Shader(_sharpenShader)
                                  .Build();
-            }
 
-            if (_embossState is null)
-            {
-                _embossState = builders.PixelShaderBuilder
+            _embossState ??= builders.PixelShaderBuilder
                                 .ConstantBuffer(_sharpenEmbossBuffer, 1)
                                 .Shader(_embossShader)
                                 .Build();
-            }
 
 
             _sharpenBatchState = builders.BatchBuilder

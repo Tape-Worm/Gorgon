@@ -681,9 +681,7 @@ public class GorgonRawMouse
     /// </remarks>
     public GorgonRawMouse(IGorgonMouseInfo mouseInfo = null)
     {
-        if (mouseInfo is null)
-        {
-            mouseInfo = new RawMouseInfo(IntPtr.Zero,
+        mouseInfo ??= new RawMouseInfo(IntPtr.Zero,
                                          "System Mouse",
                                          "Mouse",
                                          Resources.GORINP_RAW_DESC_SYS_MOUSE,
@@ -693,7 +691,6 @@ public class GorgonRawMouse
                                              dwNumberOfButtons = SystemInformation.MouseButtons,
                                              dwSampleRate = 0
                                          });
-        }
 
         _deviceHandle = mouseInfo.Handle;
         Info = mouseInfo;

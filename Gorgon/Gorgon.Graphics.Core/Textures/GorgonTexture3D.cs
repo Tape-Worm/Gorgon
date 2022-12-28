@@ -1736,20 +1736,14 @@ public sealed class GorgonTexture3D
             throw new IOException(Resources.GORGFX_ERR_STREAM_WRITE_ONLY);
         }
 
-        if (size is null)
-        {
-            size = stream.Length - stream.Position;
-        }
+        size ??= stream.Length - stream.Position;
 
         if ((stream.Length - stream.Position) < size)
         {
             throw new EndOfStreamException();
         }
 
-        if (options is null)
-        {
-            options = _defaultLoadOptions;
-        }
+        options ??= _defaultLoadOptions;
 
         if (string.IsNullOrEmpty(options.Name))
         {
@@ -1826,10 +1820,7 @@ public sealed class GorgonTexture3D
             throw new ArgumentNullException(nameof(codec));
         }
 
-        if (options is null)
-        {
-            options = _defaultLoadOptions;
-        }
+        options ??= _defaultLoadOptions;
 
         if (string.IsNullOrEmpty(options.Name))
         {

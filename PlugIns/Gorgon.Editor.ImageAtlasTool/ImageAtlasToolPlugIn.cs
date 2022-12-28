@@ -146,22 +146,13 @@ internal class ImageAtlasToolPlugIn
         {
             settings = HostToolServices.ToolPlugInService.ReadContentSettings<TextureAtlasSettings>(typeof(ImageAtlasToolPlugIn).FullName);
 
-            if (settings is null)
-            {
-                settings = new TextureAtlasSettings();
-            }
+            settings ??= new TextureAtlasSettings();
 
             (List<IContentFileExplorerSearchEntry> searchEntries, List<ContentFileExplorerDirectoryEntry> entries) = GetFileEntries();
 
-            if (_fileVm is null)
-            {
-                _fileVm = new ImageFiles();
-            }
+            _fileVm ??= new ImageFiles();
 
-            if (_textureAtlas is null)
-            {
-                _textureAtlas = new ImageAtlas();
-            }
+            _textureAtlas ??= new ImageAtlas();
 
             _fileVm.Initialize(new ImageFilesParameters(entries, TemporaryFileSystem, new EditorContentSearchService(searchEntries), HostToolServices));
             _textureAtlas.Initialize(new ImageAtlasParameters(_fileVm, 
@@ -204,10 +195,7 @@ internal class ImageAtlasToolPlugIn
     /// </remarks>
     protected override IToolPlugInRibbonButton OnGetToolButton()
     {
-        if (_button.ClickCallback is null)
-        {
-            _button.ClickCallback = ShowForm;
-        }
+        _button.ClickCallback ??= ShowForm;
 
         return _button;
     }

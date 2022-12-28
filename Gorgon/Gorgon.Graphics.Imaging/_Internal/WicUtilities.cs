@@ -955,15 +955,9 @@ class WicUtilities
         reader.TryGetMetadataByName(metadataNames[0], out object xValue);
         reader.TryGetMetadataByName(metadataNames[1], out object yValue);
 
-        if (xValue is null)
-        {
-            xValue = 0;
-        }
+        xValue ??= 0;
 
-        if (yValue is null)
-        {
-            yValue = 0;
-        }
+        yValue ??= 0;
 
         return new DX.Point(Convert.ToInt32(xValue), Convert.ToInt32(yValue));
     }

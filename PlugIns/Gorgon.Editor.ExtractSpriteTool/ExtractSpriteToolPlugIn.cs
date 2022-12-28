@@ -131,10 +131,7 @@ internal class ExtractSpriteToolPlugIn
         {
             settings = HostToolServices.ToolPlugInService.ReadContentSettings<ExtractSpriteToolSettings>(typeof(ExtractSpriteToolPlugIn).FullName);
 
-            if (settings is null)
-            {
-                settings = new ExtractSpriteToolSettings();
-            }
+            settings ??= new ExtractSpriteToolSettings();
 
             textureFile = ContentFileManager.GetSelectedFiles()[0];
 
@@ -221,15 +218,9 @@ internal class ExtractSpriteToolPlugIn
     /// </remarks>
     protected override IToolPlugInRibbonButton OnGetToolButton()
     {
-        if (_button.ClickCallback is null)
-        {
-            _button.ClickCallback = ShowForm;
-        }
+        _button.ClickCallback ??= ShowForm;
         
-        if (_button.CanExecute is null)
-        {
-            _button.CanExecute = CanShowForm;
-        }
+        _button.CanExecute ??= CanShowForm;
 
         return _button;
     }

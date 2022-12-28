@@ -249,10 +249,7 @@ internal class Boot
             }
         }
 
-        if (result is null)
-        {
-            result = CreateEditorSettings();
-        }
+        result ??= CreateEditorSettings();
 
         if (string.IsNullOrWhiteSpace(result.LastOpenSavePath))
         {

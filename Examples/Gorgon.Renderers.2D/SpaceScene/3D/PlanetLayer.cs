@@ -307,10 +307,7 @@ internal class PlanetLayer
                 GorgonPixelShader pixelShader = _resources.PixelShaders[layer.Mesh.Material.PixelShader];
 
                 // Create our vertex layout now.
-                if (_vertexLayout is null)
-                {
-                    _vertexLayout = _vertexLayout = GorgonInputLayout.CreateUsingType<GorgonVertexPosNormUvTangent>(_graphics, vertexShader);
-                }
+                _vertexLayout ??= _vertexLayout = GorgonInputLayout.CreateUsingType<GorgonVertexPosNormUvTangent>(_graphics, vertexShader);
 
                 // Set up a pipeline state for the mesh.
                 GorgonPipelineState pipelineState = _stateBuilder.Clear()

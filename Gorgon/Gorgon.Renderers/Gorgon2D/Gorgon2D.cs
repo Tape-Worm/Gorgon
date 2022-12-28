@@ -691,14 +691,11 @@ public sealed class Gorgon2D
             _currentBatchState.RasterState = GorgonRasterState.Default;
             _currentBatchState.DepthStencilState = GorgonDepthStencilState.Default;
 
-            if (_defaultCamera is null)
-            {
-                _defaultCamera = new GorgonOrthoCamera(Graphics,
+            _defaultCamera ??= new GorgonOrthoCamera(Graphics,
                                                        new DX.Size2F(Graphics.Viewports[0].Width, Graphics.Viewports[0].Height),
                                                        -100_000.0f,
                                                        100_000.0f,
                                                        "Gorgon2D.Default_Camera");
-            }
 
             _cameraController = new CameraController(Graphics);
             _cameraController.UpdateCamera(_defaultCamera);
@@ -1627,10 +1624,7 @@ public sealed class Gorgon2D
         ref Gorgon2DVertex v2 = ref _primitiveRenderable.Vertices[2];
         ref Gorgon2DVertex v3 = ref _primitiveRenderable.Vertices[3];
 
-        if (textureSampler is null)
-        {
-            textureSampler = GorgonSamplerState.Wrapping;
-        }
+        textureSampler ??= GorgonSamplerState.Wrapping;
 
         if (texture is not null)
         {
@@ -1711,10 +1705,7 @@ public sealed class Gorgon2D
             throw new InvalidOperationException(Resources.GOR2D_ERR_BEGIN_NOT_CALLED);
         }
 #endif
-        if (textureSampler is null)
-        {
-            textureSampler = GorgonSamplerState.Wrapping;
-        }
+        textureSampler ??= GorgonSamplerState.Wrapping;
 
         AlphaTestData alphaTestData = PrimitiveAlphaTestRange is null ? new AlphaTestData(false, GorgonRangeF.Empty) : new AlphaTestData(true, PrimitiveAlphaTestRange.Value);
         CheckPrimitiveStateChange(texture, textureSampler, in alphaTestData);
@@ -1918,10 +1909,7 @@ public sealed class Gorgon2D
         ref Gorgon2DVertex v2 = ref _primitiveRenderable.Vertices[2];
         ref Gorgon2DVertex v3 = ref _primitiveRenderable.Vertices[3];
 
-        if (textureSampler is null)
-        {
-            textureSampler = GorgonSamplerState.Wrapping;
-        }
+        textureSampler ??= GorgonSamplerState.Wrapping;
 
         var bounds = new DX.RectangleF
         {
@@ -2115,10 +2103,7 @@ public sealed class Gorgon2D
             c.Angle = new Vector2(1, 0);
         }
 
-        if (textureSampler is null)
-        {
-            textureSampler = GorgonSamplerState.Wrapping;
-        }
+        textureSampler ??= GorgonSamplerState.Wrapping;
 
         AlphaTestData alphaTestData = PrimitiveAlphaTestRange is null ? new AlphaTestData(false, GorgonRangeF.Empty) : new AlphaTestData(true, PrimitiveAlphaTestRange.Value);
         CheckPrimitiveStateChange(texture, textureSampler, in alphaTestData);
@@ -2236,10 +2221,7 @@ public sealed class Gorgon2D
             vInner.Angle = new Vector2(1, 0);
         }
 
-        if (textureSampler is null)
-        {
-            textureSampler = GorgonSamplerState.Wrapping;
-        }
+        textureSampler ??= GorgonSamplerState.Wrapping;
 
         AlphaTestData alphaTestData = PrimitiveAlphaTestRange is null ? new AlphaTestData(false, GorgonRangeF.Empty) : new AlphaTestData(true, PrimitiveAlphaTestRange.Value);
         CheckPrimitiveStateChange(texture, textureSampler, in alphaTestData);
@@ -2351,10 +2333,7 @@ public sealed class Gorgon2D
             c.Angle = new Vector2(1, 0);
         }
 
-        if (textureSampler is null)
-        {
-            textureSampler = GorgonSamplerState.Wrapping;
-        }
+        textureSampler ??= GorgonSamplerState.Wrapping;
 
         AlphaTestData alphaTestData = PrimitiveAlphaTestRange is null ? new AlphaTestData(false, GorgonRangeF.Empty) : new AlphaTestData(true, PrimitiveAlphaTestRange.Value);
         CheckPrimitiveStateChange(texture, textureSampler, in alphaTestData);
@@ -2467,10 +2446,7 @@ public sealed class Gorgon2D
             vInner.Angle = new Vector2(1, 0);
         }
 
-        if (textureSampler is null)
-        {
-            textureSampler = GorgonSamplerState.Wrapping;
-        }
+        textureSampler ??= GorgonSamplerState.Wrapping;
 
         AlphaTestData alphaTestData = PrimitiveAlphaTestRange is null ? new AlphaTestData(false, GorgonRangeF.Empty) : new AlphaTestData(true, PrimitiveAlphaTestRange.Value);
         CheckPrimitiveStateChange(texture, textureSampler, in alphaTestData);

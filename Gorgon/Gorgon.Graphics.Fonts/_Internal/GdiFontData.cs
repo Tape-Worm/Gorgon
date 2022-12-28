@@ -128,10 +128,7 @@ internal class GdiFontData
                                 .FirstOrDefault(item => string.Equals(fontInfo.FontFamilyName, item.Name, StringComparison.InvariantCultureIgnoreCase));
 
         // If we cannot locate the font family by name, then fall back.
-        if (fontFamily is null)
-        {
-            fontFamily = FontFamily.GenericSerif;
-        }
+        fontFamily ??= FontFamily.GenericSerif;
 
 
         // Scale the font appropriately.

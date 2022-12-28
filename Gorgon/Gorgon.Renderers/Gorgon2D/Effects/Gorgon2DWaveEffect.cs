@@ -286,13 +286,10 @@ public class Gorgon2DWaveEffect
     {
         if ((_batchState is null) || (statesChanged))
         {
-            if (_waveState is null)
-            {
-                _waveState = builders.PixelShaderBuilder
+            _waveState ??= builders.PixelShaderBuilder
                               .Shader(_waveShader)
                               .ConstantBuffer(_waveBuffer, 1)
                               .Build();
-            }
 
             _batchState = builders.BatchBuilder
                           .PixelShaderState(_waveState)

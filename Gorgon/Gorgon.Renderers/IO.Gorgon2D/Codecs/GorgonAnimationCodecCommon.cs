@@ -240,10 +240,7 @@ public abstract class GorgonAnimationCodecCommon
             throw new GorgonException(GorgonResult.CannotRead, Resources.GOR2DIO_ERR_STREAM_IS_WRITE_ONLY);
         }
 
-        if (byteCount is null)
-        {
-            byteCount = (int)stream.Length;
-        }
+        byteCount ??= (int)stream.Length;
 
         if ((stream.Position + byteCount.Value) > stream.Length)
         {

@@ -721,10 +721,7 @@ public abstract class GorgonBufferCommon
     {
         int typeSize = sizeof(T);
 
-        if (size is null)
-        {
-            size = SizeInBytes - sourceOffset;
-        }
+        size ??= SizeInBytes - sourceOffset;
 
         int arraySize = (int)(((float)size.Value) / typeSize).FastFloor();
 
@@ -845,10 +842,7 @@ public abstract class GorgonBufferCommon
     {
         int typeSize = sizeof(T);
 
-        if (size is null)
-        {
-            size = SizeInBytes - sourceOffset;
-        }
+        size ??= SizeInBytes - sourceOffset;
         
 #if DEBUG
         ValidateGetSetData(sourceOffset, 0, size.Value, SizeInBytes, destination.Length * typeSize);

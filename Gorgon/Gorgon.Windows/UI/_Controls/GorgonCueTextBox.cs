@@ -59,10 +59,7 @@ public class GorgonCueTextBox
         get => _cueText;
         set
         {
-            if (value is null)
-            {
-                value = string.Empty;
-            }
+            value ??= string.Empty;
 
             _cueText = value;
             Invalidate();
@@ -125,10 +122,7 @@ public class GorgonCueTextBox
                 using (System.Drawing.Graphics g = CreateGraphics())
                 {
                     // If the font has not been created, then create it now.
-                    if (_cueFont is null)
-                    {
-                        _cueFont = new Font(Font, FontStyle.Italic);
-                    }
+                    _cueFont ??= new Font(Font, FontStyle.Italic);
                     using var brush = new SolidBrush(BackColor);
                     g.FillRectangle(brush, ClientRectangle);
                     TextRenderer.DrawText(g, _cueText, _cueFont, ClientRectangle, Color.FromKnownColor(KnownColor.GrayText), TextFormatFlags.Left);

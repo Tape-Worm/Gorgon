@@ -286,10 +286,7 @@ public static class GorgonIOExtensions
             throw new IOException(Resources.GOR_ERR_STREAM_IS_READONLY);
         }
 
-        if (encoding is null)
-        {
-            encoding = Encoding.UTF8;
-        }
+        encoding ??= Encoding.UTF8;
 
         byte[] stringData = encoding.GetBytes(value);
         int size = stringData.Length;
@@ -392,10 +389,7 @@ public static class GorgonIOExtensions
             throw new ArgumentNullException(nameof(stream));
         }
 
-        if (encoding is null)
-        {
-            encoding = Encoding.UTF8;
-        }
+        encoding ??= Encoding.UTF8;
 
         // String length is encoded in a 7 bit integer.
         // We have to get each byte and shift it until there are no more high bits set, or the counter becomes larger than 32 bits.
@@ -455,11 +449,8 @@ public static class GorgonIOExtensions
                 }
 
                 // We'll need a bigger string. So allocate a string builder and use that.
-                if (result is null)
-                {
-                    // Try to max out the string builder size by the length of our string, in characters.
-                    result = new StringBuilder(encoding.GetMaxCharCount(stringLength));
-                }
+                // Try to max out the string builder size by the length of our string, in characters.
+                result ??= new StringBuilder(encoding.GetMaxCharCount(stringLength));
 
                 result.Append(charBuffer, 0, charsRead);
 

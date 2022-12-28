@@ -204,10 +204,7 @@ internal class ImageSplitToolPlugIn
         {
             settings = HostToolServices.ToolPlugInService.ReadContentSettings<ImageSplitToolSettings>(typeof(ImageSplitToolPlugIn).FullName);
 
-            if (settings is null)
-            {                    
-                settings = new ImageSplitToolSettings();
-            }
+            settings ??= new ImageSplitToolSettings();
 
             if ((string.IsNullOrWhiteSpace(settings.LastOutputDir)) || (!ContentFileManager.DirectoryExists(settings.LastOutputDir)))
             {
@@ -271,15 +268,9 @@ internal class ImageSplitToolPlugIn
     /// </remarks>
     protected override IToolPlugInRibbonButton OnGetToolButton()
     {
-        if (_button.ClickCallback is null)
-        {
-            _button.ClickCallback = ShowForm;
-        }
+        _button.ClickCallback ??= ShowForm;
         
-        if (_button.CanExecute is null)
-        {
-            _button.CanExecute = CanShowForm;
-        }
+        _button.CanExecute ??= CanShowForm;
 
         return _button;
     }

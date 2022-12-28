@@ -84,10 +84,7 @@ internal class FileSystemFolderBrowseService
                                                          : _mainViewModel.CurrentProject?.FileExplorer.Root.Directories.Traverse(d => d.Directories)
                                                                 .FirstOrDefault(d => string.Equals(d.FullPath, initialPath, StringComparison.OrdinalIgnoreCase));
 
-        if (initialDirectory is null)
-        {
-            initialDirectory = _mainViewModel.CurrentProject?.FileExplorer.Root;
-        }
+        initialDirectory ??= _mainViewModel.CurrentProject?.FileExplorer.Root;
 
         using var browser = new FormFileSystemFolderBrowser()
         {

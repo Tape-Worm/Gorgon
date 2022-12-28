@@ -295,10 +295,7 @@ public class GorgonBinaryWriter
             throw new ArgumentNullException(nameof(value));
         }
 
-        if (count is null)
-        {
-            count = value.Length - startIndex;
-        }
+        count ??= value.Length - startIndex;
 
         if (startIndex < 0)
         {
@@ -366,10 +363,7 @@ public class GorgonBinaryWriter
             throw new ArgumentNullException(nameof(value));
         }
 
-        if (count is null)
-        {
-            count = value.Length - startIndex;
-        }
+        count ??= value.Length - startIndex;
 
         if (startIndex < 0)
         {

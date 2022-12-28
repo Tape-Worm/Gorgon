@@ -311,10 +311,7 @@ public class GorgonBinaryReader
             throw new ArgumentNullException(nameof(pointer));
         }
 
-        if (count is null)
-        {
-            count = pointer.Length - startIndex;
-        }
+        count ??= pointer.Length - startIndex;
 
         if (startIndex < 0)
         {
@@ -380,10 +377,7 @@ public class GorgonBinaryReader
             throw new ArgumentNullException(nameof(value));
         }
 
-        if (count is null)
-        {
-            count = value.Length - startIndex;
-        }
+        count ??= value.Length - startIndex;
 
         if (startIndex < 0)
         {

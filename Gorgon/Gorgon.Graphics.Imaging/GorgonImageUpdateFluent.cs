@@ -432,10 +432,7 @@ public partial class GorgonImage
     /// </remarks>
     IGorgonImageUpdateFluent IGorgonImageUpdateFluent.Crop(DX.Rectangle cropRect, int? newDepth)
     {
-        if (newDepth is null)
-        {
-            newDepth = Depth.Max(1);
-        }
+        newDepth ??= Depth.Max(1);
 
         if ((newDepth < 1) && (ImageType == ImageType.Image3D))
         {
@@ -508,10 +505,7 @@ public partial class GorgonImage
     /// </remarks>
     IGorgonImageUpdateFluent IGorgonImageUpdateFluent.Expand(int newWidth, int newHeight, int? newDepth, ImageExpandAnchor anchor)
     {
-        if (newDepth is null)
-        {
-            newDepth = Depth.Max(1);
-        }
+        newDepth ??= Depth.Max(1);
 
         void DoExpand()
         {
@@ -609,10 +603,7 @@ public partial class GorgonImage
             throw new ArgumentOutOfRangeException(Resources.GORIMG_ERR_IMAGE_WIDTH_TOO_SMALL, nameof(newWidth));
         }
 
-        if (newDepth is null)
-        {
-            newDepth = Depth.Max(1);
-        }
+        newDepth ??= Depth.Max(1);
 
         if ((newHeight < 1) && ((ImageType == ImageType.Image2D) || (ImageType == ImageType.ImageCube)))
         {

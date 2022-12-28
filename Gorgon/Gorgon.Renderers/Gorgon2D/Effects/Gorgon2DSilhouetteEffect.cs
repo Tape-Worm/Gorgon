@@ -74,12 +74,9 @@ public class Gorgon2DSilhouetteEffect
     {
         if ((statesChanged) || (_batchState is null))
         {
-            if (_shaderState is null)
-            {
-                _shaderState = builders.PixelShaderBuilder
+            _shaderState ??= builders.PixelShaderBuilder
                                             .Shader(_shader)
                                             .Build();
-            }
 
             _batchState = builders.BatchBuilder.PixelShaderState(_shaderState)
                                                .Build(BatchStateAllocator);

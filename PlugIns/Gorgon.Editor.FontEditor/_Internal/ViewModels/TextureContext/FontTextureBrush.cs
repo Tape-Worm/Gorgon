@@ -76,10 +76,7 @@ internal class FontTextureBrush
         get => _brush;
         set
         {
-            if (value is null)
-            {
-                value = DefaultBrush;
-            }
+            value ??= DefaultBrush;
 
             if ((_brush == value) || (value.Equals(_brush)))
             {

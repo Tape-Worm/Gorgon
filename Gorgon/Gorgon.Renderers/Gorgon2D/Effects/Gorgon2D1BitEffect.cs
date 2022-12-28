@@ -237,12 +237,9 @@ public class Gorgon2D1BitEffect
     {
         if ((statesChanged) || (_batchState is null))
         {
-            if (_shaderState is null)
-            {
-                _shaderState = builders.PixelShaderBuilder.ConstantBuffer(_1BitBuffer, 1)
+            _shaderState ??= builders.PixelShaderBuilder.ConstantBuffer(_1BitBuffer, 1)
                                             .Shader(_shader)
                                             .Build();
-            }
 
             _batchState = builders.BatchBuilder.PixelShaderState(_shaderState)
                                                .Build(BatchStateAllocator);

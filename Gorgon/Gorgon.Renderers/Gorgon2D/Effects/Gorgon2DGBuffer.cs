@@ -207,11 +207,8 @@ public class Gorgon2DGBuffer
     /// </remarks>
     protected override Gorgon2DBatchState OnGetBatchState(int passIndex, IGorgon2DEffectBuilders builders, bool defaultStatesChanged)
     {
-        if (_vertexShaderState is null)
-        {
-            _vertexShaderState = builders.VertexShaderBuilder.Shader(_vertexShader)
+        _vertexShaderState ??= builders.VertexShaderBuilder.Shader(_vertexShader)
                                                              .Build();
-        }
 
         if (_pixelShader is null)
         {

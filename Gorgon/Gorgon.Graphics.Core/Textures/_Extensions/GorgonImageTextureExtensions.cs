@@ -93,10 +93,7 @@ public static class GorgonImageTextureExtensions
             throw new ArgumentNullException(nameof(graphics));
         }
 
-        if (options is null)
-        {
-            options = _defaultLoadOptions;
-        }
+        options ??= _defaultLoadOptions;
 
         if (string.IsNullOrEmpty(options.Name))
         {
@@ -166,10 +163,7 @@ public static class GorgonImageTextureExtensions
             throw new ArgumentNullException(nameof(graphics));
         }
 
-        if (options is null)
-        {
-            options = _defaultLoadOptions;
-        }
+        options ??= _defaultLoadOptions;
 
         if (string.IsNullOrEmpty(options.Name))
         {
@@ -246,10 +240,7 @@ public static class GorgonImageTextureExtensions
             throw new ArgumentNullException(nameof(graphics));
         }
 
-        if (options is null)
-        {
-            options = _defaultLoadOptions;
-        }
+        options ??= _defaultLoadOptions;
 
         if (string.IsNullOrEmpty(options.Name))
         {
@@ -325,10 +316,7 @@ public static class GorgonImageTextureExtensions
             throw new ArgumentNullException(nameof(graphics));
         }
 
-        if (options is null)
-        {
-            options = _defaultLoadOptions;
-        }
+        options ??= _defaultLoadOptions;
 
         if (string.IsNullOrEmpty(options.Name))
         {
@@ -395,10 +383,7 @@ public static class GorgonImageTextureExtensions
             throw new ArgumentNullException(nameof(graphics));
         }
 
-        if (options is null)
-        {
-            options = _defaultLoadOptions;
-        }
+        options ??= _defaultLoadOptions;
 
         if (string.IsNullOrEmpty(options.Name))
         {
@@ -471,10 +456,7 @@ public static class GorgonImageTextureExtensions
             throw new ArgumentNullException(nameof(graphics));
         }
 
-        if (options is null)
-        {
-            options = _defaultLoadOptions;
-        }
+        options ??= _defaultLoadOptions;
 
         if (string.IsNullOrEmpty(options.Name))
         {
@@ -541,10 +523,7 @@ public static class GorgonImageTextureExtensions
             throw new ArgumentNullException(nameof(graphics));
         }
 
-        if (options is null)
-        {
-            options = _defaultLoadOptions;
-        }
+        options ??= _defaultLoadOptions;
 
         if (string.IsNullOrEmpty(options.Name))
         {
@@ -609,10 +588,7 @@ public static class GorgonImageTextureExtensions
             throw new ArgumentNullException(nameof(graphics));
         }
 
-        if (options is null)
-        {
-            options = _defaultLoadOptions;
-        }
+        options ??= _defaultLoadOptions;
 
         if (string.IsNullOrEmpty(options.Name))
         {

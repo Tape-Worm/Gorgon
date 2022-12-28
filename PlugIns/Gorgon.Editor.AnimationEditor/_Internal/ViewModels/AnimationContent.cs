@@ -336,10 +336,7 @@ internal class AnimationContent
         get => _selected;
         private set
         {
-            if (value is null)
-            {
-                value = Array.Empty<TrackKeySelection>();
-            }
+            value ??= Array.Empty<TrackKeySelection>();
 
             if ((value == _selected) || (_selected.SequenceEqual(value)))
             {
@@ -826,10 +823,7 @@ internal class AnimationContent
         {
             IContentFile spriteFile;
 
-            if (spritePaths is null)
-            {                    
-                spritePaths = ContentFileManager.GetSelectedFiles();
-            }
+            spritePaths ??= ContentFileManager.GetSelectedFiles();
 
             spritePath = spritePaths[0];
             spriteFile = ContentFileManager.GetFile(spritePath);
@@ -1079,10 +1073,7 @@ internal class AnimationContent
         {
             HostServices.BusyService.SetBusy();                
 
-            if (args.RemovedTracks is null)
-            {
-                args.RemovedTracks = new List<ITrack>();
-            }
+            args.RemovedTracks ??= new List<ITrack>();
 
             try
             {
@@ -1889,14 +1880,11 @@ internal class AnimationContent
                     Fps = args.Fps;
                 }
 
-                if (args.Keys is null)
-                {
-                    // Store the updated keys back into the redo buffer.
-                    args.Keys = StoreKeyframes();
-                }
+                // Store the updated keys back into the redo buffer.
+                args.Keys ??= StoreKeyframes();
 
                 // Add each texture frame to the cache.
-                
+
                 foreach (IKeyFrame keyFrame in args.Keys.SelectMany(item => item.Value)
                                                         .Where(item => (item?.TextureValue.TextureFile is not null) && (item?.TextureValue.Texture is null)))
                 {

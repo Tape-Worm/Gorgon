@@ -533,10 +533,7 @@ internal class KeyEditorContext
 
         void SetupKeyframeBuffer(ITrack track, ref IKeyFrame[] buffer)
         {
-            if (buffer is null)
-            {
-                buffer = ArrayPool<IKeyFrame>.Shared.Rent(track.KeyFrames.Count);
-            }
+            buffer ??= ArrayPool<IKeyFrame>.Shared.Rent(track.KeyFrames.Count);
 
             track.KeyFrames.CopyTo(buffer);
         }
@@ -737,10 +734,7 @@ internal class KeyEditorContext
                         ShowWaitPanel(Resources.GORANM_TEXT_PLEASE_WAIT);
                     }
 
-                    if (keyFrames is null)
-                    {
-                        keyFrames = ArrayPool<IKeyFrame>.Shared.Rent(trackSel.Track.KeyFrames.Count);
-                    }
+                    keyFrames ??= ArrayPool<IKeyFrame>.Shared.Rent(trackSel.Track.KeyFrames.Count);
 
 
                     Array.Clear(keyFrames, 0, keyFrames.Length);

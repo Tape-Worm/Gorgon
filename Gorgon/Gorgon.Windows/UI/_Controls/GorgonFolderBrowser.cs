@@ -1493,10 +1493,7 @@ public partial class GorgonFolderBrowser
                 {
                     ListDirectories.Columns.Add(ColumnSize);
                 }
-                if (dir is null)
-                {
-                    dir = RootFolder.FullName;
-                }
+                dir ??= RootFolder.FullName;
 
                 GetDirectories(dir);
             }

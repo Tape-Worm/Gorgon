@@ -303,10 +303,7 @@ public sealed class GorgonNativeBuffer<T>
     /// </remarks>
     public static GorgonNativeBuffer<T> Pin(T[] array, int index = 0, int? count = null)
     {
-        if (count is null)
-        {
-            count = array.Length - index;
-        }
+        count ??= array.Length - index;
         
         ValidateArrayParams(array, index, count.Value);
 

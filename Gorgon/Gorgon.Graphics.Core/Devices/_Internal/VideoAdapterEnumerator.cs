@@ -219,10 +219,7 @@ internal class VideoAdapterEnumerator
     {
         var devices = new List<IGorgonVideoAdapterInfo>();
 
-        if (log is null)
-        {
-            log = GorgonLog.NullLog;
-        }
+        log ??= GorgonLog.NullLog;
 
         using (var factory2 = new Factory2(GorgonGraphics.IsDebugEnabled))
         using (Factory5 factory5 = factory2.QueryInterface<Factory5>())

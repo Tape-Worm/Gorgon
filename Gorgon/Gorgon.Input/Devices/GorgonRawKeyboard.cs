@@ -340,10 +340,7 @@ public class GorgonRawKeyboard
     /// </remarks>
     public GorgonRawKeyboard(IGorgonKeyboardInfo keyboardInfo = null)
     {
-        if (keyboardInfo is null)
-        {
-            keyboardInfo = GetSysKeyboardInfo();
-        }
+        keyboardInfo ??= GetSysKeyboardInfo();
 
         _deviceHandle = keyboardInfo.Handle;
         Info = keyboardInfo;

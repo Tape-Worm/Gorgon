@@ -348,10 +348,7 @@ public abstract class GorgonImageCodec<TEncOpt, TDecOpt>
             throw new ArgumentException(Resources.GORIMG_ERR_STREAM_IS_WRITEONLY, nameof(stream));
         }
 
-        if (size is null)
-        {
-            size = stream.Length;
-        }
+        size ??= stream.Length;
 
         if (size + stream.Position > stream.Length)
         {

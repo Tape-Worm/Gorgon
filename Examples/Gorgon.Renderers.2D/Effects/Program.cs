@@ -201,11 +201,8 @@ static class Program
     /// </summary>
     private static void InitializeBackgroundTexturePositioning()
     {
-        if (_randomOffset is null)
-        {
-            _randomOffset = new Vector2(GorgonRandom.RandomSingle(_background.Width - _postTarget1.Width),
+        _randomOffset ??= new Vector2(GorgonRandom.RandomSingle(_background.Width - _postTarget1.Width),
                                            GorgonRandom.RandomSingle(_background.Height - _postTarget1.Height));
-        }
 
         // If we're previously out of frame, then push back until we're in frame.
         if (_randomOffset.Value.X + _postTarget1.Width > _background.Width)

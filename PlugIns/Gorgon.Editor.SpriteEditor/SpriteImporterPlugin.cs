@@ -115,10 +115,7 @@ internal class SpriteImporterPlugIn
 
         SpriteImportSettings settings = HostContentServices.ContentPlugInService.ReadContentSettings<SpriteImportSettings>(SettingsFilename);
 
-        if (settings is null)
-        {
-            settings = new SpriteImportSettings();
-        }
+        settings ??= new SpriteImportSettings();
         
         _codecs = new CodecRegistry(_pluginCache, HostContentServices.GraphicsContext.Renderer2D, HostContentServices.Log);
         _codecs.LoadFromSettings(settings);

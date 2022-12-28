@@ -575,10 +575,7 @@ internal partial class FontGradientBrushView
         {
             selectedNode = HitTest(DataContext.Nodes[0], e.Location, PanelGradControls.ClientRectangle) ? DataContext.Nodes[0] : null;
 
-            if (selectedNode is null)
-            {
-                selectedNode = HitTest(DataContext.Nodes[^1], e.Location, PanelGradControls.ClientRectangle) ? DataContext.Nodes[^1] : null;
-            }
+            selectedNode ??= HitTest(DataContext.Nodes[^1], e.Location, PanelGradControls.ClientRectangle) ? DataContext.Nodes[^1] : null;
         }
 
         switch (e.Button)

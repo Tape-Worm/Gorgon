@@ -297,10 +297,7 @@ public sealed class GorgonFontFactory
             throw new IOException(Resources.GORGFX_ERR_STREAM_WRITE_ONLY);
         }
 
-        if (size is null)
-        {
-            size = (int)stream.Length;
-        }
+        size ??= (int)stream.Length;
 
         if (size < 1)
         {

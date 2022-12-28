@@ -443,10 +443,7 @@ public static class GorgonStringFormattingExtension
             return 0;
         }
 
-        if (encoding is null)
-        {
-            encoding = Encoding.UTF8;
-        }
+        encoding ??= Encoding.UTF8;
 
         int size = encoding.GetByteCount(value);
         int result = size;

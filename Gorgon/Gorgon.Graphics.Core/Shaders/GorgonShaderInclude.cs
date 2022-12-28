@@ -166,10 +166,7 @@ public readonly struct GorgonShaderInclude
             throw new ArgumentEmptyException(nameof(includeName));
         }
 
-        if (includeSourceFile is null)
-        {
-            includeSourceFile = string.Empty;
-        }
+        includeSourceFile ??= string.Empty;
 
         Name = includeName;
         SourceCodeFile = includeSourceFile;

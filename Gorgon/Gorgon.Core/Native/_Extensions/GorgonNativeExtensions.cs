@@ -135,10 +135,7 @@ public static class GorgonNativeExtensions
             throw new ArgumentOutOfRangeException(nameof(index), Resources.GOR_ERR_DATABUFF_OFFSET_TOO_SMALL);
         }
 
-        if (count is null)
-        {
-            count = pointer.Length.Min((int)(stream.Length - stream.Position));
-        }
+        count ??= pointer.Length.Min((int)(stream.Length - stream.Position));
 
         if (count == 0)
         {
@@ -278,10 +275,7 @@ public static class GorgonNativeExtensions
             throw new ArgumentNullException(nameof(pointer));
         }
 
-        if (count is null)
-        {
-            count = array.Length - arrayIndex;
-        }
+        count ??= array.Length - arrayIndex;
 
         GorgonNativeBuffer<T>.ValidateArrayParams(array, arrayIndex, count.Value);
 
@@ -333,10 +327,7 @@ public static class GorgonNativeExtensions
     public static GorgonNativeBuffer<T> ToNativeBuffer<T>(this T[] array, int index = 0, int? count = null)
         where T : unmanaged
     {
-        if (count is null)
-        {
-            count = array.Length - index;
-        }
+        count ??= array.Length - index;
 
         GorgonNativeBuffer<T>.ValidateArrayParams(array, index, count.Value);
 
@@ -422,10 +413,7 @@ public static class GorgonNativeExtensions
     public static GorgonNativeBuffer<T> ToPinned<T>(this T[] array, int index = 0, int? count = null)
         where T : unmanaged
     {
-        if (count is null)
-        {
-            count = array.Length - index;
-        }
+        count ??= array.Length - index;
 
         return GorgonNativeBuffer<T>.Pin(array, index, count);
     }

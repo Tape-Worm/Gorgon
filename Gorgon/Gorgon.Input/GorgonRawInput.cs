@@ -251,10 +251,7 @@ public class GorgonRawInput
             throw new ArgumentNullException(nameof(device));
         }
 
-        if (settings is null)
-        {
-            settings = default(GorgonRawInputSettings);
-        }
+        settings ??= default(GorgonRawInputSettings);
 
         lock (_syncLock)
         {
@@ -304,10 +301,7 @@ public class GorgonRawInput
             throw new ArgumentNullException(nameof(device));
         }
 
-        if (settings is null)
-        {
-            settings = default(GorgonRawInputSettings);
-        }
+        settings ??= default(GorgonRawInputSettings);
 
         lock (_syncLock)
         {
@@ -357,10 +351,7 @@ public class GorgonRawInput
             throw new ArgumentNullException(nameof(device));
         }
 
-        if (settings is null)
-        {
-            settings = default(GorgonRawInputSettings);
-        }
+        settings ??= default(GorgonRawInputSettings);
 
         lock (_syncLock)
         {

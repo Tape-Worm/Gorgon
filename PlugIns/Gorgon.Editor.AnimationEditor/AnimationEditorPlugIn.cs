@@ -1162,10 +1162,7 @@ internal class AnimationEditorPlugIn
         try
         {
             _undoService = undoService;
-            if (_textureCache is null)
-            {
-                _textureCache = new TextureCache(HostContentServices.GraphicsContext.Graphics, ContentFileManager, scratchArea, _defaultImageCodec, HostContentServices.Log);
-            }
+            _textureCache ??= new TextureCache(HostContentServices.GraphicsContext.Graphics, ContentFileManager, scratchArea, _defaultImageCodec, HostContentServices.Log);
 
             _ioService = new AnimationIOService(ContentFileManager,
                                                 _textureCache,

@@ -287,10 +287,7 @@ public class GorgonTextSprite
         get => _allowCodes ? _encodedText : _text;
         set
         {
-            if (value is null)
-            {
-                value = string.Empty;
-            }
+            value ??= string.Empty;
 
             if (string.Equals(_allowCodes ? _encodedText : _text, value))
             {

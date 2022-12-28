@@ -115,10 +115,7 @@ internal class SpriteTextureWrapEdit
         get => _current;
         set
         {
-            if (value is null)
-            {
-                value = GorgonSamplerState.Default;
-            }
+            value ??= GorgonSamplerState.Default;
 
             if ((value == _current) || (value.Equals(_current)))
             {

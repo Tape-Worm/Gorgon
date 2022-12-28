@@ -356,10 +356,7 @@ internal class ContentPreview
             IContentFile file = _contentFileManager.GetFile(filePath);
             IGorgonVirtualDirectory thumbDirectory = _tempFileSystem.FileSystem.GetDirectory(_thumbnailPath);
 
-            if (thumbDirectory is null)
-            {
-                thumbDirectory = _tempFileSystem.CreateDirectory(_thumbnailPath);
-            }
+            thumbDirectory ??= _tempFileSystem.CreateDirectory(_thumbnailPath);
 
             // If the file already has a link to a thumbnail, remove it.
             string thumbnailName = file.Metadata.Thumbnail;

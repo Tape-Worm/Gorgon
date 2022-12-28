@@ -55,10 +55,7 @@ internal class FontCharacterSelection
         get => _characters;
         set
         {
-            if (value is null)
-            {
-                value = Array.Empty<char>();
-            }
+            value ??= Array.Empty<char>();
 
             if ((_characters == value) || (_characters.SequenceEqual(value)))
             {
@@ -113,10 +110,7 @@ internal class FontCharacterSelection
     {
         base.OnLoad();
 
-        if (CurrentFont is null)
-        {
-            CurrentFont = new Drawing.Font(_fontService.WorkerFont.FontFamilyName, 16.0f, Drawing.GraphicsUnit.Pixel);
-        }
+        CurrentFont ??= new Drawing.Font(_fontService.WorkerFont.FontFamilyName, 16.0f, Drawing.GraphicsUnit.Pixel);
     }
 
     /// <summary>Function called when the associated view is unloaded.</summary>

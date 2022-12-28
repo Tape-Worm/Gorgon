@@ -131,10 +131,7 @@ public class Aes256Encryption
             return Array.Empty<byte>();
         }
 
-        if (textEncoding is null)
-        {
-            textEncoding = Encoding.UTF8;
-        }
+        textEncoding ??= Encoding.UTF8;
 
         return Encrypt(textEncoding.GetBytes(value));
     }
@@ -156,10 +153,7 @@ public class Aes256Encryption
             return string.Empty;
         }
 
-        if (textEncoding is null)
-        {
-            textEncoding = Encoding.UTF8;
-        }
+        textEncoding ??= Encoding.UTF8;
 
         return textEncoding.GetString(Decrypt(value));
     }

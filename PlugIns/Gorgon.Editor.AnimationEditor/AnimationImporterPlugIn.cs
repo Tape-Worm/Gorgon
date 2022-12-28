@@ -115,10 +115,7 @@ internal class AnimationImporterPlugIn
 
         AnimationImportSettings settings = HostContentServices.ContentPlugInService.ReadContentSettings<AnimationImportSettings>(SettingsFilename);
 
-        if (settings is null)
-        {
-            settings = new AnimationImportSettings();
-        }
+        settings ??= new AnimationImportSettings();
 
         _codecs = new CodecRegistry(_pluginCache, HostContentServices.GraphicsContext.Renderer2D, HostContentServices.Log);
         _codecs.LoadFromSettings(settings);

@@ -1152,10 +1152,7 @@ public sealed class GorgonCodecDds
                         for (int h = 0; h < destBuffer.Height; h++)
                         {
                             // Use this to read a line of data from the source.
-                            if (lineBuffer is null)
-                            {
-                                lineBuffer = new GorgonNativeBuffer<byte>(pitchInfo.RowPitch);
-                            }
+                            lineBuffer ??= new GorgonNativeBuffer<byte>(pitchInfo.RowPitch);
 
                             reader.ReadRange<byte>(lineBuffer, count: pitchInfo.RowPitch);
 

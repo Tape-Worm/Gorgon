@@ -706,10 +706,7 @@ public class GorgonFileSystemWriter
         // If we've deleted a sub directory (i.e. not the root), then include it in the list as well.
         directories.Add(directory);
 
-        if (cancelToken is null)
-        {
-            cancelToken = CancellationToken.None;
-        }
+        cancelToken ??= CancellationToken.None;
 
         if (cancelToken.Value.IsCancellationRequested)
         {
@@ -914,10 +911,7 @@ public class GorgonFileSystemWriter
         }
 
         var deletedFiles = new List<IGorgonVirtualFile>();
-        if (cancelToken is null)
-        {
-            cancelToken = CancellationToken.None;
-        }
+        cancelToken ??= CancellationToken.None;
 
         for (int i = 0; i < files.Length; ++i)
         {

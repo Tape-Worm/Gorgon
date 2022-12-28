@@ -749,10 +749,7 @@ public sealed class GorgonCodecTga
                 else
                 {
                     // Read the current scanline into memory.
-                    if (lineBuffer is null)
-                    {
-                        lineBuffer = new GorgonNativeBuffer<byte>(srcPitch.RowPitch);
-                    }
+                    lineBuffer ??= new GorgonNativeBuffer<byte>(srcPitch.RowPitch);
 
                     ref readonly GorgonPtr<byte> linePtr = ref lineBuffer.Pointer;
 

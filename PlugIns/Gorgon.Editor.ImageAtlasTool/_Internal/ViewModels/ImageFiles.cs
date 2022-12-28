@@ -106,10 +106,7 @@ internal class ImageFiles
         get => _selected;
         private set
         {
-            if (value is null)
-            {
-                value = Array.Empty<ContentFileExplorerFileEntry>();
-            }
+            value ??= Array.Empty<ContentFileExplorerFileEntry>();
 
             if (value.SequenceEqual(_selected))
             {
@@ -211,10 +208,7 @@ internal class ImageFiles
         {
             IGorgonVirtualDirectory thumbDirectory = _tempFileSystem.FileSystem.GetDirectory(ThumbnailPath);
 
-            if (thumbDirectory is null)
-            {
-                thumbDirectory = _tempFileSystem.CreateDirectory(ThumbnailPath);
-            }
+            thumbDirectory ??= _tempFileSystem.CreateDirectory(ThumbnailPath);
 
             if (_loadPreviewTask is not null)
             {

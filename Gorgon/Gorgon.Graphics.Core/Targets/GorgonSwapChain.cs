@@ -443,10 +443,7 @@ public sealed class GorgonSwapChain
 
         result = control.FindForm();
 
-        if (result is null)
-        {
-            result = control.TopLevelControl as Form;
-        }
+        result ??= control.TopLevelControl as Form;
 
         if (result is null)
         {

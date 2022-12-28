@@ -235,10 +235,7 @@ internal class ImageIOService : IImageIOService
     /// <returns>The updated working file.</returns>
     public IGorgonVirtualFile SaveImageFile(string name, IGorgonImage image, BufferFormat pixelFormat, IGorgonImageCodec codec = null)
     {
-        if (codec is null)
-        {
-            codec = DefaultCodec;
-        }
+        codec ??= DefaultCodec;
 
         // We absolutely need to have an extension, or else the texconv tool will not work.
         if ((codec.CodecCommonExtensions.Count > 0)

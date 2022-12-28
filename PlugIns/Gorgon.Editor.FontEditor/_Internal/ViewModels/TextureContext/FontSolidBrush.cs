@@ -64,10 +64,7 @@ internal class FontSolidBrush
         get => _brush;
         set
         {
-            if (value == null)
-            {
-                value = DefaultBrush;
-            }
+            value ??= DefaultBrush;
 
             if ((value == _brush) || (value.Color == _brush.Color))
             {

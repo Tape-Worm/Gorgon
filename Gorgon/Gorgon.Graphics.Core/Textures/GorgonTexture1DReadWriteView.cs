@@ -522,10 +522,7 @@ public sealed class GorgonTexture1DReadWriteView
             throw new IOException(Resources.GORGFX_ERR_STREAM_WRITE_ONLY);
         }
 
-        if (size is null)
-        {
-            size = stream.Length - stream.Position;
-        }
+        size ??= stream.Length - stream.Position;
 
         if ((stream.Length - stream.Position) < size)
         {

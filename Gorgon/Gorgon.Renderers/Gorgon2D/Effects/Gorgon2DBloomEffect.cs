@@ -502,9 +502,7 @@ public class Gorgon2DBloomEffect
     protected override Gorgon2DBatchState OnGetBatchState(int passIndex, IGorgon2DEffectBuilders builders, bool statesChanged)
     {
 
-        if (_filterBatchState is null)
-        {
-            _filterBatchState = builders.BatchBuilder
+        _filterBatchState ??= builders.BatchBuilder
                                             .Clear()
                                             .PixelShaderState(_shaderBuilder.Clear()
                                                                             .Shader(_filterShader)
@@ -513,11 +511,8 @@ public class Gorgon2DBloomEffect
                                                                             .Build())
                                             .BlendState(GorgonBlendState.NoBlending)
                                             .Build();
-        }
 
-        if (_downSampleBatchState is null)
-        {
-            _downSampleBatchState = builders.BatchBuilder
+        _downSampleBatchState ??= builders.BatchBuilder
                                             .Clear()
                                             .PixelShaderState(_shaderBuilder.Clear()
                                                                             .Shader(_downSampleShader)
@@ -525,7 +520,6 @@ public class Gorgon2DBloomEffect
                                                                             .Build())
                                             .BlendState(GorgonBlendState.NoBlending)
                                             .Build();
-        }
 
         switch (passIndex)
         {

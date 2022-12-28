@@ -129,10 +129,7 @@ internal partial class PlugInListPanel
 
             ListPlugIns.Select();
 
-            if (selected is null)
-            {
-                selected = ListPlugIns.Items[0];
-            }
+            selected ??= ListPlugIns.Items[0];
 
             selected.Selected = true;
             ListPlugIns.SelectedIndices.Add(selected.Index);

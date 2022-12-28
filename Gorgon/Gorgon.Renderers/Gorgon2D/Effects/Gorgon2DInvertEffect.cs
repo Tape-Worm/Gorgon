@@ -83,13 +83,10 @@ public class Gorgon2DInvertEffect
     {
         if ((_batchState is null) || (statesChanged))
         {
-            if (_invertState is null)
-            {
-                _invertState = builders.PixelShaderBuilder
+            _invertState ??= builders.PixelShaderBuilder
                           .ConstantBuffer(_invertBuffer, 1)
                           .Shader(_invertShader)
                           .Build();
-            }
 
             _batchState = builders.BatchBuilder
                           .PixelShaderState(_invertState)

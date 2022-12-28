@@ -125,21 +125,15 @@ public class Gorgon2DBurnDodgeEffect
         if ((_batchStateDodgeBurn is null) || (_batchStateLinearDodgeBurn is null) || (statesChanged))
         {
 
-            if (_linearDodgeBurn is null)
-            {
-                _linearDodgeBurn = builders.PixelShaderBuilder.Clear()
+            _linearDodgeBurn ??= builders.PixelShaderBuilder.Clear()
                                    .Shader(_linearDodgeBurnShader)
                                    .ConstantBuffer(_burnDodgeBuffer, 1)
                                    .Build();
-            }
 
-            if (_dodgeBurn is null)
-            {
-                _dodgeBurn = builders.PixelShaderBuilder.Clear()
+            _dodgeBurn ??= builders.PixelShaderBuilder.Clear()
                              .Shader(_dodgeBurnShader)
                              .ConstantBuffer(_burnDodgeBuffer, 1)
                              .Build();
-            }
 
             _batchStateLinearDodgeBurn = builders.BatchBuilder
                                                 .PixelShaderState(_linearDodgeBurn)

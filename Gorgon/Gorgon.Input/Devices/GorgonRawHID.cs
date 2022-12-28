@@ -119,10 +119,7 @@ public class GorgonRawHID
         {
             lock (_syncLock)
             {
-                if (_preParsedData is null)
-                {
-                    _preParsedData = RawInputApi.GetPreparsedDeviceInfoData(Handle);
-                }
+                _preParsedData ??= RawInputApi.GetPreparsedDeviceInfoData(Handle);
             }
 
             return _preParsedData;

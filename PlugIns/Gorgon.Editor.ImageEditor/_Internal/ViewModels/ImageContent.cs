@@ -821,10 +821,7 @@ internal class ImageContent
 
                 NotifyImageUpdated(nameof(ImageData));
 
-                if (redoArgs is null)
-                {
-                    redoArgs = importUndoArgs = new ImportDimensionUndoArgs();
-                }
+                redoArgs ??= importUndoArgs = new ImportDimensionUndoArgs();
 
                 redoArgs.RedoFile = redoFile;
                 redoArgs.UndoFile = undoFile;
@@ -1321,10 +1318,7 @@ internal class ImageContent
                 _workingFile = _imageIO.SaveImageFile(File.Name, ImageData, format);
                 NotifyPropertyChanged(nameof(ImageData));
 
-                if (redoArgs is null)
-                {
-                    redoArgs = convertUndoArgs = new ConvertUndoArgs();
-                }
+                redoArgs ??= convertUndoArgs = new ConvertUndoArgs();
 
                 redoArgs.Format = CurrentPixelFormat;
                 redoArgs.UndoFile = undoFile;
@@ -1714,10 +1708,7 @@ internal class ImageContent
                 _workingFile = _imageIO.SaveImageFile(File.Name, ImageData, ImageData.Format);
                 redoFile = CreateUndoCacheFile();
 
-                if (redoArgs is null)
-                {
-                    redoArgs = dimensionUndoArgs = new ImportDimensionUndoArgs();
-                }
+                redoArgs ??= dimensionUndoArgs = new ImportDimensionUndoArgs();
 
                 redoArgs.UndoFile = undoFile;
                 redoArgs.RedoFile = redoFile;
@@ -1872,10 +1863,7 @@ internal class ImageContent
                 _workingFile = _imageIO.SaveImageFile(File.Name, ImageData, ImageData.Format);
                 redoFile = CreateUndoCacheFile();
 
-                if (redoArgs is null)
-                {
-                    redoArgs = mipGenUndoArgs = new ImportDimensionUndoArgs();
-                }
+                redoArgs ??= mipGenUndoArgs = new ImportDimensionUndoArgs();
 
                 redoArgs.UndoFile = undoFile;
                 redoArgs.RedoFile = redoFile;
@@ -2053,10 +2041,7 @@ internal class ImageContent
                 undoFile = CreateUndoCacheFile();
                 _workingFile = _imageIO.SaveImageFile(File.Name, ImageData, ImageData.Format);
 
-                if (redoArgs is null)
-                {
-                    redoArgs = imageTypeUndoArgs = new ImageTypeUndoArgs();
-                }
+                redoArgs ??= imageTypeUndoArgs = new ImageTypeUndoArgs();
 
                 redoArgs.ImageType = newImageType;
                 redoArgs.UndoFile = undoFile;
@@ -2380,10 +2365,7 @@ internal class ImageContent
 
                 NotifyImageUpdated(nameof(ImageData));
 
-                if (redoArgs is null)
-                {
-                    redoArgs = importUndoArgs = new ImportDimensionUndoArgs();
-                }
+                redoArgs ??= importUndoArgs = new ImportDimensionUndoArgs();
 
                 redoArgs.RedoFile = redoFile;
                 redoArgs.UndoFile = undoFile;
@@ -2973,10 +2955,7 @@ internal class ImageContent
                 _workingFile = _imageIO.SaveImageFile(File.Name, ImageData, ImageData.Format);
                 redoFile = CreateUndoCacheFile();
 
-                if (redoArgs is null)
-                {
-                    redoArgs = effectsUndoArgs = new EffectsUndoArgs();
-                }
+                redoArgs ??= effectsUndoArgs = new EffectsUndoArgs();
 
                 redoArgs.RedoFile = redoFile;
                 redoArgs.UndoFile = undoFile;

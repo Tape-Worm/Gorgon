@@ -75,10 +75,7 @@ internal static class SharedDataFactory
 
         ImageEditorSettings settings = commonServices.ContentPlugInService.ReadContentSettings<ImageEditorSettings>(ImageEditorPlugIn.SettingsName);
 
-        if (settings is null)
-        {
-            settings = new ImageEditorSettings();
-        }
+        settings ??= new ImageEditorSettings();
 
         return settings;
     }

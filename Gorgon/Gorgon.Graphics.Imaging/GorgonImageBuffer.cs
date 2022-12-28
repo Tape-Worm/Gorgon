@@ -159,10 +159,7 @@ public class GorgonImageBuffer
             throw new NotSupportedException(string.Format(Resources.GORIMG_ERR_FORMAT_NOT_SUPPORTED, Format));
         }
 
-        if (updateAlphaRange is null)
-        {
-            updateAlphaRange = new GorgonRangeF(0, 1);
-        }
+        updateAlphaRange ??= new GorgonRangeF(0, 1);
 
         var fullRect = new DX.Rectangle(0, 0, Width - 1, Height - 1);
 

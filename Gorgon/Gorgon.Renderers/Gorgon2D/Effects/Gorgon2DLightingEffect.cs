@@ -250,11 +250,8 @@ public class Gorgon2DLightingEffect
     /// <returns>The 2D batch state.</returns>
     protected override Gorgon2DBatchState OnGetBatchState(int passIndex, IGorgon2DEffectBuilders builders, bool statesChanged)
     {
-        if (_vertexLitShaderState is null)
-        {
-            _vertexLitShaderState = builders.VertexShaderBuilder.Shader(_vertexLitTransformShader)
+        _vertexLitShaderState ??= builders.VertexShaderBuilder.Shader(_vertexLitTransformShader)
                                                                 .Build(VertexShaderAllocator);
-        }
 
         if ((statesChanged) || (_pixelLitShaderState is null))
         {
@@ -271,16 +268,13 @@ public class Gorgon2DLightingEffect
             _lightingState = null;
         }
 
-        if (_lightingState is null)
-        {
-            _lightingState = builders.BatchBuilder
+        _lightingState ??= builders.BatchBuilder
                                      .BlendState(GorgonBlendState.Additive)
                                      .DepthStencilState(GorgonDepthStencilState.Default)
                                      .RasterState(GorgonRasterState.Default)
                                      .PixelShaderState(_pixelLitShaderState)
                                      .VertexShaderState(_vertexLitShaderState)
                                      .Build(BatchStateAllocator);
-        }
 
         return _lightingState;
     }

@@ -82,12 +82,9 @@ public class Gorgon2DGrayScaleEffect
     {
         if ((_batchState is null) || (statesChanged))
         {
-            if (_grayScaleState is null)
-            {
-                _grayScaleState = builders.PixelShaderBuilder
+            _grayScaleState ??= builders.PixelShaderBuilder
                                    .Shader(_grayScaleShader)
                                    .Build();
-            }
 
             _batchState = builders.BatchBuilder
                           .PixelShaderState(_grayScaleState)

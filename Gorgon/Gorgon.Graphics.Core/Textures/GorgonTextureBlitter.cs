@@ -318,20 +318,11 @@ public class GorgonTextureBlitter
             return;
         }
 
-        if (texture is null)
-        {
-            texture = _defaultTexture;
-        }
+        texture ??= _defaultTexture;
 
-        if (blendState is null)
-        {
-            blendState = GorgonBlendState.NoBlending;
-        }
+        blendState ??= GorgonBlendState.NoBlending;
 
-        if (samplerState is null)
-        {
-            samplerState = GorgonSamplerState.PointFiltering;
-        }
+        samplerState ??= GorgonSamplerState.PointFiltering;
 
         GetFullScreenDrawCall(texture, blendState, samplerState);
 
@@ -412,33 +403,18 @@ public class GorgonTextureBlitter
             return;
         }
 
-        if (texture is null)
-        {
-            texture = _defaultTexture;
-        }
+        texture ??= _defaultTexture;
 
         UpdateProjection();
 
         // Set to default states if not provided.
-        if (blendState is null)
-        {
-            blendState = GorgonBlendState.NoBlending;
-        }
+        blendState ??= GorgonBlendState.NoBlending;
 
-        if (pixelShader is null)
-        {
-            pixelShader = _blitPixelShader;
-        }
+        pixelShader ??= _blitPixelShader;
 
-        if (samplerState is null)
-        {
-            samplerState = GorgonSamplerState.Default;
-        }
+        samplerState ??= GorgonSamplerState.Default;
 
-        if (pixelShaderConstants is null)
-        {
-            pixelShaderConstants = _emptyPsConstants;
-        }
+        pixelShaderConstants ??= _emptyPsConstants;
         
         GetDrawCall(texture, blendState, samplerState, pixelShader, pixelShaderConstants);
 

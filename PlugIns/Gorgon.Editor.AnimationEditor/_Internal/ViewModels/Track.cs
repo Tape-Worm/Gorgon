@@ -143,10 +143,7 @@ internal class Track
         get => _keyFrames;
         set
         {
-            if (value is null)
-            {
-                value = Array.Empty<IKeyFrame>();
-            }
+            value ??= Array.Empty<IKeyFrame>();
 
             if ((_keyFrames == value) || (value.SequenceEqual(_keyFrames)))
             {

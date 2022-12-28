@@ -91,10 +91,7 @@ internal class LogTextFileProvider
             return;
         }
 
-        if (message is null)
-        {
-            message = string.Empty;
-        }
+        message ??= string.Empty;
 
         try
         {

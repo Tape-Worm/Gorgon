@@ -186,13 +186,10 @@ public class Gorgon2DPosterizedEffect
     {
         if ((_batchState is null) || (statesChanged))
         {
-            if (_posterizeState is null)
-            {
-                _posterizeState = builders.PixelShaderBuilder
+            _posterizeState ??= builders.PixelShaderBuilder
                           .ConstantBuffer(_posterizeBuffer, 1)
                           .Shader(_posterizeShader)
                           .Build();
-            }
 
             _batchState = builders.BatchBuilder
                           .PixelShaderState(_posterizeState)

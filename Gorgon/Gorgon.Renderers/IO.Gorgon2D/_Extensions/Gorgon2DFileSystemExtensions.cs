@@ -232,10 +232,7 @@ public static class Gorgon2DFileSystemExtensions
     /// <returns>The updated texture loading options.</returns>
     private static GorgonTexture2DLoadOptions GetTextureOptions(string name, GorgonTexture2DLoadOptions options)
     {
-        if (options is null)
-        {
-            options = _defaultLoadOptions;
-        }
+        options ??= _defaultLoadOptions;
 
         options.Name = name;
         options.Binding &= ~TextureBinding.DepthStencil;

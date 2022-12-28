@@ -76,10 +76,7 @@ public static class GorgonReflectionExtensions
     /// <returns>The constructor info for the constructor that matches the parameter types, or <b>null</b> if no matching constructor is found.</returns>
     private static (ConstructorInfo Ctor, ParameterInfo[] Params) GetConstructor(Type objectType, Type[] paramTypes)
     {
-        if (paramTypes is null)
-        {
-            paramTypes = Array.Empty<Type>();
-        }
+        paramTypes ??= Array.Empty<Type>();
 
         // Look for the constructor with the most parameters.
         (ConstructorInfo, ParameterInfo[])[] constructors = (from constructorInfo in objectType.GetConstructors(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)
@@ -336,10 +333,7 @@ public static class GorgonReflectionExtensions
             throw new InvalidCastException(string.Format(Resources.GOR_ERR_ACTIVATOR_TYPE_MISMATCH, type.FullName, typeT.FullName));
         }
 
-        if (paramTypes is null)
-        {
-            paramTypes = Array.Empty<Type>();
-        }
+        paramTypes ??= Array.Empty<Type>();
 
         (ConstructorInfo Ctor, ParameterInfo[] Params) = GetConstructor(type, paramTypes);
 
