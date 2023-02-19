@@ -233,11 +233,11 @@ public sealed class GorgonRenderTarget2DView
 	/// </summary>
 	public override TextureBinding Binding => Texture?.Binding ?? TextureBinding.None;
 
-	/// <summary>
-	/// Property to return whether the resource used by this view can be shared or not.
-	/// </summary>
-	public bool Shared => Texture.Shared;
-	#endregion
+		/// <summary>
+		/// Property to return whether the resource used by this view can be shared or not.
+		/// </summary>
+		public TextureSharingOptions Shared => Texture.Shared;
+		#endregion
 
 	#region Methods.
 	/// <summary>

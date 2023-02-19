@@ -1,0 +1,157 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:ex="clr-namespace:Gorgon.Examples"
+        xmlns:gA="clr-namespace:Gorgon.Graphics.Avalonia;assembly=Gorgon.Graphics.Avalonia"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        x:Class="Gorgon.Examples.MainWindow"
+        Icon="/Gorgon2.ico"
+        Title="Glass Cube Avalonia"
+        Height="800" Width="1280"
+        Background="Transparent"
+        BorderBrush="Transparent"
+        WindowStartupLocation="CenterScreen"
+        SystemDecorations="None"   
+        Loaded="Window_Loaded" KeyDown="Window_KeyDown"
+        PointerPressed="Window_PointerPressed">      
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="0.22*"/>
+            <ColumnDefinition Width="0.78*"/>
+        </Grid.ColumnDefinitions>
+        
+        <Canvas Grid.ColumnSpan="2">
+          <Canvas.Background>
+            <RadialGradientBrush Opacity="1" Center="50%,50%" GradientOrigin="50%,50%" Radius="0.5">
+              <RadialGradientBrush.GradientStops>
+                  <GradientStop Color="#00000000" Offset="0"/>              
+                  <GradientStop Color="#00000000" Offset="0.314"/>
+                  <GradientStop Color="#E6000000" Offset="0.448"/>
+                  <GradientStop Color="White" Offset="0.502"/>
+                  <GradientStop Color="White" Offset="0.75"/>
+                  <GradientStop Color="White" Offset="0.876"/>
+                  <GradientStop Color="#00000000" Offset="1"/>
+              </RadialGradientBrush.GradientStops>
+            </RadialGradientBrush>
+          </Canvas.Background>
+        </Canvas>
+        <TextBlock Text="Avalonia" Grid.ColumnSpan="2">
+          <TextBlock.Styles>
+            <Style Selector="TextBlock">
+              <Setter Property="FontSize" Value="48"/>
+              <Setter Property="HorizontalAlignment" Value="Center"/>
+              <Setter Property="VerticalAlignment" Value="Center"/>
+              <Setter Property="FontWeight" Value="ExtraBold"/>              
+              <Setter Property="Foreground">
+                  <Setter.Value>
+                      <LinearGradientBrush EndPoint="100%,100%" StartPoint="0%,0%" SpreadMethod="Reflect">
+                          <GradientStop Color="#FFCE2121" Offset="0"/>
+                          <GradientStop Color="#FF511004" Offset="0.288"/>
+                          <GradientStop Color="#FFC79E8C" Offset="0.415"/>
+                          <GradientStop Color="#FFFD8644" Offset="0.535"/>
+                          <GradientStop Color="#FFF5DB36" Offset="0.696"/>
+                          <GradientStop Color="#FF490707" Offset="0.819"/>
+                          <GradientStop Color="#FFE7821C" Offset="1"/>
+                      </LinearGradientBrush>
+                  </Setter.Value>
+              </Setter>
+              <Setter Property="Effect">
+                  <Setter.Value>
+                      <DropShadowEffect/>
+                  </Setter.Value>
+              </Setter>              
+              <Setter Property="RenderTransform">
+                  <Setter.Value>
+                      <TransformGroup>
+                          <ScaleTransform ScaleX="6" ScaleY="3"/>
+                          <SkewTransform AngleX="-10" AngleY="-24"/>
+                          <RotateTransform/>
+                          <TranslateTransform/>
+                      </TransformGroup>
+                  </Setter.Value>
+              </Setter>              
+            </Style>
+          </TextBlock.Styles>
+        </TextBlock>
+      
+        <!-- Our swap chain control -->
+        <gA:GorgonAvaloniaSwapChainControl Grid.ColumnSpan="2" Name="GorgonControl" DetachedFromLogicalTree="GorgonControl_DetachedFromLogicalTree" Resized="GorgonControl_Resized"/>
+            
+        <Expander Grid.Column="0">
+            <Expander.Header>              
+              Options...
+            </Expander.Header>
+            <Expander.Styles>
+	            <Style Selector="Expander /template/ Border#ExpanderContent">
+		            <Setter Property="BorderThickness" Value="1, 0, 1, 1"/>
+                <Setter Property="BorderBrush" Value="SteelBlue"/>
+                <Setter Property="Padding" Value="0"/>
+	            </Style>
+	            <Style Selector="Expander /template/ ToggleButton#ExpanderHeader">
+		            <Setter Property="BorderThickness" Value="1, 1, 1, 1"/>
+                <Setter Property="BorderBrush" Value="SteelBlue"/>
+	            </Style>
+	            <Style Selector="Expander:pointerover /template/ ToggleButton#ExpanderHeader">
+		            <Setter Property="BorderThickness" Value="1, 1, 1, 1"/>
+                <Setter Property="BorderBrush" Value="SteelBlue"/>
+	            </Style>
+	            <Style Selector="Expander:down /template/ Border#ExpanderContent">
+		            <Setter Property="BorderThickness" Value="1, 0, 1, 1"/>
+                <Setter Property="BorderBrush" Value="SteelBlue"/>
+                <Setter Property="Padding" Value="0"/>
+	            </Style>
+              <Style Selector="Expander">
+                <Setter Property="IsExpanded" Value="True"/>
+                <Setter Property="Margin" Value="4,4"/>
+                <Setter Property="Foreground" Value="White"/>
+                <Setter Property="Background" Value="#CC000000"/>
+                <Setter Property="HorizontalAlignment" Value="Stretch"/>
+                <Setter Property="VerticalAlignment" Value="Top"/>
+                <Setter Property="Effect">
+                    <Setter.Value>
+                        <DropShadowEffect BlurRadius="7" Opacity="0.85"/>
+                    </Setter.Value>
+                </Setter>
+              </Style>
+            </Expander.Styles>
+            <Grid Background="#64232325">
+                <Grid.RowDefinitions>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+                <Grid.Styles>
+                  <Style Selector="Button">
+                    <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                    <Setter Property="VerticalContentAlignment" Value="Center"/>
+                    <Setter Property="HorizontalAlignment" Value="Stretch"/>
+                    <Setter Property="Padding" Value="1"/>
+                    <Setter Property="Template">
+                        <Setter.Value>
+                            <ControlTemplate>
+                                <Border Name="PART_Border" BorderBrush="#7F4682B4" BorderThickness="0,2,0,0" Background="{TemplateBinding Background}" >
+                                    <ContentPresenter Name="PART_ContentPresenter" Focusable="False" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" Margin="{TemplateBinding Padding}" RecognizesAccessKey="True" VerticalAlignment="{TemplateBinding VerticalContentAlignment}" Content="{TemplateBinding Content}"/>                                  
+                                </Border>
+                            </ControlTemplate>
+                        </Setter.Value>
+                    </Setter>
+                  </Style>
+                  <Style Selector="Button:pointerover /template/ Border">
+                      <Setter Property="Background" Value="CornFlowerBlue"/>
+                      <Setter Property="BorderBrush" Value="#806495ED"/>                                        
+                  </Style>
+                  <Style Selector="Button:pressed /template/ Border">
+                      <Setter Property="Background" Value="DarkOrange"/>
+                      <Setter Property="BorderBrush" Value="#80FF8C00"/>
+                  </Style>                  
+                </Grid.Styles>
+                <TextBlock Name="BlockFps" Text="FPS: 60.0 Frame Delta: 0.000" Padding="0,8,0,8" HorizontalAlignment="Center"/>
+                <CheckBox Name="CheckTextureSmooth" Grid.Row="1" BorderBrush="#80646464" Background="Transparent" Foreground="White" Margin="2, 2, 0, 2" VerticalContentAlignment="Center" Click="CheckTextureSmooth_Click">
+                    Texture Smoothing
+                </CheckBox>
+                <Button Name="ButtonClose" Grid.Row="2" BorderBrush="{x:Null}" Background="Transparent" Foreground="White" Click="ButtonClose_Click" >Close</Button>
+            </Grid>
+        </Expander>
+    </Grid>
+</Window>

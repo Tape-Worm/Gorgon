@@ -122,6 +122,25 @@ public enum TextureBinding
 }
 
 /// <summary>
+/// Values to indicate how texture resources should be shared.
+/// </summary>
+public enum TextureSharingOptions
+{
+    /// <summary>
+    /// No sharing.
+    /// </summary>
+    None = 0,
+    /// <summary>
+    /// Enables resource data sharing between two or more Direct3D devices. The only resources that can be shared are 2D non-mipmapped textures.
+    /// </summary>
+    Shared = 1,
+    /// <summary>
+    /// Enables the resource to be synchronized by using the IDXGIKeyedMutex::AcquireSync and IDXGIKeyedMutex::ReleaseSync APIs. 
+    /// </summary>
+    SharedKeyedMutex = 2
+}
+
+/// <summary>
 /// Information used to create a 2D texture object.
 /// </summary>
 /// <remarks>
@@ -250,7 +269,7 @@ public interface IGorgonTexture2DInfo
     /// <remarks>
     /// Settings this flag to <b>true</b> allows the texture to be used with external graphics interfaces such as a Direct3D device. This is useful for providing interoperation between systems.
     /// </remarks>
-    bool Shared
+    TextureSharingOptions Shared
     {
         get;
     }

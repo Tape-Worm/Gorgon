@@ -24,8 +24,7 @@
 // 
 #endregion
 
-
-namespace Gorgon.Graphics;
+namespace Gorgon.Graphics.Core;
 
 /// <summary>
 /// Provides the ability return a shared resource for passing objects to other APIs.
@@ -41,6 +40,38 @@ public interface IGorgonSharedResource
     /// <para>
     /// This is used to retrieve a handle to the shared resource that allows applications to share the resource with other APIs (e.g. Direct 2D). 
     /// </para>
+    /// <para>
+    /// This method will only work with textures that have a value of <see cref="TextureSharingOptions.SharedKeyedMutex"/>, or <see cref="TextureSharingOptions.Shared"/> assigned to <see cref="IGorgonTexture2DInfo.Shared"/>.
+    /// </para>
     /// </remarks>        
     nint GetSharedHandle();
+
+    /// <summary>
+    /// Function to acquire the mutex for the texture.
+    /// </summary>
+    /// <param name="key">The key to use for the mutex.</param>
+    /// <param name="timeOut">The number of milliseconds that the mutex should last for. Use <see cref="int.MaxValue"/> for an indefinite timeout.</param>
+    /// <remarks>
+    /// <para>
+    /// Calls to this method must be matched with a call to <see cref="Release"/> to avoid issues with leakage.
+    /// </para>
+    /// <para>
+    /// This method will only work with textures that have a value of <see cref="TextureSharingOptions.SharedKeyedMutex"/> assigned to <see cref="IGorgonTexture2DInfo.Shared"/>.
+    /// </para>
+    /// </remarks>
+    void Acquire(long key, int timeOut);
+
+    /// <summary>
+    /// Function to release a previously acquired mutex for the texture.
+    /// </summary>
+    /// <param name="key">The key used for the mutex.</param>
+    /// <remarks>
+    /// <para>
+    /// This method must be called when a call to <see cref="Acquire(long, int)"/> is made, and the mutex is no longer required.
+    /// </para>
+    /// <para>
+    /// This method will only work with textures that have a value of <see cref="TextureSharingOptions.SharedKeyedMutex"/> assigned to <see cref="IGorgonTexture2DInfo.Shared"/>.
+    /// </para>
+    /// </remarks>
+    void Release(long key);
 }

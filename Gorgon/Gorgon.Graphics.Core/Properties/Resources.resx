@@ -562,4 +562,10 @@ Textures must be configured to share their data when they are first created.</va
   <data name="GORGFX_ERR_SHARED_RES_NOT_AVAILABLE" xml:space="preserve">
     <value>The shared resource could not be created for the texture '{0}'.</value>
   </data>
+  <data name="GORGFX_ERR_NO_KEYED_MUTEX" xml:space="preserve">
+    <value>Unable to create a keyed mutex for acquisition or release. The resource was not created with a shared keyed mutex option.</value>
+  </data>
+  <data name="GORGFX_ERR_CANNOT_GET_KEYED_MUTEX" xml:space="preserve">
+    <value>Could not retrieve a keyed mutex from the resource.</value>
+  </data>
 </root>

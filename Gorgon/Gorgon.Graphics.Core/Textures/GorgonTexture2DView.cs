@@ -233,7 +233,7 @@ public sealed class GorgonTexture2DView
     /// <summary>
     /// Property to return whether the resource used by this view can be shared or not.
     /// </summary>
-    public bool Shared => Texture.Shared;
+    public TextureSharingOptions Shared => Texture.Shared;
     #endregion
 
     #region Methods.

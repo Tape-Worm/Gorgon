@@ -26,17 +26,10 @@
 
 using System;
 
-/* Unmerged change from project 'Gorgon.Graphics.Core (net5.0-windows)'
-Before:
-using System.Numerics;
-using System.Collections.Generic;
-After:
-using System.Collections.Generic;
-using System.ComponentModel;
-*/
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net.Mail;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Threading;
@@ -96,6 +89,8 @@ public sealed class GorgonTexture2D
     };
     // The shared resource for this texture.
     private DXGI.Resource _sharedResource;
+    // The keyed mutex for the shared resource.
+    private DXGI.KeyedMutex _keyedMutex;
     #endregion
 
     #region Properties.
@@ -238,7 +233,7 @@ public sealed class GorgonTexture2D
     /// <remarks>
     /// Settings this flag to <b>true</b> allows the texture to be used with external graphics interfaces such as a Direct3D device. This is useful for providing interoperation between systems.
     /// </remarks>
-    public bool Shared =>_info.Shared;
+    public TextureSharingOptions Shared =>_info.Shared;
     #endregion
 
     #region Methods.
@@ -538,18 +533,18 @@ public sealed class GorgonTexture2D
             throw new GorgonException(GorgonResult.CannotCreate, Resources.GORGFX_ERR_TEXTURE_MULTISAMPLED);
         }
 
-        D3D11.ResourceOptionFlags options = D3D11.ResourceOptionFlags.None;
+        D3D11.ResourceOptionFlags options = Shared switch
+        {            
+            TextureSharingOptions.Shared => D3D11.ResourceOptionFlags.Shared,
+            TextureSharingOptions.SharedKeyedMutex => D3D11.ResourceOptionFlags.SharedKeyedmutex,
+            _ => D3D11.ResourceOptionFlags.None
+        };
 
         if (IsCubeMap)
         {
             options |= D3D11.ResourceOptionFlags.TextureCube;
         }
 
-        if (Shared)
-        {
-            options |= D3D11.ResourceOptionFlags.Shared;
-        }
-        
         var tex2DDesc = new D3D11.Texture2DDescription1
         {
             Format = (DXGI.Format)Format,
@@ -692,13 +687,13 @@ public sealed class GorgonTexture2D
     /// This is used to retrieve a handle to the shared resource that allows applications to share the texture with other APIs (e.g. Direct 2D). 
     /// </para>
     /// <para>
-    /// To retrieve the shared resource handle, the texture must have set the <see cref="IGorgonTexture2DInfo.Shared"/> property on <see cref="GorgonTexture2DInfo"/> to <b>true</b>, otherwise the 
-    /// method will throw an exception.
+    /// To retrieve the shared resource handle, the texture must have set the <see cref="IGorgonTexture2DInfo.Shared"/> property on <see cref="GorgonTexture2DInfo"/> to 
+    /// <see cref="TextureSharingOptions.Shared"/>, or <see cref="TextureSharingOptions.SharedKeyedMutex"/>, otherwise the method will throw an exception.
     /// </para>
     /// </remarks>        
     nint IGorgonSharedResource.GetSharedHandle()
     {
-        if (!Shared)
+        if (Shared == TextureSharingOptions.None)
         {
             throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_CANNOT_CREATE_SHARED_RES, Name));
         }
@@ -2269,6 +2264,9 @@ public sealed class GorgonTexture2D
             return;
         }
 
+        Interlocked.Exchange(ref _keyedMutex, null);
+        _keyedMutex?.Dispose();
+
         DXGI.Resource sharedRes = Interlocked.Exchange(ref _sharedResource, null);
         sharedRes?.Dispose();
 
@@ -2318,6 +2316,52 @@ public sealed class GorgonTexture2D
     /// <summary>Function to retrieve a default shader resource view.</summary>
     /// <returns>The default shader resource view for the texture.</returns>
     GorgonShaderResourceView IGorgonTextureResource.GetShaderResourceView() => GetShaderResourceView();
+
+    /// <summary>
+    /// Function to acquire the mutex for the texture.
+    /// </summary>
+    /// <param name="key">The key to use for the mutex.</param>
+    /// <param name="timeOut">The number of milliseconds that the mutex should last for. Use <see cref="int.MaxValue"/> for an indefinite timeout.</param>
+    /// <exception cref="GorgonException">Thrown if the resource did not have a <see cref="TextureSharingOptions.SharedKeyedMutex"/> value upon creation.</exception>
+    /// <remarks>
+    /// <para>
+    /// Calls to this method must be matched with a call to <see cref="IGorgonSharedResource.Release"/> to avoid issues with leakage.
+    /// </para>
+    /// <para>
+    /// This method will only work with textures that have a value of <see cref="TextureSharingOptions.SharedKeyedMutex"/> assigned to <see cref="IGorgonTexture2DInfo.Shared"/>.
+    /// </para>
+    /// </remarks>
+    void IGorgonSharedResource.Acquire(long key, int timeOut)
+    {
+        if (Shared != TextureSharingOptions.SharedKeyedMutex)
+        {
+            throw new GorgonException(GorgonResult.CannotCreate, Resources.GORGFX_ERR_NO_KEYED_MUTEX);
+        }
+
+        if (_keyedMutex is null)
+        {
+            DXGI.KeyedMutex keyedMutex = D3DResource.QueryInterface<DXGI.KeyedMutex>() ?? throw new GorgonException(GorgonResult.CannotCreate, Resources.GORGFX_ERR_CANNOT_GET_KEYED_MUTEX);
+
+            _keyedMutex = keyedMutex;
+        }
+
+        _keyedMutex.Acquire(key, timeOut);
+    }
+
+    /// <summary>
+    /// Function to release a previously acquired mutex for the texture.
+    /// </summary>
+    /// <param name="key">The key used for the mutex.</param>
+    /// <exception cref="GorgonException">Thrown if the resource did not have a <see cref="TextureSharingOptions.SharedKeyedMutex"/> value upon creation.</exception>
+    /// <remarks>
+    /// <para>
+    /// This method must be called when a call to <see cref="IGorgonSharedResource.Acquire(long, int)"/> is made, and the mutex is no longer required.
+    /// </para>
+    /// <para>
+    /// This method will only work with textures that have a value of <see cref="TextureSharingOptions.SharedKeyedMutex"/> assigned to <see cref="IGorgonTexture2DInfo.Shared"/>.
+    /// </para>
+    /// </remarks>
+    void IGorgonSharedResource.Release(long key) => _keyedMutex?.Release(key);
     #endregion
 
     #region Constructor/Finalizer.
@@ -2364,7 +2408,8 @@ public sealed class GorgonTexture2D
             MipLevels = desc.MipLevels,
             IsCubeMap = false,
             MultisampleInfo = GorgonMultisampleInfo.NoMultiSampling,
-            Binding = (TextureBinding)desc.BindFlags
+            Binding = (TextureBinding)desc.BindFlags,
+            Shared = TextureSharingOptions.Shared
         };
         
         FormatInformation = new GorgonFormatInfo(Format);

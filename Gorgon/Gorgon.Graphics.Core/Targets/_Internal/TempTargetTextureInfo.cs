@@ -124,7 +124,7 @@ internal class TempTargetTextureInfo
     /// <remarks>
     /// Settings this flag to <b>true</b> allows the texture to be used with external graphics interfaces such as a Direct3D device. This is useful for providing interoperation between systems.
     /// </remarks>
-    public bool Shared => false;
+    public TextureSharingOptions Shared => TextureSharingOptions.None;
 
     /// <summary>Property to return the name of this object.</summary>
     public string Name

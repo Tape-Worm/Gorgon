@@ -229,7 +229,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WinFormsColor", "Dependenci
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Gorgon.Editor.FontEditor", "PlugIns\Gorgon.Editor.FontEditor\Gorgon.Editor.FontEditor.csproj", "{28E3B558-A693-4BB8-9EE0-2B3DEBDDFFE2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AssImp", "Examples\Gorgon.Graphics\AssImp\AssImp.csproj", "{DA72188C-8E7B-4F79-B624-557FD9029256}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AssImp", "Examples\Gorgon.Graphics\AssImp\AssImp.csproj", "{DA72188C-8E7B-4F79-B624-557FD9029256}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GlassCube.Avalonia", "Examples\Gorgon.Graphics\GlassCube.Avalonia\GlassCube.Avalonia.csproj", "{AB780639-FAB4-4F32-ADA1-CE850888CD89}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Gorgon.Graphics.Avalonia", "Gorgon\Gorgon.Graphics.Avalonia\Gorgon.Graphics.Avalonia.csproj", "{EB60F13D-461A-4B5B-9C56-ED528B2D1C0F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -903,6 +907,22 @@ Global
 		{DA72188C-8E7B-4F79-B624-557FD9029256}.Release|Any CPU.Build.0 = Release|Any CPU
 		{DA72188C-8E7B-4F79-B624-557FD9029256}.Release|x64.ActiveCfg = Release|Any CPU
 		{DA72188C-8E7B-4F79-B624-557FD9029256}.Release|x64.Build.0 = Release|Any CPU
+		{AB780639-FAB4-4F32-ADA1-CE850888CD89}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AB780639-FAB4-4F32-ADA1-CE850888CD89}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AB780639-FAB4-4F32-ADA1-CE850888CD89}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{AB780639-FAB4-4F32-ADA1-CE850888CD89}.Debug|x64.Build.0 = Debug|Any CPU
+		{AB780639-FAB4-4F32-ADA1-CE850888CD89}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AB780639-FAB4-4F32-ADA1-CE850888CD89}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AB780639-FAB4-4F32-ADA1-CE850888CD89}.Release|x64.ActiveCfg = Release|Any CPU
+		{AB780639-FAB4-4F32-ADA1-CE850888CD89}.Release|x64.Build.0 = Release|Any CPU
+		{EB60F13D-461A-4B5B-9C56-ED528B2D1C0F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EB60F13D-461A-4B5B-9C56-ED528B2D1C0F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EB60F13D-461A-4B5B-9C56-ED528B2D1C0F}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{EB60F13D-461A-4B5B-9C56-ED528B2D1C0F}.Debug|x64.Build.0 = Debug|Any CPU
+		{EB60F13D-461A-4B5B-9C56-ED528B2D1C0F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EB60F13D-461A-4B5B-9C56-ED528B2D1C0F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EB60F13D-461A-4B5B-9C56-ED528B2D1C0F}.Release|x64.ActiveCfg = Release|Any CPU
+		{EB60F13D-461A-4B5B-9C56-ED528B2D1C0F}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -986,6 +1006,7 @@ Global
 		{E1E3F636-D272-462C-AD70-96414B318766} = {5A7D31B0-3DCD-46AB-8980-98E5985E44F2}
 		{28E3B558-A693-4BB8-9EE0-2B3DEBDDFFE2} = {9491DE41-CAB3-4B22-9AFD-8BA8958453E5}
 		{DA72188C-8E7B-4F79-B624-557FD9029256} = {C421D2F1-B2C4-4136-A33E-52A17B0E907C}
+		{AB780639-FAB4-4F32-ADA1-CE850888CD89} = {C421D2F1-B2C4-4136-A33E-52A17B0E907C}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {BA39288E-AC40-4B74-8AE3-AB6E94D02D77}

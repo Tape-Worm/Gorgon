@@ -112,7 +112,7 @@ internal class BloomTextureInfo
     /// <remarks>
     /// Settings this flag to <b>true</b> allows the texture to be used with external graphics interfaces such as a Direct3D device. This is useful for providing interoperation between systems.
     /// </remarks>
-    bool IGorgonTexture2DInfo.Shared => false;
+    TextureSharingOptions IGorgonTexture2DInfo.Shared => TextureSharingOptions.None;
 
     /// <summary>Property to set or return the name of this object.</summary>
     public string Name

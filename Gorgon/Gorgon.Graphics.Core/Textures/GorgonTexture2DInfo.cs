@@ -203,7 +203,7 @@ public record GorgonTexture2DInfo(int Width, int Height, BufferFormat Format)
     /// <remarks>
     /// Settings this flag to <b>true</b> allows the texture to be used with external graphics interfaces such as a Direct3D device. This is useful for providing interoperation between systems.
     /// </remarks>
-    public bool Shared
+    public TextureSharingOptions Shared
     {
         get;
         init;
@@ -335,7 +335,7 @@ public class GorgonTexture2DInfo
     }
 
     /// <summary>Property to return whether this texture can be shared with other graphics interfaces.</summary>
-    public bool Shared
+    public TextureSharingOptions Shared
     {
         get;
         set;
