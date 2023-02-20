@@ -44,11 +44,7 @@
     <PlatformTarget>AnyCPU</PlatformTarget>
   </PropertyGroup>
   <ItemGroup>
-    <None Include="..\g.png">
-      <Pack>True</Pack>
-      <PackagePath>
-      </PackagePath>
-    </None>
+    <None Include="..\g.png" Link="g.png" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Dependencies\BCnEncoder.NET\BCnEnc.Net\BCnEncoder.csproj" />

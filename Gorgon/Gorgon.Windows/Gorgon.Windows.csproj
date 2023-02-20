@@ -54,11 +54,7 @@
     <EmbeddedResource Remove="UI\_Controls\GorgonProgressScreenPanel.resx" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\g.png">
-      <Pack>True</Pack>
-      <PackagePath>
-      </PackagePath>
-    </None>
+    <None Include="..\g.png" Link="g.png" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Gorgon.Core\Gorgon.Core.csproj" />
