@@ -120,13 +120,7 @@ internal class TrackKeyBuilder<T>
             throw new ArgumentNullException(nameof(key));
         }
 
-        int? index = IndexOfFrame(key);
-
-        // Do not allow the same key to added again.
-        if (index is null)
-        {
-            throw new ArgumentException(string.Format(Resources.GORANM_ERR_KEY_ALREADY_IN_TRACK, key.Time), nameof(key));
-        }
+        int? index = IndexOfFrame(key) ?? throw new ArgumentException(string.Format(Resources.GORANM_ERR_KEY_ALREADY_IN_TRACK, key.Time), nameof(key));
 
         if (index != -1)
         {

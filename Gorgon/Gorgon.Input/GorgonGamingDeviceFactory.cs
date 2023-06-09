@@ -133,12 +133,7 @@ public sealed class GorgonGamingDeviceDriverFactory
         }
 
         _plugInCache.LoadPlugInAssemblies(dirName, fileName);
-        GorgonGamingDeviceDriver result = _plugInService.GetPlugIn<GorgonGamingDeviceDriver>(driverType);
-
-        if (result is null)
-        {
-            throw new ArgumentException(string.Format(Resources.GORINP_ERR_DRIVER_NOT_FOUND, driverType));
-        }
+        GorgonGamingDeviceDriver result = _plugInService.GetPlugIn<GorgonGamingDeviceDriver>(driverType) ?? throw new ArgumentException(string.Format(Resources.GORINP_ERR_DRIVER_NOT_FOUND, driverType));
 
         result.Log = _log;
 

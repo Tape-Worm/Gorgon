@@ -134,12 +134,7 @@ public static class ViewFactory
 
         Type dataContextType = typeof(IDataContext<>);
         Type controlType = control.GetType();
-        Type controlInterface = controlType.GetInterface(dataContextType.FullName);
-
-        if (controlInterface is null)
-        {
-            throw new InvalidCastException(string.Format(Resources.GOREDIT_ERR_HOSTED_CTL_NOT_DATACONTEXT, control.Name));
-        }
+        Type controlInterface = controlType.GetInterface(dataContextType.FullName) ?? throw new InvalidCastException(string.Format(Resources.GOREDIT_ERR_HOSTED_CTL_NOT_DATACONTEXT, control.Name));
 
         PropertyInfo property = controlInterface.GetProperty("DataContext");
         return property?.GetValue(control) as IViewModel;

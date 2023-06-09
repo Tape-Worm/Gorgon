@@ -787,12 +787,7 @@ internal class ProjectManager
             throw new FileNotFoundException(string.Format(Resources.GOREDIT_ERR_PROJECT_NOT_FOUND, path));
         }
 
-        IGorgonFileSystemProvider provider = _providers.GetBestReader(path);
-
-        if (provider is null)
-        {
-            throw new GorgonException(GorgonResult.CannotRead, string.Format(Resources.GOREDIT_ERR_NO_PROVIDER, Path.GetFileNameWithoutExtension(path)));
-        }
+        IGorgonFileSystemProvider provider = _providers.GetBestReader(path) ?? throw new GorgonException(GorgonResult.CannotRead, string.Format(Resources.GOREDIT_ERR_NO_PROVIDER, Path.GetFileNameWithoutExtension(path)));
 
         // Unlock the directory if we have it locked.
         // Unlock our own lock prior to opening.

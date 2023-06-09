@@ -229,12 +229,7 @@ public static class IOExtensions
 
         path = path.FormatDirectory('/');
 
-        IGorgonVirtualDirectory directory = fileSystem.GetDirectory(path);
-
-        if (directory is null)
-        {
-            throw new DirectoryNotFoundException();
-        }
+        IGorgonVirtualDirectory directory = fileSystem.GetDirectory(path) ?? throw new DirectoryNotFoundException();
 
         IEnumerable<IGorgonVirtualFile> files = fileSystem.FindFiles(directory.FullPath, searchMask, recursive);
 

@@ -3453,11 +3453,7 @@ internal class FileExplorer
             throw new ArgumentEmptyException(nameof(path));
         }
 
-        IFile file = _files.Values.FirstOrDefault(item => string.Equals(item.FullPath, path, StringComparison.OrdinalIgnoreCase));
-        if (file is null)
-        {
-            throw new FileNotFoundException(string.Format(Resources.GOREDIT_ERR_FILE_NOT_FOUND, path));
-        }
+        IFile file = _files.Values.FirstOrDefault(item => string.Equals(item.FullPath, path, StringComparison.OrdinalIgnoreCase)) ?? throw new FileNotFoundException(string.Format(Resources.GOREDIT_ERR_FILE_NOT_FOUND, path));
 
         if (file.IsOpen)
         {
@@ -3542,12 +3538,7 @@ internal class FileExplorer
             directory = "/" + directory;
         }
 
-        IDirectory dir = _directories.Values.FirstOrDefault(item => string.Equals(item.FullPath, directory, StringComparison.OrdinalIgnoreCase));
-                    
-        if (dir is null)
-        {
-            throw new DirectoryNotFoundException(string.Format(Resources.GOREDIT_ERR_DIRECTORY_NOT_FOUND, directory));
-        }
+        IDirectory dir = _directories.Values.FirstOrDefault(item => string.Equals(item.FullPath, directory, StringComparison.OrdinalIgnoreCase)) ?? throw new DirectoryNotFoundException(string.Format(Resources.GOREDIT_ERR_DIRECTORY_NOT_FOUND, directory));
 
         if (dir is not IExcludable excluder)
         {

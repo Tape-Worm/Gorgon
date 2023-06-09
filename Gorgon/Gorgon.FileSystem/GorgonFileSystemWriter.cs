@@ -690,12 +690,7 @@ public class GorgonFileSystemWriter
             throw new ArgumentEmptyException(nameof(path));
         }
 
-        IGorgonVirtualDirectory directory = FileSystem.GetDirectory(path);
-
-        if (directory is null)
-        {
-            throw new DirectoryNotFoundException(string.Format(Resources.GORFS_ERR_DIRECTORY_NOT_FOUND, path));
-        }
+        IGorgonVirtualDirectory directory = FileSystem.GetDirectory(path) ?? throw new DirectoryNotFoundException(string.Format(Resources.GORFS_ERR_DIRECTORY_NOT_FOUND, path));
 
         // Build up a list of directories to delete.
         // We'll sort these by full path length since it is impossible to have a child directory with a longer name than its parent.
@@ -841,12 +836,7 @@ public class GorgonFileSystemWriter
             throw new ArgumentEmptyException(nameof(path));
         }
 
-        IGorgonVirtualFile file = FileSystem.GetFile(path);
-
-        if (file is null)
-        {
-            throw new FileNotFoundException(string.Format(Resources.GORFS_ERR_FILE_NOT_FOUND, path));
-        }
+        IGorgonVirtualFile file = FileSystem.GetFile(path) ?? throw new FileNotFoundException(string.Format(Resources.GORFS_ERR_FILE_NOT_FOUND, path));
 
         if (!DeleteVirtualFile(file))
         {
@@ -976,12 +966,7 @@ public class GorgonFileSystemWriter
             throw new ArgumentEmptyException(nameof(newName));
         }
 
-        IGorgonVirtualFile file = FileSystem.GetFile(path);
-
-        if (file is null)
-        {
-            throw new DirectoryNotFoundException(string.Format(Resources.GORFS_ERR_DIRECTORY_NOT_FOUND, path));
-        }
+        IGorgonVirtualFile file = FileSystem.GetFile(path) ?? throw new DirectoryNotFoundException(string.Format(Resources.GORFS_ERR_DIRECTORY_NOT_FOUND, path));
 
         if ((file.Directory.Directories.Contains(newName)) || (file.Directory.Files.Contains(newName)))
         {
@@ -1055,12 +1040,7 @@ public class GorgonFileSystemWriter
             throw new ArgumentEmptyException(nameof(newName));
         }
 
-        IGorgonVirtualDirectory directory = FileSystem.GetDirectory(path);
-
-        if (directory is null)
-        {
-            throw new DirectoryNotFoundException(string.Format(Resources.GORFS_ERR_DIRECTORY_NOT_FOUND, path));
-        }
+        IGorgonVirtualDirectory directory = FileSystem.GetDirectory(path) ?? throw new DirectoryNotFoundException(string.Format(Resources.GORFS_ERR_DIRECTORY_NOT_FOUND, path));
 
         if ((directory.Directories.Contains(newName)) || (directory.Files.Contains(newName)))
         {
@@ -1564,23 +1544,13 @@ public class GorgonFileSystemWriter
             throw new ArgumentEmptyException(nameof(destDirectoryPath));
         }
         
-        IGorgonVirtualDirectory destDirectory = FileSystem.GetDirectory(destDirectoryPath);
-
-        if (destDirectory is null)
-        {
-            throw new DirectoryNotFoundException(string.Format(Resources.GORFS_ERR_DIRECTORY_NOT_FOUND, destDirectoryPath));
-        }
+        IGorgonVirtualDirectory destDirectory = FileSystem.GetDirectory(destDirectoryPath) ?? throw new DirectoryNotFoundException(string.Format(Resources.GORFS_ERR_DIRECTORY_NOT_FOUND, destDirectoryPath));
 
         var files = new List<IGorgonVirtualFile>();
 
         foreach (string filePath in filePaths)
         {
-            IGorgonVirtualFile file = FileSystem.GetFile(filePath);
-
-            if (file is null)
-            {
-                throw new FileNotFoundException(string.Format(Resources.GORFS_ERR_FILE_NOT_FOUND, filePath));
-            }
+            IGorgonVirtualFile file = FileSystem.GetFile(filePath) ?? throw new FileNotFoundException(string.Format(Resources.GORFS_ERR_FILE_NOT_FOUND, filePath));
 
             // Don't copy files to the same location.
             if (file.Directory == destDirectory)
@@ -1729,23 +1699,13 @@ public class GorgonFileSystemWriter
             throw new ArgumentEmptyException(nameof(destDirectoryPath));
         }
 
-        IGorgonVirtualDirectory destDirectory = FileSystem.GetDirectory(destDirectoryPath);
-
-        if (destDirectory is null)
-        {
-            throw new DirectoryNotFoundException(string.Format(Resources.GORFS_ERR_DIRECTORY_NOT_FOUND, destDirectoryPath));
-        }
+        IGorgonVirtualDirectory destDirectory = FileSystem.GetDirectory(destDirectoryPath) ?? throw new DirectoryNotFoundException(string.Format(Resources.GORFS_ERR_DIRECTORY_NOT_FOUND, destDirectoryPath));
 
         var files = new List<IGorgonVirtualFile>();
 
         foreach (string filePath in filePaths)
         {
-            IGorgonVirtualFile file = FileSystem.GetFile(filePath);
-
-            if (file is null)
-            {
-                throw new FileNotFoundException(string.Format(Resources.GORFS_ERR_FILE_NOT_FOUND, filePath));
-            }
+            IGorgonVirtualFile file = FileSystem.GetFile(filePath) ?? throw new FileNotFoundException(string.Format(Resources.GORFS_ERR_FILE_NOT_FOUND, filePath));
 
             files.Add(file);
         }
@@ -1900,12 +1860,7 @@ public class GorgonFileSystemWriter
 
         foreach (string filePath in filePaths)
         {
-            IGorgonVirtualFile file = FileSystem.GetFile(filePath);
-
-            if (file is null)
-            {
-                throw new FileNotFoundException(string.Format(Resources.GORFS_ERR_FILE_NOT_FOUND, filePath));
-            }
+            IGorgonVirtualFile file = FileSystem.GetFile(filePath) ?? throw new FileNotFoundException(string.Format(Resources.GORFS_ERR_FILE_NOT_FOUND, filePath));
 
             files.Add(file);
         }
@@ -2020,12 +1975,7 @@ public class GorgonFileSystemWriter
             throw new ArgumentEmptyException(nameof(destDirectoryPath));
         }
 
-        IGorgonVirtualDirectory srcDirectory = FileSystem.GetDirectory(directoryPath);            
-
-        if (srcDirectory is null)
-        {
-            throw new DirectoryNotFoundException(string.Format(Resources.GORFS_ERR_DIRECTORY_NOT_FOUND, directoryPath));
-        }
+        IGorgonVirtualDirectory srcDirectory = FileSystem.GetDirectory(directoryPath) ?? throw new DirectoryNotFoundException(string.Format(Resources.GORFS_ERR_DIRECTORY_NOT_FOUND, directoryPath));
 
         if (!Directory.Exists(destDirectoryPath))
         {
@@ -2171,12 +2121,7 @@ public class GorgonFileSystemWriter
             return;
         }
 
-        IGorgonVirtualDirectory destDirectory = FileSystem.GetDirectory(destDirectoryPath);
-
-        if (destDirectory is null)
-        {
-            throw new DirectoryNotFoundException(string.Format(Resources.GORFS_ERR_DIRECTORY_NOT_FOUND, destDirectoryPath));
-        }
+        IGorgonVirtualDirectory destDirectory = FileSystem.GetDirectory(destDirectoryPath) ?? throw new DirectoryNotFoundException(string.Format(Resources.GORFS_ERR_DIRECTORY_NOT_FOUND, destDirectoryPath));
 
         try
         {
@@ -2422,12 +2367,7 @@ public class GorgonFileSystemWriter
 
         directoryPath = string.IsNullOrWhiteSpace(directoryPath) ? "/" : directoryPath.FormatDirectory('/');
 
-        IGorgonVirtualDirectory directory = FileSystem.GetDirectory(directoryPath);
-
-        if (directory is null)
-        {
-            throw new DirectoryNotFoundException(string.Format(Resources.GORFS_ERR_DIRECTORY_NOT_FOUND, directoryPath));
-        }
+        IGorgonVirtualDirectory directory = FileSystem.GetDirectory(directoryPath) ?? throw new DirectoryNotFoundException(string.Format(Resources.GORFS_ERR_DIRECTORY_NOT_FOUND, directoryPath));
 
         if (string.IsNullOrWhiteSpace(fileName))
         {

@@ -273,12 +273,7 @@ public static class Gorgon2DEditorExtensions
             throw new GorgonException(GorgonResult.CannotRead, string.Format(Resources.GOREDIT_ERR_UNSUPPORTED_CODEC, codecTypeName));
         }
 
-        IGorgonVirtualFile file = fileSystem.GetFile(path);
-
-        if (file is null)
-        {
-            throw new FileNotFoundException(string.Format(Resources.GOREDIT_ERR_FILE_NOT_FOUND, path));
-        }
+        IGorgonVirtualFile file = fileSystem.GetFile(path) ?? throw new FileNotFoundException(string.Format(Resources.GOREDIT_ERR_FILE_NOT_FOUND, path));
 
         bool shouldConvertToPremultiplied = false;
 
@@ -405,12 +400,7 @@ public static class Gorgon2DEditorExtensions
             throw new GorgonException(GorgonResult.CannotRead, string.Format(Resources.GOREDIT_ERR_UNSUPPORTED_CODEC, codecTypeName));
         }
 
-        IGorgonVirtualFile file = fileSystem.GetFile(path);
-
-        if (file is null)
-        {
-            throw new FileNotFoundException(string.Format(Resources.GOREDIT_ERR_FILE_NOT_FOUND, path));
-        }
+        IGorgonVirtualFile file = fileSystem.GetFile(path) ?? throw new FileNotFoundException(string.Format(Resources.GOREDIT_ERR_FILE_NOT_FOUND, path));
 
         GorgonTexture2D texture = null;
         if (overrideTexture is null)

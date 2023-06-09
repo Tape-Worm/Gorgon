@@ -203,12 +203,7 @@ public class GorgonFileSystem
             throw new FileNotFoundException(string.Format(Resources.GORFS_ERR_FILE_NOT_FOUND, physicalPath));
         }
 
-        IGorgonFileSystemProvider provider = _providers.FirstOrDefault(item => item.Value.CanReadFileSystem(physicalPath)).Value;
-
-        if (provider is null)
-        {
-            throw new IOException(string.Format(Resources.GORFS_ERR_CANNOT_READ_FILESYSTEM, physicalPath));
-        }
+        IGorgonFileSystemProvider provider = _providers.FirstOrDefault(item => item.Value.CanReadFileSystem(physicalPath)).Value ?? throw new IOException(string.Format(Resources.GORFS_ERR_CANNOT_READ_FILESYSTEM, physicalPath));
 
         var mountPoint = new GorgonFileSystemMountPoint(provider, physicalPath, mountPath);
 
@@ -268,12 +263,7 @@ public class GorgonFileSystem
     /// <returns>A <see cref="GorgonFileSystemMountPoint"/>.</returns>
     private GorgonFileSystemMountPoint MountNonPhysicalLocation(string location, string mountDirectory)
     {
-        IGorgonFileSystemProvider provider = _providers.FirstOrDefault(item => item.Value.CanReadFileSystem(location)).Value;
-
-        if (provider is null)
-        {
-            throw new IOException(string.Format(Resources.GORFS_ERR_CANNOT_READ_FILESYSTEM, location));
-        }
+        IGorgonFileSystemProvider provider = _providers.FirstOrDefault(item => item.Value.CanReadFileSystem(location)).Value ?? throw new IOException(string.Format(Resources.GORFS_ERR_CANNOT_READ_FILESYSTEM, location));
 
         var mountPoint = new GorgonFileSystemMountPoint(provider, location, mountDirectory, true);
 
@@ -357,12 +347,7 @@ public class GorgonFileSystem
                 directoryName += "/";
             }
 
-            VirtualDirectory directory = GetVirtualDirectory(directoryName);
-
-            if (directory is null)
-            {
-                throw new DirectoryNotFoundException(string.Format(Resources.GORFS_ERR_DIRECTORY_NOT_FOUND, directoryName));
-            }
+            VirtualDirectory directory = GetVirtualDirectory(directoryName) ?? throw new DirectoryNotFoundException(string.Format(Resources.GORFS_ERR_DIRECTORY_NOT_FOUND, directoryName));
 
 
             // Update the file information to the most recent provider.
@@ -1027,12 +1012,7 @@ public class GorgonFileSystem
             throw new ArgumentEmptyException(nameof(path));
         }
 
-        VirtualDirectory directory = GetVirtualDirectory(path);
-
-        if (directory is null)
-        {
-            throw new DirectoryNotFoundException(string.Format(Resources.GORFS_ERR_DIRECTORY_NOT_FOUND, path));
-        }
+        VirtualDirectory directory = GetVirtualDirectory(path) ?? throw new DirectoryNotFoundException(string.Format(Resources.GORFS_ERR_DIRECTORY_NOT_FOUND, path));
 
         if (path == "/")
         {
@@ -1072,12 +1052,7 @@ public class GorgonFileSystem
                 directoryName += "/";
             }
 
-            VirtualDirectory subDirectory = GetVirtualDirectory(directoryName);
-
-            if (subDirectory is null)
-            {
-                throw new DirectoryNotFoundException(string.Format(Resources.GORFS_ERR_DIRECTORY_NOT_FOUND, directoryName));
-            }
+            VirtualDirectory subDirectory = GetVirtualDirectory(directoryName) ?? throw new DirectoryNotFoundException(string.Format(Resources.GORFS_ERR_DIRECTORY_NOT_FOUND, directoryName));
 
             subDirectory.Files.Add(directory.MountPoint, file);
         }

@@ -308,12 +308,7 @@ public static class Gorgon2DFileSystemExtensions
             throw new ArgumentNullException(nameof(fileSystem));
         }
 
-        IGorgonVirtualFile file = fileSystem.GetFile(path);
-
-        if (file is null)
-        {
-            throw new FileNotFoundException(string.Format(Resources.GOR2DIO_ERR_FILE_NOT_FOUND, path));
-        }
+        IGorgonVirtualFile file = fileSystem.GetFile(path) ?? throw new FileNotFoundException(string.Format(Resources.GOR2DIO_ERR_FILE_NOT_FOUND, path));
 
         if ((imageCodecs is null) || (!imageCodecs.Any()))
         {
@@ -365,12 +360,7 @@ public static class Gorgon2DFileSystemExtensions
                 spriteStream = newStream;
             }
 
-            IGorgonSpriteCodec spriteCodec = GetSpriteCodec(spriteStream, spriteCodecs);
-
-            if (spriteCodec is null)
-            {
-                throw new GorgonException(GorgonResult.CannotRead, string.Format(Resources.GOR2DIO_ERR_NO_SUITABLE_SPRITE_CODEC_FOUND, path));
-            }
+            IGorgonSpriteCodec spriteCodec = GetSpriteCodec(spriteStream, spriteCodecs) ?? throw new GorgonException(GorgonResult.CannotRead, string.Format(Resources.GOR2DIO_ERR_NO_SUITABLE_SPRITE_CODEC_FOUND, path));
 
             // Try to locate the texture.
             string textureName = spriteCodec.GetAssociatedTextureName(spriteStream);
@@ -469,12 +459,7 @@ public static class Gorgon2DFileSystemExtensions
             throw new ArgumentNullException(nameof(fileSystem));
         }
 
-        IGorgonVirtualFile file = fileSystem.GetFile(path);
-
-        if (file is null)
-        {
-            throw new FileNotFoundException(string.Format(Resources.GOR2DIO_ERR_FILE_NOT_FOUND, path));
-        }
+        IGorgonVirtualFile file = fileSystem.GetFile(path) ?? throw new FileNotFoundException(string.Format(Resources.GOR2DIO_ERR_FILE_NOT_FOUND, path));
 
         if ((imageCodecs is null) || (!imageCodecs.Any()))
         {
@@ -523,12 +508,7 @@ public static class Gorgon2DFileSystemExtensions
                 spriteStream = newStream;
             }
 
-            IGorgonPolySpriteCodec spriteCodec = GetPolySpriteCodec(spriteStream, spriteCodecs);
-
-            if (spriteCodec is null)
-            {
-                throw new GorgonException(GorgonResult.CannotRead, string.Format(Resources.GOR2DIO_ERR_NO_SUITABLE_SPRITE_CODEC_FOUND, path));
-            }
+            IGorgonPolySpriteCodec spriteCodec = GetPolySpriteCodec(spriteStream, spriteCodecs) ?? throw new GorgonException(GorgonResult.CannotRead, string.Format(Resources.GOR2DIO_ERR_NO_SUITABLE_SPRITE_CODEC_FOUND, path));
 
             // Try to locate the texture.
             string textureName = spriteCodec.GetAssociatedTextureName(spriteStream);
@@ -627,12 +607,7 @@ public static class Gorgon2DFileSystemExtensions
             throw new ArgumentNullException(nameof(fileSystem));
         }
 
-        IGorgonVirtualFile file = fileSystem.GetFile(path);
-
-        if (file is null)
-        {
-            throw new FileNotFoundException(string.Format(Resources.GOR2DIO_ERR_FILE_NOT_FOUND, path));
-        }
+        IGorgonVirtualFile file = fileSystem.GetFile(path) ?? throw new FileNotFoundException(string.Format(Resources.GOR2DIO_ERR_FILE_NOT_FOUND, path));
 
         if ((imageCodecs is null) || (!imageCodecs.Any()))
         {
@@ -685,12 +660,7 @@ public static class Gorgon2DFileSystemExtensions
                 animStream = newStream;
             }
 
-            IGorgonAnimationCodec animationCodec = GetAnimationCodec(animStream, animationCodecs);
-
-            if (animationCodec is null)
-            {
-                throw new GorgonException(GorgonResult.CannotRead, string.Format(Resources.GOR2DIO_ERR_NO_SUITABLE_ANIM_CODEC_FOUND, path));
-            }
+            IGorgonAnimationCodec animationCodec = GetAnimationCodec(animStream, animationCodecs) ?? throw new GorgonException(GorgonResult.CannotRead, string.Format(Resources.GOR2DIO_ERR_NO_SUITABLE_ANIM_CODEC_FOUND, path));
 
             // Load the animation.
             IGorgonAnimation animation = animationCodec.FromStream(animStream, (int)file.Size);
