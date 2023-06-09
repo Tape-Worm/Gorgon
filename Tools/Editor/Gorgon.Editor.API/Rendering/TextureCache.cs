@@ -490,17 +490,16 @@ public class TextureCache
         bool copyResult = await Task.Run(() =>
         {
             _log.Print($"Copying texture '{file.Path}' to temporary cache area '{cacheFilePath}'.", LoggingLevel.Verbose);
-            using (Stream inStream = _fileManager.OpenStream(file.Path, FileMode.Open))
-            using (Stream outStream = _tempWriter.OpenStream(cacheFilePath, FileMode.Create))
-            {
-                if (!_codec.IsReadable(inStream))
-                {
-                    _log.Print($"ERROR: Texture '{file.Path}' is not a {_codec.Name} file.", LoggingLevel.Verbose);
-                    return false;
-                }
+            using Stream inStream = _fileManager.OpenStream(file.Path, FileMode.Open);
+            using Stream outStream = _tempWriter.OpenStream(cacheFilePath, FileMode.Create);
 
-                inStream.CopyTo(outStream);
+            if (!_codec.IsReadable(inStream))
+            {
+                _log.Print($"ERROR: Texture '{file.Path}' is not a {_codec.Name} file.", LoggingLevel.Verbose);
+                return false;
             }
+
+            inStream.CopyTo(outStream);
 
             return true;
         });
