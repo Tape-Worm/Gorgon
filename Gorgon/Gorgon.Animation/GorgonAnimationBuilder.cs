@@ -570,10 +570,12 @@ public class GorgonAnimationBuilder
     /// <param name="fps">[Optional] The frames per second for the animation.</param>
     /// <param name="length">[Optional] The length of the animation, in seconds.</param>
     /// <returns>The object created or updated by this builder.</returns>
+    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="name"/> parameter is <b>null</b>.</exception>
+    /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="name"/> parameter is empty.</exception>
     /// <remarks>
     /// <para>
     /// When the <paramref name="fps"/> parameter is omitted, it will default to 60 frames per second. This parameter is used to adjust the key frame times to fit within the specified frame delays 
-    /// for the frames per second.
+    /// for the frames per second. If this value is less than 1, the animation will be assumed to be 1 frame per second.
     /// </para>
     /// <para>
     /// When the <paramref name="length"/> parameter is omitted, the length of the animation will be calculated based on the key frame times present in the tracks. This may not be ideal for certain 
@@ -594,6 +596,8 @@ public class GorgonAnimationBuilder
         }
 
         fps = fps.Max(1);
+
+        float minFrameTime = 1.0f / fps;
 
         // Function to adjust the key time to fit within the frames per second provided.
         float AdjustKeyTime(float keyTime)
@@ -725,17 +729,17 @@ public class GorgonAnimationBuilder
             };
         }
 
-        length ??= _singleTracks.SelectMany(item => item.Value.Keys.Cast<IGorgonKeyFrame>()).DefaultIfEmpty()
-                                  .Concat(_vector2Tracks.SelectMany(item => item.Value.Keys).DefaultIfEmpty())
-                                  .Concat(_vector3Tracks.SelectMany(item => item.Value.Keys).DefaultIfEmpty())
-                                  .Concat(_vector4Tracks.SelectMany(item => item.Value.Keys).DefaultIfEmpty())
-                                  .Concat(_quatTracks.SelectMany(item => item.Value.Keys).DefaultIfEmpty())
-                                  .Concat(_rectangleTracks.SelectMany(item => item.Value.Keys).DefaultIfEmpty())
-                                  .Concat(_colorTracks.SelectMany(item => item.Value.Keys).DefaultIfEmpty())
-                                  .Concat(_textureTracks.SelectMany(item => item.Value.Keys).DefaultIfEmpty())
-                                  .Max(item => item?.Time ?? 0);
+        length ??= (_singleTracks.SelectMany(item => item.Value.Keys.Cast<IGorgonKeyFrame>()).DefaultIfEmpty()
+                                 .Concat(_vector2Tracks.SelectMany(item => item.Value.Keys).DefaultIfEmpty())
+                                 .Concat(_vector3Tracks.SelectMany(item => item.Value.Keys).DefaultIfEmpty())
+                                 .Concat(_vector4Tracks.SelectMany(item => item.Value.Keys).DefaultIfEmpty())
+                                 .Concat(_quatTracks.SelectMany(item => item.Value.Keys).DefaultIfEmpty())
+                                 .Concat(_rectangleTracks.SelectMany(item => item.Value.Keys).DefaultIfEmpty())
+                                 .Concat(_colorTracks.SelectMany(item => item.Value.Keys).DefaultIfEmpty())
+                                 .Concat(_textureTracks.SelectMany(item => item.Value.Keys).DefaultIfEmpty())                                 
+                                 .Max(item => item?.Time ?? 0)) + minFrameTime;
 
-        return new AnimationData(name, fps, length.Value.Max(1 / fps))
+        return new AnimationData(name, fps, length.Value.Max(minFrameTime))
         {
             SingleTracks = singles,
             ColorTracks = color,
