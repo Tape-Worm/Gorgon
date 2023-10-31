@@ -72,6 +72,10 @@ Gorgon provides a set of libraries that are capable of handling pretty much any 
   
   Functionality to allow Gorgon to render onto a WPF surface. This allows interoperabilty between Gorgon and WPF.
 
+  - [x] __[Gorgon.Graphics.Avalonia](Gorgon/Gorgon.Graphics.Avalonia)__ 
+  
+  Functionality to allow Gorgon to render onto an Avalonia surface. This allows interoperabilty between Gorgon and Avalonia.
+
   - [x] __[Gorgon.Graphics.Imaging](Gorgon/Gorgon.Graphics.Imaging)__ 
   
   Functionality to read and write image formats. This also contains functionality to use a fluent interface to manipulate images for things like cropping, scaling, etc... 
