@@ -74,7 +74,7 @@ Gorgon provides a set of libraries that are capable of handling pretty much any 
 
   - [x] __[Gorgon.Graphics.Avalonia](Gorgon/Gorgon.Graphics.Avalonia)__ 
   
-  Functionality to allow Gorgon to render onto an Avalonia surface. This allows interoperabilty between Gorgon and Avalonia.
+  Functionality to allow Gorgon to render onto an Avalonia surface. This allows interoperabilty between Gorgon and [Avalonia](https://www.avaloniaui.net/).
 
   - [x] __[Gorgon.Graphics.Imaging](Gorgon/Gorgon.Graphics.Imaging)__ 
   
