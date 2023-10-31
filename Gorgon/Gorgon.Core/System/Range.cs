@@ -36,10 +36,10 @@ public struct Range
 {
 #pragma warning disable IDE0060 // Remove unused parameter
     /// <summary>Gets the start.</summary>
-    public Index Start => default;
+    public readonly Index Start => default;
 
     /// <summary>Gets the end.</summary>
-    public Index End => default;
+    public readonly Index End => default;
 
     /// <summary>Gets all.</summary>
     public static Range All => default;
@@ -67,12 +67,12 @@ public struct Range
     ///   <span class="nu">
     ///     <span class="keyword">true</span> (<span class="keyword">True</span> in Visual Basic)</span> if the current object is equal to the <paramref name="other" /> parameter; otherwise, <span class="keyword"><span class="languageSpecificText"><span class="cs">false</span><span class="vb">False</span><span class="cpp">false</span></span></span><span class="nu"><span class="keyword">false</span> (<span class="keyword">False</span> in Visual Basic)</span>.
     /// </returns>
-    public bool Equals(Range other) => true;
+    public readonly bool Equals(Range other) => true;
 
     /// <summary>Gets the length of the offset and.</summary>
     /// <param name="length">The length.</param>
     /// <returns>System.ValueTuple&lt;System.Int32, System.Int32&gt;.</returns>
-    public (int, int) GetOffsetAndLength(int length) => (0, length);
+    public readonly (int, int) GetOffsetAndLength(int length) => (0, length);
 
     /// <summary>Initializes a new instance of the <see cref="T:System.Range">Range</see> struct.</summary>
     /// <param name="p1">The start.</param>

@@ -34,31 +34,21 @@
     <EmbeddedResourceUseDependentUponConvention>true</EmbeddedResourceUseDependentUponConvention>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <DocumentationFile>bin\Release\Gorgon.Graphics.Core.XML</DocumentationFile>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <PlatformTarget>AnyCPU</PlatformTarget>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <DocumentationFile>bin\Debug\Gorgon.Graphics.Core.XML</DocumentationFile>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <DebugType>full</DebugType>
     <DebugSymbols>true</DebugSymbols>
     <PlatformTarget>AnyCPU</PlatformTarget>
   </PropertyGroup>
   <ItemGroup>
-    <None Remove="Resources\GraphicsShaders.hlsl" />
-    <None Remove="Resources\White_2x2.png" />
+    <None Include="..\g.png" Link="g.png" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Resources\GraphicsShaders.hlsl" />
     <EmbeddedResource Include="Resources\White_2x2.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="..\g.png">
-      <Pack>True</Pack>
-      <PackagePath>
-      </PackagePath>
-    </None>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Gorgon.Windows\Gorgon.Windows.csproj" />

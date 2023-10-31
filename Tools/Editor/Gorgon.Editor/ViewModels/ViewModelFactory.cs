@@ -201,12 +201,7 @@ internal class ViewModelFactory
             [parent.FullPath] = parent
         };
 
-        IGorgonVirtualDirectory parentVirtDir = fileSystem.GetDirectory(parent.FullPath);
-
-        if (parentVirtDir is null)
-        {
-            throw new DirectoryNotFoundException(string.Format(Resources.GOREDIT_ERR_DIRECTORY_NOT_FOUND, parent.FullPath));
-        }
+        IGorgonVirtualDirectory parentVirtDir = fileSystem.GetDirectory(parent.FullPath) ?? throw new DirectoryNotFoundException(string.Format(Resources.GOREDIT_ERR_DIRECTORY_NOT_FOUND, parent.FullPath));
 
         var subDirs = new List<IGorgonVirtualDirectory>
         {

@@ -93,7 +93,7 @@ internal struct WrapModeComboItem
     /// <returns>
     ///   <c>true</c> if the specified <see cref="object" /> is equal to this instance; otherwise, <c>false</c>.
     /// </returns>
-    public override bool Equals(object obj) => obj is WrapModeComboItem item ? item.Equals(this) : base.Equals(obj);
+    public override readonly bool Equals(object obj) => obj is WrapModeComboItem item ? item.Equals(this) : base.Equals(obj);
 
     /// <summary>
     /// Returns a hash code for this instance.
@@ -101,7 +101,7 @@ internal struct WrapModeComboItem
     /// <returns>
     /// A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table. 
     /// </returns>
-    public override int GetHashCode() => HashCode.Combine(WrapMode);
+    public override readonly int GetHashCode() => HashCode.Combine(WrapMode);
 
     /// <summary>
     /// Returns a <see cref="string" /> that represents this instance.
@@ -109,7 +109,7 @@ internal struct WrapModeComboItem
     /// <returns>
     /// A <see cref="string" /> that represents this instance.
     /// </returns>
-    public override string ToString() => _text;
+    public override readonly string ToString() => _text;
     #endregion
 
     #region Constructor/Destructor.

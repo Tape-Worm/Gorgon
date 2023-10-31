@@ -414,12 +414,7 @@ public abstract class ContentPlugIn
         // Ensure the temp directory contents are up to date.
         TemporaryFileSystem.FileSystem.Refresh();
 
-        IEditorContent content = await OnOpenContentAsync(file, fileManager, TemporaryFileSystem, undoService);
-
-        if (content is null)
-        {
-            throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GOREDIT_ERR_NO_CONTENT_FROM_PLUGIN, Name));
-        }
+        IEditorContent content = await OnOpenContentAsync(file, fileManager, TemporaryFileSystem, undoService) ?? throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GOREDIT_ERR_NO_CONTENT_FROM_PLUGIN, Name));
 
         // Reset the content state.
         content.ContentState = ContentState.Unmodified;

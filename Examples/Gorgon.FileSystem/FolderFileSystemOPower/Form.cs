@@ -236,12 +236,7 @@ public partial class Form
     /// <returns>A byte array containing the data for a file from the file system.</returns>
     private byte[] LoadFile(string path)
     {
-        IGorgonVirtualFile file = _fileSystem.GetFile(path);
-
-        if (file is null)
-        {
-            throw new FileNotFoundException($"The file '{path}' was not found in the file system.");
-        }
+        IGorgonVirtualFile file = _fileSystem.GetFile(path) ?? throw new FileNotFoundException($"The file '{path}' was not found in the file system.");
 
         using Stream stream = file.OpenStream();
         byte[] result = new byte[stream.Length];

@@ -579,9 +579,7 @@ public partial class ContentBaseControl
 
         Type dataContextType = typeof(IDataContext<>);
         Type controlType = CurrentHostedPanel.GetType();
-        Type controlInterface = controlType.GetInterface(dataContextType.FullName);
-
-        if (controlInterface is null)
+        if (controlType.GetInterface(dataContextType.FullName) is null)
         {
             throw new InvalidCastException(string.Format(Resources.GOREDIT_ERR_HOSTED_CTL_NOT_DATACONTEXT, CurrentHostedPanel.Name));
         }

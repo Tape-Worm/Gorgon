@@ -55,31 +55,31 @@ public struct GorgonGraphicsStatistics
 		/// <summary>
 		/// Property to return the number of calls to clear render targets or depth buffers.
 		/// </summary>
-		public long ClearCount => _clearCount;
+		public readonly long ClearCount => _clearCount;
 
 		/// <summary>
 		/// Property to return the number of calls to clear a stencil buffer.
 		/// </summary>
-		public long StencilClearCount => _stencilClearCount;
+		public readonly long StencilClearCount => _stencilClearCount;
 
 		/// <summary>
 		/// Property to return the number of draw calls submitted.
 		/// </summary>
-		public long DrawCallCount => _drawCallCount;
+		public readonly long DrawCallCount => _drawCallCount;
 
 		/// <summary>
     /// Property to return the number of indirect calls submitted.
     /// </summary>
-		public long IndirectCount => _indirectCount;
+		public readonly long IndirectCount => _indirectCount;
 
 		/// <summary>
     /// Property to return the number of stream out calls submitted.
     /// </summary>
-		public long StreamOutCount => _streamOutCount;
+		public readonly long StreamOutCount => _streamOutCount;
 
 		/// <summary>
     /// Property to return the number of triangles submitted in the frame.
     /// </summary>
-		public long TriangleCount => _triangleCount;
+		public readonly long TriangleCount => _triangleCount;
 		#endregion
 	}

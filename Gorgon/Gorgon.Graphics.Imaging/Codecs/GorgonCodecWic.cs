@@ -146,12 +146,7 @@ public abstract class GorgonCodecWic<TWicEncOpt, TWicDecOpt>
                 streamAlias = new GorgonStreamWrapper(stream, 0, size);
             }
 
-            IGorgonImage result = wic.DecodeImageData(streamAlias, size, SupportedFileFormat, DecodingOptions, FrameOffsetMetadataNames);
-
-            if (result is null)
-            {
-                throw new IOException(string.Format(Resources.GORIMG_ERR_FILE_FORMAT_NOT_CORRECT, Codec));
-            }
+            IGorgonImage result = wic.DecodeImageData(streamAlias, size, SupportedFileFormat, DecodingOptions, FrameOffsetMetadataNames) ?? throw new IOException(string.Format(Resources.GORIMG_ERR_FILE_FORMAT_NOT_CORRECT, Codec));
 
             if (stream.Position != streamAlias.Position)
             {

@@ -59,7 +59,7 @@ internal struct DeviceKey
     /// <returns>
     /// true if <paramref name="obj"/> and this instance are the same type and represent the same value; otherwise, false. 
     /// </returns>        
-    public override bool Equals(object obj) => obj is DeviceKey devKey ? devKey.Equals(this) : base.Equals(obj);
+    public override readonly bool Equals(object obj) => obj is DeviceKey devKey ? devKey.Equals(this) : base.Equals(obj);
 
     /// <summary>
     /// Returns the hash code for this instance.
@@ -68,7 +68,7 @@ internal struct DeviceKey
     /// A 32-bit signed integer that is the hash code for this instance.
     /// </returns>
     /// <filterpriority>2</filterpriority>
-    public override int GetHashCode() => HashCode.Combine(DeviceType, DeviceHandle);
+    public override readonly int GetHashCode() => HashCode.Combine(DeviceType, DeviceHandle);
 
     /// <summary>
     /// Indicates whether the current object is equal to another object of the same type.

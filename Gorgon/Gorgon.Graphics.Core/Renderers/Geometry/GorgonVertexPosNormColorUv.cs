@@ -76,7 +76,7 @@ public struct GorgonVertexPosNormColorUv
     /// <param name="x">The X coordinate of the <see cref="Position"/>.</param>
     /// <param name="y">The Y coordinate of the <see cref="Position"/>.</param>
     /// <param name="z">The Z coordinate of the <see cref="Position"/>.</param>
-    public void Deconstruct(out float x, out float y, out float z)
+    public readonly void Deconstruct(out float x, out float y, out float z)
     {
         x = Position.X;
         y = Position.Y;
@@ -88,7 +88,7 @@ public struct GorgonVertexPosNormColorUv
     /// <param name="normal">The normal.</param>
     /// <param name="color">The color.</param>
     /// <param name="uv">The texture coordinate.</param>
-    public void Deconstruct(out Vector4 position, out Vector3 normal, out GorgonColor color, out Vector2 uv)
+    public readonly void Deconstruct(out Vector4 position, out Vector3 normal, out GorgonColor color, out Vector2 uv)
     {
         position = Position;
         color = Color;

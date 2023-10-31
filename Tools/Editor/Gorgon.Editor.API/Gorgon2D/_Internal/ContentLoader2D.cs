@@ -712,9 +712,7 @@ internal class ContentLoader2D
             throw new ArgumentEmptyException(nameof(path));
         }
 
-        IGorgonVirtualDirectory directory = _fileSystem.GetDirectory(path);
-
-        if (directory is null)
+        if (_fileSystem.GetDirectory(path) is null)
         {
             throw new DirectoryNotFoundException(string.Format(Resources.GOREDIT_ERR_DIR_NOT_FOUND, path));
         }

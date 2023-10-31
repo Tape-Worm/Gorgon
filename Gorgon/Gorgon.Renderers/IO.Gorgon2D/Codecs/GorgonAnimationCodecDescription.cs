@@ -58,16 +58,16 @@ public struct GorgonAnimationCodecDescription
 
     /// <summary>Returns the fully qualified type name of this instance.</summary>
     /// <returns>A <see cref="string" /> containing a fully qualified type name.</returns>
-    public override string ToString() => string.Format(Resources.GOR2DIO_TOSTR_ANIMATION_CODEC_PLUGIN_DESC, Name, Description);
+    public override readonly string ToString() => string.Format(Resources.GOR2DIO_TOSTR_ANIMATION_CODEC_PLUGIN_DESC, Name, Description);
 
     /// <summary>Indicates whether this instance and a specified object are equal.</summary>
     /// <returns>true if <paramref name="obj" /> and this instance are the same type and represent the same value; otherwise, false. </returns>
     /// <param name="obj">The object to compare with the current instance. </param>
-    public override bool Equals(object obj) => obj is GorgonAnimationCodecDescription codecDesc ? codecDesc.Equals(this) : base.Equals(obj);
+    public override readonly bool Equals(object obj) => obj is GorgonAnimationCodecDescription codecDesc ? codecDesc.Equals(this) : base.Equals(obj);
 
     /// <summary>Returns the hash code for this instance.</summary>
     /// <returns>A 32-bit signed integer that is the hash code for this instance.</returns>
-    public override int GetHashCode() => Name?.GetHashCode() ?? 0;
+    public override readonly int GetHashCode() => Name?.GetHashCode() ?? 0;
 
     /// <summary>
     /// Indicates whether the current object is equal to another object of the same type.
@@ -75,7 +75,7 @@ public struct GorgonAnimationCodecDescription
     /// <param name="other">An object to compare with this object.</param>
     /// <returns>true if the current object is equal to the <paramref name="other" /> parameter; otherwise, false.</returns>
     /// <exception cref="NotImplementedException"></exception>
-    public bool Equals(GorgonAnimationCodecDescription other) => Equals(this, other);
+    public readonly bool Equals(GorgonAnimationCodecDescription other) => Equals(this, other);
 
     /// <summary>
     /// Operator to determine if two instances are equal or not.

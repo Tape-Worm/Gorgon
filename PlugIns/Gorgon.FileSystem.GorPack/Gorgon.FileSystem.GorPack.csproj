@@ -49,7 +49,7 @@ This assembly contains a plug in that will read a proprietary BZip packed Gorgon
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
     <PackageReference Include="SharpZipLib">
-      <Version>1.3.*</Version>
+      <Version>1.4.2</Version>
     </PackageReference>
   </ItemGroup>
   <ItemGroup>

@@ -708,12 +708,7 @@ public sealed class GorgonTexture2D
             return _sharedResource.SharedHandle;
         }
         
-        DXGI.Resource resource = D3DResource.QueryInterface<DXGI.Resource>();
-
-        if (resource is null)
-        {
-            throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_SHARED_RES_NOT_AVAILABLE, Name));
-        }
+        DXGI.Resource resource = D3DResource.QueryInterface<DXGI.Resource>() ?? throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_SHARED_RES_NOT_AVAILABLE, Name));
 
         Interlocked.Exchange(ref _sharedResource, resource);
         return resource.SharedHandle;
@@ -2355,11 +2350,7 @@ public sealed class GorgonTexture2D
                 throw new GorgonException(GorgonResult.CannotCreate, Resources.GORGFX_ERR_DXGI_RESOURCE_IS_NOT_D3D_RESOURCE);
             }
 
-            using D3D11.Texture2D texture = D3DResource.QueryInterface<D3D11.Texture2D>();
-            if (texture is null)
-            {
-                throw new GorgonException(GorgonResult.CannotCreate, Resources.GORGFX_ERR_D3D_RESOURCE_IS_NOT_2D_TEXTURE);
-            }
+            using D3D11.Texture2D texture = D3DResource.QueryInterface<D3D11.Texture2D>() ?? throw new GorgonException(GorgonResult.CannotCreate, Resources.GORGFX_ERR_D3D_RESOURCE_IS_NOT_2D_TEXTURE);
 
             desc = texture.Description;
         }
