@@ -17,7 +17,7 @@
     <dependencies>
       <group targetFramework="net6.0" >
         <dependency id="SharpDX.Direct2D1" version="4.2.0"/>
-        <dependency id="System.Drawing.Common" version="5.0.2"/>
+        <dependency id="System.Drawing.Common" version="5.0.3"/>
         <dependency id="Gorgon.Core.Debug" version="$version$-beta"/>
       </group>
     </dependencies>

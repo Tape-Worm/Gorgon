@@ -108,10 +108,11 @@ jobs:
           SymbolsFolder: '$(Build.SourcesDirectory)'
           SearchPattern: |              
               **/bin/**/Gorgon*.pdb
+              !**/Dependencies/**
               !**/Examples/**
-          IndexSources: true
+          IndexSources: false
           PublishSymbols: true
-          SymbolServerType: 'teamServices'                    
+          SymbolServerType: 'TeamServices'
           DetailedLog: true
           TreatNotIndexedAsWarning: false
-          SymbolsArtifactName: 'Gorgon_Symbols_$(BuildConfiguration)'
+          SymbolsArtifactName: 'Gorgon_Symbols_$(BuildConfiguration)_$(Build.BuildNumber)'
