@@ -81,7 +81,7 @@ public struct Gorgon2DVertex
     /// <param name="x">The X coordinate of the <see cref="Position"/>.</param>
     /// <param name="y">The Y coordinate of the <see cref="Position"/>.</param>
     /// <param name="z">The Z coordinate of the <see cref="Position"/>.</param>
-    public void Deconstruct(out float x, out float y, out float z)
+    public readonly void Deconstruct(out float x, out float y, out float z)
     {
         x = Position.X;
         y = Position.Y;
@@ -93,7 +93,7 @@ public struct Gorgon2DVertex
     /// <param name="color">The color.</param>
     /// <param name="uv">The texture coordinates.</param>
     /// <param name="angle">The angle.</param>
-    public void Deconstruct(out Vector4 position, out GorgonColor color, out Vector4 uv, out Vector2 angle)
+    public readonly void Deconstruct(out Vector4 position, out GorgonColor color, out Vector4 uv, out Vector2 angle)
     {
         position = Position;
         color = Color;

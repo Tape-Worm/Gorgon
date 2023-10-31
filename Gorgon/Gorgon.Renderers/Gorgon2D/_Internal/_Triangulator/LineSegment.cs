@@ -20,7 +20,7 @@ internal struct LineSegment
         B = b;
     }
 
-    public float? IntersectsWithRay(Vector2 origin, Vector2 direction)
+    public readonly float? IntersectsWithRay(Vector2 origin, Vector2 direction)
     {
         float largestDistance = (A.Position.X - origin.X).Max(B.Position.X - origin.X) * 2.0f;
         var raySegment = new LineSegment(new Vertex(origin, 0), new Vertex(origin + (direction * largestDistance), 0));

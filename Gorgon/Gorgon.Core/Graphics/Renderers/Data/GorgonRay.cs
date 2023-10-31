@@ -147,7 +147,7 @@ public struct GorgonRay
     /// <returns>
     /// A <see cref="string"/> that represents this instance.
     /// </returns>
-    public override string ToString() => string.Format(CultureInfo.CurrentCulture, Resources.GOR_TOSTR_RAY, Position.X, Position.Y, Position.Z, Direction.X, Direction.Y, Direction.Z);
+    public override readonly string ToString() => string.Format(CultureInfo.CurrentCulture, Resources.GOR_TOSTR_RAY, Position.X, Position.Y, Position.Z, Direction.X, Direction.Y, Direction.Z);
 
     /// <summary>
     /// Returns a hash code for this instance.
@@ -155,7 +155,7 @@ public struct GorgonRay
     /// <returns>
     /// A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table. 
     /// </returns>
-    public override int GetHashCode()
+    public override readonly int GetHashCode()
     {
         unchecked
         {
@@ -171,7 +171,7 @@ public struct GorgonRay
     /// <c>true</c> if the specified <see cref="Vector4"/> is equal to this instance; otherwise, <c>false</c>.
     /// </returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public bool Equals(GorgonRay value) => Equals(in value);
+    public readonly bool Equals(GorgonRay value) => Equals(in value);
 
     /// <summary>
     /// Determines whether the specified <see cref="object"/> is equal to this instance.
@@ -180,14 +180,14 @@ public struct GorgonRay
     /// <returns>
     /// <c>true</c> if the specified <see cref="object"/> is equal to this instance; otherwise, <c>false</c>.
     /// </returns>
-    public override bool Equals(object value) => (value is GorgonRay ray) ? ray.Equals(in this) : base.Equals(value);
+    public override readonly bool Equals(object value) => (value is GorgonRay ray) ? ray.Equals(in this) : base.Equals(value);
 
     /// <summary>Function to compare this instance with another.</summary>
     /// <param name="other">The other instance to use for comparison.</param>
     /// <returns>
     ///   <b>true</b> if equal, <b>false</b> if not.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public bool Equals(in GorgonRay other) => Position.Equals(other.Position) && Direction.Equals(other.Direction);
+    public readonly bool Equals(in GorgonRay other) => Position.Equals(other.Position) && Direction.Equals(other.Direction);
     #endregion
 
     #region Constructor.

@@ -86,14 +86,14 @@ public struct GorgonBox
     /// <summary>
     /// Property to determine if the box is empty.
     /// </summary>
-	    public bool IsEmpty => Width == 0 && Height == 0 && Depth == 0 && X == 0 && Y == 0 && Z == 0;
+	    public readonly bool IsEmpty => Width == 0 && Height == 0 && Depth == 0 && X == 0 && Y == 0 && Z == 0;
 
     /// <summary>
     /// Property to set or return the left value for the box.
     /// </summary>
     public int Left
     {
-        get => X;
+        readonly get => X;
         set => X = value;
     }
 
@@ -102,7 +102,7 @@ public struct GorgonBox
     /// </summary>
     public int Top
     {
-        get => Y;
+        readonly get => Y;
         set => Y = value;
     }
 
@@ -111,24 +111,24 @@ public struct GorgonBox
     /// </summary>
     public int Front
     {
-        get => Z;
+        readonly get => Z;
         set => Z = value;
     }
 
     /// <summary>
     /// Property to return the right value of the box.
     /// </summary>
-    public int Right => X + Width;
+    public readonly int Right => X + Width;
 
     /// <summary>
     /// Property to return the bottom value of the box.
     /// </summary>
-    public int Bottom => Y + Height;
+    public readonly int Bottom => Y + Height;
 
     /// <summary>
     /// Property to return the back value of the box.
     /// </summary>
-    public int Back => Z + Depth;
+    public readonly int Back => Z + Depth;
 
     #endregion
 
@@ -139,7 +139,7 @@ public struct GorgonBox
     /// <returns>
     /// A <see cref="string" /> that represents this instance.
     /// </returns>
-    public override string ToString() => string.Format(Resources.GOR_TOSTR_BOX, X, Y, Z, Right, Bottom, Back, Width, Height, Depth);
+    public override readonly string ToString() => string.Format(Resources.GOR_TOSTR_BOX, X, Y, Z, Right, Bottom, Back, Width, Height, Depth);
 
     // ReSharper disable once InconsistentNaming
     /// <summary>
@@ -206,7 +206,7 @@ public struct GorgonBox
     /// </summary>
     /// <param name="box">Box to intersect.</param>
     /// <returns>The intersection between this box and the other box.</returns>
-	    public GorgonBox Intersect(GorgonBox box)
+	    public readonly GorgonBox Intersect(GorgonBox box)
     {
 
         Intersect(in this, in box, out GorgonBox result);
@@ -230,7 +230,7 @@ public struct GorgonBox
     /// <returns>
     ///   <b>true</b> if the specified <see cref="object" /> is equal to this instance; otherwise, <b>false</b>.
     /// </returns>
-	    public override bool Equals(object obj) => obj is GorgonBox box ? box.Equals(in this) : base.Equals(obj);
+	    public override readonly bool Equals(object obj) => obj is GorgonBox box ? box.Equals(in this) : base.Equals(obj);
 
     /// <summary>
     /// Operator to determine if 2 instances are equal.
@@ -254,7 +254,7 @@ public struct GorgonBox
     /// <returns>
     /// A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table. 
     /// </returns>
-	    public override int GetHashCode() => HashCode.Combine(Back, Right, Bottom, Left, Top, Front);
+    public override readonly int GetHashCode() => HashCode.Combine(Back, Right, Bottom, Left, Top, Front);
 
     /// <summary>
     /// Indicates whether the current object is equal to another object of the same type.
@@ -263,7 +263,7 @@ public struct GorgonBox
     /// <returns>
     /// true if the current object is equal to the other parameter; otherwise, false.
     /// </returns>
-    public bool Equals(GorgonBox other) => Equals(in this, in other);
+    public readonly bool Equals(GorgonBox other) => Equals(in this, in other);
 
     /// <summary>
     /// Indicates whether the current object is equal to another object of the same type.
@@ -272,6 +272,6 @@ public struct GorgonBox
     /// <returns>
     /// true if the current object is equal to the other parameter; otherwise, false.
     /// </returns>
-    public bool Equals(in GorgonBox other) => Equals(in this, in other);
+    public readonly bool Equals(in GorgonBox other) => Equals(in this, in other);
     #endregion
 }

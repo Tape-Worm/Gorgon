@@ -37,19 +37,19 @@ public struct Index
     /// <summary>
     /// Dummy property.
     /// </summary>
-    public int End => int.MaxValue;
+    public readonly int End => int.MaxValue;
     /// <summary>
     /// Dummy property.
     /// </summary>
-    public bool IsFromEnd => false;
+    public readonly bool IsFromEnd => false;
     /// <summary>
     /// Dummy property.
     /// </summary>
-    public int Start => 0;
+    public readonly int Start => 0;
     /// <summary>
     /// Dummy property.
     /// </summary>
-    public int Value => 0;
+    public readonly int Value => 0;
 
     /// <summary>
     /// Performs an implicit conversion from <see cref="int"/> to <see cref="Index"/>.
@@ -63,7 +63,7 @@ public struct Index
     /// </summary>
     /// <param name="length">The length.</param>
     /// <returns>int.</returns>
-    public int GetOffset(int length) => 0;
+    public readonly int GetOffset(int length) => 0;
 
     /// <summary>Initializes a new instance of the <see cref="T:System.Index">Index</see> struct.</summary>
     /// <param name="p1">The p1.</param>
@@ -85,7 +85,7 @@ public struct Index
     ///   <span class="nu">
     ///     <span class="keyword">true</span> (<span class="keyword">True</span> in Visual Basic)</span> if the current object is equal to the <paramref name="other" /> parameter; otherwise, <span class="keyword"><span class="languageSpecificText"><span class="cs">false</span><span class="vb">False</span><span class="cpp">false</span></span></span><span class="nu"><span class="keyword">false</span> (<span class="keyword">False</span> in Visual Basic)</span>.
     /// </returns>
-    public bool Equals(Index other) => true;
+    public readonly bool Equals(Index other) => true;
 #pragma warning restore IDE0060 // Remove unused parameter
 }
 #endif
