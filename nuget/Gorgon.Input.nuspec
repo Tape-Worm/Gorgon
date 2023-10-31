@@ -12,7 +12,8 @@
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>Contains functionality to access the various input devices attached to the system.</description>
     <releaseNotes></releaseNotes>
-    <copyright>Copyright 2020 Tape_Worm</copyright>
+    <copyright>Copyright 2023 Tape_Worm</copyright>
+
     <tags>Gorgon C# .NET SharpDX Graphics Windows Input XInput DirectInput RawInput WinForms</tags>
     <dependencies>
       <group targetFramework="net6.0" >

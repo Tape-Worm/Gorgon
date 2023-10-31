@@ -12,7 +12,8 @@
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>Contains the functionality used to provide animation to specific property types on objects.</description>
     <releaseNotes></releaseNotes>    
-    <copyright>Copyright 2020 Tape_Worm</copyright>
+    <copyright>Copyright 2023 Tape_Worm</copyright>
+
     <tags>Gorgon C# .NET Direct3D SharpDX Graphics Animation</tags>
     <dependencies>
       <group targetFramework="net6.0" >

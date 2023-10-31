@@ -12,7 +12,8 @@
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>Contains functionality for a unified virtual file system for Gorgon.</description>
     <releaseNotes></releaseNotes>
-    <copyright>Copyright 2020 Tape_Worm</copyright>
+    <copyright>Copyright 2023 Tape_Worm</copyright>
+
     <tags>Gorgon C# .NET</tags>
     <dependencies>
       <group targetFramework="net6.0" >

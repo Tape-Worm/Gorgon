@@ -12,7 +12,8 @@
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>Contains common core functionality used by the various Gorgon libraries.</description>
     <releaseNotes></releaseNotes>
-    <copyright>Copyright 2020 Tape_Worm</copyright>
+    <copyright>Copyright 2023 Tape_Worm</copyright>
+
     <tags>Gorgon C# .NET</tags>
     <dependencies>
       <group targetFramework="net6.0">

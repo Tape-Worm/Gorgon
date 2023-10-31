@@ -12,7 +12,8 @@
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>Contains functionality to create, read and store bitmap fonts for use in text rendering.</description>
     <releaseNotes></releaseNotes>
-    <copyright>Copyright 2020 Tape_Worm</copyright>
+    <copyright>Copyright 2023 Tape_Worm</copyright>
+
     <tags>Gorgon C# .NET Direct3D SharpDX Graphics 2D Windows Fonts</tags>
     <dependencies>
       <group targetFramework="net6.0" >
