@@ -16,7 +16,7 @@ Building applications with Gorgon requires that you write code. There's no nodes
 
 Gorgon is meant for people that want to write their own functionality, get down into the guts of their applications and not have to deal with a black boxed scripting system, or editor. In short, it's more work, but more customizable.
 
-For those that want a more complete (and polished) package to build their applications there's [Unity](https://unity.com/), [Unreal](https://www.unrealengine.com/en-US/), [Godot](https://godotengine.org/) or [Stride (formally Xenko)](https://github.com/stride3d/stride).
+For those that want a more complete (and polished) package to build their applications there's ~~Unity~~ (after the crap they've pulled, no one should be using Unity), [Unreal](https://www.unrealengine.com/en-US/), [Godot](https://godotengine.org/) or [Stride (formally Xenko)](https://github.com/stride3d/stride).
 
 Documentation
 =============
