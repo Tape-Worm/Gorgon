@@ -175,8 +175,8 @@ partial class FormRibbon
         this.ButtonSaveImage.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.S)));
         this.ButtonSaveImage.TextLine1 = "Save";
         this.ButtonSaveImage.TextLine2 = " Image";
-        this.ButtonSaveImage.ToolTipBody = "Updates the image file in the file system with the current changes.";
-        this.ButtonSaveImage.ToolTipTitle = "Save Image";
+        this.ButtonSaveImage.ToolTipValues.Description = "Updates the image file in the file system with the current changes.";
+        this.ButtonSaveImage.ToolTipValues.Heading = "Save Image";
         this.ButtonSaveImage.Click += new System.EventHandler(this.ButtonSaveImage_Click);
         // 
         // GroupCodec
@@ -193,8 +193,8 @@ partial class FormRibbon
         this.ButtonImport.ShortcutKeys = ((System.Windows.Forms.Keys)(((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Shift) 
         | System.Windows.Forms.Keys.I)));
         this.ButtonImport.TextLine1 = "Import";
-        this.ButtonImport.ToolTipBody = resources.GetString("ButtonImport.ToolTipBody");
-        this.ButtonImport.ToolTipTitle = "Import Image";
+        this.ButtonImport.ToolTipValues.Description = resources.GetString("ButtonImport.ToolTipValues.Description");
+        this.ButtonImport.ToolTipValues.Heading = "Import Image";
         this.ButtonImport.Click += new System.EventHandler(this.ButtonImport_Click);
         // 
         // ButtonExport
@@ -205,8 +205,8 @@ partial class FormRibbon
         this.ButtonExport.ImageSmall = global::Gorgon.Editor.ImageEditor.Properties.Resources.export_image_16x16;
         this.ButtonExport.KeyTip = "E";
         this.ButtonExport.TextLine1 = "Export";
-        this.ButtonExport.ToolTipBody = resources.GetString("ButtonExport.ToolTipBody");
-        this.ButtonExport.ToolTipTitle = "Export Image";
+        this.ButtonExport.ToolTipValues.Description = resources.GetString("ButtonExport.ToolTipValues.Description");
+        this.ButtonExport.ToolTipValues.Heading = "Export Image";
         // 
         // MenuCodecs
         // 
@@ -241,10 +241,10 @@ partial class FormRibbon
         this.ButtonEditInApp.KeyTip = "E";
         this.ButtonEditInApp.TextLine1 = "Edit In";
         this.ButtonEditInApp.TextLine2 = "Application";
-        this.ButtonEditInApp.ToolTipBody = "Launches the associated application and opens the image \r\nfor editing.\r\n\r\nWhen th" +
+        this.ButtonEditInApp.ToolTipValues.Description = "Launches the associated application and opens the image \r\nfor editing.\r\n\r\nWhen th" +
 "e image editor application is launched, Gorgon\'s \r\nUI will remain locked until t" +
 "he application exits.\r\n";
-        this.ButtonEditInApp.ToolTipTitle = "Edit In Application";
+        this.ButtonEditInApp.ToolTipValues.Heading = "Edit In Application";
         this.ButtonEditInApp.Click += new System.EventHandler(this.ButtonEditInApp_Click);
         // 
         // ButtonFx
@@ -253,8 +253,8 @@ partial class FormRibbon
         this.ButtonFx.ImageSmall = global::Gorgon.Editor.ImageEditor.Properties.Resources.image_effect_16x16;
         this.ButtonFx.KeyTip = "F";
         this.ButtonFx.TextLine1 = "FX";
-        this.ButtonFx.ToolTipBody = "Provides effects to apply to the current image array/depth/mip level.";
-        this.ButtonFx.ToolTipTitle = "FX";
+        this.ButtonFx.ToolTipValues.Description = "Provides effects to apply to the current image array/depth/mip level.";
+        this.ButtonFx.ToolTipValues.Heading = "FX";
         this.ButtonFx.Click += new System.EventHandler(this.ButtonFx_Click);
         // 
         // kryptonRibbonGroupLines2
@@ -270,8 +270,8 @@ partial class FormRibbon
         this.ButtonImageUndo.KeyTip = "Z";
         this.ButtonImageUndo.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Z)));
         this.ButtonImageUndo.TextLine1 = "Undo";
-        this.ButtonImageUndo.ToolTipBody = "Reverts the previous change made to the image.";
-        this.ButtonImageUndo.ToolTipTitle = "Undo";
+        this.ButtonImageUndo.ToolTipValues.Description = "Reverts the previous change made to the image.";
+        this.ButtonImageUndo.ToolTipValues.Heading = "Undo";
         this.ButtonImageUndo.Click += new System.EventHandler(this.ButtonImageUndo_Click);
         // 
         // ButtonImageRedo
@@ -281,8 +281,8 @@ partial class FormRibbon
         this.ButtonImageRedo.KeyTip = "Y";
         this.ButtonImageRedo.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Y)));
         this.ButtonImageRedo.TextLine1 = "Redo";
-        this.ButtonImageRedo.ToolTipBody = "Restores the next change made to the image.";
-        this.ButtonImageRedo.ToolTipTitle = "Redo";
+        this.ButtonImageRedo.ToolTipValues.Description = "Restores the next change made to the image.";
+        this.ButtonImageRedo.ToolTipValues.Heading = "Redo";
         this.ButtonImageRedo.Click += new System.EventHandler(this.ButtonImageRedo_Click);
         // 
         // GroupImage
@@ -312,10 +312,10 @@ partial class FormRibbon
         this.ButtonDimensions.ShortcutKeys = ((System.Windows.Forms.Keys)(((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Shift) 
         | System.Windows.Forms.Keys.D)));
         this.ButtonDimensions.TextLine1 = "Dimensions";
-        this.ButtonDimensions.ToolTipBody = "Alters the width, height (and depth if applicable) of the image.  This is also \r\n" +
+        this.ButtonDimensions.ToolTipValues.Description = "Alters the width, height (and depth if applicable) of the image.  This is also \r\n" +
 "used to update the number of array indices (for 2D and cube images), and \r\nthe n" +
 "umber of mip map levels for the image.";
-        this.ButtonDimensions.ToolTipTitle = "Image Dimensions";
+        this.ButtonDimensions.ToolTipValues.Heading = "Image Dimensions";
         this.ButtonDimensions.Click += new System.EventHandler(this.ButtonDimensions_Click);
         // 
         // ButtonGenerateMipMaps
@@ -325,8 +325,8 @@ partial class FormRibbon
         this.ButtonGenerateMipMaps.KeyTip = "G";
         this.ButtonGenerateMipMaps.TextLine1 = "Generate";
         this.ButtonGenerateMipMaps.TextLine2 = "Mip Maps";
-        this.ButtonGenerateMipMaps.ToolTipBody = "Automatically generates the image data for each mip map level in the image.";
-        this.ButtonGenerateMipMaps.ToolTipTitle = "Generate Mip Map Levels";
+        this.ButtonGenerateMipMaps.ToolTipValues.Description = "Automatically generates the image data for each mip map level in the image.";
+        this.ButtonGenerateMipMaps.ToolTipValues.Heading = "Generate Mip Map Levels";
         this.ButtonGenerateMipMaps.Click += new System.EventHandler(this.ButtonGenerateMipMaps_Click);
         // 
         // ButtonSetAlpha
@@ -336,8 +336,8 @@ partial class FormRibbon
         this.ButtonSetAlpha.KeyTip = "A";
         this.ButtonSetAlpha.TextLine1 = "Set Alpha";
         this.ButtonSetAlpha.TextLine2 = "Channel";
-        this.ButtonSetAlpha.ToolTipBody = "Sets the alpha channel for the image to a specified value.";
-        this.ButtonSetAlpha.ToolTipTitle = "Set Alpha";
+        this.ButtonSetAlpha.ToolTipValues.Description = "Sets the alpha channel for the image to a specified value.";
+        this.ButtonSetAlpha.ToolTipValues.Heading = "Set Alpha";
         this.ButtonSetAlpha.Click += new System.EventHandler(this.ButtonSetAlpha_Click);
         // 
         // GroupImageFormat
@@ -356,10 +356,10 @@ partial class FormRibbon
         this.ButtonImageFormat.ImageSmall = global::Gorgon.Editor.ImageEditor.Properties.Resources.pixel_format_16x16;
         this.ButtonImageFormat.KeyTip = "F";
         this.ButtonImageFormat.TextLine1 = "Format";
-        this.ButtonImageFormat.ToolTipBody = "Changes the layout of the pixel components in the image data. \r\n\r\nCertain codecs " +
+        this.ButtonImageFormat.ToolTipValues.Description = "Changes the layout of the pixel components in the image data. \r\n\r\nCertain codecs " +
 "can only use specific pixel layouts, and as such, this list will change dependin" +
 "g on the codec used.";
-        this.ButtonImageFormat.ToolTipTitle = "Image Pixel Format";
+        this.ButtonImageFormat.ToolTipValues.Heading = "Image Pixel Format";
         // 
         // MenuImageFormats
         // 
@@ -375,8 +375,8 @@ partial class FormRibbon
         this.ButtonImageType.ImageSmall = global::Gorgon.Editor.ImageEditor.Properties.Resources.image_dimensions_16x16;
         this.ButtonImageType.KeyTip = "T";
         this.ButtonImageType.TextLine1 = "Type";
-        this.ButtonImageType.ToolTipBody = resources.GetString("ButtonImageType.ToolTipBody");
-        this.ButtonImageType.ToolTipTitle = "Image Type";
+        this.ButtonImageType.ToolTipValues.Description = resources.GetString("ButtonImageType.ToolTipValues.Description");
+        this.ButtonImageType.ToolTipValues.Heading = "Image Type";
         // 
         // MenuImageType
         // 
@@ -422,8 +422,8 @@ partial class FormRibbon
         this.CheckPremultipliedAlpha.KeyTip = "P";
         this.CheckPremultipliedAlpha.TextLine1 = "Premultiplied";
         this.CheckPremultipliedAlpha.TextLine2 = "Alpha";
-        this.CheckPremultipliedAlpha.ToolTipBody = "Indicates that this texture should use premultiplied alpha.";
-        this.CheckPremultipliedAlpha.ToolTipTitle = "Premultiplied Alpha";
+        this.CheckPremultipliedAlpha.ToolTipValues.Description = "Indicates that this texture should use premultiplied alpha.";
+        this.CheckPremultipliedAlpha.ToolTipValues.Heading = "Premultiplied Alpha";
         this.CheckPremultipliedAlpha.Click += new System.EventHandler(this.CheckPremultipliedAlpha_Click);
         // 
         // kryptonRibbonGroupLines3
@@ -439,8 +439,8 @@ partial class FormRibbon
         this.ButtonZoom.ImageSmall = global::Gorgon.Editor.ImageEditor.Properties.Resources.zoom_16x16;
         this.ButtonZoom.KeyTip = "Z";
         this.ButtonZoom.TextLine1 = "Zoom";
-        this.ButtonZoom.ToolTipBody = resources.GetString("ButtonZoom.ToolTipBody");
-        this.ButtonZoom.ToolTipTitle = "Zoom";
+        this.ButtonZoom.ToolTipValues.Description = resources.GetString("ButtonZoom.ToolTipValues.Description");
+        this.ButtonZoom.ToolTipValues.Heading = "Zoom";
         // 
         // MenuZoom
         // 
@@ -599,8 +599,8 @@ partial class FormRibbon
         this.ButtonFxApply.ImageSmall = global::Gorgon.Editor.ImageEditor.Properties.Resources.confirm_16x16;
         this.ButtonFxApply.KeyTip = "A";
         this.ButtonFxApply.TextLine1 = "Apply";
-        this.ButtonFxApply.ToolTipBody = "Applies the effects to the current image array/depth/mip level.";
-        this.ButtonFxApply.ToolTipTitle = "Finish Applying Effects";
+        this.ButtonFxApply.ToolTipValues.Description = "Applies the effects to the current image array/depth/mip level.";
+        this.ButtonFxApply.ToolTipValues.Heading = "Finish Applying Effects";
         this.ButtonFxApply.Click += new System.EventHandler(this.ButtonFxApply_Click);
         // 
         // ButtonFxCancel
@@ -609,8 +609,8 @@ partial class FormRibbon
         this.ButtonFxCancel.ImageSmall = global::Gorgon.Editor.ImageEditor.Properties.Resources.cancel_16x16;
         this.ButtonFxCancel.KeyTip = "C";
         this.ButtonFxCancel.TextLine1 = "Cancel";
-        this.ButtonFxCancel.ToolTipBody = "Cancels the effect operations.";
-        this.ButtonFxCancel.ToolTipTitle = "Cancel";
+        this.ButtonFxCancel.ToolTipValues.Description = "Cancels the effect operations.";
+        this.ButtonFxCancel.ToolTipValues.Heading = "Cancel";
         this.ButtonFxCancel.Click += new System.EventHandler(this.ButtonFxCancel_Click);
         // 
         // GroupImageFilters
@@ -635,8 +635,8 @@ partial class FormRibbon
         this.ButtonGaussBlur.ImageSmall = global::Gorgon.Editor.ImageEditor.Properties.Resources.gauss_blur_16x16;
         this.ButtonGaussBlur.TextLine1 = "Gaussian";
         this.ButtonGaussBlur.TextLine2 = "Blur";
-        this.ButtonGaussBlur.ToolTipBody = "Blurs the image using a gaussian blur algorithm.";
-        this.ButtonGaussBlur.ToolTipTitle = "Gaussian Blur";
+        this.ButtonGaussBlur.ToolTipValues.Description = "Blurs the image using a gaussian blur algorithm.";
+        this.ButtonGaussBlur.ToolTipValues.Heading = "Gaussian Blur";
         this.ButtonGaussBlur.Click += new System.EventHandler(this.ButtonFxGaussBlur_Click);
         // 
         // ButtonFxSharpen
@@ -645,8 +645,8 @@ partial class FormRibbon
         this.ButtonFxSharpen.ImageSmall = global::Gorgon.Editor.ImageEditor.Properties.Resources.sharpen_16x16;
         this.ButtonFxSharpen.KeyTip = "S";
         this.ButtonFxSharpen.TextLine1 = "Sharpen";
-        this.ButtonFxSharpen.ToolTipBody = "Sharpens the image by making the edges between colors more \r\npronounced.";
-        this.ButtonFxSharpen.ToolTipTitle = "Sharpen";
+        this.ButtonFxSharpen.ToolTipValues.Description = "Sharpens the image by making the edges between colors more \r\npronounced.";
+        this.ButtonFxSharpen.ToolTipValues.Heading = "Sharpen";
         this.ButtonFxSharpen.Click += new System.EventHandler(this.ButtonFxSharpen_Click);
         // 
         // kryptonRibbonGroupLines4
@@ -661,8 +661,8 @@ partial class FormRibbon
         this.ButtonFxEmboss.ImageSmall = global::Gorgon.Editor.ImageEditor.Properties.Resources.emboss_16x16;
         this.ButtonFxEmboss.KeyTip = "M";
         this.ButtonFxEmboss.TextLine1 = "Emboss";
-        this.ButtonFxEmboss.ToolTipBody = "Applies an emboss effect to the image.";
-        this.ButtonFxEmboss.ToolTipTitle = "Emboss";
+        this.ButtonFxEmboss.ToolTipValues.Description = "Applies an emboss effect to the image.";
+        this.ButtonFxEmboss.ToolTipValues.Heading = "Emboss";
         this.ButtonFxEmboss.Click += new System.EventHandler(this.ButtonFxEmboss_Click);
         // 
         // ButtonFxEdgeDetect
@@ -672,8 +672,8 @@ partial class FormRibbon
         this.ButtonFxEdgeDetect.KeyTip = "E";
         this.ButtonFxEdgeDetect.TextLine1 = "Edge";
         this.ButtonFxEdgeDetect.TextLine2 = "Detect";
-        this.ButtonFxEdgeDetect.ToolTipBody = "Applies a filter to detect the edges of the image.";
-        this.ButtonFxEdgeDetect.ToolTipTitle = "Edge Detect";
+        this.ButtonFxEdgeDetect.ToolTipValues.Description = "Applies a filter to detect the edges of the image.";
+        this.ButtonFxEdgeDetect.ToolTipValues.Heading = "Edge Detect";
         this.ButtonFxEdgeDetect.Click += new System.EventHandler(this.ButtonFxEdgeDetect_Click);
         // 
         // GroupImageColor
@@ -698,8 +698,8 @@ partial class FormRibbon
         this.ButtonGrayScale.ImageSmall = global::Gorgon.Editor.ImageEditor.Properties.Resources.grayscale_16x16;
         this.ButtonGrayScale.KeyTip = "G";
         this.ButtonGrayScale.TextLine1 = "Grayscale";
-        this.ButtonGrayScale.ToolTipBody = "Removes all color information.";
-        this.ButtonGrayScale.ToolTipTitle = "Grayscale";
+        this.ButtonGrayScale.ToolTipValues.Description = "Removes all color information.";
+        this.ButtonGrayScale.ToolTipValues.Heading = "Grayscale";
         this.ButtonGrayScale.Click += new System.EventHandler(this.ButtonGrayScale_Click);
         // 
         // ButtonFxInvert
@@ -708,8 +708,8 @@ partial class FormRibbon
         this.ButtonFxInvert.ImageSmall = global::Gorgon.Editor.ImageEditor.Properties.Resources.invert_16x16;
         this.ButtonFxInvert.KeyTip = "I";
         this.ButtonFxInvert.TextLine1 = "Invert";
-        this.ButtonFxInvert.ToolTipBody = "Inverts the image colors.";
-        this.ButtonFxInvert.ToolTipTitle = "Invert";
+        this.ButtonFxInvert.ToolTipValues.Description = "Inverts the image colors.";
+        this.ButtonFxInvert.ToolTipValues.Heading = "Invert";
         this.ButtonFxInvert.Click += new System.EventHandler(this.ButtonFxInvert_Click);
         // 
         // kryptonRibbonGroupLines1
@@ -725,8 +725,8 @@ partial class FormRibbon
         this.ButtonFxBurn.ImageLarge = global::Gorgon.Editor.ImageEditor.Properties.Resources.burn_48x48;
         this.ButtonFxBurn.ImageSmall = global::Gorgon.Editor.ImageEditor.Properties.Resources.burn_16x16;
         this.ButtonFxBurn.TextLine1 = "Burn";
-        this.ButtonFxBurn.ToolTipBody = "Apply a burn effect to the image.";
-        this.ButtonFxBurn.ToolTipTitle = "Burn";
+        this.ButtonFxBurn.ToolTipValues.Description = "Apply a burn effect to the image.";
+        this.ButtonFxBurn.ToolTipValues.Heading = "Burn";
         this.ButtonFxBurn.Click += new System.EventHandler(this.ButtonFxBurn_Click);
         // 
         // ButtonFxDodge
@@ -735,8 +735,8 @@ partial class FormRibbon
         this.ButtonFxDodge.ImageSmall = global::Gorgon.Editor.ImageEditor.Properties.Resources.dodge_16x16;
         this.ButtonFxDodge.KeyTip = "D";
         this.ButtonFxDodge.TextLine1 = "Dodge";
-        this.ButtonFxDodge.ToolTipBody = "Apply a dodge effect to the image.";
-        this.ButtonFxDodge.ToolTipTitle = "Dodge";
+        this.ButtonFxDodge.ToolTipValues.Description = "Apply a dodge effect to the image.";
+        this.ButtonFxDodge.ToolTipValues.Heading = "Dodge";
         this.ButtonFxDodge.Click += new System.EventHandler(this.ButtonFxDodge_Click);
         // 
         // ButtonFxOneBit
@@ -745,8 +745,8 @@ partial class FormRibbon
         this.ButtonFxOneBit.ImageSmall = global::Gorgon.Editor.ImageEditor.Properties.Resources.onebit_16x16;
         this.ButtonFxOneBit.KeyTip = "1";
         this.ButtonFxOneBit.TextLine1 = "1 bit";
-        this.ButtonFxOneBit.ToolTipBody = "Converts the image to simulate 1 bit (2 colors) per pixel.";
-        this.ButtonFxOneBit.ToolTipTitle = "One bit";
+        this.ButtonFxOneBit.ToolTipValues.Description = "Converts the image to simulate 1 bit (2 colors) per pixel.";
+        this.ButtonFxOneBit.ToolTipValues.Heading = "One bit";
         this.ButtonFxOneBit.Click += new System.EventHandler(this.ButtonFxOneBit_Click);
         // 
         // ButtonFxPosterize
@@ -755,8 +755,8 @@ partial class FormRibbon
         this.ButtonFxPosterize.ImageSmall = global::Gorgon.Editor.ImageEditor.Properties.Resources.posterize_16x16;
         this.ButtonFxPosterize.KeyTip = "P";
         this.ButtonFxPosterize.TextLine1 = "Posterize";
-        this.ButtonFxPosterize.ToolTipBody = "Applies a posterize effect to the image.";
-        this.ButtonFxPosterize.ToolTipTitle = "Posterize";
+        this.ButtonFxPosterize.ToolTipValues.Description = "Applies a posterize effect to the image.";
+        this.ButtonFxPosterize.ToolTipValues.Heading = "Posterize";
         this.ButtonFxPosterize.Click += new System.EventHandler(this.ButtonFxPosterize_Click);
         // 
         // MenuExternalEdit

@@ -51,7 +51,7 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Krypton.Ribbon.Lite.Signed" Version="5.550.2103" />
+    <PackageReference Include="Krypton.Ribbon.Lite" Version="80.23.11.321" />
     <PackageReference Include="Microsoft.SourceLink.GitHub">
       <Version>1.1.1</Version>      
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>

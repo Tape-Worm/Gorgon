@@ -178,9 +178,9 @@ partial class FormRibbon
         this.ButtonNewAnimation.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.N)));
         this.ButtonNewAnimation.TextLine1 = "New";
         this.ButtonNewAnimation.TextLine2 = "Animation";
-        this.ButtonNewAnimation.ToolTipBody = "Creates a new animation based on the current animation being edited.\r\n\r\nAll anima" +
+        this.ButtonNewAnimation.ToolTipValues.Description = "Creates a new animation based on the current animation being edited.\r\n\r\nAll anima" +
 "tion properties (except the name) will be copied to the new \r\nanimation.";
-        this.ButtonNewAnimation.ToolTipTitle = "New animation";
+        this.ButtonNewAnimation.ToolTipValues.Heading = "New animation";
         this.ButtonNewAnimation.Click += new System.EventHandler(this.ButtonNewAnimation_Click);
         // 
         // ButtonSaveAnimation
@@ -192,8 +192,8 @@ partial class FormRibbon
         this.ButtonSaveAnimation.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.S)));
         this.ButtonSaveAnimation.TextLine1 = "Save";
         this.ButtonSaveAnimation.TextLine2 = "Animation";
-        this.ButtonSaveAnimation.ToolTipBody = "Updates the animation file in the file system with the current changes.";
-        this.ButtonSaveAnimation.ToolTipTitle = "Save Animation";
+        this.ButtonSaveAnimation.ToolTipValues.Description = "Updates the animation file in the file system with the current changes.";
+        this.ButtonSaveAnimation.ToolTipValues.Heading = "Save Animation";
         this.ButtonSaveAnimation.Click += new System.EventHandler(this.ButtonSaveAnimation_Click);
         // 
         // GroupAnimationEdit
@@ -218,8 +218,8 @@ partial class FormRibbon
         this.ButtonAnimationUndo.KeyTip = "U";
         this.ButtonAnimationUndo.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Z)));
         this.ButtonAnimationUndo.TextLine1 = "Undo";
-        this.ButtonAnimationUndo.ToolTipBody = "Reverts the previous change made to the animation.\r\n.";
-        this.ButtonAnimationUndo.ToolTipTitle = "Undo";
+        this.ButtonAnimationUndo.ToolTipValues.Description = "Reverts the previous change made to the animation.\r\n.";
+        this.ButtonAnimationUndo.ToolTipValues.Heading = "Undo";
         this.ButtonAnimationUndo.Click += new System.EventHandler(this.ButtonAnimationUndo_Click);
         // 
         // ButtonAnimationRedo
@@ -229,8 +229,8 @@ partial class FormRibbon
         this.ButtonAnimationRedo.KeyTip = "R";
         this.ButtonAnimationRedo.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Y)));
         this.ButtonAnimationRedo.TextLine1 = "Redo";
-        this.ButtonAnimationRedo.ToolTipBody = "Restores the next change made to the animation.";
-        this.ButtonAnimationRedo.ToolTipTitle = "Redo";
+        this.ButtonAnimationRedo.ToolTipValues.Description = "Restores the next change made to the animation.";
+        this.ButtonAnimationRedo.ToolTipValues.Heading = "Redo";
         this.ButtonAnimationRedo.Click += new System.EventHandler(this.ButtonAnimationRedo_Click);
         // 
         // GroupAnimation
@@ -257,9 +257,9 @@ partial class FormRibbon
         this.ButtonAnimationProperties.KeyTip = "P";
         this.ButtonAnimationProperties.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.L)));
         this.ButtonAnimationProperties.TextLine1 = "Properties";
-        this.ButtonAnimationProperties.ToolTipBody = "Updates properties for the animation such as the length and \r\nthe frames per seco" +
+        this.ButtonAnimationProperties.ToolTipValues.Description = "Updates properties for the animation such as the length and \r\nthe frames per seco" +
 "nd.";
-        this.ButtonAnimationProperties.ToolTipTitle = "Properties";
+        this.ButtonAnimationProperties.ToolTipValues.Heading = "Properties";
         this.ButtonAnimationProperties.Click += new System.EventHandler(this.ButtonAnimationProperties_Click);
         // 
         // LineGroupBgImage
@@ -276,8 +276,8 @@ partial class FormRibbon
         this.ButtonAnimationLoadBack.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.I)));
         this.ButtonAnimationLoadBack.TextLine1 = "Set Reference";
         this.ButtonAnimationLoadBack.TextLine2 = "Image";
-        this.ButtonAnimationLoadBack.ToolTipBody = resources.GetString("ButtonAnimationLoadBack.ToolTipBody");
-        this.ButtonAnimationLoadBack.ToolTipTitle = "Set reference image";
+        this.ButtonAnimationLoadBack.ToolTipValues.Description = resources.GetString("ButtonAnimationLoadBack.ToolTipValues.Description");
+        this.ButtonAnimationLoadBack.ToolTipValues.Heading = "Set reference image";
         this.ButtonAnimationLoadBack.Click += new System.EventHandler(this.ButtonAnimationLoadBack_Click);
         // 
         // ButtonAnimationClearBack
@@ -287,9 +287,9 @@ partial class FormRibbon
         this.ButtonAnimationClearBack.KeyTip = "C";
         this.ButtonAnimationClearBack.TextLine1 = "Clear Reference";
         this.ButtonAnimationClearBack.TextLine2 = "Image";
-        this.ButtonAnimationClearBack.ToolTipBody = "Clears the reference image if one is loaded.\r\n\r\nNOTE: This is only for animation " +
+        this.ButtonAnimationClearBack.ToolTipValues.Description = "Clears the reference image if one is loaded.\r\n\r\nNOTE: This is only for animation " +
 "design purposes and will not be \r\nstored with the animation file.\r\n";
-        this.ButtonAnimationClearBack.ToolTipTitle = "Clear reference image";
+        this.ButtonAnimationClearBack.ToolTipValues.Heading = "Clear reference image";
         this.ButtonAnimationClearBack.Click += new System.EventHandler(this.ButtonAnimationClearBack_Click);
         // 
         // LineGroupAnimation
@@ -303,12 +303,12 @@ partial class FormRibbon
         this.ButtonAnimationSprite.ImageLarge = global::Gorgon.Editor.AnimationEditor.Properties.Resources.sprite_48x48;
         this.ButtonAnimationSprite.ImageSmall = global::Gorgon.Editor.AnimationEditor.Properties.Resources.sprite2_16x16;
         this.ButtonAnimationSprite.KeyTip = "P";
-        this.ButtonAnimationSprite.ShortcutKeys = ((System.Windows.Forms.Keys)(((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Shift) 
+        this.ButtonAnimationSprite.ShortcutKeys = ((System.Windows.Forms.Keys)(((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Shift)
         | System.Windows.Forms.Keys.P)));
         this.ButtonAnimationSprite.TextLine1 = "Set Main";
         this.ButtonAnimationSprite.TextLine2 = "Sprite";
-        this.ButtonAnimationSprite.ToolTipBody = resources.GetString("ButtonAnimationSprite.ToolTipBody");
-        this.ButtonAnimationSprite.ToolTipTitle = "Set main sprite";
+        this.ButtonAnimationSprite.ToolTipValues.Description = resources.GetString("ButtonAnimationSprite.ToolTipValues.Description");
+        this.ButtonAnimationSprite.ToolTipValues.Heading = "Set main sprite";
         this.ButtonAnimationSprite.Click += new System.EventHandler(this.ButtonAnimationSprite_Click);
         // 
         // CheckAnimationLoop
@@ -317,11 +317,11 @@ partial class FormRibbon
         this.CheckAnimationLoop.ImageLarge = global::Gorgon.Editor.AnimationEditor.Properties.Resources.anim_loop_48x48;
         this.CheckAnimationLoop.ImageSmall = global::Gorgon.Editor.AnimationEditor.Properties.Resources.anim_loop_16x16;
         this.CheckAnimationLoop.KeyTip = "L";
-        this.CheckAnimationLoop.ShortcutKeys = ((System.Windows.Forms.Keys)(((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Shift) 
+        this.CheckAnimationLoop.ShortcutKeys = ((System.Windows.Forms.Keys)(((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Shift)
         | System.Windows.Forms.Keys.L)));
         this.CheckAnimationLoop.TextLine1 = "Looping";
-        this.CheckAnimationLoop.ToolTipBody = "Enables or disables looping when animating.";
-        this.CheckAnimationLoop.ToolTipTitle = "Looping";
+        this.CheckAnimationLoop.ToolTipValues.Description = "Enables or disables looping when animating.";
+        this.CheckAnimationLoop.ToolTipValues.Heading = "Looping";
         this.CheckAnimationLoop.Click += new System.EventHandler(this.CheckAnimationLoop_Click);
         // 
         // GroupTrack
@@ -349,9 +349,9 @@ partial class FormRibbon
         this.CheckAnimationEditTrack.KeyTip = "E";
         this.CheckAnimationEditTrack.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.E)));
         this.CheckAnimationEditTrack.TextLine1 = "Edit Track";
-        this.CheckAnimationEditTrack.ToolTipBody = "Opens the currently selected track for adding, updating and removing \r\nkey frames" +
+        this.CheckAnimationEditTrack.ToolTipValues.Description = "Opens the currently selected track for adding, updating and removing \r\nkey frames" +
 " for the animation.";
-        this.CheckAnimationEditTrack.ToolTipTitle = "Edit track";
+        this.CheckAnimationEditTrack.ToolTipValues.Heading = "Edit track";
         this.CheckAnimationEditTrack.Click += new System.EventHandler(this.CheckAnimationEditTrack_Click);
         // 
         // kryptonRibbonGroupTriple3
@@ -367,8 +367,8 @@ partial class FormRibbon
         this.ButtonAddTrack.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.T)));
         this.ButtonAddTrack.TextLine1 = "Add";
         this.ButtonAddTrack.TextLine2 = "Track(s)";
-        this.ButtonAddTrack.ToolTipBody = "Adds a new track or multiple tracks to the animation.";
-        this.ButtonAddTrack.ToolTipTitle = "Add track";
+        this.ButtonAddTrack.ToolTipValues.Description = "Adds a new track or multiple tracks to the animation.";
+        this.ButtonAddTrack.ToolTipValues.Heading = "Add track";
         this.ButtonAddTrack.Click += new System.EventHandler(this.ButtonAddTrack_Click);
         // 
         // kryptonRibbonGroupLines3
@@ -384,8 +384,8 @@ partial class FormRibbon
         this.ButtonRemoveTrack.KeyTip = "R";
         this.ButtonRemoveTrack.TextLine1 = "Remove";
         this.ButtonRemoveTrack.TextLine2 = "Track";
-        this.ButtonRemoveTrack.ToolTipBody = "Removes the selected track(s) from the animation.";
-        this.ButtonRemoveTrack.ToolTipTitle = "Remove track";
+        this.ButtonRemoveTrack.ToolTipValues.Description = "Removes the selected track(s) from the animation.";
+        this.ButtonRemoveTrack.ToolTipValues.Heading = "Remove track";
         this.ButtonRemoveTrack.Click += new System.EventHandler(this.ButtonRemoveTrack_Click);
         // 
         // ButtonAnimationClear
@@ -394,8 +394,8 @@ partial class FormRibbon
         this.ButtonAnimationClear.ImageSmall = global::Gorgon.Editor.AnimationEditor.Properties.Resources.clear_fs_16x16;
         this.ButtonAnimationClear.KeyTip = "C";
         this.ButtonAnimationClear.TextLine1 = "Clear Track(s)";
-        this.ButtonAnimationClear.ToolTipBody = "Clears all tracks and keys from the current animation.";
-        this.ButtonAnimationClear.ToolTipTitle = "Clear";
+        this.ButtonAnimationClear.ToolTipValues.Description = "Clears all tracks and keys from the current animation.";
+        this.ButtonAnimationClear.ToolTipValues.Heading = "Clear";
         this.ButtonAnimationClear.Click += new System.EventHandler(this.ButtonAnimationClear_Click);
         // 
         // GroupPreview
@@ -424,8 +424,8 @@ partial class FormRibbon
         this.ButtonAnimPlay.KeyTip = "P";
         this.ButtonAnimPlay.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Shift | System.Windows.Forms.Keys.Space)));
         this.ButtonAnimPlay.TextLine1 = "Play";
-        this.ButtonAnimPlay.ToolTipBody = "Plays the current animation from the current selected time.";
-        this.ButtonAnimPlay.ToolTipTitle = "Play Animation";
+        this.ButtonAnimPlay.ToolTipValues.Description = "Plays the current animation from the current selected time.";
+        this.ButtonAnimPlay.ToolTipValues.Heading = "Play Animation";
         this.ButtonAnimPlay.Click += new System.EventHandler(this.ButtonAnimPlay_Click);
         // 
         // ButtonAnimStop
@@ -435,8 +435,8 @@ partial class FormRibbon
         this.ButtonAnimStop.KeyTip = "S";
         this.ButtonAnimStop.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Shift | System.Windows.Forms.Keys.Space)));
         this.ButtonAnimStop.TextLine1 = "Stop";
-        this.ButtonAnimStop.ToolTipBody = "Stops a currently playing animation.";
-        this.ButtonAnimStop.ToolTipTitle = "Stop animation";
+        this.ButtonAnimStop.ToolTipValues.Description = "Stops a currently playing animation.";
+        this.ButtonAnimStop.ToolTipValues.Heading = "Stop animation";
         this.ButtonAnimStop.Visible = false;
         this.ButtonAnimStop.Click += new System.EventHandler(this.ButtonAnimStop_Click);
         // 
@@ -455,8 +455,8 @@ partial class FormRibbon
         this.ButtonPrevKey.KeyTip = "R";
         this.ButtonPrevKey.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Left)));
         this.ButtonPrevKey.TextLine1 = "Previous";
-        this.ButtonPrevKey.ToolTipBody = "Moves to the previous key frame of the animation.";
-        this.ButtonPrevKey.ToolTipTitle = "Previous key frame";
+        this.ButtonPrevKey.ToolTipValues.Description = "Moves to the previous key frame of the animation.";
+        this.ButtonPrevKey.ToolTipValues.Heading = "Previous key frame";
         this.ButtonPrevKey.Click += new System.EventHandler(this.ButtonPrevKey_Click);
         // 
         // ButtonNextKey
@@ -466,8 +466,8 @@ partial class FormRibbon
         this.ButtonNextKey.KeyTip = "N";
         this.ButtonNextKey.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Right)));
         this.ButtonNextKey.TextLine1 = "Next";
-        this.ButtonNextKey.ToolTipBody = "Moves to the next key frame of the animation.";
-        this.ButtonNextKey.ToolTipTitle = "Next key frame";
+        this.ButtonNextKey.ToolTipValues.Description = "Moves to the next key frame of the animation.";
+        this.ButtonNextKey.ToolTipValues.Heading = "Next key frame";
         this.ButtonNextKey.Click += new System.EventHandler(this.ButtonNextKey_Click);
         // 
         // ButtonFirstKey
@@ -477,8 +477,8 @@ partial class FormRibbon
         this.ButtonFirstKey.KeyTip = "F";
         this.ButtonFirstKey.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Home)));
         this.ButtonFirstKey.TextLine1 = "First";
-        this.ButtonFirstKey.ToolTipBody = "Resets the animation to the first key frame.";
-        this.ButtonFirstKey.ToolTipTitle = "First key frame";
+        this.ButtonFirstKey.ToolTipValues.Description = "Resets the animation to the first key frame.";
+        this.ButtonFirstKey.ToolTipValues.Heading = "First key frame";
         this.ButtonFirstKey.Click += new System.EventHandler(this.ButtonFirstKey_Click);
         // 
         // ButtonLastKey
@@ -488,8 +488,8 @@ partial class FormRibbon
         this.ButtonLastKey.KeyTip = "L";
         this.ButtonLastKey.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.End)));
         this.ButtonLastKey.TextLine1 = "Last";
-        this.ButtonLastKey.ToolTipBody = "Sets the animation to the last key frame.";
-        this.ButtonLastKey.ToolTipTitle = "Last key frame";
+        this.ButtonLastKey.ToolTipValues.Description = "Sets the animation to the last key frame.";
+        this.ButtonLastKey.ToolTipValues.Heading = "Last key frame";
         this.ButtonLastKey.Click += new System.EventHandler(this.ButtonLastKey_Click);
         // 
         // LinesZoom2
@@ -505,8 +505,8 @@ partial class FormRibbon
         this.ButtonZoomAnimation.ImageSmall = global::Gorgon.Editor.AnimationEditor.Properties.Resources.zoom_16x16;
         this.ButtonZoomAnimation.KeyTip = "Z";
         this.ButtonZoomAnimation.TextLine1 = "Zoom";
-        this.ButtonZoomAnimation.ToolTipBody = resources.GetString("ButtonZoomAnimation.ToolTipBody");
-        this.ButtonZoomAnimation.ToolTipTitle = "Zoom";
+        this.ButtonZoomAnimation.ToolTipValues.Description = resources.GetString("ButtonZoomAnimation.ToolTipValues.Description");
+        this.ButtonZoomAnimation.ToolTipValues.Heading = "Zoom";
         // 
         // MenuZoom
         // 
@@ -663,8 +663,8 @@ partial class FormRibbon
         this.ButtonAnimationGoBack.ImageLarge = global::Gorgon.Editor.AnimationEditor.Properties.Resources.go_back_48x48;
         this.ButtonAnimationGoBack.ImageSmall = global::Gorgon.Editor.AnimationEditor.Properties.Resources.go_back_16x16;
         this.ButtonAnimationGoBack.TextLine1 = "Go Back";
-        this.ButtonAnimationGoBack.ToolTipBody = "Closes the key editor and returns back to the animation tab.";
-        this.ButtonAnimationGoBack.ToolTipTitle = "Go back to animation";
+        this.ButtonAnimationGoBack.ToolTipValues.Description = "Closes the key editor and returns back to the animation tab.";
+        this.ButtonAnimationGoBack.ToolTipValues.Heading = "Go back to animation";
         this.ButtonAnimationGoBack.Click += new System.EventHandler(this.CheckAnimationEditTrack_Click);
         // 
         // GroupAnimationKeys
@@ -688,12 +688,12 @@ partial class FormRibbon
         this.ButtonAnimationSetKeyframe.ImageLarge = global::Gorgon.Editor.AnimationEditor.Properties.Resources.add_key_frame_48x48;
         this.ButtonAnimationSetKeyframe.ImageSmall = global::Gorgon.Editor.AnimationEditor.Properties.Resources.add_key_frame_16x16;
         this.ButtonAnimationSetKeyframe.KeyTip = "S";
-        this.ButtonAnimationSetKeyframe.ShortcutKeys = ((System.Windows.Forms.Keys)(((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Shift) 
+        this.ButtonAnimationSetKeyframe.ShortcutKeys = ((System.Windows.Forms.Keys)(((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Shift)
         | System.Windows.Forms.Keys.S)));
         this.ButtonAnimationSetKeyframe.TextLine1 = "Set";
         this.ButtonAnimationSetKeyframe.TextLine2 = "Keyframe";
-        this.ButtonAnimationSetKeyframe.ToolTipBody = "Assigns the current value(s) to the currently selected key frame.";
-        this.ButtonAnimationSetKeyframe.ToolTipTitle = "Set key frame";
+        this.ButtonAnimationSetKeyframe.ToolTipValues.Description = "Assigns the current value(s) to the currently selected key frame.";
+        this.ButtonAnimationSetKeyframe.ToolTipValues.Heading = "Set key frame";
         this.ButtonAnimationSetKeyframe.Click += new System.EventHandler(this.ButtonAnimationSetKeyframe_Click);
         // 
         // LineGroupKeyframes
@@ -710,8 +710,8 @@ partial class FormRibbon
         this.ButtonAnimationRemoveKeyframes.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.R)));
         this.ButtonAnimationRemoveKeyframes.TextLine1 = "Remove";
         this.ButtonAnimationRemoveKeyframes.TextLine2 = "Keyframes";
-        this.ButtonAnimationRemoveKeyframes.ToolTipBody = "Removes the selected key frames from the track.";
-        this.ButtonAnimationRemoveKeyframes.ToolTipTitle = "Remove key frames";
+        this.ButtonAnimationRemoveKeyframes.ToolTipValues.Description = "Removes the selected key frames from the track.";
+        this.ButtonAnimationRemoveKeyframes.ToolTipValues.Heading = "Remove key frames";
         this.ButtonAnimationRemoveKeyframes.Click += new System.EventHandler(this.ButtonAnimationRemoveKeyframes_Click);
         // 
         // ButtonAnimationClearKeyframes
@@ -719,12 +719,12 @@ partial class FormRibbon
         this.ButtonAnimationClearKeyframes.ImageLarge = global::Gorgon.Editor.AnimationEditor.Properties.Resources.clear_fs_48x48;
         this.ButtonAnimationClearKeyframes.ImageSmall = global::Gorgon.Editor.AnimationEditor.Properties.Resources.clear_fs_16x16;
         this.ButtonAnimationClearKeyframes.KeyTip = "C";
-        this.ButtonAnimationClearKeyframes.ShortcutKeys = ((System.Windows.Forms.Keys)(((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Shift) 
+        this.ButtonAnimationClearKeyframes.ShortcutKeys = ((System.Windows.Forms.Keys)(((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Shift)
         | System.Windows.Forms.Keys.Delete)));
         this.ButtonAnimationClearKeyframes.TextLine1 = "Clear All";
         this.ButtonAnimationClearKeyframes.TextLine2 = "Keyframes";
-        this.ButtonAnimationClearKeyframes.ToolTipBody = "Removes all key frames from the tracks.";
-        this.ButtonAnimationClearKeyframes.ToolTipTitle = "Clear all key frames";
+        this.ButtonAnimationClearKeyframes.ToolTipValues.Description = "Removes all key frames from the tracks.";
+        this.ButtonAnimationClearKeyframes.ToolTipValues.Heading = "Clear all key frames";
         this.ButtonAnimationClearKeyframes.Click += new System.EventHandler(this.ButtonAnimationClearKeyframes_Click);
         // 
         // GroupAnimationKeyEdit
@@ -751,8 +751,8 @@ partial class FormRibbon
         this.ButtonAnimationPaste.KeyTip = "C";
         this.ButtonAnimationPaste.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.V)));
         this.ButtonAnimationPaste.TextLine1 = "Paste";
-        this.ButtonAnimationPaste.ToolTipBody = "Pastes copied/cut key frames to another location in a track.";
-        this.ButtonAnimationPaste.ToolTipTitle = "Paste";
+        this.ButtonAnimationPaste.ToolTipValues.Description = "Pastes copied/cut key frames to another location in a track.";
+        this.ButtonAnimationPaste.ToolTipValues.Heading = "Paste";
         this.ButtonAnimationPaste.Click += new System.EventHandler(this.ButtonAnimationPaste_Click);
         // 
         // LineGroupAnimationCopyCut
@@ -768,8 +768,8 @@ partial class FormRibbon
         this.ButtonAnimationCopy.KeyTip = "P";
         this.ButtonAnimationCopy.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.C)));
         this.ButtonAnimationCopy.TextLine1 = "Copy";
-        this.ButtonAnimationCopy.ToolTipBody = "Copy the currently selected key frame(s).";
-        this.ButtonAnimationCopy.ToolTipTitle = "Copy";
+        this.ButtonAnimationCopy.ToolTipValues.Description = "Copy the currently selected key frame(s).";
+        this.ButtonAnimationCopy.ToolTipValues.Heading = "Copy";
         this.ButtonAnimationCopy.Click += new System.EventHandler(this.ButtonAnimationCopy_Click);
         // 
         // ButtonAnimationCut
@@ -779,9 +779,9 @@ partial class FormRibbon
         this.ButtonAnimationCut.KeyTip = "T";
         this.ButtonAnimationCut.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.X)));
         this.ButtonAnimationCut.TextLine1 = "Cut";
-        this.ButtonAnimationCut.ToolTipBody = "Cuts the selected key frame(s) for moving key frames \r\nto another location on the" +
+        this.ButtonAnimationCut.ToolTipValues.Description = "Cuts the selected key frame(s) for moving key frames \r\nto another location on the" +
 " track.";
-        this.ButtonAnimationCut.ToolTipTitle = "Cut";
+        this.ButtonAnimationCut.ToolTipValues.Heading = "Cut";
         this.ButtonAnimationCut.Click += new System.EventHandler(this.ButtonAnimationCut_Click);
         // 
         // LineAnimationKeyUndoRedo
@@ -797,8 +797,8 @@ partial class FormRibbon
         this.ButtonAnimationKeyUndo.KeyTip = "U";
         this.ButtonAnimationKeyUndo.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Z)));
         this.ButtonAnimationKeyUndo.TextLine1 = "Undo";
-        this.ButtonAnimationKeyUndo.ToolTipBody = "Reverts the previous change made to the animation.\r\n.";
-        this.ButtonAnimationKeyUndo.ToolTipTitle = "Undo";
+        this.ButtonAnimationKeyUndo.ToolTipValues.Description = "Reverts the previous change made to the animation.\r\n.";
+        this.ButtonAnimationKeyUndo.ToolTipValues.Heading = "Undo";
         this.ButtonAnimationKeyUndo.Click += new System.EventHandler(this.ButtonAnimationUndo_Click);
         // 
         // ButtonAnimationKeyRedo
@@ -808,8 +808,8 @@ partial class FormRibbon
         this.ButtonAnimationKeyRedo.KeyTip = "R";
         this.ButtonAnimationKeyRedo.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Y)));
         this.ButtonAnimationKeyRedo.TextLine1 = "Redo";
-        this.ButtonAnimationKeyRedo.ToolTipBody = "Restores the next change made to the animation.";
-        this.ButtonAnimationKeyRedo.ToolTipTitle = "Redo";
+        this.ButtonAnimationKeyRedo.ToolTipValues.Description = "Restores the next change made to the animation.";
+        this.ButtonAnimationKeyRedo.ToolTipValues.Heading = "Redo";
         this.ButtonAnimationKeyRedo.Click += new System.EventHandler(this.ButtonAnimationRedo_Click);
         // 
         // FormRibbon

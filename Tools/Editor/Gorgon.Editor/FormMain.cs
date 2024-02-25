@@ -263,8 +263,8 @@ internal partial class FormMain
 
                 if (!string.IsNullOrWhiteSpace(button.Description))
                 {
-                    newButton.ToolTipTitle = button.DisplayText;
-                    newButton.ToolTipBody = button.Description;
+                    newButton.ToolTipValues.Heading = button.DisplayText;
+                    newButton.ToolTipValues.Description = button.Description;
                 }
 
                 newButton.Click += ToolButton_Click;
@@ -355,7 +355,7 @@ internal partial class FormMain
         }
 
         if ((DataContext.CurrentProject.ContentPreviewer?.RefreshPreviewCommand is null)
-            || (!DataContext.CurrentProject.ContentPreviewer.RefreshPreviewCommand.CanExecute(selectedFile.FullPath)))                
+            || (!DataContext.CurrentProject.ContentPreviewer.RefreshPreviewCommand.CanExecute(selectedFile.FullPath)))
         {
             return;
         }
@@ -675,13 +675,13 @@ internal partial class FormMain
 
         ButtonFileSystemPanel.Enabled = project is not null;
         ButtonFileSystemPreview.Enabled = (ButtonFileSystemPanel.Enabled) && (_settings.ShowFileExplorer);
-        ButtonFileSystemNewDirectory.Enabled = (!PanelProject.FileExplorer.IsRenaming) && (fileExplorer.CreateDirectoryCommand?.CanExecute(_createDirArgs) ?? false);            
-        ButtonImport.Enabled = (!PanelProject.FileExplorer.IsRenaming) && (fileExplorer.ImportCommand?.CanExecute(_defaultImportData) ?? false);            
+        ButtonFileSystemNewDirectory.Enabled = (!PanelProject.FileExplorer.IsRenaming) && (fileExplorer.CreateDirectoryCommand?.CanExecute(_createDirArgs) ?? false);
+        ButtonImport.Enabled = (!PanelProject.FileExplorer.IsRenaming) && (fileExplorer.ImportCommand?.CanExecute(_defaultImportData) ?? false);
         ButtonOpenContent.Enabled = (!PanelProject.FileExplorer.IsRenaming) && (fileExplorer.OpenContentFileCommand?.CanExecute(null) ?? false);
         PanelProject.FileExplorer.MenuItemDirCreateContent.Available =
         PanelProject.FileExplorer.MenuItemFileCreateContent.Available =
         GroupCreate.Visible = SepCreate.Visible = DataContext.ContentCreators.Count > 0;
-        ButtonFileSystemRefresh.Enabled = !PanelProject.FileExplorer.IsRenaming;                        
+        ButtonFileSystemRefresh.Enabled = !PanelProject.FileExplorer.IsRenaming;
 
         foreach (ToolStripItem item in MenuCreate.Items)
         {
@@ -694,11 +694,11 @@ internal partial class FormMain
         switch (PanelProject.FileExplorer.ControlContext)
         {
             case FileExplorerContext.None:
-                ButtonExport.Enabled = 
-                ButtonFileSystemDelete.Enabled = 
-                ButtonFileSystemRename.Enabled = 
+                ButtonExport.Enabled =
+                ButtonFileSystemDelete.Enabled =
+                ButtonFileSystemRename.Enabled =
                 ButtonFileSystemPaste.Enabled =
-                ButtonFileSystemCopy.Enabled = 
+                ButtonFileSystemCopy.Enabled =
                 ButtonFileSystemCut.Enabled = false;
                 break;
             case FileExplorerContext.DirectoryTree:
@@ -719,7 +719,7 @@ internal partial class FormMain
                                             }) ?? false));
                 ButtonFileSystemPaste.Enabled = (!PanelProject.FileExplorer.IsRenaming)
                                             && (_clipboardContext?.PasteDataCommand?.CanExecute(null) ?? false);
-                ButtonFileSystemDeleteAll.Enabled = 
+                ButtonFileSystemDeleteAll.Enabled =
                 ButtonFileSystemDelete.Enabled = (!PanelProject.FileExplorer.IsRenaming) && (fileExplorer.DeleteDirectoryCommand?.CanExecute(_deleteValidationArgs) ?? false);
                 ButtonFileSystemDeleteAll.Enabled = (!PanelProject.FileExplorer.IsRenaming) && (fileExplorer.DeleteDirectoryCommand?.CanExecute(_deleteAllValidationArgs) ?? false);
                 ButtonFileSystemRename.Enabled = (!PanelProject.FileExplorer.IsRenaming) && (fileExplorer.RenameDirectoryCommand?.CanExecute(null) ?? false);
@@ -982,7 +982,7 @@ internal partial class FormMain
                 _deleteAllValidationArgs = new DeleteArgs(DataContext.CurrentProject.FileExplorer.Root.ID);
                 ButtonFileSystemPanel.Checked = _settings.ShowFileExplorer;
                 ButtonFileSystemPreview.Checked = _settings.ShowContentPreview;
-                break;                
+                break;
         }
 
         ValidateRibbonButtons();
@@ -1161,7 +1161,7 @@ internal partial class FormMain
     {
         try
         {
-            switch(PanelProject.FileExplorer.ControlContext)
+            switch (PanelProject.FileExplorer.ControlContext)
             {
                 case FileExplorerContext.DirectoryTree:
                     PanelProject.FileExplorer.RenameDirectory();
@@ -1250,7 +1250,7 @@ internal partial class FormMain
     /// </summary>
     /// <param name="sender">The source of the event.</param>
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
-    private void ButtonFileSystemCopy_Click(object sender, EventArgs e) 
+    private void ButtonFileSystemCopy_Click(object sender, EventArgs e)
     {
         if (_clipboardContext?.CopyDataCommand is null)
         {
@@ -1424,8 +1424,8 @@ internal partial class FormMain
     /// </summary>
     public FormMain()
     {
-        InitializeComponent();            
-        
+        InitializeComponent();
+
         if (LicenseManager.UsageMode != LicenseUsageMode.Designtime)
         {
             _ribbonMerger = new RibbonMerger(RibbonMain);
@@ -1441,6 +1441,6 @@ internal partial class FormMain
     /// <summary>Initializes a new instance of the <see cref="FormMain"/> class.</summary>
     /// <param name="settings">The settings for the application.</param>
     public FormMain(EditorSettings settings)
-        : this() =>PanelProject.Settings = _settings = settings;
+        : this() => PanelProject.Settings = _settings = settings;
     #endregion
 }
