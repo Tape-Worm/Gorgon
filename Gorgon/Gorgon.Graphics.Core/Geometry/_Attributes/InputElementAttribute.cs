@@ -1,6 +1,6 @@
-﻿#region MIT.
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2011 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,29 +11,27 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: Thursday, November 24, 2011 3:40:38 PM
 // 
-#endregion
 
-using System;
 
 namespace Gorgon.Graphics.Core;
 
 /// <summary>
-/// An attribute to mark a field in a value type as an input element.
+/// An attribute to mark a field in a value type as an input element
 /// </summary>
 /// <remarks>
 /// <para>
-/// Apply this to a field in a value type to allow the <see cref="GorgonInputLayout.CreateUsingType{T}"/> method to parse the value type and build an input element element list from it.
+/// Apply this to a field in a value type to allow the <see cref="GorgonInputLayout.CreateUsingType{T}"/> method to parse the value type and build an input element element list from it
 /// </para>
 /// <para>
 /// Using Unknown for the format will tell the library to try and figure out the type from the field/property.  This will only work on members that return the following types:
@@ -80,21 +78,27 @@ namespace Gorgon.Graphics.Core;
 ///		</item>
 /// </list>
 /// </para>
-/// If the type of the member is not on this list, then an exception will be thrown when the input layout is generated.
+/// If the type of the member is not on this list, then an exception will be thrown when the input layout is generated
 /// </para>
 /// </remarks>
+/// <remarks>
+/// Initializes a new instance of the <see cref="InputElementAttribute"/> class
+/// </remarks>
+/// <param name="context">The context of the element.</param>
+/// <param name="format">The format/type of the element.</param>
+/// <param name="offset">Offset of the element in the structure.</param>
 [AttributeUsage(AttributeTargets.Field)]
-public class InputElementAttribute
-    : Attribute
+public class InputElementAttribute(string context, BufferFormat format, int offset)
+        : Attribute
 {
-    #region Properties.
+
     /// <summary>
     /// Property to return the explicit order of the field.
     /// </summary>
     internal int ExplicitOrder
     {
         get;
-    }
+    } = int.MaxValue;
 
     /// <summary>
     /// Property to return whether to use automatic calculation for the offset.
@@ -102,7 +106,7 @@ public class InputElementAttribute
     internal bool AutoOffset
     {
         get;
-    }
+    } = false;
 
     /// <summary>
     /// Property to return the context of the element.
@@ -114,7 +118,7 @@ public class InputElementAttribute
     public string Context
     {
         get;
-    }
+    } = context;
 
     /// <summary>
     /// Property to set or return the index of the context.
@@ -127,7 +131,7 @@ public class InputElementAttribute
     {
         get;
         set;
-    }
+    } = 0;
 
     /// <summary>
     /// Property to set or return the format of the data.
@@ -139,7 +143,7 @@ public class InputElementAttribute
     {
         get;
         set;
-    }
+    } = format;
 
     /// <summary>
     /// Property to set or return the vertex buffer slot this element will use.
@@ -156,7 +160,7 @@ public class InputElementAttribute
     {
         get;
         set;
-    }
+    } = 0;
 
     /// <summary>
     /// Property to set or return whether this data is instanced or per vertex.
@@ -168,7 +172,7 @@ public class InputElementAttribute
     {
         get;
         set;
-    }
+    } = false;
 
     /// <summary>
     /// Property to return the offset of the element within the structure.
@@ -180,7 +184,7 @@ public class InputElementAttribute
     public int Offset
     {
         get;
-    }
+    } = offset;
 
     /// <summary>
     /// Property to set or return the number of instances to draw.
@@ -197,29 +201,10 @@ public class InputElementAttribute
     {
         get;
         set;
-    }
-    #endregion
+    } = 0;
 
-    #region Constructor/Destructor.
-    /// <summary>
-    /// Initializes a new instance of the <see cref="InputElementAttribute"/> class.
-    /// </summary>
-    /// <param name="context">The context of the element.</param>
-    /// <param name="format">The format/type of the element.</param>
-    /// <param name="offset">Offset of the element in the structure.</param>
-    public InputElementAttribute(string context, BufferFormat format, int offset)
-    {
 
-        Context = context;
-        Format = format;
-        Index = 0;
-        Slot = 0;
-        Instanced = false;
-        InstanceCount = 0;
-        Offset = offset;
-        AutoOffset = false;
-        ExplicitOrder = int.MaxValue;
-    }
+
 
     /// <summary>
     /// Initializes a new instance of the <see cref="InputElementAttribute"/> class.
@@ -239,5 +224,5 @@ public class InputElementAttribute
         Offset = 0;
         AutoOffset = true;
     }
-    #endregion
+
 }

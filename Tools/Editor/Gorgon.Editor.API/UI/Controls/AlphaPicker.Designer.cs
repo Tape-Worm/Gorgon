@@ -26,7 +26,7 @@ partial class AlphaPicker
         base.Dispose(disposing);
     }
 
-    #region Component Designer generated code
+
 
     /// <summary> 
     /// Required method for Designer support - do not modify 
@@ -126,7 +126,7 @@ partial class AlphaPicker
         this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
         this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(35)))), ((int)(((byte)(35)))), ((int)(((byte)(37)))));
         this.Controls.Add(this.TableAlpha);
-        this.Font = new System.Drawing.Font("Segoe UI", 9F);
+        
         this.ForeColor = System.Drawing.Color.White;
         this.Name = "AlphaPicker";
         this.Size = new System.Drawing.Size(411, 168);
@@ -137,7 +137,7 @@ partial class AlphaPicker
 
     }
 
-    #endregion
+
     private System.Windows.Forms.TableLayoutPanel TableAlpha;
     private System.Windows.Forms.Label LabelAlpha;
     private System.Windows.Forms.NumericUpDown NumericAlpha;

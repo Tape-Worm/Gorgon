@@ -1,6 +1,6 @@
-﻿#region MIT.
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2011 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,28 +11,26 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: Wednesday, October 02, 2012 07:17:00 AM
 // 
-#endregion
 
-using System;
-using System.Collections.Generic;
+
 using System.Numerics;
 using Gorgon.Diagnostics;
 
 namespace Gorgon.Math;
 
 /// <summary>
-/// Returns spline interpolated values across a set of points.
+/// Returns spline interpolated values across a set of points
 /// </summary>
 /// <remarks>
 /// <para>
@@ -41,13 +39,13 @@ namespace Gorgon.Math;
 /// <para>
 /// Because this class provides smoothing between the nodes on the a spline, the result is very different than that of a linear interpolation. A linear interpolation will go in a straight line until 
 /// the end point is reached. This can give a jagged looking effect when a point moves between several points that are in vastly different places. But the spline will smooth the transition for the 
-/// value travelling to the destination points, thus giving a curved appearance when a point traverses the spline.
+/// value travelling to the destination points, thus giving a curved appearance when a point traverses the spline
 /// </para>
 /// <para>
-/// When adding or removing <see cref="Points"/> from the spline, remember to call <see cref="UpdateTangents"/> to recalculate the tangents.
+/// When adding or removing <see cref="Points"/> from the spline, remember to call <see cref="UpdateTangents"/> to recalculate the tangents
 /// </para>
 /// <para>
-/// This spline object uses the <a href="https://en.wikipedia.org/wiki/Centripetal_Catmull%E2%80%93Rom_spline">Catmull-Rom algorithm</a> to perform its work.
+/// This spline object uses the <a href="https://en.wikipedia.org/wiki/Centripetal_Catmull%E2%80%93Rom_spline">Catmull-Rom algorithm</a> to perform its work
 /// </para>
 /// </remarks>
 /// <example>
@@ -73,8 +71,8 @@ namespace Gorgon.Math;
 ///		Vector4 result = spline.GetInterpolatedValue(currentTime);
 /// 
 ///		// Do something with the result... like plot a pixel:
-///		// e.g PutPixel(result.X, result.Y, Color.Blue); or something.
-///		// and over 5 seconds, a curved series of points should be plotted.
+///		// e.g PutPixel(result.X, result.Y, Color.Blue); or something
+///		// and over 5 seconds, a curved series of points should be plotted
 /// 
 ///		currentTime = GorgonTiming.SecondsSinceStart / (endTime - startTime);
 /// } 
@@ -84,14 +82,14 @@ namespace Gorgon.Math;
 public class GorgonCatmullRomSpline
     : IGorgonSpline
 {
-    #region Variables.
+
     // Spline coefficients.
     private Matrix4x4 _coefficients = Matrix4x4.Identity;
     // Tangents.
     private Vector4[] _tangents;
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to return the list of points for the spline.
     /// </summary>
@@ -102,9 +100,9 @@ public class GorgonCatmullRomSpline
     {
         get;
     }
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to return an interpolated point from the spline.
     /// </summary>
@@ -121,7 +119,7 @@ public class GorgonCatmullRomSpline
     /// </para>
     /// </remarks>
     /// <exception cref="ArgumentOutOfRangeException"><c>[Debug only]</c> Thrown when the <paramref name="startPointIndex"/> is less than 0, or greater than/equal to the number of points - 1 in the <see cref="IGorgonSpline.Points"/> parameter.</exception>        
-		public Vector4 GetInterpolatedValue(int startPointIndex, float delta)
+    public Vector4 GetInterpolatedValue(int startPointIndex, float delta)
     {
         Matrix4x4 calculations = Matrix4x4.Identity;
 
@@ -138,7 +136,7 @@ public class GorgonCatmullRomSpline
         }
 
         var deltaCubeSquare = new Vector4(delta * delta * delta, delta * delta, delta, 1.0f);
-                    
+
         calculations.SetRow(0, Points[startPointIndex]);
         calculations.SetRow(1, Points[startPointIndex + 1]);
         calculations.SetRow(2, _tangents[startPointIndex]);
@@ -237,9 +235,7 @@ public class GorgonCatmullRomSpline
             _tangents[i] = Vector4.Multiply(diff, 0.5f);
         }
     }
-    #endregion
 
-    #region Constructor.
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonCatmullRomSpline"/> object.
     /// </summary>
@@ -253,5 +249,4 @@ public class GorgonCatmullRomSpline
         Points = new List<Vector4>(256);
         _tangents = new Vector4[256];
     }
-    #endregion
 }

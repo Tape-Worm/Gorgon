@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2018 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,23 +11,23 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: May 23, 2018 11:59:42 PM
 // 
-#endregion
+
 
 namespace Gorgon.Graphics.Core;
 
 /// <summary>
-/// A draw call that draws using an index buffer.
+/// A draw call that draws using an index buffer
 /// </summary>
 /// <remarks>
 /// <para>
@@ -35,12 +35,12 @@ namespace Gorgon.Graphics.Core;
 /// <see cref="GorgonGraphics.Submit(GorgonDrawIndexCall, in GorgonColor?, int, int)"/> method.  
 /// </para>
 /// <para>
-/// State management is handled internally by Gorgon so that duplicate states are not set and thus, performance is not impacted by redundant states.
+/// State management is handled internally by Gorgon so that duplicate states are not set and thus, performance is not impacted by redundant states
 /// </para>
 /// <para>
 /// Because a draw call is immutable, it is not possible to modify a draw call after it's been created. However, a copy of a draw call can be created using the
 /// <see cref="GorgonDrawCallBuilderCommon{TB,TDc}.ResetTo"/> method on the <see cref="GorgonDrawIndexCallBuilder"/> object. Or, the builder can be modified after the creation of your draw call that
-/// needs to be updated and a new call may be built then.
+/// needs to be updated and a new call may be built then
 /// </para>
 /// </remarks>
 /// <seealso cref="GorgonGraphics"/>

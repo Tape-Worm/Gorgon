@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2018 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,26 +11,20 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: August 14, 2018 7:28:55 PM
 // 
-#endregion
 
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
+
 using System.Numerics;
-using System.Threading.Tasks;
-using System.Windows.Forms;
 using Gorgon.Core;
 using Gorgon.Examples.Properties;
 using Gorgon.Graphics;
@@ -48,11 +42,11 @@ using DX = SharpDX;
 namespace Gorgon.Examples;
 
 /// <summary>
-/// The example entry point.
+/// The example entry point
 /// </summary>
 static class Program
 {
-    #region Variables.
+
     // The main graphics interface.
     private static GorgonGraphics _graphics;
     // The swap chain representing our "screen".
@@ -60,8 +54,8 @@ static class Program
     // Our 2D renderer, used to draw text.
     private static Gorgon2D _renderer;
     // The list of built-in Windows font family names to use.
-    private static readonly List<string> _fontFamilies = new()
-    {
+    private static readonly List<string> _fontFamilies =
+    [
         "Usuzi",
         "Algerian",
         "Bauhaus 93",
@@ -74,9 +68,9 @@ static class Program
         "Times New Roman",
         "Ravie",
         "Playbill"
-    };
+    ];
     // The fonts for the application. 
-    private static readonly List<GorgonFont> _font = new();
+    private static readonly List<GorgonFont> _font = [];
     // The starting time.
     private static float _startTime = float.MinValue;
     // The current font index.
@@ -97,9 +91,9 @@ static class Program
     private static float _angleSpeed = 360.0f;
     // The text to display.
     private readonly static string _text = Resources.Lorem_Ipsum;
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to generate the Gorgon bitmap fonts.
     /// </summary>
@@ -109,7 +103,7 @@ static class Program
     {
         // Pick a font to use with outlines.
         int fontWithOutlineIndex = GorgonRandom.RandomInt32(1, 5);
-        _glowIndex = GorgonRandom.RandomInt32(fontWithOutlineIndex + 1, fontWithOutlineIndex + 5);            
+        _glowIndex = GorgonRandom.RandomInt32(fontWithOutlineIndex + 1, fontWithOutlineIndex + 5);
         int fontWithGradient = GorgonRandom.RandomInt32(_glowIndex + 1, _glowIndex + 5);
         int fontWithTexture = GorgonRandom.RandomInt32(fontWithGradient + 1, fontWithGradient + 5).Min(_fontFamilies.Count - 1);
 
@@ -125,7 +119,7 @@ static class Program
                 // Can't locate this one, move on...
                 continue;
             }
-            
+
             bool isExternal = Drawing.FontFamily.Families.All(item => !string.Equals(item.Name, fontFamily, StringComparison.InvariantCultureIgnoreCase));
             string fontName;
             int outlineSize = 0;
@@ -171,10 +165,10 @@ static class Program
 
             var fontInfo = new GorgonFontInfo(fontFamily,
                                               30.25f,
-                                              FontHeightMode.Pixels)
+                                              GorgonFontHeightMode.Pixels)
             {
                 Name = fontName,
-                AntiAliasingMode = FontAntiAliasMode.AntiAlias,
+                AntiAliasingMode = GorgonFontAntiAliasMode.AntiAlias,
                 OutlineSize = outlineSize,
                 OutlineColor1 = outlineColor1,
                 OutlineColor2 = outlineColor2,
@@ -198,7 +192,7 @@ static class Program
     /// <param name="window">The window containing the loading message.</param>
     /// <returns>The font families to use when building the bitmap fonts.</returns>
     private static Task<IReadOnlyList<Drawing.FontFamily>> LoadTrueTypeFontsAsync(FormMain window)
-    {            
+    {
         // Load in a bunch of true type fonts.
         DirectoryInfo dirInfo = GorgonExample.GetResourcePath("Fonts");
         FileInfo[] files = dirInfo.GetFiles("*.ttf", SearchOption.TopDirectoryOnly);
@@ -239,7 +233,7 @@ static class Program
     /// </summary>
     /// <returns><b>true</b> to continue executing, <b>false</b> to stop.</returns>
     private static bool Idle()
-    {            
+    {
         GorgonFont currentFont = _font[_fontIndex];
 
         if (_startTime < 0)
@@ -435,9 +429,7 @@ static class Program
     {
         try
         {
-#if NET6_0_OR_GREATER
             Application.SetHighDpiMode(HighDpiMode.PerMonitorV2);
-#endif
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
 
@@ -456,5 +448,5 @@ static class Program
             _graphics?.Dispose();
         }
     }
-    #endregion
+
 }

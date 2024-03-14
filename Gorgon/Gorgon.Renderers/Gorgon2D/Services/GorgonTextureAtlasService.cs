@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2019 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,22 +11,19 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: May 2, 2019 9:24:26 AM
 // 
-#endregion
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
+
 using Gorgon.Core;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
@@ -37,24 +34,24 @@ using DX = SharpDX;
 namespace Gorgon.Renderers.Services;
 
 /// <summary>
-/// A service used to generate a 2D texture atlas from a series of separate sprites.
+/// A service used to generate a 2D texture atlas from a series of separate sprites
 /// </summary>
 /// <remarks>
 /// <para>
 /// To get the best performance when rendering sprites, batching is essential. In order to achieve this, rendering sprites that use the same texture is necessary. This is where building a texture atlas 
 /// comes in. A texture atlas is a combination of multiple sprite images into a single texture, each sprite that is embedded into the atlas uses a different set of texture coordinates. When rendering 
-/// these sprites with the atlas, only a single texture change is required.
+/// these sprites with the atlas, only a single texture change is required
 /// </para>
 /// <para>
 /// When generating an atlas, a series of existing sprites, that reference different textures is fed to the service and each sprite's dimensions is fit into a texture region, with the image from the 
 /// original sprite texture transferred and packed into the new atlas texture. Should the texture not have enough empty space for the sprites, array indices will be used to store the extra sprites. 
-/// In the worst case, multiple textures will be generated.
+/// In the worst case, multiple textures will be generated
 /// </para>
 /// </remarks>
 public class GorgonTextureAtlasService
     : IGorgonTextureAtlasService
 {
-    #region Variables.
+
     // The 2D renderer used to generate the data.
     private readonly Gorgon2D _renderer;
     // The graphics interface used to generate the data.
@@ -63,9 +60,9 @@ public class GorgonTextureAtlasService
     private DX.Size2 _textureSize = new(1024, 1024);
     // The number of array indices in the texture to generate.
     private int _arrayCount;
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to set or return the size of the texture to generate.
     /// </summary>
@@ -105,9 +102,9 @@ public class GorgonTextureAtlasService
         get;
         set;
     }
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to calculate the size to the next power of two.
     /// </summary>
@@ -212,7 +209,7 @@ public class GorgonTextureAtlasService
         }
 
         // Get all texture regions.
-        List<(GorgonSprite sprite, DX.Rectangle spriteRegion)> spriteRegions = sprites.Select(item =>
+        List<(GorgonSprite sprite, DX.Rectangle spriteRegion)> spriteRegions = [.. sprites.Select(item =>
         {
             DX.Rectangle region = item.Texture.Texture.ToPixel(item.TextureRegion);
 
@@ -223,8 +220,7 @@ public class GorgonTextureAtlasService
 
             return (item, region);
         })
-        .OrderByDescending(item => item.region.Height)
-        .ToList();
+        .OrderByDescending(item => item.region.Height)];
 
         int array = 0;
         result.Add(rects);
@@ -232,7 +228,7 @@ public class GorgonTextureAtlasService
         while (spriteRegions.Count > 0)
         {
             SpritePacker.CreateRoot(textureBounds.Width, textureBounds.Height);
-            (GorgonSprite sprite, DX.Rectangle region)[] activeRegions = spriteRegions.ToArray();
+            (GorgonSprite sprite, DX.Rectangle region)[] activeRegions = [.. spriteRegions];
 
             // Pack as many as possible into the current array/texture rect list.
             foreach ((GorgonSprite sprite, DX.Rectangle region) sprite in activeRegions)
@@ -280,7 +276,7 @@ public class GorgonTextureAtlasService
             if (array >= maxArrayCount)
             {
                 array = 0;
-                rects = new Dictionary<int, TextureRects>();
+                rects = [];
                 result.Add(rects);
             }
         }
@@ -457,7 +453,7 @@ public class GorgonTextureAtlasService
 
         if (regions.Count == 0)
         {
-            return new GorgonTextureAtlas(Array.Empty<GorgonTexture2DView>(), Array.Empty<(GorgonSprite, GorgonSprite)>());
+            return new GorgonTextureAtlas([], Array.Empty<(GorgonSprite, GorgonSprite)>());
         }
 
         // Get the total number of textures.
@@ -529,9 +525,9 @@ public class GorgonTextureAtlasService
             _graphics.SetRenderTarget(original);
         }
     }
-    #endregion
 
-    #region Constructor/Finalizer.
+
+
     /// <summary>Initializes a new instance of the <see cref="GorgonTextureAtlasService"/> class.</summary>
     /// <param name="renderer">The 2D renderer to use when generating the atlas data.</param>
     /// <exception cref="ArgumentNullException">Thrown when the <paramref name="renderer"/> parameter is <strong>null</strong>.</exception>
@@ -540,5 +536,5 @@ public class GorgonTextureAtlasService
         _renderer = renderer ?? throw new ArgumentNullException(nameof(renderer));
         _graphics = _renderer.Graphics;
     }
-    #endregion
+
 }

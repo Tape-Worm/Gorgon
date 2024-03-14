@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2019 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,21 +11,19 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: May 21, 2019 11:13:16 AM
 // 
-#endregion
 
-using System.Collections.Generic;
-using System.Linq;
+
 using System.Numerics;
 using Gorgon.Graphics.Core;
 using Gorgon.Renderers;
@@ -34,28 +32,30 @@ using DX = SharpDX;
 namespace Gorgon.Examples;
 
 /// <summary>
-/// A layer used to display sprites.
+/// A layer used to display sprites
 /// </summary>
-internal class SpritesLayer
-    : Layer2D
+/// <remarks>Initializes a new instance of the <see cref="SpritesLayer"/> class.</remarks>
+/// <param name="renderer">The 2D renderer for the application.</param>
+internal class SpritesLayer(Gorgon2D renderer, IReadOnlyDictionary<string, Gorgon2DEffect> effects)
+        : Layer2D(renderer)
 {
-    #region Variables.
-    // The list of sprites that are lit.
-    private readonly List<Gorgon2DBatchState> _states = new();
-    // The list of sprites organized by name.
-    private readonly Dictionary<string, SpriteEntity> _spriteByName = new();
-    // A list of sprite entities to draw.
-    private readonly List<(int index, SpriteEntity entity)> _drawList = new();
-    #endregion
 
-    #region Properties.
+    // The list of sprites that are lit.
+    private readonly List<Gorgon2DBatchState> _states = [];
+    // The list of sprites organized by name.
+    private readonly Dictionary<string, SpriteEntity> _spriteByName = [];
+    // A list of sprite entities to draw.
+    private readonly List<(int index, SpriteEntity entity)> _drawList = [];
+
+
+
     /// <summary>
     /// Property to return the effects for the system.
     /// </summary>
     public IReadOnlyDictionary<string, Gorgon2DEffect> Effects
     {
         get;
-    }
+    } = effects;
 
     /// <summary>
     /// Property to return the sprites for this layer.
@@ -63,7 +63,7 @@ internal class SpritesLayer
     public List<SpriteEntity> Sprites
     {
         get;
-    } = new List<SpriteEntity>();
+    } = [];
 
     /// <summary>
     /// Property to set or return the gbuffer for lighting.
@@ -82,9 +82,9 @@ internal class SpritesLayer
         get;
         set;
     }
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to perform a culling pass to exclude objects that are not visible.
     /// </summary>
@@ -159,11 +159,11 @@ internal class SpritesLayer
             return;
         }
 
-        if ((GBuffer is not null) && 
+        if ((GBuffer is not null) &&
             ((GBuffer.Diffuse.Width != rtv.Width) || (GBuffer.Diffuse.Height != rtv.Height)))
         {
             GBuffer.Resize(rtv.Width, rtv.Height);
-        }                       
+        }
 
         for (int i = 0; i < _drawList.Count; ++i)
         {
@@ -192,7 +192,7 @@ internal class SpritesLayer
                 {
                     if (wasLit)
                     {
-                        GBuffer.End();                            
+                        GBuffer.End();
                         if ((DeferredLighter is not null) && (DeferredLighter.Lights.Count > 0))
                         {
                             DeferredLighter.Render(GBuffer, rtv);
@@ -270,13 +270,6 @@ internal class SpritesLayer
     /// <param name="name">The name of the sprite.</param>
     /// <returns>The sprite entity with the specified name.</returns>
     public SpriteEntity GetSpriteByName(string name) => _spriteByName[name];
-    #endregion
 
-    #region Constructor/Finalizer.
-    /// <summary>Initializes a new instance of the <see cref="SpritesLayer"/> class.</summary>
-    /// <param name="renderer">The 2D renderer for the application.</param>
-    public SpritesLayer(Gorgon2D renderer, IReadOnlyDictionary<string, Gorgon2DEffect> effects)
-        : base(renderer)
-        => Effects = effects;
-    #endregion
+
 }

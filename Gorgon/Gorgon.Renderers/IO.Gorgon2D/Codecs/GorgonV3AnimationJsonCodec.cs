@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2018 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,23 +11,19 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: August 25, 2018 2:43:32 PM
 // 
-#endregion
 
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
+
 using System.Numerics;
 using System.Text;
 using Gorgon.Animation;
@@ -41,12 +37,17 @@ using Newtonsoft.Json;
 namespace Gorgon.IO;
 
 /// <summary>
-/// A codec used to read/write animations as a JSON formatted string value.
+/// A codec used to read/write animations as a JSON formatted string value
 /// </summary>
-public class GorgonV3AnimationJsonCodec
-    : GorgonAnimationCodecCommon
+/// <remarks>
+/// Initializes a new instance of the <see cref="GorgonV3AnimationJsonCodec"/> class
+/// </remarks>
+/// <param name="renderer">The renderer used for resource handling.</param>
+/// <exception cref="ArgumentNullException">Thrown when the <paramref name="renderer"/> is <b>null</b>.</exception>
+public class GorgonV3AnimationJsonCodec(Gorgon2D renderer)
+        : GorgonAnimationCodecCommon(renderer, Resources.GOR2DIO_V3_ANIM_JSON_CODEC, Resources.GOR2DIO_V3_ANIM_JSON_CODEC_DESCRIPTION)
 {
-    #region Constants.
+
     /// <summary>
     /// The ID for the file header for the previous version of the animation format.
     /// </summary>
@@ -56,9 +57,9 @@ public class GorgonV3AnimationJsonCodec
     /// The previous version for animation serialization.
     /// </summary>
     internal static readonly Version Version30 = new(3, 0);
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to return whether or not the codec can decode animation data.
     /// </summary>
@@ -73,9 +74,9 @@ public class GorgonV3AnimationJsonCodec
     /// Property to return the version of animation data that the codec supports.
     /// </summary>
     public override Version Version => Version30;
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to retrieve the stream as JSON.Net object.
     /// </summary>
@@ -459,7 +460,7 @@ public class GorgonV3AnimationJsonCodec
         {
             if (!IsReadableJObject(reader))
             {
-                return Array.Empty<string>();
+                return [];
             }
 
             while (reader.Read())
@@ -493,7 +494,7 @@ public class GorgonV3AnimationJsonCodec
             }
         }
 
-        return Array.Empty<string>();
+        return [];
     }
 
     /// <summary>
@@ -729,17 +730,6 @@ public class GorgonV3AnimationJsonCodec
             reader?.Close();
         }
     }
-    #endregion
 
-    #region Constructor/Finalizer.
-    /// <summary>
-    /// Initializes a new instance of the <see cref="GorgonV3AnimationJsonCodec"/> class.
-    /// </summary>
-    /// <param name="renderer">The renderer used for resource handling.</param>
-    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="renderer"/> is <b>null</b>.</exception>
-    public GorgonV3AnimationJsonCodec(Gorgon2D renderer)
-        : base(renderer, Resources.GOR2DIO_V3_ANIM_JSON_CODEC, Resources.GOR2DIO_V3_ANIM_JSON_CODEC_DESCRIPTION)
-    {
-    }
-    #endregion
+
 }

@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2019 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,20 +11,19 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: February 5, 2019 7:54:23 PM
 // 
-#endregion
 
-using System;
+
 using Gorgon.Editor.ImageEditor.Properties;
 using Gorgon.Editor.UI;
 using Gorgon.Graphics.Core;
@@ -35,12 +34,12 @@ using Gorgon.UI;
 namespace Gorgon.Editor.ImageEditor.ViewModels;
 
 /// <summary>
-/// The view model for the image dimensions editor.
+/// The view model for the image dimensions editor
 /// </summary>
 internal class DimensionSettings
     : HostedPanelViewModelBase<DimensionSettingsParameters>, IDimensionSettings
 {
-    #region Variables.
+
     // Flag to indicate that the image has depth slices.
     private bool _hasDepth;
     // The maximum width.
@@ -71,9 +70,9 @@ internal class DimensionSettings
     private int _depthSlicesOrArrayIndices = 1;
     // Flag to indicate mip maps are supported.
     private bool _mipSupport;
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>Property to return whether the panel is modal.</summary>
     public override bool IsModal => true;
 
@@ -339,9 +338,9 @@ internal class DimensionSettings
     {
         get;
     }
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to update the maximum mip map count for the current spatial dimensions.
     /// </summary>
@@ -377,12 +376,12 @@ internal class DimensionSettings
             }
 
             MipSupport = false;
-            MaxDepthOrArrayIndices = image.ImageType == ImageType.Image3D ? _videoAdapter.MaxTexture3DDepth : _videoAdapter.MaxTextureArrayCount;
+            MaxDepthOrArrayIndices = image.ImageType == ImageDataType.Image3D ? _videoAdapter.MaxTexture3DDepth : _videoAdapter.MaxTextureArrayCount;
             MaxHeight = _videoAdapter.MaxTextureHeight;
             MaxWidth = _videoAdapter.MaxTextureWidth;
 
-            _arrayIndexStep = image.ImageType == ImageType.ImageCube ? 6 : 1;
-            _depthSlicesOrArrayIndices = image.ImageType == ImageType.Image3D ? image.Depth : image.ArrayCount;
+            _arrayIndexStep = image.ImageType == ImageDataType.ImageCube ? 6 : 1;
+            _depthSlicesOrArrayIndices = image.ImageType == ImageDataType.Image3D ? image.Depth : image.ArrayCount;
             _height = image.Height;
             _width = image.Width;
             _mipLevels = image.MipCount;
@@ -392,7 +391,7 @@ internal class DimensionSettings
             NotifyPropertyChanged(nameof(Height));
             NotifyPropertyChanged(nameof(DepthSlicesOrArrayIndices));
 
-            HasDepth = image.ImageType == ImageType.Image3D;
+            HasDepth = image.ImageType == ImageDataType.Image3D;
         }
         catch (Exception ex)
         {
@@ -403,19 +402,19 @@ internal class DimensionSettings
             UpdateMaxMips();
         }
     }
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>Function to inject dependencies for the view model.</summary>
     /// <param name="injectionParameters">The parameters to inject.</param>
     /// <remarks>
     /// Applications should call this when setting up the view model for complex operations and/or dependency injection. The constructor should only be used for simple set up and initialization of objects.
     /// </remarks>
     protected override void OnInitialize(DimensionSettingsParameters injectionParameters) => _videoAdapter = injectionParameters.VideoAdapter;
-    #endregion
 
-    #region Constructor.
+
+
     /// <summary>Initializes a new instance of the <see cref="DimensionSettings"/> class.</summary>
     public DimensionSettings() => UpdateImageInfoCommand = new EditorCommand<IGorgonImage>(DoUpdateImageInfo);
-    #endregion
+
 }

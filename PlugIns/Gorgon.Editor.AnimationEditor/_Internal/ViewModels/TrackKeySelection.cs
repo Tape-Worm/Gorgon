@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2020 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,28 +11,29 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: July 14, 2020 3:00:30 PM
 // 
-#endregion
 
-using System;
-using System.Collections.Generic;
 
 namespace Gorgon.Editor.AnimationEditor;
 
 /// <summary>
-/// A type that contains the track and keyframes that are selected for work.
+/// A type that contains the track and keyframes that are selected for work
 /// </summary>
-internal class TrackKeySelection
+/// <remarks>Initializes a new instance of the <see cref="TrackKeySelection"/> class.</remarks>
+/// <param name="trackIndex">Index of the track.</param>
+/// <param name="track">The selected track.</param>
+/// <param name="selectedKeys">The keys that were selected within the track.</param>
+internal class TrackKeySelection(int trackIndex, ITrack track, IReadOnlyList<TrackKeySelection.KeySelection> selectedKeys)
 {
     /// <summary>
     /// A keyframe selection.
@@ -69,7 +70,7 @@ internal class TrackKeySelection
         /// <remarks>
         /// This value may be <b>null</b> if no keyframe was assigned at the <see cref="KeyIndex"/>.
         /// </remarks>
-        public IKeyFrame KeyFrame 
+        public IKeyFrame KeyFrame
         {
             get;
             set;
@@ -114,7 +115,7 @@ internal class TrackKeySelection
     public int TrackIndex
     {
         get;
-    }
+    } = trackIndex;
 
     /// <summary>
     /// Property to return the track that has selected keyframes.
@@ -122,7 +123,7 @@ internal class TrackKeySelection
     public ITrack Track
     {
         get;
-    }
+    } = track;
 
     /// <summary>
     /// Property to return the list of keys that were selected within the track.
@@ -130,16 +131,5 @@ internal class TrackKeySelection
     public IReadOnlyList<KeySelection> SelectedKeys
     {
         get;
-    }
-
-    /// <summary>Initializes a new instance of the <see cref="TrackKeySelection"/> class.</summary>
-    /// <param name="trackIndex">Index of the track.</param>
-    /// <param name="track">The selected track.</param>
-    /// <param name="selectedKeys">The keys that were selected within the track.</param>
-    public TrackKeySelection(int trackIndex, ITrack track, IReadOnlyList<KeySelection> selectedKeys)
-    {
-        TrackIndex = trackIndex;
-        Track = track;
-        SelectedKeys = selectedKeys ?? Array.Empty<KeySelection>();
-    }
+    } = selectedKeys ?? [];
 }

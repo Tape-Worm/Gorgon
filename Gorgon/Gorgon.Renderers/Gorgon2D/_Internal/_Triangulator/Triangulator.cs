@@ -1,11 +1,10 @@
-// Triangulator source code by Nick Gravelyn.
+﻿// Triangulator source code by Nick Gravelyn
 // https://github.com/nickgravelyn/Triangulator
 //
-// Licensed under the MIT license.
+// Licensed under the MIT license
 // https://github.com/nickgravelyn/Triangulator/blob/master/LICENSE
 //
 
-using System.Collections.Generic;
 using System.Diagnostics;
 
 /* Unmerged change from project 'Gorgon.Renderers.Gorgon2D (net5.0-windows)'
@@ -34,39 +33,30 @@ namespace GorgonTriangulator;
 /// <summary>
 /// A class exposing methods for triangulating 2D polygons. This is the sole public
 /// class in the entire library; all other classes/structures are intended as internal-only
-/// objects used only to assist in triangulation.
+/// objects used only to assist in triangulation
 /// 
 /// This class makes use of the DEBUG conditional and produces quite verbose output when built
 /// in Debug mode. This is quite useful for debugging purposes, but can slow the process down
-/// quite a bit. For optimal performance, build the library in Release mode.
+/// quite a bit. For optimal performance, build the library in Release mode
 /// 
 /// The triangulation is also not optimized for garbage sensitive processing. The point of the
 /// library is a robust, yet simple, system for triangulating 2D shapes. It is intended to be
 /// used as part of your content pipeline or at load-time. It is not something you want to be
-/// using each and every frame unless you really don't care about garbage.
+/// using each and every frame unless you really don't care about garbage
 /// </summary>
-internal class Triangulator
+/// <remarks>
+/// Initializes a new instance of the <see cref="Triangulator"/> class
+/// </remarks>
+/// <param name="log">The log used for debug messages..</param>
+internal class Triangulator(IGorgonLog log)
 {
-    #region Fields
     private readonly IndexableCyclicalLinkedList<Vertex> _polygonVertices = new();
     private readonly IndexableCyclicalLinkedList<Vertex> _earVertices = new();
-    private readonly CyclicalList<Vertex> _convexVertices = new();
-    private readonly CyclicalList<Vertex> _reflexVertices = new();
-    private readonly List<Triangle> _triangles = new();
+    private readonly CyclicalList<Vertex> _convexVertices = [];
+    private readonly CyclicalList<Vertex> _reflexVertices = [];
+    private readonly List<Triangle> _triangles = [];
     // The log used for debug messages.
-    private readonly IGorgonLog _log;
-    #endregion
-
-    #region Constructor
-    /// <summary>
-    /// Initializes a new instance of the <see cref="Triangulator"/> class.
-    /// </summary>
-    /// <param name="log">The log used for debug messages..</param>
-    public Triangulator(IGorgonLog log) => _log = log ?? GorgonLog.NullLog;
-    #endregion
-
-
-    #region Public Methods
+    private readonly IGorgonLog _log = log ?? GorgonLog.NullLog;
 
     /// <summary>
     /// Triangulates a 2D polygon produced the indexes required to render the points as a triangle list.
@@ -424,20 +414,20 @@ internal class Triangulator
         _log?.Print(format, LoggingLevel.Verbose, parameters);
     }
 
-    #endregion
+
 }
 
 /// <summary>
-/// Specifies a desired winding order for the shape vertices.
+/// Specifies a desired winding order for the shape vertices
 /// </summary>
 internal enum WindingOrder
 {
     /// <summary>
     /// Clockwise winding for vertices.
     /// </summary>
-		Clockwise,
+    Clockwise,
     /// <summary>
     /// Counterclockwise winding for vertices.
     /// </summary>
-		CounterClockwise
+    CounterClockwise
 }

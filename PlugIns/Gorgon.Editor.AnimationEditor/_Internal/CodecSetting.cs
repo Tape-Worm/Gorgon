@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2019 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: April 21, 2019 1:39:30 AM
 // 
-#endregion
+
 
 using Gorgon.Core;
 using Gorgon.IO;
@@ -30,10 +30,14 @@ using Gorgon.IO;
 namespace Gorgon.Editor.AnimationEditor;
 
 /// <summary>
-/// A setting used to display a loaded codec.
+/// A setting used to display a loaded codec
 /// </summary>
-internal class CodecSetting
-    : IGorgonNamedObject
+/// <remarks>Initializes a new instance of the <see cref="CodecSetting"/> class.</remarks>
+/// <param name="description">The friendly description of the codec.</param>
+/// <param name="plugin">The plugin for the codec.</param>
+/// <param name="desc">The description of the codec.</param>
+internal class CodecSetting(string description, GorgonAnimationCodecPlugIn plugin, GorgonAnimationCodecDescription desc)
+        : IGorgonNamedObject
 {
     /// <summary>
     /// Property to return the description for the codec.
@@ -41,7 +45,7 @@ internal class CodecSetting
     public string Description
     {
         get;
-    }
+    } = description;
 
     /// <summary>
     /// Property to return the plug in that contains the codec.
@@ -49,7 +53,7 @@ internal class CodecSetting
     public GorgonAnimationCodecPlugIn PlugIn
     {
         get;
-    }
+    } = plugin;
 
     /// <summary>
     /// Property to return the formal name of the codec.
@@ -57,16 +61,5 @@ internal class CodecSetting
     public string Name
     {
         get;
-    }
-
-    /// <summary>Initializes a new instance of the <see cref="CodecSetting"/> class.</summary>
-    /// <param name="description">The friendly description of the codec.</param>
-    /// <param name="plugin">The plugin for the codec.</param>
-    /// <param name="desc">The description of the codec.</param>
-    public CodecSetting(string description, GorgonAnimationCodecPlugIn plugin, GorgonAnimationCodecDescription desc)
-    {
-        Description = description;
-        PlugIn = plugin;
-        Name = desc.Name;
-    }
+    } = desc.Name;
 }

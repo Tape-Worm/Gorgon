@@ -1,6 +1,6 @@
-#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2017 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,34 +11,38 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: February 23, 2017 9:49:20 PM
 // 
-#endregion
+
 
 using DX = SharpDX;
 
 namespace Gorgon.Renderers.Services;
 
 /// <summary>
-/// A node for the sprite packing.
+/// A node for the sprite packing
 /// </summary>
-internal class SpriteNode
+/// <remarks>
+/// Initializes a new instance of the <see cref="SpriteNode"/> class
+/// </remarks>
+/// <param name="parentNode">The parent node.</param>
+internal class SpriteNode(SpriteNode parentNode)
 {
-    #region Variables.
+
     // Flag to indicate that we have no more space.
     private bool _noMoreRoom;
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to set or return the region that this node occupies on the image.
     /// </summary>
@@ -46,7 +50,7 @@ internal class SpriteNode
     {
         get;
         set;
-    }
+    } = DX.Rectangle.Empty;
 
     /// <summary>
     /// Property to return the parent node for this node.
@@ -54,7 +58,7 @@ internal class SpriteNode
     public SpriteNode Parent
     {
         get;
-    }
+    } = parentNode;
 
     /// <summary>
     /// Property to set or return the node to the left of this one.
@@ -78,9 +82,9 @@ internal class SpriteNode
     /// Property to return whether this node is a leaf node.
     /// </summary>
     public bool IsLeaf => ((Left is null) && (Right is null));
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to add a node as a child to this node.
     /// </summary>
@@ -132,17 +136,8 @@ internal class SpriteNode
 
         return Left.AddNode(dimensions) ?? Right.AddNode(dimensions);
     }
-    #endregion
 
-    #region Constructor/Destructor.
-    /// <summary>
-    /// Initializes a new instance of the <see cref="SpriteNode"/> class.
-    /// </summary>
-    /// <param name="parentNode">The parent node.</param>
-    public SpriteNode(SpriteNode parentNode)
-    {
-        Region = DX.Rectangle.Empty;
-        Parent = parentNode;
-    }
-    #endregion
+
+
+
 }

@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2019 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,22 +11,19 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: May 18, 2019 5:09:46 PM
 // 
-#endregion
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
+
 using System.Numerics;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
@@ -37,12 +34,12 @@ using DX = SharpDX;
 namespace Gorgon.Examples;
 
 /// <summary>
-/// Provides rendering functionality for the appilcation.
+/// Provides rendering functionality for the appilcation
 /// </summary>
 internal class SceneRenderer
     : IDisposable
 {
-    #region Variables.
+
     // The main graphics interface.
     private readonly GorgonGraphics _graphics;
     // The 2D renderer.
@@ -54,13 +51,13 @@ internal class SceneRenderer
     // The screen buffer.
     private GorgonRenderTarget2DView _screen;
     // The list of layers to render.
-    private readonly List<Layer> _layers = new();
+    private readonly List<Layer> _layers = [];
     // Post processing groups.  Use to render specific layers with post processing effects.
-    private readonly List<(string name, Gorgon2DCompositor compositor)> _postProcessGroups = new();
+    private readonly List<(string name, Gorgon2DCompositor compositor)> _postProcessGroups = [];
     private readonly Dictionary<string, List<Layer>> _postProcessLayers = new(StringComparer.OrdinalIgnoreCase);
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to copy the contents of a texture to the screen buffer.
     /// </summary>
@@ -139,7 +136,7 @@ internal class SceneRenderer
             }
 
             FlipToScreen(sceneSrv);
-        }            
+        }
         else
         {
             for (int i = 0; i < _postProcessGroups.Count; ++i)
@@ -229,7 +226,7 @@ internal class SceneRenderer
     /// </summary>
     public void LoadResources()
     {
-        _postProcessLayers["__NULL__"] = new List<Layer>();
+        _postProcessLayers["__NULL__"] = [];
         _postProcessGroups.Add(("Final Pass", _resources.PostProcessCompositors["Final Pass"]));
         _postProcessGroups.Add(("Space Ships", null));
 
@@ -244,7 +241,7 @@ internal class SceneRenderer
 
             if (!_postProcessLayers.TryGetValue(layer.PostProcessGroup, out List<Layer> layers))
             {
-                _postProcessLayers[layer.PostProcessGroup] = layers = new List<Layer>();
+                _postProcessLayers[layer.PostProcessGroup] = layers = [];
             }
 
             layers.Add(layer);
@@ -262,9 +259,9 @@ internal class SceneRenderer
             layer.Dispose();
         }
     }
-    #endregion
 
-    #region Constructor/Finalizer.
+
+
     /// <summary>Initializes a new instance of the <see cref="Examples.Renderer"/> class.</summary>
     /// <param name="renderer">The renderer.</param>
     /// <param name="resources">The resources.</param>
@@ -279,5 +276,5 @@ internal class SceneRenderer
         _layers.AddRange(layerController.Layers);
         _camera = camera;
     }
-    #endregion
+
 }

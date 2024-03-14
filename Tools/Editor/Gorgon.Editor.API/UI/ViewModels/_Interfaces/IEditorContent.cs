@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2018 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,25 +11,25 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: October 29, 2018 3:49:26 PM
 // 
-#endregion
+
 
 using Gorgon.Editor.Content;
 
 namespace Gorgon.Editor.UI;
 
 /// <summary>
-/// The flags used to identify the current content state.
+/// The flags used to identify the current content state
 /// </summary>
 public enum ContentState
 {
@@ -48,7 +48,7 @@ public enum ContentState
 }
 
 /// <summary>
-/// The reason why the application is saving the content.
+/// The reason why the application is saving the content
 /// </summary>
 public enum SaveReason
 {
@@ -67,12 +67,12 @@ public enum SaveReason
 }
 
 /// <summary>
-/// Common interface for editor content view models.
+/// Common interface for editor content view models
 /// </summary>
 public interface IEditorContent
     : IViewModel
 {
-    #region Properties.
+
     /// <summary>
     /// Property to return the clipboard handler for this view model.
     /// </summary>
@@ -177,5 +177,5 @@ public interface IEditorContent
     {
         get;
     }
-    #endregion
+
 }

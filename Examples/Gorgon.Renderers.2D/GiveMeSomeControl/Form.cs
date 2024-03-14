@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2018 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,24 +11,20 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: August 24, 2018 2:33:28 PM
 // 
-#endregion
 
-using System;
-using System.Collections.Generic;
-using System.IO;
+
 using System.Numerics;
-using System.Windows.Forms;
 using Gorgon.Animation;
 using Gorgon.Core;
 using Gorgon.Graphics;
@@ -38,17 +34,17 @@ using Gorgon.Graphics.Imaging.Codecs;
 using Gorgon.Renderers;
 using Gorgon.UI;
 using DX = SharpDX;
-using FontStyle = Gorgon.Graphics.Fonts.FontStyle;
+
 
 namespace Gorgon.Examples;
 
 /// <summary>
-/// Main application form.
+/// Main application form
 /// </summary>
 public partial class Form
     : System.Windows.Forms.Form
 {
-    #region Variables.
+
     // Our primary graphics interface.
     private GorgonGraphics _graphics;
     // The swap chain for the left panel.
@@ -75,9 +71,9 @@ public partial class Form
     private Vector2 _scale = new(2, 2);
     // The original size of the left panel.
     private Vector2 _originalSize;
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Handles the SplitterMoved event of the SplitViews control.
     /// </summary>
@@ -174,7 +170,7 @@ public partial class Form
         _rightPanel = new GorgonSwapChain(_graphics,
                                           GroupControl2,
                                           new GorgonSwapChainInfo(_leftPanel, "Right Panel SwapChain")
-                                          {                                                  
+                                          {
                                               Width = GroupControl2.ClientSize.Width,
                                               Height = GroupControl2.ClientSize.Height
                                           });
@@ -208,14 +204,14 @@ public partial class Form
 
         GorgonExample.LoadResources(_graphics);
 
-        _appFont = GorgonExample.Fonts.GetFont(new GorgonFontInfo(Font.FontFamily.Name, Font.Size * 1.33333f, FontHeightMode.Points)
+        _appFont = GorgonExample.Fonts.GetFont(new GorgonFontInfo(Font.FontFamily.Name, Font.Size * 1.33333f, GorgonFontHeightMode.Points)
         {
             Name = "Form Font",
             Characters = "SpdtoxDrag me!\u2190:1234567890.",
             TextureWidth = 128,
             TextureHeight = 128,
             OutlineSize = 2,
-            FontStyle = FontStyle.Bold,
+            FontStyle = GorgonFontStyle.Bold,
             OutlineColor1 = GorgonColor.Black,
             OutlineColor2 = GorgonColor.Black
         });
@@ -339,12 +335,12 @@ public partial class Form
             Cursor.Current = Cursors.Default;
         }
     }
-    #endregion
 
-    #region Constructor/Finalizer.
+
+
     /// <summary>
     /// Initializes a new instance of the <see cref="Form"/> class.
     /// </summary>
     public Form() => InitializeComponent();
-    #endregion
+
 }

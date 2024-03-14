@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2019 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,25 +11,20 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: May 9, 2019 12:38:19 PM
 // 
-#endregion
 
-using System;
-using System.Collections.Generic;
+
 using System.ComponentModel;
-using System.Threading;
-using System.Threading.Tasks;
-using System.Windows.Forms;
 using Gorgon.Core;
 using Gorgon.Editor.Properties;
 using Gorgon.Editor.Rendering;
@@ -42,18 +37,18 @@ using Gorgon.UI;
 namespace Gorgon.Editor.UI.Views;
 
 /// <summary>
-/// The base form used for krypton tool plug ins.
+/// The base form used for krypton tool plug ins
 /// </summary>
 /// <remarks>
 /// <para>
 /// Developers who use to create tool plug ins for the editor should use this form as the base for their UI.  It provides functionality to make setting up and rendering easier, and will perform any 
-/// necessary clean up on behalf of the developer.
+/// necessary clean up on behalf of the developer
 /// </para>
 /// </remarks>
 public partial class EditorToolBaseForm
     : Form
 {
-    #region Variables.
+
     // A list of renderers used to draw our content to the UI.
     private readonly Dictionary<string, IToolRenderer> _renderers = new(StringComparer.OrdinalIgnoreCase);
     // The control that will receive rendering output.
@@ -70,9 +65,9 @@ public partial class EditorToolBaseForm
     private IEditorTool _dataContext;
     // The state for the close procedure.
     private int _closeState;
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to return the currently active tool renderer.
     /// </summary>
@@ -126,10 +121,10 @@ public partial class EditorToolBaseForm
 
             _renderControl = value;
         }
-    }        
-    #endregion
+    }
 
-    #region Methods.
+
+
     /// <summary>Handles the PropertyChanging event of the DataContext control.</summary>
     /// <param name="sender">The source of the event.</param>
     /// <param name="e">The <see cref="PropertyChangingEventArgs"/> instance containing the event data.</param>
@@ -192,14 +187,14 @@ public partial class EditorToolBaseForm
         OnShutdownGraphics();
 
         foreach (IToolRenderer renderer in _renderers.Values)
-        {                
+        {
             renderer.Dispose();
         }
 
         _renderers.Clear();
 
         GorgonSwapChain swapChain = Interlocked.Exchange(ref _swapChain, null);
-        IGraphicsContext context = Interlocked.Exchange(ref _graphicsContext, null);            
+        IGraphicsContext context = Interlocked.Exchange(ref _graphicsContext, null);
 
         GorgonApplication.AllowBackground = _oldBackgroundState;
 
@@ -275,7 +270,7 @@ public partial class EditorToolBaseForm
     /// </para>
     /// </remarks>
     protected virtual void OnRenderWindowDragDrop(DragEventArgs e)
-    {        
+    {
     }
 
     /// <summary>
@@ -324,7 +319,7 @@ public partial class EditorToolBaseForm
     /// </remarks>
     protected virtual void OnPropertyChanging(string propertyName)
     {
-    
+
     }
 
     /// <summary>
@@ -486,7 +481,7 @@ public partial class EditorToolBaseForm
     /// </remarks>
     protected virtual void OnUnassignEvents()
     {
-    
+
     }
 
     /// <summary>
@@ -499,7 +494,7 @@ public partial class EditorToolBaseForm
     /// </remarks>
     protected virtual void OnResetDataContext()
     {
-        
+
     }
 
     /// <summary>
@@ -634,7 +629,7 @@ public partial class EditorToolBaseForm
             _graphicsContext?.ReturnSwapPresenter(ref _swapChain);
             _graphicsContext = null;
         }
-                    
+
         GorgonSwapChain swapChain = context.LeaseSwapPresenter(RenderControl);
 
         // Always insert the default renderer.
@@ -673,9 +668,9 @@ public partial class EditorToolBaseForm
         _graphicsContext = context;
         _swapChain = swapChain;
     }
-    #endregion
 
-    #region Constructor/Finalizer.
+
+
     /// <summary>Initializes a new instance of the <see cref="EditorToolBaseForm"/> class.</summary>
     public EditorToolBaseForm()
     {
@@ -683,5 +678,5 @@ public partial class EditorToolBaseForm
 
         InitializeComponent();
     }
-    #endregion
+
 }

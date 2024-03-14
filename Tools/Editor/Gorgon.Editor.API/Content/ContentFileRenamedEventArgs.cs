@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2018 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,28 +11,29 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: December 23, 2018 3:38:25 PM
 // 
-#endregion
 
-using System;
 
 namespace Gorgon.Editor.Content;
 
 /// <summary>
-/// Event parameters for the <see cref="IContentFile.Renamed"/> event.
+/// Event parameters for the <see cref="IContentFile.Renamed"/> event
 /// </summary>
-public class ContentFileRenamedEventArgs
-    : EventArgs
+/// <remarks>Initializes a new instance of the <see cref="ContentFileRenamedEventArgs"/> class.</remarks>
+/// <param name="oldName">The old name.</param>
+/// <param name="newName">The new name.</param>
+public class ContentFileRenamedEventArgs(string oldName, string newName)
+        : EventArgs
 {
     /// <summary>
     /// Property to return the new name of the node.
@@ -40,7 +41,7 @@ public class ContentFileRenamedEventArgs
     public string NewName
     {
         get;
-    }
+    } = newName ?? string.Empty;
 
     /// <summary>
     /// Property to return the old name of the node.
@@ -48,14 +49,5 @@ public class ContentFileRenamedEventArgs
     public string OldName
     {
         get;
-    }
-
-    /// <summary>Initializes a new instance of the <see cref="ContentFileRenamedEventArgs"/> class.</summary>
-    /// <param name="oldName">The old name.</param>
-    /// <param name="newName">The new name.</param>
-    public ContentFileRenamedEventArgs(string oldName, string newName)
-    {
-        OldName = oldName ?? string.Empty;
-        NewName = newName ?? string.Empty;
-    }
+    } = oldName ?? string.Empty;
 }

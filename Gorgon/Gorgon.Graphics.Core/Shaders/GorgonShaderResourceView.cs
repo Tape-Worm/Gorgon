@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2016 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,20 +11,19 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: July 21, 2016 11:05:38 AM
 // 
-#endregion
 
-using System;
+
 using Gorgon.Core;
 using Gorgon.Diagnostics;
 using Gorgon.Graphics.Core.Properties;
@@ -34,22 +33,27 @@ using DX = SharpDX;
 namespace Gorgon.Graphics.Core;
 
 /// <summary>
-/// Base class for shader resource views.
+/// Base class for shader resource views
 /// </summary>
 /// <remarks>
 /// <para>
-/// This base class is used to define shader resource views for strongly typed resources like textures and buffers.
+/// This base class is used to define shader resource views for strongly typed resources like textures and buffers
 /// </para>
 /// </remarks>
-public abstract class GorgonShaderResourceView
-    : GorgonResourceView, IEquatable<GorgonShaderResourceView>
+/// <remarks>
+/// Initializes a new instance of the <see cref="GorgonShaderResourceView"/> class
+/// </remarks>
+/// <param name="resource">The resource to bind to the view.</param>
+/// <exception cref="ArgumentNullException">Thrown when the <paramref name="resource"/> parameter is <b>null</b>.</exception>
+public abstract class GorgonShaderResourceView(GorgonGraphicsResource resource)
+        : GorgonResourceView(resource), IEquatable<GorgonShaderResourceView>
 {
-    #region Variables.
+
     // The shader resource view descriptor.
     private D3D11.ShaderResourceViewDescription1 _srvDesc;
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to return a reference to the shader resource view descriptor.
     /// </summary>
@@ -63,9 +67,9 @@ public abstract class GorgonShaderResourceView
         get;
         set;
     }
-    #endregion
 
-    #region Methods.        
+
+
     /// <summary>Function to perform the creation of a specific kind of view.</summary>
     /// <returns>The view that was created.</returns>
     private protected sealed override D3D11.ResourceView OnCreateNativeView()
@@ -75,14 +79,14 @@ public abstract class GorgonShaderResourceView
         ref readonly D3D11.ShaderResourceViewDescription1 desc = ref OnGetSrvParams();
 
         try
-        {                
+        {
             Native = new D3D11.ShaderResourceView1(Graphics.D3DDevice, Resource.D3DResource, desc)
             {
                 DebugName = $"{Resource.Name}_SRV"
             };
 
             Graphics.Log.Print($"Shader Resource View for '{Resource.Name}': {Resource.ResourceType} -> Start: {desc.Buffer.ElementOffset}, Count: {desc.Buffer.ElementCount}", LoggingLevel.Verbose);
-            
+
             return Native;
         }
         catch (DX.SharpDXException sDXEx)
@@ -90,7 +94,7 @@ public abstract class GorgonShaderResourceView
             if ((uint)sDXEx.ResultCode.Code == 0x80070057)
             {
                 throw new GorgonException(GorgonResult.CannotCreate,
-                                          string.Format(Resources.GORGFX_ERR_VIEW_CANNOT_CAST_FORMAT,                                                            
+                                          string.Format(Resources.GORGFX_ERR_VIEW_CANNOT_CAST_FORMAT,
                                                         (BufferFormat)desc.Format));
             }
 
@@ -134,17 +138,6 @@ public abstract class GorgonShaderResourceView
     /// A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table. 
     /// </returns>
     public override int GetHashCode() => base.GetHashCode();
-    #endregion
 
-    #region Constructor/Finalizer.
-    /// <summary>
-    /// Initializes a new instance of the <see cref="GorgonShaderResourceView"/> class.
-    /// </summary>
-    /// <param name="resource">The resource to bind to the view.</param>
-    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="resource"/> parameter is <b>null</b>.</exception>
-    protected GorgonShaderResourceView(GorgonGraphicsResource resource)
-        : base(resource)
-    {
-    }
-    #endregion
+
 }

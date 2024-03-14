@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2020 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,24 +11,19 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: May 7, 2020 12:57:05 PM
 // 
-#endregion
 
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Windows.Forms;
+
 using Gorgon.Editor.Content;
 using Gorgon.Editor.SpriteEditor.Properties;
 using Gorgon.Graphics.Imaging;
@@ -40,18 +35,22 @@ using DX = SharpDX;
 namespace Gorgon.Editor.SpriteEditor;
 
 /// <summary>
-/// The service used to query for new sprite information.
+/// The service used to query for new sprite information
 /// </summary>
-internal class NewSpriteService 
+/// <remarks>Initializes a new instance of the <see cref="NewSpriteService"/> class.</remarks>
+/// <param name="fileManager">The project file manager.</param>
+/// <param name="imageCodec">The image codec for loading texture data.</param>
+/// <exception cref="ArgumentNullException">Thrown when the <paramref name="fileManager"/> parameter is <b>null</b>.</exception>
+internal class NewSpriteService(IContentFileManager fileManager, IGorgonImageCodec imageCodec)
 {
-    #region Variables.
-    // The file manager for the project file system.
-    private readonly IContentFileManager _fileManager;
-    // The image codec for loading texture data.
-    private readonly IGorgonImageCodec _imageCodec;
-    #endregion
 
-    #region Methods.
+    // The file manager for the project file system.
+    private readonly IContentFileManager _fileManager = fileManager ?? throw new ArgumentNullException(nameof(fileManager));
+    // The image codec for loading texture data.
+    private readonly IGorgonImageCodec _imageCodec = imageCodec ?? throw new ArgumentNullException(nameof(imageCodec));
+
+
+
     /// <summary>
     /// Function to determine if an image content file is a 2D image or not.
     /// </summary>
@@ -61,7 +60,7 @@ internal class NewSpriteService
     {
         using Stream stream = _fileManager.OpenStream(file.Path, FileMode.Open);
         IGorgonImageInfo metadata = _imageCodec.GetMetaData(stream);
-        return metadata.ImageType is not ImageType.Image3D and not ImageType.Image1D;
+        return metadata.ImageType is not ImageDataType.Image3D and not ImageDataType.Image1D;
     }
 
     /// <summary>
@@ -113,17 +112,8 @@ internal class NewSpriteService
             ? (newSpriteForm.ObjectName, newSpriteForm.TextureFile, newSpriteForm.SpriteSize)
             : (null, null, DX.Size2F.Zero);
     }
-    #endregion
 
-    #region Constructor.
-    /// <summary>Initializes a new instance of the <see cref="NewSpriteService"/> class.</summary>
-    /// <param name="fileManager">The project file manager.</param>
-    /// <param name="imageCodec">The image codec for loading texture data.</param>
-    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="fileManager"/> parameter is <b>null</b>.</exception>
-    public NewSpriteService(IContentFileManager fileManager, IGorgonImageCodec imageCodec)
-    {
-        _fileManager = fileManager ?? throw new ArgumentNullException(nameof(fileManager));
-        _imageCodec = imageCodec ?? throw new ArgumentNullException(nameof(imageCodec));
-    }
-    #endregion
+
+
+
 }

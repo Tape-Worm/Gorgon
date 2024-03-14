@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2018 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,25 +11,21 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: April 8, 2018 8:17:22 PM
 // 
-#endregion
 
-using System;
-using System.Collections.Generic;
-using System.IO;
+
 using System.Numerics;
 using System.Runtime.CompilerServices;
-using System.Threading;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
 using Gorgon.Graphics.Core.Properties;
@@ -43,40 +39,32 @@ using DX = SharpDX;
 namespace Gorgon.Graphics.Core;
 
 /// <summary>
-/// A texture used to project an image onto a graphic primitive such as a triangle.
+/// A texture used to project an image onto a graphic primitive such as a triangle
 /// </summary>
 public sealed class GorgonTexture3D
     : GorgonGraphicsResource, IGorgonTexture3DInfo, IGorgonTextureResource
 {
-    #region Constants.
+
     /// <summary>
     /// The prefix used for generated names.
     /// </summary>
     internal const string NamePrefix = nameof(GorgonTexture3D);
-    #endregion
 
-    #region Variables.
+
+
     // Default texture loading options.
     private static readonly GorgonTextureLoadOptions _defaultLoadOptions = new();
     // The ID number of the texture.
     private static int _textureID;
     // The list of cached texture unordered access views.
-    private Dictionary<TextureViewKey, GorgonTexture3DReadWriteView> _cachedReadWriteViews = new();
+    private Dictionary<TextureViewKey, GorgonTexture3DReadWriteView> _cachedReadWriteViews = [];
     // The list of cached texture shader resource views.
-    private Dictionary<TextureViewKey, GorgonTexture3DView> _cachedSrvs = new();
+    private Dictionary<TextureViewKey, GorgonTexture3DView> _cachedSrvs = [];
     // The list of cached render target resource views.
-    private Dictionary<TextureViewKey, GorgonRenderTarget3DView> _cachedRtvs = new();
-#if NET48_OR_GREATER
-#pragma warning disable IDE0044 // Add readonly modifier
-#endif
+    private Dictionary<TextureViewKey, GorgonRenderTarget3DView> _cachedRtvs = [];
     // The information used to create the texture.
     private GorgonTexture3DInfo _info;
-#if NET48_OR_GREATER
-#pragma warning restore IDE0044 // Add readonly modifier
-#endif
-    #endregion
 
-    #region Properties.
     /// <summary>
     /// Property to return the bind flags used for the D3D 11 resource.
     /// </summary>
@@ -85,7 +73,7 @@ public sealed class GorgonTexture3D
     /// <summary>
     /// Property to return the type of image data.
     /// </summary>
-    ImageType IGorgonImageInfo.ImageType => ImageType.Image3D;
+    ImageDataType IGorgonImageInfo.ImageType => ImageDataType.Image3D;
 
     /// <summary>
     /// Property to return whether the image data is using premultiplied alpha.
@@ -196,9 +184,9 @@ public sealed class GorgonTexture3D
     /// Property to return the name of this object.
     /// </summary>
     public override string Name => _info.Name;
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to transfer texture data into an image buffer.
     /// </summary>
@@ -336,7 +324,7 @@ public sealed class GorgonTexture3D
         }
 
         // Ensure that we can actually use our requested format as a texture.
-        if ((Format == BufferFormat.Unknown) || (!Graphics.FormatSupport[Format].IsTextureFormat(ImageType.Image3D)))
+        if ((Format == BufferFormat.Unknown) || (!Graphics.FormatSupport[Format].IsTextureFormat(ImageDataType.Image3D)))
         {
             throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_TEXTURE_FORMAT_NOT_SUPPORTED, Format, @"3D"));
         }
@@ -368,7 +356,6 @@ public sealed class GorgonTexture3D
         // Ensure the number of mip levels is not outside of the range for the width/height.
         int mipLevels = MipLevels.Min(GorgonImage.CalculateMaxMipCount(Width, Height, 1)).Max(1);
 
-#if NET6_0_OR_GREATER
         if (mipLevels != _info.MipLevels)
         {
             _info = _info with
@@ -376,7 +363,6 @@ public sealed class GorgonTexture3D
                 MipLevels = mipLevels
             };
         }
-#endif
 
         if (MipLevels > 1)
         {
@@ -522,7 +508,7 @@ public sealed class GorgonTexture3D
     /// <param name="format">The format for the texture.</param>
     /// <param name="mipCount">The number of mip map levels.</param>
     /// <returns>The number of bytes for the texture.</returns>
-    public static int CalculateSizeInBytes(int width, int height, int depth, BufferFormat format, int mipCount) => GorgonImage.CalculateSizeInBytes(ImageType.Image3D,
+    public static int CalculateSizeInBytes(int width, int height, int depth, BufferFormat format, int mipCount) => GorgonImage.CalculateSizeInBytes(ImageDataType.Image3D,
                                                 width,
                                                 height,
                                                 depth,
@@ -1025,7 +1011,6 @@ public sealed class GorgonTexture3D
     /// </para>
     /// </remarks>
     public GorgonTexture3D GetStagingTexture()
-#if NET6_0_OR_GREATER
     {
         GorgonTexture3DInfo info = _info with
         {
@@ -1040,9 +1025,6 @@ public sealed class GorgonTexture3D
 
         return staging;
     }
-#else
-        => null;
-#endif
 
     /// <summary>
     /// Function to update the texture, or a sub section of the texture with data from a <see cref="IGorgonImageBuffer"/> contained within a <see cref="IGorgonImage"/>.
@@ -1274,7 +1256,7 @@ public sealed class GorgonTexture3D
                 slice = depthSlice.Value.Min(Depth - 1).Max(0);
             }
 
-            image = new GorgonImage(new GorgonImageInfo(ImageType.Image3D, stagingTexture.Format)
+            image = new GorgonImage(new GorgonImageInfo(ImageDataType.Image3D, stagingTexture.Format)
             {
                 Width = (Width >> mipLevel).Max(1),
                 Height = (Height >> mipLevel).Max(1),
@@ -1324,7 +1306,7 @@ public sealed class GorgonTexture3D
                 stagingTexture = GetStagingTexture();
             }
 
-            image = new GorgonImage(new GorgonImageInfo(ImageType.Image3D, stagingTexture.Format)
+            image = new GorgonImage(new GorgonImageInfo(ImageDataType.Image3D, stagingTexture.Format)
             {
                 Width = Width,
                 Height = Height,
@@ -1880,9 +1862,9 @@ public sealed class GorgonTexture3D
     /// <summary>Function to retrieve a default shader resource view.</summary>
     /// <returns>The default shader resource view for the texture.</returns>
     GorgonShaderResourceView IGorgonTextureResource.GetShaderResourceView() => GetShaderResourceView();
-#endregion
 
-    #region Constructor/Finalizer.
+
+
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonTexture3D"/> class.
     /// </summary>
@@ -1941,5 +1923,5 @@ public sealed class GorgonTexture3D
 
         this.RegisterDisposable(graphics);
     }
-#endregion
+
 }

@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2018 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,21 +11,19 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: June 5, 2018 1:00:31 PM
 // 
-#endregion
 
-using System;
-using System.Collections.Generic;
+
 using Gorgon.Core;
 using Gorgon.Graphics.Core.Properties;
 using Gorgon.Memory;
@@ -33,18 +31,18 @@ using Gorgon.Memory;
 namespace Gorgon.Graphics.Core;
 
 /// <summary>
-/// A builder used to create <see cref="GorgonDispatchCall"/> objects.
+/// A builder used to create <see cref="GorgonDispatchCall"/> objects
 /// </summary>
 /// <seealso cref="GorgonDispatchCall"/>
 public class GorgonDispatchCallBuilder
     : IGorgonFluentBuilderAllocator<GorgonDispatchCallBuilder, GorgonDispatchCall, IGorgonAllocator<GorgonDispatchCall>>
 {
-    #region Variables.
+
     // The dispatch call being edited.
     private readonly GorgonDispatchCall _worker;
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to assign a list of samplers to a compute shader on the pipeline.
     /// </summary>
@@ -300,9 +298,9 @@ public class GorgonDispatchCallBuilder
 
         return this;
     }
-    #endregion
 
-    #region Constructor/Finalizer.
+
+
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonDispatchCallBuilder"/> class.
     /// </summary>
@@ -311,5 +309,5 @@ public class GorgonDispatchCallBuilder
         _worker = new GorgonDispatchCall();
         _worker.Setup();
     }
-    #endregion
+
 }

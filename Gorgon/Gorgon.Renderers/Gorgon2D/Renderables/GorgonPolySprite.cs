@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2018 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,23 +11,20 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: June 7, 2018 3:13:51 PM
 // 
-#endregion
 
-using System;
-using System.Collections.Generic;
+
 using System.Numerics;
-using System.Threading;
 using Gorgon.Collections;
 using Gorgon.Core;
 using Gorgon.Graphics;
@@ -42,12 +39,12 @@ using DX = SharpDX;
 namespace Gorgon.Renderers;
 
 /// <summary>
-/// A class that defines a polygonal region to display a 2D image.
+/// A class that defines a polygonal region to display a 2D image
 /// </summary>
 public class GorgonPolySprite
     : IDisposable
 {
-    #region Variables.
+
     // The renderable data for this sprite.
     // It is exposed as an internal variable (which goes against C# best practices) for performance reasons (property accesses add up over time).
     internal PolySpriteRenderable Renderable = new()
@@ -55,9 +52,9 @@ public class GorgonPolySprite
         WorldMatrix = Matrix4x4.Identity,
         TextureTransform = new Vector4(0, 0, 1, 1)
     };
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to return the read/write list of vertices for the poly sprite.
     /// </summary>
@@ -75,7 +72,7 @@ public class GorgonPolySprite
     {
         get;
         set;
-    } = Array.Empty<int>();
+    } = [];
 
     /// <summary>
     /// Property to return the list of vertices used by the poly sprite.
@@ -95,7 +92,7 @@ public class GorgonPolySprite
     /// Property to return whether this sprite contains any index data.
     /// </summary>
     [JsonIgnore]
-    public IReadOnlyList<int> Indices => RwIndices ?? Array.Empty<int>();
+    public IReadOnlyList<int> Indices => RwIndices ?? [];
 
     /// <summary>
     /// Property to set or return the color of the sprite.
@@ -438,9 +435,9 @@ public class GorgonPolySprite
             Renderable.HasTextureChanges = true;
         }
     }
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
     /// </summary>
@@ -659,19 +656,19 @@ public class GorgonPolySprite
         newSprite.Renderable.VertexBuffer = GorgonVertexBufferBinding.CreateVertexBuffer<Gorgon2DVertex>(graphics, new GorgonVertexBufferInfo(newSprite.Renderable.Vertices.Length * Gorgon2DVertex.SizeInBytes)
         {
             Usage = ResourceUsage.Immutable,
-            Binding = VertexIndexBufferBinding.None                
-        }, newSprite.Renderable.Vertices);                
+            Binding = VertexIndexBufferBinding.None
+        }, newSprite.Renderable.Vertices);
 
         return newSprite;
     }
-    #endregion
 
-    #region Constructor/Finalizer.
+
+
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonPolySprite"/> class.
     /// </summary>
     internal GorgonPolySprite()
     {
-    }        
-    #endregion
+    }
+
 }

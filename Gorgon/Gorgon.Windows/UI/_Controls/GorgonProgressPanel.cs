@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2018 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,35 +11,31 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: September 15, 2018 12:53:46 PM
 // 
-#endregion
 
-using System;
+
 using System.ComponentModel;
-using System.Drawing;
-using System.Threading;
-using System.Windows.Forms;
 using Gorgon.Math;
 
 namespace Gorgon.UI;
 
 /// <summary>
-/// The progress meter panel.
+/// The progress meter panel
 /// </summary>
 public partial class GorgonProgressPanel
     : UserControl
 {
-    #region Variables.
+
     // The synchronization context to use.
     private readonly SynchronizationContext _syncContext;
     // The current progress percentage.
@@ -48,9 +44,9 @@ public partial class GorgonProgressPanel
     private int _cancelEvent;
     // Flag to indicate that cancellation is allowed.
     private bool _allowCancel;
-    #endregion
 
-    #region Events.
+
+
     // The event triggered when the operation is cancelled.
     private event EventHandler OperationCancelledEvent;
 
@@ -80,9 +76,9 @@ public partial class GorgonProgressPanel
             OperationCancelledEvent -= value;
         }
     }
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>Gets or sets the foreground color of progress message box.</summary>
     [Browsable(true),
     Category("Appearance"),
@@ -221,9 +217,9 @@ public partial class GorgonProgressPanel
             }
         }
     }
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to unassign the cancel event.
     /// </summary>
@@ -374,12 +370,12 @@ public partial class GorgonProgressPanel
         base.OnLoad(e);
 
         ButtonCancel.Select();
-    }                
+    }
 
     /// <summary>
     /// Function to cancel the operation.
     /// </summary>
-    public void Cancel() 
+    public void Cancel()
     {
         if (!AllowCancellation)
         {
@@ -388,9 +384,9 @@ public partial class GorgonProgressPanel
 
         ButtonCancel.PerformClick();
     }
-    #endregion
 
-    #region Constructor/Finalizer.
+
+
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonProgressPanel"/> class.
     /// </summary>
@@ -404,5 +400,5 @@ public partial class GorgonProgressPanel
             AssignCancelEvent();
         }
     }
-    #endregion
+
 }

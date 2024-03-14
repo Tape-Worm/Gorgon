@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2017 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,21 +11,19 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: April 26, 2017 12:46:08 PM
 // 
-#endregion
 
-using System;
-using System.Runtime.Serialization;
+
 using Gorgon.Properties;
 
 namespace Gorgon.Core;
@@ -54,17 +52,6 @@ public class ArgumentEmptyException
     /// <param name="innerException">The inner exception for this exception.</param>
     public ArgumentEmptyException(string parameterName, Exception innerException)
         : base(Resources.GOR_ERR_PARAMETER_MUST_NOT_BE_EMPTY, parameterName, innerException)
-    {
-
-    }
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="ArgumentEmptyException"/> class.
-    /// </summary>
-    /// <param name="info">The object that holds the serialized object data.</param>
-    /// <param name="context">The contextual information about the source or destination.</param>
-    protected ArgumentEmptyException(SerializationInfo info, StreamingContext context)
-        : base(info, context)
     {
 
     }

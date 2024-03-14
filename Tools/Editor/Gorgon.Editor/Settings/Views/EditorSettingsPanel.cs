@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2019 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,24 +11,20 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: April 19, 2019 12:31:15 PM
 // 
-#endregion
 
-using System;
-using System.Collections.Generic;
+
 using System.ComponentModel;
-using System.Linq;
-using System.Windows.Forms;
 using Gorgon.Editor.UI;
 using Gorgon.Editor.UI.Views;
 using Gorgon.Editor.ViewModels;
@@ -36,29 +32,29 @@ using Gorgon.Editor.ViewModels;
 namespace Gorgon.Editor.Views;
 
 /// <summary>
-/// The view used to alter settings for the application.
+/// The view used to alter settings for the application
 /// </summary>
 internal partial class EditorSettingsPanel
     : EditorBaseControl, IDataContext<IEditorSettings>
 {
-    #region Variables.
+
     // The lookup used to locate categories.
     private readonly Dictionary<string, string> _categoryLookup = new(StringComparer.CurrentCultureIgnoreCase);
     // The lookup used to locate panels.
     private readonly Dictionary<string, SettingsBaseControl> _panelLookup = new(StringComparer.OrdinalIgnoreCase);
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>Property to return the data context assigned to this view.</summary>
     [Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-    public IEditorSettings DataContext
+    public IEditorSettings ViewModel
     {
         get;
         private set;
     }
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>Handles the SelectedIndexChanged event of the ListCategories control.</summary>
     /// <param name="sender">The source of the event.</param>
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
@@ -75,12 +71,12 @@ internal partial class EditorSettingsPanel
             return;
         }
 
-        if ((DataContext?.SetCategoryCommand is null) || (!DataContext.SetCategoryCommand.CanExecute(id)))
+        if ((ViewModel?.SetCategoryCommand is null) || (!ViewModel.SetCategoryCommand.CanExecute(id)))
         {
             return;
         }
 
-        DataContext.SetCategoryCommand.Execute(id);
+        ViewModel.SetCategoryCommand.Execute(id);
     }
 
     /// <summary>Handles the PropertyChanged event of the DataContext control.</summary>
@@ -91,7 +87,7 @@ internal partial class EditorSettingsPanel
         switch (e.PropertyName)
         {
             case nameof(IEditorSettings.CurrentCategory):
-                if (!_panelLookup.TryGetValue(DataContext.CurrentCategory.ID.ToString(), out SettingsBaseControl value))
+                if (!_panelLookup.TryGetValue(ViewModel.CurrentCategory.ID.ToString(), out SettingsBaseControl value))
                 {
                     break;
                 }
@@ -198,12 +194,12 @@ internal partial class EditorSettingsPanel
     /// </summary>
     private void UnassignEvents()
     {
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             return;
         }
 
-        DataContext.PropertyChanged -= DataContext_PropertyChanged;
+        ViewModel.PropertyChanged -= DataContext_PropertyChanged;
     }
 
     /// <summary>
@@ -267,18 +263,18 @@ internal partial class EditorSettingsPanel
         PlugInList.SetDataContext(dataContext?.PlugInsList);
 
         InitializeFromDataContext(dataContext);
-        DataContext = dataContext;
+        ViewModel = dataContext;
 
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             return;
         }
 
-        DataContext.PropertyChanged += DataContext_PropertyChanged;
+        ViewModel.PropertyChanged += DataContext_PropertyChanged;
     }
-    #endregion
 
-    #region Constructor/Finalizer.
+
+
     /// <summary>Initializes a new instance of the <see cref="EditorSettingsPanel"/> class.</summary>
     public EditorSettingsPanel()
     {
@@ -288,5 +284,5 @@ internal partial class EditorSettingsPanel
         _panelLookup[PlugInList.PanelID] = PlugInList;
         _categoryLookup[ListCategories.Items[0].ToString()] = PlugInList.PanelID;
     }
-    #endregion
+
 }

@@ -1,6 +1,6 @@
-#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2015 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,29 +11,27 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: Saturday, September 19, 2015 11:40:28 PM
 // 
-#endregion
 
-using System;
 
 namespace Gorgon.IO.Providers;
 
 /// <summary>
-/// Provides information about a file stored in a physical file system.
+/// Provides information about a file stored in a physical file system
 /// </summary>
 public interface IGorgonPhysicalFileInfo
 {
-    #region Properties.
+
     /// <summary>
     /// Property to return the full path to the physical file.
     /// </summary>
@@ -133,12 +131,12 @@ public interface IGorgonPhysicalFileInfo
     {
         get;
     }
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to refresh the file information.
     /// </summary>
     void Refresh();
-    #endregion
+
 }

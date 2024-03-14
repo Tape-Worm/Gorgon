@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2018 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,45 +11,42 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: August 31, 2018 1:00:47 AM
 // 
-#endregion
 
-using System;
-using System.Threading;
-using System.Windows.Forms;
+
 using Gorgon.Math;
 
 namespace Gorgon.Editor.Services;
 
 /// <summary>
-/// An implementation of <see cref="IBusyStateService"/> that shows a wait cursor when an application main thread is busy.
+/// An implementation of <see cref="IBusyStateService"/> that shows a wait cursor when an application main thread is busy
 /// </summary>
 /// <remarks>
 /// <para>
-/// This implementation is reference counted. That is, a call to <see cref="SetBusy"/> increments an internal counter.
+/// This implementation is reference counted. That is, a call to <see cref="SetBusy"/> increments an internal counter
 /// </para>
 /// </remarks>
 public class WaitCursorBusyState
     : IBusyStateService
 {
-    #region Variables.
+
     // Synchronization lock for the event.
     private readonly object _eventLock = new();
     // The number of times the SetBusy method has been called.
     private int _busyStateCounter;
-    #endregion
 
-    #region Events.
+
+
     // Event triggered when the busy state changes.
     private event EventHandler BusyStateChangedEvent;
 
@@ -84,9 +81,9 @@ public class WaitCursorBusyState
             }
         }
     }
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to return whether or not there's a busy state.
     /// </summary>
@@ -95,9 +92,9 @@ public class WaitCursorBusyState
         get;
         private set;
     }
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to trigger the busy state change event.
     /// </summary>
@@ -166,5 +163,5 @@ public class WaitCursorBusyState
 
         OnBusyStateChanged();
     }
-    #endregion
+
 }

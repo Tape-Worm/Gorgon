@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2021 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,46 +11,46 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: February 13, 2021 3:59:57 PM
 // 
-#endregion
 
-using System.Collections.Generic;
-using System.Linq;
+
 using System.Numerics;
 
 namespace Gorgon.Examples;
 
 /// <summary>
-/// The camera controller for the layers.
+/// The camera controller for the layers
 /// </summary>
 /// <remarks>
-/// This updates the view point of the user by offsetting all the layers by a specified amount.
+/// This updates the view point of the user by offsetting all the layers by a specified amount
 /// </remarks>
-internal class LayerCamera
+/// <remarks>Initializes a new instance of the <see cref="LayerCamera"/> class.</remarks>
+/// <param name="layers">The layers used by the application.</param>
+internal class LayerCamera(IEnumerable<Layer> layers)
 {
-    #region Variables.
+
     // The layer to track.
     private Layer _trackingLayer;
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to return the list of layers to control.
     /// </summary>
     public IReadOnlyList<Layer> Layers
     {
         get;
-    }
+    } = layers.ToArray();
 
     /// <summary>
     /// Property to set or return the layer that will be tracked by the controller.
@@ -71,9 +71,9 @@ internal class LayerCamera
             }
         }
     }
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to set the position of all unlocked layers.
     /// </summary>
@@ -94,11 +94,6 @@ internal class LayerCamera
             layer.Update();
         }
     }
-    #endregion
 
-    #region Constructor/Finalizer.
-    /// <summary>Initializes a new instance of the <see cref="LayerCamera"/> class.</summary>
-    /// <param name="layers">The layers used by the application.</param>
-    public LayerCamera(IEnumerable<Layer> layers) => Layers = layers.ToArray();
-    #endregion
+
 }

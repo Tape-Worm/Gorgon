@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2018 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,21 +11,19 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: August 10, 2018 7:34:05 PM
 // 
-#endregion
 
-using System;
-using System.Collections.Generic;
+
 using System.Numerics;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
@@ -38,7 +36,7 @@ using DX = SharpDX;
 namespace Gorgon.Renderers;
 
 /// <summary>
-/// A fluent interface for the <see cref="Gorgon2D"/> object.
+/// A fluent interface for the <see cref="Gorgon2D"/> object
 /// </summary>
 public interface IGorgon2DFluent
     : IDisposable
@@ -183,7 +181,7 @@ public interface IGorgon2DFluent
 }
 
 /// <summary>
-/// A fluent interface for drawing commands on a <see cref="Gorgon2D"/> object.
+/// A fluent interface for drawing commands on a <see cref="Gorgon2D"/> object
 /// </summary>
 public interface IGorgon2DDrawingFluent
 {

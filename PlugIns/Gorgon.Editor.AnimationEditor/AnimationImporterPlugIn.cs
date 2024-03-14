@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2020 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,22 +11,19 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: June 5, 2020 6:15:37 PM
 // 
-#endregion
 
-using System;
-using System.IO;
-using System.Linq;
+
 using Gorgon.Editor.AnimationEditor.Properties;
 using Gorgon.Editor.AnimationEditor.Services;
 using Gorgon.Editor.PlugIns;
@@ -38,12 +35,12 @@ using Gorgon.PlugIns;
 namespace Gorgon.Editor.AnimationEditor;
 
 /// <summary>
-/// A plugin used to build an importer for animation data.
+/// A plugin used to build an importer for animation data
 /// </summary>
 internal class AnimationImporterPlugIn
     : ContentImportPlugIn
 {
-    #region Variables.
+
     // The image editor settings.
     private IImportSettings _settings;
 
@@ -57,9 +54,9 @@ internal class AnimationImporterPlugIn
     /// The file name for the file that stores the settings.
     /// </summary>
     public readonly static string SettingsFilename = typeof(AnimationImporterPlugIn).FullName;
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to retrieve the codec used by the sprite.
     /// </summary>
@@ -169,13 +166,13 @@ internal class AnimationImporterPlugIn
     /// <returns>A new <see cref="IEditorContentImporter"/> object.</returns>
     /// <remarks>This method creates an instance of the custom content importer. The application will use the object returned to perform the actual import process.</remarks>
     protected override IEditorContentImporter OnCreateImporter() => new GorgonAnimationImporter(ProjectFileSystem, TemporaryFileSystem, _codecs, HostContentServices.GraphicsContext.Renderer2D, HostContentServices.Log);
-    #endregion
 
-    #region Constructor/Finalizer.
+
+
     /// <summary>Initializes a new instance of the <see cref="AnimationImporterPlugIn"/> class.</summary>
     public AnimationImporterPlugIn()
         : base(Resources.GORANM_IMPORT_DESC)
     {
     }
-    #endregion
+
 }

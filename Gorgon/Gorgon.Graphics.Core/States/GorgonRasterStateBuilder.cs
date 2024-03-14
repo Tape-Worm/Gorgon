@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2018 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,35 +11,35 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: May 24, 2018 4:10:30 PM
 // 
-#endregion
+
 
 
 namespace Gorgon.Graphics.Core;
 
 /// <summary>
-/// A builder for a <see cref="GorgonRasterState"/> object.
+/// A builder for a <see cref="GorgonRasterState"/> object
 /// </summary>
 /// <remarks>
 /// <para>
 /// Use this builder to create a new immutable <see cref="GorgonRasterState"/> to pass to a <see cref="GorgonPipelineState"/>. This object provides a fluent interface to help build up a 
-/// raster state.
+/// raster state
 /// </para>
 /// <para>
-/// This will define how a triangle, line, point, etc... is rasterized by the GPU when rendering. Clipping, vertex ordering, culling, etc... are all affected by this state.
+/// This will define how a triangle, line, point, etc... is rasterized by the GPU when rendering. Clipping, vertex ordering, culling, etc... are all affected by this state
 /// </para>
 /// <para>
-/// A raster state is an immutable object, and as such can only be created by using this object.
+/// A raster state is an immutable object, and as such can only be created by using this object
 /// </para>
 /// </remarks>
 /// <seealso cref="GorgonGraphics"/>
@@ -48,7 +48,7 @@ namespace Gorgon.Graphics.Core;
 public class GorgonRasterStateBuilder
     : GorgonStateBuilderAllocator<GorgonRasterStateBuilder, GorgonRasterState>
 {
-    #region Methods.
+
     /// <summary>
     /// Function to copy the state settings from the source state into the destination.
     /// </summary>
@@ -75,7 +75,7 @@ public class GorgonRasterStateBuilder
     /// </summary>
     /// <returns>The fluent builder interface.</returns>
     protected override GorgonRasterState OnCreateState() => new(WorkingState);
-    
+
     /// <summary>Function to update the properties of the state, allocated from an allocator, from the working copy.</summary>
     /// <param name="state">The state to update.</param>
     protected override void OnUpdate(GorgonRasterState state) => CopyState(WorkingState, state);
@@ -230,9 +230,9 @@ public class GorgonRasterStateBuilder
         }
         return this;
     }
-    #endregion
 
-    #region Constructor.
+
+
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonRasterStateBuilder"/> class.
     /// </summary>
@@ -240,5 +240,5 @@ public class GorgonRasterStateBuilder
         : base(new GorgonRasterState())
     {
     }
-    #endregion
+
 }

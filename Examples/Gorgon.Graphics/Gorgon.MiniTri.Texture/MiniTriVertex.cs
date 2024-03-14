@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2017 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: March 4, 2017 9:51:18 AM
 // 
-#endregion
+
 
 using System.Numerics;
 using System.Runtime.CompilerServices;
@@ -32,13 +32,18 @@ using Gorgon.Graphics.Core;
 namespace Gorgon.Examples;
 
 /// <summary>
-/// This represents a single vertex in our triangle.
+/// This represents a single vertex in our triangle
 /// 
 /// It will contain a position, and a texture coordinate. We have to specify the packing and the layout ordering so we can safely transfer the data from the managed 
-/// environment of .NET into the unmanaged world of Direct 3D.
+/// environment of .NET into the unmanaged world of Direct 3D
 /// </summary>
+/// <remarks>
+/// Initializes a new instance of the <see cref="MiniTriVertex"/> struct
+/// </remarks>
+/// <param name="position">The position of the vertex in object space.</param>
+/// <param name="uv">The texture coordinate for this vertex.</param>
 [StructLayout(LayoutKind.Sequential, Pack = 1)]
-internal struct MiniTriVertex
+internal struct MiniTriVertex(Vector3 position, Vector2 uv)
 {
     /// <summary>
     /// This is the size of the vertex, in bytes. 
@@ -54,7 +59,7 @@ internal struct MiniTriVertex
     /// as indicated by the integer parameter.
     /// </summary>
     [InputElement(0, "SV_POSITION")]
-    public Vector4 Position;
+    public Vector4 Position = new(position, 1.0f);
 
     /// <summary>
     /// This will be the texture coordinate for the vertex.
@@ -63,18 +68,5 @@ internal struct MiniTriVertex
     /// texture, and 1, 1 is the lower-right of the texture.
     /// </summary>
     [InputElement(1, "TEX_COORD")]
-    public Vector2 UV;
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="MiniTriVertex"/> struct.
-    /// </summary>
-    /// <param name="position">The position of the vertex in object space.</param>
-    /// <param name="uv">The texture coordinate for this vertex.</param>
-    public MiniTriVertex(Vector3 position, Vector2 uv)
-    {
-        // Note that we're passing a 3D vector, but storing a 4D vector. We need the W coordinate set to 1.0f to indicate that the coordinates are normalized.
-        // For more information about the W component, go to http://www.tomdalling.com/blog/modern-opengl/explaining-homogenous-coordinates-and-projective-geometry/
-        Position = new Vector4(position, 1.0f);
-        UV = uv;
-    }
+    public Vector2 UV = uv;
 }

@@ -1,6 +1,6 @@
-#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2016 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: July 28, 2016 8:42:36 PM
 // 
-#endregion
+
 
 
 using Gorgon.Core;
@@ -30,11 +30,11 @@ using Gorgon.Core;
 namespace Gorgon.Graphics.Core;
 
 /// <summary>
-/// Provides information on how to set up a constant buffer.
+/// Provides information on how to set up a constant buffer
 /// </summary>
 /// <remarks>
 /// <para>
-/// This provides an immutable view of the constant buffer information so that it cannot be modified after the buffer is created.
+/// This provides an immutable view of the constant buffer information so that it cannot be modified after the buffer is created
 /// </para>
 /// </remarks>
 public interface IGorgonConstantBufferInfo

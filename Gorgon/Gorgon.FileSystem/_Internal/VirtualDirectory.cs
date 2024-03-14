@@ -1,6 +1,6 @@
-﻿#region MIT.
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2011 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,22 +11,19 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: Monday, June 27, 2011 8:58:26 AM
 // 
-#endregion
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
+
 using Gorgon.Collections;
 using Gorgon.Core;
 using Gorgon.IO.Providers;
@@ -34,7 +31,7 @@ using Gorgon.IO.Providers;
 namespace Gorgon.IO;
 
 /// <summary>
-/// A representation of a virtual directory within a <see cref="IGorgonFileSystem"/>.
+/// A representation of a virtual directory within a <see cref="IGorgonFileSystem"/>
 /// </summary>
 /// <remarks>
 /// <para>
@@ -43,13 +40,13 @@ namespace Gorgon.IO;
 /// <para>
 /// Directories can be created by creating a <see cref="IGorgonFileSystemWriter{T}"/> instance and calling its <see cref="IGorgonFileSystemWriter{T}.CreateDirectory"/>. Likewise, if you wish to delete 
 /// a directory, call the <see cref="IGorgonFileSystemWriter{T}.DeleteDirectory(string, Action{string}, System.Threading.CancellationToken?)"/> method on the <see cref="IGorgonFileSystemWriter{T}"/> 
-/// object.
+/// object
 /// </para>
 /// </remarks>
 internal class VirtualDirectory
     : IGorgonVirtualDirectory
 {
-    #region Properties.
+
     /// <summary>
     /// Property to return the name of the directory.
     /// </summary>
@@ -134,9 +131,9 @@ internal class VirtualDirectory
     /// Property to return the full path to the directory.
     /// </summary>
     public string FullPath => Parent is null ? "/" : Parent.FullPath + Name + "/";
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to return all the parents up to the root directory.
     /// </summary>
@@ -225,9 +222,9 @@ internal class VirtualDirectory
 
         return directories.Any(item => item.Files.Contains(fileName));
     }
-    #endregion
 
-    #region Constructor/Destructor.
+
+
     /// <summary>
     /// Initializes a new instance of the <see cref="VirtualDirectory" /> class.
     /// </summary>
@@ -244,5 +241,5 @@ internal class VirtualDirectory
         Directories = new VirtualDirectoryCollection(this);
         Files = new VirtualFileCollection(this);
     }
-    #endregion
+
 }

@@ -27,13 +27,13 @@ partial class FormRibbon
                 _contentRenderer.ZoomScaleChanged -= ContentRenderer_ZoomScale;
             }
 
-            DataContext = null;
+            ViewModel = null;
         }
 
         base.Dispose(disposing);
     }
 
-    #region Windows Form Designer generated code
+
 
     /// <summary>
     /// Required method for Designer support - do not modify
@@ -753,7 +753,7 @@ partial class FormRibbon
         this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
         this.ClientSize = new System.Drawing.Size(1437, 399);
         this.Controls.Add(this.RibbonTextContent);
-        this.Font = new System.Drawing.Font("Segoe UI", 9F);
+        
         this.Name = "FormRibbon";
         this.Text = "FormRibbon";
         ((System.ComponentModel.ISupportInitialize)(this.RibbonTextContent)).EndInit();
@@ -765,7 +765,7 @@ partial class FormRibbon
 
     }
 
-    #endregion
+
     private Krypton.Ribbon.KryptonRibbonTab TabFont;
     private Krypton.Ribbon.KryptonRibbonGroup GroupImageFile;
     private Krypton.Ribbon.KryptonRibbonGroupTriple kryptonRibbonGroupTriple1;

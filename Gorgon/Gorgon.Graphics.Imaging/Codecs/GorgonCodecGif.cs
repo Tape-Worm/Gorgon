@@ -1,6 +1,6 @@
-﻿#region MIT.
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2013 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,22 +11,19 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: Thursday, February 14, 2013 9:24:55 PM
 // 
-#endregion
 
-using System;
-using System.Collections.Generic;
-using System.IO;
+
 using Gorgon.Core;
 using Gorgon.Graphics.Imaging.Properties;
 using Gorgon.Math;
@@ -35,30 +32,35 @@ using SharpDX.WIC;
 namespace Gorgon.Graphics.Imaging.Codecs;
 
 /// <summary>
-/// A codec to handle reading/writing GIF files.
+/// A codec to handle reading/writing GIF files
 /// </summary>
 /// <remarks>
 /// <para>
-/// This codec will read and write lossless compressed files using the Graphics Interchange Format (GIF).
+/// This codec will read and write lossless compressed files using the Graphics Interchange Format (GIF)
 /// </para>
 /// <para>
 /// This codec only supports 1, 4, and 8 bit indexed pixel formats, and uses a palette to define the actual colors at the indices for each pixel. All data decoded will be encoded using the 
-/// 32 bit <see cref="BufferFormat.R8G8B8A8_UNorm"/> pixel format. Data encoded with this codec will be downsampled to 8 bit indexed data.
+/// 32 bit <see cref="BufferFormat.R8G8B8A8_UNorm"/> pixel format. Data encoded with this codec will be downsampled to 8 bit indexed data
 /// </para>
 /// </remarks>
-public sealed class GorgonCodecGif
-    : GorgonCodecWic<GorgonGifEncodingOptions, GorgonGifDecodingOptions>
+/// <remarks>
+/// Initializes a new instance of the <see cref="GorgonCodecGif" /> class
+/// </remarks>
+/// <param name="encodingOptions">[Optional] Options to use when encoding a GIF file.</param>
+/// <param name="decodingOptions">[Optional] Options to use when decoding a GIF file.</param>
+public sealed class GorgonCodecGif(GorgonGifEncodingOptions encodingOptions = null, GorgonGifDecodingOptions decodingOptions = null)
+        : GorgonCodecWic<GorgonGifEncodingOptions, GorgonGifDecodingOptions>("GIF", Resources.GORIMG_DESC_GIF_CODEC, ["gif"], ContainerFormatGuids.Gif, encodingOptions, decodingOptions)
 {
-    #region Variables.
+
     // Meta data names for the frame offsets.
     private static readonly string[] _frameOffsetItems =
-    {
+    [
         "/imgdesc/Left",
         "/imgdesc/Top"
-    };
-    #endregion
+    ];
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to return the list of names used to locate frame offsets in metadata.
     /// </summary>
@@ -71,9 +73,9 @@ public sealed class GorgonCodecGif
     /// Property to return whether the codec supports decoding/encoding multiple frames or not.
     /// </summary>
     public override bool SupportsMultipleFrames => true;
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to retrieve custom metadata when encoding an image frame.
     /// </summary>
@@ -203,17 +205,8 @@ public sealed class GorgonCodecGif
             stream.Position = position;
         }
     }
-    #endregion
 
-    #region Constructor/Destructor.
-    /// <summary>
-    /// Initializes a new instance of the <see cref="GorgonCodecGif" /> class.
-    /// </summary>
-    /// <param name="encodingOptions">[Optional] Options to use when encoding a GIF file.</param>
-    /// <param name="decodingOptions">[Optional] Options to use when decoding a GIF file.</param>
-    public GorgonCodecGif(GorgonGifEncodingOptions encodingOptions = null, GorgonGifDecodingOptions decodingOptions = null)
-        : base("GIF", Resources.GORIMG_DESC_GIF_CODEC, new[] { "gif" }, ContainerFormatGuids.Gif, encodingOptions, decodingOptions)
-    {
-    }
-    #endregion
+
+
+
 }

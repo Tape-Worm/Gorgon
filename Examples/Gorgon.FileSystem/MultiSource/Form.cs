@@ -1,6 +1,6 @@
-﻿#region MIT.
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2013 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,26 +11,20 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: Thursday, January 17, 2013 11:07:02 PM
 // 
-#endregion
 
-using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.IO;
-using System.Linq;
+
 using System.Text;
-using System.Windows.Forms;
 using Gorgon.Core;
 using Gorgon.IO;
 using Gorgon.IO.Providers;
@@ -40,7 +34,7 @@ using Gorgon.UI;
 namespace Gorgon.Examples;
 
 /// <summary>
-/// Main application interface.
+/// Main application interface
 /// </summary>
 /// <remarks>
 /// In this example we will mount two different data sources into a virtual file system.  
@@ -55,19 +49,19 @@ namespace Gorgon.Examples;
 /// are mounted.  If 2 or more data sources contain the same file names, then the data source that was mounted
 /// last will take precedence over the previous file systems.  For example, if D:\directory\filename.txt exists in
 /// the virtual root as "/filename.txt" and we mount a zip file that has filename.txt in the root of the zip file,
-/// then when we open filename.txt from the virtual file system we will be opening the file from the zip file.
+/// then when we open filename.txt from the virtual file system we will be opening the file from the zip file
 /// 
 /// We begin the example by loading the file system provider for zip files, and then mounting a physical folder
 /// and then the zip file into a virtual subdirectory.  From there we enumerate the files and virtual sub directories
 /// into the tree view.  Opening a file can be done either from the file entry as shown in the example, or it can be
 /// opened via the file system interface (allowing the user to pass a full path to the file).  Files can be returned
 /// as a stream (OpenStream) or an array of bytes (ReadFile).  Please note that writing to these file systems is not
-/// supported and can only be done when a write directory is set.  This will be covered in another example.
+/// supported and can only be done when a write directory is set.  This will be covered in another example
 /// </remarks>
 public partial class Form
     : System.Windows.Forms.Form
 {
-    #region Variables.
+
     // Our file system.
     private GorgonFileSystem _fileSystem;
     // Our picture box.
@@ -82,9 +76,9 @@ public partial class Form
     private Label _instructions;
     // File system plug in assembly cache.
     private GorgonMefPlugInCache _cache;
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Handles the NodeMouseDoubleClick event of the treeFileSystem control.
     /// </summary>
@@ -219,7 +213,7 @@ public partial class Form
         var providerFactory = new GorgonFileSystemProviderFactory(_cache, Program.Log);
         IGorgonFileSystemProvider provider = providerFactory.CreateProvider(Path.Combine(GorgonExample.GetPlugInPath().FullName, "Gorgon.FileSystem.Zip.DLL"), zipProviderPlugInName);
 
-        _fileSystem = new GorgonFileSystem(provider, Program.Log);           
+        _fileSystem = new GorgonFileSystem(provider, Program.Log);
     }
 
     /// <summary>
@@ -409,12 +403,18 @@ public partial class Form
             GorgonApplication.Quit();
         }
     }
-    #endregion
 
-    #region Constructor/Destructor.
     /// <summary>
     /// Initializes a new instance of the <see cref="Form" /> class.
     /// </summary>
-    public Form() => InitializeComponent();
-    #endregion
+    public Form()
+    {
+        InitializeComponent();
+
+        imageTree.ImageSize = new Size(16, 16);
+        imageTree.Images.Add(Properties.Resources.folder_16x16);
+        imageTree.Images.Add(Properties.Resources.document_text_16x16);
+        imageTree.Images.Add(Properties.Resources.packed_file_16x16);
+    }
+
 }

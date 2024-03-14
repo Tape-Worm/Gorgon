@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2019 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,23 +11,20 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: May 9, 2019 7:50:58 AM
 // 
-#endregion
 
-using System;
+
 using System.ComponentModel;
-using System.Threading.Tasks;
-using System.Windows.Forms;
 using Gorgon.Editor.ImageSplitTool.Properties;
 using Gorgon.Editor.Rendering;
 using Gorgon.Editor.UI;
@@ -39,45 +36,45 @@ using Gorgon.UI;
 namespace Gorgon.Editor.ImageSplitTool;
 
 /// <summary>
-/// A dialog used for sprite selection.
+/// A dialog used for sprite selection
 /// </summary>
 internal partial class FormImageSelector
     : EditorToolBaseForm, IDataContext<ISplit>
 {
-    #region Variables.
+
     // Flag to indicate that the form is being designed in the IDE.
     private readonly bool _isDesignTime;
     // The state of the close operation.
     private int _closeState;
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>Property to return the data context assigned to this view.</summary>
     [Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-    public ISplit DataContext
+    public ISplit ViewModel
     {
         get;
         private set;
     }
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to validate the controls on the form.
     /// </summary>
-    private void ValidateControls() => ButtonSplit.Enabled = DataContext?.SplitImageCommand?.CanExecute(null) ?? false;
+    private void ValidateControls() => ButtonSplit.Enabled = ViewModel?.SplitImageCommand?.CanExecute(null) ?? false;
 
     /// <summary>Handles the Search event of the ContentFileExplorer control.</summary>
     /// <param name="sender">The source of the event.</param>
     /// <param name="e">The <see cref="GorgonSearchEventArgs"/> instance containing the event data.</param>
     private void ContentFileExplorer_Search(object sender, GorgonSearchEventArgs e)
     {
-        if ((DataContext?.SearchCommand is null) || (!DataContext.SearchCommand.CanExecute(e.SearchText)))
+        if ((ViewModel?.SearchCommand is null) || (!ViewModel.SearchCommand.CanExecute(e.SearchText)))
         {
             return;
         }
 
-        DataContext.SearchCommand.Execute(e.SearchText);
+        ViewModel.SearchCommand.Execute(e.SearchText);
         ValidateControls();
     }
 
@@ -87,12 +84,12 @@ internal partial class FormImageSelector
     /// <param name="e">The e.</param>
     private async void ContentFileExplorer_FileEntriesFocused(object sender, ContentFileEntriesFocusedArgs e)
     {
-        if ((DataContext?.RefreshSpritePreviewCommand is null) || (!DataContext.RefreshSpritePreviewCommand.CanExecute(e.FocusedFiles)))
+        if ((ViewModel?.RefreshSpritePreviewCommand is null) || (!ViewModel.RefreshSpritePreviewCommand.CanExecute(e.FocusedFiles)))
         {
             return;
         }
 
-        await DataContext.RefreshSpritePreviewCommand.ExecuteAsync(e.FocusedFiles);
+        await ViewModel.RefreshSpritePreviewCommand.ExecuteAsync(e.FocusedFiles);
         ValidateControls();
     }
 
@@ -102,13 +99,13 @@ internal partial class FormImageSelector
     private async void ButtonCancel_Click(object sender, EventArgs e)
     {
         var args = new CancelEventArgs();
-        if ((DataContext?.CancelCommand is null) || (!DataContext.CancelCommand.CanExecute(args)))
+        if ((ViewModel?.CancelCommand is null) || (!ViewModel.CancelCommand.CanExecute(args)))
         {
             Close();
             return;
         }
 
-        await DataContext.CancelCommand.ExecuteAsync(args);
+        await ViewModel.CancelCommand.ExecuteAsync(args);
 
         if (args.Cancel)
         {
@@ -125,7 +122,7 @@ internal partial class FormImageSelector
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
     private async void ButtonSplit_Click(object sender, EventArgs e)
     {
-        if ((DataContext?.SplitImageCommand is null) || (!DataContext.SplitImageCommand.CanExecute(null)))
+        if ((ViewModel?.SplitImageCommand is null) || (!ViewModel.SplitImageCommand.CanExecute(null)))
         {
             return;
         }
@@ -136,7 +133,7 @@ internal partial class FormImageSelector
         SplitFileSelector.Visible = false;
         TableOutput.Visible = false;
 
-        await DataContext.SplitImageCommand.ExecuteAsync(null);
+        await ViewModel.SplitImageCommand.ExecuteAsync(null);
 
         SplitFileSelector.Visible = true;
         TableOutput.Visible = true;
@@ -152,10 +149,10 @@ internal partial class FormImageSelector
         switch (propertyName)
         {
             case nameof(ISplit.Progress):
-                LabelProcessing.Text = string.IsNullOrWhiteSpace(DataContext.Progress) ? Resources.GORIST_TEXT_LOADING : string.Format(Resources.GORIST_TEXT_PROCESSING, DataContext.Progress);
+                LabelProcessing.Text = string.IsNullOrWhiteSpace(ViewModel.Progress) ? Resources.GORIST_TEXT_LOADING : string.Format(Resources.GORIST_TEXT_PROCESSING, ViewModel.Progress);
                 break;
             case nameof(ISplit.OutputDirectory):
-                TextOutputFolder.Text = DataContext.OutputDirectory;
+                TextOutputFolder.Text = ViewModel.OutputDirectory;
                 break;
         }
 
@@ -167,12 +164,12 @@ internal partial class FormImageSelector
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
     private void ButtonFolderBrowse_Click(object sender, EventArgs e)
     {
-        if ((DataContext?.SelectFolderCommand is null) || (!DataContext.SelectFolderCommand.CanExecute(null)))
+        if ((ViewModel?.SelectFolderCommand is null) || (!ViewModel.SelectFolderCommand.CanExecute(null)))
         {
             return;
         }
 
-        DataContext.SelectFolderCommand.Execute(null);
+        ViewModel.SelectFolderCommand.Execute(null);
     }
 
     /// <summary>
@@ -212,7 +209,7 @@ internal partial class FormImageSelector
     {
         base.OnSetupGraphics(graphicsContext, swapChain);
 
-        var renderer = new Renderer(graphicsContext.Renderer2D, swapChain, DataContext);
+        var renderer = new Renderer(graphicsContext.Renderer2D, swapChain, ViewModel);
         renderer.Initialize();
 
         AddRenderer("PreviewRenderer", renderer);
@@ -232,20 +229,20 @@ internal partial class FormImageSelector
 
         if (_closeState != 0)
         {
-            DataContext?.Unload();
+            ViewModel?.Unload();
             return;
         }
 
-        if ((DataContext?.CancelCommand is null) || (!DataContext.CancelCommand.CanExecute(null)))
+        if ((ViewModel?.CancelCommand is null) || (!ViewModel.CancelCommand.CanExecute(null)))
         {
-            DataContext?.Unload();
+            ViewModel?.Unload();
             return;
         }
 
         e.Cancel = true;
 
         var args = new CancelEventArgs();
-        await DataContext.CancelCommand.ExecuteAsync(args);
+        await ViewModel.CancelCommand.ExecuteAsync(args);
 
         if (args.Cancel)
         {
@@ -270,7 +267,7 @@ internal partial class FormImageSelector
             return;
         }
 
-        DataContext?.Load();
+        ViewModel?.Load();
 
         ValidateControls();
     }
@@ -283,16 +280,16 @@ internal partial class FormImageSelector
         OnSetDataContext(dataContext);
 
         InitializeFromDataContext(dataContext);
-        DataContext = dataContext;
+        ViewModel = dataContext;
     }
-    #endregion
 
-    #region Constructor/Finalizer.
+
+
     /// <summary>Initializes a new instance of the <see cref="FormImageSelector"/> class.</summary>
     public FormImageSelector()
     {
         _isDesignTime = LicenseManager.UsageMode == LicenseUsageMode.Designtime;
         InitializeComponent();
     }
-    #endregion
+
 }

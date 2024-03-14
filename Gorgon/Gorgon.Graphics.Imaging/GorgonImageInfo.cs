@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2016 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,34 +11,32 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: June 20, 2016 9:22:50 PM
 // 
-#endregion
 
-using System;
+
 using Gorgon.Math;
 
 namespace Gorgon.Graphics.Imaging;
 
-#if NET6_0_OR_GREATER
 /// <summary>
-/// A record used to define the properties of a <see cref="IGorgonImage"/>.
+/// A record used to define the properties of a <see cref="IGorgonImage"/>
 /// </summary>
 /// <param name="ImageType">The type of image to build.</param>
 /// <param name="Format">The pixel format layout of the data in the image.</param>
-public record GorgonImageInfo(ImageType ImageType, BufferFormat Format)
+public record GorgonImageInfo(ImageDataType ImageType, BufferFormat Format)
     : IGorgonImageInfo
 {
-#region Constructor.
+
     /// <summary>
     /// A copy constructor for an <see cref="IGorgonImageInfo"/>.
     /// </summary>
@@ -54,9 +52,9 @@ public record GorgonImageInfo(ImageType ImageType, BufferFormat Format)
         MipCount = info.MipCount.Max(1);
         HasPreMultipliedAlpha = info.HasPreMultipliedAlpha;
     }
-#endregion
 
-#region Properties.
+
+
     /// <summary>
     /// Property to return the total number of images there are in an image array.
     /// </summary>
@@ -65,7 +63,7 @@ public record GorgonImageInfo(ImageType ImageType, BufferFormat Format)
     /// This only applies to 1D and 2D images.  This parameter will be set to a value of 1 for a 3D image.
     /// </para>
     /// <para>
-    /// If the <see cref="IGorgonImageInfo.ImageType"/> is <see cref="ImageType.ImageCube"/>, then this value should be set to a multiple of 6. If it is not, then Gorgon will adjust this value to be a multiple of 
+    /// If the <see cref="IGorgonImageInfo.ImageType"/> is <see cref="ImageDataType.ImageCube"/>, then this value should be set to a multiple of 6. If it is not, then Gorgon will adjust this value to be a multiple of 
     /// 6 if this image is to be used as a cube map.
     /// </para>
     /// <para>
@@ -162,118 +160,5 @@ public record GorgonImageInfo(ImageType ImageType, BufferFormat Format)
         get;
         internal init;
     }
-#endregion
-}
-#else
-#region Compatibility
-/// <summary>
-/// Provides information describing how to create an image.
-/// </summary>
-public class GorgonImageInfo
-    : IGorgonImageInfo
-{
-    #region Properties.
-    /// <summary>
-    /// Property to return the total number of images there are in an image array.
-    /// </summary>
-    public int ArrayCount
-    {
-        get;
-        set;
-    }
-
-    /// <summary>
-    /// Property to return the depth of an image, in pixels.
-    /// </summary>
-    public int Depth
-    {
-        get;
-        set;
-    }
-
-    /// <summary>
-    /// Property to return the pixel format for an image.
-    /// </summary>
-    public BufferFormat Format
-    {
-        get;
-        set;
-    }
-
-    /// <summary>
-    /// Property to return the height of an image, in pixels.
-    /// </summary>
-    public int Height
-    {
-        get;
-        set;
-    }
-
-    /// <summary>
-    /// Property to return the type of image data.
-    /// </summary>
-    public ImageType ImageType
-    {
-        get;
-        set;
-    }
-
-    /// <summary>
-    /// Property to return whether the size of the texture is a power of 2 or not.
-    /// </summary>
-    public bool IsPowerOfTwo => false;
-
-    /// <summary>
-    /// Property to return the number of mip map levels in the image.
-    /// </summary>
-    public int MipCount
-    {
-        get;
-        set;
-    }
-
-    /// <summary>
-    /// Property to return the width of an image, in pixels.
-    /// </summary>
-    public int Width
-    {
-        get;
-        set;
-    }
-
-    /// <summary>
-    /// Property to return whether the image data is using premultiplied alpha.
-    /// </summary>
-    public bool HasPreMultipliedAlpha
-    {
-        get;
-        internal set;
-    }
-    #endregion
-
-    #region Constructor/Finalizer.
-    /// <summary>
-    /// Initializes a new instance of the <see cref="GorgonImageInfo"/> class.
-    /// </summary>
-    /// <param name="imageType">The type of the image to create.</param>
-    /// <param name="format">The format describing how a pixel is laid out in memory.</param>
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0060:Remove unused parameter")]
-    public GorgonImageInfo(ImageType imageType, BufferFormat format)
-    {
-    }
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="GorgonImageInfo"/> class.
-    /// </summary>
-    /// <param name="info">The initial image information to copy into this instance.</param>
-    /// <param name="imageType">[Optional] An updated image type.</param>
-    /// <param name="format">[Optional] An updated image pixel format.</param>
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0060:Remove unused parameter")]
-    public GorgonImageInfo(IGorgonImageInfo info, ImageType? imageType = null, BufferFormat? format = null)
-    {
-    }
-    #endregion
 
 }
-#endregion
-#endif

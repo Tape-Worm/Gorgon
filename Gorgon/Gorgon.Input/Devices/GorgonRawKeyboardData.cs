@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2015 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,26 +11,23 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: Saturday, July 18, 2015 4:38:03 PM
 // 
-#endregion
 
-using System;
-using System.Windows.Forms;
 
 namespace Gorgon.Input;
 
 /// <summary>
-/// Flags to help determine the type of data within the <see cref="GorgonRawKeyboardData"/> interface.
+/// Flags to help determine the type of data within the <see cref="GorgonRawKeyboardData"/> interface
 /// </summary>
 [Flags]
 public enum KeyboardDataFlags
@@ -58,7 +55,7 @@ public enum KeyboardDataFlags
 }
 
 /// <summary>
-/// A representation of the Raw Input data received from <c>WM_INPUT</c>.
+/// A representation of the Raw Input data received from <c>WM_INPUT</c>
 /// </summary>
 /// <remarks>
 /// <para>
@@ -66,34 +63,27 @@ public enum KeyboardDataFlags
 /// appropriate <see cref="GorgonRawKeyboard"/> device object to be turned into state for that device. 
 /// </para>
 /// <para>
-/// This type is not intended for use by applications.
+/// This type is not intended for use by applications
 /// </para>
 /// </remarks>
-public readonly struct GorgonRawKeyboardData
+/// <remarks>Initializes a new instance of the <see cref="GorgonRawKeyboardData" /> struct.</remarks>
+/// <param name="scanCode">The scan code for the key.</param>
+/// <param name="flags">The flags for the scan code.</param>
+/// <param name="key">The virtual key.</param>
+public readonly struct GorgonRawKeyboardData(int scanCode, KeyboardDataFlags flags, Keys key)
 {
     /// <summary>
     /// Property to return the scan code for the key.
     /// </summary>
-    public readonly int ScanCode;
+    public readonly int ScanCode = scanCode;
 
     /// <summary>
     /// Property to return flags for the scan code information.
     /// </summary>
-    public readonly KeyboardDataFlags Flags;
+    public readonly KeyboardDataFlags Flags = flags;
 
     /// <summary>
     /// Property to return the key being used.
     /// </summary>
-    public readonly Keys Key;
-
-    /// <summary>Initializes a new instance of the <see cref="GorgonRawKeyboardData" /> struct.</summary>
-    /// <param name="scanCode">The scan code for the key.</param>
-    /// <param name="flags">The flags for the scan code.</param>
-    /// <param name="key">The virtual key.</param>
-    public GorgonRawKeyboardData(int scanCode, KeyboardDataFlags flags, Keys key)
-    {
-        ScanCode = scanCode;
-        Flags = flags;
-        Key = key;
-    }
+    public readonly Keys Key = key;
 }

@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2017 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,29 +11,25 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: February 23, 2017 10:26:34 PM
 // 
-#endregion
 
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Threading.Tasks;
+
 using Gorgon.Core;
 
 namespace Gorgon.Graphics.Fonts.Codecs;
 
 /// <summary>
-/// A encoder/decoder for reading and writing font data.
+/// A encoder/decoder for reading and writing font data
 /// </summary>
 /// <remarks>
 /// <para>
@@ -43,7 +39,7 @@ namespace Gorgon.Graphics.Fonts.Codecs;
 public interface IGorgonFontCodec
     : IGorgonNamedObject
 {
-    #region Properties.
+
     /// <summary>
     /// Property to return the common file name extension(s) for a codec.
     /// </summary>
@@ -105,9 +101,9 @@ public interface IGorgonFontCodec
     {
         get;
     }
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to load a font from a stream.
     /// </summary>
@@ -191,5 +187,5 @@ public interface IGorgonFontCodec
     /// </para> 
     /// </remarks>
     GorgonFontInfo GetMetaData(Stream stream);
-    #endregion
+
 }

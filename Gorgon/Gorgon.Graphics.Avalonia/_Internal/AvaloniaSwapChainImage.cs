@@ -1,14 +1,12 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using Avalonia;
 using Avalonia.Platform;
 using Avalonia.Rendering.Composition;
 using Gorgon.Graphics.Core;
-using Avalonia;
 
 namespace Gorgon.Graphics.Avalonia;
 
 /// <summary>
-/// The current state for the image.
+/// The current state for the image
 /// </summary>
 internal enum AvaloniaImageState
 {
@@ -27,18 +25,18 @@ internal enum AvaloniaImageState
 }
 
 /// <summary>
-/// An individual image for an avalonia swap chain.
+/// An individual image for an avalonia swap chain
 /// </summary>
 internal class AvaloniaSwapChainImage
     : IGorgonGraphicsObject, IAsyncDisposable
 {
-    #region Variables.
+
     // The interop layer for the GPU.
     private readonly ICompositionGpuInterop _interop;
     // The surface that will receive the texture data.
     private readonly CompositionDrawingSurface _surface;
     // The size of the surface.
-    private PixelSize _pixelSize;
+    private readonly PixelSize _pixelSize;
     // The render target texture that will receive rendering data.
     private GorgonTexture2D _texture;
     // The shared texture interface.
@@ -51,9 +49,9 @@ internal class AvaloniaSwapChainImage
     private ICompositionImportedGpuImage _imported;
     // The last presentation task.
     private Task _lastPresentation;
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to return the current render target view for the image.
     /// </summary>
@@ -68,8 +66,8 @@ internal class AvaloniaSwapChainImage
     /// </summary>
     public GorgonGraphics Graphics
     {
-        get; 
-        private set; 
+        get;
+        private set;
     }
 
     /// <summary>
@@ -91,10 +89,10 @@ internal class AvaloniaSwapChainImage
     /// <summary>
     /// Property to return the height of the image, in pixels.
     /// </summary>
-    public int Height => _pixelSize.Height;    
-    #endregion
+    public int Height => _pixelSize.Height;
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to initialize the swap chain image.
     /// </summary>
@@ -160,7 +158,7 @@ internal class AvaloniaSwapChainImage
     /// <summary>
     /// Function that needs to be called prior to rendering.
     /// </summary>
-    public void Begin() => _sharedTexture?.Acquire(0, int.MaxValue);    
+    public void Begin() => _sharedTexture?.Acquire(0, int.MaxValue);
 
     /// <summary>
     /// Function end rendering and send the rendering data to the Avalonia surface.
@@ -170,9 +168,9 @@ internal class AvaloniaSwapChainImage
         _sharedTexture?.Release(1);
         _lastPresentation = _surface.UpdateWithKeyedMutexAsync(_imported, 1, 0);
     }
-    #endregion
 
-    #region Constructor.
+
+
     /// <summary>
     /// Initializes a new instance of the <see cref="AvaloniaSwapChainImage"/> class.
     /// </summary>
@@ -189,5 +187,5 @@ internal class AvaloniaSwapChainImage
 
         Initialize();
     }
-    #endregion
+
 }

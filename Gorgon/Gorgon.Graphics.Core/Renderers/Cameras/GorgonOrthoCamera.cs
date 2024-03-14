@@ -1,6 +1,6 @@
-﻿#region MIT.
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2012 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,20 +11,19 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: Monday, March 05, 2012 10:34:16 AM
 // 
-#endregion
 
-using System;
+
 using System.Numerics;
 using Gorgon.Graphics.Core;
 using Gorgon.Math;
@@ -33,18 +32,27 @@ using DX = SharpDX;
 namespace Gorgon.Renderers.Cameras;
 
 /// <summary>
-/// A camera that performs orthographic (2D) projection.
+/// A camera that performs orthographic (2D) projection
 /// </summary>
 /// <remarks>
 /// <para>
 /// This camera performs 2D projection of sprites and other renderables on to a target. By default, the camera will use absolute screen space coordinates e.g. 160x120 will be the center of a 
-/// 320x240 render target.  The user may define their own coordinate system to apply to the projection.
+/// 320x240 render target.  The user may define their own coordinate system to apply to the projection
 /// </para>
 /// </remarks>
-public class GorgonOrthoCamera
-    : GorgonCameraCommon
+/// <remarks>
+/// Initializes a new instance of the <see cref="GorgonOrthoCamera"/> class
+/// </remarks>
+/// <param name="graphics">The graphics interface to use with this object.</param>
+/// <param name="viewDimensions">The view dimensions.</param>
+/// <param name="minDepth">[Optional] The minimum depth value.</param>
+/// <param name="maximumDepth">[Optional] The maximum depth value.</param>
+/// <param name="name">[Optional] The name of the camera.</param>
+/// <exception cref="ArgumentNullException">Thrown when the <paramref name="graphics"/> parameter is <b>null</b>.</exception>
+public class GorgonOrthoCamera(GorgonGraphics graphics, DX.Size2F viewDimensions, float minDepth = 0.0f, float maximumDepth = 1.0f, string name = null)
+        : GorgonCameraCommon(graphics, viewDimensions, minDepth, maximumDepth, name)
 {
-    #region Variables.
+
     // The rotation matrix.
     private Matrix4x4 _rotation = Matrix4x4.Identity;
     // The scaling matrix.
@@ -57,9 +65,9 @@ public class GorgonOrthoCamera
     private Vector2 _anchor = Vector2.Zero;
     // Angle of rotation on the Z axis.
     private float _angleZ;
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to set or return the rotation on the Z axis, in degrees.
     /// </summary>
@@ -125,9 +133,9 @@ public class GorgonOrthoCamera
     /// Z depth, and the lower right of the region corresponds with the lower right of the active render target at minimum Z depth.
     /// </remarks>
     public override DX.RectangleF ViewableRegion => new(-ViewDimensions.Width * _anchor.X, -ViewDimensions.Height * _anchor.Y, ViewDimensions.Width, ViewDimensions.Height);
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>Function to update the projection matrix.</summary>
     /// <param name="projectionMatrix">The instance of the matrix to update.</param>
     protected override void UpdateProjectionMatrix(ref Matrix4x4 projectionMatrix)
@@ -194,21 +202,8 @@ public class GorgonOrthoCamera
         var temp = Matrix4x4.Multiply(_rotation, _scale);
         viewMatrix = Matrix4x4.Multiply(_translate, temp);
     }
-    #endregion
 
-    #region Constructor/Destructor.
-    /// <summary>
-    /// Initializes a new instance of the <see cref="GorgonOrthoCamera"/> class.
-    /// </summary>
-    /// <param name="graphics">The graphics interface to use with this object.</param>
-    /// <param name="viewDimensions">The view dimensions.</param>
-    /// <param name="minDepth">[Optional] The minimum depth value.</param>
-    /// <param name="maximumDepth">[Optional] The maximum depth value.</param>
-    /// <param name="name">[Optional] The name of the camera.</param>
-    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="graphics"/> parameter is <b>null</b>.</exception>
-    public GorgonOrthoCamera(GorgonGraphics graphics, DX.Size2F viewDimensions, float minDepth = 0.0f, float maximumDepth = 1.0f, string name = null)
-        : base(graphics, viewDimensions, minDepth, maximumDepth, name)
-    {
-    }
-    #endregion
+
+
+
 }

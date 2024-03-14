@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2017 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,20 +11,19 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: March 1, 2017 9:44:33 PM
 // 
-#endregion
 
-using System;
+
 using System.Drawing;
 using System.Drawing.Imaging;
 using Gorgon.Core;
@@ -44,7 +43,7 @@ public static class GdiPlusExtensions
     /// </summary>
     /// <param name="bitmapLock">The lock on the bitmap to transfer from.</param>
     /// <param name="buffer">The buffer to transfer into.</param>
-	    private static void Transfer32Argb(BitmapData bitmapLock, IGorgonImageBuffer buffer)
+    private static void Transfer32Argb(BitmapData bitmapLock, IGorgonImageBuffer buffer)
     {
         unsafe
         {
@@ -178,7 +177,7 @@ public static class GdiPlusExtensions
     /// If the source <paramref name="buffer"/> does not support any of the formats on the lists, then an exception will be thrown.
     /// </para>
     /// </remarks>
-	    public static Bitmap ToBitmap(this IGorgonImageBuffer buffer)
+    public static Bitmap ToBitmap(this IGorgonImageBuffer buffer)
     {
         if (buffer is null)
         {
@@ -315,7 +314,7 @@ public static class GdiPlusExtensions
     /// If the source <paramref name="buffer"/> does not support any of the formats on the lists, then an exception will be thrown.
     /// </para>
     /// </remarks>
-	    public static void CopyTo(this IGorgonImageBuffer buffer, Bitmap bitmap)
+    public static void CopyTo(this IGorgonImageBuffer buffer, Bitmap bitmap)
     {
         if (buffer is null)
         {
@@ -430,7 +429,7 @@ public static class GdiPlusExtensions
     /// If the source <paramref name="buffer"/> does not support any of the formats on the lists, then an exception will be thrown.
     /// </para>
     /// </remarks>
-	    public static void CopyTo(this Bitmap bitmap, IGorgonImageBuffer buffer)
+    public static void CopyTo(this Bitmap bitmap, IGorgonImageBuffer buffer)
     {
         if (bitmap is null)
         {
@@ -526,7 +525,7 @@ public static class GdiPlusExtensions
             throw new GorgonException(GorgonResult.FormatNotSupported, string.Format(Resources.GORIMG_ERR_FORMAT_NOT_SUPPORTED, bitmap.PixelFormat));
         }
 
-        var info = new GorgonImageInfo(ImageType.Image2D, BufferFormat.R8G8B8A8_UNorm)
+        var info = new GorgonImageInfo(ImageDataType.Image2D, BufferFormat.R8G8B8A8_UNorm)
         {
             Width = bitmap.Width,
             Height = bitmap.Height

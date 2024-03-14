@@ -1,6 +1,6 @@
-﻿#region MIT.
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2011 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,40 +11,38 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: Monday, June 27, 2011 8:59:25 AM
 // 
-#endregion
 
-using System;
-using System.IO;
+
 using Gorgon.IO.Providers;
 
 namespace Gorgon.IO;
 
 /// <summary>
-/// A representation of a file from a physical file system.
+/// A representation of a file from a physical file system
 /// </summary>
 /// <remarks>
 /// <para>
 /// This represents the information for a file on a physical file system. This object only contains data about the file, and <u>not</u> the file itself. These files are read only and cannot be written 
-/// into from the standard <see cref="IGorgonFileSystem"/>.
+/// into from the standard <see cref="IGorgonFileSystem"/>
 /// </para>
 /// <para>
 /// Users may retrieve a file from a <see cref="IGorgonFileSystem"/> via the <see cref="IGorgonFileSystem.GetFile"/> method. When the file has been returned to the user, they may call the <see cref="OpenStream"/> 
-/// method to read the contents of the file.
+/// method to read the contents of the file
 /// </para>
 /// <para>
 /// To create, update or delete a file from the <see cref="IGorgonFileSystem"/>, use an instance of the <see cref="IGorgonFileSystemWriter{T}"/> object and call the <see cref="IGorgonFileSystemWriter{T}.OpenStream"/> 
-/// method to create or update a file. Use the <see cref="IGorgonFileSystemWriter{T}.DeleteFile"/> method to delete a file.
+/// method to create or update a file. Use the <see cref="IGorgonFileSystemWriter{T}.DeleteFile"/> method to delete a file
 /// </para>
 /// </remarks>
 /// <example>
@@ -53,10 +51,10 @@ namespace Gorgon.IO;
 /// <![CDATA[
 /// IGorgonFileSystem fileSystem = new GorgonFileSystem();
 /// 
-/// // Mount a directory for this file system.
+/// // Mount a directory for this file system
 /// fileSystem.Mount(@"C:\MyDirectory\", "/"); 
 /// 
-/// // Get the file.
+/// // Get the file
 /// IGorgonVirtualFile file = fileSystem.GetFile("/AFile.txt");
 /// 
 /// using (Stream stream = file.OpenStream())
@@ -75,7 +73,7 @@ namespace Gorgon.IO;
 internal class VirtualFile
     : IGorgonVirtualFile
 {
-    #region Properties.
+
     /// <summary>
     /// Property to return the file system that owns this file.
     /// </summary>
@@ -164,9 +162,9 @@ internal class VirtualFile
     /// property.
     /// </remarks>
     public string Name => PhysicalFile.Name;
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to open a stream to the file on the physical file system.
     /// </summary>
@@ -175,9 +173,9 @@ internal class VirtualFile
     /// This will open a <see cref="Stream"/> to the physical file for reading. Applications that open a stream to a file are responsible for closing the <see cref="Stream"/> when they are done.
     /// </remarks>
     public Stream OpenStream() => MountPoint.Provider.OpenFileStream(this);
-    #endregion
 
-    #region Constructor/Destructor.
+
+
     /// <summary>
     /// Initializes a new instance of the <see cref="VirtualFile"/> class.
     /// </summary>
@@ -193,5 +191,5 @@ internal class VirtualFile
         BaseFileName = Path.GetFileNameWithoutExtension(fileInfo.Name);
         MountPoint = mountPoint;
     }
-    #endregion
+
 }

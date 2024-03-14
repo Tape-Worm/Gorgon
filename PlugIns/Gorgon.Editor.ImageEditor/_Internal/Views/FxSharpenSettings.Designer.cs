@@ -26,7 +26,7 @@ partial class FxSharpenSettings
         base.Dispose(disposing);
     }
 
-    #region Component Designer generated code
+
 
     /// <summary> 
     /// Required method for Designer support - do not modify 
@@ -83,7 +83,7 @@ partial class FxSharpenSettings
 
     }
 
-    #endregion
+
 
     private System.Windows.Forms.NumericUpDown NumericSharpenAmount;
     private System.Windows.Forms.Label label1;

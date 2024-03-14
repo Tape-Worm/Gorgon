@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2020 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,27 +11,21 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: June 10, 2020 4:04:09 PM
 // 
-#endregion
 
-using System;
-using System.Collections.Generic;
+
 using System.Collections.Specialized;
 using System.ComponentModel;
-using System.Drawing;
-using System.Linq;
-using System.Threading;
-using System.Windows.Forms;
 using Gorgon.Animation;
 using Gorgon.Core;
 using Gorgon.Editor.AnimationEditor.Properties;
@@ -42,12 +36,12 @@ using Gorgon.Math;
 namespace Gorgon.Editor.AnimationEditor;
 
 /// <summary>
-/// A container component for handling animation tracks and key frames.
+/// A container component for handling animation tracks and key frames
 /// </summary>
 internal partial class AnimationTrackContainer
     : UserControl, IDataContext<IAnimationContent>
 {
-    #region Variables.
+
     // The style to apply to column headers when a playing animation is on a specific key frame column.
     private readonly DataGridViewCellStyle _headerActive;
     private readonly DataGridViewCellStyle _activeCellStyle;
@@ -57,19 +51,19 @@ internal partial class AnimationTrackContainer
     private int _selectionEvent = 1;
     // The data to copy/move.
     private readonly KeyFrameCopyMoveData _copyMoveData = new();
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>Property to return the data context assigned to this view.</summary>
     [Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-    public IAnimationContent DataContext
+    public IAnimationContent ViewModel
     {
         get;
         private set;
     }
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to disable grid events.
     /// </summary>
@@ -229,8 +223,8 @@ internal partial class AnimationTrackContainer
             Name = $"TrackInterpolation",
             ReadOnly = false,
             DataPropertyName = null,
-            Frozen = true,                
-            FlatStyle = FlatStyle.Flat                
+            Frozen = true,
+            FlatStyle = FlatStyle.Flat
         };
 
         // We'll use our columns as key values.
@@ -275,7 +269,7 @@ internal partial class AnimationTrackContainer
         // If we drop a sprite onto an empty animation, then we'll have no columns and need to rebuild them.
         if (GridTrackKeys.Columns.Count == 0)
         {
-            SetupGridColumns(DataContext);
+            SetupGridColumns(ViewModel);
         }
 
         var row = new DataGridViewRow
@@ -321,19 +315,19 @@ internal partial class AnimationTrackContainer
     /// <param name="time">The current time in the animation.</param>
     private void AnimationTimeUpdated(float time)
     {
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             return;
         }
 
-        int index = ((int)(time * DataContext.Fps).Round()) + 1;
+        int index = ((int)(time * ViewModel.Fps).Round()) + 1;
 
         if ((index < 1) || (index >= GridTrackKeys.ColumnCount))
         {
             return;
         }
 
-        if (DataContext.State != AnimationState.Playing)
+        if (ViewModel.State != AnimationState.Playing)
         {
             // If we've stopped playing, reset the entire grid.
             for (int x = 1; x < GridTrackKeys.ColumnCount; ++x)
@@ -395,16 +389,16 @@ internal partial class AnimationTrackContainer
         try
         {
             GridTrackKeys.ClearSelection();
-            if ((DataContext.Selected.Count > 0) && (DataContext.Selected[0].SelectedKeys.Count > 0))
+            if ((ViewModel.Selected.Count > 0) && (ViewModel.Selected[0].SelectedKeys.Count > 0))
             {
-                int selRowIndex = DataContext.Selected[0].TrackIndex;
-                int selColIndex = DataContext.Selected[0].SelectedKeys[0].KeyIndex + 1;
+                int selRowIndex = ViewModel.Selected[0].TrackIndex;
+                int selColIndex = ViewModel.Selected[0].SelectedKeys[0].KeyIndex + 1;
 
                 GridTrackKeys.CurrentCell = GridTrackKeys.Rows[selRowIndex].Cells[selColIndex];
 
-                for (int j = 0; j < DataContext.Selected.Count; ++j)
+                for (int j = 0; j < ViewModel.Selected.Count; ++j)
                 {
-                    TrackKeySelection selection = DataContext.Selected[j];
+                    TrackKeySelection selection = ViewModel.Selected[j];
                     for (int i = 0; i < selection.SelectedKeys.Count; ++i)
                     {
                         GridTrackKeys.Rows[selection.TrackIndex].Cells[selection.SelectedKeys[i].KeyIndex + 1].Selected = true;
@@ -414,7 +408,7 @@ internal partial class AnimationTrackContainer
                 return;
             }
 
-            int rowIndex = DataContext.Selected.Count > 0 ? DataContext.Selected[0].TrackIndex : 0;
+            int rowIndex = ViewModel.Selected.Count > 0 ? ViewModel.Selected[0].TrackIndex : 0;
             GridTrackKeys.CurrentCell = GridTrackKeys.Rows[rowIndex].Cells[0];
         }
         finally
@@ -439,14 +433,14 @@ internal partial class AnimationTrackContainer
         {
             case nameof(IAnimationContent.Length):
             case nameof(IAnimationContent.Fps):
-                FillGrid(DataContext);
+                FillGrid(ViewModel);
                 break;
             case nameof(IAnimationContent.Selected):
                 SelectCells();
                 break;
             case nameof(IAnimationContent.PreviewKeyTime):
             case nameof(IAnimationContent.State):
-                AnimationTimeUpdated(DataContext.PreviewKeyTime);
+                AnimationTimeUpdated(ViewModel.PreviewKeyTime);
                 break;
         }
     }
@@ -469,8 +463,8 @@ internal partial class AnimationTrackContainer
                 GridTrackKeys.ClearSelection();
                 GridTrackKeys.Rows[lastSelRowIndex].Cells[0].Selected = true;
             }
-            return new[] { 
-                (lastSelRowIndex, (IReadOnlyList<int>)Array.Empty<int>())
+            return new[] {
+                (lastSelRowIndex, (IReadOnlyList<int>)[])
             };
         }
 
@@ -481,9 +475,9 @@ internal partial class AnimationTrackContainer
         {
             if (rowID != cell.RowIndex)
             {
-                keyIndices = new List<int>();
+                keyIndices = [];
                 result.Add((cell.RowIndex, keyIndices));
-                rowID = cell.RowIndex;                    
+                rowID = cell.RowIndex;
             }
 
             int columnIndex = cell.ColumnIndex - 1;
@@ -512,7 +506,7 @@ internal partial class AnimationTrackContainer
         int colEnd = colStart + GridTrackKeys.DisplayedColumnCount(false) - 2;
         int rowStart = GridTrackKeys.FirstDisplayedScrollingRowIndex;
         int rowEnd = rowStart + GridTrackKeys.DisplayedRowCount(false);
-        if ((lastSelCell is null) 
+        if ((lastSelCell is null)
             || ((lastSelCell.RowIndex >= rowStart) && (lastSelCell.RowIndex <= rowEnd) && (lastSelCell.ColumnIndex >= colStart) && (lastSelCell.ColumnIndex <= colEnd)))
         {
             return;
@@ -562,12 +556,12 @@ internal partial class AnimationTrackContainer
         {
             IReadOnlyList<(int trackIndex, IReadOnlyList<int> keyIndices)> args = GetTrackKeySelectionIndices();
 
-            if ((DataContext?.SelectTrackAndKeysCommand is null) || (!DataContext.SelectTrackAndKeysCommand.CanExecute(args)))
+            if ((ViewModel?.SelectTrackAndKeysCommand is null) || (!ViewModel.SelectTrackAndKeysCommand.CanExecute(args)))
             {
                 return;
             }
 
-            DataContext.SelectTrackAndKeysCommand.Execute(args);
+            ViewModel.SelectTrackAndKeysCommand.Execute(args);
         }
         finally
         {
@@ -596,7 +590,7 @@ internal partial class AnimationTrackContainer
         }
         finally
         {
-            EnableGridEvents();                
+            EnableGridEvents();
         }
     }
 
@@ -605,24 +599,24 @@ internal partial class AnimationTrackContainer
     /// <param name="e">The <see cref="DataGridViewCellValueEventArgs"/> instance containing the event data.</param>
     private void GridTrackKeys_CellValueNeeded(object sender, DataGridViewCellValueEventArgs e)
     {
-        if (DataContext?.GetTrackKeyCommand is null)
+        if (ViewModel?.GetTrackKeyCommand is null)
         {
             return;
         }
 
-        if ((e.ColumnIndex == 0) && (e.RowIndex < DataContext.Tracks.Count))
+        if ((e.ColumnIndex == 0) && (e.RowIndex < ViewModel.Tracks.Count))
         {
-            e.Value = DataContext.Tracks[e.RowIndex].InterpolationMode.GetDescription();
+            e.Value = ViewModel.Tracks[e.RowIndex].InterpolationMode.GetDescription();
             return;
         }
 
         var args = new GetTrackKeyArgs(e.ColumnIndex - 1, e.RowIndex);
-        if (!DataContext.GetTrackKeyCommand.CanExecute(args))
+        if (!ViewModel.GetTrackKeyCommand.CanExecute(args))
         {
             return;
         }
 
-        DataContext.GetTrackKeyCommand.Execute(args);
+        ViewModel.GetTrackKeyCommand.Execute(args);
 
         if (args.Key is not null)
         {
@@ -635,7 +629,7 @@ internal partial class AnimationTrackContainer
     /// <param name="e">The <see cref="DragEventArgs"/> instance containing the event data.</param>
     private async void GridTrackKeys_DragDrop(object sender, DragEventArgs e)
     {
-        if ((DataContext?.KeyEditor is null) || (!e.Data.GetDataPresent(typeof(KeyFrameCopyMoveData))))
+        if ((ViewModel?.KeyEditor is null) || (!e.Data.GetDataPresent(typeof(KeyFrameCopyMoveData))))
         {
             return;
         }
@@ -647,12 +641,12 @@ internal partial class AnimationTrackContainer
             return;
         }
 
-        if ((DataContext.KeyEditor.CopyMoveFramesCommand is null) || (!DataContext.KeyEditor.CopyMoveFramesCommand.CanExecute(data)))
+        if ((ViewModel.KeyEditor.CopyMoveFramesCommand is null) || (!ViewModel.KeyEditor.CopyMoveFramesCommand.CanExecute(data)))
         {
             return;
         }
 
-        await DataContext.KeyEditor.CopyMoveFramesCommand.ExecuteAsync(data);
+        await ViewModel.KeyEditor.CopyMoveFramesCommand.ExecuteAsync(data);
     }
 
     /// <summary>Handles the DragOver event of the GridTrackKeys control.</summary>
@@ -662,7 +656,7 @@ internal partial class AnimationTrackContainer
     {
         e.Effect = DragDropEffects.None;
 
-        if (DataContext?.KeyEditor is null)
+        if (ViewModel?.KeyEditor is null)
         {
             return;
         }
@@ -700,7 +694,7 @@ internal partial class AnimationTrackContainer
 
         data.DestinationKeyIndex = info.ColumnIndex - 1;
 
-        if ((DataContext.KeyEditor.CopyMoveFramesCommand is null) || (!DataContext.KeyEditor.CopyMoveFramesCommand.CanExecute(data)))
+        if ((ViewModel.KeyEditor.CopyMoveFramesCommand is null) || (!ViewModel.KeyEditor.CopyMoveFramesCommand.CanExecute(data)))
         {
             return;
         }
@@ -713,14 +707,14 @@ internal partial class AnimationTrackContainer
     /// <param name="e">The <see cref="CellsDragEventArgs"/> instance containing the event data.</param>
     private void GridTrackKeys_CellsDrag(object sender, CellsDragEventArgs e)
     {
-        if ((DataContext?.Selected is null) || (e.DraggedCells.Any(cell => cell.ColumnIndex == 0)))
+        if ((ViewModel?.Selected is null) || (e.DraggedCells.Any(cell => cell.ColumnIndex == 0)))
         {
             return;
         }
 
         var data = new DataObject();
         _copyMoveData.Operation = ((ModifierKeys & Keys.Shift) == Keys.Shift) ? CopyMoveOperation.Copy : CopyMoveOperation.Move;
-        _copyMoveData.KeyFrames = DataContext.Selected;
+        _copyMoveData.KeyFrames = ViewModel.Selected;
         _copyMoveData.DestinationKeyIndex = -1;
         data.SetData(typeof(KeyFrameCopyMoveData).FullName, true, _copyMoveData);
 
@@ -732,19 +726,19 @@ internal partial class AnimationTrackContainer
     /// </summary>
     private void UnassignEvents()
     {
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             return;
         }
 
-        foreach (ITrack track in DataContext.Tracks)
+        foreach (ITrack track in ViewModel.Tracks)
         {
             track.PropertyChanged -= Track_PropertyChanged;
         }
 
-        DataContext.Tracks.CollectionChanged -= Tracks_CollectionChanged;
-        DataContext.PropertyChanged -= DataContext_PropertyChanged;
-        DataContext.PropertyChanging -= DataContext_PropertyChanging;
+        ViewModel.Tracks.CollectionChanged -= Tracks_CollectionChanged;
+        ViewModel.PropertyChanged -= DataContext_PropertyChanged;
+        ViewModel.PropertyChanging -= DataContext_PropertyChanging;
     }
 
     /// <summary>
@@ -799,7 +793,7 @@ internal partial class AnimationTrackContainer
         ResetDataContext();
 
         if (dataContext is null)
-        {                
+        {
             return;
         }
 
@@ -849,26 +843,26 @@ internal partial class AnimationTrackContainer
 
         InitializeFromDataContext(dataContext);
 
-        DataContext = dataContext;
+        ViewModel = dataContext;
 
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             return;
         }
 
-        DataContext.PropertyChanged += DataContext_PropertyChanged;
-        DataContext.PropertyChanging += DataContext_PropertyChanging;
-        DataContext.Tracks.CollectionChanged += Tracks_CollectionChanged;
-    }        
-    #endregion
+        ViewModel.PropertyChanged += DataContext_PropertyChanged;
+        ViewModel.PropertyChanging += DataContext_PropertyChanging;
+        ViewModel.Tracks.CollectionChanged += Tracks_CollectionChanged;
+    }
 
-    #region Constructor.
+
+
     /// <summary>Initializes a new instance of the <see cref="AnimationTrackContainer"/> class.</summary>
     public AnimationTrackContainer()
     {
         InitializeComponent();
 
-        var selected = GorgonColor.Lerp(Color.LimeGreen, GridTrackKeys.DefaultCellStyle.SelectionBackColor, 0.4f);            
+        var selected = GorgonColor.Lerp(Color.LimeGreen, GridTrackKeys.DefaultCellStyle.SelectionBackColor, 0.4f);
 
         _activeCellStyle = new DataGridViewCellStyle(GridTrackKeys.DefaultCellStyle)
         {
@@ -877,7 +871,7 @@ internal partial class AnimationTrackContainer
             BackColor = Color.LimeGreen,
             ForeColor = DarkFormsRenderer.CutForeground
         };
-        
+
         _headerActive = new DataGridViewCellStyle(GridTrackKeys.ColumnHeadersDefaultCellStyle)
         {
             SelectionBackColor = selected,
@@ -886,5 +880,5 @@ internal partial class AnimationTrackContainer
             ForeColor = DarkFormsRenderer.CutForeground
         };
     }
-    #endregion
+
 }

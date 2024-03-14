@@ -31,7 +31,7 @@ partial class FormRibbon
         base.Dispose(disposing);
     }
 
-    #region Windows Form Designer generated code
+
 
     /// <summary>
     /// Required method for Designer support - do not modify
@@ -818,7 +818,7 @@ partial class FormRibbon
         this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
         this.ClientSize = new System.Drawing.Size(1594, 302);
         this.Controls.Add(this.RibbonAnimationContent);
-        this.Font = new System.Drawing.Font("Segoe UI", 9F);
+        
         this.Name = "FormRibbon";
         this.Text = "FormRibbon";
         ((System.ComponentModel.ISupportInitialize)(this.RibbonAnimationContent)).EndInit();
@@ -828,7 +828,7 @@ partial class FormRibbon
 
     }
 
-    #endregion
+
     private Krypton.Ribbon.KryptonRibbonTab TabAnimation;
     private Krypton.Ribbon.KryptonRibbonGroup GroupAnimationFile;
     private Krypton.Ribbon.KryptonRibbonGroupTriple kryptonRibbonGroupTriple1;

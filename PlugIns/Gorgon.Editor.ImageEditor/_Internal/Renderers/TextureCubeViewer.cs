@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2019 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,22 +11,20 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: January 9, 2019 1:43:36 PM
 // 
-#endregion
+
 
 using System.Numerics;
-using System.Threading;
-using System.Windows.Forms;
 using Gorgon.Editor.ImageEditor.ViewModels;
 using Gorgon.Editor.Rendering;
 using Gorgon.Graphics;
@@ -36,15 +34,21 @@ using Gorgon.Graphics.Imaging;
 using Gorgon.Renderers;
 using DX = SharpDX;
 
+
 namespace Gorgon.Editor.ImageEditor;
 
 /// <summary>
-/// A viewer for a 2D cube texture.
+/// A viewer for a 2D cube texture
 /// </summary>
-internal class TextureCubeViewer
-    : TextureViewer
+/// <remarks>Initializes a new instance of the <see cref="TextureCubeViewer"/> class.</remarks>
+/// <param name="renderer">The main renderer for the content view.</param>
+/// <param name="swapChain">The swap chain for the content view.</param>
+/// <param name="fontFactory">The font factory used to generate the font for the glyphs.</param>
+/// <param name="dataContext">The view model to assign to the renderer.</param>
+internal class TextureCubeViewer(Gorgon2D renderer, GorgonSwapChain swapChain, GorgonFontFactory fontFactory, IImageContent dataContext)
+        : TextureViewer(ImageDataType.ImageCube.ToString(), "Gorgon2DTextureArrayView", 0, renderer, swapChain, dataContext)
 {
-    #region Variables.
+
     // The texture to display.
     private GorgonTexture2D _texture;
     // The view for the texture.
@@ -57,10 +61,10 @@ internal class TextureCubeViewer
     // The selection rectangle.
     private IMarchingAnts _selectionRect;
     // The font factory used to generate the font for the glyphs.
-    private readonly GorgonFontFactory _fontFactory;
-    #endregion
+    private readonly GorgonFontFactory _fontFactory = fontFactory;
 
-    #region Methods.
+
+
     /// <summary>Releases unmanaged and - optionally - managed resources.</summary>
     /// <param name="disposing">
     ///   <c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
@@ -89,7 +93,7 @@ internal class TextureCubeViewer
     /// <summary>Function to create the texture for display.</summary>
     protected override void CreateTexture()
     {
-        if ((DataContext?.ImageData is null) || (DataContext.ImageType != ImageType.ImageCube))
+        if ((DataContext?.ImageData is null) || (DataContext.ImageType != ImageDataType.ImageCube))
         {
             RenderRegion = DX.RectangleF.Empty;
             return;
@@ -124,7 +128,7 @@ internal class TextureCubeViewer
         int cubeGroup = (DataContext.CurrentArrayIndex / 6) * 6;
 
         for (int i = 0; i < _cubeImageBounds.Length; ++i)
-        {                
+        {
             if (_cubeImageBounds[i].Contains(args.CameraSpacePosition.X, args.CameraSpacePosition.Y))
             {
                 DataContext.CurrentArrayIndex = cubeGroup + i;
@@ -205,26 +209,17 @@ internal class TextureCubeViewer
     /// <summary>Function called during resource creation.</summary>
     protected override void OnCreateResources()
     {
-        _axisFont = _fontFactory.GetFont(new GorgonFontInfo("Segoe UI", 12, FontHeightMode.Points)
+        _axisFont = _fontFactory.GetFont(new GorgonFontInfo("Segoe UI", 12, GorgonFontHeightMode.Points)
         {
             Name = "Segoe UI Bold 12pt - Axis Font",
             OutlineColor1 = GorgonColor.Black,
             OutlineColor2 = GorgonColor.Black,
             OutlineSize = 3,
-            FontStyle = FontStyle.Bold
+            FontStyle = GorgonFontStyle.Bold
         });
 
         _selectionRect = new MarchingAnts(Renderer);
     }
-    #endregion
 
-    #region Constructor/Finalizer.
-    /// <summary>Initializes a new instance of the <see cref="TextureCubeViewer"/> class.</summary>
-    /// <param name="renderer">The main renderer for the content view.</param>
-    /// <param name="swapChain">The swap chain for the content view.</param>
-    /// <param name="fontFactory">The font factory used to generate the font for the glyphs.</param>
-    /// <param name="dataContext">The view model to assign to the renderer.</param>
-    public TextureCubeViewer(Gorgon2D renderer, GorgonSwapChain swapChain, GorgonFontFactory fontFactory, IImageContent dataContext)
-        : base(ImageType.ImageCube.ToString(), "Gorgon2DTextureArrayView", 0, renderer, swapChain, dataContext) => _fontFactory = fontFactory;
-    #endregion
+
 }

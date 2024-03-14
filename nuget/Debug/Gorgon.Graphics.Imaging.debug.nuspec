@@ -12,21 +12,21 @@
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>Contains functionality to read, write and manipulate image data using various common image formats such as DDS, TGA, PNG, etc...</description>
     <releaseNotes></releaseNotes>
-    <copyright>Copyright 2023 Tape_Worm</copyright>
+    <copyright>Copyright 2024 Tape_Worm</copyright>
 
     <tags>Gorgon C# .NET Direct3D SharpDX Graphics Imaging</tags>
     <dependencies>
-      <group targetFramework="net6.0" >
+      <group targetFramework="net8.0" >
         <dependency id="SharpDX.Direct2D1" version="4.2.0"/>
-        <dependency id="System.Drawing.Common" version="7.0.0"/>
+        <dependency id="System.Drawing.Common" version="8.0.3"/>
         <dependency id="Gorgon.Core.Debug" version="$version$-beta"/>
       </group>
     </dependencies>
   </metadata>
   <files>
     <file src=".\icon.png" target="images\Gorgon_Icon_64x64.png" />
-    <file src="..\lib\Gorgon.Graphics.Imaging.dll" target="lib\net6.0\Gorgon.Graphics.Imaging.dll" />
-    <file src="..\lib\Gorgon.Graphics.Imaging.xml" target="lib\net6.0\Gorgon.Graphics.Imaging.xml" />
-    <file src="..\lib\BCnEncoder.dll" target="lib\net6.0\BCnEncoder.dll" />
+    <file src="..\lib\Gorgon.Graphics.Imaging.dll" target="lib\net8.0\Gorgon.Graphics.Imaging.dll" />
+    <file src="..\lib\Gorgon.Graphics.Imaging.xml" target="lib\net8.0\Gorgon.Graphics.Imaging.xml" />
+    <file src="..\lib\BCnEncoder.dll" target="lib\net8.0\BCnEncoder.dll" />
   </files>
 </package>

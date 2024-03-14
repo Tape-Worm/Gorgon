@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2018 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,26 +11,20 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: August 19, 2018 10:22:18 AM
 // 
-#endregion
 
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
+
 using System.Numerics;
-using System.Threading.Tasks;
-using System.Windows.Forms;
 using Gorgon.Animation;
 using Gorgon.Core;
 using Gorgon.Graphics;
@@ -44,11 +38,11 @@ using DX = SharpDX;
 namespace Gorgon.Examples;
 
 /// <summary>
-/// Our example entry point.
+/// Our example entry point
 /// </summary>
 static class Program
 {
-    #region Variables.
+
     // The primary graphics interface.
     private static GorgonGraphics _graphics;
     // Our swap chain representing our screen.
@@ -77,9 +71,9 @@ static class Program
     private static readonly AudioPlayback _mp3Player = new();
     // The task used while playing audio.
     private static Task _audioTask;
-    #endregion
 
-    #region Methods.
+
+
     // ReSharper disable once InconsistentNaming
     /// <summary>
     /// Function to build our animation... like an 80's music video... this is going to be ugly.
@@ -91,7 +85,7 @@ static class Program
         // When building animations, you can create your own animation tracks to handle which properties on the 
         // sprite get updated. These often correspond to property names, so passing "Position" as the name will 
         // update the Position property on the sprite.
-        
+
         // Set up some scaling...            
         animBuilder.EditVector2("Scale")
                    .SetInterpolationMode(TrackInterpolationMode.Spline)
@@ -335,7 +329,7 @@ static class Program
 
         return true;
     }
-    #endregion
+
 
     /// <summary>
     /// The main entry point for the application.
@@ -345,9 +339,7 @@ static class Program
     {
         try
         {
-#if NET6_0_OR_GREATER
             Application.SetHighDpiMode(HighDpiMode.PerMonitorV2);
-#endif
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
 

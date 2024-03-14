@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2017 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,32 +11,31 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: July 30, 2017 2:55:45 PM
 // 
-#endregion
+
 
 using System.Numerics;
 using Gorgon.Collections;
-using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 
 namespace Gorgon.Examples;
 
 /// <summary>
-/// A material for a mesh.
+/// A material for a mesh
 /// </summary>
 internal class MeshMaterial
 {
-    #region Properties.
+
     /// <summary>
     /// Property to return the textures for this mesh.
     /// </summary>
@@ -89,9 +88,9 @@ internal class MeshMaterial
         get;
         set;
     }
-    #endregion
 
-    #region Constructor/Finalizer.
+
+
     /// <summary>
     /// Initializes a new instance of the <see cref="MeshMaterial"/> class.
     /// </summary>
@@ -101,5 +100,5 @@ internal class MeshMaterial
         Textures = new GorgonArray<string>(3);
         BlendState = GorgonBlendState.NoBlending;
     }
-    #endregion
+
 }

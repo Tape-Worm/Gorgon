@@ -1,6 +1,6 @@
-#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2015 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,32 +11,40 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: Wednesday, August 12, 2015 7:40:24 PM
 // 
-#endregion
 
-using System.Drawing;
+
 using System.Runtime.InteropServices;
 
-// ReSharper disable InconsistentNaming
 namespace Gorgon.Native;
 
 /// <summary>
-/// Value type representing a Window message.
+/// A Win32 point structure
+/// </summary>
+[StructLayout(LayoutKind.Sequential)]
+internal struct Point
+{
+    public int X;
+    public int Y;
+}
+
+/// <summary>
+/// Value type representing a Window message
 /// </summary>
 /// <remarks>
-/// See the MSDN documentation for more detail.
+/// See the MSDN documentation for more detail
 /// <para>
-/// Used to pass various messages back and forth between the OS and the app.
+/// Used to pass various messages back and forth between the OS and the app
 /// </para>
 /// </remarks>
 [StructLayout(LayoutKind.Sequential)]

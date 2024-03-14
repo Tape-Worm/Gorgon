@@ -1,6 +1,6 @@
-﻿#region MIT.
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2011 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,46 +11,49 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: Monday, June 27, 2011 8:56:28 AM
 // 
-#endregion
 
-using System;
-using System.IO;
+
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using System.Text;
 using Gorgon.Native;
 using Gorgon.Properties;
 
 namespace Gorgon.IO;
 
 /// <summary>
-/// An extended binary reader class.
+/// An extended binary reader class
 /// </summary>
 /// <remarks>
 /// <para>
-/// This object extends the functionality of the <see cref="BinaryReader"/> type by adding extra functions to read from a pointer (or <c>nint</c>), and from generic value types.
+/// This object extends the functionality of the <see cref="BinaryReader"/> type by adding extra functions to read from a pointer (or <c>nint</c>), and from generic value types
 /// </para>
 /// </remarks>
-public class GorgonBinaryReader
-    : BinaryReader
+/// <remarks>
+/// Initializes a new instance of the <see cref="GorgonBinaryReader"/> class
+/// </remarks>
+/// <param name="input">Input stream.</param>
+/// <param name="encoder">Encoding for the binary reader.</param>
+/// <param name="keepStreamOpen">[Optional] <b>true</b> to keep the underlying stream open when the writer is closed, <b>false</b> to close when done.</param>
+public class GorgonBinaryReader(Stream input, Encoding encoder, bool keepStreamOpen = false)
+        : BinaryReader(input, encoder, keepStreamOpen)
 {
-    #region Variables.
+
     // The size of the temporary buffer used to stream data in.
     private int _bufferSize = 65536;
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to set or return the size of the buffer, in bytes, used to stream the data in.
     /// </summary>
@@ -83,10 +86,10 @@ public class GorgonBinaryReader
     public bool KeepStreamOpen
     {
         get;
-    }
-    #endregion
+    } = keepStreamOpen;
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to read bytes from a stream into a buffer pointed at by the pointer.
     /// </summary>
@@ -154,7 +157,7 @@ public class GorgonBinaryReader
     /// This method is unsafe, therefore a proper <paramref name="size"/> must be passed to the method.  Failure to do so can lead to memory corruption.  Use this method at your own peril.
     /// </note>
     /// </remarks>
-    
+
     public void Read(ref byte buffer, int size)
     {
         if (size < 1)
@@ -269,7 +272,7 @@ public class GorgonBinaryReader
     /// </para>
     /// </note>
     /// </remarks>
-    public void ReadRange<T>(Span<T> buffer) 
+    public void ReadRange<T>(Span<T> buffer)
         where T : unmanaged => Read(ref Unsafe.As<T, byte>(ref buffer[0]), Unsafe.SizeOf<T>() * buffer.Length);
 
     /// <summary>
@@ -334,7 +337,7 @@ public class GorgonBinaryReader
         }
 
         unsafe
-        {        
+        {
             Read((pointer + startIndex), Unsafe.SizeOf<T>() * count.Value);
         }
     }
@@ -437,17 +440,9 @@ public class GorgonBinaryReader
 
         return array;
     }
-    #endregion
 
-    #region Constructor/Destructor.
-    /// <summary>
-    /// Initializes a new instance of the <see cref="GorgonBinaryReader"/> class.
-    /// </summary>
-    /// <param name="input">Input stream.</param>
-    /// <param name="encoder">Encoding for the binary reader.</param>
-    /// <param name="keepStreamOpen">[Optional] <b>true</b> to keep the underlying stream open when the writer is closed, <b>false</b> to close when done.</param>
-    public GorgonBinaryReader(Stream input, Encoding encoder, bool keepStreamOpen = false)
-        : base(input, encoder, keepStreamOpen) => KeepStreamOpen = keepStreamOpen;
+
+
 
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonBinaryReader"/> class.
@@ -458,5 +453,5 @@ public class GorgonBinaryReader
         : this(input, Encoding.UTF8, keepStreamOpen)
     {
     }
-    #endregion
+
 }

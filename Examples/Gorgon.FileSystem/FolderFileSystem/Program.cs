@@ -1,6 +1,6 @@
-﻿#region MIT.
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2013 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,22 +11,19 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: Saturday, January 5, 2013 3:29:58 PM
 // 
-#endregion
 
-using System;
-using System.IO;
-using System.Linq;
+
 using Gorgon.Core;
 using Gorgon.Diagnostics;
 using Gorgon.IO;
@@ -35,12 +32,12 @@ using Gorgon.Math;
 namespace Gorgon.Examples;
 
 /// <summary>
-/// Example entry point.
+/// Example entry point
 /// </summary>
 /// <remarks>
 /// Gorgon is capable of making use of Virtual File Systems.  This is quite different from the file system type that was in the
 /// first version of Gorgon which was really nothing more than a compressed file reader/writer (even though it could mount 
-/// folders).
+/// folders)
 /// 
 /// Virtual File Systems take a directory, or some packed data file and mount it as a root directory.  Any subsequent directories
 /// and files inside of the directory (or file) are mapped to be relative to the root point on the file system.  For example,
@@ -49,28 +46,28 @@ namespace Gorgon.Examples;
 /// that was mounted as the root of the VFS.  This allows for a certain level of security to keep users from writing or reading
 /// areas outside of the intended directory structure.  
 /// 
-/// Gorgon's VFS is modeled after the PhysFS project (http://icculus.org/physfs/).
+/// Gorgon's VFS is modeled after the PhysFS project (http://icculus.org/physfs/)
 /// 
 /// In this example, we'll mount a physical file system directory as the root of the virtual file system.  All sub directories
 /// and files under the root directory will become accessible from the virtual file system.  The program will enumerate the 
-/// directories and files and list them in the console window with relevant file information.
+/// directories and files and list them in the console window with relevant file information
 /// </remarks>
 internal static class Program
 {
-    #region Variables.
+
     // File system.
     private static GorgonFileSystem _fileSystem;
     // The log used logging debug messages.
     private static IGorgonLog _log;
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// The main entry point for the application.
     /// </summary>
     private static void Main()
     {
-        GorgonExample.ResourceBaseDirectory = new DirectoryInfo(ExampleConfig.Default.ResourceLocation);
+        DirectoryInfo resourceBaseDirectory = new(Path.Combine(ExampleConfig.Default.ResourceLocation, "FileSystems", "FolderSystem"));
 
         _log = new GorgonTextFileLog("FolderFileSystem", "Tape_Worm");
         _log.LogStart();
@@ -95,7 +92,7 @@ internal static class Program
             // would load files from the system into memory when mounting a 
             // directory.  While this version only loads directory and file 
             // information when mounting.  This is considerably more efficient.
-            string physicalPath = GorgonExample.GetResourcePath(@"FileSystems\FolderSystem\").FullName;
+            string physicalPath = resourceBaseDirectory.FullName.FormatDirectory(Path.DirectorySeparatorChar);
             _fileSystem.Mount(physicalPath);
 
             Console.ForegroundColor = ConsoleColor.White;
@@ -170,5 +167,5 @@ internal static class Program
             _log.LogEnd();
         }
     }
-    #endregion
+
 }

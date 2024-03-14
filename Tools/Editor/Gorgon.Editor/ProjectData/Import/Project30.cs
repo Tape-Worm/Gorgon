@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2018 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,32 +11,30 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: August 29, 2018 8:19:12 PM
 // 
-#endregion
 
-using System;
-using System.Collections.Generic;
+
 using Gorgon.Editor.Metadata;
 using Newtonsoft.Json;
 
 namespace Gorgon.Editor.ProjectData;
 
 /// <summary>
-/// The project data.
+/// The project data
 /// </summary>
 internal class Project30
 {
-    #region Properties.
+
     /// <summary>
     /// Property to return the version for the project file.
     /// </summary>
@@ -56,14 +54,14 @@ internal class Project30
         get;
         private set;
     } = new Dictionary<string, Project30ItemMetadata>(StringComparer.OrdinalIgnoreCase);
-    #endregion
 
-    #region Constructor/Finalizer.        
+
+
     /// <summary>Initializes a new instance of the Project class.</summary>
     [JsonConstructor]
     public Project30()
     {
         // Used by JSON.Net for deserialization.
     }
-    #endregion
+
 }

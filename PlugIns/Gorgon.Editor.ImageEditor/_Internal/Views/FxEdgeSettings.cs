@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2020 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,22 +11,20 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: March 6, 2020 1:30:22 PM
 // 
-#endregion
 
-using System;
+
 using System.ComponentModel;
-using System.Drawing;
 using Gorgon.Editor.ImageEditor.Properties;
 using Gorgon.Editor.UI;
 using Gorgon.Editor.UI.Controls;
@@ -35,33 +33,33 @@ using Gorgon.Math;
 namespace Gorgon.Editor.ImageEditor;
 
 /// <summary>
-/// The settings for the edge filter effect.
+/// The settings for the edge filter effect
 /// </summary>
-internal partial class FxEdgeSettings 
+internal partial class FxEdgeSettings
     : EditorSubPanelCommon, IDataContext<IFxEdgeDetect>
 {
-    #region Properties.
+
     /// <summary>Property to return the data context assigned to this view.</summary>
     [Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-    public IFxEdgeDetect DataContext
+    public IFxEdgeDetect ViewModel
     {
         get;
         private set;
     }
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>Handles the ValueChanged event of the TrackThreshold control.</summary>
     /// <param name="sender">The source of the event.</param>
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
     private void TrackThreshold_ValueChanged(object sender, EventArgs e)
     {
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             return;
         }
 
-        DataContext.Threshold = TrackThreshold.Value;
+        ViewModel.Threshold = TrackThreshold.Value;
     }
 
     /// <summary>Handles the ValueChanged event of the PickerLineColor control.</summary>
@@ -69,12 +67,12 @@ internal partial class FxEdgeSettings
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
     private void PickerLineColor_ValueChanged(object sender, EventArgs e)
     {
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             return;
         }
 
-        DataContext.LineColor = new Graphics.GorgonColor(PickerLineColor.Value, DataContext.LineColor.Alpha);
+        ViewModel.LineColor = new Graphics.GorgonColor(PickerLineColor.Value, ViewModel.LineColor.Alpha);
     }
 
     /// <summary>Handles the ValueChanged event of the SliderAlpha control.</summary>
@@ -82,12 +80,12 @@ internal partial class FxEdgeSettings
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
     private void SliderAlpha_ValueChanged(object sender, EventArgs e)
     {
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             return;
         }
 
-        DataContext.LineColor = new Graphics.GorgonColor(DataContext.LineColor, SliderAlpha.ValuePercentual);
+        ViewModel.LineColor = new Graphics.GorgonColor(ViewModel.LineColor, SliderAlpha.ValuePercentual);
     }
 
     /// <summary>Handles the Click event of the CheckOverlay control.</summary>
@@ -95,12 +93,12 @@ internal partial class FxEdgeSettings
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
     private void CheckOverlay_Click(object sender, EventArgs e)
     {
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             return;
         }
 
-        DataContext.Overlay = CheckOverlay.Checked;
+        ViewModel.Overlay = CheckOverlay.Checked;
     }
 
     /// <summary>Handles the ValueChanged event of the NumericEmbossAmount control.</summary>
@@ -108,19 +106,19 @@ internal partial class FxEdgeSettings
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
     private void NumericOffsetAmount_ValueChanged(object sender, EventArgs e)
     {
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             return;
         }
 
         float currentValue = (float)NumericOffset.Value;
 
-        if (currentValue.EqualsEpsilon(DataContext.Offset))
+        if (currentValue.EqualsEpsilon(ViewModel.Offset))
         {
             return;
         }
 
-        DataContext.Offset = currentValue;
+        ViewModel.Offset = currentValue;
     }
 
     /// <summary>Function to submit the change.</summary>
@@ -128,12 +126,12 @@ internal partial class FxEdgeSettings
     {
         base.OnSubmit();
 
-        if ((DataContext?.OkCommand is null) || (!DataContext.OkCommand.CanExecute(null)))
+        if ((ViewModel?.OkCommand is null) || (!ViewModel.OkCommand.CanExecute(null)))
         {
             return;
         }
 
-        DataContext.OkCommand.Execute(null);
+        ViewModel.OkCommand.Execute(null);
     }
 
     /// <summary>Function to cancel the change.</summary>
@@ -141,12 +139,12 @@ internal partial class FxEdgeSettings
     {
         base.OnCancel();
 
-        if ((DataContext?.CancelCommand is null) || (!DataContext.CancelCommand.CanExecute(null)))
+        if ((ViewModel?.CancelCommand is null) || (!ViewModel.CancelCommand.CanExecute(null)))
         {
             return;
         }
 
-        DataContext.CancelCommand.Execute(null);
+        ViewModel.CancelCommand.Execute(null);
     }
 
     /// <summary>Handles the PropertyChanged event of the DataContext control.</summary>
@@ -157,17 +155,17 @@ internal partial class FxEdgeSettings
         switch (e.PropertyName)
         {
             case nameof(IFxEdgeDetect.Offset):
-                NumericOffset.Value = (decimal)DataContext.Offset;
+                NumericOffset.Value = (decimal)ViewModel.Offset;
                 break;
             case nameof(IFxEdgeDetect.Threshold):
-                TrackThreshold.Value = DataContext.Threshold;
+                TrackThreshold.Value = ViewModel.Threshold;
                 break;
             case nameof(IFxEdgeDetect.LineColor):
-                ColorPreview.Color = DataContext.LineColor.ToColor();
-                LabelColorValue.Text = string.Format(Resources.GORIMG_TEXT_COLOR_VALUES, (int)(255 * DataContext.LineColor.Red),
-                                                                                         (int)(255 * DataContext.LineColor.Green),
-                                                                                         (int)(255 * DataContext.LineColor.Blue),
-                                                                                         (int)(255 * DataContext.LineColor.Alpha));
+                ColorPreview.Color = ViewModel.LineColor.ToColor();
+                LabelColorValue.Text = string.Format(Resources.GORIMG_TEXT_COLOR_VALUES, (int)(255 * ViewModel.LineColor.Red),
+                                                                                         (int)(255 * ViewModel.LineColor.Green),
+                                                                                         (int)(255 * ViewModel.LineColor.Blue),
+                                                                                         (int)(255 * ViewModel.LineColor.Alpha));
                 break;
         }
     }
@@ -177,12 +175,12 @@ internal partial class FxEdgeSettings
     /// </summary>
     private void UnassignEvents()
     {
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             return;
         }
 
-        DataContext.PropertyChanged -= DataContext_PropertyChanged;
+        ViewModel.PropertyChanged -= DataContext_PropertyChanged;
     }
 
     /// <summary>
@@ -192,7 +190,7 @@ internal partial class FxEdgeSettings
     private void InitializeFromDataContext(IFxEdgeDetect dataContext)
     {
         if (dataContext is null)
-        {                
+        {
             TrackThreshold.Value = 50;
             SliderAlpha.ValuePercentual = 1.0f;
             ColorPreview.Color = Color.Black;
@@ -210,7 +208,7 @@ internal partial class FxEdgeSettings
         ColorPreview.Color = dataContext.LineColor.ToColor();
         LabelColorValue.Text = string.Format(Resources.GORIMG_TEXT_COLOR_VALUES, (int)(255 * dataContext.LineColor.Red),
                                                                                  (int)(255 * dataContext.LineColor.Green),
-                                                                                 (int)(255 * dataContext.LineColor.Blue), 
+                                                                                 (int)(255 * dataContext.LineColor.Blue),
                                                                                  (int)(255 * dataContext.LineColor.Alpha));
         PickerLineColor.ValuePercentual = new PointF(((Color)dataContext.LineColor).GetHue(), ((Color)dataContext.LineColor).GetSaturation());
         CheckOverlay.Checked = dataContext.Overlay;
@@ -226,19 +224,19 @@ internal partial class FxEdgeSettings
 
         InitializeFromDataContext(dataContext);
 
-        DataContext = dataContext;
+        ViewModel = dataContext;
 
         if (dataContext is null)
         {
             return;
         }
 
-        DataContext.PropertyChanged += DataContext_PropertyChanged;
+        ViewModel.PropertyChanged += DataContext_PropertyChanged;
     }
-    #endregion
 
-    #region Constructor/Finalizer.
+
+
     /// <summary>Initializes a new instance of the <see cref="FxEdgeSettings"/> class.</summary>
     public FxEdgeSettings() => InitializeComponent();
-    #endregion
+
 }

@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2018 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,34 +11,35 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: August 31, 2018 12:31:55 AM
 // 
-#endregion
 
-using System;
-using System.Windows.Forms;
+
 using Gorgon.Diagnostics;
 using Gorgon.UI;
 
 namespace Gorgon.Editor.Services;
 
 /// <summary>
-/// A service used to display messages in message box dialogs.
+/// A service used to display messages in message box dialogs
 /// </summary>
-public class MessageBoxService
-    : IMessageDisplayService
+/// <remarks>Initializes a new instance of the <see cref="MessageBoxService"/> class.</remarks>
+/// <param name="log">The log.</param>
+/// <exception cref="ArgumentNullException">Thrown when the <paramref name="log"/> parameter is <b>null</b>.</exception>
+public class MessageBoxService(IGorgonLog log)
+        : IMessageDisplayService
 {
     // The log for the application.
-    private readonly IGorgonLog _log;
+    private readonly IGorgonLog _log = log ?? throw new ArgumentNullException(nameof(log));
 
     /// <summary>
     /// Function to retrieve the parent form for the message box.
@@ -144,10 +145,4 @@ public class MessageBoxService
 
         GorgonDialogs.WarningBox(GetParentForm(), message, caption, details);
     }
-
-
-    /// <summary>Initializes a new instance of the <see cref="MessageBoxService"/> class.</summary>
-    /// <param name="log">The log.</param>
-    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="log"/> parameter is <b>null</b>.</exception>
-    public MessageBoxService(IGorgonLog log) => _log = log ?? throw new ArgumentNullException(nameof(log));
 }

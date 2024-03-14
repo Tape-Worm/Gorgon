@@ -20,8 +20,6 @@ partial class Form
         base.Dispose(disposing);
     }
 
-    #region Windows Form Designer generated code
-
     /// <summary>
     /// Required method for Designer support - do not modify
     /// the contents of this method with the code editor.
@@ -136,13 +134,13 @@ partial class Form
         ((System.ComponentModel.ISupportInitialize)(this.TrackSpeed)).EndInit();
         this.ResumeLayout(false);
 
-		}
-		#endregion
+        }
+    
 
-		private System.Windows.Forms.SplitContainer SplitViews;
-		private System.Windows.Forms.Panel GroupControl1;
-		private System.Windows.Forms.TrackBar TrackSpeed;
-		private System.Windows.Forms.Button ButtonAnimation;
-		private System.Windows.Forms.Panel GroupControl2;
+        private System.Windows.Forms.SplitContainer SplitViews;
+        private System.Windows.Forms.Panel GroupControl1;
+        private System.Windows.Forms.TrackBar TrackSpeed;
+        private System.Windows.Forms.Button ButtonAnimation;
+        private System.Windows.Forms.Panel GroupControl2;
 }
 

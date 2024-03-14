@@ -23,8 +23,6 @@ partial class Form
         base.Dispose(disposing);
     }
 
-    #region Windows Form Designer generated code
-
     /// <summary>
     /// Required method for Designer support - do not modify
     /// the contents of this method with the code editor.
@@ -208,7 +206,7 @@ partial class Form
         this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
         this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
         this.ClientSize = new System.Drawing.Size(1280, 800);
-        this.Font = new System.Drawing.Font("Segoe UI", 9F);
+        
         this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
         this.Margin = new System.Windows.Forms.Padding(2);
         this.Name = "Form";
@@ -228,7 +226,7 @@ partial class Form
 
     }
 
-    #endregion
+
     private TextBox TextImagePath;
     private Label label1;
     private Button ButtonImagePath;

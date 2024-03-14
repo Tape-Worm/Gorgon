@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2020 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: February 14, 2020 12:33:11 PM
 // 
-#endregion
+
 
 using Gorgon.Graphics.Imaging;
 using Gorgon.IO;
@@ -30,11 +30,16 @@ using Gorgon.IO;
 namespace Gorgon.Editor.ImageEditor;
 
 /// <summary>
-/// Data for the image picker import files.
+/// Data for the image picker import files
 /// </summary>
-internal class ImagePickerImportData
+/// <remarks>Initializes a new instance of the <see cref="ImagePickerImportData"/> class.</remarks>
+/// <param name="originalFilePath">The original file path.</param>
+/// <param name="fromFile">From file.</param>
+/// <param name="thumbnail">The thumbnail.</param>
+/// <param name="originalMetadata">The original size of the image.</param>
+internal class ImagePickerImportData(string originalFilePath, IGorgonVirtualFile fromFile, IGorgonImage thumbnail, IGorgonImageInfo originalMetadata)
 {
-    #region Properties.
+
     /// <summary>
     /// Property to return the image containing the thumbnail.
     /// </summary>
@@ -42,7 +47,7 @@ internal class ImagePickerImportData
     {
         get;
         private set;
-    }
+    } = thumbnail;
 
     /// <summary>
     /// Property to return the file to work with.
@@ -50,7 +55,7 @@ internal class ImagePickerImportData
     public IGorgonVirtualFile FromFile
     {
         get;
-    }
+    } = fromFile;
 
     /// <summary>
     /// Property to return the source file that was imported.
@@ -58,7 +63,7 @@ internal class ImagePickerImportData
     public string OriginalFilePath
     {
         get;
-    }
+    } = originalFilePath;
 
     /// <summary>
     /// Property to return the original metadata of the image that is used to generate the thumbnail.
@@ -66,21 +71,9 @@ internal class ImagePickerImportData
     public IGorgonImageInfo OriginalMetadata
     {
         get;
-    }
-    #endregion
+    } = originalMetadata;
 
-    #region Constructor.
-    /// <summary>Initializes a new instance of the <see cref="ImagePickerImportData"/> class.</summary>
-    /// <param name="originalFilePath">The original file path.</param>
-    /// <param name="fromFile">From file.</param>
-    /// <param name="thumbnail">The thumbnail.</param>
-    /// <param name="originalMetadata">The original size of the image.</param>
-    public ImagePickerImportData(string originalFilePath, IGorgonVirtualFile fromFile, IGorgonImage thumbnail, IGorgonImageInfo originalMetadata)
-    {
-        OriginalFilePath = originalFilePath;
-        FromFile = fromFile;
-        Thumbnail = thumbnail;
-        OriginalMetadata = originalMetadata;
-    }        
-    #endregion
+
+
+
 }

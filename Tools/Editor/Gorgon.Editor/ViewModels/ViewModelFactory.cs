@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2018 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,25 +11,19 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: August 28, 2018 12:43:55 PM
 // 
-#endregion
 
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
+
 using Gorgon.Collections;
 using Gorgon.Editor.Metadata;
 using Gorgon.Editor.Native;
@@ -44,28 +38,33 @@ using Gorgon.IO.Providers;
 namespace Gorgon.Editor.ViewModels;
 
 /// <summary>
-/// A factory for generating view models and their dependencies.
+/// A factory for generating view models and their dependencies
 /// </summary>
-internal class ViewModelFactory
+/// <remarks>Initializes a new instance of the <see cref="ViewModelFactory"/> class.</remarks>
+/// <param name="settings">The settings for the editor.</param>
+/// <param name="projectManager">The project manager for managing the project file.</param>
+/// <param name="fileSystemProviders">The file system providers used to read/write file systems.</param>
+/// <param name="contentServices">Common host services to pass into plug ins.</param>        
+internal class ViewModelFactory(Editor.EditorSettings settings, ProjectManager projectManager, FileSystemProviders fileSystemProviders, HostContentServices contentServices)
 {
-    #region Variables.        
+
     // The buffer to hold directory paths.
     private readonly Dictionary<string, IDirectory> _directoryBuffer = new(StringComparer.OrdinalIgnoreCase);
     // The host content services.
-    private readonly HostContentServices _hostContentServices;
+    private readonly HostContentServices _hostContentServices = contentServices;
     // The file system providers for reading/writing file systems.
-    private readonly FileSystemProviders _fileSystemProviders;
+    private readonly FileSystemProviders _fileSystemProviders = fileSystemProviders;
     // The settings for the editor.
-    private readonly Editor.EditorSettings _settings;
+    private readonly Editor.EditorSettings _settings = settings;
     // The project manager.
-    private readonly ProjectManager _projectManager;
+    private readonly ProjectManager _projectManager = projectManager;
     // The synchronization context.
     private SynchronizationContext _syncContext;
     // The list of content creator plug ins.
-    private IReadOnlyList<IContentPlugInMetadata> _contentCreators = Array.Empty<IContentPlugInMetadata>();
-    #endregion
+    private IReadOnlyList<IContentPlugInMetadata> _contentCreators = [];
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to send the item specified in the path to the recycle bin.
     /// </summary>
@@ -76,7 +75,7 @@ internal class ViewModelFactory
     {
         bool isDirectory = (System.IO.File.GetAttributes(path) & FileAttributes.Directory) == FileAttributes.Directory;
 
-        if (!Shell32.SendToRecycleBin(path, Shell32.FileOperationFlags.FOF_SILENT | Shell32.FileOperationFlags.FOF_NOCONFIRMATION | Shell32.FileOperationFlags.FOF_WANTNUKEWARNING))
+        if (!Shell32.SendToRecycleBin(path, FileOperationFlags.FOF_SILENT | FileOperationFlags.FOF_NOCONFIRMATION | FileOperationFlags.FOF_WANTNUKEWARNING))
         {
             return false;
         }
@@ -213,7 +212,7 @@ internal class ViewModelFactory
         {
             IGorgonVirtualDirectory subDir = subDirs[i];
             IDirectory subDirParent = null;
-            IDirectory fileDir = null;                
+            IDirectory fileDir = null;
 
             if (subDir.Parent is not null)
             {
@@ -303,7 +302,7 @@ internal class ViewModelFactory
 
         foreach (ContentPlugIn plugIn in _hostContentServices.ContentPlugInService.PlugIns.Values)
         {
-            plugIn.RegisterSearchKeywords(searchService);                
+            plugIn.RegisterSearchKeywords(searchService);
         }
 
         return result;
@@ -417,7 +416,7 @@ internal class ViewModelFactory
 
         if (parent is IExcludable excludeParent)
         {
-            newDir.IsExcluded = excludeParent.IsExcluded; 
+            newDir.IsExcluded = excludeParent.IsExcluded;
         }
 
         parent.Directories.Add(newDir);
@@ -479,7 +478,7 @@ internal class ViewModelFactory
     /// <param name="gpuName">The name of the GPU used by the application.</param>
     /// <returns>A new instance of the main view model.</returns>
     public IMain CreateMainViewModel(string gpuName)
-    {            
+    {
         IDirectoryLocateService dirLocator = new DirectoryLocateService();
         ISettingsPlugInsList pluginList = CreatePlugInListViewModel();
 
@@ -501,7 +500,7 @@ internal class ViewModelFactory
 
         var newProjectVm = new NewProject
         {
-            GPUName = gpuName,                
+            GPUName = gpuName,
         };
         var recentFilesVm = new Recent();
 
@@ -527,8 +526,8 @@ internal class ViewModelFactory
             NewProject = newProjectVm,
             Settings = settingsVm,
             RecentFiles = recentFilesVm,
-            ProjectManager = _projectManager,                
-            OpenDialog = new EditorFileOpenDialogService(_settings, _fileSystemProviders)                        
+            ProjectManager = _projectManager,
+            OpenDialog = new EditorFileOpenDialogService(_settings, _fileSystemProviders)
         });
 
         return mainVm;
@@ -588,7 +587,7 @@ internal class ViewModelFactory
             SaveDialog = new EditorFileSaveDialogService(_settings, _fileSystemProviders),
             FileExplorer = fileExplorer,
             ContentFileManager = fileExplorer,
-            ContentPreviewer = previewer,                
+            ContentPreviewer = previewer,
             EditorSettings = _settings,
             Project = projectData,
             ProjectManager = _projectManager,
@@ -603,20 +602,8 @@ internal class ViewModelFactory
 
         return result;
     }
-    #endregion
 
-    #region Constructor.
-    /// <summary>Initializes a new instance of the <see cref="ViewModelFactory"/> class.</summary>
-    /// <param name="settings">The settings for the editor.</param>
-    /// <param name="projectManager">The project manager for managing the project file.</param>
-    /// <param name="fileSystemProviders">The file system providers used to read/write file systems.</param>
-    /// <param name="contentServices">Common host services to pass into plug ins.</param>        
-    public ViewModelFactory(Editor.EditorSettings settings, ProjectManager projectManager, FileSystemProviders fileSystemProviders, HostContentServices contentServices)
-    {
-        _settings = settings;
-        _projectManager = projectManager;
-        _fileSystemProviders = fileSystemProviders;
-        _hostContentServices = contentServices;
-    }
-    #endregion
+
+
+
 }

@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2020 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,30 +11,29 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: January 12, 2020 3:48:29 PM
 // 
-#endregion
 
-using System;
-using System.Collections.Generic;
-using System.Windows.Forms;
 
 namespace Gorgon.Editor.AnimationEditor;
 
 /// <summary>
-/// Event parameters for the <see cref="DataGridViewEx.CellsDrag"/> event.
+/// Event parameters for the <see cref="DataGridViewEx.CellsDrag"/> event
 /// </summary>
-internal class CellsDragEventArgs
-    : EventArgs
+/// <remarks>Initializes a new instance of the <see cref="CellsDragEventArgs"/> class.</remarks>
+/// <param name="dragCells">The cells being dragged.</param>
+/// <param name="mouseButtons">The mouse buttons that were pressed while dragging.</param>
+internal class CellsDragEventArgs(IReadOnlyList<DataGridViewCell> dragCells, MouseButtons mouseButtons)
+        : EventArgs
 {
     /// <summary>
     /// Property to return the rows that are being dragged.
@@ -42,7 +41,7 @@ internal class CellsDragEventArgs
     public IReadOnlyList<DataGridViewCell> DraggedCells
     {
         get;
-    }
+    } = dragCells;
 
     /// <summary>
     /// Property to return the mouse buttons that were pressed while dragging.
@@ -50,14 +49,5 @@ internal class CellsDragEventArgs
     public MouseButtons MouseButtons
     {
         get;
-    }
-
-    /// <summary>Initializes a new instance of the <see cref="CellsDragEventArgs"/> class.</summary>
-    /// <param name="dragCells">The cells being dragged.</param>
-    /// <param name="mouseButtons">The mouse buttons that were pressed while dragging.</param>
-    public CellsDragEventArgs(IReadOnlyList<DataGridViewCell> dragCells, MouseButtons mouseButtons)
-    {
-        DraggedCells = dragCells;
-        MouseButtons = mouseButtons;
-    }
+    } = mouseButtons;
 }

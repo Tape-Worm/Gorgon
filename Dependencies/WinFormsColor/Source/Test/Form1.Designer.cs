@@ -20,7 +20,7 @@
             base.Dispose(disposing);
         }
 
-        #region Windows Form Designer generated code
+
 
         /// <summary>
         /// Required method for Designer support - do not modify
@@ -64,7 +64,7 @@
             this.ClientSize = new System.Drawing.Size(933, 519);
             this.Controls.Add(this.colorPickerPanel1);
             this.Controls.Add(this.label1);
-            this.Font = new System.Drawing.Font("Segoe UI", 9F);
+            
             this.Name = "Form1";
             this.Text = "Form1";
             this.ResumeLayout(false);
@@ -72,7 +72,7 @@
 
         }
 
-        #endregion
+    
         private System.Windows.Forms.Label label1;
         private Fetze.WinFormsColor.ColorPickerPanel colorPickerPanel1;
     }

@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2019 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,26 +11,20 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: May 18, 2019 1:25:32 PM
 // 
-#endregion
 
-using System;
-using System.IO;
-using System.Linq;
+
 using System.Numerics;
-using System.Threading;
-using System.Threading.Tasks;
-using System.Windows.Forms;
 using Gorgon.Core;
 using Gorgon.Examples.Properties;
 using Gorgon.Graphics;
@@ -43,17 +37,18 @@ using Gorgon.Renderers.Cameras;
 using Gorgon.UI;
 using DX = SharpDX;
 
+
 namespace Gorgon.Examples;
 
 /// <summary>
-/// This example shows many of the features present in Gorgon to show how they could be used to build a 2D top down game with special effects.
-/// It employs the 2D rendering system, lighting effect, bloom effect, post processing and even 3D using the core graphics API.
+/// This example shows many of the features present in Gorgon to show how they could be used to build a 2D top down game with special effects
+/// It employs the 2D rendering system, lighting effect, bloom effect, post processing and even 3D using the core graphics API
 /// 
 /// Due to the effects employed, this example requires a fair bit of video RAM and a fairly fast GPU. 
 /// </summary>
 static class Program
 {
-    #region Variables.
+
     // The cache for our plug in assemblies.
     private static GorgonMefPlugInCache _assemblyCache;
     // The primary graphics interface.
@@ -92,9 +87,9 @@ static class Program
     private static GorgonTextSprite _textSprite;
     // Flag to indicate that the instructions be shown.
     private static bool _showInstructions = true;
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>Handles the KeyUp event of the Keyboard control.</summary>
     /// <param name="sender">The source of the event.</param>
     /// <param name="e">The <see cref="GorgonKeyboardEventArgs"/> instance containing the event data.</param>
@@ -246,7 +241,7 @@ static class Program
         sunLayer.Lights[0].Layers.Add(planetLayer);
 
         // Here we'll set up the layer camera controller. This is what will give the illusion of movement across space by shifting the planet, sun, and other sprites.
-        var controller = new LayerCamera(new Layer[] { bgLayer, sunLayer, planetLayer, shipLayerDeux, shipLayer });
+        var controller = new LayerCamera([bgLayer, sunLayer, planetLayer, shipLayerDeux, shipLayer]);
 
         // This is our renderer which is responsible the drawing the layers and applying any post processing effects.
         _sceneRenderer = new SceneRenderer(_renderer, _resources, _mainRtv, controller, camera);
@@ -298,7 +293,7 @@ static class Program
 
             // Retrieve the list of video adapters. We can do this on a background thread because there's no interaction between other threads and the 
             // underlying D3D backend yet.
-            var videoDevices = await Task.Run(() => GorgonGraphics.EnumerateAdapters(log: GorgonApplication.Log));                
+            var videoDevices = await Task.Run(() => GorgonGraphics.EnumerateAdapters(log: GorgonApplication.Log));
 
             if (videoDevices.Count == 0)
             {
@@ -351,13 +346,13 @@ static class Program
             SetupScene();
 
             // Build up a font to use for rendering any GUI text.
-            _helpFont = GorgonExample.Fonts.GetFont(new GorgonFontInfo("Segoe UI", 10.0f, FontHeightMode.Points)
+            _helpFont = GorgonExample.Fonts.GetFont(new GorgonFontInfo("Segoe UI", 10.0f, GorgonFontHeightMode.Points)
             {
                 Name = "Segoe UI 10pt",
                 OutlineSize = 2,
                 Characters = (Resources.Instructions + "yQHS:1234567890x").Distinct().ToArray(),
-                FontStyle = FontStyle.Bold,
-                AntiAliasingMode = FontAntiAliasMode.AntiAlias,
+                FontStyle = GorgonFontStyle.Bold,
+                AntiAliasingMode = GorgonFontAntiAliasMode.AntiAlias,
                 OutlineColor1 = GorgonColor.Black,
                 OutlineColor2 = GorgonColor.Black
             });
@@ -433,5 +428,5 @@ static class Program
             _assemblyCache?.Dispose();
         }
     }
-    #endregion
+
 }

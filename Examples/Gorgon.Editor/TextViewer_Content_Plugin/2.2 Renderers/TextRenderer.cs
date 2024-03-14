@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2020 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: August 3, 2020 4:40:15 PM
 // 
-#endregion
+
 
 using System.Numerics;
 using Gorgon.Editor.Rendering;
@@ -32,33 +32,39 @@ using Gorgon.Graphics.Fonts;
 using Gorgon.Renderers;
 using DX = SharpDX;
 
+
 namespace Gorgon.Examples;
 
 /// <summary>
-/// This is a renderer that will print our text into the view.
+/// This is a renderer that will print our text into the view
 /// </summary>
 /// <remarks>
 /// A renderer is used to convey any graphical/visual content data back to the user. Changes made to the content are reflected in the renderer by monitoring
-/// the content view model and adjusting the internal content representation used by the renderer.
+/// the content view model and adjusting the internal content representation used by the renderer
 /// 
 /// The renderer works differently than our content control in that it does not wait for events to update itself, it is constantly running using an idle loop 
-/// to reflect content changes in real time.
+/// to reflect content changes in real time
 /// </remarks>
-internal class TextRenderer
-    : DefaultContentRenderer<ITextContent>
+/// <remarks>Initializes a new instance of the <see cref="TextRenderer"/> class.</remarks>
+/// <param name="renderer">The 2D renderer used to render our text.</param>
+/// <param name="mainRenderTarget">The main render target for the view.</param>
+/// <param name="fonts">The factory used to create fonts.</param>
+/// <param name="dataContext">The view model for our text data.</param>
+internal class TextRenderer(Gorgon2D renderer, GorgonSwapChain mainRenderTarget, GorgonFontFactory fonts, ITextContent dataContext)
+        : DefaultContentRenderer<ITextContent>("TextRenderer", renderer, mainRenderTarget, dataContext)
 {
-    #region Variables.
+
     // The sprite used to render our text data.
     private GorgonTextSprite _textSprite;
     // The factory used to create fonts.
-    private readonly GorgonFontFactory _fontFactory;
+    private readonly GorgonFontFactory _fontFactory = fonts;
     // The fonts used for text rendering.
     private GorgonFont _arial;
     private GorgonFont _timesNewRoman;
     private GorgonFont _papyrus;
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to update the font for the text sprite.
     /// </summary>
@@ -86,8 +92,8 @@ internal class TextRenderer
                 break;
         }
 
-        _textSprite.Text = DataContext.Text.WordWrap(_textSprite.Font, RenderRegion.Width);           
-        
+        _textSprite.Text = DataContext.Text.WordWrap(_textSprite.Font, RenderRegion.Width);
+
     }
 
     /// <summary>Handles the PropertyChanged event of the TextColor control.</summary>
@@ -106,7 +112,7 @@ internal class TextRenderer
     /// <summary>Releases unmanaged and - optionally - managed resources.</summary>
     /// <param name="disposing">
     ///   <c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
-    protected override void Dispose(bool disposing) 
+    protected override void Dispose(bool disposing)
     {
         if (disposing)
         {
@@ -204,7 +210,7 @@ internal class TextRenderer
         Renderer.Begin(Gorgon2DBatchState.ScissorClipping, Camera);
         Renderer.DrawTextSprite(_textSprite);
         Renderer.End();
-        
+
         // Turn off clipping so we don't affect anything else.
         Graphics.SetScissorRect(DX.Rectangle.Empty);
     }
@@ -257,18 +263,18 @@ internal class TextRenderer
     /// <summary>Function to create resources required for the lifetime of the viewer.</summary>
     public void CreateResources()
     {
-        _arial = _fontFactory.GetFont(new GorgonFontInfo("Arial", 9.0f, FontHeightMode.Points)
+        _arial = _fontFactory.GetFont(new GorgonFontInfo("Arial", 9.0f, GorgonFontHeightMode.Points)
         {
             Name = "Arial 9pt",
-            FontStyle = FontStyle.Bold
+            FontStyle = GorgonFontStyle.Bold
         });
 
-        _timesNewRoman = _fontFactory.GetFont(new GorgonFontInfo("Times New Roman", 18.0f, FontHeightMode.Points)
+        _timesNewRoman = _fontFactory.GetFont(new GorgonFontInfo("Times New Roman", 18.0f, GorgonFontHeightMode.Points)
         {
             Name = "Times New Roman 18pt"
         });
 
-        _papyrus = _fontFactory.GetFont(new GorgonFontInfo("Papyrus", 20.0f, FontHeightMode.Points)
+        _papyrus = _fontFactory.GetFont(new GorgonFontInfo("Papyrus", 20.0f, GorgonFontHeightMode.Points)
         {
             Name = "Papyrus 20pt",
             OutlineColor1 = GorgonColor.Black,
@@ -291,15 +297,6 @@ internal class TextRenderer
     /// Function to set the view to a default zoom level.
     /// </summary>
     public void DefaultZoom() => MoveTo(Vector2.Zero, 1);
-    #endregion
 
-    #region Constructor/Finalizer.
-    /// <summary>Initializes a new instance of the <see cref="TextRenderer"/> class.</summary>
-    /// <param name="renderer">The 2D renderer used to render our text.</param>
-    /// <param name="mainRenderTarget">The main render target for the view.</param>
-    /// <param name="fonts">The factory used to create fonts.</param>
-    /// <param name="dataContext">The view model for our text data.</param>
-    public TextRenderer(Gorgon2D renderer, GorgonSwapChain mainRenderTarget, GorgonFontFactory fonts, ITextContent dataContext)
-        : base("TextRenderer", renderer, mainRenderTarget, dataContext) => _fontFactory = fonts;
-    #endregion
+
 }

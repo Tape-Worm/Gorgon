@@ -1,6 +1,6 @@
-﻿#region MIT.
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2011 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,43 +11,41 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: Wednesday, November 02, 2011 9:05:14 AM
 // 
-#endregion
 
-using System;
+
 using System.Collections;
-using System.Collections.Generic;
 using Gorgon.Collections.Specialized;
 using Gorgon.Native;
 
 namespace Gorgon.Diagnostics;
 
 /// <summary>
-/// Information about the computer and operating system that is running Gorgon.
+/// Information about the computer and operating system that is running Gorgon
 /// </summary>
 public class GorgonComputerInfo
     : IGorgonComputerInfo
 {
-    #region Variables.
+
     // List of machine specific environment variables.
     private readonly GorgonConcurrentDictionary<string, string> _machineVariables;
     // List of user specific environment variables.
     private readonly GorgonConcurrentDictionary<string, string> _userVariables;
     // List of process specific environment variables.
     private readonly GorgonConcurrentDictionary<string, string> _processVariables;
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to return the total physical RAM available in bytes.
     /// </summary>
@@ -127,9 +125,9 @@ public class GorgonComputerInfo
     /// </summary>
     public IReadOnlyDictionary<string, string> ProcessEnvironmentVariables => _processVariables;
 
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to refresh the list of user and machine specific environment variables.
     /// </summary>
@@ -161,9 +159,9 @@ public class GorgonComputerInfo
             _userVariables.TryAdd(variable.Key.ToString(), variable.Value.ToString());
         }
     }
-    #endregion
 
-    #region Constructor/Destructor.
+
+
     /// <summary>
     /// Initializes the <see cref="GorgonComputerInfo"/> class.
     /// </summary>
@@ -172,8 +170,8 @@ public class GorgonComputerInfo
         _machineVariables = new GorgonConcurrentDictionary<string, string>(StringComparer.OrdinalIgnoreCase);
         _userVariables = new GorgonConcurrentDictionary<string, string>(StringComparer.OrdinalIgnoreCase);
         _processVariables = new GorgonConcurrentDictionary<string, string>(StringComparer.OrdinalIgnoreCase);
-        
+
         RefreshEnvironmentVariables();
     }
-    #endregion
+
 }

@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2018 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: June 6, 2018 2:34:12 PM
 // 
-#endregion
+
 
 using System.Numerics;
 using System.Runtime.CompilerServices;
@@ -33,12 +33,12 @@ using Gorgon.Graphics.Core;
 namespace Gorgon.Renderers.Geometry;
 
 /// <summary>
-/// A vertex used for 2D rendering.
+/// A vertex used for 2D rendering
 /// </summary>		
 [StructLayout(LayoutKind.Sequential, Pack = 1)]
 public struct Gorgon2DVertex
 {
-    #region Variables.
+
     /// <summary>
     /// The size of the vertex, in bytes.
     /// </summary>
@@ -72,9 +72,9 @@ public struct Gorgon2DVertex
     /// </summary>
     [InputElement(3, "ANGLE")]
     public Vector2 Angle;
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Deconstructs this instance into individual position values.
     /// </summary>
@@ -100,9 +100,9 @@ public struct Gorgon2DVertex
         uv = UV;
         angle = Angle;
     }
-    #endregion
 
-    #region Constructor.
+
+
     /// <summary>Initializes a new instance of the <see cref="Gorgon2DVertex" /> struct.</summary>
     /// <param name="pos">The position.</param>
     /// <param name="color">The color.</param>
@@ -141,5 +141,5 @@ public struct Gorgon2DVertex
         UV = uv;
         Angle = angle;
     }
-    #endregion
+
 }

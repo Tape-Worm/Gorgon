@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2020 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: March 6, 2020 1:38:12 PM
 // 
-#endregion
+
 
 using Gorgon.Editor.UI;
 using Gorgon.Graphics;
@@ -31,12 +31,12 @@ using Gorgon.Math;
 namespace Gorgon.Editor.ImageEditor;
 
 /// <summary>
-/// The settings view model for the edge detect effect.
+/// The settings view model for the edge detect effect
 /// </summary>
 internal class FxEdgeDetect
     : HostedPanelViewModelBase<HostedPanelViewModelParameters>, IFxEdgeDetect
 {
-    #region Variables.
+
     // The threshold for the edge detection.
     private int _threshold = 50;
     // The offset for the edge line width.
@@ -45,9 +45,9 @@ internal class FxEdgeDetect
     private GorgonColor _lineColor = GorgonColor.Black;
     // Flag to indicate that the edges should be overlaid on top of the original image or not.
     private bool _overlay = true;
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>Property to return whether the panel is modal.</summary>
     public override bool IsModal => false;
 
@@ -120,9 +120,9 @@ internal class FxEdgeDetect
             OnPropertyChanged();
         }
     }
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>Function to inject dependencies for the view model.</summary>
     /// <param name="injectionParameters">The parameters to inject.</param>
     /// <remarks>
@@ -136,5 +136,5 @@ internal class FxEdgeDetect
     protected override void OnInitialize(HostedPanelViewModelParameters injectionParameters)
     {
     }
-    #endregion
+
 }

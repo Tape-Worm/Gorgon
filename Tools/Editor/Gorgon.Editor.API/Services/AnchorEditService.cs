@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2020 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,22 +11,20 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: July 11, 2020 9:51:23 PM
 // 
-#endregion
 
-using System;
+
 using System.Numerics;
-using System.Windows.Forms;
 using Gorgon.Animation;
 using Gorgon.Editor.Rendering;
 using Gorgon.Graphics;
@@ -38,11 +36,11 @@ using DX = SharpDX;
 namespace Gorgon.Editor.Services;
 
 /// <summary>
-/// A service used to edit an anchor point on a sprite.
+/// A service used to edit an anchor point on a sprite
 /// </summary>
 public class AnchorEditService : IAnchorEditService
 {
-    #region Variables.
+
     // The icon for the anchor.
     private readonly GorgonSprite _anchorIcon;
     // The 2D renderer for the application.
@@ -63,16 +61,16 @@ public class AnchorEditService : IAnchorEditService
     private DX.Rectangle _bounds;
     // Flag to indicate that the mouse cursor is hidden.
     private bool _cursorHidden;
-    #endregion
 
-    #region Events.
+
+
     /// <summary>
     /// Event triggered when the anchor position is updated.
     /// </summary>
     public event EventHandler AnchorChanged;
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to set or return the camera for the renderer.
     /// </summary>
@@ -110,9 +108,9 @@ public class AnchorEditService : IAnchorEditService
         get;
         set;
     }
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to assign the anchor position.
     /// </summary>
@@ -133,7 +131,7 @@ public class AnchorEditService : IAnchorEditService
     /// </summary>
     private void UpdateCursor()
     {
-        if (IsDragging) 
+        if (IsDragging)
         {
             return;
         }
@@ -229,7 +227,7 @@ public class AnchorEditService : IAnchorEditService
         UpdateCursor();
 
         if (IsDragging)
-        {                
+        {
             IsDragging = false;
             return true;
         }
@@ -319,9 +317,9 @@ public class AnchorEditService : IAnchorEditService
 
         _animController.Update();
     }
-    #endregion
 
-    #region Constructor.
+
+
     /// <summary>Initializes a new instance of the <see cref="AnchorEditService"/> class.</summary>
     /// <param name="renderer">The 2D renderer for the application.</param>
     /// <param name="anchorSprite">The sprite representing the anchor icon.</param>
@@ -347,5 +345,5 @@ public class AnchorEditService : IAnchorEditService
             .EndEdit()
             .Build("Icon Opacity");
     }
-    #endregion
+
 }

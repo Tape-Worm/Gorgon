@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2019 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,22 +11,20 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: March 23, 2019 9:42:34 PM
 // 
-#endregion
 
-using System;
+
 using System.ComponentModel;
-using System.Windows.Forms;
 using Gorgon.Editor.UI;
 using Gorgon.Math;
 using DX = SharpDX;
@@ -34,34 +32,34 @@ using DX = SharpDX;
 namespace Gorgon.Editor.SpriteEditor;
 
 /// <summary>
-/// The window for the manual rectangle input interface.
+/// The window for the manual rectangle input interface
 /// </summary>
 internal partial class FormManualRectangleEdit
     : Form, IDataContext<ISpriteClipContext>
 {
-    #region Variables.
+
     // Flag to indicate that the value changed event for the numeric controls should not fire.
     private bool _noValueEvent;
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>Property to return the data context assigned to this view.</summary>
     /// <value>The data context.</value>
     [Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-    public ISpriteClipContext DataContext
+    public ISpriteClipContext ViewModel
     {
         get;
         private set;
     }
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>Handles the ValueChanged event of the NumericLeft control.</summary>
     /// <param name="sender">The source of the event.</param>
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
     private void NumericLeft_ValueChanged(object sender, EventArgs e)
     {
-        if ((DataContext is null) || (_noValueEvent))
+        if ((ViewModel is null) || (_noValueEvent))
         {
             return;
         }
@@ -74,12 +72,12 @@ internal partial class FormManualRectangleEdit
             Bottom = (float)NumericBottom.Value
         };
 
-        if (newRect.Equals(DataContext.SpriteRectangle))
+        if (newRect.Equals(ViewModel.SpriteRectangle))
         {
             return;
         }
 
-        DataContext.SpriteRectangle = newRect;
+        ViewModel.SpriteRectangle = newRect;
     }
 
     /// <summary>
@@ -112,10 +110,10 @@ internal partial class FormManualRectangleEdit
         {
             case nameof(ISpriteClipContext.FixedSize):
                 LabelRight.Enabled = LabelBottom.Enabled =
-                NumericRight.Enabled = NumericBottom.Enabled = DataContext.FixedSize is null;
+                NumericRight.Enabled = NumericBottom.Enabled = ViewModel.FixedSize is null;
                 break;
             case nameof(ISpriteClipContext.SpriteRectangle):
-                SetRectangleInputs(DataContext);
+                SetRectangleInputs(ViewModel);
                 break;
         }
     }
@@ -125,12 +123,12 @@ internal partial class FormManualRectangleEdit
     /// </summary>
     private void UnassignEvents()
     {
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             return;
         }
 
-        DataContext.PropertyChanged -= DataContext_PropertyChanged;
+        ViewModel.PropertyChanged -= DataContext_PropertyChanged;
     }
 
     /// <summary>
@@ -167,7 +165,7 @@ internal partial class FormManualRectangleEdit
     {
         base.OnResizeBegin(e);
 
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             return;
         }
@@ -181,7 +179,7 @@ internal partial class FormManualRectangleEdit
     {
         base.OnResizeEnd(e);
 
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             return;
         }
@@ -200,7 +198,7 @@ internal partial class FormManualRectangleEdit
             return;
         }
 
-        DataContext?.Load();
+        ViewModel?.Load();
     }
 
     /// <summary>Function to assign a data context to the view as a view model.</summary>
@@ -211,19 +209,19 @@ internal partial class FormManualRectangleEdit
         UnassignEvents();
 
         InitializeFromDataContext(dataContext);
-        DataContext = dataContext;
+        ViewModel = dataContext;
 
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             return;
         }
 
-        DataContext.PropertyChanged += DataContext_PropertyChanged;
+        ViewModel.PropertyChanged += DataContext_PropertyChanged;
     }
-    #endregion
 
-    #region Constructor/Finalizer.
+
+
     /// <summary>Initializes a new instance of the <see cref="FormManualRectangleEdit"/> class.</summary>
     public FormManualRectangleEdit() => InitializeComponent();
-    #endregion
+
 }

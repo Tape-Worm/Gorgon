@@ -20,7 +20,7 @@ partial class FormName
         base.Dispose(disposing);
     }
 
-    #region Windows Form Designer generated code
+
 
     /// <summary>
     /// Required method for Designer support - do not modify
@@ -163,7 +163,7 @@ partial class FormName
         this.CancelButton = this.ButtonCancel;
         this.ClientSize = new System.Drawing.Size(464, 62);
         this.Controls.Add(this.TableName);
-        this.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+        
         this.ForeColor = System.Drawing.Color.White;
         this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
         this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
@@ -183,7 +183,7 @@ partial class FormName
 
     }
 
-    #endregion
+
 
     private Gorgon.UI.GorgonCueTextBox TextName;
     private System.Windows.Forms.Button ButtonOK;

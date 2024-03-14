@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2018 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,22 +11,19 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: August 11, 2018 3:43:13 PM
 // 
-#endregion
 
-using System;
-using System.IO;
-using System.Linq;
+
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using Gorgon.Core;
@@ -40,12 +37,17 @@ using DX = SharpDX;
 namespace Gorgon.IO;
 
 /// <summary>
-/// A codec that can read version 2 sprite data.
+/// A codec that can read version 2 sprite data
 /// </summary>
-public class GorgonV2SpriteCodec
-    : GorgonSpriteCodecCommon
+/// <remarks>
+/// Initializes a new instance of the <see cref="GorgonV2SpriteCodec"/> class
+/// </remarks>
+/// <param name="renderer">The renderer used for resource handling.</param>
+/// <exception cref="ArgumentNullException">Thrown when the <paramref name="renderer"/> parameter is <b>null</b>.</exception>
+public class GorgonV2SpriteCodec(Gorgon2D renderer)
+        : GorgonSpriteCodecCommon(renderer, Resources.GOR2DIO_V2_CODEC, Resources.GOR2DIO_V2_CODEC_DESCRIPTION)
 {
-    #region Enums.
+
     /// <summary>
     /// Filtering to apply to a texture.
     /// </summary>
@@ -95,9 +97,9 @@ public class GorgonV2SpriteCodec
         /// <remarks>This flag is mutually exclusive and applies to minification, magnification and mip mapping.</remarks>
         CompareAnisotropic = 131072,
     }
-    #endregion
 
-    #region Constants.
+
+
     // Sprite texture data chunk.
     private const string TextureDataChunk = "TXTRDATA";
     // Sprite render data chunk.
@@ -109,9 +111,9 @@ public class GorgonV2SpriteCodec
     /// Header for the Gorgon sprite file.
     /// </summary>		
     public const string FileHeader = "GORSPR20";
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to return whether or not the codec can decode sprite data.
     /// </summary>
@@ -129,9 +131,9 @@ public class GorgonV2SpriteCodec
     {
         get;
     } = new Version(2, 0);
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to convert Gorgon 2.x texture filtering to 3.x texture filtering values.
     /// </summary>
@@ -275,11 +277,11 @@ public class GorgonV2SpriteCodec
     }
 
     /// <summary>
-		/// Function to convert Gorgon 1.x image addressing values to 2.x texture addressing values.
-		/// </summary>
-		/// <param name="imageAddress">Image addressing values.</param>
-		/// <returns>Texture addressing values.</returns>
-		private static TextureWrap ConvertV2TextureWrapToTextureAddress(int imageAddress) => imageAddress switch
+    /// Function to convert Gorgon 1.x image addressing values to 2.x texture addressing values.
+    /// </summary>
+    /// <param name="imageAddress">Image addressing values.</param>
+    /// <returns>Texture addressing values.</returns>
+    private static TextureWrap ConvertV2TextureWrapToTextureAddress(int imageAddress) => imageAddress switch
     {
         1 => TextureWrap.Wrap,
         2 => TextureWrap.Mirror,
@@ -297,7 +299,7 @@ public class GorgonV2SpriteCodec
     /// <param name="hWrap">Horizontal wrapping mode.</param>
     /// <param name="vWrap">Vertical wrapping mode.</param>
     /// <returns>The sampler state.</returns>
-	    private static GorgonSamplerState CreateSamplerState(GorgonGraphics graphics, SampleFilter filter, GorgonColor borderColor, TextureWrap hWrap, TextureWrap vWrap)
+    private static GorgonSamplerState CreateSamplerState(GorgonGraphics graphics, SampleFilter filter, GorgonColor borderColor, TextureWrap hWrap, TextureWrap vWrap)
     {
         var builder = new GorgonSamplerStateBuilder(graphics);
 
@@ -497,17 +499,6 @@ public class GorgonV2SpriteCodec
     /// <param name="sprite">The sprite to serialize into the stream.</param>
     /// <param name="stream">The stream that will contain the sprite.</param>
     protected override void OnSaveToStream(GorgonSprite sprite, Stream stream) => throw new NotSupportedException();
-    #endregion
 
-    #region Constructor/Finalizer.
-    /// <summary>
-    /// Initializes a new instance of the <see cref="GorgonV2SpriteCodec"/> class.
-    /// </summary>
-    /// <param name="renderer">The renderer used for resource handling.</param>
-    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="renderer"/> parameter is <b>null</b>.</exception>
-    public GorgonV2SpriteCodec(Gorgon2D renderer)
-        : base(renderer, Resources.GOR2DIO_V2_CODEC, Resources.GOR2DIO_V2_CODEC_DESCRIPTION)
-    {
-    }
-    #endregion
+
 }

@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2016 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,22 +11,19 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: August 16, 2016 3:30:55 PM
 // 
-#endregion
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
+
 using Gorgon.Core;
 using Gorgon.Graphics.Imaging.Properties;
 using Gorgon.PlugIns;
@@ -34,12 +31,21 @@ using Gorgon.PlugIns;
 namespace Gorgon.Graphics.Imaging.Codecs;
 
 /// <summary>
-/// A plug in to allow for loading of custom image codecs.
+/// A plug in to allow for loading of custom image codecs
 /// </summary>
-public abstract class GorgonImageCodecPlugIn
-    : GorgonPlugIn
+/// <remarks>
+/// Initializes a new instance of the <see cref="GorgonImageCodecPlugIn"/> class
+/// </remarks>
+/// <param name="description">Optional description of the plug in.</param>
+/// <remarks>
+/// <para>
+/// Objects that implement this base class should pass in a hard coded description on the base constructor
+/// </para>
+/// </remarks>
+public abstract class GorgonImageCodecPlugIn(string description)
+        : GorgonPlugIn(description)
 {
-    #region Properties.
+
     /// <summary>
     /// Property to return the names of the available codecs for this plug in.
     /// </summary>
@@ -50,9 +56,9 @@ public abstract class GorgonImageCodecPlugIn
     {
         get;
     }
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to create a new <see cref="IGorgonImageCodec"/>.
     /// </summary>
@@ -190,21 +196,8 @@ public abstract class GorgonImageCodecPlugIn
 
         return result ?? throw new KeyNotFoundException(string.Format(Resources.GORIMG_ERR_CODEC_NOT_IN_PLUGIN, codec));
     }
-    #endregion
 
-    #region Constructor/Destructor.
-    /// <summary>
-    /// Initializes a new instance of the <see cref="GorgonImageCodecPlugIn"/> class.
-    /// </summary>
-    /// <param name="description">Optional description of the plug in.</param>
-    /// <remarks>
-    /// <para>
-    /// Objects that implement this base class should pass in a hard coded description on the base constructor.
-    /// </para>
-    /// </remarks>
-    protected GorgonImageCodecPlugIn(string description)
-        : base(description)
-    {
-    }
-    #endregion
+
+
+
 }

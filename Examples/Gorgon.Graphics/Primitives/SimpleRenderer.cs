@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2017 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,24 +11,21 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: July 30, 2017 1:49:31 PM
 // 
-#endregion
 
-using System;
-using System.Collections.Generic;
+
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
-using System.Linq;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
@@ -45,17 +42,15 @@ using Gorgon.Renderers.Lights;
 namespace Gorgon.Examples;
 
 /// <summary>
-/// A simple renderer used to display and animate the scene data.
+/// A simple renderer used to display and animate the scene data
 /// </summary>
 internal class SimpleRenderer
     : IDisposable
 {
-    #region Constants.
+
     // The maximum number of available lights.
     private const int MaxLights = 8;
-    #endregion
 
-    #region Value Types.
     /// <summary>
     /// View/projection matrices.
     /// </summary>
@@ -94,9 +89,9 @@ internal class SimpleRenderer
         /// </summary>
         public float SpecularPower;
     }
-    #endregion
 
-    #region Variables.
+
+
     // The graphics interface to use.
     private readonly GorgonGraphics _graphics;
     // A constant buffer for holding the projection*view matrix.
@@ -112,9 +107,9 @@ internal class SimpleRenderer
     // The light data to send to the constant buffer.
     private readonly GorgonGpuLightData[] _lightData = new GorgonGpuLightData[MaxLights];
     // The list of meshes to render.
-    private readonly ObservableCollection<Mesh> _meshes = new();
+    private readonly ObservableCollection<Mesh> _meshes = [];
     // The draw calls for the available meshes.
-    private readonly List<GorgonDrawIndexCall> _drawCalls = new();
+    private readonly List<GorgonDrawIndexCall> _drawCalls = [];
     // The layout of a vertex.
     private GorgonInputLayout _vertexLayout;
     // The default sampler state.
@@ -127,9 +122,9 @@ internal class SimpleRenderer
     private readonly GorgonBoundingFrustum _frustum = new();
     // The visual for AABBs.
     private readonly GorgonAABBVisual _aabbVisual;
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to return the list of meshes to render.
     /// </summary>
@@ -146,10 +141,10 @@ internal class SimpleRenderer
     /// <summary>
     /// Property to return the camera used for rendering.
     /// </summary>
-    public GorgonPerspectiveCamera Camera 
-    { 
+    public GorgonPerspectiveCamera Camera
+    {
         get;
-        set; 
+        set;
     }
 
     /// <summary>
@@ -176,9 +171,9 @@ internal class SimpleRenderer
         get;
         set;
     }
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to create a draw call based on a mesh.
     /// </summary>
@@ -320,7 +315,7 @@ internal class SimpleRenderer
         _viewProjectionBuffer = new GorgonConstantBuffer(_graphics,
                                                          new GorgonConstantBufferInfo(Unsafe.SizeOf<ViewProjectionData>())
                                                          {
-                                                             Name = "Projection/View Buffer",                                                                 
+                                                             Name = "Projection/View Buffer",
                                                              Usage = ResourceUsage.Dynamic
                                                          }).GetView();
 
@@ -335,7 +330,7 @@ internal class SimpleRenderer
                                                  new GorgonConstantBufferInfo(Unsafe.SizeOf<Vector3>())
                                                  {
                                                      Name = "CameraBuffer",
-                                                     Usage = ResourceUsage.Dynamic                                                         
+                                                     Usage = ResourceUsage.Dynamic
                                                  }).GetView();
 
         _materialBuffer = new GorgonConstantBuffer(_graphics,
@@ -349,7 +344,7 @@ internal class SimpleRenderer
                                                 new GorgonConstantBufferInfo(GorgonGpuLightData.SizeInBytes * MaxLights)
                                                 {
                                                     Name = "LightDataBuffer",
-                                                    Usage = ResourceUsage.Dynamic                                                        
+                                                    Usage = ResourceUsage.Dynamic
                                                 }).GetView();
 
         // Initialize the constant buffers.
@@ -384,7 +379,7 @@ internal class SimpleRenderer
             SpecularPower = material.SpecularPower
         };
         _materialBuffer.Buffer.SetData(in materialData);
-    }        
+    }
 
     /// <summary>
     /// Function to render the scene.
@@ -404,7 +399,7 @@ internal class SimpleRenderer
             if ((Camera.Changes & CameraChange.View) == CameraChange.View)
             {
                 ref readonly Matrix4x4 view = ref Camera.GetViewMatrix();
-                
+
                 _cameraBuffer.Buffer.SetData(Camera.Position);
             }
 
@@ -432,7 +427,7 @@ internal class SimpleRenderer
             }
 
             UpdateMaterials(_meshes[i].Material);
-            
+
             if (aabb.IsEmpty)
             {
                 _graphics.Submit(_drawCalls[i]);
@@ -473,9 +468,9 @@ internal class SimpleRenderer
             texture.Value.Dispose();
         }
     }
-    #endregion
 
-    #region Constructor/Finalizer.
+
+
     /// <summary>
     /// Initializes a new instance of the <see cref="SimpleRenderer"/> class.
     /// </summary>
@@ -497,5 +492,5 @@ internal class SimpleRenderer
 
         InitializeConstantBuffers();
     }
-    #endregion
+
 }

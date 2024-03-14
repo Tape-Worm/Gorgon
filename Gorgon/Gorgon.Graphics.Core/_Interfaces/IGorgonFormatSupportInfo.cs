@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2018 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,25 +11,25 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: April 7, 2018 11:35:23 PM
 // 
-#endregion
+
 
 using Gorgon.Graphics.Imaging;
 
 namespace Gorgon.Graphics.Core;
 
 /// <summary>
-/// Defines the support given to a specific <see cref="BufferFormat"/>.
+/// Defines the support given to a specific <see cref="BufferFormat"/>
 /// </summary>
 public interface IGorgonFormatSupportInfo
 {
@@ -106,9 +106,9 @@ public interface IGorgonFormatSupportInfo
     }
 
     /// <summary>
-    /// Function to determine if a format is suitable for the texture type specified by <see cref="ImageType"/>.
+    /// Function to determine if a format is suitable for the texture type specified by <see cref="ImageDataType"/>.
     /// </summary>
     /// <param name="imageType">The image type to evaluate.</param>
     /// <returns><b>true</b> if suitable, <b>false</b> if not.</returns>
-    bool IsTextureFormat(ImageType imageType);
+    bool IsTextureFormat(ImageDataType imageType);
 }

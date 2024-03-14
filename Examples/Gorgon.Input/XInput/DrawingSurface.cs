@@ -1,6 +1,5 @@
-﻿#region MIT.
-// 
-// Gorgon.
+﻿// 
+// Gorgon
 // Copyright (C) 2013 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,23 +10,20 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: Saturday, January 12, 2013 4:44:57 PM
 // 
-#endregion
 
-using System;
-using System.Drawing;
+
 using System.Drawing.Imaging;
-using System.Windows.Forms;
 using Gorgon.Examples.Properties;
 using Gorgon.Timing;
 using DrawingGraphics = System.Drawing.Graphics;
@@ -35,12 +31,12 @@ using DrawingGraphics = System.Drawing.Graphics;
 namespace Gorgon.Examples;
 
 /// <summary>
-/// The drawing surface for our joystick.
+/// The drawing surface for our joystick
 /// </summary>
 internal class DrawingSurface
     : IDisposable
 {
-    #region Variables.
+
     // Control we're drawing on.
     private readonly Control _control;
     // Flag to indicate that the object was disposed.
@@ -69,9 +65,9 @@ internal class DrawingSurface
     private readonly ColorMatrix _colorMatrix;
     // Cursor image attributes.
     private ImageAttributes _cursorAttribs;
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to return the cursor size.
     /// </summary>
@@ -79,9 +75,9 @@ internal class DrawingSurface
     {
         get;
     }
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Handles the Resize event of the surfaceControl control.
     /// </summary>
@@ -274,26 +270,7 @@ internal class DrawingSurface
         _buffer.Render();
         _buffer.Render(_controlGraphics);
     }
-    #endregion
 
-    #region Constructor/Destructor.
-    /// <summary>
-    /// Initializes a new instance of the <see cref="DrawingSurface" /> class.
-    /// </summary>
-    /// <param name="surfaceControl">The control that contains the surface to draw on.</param>
-    public DrawingSurface(Control surfaceControl)
-    {
-        _colorMatrix = new ColorMatrix();
-        _cursorAttribs = new ImageAttributes();
-        _cursor = Resources.device_gamepad_48x48;
-        CursorSize = new Size(_cursor.Width, _cursor.Height);
-        _control = surfaceControl;
-        _control.Resize += SurfaceControl_Resize;
-        GetResources(true);
-    }
-    #endregion
-
-    #region IDisposable Members
     /// <summary>
     /// Releases unmanaged and - optionally - managed resources.
     /// </summary>
@@ -330,5 +307,19 @@ internal class DrawingSurface
         Dispose(true);
         GC.SuppressFinalize(this);
     }
-    #endregion
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="DrawingSurface" /> class.
+    /// </summary>
+    /// <param name="surfaceControl">The control that contains the surface to draw on.</param>
+    public DrawingSurface(Control surfaceControl)
+    {
+        _colorMatrix = new ColorMatrix();
+        _cursorAttribs = new ImageAttributes();
+        _cursor = Resources.device_gamepad_48x48;
+        CursorSize = new Size(_cursor.Width, _cursor.Height);
+        _control = surfaceControl;
+        _control.Resize += SurfaceControl_Resize;
+        GetResources(true);
+    }
 }

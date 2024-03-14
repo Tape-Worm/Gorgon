@@ -1,6 +1,6 @@
-#region MIT.
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2011 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,32 +11,31 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: Friday, July 15, 2011 6:22:41 AM
 // 
-#endregion
 
-using System.Collections.Generic;
+
 using Gorgon.Core;
 using XI = SharpDX.XInput;
 
 namespace Gorgon.Input.XInput;
 
 /// <summary>
-/// XInput XBOX 360 controller device.
+/// XInput XBOX 360 controller device
 /// </summary>
 internal class XInputDevice
     : GorgonGamingDevice
 {
-    #region Variables.
+
     // Last packet number.
     private int _lastPacket = int.MaxValue;
     // The XInput controller.
@@ -45,13 +44,13 @@ internal class XInputDevice
     private XI.Vibration _currentVibration;
     // The strongly typed device information data.
     private readonly XInputDeviceInfo _info;
-    #endregion
 
-    #region Properties.
+
+
     public override bool IsConnected => _controller.IsConnected;
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to acquire a gaming device.
     /// </summary>
@@ -239,9 +238,9 @@ internal class XInputDevice
 
         _lastPacket = int.MaxValue;
     }
-    #endregion
 
-    #region Constructor/Destructor.
+
+
     /// <summary>
     /// Initializes a new instance of the <see cref="XInputDevice" /> class.
     /// </summary>
@@ -251,7 +250,7 @@ internal class XInputDevice
     {
         // XInput devices don't lose acquisition when the application loses focus.
         IsAcquired = true;
-        _info = deviceInfo;            
+        _info = deviceInfo;
         _controller = new XI.Controller(deviceInfo.DeviceID.ToUserIndex());
 
         if (Axis.Contains(GamingDeviceAxis.XAxis))
@@ -284,5 +283,5 @@ internal class XInputDevice
             Axis[GamingDeviceAxis.LeftTrigger].DeadZone = new GorgonRange(0, XI.Gamepad.TriggerThreshold);
         }
     }
-    #endregion
+
 }

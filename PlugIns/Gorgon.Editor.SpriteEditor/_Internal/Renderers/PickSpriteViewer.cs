@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2019 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,23 +11,21 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: April 1, 2019 11:51:35 PM
 // 
-#endregion
+
 
 using System.ComponentModel;
 using System.Numerics;
-using System.Threading;
-using System.Windows.Forms;
 using Gorgon.Core;
 using Gorgon.Editor.Rendering;
 using Gorgon.Editor.UI;
@@ -39,23 +37,29 @@ using DX = SharpDX;
 namespace Gorgon.Editor.SpriteEditor;
 
 /// <summary>
-/// A renderer to use with the sprite picker tool.
+/// A renderer to use with the sprite picker tool
 /// </summary>
-internal class PickSpriteViewer
-    : SpriteViewer
+/// <remarks>Initializes a new instance of the <see cref="PickSpriteViewer"/> class.</remarks>
+/// <param name="renderer">The 2D renderer for the application </param>
+/// <param name="swapChain">The swap chain for the render area.</param>
+/// <param name="dataContext">The graphics interface for the application.</param>
+/// <param name="picker">The sprite picker used to automatically clip sprite data.</param>
+/// <param name="selectionRect">The marching ants rectangle used to draw selection rectangles.</param>
+internal class PickSpriteViewer(Gorgon2D renderer, GorgonSwapChain swapChain, ISpriteContent dataContext, PickClipperService picker, IMarchingAnts selectionRect)
+        : SpriteViewer(ViewerName, renderer, swapChain, dataContext)
 {
-    #region Constants.
+
     /// <summary>
     /// The name of the viewer.
     /// </summary>
     public const string ViewerName = "ContextSpritePick";
-    #endregion
 
-    #region Variables.
+
+
     // Marching ants rectangle.
-    private readonly IMarchingAnts _marchAnts;
+    private readonly IMarchingAnts _marchAnts = selectionRect;
     // The rectangle clipping service.
-    private readonly PickClipperService _picker;
+    private readonly PickClipperService _picker = picker;
     // The render target for the sprite texture.
     private GorgonRenderTarget2DView _spriteTarget;
     // The sprite texture to display in the background.
@@ -64,9 +68,9 @@ internal class PickSpriteViewer
     private readonly GorgonSprite _sprite = new();
     // The region for the sprite.
     private DX.RectangleF _spriteRegion;
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to release the texture resources.
     /// </summary>
@@ -104,7 +108,7 @@ internal class PickSpriteViewer
     {
         GorgonRenderTargetView prevTarget = Graphics.RenderTargets[0];
         GorgonRangeF? prevAlphaTest = Renderer.PrimitiveAlphaTestRange;
-        var clearRegion = _sprite.Texture.ToPixel(_sprite.TextureRegion).ToRectangleF();            
+        var clearRegion = _sprite.Texture.ToPixel(_sprite.TextureRegion).ToRectangleF();
 
         _spriteTarget.Clear(GorgonColor.BlackTransparent);
 
@@ -174,7 +178,7 @@ internal class PickSpriteViewer
     /// <param name="args">The arguments for the event.</param>
     /// <remarks>Developers can override this method to handle a mouse move event in their own content view.</remarks>
     protected override void OnMouseMove(MouseArgs args)
-    {   
+    {
         base.OnMouseMove(args);
 
         var position = new Vector2(args.CameraSpacePosition.X + RenderRegion.Width * 0.5f,
@@ -198,7 +202,7 @@ internal class PickSpriteViewer
         // We'll need to draw the marching ants rectangle in standard client space. 
         // So, we can just get the camera to tell us where that is.
         var spriteTopLeft = new Vector3(_spriteRegion.Left, _spriteRegion.Top, 0);
-        var spriteBottomRight = new Vector3(_spriteRegion.Right, _spriteRegion.Bottom, 0);            
+        var spriteBottomRight = new Vector3(_spriteRegion.Right, _spriteRegion.Bottom, 0);
         Camera.Unproject(in spriteTopLeft, out Vector3 transformedTopLeft);
         Camera.Unproject(in spriteBottomRight, out Vector3 transformedBottomRight);
 
@@ -251,7 +255,7 @@ internal class PickSpriteViewer
         _sprite.Color = GorgonColor.White;
         _sprite.Texture = DataContext.Texture;
         _sprite.TextureArrayIndex = DataContext.ArrayIndex;
-        _sprite.TextureSampler = GorgonSamplerState.PointFiltering;            
+        _sprite.TextureSampler = GorgonSamplerState.PointFiltering;
 
         DataContext.SpritePickContext.SpriteRectangle = DataContext.Texture.ToPixel(DataContext.TextureCoordinates).ToRectangleF();
 
@@ -304,7 +308,7 @@ internal class PickSpriteViewer
     protected override void OnPropertyChanged(string propertyName)
     {
         switch (propertyName)
-        {                
+        {
             case nameof(ISpriteContent.Texture):
                 UpdateWorkingSprite();
                 break;
@@ -324,20 +328,6 @@ internal class PickSpriteViewer
 
     /// <summary>Function to set the default zoom/offset for the viewer.</summary>
     public override void DefaultZoom() => MoveTo(Vector2.Zero, ZoomLevels.ToWindow.GetScale());
-    #endregion
 
-    #region Constructor/Finalizer.
-    /// <summary>Initializes a new instance of the <see cref="PickSpriteViewer"/> class.</summary>
-    /// <param name="renderer">The 2D renderer for the application </param>
-    /// <param name="swapChain">The swap chain for the render area.</param>
-    /// <param name="dataContext">The graphics interface for the application.</param>
-    /// <param name="picker">The sprite picker used to automatically clip sprite data.</param>
-    /// <param name="selectionRect">The marching ants rectangle used to draw selection rectangles.</param>
-    public PickSpriteViewer(Gorgon2D renderer, GorgonSwapChain swapChain, ISpriteContent dataContext, PickClipperService picker, IMarchingAnts selectionRect)
-        : base(ViewerName, renderer, swapChain, dataContext)
-    {
-        _marchAnts = selectionRect;
-        _picker = picker;                        
-    }        
-    #endregion
+
 }

@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2019 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,42 +11,40 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: May 21, 2019 12:29:13 PM
 // 
-#endregion
 
-using System.Collections.Generic;
-using System.Linq;
+
 using System.Numerics;
 using Gorgon.Animation;
 
 namespace Gorgon.Examples;
 
 /// <summary>
-/// A planet object.
+/// A planet object
 /// </summary>
 /// <remarks>
-/// This will represent a planetary body using 3D spheres as layers that are composited on top of one another.
+/// This will represent a planetary body using 3D spheres as layers that are composited on top of one another
 /// </remarks>
 internal class Planet
 {
-    #region Variables.
+
     // Animation controller for the entity.
     private readonly List<MeshAnimationController> _animController;
     // The world position of this entity.
     private Vector3 _position;
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to return the meshes used to render the layers of this planet.
     /// </summary>
@@ -72,9 +70,9 @@ internal class Planet
         get;
         set;
     }
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to update the entity during a frame.
     /// </summary>
@@ -106,20 +104,18 @@ internal class Planet
             depth -= 0.02f;
         }
     }
-    #endregion
 
-    #region Constructor.
     /// <summary>Initializes a new instance of the <see cref="Planet"/> class.</summary>
     /// <param name="layers">The layers for this planet.</param>
     public Planet(IEnumerable<PlanetaryLayer> layers)
     {
         Layers = layers.ToArray();
-        _animController = new List<MeshAnimationController>();
+        _animController = [];
 
         for (int i = 0; i < Layers.Count; ++i)
         {
             _animController.Add(new MeshAnimationController());
         }
     }
-    #endregion
+
 }

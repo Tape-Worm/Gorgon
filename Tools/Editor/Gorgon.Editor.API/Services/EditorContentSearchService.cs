@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2018 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,22 +11,19 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: December 12, 2018 4:43:24 PM
 // 
-#endregion
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
+
 using Gorgon.Core;
 using Gorgon.Editor.Properties;
 using Gorgon.Editor.UI.Controls;
@@ -34,23 +31,26 @@ using Gorgon.Editor.UI.Controls;
 namespace Gorgon.Editor.Services;
 
 /// <summary>
-/// A system used to search through the file system for files.
+/// A system used to search through the file system for files
 /// </summary>
-public class EditorContentSearchService
-    : ISearchService<IContentFileExplorerSearchEntry>
+/// <remarks>Initializes a new instance of the <see cref="EditorContentSearchService"/> class.</remarks>
+/// <param name="rows">The list of rows from the data grid containing the editor files.</param>
+/// <exception cref="ArgumentNullException">Thrown when the <paramref name="rows" /> parameter is <strong>null</strong>.</exception>
+public class EditorContentSearchService(IReadOnlyList<IContentFileExplorerSearchEntry> rows)
+        : ISearchService<IContentFileExplorerSearchEntry>
 {
-    #region Variables.
+
     // The rows containing the editor files.
-    private readonly IReadOnlyList<IContentFileExplorerSearchEntry> _rows;
+    private readonly IReadOnlyList<IContentFileExplorerSearchEntry> _rows = rows ?? throw new ArgumentNullException(nameof(rows));
     // The type of search keywords that can be used.
     private readonly Dictionary<string, string> _searchKeywords = new(StringComparer.CurrentCultureIgnoreCase)
     {
         { Resources.GOREDIT_SEARCH_DIRECTORY_TAG1, "directory" },
         { Resources.GOREDIT_SEARCH_DIRECTORY_TAG2, "directory" }
     };
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to parse the search text passed from the user to extract specific keywords.
     /// </summary>
@@ -162,7 +162,7 @@ public class EditorContentSearchService
     {
         if (string.IsNullOrWhiteSpace(searchText))
         {
-            return Array.Empty<IContentFileExplorerSearchEntry>();
+            return [];
         }
 
         // Extract any keyword that might be embedded in the start of the search text.
@@ -250,12 +250,6 @@ public class EditorContentSearchService
 
         return searchResults;
     }
-    #endregion
 
-    #region Constructor/Finalizer.
-    /// <summary>Initializes a new instance of the <see cref="EditorContentSearchService"/> class.</summary>
-    /// <param name="rows">The list of rows from the data grid containing the editor files.</param>
-    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="rows" /> parameter is <strong>null</strong>.</exception>
-    public EditorContentSearchService(IReadOnlyList<IContentFileExplorerSearchEntry> rows) => _rows = rows ?? throw new ArgumentNullException(nameof(rows));
-    #endregion
+
 }

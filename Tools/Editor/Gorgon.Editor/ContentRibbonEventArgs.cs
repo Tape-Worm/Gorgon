@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2018 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,29 +11,30 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: November 10, 2018 10:13:20 PM
 // 
-#endregion
 
-using System;
+
 using Krypton.Ribbon;
 
 namespace Gorgon.Editor;
 
 /// <summary>
-/// Event parameters used to indicate when a content ribbon is added to or removed from the project view.
+/// Event parameters used to indicate when a content ribbon is added to or removed from the project view
 /// </summary>
-internal class ContentRibbonEventArgs
-    : EventArgs
+/// <remarks>Initializes a new instance of the ContentRibbonAddedEventArgs class.</remarks>
+/// <param name="ribbon">The ribbon.</param>
+internal class ContentRibbonEventArgs(KryptonRibbon ribbon)
+        : EventArgs
 {
     /// <summary>
     /// Property to return the ribbon that was added.
@@ -41,9 +42,5 @@ internal class ContentRibbonEventArgs
     public KryptonRibbon Ribbon
     {
         get;
-    }
-
-    /// <summary>Initializes a new instance of the ContentRibbonAddedEventArgs class.</summary>
-    /// <param name="ribbon">The ribbon.</param>
-    public ContentRibbonEventArgs(KryptonRibbon ribbon) => Ribbon = ribbon;
+    } = ribbon;
 }

@@ -1,6 +1,6 @@
-﻿#region MIT.
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2011 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,52 +11,48 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: Thursday, November 24, 2011 3:38:16 PM
 // 
-#endregion
 
-using System;
-using System.Collections.Generic;
+
 using System.Diagnostics;
-using System.Linq;
 using System.Numerics;
 using System.Reflection;
 using System.Runtime.InteropServices;
-using System.Threading;
 using Gorgon.Core;
 using Gorgon.Graphics.Core.Properties;
 using Gorgon.Reflection;
-using DX = SharpDX;
 using D3D11 = SharpDX.Direct3D11;
+using DX = SharpDX;
 
 namespace Gorgon.Graphics.Core;
 
 /// <summary>
-/// Defines the layout of an input item within a buffer.
+/// Defines the layout of an input item within a buffer
 /// </summary>
 /// <remarks>
 /// <para>
 /// This defines the layout of a piece of data within a buffer, specifically, a vertex within a vertex buffer. The layout is defined by a list of <see cref="GorgonInputElement"/> values that determine 
-/// how the data within the layout is arranged.
+/// how the data within the layout is arranged
 /// </para>
 /// <para>
 /// Users may create a layout manually, or, derive it from a value type (<c>struct</c>). If deriving from a value type, then the members of the value type must be decorated with a 
-/// <see cref="InputElementAttribute"/> to define where the member is located within the layout data structure.
+/// <see cref="InputElementAttribute"/> to define where the member is located within the layout data structure
 /// </para>
 /// </remarks>
 public sealed class GorgonInputLayout
     : IGorgonNamedObject, IEquatable<GorgonInputLayout>, IDisposable
 {
-    #region Variables.
+
     // Type mapping for types.
     private static readonly Dictionary<Type, BufferFormat> _typeMapping = new()
     {
@@ -124,12 +120,10 @@ public sealed class GorgonInputLayout
             typeof(DX.Half4),
             BufferFormat.R16G16B16A16_Float
         },
-#if NET6_0_OR_GREATER
         {
             typeof(Half),
             BufferFormat.R16_Float
         },
-#endif
         {
             typeof(DX.Int3),
             BufferFormat.R32G32B32_SInt
@@ -146,9 +140,9 @@ public sealed class GorgonInputLayout
     private Dictionary<int, int> _slotSizes;
     // The Direct 3D input layout.
     private D3D11.InputLayout _d3DInputLayout;
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to return the Direct 3D input layout.
     /// </summary>
@@ -195,9 +189,9 @@ public sealed class GorgonInputLayout
     {
         get;
     }
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to convert this input layout into a Direct3D input layout.
     /// </summary>
@@ -251,7 +245,7 @@ public sealed class GorgonInputLayout
     private void UpdateVertexSize()
     {
         int size = 0;
-        _slotSizes = new Dictionary<int, int>();
+        _slotSizes = [];
 
         // ReSharper disable once ForCanBeConvertedToForeach
         for (int i = 0; i < _elements.Length; ++i)
@@ -322,7 +316,6 @@ public sealed class GorgonInputLayout
         return result;
     }
 
-#if NET6_0_OR_GREATER
     /// <summary>
     /// Function to build an input layout using the fields from a value type.
     /// </summary>
@@ -420,19 +413,9 @@ public sealed class GorgonInputLayout
     /// </para>
     /// </remarks>
     /// <seealso cref="GorgonReflectionExtensions.IsFieldSafeForNative"/>
-#else
-    /// <summary>
-    /// 
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="graphics"></param>
-    /// <param name="shader"></param>
-    /// <returns></returns>
-#endif
     public static GorgonInputLayout CreateUsingType<T>(GorgonGraphics graphics, GorgonVertexShader shader)
         where T : unmanaged => CreateUsingType(graphics, typeof(T), shader);
 
-#if NET6_0_OR_GREATER
     /// <summary>
     /// Function to build an input layout using the fields from a value type.
     /// </summary>
@@ -531,17 +514,6 @@ public sealed class GorgonInputLayout
     /// </para>
     /// </remarks>
     /// <seealso cref="GorgonReflectionExtensions.IsFieldSafeForNative"/>
-#else
-    /// <summary>
-    /// 
-    /// </summary>
-    /// <param name="graphics"></param>
-    /// <param name="type"></param>
-    /// <param name="shader"></param>
-    /// <returns></returns>
-    /// <exception cref="ArgumentNullException"></exception>
-    /// <exception cref="ArgumentException"></exception>
-#endif
     public static GorgonInputLayout CreateUsingType(GorgonGraphics graphics, Type type, GorgonVertexShader shader)
     {
         if (graphics is null)
@@ -576,7 +548,6 @@ public sealed class GorgonInputLayout
     public static IReadOnlyList<GorgonInputElement> ElementsFromType<T>()
         where T : unmanaged => ElementsFromType(typeof(T));
 
-#if NET6_0_OR_GREATER
     /// <summary>
     /// Function to retrieve the input elements corresponding to fields on a type.
     /// </summary>
@@ -672,16 +643,6 @@ public sealed class GorgonInputLayout
     /// </para>
     /// </remarks>
     /// <seealso cref="GorgonReflectionExtensions.IsFieldSafeForNative"/>
-#else
-    /// <summary>
-    /// 
-    /// </summary>
-    /// <param name="type"></param>
-    /// <returns></returns>
-    /// <exception cref="ArgumentNullException"></exception>
-    /// <exception cref="ArgumentException"></exception>
-    /// <exception cref="GorgonException"></exception>
-#endif
     public static IReadOnlyList<GorgonInputElement> ElementsFromType(Type type)
     {
         if (type is null)
@@ -745,7 +706,7 @@ public sealed class GorgonInputLayout
     /// </para>
     /// </remarks>
     /// <seealso cref="GorgonStreamOutLayout"/>
-	    public GorgonStreamOutLayout ToStreamOutLayout(int stream = 0, byte slot = 0)
+    public GorgonStreamOutLayout ToStreamOutLayout(int stream = 0, byte slot = 0)
     {
         var elements = new GorgonStreamOutElement[_elements.Length];
 
@@ -836,7 +797,7 @@ public sealed class GorgonInputLayout
     /// <returns>A list of input elements that belong to the specified context and index (if supplied).</returns>
     public IReadOnlyList<GorgonInputElement> GetElementsByContext(string context, int? index = null)
     {
-        List<GorgonInputElement> elements = new();
+        List<GorgonInputElement> elements = [];
 
         for (int i = 0; i < Elements.Count; ++i)
         {
@@ -865,8 +826,8 @@ public sealed class GorgonInputLayout
         {
             GorgonInputElement element = Elements[i];
 
-            if ((string.Equals(context, element.Context, StringComparison.OrdinalIgnoreCase)) 
-                && (index == element.Index) 
+            if ((string.Equals(context, element.Context, StringComparison.OrdinalIgnoreCase))
+                && (index == element.Index)
                 && ((slot is null) || (slot.Value == element.Slot)))
             {
                 return element;
@@ -920,9 +881,9 @@ public sealed class GorgonInputLayout
 
         this.UnregisterDisposable(Graphics);
     }
-#endregion
 
-#region Constructor/Destructor.
+
+
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonInputLayout"/> class.
     /// </summary>
@@ -955,7 +916,7 @@ public sealed class GorgonInputLayout
             throw new ArgumentEmptyException(nameof(elements));
         }
 
-        _slotSizes = new Dictionary<int, int>();
+        _slotSizes = [];
 
         // Check for duplicated elements.
         for (int i = 0; i < _elements.Length; ++i)
@@ -971,5 +932,5 @@ public sealed class GorgonInputLayout
 
         this.RegisterDisposable(graphics);
     }
-#endregion
+
 }

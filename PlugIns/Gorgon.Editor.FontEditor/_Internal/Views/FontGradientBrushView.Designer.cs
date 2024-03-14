@@ -2,62 +2,62 @@
 
 namespace Gorgon.Editor.FontEditor;
 
-	partial class FontGradientBrushView
-	{
-		/// <summary> 
-		/// Required designer variable.
-		/// </summary>
-		private System.ComponentModel.IContainer components = null;
+    partial class FontGradientBrushView
+    {
+        /// <summary> 
+        /// Required designer variable.
+        /// </summary>
+        private System.ComponentModel.IContainer components = null;
 
-		/// <summary> 
-		/// Clean up any resources being used.
-		/// </summary>
-		/// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
-		protected override void Dispose(bool disposing)
-		{
-			if (disposing && (components != null))
-			{
-				components.Dispose();
-			}
+        /// <summary> 
+        /// Clean up any resources being used.
+        /// </summary>
+        /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing && (components != null))
+            {
+                components.Dispose();
+            }
 
-			if (disposing)
-			{
-				if (_controlPanelImage != null)
-				{
-					_controlPanelImage.Dispose();
-					_controlPanelImage = null;
-				}
+            if (disposing)
+            {
+                if (_controlPanelImage != null)
+                {
+                    _controlPanelImage.Dispose();
+                    _controlPanelImage = null;
+                }
 
-				if (_gradDisplayImage != null)
-				{
-					_gradDisplayImage.Dispose();
-					_gradDisplayImage = null;
-				}
+                if (_gradDisplayImage != null)
+                {
+                    _gradDisplayImage.Dispose();
+                    _gradDisplayImage = null;
+                }
 
-				if (_gradientImage != null)
-				{
-					_gradientImage.Dispose();
-					_gradientImage = null;
-				}
+                if (_gradientImage != null)
+                {
+                    _gradientImage.Dispose();
+                    _gradientImage = null;
+                }
 
-				if (_gradPreviewImage != null)
-				{
-					_gradPreviewImage.Dispose();
-					_gradPreviewImage = null;
-				}
-			}
+                if (_gradPreviewImage != null)
+                {
+                    _gradPreviewImage.Dispose();
+                    _gradPreviewImage = null;
+                }
+            }
 
-			base.Dispose(disposing);
-		}
+            base.Dispose(disposing);
+        }
 
-		#region Component Designer generated code
+    
 
-		/// <summary> 
-		/// Required method for Designer support - do not modify 
-		/// the contents of this method with the code editor.
-		/// </summary>
-		private void InitializeComponent()
-		{
+        /// <summary> 
+        /// Required method for Designer support - do not modify 
+        /// the contents of this method with the code editor.
+        /// </summary>
+        private void InitializeComponent()
+        {
         this.components = new System.ComponentModel.Container();
         this.PanelGradientDisplay = new System.Windows.Forms.Panel();
         this.PanelGradControls = new System.Windows.Forms.Panel();
@@ -482,24 +482,24 @@ namespace Gorgon.Editor.FontEditor;
         this.ResumeLayout(false);
         this.PerformLayout();
 
-		}
+        }
 
-		#endregion
-		private System.Windows.Forms.Label LabelAngle;
-		private System.Windows.Forms.NumericUpDown NumericAngle;
-		private System.Windows.Forms.Label LabelDegrees;
-		private System.Windows.Forms.CheckBox CheckScaleAngle;
-		private System.Windows.Forms.CheckBox CheckUseGamma;
-		private System.Windows.Forms.Panel PanelGradientDisplay;
-		private System.Windows.Forms.Panel PanelGradControls;
-		private System.Windows.Forms.NumericUpDown NumericSelectedWeight;
-		private System.Windows.Forms.Label LabelSelectedWeight;
-		private System.Windows.Forms.Panel PanelPreview;
-		private System.Windows.Forms.Label LabelPreview;
-		private System.Windows.Forms.ContextMenuStrip PopupNodeEdit;
-		private System.Windows.Forms.ToolStripMenuItem ItemDuplicateNode;
-		private System.Windows.Forms.ToolStripSeparator toolStripMenuItem1;
-		private System.Windows.Forms.ToolStripMenuItem ItemRemoveNode;
+    
+        private System.Windows.Forms.Label LabelAngle;
+        private System.Windows.Forms.NumericUpDown NumericAngle;
+        private System.Windows.Forms.Label LabelDegrees;
+        private System.Windows.Forms.CheckBox CheckScaleAngle;
+        private System.Windows.Forms.CheckBox CheckUseGamma;
+        private System.Windows.Forms.Panel PanelGradientDisplay;
+        private System.Windows.Forms.Panel PanelGradControls;
+        private System.Windows.Forms.NumericUpDown NumericSelectedWeight;
+        private System.Windows.Forms.Label LabelSelectedWeight;
+        private System.Windows.Forms.Panel PanelPreview;
+        private System.Windows.Forms.Label LabelPreview;
+        private System.Windows.Forms.ContextMenuStrip PopupNodeEdit;
+        private System.Windows.Forms.ToolStripMenuItem ItemDuplicateNode;
+        private System.Windows.Forms.ToolStripSeparator toolStripMenuItem1;
+        private System.Windows.Forms.ToolStripMenuItem ItemRemoveNode;
     private System.Windows.Forms.ToolStripMenuItem ItemAddNode;
     private System.Windows.Forms.TableLayoutPanel TableOptions;
     private System.Windows.Forms.TableLayoutPanel TableControls;

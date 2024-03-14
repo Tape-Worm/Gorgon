@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2020 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,25 +11,20 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: August 2, 2020 12:56:22 PM
 // 
-#endregion
 
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Threading.Tasks;
+
 using Gorgon.Animation;
-using Gorgon.Core;
 using Gorgon.Editor;
 using Gorgon.Graphics.Core;
 using Gorgon.Graphics.Imaging;
@@ -39,7 +34,7 @@ using Gorgon.Renderers;
 namespace Gorgon.IO;
 
 /// <summary>
-/// Loads <see cref="Gorgon2D"/> specific content from an editor file system.
+/// Loads <see cref="Gorgon2D"/> specific content from an editor file system
 /// </summary>
 /// <remarks>
 /// <para>
@@ -49,14 +44,14 @@ namespace Gorgon.IO;
 /// <note type="important">
 /// <para>
 /// These methods load the data using the layout and metadata information as provided by the default plug ins for the editor.  Custom plug ins for sprite data, etc... may not work with these methods 
-/// unless those plug ins follow the same file layout as the default plug ins.
+/// unless those plug ins follow the same file layout as the default plug ins
 /// </para>
 /// </note>
 /// </para>
 /// </remarks>
 public interface IGorgonContentLoader
 {
-    #region Properties.
+
     /// <summary>
     /// Property to return a list of codecs that can be used to load animation content data.
     /// </summary>
@@ -112,9 +107,9 @@ public interface IGorgonContentLoader
     {
         get;
     }
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to retrieve the dependencies for a file.
     /// </summary>
@@ -297,5 +292,5 @@ public interface IGorgonContentLoader
     /// </para>
     /// </remarks>
     bool IsDirectoryExcluded(string path);
-    #endregion
+
 }

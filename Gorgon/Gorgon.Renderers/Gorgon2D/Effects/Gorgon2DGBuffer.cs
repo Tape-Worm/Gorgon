@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2019 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,23 +11,21 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: November 14, 2019 10:53:27 PM
 // 
-#endregion
 
-using System;
+
 using System.Numerics;
 using System.Runtime.CompilerServices;
-using System.Threading;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Renderers.Cameras;
@@ -37,12 +35,12 @@ using Gorgon.Renderers.Techniques;
 namespace Gorgon.Renderers;
 
 /// <summary>
-/// A GBuffer containing targets for rendering effects that have need of multiple render targets.
+/// A GBuffer containing targets for rendering effects that have need of multiple render targets
 /// </summary>
 public class Gorgon2DGBuffer
     : Gorgon2DEffect, IGorgonGBuffer
 {
-    #region Variables.
+
     // The graphics interface used for target creation.
     private readonly GorgonGraphics _graphics;
     // The default batch render state for drawing normals.
@@ -72,9 +70,9 @@ public class Gorgon2DGBuffer
     private (int normalIndex, int specularIndex) _indices;
     // The macro sent to the shader to enable using array indices.
     private readonly GorgonShaderMacro _useArrayMacro = new("USE_ARRAY");
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to return the entire gbuffer texture (all array indices).
     /// </summary>
@@ -135,9 +133,9 @@ public class Gorgon2DGBuffer
 
     /// <summary>Property to return the position render target for the gbuffer.</summary>
     public GorgonRenderTarget2DView PositionTarget => _target[3];
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to dispose of the gbuffer.
     /// </summary>
@@ -431,9 +429,9 @@ public class Gorgon2DGBuffer
         EndPass(0, _target[0]);
         EndRender(_target[0]);
     }
-    #endregion
 
-    #region Constructor/Finalizer.
+
+
     /// <summary>Initializes a new instance of the <see cref="Gorgon2DGBuffer"/> class.</summary>
     /// <param name="renderer">The 2D renderer for the application.</param>
     /// <param name="width">The initial width of the gbuffer.</param>
@@ -445,5 +443,5 @@ public class Gorgon2DGBuffer
         _graphics = renderer?.Graphics ?? throw new ArgumentNullException(nameof(renderer));
         Resize(width, height);
     }
-    #endregion
+
 }

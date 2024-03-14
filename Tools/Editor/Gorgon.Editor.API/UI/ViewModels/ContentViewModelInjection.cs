@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2018 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,20 +11,19 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: November 10, 2018 11:07:56 PM
 // 
-#endregion
 
-using System;
+
 using Gorgon.Editor.Content;
 using Gorgon.Editor.PlugIns;
 using Gorgon.Editor.UI.ViewModels;
@@ -32,20 +31,25 @@ using Gorgon.Editor.UI.ViewModels;
 namespace Gorgon.Editor.UI;
 
 /// <summary>
-/// Common content view model parameters.
+/// Common content view model parameters
 /// </summary>
 /// <remarks>
 /// <para>
 /// These parameters are meant to be passed to a view model based on the <see cref="ContentEditorViewModelBase{T}"/> type and will contain services from the host application, and any other information 
-/// required for content editor view models.
+/// required for content editor view models
 /// </para>
 /// <para>
 /// Content editor developers will use types derived from this type to pass custom initialization parameters to their content view models. 
 /// </para>
 /// </remarks>
 /// <seealso cref="ContentEditorViewModelBase{T}"/>
-public class ContentViewModelInjection
-    : ViewModelInjection<IHostContentServices>, IContentViewModelInjection
+/// <remarks>Initializes a new instance of the ContentViewModelInjectionCommon class.</remarks>
+/// <param name="fileManager">The file manager for content files.</param>
+/// <param name="file">The file that contains the content.</param>        
+/// <param name="commonServices">The common services for the application.</param>
+/// <exception cref="ArgumentNullException">Thrown any of the parameters are <b>null</b></exception>
+public class ContentViewModelInjection(IContentFileManager fileManager, IContentFile file, IHostContentServices commonServices)
+        : ViewModelInjection<IHostContentServices>(commonServices), IContentViewModelInjection
 {
     /// <summary>
     /// Property to return the content file.
@@ -53,23 +57,11 @@ public class ContentViewModelInjection
     public IContentFile File
     {
         get;
-    }
+    } = file ?? throw new ArgumentNullException(nameof(file));
 
     /// <summary>Property to return the file manager for content files.</summary>
     public IContentFileManager ContentFileManager
     {
         get;
-    }
-
-    /// <summary>Initializes a new instance of the ContentViewModelInjectionCommon class.</summary>
-    /// <param name="fileManager">The file manager for content files.</param>
-    /// <param name="file">The file that contains the content.</param>        
-    /// <param name="commonServices">The common services for the application.</param>
-    /// <exception cref="ArgumentNullException">Thrown any of the parameters are <b>null</b></exception>
-    public ContentViewModelInjection(IContentFileManager fileManager, IContentFile file, IHostContentServices commonServices)
-        : base(commonServices)
-    {
-        ContentFileManager = fileManager ?? throw new ArgumentNullException(nameof(fileManager));
-        File = file ?? throw new ArgumentNullException(nameof(file));
-    }
+    } = fileManager ?? throw new ArgumentNullException(nameof(fileManager));
 }

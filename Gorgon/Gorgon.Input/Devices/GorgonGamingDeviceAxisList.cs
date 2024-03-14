@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2015 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,43 +11,40 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: Sunday, July 5, 2015 1:22:12 PM
 // 
-#endregion
 
-using System;
+
 using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
 using Gorgon.Input.Properties;
 
 namespace Gorgon.Input;
 
 /// <summary>
-/// A list of axis data values for a gaming device.
+/// A list of axis data values for a gaming device
 /// </summary>
 /// <typeparam name="T">The type of axis data to store in this collection. This type must implement <see cref="IGorgonGamingDeviceAxis"/>.</typeparam>
 public sealed class GorgonGamingDeviceAxisList<T>
     : IReadOnlyList<T>
     where T : IGorgonGamingDeviceAxis
 {
-    #region Variables.
-    // The list of available axes.
-    private readonly List<GamingDeviceAxis> _axisList = new();
-    // The list of information about each axis.
-    private readonly Dictionary<GamingDeviceAxis, T> _infoList = new();
-    #endregion
 
-    #region Properties.
+    // The list of available axes.
+    private readonly List<GamingDeviceAxis> _axisList = [];
+    // The list of information about each axis.
+    private readonly Dictionary<GamingDeviceAxis, T> _infoList = [];
+
+
+
     /// <summary>
     /// Property to return the number of axes on the gaming device.
     /// </summary>
@@ -75,9 +72,9 @@ public sealed class GorgonGamingDeviceAxisList<T>
             return _infoList[_axisList[index]];
         }
     }
-    #endregion
 
-    #region Methods.
+
+
 
     /// <summary>
     /// Function to add an axis to the list.
@@ -131,9 +128,9 @@ public sealed class GorgonGamingDeviceAxisList<T>
     /// recommened to use the method return value to determine if the item exists or not.
     /// </remarks>
     public bool TryGetValue(GamingDeviceAxis axis, out T result) => _infoList.TryGetValue(axis, out result);
-    #endregion
 
-    #region Constructor.
+
+
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonGamingDeviceAxisList{T}" /> class.
     /// </summary>
@@ -145,5 +142,5 @@ public sealed class GorgonGamingDeviceAxisList<T>
             Add(item);
         }
     }
-    #endregion
+
 }

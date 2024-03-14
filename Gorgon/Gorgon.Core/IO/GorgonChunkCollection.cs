@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2015 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,37 +11,34 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: Sunday, June 14, 2015 9:42:32 PM
 // 
-#endregion
+
 
 using System.Collections;
-using System.Collections.Generic;
 
 namespace Gorgon.IO;
 
 /// <summary>
-/// A collection of chunks within a chunked file.
+/// A collection of chunks within a chunked file
 /// </summary>
 internal class GorgonChunkCollection
     : IList<GorgonChunk>, IGorgonReadOnlyChunkCollection
 {
-    #region Variables.
-    // The backing store for the chunks.
-    private readonly List<GorgonChunk> _list = new();
-    #endregion
 
-    #region IList<GorgonChunk> Members
-    #region Properties.
+    // The backing store for the chunks.
+    private readonly List<GorgonChunk> _list = [];
+
+
     /// <summary>
     /// Property to set or return a chunk at the specified index.
     /// </summary>
@@ -50,9 +47,9 @@ internal class GorgonChunkCollection
         get => _list[index];
         set => _list[index] = value;
     }
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Determines the index of a specific item in the <see cref="IList{T}" />.
     /// </summary>
@@ -72,11 +69,9 @@ internal class GorgonChunkCollection
     /// </summary>
     /// <param name="index">The zero-based index of the item to remove.</param>
     public void RemoveAt(int index) => _list.RemoveAt(index);
-    #endregion
-    #endregion
 
-    #region ICollection<GorgonChunk> Members
-    #region Properties.
+
+
     /// <summary>
     /// Gets the number of elements contained in the <see cref="ICollection{T}" />.
     /// </summary>
@@ -89,9 +84,9 @@ internal class GorgonChunkCollection
     /// <value><b>true</b> if this instance is read only; otherwise, <b>false</b>.</value>
     bool ICollection<GorgonChunk>.IsReadOnly => false;
 
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Adds an item to the <see cref="ICollection{T}" />.
     /// </summary>
@@ -123,27 +118,19 @@ internal class GorgonChunkCollection
     /// <param name="item">The object to remove from the <see cref="ICollection{T}" />.</param>
     /// <returns>true if <paramref name="item" /> was successfully removed from the <see cref="ICollection{T}" />; otherwise, false. This method also returns false if <paramref name="item" /> is not found in the original <see cref="ICollection{T}" />.</returns>
     public bool Remove(GorgonChunk item) => _list.Remove(item);
-    #endregion
-    #endregion
 
-    #region IEnumerable<GorgonChunk> Members
     /// <summary>
     /// Returns an enumerator that iterates through the collection.
     /// </summary>
     /// <returns>A <see cref="IEnumerator{T}" /> that can be used to iterate through the collection.</returns>
     public IEnumerator<GorgonChunk> GetEnumerator() => _list.GetEnumerator();
-    #endregion
 
-    #region IEnumerable Members
     /// <summary>
     /// Returns an enumerator that iterates through a collection.
     /// </summary>
     /// <returns>An <see cref="IEnumerator" /> object that can be used to iterate through the collection.</returns>
     IEnumerator IEnumerable.GetEnumerator() => ((IEnumerable)_list).GetEnumerator();
-    #endregion
 
-    #region IGorgonReadOnlyChunkCollection Members
-    #region Properties.
     /// <summary>
     /// Property to return a chunk by a string identifier.
     /// </summary>
@@ -175,9 +162,9 @@ internal class GorgonChunkCollection
             return index == -1 ? default : _list[index];
         }
     }
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to return the index of a chunk by its name.
     /// </summary>
@@ -226,6 +213,6 @@ internal class GorgonChunkCollection
     /// <param name="chunkID">The <see cref="ulong"/> ID of the chunk.</param>
     /// <returns><b>true</b> if a chunk exists with the specified <paramref name="chunkID"/>, <b>false</b> if not.</returns>
     public bool Contains(ulong chunkID) => IndexOf(chunkID) != -1;
-    #endregion
-    #endregion
+
+
 }

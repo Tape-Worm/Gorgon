@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2019 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,21 +11,20 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: January 9, 2019 1:43:36 PM
 // 
-#endregion
+
 
 using System.Numerics;
-using System.Threading;
 using Gorgon.Editor.ImageEditor.Properties;
 using Gorgon.Editor.ImageEditor.ViewModels;
 using Gorgon.Graphics;
@@ -38,21 +37,25 @@ using DX = SharpDX;
 namespace Gorgon.Editor.ImageEditor;
 
 /// <summary>
-/// A viewer for a 3D texture.
+/// A viewer for a 3D texture
 /// </summary>
-internal class Texture3DViewer
-    : TextureViewer
+/// <remarks>Initializes a new instance of the <see cref="Texture3DViewer"/> class.</remarks>
+/// <param name="renderer">The main renderer for the content view.</param>
+/// <param name="swapChain">The swap chain for the content view.</param>
+/// <param name="dataContext">The view model to assign to the renderer.</param>
+internal class Texture3DViewer(Gorgon2D renderer, GorgonSwapChain swapChain, IImageContent dataContext)
+        : TextureViewer(ImageDataType.Image3D.ToString(), "Gorgon3DTextureView", 1, renderer, swapChain, dataContext)
 {
-    #region Variables.
+
     // The texture to display.
     private GorgonTexture3D _texture;
     // The view for the texture.
     private GorgonTexture3DView _textureView;
     // The volume renderer.
     private VolumeRenderer _volRenderer;
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>Function to dispose any texture resources.</summary>
     protected override void DestroyTexture()
     {
@@ -66,7 +69,7 @@ internal class Texture3DViewer
     /// <summary>Function to create the texture for the view.</summary>
     protected override void CreateTexture()
     {
-        if ((DataContext?.ImageData is null) || (DataContext.ImageType != ImageType.Image3D))
+        if ((DataContext?.ImageData is null) || (DataContext.ImageType != ImageDataType.Image3D))
         {
             RenderRegion = DX.RectangleF.Empty;
             return;
@@ -141,23 +144,13 @@ internal class Texture3DViewer
     }
 
     /// <summary>Function called during resource creation.</summary>
-    protected override void OnCreateResources() 
+    protected override void OnCreateResources()
     {
         base.OnCreateResources();
 
         _volRenderer = new VolumeRenderer(Graphics);
-        _volRenderer.CreateResources(ClientSize);            
+        _volRenderer.CreateResources(ClientSize);
     }
-    #endregion
 
-    #region Constructor/Finalizer.
-    /// <summary>Initializes a new instance of the <see cref="Texture3DViewer"/> class.</summary>
-    /// <param name="renderer">The main renderer for the content view.</param>
-    /// <param name="swapChain">The swap chain for the content view.</param>
-    /// <param name="dataContext">The view model to assign to the renderer.</param>
-    public Texture3DViewer(Gorgon2D renderer, GorgonSwapChain swapChain, IImageContent dataContext)
-        : base(ImageType.Image3D.ToString(), "Gorgon3DTextureView", 1, renderer, swapChain, dataContext)
-    {
-    }
-    #endregion
+
 }

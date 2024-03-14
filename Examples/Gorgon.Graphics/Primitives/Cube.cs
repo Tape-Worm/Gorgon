@@ -1,6 +1,6 @@
-﻿#region MIT.
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2014 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,21 +11,19 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: Sunday, August 10, 2014 10:49:01 PM
 // 
-#endregion
 
-using System;
-using System.Drawing;
+
 using System.Numerics;
 using Gorgon.Graphics.Core;
 using Gorgon.Math;
@@ -34,17 +32,17 @@ using Gorgon.Renderers.Geometry;
 namespace Gorgon.Examples;
 
 /// <summary>
-/// A mesh representing a solid cube.
+/// A mesh representing a solid cube
 /// </summary>
 internal class Cube
     : MoveableMesh
 {
-    #region Variables.
+
     // Initial orientation.
     private Matrix4x4 _orientation;
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to build the plane vertices.
     /// </summary>
@@ -121,9 +119,7 @@ internal class Cube
             }
         }
     }
-    #endregion
 
-    #region Constructor/Destructor.
     /// <summary>
     /// Initializes a new instance of the <see cref="Cube" /> class.
     /// </summary>
@@ -170,12 +166,12 @@ internal class Cube
         GetIndices(indexData, faceIndexCount * 5, faceVertexCount * 5, columnsPerFace, rowsPerFace);
 
         CalculateTangents(vertexData, indexData);
-                    
+
         VertexBuffer = GorgonVertexBuffer.Create<GorgonVertexPosNormUvTangent>(graphics,
                                                  new GorgonVertexBufferInfo(GorgonVertexPosNormUvTangent.SizeInBytes * vertexData.Length)
                                                  {
-                                                    Name = "CubeVB",
-                                                    Usage = ResourceUsage.Immutable
+                                                     Name = "CubeVB",
+                                                     Usage = ResourceUsage.Immutable
                                                  },
                                                  vertexData);
 
@@ -190,5 +186,5 @@ internal class Cube
 
         UpdateAabb(vertexData);
     }
-    #endregion
+
 }

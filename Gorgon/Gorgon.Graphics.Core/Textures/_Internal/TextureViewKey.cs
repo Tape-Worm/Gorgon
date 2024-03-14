@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2017 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,42 +11,47 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: July 5, 2017 12:10:23 AM
 // 
-#endregion
 
-using System;
-using Gorgon.Core;
 
 namespace Gorgon.Graphics.Core;
 
 /// <summary>
-/// A key used to uniquely identify a shader view.
+/// A key used to uniquely identify a shader view
 /// </summary>
-internal readonly struct TextureViewKey
-    : IEquatable<TextureViewKey>
+/// <remarks>
+/// Initializes a new instance of the <see cref="TextureViewKey"/> struct
+/// </remarks>
+/// <param name="format">The format of the view.</param>
+/// <param name="mipStart">The starting mip map to view.</param>
+/// <param name="mipCount">The number of mip maps to view.</param>
+/// <param name="arrayStart">The starting array index to view.</param>
+/// <param name="arrayCount">The number of array indices to view.</param>
+internal readonly struct TextureViewKey(BufferFormat format, int mipStart, int mipCount, int arrayStart, int arrayCount)
+        : IEquatable<TextureViewKey>
 {
     /// <summary>
     /// The starting element.
     /// </summary>
-    public readonly BufferFormat Format;
+    public readonly BufferFormat Format = format;
     /// <summary>
     /// The encoded range of mip maps to view.
     /// </summary>
-    public readonly uint MipRange;
+    public readonly uint MipRange = (((uint)mipCount & 0xffff) << 16) | ((uint)mipStart & 0xffff);
     /// <summary>
     /// The encoded range of array indices to view (for 1D/2D).
     /// </summary>
-    public readonly uint ArrayRange;
+    public readonly uint ArrayRange = (((uint)arrayStart & 0xffff) << 16) | ((uint)arrayCount & 0xffff);
 
     /// <summary>
     /// Determines whether the specified <see cref="object" /> is equal to this instance.
@@ -60,21 +65,6 @@ internal readonly struct TextureViewKey
     /// </summary>
     /// <returns>A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table.</returns>
     public override int GetHashCode() => HashCode.Combine(Format, MipRange, ArrayRange);
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="TextureViewKey"/> struct.
-    /// </summary>
-    /// <param name="format">The format of the view.</param>
-    /// <param name="mipStart">The starting mip map to view.</param>
-    /// <param name="mipCount">The number of mip maps to view.</param>
-    /// <param name="arrayStart">The starting array index to view.</param>
-    /// <param name="arrayCount">The number of array indices to view.</param>
-    public TextureViewKey(BufferFormat format, int mipStart, int mipCount, int arrayStart, int arrayCount)
-    {
-        Format = format;
-        MipRange = (((uint)mipCount & 0xffff) << 16) | ((uint)mipStart & 0xffff);
-        ArrayRange = (((uint)arrayStart & 0xffff) << 16) | ((uint)arrayCount & 0xffff);
-    }
 
     /// <summary>
     /// Indicates whether the current object is equal to another object of the same type.

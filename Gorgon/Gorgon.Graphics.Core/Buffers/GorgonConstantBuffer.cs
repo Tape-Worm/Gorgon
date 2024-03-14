@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2016 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,22 +11,19 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: June 15, 2016 9:33:57 PM
 // 
-#endregion
 
-using System;
-using System.Collections.Generic;
-using System.Threading;
+
 using Gorgon.Core;
 using Gorgon.Diagnostics;
 using D3D11 = SharpDX.Direct3D11;
@@ -34,13 +31,13 @@ using D3D11 = SharpDX.Direct3D11;
 namespace Gorgon.Graphics.Core;
 
 /// <summary>
-/// A buffer for constant shader data.
+/// A buffer for constant shader data
 /// </summary>
 /// <remarks>
 /// <para>
 /// To send changing data to a shader from you application to a constant buffer, an application can upload a value type (or primitive) value to the buffer using one of the 
 /// <see cref="GorgonBufferCommon.SetData{T}(ReadOnlySpan{T}, int, CopyMode)"/> methods. This allows an application to update the state of a shader to reflect changes in the application. Things like animation or setup 
-/// information can easily be sent to modify the state of a shader (hence somewhat making the term <i>constant</i> a bit of a misnomer).
+/// information can easily be sent to modify the state of a shader (hence somewhat making the term <i>constant</i> a bit of a misnomer)
 /// </para>
 /// <para>
 /// A constant buffer must be a minimum of 16 bytes in size (4 float values), and be aligned to 16 bytes. The maximum size of the buffer is limited to 134,217,728 elements (one element = 4x 32 bit float
@@ -48,7 +45,7 @@ namespace Gorgon.Graphics.Core;
 /// </para>
 /// <para>
 /// If the <see cref="IGorgonConstantBufferInfo"/> <see cref="IGorgonConstantBufferInfo.SizeInBytes"/> value is less than 16 bytes, or is not aligned to 16 bytes, it will be adjusted before buffer
-/// creation to ensure the buffer is adequate.
+/// creation to ensure the buffer is adequate
 /// </para>
 /// <para>
 /// Constant buffers are bound to a finite number of slots in the shader. Typically these are declared as follows:
@@ -59,7 +56,7 @@ namespace Gorgon.Graphics.Core;
 ///    Vector3 other;
 /// }
 /// </pre>
-/// This binds a matrix used for the view to constant buffer slot 0. Note that the register slot name starts with a <b>b</b>.
+/// This binds a matrix used for the view to constant buffer slot 0. Note that the register slot name starts with a <b>b</b>
 /// </para>
 /// <para> 
 /// <example language="csharp">
@@ -67,24 +64,24 @@ namespace Gorgon.Graphics.Core;
 /// <code language="csharp">
 /// <![CDATA[
 /// Vector3 _lastPosition;
-/// GorgonConstantBuffer _viewMatrixBuffer;		// This is created elsewhere with a size of 64 bytes to hold a Matrix.
+/// GorgonConstantBuffer _viewMatrixBuffer;		// This is created elsewhere with a size of 64 bytes to hold a Matrix
 /// 
 /// void IdleMethod()
 /// {
-///		// Move 2 units to the right every second.
+///		// Move 2 units to the right every second
 ///		_lastPosition = new Vector3(_lastPosition.X + 2 * GorgonTiming.Delta, 0, -2.0f);
 ///		Matrix viewMatrix = Matrix.Identity;
 /// 
-///		// Adjust the matrix to perform the translation.
-///		// We use ref/out here for better performance.
+///		// Adjust the matrix to perform the translation
+///		// We use ref/out here for better performance
 ///		Matrix.Translation(ref _lastPosition, out viewMatrix);
 ///  
-///		// Send to the shader (typically, this would be the vertex shader).
+///		// Send to the shader (typically, this would be the vertex shader)
 ///		_viewMatrixBuffer.SetData<Matrix>(ref viewMatrix);
 /// 
-///		// Send again to the shader, but this time, at the fourth float value index.
+///		// Send again to the shader, but this time, at the fourth float value index
 ///     // This would skip the first 4 float values in viewMatrix, and write into
-///     // the remaining 60 float values, and the first 4 float values in "other".
+///     // the remaining 60 float values, and the first 4 float values in "other"
 ///		_viewMatrixBuffer.SetData<Matrix>(ref viewMatrix, 4 * sizeof(float));
 /// }
 /// ]]>
@@ -96,27 +93,19 @@ namespace Gorgon.Graphics.Core;
 public sealed class GorgonConstantBuffer
     : GorgonBufferCommon, IGorgonConstantBufferInfo
 {
-    #region Constants.
+
     /// <summary>
     /// The prefix to assign to a default name.
     /// </summary>
     internal const string NamePrefix = nameof(GorgonConstantBuffer);
-    #endregion
 
-    #region Variables.
+
     // The information used to create the buffer.
-#if NET48_OR_GREATER
-#pragma warning disable IDE0044 // Add readonly modifier
-#endif
     private GorgonConstantBufferInfo _info;
-#if NET48_OR_GREATER
-#pragma warning restore IDE0044 // Add readonly modifier
-#endif
     // A list of constant buffer views.
-    private List<GorgonConstantBufferView> _cbvs = new();
-    #endregion
+    private List<GorgonConstantBufferView> _cbvs = [];
 
-    #region Properties.
+
     /// <summary>
     /// Property to return the bind flags used for the D3D 11 resource.
     /// </summary>
@@ -145,14 +134,14 @@ public sealed class GorgonConstantBuffer
     /// <summary>
     /// Property to return the number of 4 component floating point values (16 bytes) that can be stored in this buffer.
     /// </summary>
-	    public int TotalConstantCount
+    public int TotalConstantCount
     {
         get;
         private set;
     }
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to initialize the buffer data.
     /// </summary>
@@ -164,12 +153,10 @@ public sealed class GorgonConstantBuffer
 
         if (newSize != _info.SizeInBytes)
         {
-#if NET6_0_OR_GREATER
             _info = _info with
             {
                 SizeInBytes = newSize
             };
-#endif
         }
 
         TotalConstantCount = _info.SizeInBytes / (sizeof(float) * 4);
@@ -284,9 +271,9 @@ public sealed class GorgonConstantBuffer
 
         return buffer;
     }
-    #endregion
 
-    #region Constructor/Finalizer.
+
+
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonConstantBuffer" /> class.
     /// </summary>
@@ -309,5 +296,5 @@ public sealed class GorgonConstantBuffer
 
         Initialize(initialData);
     }
-    #endregion
+
 }

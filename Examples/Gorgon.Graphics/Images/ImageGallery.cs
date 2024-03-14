@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2018 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,25 +11,21 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: April 4, 2018 9:39:05 PM
 // 
-#endregion
 
-using System;
-using System.Drawing;
+
 using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
-using System.IO;
-using System.Threading;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Imaging;
 using Gorgon.Graphics.Imaging.Codecs;
@@ -39,25 +35,25 @@ using Gorgon.Math;
 namespace Gorgon.Examples;
 
 /// <summary>
-/// A gallery for displaying the example images.
+/// A gallery for displaying the example images
 /// </summary>
 class ImageGallery
     : IDisposable
 {
-    #region Variables.
+
     // The content font with bolding.
     private readonly Font _boldContentFont;
     // Our image list.
     private readonly IGorgonImage[] _images = new IGorgonImage[6];
     // Descriptions for each image.
-    private readonly string[] _descriptions = {
+    private readonly string[] _descriptions = [
                                                   "User Drawn Image",
                                                   "Direct Draw Surface (DDS) Image",
                                                   "16bpp TGA Image",
                                                   "Animated GIF",
                                                   "PNG Image (w/alpha)",
                                                   "BMP Image"
-                                              };
+                                              ];
     // The size of the image.
     private Size _imageSize;
     // The destination bitmap to draw on the screen.
@@ -74,13 +70,13 @@ class ImageGallery
     private Point _gifPosition;
     // Counter for drawing frames.
     private int _isDrawing;
-    #endregion
 
-    #region Properties.
 
-    #endregion
 
-    #region Methods.
+
+
+
+
     /// <summary>
     /// Function to provide a quick and dirty method of drawing outlined text.
     /// </summary>
@@ -107,7 +103,7 @@ class ImageGallery
     private void CreateCustomImage()
     {
         // Create the image at the original size.
-        var sourceImage = new GorgonImage(new GorgonImageInfo(ImageType.Image2D, BufferFormat.R8G8B8A8_UNorm)
+        var sourceImage = new GorgonImage(new GorgonImageInfo(ImageDataType.Image2D, BufferFormat.R8G8B8A8_UNorm)
         {
             Width = 320,
             Height = 240
@@ -349,9 +345,9 @@ class ImageGallery
         _gifBuffer.Dispose();
         _destBitmap?.Dispose();
     }
-    #endregion
 
-    #region Constructor/Finalizer.
+
+
     /// <summary>
     /// Initializes a new instance of the <see cref="ImageGallery"/> class.
     /// </summary>
@@ -373,5 +369,5 @@ class ImageGallery
         var dpiScale = new SizeF(newScaleWidth, newScaleWidth);
         _imageSize = new Size((int)(dpiScale.Width * 320), (int)(dpiScale.Height * 240));
     }
-    #endregion
+
 }

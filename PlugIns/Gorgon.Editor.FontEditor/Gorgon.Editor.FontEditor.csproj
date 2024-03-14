@@ -1,10 +1,11 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>net48;net6.0-windows</TargetFrameworks>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <ForceDesignerDpiUnaware>true</ForceDesignerDpiUnaware>
     <UseWindowsForms>true</UseWindowsForms>
     <ApplicationIcon>Gorgon2.ico</ApplicationIcon>
-    <Version>3.2.0</Version>
+    <Version>4.0.0</Version>
     <Authors>Michael Winsor</Authors>
     <Company>Tape_Worm</Company>
     <Product>Gorgon</Product>
@@ -22,44 +23,24 @@
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <EmbeddedResourceUseDependentUponConvention>true</EmbeddedResourceUseDependentUponConvention>
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
-    <AssemblyVersion>3.2.0.0</AssemblyVersion>
-    <FileVersion>3.2.0.0</FileVersion>
-    <LangVersion>10</LangVersion>
+    <AssemblyVersion>4.0.0.0</AssemblyVersion>
+    <FileVersion>4.0.0.0</FileVersion>
     <SignAssembly>false</SignAssembly>
     <AssemblyOriginatorKeyFile>
     </AssemblyOriginatorKeyFile>
     <DelaySign>false</DelaySign>
+    <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <PlatformTarget>AnyCPU</PlatformTarget>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <DebugType>full</DebugType>
     <DebugSymbols>true</DebugSymbols>
     <PlatformTarget>AnyCPU</PlatformTarget>
   </PropertyGroup>
-  <ItemGroup>
-    <Compile Remove="2. Views\**" />
-    <Compile Remove="2.1. Ribbon\**" />
-    <Compile Remove="2.2 Renderers\**" />
-    <Compile Remove="3.1. Services\**" />
-    <Compile Remove="4. Settings\**" />
-    <Compile Remove="_Internal\2.2 Renderers\**" />
-    <EmbeddedResource Remove="2. Views\**" />
-    <EmbeddedResource Remove="2.1. Ribbon\**" />
-    <EmbeddedResource Remove="2.2 Renderers\**" />
-    <EmbeddedResource Remove="3.1. Services\**" />
-    <EmbeddedResource Remove="4. Settings\**" />
-    <EmbeddedResource Remove="_Internal\2.2 Renderers\**" />
-    <None Remove="2. Views\**" />
-    <None Remove="2.1. Ribbon\**" />
-    <None Remove="2.2 Renderers\**" />
-    <None Remove="3.1. Services\**" />
-    <None Remove="4. Settings\**" />
-    <None Remove="_Internal\2.2 Renderers\**" />
-  </ItemGroup>
   <ItemGroup>
     <Compile Remove="_Internal\ViewModels\TextContent.cs" />
   </ItemGroup>
@@ -68,7 +49,7 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.SourceLink.GitHub">
-      <Version>1.1.1</Version>      
+      <Version>8.0.0</Version>      
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>

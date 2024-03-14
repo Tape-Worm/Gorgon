@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2016 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,41 +11,39 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: Thursday, January 7, 2016 7:15:06 PM
 // 
-#endregion
 
-using System.Collections.Generic;
-using System.Linq;
+
 using SharpDX.DXGI;
 using DX = SharpDX;
 
 namespace Gorgon.Graphics.Core;
 
 /// <summary>
-/// Provides information about an output on a <see cref="IGorgonVideoAdapterInfo"/>.
+/// Provides information about an output on a <see cref="IGorgonVideoAdapterInfo"/>
 /// </summary>
 /// <remarks>
-/// An output is typically a physical connection between the video adapter and another device.
+/// An output is typically a physical connection between the video adapter and another device
 /// </remarks>
 internal class VideoOutputInfo
     : IGorgonVideoOutputInfo
 {
-    #region Variables.
+
     // Output description.
     private OutputDescription _desc;
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to return the index of the output.
     /// </summary>
@@ -104,9 +102,9 @@ internal class VideoOutputInfo
     {
         get;
     }
-    #endregion
 
-    #region Constructor/Finalizer.
+
+
     /// <summary>
     /// Initializes a new instance of the <see cref="VideoOutputInfo" /> class.
     /// </summary>
@@ -121,5 +119,5 @@ internal class VideoOutputInfo
         Rotation = (RotationMode)_desc.Rotation;
         VideoModes = modes.Select(item => new GorgonVideoMode(item)).ToArray();
     }
-    #endregion
+
 }

@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2018 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,23 +11,19 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: September 24, 2018 11:05:00 AM
 // 
-#endregion
 
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
+
 using Gorgon.Core;
 using Gorgon.Diagnostics;
 using Gorgon.Editor.PlugIns;
@@ -39,11 +35,14 @@ using Gorgon.PlugIns;
 namespace Gorgon.Editor.Services;
 
 /// <summary>
-/// Functionality to capture and load file system providers from plugins.
+/// Functionality to capture and load file system providers from plugins
 /// </summary>
-internal class FileSystemProviders
+/// <remarks>Initializes a new instance of the <see cref="FileSystemProviders"/> class.</remarks>
+/// <param name="hostServices">Services to pass around to the plug ins from the host application.</param>
+/// <exception cref="ArgumentNullException">Thrown when the <paramref name="commonServices"/> parameter is <b>null</b>.</exception>
+internal class FileSystemProviders(IHostServices hostServices)
 {
-    #region Variables.
+
     // A list of available file system reader providers.
     private readonly Dictionary<string, IGorgonFileSystemProvider> _readers = new(StringComparer.OrdinalIgnoreCase);
     // A list of available file system writer providers.
@@ -51,10 +50,10 @@ internal class FileSystemProviders
     // A list of disabled plug ins.
     private readonly Dictionary<string, IDisabledPlugIn> _disabled = new(StringComparer.OrdinalIgnoreCase);
     // Common application services.
-    private readonly IHostServices _hostServices;
-    #endregion
+    private readonly IHostServices _hostServices = hostServices ?? throw new ArgumentNullException(nameof(hostServices));
 
-    #region Properties.                
+
+
     /// <summary>
     /// Property to return the list of disabled provider plug ins.
     /// </summary>
@@ -69,9 +68,9 @@ internal class FileSystemProviders
     /// Property to return all loaded file system writer plug ins.
     /// </summary>
     public IReadOnlyDictionary<string, FileWriterPlugIn> Writers => _writers;
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to retrieve the file system provider that supports the specified file.
     /// </summary>
@@ -222,7 +221,7 @@ internal class FileSystemProviders
 
             if (!result.TryGetValue(description, out List<GorgonFileExtension> extensions))
             {
-                result[description] = extensions = new List<GorgonFileExtension>();
+                result[description] = extensions = [];
             }
 
             extensions.AddRange(provider.Value.PreferredExtensions.OrderBy(item => item.Extension));
@@ -305,7 +304,7 @@ internal class FileSystemProviders
                 _writers[writer.GetType().FullName] = writer;
             }
             catch (Exception ex)
-            {                    
+            {
                 _hostServices.Log.Print($"ERROR: Cannot create file system writer plug in '{writer.Name}'.", LoggingLevel.Simple);
                 _hostServices.Log.LogException(ex);
 
@@ -313,12 +312,8 @@ internal class FileSystemProviders
             }
         }
     }
-    #endregion
 
-    #region Constructor.
-    /// <summary>Initializes a new instance of the <see cref="FileSystemProviders"/> class.</summary>
-    /// <param name="hostServices">Services to pass around to the plug ins from the host application.</param>
-    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="commonServices"/> parameter is <b>null</b>.</exception>
-    public FileSystemProviders(IHostServices hostServices) => _hostServices = hostServices ?? throw new ArgumentNullException(nameof(hostServices));
-    #endregion
+
+
+
 }

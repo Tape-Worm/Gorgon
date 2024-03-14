@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2016 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,20 +11,19 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: June 15, 2016 9:33:57 PM
 // 
-#endregion
 
-using System;
+
 using Gorgon.Core;
 using Gorgon.Diagnostics;
 using Gorgon.Graphics.Core.Properties;
@@ -34,16 +33,16 @@ using D3D11 = SharpDX.Direct3D11;
 namespace Gorgon.Graphics.Core;
 
 /// <summary>
-/// A buffer for holding vertex data.
+/// A buffer for holding vertex data
 /// </summary>
 /// <remarks>
 /// <para>
 /// To send vertices to the GPU using a vertex buffer, an application can upload vertices, represented as a value type, to the buffer using one of the
 /// <see cref="GorgonBufferCommon.SetData{T}(ReadOnlySpan{T}, int, CopyMode)"/> overloads. For best performance, it is recommended to upload vertex data only once, or rarely. However, in some 
-/// scenarios, and with the correct <see cref="GorgonGraphicsResource.Usage"/> flag, vertex animation is possible by uploading data to a <see cref="ResourceUsage.Dynamic"/> vertex buffer.
+/// scenarios, and with the correct <see cref="GorgonGraphicsResource.Usage"/> flag, vertex animation is possible by uploading data to a <see cref="ResourceUsage.Dynamic"/> vertex buffer
 /// </para>
 /// <para>
-/// To use a vertex buffer with the GPU pipeline, one must create a <see cref="GorgonVertexBufferBinding"/> to inform the GPU on how to use the vertex buffer.
+/// To use a vertex buffer with the GPU pipeline, one must create a <see cref="GorgonVertexBufferBinding"/> to inform the GPU on how to use the vertex buffer
 /// </para>
 /// <para> 
 /// </para>
@@ -52,7 +51,7 @@ namespace Gorgon.Graphics.Core;
 /// For example, to send a list of vertices to a vertex buffer:
 /// <code language="csharp">
 /// <![CDATA[
-/// // Our vertex, with a position and color component.
+/// // Our vertex, with a position and color component
 /// [StructLayout(LayoutKind = LayoutKind.Sequential)] 
 /// struct MyVertex
 /// {
@@ -66,48 +65,48 @@ namespace Gorgon.Graphics.Core;
 /// 
 /// void InitializeVertexBuffer()
 /// {
-///		_vertices = ... // Fill your vertex array here.
+///		_vertices = ... // Fill your vertex array here
 /// 
-///		// Create the vertex buffer large enough so that it'll hold 100 vertices.
+///		// Create the vertex buffer large enough so that it'll hold 100 vertices
 ///		_vertexBuffer = new GorgonVertexBuffer(graphics, GorgonVertexBufferInfo.CreateFromType<MyVertex>(_vertices.Length, Usage.Default));
 /// 
-///		// Copy our data to the vertex buffer.
+///		// Copy our data to the vertex buffer
 ///     _vertexBuffer.SetData<MyVertex>(_vertices);
 /// 
-///		// Copy our data to the vertex buffer, using the 5th index in the vertex array, and 25 vertices.
+///		// Copy our data to the vertex buffer, using the 5th index in the vertex array, and 25 vertices
 ///     _vertexBuffer.SetData<MyVertex>(_vertices, 5, 25);
 ///
-///		// Copy our data to the vertex buffer, using the 5th index in the vertex array, 25 vertices, and storing at index 2 in the vertex buffer.
+///		// Copy our data to the vertex buffer, using the 5th index in the vertex array, 25 vertices, and storing at index 2 in the vertex buffer
 ///     _vertexBuffer.SetData<MyVertex>(_vertices, 5, 25, 2);
 ///
-///     // Copy our data to the vertex buffer, using the 5th index in the native buffer, 25 vertices, and storing at index 2 in the vertex buffer, using a copy mode.
+///     // Copy our data to the vertex buffer, using the 5th index in the native buffer, 25 vertices, and storing at index 2 in the vertex buffer, using a copy mode
 ///     _vertexBuffer.SetData(vertices, 5, 25, 2, CopyMode.NoOverWrite);
 /// 
-///     // Copy our data from a GorgonNativeBuffer.
+///     // Copy our data from a GorgonNativeBuffer
 ///     using (GorgonNativeBuffer<MyVertex> vertices = new GorgonNativeBuffer<MyVertex>(100))
 ///     {
-///        // Copy vertices into the native buffer here....
+///        // Copy vertices into the native buffer here...
 ///
-///        // Copy everything.
+///        // Copy everything
 ///        _vertexBuffer.SetData(vertices);
 /// 
-///        // Copy our data to the vertex buffer, using the 5th index in the native buffer, 25 vertices, and storing at index 2 in the vertex buffer.
+///        // Copy our data to the vertex buffer, using the 5th index in the native buffer, 25 vertices, and storing at index 2 in the vertex buffer
 ///        _vertexBuffer.SetData(vertices, 5, 25, 2);
 ///
-///        // Copy our data to the vertex buffer, using the 5th index in the native buffer, 25 vertices, and storing at index 2 in the vertex buffer, using a copy mode.
+///        // Copy our data to the vertex buffer, using the 5th index in the native buffer, 25 vertices, and storing at index 2 in the vertex buffer, using a copy mode
 ///        _vertexBuffer.SetData(vertices, 5, 25, 2, CopyMode.NoOverWrite);
 ///
-///        // Get the data back out from the buffer, using index 5 and up to 10 vertices, storing at index 2 of the native buffer.
+///        // Get the data back out from the buffer, using index 5 and up to 10 vertices, storing at index 2 of the native buffer
 ///        _vertexBuffer.GetData<MyVertex>(vertices, 5, 10, 2); 
 ///     }
 ///
-///     // Get the data back out from the buffer.
+///     // Get the data back out from the buffer
 ///     MyVertex[] readBack = _vertexBuffer.GetData<MyVertex>();
 ///
-///     // Get the data back out from the buffer, starting at index 5 and a count of 10 vertices.
+///     // Get the data back out from the buffer, starting at index 5 and a count of 10 vertices
 ///     readBack = _vertexBuffer.GetData<MyVertex>(5, 10);
 ///
-///     // Get the data back out from the buffer, using index 5 and up to 10 vertices, storing at index 2.
+///     // Get the data back out from the buffer, using index 5 and up to 10 vertices, storing at index 2
 ///     _vertexBuffer.GetData<MyVertex>(readBack, 5, 10, 2);
 /// }
 /// ]]>
@@ -117,19 +116,19 @@ namespace Gorgon.Graphics.Core;
 public sealed class GorgonVertexBuffer
     : GorgonBufferCommon, IGorgonVertexBufferInfo
 {
-    #region Constants.
+
     /// <summary>
     /// The prefix to assign to a default name.
     /// </summary>
-	    internal const string NamePrefix = nameof(GorgonVertexBuffer);
-    #endregion
+    internal const string NamePrefix = nameof(GorgonVertexBuffer);
 
-    #region Variables.
+
+
     // The information used to create the buffer
     private readonly GorgonVertexBufferInfo _info;
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to return the bind flags used for the D3D 11 resource.
     /// </summary>
@@ -175,9 +174,9 @@ public sealed class GorgonVertexBuffer
     /// Property to return the name of this object.
     /// </summary>
     public override string Name => _info.Name;
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to initialize the buffer data.
     /// </summary>
@@ -273,7 +272,7 @@ public sealed class GorgonVertexBuffer
     /// </remarks>
     /// <seealso cref="GorgonVertexBufferInfo"/>
     public static GorgonVertexBuffer Create<T>(GorgonGraphics graphics, GorgonVertexBufferInfo info, ReadOnlySpan<T> initialData = default)
-        where T : unmanaged            
+        where T : unmanaged
     {
         if (graphics is null)
         {
@@ -291,8 +290,8 @@ public sealed class GorgonVertexBuffer
         }
 
         unsafe
-        {                
-            int size = initialData.Length * sizeof(T);                
+        {
+            int size = initialData.Length * sizeof(T);
 
             if (info.SizeInBytes < 1)
             {
@@ -424,9 +423,9 @@ public sealed class GorgonVertexBuffer
 
         return result;
     }
-    #endregion
 
-    #region Constructor/Finalizer.
+
+
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonVertexBuffer" /> class.
     /// </summary>
@@ -440,5 +439,5 @@ public sealed class GorgonVertexBuffer
         _info = new GorgonVertexBufferInfo(info ?? throw new ArgumentNullException(nameof(info)));
         Initialize(initialData);
     }
-    #endregion
+
 }

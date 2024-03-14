@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2015 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,32 +11,37 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: Sunday, June 14, 2015 5:59:28 PM
 // 
-#endregion
 
-using System;
+
 using Gorgon.Core;
 using Gorgon.Properties;
 
 namespace Gorgon.IO;
 
 /// <summary>
-/// A chunk for the chunked file format.
+/// A chunk for the chunked file format
 /// </summary>
-public readonly struct GorgonChunk
-    : IGorgonEquatableByRef<GorgonChunk>
+/// <remarks>
+/// Initializes a new instance of the <see cref="GorgonChunk"/> struct
+/// </remarks>
+/// <param name="id">The identifier for the chunk.</param>
+/// <param name="size">The size of the chunk, in bytes.</param>
+/// <param name="offset">The offset within the file, in bytes.</param>
+public readonly struct GorgonChunk(ulong id, int size, ulong offset)
+        : IGorgonEquatableByRef<GorgonChunk>
 {
-    #region Variables.		
+
     /// <summary>
     /// An empty chunk.
     /// </summary>
@@ -45,21 +50,21 @@ public readonly struct GorgonChunk
     /// <summary>
     /// The ID for the chunk.
     /// </summary>
-    public readonly ulong ID;
+    public readonly ulong ID = id;
 
     /// <summary>
     /// The size of the chunk, in bytes.
     /// </summary>
-    public readonly int Size;
+    public readonly int Size = size;
 
     /// <summary>
     /// The offset, in bytes, of the chunk within the chunked file.
     /// </summary>
     /// <remarks>This is relative to the header of the file.</remarks>
-    public readonly ulong FileOffset;
-    #endregion
+    public readonly ulong FileOffset = offset;
 
-    #region Methods.
+
+
     /// <summary>
     /// Returns a <see cref="string" /> that represents this instance.
     /// </summary>
@@ -100,9 +105,9 @@ public readonly struct GorgonChunk
     /// <param name="other">The other instance to use for comparison.</param>
     /// <returns><b>true</b> if equal, <b>false</b> if not.</returns>
     public bool Equals(in GorgonChunk other) => Equals(in this, in other);
-    #endregion
 
-    #region Operators.
+
+
     /// <summary>
     /// Operator used to compare two instances for equality.
     /// </summary>
@@ -118,20 +123,6 @@ public readonly struct GorgonChunk
     /// <param name="right">The right instance to compare.</param>
     /// <returns><b>true</b> if not equal, <b>false</b> otherwise.</returns>
     public static bool operator !=(in GorgonChunk left, in GorgonChunk right) => !Equals(in left, in right);
-    #endregion
 
-    #region Constructor/Finalizer.
-    /// <summary>
-    /// Initializes a new instance of the <see cref="GorgonChunk"/> struct.
-    /// </summary>
-    /// <param name="id">The identifier for the chunk.</param>
-    /// <param name="size">The size of the chunk, in bytes.</param>
-    /// <param name="offset">The offset within the file, in bytes.</param>
-    public GorgonChunk(ulong id, int size, ulong offset)
-    {
-        ID = id;
-        Size = size;
-        FileOffset = offset;
-    }
-    #endregion
+
 }

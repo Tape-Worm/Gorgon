@@ -1,6 +1,6 @@
-﻿#region MIT.
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2013 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,23 +11,19 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: Saturday, January 5, 2013 3:29:58 PM
 // 
-#endregion
 
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
+
 using Gorgon.Core;
 using Gorgon.Diagnostics;
 using Gorgon.IO.Providers;
@@ -36,12 +32,12 @@ using Gorgon.PlugIns;
 namespace Gorgon.Examples;
 
 /// <summary>
-/// Example entry point.
+/// Example entry point
 /// </summary>
 /// <remarks>
 /// Gorgon is capable of making use of Virtual File Systems.  This is quite different from the file system type that was in the
 /// first version of Gorgon which was really nothing more than a compressed file reader/writer (even though it could mount 
-/// folders).
+/// folders)
 /// 
 /// Virtual File Systems take a directory, or some packed data file and mount it as a root directory.  Any subsequent directories
 /// and files inside of the directory (or file) are mapped to be relative to the root point on the file system.  For example,
@@ -50,32 +46,32 @@ namespace Gorgon.Examples;
 /// that was mounted as the root of the VFS.  This allows for a certain level of security to keep users from writing or reading
 /// areas outside of the intended directory structure.  
 /// 
-/// Gorgon's VFS is modelled after the PhysFS project (http://icculus.org/physfs/).
+/// Gorgon's VFS is modelled after the PhysFS project (http://icculus.org/physfs/)
 /// 
 /// The VFS object in Gorgon comes with the ability to mount a directory as a root of a VFS.  However, it's possible to mount a
 /// zip file, or the old Gorgon BZip2 Pack file format as a VFS.  This is done through file system providers.  Similar to the
 /// input factories, these providers are plug ins and can be loaded into a file system object to give access to these types of 
 /// files.  A provider plug in can be written to pull data from a SQL server, or a network stream or any access point that can
-/// stream data.
+/// stream data
 /// 
-/// In this example, we'll show how to load some of these providers.
+/// In this example, we'll show how to load some of these providers
 /// </remarks>
 internal static class Program
 {
-    #region Variables.
+
     // The providers that were loaded.
     private static IReadOnlyList<GorgonFileSystemProvider> _providers;
     // The cache that will hold the assemblies where our plugins will live.
     private static GorgonMefPlugInCache _pluginAssemblies;
     // The log used for debug logging.
     private static IGorgonLog _log;
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
-		/// Property to return the path to the plug ins.
-		/// </summary>
-		public static string PlugInPath
+    /// Property to return the path to the plug ins.
+    /// </summary>
+    public static string PlugInPath
     {
         get
         {
@@ -86,7 +82,7 @@ internal static class Program
 #if DEBUG
                 path = string.Format(path, "Debug");
 #else
-					path = string.Format(path, "Release");					
+                path = string.Format(path, "Release");                    
 #endif
             }
 
@@ -98,14 +94,46 @@ internal static class Program
             return Path.GetFullPath(path);
         }
     }
-    #endregion
 
-    #region Methods.
+
+
+    /// <summary>
+    /// Function to retrieve the directory that contains the plugins for an application.
+    /// </summary>
+    /// <param name="pluginDirectory">The directory containing the plug ins.</param>
+    /// <returns>A directory information object for the plugin path.</returns>
+    private static DirectoryInfo GetPlugInPath(DirectoryInfo pluginDirectory)
+    {
+        string path = pluginDirectory.FullName;
+
+        if (string.IsNullOrWhiteSpace(path))
+        {
+            throw new IOException("No plug in path has been assigned.");
+        }
+
+        if (path.Contains("{0}"))
+        {
+#if DEBUG
+            path = string.Format(path, "Debug");
+#else
+            path = string.Format(path, "Release");					
+#endif
+        }
+
+        if (!path.EndsWith(Path.DirectorySeparatorChar.ToString()))
+        {
+            path += Path.DirectorySeparatorChar.ToString();
+        }
+
+        return new DirectoryInfo(Path.GetFullPath(path));
+    }
+
     /// <summary>
     /// Function to load the file system providers.
     /// </summary>
+    /// <param name="pluginDirectory">The directory containing the plug ins.</param>
     /// <returns>The number of file system provider plug ins.</returns>
-    private static int LoadFileSystemProviders()
+    private static int LoadFileSystemProviders(DirectoryInfo pluginDirectory)
     {
         // Get the file system provider factory so we can retrieve our newly loaded providers.
         IGorgonFileSystemProviderFactory providerFactory = new GorgonFileSystemProviderFactory(_pluginAssemblies, _log);
@@ -113,7 +141,7 @@ internal static class Program
         // Get all the providers.
         // We could limit this to a single provider, or to a single plugin assembly if we choose.  But for 
         // this example, we'll get everything we've got.
-        _providers = providerFactory.CreateProviders(Path.Combine(GorgonExample.GetPlugInPath().FullName, "Gorgon.FileSystem.*.dll"));
+        _providers = providerFactory.CreateProviders(Path.Combine(GetPlugInPath(pluginDirectory).FullName, "Gorgon.FileSystem.*.dll"));
 
         return _providers.Count;
     }
@@ -123,7 +151,7 @@ internal static class Program
     /// </summary>
     private static void Main()
     {
-        GorgonExample.PlugInLocationDirectory = new DirectoryInfo(ExampleConfig.Default.PlugInLocation);
+        DirectoryInfo plugInLocationDirectory = new(ExampleConfig.Default.PlugInLocation);
 
         _log = new GorgonTextFileLog("FileSystemProviders", "Tape_Worm");
         _log.LogStart();
@@ -144,7 +172,7 @@ internal static class Program
             Console.ForegroundColor = ConsoleColor.White;
 
             // Get our file system providers.                
-            Console.WriteLine("Found {0} external file system plug ins.\n", LoadFileSystemProviders());
+            Console.WriteLine("Found {0} external file system plug ins.\n", LoadFileSystemProviders(plugInLocationDirectory));
 
             // Loop through each provider and print some info.
             for (int i = 0; i < _providers.Count; ++i)
@@ -201,5 +229,5 @@ internal static class Program
             _log.LogEnd();
         }
     }
-    #endregion
+
 }

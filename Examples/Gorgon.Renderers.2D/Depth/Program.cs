@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2019 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,27 +11,20 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: May 9, 2019 5:34:12 PM
 // 
-#endregion
 
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
+
 using System.Numerics;
-using System.Threading;
-using System.Threading.Tasks;
-using System.Windows.Forms;
 using Gorgon.Animation;
 using Gorgon.Core;
 using Gorgon.Graphics;
@@ -47,21 +40,20 @@ using DX = SharpDX;
 namespace Gorgon.Examples;
 
 /// <summary>
-/// This is an updated version of the "DeepAsAPuddle" example from Gorgon v1.x.
+/// This is an updated version of the "DeepAsAPuddle" example from Gorgon v1.x
 /// 
 /// This example shows how to use the depth buffer in conjunction with 2D graphics to provide the illusion of a scene with 
-/// depth by having a character walk behind an obstacle (similar to old Sierra/Lucasarts adventure games).
+/// depth by having a character walk behind an obstacle (similar to old Sierra/Lucasarts adventure games)
 /// 
 /// By using a depth buffer, the order in which we draw our sprites no longer matters because the Depth property is used to 
 /// determine how far "in" a sprite is within the scene. For example, 2 sprites, A and B, where A has a depth of 0.2 and B 
-/// has a depth of 0.1 will always have B render before A (depending on depth stencil state).
+/// has a depth of 0.1 will always have B render before A (depending on depth stencil state)
 /// 
 /// Be aware there are limitations with this trick. If you render a sprite with translucency with a lower depth value before 
-/// a sprite with a high depth value, the pixels will overwrite what's behind it.
+/// a sprite with a high depth value, the pixels will overwrite what's behind it
 /// </summary>
 static class Program
 {
-    #region Enums.
     /// <summary>
     /// The name of an animation.
     /// </summary>
@@ -71,9 +63,7 @@ static class Program
         Turn = 1,
         WalkLeft = 2
     }
-    #endregion
 
-    #region Variables.
     // The primary graphics interface.
     private static GorgonGraphics _graphics;
     // The main "screen" for the application.
@@ -83,7 +73,7 @@ static class Program
     // Our 2D renderer.
     private static Gorgon2D _renderer;
     // The list of textures for the sprite.
-    private static readonly List<GorgonTexture2D> _textures = new();
+    private static readonly List<GorgonTexture2D> _textures = [];
     // The size of the tiled screen.
     private static DX.Size2 _tileSize;
     // The tile used for the snow layer.
@@ -95,7 +85,7 @@ static class Program
     // The position of the guy.
     private static Vector2 _guyPosition;
     // Up animation.
-    private static readonly Dictionary<AnimationName, IGorgonAnimation> _animations = new();
+    private static readonly Dictionary<AnimationName, IGorgonAnimation> _animations = [];
     // The animation controller.
     private static GorgonSpriteAnimationController _controller;
     // The current animation.
@@ -104,9 +94,9 @@ static class Program
     private static GorgonMefPlugInCache _assemblyCache;
     // The cache for holding sprite textures.
     private static GorgonTextureCache<GorgonTexture2D> _textureCache;
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to draw the background layer.
     /// </summary>
@@ -272,7 +262,7 @@ static class Program
         walkLeftFrames.RemoveAt(5); // This frame is broken.
         walkLeftFrames.Add(walkLeftFrames[3]); // We need to repeat these frames to get fluid motion.
         walkLeftFrames.Insert(3, walkLeftFrames[0]);
-        walkLeftFrames.Insert(3, walkLeftFrames[1]);            
+        walkLeftFrames.Insert(3, walkLeftFrames[1]);
 
         float time = 0;
 
@@ -321,7 +311,7 @@ static class Program
         time = 0;
         animBuilder.Clear();
         foreach (GorgonSprite sprite in walkLeftFrames)
-        {                
+        {
             animBuilder.Edit2DTexture("Texture")
                         .SetKey(new GorgonKeyTexture2D(time, sprite.Texture, sprite.TextureRegion, 0))
                         .EndEdit();
@@ -430,9 +420,9 @@ static class Program
 
         GorgonExample.EndInit();
     }
-    #endregion
 
-    #region Constructor/Finalizer.
+
+
     /// <summary>
     /// The main entry point for the application.
     /// </summary>
@@ -441,9 +431,7 @@ static class Program
     {
         try
         {
-#if NET6_0_OR_GREATER
             Application.SetHighDpiMode(HighDpiMode.PerMonitorV2);
-#endif
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
 
@@ -451,7 +439,7 @@ static class Program
             WindowsFormsSynchronizationContext.AutoInstall = false;
             SynchronizationContext.SetSynchronizationContext(new WindowsFormsSynchronizationContext());
 
-            FormMain window = GorgonExample.Initialize(new DX.Size2(ExampleConfig.Default.Resolution.Width, ExampleConfig.Default.Resolution.Height), "Depth", 
+            FormMain window = GorgonExample.Initialize(new DX.Size2(ExampleConfig.Default.Resolution.Width, ExampleConfig.Default.Resolution.Height), "Depth",
                                                        async (o, _) => await InitializeAsync((FormMain)o));
 
             GorgonApplication.Run(window, Idle);
@@ -477,5 +465,5 @@ static class Program
             _assemblyCache?.Dispose();
         }
     }
-    #endregion
+
 }

@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2019 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,26 +11,21 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: April 27, 2019 12:22:19 PM
 // 
-#endregion
 
-using System;
-using System.Collections.Generic;
+
 using System.Diagnostics;
-using System.IO;
 using System.Numerics;
-using System.Threading;
-using System.Threading.Tasks;
 using Gorgon.Editor.Content;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
@@ -42,28 +37,32 @@ using DX = SharpDX;
 namespace Gorgon.Editor.Services;
 
 /// <summary>
-/// The service used to retrieve sprite data from a texture atlas.
+/// The service used to retrieve sprite data from a texture atlas
 /// </summary>
 /// <remarks>
 /// <para>
-/// Developers can use this to extract sprite information using a fixed size grid to retrieve texture coordinates from a texture passed to the service.
+/// Developers can use this to extract sprite information using a fixed size grid to retrieve texture coordinates from a texture passed to the service
 /// </para>
 /// </remarks>
-public class SpriteExtractorService
-    : ISpriteExtractorService
+/// <remarks>Initializes a new instance of the <see cref="SpriteExtractorService"/> class.</remarks>
+/// <param name="renderer">The application 2D renderer.</param>
+/// <param name="fileManager">The file manager for the project files.</param>
+/// <param name="defaultCodec">The default sprite codec.</param>
+public class SpriteExtractorService(Gorgon2D renderer, IContentFileManager fileManager, IGorgonSpriteCodec defaultCodec)
+        : ISpriteExtractorService
 {
-    #region Variables.
-    // The renderer for preparing a compatible texture.
-    private readonly Gorgon2D _renderer;
-    // The graphics interface.
-    private readonly GorgonGraphics _graphics;
-    // The file manager used to write the content files.
-    private readonly IContentFileManager _fileManager;
-    // The default sprite codec.
-    private readonly IGorgonSpriteCodec _defaultCodec;
-    #endregion
 
-    #region Methods.
+    // The renderer for preparing a compatible texture.
+    private readonly Gorgon2D _renderer = renderer;
+    // The graphics interface.
+    private readonly GorgonGraphics _graphics = renderer.Graphics;
+    // The file manager used to write the content files.
+    private readonly IContentFileManager _fileManager = fileManager;
+    // The default sprite codec.
+    private readonly IGorgonSpriteCodec _defaultCodec = defaultCodec;
+
+
+
     /// <summary>
     /// Function to detect if a sprite has no pixel data.
     /// </summary>
@@ -120,7 +119,7 @@ public class SpriteExtractorService
 
         try
         {
-            IGorgonImage resultImage = new GorgonImage(new GorgonImageInfo(ImageType.Image2D, targetFormat)
+            IGorgonImage resultImage = new GorgonImage(new GorgonImageInfo(ImageDataType.Image2D, targetFormat)
             {
                 Width = texture.Width,
                 Height = texture.Height,
@@ -212,21 +211,21 @@ public class SpriteExtractorService
         {
             if (cancelToken.IsCancellationRequested)
             {
-                return Array.Empty<GorgonSprite>();
+                return [];
             }
 
             for (int y = 0; y < data.GridSize.Height; ++y)
             {
                 if (cancelToken.IsCancellationRequested)
                 {
-                    return Array.Empty<GorgonSprite>();
+                    return [];
                 }
 
                 for (int x = 0; x < data.GridSize.Width; ++x)
                 {
                     if (cancelToken.IsCancellationRequested)
                     {
-                        return Array.Empty<GorgonSprite>();
+                        return [];
                     }
 
                     DX.Rectangle spriteRect = GetSpriteRect(x, y, data.GridOffset, data.CellSize);
@@ -295,19 +294,8 @@ public class SpriteExtractorService
             file.LinkContent(textureFile);
         }
     }
-    #endregion
 
-    #region Constructor
-    /// <summary>Initializes a new instance of the <see cref="SpriteExtractorService"/> class.</summary>
-    /// <param name="renderer">The application 2D renderer.</param>
-    /// <param name="fileManager">The file manager for the project files.</param>
-    /// <param name="defaultCodec">The default sprite codec.</param>
-    public SpriteExtractorService(Gorgon2D renderer, IContentFileManager fileManager, IGorgonSpriteCodec defaultCodec)
-    {
-        _renderer = renderer;
-        _graphics = renderer.Graphics;
-        _fileManager = fileManager;
-        _defaultCodec = defaultCodec;
-    }
-    #endregion
+
+
+
 }

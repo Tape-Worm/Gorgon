@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2020 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,24 +11,20 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: July 4, 2020 12:40:55 AM
 // 
-#endregion
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
+
 using System.Numerics;
-using System.Threading.Tasks;
 using Gorgon.Animation;
 using Gorgon.Diagnostics;
 using Gorgon.Editor.Content;
@@ -39,24 +35,27 @@ using Gorgon.Renderers;
 namespace Gorgon.Editor.AnimationEditor;
 
 /// <summary>
-/// A processor for handling setting up key frames with relevant data.
+/// A processor for handling setting up key frames with relevant data
 /// </summary>
-internal class KeyProcessorService
+/// <remarks>Initializes a new instance of the <see cref="KeyProcessorService"/> class.</remarks>
+/// <param name="textureCache">The texture cache.</param>
+/// <param name="log">The log.</param>
+internal class KeyProcessorService(ITextureCache textureCache, IGorgonLog log)
 {
-    #region Variables.
+
     // The texture cache used to retrieve textures for sprites.
-    private readonly ITextureCache _textureCache;
+    private readonly ITextureCache _textureCache = textureCache;
     // The log used for debug messages.
-    private readonly IGorgonLog _log;
+    private readonly IGorgonLog _log = log;
     // The list of files for a texture track.
-    private readonly List<IContentFile> _textureFiles = new();
+    private readonly List<IContentFile> _textureFiles = [];
     // The arguments for the set keyframe command.
     private readonly SetKeyFramesArgs _setKeysArgs = new();
     // The synchronization lock for multiple threads.
     private readonly object _syncLock = new();
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to retrieve a list of files for each key frame in a texture track.
     /// </summary>
@@ -64,7 +63,7 @@ internal class KeyProcessorService
     /// <returns>The list of files.</returns>
     public IReadOnlyList<IContentFile> GetKeyframeTextureFiles(IReadOnlyList<ITrack> tracks)
     {
-        
+
         ITrack track = tracks.FirstOrDefault(item => item.ID == GorgonSpriteAnimationController.TextureTrack.ID);
 
         lock (_syncLock)
@@ -115,10 +114,10 @@ internal class KeyProcessorService
             return null;
         }
 
-        textureValue = new TextureValue(await _textureCache.GetTextureAsync(textureValue.TextureFile), 
-                                                                            textureValue.TextureFile, 
-                                                                            textureValue.ArrayIndex, 
-                                                                            textureValue.TextureCoordinates);                
+        textureValue = new TextureValue(await _textureCache.GetTextureAsync(textureValue.TextureFile),
+                                                                            textureValue.TextureFile,
+                                                                            textureValue.ArrayIndex,
+                                                                            textureValue.TextureCoordinates);
 
         destKeyFrame.TextureValue = textureValue;
 
@@ -241,7 +240,7 @@ internal class KeyProcessorService
     /// <param name="workingSprite">The working sprite to update.</param>
     /// <returns>The floating point values at the specified time.</returns>
     public Vector4? GetTrackFloatValues(ITrack track, float time, IGorgonAnimation animation, GorgonSprite workingSprite)
-    {            
+    {
         if ((animation is null) || (workingSprite is null))
         {
             return null;
@@ -337,16 +336,6 @@ internal class KeyProcessorService
                 return null;
         }
     }
-    #endregion
 
-    #region Constructor/Finalizer.
-    /// <summary>Initializes a new instance of the <see cref="KeyProcessorService"/> class.</summary>
-    /// <param name="textureCache">The texture cache.</param>
-    /// <param name="log">The log.</param>
-    public KeyProcessorService(ITextureCache textureCache, IGorgonLog log)
-    {
-        _textureCache = textureCache;
-        _log = log;
-    }
-    #endregion
+
 }

@@ -1,7 +1,7 @@
-// Triangulator source code by Nick Gravelyn.
+﻿// Triangulator source code by Nick Gravelyn
 // https://github.com/nickgravelyn/Triangulator
 //
-// Licensed under the MIT license.
+// Licensed under the MIT license
 // https://github.com/nickgravelyn/Triangulator/blob/master/LICENSE
 
 using System.Numerics;
@@ -9,16 +9,10 @@ using Gorgon.Math;
 
 namespace GorgonTriangulator;
 
-internal struct LineSegment
+internal struct LineSegment(Vertex a, Vertex b)
 {
-    public Vertex A;
-    public Vertex B;
-
-    public LineSegment(Vertex a, Vertex b)
-    {
-        A = a;
-        B = b;
-    }
+    public Vertex A = a;
+    public Vertex B = b;
 
     public readonly float? IntersectsWithRay(Vector2 origin, Vector2 direction)
     {

@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2018 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,28 +11,21 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: April 8, 2018 8:17:22 PM
 // 
-#endregion
 
-using System;
 
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Net.Mail;
 using System.Numerics;
 using System.Runtime.CompilerServices;
-using System.Threading;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
 using Gorgon.Graphics.Core.Properties;
@@ -46,54 +39,48 @@ using DXGI = SharpDX.DXGI;
 namespace Gorgon.Graphics.Core;
 
 /// <summary>
-/// A texture used to project an image onto a graphic primitive such as a triangle.
+/// A texture used to project an image onto a graphic primitive such as a triangle
 /// </summary>
 public sealed class GorgonTexture2D
     : GorgonGraphicsResource, IGorgonTexture2DInfo, IGorgonTextureResource, IGorgonSharedResource
 {
-    #region Constants.
+
     /// <summary>
     /// The prefix used for generated names.
     /// </summary>
     internal const string NamePrefix = nameof(GorgonTexture2D);
-    #endregion
 
-    #region Variables.
+
+
     // Default texture loading options.
     private static readonly GorgonTexture2DLoadOptions _defaultLoadOptions = new();
     // The ID number of the texture.
     private static int _textureID;
     // The list of cached texture unordered access views.
-    private Dictionary<TextureViewKey, GorgonTexture2DReadWriteView> _cachedReadWriteViews = new();
+    private Dictionary<TextureViewKey, GorgonTexture2DReadWriteView> _cachedReadWriteViews = [];
     // The list of cached texture shader resource views.
-    private Dictionary<TextureViewKey, GorgonTexture2DView> _cachedSrvs = new();
+    private Dictionary<TextureViewKey, GorgonTexture2DView> _cachedSrvs = [];
     // The list of cached render target resource views.
-    private Dictionary<TextureViewKey, GorgonRenderTarget2DView> _cachedRtvs = new();
+    private Dictionary<TextureViewKey, GorgonRenderTarget2DView> _cachedRtvs = [];
     // The list of cached depth/stencil resource views.
-    private Dictionary<TextureViewKey, GorgonDepthStencil2DView> _cachedDsvs = new();
-#if NET48_OR_GREATER
-#pragma warning disable IDE0044 // Add readonly modifier
-#endif
+    private Dictionary<TextureViewKey, GorgonDepthStencil2DView> _cachedDsvs = [];
     // The information used to create the texture.
     private GorgonTexture2DInfo _info;
-#if NET48_OR_GREATER
-#pragma warning restore IDE0044 // Add readonly modifier
-#endif
     // List of typeless formats that are compatible with a depth view format.
-    private static readonly HashSet<BufferFormat> _typelessDepthFormats = new()
-    {
+    private static readonly HashSet<BufferFormat> _typelessDepthFormats =
+    [
         BufferFormat.R16_Typeless,
         BufferFormat.R32_Typeless,
         BufferFormat.R24G8_Typeless,
         BufferFormat.R32G8X24_Typeless
-    };
+    ];
     // The shared resource for this texture.
     private DXGI.Resource _sharedResource;
     // The keyed mutex for the shared resource.
     private DXGI.KeyedMutex _keyedMutex;
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to return the bind flags used for the D3D 11 resource.
     /// </summary>
@@ -102,7 +89,7 @@ public sealed class GorgonTexture2D
     /// <summary>
     /// Property to return the type of image data.
     /// </summary>
-    ImageType IGorgonImageInfo.ImageType => IsCubeMap ? ImageType.ImageCube : ImageType.Image2D;
+    ImageDataType IGorgonImageInfo.ImageType => IsCubeMap ? ImageDataType.ImageCube : ImageDataType.Image2D;
 
     /// <summary>
     /// Property to return the depth of an image, in pixels.
@@ -233,10 +220,10 @@ public sealed class GorgonTexture2D
     /// <remarks>
     /// Settings this flag to <b>true</b> allows the texture to be used with external graphics interfaces such as a Direct3D device. This is useful for providing interoperation between systems.
     /// </remarks>
-    public TextureSharingOptions Shared =>_info.Shared;
-    #endregion
+    public TextureSharingOptions Shared => _info.Shared;
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to transfer texture data into an image buffer.
     /// </summary>
@@ -410,7 +397,7 @@ public sealed class GorgonTexture2D
         }
 
         // Ensure that we can actually use our requested format as a texture.
-        if ((Format == BufferFormat.Unknown) || (!Graphics.FormatSupport[Format].IsTextureFormat(ImageType.Image2D)))
+        if ((Format == BufferFormat.Unknown) || (!Graphics.FormatSupport[Format].IsTextureFormat(ImageDataType.Image2D)))
         {
             throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_TEXTURE_FORMAT_NOT_SUPPORTED, Format, @"2D"));
         }
@@ -486,7 +473,6 @@ public sealed class GorgonTexture2D
                                                     Format));
         }
 
-#if NET6_0_OR_GREATER
         if ((arrayCount == _info.ArrayCount) && (mipLevels == _info.MipLevels))
         {
             return;
@@ -497,7 +483,6 @@ public sealed class GorgonTexture2D
             MipLevels = mipLevels,
             ArrayCount = arrayCount
         };
-#endif
     }
 
     /// <summary>
@@ -534,7 +519,7 @@ public sealed class GorgonTexture2D
         }
 
         D3D11.ResourceOptionFlags options = Shared switch
-        {            
+        {
             TextureSharingOptions.Shared => D3D11.ResourceOptionFlags.Shared,
             TextureSharingOptions.SharedKeyedMutex => D3D11.ResourceOptionFlags.SharedKeyedmutex,
             _ => D3D11.ResourceOptionFlags.None
@@ -655,7 +640,7 @@ public sealed class GorgonTexture2D
     /// <param name="mipCount">The number of mip map levels.</param>
     /// <param name="isCubeMap"><b>true</b> if the texture is meant to be used as a cube map, or <b>false</b> if not.</param>
     /// <returns>The number of bytes for the texture.</returns>
-    public static int CalculateSizeInBytes(int width, int height, int arrayCount, BufferFormat format, int mipCount, bool isCubeMap) => GorgonImage.CalculateSizeInBytes(isCubeMap ? ImageType.ImageCube : ImageType.Image2D,
+    public static int CalculateSizeInBytes(int width, int height, int arrayCount, BufferFormat format, int mipCount, bool isCubeMap) => GorgonImage.CalculateSizeInBytes(isCubeMap ? ImageDataType.ImageCube : ImageDataType.Image2D,
                                                 width,
                                                 height,
                                                 arrayCount,
@@ -702,7 +687,7 @@ public sealed class GorgonTexture2D
         {
             return _sharedResource.SharedHandle;
         }
-        
+
         DXGI.Resource resource = D3DResource.QueryInterface<DXGI.Resource>() ?? throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_SHARED_RES_NOT_AVAILABLE, Name));
 
         Interlocked.Exchange(ref _sharedResource, resource);
@@ -1538,7 +1523,7 @@ public sealed class GorgonTexture2D
                 index = arrayIndex.Value.Min(ArrayCount - 1).Max(0);
             }
 
-            ImageType imageType = stagingTexture.IsCubeMap ? ImageType.ImageCube : ImageType.Image2D;
+            ImageDataType imageType = stagingTexture.IsCubeMap ? ImageDataType.ImageCube : ImageDataType.Image2D;
 
             image = new GorgonImage(new GorgonImageInfo(imageType, stagingTexture.Format)
             {
@@ -1573,11 +1558,11 @@ public sealed class GorgonTexture2D
     }
 
     /// <summary>
-		/// Function to convert this texture to a <see cref="IGorgonImage"/>.
-		/// </summary>
-		/// <returns>A new <see cref="IGorgonImage"/> containing the texture data.</returns>
-		/// <exception cref="GorgonException">Thrown when this texture has a <see cref="GorgonGraphicsResource.Usage"/> set to <see cref="ResourceUsage.Immutable"/>.</exception>
-		public IGorgonImage ToImage()
+    /// Function to convert this texture to a <see cref="IGorgonImage"/>.
+    /// </summary>
+    /// <returns>A new <see cref="IGorgonImage"/> containing the texture data.</returns>
+    /// <exception cref="GorgonException">Thrown when this texture has a <see cref="GorgonGraphicsResource.Usage"/> set to <see cref="ResourceUsage.Immutable"/>.</exception>
+    public IGorgonImage ToImage()
     {
         GorgonTexture2D stagingTexture = this;
         GorgonImage image = null;
@@ -1589,7 +1574,7 @@ public sealed class GorgonTexture2D
                 stagingTexture = GetStagingTexture();
             }
 
-            ImageType imageType = stagingTexture.IsCubeMap ? ImageType.ImageCube : ImageType.Image2D;
+            ImageDataType imageType = stagingTexture.IsCubeMap ? ImageDataType.ImageCube : ImageDataType.Image2D;
 
             image = new GorgonImage(new GorgonImageInfo(imageType, stagingTexture.Format)
             {
@@ -1724,7 +1709,7 @@ public sealed class GorgonTexture2D
     /// are left at 0, then all array indices will be accessible. 
     /// </para>
     /// </remarks>
-	    public GorgonTexture2DView GetShaderResourceView(BufferFormat format = BufferFormat.Unknown, int firstMipLevel = 0, int mipCount = 0, int arrayIndex = 0, int arrayCount = 0)
+    public GorgonTexture2DView GetShaderResourceView(BufferFormat format = BufferFormat.Unknown, int firstMipLevel = 0, int mipCount = 0, int arrayIndex = 0, int arrayCount = 0)
     {
         if (format == BufferFormat.Unknown)
         {
@@ -2362,9 +2347,9 @@ public sealed class GorgonTexture2D
     /// </para>
     /// </remarks>
     void IGorgonSharedResource.Release(long key) => _keyedMutex?.Release(key);
-    #endregion
 
-    #region Constructor/Finalizer.
+
+
     /// <summary>Initializes a new instance of the <see cref="GorgonTexture2D" /> class.</summary>
     /// <param name="graphics">The graphics interface used to create this texture.</param>
     /// <param name="surface">The pointer to an external rendering surface.</param>
@@ -2411,7 +2396,7 @@ public sealed class GorgonTexture2D
             Binding = (TextureBinding)desc.BindFlags,
             Shared = TextureSharingOptions.Shared
         };
-        
+
         FormatInformation = new GorgonFormatInfo(Format);
         TextureID = Interlocked.Increment(ref _textureID);
         SizeInBytes = CalculateSizeInBytes(_info);
@@ -2474,7 +2459,7 @@ public sealed class GorgonTexture2D
         bool isCubeMap;
         if (options.IsTextureCube is null)
         {
-            isCubeMap = image.ImageType == ImageType.ImageCube;
+            isCubeMap = image.ImageType == ImageDataType.ImageCube;
         }
         else
         {
@@ -2531,5 +2516,5 @@ public sealed class GorgonTexture2D
 
         this.RegisterDisposable(graphics);
     }
-    #endregion
+
 }

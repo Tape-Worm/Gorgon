@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2018 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,22 +11,19 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: August 11, 2018 3:36:34 PM
 // 
-#endregion
 
-using System;
-using System.Collections.Generic;
-using System.IO;
+
 using Gorgon.Core;
 using Gorgon.Graphics.Core;
 using Gorgon.Renderers;
@@ -34,13 +31,13 @@ using Gorgon.Renderers;
 namespace Gorgon.IO;
 
 /// <summary>
-/// An interface used to serialize and deserialize <see cref="GorgonSprite"/> objects.
+/// An interface used to serialize and deserialize <see cref="GorgonSprite"/> objects
 /// </summary>
 /// <seealso cref="GorgonSprite"/>
 public interface IGorgonSpriteCodec
     : IGorgonGraphicsObject, IGorgonNamedObject
 {
-    #region Properties.
+
     /// <summary>
     /// Property to return the common file extensions for this codec.
     /// </summary>
@@ -96,9 +93,9 @@ public interface IGorgonSpriteCodec
     {
         get;
     }
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to retrieve the name of the associated texture.
     /// </summary>
@@ -143,5 +140,5 @@ public interface IGorgonSpriteCodec
     /// <param name="stream">The stream containing the data.</param>
     /// <returns><b>true</b> if the data can be read, or <b>false</b> if not.</returns>
     bool IsReadable(Stream stream);
-    #endregion
+
 }

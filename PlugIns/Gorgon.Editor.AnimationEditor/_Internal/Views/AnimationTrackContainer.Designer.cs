@@ -26,7 +26,7 @@ partial class AnimationTrackContainer
         base.Dispose(disposing);
     }
 
-    #region Component Designer generated code
+
 
     /// <summary> 
     /// Required method for Designer support - do not modify 
@@ -132,7 +132,7 @@ partial class AnimationTrackContainer
         this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
         this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(28)))), ((int)(((byte)(28)))), ((int)(((byte)(28)))));
         this.Controls.Add(this.GridTrackKeys);
-        this.Font = new System.Drawing.Font("Segoe UI", 9F);
+        
         this.ForeColor = System.Drawing.Color.White;
         this.Name = "AnimationTrackContainer";
         this.Size = new System.Drawing.Size(648, 358);
@@ -141,7 +141,7 @@ partial class AnimationTrackContainer
 
     }
 
-    #endregion
+
 
     private DataGridViewEx GridTrackKeys;
     private System.Windows.Forms.DataGridViewImageColumn Column0;

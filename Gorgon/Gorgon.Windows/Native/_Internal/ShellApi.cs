@@ -1,7 +1,6 @@
-﻿#region MIT
-// 
-// Gorgon.
-// Copyright (C) 2018 Michael Winsor
+﻿// 
+// Gorgon
+// Copyright (C) 2024 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -11,29 +10,25 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: August 29, 2018 12:34:04 PM
 // 
-#endregion
 
-using System;
-using System.Drawing;
 using System.Runtime.InteropServices;
 using System.Security;
-// ReSharper disable InconsistentNaming
 
 namespace Gorgon.Native;
 
 /// <summary>
-/// The shell icon indexes for extraction from the standard shell library.
+/// The shell icon indexes for extraction from the standard shell library
 /// </summary>
 internal enum StandardShellIcons
 {
@@ -74,7 +69,7 @@ internal enum StandardShellIcons
 }
 
 /// <summary>
-/// Shell get file info flags.
+/// Shell get file info flags
 /// </summary>
 [Flags]
 internal enum SHGFI : uint
@@ -135,7 +130,7 @@ internal enum SHGFI : uint
 }
 
 /// <summary>
-/// Icon sizes for the shell icons.
+/// Icon sizes for the shell icons
 /// </summary>
 internal enum ShellIconSize
 {
@@ -165,9 +160,9 @@ internal enum ShellIconSize
 /// Functionality from ShellApi.dll
 /// </summary>
 [SuppressUnmanagedCodeSecurity]
-internal class ShellApi
+internal partial class ShellApi
 {
-    #region Constants.
+
     /// <summary>
     /// ID for the image list COM objects.
     /// </summary>
@@ -180,9 +175,9 @@ internal class ShellApi
     /// Mask not required.
     /// </summary>
     private const int ILD_IMAGE = 0x00000020;
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to retrieve an image list.
     /// </summary>
@@ -190,8 +185,8 @@ internal class ShellApi
     /// <param name="riid"></param>
     /// <param name="ppv"></param>
     /// <returns></returns>
-    [DllImport("shell32.dll", EntryPoint = "#727")]
-    private static extern int SHGetImageList(int iImageList, ref Guid riid, ref IImageList ppv);
+    [LibraryImport("shell32.dll", EntryPoint = "#727")]
+    private static partial int SHGetImageList(int iImageList, ref Guid riid, ref IImageList ppv);
 
     /// <summary>
     /// Function to extract a standard shell icon and return it as an Icon image.
@@ -200,46 +195,32 @@ internal class ShellApi
     /// <returns>The Icon if found, or <b>null</b> if not.</returns>
     public static Icon ExtractShellIcon(StandardShellIcons icon)
     {
-        nint hIcon = IntPtr.Zero;
         IImageList imageList = null;
 
         // COM interface ID for the shell image list.
         var IID = new Guid(IID_IImageList);
 
-        try
+        _ = SHGetImageList((int)ShellIconSize.ExtraLarge, ref IID, ref imageList);
+
+        if (imageList is null)
         {
-            _ = SHGetImageList((int)ShellIconSize.ExtraLarge, ref IID, ref imageList);
-
-            if (imageList is null)
-            {
-                return null;
-            }
-
-            _ = imageList.GetIcon((int)icon, ILD_TRANSPARENT | ILD_IMAGE, ref hIcon);
-
-            Icon result = null;
-
-            if (hIcon != IntPtr.Zero)
-            {
-                result = Icon.FromHandle(hIcon);
-            }
-
-            return result;
+            return null;
         }
-        finally
+
+        _ = imageList.GetIcon((int)icon, ILD_TRANSPARENT | ILD_IMAGE, out nint hIcon);
+
+        Icon result = null;
+
+        if (hIcon != IntPtr.Zero)
         {
-            if (imageList is not null)
-            {
-                Marshal.ReleaseComObject(imageList);
-            }
+            result = Icon.FromHandle(hIcon);
         }
+
+        return result;
     }
-    #endregion
 
-    #region Constructor/Finalizer.
     /// <summary>
     /// Initializes static members of the <see cref="ShellApi"/> class.
     /// </summary>
     static ShellApi() => Marshal.PrelinkAll(typeof(ShellApi));
-    #endregion
 }

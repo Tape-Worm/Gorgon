@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2018 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,23 +11,19 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: August 25, 2018 2:43:32 PM
 // 
-#endregion
 
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
+
 using System.Numerics;
 using Gorgon.Animation;
 using Gorgon.Diagnostics;
@@ -40,12 +36,17 @@ using DX = SharpDX;
 namespace Gorgon.IO;
 
 /// <summary>
-/// A codec used to read/write animations as binary formatted data.
+/// A codec used to read/write animations as binary formatted data
 /// </summary>
-public class GorgonV3AnimationBinaryCodec
-    : GorgonAnimationCodecCommon
+/// <remarks>
+/// Initializes a new instance of the <see cref="GorgonV3AnimationBinaryCodec"/> class
+/// </remarks>
+/// <param name="renderer">The renderer used for resource handling.</param>
+/// <exception cref="ArgumentNullException">Thrown when the <paramref name="renderer"/> is <b>null</b>.</exception>
+public class GorgonV3AnimationBinaryCodec(Gorgon2D renderer)
+        : GorgonAnimationCodecCommon(renderer, Resources.GOR2DIO_V3_ANIM_BIN_CODEC, Resources.GOR2DIO_V3_ANIM_BIN_CODEC_DESCRIPTION)
 {
-    #region Properties.
+
     /// <summary>
     /// The version data chunk ID.
     /// </summary>
@@ -97,9 +98,9 @@ public class GorgonV3AnimationBinaryCodec
     /// Property to return the version of animation data that the codec supports.
     /// </summary>
     public override Version Version => GorgonV3AnimationJsonCodec.Version30;
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to load the texture information.
     /// </summary>
@@ -169,23 +170,23 @@ public class GorgonV3AnimationBinaryCodec
 
         try
         {
-            reader = new GorgonChunkFileReader(stream, new[] { CurrentFileHeader });
+            reader = new GorgonChunkFileReader(stream, [CurrentFileHeader]);
             reader.Open();
             if (!IsReadableChunkFile(reader))
             {
-                return Array.Empty<string>();
+                return [];
             }
 
             // No texture data in this file.
             if (!reader.Chunks.Contains(TextureData))
             {
-                return Array.Empty<string>();
+                return [];
             }
 
             binReader = reader.OpenChunk(TextureData);
             int keyCount = binReader.ReadInt32();
             var result = new List<string>();
-            
+
             for (int i = 0; i < keyCount; ++i)
             {
                 binReader.ReadSingle();
@@ -242,10 +243,9 @@ public class GorgonV3AnimationBinaryCodec
         var builder = new GorgonAnimationBuilder();
 
         var reader = new GorgonChunkFileReader(stream,
-                                               new[]
-                                               {
+                                               [
                                                    CurrentFileHeader
-                                               });
+                                               ]);
         GorgonBinaryReader binReader = null;
 
         try
@@ -263,7 +263,7 @@ public class GorgonV3AnimationBinaryCodec
             if (reader.Chunks.Contains(PositionData))
             {
                 binReader = reader.OpenChunk(PositionData);
-                TrackInterpolationMode interpolation =  binReader.ReadValue<TrackInterpolationMode>();
+                TrackInterpolationMode interpolation = binReader.ReadValue<TrackInterpolationMode>();
                 keyCount = binReader.ReadInt32();
 
                 IGorgonTrackKeyBuilder<GorgonKeyVector2> track = builder.EditVector2("Position")
@@ -426,7 +426,7 @@ public class GorgonV3AnimationBinaryCodec
 
         try
         {
-            reader = new GorgonChunkFileReader(stream, new[] { GorgonV3AnimationJsonCodec.FileHeader30 });
+            reader = new GorgonChunkFileReader(stream, [GorgonV3AnimationJsonCodec.FileHeader30]);
             reader.Open();
             return IsReadableChunkFile(reader);
         }
@@ -439,17 +439,6 @@ public class GorgonV3AnimationBinaryCodec
             reader?.Close();
         }
     }
-    #endregion
 
-    #region Constructor/Finalizer.
-    /// <summary>
-    /// Initializes a new instance of the <see cref="GorgonV3AnimationBinaryCodec"/> class.
-    /// </summary>
-    /// <param name="renderer">The renderer used for resource handling.</param>
-    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="renderer"/> is <b>null</b>.</exception>
-    public GorgonV3AnimationBinaryCodec(Gorgon2D renderer)
-        : base(renderer, Resources.GOR2DIO_V3_ANIM_BIN_CODEC, Resources.GOR2DIO_V3_ANIM_BIN_CODEC_DESCRIPTION)
-    {
-    }
-    #endregion
+
 }

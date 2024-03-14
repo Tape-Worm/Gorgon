@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2021 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: January 16, 2021 12:10:27 AM
 // 
-#endregion
+
 
 using System.Numerics;
 using System.Runtime.CompilerServices;
@@ -33,12 +33,12 @@ using Gorgon.Graphics.Core;
 namespace Gorgon.Renderers.Geometry;
 
 /// <summary>
-/// A vertex with a position, and UV texture coordinate.
+/// A vertex with a position, and UV texture coordinate
 /// </summary>
 [StructLayout(LayoutKind.Sequential, Pack = 1)]
 public struct GorgonVertexPosColor
 {
-    #region Variables.
+
     /// <summary>
     /// The size of the vertex, in bytes.
     /// </summary>
@@ -55,9 +55,9 @@ public struct GorgonVertexPosColor
     /// </summary>
     [InputElement(1, "COLOR")]
     public GorgonColor Color;
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Deconstructs this instance into individual position values.
     /// </summary>
@@ -79,15 +79,15 @@ public struct GorgonVertexPosColor
         position = Position;
         color = Color;
     }
-    #endregion
 
-    #region Constructor.
+
+
     /// <summary>Initializes a new instance of the <see cref="GorgonVertexPosColor" /> struct.</summary>
     /// <param name="pos">The position.</param>
     /// <param name="color">The diffuse color for the vertex.</param>
     public GorgonVertexPosColor(Vector3 pos, GorgonColor color)
     {
-        Position = new Vector4(pos, 1);            
+        Position = new Vector4(pos, 1);
         Color = color;
     }
 
@@ -96,8 +96,8 @@ public struct GorgonVertexPosColor
     /// <param name="color">The diffuse color for the vertex.</param>
     public GorgonVertexPosColor(Vector4 pos, GorgonColor color)
     {
-        Position = pos;            
+        Position = pos;
         Color = color;
     }
-    #endregion
+
 }

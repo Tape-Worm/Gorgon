@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2020 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: July 4, 2020 10:03:17 PM
 // 
-#endregion
+
 
 using System.Numerics;
 using Gorgon.Editor.AnimationEditor.Properties;
@@ -32,21 +32,21 @@ using Gorgon.Renderers;
 namespace Gorgon.Editor.AnimationEditor;
 
 /// <summary>
-/// A view model for the keyframe value editor.
+/// A view model for the keyframe value editor
 /// </summary>
 internal class KeyValueEditor
     : HostedPanelViewModelBase<HostedPanelViewModelParameters>, IKeyValueEditor
 {
-    #region Variables.
+
     // The track that is being edited.
     private TrackKeySelection _editTrack;
     // The floating point values.
     private Vector4 _floatValues;
     // The sprite to update.
     private GorgonSprite _workingSprite;
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>Property to return the title for the editor.</summary>
     public string Title => string.IsNullOrWhiteSpace(_editTrack?.Track.Description) ? Resources.GORANM_DEFAULT_TITLE : _editTrack?.Track.Description;
 
@@ -111,7 +111,7 @@ internal class KeyValueEditor
             OnPropertyChanging();
 
             _floatValues = value;
-            
+
             if ((_editTrack is not null) && (_workingSprite is not null))
             {
                 _workingSprite.SetFloatValues(_editTrack.Track.SpriteProperty, _floatValues);
@@ -119,9 +119,9 @@ internal class KeyValueEditor
             OnPropertyChanged();
         }
     }
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>Function to inject dependencies for the view model.</summary>
     /// <param name="injectionParameters">The parameters to inject.</param>
     /// <remarks>
@@ -141,7 +141,7 @@ internal class KeyValueEditor
     /// Function used to notify when the <see cref="Track"/> property is assigned.
     /// </summary>
     protected virtual void OnTrackSet()
-    {        
+    {
     }
-    #endregion
+
 }

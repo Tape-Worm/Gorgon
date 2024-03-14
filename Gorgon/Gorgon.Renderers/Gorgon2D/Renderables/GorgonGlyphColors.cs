@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2017 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,39 +11,37 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: February 8, 2017 7:22:29 PM
 // 
-#endregion
 
-using System;
+
 using System.Collections;
-using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using Gorgon.Graphics;
 
 namespace Gorgon.Renderers;
 
 /// <summary>
-/// Defines the colors for each corner of a text sprite glyph rectangle.
+/// Defines the colors for each corner of a text sprite glyph rectangle
 /// </summary>
 public class GorgonGlyphColors
     : IReadOnlyList<GorgonColor>
 {
-    #region Variables.
+
     // The renderable that owns this object.
     private readonly TextRenderable _renderable;
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to set or return the corner color by index.
     /// </summary>
@@ -157,9 +155,9 @@ public class GorgonGlyphColors
 
     /// <summary>Gets the number of elements in the collection.</summary>
     public int Count => 4;
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to assign a single color to all corners.
     /// </summary>
@@ -216,9 +214,9 @@ public class GorgonGlyphColors
             yield return this[i];
         }
     }
-    #endregion
 
-    #region Constructor
+
+
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonGlyphColors"/> class.
     /// </summary>
@@ -229,5 +227,5 @@ public class GorgonGlyphColors
         _renderable = renderable;
         SetAll(defaultColor);
     }
-    #endregion
+
 }

@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2019 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,22 +11,19 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: March 2, 2019 11:15:34 AM
 // 
-#endregion
 
-using System;
-using System.Collections.Generic;
-using System.IO;
+
 using Gorgon.Diagnostics;
 using Gorgon.Editor.Content;
 using Gorgon.Editor.ExtractSpriteTool.Properties;
@@ -42,21 +39,21 @@ using Gorgon.UI;
 namespace Gorgon.Editor.ExtractSpriteTool;
 
 /// <summary>
-/// A plug in used to extract sprites from a texture atlas by using an adjustable grid.
+/// A plug in used to extract sprites from a texture atlas by using an adjustable grid
 /// </summary>
 internal class ExtractSpriteToolPlugIn
     : ToolPlugIn
 {
-    #region Variables.
+
     // The cached button definition.
     private ToolPlugInRibbonButton _button;
     // The default image codec to use.
     private IGorgonImageCodec _defaultImageCodec;
     // Data used for extracting sprites.
     private readonly SpriteExtractionData _extractData = new();
-    #endregion
 
-    #region Methods.		
+
+
     /// <summary>
     /// Function to determine if the form can be shown.
     /// </summary>
@@ -96,7 +93,7 @@ internal class ExtractSpriteToolPlugIn
 
             IGorgonImageInfo metaData = _defaultImageCodec.GetMetaData(fileStream);
 
-            if (metaData.ImageType is not ImageType.Image2D and not ImageType.ImageCube)
+            if (metaData.ImageType is not ImageDataType.Image2D and not ImageDataType.ImageCube)
             {
                 return false;
             }
@@ -165,13 +162,13 @@ internal class ExtractSpriteToolPlugIn
             _extractData.CellSize = settings.GridCellSize;
 
             var extractViewModel = new Extract();
-            extractViewModel.Initialize(new ExtractParameters(settings, 
-                                                              _extractData, 
+            extractViewModel.Initialize(new ExtractParameters(settings,
+                                                              _extractData,
                                                               new SpriteExtractorService(HostToolServices.GraphicsContext.Renderer2D,
                                                                                          ContentFileManager,
                                                                                          new GorgonV3SpriteBinaryCodec(HostToolServices.GraphicsContext.Renderer2D)),
                                                               ContentFileManager.GetFile(textureFile),
-                                                              ContentFileManager, 
+                                                              ContentFileManager,
                                                               HostToolServices));
 
             form = new FormExtract(settings);
@@ -186,7 +183,7 @@ internal class ExtractSpriteToolPlugIn
             HostToolServices.ToolPlugInService.WriteContentSettings(typeof(ExtractSpriteToolPlugIn).FullName, settings);
         }
         catch (Exception ex)
-        {                
+        {
             HostServices.MessageDisplay.ShowError(ex, Resources.GOREST_ERR_LAUNCH);
         }
         finally
@@ -219,7 +216,7 @@ internal class ExtractSpriteToolPlugIn
     protected override IToolPlugInRibbonButton OnGetToolButton()
     {
         _button.ClickCallback ??= ShowForm;
-        
+
         _button.CanExecute ??= CanShowForm;
 
         return _button;
@@ -230,7 +227,7 @@ internal class ExtractSpriteToolPlugIn
     protected override void OnInitialize()
     {
         _defaultImageCodec = new GorgonCodecDds();
-        
+
         _button = new ToolPlugInRibbonButton(Resources.GOREST_TEXT_BUTTON, Resources.extract_grid_48x48, Resources.extract_grid_16x16, Resources.GOREST_GROUP_BUTTON)
         {
             Description = Resources.GOREST_DESC_BUTTON
@@ -251,13 +248,13 @@ internal class ExtractSpriteToolPlugIn
 
         base.OnShutdown();
     }
-    #endregion
 
-    #region Constructor/Finalizer.
+
+
     /// <summary>Initializes a new instance of the <see cref="ExtractSpriteToolPlugIn"/> class.</summary>
     public ExtractSpriteToolPlugIn()
-        : base(Resources.GOREST_PLUGIN_DESC) 
-    {        
+        : base(Resources.GOREST_PLUGIN_DESC)
+    {
     }
-    #endregion
+
 }

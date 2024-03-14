@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2017 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,23 +11,19 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: March 5, 2017 10:33:01 PM
 // 
-#endregion
 
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Windows.Forms;
+
 using Gorgon.Examples;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
@@ -41,11 +37,11 @@ using DX = SharpDX;
 namespace Graphics.Examples;
 
 /// <summary>
-/// Our main UI window for the example.
+/// Our main UI window for the example
 /// </summary>
 public partial class Form : System.Windows.Forms.Form
 {
-    #region Variables.
+
     // The cache that holds plugin information.
     private GorgonMefPlugInCache _pluginCache;
     // The main graphics interface.
@@ -58,9 +54,9 @@ public partial class Form : System.Windows.Forms.Form
     private IGorgonImage _image;
     // Our custom codec loaded from the plug in.
     private IGorgonImageCodec _customCodec;
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function called during idle time.
     /// </summary>
@@ -186,7 +182,7 @@ public partial class Form : System.Windows.Forms.Form
 
         GorgonExample.UnloadResources();
 
-        _pluginCache?.Dispose();            
+        _pluginCache?.Dispose();
         _texture?.Dispose();
         _swap?.Dispose();
         _graphics?.Dispose();
@@ -258,12 +254,10 @@ public partial class Form : System.Windows.Forms.Form
             Cursor.Current = Cursors.Default;
         }
     }
-    #endregion
 
-    #region Constructor/Destructor.
     /// <summary>
     /// Initializes a new instance of the <see cref="Form"/> class.
     /// </summary>
     public Form() => InitializeComponent();
-    #endregion
+
 }

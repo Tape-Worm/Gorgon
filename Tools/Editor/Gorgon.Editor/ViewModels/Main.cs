@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2018 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,27 +11,22 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: August 26, 2018 9:43:30 PM
 // 
-#endregion
 
-using System;
-using System.Collections.Generic;
+
 using System.ComponentModel;
 using System.Diagnostics;
-using System.IO;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
 using Gorgon.Editor.Converters;
@@ -47,12 +42,12 @@ using Newtonsoft.Json;
 namespace Gorgon.Editor.ViewModels;
 
 /// <summary>
-/// The view model for the main window.
+/// The view model for the main window
 /// </summary>
 internal class Main
     : ViewModelBase<MainParameters, IHostContentServices>, IMain
 {
-    #region Variables.
+
     // The project manager used to handle project data.
     private ProjectManager _projectManager;
     // The factory used to create view models.
@@ -63,9 +58,9 @@ internal class Main
     private EditorFileOpenDialogService _openDialog;
     // The directory locator service.
     private IDirectoryLocateService _directoryLocator;
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to return the settings for the application.
     /// </summary>
@@ -186,9 +181,9 @@ internal class Main
     {
         get;
     }
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to save the project metadata.
     /// </summary>
@@ -203,7 +198,7 @@ internal class Main
 
         project.SaveProjectMetadataCommand.Execute(null);
     }
-    
+
     /// <summary>
     /// Function to persist the settings back to the file system.
     /// </summary>
@@ -640,7 +635,7 @@ internal class Main
     {
         IProjectEditor current = CurrentProject;
 
-        ShowWaitPanel(Resources.GOREDIT_TEXT_CREATING_PROJECT);            
+        ShowWaitPanel(Resources.GOREDIT_TEXT_CREATING_PROJECT);
 
         try
         {
@@ -655,7 +650,7 @@ internal class Main
                     return;
                 }
             }
-            
+
             IProject project = await Task.Run(() => _projectManager.CreateProject(directory));
             CurrentProject = null;
 
@@ -824,9 +819,9 @@ internal class Main
 
         base.OnUnload();
     }
-    #endregion
 
-    #region Constructor/Finalizer.
+
+
     /// <summary>
     /// Initializes a new instance of the <see cref="Main"/> class.
     /// </summary>
@@ -834,7 +829,7 @@ internal class Main
     {
         BrowseProjectCommand = new EditorCommand<object>(DoOpenProjectAsync);
         OpenPackFileCommand = new EditorCommand<object>(DoOpenPackFileAsync, CanOpenProjects);
-        AppClosingAsyncCommand = new EditorAsyncCommand<AppCloseArgs>(DoAppCloseAsync);            
+        AppClosingAsyncCommand = new EditorAsyncCommand<AppCloseArgs>(DoAppCloseAsync);
     }
-    #endregion
+
 }

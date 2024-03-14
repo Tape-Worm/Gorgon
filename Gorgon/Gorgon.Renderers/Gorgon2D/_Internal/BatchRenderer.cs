@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2018 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,20 +11,19 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: June 6, 2018 8:56:13 PM
 // 
-#endregion
 
-using System;
+
 using System.Runtime.CompilerServices;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
@@ -35,12 +34,12 @@ using Gorgon.Renderers.Geometry;
 namespace Gorgon.Renderers;
 
 /// <summary>
-/// The renderer for renderable objects.
+/// The renderer for renderable objects
 /// </summary>
 internal sealed class BatchRenderer
     : IDisposable
 {
-    #region Constants.
+
     /// <summary>
     /// Maximum number of renderables that can be buffered prior to sending to the GPU.
     /// We have 10,922 renderables (16 bit Index Buffer - 65536 bytes / 6 indices per renderable = ~10922).
@@ -50,9 +49,9 @@ internal sealed class BatchRenderer
     private const int MaxVertexCount = MaxSpriteCount * 4;
     // The maximum number of indices we can render.
     private const int MaxIndexCount = MaxSpriteCount * 6;
-    #endregion
 
-    #region Variables.
+
+
     // Start with a modest cache size.
     private Gorgon2DVertex[] _vertexCache = new Gorgon2DVertex[4096];
     // The current vertex index.
@@ -69,9 +68,9 @@ internal sealed class BatchRenderer
     private int _vertexBufferIndex;
     // The vertex index offset used by the index buffer to offset within the vertex buffer.
     private int _indexBufferBaseVertexIndex;
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to return the graphics interface that built this object.
     /// </summary>
@@ -113,9 +112,9 @@ internal sealed class BatchRenderer
         get;
         private set;
     }
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to create the vertex/index buffers for the renderer.
     /// </summary>
@@ -141,7 +140,7 @@ internal sealed class BatchRenderer
                                                                                      new GorgonVertexBufferInfo(Gorgon2DVertex.SizeInBytes * (MaxSpriteCount * 4))
                                                                                      {
                                                                                          Usage = ResourceUsage.Dynamic,
-                                                                                         Binding = VertexIndexBufferBinding.None                                                                                             
+                                                                                         Binding = VertexIndexBufferBinding.None
                                                                                      });
 
         IndexBuffer = new GorgonIndexBuffer(Graphics,
@@ -320,9 +319,9 @@ internal sealed class BatchRenderer
         VertexBuffer.VertexBuffer?.Dispose();
         IndexBuffer?.Dispose();
     }
-    #endregion
 
-    #region Constructor/Finalizer.
+
+
     /// <summary>
     /// Initializes a new instance of the <see cref="BatchRenderer"/> class.
     /// </summary>
@@ -334,5 +333,5 @@ internal sealed class BatchRenderer
         TextSpriteTransformer = new TextSpriteTransformer();
         CreateBuffers();
     }
-    #endregion
+
 }

@@ -1,6 +1,6 @@
-﻿#region MIT.
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2013 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,23 +11,20 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: Monday, June 27 2016 5:59:03 PM
 // 
-#endregion
 
-using System;
-using System.Collections.Generic;
+
 using System.ComponentModel;
-using System.IO;
 using Gorgon.Core;
 using Gorgon.Graphics.Imaging.Properties;
 using DX = SharpDX;
@@ -35,14 +32,14 @@ using DX = SharpDX;
 namespace Gorgon.Graphics.Imaging.Codecs;
 
 /// <summary>
-/// A codec to reading and/or writing image data.
+/// A codec to reading and/or writing image data
 /// </summary>
 /// <typeparam name="TEncOpt">The type of the options object used to provide options when encoding an image. Must be a reference type and implement <see cref="IGorgonImageCodecEncodingOptions"/>.</typeparam>
 /// <typeparam name="TDecOpt">The type of the options object used to provide options when decoding an image. Must be a reference type and implement <see cref="IGorgonImageCodecDecodingOptions"/>.</typeparam>
 /// <remarks>
 /// <para>
 /// A codec allows for reading and/or writing of data in an encoded format.  Users may inherit from this object to define their own image formats, or use one of the predefined image codecs available in 
-/// Gorgon.
+/// Gorgon
 /// </para>
 /// <para>
 /// Currently, Gorgon supports the following codecs:
@@ -187,7 +184,7 @@ namespace Gorgon.Graphics.Imaging.Codecs;
 ///				</list>
 ///			</description>
 ///			<description>
-///				Supports the full array of image options like arrays, mip maps, 3D images and all Direct 3D 11 pixel formats.
+///				Supports the full array of image options like arrays, mip maps, 3D images and all Direct 3D 11 pixel formats
 ///			</description>
 ///		</item>
 /// </list>
@@ -195,30 +192,35 @@ namespace Gorgon.Graphics.Imaging.Codecs;
 /// </para>
 /// <para>
 ///	While many of the image formats supplied will be useful out of the box, the system can read/write images via a <see cref="GorgonImageCodecPlugIn"/> if the supplied formats are too limited or do not 
-/// support a necessary feature.
+/// support a necessary feature
 /// </para>
 /// </remarks>
-public abstract class GorgonImageCodec<TEncOpt, TDecOpt>
+/// <remarks>
+/// Initializes a new instance of the <see cref="GorgonImageCodec{TEncOpt, TDecOpt}" /> class
+/// </remarks>
+/// <param name="encodingOptions">Codec specific options to use when encoding image data.</param>
+/// <param name="decodingOptions">Codec specific options to use when decoding image data.</param>
+public abstract class GorgonImageCodec<TEncOpt, TDecOpt>(TEncOpt encodingOptions, TDecOpt decodingOptions)
     : IGorgonImageCodec
     where TEncOpt : class, IGorgonImageCodecEncodingOptions
     where TDecOpt : class, IGorgonImageCodecDecodingOptions
 {
-    #region Properties.
+
     /// <summary>
     /// Property to return the encoding options for the codec.
     /// </summary>
     protected TEncOpt EncodingOptions
     {
         get;
-    }
+    } = encodingOptions;
 
     /// <summary>
     /// Property to return the decoding options for the codec.
     /// </summary>
-	    protected TDecOpt DecodingOptions
+    protected TDecOpt DecodingOptions
     {
         get;
-    }
+    } = decodingOptions;
 
     /// <summary>
     /// Property to return whether the codec supports decoding/encoding multiple frames or not.
@@ -248,7 +250,7 @@ public abstract class GorgonImageCodec<TEncOpt, TDecOpt>
     {
         get;
         protected set;
-    }
+    } = [];
 
     /// <summary>
     /// Property to return the friendly description of the format.
@@ -269,7 +271,7 @@ public abstract class GorgonImageCodec<TEncOpt, TDecOpt>
     /// <summary>
     /// Property to return the pixel formats supported by the codec.
     /// </summary>
-	    public abstract IReadOnlyList<BufferFormat> SupportedPixelFormats
+    public abstract IReadOnlyList<BufferFormat> SupportedPixelFormats
     {
         get;
     }
@@ -277,7 +279,7 @@ public abstract class GorgonImageCodec<TEncOpt, TDecOpt>
     /// <summary>
     /// Property to return whether the image codec supports a depth component for volume (3D) images.
     /// </summary>
-	    public abstract bool SupportsDepth
+    public abstract bool SupportsDepth
     {
         get;
     }
@@ -285,7 +287,7 @@ public abstract class GorgonImageCodec<TEncOpt, TDecOpt>
     /// <summary>
     /// Property to return whether the image codec supports mip maps.
     /// </summary>
-	    public abstract bool SupportsMipMaps
+    public abstract bool SupportsMipMaps
     {
         get;
     }
@@ -302,9 +304,9 @@ public abstract class GorgonImageCodec<TEncOpt, TDecOpt>
     /// Property to return the name of this object.
     /// </summary>
     string IGorgonNamedObject.Name => Codec;
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to decode an image from a stream.
     /// </summary>
@@ -574,19 +576,8 @@ public abstract class GorgonImageCodec<TEncOpt, TDecOpt>
     /// A <see cref="string" /> that represents this instance.
     /// </returns>
     public override string ToString() => string.Format(Resources.GORIMG_TOSTR_IMAGE_CODEC, Codec);
-    #endregion
 
-    #region Constructor/Destructor.
-    /// <summary>
-    /// Initializes a new instance of the <see cref="GorgonImageCodec{TEncOpt, TDecOpt}" /> class.
-    /// </summary>
-    /// <param name="encodingOptions">Codec specific options to use when encoding image data.</param>
-    /// <param name="decodingOptions">Codec specific options to use when decoding image data.</param>
-    protected GorgonImageCodec(TEncOpt encodingOptions, TDecOpt decodingOptions)
-    {
-        EncodingOptions = encodingOptions;
-        DecodingOptions = decodingOptions;
-        CodecCommonExtensions = Array.Empty<string>();
-    }
-    #endregion
+
+
+
 }

@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2018 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,25 +11,20 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: July 18, 2018 4:04:19 PM
 // 
-#endregion
 
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
+
 using System.Numerics;
-using System.Windows.Forms;
 using Gorgon.Core;
 using Gorgon.Examples.Properties;
 using Gorgon.Graphics;
@@ -40,14 +35,15 @@ using Gorgon.Timing;
 using Gorgon.UI;
 using DX = SharpDX;
 
+
 namespace Gorgon.Examples;
 
 /// <summary>
-/// Our example entry point.
+/// Our example entry point
 /// </summary>
 static class Program
 {
-    #region Variables.
+
     // The core graphics functionality.
     private static GorgonGraphics _graphics;
     // Our swap chain that represents our "Screen".
@@ -68,13 +64,13 @@ static class Program
     private static GorgonTextSprite _crawlText;
     // The position of the crawl text.
     private static Vector2 _crawlPosition;
-    #endregion
 
-    #region Properties.
 
-    #endregion
 
-    #region Methods.
+
+
+
+
     /// <summary>
     /// Function to create the render targets to display.
     /// </summary>
@@ -217,10 +213,10 @@ static class Program
             CreateTargets();
 
             // Set up our text sprite so we can render formatted text to the render target.
-            _crawlText = new GorgonTextSprite(GorgonExample.Fonts.GetFont(new GorgonFontInfo("Arial", 36.0f, FontHeightMode.Points)
+            _crawlText = new GorgonTextSprite(GorgonExample.Fonts.GetFont(new GorgonFontInfo("Arial", 36.0f, GorgonFontHeightMode.Points)
             {
                 Name = "Arial SW",
-                FontStyle = FontStyle.Bold,
+                FontStyle = GorgonFontStyle.Bold,
                 Characters = Resources.CrawlText.Distinct()
             }))
             {
@@ -229,7 +225,7 @@ static class Program
                 LayoutArea = new DX.Size2F(_screen.Width, _screen.Height),
                 AllowColorCodes = true
             };
-                            
+
             _crawlText.Text = Resources.CrawlText.WordWrap(_crawlText.Font, _crawlRtv.Width - 50);
             _crawlPosition = new Vector2(0, _crawlRtv.Height);
 
@@ -269,9 +265,7 @@ static class Program
     {
         try
         {
-#if NET6_0_OR_GREATER
             Application.SetHighDpiMode(HighDpiMode.PerMonitorV2);
-#endif
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
 
@@ -296,5 +290,5 @@ static class Program
             _graphics?.Dispose();
         }
     }
-    #endregion
+
 }

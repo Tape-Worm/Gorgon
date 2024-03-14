@@ -1,34 +1,27 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-using DX = SharpDX;
+﻿using System.ComponentModel;
+using Gorgon.Diagnostics;
 using Gorgon.Editor.FontEditor.Properties;
 using Gorgon.Editor.Services;
 using Gorgon.Editor.UI;
 using Gorgon.Graphics.Core;
 using Gorgon.Graphics.Fonts;
-using Gorgon.Graphics.Imaging;
 using Gorgon.Math;
-using Gorgon.Diagnostics;
-using Gorgon.Graphics;
-using System.ComponentModel;
+using DX = SharpDX;
 
 namespace Gorgon.Editor.FontEditor;
 
 /// <summary>
-/// A context editor for modifying the textures on the font.
+/// A context editor for modifying the textures on the font
 /// </summary>
 internal class TextureEditorContext
     : EditorContext<TextureEditorContextParameters>, ITextureEditorContext
 {
-    #region Constants.
+
     // The name of the context.
     private const string ContextName = "TextureEditor";
-    #endregion
 
-    #region Variables.
+
+
     // Flag to indicate that the font uses premultiplied alpha for its textures.
     private bool _premultipliedAlpha;
     // The service used to generate fonts.
@@ -40,9 +33,9 @@ internal class TextureEditorContext
     private int _selectedArrayIndex;
     // The currently hosted panel view model.
     private IHostedPanelViewModel _currentPanel;
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to return the solid brush viewmodel.
     /// </summary>
@@ -119,7 +112,7 @@ internal class TextureEditorContext
             {
                 _currentPanel.WaitPanelActivated -= CurrentPanel_WaitPanelActivated;
                 _currentPanel.WaitPanelDeactivated -= CurrentPanel_WaitPanelDeactivated;
-                _currentPanel.PropertyChanged -= CurrentPanel_PropertyChanged;                                        
+                _currentPanel.PropertyChanged -= CurrentPanel_PropertyChanged;
             }
 
             OnPropertyChanging();
@@ -132,7 +125,7 @@ internal class TextureEditorContext
             {
                 return;
             }
-                            
+
             _currentPanel.PropertyChanged += CurrentPanel_PropertyChanged;
             _currentPanel.WaitPanelActivated += CurrentPanel_WaitPanelActivated;
             _currentPanel.WaitPanelDeactivated += CurrentPanel_WaitPanelDeactivated;
@@ -142,7 +135,7 @@ internal class TextureEditorContext
     /// <summary>
     /// Property to return the textures for the font.
     /// </summary>
-    public IReadOnlyList<GorgonTexture2DView> Textures => _fontService?.Textures ?? Array.Empty<GorgonTexture2DView>();
+    public IReadOnlyList<GorgonTexture2DView> Textures => _fontService?.Textures ?? [];
 
     /// <summary>
     /// Property to return the total number of textures, and array indices in the font.
@@ -321,9 +314,9 @@ internal class TextureEditorContext
     {
         get;
     }
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>Handles the WaitPanelDeactivated event of the CurrentPanel control.</summary>
     /// <param name="sender">The source of the event.</param>
     /// <param name="e">The <see cref="EventArgs" /> instance containing the event data.</param>
@@ -365,7 +358,6 @@ internal class TextureEditorContext
     /// <returns>A task for asynchronous operation.</returns>
     private async Task DoChangePremultiplied(bool value)
     {
-#if NET6_0_OR_GREATER
         async Task<bool> SetValueAsync(GorgonFontInfo args)
         {
             ShowWaitPanel(Resources.GORFNT_TEXT_PLEASE_WAIT_GEN_FONT);
@@ -408,11 +400,6 @@ internal class TextureEditorContext
 
         _undoService.Record(Resources.GORFNT_UNDO_SET_PREMULTIPLIED, UndoRedoActionAsync, UndoRedoActionAsync, undoArgs, redoArgs);
         NotifyPropertyChanged(nameof(ITextureEditorContext.Name));
-#else
-#pragma warning disable IDE0022 // Use expression body for methods
-        await Task.CompletedTask;
-#pragma warning restore IDE0022 // Use expression body for methods
-#endif
     }
 
     /// <summary>
@@ -455,7 +442,7 @@ internal class TextureEditorContext
             return false;
         }
 
-        if ((SelectedTexture < 0) || (SelectedTexture >= Textures.Count ))
+        if ((SelectedTexture < 0) || (SelectedTexture >= Textures.Count))
         {
             return false;
         }
@@ -492,7 +479,7 @@ internal class TextureEditorContext
     /// Function to determine if the selected texture can be moved to the first one.
     /// </summary>
     /// <returns></returns>
-    private bool CanMoveFirst() =>  (CurrentPanel is null) && ((_selectedTextureIndex != 0) || (_selectedArrayIndex != 0));
+    private bool CanMoveFirst() => (CurrentPanel is null) && ((_selectedTextureIndex != 0) || (_selectedArrayIndex != 0));
 
     /// <summary>
     /// Function to move to the first texture selection.
@@ -600,7 +587,7 @@ internal class TextureEditorContext
         {
             TextureWidth = FontTextureSize.TextureWidth,
             TextureHeight = FontTextureSize.TextureHeight
-        };                       
+        };
 
         if (!(await ResizeAsync(redoArgs)))
         {
@@ -713,7 +700,7 @@ internal class TextureEditorContext
                 SolidBrush.Brush = FontSolidBrush.DefaultBrush;
                 SolidBrush.OriginalColor = FontSolidBrush.DefaultBrush.Color;
             }
-            
+
             CurrentPanel = SolidBrush;
         }
         catch (Exception ex)
@@ -882,7 +869,7 @@ internal class TextureEditorContext
         CurrentPanel = null;
 
         _undoService.Record(Resources.GORFNT_UNDO_SOLID_BRUSH, UndoRedoAction, UndoRedoAction, undoArgs, redoArgs);
-    }        
+    }
 
     /// <summary>Function to inject dependencies for the view model.</summary>
     /// <param name="injectionParameters">The parameters to inject.</param>
@@ -895,7 +882,7 @@ internal class TextureEditorContext
     /// </para>
     /// </remarks>
     protected override void OnInitialize(TextureEditorContextParameters injectionParameters)
-    {            
+    {
         _fontService = injectionParameters.FontService;
         _undoService = injectionParameters.UndoService;
         FontTextureSize = injectionParameters.FontTextureSize;
@@ -926,7 +913,7 @@ internal class TextureEditorContext
         PatternBrush?.Load();
         GradientBrush?.Load();
         TextureBrush?.Load();
-    }        
+    }
 
     /// <summary>Function called when the associated view is unloaded.</summary>
     /// <remarks>This method is used to perform tear down and clean up of resources.</remarks>
@@ -950,9 +937,9 @@ internal class TextureEditorContext
 
         base.OnUnload();
     }
-    #endregion
 
-    #region Constructor/Finalizer.
+
+
     /// <summary>Initializes a new instance of the <see cref="TextureEditorContext" /> class.</summary>
     public TextureEditorContext()
     {
@@ -968,6 +955,6 @@ internal class TextureEditorContext
         ActivateGradientBrushCommand = new EditorCommand<object>(DoActivateGradientBrush, CanActivateGradientBrush);
         ActivateTextureBrushCommand = new EditorCommand<object>(DoActivateTextureBrush, CanActivateTextureBrush);
     }
-    #endregion
+
 
 }

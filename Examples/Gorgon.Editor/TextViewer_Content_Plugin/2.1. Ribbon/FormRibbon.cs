@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2021 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,25 +11,21 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: February 13, 2021 4:04:07 PM
 // 
-#endregion
 
-using System;
-using System.Collections.Generic;
+
 using System.ComponentModel;
-using System.Linq;
 using System.Numerics;
-using System.Windows.Forms;
 using Gorgon.Editor.Rendering;
 using Gorgon.Editor.UI;
 using Gorgon.Examples.Properties;
@@ -39,16 +35,16 @@ using Krypton.Toolkit;
 namespace Gorgon.Examples;
 
 /// <summary>
-/// Provides a ribbon interface for the plug in view.
+/// Provides a ribbon interface for the plug in view
 /// </summary>
 /// <remarks>
 /// We cannot provide a ribbon on the control directly because, for some reason, the Krypton components will only allow ribbons on forms. 
 /// 
 /// So, in order to provide ribbon functionality, we create a simple form and drop a Krypton ribbon control on it and set up our buttons for the 
-/// view functions. We also have to ensure that the ribbon component is marked as internal/public so we can access it from the main view.
+/// view functions. We also have to ensure that the ribbon component is marked as internal/public so we can access it from the main view
 /// 
 /// We expose the ribbon to the application by assigning the instance of the ribbon to the Ribbon property on the main view. The editor will 
-/// pick up the Ribbon property and merge the ribbon on this form into the ribbon on the application window.
+/// pick up the Ribbon property and merge the ribbon on this form into the ribbon on the application window
 /// 
 /// Typically we need to assign the view model for the main view to this form. This is so we can have the ribbon respond to the state of the 
 /// view model, and execute commands on the view model in response to ribbon button presses. 
@@ -56,29 +52,29 @@ namespace Gorgon.Examples;
 internal partial class FormRibbon
     : KryptonForm, IDataContext<ITextContent>
 {
-    #region Variables.
+
     // This allows us to set up a list of predefiend zoom values for zooming in and out on the content. It matches the zoom level we've picked 
     // with the menu item assigned to the zoom level.
 
     // The list of menu items associated with the zoom level.
-    private readonly Dictionary<ZoomLevels, ToolStripMenuItem> _menuZoomItems = new();
+    private readonly Dictionary<ZoomLevels, ToolStripMenuItem> _menuZoomItems = [];
 
     // This is similar to the zoom items in that it's a lookup for the font values and the menu items for the fonts.
 
     // The list of menu items associated with font selection.
-    private readonly Dictionary<FontFace, ToolStripMenuItem> _menuFontItems = new();
+    private readonly Dictionary<FontFace, ToolStripMenuItem> _menuFontItems = [];
 
     // The current zoom level.
     private ZoomLevels _zoomLevel = ZoomLevels.ToWindow;
     // The renderer for the content.
     private IContentRenderer _contentRenderer;
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to set or return the data context for the ribbon on the form.
     /// </summary>
-    public ITextContent DataContext
+    public ITextContent ViewModel
     {
         get;
         private set;
@@ -118,9 +114,9 @@ internal partial class FormRibbon
             UpdateZoomMenu();
         }
     }
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>Handles the ZoomScale event of the ContentRenderer control.</summary>
     /// <param name="sender">The source of the event.</param>
     /// <param name="e">The <see cref="ZoomScaleEventArgs"/> instance containing the event data.</param>
@@ -169,7 +165,7 @@ internal partial class FormRibbon
     private void UpdateFontMenu()
     {
         // For this example, we follow the same pattern as the zoom menu items.
-        if (!_menuFontItems.TryGetValue(DataContext.FontFace, out ToolStripMenuItem currentItem))
+        if (!_menuFontItems.TryGetValue(ViewModel.FontFace, out ToolStripMenuItem currentItem))
         {
             return;
         }
@@ -212,13 +208,13 @@ internal partial class FormRibbon
     {
         // Here's how we execute a command on the view model. We first check to see if the command is assigned, 
         // and can actually execute given the current state of the view model.
-        if ((DataContext?.SaveContentCommand is null) || (!DataContext.SaveContentCommand.CanExecute(SaveReason.UserSave)))
+        if ((ViewModel?.SaveContentCommand is null) || (!ViewModel.SaveContentCommand.CanExecute(SaveReason.UserSave)))
         {
             return;
         }
 
         // Notice that this command executes asynchronously, so we need to await it prior to continuing on.
-        await DataContext.SaveContentCommand.ExecuteAsync(SaveReason.UserSave);
+        await ViewModel.SaveContentCommand.ExecuteAsync(SaveReason.UserSave);
         ValidateButtons();
     }
 
@@ -227,7 +223,7 @@ internal partial class FormRibbon
     /// </summary>
     private void ValidateButtons()
     {
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             return;
         }
@@ -239,13 +235,13 @@ internal partial class FormRibbon
         // view model to handle any complicated state evaluation logic and makes it such that the view stays unaware of 
         // the logic.
 
-        ButtonFont.Enabled = DataContext.CurrentPanel is null;
-        ButtonChangeText.Enabled = DataContext.ChangeTextCommand?.CanExecute(null) ?? false;
-        ButtonTextColor.Enabled = DataContext.ActivateTextColorCommand?.CanExecute(null) ?? false;
-        ButtonSaveText.Enabled = DataContext.SaveContentCommand?.CanExecute(SaveReason.UserSave) ?? false;
-        ButtonTextUndo.Enabled = DataContext.UndoCommand?.CanExecute(null) ?? false;
-        ButtonTextRedo.Enabled = DataContext.RedoCommand?.CanExecute(null) ?? false;
-        
+        ButtonFont.Enabled = ViewModel.CurrentPanel is null;
+        ButtonChangeText.Enabled = ViewModel.ChangeTextCommand?.CanExecute(null) ?? false;
+        ButtonTextColor.Enabled = ViewModel.ActivateTextColorCommand?.CanExecute(null) ?? false;
+        ButtonSaveText.Enabled = ViewModel.SaveContentCommand?.CanExecute(SaveReason.UserSave) ?? false;
+        ButtonTextUndo.Enabled = ViewModel.UndoCommand?.CanExecute(null) ?? false;
+        ButtonTextRedo.Enabled = ViewModel.RedoCommand?.CanExecute(null) ?? false;
+
         ItemArial.Enabled = true;
         ItemPapyrus.Enabled = true;
         ItemTimesNewRoman.Enabled = true;
@@ -259,12 +255,12 @@ internal partial class FormRibbon
         // Always unassign your view model events. Failure to do so can result in an event leak, causing the view to stay 
         // in memory for the lifetime of the application.
 
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             return;
         }
 
-        DataContext.PropertyChanged -= DataContext_PropertyChanged;
+        ViewModel.PropertyChanged -= DataContext_PropertyChanged;
     }
 
     /// <summary>
@@ -284,7 +280,7 @@ internal partial class FormRibbon
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
     private void Font_Click(object sender, EventArgs e)
     {
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             return;
         }
@@ -305,13 +301,13 @@ internal partial class FormRibbon
 
         // Do not let us uncheck.
         // Yes, this is annoying. Blame Microsoft for a lousy implementation.
-        if (DataContext.FontFace == fontFace)
+        if (ViewModel.FontFace == fontFace)
         {
             menuitem.Checked = true;
             return;
         }
 
-        DataContext.FontFace = fontFace;
+        ViewModel.FontFace = fontFace;
         UpdateFontMenu();
     }
 
@@ -362,12 +358,12 @@ internal partial class FormRibbon
     {
         // Here's how we execute a command on the view model. We first check to see if the command is assigned, 
         // and can actually execute given the current state of the view model.
-        if ((DataContext?.ChangeTextCommand is null) || (!DataContext.ChangeTextCommand.CanExecute(null)))
+        if ((ViewModel?.ChangeTextCommand is null) || (!ViewModel.ChangeTextCommand.CanExecute(null)))
         {
             return;
         }
 
-        DataContext.ChangeTextCommand.Execute(null);
+        ViewModel.ChangeTextCommand.Execute(null);
         ValidateButtons();
     }
 
@@ -378,12 +374,12 @@ internal partial class FormRibbon
     {
         // Here's how we execute a command on the view model. We first check to see if the command is assigned, 
         // and can actually execute given the current state of the view model.
-        if ((DataContext?.ActivateTextColorCommand is null) || (!DataContext.ActivateTextColorCommand.CanExecute(null)))
+        if ((ViewModel?.ActivateTextColorCommand is null) || (!ViewModel.ActivateTextColorCommand.CanExecute(null)))
         {
             return;
         }
 
-        DataContext.ActivateTextColorCommand.Execute(null);
+        ViewModel.ActivateTextColorCommand.Execute(null);
         ValidateButtons();
     }
 
@@ -394,12 +390,12 @@ internal partial class FormRibbon
     {
         // Here's how we execute a command on the view model. We first check to see if the command is assigned, 
         // and can actually execute given the current state of the view model.
-        if ((DataContext?.UndoCommand is null) || (!DataContext.UndoCommand.CanExecute(null)))
+        if ((ViewModel?.UndoCommand is null) || (!ViewModel.UndoCommand.CanExecute(null)))
         {
             return;
         }
 
-        DataContext.UndoCommand.Execute(null);
+        ViewModel.UndoCommand.Execute(null);
         ValidateButtons();
     }
 
@@ -410,12 +406,12 @@ internal partial class FormRibbon
     {
         // Here's how we execute a command on the view model. We first check to see if the command is assigned, 
         // and can actually execute given the current state of the view model.
-        if ((DataContext?.RedoCommand is null) || (!DataContext.RedoCommand.CanExecute(null)))
+        if ((ViewModel?.RedoCommand is null) || (!ViewModel.RedoCommand.CanExecute(null)))
         {
             return;
         }
 
-        DataContext.RedoCommand.Execute(null);
+        ViewModel.RedoCommand.Execute(null);
         ValidateButtons();
     }
 
@@ -443,16 +439,16 @@ internal partial class FormRibbon
 
         InitializeFromDataContext(dataContext);
 
-        DataContext = dataContext;
+        ViewModel = dataContext;
         ValidateButtons();
 
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             return;
         }
 
-        DataContext.PropertyChanged += DataContext_PropertyChanged;
-    }        
+        ViewModel.PropertyChanged += DataContext_PropertyChanged;
+    }
 
     /// <summary>
     /// Function to reset the zoom back to the default.
@@ -467,17 +463,16 @@ internal partial class FormRibbon
         // we have to do some manual house keeping to keep it up to date.
         UpdateZoomMenu();
     }
-    #endregion
 
-    #region Constructor.
+
     /// <summary>Initializes a new instance of the FormRibbon class.</summary>
     public FormRibbon()
     {
         InitializeComponent();
 
-        ItemArial.Tag = ImageType.Image2D;
-        ItemTimesNewRoman.Tag = ImageType.ImageCube;
-        ItemPapyrus.Tag = ImageType.Image3D;
+        ItemArial.Tag = ImageDataType.Image2D;
+        ItemTimesNewRoman.Tag = ImageDataType.ImageCube;
+        ItemPapyrus.Tag = ImageDataType.Image3D;
 
         foreach (ToolStripMenuItem menuItem in MenuZoom.Items.OfType<ToolStripMenuItem>())
         {
@@ -497,5 +492,5 @@ internal partial class FormRibbon
         _menuFontItems[FontFace.TimesNewRoman] = ItemTimesNewRoman;
         _menuFontItems[FontFace.Papyrus] = ItemPapyrus;
     }
-    #endregion
+
 }

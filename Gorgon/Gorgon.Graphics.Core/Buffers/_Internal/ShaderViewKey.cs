@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2017 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,42 +11,45 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: July 5, 2017 12:10:23 AM
 // 
-#endregion
 
-using System;
-using Gorgon.Core;
 
 namespace Gorgon.Graphics.Core;
 
 /// <summary>
-/// A key used to uniquely identify a shader view.
+/// A key used to uniquely identify a shader view
 /// </summary>
-internal readonly struct BufferShaderViewKey
-    : IEquatable<BufferShaderViewKey>
+/// <remarks>
+/// Initializes a new instance of the <see cref="BufferShaderViewKey"/> struct
+/// </remarks>
+/// <param name="start">The start.</param>
+/// <param name="count">The count.</param>
+/// <param name="dataType">Type of the data.</param>
+internal readonly struct BufferShaderViewKey(int start, int count, int dataType)
+        : IEquatable<BufferShaderViewKey>
 {
     /// <summary>
     /// The starting element.
     /// </summary>
-    public readonly int Start;
+    public readonly int Start = start;
     /// <summary>
     /// The number of elements.
     /// </summary>
-    public readonly int Count;
+    public readonly int Count = count;
     /// <summary>
     /// The type of data or size of data.
     /// </summary>
-    public readonly int DataType;
+    public readonly int DataType = dataType;
 
     /// <summary>
     /// Determines whether the specified <see cref="object" /> is equal to this instance.
@@ -81,19 +84,6 @@ internal readonly struct BufferShaderViewKey
     public BufferShaderViewKey(int start, int count, RawBufferElementType elementType)
         : this(start, count, (int)elementType)
     {
-    }
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="BufferShaderViewKey"/> struct.
-    /// </summary>
-    /// <param name="start">The start.</param>
-    /// <param name="count">The count.</param>
-    /// <param name="dataType">Type of the data.</param>
-    public BufferShaderViewKey(int start, int count, int dataType)
-    {
-        Start = start;
-        Count = count;
-        DataType = dataType;
     }
 
     /// <summary>

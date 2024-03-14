@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2020 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,28 +11,20 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: March 31, 2020 10:49:39 PM
 // 
-#endregion
 
-using System;
-using System.Collections.Generic;
+
 using System.ComponentModel;
-using System.Drawing;
-using System.IO;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-using System.Windows.Forms;
 using Gorgon.Editor.AnimationEditor.Properties;
 using Gorgon.Editor.Content;
 using Gorgon.Editor.UI;
@@ -47,16 +39,16 @@ using Gorgon.Math;
 namespace Gorgon.Editor.AnimationEditor;
 
 /// <summary>
-/// A form used to set up a new sprite.
+/// A form used to set up a new sprite
 /// </summary>
 internal partial class FormNewAnimation
     : Form
 {
-    #region Variables.
+
     // The list of textures.
-    private IReadOnlyList<IContentFile> _textures = Array.Empty<IContentFile>();
+    private IReadOnlyList<IContentFile> _textures = [];
     // The list of textures.
-    private IReadOnlyList<IContentFile> _sprites = Array.Empty<IContentFile>();
+    private IReadOnlyList<IContentFile> _sprites = [];
     // The preview images for the selected files.
     private Image _previewImage;
     private Image _previewSprite;
@@ -71,9 +63,9 @@ internal partial class FormNewAnimation
     private float _originalFps;
     // The path to the preview directory.
     private static readonly string _previewDirPath = $"/Thumbnails/";
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to set or return the image codec for textures.
     /// </summary>
@@ -155,9 +147,9 @@ internal partial class FormNewAnimation
     /// </summary>
     [Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public float Fps => (float)NumericFps.Value;
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>Handles the FileEntrySelected event of the FilePrimarySprite control.</summary>
     /// <param name="sender">The source of the event.</param>
     /// <param name="e">The <see cref="ContentFileEntrySelectedEventArgs"/> instance containing the event data.</param>
@@ -200,7 +192,7 @@ internal partial class FormNewAnimation
                 PictureSpritePreview.Image = null;
                 image?.Dispose();
                 return;
-            }                
+            }
 
             if (image.Format != BufferFormat.R8G8B8A8_UNorm)
             {
@@ -361,9 +353,9 @@ internal partial class FormNewAnimation
             return;
         }
 
-        FillFileList(_textures.Where(item => item.Name.IndexOf(e.SearchText, StringComparison.CurrentCultureIgnoreCase) > -1).ToArray(), 
-                     BackgroundTextureFile, 
-                     FileBgTextures, 
+        FillFileList(_textures.Where(item => item.Name.IndexOf(e.SearchText, StringComparison.CurrentCultureIgnoreCase) > -1).ToArray(),
+                     BackgroundTextureFile,
+                     FileBgTextures,
                      FileTextures_FileEntrySelected);
     }
 
@@ -454,7 +446,7 @@ internal partial class FormNewAnimation
 
             if (!dirs.TryGetValue(dirName, out ContentFileExplorerDirectoryEntry dirEntry))
             {
-                fileEntries = new List<ContentFileExplorerFileEntry>();
+                fileEntries = [];
                 dirEntry = new ContentFileExplorerDirectoryEntry(dirName, fileEntries);
                 dirs[dirName] = dirEntry;
             }
@@ -474,7 +466,7 @@ internal partial class FormNewAnimation
             fileEntries.Add(contentFile);
         }
 
-        target.Entries = dirs.Values.ToArray();
+        target.Entries = [.. dirs.Values];
 
         if (selectedTexture is null)
         {
@@ -532,10 +524,10 @@ internal partial class FormNewAnimation
         NumericFps.Value = ((decimal)_originalFps).Max(NumericFps.Minimum).Min(NumericFps.Maximum);
         UpdateFrameCountLabel();
     }
-    #endregion
 
-    #region Constructor/Finalizer.
+
+
     /// <summary>Initializes a new instance of the <see cref="FormNewAnimation"/> class.</summary>
     public FormNewAnimation() => InitializeComponent();
-    #endregion
+
 }

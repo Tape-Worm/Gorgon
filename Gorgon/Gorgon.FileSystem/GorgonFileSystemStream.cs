@@ -1,6 +1,6 @@
-﻿#region MIT.
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2011 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,36 +11,33 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: Monday, June 27, 2011 9:01:45 AM
 // 
-#endregion
 
-using System;
-using System.IO;
 
 namespace Gorgon.IO;
 
 /// <summary>
-/// A file stream for the Gorgon file system.
+/// A file stream for the Gorgon file system
 /// </summary>
 public class GorgonFileSystemStream
     : Stream
 {
-    #region Variables.
+
     // Base stream to use.
     private Stream _baseStream;
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to set or return whether to close the underlying stream when this stream is closed.
     /// </summary>
@@ -132,9 +129,9 @@ public class GorgonFileSystemStream
         get => _baseStream.WriteTimeout;
         set => _baseStream.WriteTimeout = value;
     }
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Releases the unmanaged resources used by the <see cref="Stream"/> and optionally releases the managed resources.
     /// </summary>
@@ -296,9 +293,9 @@ public class GorgonFileSystemStream
     /// <exception cref="NotSupportedException">The stream does not support writing, or the stream is already closed. </exception>
     /// <exception cref="ObjectDisposedException">Methods were called after the stream was closed. </exception>
     public override void WriteByte(byte value) => _baseStream.WriteByte(value);
-    #endregion
 
-    #region Constructor/Destructor.
+
+
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonFileSystemStream"/> class.
     /// </summary>
@@ -317,5 +314,5 @@ public class GorgonFileSystemStream
             _baseStream.Position = 0;
         }
     }
-    #endregion
+
 }

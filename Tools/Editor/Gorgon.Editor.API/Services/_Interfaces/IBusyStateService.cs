@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2018 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,36 +11,34 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: August 31, 2018 12:59:09 AM
 // 
-#endregion
 
-using System;
 
 namespace Gorgon.Editor.Services;
 
 /// <summary>
-/// A service that notifies the user of a busy state.
+/// A service that notifies the user of a busy state
 /// </summary>
 public interface IBusyStateService
 {
-    #region Events.
+
     /// <summary>
     /// Event triggered when the busy state changes.
     /// </summary>
     event EventHandler BusyStateChanged;
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to return whether or not there's a busy state.
     /// </summary>
@@ -48,9 +46,9 @@ public interface IBusyStateService
     {
         get;
     }
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to forcefully reset the busy state back to an idle state.
     /// </summary>
@@ -63,5 +61,5 @@ public interface IBusyStateService
     /// Function to set idle state (canceling busy state).
     /// </summary>
     void SetIdle();
-    #endregion
+
 }

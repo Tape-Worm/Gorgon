@@ -1,6 +1,6 @@
-﻿#region MIT.
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2011 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,20 +11,19 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: Wednesday, November 23, 2011 9:54:30 AM
 // 
-#endregion
 
-using System;
+
 using Gorgon.Core;
 using Gorgon.Graphics.Core.Properties;
 using Gorgon.Math;
@@ -33,27 +32,27 @@ using D3D11 = SharpDX.Direct3D11;
 namespace Gorgon.Graphics.Core;
 
 /// <summary>
-/// A stream out element for a stream out buffer.
+/// A stream out element for a stream out buffer
 /// </summary>
 /// <remarks>
 /// <para>
-/// This defines a single element within a <see cref="GorgonStreamOutLayout"/>, and its relationship with other elements in that layout.
+/// This defines a single element within a <see cref="GorgonStreamOutLayout"/>, and its relationship with other elements in that layout
 /// </para>
 /// <para>
-/// A <see cref="GorgonStreamOutLayout"/> will use an array of these items to define individual elements for a stream out slot.
+/// A <see cref="GorgonStreamOutLayout"/> will use an array of these items to define individual elements for a stream out slot
 /// </para>
 /// </remarks>
 public readonly struct GorgonStreamOutElement
     : IGorgonNamedObject, IGorgonEquatableByRef<GorgonStreamOutElement>
 {
-    #region Variables.
+
     /// <summary>
     /// The Direct 3D 11 Input Element that is wrapped by this type.
     /// </summary>
     internal readonly D3D11.StreamOutputElement NativeElement;
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to return the name of this object.
     /// </summary>
@@ -62,7 +61,7 @@ public readonly struct GorgonStreamOutElement
     /// <summary>
     /// Property to return the stream number to use.
     /// </summary>
-	    public int StreamIndex => NativeElement.Stream;
+    public int StreamIndex => NativeElement.Stream;
 
     /// <summary>
     /// Property to return the context of the element.
@@ -105,9 +104,9 @@ public readonly struct GorgonStreamOutElement
     /// The valid range for OutputSlot is 0 to 3.
     /// </remarks>
     public int Slot => NativeElement.OutputSlot;
-    #endregion
 
-    #region Method.
+
+
     /// <summary>
     /// Determines whether the specified <see cref="object"/> is equal to this instance.
     /// </summary>
@@ -170,9 +169,9 @@ public readonly struct GorgonStreamOutElement
     /// <param name="other">The other instance to use for comparison.</param>
     /// <returns><b>true</b> if equal, <b>false</b> if not.</returns>
     public bool Equals(in GorgonStreamOutElement other) => Equals(in this, in other);
-    #endregion
 
-    #region Constructor/Destructor.
+
+
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonStreamOutElement"/> class.
     /// </summary>
@@ -223,5 +222,5 @@ public readonly struct GorgonStreamOutElement
 
         NativeElement = new D3D11.StreamOutputElement(stream.Max(0), context, index, start, count, slot);
     }
-    #endregion
+
 }

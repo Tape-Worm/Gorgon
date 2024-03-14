@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2015 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,22 +11,19 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: Saturday, September 19, 2015 11:40:07 PM
 // 
-#endregion
 
-using System;
-using System.Collections.Generic;
-using System.IO;
+
 using Gorgon.Collections;
 using Gorgon.Core;
 using Gorgon.PlugIns;
@@ -34,7 +31,7 @@ using Gorgon.PlugIns;
 namespace Gorgon.IO.Providers;
 
 /// <summary>
-/// A file system provider that mounts Windows file system directories.
+/// A file system provider that mounts Windows file system directories
 /// </summary>
 /// <remarks>
 /// <para>
@@ -52,13 +49,13 @@ namespace Gorgon.IO.Providers;
 /// </para>
 /// <para>
 /// When this type is implemented, it can be made to read any type of file system, including those that store their contents in a packed file format (e.g. Zip). And since this type inherits from <see cref="GorgonPlugIn"/>, 
-/// the file system provider can be loaded dynamically through Gorgon's plug in system.
+/// the file system provider can be loaded dynamically through Gorgon's plug in system
 /// </para>
 /// </remarks>
 public interface IGorgonFileSystemProvider
     : IGorgonNamedObject
 {
-    #region Properties.
+
     /// <summary>
     /// Property to return whether this provider only gives read only access to the physical file system.
     /// </summary>
@@ -95,9 +92,9 @@ public interface IGorgonFileSystemProvider
     {
         get;
     }
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to return the virtual file system path from a physical file system path.
     /// </summary>
@@ -179,5 +176,5 @@ public interface IGorgonFileSystemProvider
     /// </para>
     /// </remarks>
     bool CanReadFileSystem(string physicalPath);
-    #endregion
+
 }

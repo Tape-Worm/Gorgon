@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2019 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,23 +11,20 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: March 26, 2019 3:57:12 PM
 // 
-#endregion
 
-using System;
+
 using System.ComponentModel;
-using System.Drawing;
-using System.Windows.Forms;
 using Gorgon.Editor.PlugIns;
 using Gorgon.Editor.Properties;
 using Gorgon.IO;
@@ -35,27 +32,27 @@ using Gorgon.IO;
 namespace Gorgon.Editor.UI.Forms;
 
 /// <summary>
-/// A form used to input a name.
+/// A form used to input a name
 /// </summary>
 /// <remarks>
 /// <para>
-/// Plug in developers can use this to present a dialog that will prompt the user for a name.
+/// Plug in developers can use this to present a dialog that will prompt the user for a name
 /// </para>
 /// <para>
 /// An ideal place to use this form would be in the <see cref="ContentPlugIn"/>.<see cref="ContentPlugIn.GetDefaultContentAsync(string, System.Collections.Generic.HashSet{string})"/> method so that users 
-/// could be given a chance to name their objects prior to creation.
+/// could be given a chance to name their objects prior to creation
 /// </para>
 /// </remarks>
 /// <seealso cref="ContentPlugIn"/>
 public partial class FormName
     : Form
 {
-    #region Variables.
+
     // The object type to be displayed in the textbox cue.
     private string _objectType = string.Empty;
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to set or return the name of the object.
     /// </summary>
@@ -86,9 +83,9 @@ public partial class FormName
             TextName.CueText = string.Format(Resources.GOREDIT_TEXT_NAME_CUE, _objectType);
         }
     }
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>Handles the Leave event of the TextName control.</summary>
     /// <param name="sender">The source of the event.</param>
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
@@ -156,10 +153,10 @@ public partial class FormName
         TextName.Select();
         TextName.SelectAll();
     }
-    #endregion
 
-    #region Constructor/Finalizer.
+
+
     /// <summary>Initializes a new instance of the <see cref="FormName"/> class.</summary>
     public FormName() => InitializeComponent();
-    #endregion
+
 }

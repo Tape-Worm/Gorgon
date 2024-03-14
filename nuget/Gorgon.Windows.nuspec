@@ -12,18 +12,18 @@
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>Contains functionality specific to the Microsoft Windows platform.</description>
     <releaseNotes></releaseNotes>
-    <copyright>Copyright 2023 Tape_Worm</copyright>
+    <copyright>Copyright 2024 Tape_Worm</copyright>
 
     <tags>Gorgon C# .NET Windows Win32</tags>
     <dependencies>
-      <group targetFramework="net6.0" >
+      <group targetFramework="net8.0" >
         <dependency id="Gorgon.Core" version="$version$"/>
       </group>
     </dependencies>
   </metadata>
   <files>
     <file src=".\icon.png" target="images\Gorgon_Icon_64x64.png" />
-    <file src="..\lib\Gorgon.Windows.dll" target="lib\net6.0\Gorgon.Windows.dll" />
-    <file src="..\lib\Gorgon.Windows.xml" target="lib\net6.0\Gorgon.Windows.xml" />
+    <file src="..\lib\Gorgon.Windows.dll" target="lib\net8.0\Gorgon.Windows.dll" />
+    <file src="..\lib\Gorgon.Windows.xml" target="lib\net8.0\Gorgon.Windows.xml" />
   </files>
 </package>

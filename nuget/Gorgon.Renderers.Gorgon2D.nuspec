@@ -16,7 +16,7 @@
 
     <tags>Gorgon C# .NET Direct3D SharpDX Graphics 2D Windows Animation Fonts</tags>
     <dependencies>
-      <group targetFramework="net6.0" >
+      <group targetFramework="net8.0" >
         <dependency id="Gorgon.Graphics.Fonts" version="$version$"/>
         <dependency id="Gorgon.Animation" version="$version$"/>
         <dependency id="Gorgon.FileSystem" version="$version$"/>
@@ -25,11 +25,11 @@
   </metadata>
   <files>
     <file src=".\icon.png" target="images\Gorgon_Icon_64x64.png" />
-    <file src="..\lib\Gorgon.Renderers.Gorgon2D.dll" target="lib\net6.0\Gorgon.Renderers.Gorgon2D.dll" />
-    <file src="..\lib\Gorgon.Renderers.Gorgon2D.xml" target="lib\net6.0\Gorgon.Renderers.Gorgon2D.xml" />
-    <file src="..\lib\Gorgon.IO.Gorgon2D.dll" target="lib\net6.0\Gorgon.IO.Gorgon2D.dll" />
-    <file src="..\lib\Gorgon.IO.Gorgon2D.xml" target="lib\net6.0\Gorgon.IO.Gorgon2D.xml" />
-    <file src="..\lib\Gorgon.Animation.Gorgon2D.dll" target="lib\net6.0\Gorgon.Animation.Gorgon2D.dll" />
-    <file src="..\lib\Gorgon.Animation.Gorgon2D.xml" target="lib\net6.0\Gorgon.Animation.Gorgon2D.xml" />
+    <file src="..\lib\Gorgon.Renderers.Gorgon2D.dll" target="lib\net8.0\Gorgon.Renderers.Gorgon2D.dll" />
+    <file src="..\lib\Gorgon.Renderers.Gorgon2D.xml" target="lib\net8.0\Gorgon.Renderers.Gorgon2D.xml" />
+    <file src="..\lib\Gorgon.IO.Gorgon2D.dll" target="lib\net8.0\Gorgon.IO.Gorgon2D.dll" />
+    <file src="..\lib\Gorgon.IO.Gorgon2D.xml" target="lib\net8.0\Gorgon.IO.Gorgon2D.xml" />
+    <file src="..\lib\Gorgon.Animation.Gorgon2D.dll" target="lib\net8.0\Gorgon.Animation.Gorgon2D.dll" />
+    <file src="..\lib\Gorgon.Animation.Gorgon2D.xml" target="lib\net8.0\Gorgon.Animation.Gorgon2D.xml" />
   </files>
 </package>

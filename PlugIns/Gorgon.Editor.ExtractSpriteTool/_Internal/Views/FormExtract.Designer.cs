@@ -28,7 +28,7 @@ partial class FormExtract
         base.Dispose(disposing);
     }
 
-    #region Windows Form Designer generated code
+
 
     /// <summary>
     /// Required method for Designer support - do not modify
@@ -861,7 +861,7 @@ partial class FormExtract
 
     }
 
-    #endregion
+
     private System.Windows.Forms.TableLayoutPanel TableExtractControls;
     private Gorgon.UI.GorgonSelectablePanel PanelRender;
     private System.Windows.Forms.ToolTip TipInstructions;

@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2019 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,22 +11,20 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: March 28, 2019 9:48:28 AM
 // 
-#endregion
 
-using System;
+
 using System.ComponentModel;
-using System.Threading;
 using Gorgon.Editor.UI;
 using Gorgon.Editor.UI.Controls;
 using Gorgon.Graphics;
@@ -34,29 +32,29 @@ using Gorgon.Graphics;
 namespace Gorgon.Editor.FontEditor;
 
 /// <summary>
-/// The view for changing the font outline parameters.
+/// The view for changing the font outline parameters
 /// </summary>
 internal partial class FontOutlineView
     : EditorSubPanelCommon, IDataContext<IFontOutline>
 {
-    #region Variables.
+
     // The event hook counter.
     private int _eventHook;
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to return the data context for the view.
     /// </summary>
     [Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-    public IFontOutline DataContext
+    public IFontOutline ViewModel
     {
         get;
         private set;
     }
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to unhook the events.
     /// </summary>
@@ -92,7 +90,7 @@ internal partial class FontOutlineView
     /// </summary>
     private void ValidateControls()
     {
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             NumericSize.Enabled =
             ColorStart.Enabled =
@@ -103,9 +101,9 @@ internal partial class FontOutlineView
             return;
         }
 
-        LabelSize.Enabled = NumericSize.Enabled = true;            
-        LabelStartColor.Enabled = ColorStart.Enabled = DataContext.OutlineSize > 0;
-        LabelEndColor.Enabled = ColorEnd.Enabled = DataContext.OutlineSize > 2;
+        LabelSize.Enabled = NumericSize.Enabled = true;
+        LabelStartColor.Enabled = ColorStart.Enabled = ViewModel.OutlineSize > 0;
+        LabelEndColor.Enabled = ColorEnd.Enabled = ViewModel.OutlineSize > 2;
     }
 
     /// <summary>Handles the ValueChanged event of the NumericSize control.</summary>
@@ -113,12 +111,12 @@ internal partial class FontOutlineView
     /// <param name="e">The <see cref="EventArgs" /> instance containing the event data.</param>
     private void NumericSize_ValueChanged(object sender, EventArgs e)
     {
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             return;
         }
 
-        DataContext.OutlineSize = (int)NumericSize.Value;
+        ViewModel.OutlineSize = (int)NumericSize.Value;
     }
 
     /// <summary>Handles the ColorChanged event of the Picker control.</summary>
@@ -126,12 +124,12 @@ internal partial class FontOutlineView
     /// <param name="e">The <see cref="ColorChangedEventArgs"/> instance containing the event data.</param>
     private void ColorStart_ColorChanged(object sender, ColorChangedEventArgs e)
     {
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             return;
         }
 
-        DataContext.SelectedStartColor = e.Color;
+        ViewModel.SelectedStartColor = e.Color;
         ValidateControls();
     }
 
@@ -140,12 +138,12 @@ internal partial class FontOutlineView
     /// <param name="e">The <see cref="ColorChangedEventArgs" /> instance containing the event data.</param>
     private void ColorEnd_ColorChanged(object sender, ColorChangedEventArgs e)
     {
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             return;
         }
 
-        DataContext.SelectedEndColor = e.Color;
+        ViewModel.SelectedEndColor = e.Color;
         ValidateControls();
     }
 
@@ -156,7 +154,7 @@ internal partial class FontOutlineView
     {
         UnhookEvents();
 
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             return;
         }
@@ -164,7 +162,7 @@ internal partial class FontOutlineView
         // Always unassign your view model events. Failure to do so can result in an event leak, causing the view to stay 
         // in memory for the lifetime of the application.
 
-        DataContext.PropertyChanged -= DataContext_PropertyChanged;
+        ViewModel.PropertyChanged -= DataContext_PropertyChanged;
     }
 
     /// <summary>Handles the PropertyChanged event of the DataContext control.</summary>
@@ -176,19 +174,19 @@ internal partial class FontOutlineView
         switch (e.PropertyName)
         {
             case nameof(IFontOutline.OutlineSize):
-                NumericSize.Value = DataContext.OutlineSize;
+                NumericSize.Value = ViewModel.OutlineSize;
                 break;
             case nameof(IFontOutline.OriginalStartColor):
-                ColorStart.OriginalColor = DataContext.OriginalStartColor;
+                ColorStart.OriginalColor = ViewModel.OriginalStartColor;
                 break;
             case nameof(IFontOutline.OriginalEndColor):
-                ColorEnd.OriginalColor = DataContext.OriginalEndColor;
+                ColorEnd.OriginalColor = ViewModel.OriginalEndColor;
                 break;
             case nameof(IFontOutline.SelectedStartColor):
-                ColorStart.SelectedColor = DataContext.SelectedStartColor;
+                ColorStart.SelectedColor = ViewModel.SelectedStartColor;
                 break;
             case nameof(IFontOutline.SelectedEndColor):
-                ColorEnd.SelectedColor = DataContext.SelectedEndColor;
+                ColorEnd.SelectedColor = ViewModel.SelectedEndColor;
                 break;
         }
         HookEvents();
@@ -204,9 +202,9 @@ internal partial class FontOutlineView
         UnassignEvents();
 
         NumericSize.Value = 0;
-        ColorStart.OriginalColor = 
-        ColorStart.SelectedColor = 
-        ColorEnd.OriginalColor = 
+        ColorStart.OriginalColor =
+        ColorStart.SelectedColor =
+        ColorEnd.OriginalColor =
         ColorEnd.SelectedColor = GorgonColor.BlackTransparent;
     }
 
@@ -234,20 +232,20 @@ internal partial class FontOutlineView
     ///   <b>true</b> if the OK button is valid, <b>false</b> if not.</returns>
     protected override bool OnValidateOk()
     {
-        if (DataContext?.OkCommand is not null)
+        if (ViewModel?.OkCommand is not null)
         {
-            return DataContext.OkCommand.CanExecute(null);
+            return ViewModel.OkCommand.CanExecute(null);
         }
 
         return base.OnValidateOk();
     }
 
     /// <summary>Function to cancel the change.</summary>
-    protected override void OnCancel() 
+    protected override void OnCancel()
     {
-        if (DataContext is not null)
+        if (ViewModel is not null)
         {
-            DataContext.IsActive = false;
+            ViewModel.IsActive = false;
         }
     }
 
@@ -256,12 +254,12 @@ internal partial class FontOutlineView
     {
         base.OnSubmit();
 
-        if ((DataContext?.OkCommand is null) || (!DataContext.OkCommand.CanExecute(null)))
+        if ((ViewModel?.OkCommand is null) || (!ViewModel.OkCommand.CanExecute(null)))
         {
             return;
         }
 
-        DataContext.OkCommand.Execute(null);
+        ViewModel.OkCommand.Execute(null);
     }
 
     /// <summary>Raises the <see cref="E:System.Windows.Forms.UserControl.Load"/> event.</summary>
@@ -275,13 +273,13 @@ internal partial class FontOutlineView
             return;
         }
 
-        DataContext?.Load();
+        ViewModel?.Load();
 
         NumericSize.Select();
 
         ValidateControls();
     }
-    
+
     /// <summary>Function to assign a data context to the view as a view model.</summary>
     /// <param name="dataContext">The data context to assign.</param>
     /// <remarks>Data contexts should be nullable, in that, they should reset the view back to its original state when the context is null.</remarks>
@@ -291,9 +289,9 @@ internal partial class FontOutlineView
 
         InitializeFromDataContext(dataContext);
 
-        DataContext = dataContext;
+        ViewModel = dataContext;
 
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             ValidateControls();
             return;
@@ -301,13 +299,13 @@ internal partial class FontOutlineView
 
         HookEvents();
 
-        DataContext.PropertyChanged += DataContext_PropertyChanged;
+        ViewModel.PropertyChanged += DataContext_PropertyChanged;
         ValidateControls();
-    }        
-    #endregion
+    }
 
-    #region Constructor/Finalizer.
+
+
     /// <summary>Initializes a new instance of the <see cref="FontOutlineView"/> class.</summary>
     public FontOutlineView() => InitializeComponent();
-    #endregion
+
 }

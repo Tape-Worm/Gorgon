@@ -16,7 +16,7 @@ Building applications with Gorgon requires that you write code. There's no nodes
 
 Gorgon is meant for people that want to write their own functionality, get down into the guts of their applications and not have to deal with a black boxed scripting system, or editor. In short, it's more work, but more customizable.
 
-For those that want a more complete (and polished) package to build their applications there's [Unity](https://unity.com/), [Unreal](https://www.unrealengine.com/en-US/), [Godot](https://godotengine.org/) or [Stride (formally Xenko)](https://github.com/stride3d/stride).
+For those that want a more complete (and polished) package to build their applications there's ~~Unity~~ ([after the crap they've pulled](https://www.theguardian.com/games/2023/sep/12/unity-engine-fees-backlash-response), no one should be using Unity), [Unreal](https://www.unrealengine.com/en-US/), [Godot](https://godotengine.org/) or [Stride (formally Xenko)](https://github.com/stride3d/stride).
 
 Documentation
 =============
@@ -32,7 +32,7 @@ Gorgon is licensed under the [MIT license](http://opensource.org/licenses/MIT).
 How far along are you?  Is it done yet?  How about now?
 -------------------------------------------------------
 
-Gorgon 3.2 is in development.
+Gorgon 4.0 is in development.
 
 What can it do?
 ---------------
@@ -74,7 +74,7 @@ Gorgon provides a set of libraries that are capable of handling pretty much any 
 
   - [x] __[Gorgon.Graphics.Avalonia](Gorgon/Gorgon.Graphics.Avalonia)__ 
   
-  Functionality to allow Gorgon to render onto an Avalonia surface. This allows interoperabilty between Gorgon and Avalonia.
+  Functionality to allow Gorgon to render onto an Avalonia surface. This allows interoperabilty between Gorgon and [Avalonia](https://www.avaloniaui.net/).
 
   - [x] __[Gorgon.Graphics.Imaging](Gorgon/Gorgon.Graphics.Imaging)__ 
   
@@ -135,7 +135,7 @@ Gorgon provides a set of libraries that are capable of handling pretty much any 
 What's required?
 ----------------
 
-  * [.NET 6.0](https://dotnet.microsoft.com/download)
+  * [.NET 8.0](https://dotnet.microsoft.com/download)
   * Windows 10 (Build 15063 or later).
   * A video card that supports Microsoft DirectX 11.2 or better
 
@@ -147,12 +147,13 @@ To compile the library
 To use the library
 ------------------
 
-  * You may use any .NET 6.0 enabled language (e.g. Visual Basic .NET) to write an application with Gorgon.
+  * You may use any .NET 8.0 enabled language (e.g. Visual Basic .NET) to write an application with Gorgon.
 
 Source code
 -----------
 
-The master branch contains the current release version of Gorgon 3.2.  
+The develop branch contains the current development version of Gorgon 4.0.  
+Teh main branch contains the release version of Gorgon 3.2.
 
 Acknowledgements
 ================

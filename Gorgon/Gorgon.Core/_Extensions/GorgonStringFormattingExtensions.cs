@@ -1,6 +1,6 @@
-﻿#region MIT.
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2011 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,29 +11,25 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: Thursday, August 25, 2011 7:44:41 PM
 // 
-#endregion
 
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Text;
+
 using System.Xml.Linq;
 
 namespace Gorgon.Core;
 
 /// <summary>
-/// Extension methods to provide formatting on the <see cref="string"/> type and additional functionality for the <see cref="StringBuilder"/> type.
+/// Extension methods to provide formatting on the <see cref="string"/> type and additional functionality for the <see cref="StringBuilder"/> type
 /// </summary>
 public static class GorgonStringFormattingExtension
 {
@@ -48,7 +44,7 @@ public static class GorgonStringFormattingExtension
 
         if (text.Length == 0)
         {
-            buffer = Array.Empty<string>();
+            buffer = [];
             return;
         }
 
@@ -114,7 +110,7 @@ public static class GorgonStringFormattingExtension
     /// </summary>
     /// <param name="renderText">The text to evaluate.</param>
     /// <returns>The array of strings representing a single line per newline control character.</returns>
-    public static string[] GetLines(this string renderText) => string.IsNullOrEmpty(renderText) ? Array.Empty<string>() : renderText.Split('\n');
+    public static string[] GetLines(this string renderText) => string.IsNullOrEmpty(renderText) ? [] : renderText.Split('\n');
 
     /// <summary>
     /// Function to find the index of a character in a <see cref="StringBuilder"/>.

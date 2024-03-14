@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2015 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,38 +11,41 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: Wednesday, July 15, 2015 7:00:06 PM
 // 
-#endregion
 
-using System;
-using System.Windows.Forms;
 
 namespace Gorgon.Input;
 
 /// <summary>
-/// Event arguments for the various events triggered on the <see cref="GorgonRawKeyboard"/> interface.
+/// Event arguments for the various events triggered on the <see cref="GorgonRawKeyboard"/> interface
 /// </summary>
-public class GorgonKeyboardEventArgs
-    : EventArgs
+/// <remarks>
+/// Initializes a new instance of the <see cref="GorgonKeyboardEventArgs"/> class
+/// </remarks>
+/// <param name="key">Key that is pressed.</param>
+/// <param name="modifierKey">Keys that are held down during the event.</param>
+/// <param name="scanData">Scan code data.</param>
+public class GorgonKeyboardEventArgs(Keys key, Keys modifierKey, int scanData)
+        : EventArgs
 {
-    #region Properties.
+
     /// <summary>
     /// Property to return key that is pressed.
     /// </summary>
     public Keys Key
     {
         get;
-    }
+    } = key;
 
     /// <summary>
     /// Property to return the keys that are being held down during the event.
@@ -50,7 +53,7 @@ public class GorgonKeyboardEventArgs
     public Keys ModifierKeys
     {
         get;
-    }
+    } = modifierKey;
 
     /// <summary>
     /// Property to return if ALT is pressed or not.
@@ -73,22 +76,8 @@ public class GorgonKeyboardEventArgs
     public int ScanCodeData
     {
         get;
-    }
-    #endregion
+    } = scanData;
 
-    #region Constructor/Finalizer.
-    /// <summary>
-    /// Initializes a new instance of the <see cref="GorgonKeyboardEventArgs"/> class.
-    /// </summary>
-    /// <param name="key">Key that is pressed.</param>
-    /// <param name="modifierKey">Keys that are held down during the event.</param>
-    /// <param name="scanData">Scan code data.</param>
-    public GorgonKeyboardEventArgs(Keys key, Keys modifierKey, int scanData)
-    {
-        Key = key;
-        ModifierKeys = modifierKey;
-        ScanCodeData = scanData;
-    }
-    #endregion
+
 
 }

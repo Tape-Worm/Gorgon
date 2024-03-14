@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2019 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,26 +11,22 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: March 14, 2019 11:33:25 AM
 // 
-#endregion
 
-using System;
-using System.Collections.Generic;
+
 using System.Collections.Specialized;
 using System.ComponentModel;
-using System.IO;
 using System.Numerics;
-using System.Windows.Forms;
 using Gorgon.Editor.AnimationEditor.Properties;
 using Gorgon.Editor.Rendering;
 using Gorgon.Editor.Services;
@@ -44,16 +40,16 @@ using DX = SharpDX;
 namespace Gorgon.Editor.AnimationEditor;
 
 /// <summary>
-/// The primary view for the animation editor.
+/// The primary view for the animation editor
 /// </summary>
 internal partial class AnimationEditorView
     : VisualContentBaseControl, IDataContext<IAnimationContent>
 {
-    #region Variables.
+
     // The form for the ribbon.
     private readonly FormRibbon _ribbonForm;
     // The list of tracks in the animation.
-    private readonly List<ITrack> _tracks = new();
+    private readonly List<ITrack> _tracks = [];
     // The loader used to load sprites into the animation.
     private ISpriteLoader _spriteLoader;
     // The marching ants interface.
@@ -66,19 +62,19 @@ internal partial class AnimationEditorView
     private IAnchorEditService _anchorService;
     // The service to facilitate vertex editing for an animation.
     private VertexEditService _vertexEditorService;
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>Property to return the data context assigned to this view.</summary>
     [Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-    public IAnimationContent DataContext
+    public IAnimationContent ViewModel
     {
         get;
         private set;
     }
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>Handles the PropertyChanged event of the KeyEditor control.</summary>
     /// <param name="sender">The source of the event.</param>
     /// <param name="e">The <see cref="PropertyChangedEventArgs"/> instance containing the event data.</param>
@@ -124,12 +120,12 @@ internal partial class AnimationEditorView
     /// <param name="e">The <see cref="SplitterEventArgs"/> instance containing the event data.</param>
     private void SplitTrack_SplitterMoved(object sender, SplitterEventArgs e)
     {
-        if (DataContext?.Settings is null)
+        if (ViewModel?.Settings is null)
         {
             return;
         }
 
-        DataContext.Settings.SplitterOffset = SplitTrack.SplitPosition;
+        ViewModel.Settings.SplitterOffset = SplitTrack.SplitPosition;
     }
 
     /// <summary>
@@ -189,12 +185,12 @@ internal partial class AnimationEditorView
         SplitTrack.MinExtra = ClientSize.Height / 2;
         SplitTrack.MinSize = ClientSize.Height / 4;
 
-        if (DataContext?.Settings is null)
+        if (ViewModel?.Settings is null)
         {
             return;
         }
 
-        SplitTrack.SplitPosition = DataContext.Settings.SplitterOffset;
+        SplitTrack.SplitPosition = ViewModel.Settings.SplitterOffset;
     }
 
     /// <summary>Function to handle a drag enter event on the render control.</summary>
@@ -206,15 +202,15 @@ internal partial class AnimationEditorView
 
         e.Effect = DragDropEffects.None;
 
-        if (contentData is null) 
-        {                
+        if (contentData is null)
+        {
             return;
         }
 
         if ((_spriteLoader?.LoadSpriteCommand is not null) && (_spriteLoader.LoadSpriteCommand.CanExecute(contentData.FilePaths)))
         {
             e.Effect = DragDropEffects.Move;
-        }            
+        }
     }
 
     /// <summary>Function to handle a drag drop event on the render control.</summary>
@@ -240,7 +236,7 @@ internal partial class AnimationEditorView
         switch (propertyName)
         {
             case nameof(IAnimationContent.CommandContext):
-                DataContext.CommandContext?.Unload();
+                ViewModel.CommandContext?.Unload();
                 RenderControl.Cursor = Cursor.Current = Cursors.Default;
                 ValidateButtons();
                 break;
@@ -261,12 +257,12 @@ internal partial class AnimationEditorView
             case nameof(IAnimationContent.PrimarySprite):
             case nameof(IAnimationContent.CurrentPanel):
             case nameof(IAnimationContent.Selected):
-                if ((DataContext.PrimarySprite is null)
-                    || (DataContext.CommandContext != DataContext.KeyEditor) 
-                    || (DataContext.Selected.Count == 0) 
-                    || (!HasRenderer(DataContext.Selected[0].Track.KeyType.ToString())))
+                if ((ViewModel.PrimarySprite is null)
+                    || (ViewModel.CommandContext != ViewModel.KeyEditor)
+                    || (ViewModel.Selected.Count == 0)
+                    || (!HasRenderer(ViewModel.Selected[0].Track.KeyType.ToString())))
                 {
-                    rendererName = DataContext.PrimarySprite is not null ? DefaultAnimationViewer.ViewerName : NoPrimarySpriteViewer.ViewerName;
+                    rendererName = ViewModel.PrimarySprite is not null ? DefaultAnimationViewer.ViewerName : NoPrimarySpriteViewer.ViewerName;
 
                     if ((!HasRenderer(rendererName)) || (string.Equals(Renderer?.Name, rendererName, StringComparison.OrdinalIgnoreCase)))
                     {
@@ -275,7 +271,7 @@ internal partial class AnimationEditorView
                 }
                 else
                 {
-                    rendererName = DataContext.Selected[0].Track.KeyType.ToString();
+                    rendererName = ViewModel.Selected[0].Track.KeyType.ToString();
                 }
 
                 // Only switch if we're not on the same renderer.
@@ -285,15 +281,15 @@ internal partial class AnimationEditorView
                 }
                 break;
             case nameof(IAnimationContent.CommandContext):
-                if (DataContext.CommandContext is null)
+                if (ViewModel.CommandContext is null)
                 {
-                    SwitchRenderer(DataContext.PrimarySprite is not null ? DefaultAnimationViewer.ViewerName : NoPrimarySpriteViewer.ViewerName, false);
-                    _spriteLoader = DataContext;
+                    SwitchRenderer(ViewModel.PrimarySprite is not null ? DefaultAnimationViewer.ViewerName : NoPrimarySpriteViewer.ViewerName, false);
+                    _spriteLoader = ViewModel;
                 }
                 else
                 {
-                    DataContext.CommandContext.Load();
-                    _spriteLoader = DataContext.CommandContext as ISpriteLoader;
+                    ViewModel.CommandContext.Load();
+                    _spriteLoader = ViewModel.CommandContext as ISpriteLoader;
                 }
                 break;
         }
@@ -303,7 +299,7 @@ internal partial class AnimationEditorView
     /// <summary>Function called to shut down the view and perform any clean up required (including user defined graphics objects).</summary>
     protected override void OnShutdown()
     {
-        DataContext?.Unload();
+        ViewModel?.Unload();
 
         _vertexEditorService?.Dispose();
         _anchorTexture?.Dispose();
@@ -368,10 +364,10 @@ internal partial class AnimationEditorView
         });
         _vertexEditorService = new VertexEditService(context.Renderer2D);
 
-        var noSprite = new NoPrimarySpriteViewer(context.Renderer2D, swapChain, context.FontFactory, DataContext);
-        var defaultView = new DefaultAnimationViewer(context.Renderer2D, swapChain, DataContext, _clipper);
-        var singleEditorView = new SingleAnimationViewer(context.Renderer2D, swapChain, DataContext);
-        var vec2EditorView = new Vector2AnimationViewer(context.Renderer2D, swapChain, DataContext, _clipper, _anchorService, _vertexEditorService);
+        var noSprite = new NoPrimarySpriteViewer(context.Renderer2D, swapChain, context.FontFactory, ViewModel);
+        var defaultView = new DefaultAnimationViewer(context.Renderer2D, swapChain, ViewModel, _clipper);
+        var singleEditorView = new SingleAnimationViewer(context.Renderer2D, swapChain, ViewModel);
+        var vec2EditorView = new Vector2AnimationViewer(context.Renderer2D, swapChain, ViewModel, _clipper, _anchorService, _vertexEditorService);
 
         noSprite.CreateResources();
         defaultView.CreateResources();
@@ -383,10 +379,10 @@ internal partial class AnimationEditorView
         AddRenderer(singleEditorView.Name, singleEditorView);
         AddRenderer(vec2EditorView.Name, vec2EditorView);
 
-        SwitchRenderer(DataContext.PrimarySprite is null ? noSprite.Name : defaultView.Name, true);
+        SwitchRenderer(ViewModel.PrimarySprite is null ? noSprite.Name : defaultView.Name, true);
 
         ValidateButtons();
-    }        
+    }
 
     /// <summary>Raises the <see cref="UserControl.Load"/> event.</summary>
     /// <param name="e">An <see cref="EventArgs"/> that contains the event data.</param>
@@ -404,7 +400,7 @@ internal partial class AnimationEditorView
             _ribbonForm.CreateControl();
         }
 
-        DataContext?.Load();
+        ViewModel?.Load();
         ShowFocusState(true);
         RenderControl?.Select();
 
@@ -413,21 +409,21 @@ internal partial class AnimationEditorView
 
     /// <summary>Function to unassign events for the data context.</summary>
     protected override void UnassignEvents()
-    {            
+    {
         base.UnassignEvents();
 
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             return;
         }
 
-        foreach (ITrack track in DataContext.Tracks)
+        foreach (ITrack track in ViewModel.Tracks)
         {
             track.PropertyChanged -= Track_PropertyChanged;
         }
-        
-        DataContext.Tracks.CollectionChanged -= Tracks_CollectionChanged;
-        DataContext.KeyEditor.PropertyChanged -= KeyEditor_PropertyChanged;
+
+        ViewModel.Tracks.CollectionChanged -= Tracks_CollectionChanged;
+        ViewModel.KeyEditor.PropertyChanged -= KeyEditor_PropertyChanged;
     }
 
     /// <summary>Function to assign a data context to the view as a view model.</summary>
@@ -445,24 +441,24 @@ internal partial class AnimationEditorView
         FloatValuesEditor.SetDataContext(dataContext?.KeyEditor?.FloatKeysEditor);
         ColorValuesEditor.SetDataContext(dataContext?.KeyEditor?.ColorKeysEditor);
 
-        DataContext = dataContext;
+        ViewModel = dataContext;
 
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             return;
         }
 
-        foreach (ITrack track in DataContext.Tracks)
+        foreach (ITrack track in ViewModel.Tracks)
         {
             track.PropertyChanged += Track_PropertyChanged;
         }
-                               
-        DataContext.Tracks.CollectionChanged += Tracks_CollectionChanged;
-        DataContext.KeyEditor.PropertyChanged += KeyEditor_PropertyChanged;
-    }
-    #endregion
 
-    #region Constructor/Finalizer.
+        ViewModel.Tracks.CollectionChanged += Tracks_CollectionChanged;
+        ViewModel.KeyEditor.PropertyChanged += KeyEditor_PropertyChanged;
+    }
+
+
+
     /// <summary>Initializes a new instance of the <see cref="AnimationEditorView"/> class.</summary>
     public AnimationEditorView(AnimationEditorSettings settings)
         : this() => _ribbonForm.Settings = settings;
@@ -480,5 +476,5 @@ internal partial class AnimationEditorView
         RegisterChildPanel(typeof(KeyValueEditor).FullName, FloatValuesEditor);
         RegisterChildPanel(typeof(ColorValueEditor).FullName, ColorValuesEditor);
     }
-    #endregion
+
 }

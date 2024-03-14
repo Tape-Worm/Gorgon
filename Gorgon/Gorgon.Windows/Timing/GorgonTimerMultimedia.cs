@@ -1,6 +1,6 @@
-#region MIT.
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2011 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,20 +11,19 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: Saturday, June 18, 2011 10:35:53 AM
 // 
-#endregion
 
-using System;
+
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using Gorgon.Native;
@@ -34,7 +33,7 @@ using Gorgon.Windows.Properties;
 namespace Gorgon.Timing;
 
 /// <summary>
-/// An implementation of the <see cref="IGorgonTimer"/> interface.
+/// An implementation of the <see cref="IGorgonTimer"/> interface
 /// </summary>
 /// <remarks>
 /// <para>
@@ -53,19 +52,19 @@ namespace Gorgon.Timing;
 /// timer. Also, since only the <see cref="GorgonApplication"/> class manages the period for the timer automatically, it'll be up to the user to set and reset the period frequency via the <see cref="BeginTiming"/> 
 /// and <see cref="EndTiming"/> static methods on this class if the <see cref="GorgonApplication"/> class is not used in your application. It is vitally important that the <see cref="EndTiming"/> method is called 
 /// when the <see cref="BeginTiming"/> method is used. Failure to do so can leave the operating system timing in a state where the task scheduler switches tasks more often and the power saving may not trigger 
-/// properly.
+/// properly
 /// </note>
 /// </para>
 /// </remarks>
 public sealed class GorgonTimerMultimedia
     : IGorgonTimer
 {
-    #region Constants.
+
     // Error code returned when setting timer period.
     private const uint ErrorNoCanDo = 97;
-    #endregion
 
-    #region Variables.
+
+
     // Flag to indicate that the timer was initialized.
     private bool _initialized;
     // The last period for the timer.
@@ -80,9 +79,9 @@ public sealed class GorgonTimerMultimedia
     private double _milliseconds;
     // Timer capabilities.
     private static TIMECAPS _timeCaps;
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to return the number of milliseconds elapsed since the timer was started.
     /// </summary>
@@ -140,9 +139,9 @@ public sealed class GorgonTimerMultimedia
     /// </summary>
     public bool IsHighResolution => false;
 
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to retrieve the timeGetTime time data.
     /// </summary>
@@ -263,5 +262,5 @@ public sealed class GorgonTimerMultimedia
         _startTime = WinMultimediaApi.timeGetTime();
         _initialized = true;
     }
-    #endregion
+
 }

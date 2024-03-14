@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2020 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,45 +11,40 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: January 11, 2020 3:32:25 PM
 // 
-#endregion
 
-using System;
-using System.Collections.Generic;
+
 using System.ComponentModel;
-using System.Drawing;
-using System.Linq;
-using System.Windows.Forms;
 using Gorgon.Math;
 
 namespace Gorgon.Editor.Views;
 
 /// <summary>
-/// A data grid view with extended functionality.
+/// A data grid view with extended functionality
 /// </summary>
 internal class DataGridViewEx
     : DataGridView
 {
-    #region Variables.
+
     // The region for dragging.
     private Rectangle _dragRegion;
     // Pass through event arguments.
     private MouseEventArgs _passThruEventArgs;
     // The list of rows for dragging.
-    private readonly List<DataGridViewRow> _dragRows = new();
-    #endregion
+    private readonly List<DataGridViewRow> _dragRows = [];
 
-    #region Events.
+
+
     // Event fired when rows are dragged.
     private event EventHandler<RowsDragEventArgs> RowsDragEvent;
 
@@ -79,9 +74,9 @@ internal class DataGridViewEx
             RowsDragEvent -= value;
         }
     }
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>Processes keys used for navigating in the <see cref="DataGridView"/>.</summary>
     /// <param name="e">Contains information about the key that was pressed.</param>
     /// <returns>
@@ -141,7 +136,7 @@ internal class DataGridViewEx
         if (IsCurrentCellInEditMode)
         {
             base.OnMouseDown(e);
-            return;    
+            return;
         }
 
         Focus();
@@ -158,16 +153,16 @@ internal class DataGridViewEx
             return;
         }
 
-        DataGridViewRow row = Rows[hit.RowIndex];            
+        DataGridViewRow row = Rows[hit.RowIndex];
 
-        if ((!row.Selected) 
-            && (SelectedRows.Count > 0) 
-            && ((ModifierKeys & Keys.Shift) != Keys.Shift) 
+        if ((!row.Selected)
+            && (SelectedRows.Count > 0)
+            && ((ModifierKeys & Keys.Shift) != Keys.Shift)
             && ((ModifierKeys & Keys.Control) != Keys.Control))
         {
             ClearSelection();
             row.Selected = true;
-        }            
+        }
 
         if ((SelectedRows.Count > 0) && (row.Selected))
         {
@@ -178,7 +173,7 @@ internal class DataGridViewEx
             _dragRegion = new Rectangle(dragLocation, dragSize);
             return;
         }
-        
+
         base.OnMouseDown(e);
     }
 
@@ -211,7 +206,7 @@ internal class DataGridViewEx
     /// <param name="e">An <see cref="EventArgs"/> that contains the event data.</param>
     protected override void OnGotFocus(EventArgs e)
     {
-        Refresh();            
+        Refresh();
         base.OnGotFocus(e);
     }
 
@@ -220,24 +215,24 @@ internal class DataGridViewEx
     protected override void OnCellPainting(DataGridViewCellPaintingEventArgs e)
     {
         base.OnCellPainting(e);
-        if ((Focused) 
-            || ((e.State & DataGridViewElementStates.Selected) != DataGridViewElementStates.Selected) 
+        if ((Focused)
+            || ((e.State & DataGridViewElementStates.Selected) != DataGridViewElementStates.Selected)
             || ((e.PaintParts & DataGridViewPaintParts.Background) != DataGridViewPaintParts.Background)
             || (!Columns[e.ColumnIndex].Visible)
             || (IsCurrentCellInEditMode))
-        {                
+        {
             return;
         }
 
-        e.PaintBackground(new Rectangle(0, e.CellBounds.Y, ClientSize.Width - 1, e.CellBounds.Height), false);            
+        e.PaintBackground(new Rectangle(0, e.CellBounds.Y, ClientSize.Width - 1, e.CellBounds.Height), false);
 
         using (var pen = new Pen(e.CellStyle.SelectionBackColor))
-        {                
+        {
             var r = new Rectangle(e.ClipBounds.X, e.CellBounds.Y, e.ClipBounds.Width - 1, e.CellBounds.Height - 1);
             pen.DashStyle = System.Drawing.Drawing2D.DashStyle.Dot;
             e.Graphics.DrawRectangle(pen, r);
         }
-        
+
         e.PaintContent(e.ClipBounds);
 
         e.Handled = true;
@@ -264,5 +259,5 @@ internal class DataGridViewEx
 
         base.Dispose(disposing);
     }
-    #endregion
+
 }

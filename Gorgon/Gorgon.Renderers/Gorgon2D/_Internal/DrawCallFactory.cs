@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2018 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: June 7, 2018 4:18:45 PM
 // 
-#endregion
+
 
 using System.Runtime.CompilerServices;
 using Gorgon.Graphics.Core;
@@ -30,28 +30,34 @@ using Gorgon.Graphics.Core;
 namespace Gorgon.Renderers;
 
 /// <summary>
-/// A factory used to produce draw calls.
+/// A factory used to produce draw calls
 /// </summary>
-internal sealed class DrawCallFactory
+/// <remarks>
+/// Initializes a new instance of the <see cref="DrawCallFactory"/> class
+/// </remarks>
+/// <param name="graphics">The graphics interface to use when creating states.</param>
+/// <param name="defaultTexture">The default texture to use as a fallback when no texture is passed by renderable.</param>
+/// <param name="inputLayout">The input layout defining a vertex type.</param>
+internal sealed class DrawCallFactory(GorgonGraphics graphics, GorgonTexture2DView defaultTexture, GorgonInputLayout inputLayout)
 {
-    #region Variables.
-    // The allocater used to create draw calls.
-    private readonly GorgonDrawCallPoolAllocator<GorgonDrawIndexCall> _drawIndexAllocator;
-    // The allocater used to create draw calls.
-    private readonly GorgonDrawCallPoolAllocator<GorgonDrawCall> _drawAllocator;
-    // The builder used to build a draw call.
-    private readonly GorgonDrawIndexCallBuilder _drawIndexBuilder;
-    // The builder used to build a draw call.
-    private readonly GorgonDrawCallBuilder _drawBuilder;
-    // The builder used to build states.
-    private readonly GorgonPipelineStateBuilder _stateBuilder;
-    // The default texture to use if the renderable does not have one.
-    private readonly GorgonTexture2DView _defaultTexture;
-    // The current input layout.
-    private readonly GorgonInputLayout _inputLayout;
-    #endregion
 
-    #region Properties.
+    // The allocater used to create draw calls.
+    private readonly GorgonDrawCallPoolAllocator<GorgonDrawIndexCall> _drawIndexAllocator = new(128);
+    // The allocater used to create draw calls.
+    private readonly GorgonDrawCallPoolAllocator<GorgonDrawCall> _drawAllocator = new(128);
+    // The builder used to build a draw call.
+    private readonly GorgonDrawIndexCallBuilder _drawIndexBuilder = new();
+    // The builder used to build a draw call.
+    private readonly GorgonDrawCallBuilder _drawBuilder = new();
+    // The builder used to build states.
+    private readonly GorgonPipelineStateBuilder _stateBuilder = new(graphics);
+    // The default texture to use if the renderable does not have one.
+    private readonly GorgonTexture2DView _defaultTexture = defaultTexture;
+    // The current input layout.
+    private readonly GorgonInputLayout _inputLayout = inputLayout;
+
+
+
     /// <summary>
     /// Property to set or return the buffer used to hold alpha test data.
     /// </summary>
@@ -60,9 +66,9 @@ internal sealed class DrawCallFactory
         get;
         set;
     }
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to set up common states for a draw call type.
     /// </summary>
@@ -149,24 +155,6 @@ internal sealed class DrawCallFactory
                                 .IndexBuffer(indexBuffer)
                                 .Build(_drawIndexAllocator);
     }
-    #endregion
 
-    #region Constructor/Finalizer.
-    /// <summary>
-    /// Initializes a new instance of the <see cref="DrawCallFactory"/> class.
-    /// </summary>
-    /// <param name="graphics">The graphics interface to use when creating states.</param>
-    /// <param name="defaultTexture">The default texture to use as a fallback when no texture is passed by renderable.</param>
-    /// <param name="inputLayout">The input layout defining a vertex type.</param>
-    public DrawCallFactory(GorgonGraphics graphics, GorgonTexture2DView defaultTexture, GorgonInputLayout inputLayout)
-    {
-        _inputLayout = inputLayout;
-        _drawIndexAllocator = new GorgonDrawCallPoolAllocator<GorgonDrawIndexCall>(128);
-        _drawAllocator = new GorgonDrawCallPoolAllocator<GorgonDrawCall>(128);
-        _drawIndexBuilder = new GorgonDrawIndexCallBuilder();
-        _drawBuilder = new GorgonDrawCallBuilder();
-        _stateBuilder = new GorgonPipelineStateBuilder(graphics);
-        _defaultTexture = defaultTexture;
-    }
-    #endregion
+
 }

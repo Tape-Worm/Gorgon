@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2019 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: May 20, 2019 11:43:38 PM
 // 
-#endregion
+
 
 using Gorgon.Graphics.Core;
 using Gorgon.Renderers;
@@ -31,12 +31,14 @@ using DX = SharpDX;
 namespace Gorgon.Examples;
 
 /// <summary>
-/// This will represent a 2D layer that renders our background stars.
+/// This will represent a 2D layer that renders our background stars
 /// </summary>
-internal class BgStarLayer
-    : Layer2D
+/// <remarks>Initializes a new instance of the <see cref="BgStarLayer"/> class.</remarks>
+/// <param name="renderer">The 2D renderer for the application.</param>
+internal class BgStarLayer(Gorgon2D renderer)
+        : Layer2D(renderer)
 {
-    #region Properties.
+
     /// <summary>
     /// Property to set or return the texture used to draw the stars on the background.
     /// </summary>
@@ -45,9 +47,9 @@ internal class BgStarLayer
         get;
         set;
     }
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>Function called to update items per frame on the layer.</summary>
     protected sealed override void OnUpdate()
     {
@@ -63,15 +65,6 @@ internal class BgStarLayer
             GorgonSamplerState.Wrapping);
         Renderer.End();
     }
-    #endregion
 
-    #region Constructor/Finalizer.
-    /// <summary>Initializes a new instance of the <see cref="BgStarLayer"/> class.</summary>
-    /// <param name="renderer">The 2D renderer for the application.</param>
-    public BgStarLayer(Gorgon2D renderer)
-        : base(renderer)
-    {
 
-    }
-    #endregion
 }

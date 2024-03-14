@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2021 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,20 +11,19 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: February 12, 2021 4:11:22 PM
 // 
-#endregion
 
-#region SharpDX
+
 // Copyright (c) 2010-2014 SharpDX - Alexandre Mutel
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -35,7 +34,7 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
@@ -43,7 +42,7 @@
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // -----------------------------------------------------------------------------
 // Original code from SlimMath project. http://code.google.com/p/slimmath/
 // Greetings to SlimDX Group. Original code published with the following license:
@@ -69,9 +68,8 @@
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 * THE SOFTWARE.
 */
-#endregion
 
-using System;
+
 using System.Globalization;
 using System.Numerics;
 using System.Runtime.CompilerServices;
@@ -83,25 +81,30 @@ using DX = SharpDX;
 namespace Gorgon.Renderers.Data;
 
 /// <summary>
-/// Represents a three dimensional line based on a point in space and a direction.
+/// Represents a three dimensional line based on a point in space and a direction
 /// </summary>
+/// <remarks>
+/// Initializes a new instance of the <see cref="GorgonRay"/> struct
+/// </remarks>
+/// <param name="position">The position in three dimensional space of the origin of the ray.</param>
+/// <param name="direction">The normalized direction of the ray.</param>
 [StructLayout(LayoutKind.Sequential, Pack = 4)]
-public struct GorgonRay 
-    : IGorgonEquatableByRef<GorgonRay>
+public struct GorgonRay(Vector3 position, Vector3 direction)
+        : IGorgonEquatableByRef<GorgonRay>
 {
-    #region Variables.
+
     /// <summary>
     /// The position in three dimensional space where the ray starts.
     /// </summary>
-    public Vector3 Position;
+    public Vector3 Position = position;
 
     /// <summary>
     /// The normalized direction in which the ray points.
     /// </summary>
-    public Vector3 Direction;
-    #endregion
+    public Vector3 Direction = direction;
 
-    #region Methods.
+
+
     /// <summary>
     /// Calculates a world space <see cref="GorgonRay"/> from 2d screen coordinates.
     /// </summary>
@@ -114,11 +117,11 @@ public struct GorgonRay
     {
         var nearPoint = new Vector3(x, y, 0);
         var farPoint = new Vector3(x, y, 1);
-                    
+
         nearPoint = nearPoint.Unproject(viewport.X, viewport.Y, viewport.Width, viewport.Height, viewport.MinDepth, viewport.MaxDepth, in worldViewProjection);
         farPoint = farPoint.Unproject(viewport.X, viewport.Y, viewport.Width, viewport.Height, viewport.MinDepth, viewport.MaxDepth, in worldViewProjection);
 
-        var direction = Vector3.Normalize(farPoint - nearPoint);            
+        var direction = Vector3.Normalize(farPoint - nearPoint);
 
         return new GorgonRay(nearPoint, direction);
     }
@@ -188,18 +191,4 @@ public struct GorgonRay
     ///   <b>true</b> if equal, <b>false</b> if not.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public readonly bool Equals(in GorgonRay other) => Position.Equals(other.Position) && Direction.Equals(other.Direction);
-    #endregion
-
-    #region Constructor.
-    /// <summary>
-    /// Initializes a new instance of the <see cref="GorgonRay"/> struct.
-    /// </summary>
-    /// <param name="position">The position in three dimensional space of the origin of the ray.</param>
-    /// <param name="direction">The normalized direction of the ray.</param>
-    public GorgonRay(Vector3 position, Vector3 direction)
-    {
-        Position = position;
-        Direction = direction;
-    }
-    #endregion
 }

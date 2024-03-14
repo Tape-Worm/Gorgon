@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2019 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,25 +11,20 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: April 8, 2019 9:27:07 PM
 // 
-#endregion
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
+
 using System.Numerics;
-using System.Threading;
-using System.Windows.Forms;
 using Gorgon.Editor.Rendering;
 using Gorgon.Editor.Services;
 using Gorgon.Graphics;
@@ -42,24 +37,24 @@ using DX = SharpDX;
 namespace Gorgon.Editor.SpriteEditor;
 
 /// <summary>
-/// The service used to edit sprite vertices.
+/// The service used to edit sprite vertices
 /// </summary>
 internal class SpriteVertexEditService
 {
-    #region Variables.
+
     // The renderer used to draw the UI.
     private readonly Gorgon2D _renderer;
     // The list of vertices to update.
     private readonly Vector2[] _vertices = new Vector2[4];
     // The handles for grabbing.
     private readonly RectHandle[] _handles =
-    {
-        new RectHandle(),
-        new RectHandle(),
-        new RectHandle(),
-        new RectHandle(),
-        new RectHandle()
-    };
+    [
+        new(),
+        new(),
+        new(),
+        new(),
+        new()
+    ];
     // The sprite boundaries, in texture space (but in pixels).
     private DX.RectangleF _spriteBounds;
     // The state used to draw inverted items.
@@ -80,9 +75,9 @@ internal class SpriteVertexEditService
     private int _selectedVertexIndex = -1;
     // The camera used to render the UI.
     private GorgonOrthoCamera _camera;
-    #endregion
 
-    #region Events.
+
+
     // Event triggered when the keyboard icon is clicked.
     private event EventHandler KeyboardIconClickedEvent;
 
@@ -169,9 +164,9 @@ internal class SpriteVertexEditService
             KeyboardIconClickedEvent -= value;
         }
     }
-    #endregion
 
-    #region Properties.		
+
+
     /// <summary>
     /// Property to set or return the camera being used.
     /// </summary>
@@ -259,9 +254,9 @@ internal class SpriteVertexEditService
             SetupHandles();
         }
     }
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to raise the <see cref="VerticesChangedEvent"/> event.
     /// </summary>
@@ -450,7 +445,7 @@ internal class SpriteVertexEditService
                 _dragHandlePos = Vector2.Zero;
                 _localStartDrag = Vector2.Zero;
                 IsDragging = false;
-                return true;                    
+                return true;
             case Keys.D1:
                 SelectedVertexIndex = 0;
                 _dragHandlePos = Vector2.Zero;
@@ -603,7 +598,7 @@ internal class SpriteVertexEditService
         }
 
         if (SelectedVertexIndex == -1)
-        {                
+        {
             return false;
         }
 
@@ -703,9 +698,9 @@ internal class SpriteVertexEditService
             keyIcon.Value.Dispose();
         }
     }
-    #endregion
 
-    #region Constructor/Finalizer.
+
+
     /// <summary>Initializes a new instance of the <see cref="SpriteVertexEditService"/> class.</summary>
     /// <param name="renderer">The 2D renderer for the application.</param>
     public SpriteVertexEditService(Gorgon2D renderer)
@@ -727,5 +722,5 @@ internal class SpriteVertexEditService
             Name = "VertexEditor_KeyboardIcon"
         }, CommonEditorResources.KeyboardIcon), true);
     }
-    #endregion
+
 }

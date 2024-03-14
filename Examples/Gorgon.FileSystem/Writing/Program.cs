@@ -1,6 +1,6 @@
-﻿#region MIT.
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2013 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,33 +11,30 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: Friday, January 18, 2013 8:47:05 AM
 // 
-#endregion
 
-using System;
-using System.IO;
-using System.Windows.Forms;
+
 using Gorgon.Diagnostics;
 
 namespace Gorgon.Examples;
 
 /// <summary>
-/// Example entry point.
+/// Example entry point
 /// </summary>
 /// <remarks>To see a description of this example, look in formMain.cs</remarks>
 internal static class Program
 {
-    #region Properties.
+
     /// <summary>
     /// Property to return the application log file.
     /// </summary>
@@ -50,14 +47,14 @@ internal static class Program
     /// <summary>
     /// Property to return the directory where we'll be writing into.
     /// </summary>
-	    public static DirectoryInfo WriteDirectory
+    public static DirectoryInfo WriteDirectory
     {
         get;
         private set;
     }
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// The main entry point for the application.
     /// </summary>
@@ -70,9 +67,7 @@ internal static class Program
 
         try
         {
-#if NET6_0_OR_GREATER
             Application.SetHighDpiMode(HighDpiMode.PerMonitorV2);
-#endif
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
 
@@ -95,5 +90,5 @@ internal static class Program
             Log.LogEnd();
         }
     }
-    #endregion
+
 }

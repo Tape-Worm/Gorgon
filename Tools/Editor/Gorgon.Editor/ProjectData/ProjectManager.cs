@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2018 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,28 +11,22 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: September 1, 2018 8:41:18 PM
 // 
-#endregion
 
-using System;
+
 using System.Buffers;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
-using System.Linq;
 using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
 using Gorgon.Editor.Metadata;
@@ -48,29 +42,36 @@ using Newtonsoft.Json;
 namespace Gorgon.Editor.ProjectData;
 
 /// <summary>
-/// A project manager used to create, destroy, load and save a project.
+/// A project manager used to create, destroy, load and save a project
 /// </summary>
-internal class ProjectManager
+/// <remarks>
+/// Initializes a new instance of the <see cref="ProjectManager"/> class
+/// </remarks>
+/// <param name="providers">The file system providers used to read and write project files.</param>
+/// <param name="contentPlugIns">The plug in service used to manage content.</param>
+/// <param name="log">The log interface for debug messages.</param>
+/// <exception cref="ArgumentNullException">Thrown when the <paramref name="providers"/> parameter is <b>null</b>.</exception>
+internal class ProjectManager(FileSystemProviders providers, IGorgonLog log)
 {
-    #region Constants
+
     // The temporary directory name.
     private const string TemporaryDirectoryName = "tmp";
     // The source directory name.
     private const string SourceDirectoryName = "src";
     // The file system directory name.
     private const string FileSystemDirectoryName = "fs";
-    #endregion
 
-    #region Variables.
+
+
     // The stream used for the lock file.
     private Stream _lockStream;
     // The log interface for debug messages.
-    private readonly IGorgonLog _log;
+    private readonly IGorgonLog _log = log ?? GorgonLog.NullLog;
     // The provider service for handling reading and writing project files.
-    private readonly FileSystemProviders _providers;
-    #endregion
+    private readonly FileSystemProviders _providers = providers ?? throw new ArgumentNullException(nameof(providers));
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to set up the required project directories.
     /// </summary>
@@ -185,7 +186,7 @@ internal class ProjectManager
                 if (recycle)
                 {
                     _log.Print($"Moving '{prevDirectory}' to the recycle bin...", LoggingLevel.Intermediate);
-                    Shell32.SendToRecycleBin(prevDirectory, Shell32.FileOperationFlags.FOF_SILENT | Shell32.FileOperationFlags.FOF_NOCONFIRMATION | Shell32.FileOperationFlags.FOF_WANTNUKEWARNING);
+                    Shell32.SendToRecycleBin(prevDirectory, FileOperationFlags.FOF_SILENT | FileOperationFlags.FOF_NOCONFIRMATION | FileOperationFlags.FOF_WANTNUKEWARNING);
                 }
                 else
                 {
@@ -227,7 +228,7 @@ internal class ProjectManager
 
         foreach (IGorgonVirtualDirectory directory in directories)
         {
-            string dirPath = Path.Combine(fileSystemDir, directory.FullPath.FormatDirectory(Path.DirectorySeparatorChar)[1..]);                
+            string dirPath = Path.Combine(fileSystemDir, directory.FullPath.FormatDirectory(Path.DirectorySeparatorChar)[1..]);
 
             if (Directory.Exists(dirPath))
             {
@@ -308,7 +309,7 @@ internal class ProjectManager
         }
 
         _log.Print($"'{fileSystemFile}' has metadata. Copying to the .", LoggingLevel.Verbose);
-                    
+
         byte[] writeBuffer = ArrayPool<byte>.Shared.Rent(blockSize);
         Stream readStream = metaData.OpenStream();
         Stream writeStream = File.Open(metaDataOutput, FileMode.Create, FileAccess.Write, FileShare.None);
@@ -373,7 +374,7 @@ internal class ProjectManager
 
         using (var reader = new StreamReader(metaDataFile, Encoding.UTF8))
         {
-            string readJsonData = reader.ReadToEnd();                
+            string readJsonData = reader.ReadToEnd();
 
             switch (projectVersion)
             {
@@ -950,23 +951,9 @@ internal class ProjectManager
         }
 
         // Send the project to the recycle bin so we can recover it if need be.
-        Shell32.SendToRecycleBin(projectPath, Shell32.FileOperationFlags.FOF_SILENT | Shell32.FileOperationFlags.FOF_NOCONFIRMATION | Shell32.FileOperationFlags.FOF_WANTNUKEWARNING);
+        Shell32.SendToRecycleBin(projectPath, FileOperationFlags.FOF_SILENT | FileOperationFlags.FOF_NOCONFIRMATION | FileOperationFlags.FOF_WANTNUKEWARNING);
         return true;
     }
-    #endregion
 
-    #region Constructor/Finalizer.
-    /// <summary>
-    /// Initializes a new instance of the <see cref="ProjectManager"/> class.
-    /// </summary>
-    /// <param name="providers">The file system providers used to read and write project files.</param>
-    /// <param name="contentPlugIns">The plug in service used to manage content.</param>
-    /// <param name="log">The log interface for debug messages.</param>
-    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="providers"/> parameter is <b>null</b>.</exception>
-    public ProjectManager(FileSystemProviders providers, IGorgonLog log)
-    {
-        _log = log ?? GorgonLog.NullLog;            
-        _providers = providers ?? throw new ArgumentNullException(nameof(providers));
-    }
-    #endregion
+
 }

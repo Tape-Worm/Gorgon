@@ -5,7 +5,7 @@ using Gorgon.Timing;
 namespace Gorgon.Examples;
 
 /// <summary>
-/// Direction of cloaking effect.
+/// Direction of cloaking effect
 /// </summary>
 public enum CloakDirection
 {
@@ -33,11 +33,11 @@ public enum CloakDirection
 
 
 /// <summary>
-/// Defines the states for cloaking the ship.
+/// Defines the states for cloaking the ship
 /// </summary>
 public class CloakController
 {
-    #region Variables.
+
     // The angle for the cloaking "pulse".
     private float _cloakPulseAngle = 180.0f;
     // The anggle of the cloaking pulse, in radians.
@@ -46,9 +46,9 @@ public class CloakController
     private float _cloakAmount;
     // The direction to move in order to stop the pulse.
     private int _stopPulseDirection = 1;
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to return the opacity.
     /// </summary>
@@ -76,9 +76,9 @@ public class CloakController
         get;
         private set;
     }
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to initiate the cloak.
     /// </summary>
@@ -158,5 +158,5 @@ public class CloakController
                 break;
         }
     }
-    #endregion
+
 }

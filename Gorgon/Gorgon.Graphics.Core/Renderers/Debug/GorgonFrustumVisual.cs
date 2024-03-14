@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2021 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,20 +11,19 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: January 15, 2021 2:48:43 PM
 // 
-#endregion
 
-using System;
+
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using Gorgon.Graphics.Core;
@@ -34,12 +33,12 @@ using Gorgon.Renderers.Data;
 namespace Gorgon.Renderers.Debug;
 
 /// <summary>
-/// Provides a visual wireframe box to display a frustum for debug purposes.
+/// Provides a visual wireframe box to display a frustum for debug purposes
 /// </summary>
 public class GorgonFrustumVisual
     : IGorgonGraphicsObject, IDisposable
 {
-    #region Variables.        
+
     // The builder used to build draw calls.
     private readonly GorgonDrawCallBuilder _builder = new();
     // The draw call to submit to the graphics interface.
@@ -56,17 +55,17 @@ public class GorgonFrustumVisual
     private GorgonVertexShader _vertexShader;
     // The pixel shader.
     private GorgonPixelShader _pixelShader;
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>Property to return the graphics interface that built this object.</summary>
     public GorgonGraphics Graphics
     {
         get;
     }
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to initialize the visual.
     /// </summary>
@@ -74,7 +73,7 @@ public class GorgonFrustumVisual
     {
         var vertexBuffer = new GorgonVertexBuffer(Graphics, new GorgonVertexBufferInfo(_lineVertices.Length * Unsafe.SizeOf<Vector3>())
         {
-            Name = "Frustum Visual VertexBuffer",                
+            Name = "Frustum Visual VertexBuffer",
             Usage = ResourceUsage.Dynamic
         });
 
@@ -89,10 +88,10 @@ public class GorgonFrustumVisual
         _vertexShader = GorgonShaderFactory.Compile<GorgonVertexShader>(Graphics, Resources.GraphicsShaders, "GorgonDebugVertexShader", GorgonGraphics.IsDebugEnabled);
         _pixelShader = GorgonShaderFactory.Compile<GorgonPixelShader>(Graphics, Resources.GraphicsShaders, "GorgonDebugPixelShader", GorgonGraphics.IsDebugEnabled);
 
-        _inputLayout = new GorgonInputLayout(Graphics, "Frustum Line Vertex Input Layout", _vertexShader, new[]
-        {
+        _inputLayout = new GorgonInputLayout(Graphics, "Frustum Line Vertex Input Layout", _vertexShader,
+        [
             new GorgonInputElement("SV_POSITION", Gorgon.Graphics.BufferFormat.R32G32B32_Float, 0)
-        });
+        ]);
 
         var psoBuilder = new GorgonPipelineStateBuilder(Graphics);
 
@@ -114,9 +113,9 @@ public class GorgonFrustumVisual
     private void BuildBox(GorgonBoundingFrustum frustum)
     {
         // Left            
-        _lineVertices[0] = frustum.Corners[FrustumCorner.BottomLeftFar]; 
+        _lineVertices[0] = frustum.Corners[FrustumCorner.BottomLeftFar];
         _lineVertices[2] = _lineVertices[1] = frustum.Corners[FrustumCorner.TopLeftFar];
-        _lineVertices[4] = _lineVertices[3] = frustum.Corners[FrustumCorner.TopLeftNear]; 
+        _lineVertices[4] = _lineVertices[3] = frustum.Corners[FrustumCorner.TopLeftNear];
         _lineVertices[6] = _lineVertices[5] = frustum.Corners[FrustumCorner.BottomLeftNear];
         _lineVertices[7] = _lineVertices[0];
 
@@ -124,7 +123,7 @@ public class GorgonFrustumVisual
         _lineVertices[8] = frustum.Corners[FrustumCorner.BottomRightFar];
         _lineVertices[10] = _lineVertices[9] = frustum.Corners[FrustumCorner.TopRightFar];
         _lineVertices[12] = _lineVertices[11] = frustum.Corners[FrustumCorner.TopRightNear];
-        _lineVertices[14] = _lineVertices[13] = frustum.Corners[FrustumCorner.BottomRightNear];                
+        _lineVertices[14] = _lineVertices[13] = frustum.Corners[FrustumCorner.BottomRightNear];
         _lineVertices[15] = _lineVertices[8];
 
         // Bottom
@@ -154,7 +153,7 @@ public class GorgonFrustumVisual
 
         var viewProj = Matrix4x4.Multiply(projectionMatrix, viewMatrix);
         viewProj = Matrix4x4.Transpose(viewProj);
-        
+
         _constantBuffer.Buffer.SetData(in viewProj);
 
         Graphics.Submit(_drawCall);
@@ -169,9 +168,9 @@ public class GorgonFrustumVisual
         _vertexBuffer.VertexBuffer?.Dispose();
         _inputLayout?.Dispose();
     }
-    #endregion
 
-    #region Constructor/Finalizer.
+
+
     /// <summary>Initializes a new instance of the <see cref="GorgonFrustumVisual" /> class.</summary>
     /// <param name="graphics">The graphics interface to update.</param>
     /// <exception cref="ArgumentNullException">Thrown when the <paramref name="graphics"/> parameter is <b>null</b>.</exception>
@@ -180,5 +179,5 @@ public class GorgonFrustumVisual
         Graphics = graphics ?? throw new ArgumentNullException(nameof(graphics));
         Initialize();
     }
-    #endregion
+
 }

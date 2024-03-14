@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2019 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,30 +11,30 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: March 15, 2019 11:53:17 AM
 // 
-#endregion
+
 
 using Gorgon.Editor.Rendering;
 
 namespace Gorgon.Editor.SpriteEditor;
 
 /// <summary>
-/// Provides rendering functionality for the sprite editor.
+/// Provides rendering functionality for the sprite editor
 /// </summary>
 internal interface ISpriteViewer
     : IContentRenderer
 {
-    #region Properties.
+
     /// <summary>
     /// Property to set or return the opacity of the content in the view.
     /// </summary>
@@ -50,9 +50,9 @@ internal interface ISpriteViewer
         get;
         set;
     }
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to create resources required for the lifetime of the viewer.
     /// </summary>
@@ -62,5 +62,5 @@ internal interface ISpriteViewer
     /// Function to set the default zoom/offset for the viewer.
     /// </summary>
     void DefaultZoom();
-    #endregion
+
 }

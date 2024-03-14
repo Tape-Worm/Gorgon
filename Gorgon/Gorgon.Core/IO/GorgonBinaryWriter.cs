@@ -1,6 +1,6 @@
-﻿#region MIT.
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2011 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,46 +11,49 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: Monday, June 27, 2011 8:57:11 AM
 // 
-#endregion
 
-using System;
-using System.IO;
+
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using System.Text;
 using Gorgon.Native;
 using Gorgon.Properties;
 
 namespace Gorgon.IO;
 
 /// <summary>
-/// An extended binary writer class.
+/// An extended binary writer class
 /// </summary>
 /// <remarks>
 /// <para>
-/// This object extends the functionality of the <see cref="BinaryWriter"/> type by adding extra functions to write to a pointer (or <c>nint</c>), and to generic value types.
+/// This object extends the functionality of the <see cref="BinaryWriter"/> type by adding extra functions to write to a pointer (or <c>nint</c>), and to generic value types
 /// </para>
 /// </remarks>
-public class GorgonBinaryWriter
-    : BinaryWriter
+/// <remarks>
+/// Initializes a new instance of the <see cref="GorgonBinaryWriter"/> class
+/// </remarks>
+/// <param name="output">Output stream.</param>
+/// <param name="encoder">Encoding for the binary writer.</param>
+/// <param name="keepStreamOpen">[Optional] <b>true</b> to keep the underlying stream open when the writer is closed, <b>false</b> to close when done.</param>
+public class GorgonBinaryWriter(Stream output, Encoding encoder, bool keepStreamOpen = false)
+        : BinaryWriter(output, encoder, keepStreamOpen)
 {
-    #region Variables.
+
     // The size of the temporary buffer used to stream data out.
     private int _bufferSize = 65536;
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to set or return the size of the buffer, in bytes, used to stream the data out.
     /// </summary>
@@ -83,10 +86,10 @@ public class GorgonBinaryWriter
     public bool KeepStreamOpen
     {
         get;
-    }
-    #endregion
+    } = keepStreamOpen;
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to write data from a span to a stream.
     /// </summary>
@@ -390,17 +393,9 @@ public class GorgonBinaryWriter
             Write((value + startIndex), count.Value * Unsafe.SizeOf<T>());
         }
     }
-    #endregion
 
-    #region Constructor/Destructor.
-    /// <summary>
-    /// Initializes a new instance of the <see cref="GorgonBinaryWriter"/> class.
-    /// </summary>
-    /// <param name="output">Output stream.</param>
-    /// <param name="encoder">Encoding for the binary writer.</param>
-    /// <param name="keepStreamOpen">[Optional] <b>true</b> to keep the underlying stream open when the writer is closed, <b>false</b> to close when done.</param>
-    public GorgonBinaryWriter(Stream output, Encoding encoder, bool keepStreamOpen = false)
-        : base(output, encoder, keepStreamOpen) => KeepStreamOpen = keepStreamOpen;
+
+
 
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonBinaryWriter"/> class.
@@ -411,5 +406,5 @@ public class GorgonBinaryWriter
         : this(output, Encoding.UTF8, keepStreamOpen)
     {
     }
-    #endregion
+
 }

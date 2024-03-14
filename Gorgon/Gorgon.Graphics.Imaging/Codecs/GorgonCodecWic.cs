@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2016 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,23 +11,19 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: June 27, 2016 7:53:02 PM
 // 
-#endregion
 
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
+
 using Gorgon.Core;
 using Gorgon.Graphics.Imaging.Properties;
 using Gorgon.IO;
@@ -36,14 +32,14 @@ using DX = SharpDX;
 namespace Gorgon.Graphics.Imaging.Codecs;
 
 /// <summary>
-/// Base class for the WIC based file formats (PNG, JPG, and BMP).
+/// Base class for the WIC based file formats (PNG, JPG, and BMP)
 /// </summary>
 /// <typeparam name="TWicEncOpt">The type of the options object used to provide options when encoding an image. Must be a reference type and implement <see cref="IGorgonWicEncodingOptions"/>.</typeparam>
 /// <typeparam name="TWicDecOpt">The type of the options object used to provide options when decoding an image. Must be a reference type and implement <see cref="IGorgonWicDecodingOptions"/>.</typeparam>
 /// <remarks>
 /// <para>
 /// A codec allows for reading and/or writing of data in an encoded format.  Users may inherit from this object to define their own 
-/// image formats, or use one of the predefined image codecs available in Gorgon.
+/// image formats, or use one of the predefined image codecs available in Gorgon
 /// </para>
 /// </remarks>
 public abstract class GorgonCodecWic<TWicEncOpt, TWicDecOpt>
@@ -51,17 +47,17 @@ public abstract class GorgonCodecWic<TWicEncOpt, TWicDecOpt>
     where TWicEncOpt : class, IGorgonWicEncodingOptions
     where TWicDecOpt : class, IGorgonWicDecodingOptions
 {
-    #region Variables.
+
     // Supported formats.
     private readonly BufferFormat[] _supportedFormats =
-    {
+    [
         BufferFormat.R8G8B8A8_UNorm,
         BufferFormat.B8G8R8A8_UNorm,
         BufferFormat.B8G8R8X8_UNorm
-    };
-    #endregion
+    ];
 
-    #region Properties
+
+
     /// <summary>
     /// Property to return the list of names used to locate frame offsets in metadata.
     /// </summary>
@@ -113,9 +109,9 @@ public abstract class GorgonCodecWic<TWicEncOpt, TWicDecOpt>
     /// Property to return the supported pixel formats for this codec.
     /// </summary>
     public override IReadOnlyList<BufferFormat> SupportedPixelFormats => _supportedFormats;
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to retrieve custom metadata when encoding an image frame.
     /// </summary>
@@ -340,7 +336,7 @@ public abstract class GorgonCodecWic<TWicEncOpt, TWicDecOpt>
     {
         if (!SupportsMultipleFrames)
         {
-            return Array.Empty<DX.Point>();
+            return [];
         }
 
         var wic = new WicUtilities();
@@ -349,7 +345,7 @@ public abstract class GorgonCodecWic<TWicEncOpt, TWicDecOpt>
         {
             if ((FrameOffsetMetadataNames is null) || (FrameOffsetMetadataNames.Count == 0))
             {
-                return Array.Empty<DX.Point>();
+                return [];
             }
 
             IReadOnlyList<DX.Point> result = wic.GetFrameOffsetMetadata(stream, SupportedFileFormat, FrameOffsetMetadataNames);
@@ -413,9 +409,9 @@ public abstract class GorgonCodecWic<TWicEncOpt, TWicDecOpt>
             wic.Dispose();
         }
     }
-    #endregion
 
-    #region Constructor/Destructor.
+
+
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonCodecWic{TWicEncOpt, TWicDecOpt}" /> class.
     /// </summary>
@@ -442,8 +438,8 @@ public abstract class GorgonCodecWic<TWicEncOpt, TWicDecOpt>
 
         Codec = codec;
         CodecDescription = description ?? string.Empty;
-        CodecCommonExtensions = extensions ?? Array.Empty<string>();
+        CodecCommonExtensions = extensions ?? [];
         SupportedFileFormat = containerGUID;
     }
-    #endregion
+
 }

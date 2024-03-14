@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2019 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,21 +11,19 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: April 4, 2019 8:59:29 PM
 // 
-#endregion
 
-using System;
-using System.Collections.Generic;
+
 using System.Collections.ObjectModel;
 using Gorgon.Animation;
 using Gorgon.Editor.AnimationEditor.Properties;
@@ -34,17 +32,17 @@ using Gorgon.Editor.UI;
 namespace Gorgon.Editor.AnimationEditor;
 
 /// <summary>
-/// The view model for adding a track to the animation.
+/// The view model for adding a track to the animation
 /// </summary>
 internal class AddTrack
     : HostedPanelViewModelBase<AddTrackParameters>, IAddTrack
 {
-    #region Variables.
-    // The list of selected tracks.
-    private readonly List<GorgonTrackRegistration> _selectedTracks = new();
-    #endregion
 
-    #region Properties.
+    // The list of selected tracks.
+    private readonly List<GorgonTrackRegistration> _selectedTracks = [];
+
+
+
 
     /// <summary>Property to return whether the panel is modal.</summary>
     public override bool IsModal => true;
@@ -74,7 +72,7 @@ internal class AddTrack
             {
                 _selectedTracks.AddRange(value);
             }
-            OnPropertyChanged();                
+            OnPropertyChanged();
         }
     }
 
@@ -85,9 +83,9 @@ internal class AddTrack
     {
         get;
     }
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>Function to select the tracks to add.</summary>
     /// <param name="tracks">The list of tracks to add.</param>
     private void DoSelectTracks(IReadOnlyList<GorgonTrackRegistration> tracks)
@@ -116,10 +114,10 @@ internal class AddTrack
         _selectedTracks.Clear();
         base.Unload();
     }
-    #endregion
 
-    #region Constructor.
+
+
     /// <summary>Initializes a new instance of the <see cref="AddTrack"/> class.</summary>
     public AddTrack() => SelectTracksCommand = new EditorCommand<IReadOnlyList<GorgonTrackRegistration>>(DoSelectTracks);
-    #endregion
+
 }

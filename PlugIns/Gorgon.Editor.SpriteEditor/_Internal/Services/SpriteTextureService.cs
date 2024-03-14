@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2019 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,24 +11,20 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: March 18, 2019 12:11:28 PM
 // 
-#endregion
 
-using System;
-using System.Collections.Generic;
+
 using System.Diagnostics;
-using System.IO;
-using System.Threading.Tasks;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
 using Gorgon.Editor.Content;
@@ -45,26 +41,32 @@ using DX = SharpDX;
 namespace Gorgon.Editor.SpriteEditor;
 
 /// <summary>
-/// Functionality for handling an associated sprite texture.
+/// Functionality for handling an associated sprite texture
 /// </summary>
-internal class SpriteTextureService
+/// <remarks>Initializes a new instance of the <see cref="SpriteTextureService"/> class.</remarks>
+/// <param name="graphicsContext">The graphics context for the application.</param>
+/// <param name="fileManager">The content file manager.</param>
+/// <param name="spriteCodec">The codec used to read sprite data.</param>
+/// <param name="imageCodec">The codec used to read image data.</param>
+/// <param name="log">The logging interface for debug logging.</param>
+internal class SpriteTextureService(IGraphicsContext graphicsContext, IContentFileManager fileManager, IGorgonSpriteCodec spriteCodec, IGorgonImageCodec imageCodec, IGorgonLog log)
 {
-    #region Variables.
-    // The graphics interface for the application.
-    private readonly GorgonGraphics _graphics;
-    // The 2D renderer for the application.
-    private readonly Gorgon2D _renderer;
-    // The content file manager.
-    private readonly IContentFileManager _fileManager;
-    // The image codec used to read image file data.
-    private readonly IGorgonImageCodec _imageCodec;
-    // The codec used to read sprite data.
-    private readonly IGorgonSpriteCodec _spriteCodec;
-    // The logging interface for debug logging.
-    private readonly IGorgonLog _log;
-    #endregion
 
-    #region Methods.
+    // The graphics interface for the application.
+    private readonly GorgonGraphics _graphics = graphicsContext.Graphics;
+    // The 2D renderer for the application.
+    private readonly Gorgon2D _renderer = graphicsContext.Renderer2D;
+    // The content file manager.
+    private readonly IContentFileManager _fileManager = fileManager;
+    // The image codec used to read image file data.
+    private readonly IGorgonImageCodec _imageCodec = imageCodec;
+    // The codec used to read sprite data.
+    private readonly IGorgonSpriteCodec _spriteCodec = spriteCodec;
+    // The logging interface for debug logging.
+    private readonly IGorgonLog _log = log;
+
+
+
     /// <summary>
     /// Function to render the image data into an 32 bit RGBA pixel format render target and then return it as the properly formatted image data.
     /// </summary>
@@ -79,7 +81,7 @@ internal class SpriteTextureService
 
         try
         {
-            IGorgonImage resultImage = new GorgonImage(new GorgonImageInfo(ImageType.Image2D, targetFormat)
+            IGorgonImage resultImage = new GorgonImage(new GorgonImageInfo(ImageDataType.Image2D, targetFormat)
             {
                 Width = texture.Width,
                 Height = texture.Height,
@@ -100,7 +102,7 @@ internal class SpriteTextureService
             for (int i = 0; i < texture.ArrayCount; ++i)
             {
                 convertTarget.Clear(GorgonColor.BlackTransparent);
-                
+
                 _renderer.Begin();
                 _renderer.DrawFilledRectangle(new DX.RectangleF(0, 0, texture.Width, texture.Height),
                     GorgonColor.White,
@@ -187,7 +189,7 @@ internal class SpriteTextureService
                     return (null, null);
                 }
 
-                dependency = new List<string> { textureName };
+                dependency = [textureName];
             }
 
             _log.Print($"Found sprite texture '{dependency[0]}'...", LoggingLevel.Verbose);
@@ -284,23 +286,6 @@ internal class SpriteTextureService
             ? null
             : _imageCodec.GetMetaData(stream);
     }
-    #endregion
 
-    #region Constructor/Finalizer.
-    /// <summary>Initializes a new instance of the <see cref="SpriteTextureService"/> class.</summary>
-    /// <param name="graphicsContext">The graphics context for the application.</param>
-    /// <param name="fileManager">The content file manager.</param>
-    /// <param name="spriteCodec">The codec used to read sprite data.</param>
-    /// <param name="imageCodec">The codec used to read image data.</param>
-    /// <param name="log">The logging interface for debug logging.</param>
-    public SpriteTextureService(IGraphicsContext graphicsContext, IContentFileManager fileManager, IGorgonSpriteCodec spriteCodec, IGorgonImageCodec imageCodec, IGorgonLog log)
-    {
-        _graphics = graphicsContext.Graphics;
-        _renderer = graphicsContext.Renderer2D;
-        _fileManager = fileManager;
-        _imageCodec = imageCodec;
-        _spriteCodec = spriteCodec;
-        _log = log;
-    }
-    #endregion
+
 }

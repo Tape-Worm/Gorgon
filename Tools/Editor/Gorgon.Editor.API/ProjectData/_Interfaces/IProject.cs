@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2018 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,37 +11,36 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: August 29, 2018 8:16:04 PM
 // 
-#endregion
 
-using System.IO;
+
 using Newtonsoft.Json;
 
 // TODO:
-//Add functionality to add plugin names to the project indicating which plugins were available when the project was created.
-//If no names are present - Do a full scan on loading the file system.
-//If all plug in names match in count and names - Quick load.
+//Add functionality to add plugin names to the project indicating which plugins were available when the project was created
+//If no names are present - Do a full scan on loading the file system
+//If all plug in names match in count and names - Quick load
 //If plug in names differ, or a plug in is missing, or a new plug in was added - Do a full scan on loading the file system.
 
 namespace Gorgon.Editor.ProjectData;
 
 /// <summary>
-/// The project data used by the editor.
+/// The project data used by the editor
 /// </summary>
 public interface IProject
     : IProjectMetadata
 {
-    #region Properties.
+
     /// <summary>
     /// Property to return the workspace used by the project.
     /// </summary>
@@ -94,5 +93,5 @@ public interface IProject
     {
         get;
     }
-    #endregion
+
 }

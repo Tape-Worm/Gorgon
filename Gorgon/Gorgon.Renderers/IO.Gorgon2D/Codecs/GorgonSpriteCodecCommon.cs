@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2018 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,22 +11,19 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: August 12, 2018 4:16:33 PM
 // 
-#endregion
 
-using System;
-using System.Collections.Generic;
-using System.IO;
+
 using Gorgon.Core;
 using Gorgon.Graphics.Core;
 using Gorgon.IO.Properties;
@@ -36,12 +33,12 @@ using DX = SharpDX;
 namespace Gorgon.IO;
 
 /// <summary>
-/// A base class containing common codec functionality.
+/// A base class containing common codec functionality
 /// </summary>
 public abstract class GorgonSpriteCodecCommon
     : IGorgonSpriteCodec
 {
-    #region Variables.
+
     /// <summary>
     /// The ID for the file header for the most current version of the sprite format.
     /// </summary>
@@ -51,9 +48,9 @@ public abstract class GorgonSpriteCodecCommon
     /// The highest currently supported version for sprite serialization.
     /// </summary>
     public static readonly Version CurrentVersion = new(3, 0);
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to return the friendly description of the format.
     /// </summary>
@@ -119,9 +116,9 @@ public abstract class GorgonSpriteCodecCommon
     {
         get;
     }
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to save the sprite data to a stream.
     /// </summary>
@@ -386,9 +383,9 @@ public abstract class GorgonSpriteCodecCommon
             stream.Position = position;
         }
     }
-    #endregion
 
-    #region Constructor/Finalizer.
+
+
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonSpriteCodecCommon"/> class.
     /// </summary>
@@ -411,12 +408,12 @@ public abstract class GorgonSpriteCodecCommon
             throw new ArgumentEmptyException(nameof(name));
         }
 
-        FileExtensions = new[]
-                         {
+        FileExtensions =
+                         [
                              new GorgonFileExtension(".gorSprite", Resources.GOR2DIO_SPRITE_FILE_EXTENSION_DESC)
-                         };
+                         ];
         Codec = name;
         CodecDescription = string.IsNullOrWhiteSpace(description) ? name : description;
     }
-    #endregion
+
 }

@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2018 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,20 +11,19 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: September 17, 2018 8:10:15 AM
 // 
-#endregion
 
-using System;
+
 using Gorgon.Editor.PlugIns;
 using Gorgon.Editor.ProjectData;
 using Gorgon.Editor.UI;
@@ -32,10 +31,16 @@ using Gorgon.Editor.UI;
 namespace Gorgon.Editor.ViewModels;
 
 /// <summary>
-/// Common injection parameters for all view models.
+/// Common injection parameters for all view models
 /// </summary>
-internal class ViewModelCommonParameters
-    : IViewModelInjection<IHostContentServices>
+/// <remarks>
+/// Initializes a new instance of the <see cref="ViewModelCommonParameters"/> class
+/// </remarks>
+/// <param name="hostServices">The services from the host application.</param>
+/// <param name="viewModelFactory">The view model factory for creating view models.</param>
+/// <exception cref="ArgumentNullException">Thrown when <paramref name="hostServices"/>, or the <paramref name="viewModelFactory"/> parameter is <b>null</b>.</exception>
+internal class ViewModelCommonParameters(IHostContentServices hostServices, ViewModelFactory viewModelFactory)
+        : IViewModelInjection<IHostContentServices>
 {
     /// <summary>
     /// Property to set or return the current project.
@@ -70,23 +75,11 @@ internal class ViewModelCommonParameters
     public ViewModelFactory ViewModelFactory
     {
         get;
-    }
+    } = viewModelFactory ?? throw new ArgumentNullException(nameof(viewModelFactory));
 
     /// <summary>Property to return the services passed from host application.</summary>
     public IHostContentServices HostServices
     {
         get;
-    }
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="ViewModelCommonParameters"/> class.
-    /// </summary>
-    /// <param name="hostServices">The services from the host application.</param>
-    /// <param name="viewModelFactory">The view model factory for creating view models.</param>
-    /// <exception cref="ArgumentNullException">Thrown when <paramref name="hostServices"/>, or the <paramref name="viewModelFactory"/> parameter is <b>null</b>.</exception>
-    public ViewModelCommonParameters(IHostContentServices hostServices, ViewModelFactory viewModelFactory)
-    {
-        HostServices = hostServices ?? throw new ArgumentNullException(nameof(hostServices));
-        ViewModelFactory = viewModelFactory ?? throw new ArgumentNullException(nameof(viewModelFactory));
-    }
+    } = hostServices ?? throw new ArgumentNullException(nameof(hostServices));
 }

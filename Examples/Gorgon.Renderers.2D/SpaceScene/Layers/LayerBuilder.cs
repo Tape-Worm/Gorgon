@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2019 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,30 +11,29 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: May 24, 2019 4:50:37 PM
 // 
-#endregion
+
 
 using System.Numerics;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
-using Gorgon.Math;
 using Gorgon.Renderers;
 using Gorgon.Renderers.Lights;
 
 namespace Gorgon.Examples;
 
 /// <summary>
-/// Function to build the layers for our example.
+/// Function to build the layers for our example
 /// </summary>
 /// <remarks>
 /// This is here for convenience. In a real game, we'd load this as data and build our scene from that.  
@@ -113,8 +112,8 @@ internal static class LayerBuilder
             ParallaxLevel = 50,		// Kinda far away.
             Planets =
             {
-                new Planet(new PlanetaryLayer[]
-                {
+                new Planet(
+                [
                     new PlanetaryLayer(resources.Meshes["earthSphere"])
                     {
                         Animation = resources.Animations["PlanetRotation"]
@@ -123,7 +122,7 @@ internal static class LayerBuilder
                     {
                         Animation = resources.Animations["CloudRotation"]
                     },
-                })
+                ])
                 {
                     Position = new Vector3(-30, -15, 4.0f)
                 }
@@ -142,7 +141,7 @@ internal static class LayerBuilder
             LocalLightPosition = new Vector3(0, 0, -10000.0f),
             Layers =
             {
-                planetLayer 
+                planetLayer
             }
         });
 
@@ -205,7 +204,7 @@ internal static class LayerBuilder
             {
                 new Light(new GorgonDirectionalLight
                 {
-                    Intensity = 0.5f,                        
+                    Intensity = 0.5f,
                     LightDirection = new Vector3(1.0f, 0.0f, 0.7071068f),
                     SpecularEnabled = true,
                     SpecularPower = 512.0f,

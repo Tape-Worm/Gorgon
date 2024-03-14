@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2015 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,30 +11,28 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: Sunday, June 14, 2015 9:50:50 PM
 // 
-#endregion
 
-using System.Collections.Generic;
 
 namespace Gorgon.IO;
 
 /// <summary>
-/// A collection of available chunks within a <conceptualLink target="7b81343e-e2fc-4f0f-926a-d9193ae481fe">Gorgon Chunk File(GCFF)</conceptualLink>.
+/// A collection of available chunks within a <conceptualLink target="7b81343e-e2fc-4f0f-926a-d9193ae481fe">Gorgon Chunk File(GCFF)</conceptualLink>
 /// </summary>
 public interface IGorgonReadOnlyChunkCollection
     : IReadOnlyList<GorgonChunk>
 {
-    #region Properties.
+
     /// <summary>
     /// Property to return a chunk by a string identifier.
     /// </summary>
@@ -56,9 +54,9 @@ public interface IGorgonReadOnlyChunkCollection
     {
         get;
     }
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to return the index of a chunk by its name.
     /// </summary>
@@ -100,5 +98,5 @@ public interface IGorgonReadOnlyChunkCollection
     /// <param name="chunk">The chunk to find in the collection.</param>
     /// <returns><b>true</b> if the <paramref name="chunk"/> exists, <b>false</b> if not.</returns>
     bool Contains(GorgonChunk chunk);
-    #endregion
+
 }

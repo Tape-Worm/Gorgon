@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2016 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,22 +11,19 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: June 20, 2016 8:37:31 PM
 // 
-#endregion
 
-using System;
-using System.Collections.Generic;
-using System.Threading;
+
 using Gorgon.Core;
 using Gorgon.Graphics.Imaging.Properties;
 using Gorgon.Math;
@@ -36,27 +33,27 @@ using BCnDecode = BCnEncoder.Decoder;
 namespace Gorgon.Graphics.Imaging;
 
 /// <summary>
-/// Holds raw data that is used to represent an image.
+/// Holds raw data that is used to represent an image
 /// </summary>
 /// <remarks>
 /// <para>
 /// The <see cref="GorgonImage"/> object will hold a blob of data in native (unmanaged) memory and represent that data as a series of pixels to be displayed, or manipulated. This image type is capable 
-/// of representing standard 2D images, but can also represent 1D and 3D images. And, depending on the type of image, there is also support for mip map levels, and arrayed images.
+/// of representing standard 2D images, but can also represent 1D and 3D images. And, depending on the type of image, there is also support for mip map levels, and arrayed images
 /// </para>
 /// <para>
 /// Images can access their data directly through a <see cref="GorgonNativeBuffer{T}"/> interface that allows safe access to raw, unmanaged memory where the image data is stored. In cases where images have 
 /// multiple parts like depth slices for a 3D image, or an array for 2D images, this object will provide access through a series of buffers that will point to the individual locations for depth slices, 
-/// array indices, and mip map levels. These buffers will also provide their own <see cref="GorgonNativeBuffer{T}"/> that will allow safe and direct access to the native memory where the buffer is located.
+/// array indices, and mip map levels. These buffers will also provide their own <see cref="GorgonNativeBuffer{T}"/> that will allow safe and direct access to the native memory where the buffer is located
 /// </para>
 /// <para>
 /// Because this object stored data in native memory instead of on the heaps provided by .NET, this object should be disposed by calling its <see cref="IDisposable.Dispose"/> method when it is no 
-/// longer required. Failure to do so might cause a memory leak until the garbage collector can deal with it.
+/// longer required. Failure to do so might cause a memory leak until the garbage collector can deal with it
 /// </para>
 /// </remarks>
 public partial class GorgonImage
     : IGorgonImage
 {
-    #region Variables.
+
     // Information used to create the image.
     private GorgonImageInfo _imageInfo;
     // The list of image buffers.
@@ -67,9 +64,9 @@ public partial class GorgonImage
     private GorgonPtr<byte> _imagePtr;
     // Flag to indicate that the image is in an editing state.
     private bool _isEditing;
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to return the pointer to the beginning of the internal buffer.
     /// </summary>
@@ -101,7 +98,7 @@ public partial class GorgonImage
     /// <summary>
     /// Property to return the type of image data.
     /// </summary>
-    public ImageType ImageType => _imageInfo.ImageType;
+    public ImageDataType ImageType => _imageInfo.ImageType;
 
     /// <summary>
     /// Property to return the width of an image, in pixels.
@@ -165,9 +162,9 @@ public partial class GorgonImage
     /// </para>
     /// </remarks>
     public int ArrayCount => _imageInfo.ArrayCount;
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to initialize the image data.
     /// </summary>
@@ -179,7 +176,7 @@ public partial class GorgonImage
         if (!data.IsEmpty)
         {
             data.CopyTo(_imagePtr);
-        }            
+        }
 
         _imageBuffers = new ImageBufferList(this);
         _imageBuffers.CreateBuffers(in _imagePtr);
@@ -191,20 +188,19 @@ public partial class GorgonImage
     /// <param name="info">Information used to create this image.</param>
     private void SanitizeInfo(GorgonImageInfo info)
     {
-#if NET6_0_OR_GREATER
         int maxMipCount = CalculateMaxMipCount(info);
 
         GorgonImageInfo newInfo = info with
         {
             // Validate depth count.
-            Depth = info.ImageType != ImageType.Image3D ? 1 : info.Depth.Max(1),
+            Depth = info.ImageType != ImageDataType.Image3D ? 1 : info.Depth.Max(1),
             Height = info.Height.Max(1),
             // Validate the array size.
-            ArrayCount = info.ImageType == ImageType.Image3D ? 1 : info.ArrayCount.Max(1),
+            ArrayCount = info.ImageType == ImageDataType.Image3D ? 1 : info.ArrayCount.Max(1),
             MipCount = info.MipCount.Min(maxMipCount).Max(1)
         };
 
-        if (newInfo.ImageType == ImageType.ImageCube)
+        if (newInfo.ImageType == ImageDataType.ImageCube)
         {
             int cubeArrayCount = newInfo.ArrayCount;
 
@@ -221,7 +217,6 @@ public partial class GorgonImage
         }
 
         _imageInfo = newInfo;
-#endif
     }
 
     /// <summary>
@@ -230,7 +225,7 @@ public partial class GorgonImage
     /// <param name="imageType">The type of image.</param>
     /// <param name="width">Width of the image.</param>
     /// <param name="height">Height of the image.</param>
-    /// <param name="arrayCountOrDepth">The number of array indices for <see cref="ImageType.Image1D"/> or <see cref="ImageType.Image2D"/> images, or the number of depth slices for a <see cref="ImageType.Image3D"/>.</param>
+    /// <param name="arrayCountOrDepth">The number of array indices for <see cref="ImageDataType.Image1D"/> or <see cref="ImageDataType.Image2D"/> images, or the number of depth slices for a <see cref="ImageDataType.Image3D"/>.</param>
     /// <param name="format">Format of the image.</param>
     /// <param name="mipCount">[Optional] Number of mip-map levels in the image.</param>
     /// <param name="pitchFlags">[Optional] Flags used to influence the row pitch of the image.</param>
@@ -241,7 +236,7 @@ public partial class GorgonImage
     /// The <paramref name="pitchFlags"/> parameter is used to compensate in cases where the original image data is not laid out correctly (such as with older DirectDraw DDS images).
     /// </para>
     /// </remarks>
-    public static int CalculateSizeInBytes(ImageType imageType, int width, int height, int arrayCountOrDepth, BufferFormat format, int mipCount = 1, PitchFlags pitchFlags = PitchFlags.None)
+    public static int CalculateSizeInBytes(ImageDataType imageType, int width, int height, int arrayCountOrDepth, BufferFormat format, int mipCount = 1, PitchFlags pitchFlags = PitchFlags.None)
     {
         if (format == BufferFormat.Unknown)
         {
@@ -260,8 +255,8 @@ public partial class GorgonImage
             throw new GorgonException(GorgonResult.FormatNotSupported, string.Format(Resources.GORIMG_ERR_FORMAT_NOT_SUPPORTED, format));
         }
 
-        int arrayCount = imageType == ImageType.Image3D ? 1 : arrayCountOrDepth;
-        int depthCount = imageType == ImageType.Image3D ? arrayCountOrDepth : 1;
+        int arrayCount = imageType == ImageDataType.Image3D ? 1 : arrayCountOrDepth;
+        int depthCount = imageType == ImageDataType.Image3D ? arrayCountOrDepth : 1;
 
         for (int array = 0; array < arrayCount; ++array)
         {
@@ -310,7 +305,7 @@ public partial class GorgonImage
             : CalculateSizeInBytes(info.ImageType,
                               info.Width,
                               info.Height,
-                              info.ImageType == ImageType.Image3D ? info.Depth : info.ArrayCount,
+                              info.ImageType == ImageDataType.Image3D ? info.Depth : info.ArrayCount,
                               info.Format,
                               info.MipCount,
                               pitchFlags);
@@ -428,10 +423,9 @@ public partial class GorgonImage
 
         using var wic = new WicUtilities();
         return wic.CanConvertFormats(sourceFormat,
-                                     new[]
-                                     {
+                                     [
                                              format
-                                     }).Count > 0;
+                                     ]).Count > 0;
     }
 
     /// <summary>
@@ -444,7 +438,7 @@ public partial class GorgonImage
         if ((destFormats is null)
             || (destFormats.Count == 0))
         {
-            return Array.Empty<BufferFormat>();
+            return [];
         }
 
         // If we're converting from B4G4R4A4, then we need to use another path.
@@ -586,7 +580,7 @@ public partial class GorgonImage
                     {
                         for (int depthSlice = 0; depthSlice < GetDepthCount(mip); ++depthSlice)
                         {
-                            int depthArrayIndex = ImageType != ImageType.Image3D ? arrayIndex : depthSlice;
+                            int depthArrayIndex = ImageType != ImageDataType.Image3D ? arrayIndex : depthSlice;
                             IGorgonImageBuffer buffer = Buffers[mip, depthArrayIndex];
 
                             using GorgonNativeBuffer<byte> decompressedData = decoder.Decode(buffer.Data, buffer.Width, buffer.Height, useBC1Alpha, Format);
@@ -644,7 +638,7 @@ public partial class GorgonImage
     /// </para>
     /// </remarks>
     /// <seealso cref="IGorgonImageUpdateFinalize.EndUpdate"/>
-    public IGorgonImageUpdateFluent BeginUpdate() 
+    public IGorgonImageUpdateFluent BeginUpdate()
     {
         if ((FormatInfo.IsCompressed) || (FormatInfo.IsTypeless))
         {
@@ -677,9 +671,9 @@ public partial class GorgonImage
         _imagePtr = GorgonPtr<byte>.NullPtr;
         imageData?.Dispose();
     }
-    #endregion
 
-    #region Constructor/Destructor.
+
+
     /// <summary>Initializes a new instance of the <see cref="GorgonImage" /> class.</summary>
     /// <param name="source">The source image to copy.</param>
     /// <exception cref="ArgumentNullException">Thrown when the <paramref name="source"/> parameter is <b>null</b>.</exception>
@@ -736,14 +730,14 @@ public partial class GorgonImage
         }
 
         if ((info.Height < 1) &&
-            ((info.ImageType == ImageType.ImageCube)
-            || (info.ImageType == ImageType.Image2D)
-            || (info.ImageType == ImageType.Image3D)))
+            ((info.ImageType == ImageDataType.ImageCube)
+            || (info.ImageType == ImageDataType.Image2D)
+            || (info.ImageType == ImageDataType.Image3D)))
         {
             throw new ArgumentException(Resources.GORIMG_ERR_IMAGE_HEIGHT_TOO_SMALL, nameof(info));
         }
 
-        if ((info.Depth < 1) && (info.ImageType == ImageType.Image3D))
+        if ((info.Depth < 1) && (info.ImageType == ImageDataType.Image3D))
         {
             throw new ArgumentException(Resources.GORIMG_ERR_IMAGE_DEPTH_TOO_SMALL, nameof(info));
         }
@@ -762,5 +756,5 @@ public partial class GorgonImage
 
         Initialize(data);
     }
-    #endregion
+
 }

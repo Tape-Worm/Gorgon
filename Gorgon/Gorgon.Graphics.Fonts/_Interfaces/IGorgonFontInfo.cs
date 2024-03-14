@@ -1,6 +1,6 @@
-#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2016 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,28 +11,27 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: December 20, 2016 11:29:23 AM
 // 
-#endregion
-using System.Collections.Generic;
+
 using Gorgon.Core;
 using Gorgon.Graphics.Core;
 
 namespace Gorgon.Graphics.Fonts;
 
 /// <summary>
-/// Anti-aliasing modes for the font.
+/// Anti-aliasing modes for the font
 /// </summary>
-public enum FontAntiAliasMode
+public enum GorgonFontAntiAliasMode
 {
     /// <summary>
     /// No anti-aliasing.
@@ -45,9 +44,9 @@ public enum FontAntiAliasMode
 }
 
 /// <summary>
-/// Font height mode.
+/// Font height mode
 /// </summary>
-public enum FontHeightMode
+public enum GorgonFontHeightMode
 {
     /// <summary>
     /// Point size.
@@ -60,9 +59,9 @@ public enum FontHeightMode
 }
 
 /// <summary>
-/// Font style.
+/// Font style
 /// </summary>
-public enum FontStyle
+public enum GorgonFontStyle
 {
     /// <summary>
     /// Normal font without bold or italics.
@@ -83,30 +82,11 @@ public enum FontStyle
 }
 
 /// <summary>
-/// The type of compression to apply to font textures.
-/// </summary>
-public enum FontTextureCompression
-{
-    /// <summary>
-    /// No compression.
-    /// </summary>
-    None = 0,
-    /// <summary>
-    /// Fast compression, lower quality.
-    /// </summary>
-    Fast = 1,
-    /// <summary>
-    /// Slow compression, higher quality.
-    /// </summary>
-    Quality = 2
-}
-
-/// <summary>
-/// Provides information used to create a new <see cref="GorgonFont"/>.
+/// Provides information used to create a new <see cref="GorgonFont"/>
 /// </summary>
 /// <remarks>
 /// <para>
-/// This interface is used to provide an immutable view of the information used to generate a new <see cref="GorgonFont"/>.
+/// This interface is used to provide an immutable view of the information used to generate a new <see cref="GorgonFont"/>
 /// </para>
 /// </remarks>
 public interface IGorgonFontInfo
@@ -123,10 +103,10 @@ public interface IGorgonFontInfo
     /// This will affect the <see cref="Size"/> value in that it will alter the meaning of the units.
     /// </para>
     /// <para>
-    /// The default value is <see cref="FontHeightMode.Pixels"/>.
+    /// The default value is <see cref="GorgonFontHeightMode.Pixels"/>.
     /// </para>
     /// </remarks>
-    FontHeightMode FontHeightMode
+    GorgonFontHeightMode FontHeightMode
     {
         get;
     }
@@ -147,8 +127,8 @@ public interface IGorgonFontInfo
     /// This sets the height of the font.
     /// </para>
     /// <para>
-    /// This is affected by the <see cref="Fonts.FontHeightMode"/>. If the <see cref="FontHeightMode"/> is set to <see cref="FontHeightMode.Points"/>, then this unit is the height 
-    /// size height for the font. Otherwise, this represents the font height in <see cref="FontHeightMode.Pixels"/>.
+    /// This is affected by the <see cref="Fonts.GorgonFontHeightMode"/>. If the <see cref="FontHeightMode"/> is set to <see cref="GorgonFontHeightMode.Points"/>, then this unit is the height 
+    /// size height for the font. Otherwise, this represents the font height in <see cref="GorgonFontHeightMode.Pixels"/>.
     /// </para>
     /// </remarks>
     float Size
@@ -227,10 +207,10 @@ public interface IGorgonFontInfo
     /// </note>
     /// </para>
     /// <para>
-    /// The default value is <see cref="FontAntiAliasMode.AntiAlias"/>.
+    /// The default value is <see cref="GorgonFontAntiAliasMode.AntiAlias"/>.
     /// </para>
     /// </remarks>
-    FontAntiAliasMode AntiAliasingMode
+    GorgonFontAntiAliasMode AntiAliasingMode
     {
         get;
     }
@@ -337,9 +317,9 @@ public interface IGorgonFontInfo
     /// Property to return the style for the font.
     /// </summary>
     /// <remarks>
-    /// The default value is <see cref="System.Drawing.FontStyle.Regular"/>.
+    /// The default value is <see cref="GorgonFontStyle.Normal"/>.
     /// </remarks>
-    FontStyle FontStyle
+    GorgonFontStyle FontStyle
     {
         get;
     }

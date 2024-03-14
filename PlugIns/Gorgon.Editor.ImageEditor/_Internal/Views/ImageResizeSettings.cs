@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2019 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,20 +11,19 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: January 15, 2019 9:04:41 PM
 // 
-#endregion
 
-using System;
+
 using System.ComponentModel;
 using Gorgon.Editor.ImageEditor.Properties;
 using Gorgon.Editor.UI;
@@ -34,23 +33,23 @@ using Gorgon.Graphics.Imaging;
 namespace Gorgon.Editor.ImageEditor;
 
 /// <summary>
-/// The panel used to provide settings for image import resizing.
+/// The panel used to provide settings for image import resizing
 /// </summary>
 internal partial class ImageResizeSettings
     : EditorSubPanelCommon, IDataContext<ICropResizeSettings>
 {
-    #region Properties.
+
     /// <summary>Property to return the data context assigned to this view.</summary>
     /// <value>The data context.</value>
     [Browsable(false)]
-    public ICropResizeSettings DataContext
+    public ICropResizeSettings ViewModel
     {
         get;
         private set;
     }
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to validate the state of the controls in the view.
     /// </summary>
@@ -58,7 +57,7 @@ internal partial class ImageResizeSettings
     {
         ValidateOk();
 
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             RadioCrop.Enabled = RadioResize.Enabled = LabelImageFilter.Enabled =
                 ComboImageFilter.Enabled = CheckPreserveAspect.Enabled = LabelAnchor.Enabled =
@@ -68,7 +67,7 @@ internal partial class ImageResizeSettings
 
         LabelAnchor.Visible = AlignmentPicker.Visible = RadioCrop.Checked;
 
-        bool radioEnabled = (DataContext.AllowedModes & CropResizeMode.Resize) == CropResizeMode.Resize;
+        bool radioEnabled = (ViewModel.AllowedModes & CropResizeMode.Resize) == CropResizeMode.Resize;
         RadioResize.Enabled = radioEnabled;
         LabelImageFilter.Visible = ComboImageFilter.Visible = CheckPreserveAspect.Visible = radioEnabled && RadioResize.Checked;
     }
@@ -79,12 +78,12 @@ internal partial class ImageResizeSettings
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
     private void CheckPreserveAspect_Click(object sender, EventArgs e)
     {
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             return;
         }
 
-        DataContext.PreserveAspect = CheckPreserveAspect.Checked;
+        ViewModel.PreserveAspect = CheckPreserveAspect.Checked;
     }
 
     /// <summary>Handles the SelectedValueChanged event of the ComboImageFilter control.</summary>
@@ -92,12 +91,12 @@ internal partial class ImageResizeSettings
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
     private void ComboImageFilter_SelectedValueChanged(object sender, EventArgs e)
     {
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             return;
         }
 
-        DataContext.ImageFilter = (ImageFilter)ComboImageFilter.SelectedItem;
+        ViewModel.ImageFilter = (ImageFilter)ComboImageFilter.SelectedItem;
     }
 
     /// <summary>Handles the Click event of the RadioCrop control.</summary>
@@ -105,18 +104,18 @@ internal partial class ImageResizeSettings
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
     private void RadioCrop_Click(object sender, EventArgs e)
     {
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             return;
         }
 
-        if ((DataContext.AllowedModes & CropResizeMode.Crop) == CropResizeMode.Crop)
+        if ((ViewModel.AllowedModes & CropResizeMode.Crop) == CropResizeMode.Crop)
         {
-            DataContext.CurrentMode = CropResizeMode.Crop;
+            ViewModel.CurrentMode = CropResizeMode.Crop;
         }
         else
         {
-            DataContext.CurrentMode = CropResizeMode.None;
+            ViewModel.CurrentMode = CropResizeMode.None;
         }
 
         ValidateControls();
@@ -127,12 +126,12 @@ internal partial class ImageResizeSettings
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
     private void RadioResize_Click(object sender, EventArgs e)
     {
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             return;
         }
 
-        DataContext.CurrentMode = CropResizeMode.Resize;
+        ViewModel.CurrentMode = CropResizeMode.Resize;
 
         ValidateControls();
     }
@@ -145,11 +144,11 @@ internal partial class ImageResizeSettings
         switch (e.PropertyName)
         {
             case nameof(ICropResizeSettings.CurrentMode):
-                RadioCrop.Checked = DataContext.CurrentMode is CropResizeMode.Crop or CropResizeMode.None;
+                RadioCrop.Checked = ViewModel.CurrentMode is CropResizeMode.Crop or CropResizeMode.None;
                 RadioResize.Checked = !RadioCrop.Checked;
                 break;
         }
-        UpdateLabels(DataContext);
+        UpdateLabels(ViewModel);
         ValidateControls();
     }
 
@@ -158,12 +157,12 @@ internal partial class ImageResizeSettings
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
     private void AlignmentPicker_AlignmentChanged(object sender, EventArgs e)
     {
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             return;
         }
 
-        DataContext.CurrentAlignment = AlignmentPicker.Alignment;
+        ViewModel.CurrentAlignment = AlignmentPicker.Alignment;
     }
 
     /// <summary>
@@ -171,12 +170,12 @@ internal partial class ImageResizeSettings
     /// </summary>
     private void UnassignEvents()
     {
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             return;
         }
 
-        DataContext.PropertyChanged -= DataContext_PropertyChanged;
+        ViewModel.PropertyChanged -= DataContext_PropertyChanged;
     }
 
 
@@ -255,12 +254,12 @@ internal partial class ImageResizeSettings
     {
         base.OnCancel();
 
-        if ((DataContext?.CancelCommand is null) || (!DataContext.CancelCommand.CanExecute(null)))
+        if ((ViewModel?.CancelCommand is null) || (!ViewModel.CancelCommand.CanExecute(null)))
         {
             return;
         }
 
-        DataContext.CancelCommand.Execute(null);
+        ViewModel.CancelCommand.Execute(null);
     }
 
     /// <summary>Function to submit the change.</summary>
@@ -268,18 +267,18 @@ internal partial class ImageResizeSettings
     {
         base.OnSubmit();
 
-        if ((DataContext?.OkCommand is null) || (!DataContext.OkCommand.CanExecute(null)))
+        if ((ViewModel?.OkCommand is null) || (!ViewModel.OkCommand.CanExecute(null)))
         {
             return;
         }
 
-        DataContext.OkCommand.Execute(null);
+        ViewModel.OkCommand.Execute(null);
     }
 
     /// <summary>Function called to validate the OK button.</summary>
     /// <returns>
     ///   <b>true</b> if the OK button is valid, <b>false</b> if not.</returns>
-    protected override bool OnValidateOk() => (DataContext?.OkCommand is not null) && (DataContext.OkCommand.CanExecute(null));
+    protected override bool OnValidateOk() => (ViewModel?.OkCommand is not null) && (ViewModel.OkCommand.CanExecute(null));
 
     /// <summary>Raises the <see cref="System.Windows.Forms.Control.VisibleChanged"/> event.</summary>
     /// <param name="e">An <see cref="EventArgs"/> object that contains the event data.</param>
@@ -304,7 +303,7 @@ internal partial class ImageResizeSettings
             return;
         }
 
-        UpdateLabels(DataContext);
+        UpdateLabels(ViewModel);
         ValidateControls();
     }
 
@@ -316,22 +315,22 @@ internal partial class ImageResizeSettings
         UnassignEvents();
 
         InitializeFromDataContext(dataContext);
-        DataContext = dataContext;
+        ViewModel = dataContext;
 
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             return;
         }
 
-        DataContext.PropertyChanged += DataContext_PropertyChanged;
+        ViewModel.PropertyChanged += DataContext_PropertyChanged;
         if (IsHandleCreated)
         {
             ValidateControls();
         }
     }
-    #endregion
 
-    #region Constructor/Finalizer.
+
+
     /// <summary>Initializes a new instance of the <see cref="Editor.Views.ImageResizeSettings"/> class.</summary>
     public ImageResizeSettings()
     {
@@ -345,5 +344,5 @@ internal partial class ImageResizeSettings
             ComboImageFilter.Items.Add(filter);
         }
     }
-    #endregion
+
 }

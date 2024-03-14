@@ -1,4 +1,4 @@
-﻿#region MIT
+﻿
 // 
 // Gorgon
 // Copyright (C) 2015 Michael Winsor
@@ -11,39 +11,37 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: Sunday, September 13, 2015 1:54:33 PM
 // 
-#endregion
 
-using System;
-using System.Collections.Generic;
+
 using Gorgon.Diagnostics;
 using Gorgon.PlugIns;
 
 namespace Gorgon.Input;
 
 /// <summary>
-/// The required functionality for a gaming device driver.
+/// The required functionality for a gaming device driver
 /// </summary>
 /// <remarks>
 /// <para>
 /// A gaming device driver provides access to various gaming input devices like a joystick, game pad, etc... This allows for various input providers to be used when accessing these devices. For example, 
-/// Gorgon comes with 2 drivers: One for XBOX controllers (via XInput), and one for generic joysticks/game pads (via Direct Input).
+/// Gorgon comes with 2 drivers: One for XBOX controllers (via XInput), and one for generic joysticks/game pads (via Direct Input)
 /// </para>
 /// <para>
 /// <note type="important">
 /// The XInput driver does not enumerate or use any other type of controllers other than XBox controllers, and the Direct Input driver purposely ignores XBox controllers so that only generic devices 
 /// get enumerated. This is done because the XInput controller provides more features for the XBox controllers, and the mapping of the device interface (i.e. axes, POV, etc...) is not as straight 
-/// forward.
+/// forward
 /// </note>
 /// </para>
 /// <para>
@@ -52,7 +50,7 @@ namespace Gorgon.Input;
 /// </para>
 /// <para>
 /// Because drivers may need to set up native resources for internal use, this interface implements <see cref="IDisposable"/>, and in order to avoid leakage of resource data, the <see cref="IDisposable.Dispose"/> 
-/// method <b>must</b> be called when done with the driver.
+/// method <b>must</b> be called when done with the driver
 /// </para>
 /// </remarks>
 /// <example>
@@ -67,13 +65,13 @@ namespace Gorgon.Input;
 ///		IGorgonPlugInService plugInService = new GorgonMefPlugInService(assemblies);
 ///		var factory = new GorgonGamingDeviceDriverFactory(plugInService);
 ///
-///		// Load the assembly for the XInput driver.
+///		// Load the assembly for the XInput driver
 ///		assemblies.LoadAssemblies(".\", "Gorgon.Input.XInput.dll");
 /// 
 ///		// Get the correct driver from the plug ins via the factory. 
 ///		IGorgonGamingDeviceDriver driver = factory.Load("Gorgon.Input.GorgonXInputDriver");
 /// 
-///		// Get connected devices only. You may change the parameter to false to retrieve all devices.
+///		// Get connected devices only. You may change the parameter to false to retrieve all devices
 ///		joysticks = driver.EnumerateGamingDevices(true);
 /// 
 ///		foreach(IGorgonGamingDeviceInfo info in joysticks)
@@ -84,10 +82,14 @@ namespace Gorgon.Input;
 /// ]]>
 /// </code>
 /// </example>
-public abstract class GorgonGamingDeviceDriver
-    : GorgonPlugIn, IGorgonGamingDeviceDriver
+/// <remarks>
+/// Initializes a new instance of the <see cref="GorgonGamingDeviceDriver"/> class
+/// </remarks>
+/// <param name="description">The human readable description of the driver.</param>
+public abstract class GorgonGamingDeviceDriver(string description)
+        : GorgonPlugIn(description), IGorgonGamingDeviceDriver
 {
-    #region Properties.
+
     /// <summary>
     /// Property to return the logger used for debugging.
     /// </summary>
@@ -95,15 +97,15 @@ public abstract class GorgonGamingDeviceDriver
     {
         get;
         internal set;
-    }
-    #endregion
+    } = GorgonLog.NullLog;
 
-    #region Methods.
+
+
     /// <summary>Releases unmanaged and - optionally - managed resources.</summary>
     /// <param name="disposing">
     ///   <c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
     protected abstract void Dispose(bool disposing);
-    
+
     /// <summary>
     /// Function to enumerate the gaming devices supported by this driver.
     /// </summary>
@@ -178,15 +180,7 @@ public abstract class GorgonGamingDeviceDriver
         Dispose(true);
         GC.SuppressFinalize(this);
     }
-    #endregion
 
-    #region Constructor/Finalizer.
-    /// <summary>
-    /// Initializes a new instance of the <see cref="GorgonGamingDeviceDriver"/> class.
-    /// </summary>
-    /// <param name="description">The human readable description of the driver.</param>
-    protected GorgonGamingDeviceDriver(string description)
-        : base(description) => Log = GorgonLog.NullLog;
-    #endregion
+
 
 }

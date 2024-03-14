@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2019 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,25 +11,21 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: April 20, 2019 2:22:57 PM
 // 
-#endregion
 
-using System;
-using System.Collections.Generic;
+
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
-using System.IO;
-using System.Linq;
 using Gorgon.Editor.ImageEditor.Properties;
 using Gorgon.Editor.Services;
 using Gorgon.Editor.UI;
@@ -39,19 +35,19 @@ using Gorgon.IO;
 namespace Gorgon.Editor.ImageEditor;
 
 /// <summary>
-/// Settings view model for image codecs.
+/// Settings view model for image codecs
 /// </summary>
 internal class SettingsPlugins
     : PlugInsCategory<SettingsPluginsParameters>, ISettingsPlugins
 {
-    #region Variables.
+
     // The underlying settings for the plug in.
     private ImageEditorSettings _settings;
     // The registry for image codecs.
     private ICodecRegistry _codecs;
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>Property to return the file name that will hold the plug ins.</summary>
     protected override string SettingsFileName => typeof(ImageEditorPlugIn).FullName;
 
@@ -64,7 +60,7 @@ internal class SettingsPlugins
     public ObservableCollection<CodecSetting> SelectedCodecs
     {
         get;
-    } = new ObservableCollection<CodecSetting>();
+    } = [];
 
     /// <summary>
     /// Propery to return the paths to the codec plug ins.
@@ -72,10 +68,10 @@ internal class SettingsPlugins
     public ObservableCollection<CodecSetting> CodecPlugInPaths
     {
         get;
-    } = new ObservableCollection<CodecSetting>();
-    #endregion
+    } = [];
 
-    #region Methods.
+
+
     /// <summary>Handles the CollectionChanged event of the CodecPlugInPaths control.</summary>
     /// <param name="sender">The source of the event.</param>
     /// <param name="e">The <see cref="NotifyCollectionChangedEventArgs"/> instance containing the event data.</param>
@@ -118,7 +114,7 @@ internal class SettingsPlugins
     ///   <b>true</b> to indicate that the operation succeeded, or <b>false</b> if it was cancelled.</returns>
     protected override bool OnUnloadPlugIns()
     {
-        IReadOnlyList<CodecSetting> selected = SelectedCodecs.ToArray();
+        IReadOnlyList<CodecSetting> selected = [.. SelectedCodecs];
         IReadOnlyList<GorgonImageCodecPlugIn> plugIns = selected.Select(item => item.PlugIn).ToArray();
         MessageResponse response = MessageResponse.None;
 
@@ -221,7 +217,7 @@ internal class SettingsPlugins
     /// <remarks>
     /// Applications should call this when setting up the view model for complex operations and/or dependency injection. The constructor should only be used for simple set up and initialization of objects.
     /// </remarks>
-    protected override void OnInitialize(SettingsPluginsParameters injectionParameters)            
+    protected override void OnInitialize(SettingsPluginsParameters injectionParameters)
     {
         base.OnInitialize(injectionParameters);
         _settings = injectionParameters.Settings;
@@ -262,5 +258,5 @@ internal class SettingsPlugins
 
         base.OnUnload();
     }
-    #endregion
+
 }

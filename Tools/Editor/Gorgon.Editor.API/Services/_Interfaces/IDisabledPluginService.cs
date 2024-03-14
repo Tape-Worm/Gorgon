@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2018 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,30 +11,29 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: November 10, 2018 8:47:16 PM
 // 
-#endregion
 
-using System.Collections.Generic;
+
 using Gorgon.Editor.PlugIns;
 
 namespace Gorgon.Editor.Services;
 
 /// <summary>
-/// Provides a list of plug ins that were disabled on application start up.
+/// Provides a list of plug ins that were disabled on application start up
 /// </summary>
 /// <remarks>
 /// <para>
-/// Use this interface to determine if a plug in is available for use or not.
+/// Use this interface to determine if a plug in is available for use or not
 /// </para>
 /// </remarks>
 public interface IDisabledPlugInService

@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2019 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,20 +11,19 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: March 14, 2019 11:39:34 AM
 // 
-#endregion
 
-using System.Collections.Generic;
+
 using System.Collections.ObjectModel;
 using System.Numerics;
 using Gorgon.Animation;
@@ -35,7 +34,7 @@ using Gorgon.Renderers;
 namespace Gorgon.Editor.AnimationEditor;
 
 /// <summary>
-/// The view model for animation content.
+/// The view model for animation content
 /// </summary>
 internal interface IAnimationContent
     : IVisualEditorContent, IUndoHandler, ISpriteLoader
@@ -168,8 +167,8 @@ internal interface IAnimationContent
     ObservableCollection<ITrack> Tracks
     {
         get;
-    }       
-    
+    }
+
     /// <summary>
     /// Property to return the list of tracks and keys that were selected.
     /// </summary>

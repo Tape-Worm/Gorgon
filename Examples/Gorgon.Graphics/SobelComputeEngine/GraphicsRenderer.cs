@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2017 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,22 +11,19 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: August 3, 2017 10:43:33 PM
 // 
-#endregion
 
-using System;
-using System.Drawing;
-using System.Windows.Forms;
+
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using DX = SharpDX;
@@ -34,19 +31,24 @@ using DX = SharpDX;
 namespace Gorgon.Examples;
 
 /// <summary>
-/// This is used to render our image data for the application.
+/// This is used to render our image data for the application
 /// </summary>
-internal class GraphicsRenderer
-    : IDisposable
+/// <remarks>
+/// Initializes a new instance of the <see cref="GraphicsRenderer" /> class
+/// </remarks>
+/// <param name="graphics">The graphics interface to use.</param>
+/// <exception cref="ArgumentNullException">Thrown when the <paramref name="graphics"/> parameter is <b>null</b>.</exception>
+internal class GraphicsRenderer(GorgonGraphics graphics)
+        : IDisposable
 {
-    #region Variables.
+
     // The graphics interface to use.
-    private readonly GorgonGraphics _graphics;
+    private readonly GorgonGraphics _graphics = graphics ?? throw new ArgumentNullException(nameof(graphics));
     // The swap chain used to render our data.
     private GorgonSwapChain _swapChain;
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to render the data to the panel assigned in the <see cref="SetPanel"/> method.
     /// </summary>
@@ -126,14 +128,6 @@ internal class GraphicsRenderer
     /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
     /// </summary>
     public void Dispose() => _swapChain?.Dispose();
-    #endregion
 
-    #region Constructor/Finalizer.
-    /// <summary>
-    /// Initializes a new instance of the <see cref="GraphicsRenderer" /> class.
-    /// </summary>
-    /// <param name="graphics">The graphics interface to use.</param>
-    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="graphics"/> parameter is <b>null</b>.</exception>
-    public GraphicsRenderer(GorgonGraphics graphics) => _graphics = graphics ?? throw new ArgumentNullException(nameof(graphics));
-    #endregion
+
 }

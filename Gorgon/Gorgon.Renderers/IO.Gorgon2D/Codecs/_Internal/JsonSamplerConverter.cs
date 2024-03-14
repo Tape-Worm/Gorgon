@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2018 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,21 +11,19 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: August 11, 2018 7:56:39 PM
 // 
-#endregion
 
-using System;
-using System.Collections.Generic;
+
 using Gorgon.Core;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
@@ -34,13 +32,17 @@ using Newtonsoft.Json;
 namespace Gorgon.IO;
 
 /// <summary>
-/// A converter used to convert a texture sampler to and from a string.
+/// A converter used to convert a texture sampler to and from a string
 /// </summary>
-internal class JsonSamplerConverter
-    : JsonConverter<GorgonSamplerState>
+/// <remarks>
+/// Initializes a new instance of the <see cref="JsonSamplerConverter"/> class
+/// </remarks>
+/// <param name="graphics">The graphics interface used for resource look up.</param>
+internal class JsonSamplerConverter(GorgonGraphics graphics)
+        : JsonConverter<GorgonSamplerState>
 {
     // The graphics object to use for resource look up.
-    private readonly GorgonGraphics _graphics;
+    private readonly GorgonGraphics _graphics = graphics;
     // The property names for the object.
     private readonly HashSet<string> _propNames = new(StringComparer.Ordinal)
                                                   {
@@ -190,10 +192,4 @@ internal class JsonSamplerConverter
                       .MipLevelOfDetail(minLod ?? float.MinValue, maxLod ?? float.MaxValue, mipLodBias ?? 0)
                       .Build();
     }
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="JsonSamplerConverter"/> class.
-    /// </summary>
-    /// <param name="graphics">The graphics interface used for resource look up.</param>
-    public JsonSamplerConverter(GorgonGraphics graphics) => _graphics = graphics;
 }

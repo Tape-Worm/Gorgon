@@ -1,6 +1,6 @@
-﻿#region MIT.
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2013 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,30 +11,28 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: Wednesday, January 23, 2013 8:30:13 AM
 // 
-#endregion
 
-using System;
 
 namespace Gorgon.Core;
 
 /// <summary>
-/// A type safe version of the <see cref="ICloneable"/> interface.
+/// A type safe version of the <see cref="ICloneable"/> interface
 /// </summary>
 /// <typeparam name="T">The type to clone.</typeparam>
 /// <remarks>
 /// The .NET framework provides us with a <see cref="ICloneable"/> interface for objects that can be cloned. However, it returns the cloned object as a <see cref="object"/> type. This can 
-/// introduce boxing issues for value types that implement <c>ICloneable</c>. This interface will allow us to mitigate the boxing issues by providing a strongly typed cloning interface.
+/// introduce boxing issues for value types that implement <c>ICloneable</c>. This interface will allow us to mitigate the boxing issues by providing a strongly typed cloning interface
 /// </remarks>
 public interface IGorgonCloneable<out T>
 {

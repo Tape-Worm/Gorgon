@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2018 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,20 +11,19 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: June 7, 2018 3:41:52 PM
 // 
-#endregion
 
-using System.Windows.Markup;
+
 using Gorgon.Core;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
@@ -33,19 +32,19 @@ using Gorgon.Memory;
 namespace Gorgon.Renderers;
 
 /// <summary>
-/// A builder which will buld <see cref="Gorgon2DBatchState"/> objects to pass to the <see cref="Gorgon2D.Begin"/> method.
+/// A builder which will buld <see cref="Gorgon2DBatchState"/> objects to pass to the <see cref="Gorgon2D.Begin"/> method
 /// </summary>
 /// <seealso cref="Gorgon2DBatchState"/>
 /// <seealso cref="Gorgon2D"/>
 public class Gorgon2DBatchStateBuilder
     : IGorgonFluentBuilderAllocator<Gorgon2DBatchStateBuilder, Gorgon2DBatchState, IGorgonAllocator<Gorgon2DBatchState>>
 {
-    #region Variables.
+
     // The state that will be edited.
     private readonly Gorgon2DBatchState _worker = new();
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Function to assign a blending factor used to modulate with the pixel shader, current render target or both.
     /// </summary>
@@ -212,9 +211,9 @@ public class Gorgon2DBatchStateBuilder
         _worker.VertexShaderState = shader;
         return this;
     }
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to return the object.
     /// </summary>
@@ -329,5 +328,5 @@ public class Gorgon2DBatchStateBuilder
 
         return state;
     }
-    #endregion
+
 }

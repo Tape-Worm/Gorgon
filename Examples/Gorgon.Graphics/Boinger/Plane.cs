@@ -1,6 +1,6 @@
-﻿#region MIT.
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2012 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: Sunday, December 30, 2012 10:25:22 AM
 // 
-#endregion
+
 
 using System.Numerics;
 using Gorgon.Graphics.Core;
@@ -32,12 +32,12 @@ using DX = SharpDX;
 namespace Gorgon.Examples;
 
 /// <summary>
-/// A plane object.
+/// A plane object
 /// </summary>
 internal class Plane
     : Model
 {
-    #region Properties.
+
     /// <summary>
     /// Property to return the size of the plane.
     /// </summary>
@@ -45,9 +45,7 @@ internal class Plane
     {
         get;
     }
-    #endregion
 
-    #region Constructor/Destructor.
     /// <summary>
     /// Initializes a new instance of the <see cref="Plane" /> class.
     /// </summary>
@@ -61,24 +59,24 @@ internal class Plane
         Size = size;
 
         // Create our vertices.
-        Vertices = new[]
-                   {
+        Vertices =
+                   [
                        new GorgonVertexPosUv(new Vector3(-size.X, size.Y, 0.0f), new Vector2(textureCoordinates.Left, textureCoordinates.Top)),
                        new GorgonVertexPosUv(new Vector3(size.X, size.Y, 0.0f), new Vector2(textureCoordinates.Right, textureCoordinates.Top)),
                        new GorgonVertexPosUv(new Vector3(-size.X, -size.Y, 0.0f), new Vector2(textureCoordinates.Left, textureCoordinates.Bottom)),
                        new GorgonVertexPosUv(new Vector3(size.X, -size.Y, 0.0f), new Vector2(textureCoordinates.Right, textureCoordinates.Bottom))
-                   };
+                   ];
 
         // Create our indices.
-        Indices = new ushort[]
-                  {
+        Indices =
+                  [
                       0,
                       1,
                       2,
                       2,
                       1,
                       3
-                  };
+                  ];
 
         // Copy the above vertex/index data into a vertex and index buffer so we can render our plane.
         VertexBufferBindings[0] = GorgonVertexBufferBinding.CreateVertexBuffer<GorgonVertexPosUv>(graphics,
@@ -93,10 +91,10 @@ internal class Plane
                                             new GorgonIndexBufferInfo(Indices.Length)
                                             {
                                                 Name = "Plane Index Buffer",
-                                                Usage = ResourceUsage.Immutable,                                                    
+                                                Usage = ResourceUsage.Immutable,
                                                 Use16BitIndices = true
                                             },
                                             Indices);
     }
-    #endregion
+
 }

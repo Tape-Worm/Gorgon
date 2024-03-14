@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2018 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,28 +11,28 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: November 18, 2018 12:04:42 AM
 // 
-#endregion
 
-using System;
 
 namespace Gorgon.Editor.ViewModels;
 
 /// <summary>
-/// The arguments to pass to the <see cref="IFileExplorer.DeleteDirectoryCommand"/>, or the <see cref="IFileExplorer.DeleteFileCommand"/>.
+/// The arguments to pass to the <see cref="IFileExplorer.DeleteDirectoryCommand"/>, or the <see cref="IFileExplorer.DeleteFileCommand"/>
 /// </summary>
-internal class DeleteArgs
-    : EventArgs
+/// <remarks>Initializes a new instance of the <see cref="DeleteArgs"/> class.</remarks>
+/// <param name="id">The ID of the directory or file to delete.</param>
+internal class DeleteArgs(string id)
+        : EventArgs
 {
     /// <summary>
     /// Property to return the ID of the directory or file to delete.
@@ -40,7 +40,7 @@ internal class DeleteArgs
     public string DeleteID
     {
         get;
-    }
+    } = id;
 
     /// <summary>
     /// Property to set or return whether any items were deleted or not.
@@ -50,8 +50,4 @@ internal class DeleteArgs
         get;
         set;
     }
-
-    /// <summary>Initializes a new instance of the <see cref="DeleteArgs"/> class.</summary>
-    /// <param name="id">The ID of the directory or file to delete.</param>
-    public DeleteArgs(string id) => DeleteID = id;
 }

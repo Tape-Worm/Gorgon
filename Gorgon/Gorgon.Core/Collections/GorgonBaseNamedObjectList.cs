@@ -1,6 +1,6 @@
-﻿#region MIT.
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2011 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,22 +11,20 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: Tuesday, June 14, 2011 10:12:38 PM
 // 
-#endregion
 
-using System;
+
 using System.Collections;
-using System.Collections.Generic;
 using System.ComponentModel;
 using Gorgon.Core;
 using Gorgon.Properties;
@@ -34,22 +32,26 @@ using Gorgon.Properties;
 namespace Gorgon.Collections;
 
 /// <summary>
-/// Base list type for Gorgon library named objects.
+/// Base list type for Gorgon library named objects
 /// </summary>
 /// <typeparam name="T">The type of object to store in the collection. Must implement the <see cref="IGorgonNamedObject"/> interface.</typeparam>
 /// <remarks>
-/// This is a base class used to help in the creation of custom lists that store objects that implement the <see cref="IGorgonNamedObject"/> interface.
+/// This is a base class used to help in the creation of custom lists that store objects that implement the <see cref="IGorgonNamedObject"/> interface
 /// </remarks>
-public abstract class GorgonBaseNamedObjectList<T>
+/// <remarks>
+/// Initializes a new instance of the <see cref="GorgonBaseNamedObjectList&lt;T&gt;"/> class
+/// </remarks>
+/// <param name="caseSensitive"><b>true</b> to use case sensitive keys, <b>false</b> to ignore casing.</param>
+public abstract class GorgonBaseNamedObjectList<T>(bool caseSensitive)
     : IGorgonNamedObjectList<T>, IGorgonNamedObjectReadOnlyList<T>
     where T : IGorgonNamedObject
 {
-    #region Variables.
-    private readonly List<T> _list;
-    private readonly StringComparison _caseSensitivity;
-    #endregion
 
-    #region Properties.
+    private readonly List<T> _list = [];
+    private readonly StringComparison _caseSensitivity = caseSensitive ? StringComparison.Ordinal : StringComparison.OrdinalIgnoreCase;
+
+
+
     /// <summary>
     /// Property to return the list of items in the underlying collection.
     /// </summary>
@@ -61,10 +63,10 @@ public abstract class GorgonBaseNamedObjectList<T>
     public bool KeysAreCaseSensitive
     {
         get;
-    }
-    #endregion
+    } = caseSensitive;
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to retrieve the item at the specified index by name.
     /// </summary>
@@ -158,25 +160,7 @@ public abstract class GorgonBaseNamedObjectList<T>
 
         return -1;
     }
-    #endregion
 
-    #region Constructor
-    /// <summary>
-    /// Initializes a new instance of the <see cref="GorgonBaseNamedObjectList&lt;T&gt;"/> class.
-    /// </summary>
-    /// <param name="caseSensitive"><b>true</b> to use case sensitive keys, <b>false</b> to ignore casing.</param>
-    protected GorgonBaseNamedObjectList(bool caseSensitive)
-    {
-        KeysAreCaseSensitive = caseSensitive;
-
-        _caseSensitivity = caseSensitive ? StringComparison.Ordinal : StringComparison.OrdinalIgnoreCase;
-
-        _list = new List<T>();
-    }
-    #endregion
-
-    #region IList<T> Members
-    #region Properties.
     /// <summary>
     /// Property to set or return the item at the specified index.
     /// </summary>
@@ -185,9 +169,7 @@ public abstract class GorgonBaseNamedObjectList<T>
         get => _list[index];
         set => _list[index] = value;
     }
-    #endregion
 
-    #region Methods.
     /// <summary>
     /// Determines the index of a specific item in the list.
     /// </summary>
@@ -215,11 +197,7 @@ public abstract class GorgonBaseNamedObjectList<T>
     /// 	<paramref name="index"/> is not a valid index in the list.
     /// </exception>
     void IList<T>.RemoveAt(int index) => _list.RemoveAt(index);
-    #endregion
-    #endregion
 
-    #region ICollection<T> Members
-    #region Properties.
     /// <summary>
     /// Gets the number of elements contained in the list.
     /// </summary>
@@ -238,9 +216,6 @@ public abstract class GorgonBaseNamedObjectList<T>
     [EditorBrowsable(EditorBrowsableState.Never)]
     public bool IsReadOnly => false;
 
-    #endregion
-
-    #region Methods.
     /// <summary>
     /// Adds an item to the list.
     /// </summary>
@@ -299,10 +274,7 @@ public abstract class GorgonBaseNamedObjectList<T>
     /// true if <paramref name="item"/> was successfully removed from the list; otherwise, false. This method also returns false if <paramref name="item"/> is not found in the original list.
     /// </returns>
     bool ICollection<T>.Remove(T item) => _list.Remove(item);
-    #endregion
-    #endregion
 
-    #region IEnumerable<T> Members
     /// <summary>
     /// Returns an enumerator that iterates through the collection.
     /// </summary>
@@ -310,9 +282,7 @@ public abstract class GorgonBaseNamedObjectList<T>
     /// A <see cref="IEnumerator{T}"/> that can be used to iterate through the collection.
     /// </returns>
     public IEnumerator<T> GetEnumerator() => _list.GetEnumerator();
-    #endregion
 
-    #region IEnumerable Members
     /// <summary>
     /// Returns an enumerator that iterates through a collection.
     /// </summary>
@@ -320,34 +290,22 @@ public abstract class GorgonBaseNamedObjectList<T>
     /// An <see cref="IEnumerator"/> object that can be used to iterate through the collection.
     /// </returns>
     IEnumerator IEnumerable.GetEnumerator() => ((IEnumerable)_list).GetEnumerator();
-    #endregion
 
-    #region IReadOnlyList<T> Members
     /// <summary>
     /// Gets or sets the element at the specified index.
     /// </summary>
     T IReadOnlyList<T>.this[int index] => _list[index];
 
-    #endregion
-
-    #region IGorgonNamedObjectReadOnlyList<T> Members
     /// <summary>
     /// Property to return an item in this list by its name.
     /// </summary>
     T IGorgonNamedObjectReadOnlyList<T>.this[string name] => GetItemByName(name);
 
-    #endregion
-
-    #region IGorgonNamedObjectList<T> Members
-    #region Properties.
     /// <summary>
     /// Property to set or return an item within this list by its name.
     /// </summary>
     T IGorgonNamedObjectList<T>.this[string name] => GetItemByName(name);
 
-    #endregion
-
-    #region Methods.
     /// <summary>
     /// Function to remove an item with the specified name from this list.
     /// </summary>
@@ -371,6 +329,6 @@ public abstract class GorgonBaseNamedObjectList<T>
     /// </summary>
     /// <param name="index">The index of the item to remove.</param>
     void IGorgonNamedObjectList<T>.Remove(int index) => _list.RemoveAt(index);
-    #endregion
-    #endregion
+
+
 }

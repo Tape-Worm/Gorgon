@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2020 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,27 +11,21 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: June 21, 2020 12:18:20 AM
 // 
-#endregion
 
-using System;
+
 using System.Collections;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
 
@@ -39,7 +33,7 @@ namespace Gorgon.Graphics.Core;
 
 
 /// <summary>
-/// A texture cache used to keep textures resident for use over a user defined lifetime.
+/// A texture cache used to keep textures resident for use over a user defined lifetime
 /// </summary>
 /// <typeparam name="T">The type of texture view to store. Must be a reference type, and implement <see cref="IGorgonTextureResource"/>.</typeparam>
 /// <remarks>
@@ -50,19 +44,22 @@ namespace Gorgon.Graphics.Core;
 /// <para>
 /// This is where the texture cache can be used to solve the problem. A texture cache will keep the textures resident in memory as long as they're being used. When a texture is requested by passing in 
 /// its <see cref="GorgonTexture2D.Name"/> it will load the texture if it is not previously cached, or if the actual texture object was disposed. If the texture was previously cached, then the cached texture 
-/// will be returned, incrementing an internal count, which is used to determine how many items are using the texture.
+/// will be returned, incrementing an internal count, which is used to determine how many items are using the texture
 /// </para>
 /// <para>
 /// When a texture is no longer required, the texture should <b>not</b> be disposed. Instead, use the texture cache to return the texture which will automatically dispose of it when no more objects 
-/// are using it. If the texture is required again, then retrieving it from the texture cache will load the texture again.
+/// are using it. If the texture is required again, then retrieving it from the texture cache will load the texture again
 /// </para>
 /// </remarks>
 /// <seealso cref="IGorgonTextureResource"/>
-public class GorgonTextureCache<T>
+/// <remarks>Initializes a new instance of the <see cref="GorgonTextureCache{T}"/> class.</remarks>
+/// <param name="graphics">The graphics interface used to create textures.</param>
+/// <exception cref="ArgumentNullException">Thrown when the <paramref name="graphics"/> parameter is <b>null</b>.</exception>
+public class GorgonTextureCache<T>(GorgonGraphics graphics)
     : IEnumerable<T>
     where T : class, IGorgonTextureResource
 {
-    #region Classes.
+
     /// <summary>
     /// An entry in the texture cache.
     /// </summary>
@@ -96,27 +93,27 @@ public class GorgonTextureCache<T>
             texture?.Dispose();
         }
     }
-    #endregion
 
-    #region Variables.
+
+
     // The graphics interface used to create the textures.
-    private readonly GorgonGraphics _graphics;
+    private readonly GorgonGraphics _graphics = graphics ?? throw new ArgumentNullException(nameof(graphics));
     // The cache that holds the textures and redirected file name.
     private readonly ConcurrentDictionary<string, Lazy<TextureEntry>> _cache = new(StringComparer.OrdinalIgnoreCase);
     // The lock for updating the cache concurrently.
     private SemaphoreSlim _cacheLock = new(1, 1);
     // The list of textures to that are currently being loaded.
-    private readonly List<string> _scheduledTextures = new();
-    #endregion
+    private readonly List<string> _scheduledTextures = [];
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to return the number of cached textures.
     /// </summary>
     public int Count => _cache.Count;
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function used to locate the texture if it is not stored in the cache.
     /// </summary>
@@ -228,7 +225,7 @@ public class GorgonTextureCache<T>
         }
 
         return true;
-    }        
+    }
 
     /// <summary>
     /// Function to retrieve a cached texture (or load one if it's not available).
@@ -268,7 +265,7 @@ public class GorgonTextureCache<T>
     {
         if (textureName is null)
         {
-            throw new ArgumentNullException(nameof(textureName));                
+            throw new ArgumentNullException(nameof(textureName));
         }
 
         if (string.IsNullOrWhiteSpace(textureName))
@@ -398,7 +395,7 @@ public class GorgonTextureCache<T>
     /// </note>
     /// </para>
     /// </remarks>
-    public T FindTexture(string textureName)            
+    public T FindTexture(string textureName)
     {
         if (textureName is null)
         {
@@ -597,12 +594,6 @@ public class GorgonTextureCache<T>
     /// <summary>Returns an enumerator that iterates through a collection.</summary>
     /// <returns>An <see cref="IEnumerator"/> object that can be used to iterate through the collection.</returns>
     IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
-    #endregion
 
-    #region Constructor/Finalizer.
-    /// <summary>Initializes a new instance of the <see cref="GorgonTextureCache{T}"/> class.</summary>
-    /// <param name="graphics">The graphics interface used to create textures.</param>
-    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="graphics"/> parameter is <b>null</b>.</exception>
-    public GorgonTextureCache(GorgonGraphics graphics) => _graphics = graphics ?? throw new ArgumentNullException(nameof(graphics));
-    #endregion
+
 }

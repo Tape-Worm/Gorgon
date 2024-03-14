@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2018 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,23 +11,20 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: August 26, 2018 11:51:46 PM
 // 
-#endregion
 
-using System;
+
 using System.ComponentModel;
-using System.Drawing;
-using System.Windows.Forms;
 using Gorgon.Core;
 using Gorgon.Editor.Properties;
 using Gorgon.Editor.UI;
@@ -37,24 +34,24 @@ using Gorgon.Editor.ViewModels;
 namespace Gorgon.Editor.Views;
 
 /// <summary>
-/// The view for a new project.
+/// The view for a new project
 /// </summary>
 internal partial class StageNew
     : EditorBaseControl, IDataContext<INewProject>
 {
-    #region Properties.
+
     /// <summary>
     /// Property to return the data context assigned to this view.
     /// </summary>
     [Browsable(false)]
-    public INewProject DataContext
+    public INewProject ViewModel
     {
         get;
         private set;
     }
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to reset the path input textbox to its original color.
     /// </summary>
@@ -71,12 +68,12 @@ internal partial class StageNew
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
     private void ButtonSelect_Click(object sender, EventArgs e)
     {
-        if ((DataContext?.SelectProjectWorkspaceCommand is null) || (!DataContext.SelectProjectWorkspaceCommand.CanExecute(null)))
+        if ((ViewModel?.SelectProjectWorkspaceCommand is null) || (!ViewModel.SelectProjectWorkspaceCommand.CanExecute(null)))
         {
             return;
         }
 
-        DataContext.SelectProjectWorkspaceCommand.Execute(null);
+        ViewModel.SelectProjectWorkspaceCommand.Execute(null);
     }
 
     /// <summary>Handles the KeyDown event of the TextProjectPath control.</summary>
@@ -121,7 +118,7 @@ internal partial class StageNew
             return;
         }
 
-        ResetTextBoxColor(DataContext);
+        ResetTextBoxColor(ViewModel);
     }
 
     /// <summary>Handles the Enter event of the TextName control.</summary>
@@ -143,28 +140,28 @@ internal partial class StageNew
         try
         {
             // If the path is already set, then do nothing.
-            if (string.Equals(DataContext?.WorkspacePath?.FullName, TextProjectPath.Text, StringComparison.CurrentCultureIgnoreCase))
+            if (string.Equals(ViewModel?.WorkspacePath?.FullName, TextProjectPath.Text, StringComparison.CurrentCultureIgnoreCase))
             {
                 return;
             }
 
-            if (DataContext?.SetProjectWorkspaceCommand is null)
+            if (ViewModel?.SetProjectWorkspaceCommand is null)
             {
                 return;
             }
 
             var args = new SetProjectWorkspaceArgs(TextProjectPath.Text);
 
-            if (!DataContext.SetProjectWorkspaceCommand.CanExecute(args))
+            if (!ViewModel.SetProjectWorkspaceCommand.CanExecute(args))
             {
                 return;
             }
 
-            DataContext.SetProjectWorkspaceCommand.Execute(args);
+            ViewModel.SetProjectWorkspaceCommand.Execute(args);
         }
         finally
         {
-            ResetTextBoxColor(DataContext);
+            ResetTextBoxColor(ViewModel);
             ValidateControls();
         }
     }
@@ -176,12 +173,12 @@ internal partial class StageNew
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
     private void ButtonCreate_Click(object sender, EventArgs e)
     {
-        if ((DataContext?.CreateProjectCommand is null) || (!DataContext.CreateProjectCommand.CanExecute(null)))
+        if ((ViewModel?.CreateProjectCommand is null) || (!ViewModel.CreateProjectCommand.CanExecute(null)))
         {
             return;
         }
 
-        DataContext.CreateProjectCommand.Execute(null);
+        ViewModel.CreateProjectCommand.Execute(null);
     }
 
     /// <summary>
@@ -194,17 +191,17 @@ internal partial class StageNew
         switch (e.PropertyName)
         {
             case nameof(INewProject.AvailableDriveSpace):
-                LabelDriveSpace.Text = $"{DataContext.AvailableDriveSpace.FormatMemory()} ({DataContext.AvailableDriveSpace:###,##0} bytes)";
+                LabelDriveSpace.Text = $"{ViewModel.AvailableDriveSpace.FormatMemory()} ({ViewModel.AvailableDriveSpace:###,##0} bytes)";
                 break;
             case nameof(INewProject.Title):
-                LabelProjectTitle.Text = DataContext.Title ?? string.Empty;
+                LabelProjectTitle.Text = ViewModel.Title ?? string.Empty;
                 break;
             case nameof(INewProject.WorkspacePath):
-                TextProjectPath.Text = DataContext.WorkspacePath?.FullName ?? string.Empty;
+                TextProjectPath.Text = ViewModel.WorkspacePath?.FullName ?? string.Empty;
                 break;
             case nameof(INewProject.InvalidPathReason):
-                ResetTextBoxColor(DataContext);
-                TipError.Show(DataContext.InvalidPathReason, TextProjectPath, new Point(0, TextProjectPath.Bottom));
+                ResetTextBoxColor(ViewModel);
+                TipError.Show(ViewModel.InvalidPathReason, TextProjectPath, new Point(0, TextProjectPath.Bottom));
                 break;
         }
 
@@ -266,19 +263,19 @@ internal partial class StageNew
     /// </summary>
     private void UnassignEvents()
     {
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             return;
         }
 
-        DataContext.PropertyChanging -= DataContext_PropertyChanging;
-        DataContext.PropertyChanged -= DataContext_PropertyChanged;
+        ViewModel.PropertyChanging -= DataContext_PropertyChanging;
+        ViewModel.PropertyChanged -= DataContext_PropertyChanged;
     }
 
     /// <summary>
     /// Function to validate control state.
     /// </summary>
-    private void ValidateControls() => ButtonCreate.Enabled = (DataContext?.CreateProjectCommand?.CanExecute(null) ?? false);
+    private void ValidateControls() => ButtonCreate.Enabled = (ViewModel?.CreateProjectCommand?.CanExecute(null) ?? false);
 
     /// <summary>Raises the <see cref="E:System.Windows.Forms.UserControl.Load" /> event.</summary>
     /// <param name="e">An <see cref="EventArgs" /> that contains the event data. </param>
@@ -286,7 +283,7 @@ internal partial class StageNew
     {
         base.OnLoad(e);
 
-        DataContext?.Load();
+        ViewModel?.Load();
     }
 
     /// <summary>
@@ -300,28 +297,28 @@ internal partial class StageNew
             UnassignEvents();
 
             InitializeFromDataContext(dataContext);
-            DataContext = dataContext;
+            ViewModel = dataContext;
 
-            if ((IsDesignTime) || (DataContext is null))
+            if ((IsDesignTime) || (ViewModel is null))
             {
                 return;
             }
 
-            DataContext.PropertyChanging += DataContext_PropertyChanging;
-            DataContext.PropertyChanged += DataContext_PropertyChanged;
+            ViewModel.PropertyChanging += DataContext_PropertyChanging;
+            ViewModel.PropertyChanged += DataContext_PropertyChanged;
         }
         finally
         {
             ValidateControls();
         }
     }
-    #endregion
 
-    #region Constructor/Finalizer.
+
+
     /// <summary>
     /// Initializes a new instance of the <see cref="StageNew"/> class.
     /// </summary>
     public StageNew() => InitializeComponent();
-    #endregion
+
 
 }

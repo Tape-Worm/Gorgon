@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2020 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,20 +11,19 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: March 24, 2020 10:38:50 PM
 // 
-#endregion
 
-using System;
+
 using System.ComponentModel;
 using Gorgon.Editor.UI;
 using Gorgon.Editor.UI.Controls;
@@ -32,37 +31,37 @@ using Gorgon.Editor.UI.Controls;
 namespace Gorgon.Editor.ImageEditor;
 
 /// <summary>
-/// Settings for the burn effect.
+/// Settings for the burn effect
 /// </summary>
 internal partial class Fx1BitSettings
     : EditorSubPanelCommon, IDataContext<IFxOneBit>
 {
-    #region Variables.
 
-    #endregion
 
-    #region Properties.
+
+
+
     /// <summary>Property to return the data context assigned to this view.</summary>
     [Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-    public IFxOneBit DataContext
+    public IFxOneBit ViewModel
     {
         get;
         private set;
     }
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>Handles the Click event of the CheckInvert control.</summary>
     /// <param name="sender">The source of the event.</param>
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
     private void CheckInvert_Click(object sender, EventArgs e)
     {
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             return;
         }
 
-        DataContext.Invert = CheckInvert.Checked;
+        ViewModel.Invert = CheckInvert.Checked;
     }
 
     /// <summary>Handles the ValueChanged event of the NumericMinThreshold control.</summary>
@@ -70,12 +69,12 @@ internal partial class Fx1BitSettings
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
     private void NumericMinThreshold_ValueChanged(object sender, EventArgs e)
     {
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             return;
         }
 
-        DataContext.MinWhiteThreshold = TrackMinThreshold.Value = (int)NumericMinThreshold.Value;            
+        ViewModel.MinWhiteThreshold = TrackMinThreshold.Value = (int)NumericMinThreshold.Value;
     }
 
     /// <summary>Handles the ValueChanged event of the NumericMaxThreshold control.</summary>
@@ -83,12 +82,12 @@ internal partial class Fx1BitSettings
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
     private void NumericMaxThreshold_ValueChanged(object sender, EventArgs e)
     {
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             return;
         }
 
-        DataContext.MaxWhiteThreshold = TrackMaxThreshold.Value = (int)NumericMaxThreshold.Value;
+        ViewModel.MaxWhiteThreshold = TrackMaxThreshold.Value = (int)NumericMaxThreshold.Value;
     }
 
     /// <summary>Handles the ValueChanged event of the TrackMinThreshold control.</summary>
@@ -106,12 +105,12 @@ internal partial class Fx1BitSettings
     {
         base.OnSubmit();
 
-        if ((DataContext?.OkCommand is null) || (!DataContext.OkCommand.CanExecute(null)))
+        if ((ViewModel?.OkCommand is null) || (!ViewModel.OkCommand.CanExecute(null)))
         {
             return;
         }
 
-        DataContext.OkCommand.Execute(null);
+        ViewModel.OkCommand.Execute(null);
     }
 
     /// <summary>Function to cancel the change.</summary>
@@ -119,12 +118,12 @@ internal partial class Fx1BitSettings
     {
         base.OnCancel();
 
-        if ((DataContext?.CancelCommand is null) || (!DataContext.CancelCommand.CanExecute(null)))
+        if ((ViewModel?.CancelCommand is null) || (!ViewModel.CancelCommand.CanExecute(null)))
         {
             return;
         }
 
-        DataContext.CancelCommand.Execute(null);
+        ViewModel.CancelCommand.Execute(null);
     }
 
     /// <summary>Handles the PropertyChanged event of the DataContext control.</summary>
@@ -135,13 +134,13 @@ internal partial class Fx1BitSettings
         switch (e.PropertyName)
         {
             case nameof(IFxOneBit.Invert):
-                CheckInvert.Checked = DataContext.Invert;
+                CheckInvert.Checked = ViewModel.Invert;
                 break;
             case nameof(IFxOneBit.MinWhiteThreshold):
-                NumericMinThreshold.Value = TrackMinThreshold.Value = DataContext.MinWhiteThreshold;
+                NumericMinThreshold.Value = TrackMinThreshold.Value = ViewModel.MinWhiteThreshold;
                 break;
             case nameof(IFxOneBit.MaxWhiteThreshold):
-                NumericMaxThreshold.Value = TrackMaxThreshold.Value = DataContext.MaxWhiteThreshold;
+                NumericMaxThreshold.Value = TrackMaxThreshold.Value = ViewModel.MaxWhiteThreshold;
                 break;
         }
     }
@@ -151,12 +150,12 @@ internal partial class Fx1BitSettings
     /// </summary>
     private void UnassignEvents()
     {
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             return;
         }
 
-        DataContext.PropertyChanged -= DataContext_PropertyChanged;
+        ViewModel.PropertyChanged -= DataContext_PropertyChanged;
     }
 
     /// <summary>
@@ -193,19 +192,19 @@ internal partial class Fx1BitSettings
 
         InitializeFromDataContext(dataContext);
 
-        DataContext = dataContext;
+        ViewModel = dataContext;
 
         if (dataContext is null)
         {
             return;
         }
 
-        DataContext.PropertyChanged += DataContext_PropertyChanged;
+        ViewModel.PropertyChanged += DataContext_PropertyChanged;
     }
-    #endregion
 
-    #region Constructor/Finalizer.
+
+
     /// <summary>Initializes a new instance of the <see cref="Fx1BitSettings"/> class.</summary>
     public Fx1BitSettings() => InitializeComponent();
-    #endregion
+
 }

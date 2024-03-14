@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2020 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,20 +11,19 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: June 17, 2020 8:11:50 PM
 // 
-#endregion
 
-using System;
+
 using Gorgon.Editor.AnimationEditor.Services;
 using Gorgon.Editor.Rendering;
 using Gorgon.Editor.Services;
@@ -32,9 +31,18 @@ using Gorgon.Editor.Services;
 namespace Gorgon.Editor.AnimationEditor;
 
 /// <summary>
-/// A list of services for for the content.
+/// A list of services for for the content
 /// </summary>
-internal class ContentServices
+/// <remarks>Initializes a new instance of the <see cref="ContentServices"/> class.</remarks>
+/// <param name="clipboard">The service used to access the clipboard.</param>
+/// <param name="ioService">The io service.</param>
+/// <param name="textureCache">The texture cache for the plug in.</param>
+/// <param name="undoService">The service used for undo/redo functionality.</param>
+/// <param name="keyProcessor">The key frame processor service.</param>
+/// <param name="newAnimation">The service used to set up a new animation.</param>
+/// <param name="factory">The factory.</param>
+/// <exception cref="ArgumentNullException">Thrown when any of the parameters are <b>null</b>.</exception>
+internal class ContentServices(AnimationIOService ioService, ITextureCache textureCache, IUndoService undoService, KeyProcessorService keyProcessor, NewAnimationService newAnimation, IViewModelFactory factory)
 {
     /// <summary>
     /// Property to return the IO service for the content.
@@ -42,7 +50,7 @@ internal class ContentServices
     public AnimationIOService IOService
     {
         get;
-    }
+    } = ioService ?? throw new ArgumentNullException(nameof(ioService));
 
     /// <summary>
     /// Property to return the factory used to create view models.
@@ -50,7 +58,7 @@ internal class ContentServices
     public IViewModelFactory ViewModelFactory
     {
         get;
-    }
+    } = factory ?? throw new ArgumentNullException(nameof(factory));
 
     /// <summary>
     /// Property to return the service used for undo/redo functionality.
@@ -58,7 +66,7 @@ internal class ContentServices
     public IUndoService UndoService
     {
         get;
-    }
+    } = undoService ?? throw new ArgumentNullException(nameof(undoService));
 
     /// <summary>
     /// Property to return the texture cache.
@@ -66,7 +74,7 @@ internal class ContentServices
     public ITextureCache TextureCache
     {
         get;
-    }
+    } = textureCache ?? throw new ArgumentNullException(nameof(textureCache));
 
     /// <summary>
     /// Property to return the key frame processor service.
@@ -74,7 +82,7 @@ internal class ContentServices
     public KeyProcessorService KeyProcessor
     {
         get;
-    }
+    } = keyProcessor ?? throw new ArgumentNullException(nameof(keyProcessor));
 
     /// <summary>
     /// Property to return the service used set up a new animation.
@@ -82,24 +90,5 @@ internal class ContentServices
     public NewAnimationService NewAnimation
     {
         get;
-    }
-
-    /// <summary>Initializes a new instance of the <see cref="ContentServices"/> class.</summary>
-    /// <param name="clipboard">The service used to access the clipboard.</param>
-    /// <param name="ioService">The io service.</param>
-    /// <param name="textureCache">The texture cache for the plug in.</param>
-    /// <param name="undoService">The service used for undo/redo functionality.</param>
-    /// <param name="keyProcessor">The key frame processor service.</param>
-    /// <param name="newAnimation">The service used to set up a new animation.</param>
-    /// <param name="factory">The factory.</param>
-    /// <exception cref="ArgumentNullException">Thrown when any of the parameters are <b>null</b>.</exception>
-    public ContentServices(AnimationIOService ioService, ITextureCache textureCache, IUndoService undoService, KeyProcessorService keyProcessor, NewAnimationService newAnimation, IViewModelFactory factory)
-    {
-        IOService = ioService ?? throw new ArgumentNullException(nameof(ioService));
-        ViewModelFactory = factory ?? throw new ArgumentNullException(nameof(factory));
-        UndoService = undoService ?? throw new ArgumentNullException(nameof(undoService));
-        TextureCache = textureCache ?? throw new ArgumentNullException(nameof(textureCache));
-        KeyProcessor = keyProcessor ?? throw new ArgumentNullException(nameof(keyProcessor));
-        NewAnimation = newAnimation ?? throw new ArgumentNullException(nameof(newAnimation));
-    }
+    } = newAnimation ?? throw new ArgumentNullException(nameof(newAnimation));
 }

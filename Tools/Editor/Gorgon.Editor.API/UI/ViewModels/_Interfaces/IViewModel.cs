@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2018 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,26 +11,25 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: August 26, 2018 12:05:43 PM
 // 
-#endregion
 
-using System;
+
 using System.ComponentModel;
 
 namespace Gorgon.Editor.UI;
 
 /// <summary>
-/// A base view model interface for the gorgon editor.
+/// A base view model interface for the gorgon editor
 /// </summary>
 /// <remarks>
 /// <para>
@@ -46,16 +45,16 @@ namespace Gorgon.Editor.UI;
 ///     get => _backingStoreValue;
 ///     set
 ///     {
-///         // Always check to see if the value has changed. This keeps the view model from being too "chatty" with the UI.
+///         // Always check to see if the value has changed. This keeps the view model from being too "chatty" with the UI
 ///         if (_backingStoreValue == value)
 ///         {
 ///             return;
 ///         }
 ///         
-///         // Notify that the property is about to change. This allows the view to do any necessary clean up prior to updating the visual side.
+///         // Notify that the property is about to change. This allows the view to do any necessary clean up prior to updating the visual side
 ///         OnPropertyChanging();
 ///         _backingStoreValue = value;
-///         // Now, notify that the property has changed. The view will intercept the change and update the visual associated with the property.
+///         // Now, notify that the property has changed. The view will intercept the change and update the visual associated with the property
 ///         OnPropertyChanged();
 ///     }
 /// }
@@ -66,7 +65,7 @@ namespace Gorgon.Editor.UI;
 /// <see cref="PropertyMonitor.NotifyPropertyChanging(string)"/> methods should be used like this:
 /// <code lang="csharp">
 /// <![CDATA[
-/// // This could be a callback function for an IEditorCommand<T> object.
+/// // This could be a callback function for an IEditorCommand<T> object
 /// private void DoCommandAction()
 /// {
 ///     NotifyPropertyChanging(nameof(ReadOnlyValue));
@@ -79,13 +78,13 @@ namespace Gorgon.Editor.UI;
 /// </para>
 /// <para>
 /// The view model is also equipped with several events that are used to notify the application that a long running operation is executing. Applications can intercept these events and display a 
-/// progress panel, or "please wait" panel. These should only be used with asynchronous operations as they will not update correctly if everything is running on the same thread.
+/// progress panel, or "please wait" panel. These should only be used with asynchronous operations as they will not update correctly if everything is running on the same thread
 /// </para>
 /// </remarks>
 public interface IViewModel
     : INotifyPropertyChanged, INotifyPropertyChanging
 {
-    #region Events.
+
     /// <summary>
     /// Event triggered when a wait overlay panel needs to be activated.
     /// </summary>
@@ -105,9 +104,9 @@ public interface IViewModel
     /// Event triggered when the progress overlay should be deactivated.
     /// </summary>
     event EventHandler ProgressDeactivated;
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to notify when a property has been changed.
     /// </summary>
@@ -151,5 +150,5 @@ public interface IViewModel
     /// Function called when the associated view is unloaded.
     /// </summary>
     void Unload();
-    #endregion
+
 }

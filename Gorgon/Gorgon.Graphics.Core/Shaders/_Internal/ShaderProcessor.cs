@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2016 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,22 +11,19 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: July 7, 2016 11:53:48 PM
 // 
-#endregion
 
-using System;
-using System.Collections.Generic;
-using System.IO;
+
 using System.Text;
 using Gorgon.Core;
 using Gorgon.Graphics.Core.Properties;
@@ -34,11 +31,11 @@ using Gorgon.Graphics.Core.Properties;
 namespace Gorgon.Graphics.Core;
 
 /// <summary>
-/// A processor used to analyze shader source code and inject any special #GorgonInclude directives.
+/// A processor used to analyze shader source code and inject any special #GorgonInclude directives
 /// </summary>
 internal class ShaderProcessor
 {
-    #region Properties.
+
     /// <summary>
     /// Property to return the list of cached include files.
     /// </summary>
@@ -46,9 +43,9 @@ internal class ShaderProcessor
     {
         get;
     }
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to trim whitespace from the beginning and end of a line.
     /// </summary>
@@ -227,12 +224,12 @@ internal class ShaderProcessor
 
         return result.ToString();
     }
-    #endregion
 
-    #region Constructor
+
+
     /// <summary>
     /// Initializes a new instance of the <see cref="ShaderProcessor"/> class.
     /// </summary>
-    public ShaderProcessor() => CachedIncludes = new Dictionary<string, GorgonShaderInclude>();
-    #endregion
+    public ShaderProcessor() => CachedIncludes = [];
+
 }

@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2019 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,21 +11,19 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: May 14, 2019 11:11:34 AM
 // 
-#endregion
 
-using System;
-using System.Collections.Generic;
+
 using Gorgon.Diagnostics;
 using Gorgon.Memory;
 using Gorgon.Timing;
@@ -33,52 +31,54 @@ using Gorgon.Timing;
 namespace Gorgon.Graphics.Core;
 
 /// <summary>
-/// A factory for creating/retrieving render targets for temporary use.
+/// A factory for creating/retrieving render targets for temporary use
 /// </summary>
 /// <remarks>
 /// <para>
 /// During the lifecycle of an application, many render targets may be required. In most instances, creating a render target for a scene and disposing of it when done is all that is required. But, when 
-/// dealing with effects, shaders, etc... render targets may need to be created and released during a frame and doing this several times in a frame can be costly.
+/// dealing with effects, shaders, etc... render targets may need to be created and released during a frame and doing this several times in a frame can be costly
 /// </para>
 /// <para>
 /// This factory allows applications to "rent" a render target and return it when done with only an initial cost when creating a target for the first time. This way, temporary render targets can be reused 
-/// when needed.
+/// when needed
 /// </para>
 /// <para>
 /// When the factory retrieves a target, it will check its internal pool and see if a render target already exists. If it exists, and is not in use, it will return the existing target. If the target 
-/// does not exist, or is being used elsewhere, then a new target is created and added to the pool.
+/// does not exist, or is being used elsewhere, then a new target is created and added to the pool
 /// </para>
 /// <para>
 /// Render targets allocated by the factory will be reclaimed over time so memory usage will not get out of control. The default is 2.5 minutes, which is adjustable via the <see cref="ExpiryTime"/> 
-/// proeprty after each target is returned. This only affects targets that are not currently rented out, so there should be no danger of reclaiming a target that is in use.
+/// proeprty after each target is returned. This only affects targets that are not currently rented out, so there should be no danger of reclaiming a target that is in use
 /// </para>
 /// <para>
 /// Targets retrieved by this factory must be returned when they are no longer needed, otherwise the purpose of the factory is defeated. 
 /// </para>
 /// </remarks>
-internal class RenderTargetFactory
-    : IDisposable, IGorgonRenderTargetFactory
+/// <remarks>Initializes a new instance of the <see cref="RenderTargetFactory"/> class.</remarks>
+/// <param name="graphics">The graphics interface that owns this factory.</param>
+internal class RenderTargetFactory(GorgonGraphics graphics)
+        : IDisposable, IGorgonRenderTargetFactory
 {
-    #region Variables.
+
     // The list of render targets handled by this factory.
-    private readonly List<GorgonRenderTarget2DView> _renderTargets = new();
+    private readonly List<GorgonRenderTarget2DView> _renderTargets = [];
     // The list of preallocated default shader resource views.
-    private readonly List<GorgonShaderResourceView> _srvs = new();
+    private readonly List<GorgonShaderResourceView> _srvs = [];
     // The list of indexes for previously rented targets.
-    private readonly HashSet<GorgonRenderTarget2DView> _rented = new();
+    private readonly HashSet<GorgonRenderTarget2DView> _rented = [];
     // The graphics interface that owns this factory.
-    private readonly GorgonGraphics _graphics;
+    private readonly GorgonGraphics _graphics = graphics;
     // The time at which a render target was last returned from rental.
-    private readonly Dictionary<GorgonRenderTarget2DView, double> _expiryTime = new();
+    private readonly Dictionary<GorgonRenderTarget2DView, double> _expiryTime = [];
     // The list used to clean up expired targets.
-    private readonly List<GorgonRenderTarget2DView> _cleanupList = new();
+    private readonly List<GorgonRenderTarget2DView> _cleanupList = [];
     // The timer used to expire the render targets.
-    private readonly IGorgonTimer _expiryTimer;
+    private readonly IGorgonTimer _expiryTimer = GorgonTimerQpc.SupportsQpc() ? new GorgonTimerQpc() : new GorgonTimerMultimedia();
     // An allocator for creating texture info objects.
     private readonly GorgonRingPool<TempTargetTextureInfo> _textureInfoAllocator = new(100, () => new TempTargetTextureInfo());
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to return the number of render targets that are currently in flight.
     /// </summary>
@@ -110,9 +110,9 @@ internal class RenderTargetFactory
         get;
         set;
     } = 0.5;
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to expire any previously allocated targets after a certain amount of time.
     /// </summary>
@@ -286,15 +286,8 @@ internal class RenderTargetFactory
         _srvs.Clear();
         _renderTargets.Clear();
     }
-    #endregion
 
-    #region Constructor/Finalizer.		
-    /// <summary>Initializes a new instance of the <see cref="RenderTargetFactory"/> class.</summary>
-    /// <param name="graphics">The graphics interface that owns this factory.</param>
-    public RenderTargetFactory(GorgonGraphics graphics)
-    {
-        _graphics = graphics;
-        _expiryTimer = GorgonTimerQpc.SupportsQpc() ? new GorgonTimerQpc() : new GorgonTimerMultimedia();
-    }
-    #endregion
+
+
+
 }

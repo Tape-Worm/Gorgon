@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2018 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,27 +11,21 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: August 26, 2018 5:37:32 PM
 // 
-#endregion
 
-using System;
-using System.Drawing;
-using System.IO;
-using System.Linq;
+
 using System.Reflection;
 using System.Text;
-using System.Threading;
-using System.Windows.Forms;
 using Gorgon.Diagnostics;
 using Gorgon.Editor.Converters;
 using Gorgon.Editor.PlugIns;
@@ -51,12 +45,12 @@ using DX = SharpDX;
 namespace Gorgon.Editor;
 
 /// <summary>
-/// Bootstrap functionality for the application.
+/// Bootstrap functionality for the application
 /// </summary>
 internal class Boot
     : ApplicationContext
 {
-    #region Variables.
+
     // Splash screen.
     private FormSplash _splash;
     // The main application form.
@@ -69,9 +63,9 @@ internal class Boot
     private ToolPlugInService _toolPlugIns;
     // The service for managing content plug ins.
     private ContentPlugInService _contentPlugIns;
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>Handles the AssemblyResolve event of the CurrentDomain control.</summary>
     /// <param name="sender">The source of the event.</param>
     /// <param name="args">The <see cref="ResolveEventArgs"/> instance containing the event data.</param>
@@ -96,10 +90,10 @@ internal class Boot
         }
 
         string[] paths =
-        {
+        [
             args.RequestingAssembly.Location,
             GorgonApplication.StartupPath.FullName
-        };
+        ];
 
         // Step 2. - We did not locate the assembly in the loaded assembly list.  Check the local directory for the assembly requesting the reference.
         var name = new AssemblyName(args.Name);
@@ -135,7 +129,7 @@ internal class Boot
     protected override void Dispose(bool disposing)
     {
         AppDomain.CurrentDomain.AssemblyResolve -= CurrentDomain_AssemblyResolve;
-                    
+
         ToolPlugInService toolPlugIns = Interlocked.Exchange(ref _toolPlugIns, null);
         ContentPlugInService contentPlugIns = Interlocked.Exchange(ref _contentPlugIns, null);
         GraphicsContext context = Interlocked.Exchange(ref _graphicsContext, null);
@@ -310,7 +304,7 @@ internal class Boot
         string toolPlugInsDir = Path.Combine(plugInDir.FullName, "Tools");
         string toolPlugInSettingsDir = Path.Combine(Program.ApplicationUserDirectory.FullName, "ToolPlugIns");
         _toolPlugIns = new ToolPlugInService(toolPlugInSettingsDir, hostServices);
-        
+
         hostServices.ToolPlugInService = _toolPlugIns;
 
         if (!System.IO.Directory.Exists(toolPlugInsDir))
@@ -332,7 +326,7 @@ internal class Boot
         {
             Program.Log.LogException(ex);
             GorgonDialogs.ErrorBox(_splash, Resources.GOREDIT_ERR_LOADING_PLUGINS, Resources.GOREDIT_ERR_ERROR, ex);
-        }            
+        }
     }
 
     /// <summary>
@@ -359,7 +353,7 @@ internal class Boot
         }
 
         try
-        {                
+        {
             _splash.InfoText = Resources.GOREDIT_TEXT_LOADING_CONTENT_PLUGINS;
             _contentPlugIns.LoadContentPlugIns(_pluginCache, contentPlugInsDir);
         }
@@ -424,7 +418,7 @@ internal class Boot
             {
                 Log = Program.Log
             };
-            
+
             _pluginCache = new GorgonMefPlugInCache(Program.Log);
             _graphicsContext = GraphicsContext.Create(Program.Log);
 
@@ -448,7 +442,7 @@ internal class Boot
 
             // Load our file system import/export plugins.
             FileSystemProviders fileSystemProviders = LoadFileSystemPlugIns(plugInLocation, hostServices);
-            
+
             // Load our tool plug ins.
             LoadToolPlugIns(plugInLocation, hostServices);
 
@@ -478,7 +472,7 @@ internal class Boot
             else
             {
                 windowState = (FormWindowState)settings.WindowState;
-            }                
+            }
 
             _mainForm.SetDataContext(mainViewModel);
 
@@ -499,5 +493,5 @@ internal class Boot
             Cursor.Current = Cursors.Default;
         }
     }
-    #endregion
+
 }

@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2015 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,35 +11,33 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: Thursday, May 21, 2015 9:36:17 PM
 // 
-#endregion
 
-using System;
-using System.Collections.Generic;
+
 using System.ComponentModel;
 using Gorgon.Core;
 
 namespace Gorgon.Collections;
 
 /// <summary>
-/// A generic interface for a list of named objects that can be indexed by name and numeric index.
+/// A generic interface for a list of named objects that can be indexed by name and numeric index
 /// </summary>
 /// <typeparam name="T">The type of object to store in the collection. Must implement the <see cref="IGorgonNamedObject"/> interface.</typeparam>
 public interface IGorgonNamedObjectList<T>
     : IList<T>
     where T : IGorgonNamedObject
 {
-    #region Properties.
+
     /// <summary>
     /// Gets a value indicating whether this instance is read only.
     /// </summary>
@@ -67,9 +65,9 @@ public interface IGorgonNamedObjectList<T>
     {
         get;
     }
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to remove an item with the specified name from this list.
     /// </summary>
@@ -112,5 +110,5 @@ public interface IGorgonNamedObjectList<T>
     /// The index of <paramref name="name"/> if found in the list; otherwise, -1.
     /// </returns>
     int IndexOf(string name);
-    #endregion
+
 }

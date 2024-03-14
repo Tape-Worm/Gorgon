@@ -1,6 +1,6 @@
-﻿#region MIT.
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2013 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,25 +11,21 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: Monday, January 21, 2013 9:03:04 AM
 // 
-#endregion
 
-using System;
+
 using System.Buffers;
 using System.Globalization;
-using System.IO;
-using System.Linq;
-using System.Text;
 using Gorgon.Core;
 using Gorgon.Math;
 using Gorgon.Memory;
@@ -38,11 +34,11 @@ using Gorgon.Properties;
 namespace Gorgon.IO;
 
 /// <summary>
-/// Extension methods for IO operations and string formatting.
+/// Extension methods for IO operations and string formatting
 /// </summary>
 public static class GorgonIOExtensions
 {
-    #region Variables.
+
     // The system directory path separator.
     private static readonly string _directoryPathSeparator = Path.DirectorySeparatorChar.ToString(CultureInfo.InvariantCulture);
     // The system alternate path separator.
@@ -51,9 +47,9 @@ public static class GorgonIOExtensions
     private static readonly char[] _illegalPathChars = Path.GetInvalidPathChars();
     // Illegal file name characters.
     private static readonly char[] _illegalFileChars = Path.GetInvalidFileNameChars();
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to read data into a span from a stream.
     /// </summary>
@@ -70,7 +66,7 @@ public static class GorgonIOExtensions
 
         ArrayPool<byte> pool = GorgonArrayPool<byte>.GetBestPool(buffer.Length);
         byte[] readBuffer = pool.Rent(buffer.Length);
-        
+
         try
         {
             int byteCount = stream.Read(readBuffer, 0, buffer.Length);
@@ -470,16 +466,16 @@ public static class GorgonIOExtensions
     /// Function to format a filename with safe characters.
     /// </summary>
     /// <param name="path">The path containing the filename to evaluate.</param>
-		/// <returns>A safe filename formatted with placeholder characters if invalid characters are found.</returns>
-		/// <remarks>
-		/// <para>
-		/// This will replace any illegal filename characters with the underscore character.
-		/// </para>
-		/// <para>
-		/// If <b>null</b> or <see cref="string.Empty"/> are passed to this method, then an empty string will be returned. If the path does not contain a 
-		/// filename, then an empty string will be returned as well.
-		/// </para>
-		/// </remarks>
+    /// <returns>A safe filename formatted with placeholder characters if invalid characters are found.</returns>
+    /// <remarks>
+    /// <para>
+    /// This will replace any illegal filename characters with the underscore character.
+    /// </para>
+    /// <para>
+    /// If <b>null</b> or <see cref="string.Empty"/> are passed to this method, then an empty string will be returned. If the path does not contain a 
+    /// filename, then an empty string will be returned as well.
+    /// </para>
+    /// </remarks>
     public static string FormatFileName(this string path)
     {
         if (string.IsNullOrWhiteSpace(path))
@@ -519,9 +515,9 @@ public static class GorgonIOExtensions
     /// passed to <paramref name="directorySeparator"/>.
     /// </para>
     /// <para>
-		/// If <b>null</b> or <see cref="string.Empty"/> are passed to this method, then an empty string will be returned. If the path contains only a filename, 
-		/// that string will be formatted as though it were a directory path.
-		/// </para>
+    /// If <b>null</b> or <see cref="string.Empty"/> are passed to this method, then an empty string will be returned. If the path contains only a filename, 
+    /// that string will be formatted as though it were a directory path.
+    /// </para>
     /// </remarks>
     public static string FormatDirectory(this string path, char directorySeparator)
     {
@@ -633,21 +629,21 @@ public static class GorgonIOExtensions
     /// Function to format a path with safe characters.
     /// </summary>
     /// <param name="path">Path to the file or folder to format.</param>
-		/// <param name="directorySeparator">Directory separator character to use.</param>
+    /// <param name="directorySeparator">Directory separator character to use.</param>
     /// <returns>A safe path formatted with placeholder characters if invalid characters are found.</returns>
     /// <remarks>
     /// <para>
     /// If the path contains directories, they will be formatted according to the formatting applied by <see cref="FormatDirectory"/>, and if the path contains a filename, it will be 
     /// formatted according to the formatting applied by the <see cref="FormatFileName"/> method.
-		/// </para>
-		/// <para>
-		/// If the last character in <paramref name="path"/> is not the same as the <paramref name="directorySeparator"/> parameter, then that last part of the path will be treated as a file. 
-		/// </para>
-		/// <para>
-		/// If no directories are present in the path, then the see <paramref name="directorySeparator"/> is ignored.
-		/// </para>
-		/// </remarks>
-		public static string FormatPath(this string path, char directorySeparator)
+    /// </para>
+    /// <para>
+    /// If the last character in <paramref name="path"/> is not the same as the <paramref name="directorySeparator"/> parameter, then that last part of the path will be treated as a file. 
+    /// </para>
+    /// <para>
+    /// If no directories are present in the path, then the see <paramref name="directorySeparator"/> is ignored.
+    /// </para>
+    /// </remarks>
+    public static string FormatPath(this string path, char directorySeparator)
     {
         if (string.IsNullOrWhiteSpace(path))
         {
@@ -746,5 +742,5 @@ public static class GorgonIOExtensions
                | ((ulong)((byte)chunkName[1]) << 8)
                | (byte)chunkName[0];
     }
-    #endregion
+
 }

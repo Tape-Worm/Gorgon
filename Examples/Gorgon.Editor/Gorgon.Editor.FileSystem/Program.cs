@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2018 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,25 +11,20 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: July 18, 2018 4:04:19 PM
 // 
-#endregion
 
-using System;
-using System.IO;
-using System.Linq;
+
 using System.Numerics;
-using System.Threading;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using Gorgon.Animation;
 using Gorgon.Core;
@@ -46,11 +41,11 @@ using DX = SharpDX;
 namespace Gorgon.Examples;
 
 /// <summary>
-/// Our example entry point.
+/// Our example entry point
 /// </summary>
 static class Program
 {
-    #region Variables.
+
     // The plug in assembly cache.
     private static GorgonMefPlugInCache _assemblyCache;
     // The core graphics functionality.
@@ -58,7 +53,7 @@ static class Program
     // Our swap chain that represents our "Screen".
     private static GorgonSwapChain _screen;
     // Our 2D renderer used to draw our sprites.
-    private static Gorgon2D _renderer;        
+    private static Gorgon2D _renderer;
     // The cache that will be used to manage the lifetimes of our texture resources.
     private static GorgonTextureCache<GorgonTexture2D> _textureCache;
     // The loader used to read content from the editor file system.
@@ -76,9 +71,9 @@ static class Program
     private static GorgonSpriteAnimationController _animController;
     // The background scroll position.
     private static float _pos;
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to load the Gorgon pack file provider plugin.
     /// </summary>
@@ -88,7 +83,7 @@ static class Program
         // The Gorgon packed file provider plug in dll.
         const string gorPackDll = "Gorgon.FileSystem.GorPack.dll";
         // The name of the Gorgon packed file plugin.
-        const string gorPackPlugInName = "Gorgon.IO.GorPack.GorPackProvider";            
+        const string gorPackPlugInName = "Gorgon.IO.GorPack.GorPackProvider";
 
         // Like the zip file example, we'll just create the plugin infrastructure, grab the provider object 
         // and get rid of the plugin stuff since we won't need it again.
@@ -109,7 +104,7 @@ static class Program
 
         _screen.RenderTargetView.Clear(new GorgonColor(0.333333f, 0.752941f, 0.850980f));
 
-        var scale = new Vector2(_screen.Width / (float)ExampleConfig.Default.Resolution.Width, 
+        var scale = new Vector2(_screen.Width / (float)ExampleConfig.Default.Resolution.Width,
                                    _screen.Height / (float)ExampleConfig.Default.Resolution.Height);
 
         _dudeBro.Position = new Vector2(_screen.Width * 0.5f, -139 + _backGround.Height * scale.Y * 0.5f);
@@ -176,7 +171,7 @@ static class Program
                                           {
                                               Name = "Gorgon2D Gorgon.Editor Example Swap Chain"
                                           });
-            
+
             // Tell the graphics API that we want to render to the "screen" swap chain.
             _graphics.SetRenderTarget(_screen.RenderTargetView);
 
@@ -246,9 +241,7 @@ static class Program
     {
         try
         {
-#if NET6_0_OR_GREATER
             Application.SetHighDpiMode(HighDpiMode.PerMonitorV2);
-#endif
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
 
@@ -257,7 +250,7 @@ static class Program
             SynchronizationContext.SetSynchronizationContext(new WindowsFormsSynchronizationContext());
 
             // Create the window, and size it to our resolution.
-            FormMain window = GorgonExample.Initialize(new DX.Size2(ExampleConfig.Default.Resolution.Width, ExampleConfig.Default.Resolution.Height), 
+            FormMain window = GorgonExample.Initialize(new DX.Size2(ExampleConfig.Default.Resolution.Width, ExampleConfig.Default.Resolution.Height),
                                                        "Gorgon.Editor.FileSystem - Loading content from an editor file system example.",
                                                        async (sender, _) => await InitializeAsync(sender as FormMain));
 
@@ -277,5 +270,5 @@ static class Program
             _assemblyCache?.Dispose();
         }
     }
-    #endregion
+
 }

@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2018 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,21 +11,19 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: March 29, 2018 12:24:36 PM
 // 
-#endregion
 
-using System;
-using System.IO;
+
 using System.Runtime.CompilerServices;
 using Gorgon.IO;
 using Gorgon.Math;
@@ -34,7 +32,7 @@ using Gorgon.Properties;
 namespace Gorgon.Native;
 
 /// <summary>
-/// Extension methods for native memory functionality.
+/// Extension methods for native memory functionality
 /// </summary>
 public static class GorgonNativeExtensions
 {
@@ -148,7 +146,7 @@ public static class GorgonNativeExtensions
             || ((stream.Position + countBytes) > stream.Length))
         {
             throw new ArgumentException(string.Format(Resources.GOR_ERR_DATABUFF_SIZE_OFFSET_TOO_LARGE, index, count));
-        }            
+        }
 
         var result = new GorgonNativeBuffer<T>(count.Value);
         using var reader = new GorgonBinaryReader(stream, true);
@@ -380,7 +378,7 @@ public static class GorgonNativeExtensions
 
         var result = new GorgonNativeBuffer<T>(memory.Length);
         memory.Span.CopyTo(result.Pointer);
-        
+
         return result;
     }
 

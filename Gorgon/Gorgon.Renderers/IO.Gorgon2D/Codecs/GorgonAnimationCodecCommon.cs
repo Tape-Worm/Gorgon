@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2018 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,22 +11,19 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: August 25, 2018 2:43:42 PM
 // 
-#endregion
 
-using System;
-using System.Collections.Generic;
-using System.IO;
+
 using Gorgon.Animation;
 using Gorgon.Core;
 using Gorgon.Graphics.Core;
@@ -37,12 +34,12 @@ using DX = SharpDX;
 namespace Gorgon.IO;
 
 /// <summary>
-/// A base class containing common codec functionality.
+/// A base class containing common codec functionality
 /// </summary>
 public abstract class GorgonAnimationCodecCommon
     : IGorgonAnimationCodec
 {
-    #region Variables.
+
     /// <summary>
     /// The ID for the file header for the most current version of the animation format.
     /// </summary>
@@ -52,9 +49,9 @@ public abstract class GorgonAnimationCodecCommon
     /// The highest currently supported version for animation serialization.
     /// </summary>
     public static readonly Version CurrentVersion = new(3, 1);
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to return the friendly description of the format.
     /// </summary>
@@ -121,9 +118,9 @@ public abstract class GorgonAnimationCodecCommon
         get;
         protected set;
     }
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to save the animation data to a stream.
     /// </summary>
@@ -198,7 +195,7 @@ public abstract class GorgonAnimationCodecCommon
         {
             IReadOnlyList<string> result = OnGetAssociatedTextureNames(stream);
 
-            return result ?? Array.Empty<string>();
+            return result ?? [];
         }
         finally
         {
@@ -419,10 +416,10 @@ public abstract class GorgonAnimationCodecCommon
         {
             stream.Position = position;
         }
-    }        
-    #endregion
+    }
 
-    #region Constructor/Finalizer.
+
+
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonAnimationCodecCommon"/> class.
     /// </summary>
@@ -445,12 +442,11 @@ public abstract class GorgonAnimationCodecCommon
             throw new ArgumentEmptyException(nameof(name));
         }
 
-        FileExtensions = new[]
-                         {
+        FileExtensions = [
                              new GorgonFileExtension(".gorAnim", Resources.GOR2DIO_ANIMTION_FILE_EXTENSION_DESC)
-                         };
+                         ];
         Codec = name;
         CodecDescription = string.IsNullOrWhiteSpace(description) ? name : description;
     }
-    #endregion
+
 }

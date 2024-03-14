@@ -1,39 +1,36 @@
-﻿using System;
-using System.Linq;
-using System.Threading;
-using Gorgon.Properties;
+﻿using Gorgon.Properties;
 
 namespace Gorgon.Memory;
 
 /// <summary>
-/// A memory allocation strategy that uses a circular buffer to perform memory allocations.
+/// A memory allocation strategy that uses a circular buffer to perform memory allocations
 /// </summary>
 /// <typeparam name="T">The type of objects to allocate.  These must be a reference type.</typeparam>
 /// <remarks>
 /// <para>
 /// While the .NET memory manager is quite fast (e.g. <c>new</c>), and is useful for most cases, it does have the problem of creating garbage. When these items are created and discarded, 
 /// the garbage collector may kick in at any given time, causing performance issues during time critical code (e.g. a rendering loop). By allocating a large pool of objects and then drawing 
-/// directly from this pool, we can reuse existing, but expired objects to ensure that the garbage collector does not collect these items until we are truly done with them.
+/// directly from this pool, we can reuse existing, but expired objects to ensure that the garbage collector does not collect these items until we are truly done with them
 /// </para>
 /// <para>
-/// This allocator will allocate objects up until its total size, and then start over from the beginning if this value is exceeded. Objects returned will be reused.
+/// This allocator will allocate objects up until its total size, and then start over from the beginning if this value is exceeded. Objects returned will be reused
 /// </para>
 /// <para>
-/// This allocator will never grow beyond its initial size. So care must be taken ahead of time to ensure the pool is large enough.
+/// This allocator will never grow beyond its initial size. So care must be taken ahead of time to ensure the pool is large enough
 /// </para>
 /// </remarks>
 public class GorgonRingPool<T>
     : IGorgonAllocator<T>
     where T : class
 {
-    #region Variables.
+
     // The most current item in the heap.
     private int _currentItem = -1;
     // The items in the pool.
     private readonly T[] _items;
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to set or return the allocator to use when creating new instances of an object.
     /// </summary>
@@ -58,10 +55,10 @@ public class GorgonRingPool<T>
     /// When this value is 0, then the pool is full and should be reset using the <see cref="Reset"/> method.
     /// </remarks>
     /// <seealso cref="Reset"/>
-	    public int AvailableSlots => TotalSize - (_currentItem + 1);
-    #endregion
+    public int AvailableSlots => TotalSize - (_currentItem + 1);
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to allocate a new object from the pool.
     /// </summary>
@@ -133,9 +130,9 @@ public class GorgonRingPool<T>
 
         Interlocked.Exchange(ref _currentItem, -1);
     }
-    #endregion
 
-    #region Constructor/Finalizer.
+
+
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonRingPool{T}"/> class.
     /// </summary>
@@ -160,5 +157,5 @@ public class GorgonRingPool<T>
         _items = new T[objectCount];
         ItemAllocator = allocator;
     }
-    #endregion
+
 }

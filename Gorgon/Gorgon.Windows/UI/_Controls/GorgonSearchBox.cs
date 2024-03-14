@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2018 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,42 +11,39 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: December 12, 2018 10:52:42 AM
 // 
-#endregion
 
-using System;
+
 using System.ComponentModel;
 using System.ComponentModel.Design;
-using System.Drawing;
 using System.Drawing.Design;
-using System.Windows.Forms;
 
 namespace Gorgon.UI;
 
 /// <summary>
-/// A textbox for searching.
+/// A textbox for searching
 /// </summary>
 public partial class GorgonSearchBox : UserControl
 {
-    #region Events.
+
     /// <summary>
     /// The event triggered when a search is initiated.
     /// </summary>
     [Category("Behavior"), Description("Event triggered when a search is initiated.")]
     public event EventHandler<GorgonSearchEventArgs> Search;
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>This property is not relevant for this class.</summary>
     [Browsable(false)]
     [EditorBrowsable(EditorBrowsableState.Never)]
@@ -131,9 +128,9 @@ public partial class GorgonSearchBox : UserControl
         get => TipSearch.ForeColor;
         set => TipSearch.ForeColor = value;
     }
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>Handles the TextChanged event of the TextSearch control.</summary>
     /// <param name="sender">The source of the event.</param>
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
@@ -235,10 +232,10 @@ public partial class GorgonSearchBox : UserControl
         base.OnParentBackColorChanged(e);
         TextSearch.BackColor = BackColor;
     }
-    #endregion
 
-    #region Constructor.
+
+
     /// <summary>Initializes a new instance of the <see cref="GorgonSearchBox"/> class.</summary>
     public GorgonSearchBox() => InitializeComponent();
-    #endregion
+
 }

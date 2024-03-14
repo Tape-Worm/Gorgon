@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2021 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,24 +11,19 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: September 6, 2021 12:54:13 PM
 // 
-#endregion
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+
 using Gorgon.Editor.UI;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Fonts;
@@ -36,12 +31,12 @@ using Gorgon.Graphics.Fonts;
 namespace Gorgon.Editor.FontEditor;
 
 /// <summary>
-/// The view model for the <see cref="FontPatternBrushView"/>.
+/// The view model for the <see cref="FontPatternBrushView"/>
 /// </summary>
 internal class FontPatternBrush
     : HostedPanelViewModelBase<HostedPanelViewModelParameters>, IFontPatternBrush, IFontBrush
 {
-    #region Variables.
+
     /// <summary>
     /// The default pattern brush.
     /// </summary>
@@ -56,9 +51,9 @@ internal class FontPatternBrush
     private GorgonGlyphHatchBrush _brush = DefaultBrush;
     // The original colors for the brush.
     private (GorgonColor Foreground, GorgonColor Background) _originalColors;
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>Property to return whether the panel is modal.</summary>
     public override bool IsModal => true;
 
@@ -102,9 +97,9 @@ internal class FontPatternBrush
     /// Property to return the generic glyph brush.
     /// </summary>
     GorgonGlyphBrush IFontBrush.Brush => Brush;
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>Function to inject dependencies for the view model.</summary>
     /// <param name="injectionParameters">The parameters to inject.</param>
     protected override void OnInitialize(HostedPanelViewModelParameters injectionParameters)
@@ -118,5 +113,5 @@ internal class FontPatternBrush
         _brush = DefaultBrush;
         base.Unload();
     }
-    #endregion
+
 }

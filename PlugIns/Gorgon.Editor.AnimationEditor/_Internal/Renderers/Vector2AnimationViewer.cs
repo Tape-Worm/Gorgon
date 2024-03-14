@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2020 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,24 +11,21 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: June 10, 2020 6:38:49 AM
 // 
-#endregion
 
-using System;
+
 using System.Buffers;
 using System.Numerics;
-using System.Threading;
-using System.Windows.Forms;
 using Gorgon.Animation;
 using Gorgon.Editor.Rendering;
 using Gorgon.Editor.Services;
@@ -42,30 +39,37 @@ using DX = SharpDX;
 namespace Gorgon.Editor.AnimationEditor;
 
 /// <summary>
-/// The viewer for editing a vector 2 key value for an aniamtion.
+/// The viewer for editing a vector 2 key value for an aniamtion
 /// </summary>
-internal class Vector2AnimationViewer
-    : AnimationViewer
+/// <remarks>Initializes a new instance of the <see cref="DefaultAnimationViewer"/> class.</remarks>
+/// <param name="renderer">The main renderer for the content view.</param>
+/// <param name="swapChain">The swap chain for the content view.</param>
+/// <param name="dataContext">The view model to assign to the renderer.</param>        
+/// <param name="clipper">The rectangle clipper interface.</param>
+/// <param name="anchorEditor">The anchor editor interface.</param>
+/// <param name="vertexEditor">The editor for sprite vertices.</param>
+internal class Vector2AnimationViewer(Gorgon2D renderer, GorgonSwapChain swapChain, IAnimationContent dataContext, IRectClipperService clipper, IAnchorEditService anchorEditor, VertexEditService vertexEditor)
+        : AnimationViewer(ViewerName, renderer, swapChain, dataContext, clipper, true)
 {
-    #region Constants.
+
     /// <summary>
     /// The name of the viewer.
     /// </summary>
     public const string ViewerName = nameof(AnimationTrackKeyType.Vector2);
-    #endregion
 
-    #region Variables.
+
+
     // The anchor editor service.
-    private readonly IAnchorEditService _anchorEdit;
+    private readonly IAnchorEditService _anchorEdit = anchorEditor;
     // The editor used to modify sprite vertices.
-    private readonly VertexEditService _vertexEditor;
+    private readonly VertexEditService _vertexEditor = vertexEditor;
     // Flag to indicate whether the clipper/anchor events are assigned.
     private int _clipAnchorEvent;
     // Previous angle when modifying vertices for a sprite.
     private GorgonSprite _vertexEditSprite;
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to enable the events for the clipper/anchor editor.
     /// </summary>
@@ -135,7 +139,7 @@ internal class Vector2AnimationViewer
     /// <summary>Handles the RectChanged event of the Clipper control.</summary>
     /// <param name="sender">The source of the event.</param>
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
-    private void Clipper_RectChanged(object sender, EventArgs e) 
+    private void Clipper_RectChanged(object sender, EventArgs e)
     {
         switch (SelectedTrackID)
         {
@@ -329,7 +333,7 @@ internal class Vector2AnimationViewer
         }
 
         switch (propertyName)
-        {                
+        {
             case nameof(IKeyValueEditor.Value):
                 UpdateSprite();
                 break;
@@ -399,7 +403,7 @@ internal class Vector2AnimationViewer
             base.OnMouseMove(args);
             return;
         }
-                    
+
         switch (SelectedTrackID)
         {
             case TrackSpriteProperty.Position:
@@ -515,7 +519,7 @@ internal class Vector2AnimationViewer
             case TrackSpriteProperty.Size:
             case TrackSpriteProperty.Position:
                 Renderer.Begin();
-                
+
                 Clipper.Render();
                 DrawAnchorPoint();
 
@@ -573,7 +577,7 @@ internal class Vector2AnimationViewer
     /// </remarks>
     protected override void OnLoad()
     {
-        base.OnLoad();            
+        base.OnLoad();
 
         _vertexEditor.Camera = _anchorEdit.Camera = Clipper.Camera = Camera;
         Clipper.Bounds = RenderRegion;
@@ -597,9 +601,9 @@ internal class Vector2AnimationViewer
 
         base.OnUnload();
     }
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>Function to set the default zoom/offset for the viewer.</summary>
     public override void DefaultZoom()
     {
@@ -610,21 +614,6 @@ internal class Vector2AnimationViewer
 
         ZoomToSprite(Sprite);
     }
-    #endregion
 
-    #region Constructor/Finalizer.
-    /// <summary>Initializes a new instance of the <see cref="DefaultAnimationViewer"/> class.</summary>
-    /// <param name="renderer">The main renderer for the content view.</param>
-    /// <param name="swapChain">The swap chain for the content view.</param>
-    /// <param name="dataContext">The view model to assign to the renderer.</param>        
-    /// <param name="clipper">The rectangle clipper interface.</param>
-    /// <param name="anchorEditor">The anchor editor interface.</param>
-    /// <param name="vertexEditor">The editor for sprite vertices.</param>
-    public Vector2AnimationViewer(Gorgon2D renderer, GorgonSwapChain swapChain, IAnimationContent dataContext, IRectClipperService clipper, IAnchorEditService anchorEditor, VertexEditService vertexEditor)
-        : base(ViewerName, renderer, swapChain, dataContext, clipper, true)
-    {   
-        _anchorEdit = anchorEditor;
-        _vertexEditor = vertexEditor;
-    }
-    #endregion
+
 }

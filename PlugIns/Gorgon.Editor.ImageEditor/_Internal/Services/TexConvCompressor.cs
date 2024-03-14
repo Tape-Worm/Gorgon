@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2018 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,23 +11,20 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: November 12, 2018 10:23:07 PM
 // 
-#endregion
 
-using System;
-using System.Collections.Generic;
+
 using System.Diagnostics;
-using System.IO;
 using Gorgon.Core;
 using Gorgon.Editor.ImageEditor.Properties;
 using Gorgon.Graphics;
@@ -38,11 +35,14 @@ using Gorgon.IO;
 namespace Gorgon.Editor.ImageEditor;
 
 /// <summary>
-/// The texture conversion functionality for the external texconv process.
+/// The texture conversion functionality for the external texconv process
 /// </summary>
-internal class TexConvCompressor
+/// <remarks>Initializes a new instance of the TexConvCompressor class.</remarks>
+/// <param name="texConvFile">The tex conv file.</param>
+/// <param name="scratchWriter">The scratch writer.</param>
+/// <param name="codec">The codec used to read/write the file.</param>
+internal class TexConvCompressor(FileInfo texConvFile, IGorgonFileSystemWriter<Stream> scratchWriter, IGorgonImageCodec codec)
 {
-    #region Conversion Formats.
     // Formats used to convert from a compressed format to an expanded format.
     private readonly Dictionary<BufferFormat, string> _d3dFormats = new()
     {
@@ -103,18 +103,18 @@ internal class TexConvCompressor
                "R8G8B8A8_UNORM_SRGB"
         }
     };
-    #endregion
 
-    #region Variables.
+
+
     // The path to the texture converter process.
-    private readonly FileInfo _texConv;
+    private readonly FileInfo _texConv = texConvFile;
     // The file system writer to use.
-    private readonly IGorgonFileSystemWriter<Stream> _writer;
+    private readonly IGorgonFileSystemWriter<Stream> _writer = scratchWriter;
     // PlugIn image file codec.
-    private readonly IGorgonImageCodec _codec;
-    #endregion
+    private readonly IGorgonImageCodec _codec = codec;
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to compress an image using block compression.
     /// </summary>
@@ -242,18 +242,6 @@ internal class TexConvCompressor
             }
         }
     }
-    #endregion
 
-    #region Constructor/Finalizer.
-    /// <summary>Initializes a new instance of the TexConvCompressor class.</summary>
-    /// <param name="texConvFile">The tex conv file.</param>
-    /// <param name="scratchWriter">The scratch writer.</param>
-    /// <param name="codec">The codec used to read/write the file.</param>
-    public TexConvCompressor(FileInfo texConvFile, IGorgonFileSystemWriter<Stream> scratchWriter, IGorgonImageCodec codec)
-    {
-        _codec = codec;
-        _writer = scratchWriter;
-        _texConv = texConvFile;
-    }
-    #endregion
+
 }

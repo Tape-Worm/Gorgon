@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2019 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,47 +11,45 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: April 10, 2019 8:19:52 AM
 // 
-#endregion
 
-using System;
+
 using System.ComponentModel;
 using System.Numerics;
-using System.Windows.Forms;
 using Gorgon.Editor.UI;
 
 namespace Gorgon.Editor.SpriteEditor;
 
 /// <summary>
-/// Provides an interface to allow manual update of a sprite's vertex corners.
+/// Provides an interface to allow manual update of a sprite's vertex corners
 /// </summary>
 internal partial class FormManualVertexEdit
     : Form, IDataContext<ISpriteVertexEditContext>
 {
-    #region Variables.
 
-    #endregion
 
-    #region Properties.
+
+
+
     /// <summary>Property to return the data context assigned to this view.</summary>
-    public ISpriteVertexEditContext DataContext
+    public ISpriteVertexEditContext ViewModel
     {
         get;
         private set;
     }
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>Handles the PropertyChanged event of the DataContext control.</summary>
     /// <param name="sender">The source of the event.</param>
     /// <param name="e">The <see cref="PropertyChangedEventArgs"/> instance containing the event data.</param>
@@ -61,7 +59,7 @@ internal partial class FormManualVertexEdit
         {
             case nameof(ISpriteVertexEditContext.SelectedVertexIndex):
             case nameof(ISpriteVertexEditContext.Offset):
-                GetOffsetFromDataContext(DataContext);
+                GetOffsetFromDataContext(ViewModel);
                 break;
         }
     }
@@ -71,12 +69,12 @@ internal partial class FormManualVertexEdit
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
     private void NumericOffset_ValueChanged(object sender, EventArgs e)
     {
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             return;
         }
 
-        DataContext.Offset = new Vector2((float)NumericX.Value, (float)NumericY.Value);
+        ViewModel.Offset = new Vector2((float)NumericX.Value, (float)NumericY.Value);
     }
 
     /// <summary>
@@ -115,12 +113,12 @@ internal partial class FormManualVertexEdit
     /// </summary>
     private void UnassignEvents()
     {
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             return;
         }
 
-        DataContext.PropertyChanged -= DataContext_PropertyChanged;
+        ViewModel.PropertyChanged -= DataContext_PropertyChanged;
     }
 
     /// <summary>
@@ -156,19 +154,19 @@ internal partial class FormManualVertexEdit
     {
         InitializeFromDataContext(dataContext);
 
-        DataContext = dataContext;
+        ViewModel = dataContext;
 
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             return;
         }
 
-        DataContext.PropertyChanged += DataContext_PropertyChanged;
+        ViewModel.PropertyChanged += DataContext_PropertyChanged;
     }
-    #endregion
 
-    #region Constructor/Finalizer.
+
+
     /// <summary>Initializes a new instance of the <see cref="FormManualVertexEdit"/> class.</summary>
     public FormManualVertexEdit() => InitializeComponent();
-    #endregion
+
 }

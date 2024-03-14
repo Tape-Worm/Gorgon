@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2018 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,25 +11,20 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: September 24, 2018 12:48:59 PM
 // 
-#endregion
 
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
+
 using System.Text;
-using System.Windows.Forms;
 using Gorgon.Editor.Properties;
 using Gorgon.IO;
 using Gorgon.UI;
@@ -37,17 +32,22 @@ using Gorgon.UI;
 namespace Gorgon.Editor.Services;
 
 /// <summary>
-/// A service used to show a dialog for opening an editor file.
+/// A service used to show a dialog for opening an editor file
 /// </summary>
-internal class EditorFileOpenDialogService
-    : IFileDialogService
+/// <remarks>
+/// Initializes a new instance of the <see cref="EditorFileOpenDialogService"/> class
+/// </remarks>
+/// <param name="settings">The application settings.</param>
+/// <param name="providers">The providers used for opening/saving files.</param>
+internal class EditorFileOpenDialogService(EditorSettings settings, FileSystemProviders providers)
+        : IFileDialogService
 {
-    #region Variables.
+
     // The previously selected file extension filter index.
     private int _lastSelectedFilterIndex;
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to set or return the initial file path to use.
     /// </summary>
@@ -91,7 +91,7 @@ internal class EditorFileOpenDialogService
     public FileSystemProviders Providers
     {
         get;
-    }
+    } = providers;
 
     /// <summary>
     /// Property to return the settings for the application.
@@ -99,10 +99,10 @@ internal class EditorFileOpenDialogService
     public EditorSettings Settings
     {
         get;
-    }
-    #endregion
+    } = settings;
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to build a file system reader filter string for file dialogs.
     /// </summary>
@@ -240,18 +240,6 @@ internal class EditorFileOpenDialogService
             dialog?.Dispose();
         }
     }
-    #endregion
 
-    #region Constructor/Finalizer.
-    /// <summary>
-    /// Initializes a new instance of the <see cref="EditorFileOpenDialogService"/> class.
-    /// </summary>
-    /// <param name="settings">The application settings.</param>
-    /// <param name="providers">The providers used for opening/saving files.</param>
-    public EditorFileOpenDialogService(EditorSettings settings, FileSystemProviders providers)
-    {
-        Settings = settings;
-        Providers = providers;
-    }
-    #endregion
+
 }

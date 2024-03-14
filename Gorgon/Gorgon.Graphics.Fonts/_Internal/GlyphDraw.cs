@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2017 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,21 +11,19 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: February 15, 2017 9:22:49 PM
 // 
-#endregion
 
-using System.Collections.Generic;
-using System.Drawing;
+
 using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
 using System.Globalization;
@@ -35,18 +33,23 @@ using DX = SharpDX;
 namespace Gorgon.Graphics.Fonts;
 
 /// <summary>
-/// Provides functionality to draw and measure glyph data.
+/// Provides functionality to draw and measure glyph data
 /// </summary>
-internal class GlyphDraw
+/// <remarks>
+/// Initializes a new instance of the <see cref="GlyphDraw"/> class
+/// </remarks>
+/// <param name="fontInfo">The font information used to create the font.</param>
+/// <param name="fontData">The font data for the glyphs.</param>
+internal class GlyphDraw(IGorgonFontInfo fontInfo, GdiFontData fontData)
 {
-    #region Variables.
-    // Data used to generate the font glyphs.
-    private readonly GdiFontData _fontData;
-    // Information about the font to create.
-    private readonly IGorgonFontInfo _fontInfo;
-    #endregion
 
-    #region Methods.
+    // Data used to generate the font glyphs.
+    private readonly GdiFontData _fontData = fontData;
+    // Information about the font to create.
+    private readonly IGorgonFontInfo _fontInfo = fontInfo;
+
+
+
     /// <summary>
     /// Function to determine if a bitmap is empty.
     /// </summary>
@@ -367,7 +370,7 @@ internal class GlyphDraw
 
         switch (_fontInfo.AntiAliasingMode)
         {
-            case FontAntiAliasMode.AntiAlias:
+            case GorgonFontAntiAliasMode.AntiAlias:
                 oldGraphics.SmoothingMode = SmoothingMode.AntiAlias;
                 oldGraphics.InterpolationMode = InterpolationMode.HighQualityBicubic;
                 break;
@@ -533,7 +536,7 @@ internal class GlyphDraw
 
             switch (_fontInfo.AntiAliasingMode)
             {
-                case FontAntiAliasMode.AntiAlias:
+                case GorgonFontAntiAliasMode.AntiAlias:
                     glyphGraphics.SmoothingMode = SmoothingMode.AntiAlias;
                     glyphGraphics.InterpolationMode = InterpolationMode.HighQualityBicubic;
                     break;
@@ -658,18 +661,6 @@ internal class GlyphDraw
 
         return result;
     }
-    #endregion
 
-    #region Constructor/Finalizer.
-    /// <summary>
-    /// Initializes a new instance of the <see cref="GlyphDraw"/> class.
-    /// </summary>
-    /// <param name="fontInfo">The font information used to create the font.</param>
-    /// <param name="fontData">The font data for the glyphs.</param>
-    public GlyphDraw(IGorgonFontInfo fontInfo, GdiFontData fontData)
-    {
-        _fontInfo = fontInfo;
-        _fontData = fontData;
-    }
-    #endregion
+
 }

@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2018 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,37 +11,42 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: September 5, 2018 9:09:28 AM
 // 
-#endregion
+
 
 using System.ComponentModel;
 
 namespace Gorgon.Editor.ViewModels;
 
 /// <summary>
-/// Arguments for the <see cref="IDirectory.RenameCommand"/>.
+/// Arguments for the <see cref="IDirectory.RenameCommand"/>
 /// </summary>
-internal class RenameArgs
-    : CancelEventArgs
+/// <remarks>
+/// Initializes a new instance of the <see cref="RenameArgs"/> class
+/// </remarks>
+/// <param name="oldName">The old name.</param>
+/// <param name="newName">The new name.</param>
+internal class RenameArgs(string oldName, string newName)
+        : CancelEventArgs(false)
 {
-    #region Properties.
+
     /// <summary>
     /// Property to return the old name.
     /// </summary>
     public string OldName
     {
         get;
-    }
+    } = oldName;
 
     /// <summary>
     /// Property to set or return the ID of the file or directory being renamed.
@@ -59,20 +64,7 @@ internal class RenameArgs
     {
         get;
         set;
-    }
-    #endregion
+    } = newName;
 
-    #region Constructor/Finalizer.
-    /// <summary>
-    /// Initializes a new instance of the <see cref="RenameArgs"/> class.
-    /// </summary>
-    /// <param name="oldName">The old name.</param>
-    /// <param name="newName">The new name.</param>
-    public RenameArgs(string oldName, string newName)
-        : base(false)
-    {
-        OldName = oldName;
-        NewName = newName;
-    }
-    #endregion
+
 }

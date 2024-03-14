@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2020 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,21 +11,19 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: June 8, 2020 7:27:57 PM
 // 
-#endregion
 
-using System.IO;
-using System.Linq;
+
 using System.Numerics;
 using Gorgon.Core;
 using Gorgon.Editor.AnimationEditor.Properties;
@@ -42,19 +40,19 @@ using DX = SharpDX;
 namespace Gorgon.Editor.AnimationEditor;
 
 /// <summary>
-/// A renderer to display on the UI when the animation does not have a primary sprite.
+/// A renderer to display on the UI when the animation does not have a primary sprite
 /// </summary>
 internal class NoPrimarySpriteViewer
     : DefaultContentRenderer<IAnimationContent>
 {
-    #region Constants.
+
     /// <summary>
     /// The name of the viewer.
     /// </summary>
     public const string ViewerName = "AnimationNoSpriteRenderer";
-    #endregion
 
-    #region Variables.
+
+
     // The texture to display when an animation does not contain a primary sprite.
     private GorgonTexture2DView _noSprite;
     // The horizontal position of the film strip background.
@@ -73,9 +71,9 @@ internal class NoPrimarySpriteViewer
     private GorgonTextSprite _displayText;
     // The number of loops for the background animation.
     private int _stripAnimCount;
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to destroy the render target background.
     /// </summary>
@@ -113,7 +111,7 @@ internal class NoPrimarySpriteViewer
         if (disposing)
         {
             DestroyTarget();
-            _noSprite?.Dispose();                
+            _noSprite?.Dispose();
             _oldFilm?.Dispose();
         }
 
@@ -162,7 +160,7 @@ internal class NoPrimarySpriteViewer
         }
 
         Graphics.SetRenderTarget(_rtv);
-                    
+
         Renderer.Begin();
         Renderer.DrawFilledRectangle(_rtv.Bounds.ToRectangleF(), GorgonColor.White, _noSprite, new DX.RectangleF(_stripX, 0, 1, 1));
         Renderer.DrawTextSprite(_displayText);
@@ -206,7 +204,7 @@ internal class NoPrimarySpriteViewer
             Usage = ResourceUsage.Immutable
         });
 
-        _font = _fontFactory.GetFont(new GorgonFontInfo("Century", 64.0f, FontHeightMode.Points)
+        _font = _fontFactory.GetFont(new GorgonFontInfo("Century", 64.0f, GorgonFontHeightMode.Points)
         {
             Name = "No Preview Sprite Font",
             OutlineSize = 4,
@@ -227,14 +225,14 @@ internal class NoPrimarySpriteViewer
         _displayText = new GorgonTextSprite(_font, Resources.GORANM_TEXT_NO_SPRITE.WordWrap(_font, RenderRegion.Width))
         {
             Alignment = Alignment.Center,
-            Color = GorgonColor.White,                
+            Color = GorgonColor.White,
             LayoutArea = RenderRegion.Size,
             DrawMode = TextDrawMode.OutlinedGlyphs
         };
     }
-    #endregion
 
-    #region Constructor/Finalizer.
+
+
     /// <summary>Initializes a new instance of the <see cref="NoPrimarySpriteViewer"/> class.</summary>
     /// <param name="renderer">The 2D renderer for the application.</param>
     /// <param name="swapChain">The swap chain for the render area.</param>
@@ -249,5 +247,5 @@ internal class NoPrimarySpriteViewer
 
         _fontFactory = fontFactory;
     }
-    #endregion
+
 }

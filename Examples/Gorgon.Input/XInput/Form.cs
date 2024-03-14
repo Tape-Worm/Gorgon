@@ -1,6 +1,5 @@
-﻿#region MIT.
-// 
-// Gorgon.
+﻿// 
+// Gorgon
 // Copyright (C) 2013 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,26 +10,19 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: Friday, January 11, 2013 8:27:21 AM
 // 
-#endregion
 
-using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
-using System.Windows.Forms;
+
 using Gorgon.Core;
 using Gorgon.Input;
 using Gorgon.PlugIns;
@@ -40,7 +32,7 @@ using Gorgon.UI;
 namespace Gorgon.Examples;
 
 /// <summary>
-/// Our main form for the example.
+/// Our main form for the example
 /// </summary>
 /// <remarks>
 /// This example is exclusively for the XBox controller (although it could be made to work with a regular controller).  
@@ -53,16 +45,16 @@ namespace Gorgon.Examples;
 /// 
 /// The set up is similar to the other input examples:  Load the driver plug in assembly, create the xinput driver and 
 /// create each controller as needed.  Then in the idle loop, we poll the controller for input.  If no XBox controller is 
-/// found a prompt to plug one in is shown.
+/// found a prompt to plug one in is shown
 /// 
-/// This example also shows how to use vibration and how to make a pressure sensitive trigger on the XBox controllers.
+/// This example also shows how to use vibration and how to make a pressure sensitive trigger on the XBox controllers
 /// 
 /// To activate the spray can effect press the trigger.  The harder it's pushed, the darker the color and the quicker 
 /// the trigger is pushed, the thicker the spray.  Use the secondary directional stick to spray in a given direction.  
 /// </remarks>
 public partial class Form : System.Windows.Forms.Form
 {
-    #region Variables.
+
     // Our XInput driver.
     private IGorgonGamingDeviceDriver _driver;
     // Our XBox controllers.
@@ -75,9 +67,9 @@ public partial class Form : System.Windows.Forms.Form
     private DrawingSurface _surface;
     // The assembly cache for the plug ins
     private GorgonMefPlugInCache _assemblies = null;
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function called during the paint event of the controls that display controller information.
     /// </summary>
@@ -416,12 +408,10 @@ public partial class Form : System.Windows.Forms.Form
         _surface.Dispose();
         _surface = null;
     }
-    #endregion
 
-    #region Constructor/Destructor.
     /// <summary>
     /// Initializes a new instance of the <see cref="Form" /> class.
     /// </summary>
     public Form() => InitializeComponent();
-    #endregion
+
 }

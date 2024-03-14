@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2019 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,51 +11,49 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: April 4, 2019 7:51:22 PM
 // 
-#endregion
 
-using System;
+
 using System.ComponentModel;
-using System.Windows.Forms;
 using Gorgon.Editor.UI.Views;
 
 namespace Gorgon.Editor.UI.Controls;
 
 /// <summary>
-/// A base control for editor sub panels.
+/// A base control for editor sub panels
 /// </summary>
 /// <remarks>
 /// <para>
 /// This is a base UI element that allows content plug ins to display a settings/properties panel for a given operation while editing content. Content plug in developers must inherit this type to make 
-/// their content operation properties/settings visible to the user.
+/// their content operation properties/settings visible to the user
 /// </para>
 /// <para>
 /// One example of using this would be defining a color for the content. The developer would inherit this control type, and then place a color picker on the control. Then a view model should be created 
 /// for the control (the view must implement <see cref="IDataContext{T}"/>), and then the content view model would receive the updated color value when the OK button is clicked by providing an OK command 
-/// to the panel view model.
+/// to the panel view model
 /// </para>
 /// </remarks>
 public partial class EditorSubPanelCommon
     : EditorBaseControl
 {
-    #region Variables.
+
     /// <summary>
     /// The panel that will hold the body of the sub panel.
     /// </summary>
     protected Panel PanelBody;
-    #endregion
 
-    #region Events.
+
+
     /// <summary>
     /// Event triggered when the OK button is clicked.
     /// </summary>
@@ -67,9 +65,9 @@ public partial class EditorSubPanelCommon
     /// </summary>
     [Category("Behavior"), Description("Triggered when the Cancel button is clicked.")]
     public event EventHandler Cancel;
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to set or return the text to display in the caption.
     /// </summary>
@@ -92,9 +90,9 @@ public partial class EditorSubPanelCommon
         get => PanelConfirmCancel.Visible;
         set => PanelConfirmCancel.Visible = value;
     }
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>Handles the Click event of the ButtonOK control.</summary>
     /// <param name="sender">The source of the event.</param>
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
@@ -155,10 +153,10 @@ public partial class EditorSubPanelCommon
 
         ValidateOk();
     }
-    #endregion
 
-    #region Constructor/Finalizer.
+
+
     /// <summary>Initializes a new instance of the <see cref="EditorSubPanelCommon"/> class.</summary>
     public EditorSubPanelCommon() => InitializeComponent();
-    #endregion
+
 }

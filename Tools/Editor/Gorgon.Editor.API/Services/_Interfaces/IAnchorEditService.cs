@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2020 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,22 +11,20 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: July 11, 2020 9:54:43 PM
 // 
-#endregion
 
-using System;
+
 using System.Numerics;
-using System.Windows.Forms;
 using Gorgon.Editor.Rendering;
 using Gorgon.Renderers;
 using Gorgon.Renderers.Cameras;
@@ -34,7 +32,7 @@ using Gorgon.Renderers.Cameras;
 namespace Gorgon.Editor.Services;
 
 /// <summary>
-/// A service used to edit an anchor point on a sprite.
+/// A service used to edit an anchor point on a sprite
 /// </summary>
 /// <remarks>
 /// <para>
@@ -44,14 +42,14 @@ namespace Gorgon.Editor.Services;
 /// </remarks>
 public interface IAnchorEditService
 {
-    #region Events.
+
     /// <summary>
     /// Event triggered when the anchor position is updated.
     /// </summary>
     event EventHandler AnchorChanged;
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to set or return the position of the sprite anchor.
     /// </summary>
@@ -87,10 +85,10 @@ public interface IAnchorEditService
         get;
     }
 
-    
-    #endregion
 
-    #region Methods.
+
+
+
     /// <summary>
     /// Function to intercept keyboard key presses.
     /// </summary>
@@ -128,5 +126,5 @@ public interface IAnchorEditService
     /// Function to render the anchor UI.
     /// </summary>
     void Render();
-    #endregion
+
 }

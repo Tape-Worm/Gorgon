@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2017 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,20 +11,19 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: March 4, 2017 10:22:08 AM
 // 
-#endregion
 
-using System;
+
 using System.Numerics;
 using Gorgon.Graphics.Core;
 using Gorgon.Math;
@@ -33,12 +32,12 @@ using Gorgon.Renderers.Geometry;
 namespace Gorgon.Examples;
 
 /// <summary>
-/// Object representing a 3D dimensional cube.
+/// Object representing a 3D dimensional cube
 /// </summary>
 public class Cube
     : IDisposable
 {
-    #region Variables.
+
     // The matrix that defines our rotation.
     private Matrix4x4 _rotation = Matrix4x4.Identity;
     // The matrix that defines our translation.
@@ -46,9 +45,9 @@ public class Cube
     // The world matrix to send to the vertex shader for transformation.
     // This is the combination of the rotation and translation matrix.
     private Matrix4x4 _world = Matrix4x4.Identity;
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to return the vertex buffer that holds the cube vertex data.
     /// </summary>
@@ -85,9 +84,9 @@ public class Cube
             return ref _world;
         }
     }
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to rotate the cube.
     /// </summary>
@@ -122,9 +121,7 @@ public class Cube
         VertexBuffer[0].VertexBuffer.Dispose();
         IndexBuffer?.Dispose();
     }
-    #endregion
 
-    #region Constructor/Destructor.
     /// <summary>
     /// Initializes a new instance of the <see cref="Cube"/> class.
     /// </summary>
@@ -133,60 +130,60 @@ public class Cube
     public Cube(GorgonGraphics graphics, GorgonInputLayout inputLayout)
     {
         GorgonVertexPosUv[] vertices =
-        {
-			    // Front face.
-			    new GorgonVertexPosUv(new Vector3(-0.5f, 0.5f, -0.5f), new Vector2(0, 0)),
+        [
+                // Front face.
+                new GorgonVertexPosUv(new Vector3(-0.5f, 0.5f, -0.5f), new Vector2(0, 0)),
             new GorgonVertexPosUv(new Vector3(0.5f, -0.5f, -0.5f), new Vector2(1.0f, 1.0f)),
             new GorgonVertexPosUv(new Vector3(-0.5f, -0.5f, -0.5f), new Vector2(0.0f, 1.0f)),
             new GorgonVertexPosUv(new Vector3(0.5f, 0.5f, -0.5f), new Vector2(1.0f, 0.0f)),
 
-			    // Right face.
-			    new GorgonVertexPosUv(new Vector3(0.5f, 0.5f, -0.5f), new Vector2(0, 0)),
+                // Right face.
+                new GorgonVertexPosUv(new Vector3(0.5f, 0.5f, -0.5f), new Vector2(0, 0)),
             new GorgonVertexPosUv(new Vector3(0.5f, -0.5f, 0.5f), new Vector2(1.0f, 1.0f)),
             new GorgonVertexPosUv(new Vector3(0.5f, -0.5f, -0.5f), new Vector2(0.0f, 1.0f)),
             new GorgonVertexPosUv(new Vector3(0.5f, 0.5f, 0.5f), new Vector2(1.0f, 0.0f)),
 
-			    // Back face.
-			    new GorgonVertexPosUv(new Vector3(0.5f, 0.5f, 0.5f), new Vector2(0, 0)),
+                // Back face.
+                new GorgonVertexPosUv(new Vector3(0.5f, 0.5f, 0.5f), new Vector2(0, 0)),
             new GorgonVertexPosUv(new Vector3(-0.5f, -0.5f, 0.5f), new Vector2(1.0f, 1.0f)),
             new GorgonVertexPosUv(new Vector3(0.5f, -0.5f, 0.5f), new Vector2(0.0f, 1.0f)),
             new GorgonVertexPosUv(new Vector3(-0.5f, 0.5f, 0.5f), new Vector2(1.0f, 0.0f)),
 
-			    // Left face.
-			    new GorgonVertexPosUv(new Vector3(-0.5f, 0.5f, 0.5f), new Vector2(0, 0)),
+                // Left face.
+                new GorgonVertexPosUv(new Vector3(-0.5f, 0.5f, 0.5f), new Vector2(0, 0)),
             new GorgonVertexPosUv(new Vector3(-0.5f, -0.5f, -0.5f), new Vector2(1.0f, 1.0f)),
             new GorgonVertexPosUv(new Vector3(-0.5f, -0.5f, 0.5f), new Vector2(0.0f, 1.0f)),
             new GorgonVertexPosUv(new Vector3(-0.5f, 0.5f, -0.5f), new Vector2(1.0f, 0.0f)),
 
-			    // Top face.
-			    new GorgonVertexPosUv(new Vector3(-0.5f, 0.5f, 0.5f), new Vector2(0, 0)),
+                // Top face.
+                new GorgonVertexPosUv(new Vector3(-0.5f, 0.5f, 0.5f), new Vector2(0, 0)),
             new GorgonVertexPosUv(new Vector3(0.5f, 0.5f, -0.5f), new Vector2(1.0f, 1.0f)),
             new GorgonVertexPosUv(new Vector3(-0.5f, 0.5f, -0.5f), new Vector2(0.0f, 1.0f)),
             new GorgonVertexPosUv(new Vector3(0.5f, 0.5f, 0.5f), new Vector2(1.0f, 0.0f)),
 
-			    // Bottom face.
-			    new GorgonVertexPosUv(new Vector3(-0.5f, -0.5f, -0.5f), new Vector2(0, 0)),
+                // Bottom face.
+                new GorgonVertexPosUv(new Vector3(-0.5f, -0.5f, -0.5f), new Vector2(0, 0)),
             new GorgonVertexPosUv(new Vector3(0.5f, -0.5f, 0.5f), new Vector2(1.0f, 1.0f)),
             new GorgonVertexPosUv(new Vector3(-0.5f, -0.5f, 0.5f), new Vector2(0.0f, 1.0f)),
             new GorgonVertexPosUv(new Vector3(0.5f, -0.5f, -0.5f), new Vector2(1.0f, 0.0f))
-        };
+        ];
 
         ushort[] indices =
-        {
+        [
             8, 9, 10, 8, 11, 9,
             12, 13, 14, 12, 15, 13,
             4, 5, 6, 4, 7, 5,
             16, 17, 18, 16, 19, 17,
             20, 21, 22, 20, 23, 21,
             0, 1, 2, 0, 3, 1
-        };
+        ];
 
         // Create our index buffer and vertex buffer and populate with our cube data.
         IndexBuffer = new GorgonIndexBuffer(graphics,
                                             new GorgonIndexBufferInfo(indices.Length)
                                             {
                                                 Name = "GlassCube Index Buffer",
-                                                Usage = ResourceUsage.Immutable,                                                    
+                                                Usage = ResourceUsage.Immutable,
                                                 Use16BitIndices = true
                                             },
                                             indices);
@@ -202,5 +199,4 @@ public class Cube
                                                                vertices)
         };
     }
-    #endregion
 }

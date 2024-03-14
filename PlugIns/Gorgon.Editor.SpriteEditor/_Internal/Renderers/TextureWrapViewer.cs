@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2020 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: May 22, 2020 7:07:48 PM
 // 
-#endregion
+
 
 using System.ComponentModel;
 using System.Numerics;
@@ -35,12 +35,12 @@ using DX = SharpDX;
 namespace Gorgon.Editor.SpriteEditor;
 
 /// <summary>
-/// A renderer to use with the texture wrap editing tool.
+/// A renderer to use with the texture wrap editing tool
 /// </summary>
 internal class TextureWrapViewer
     : SingleSpriteViewer
 {
-    #region Methods.
+
     /// <summary>Handles the PropertyChanged event of the WrappingEditor control.</summary>
     /// <param name="sender">The source of the event.</param>
     /// <param name="e">The <see cref="PropertyChangedEventArgs"/> instance containing the event data.</param>
@@ -68,7 +68,7 @@ internal class TextureWrapViewer
     protected override void OnLoad()
     {
         base.OnLoad();
-                    
+
         DX.RectangleF rect = new DX.RectangleF(-DataContext.Size.Width - (DataContext.Size.Width * 0.5f),
                                                -DataContext.Size.Height - (DataContext.Size.Height * 0.5f),
                                                DataContext.Size.Width * 3,
@@ -89,7 +89,7 @@ internal class TextureWrapViewer
         RenderRegion = rect;
 
         DataContext.WrappingEditor.PropertyChanged += WrappingEditor_PropertyChanged;
-    }        
+    }
 
     /// <summary>Function to set the default zoom/offset for the viewer.</summary>
     public override void DefaultZoom()
@@ -110,14 +110,14 @@ internal class TextureWrapViewer
 
         ForceMoveTo(new Vector2(spritePosition.X, spritePosition.Y), spriteZoomLevel.GetScale(), true);
     }
-    #endregion
 
-    #region Constructor/Finalizer.
+
+
     /// <summary>Initializes a new instance of the <see cref="TextureWrapViewer"/> class.</summary>
     /// <param name="renderer">The 2D renderer for the application.</param>
     /// <param name="swapChain">The swap chain for the render area.</param>
     /// <param name="dataContext">The sprite view model.</param>        
     public TextureWrapViewer(Gorgon2D renderer, GorgonSwapChain swapChain, ISpriteContent dataContext)
         : base(typeof(SpriteTextureWrapEdit).FullName, renderer, swapChain, dataContext) => CanZoom = CanPanVertically = CanPanHorizontally = false;
-    #endregion
+
 }

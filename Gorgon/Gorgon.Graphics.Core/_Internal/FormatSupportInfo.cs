@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2017 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: November 21, 2017 8:44:47 PM
 // 
-#endregion
+
 
 using Gorgon.Graphics.Imaging;
 using D3D11 = SharpDX.Direct3D11;
@@ -30,18 +30,28 @@ using D3D11 = SharpDX.Direct3D11;
 namespace Gorgon.Graphics.Core;
 
 /// <summary>
-/// Defines the support given to a specific <see cref="BufferFormat"/>.
+/// Defines the support given to a specific <see cref="BufferFormat"/>
 /// </summary>
-internal class FormatSupportInfo : IGorgonFormatSupportInfo
+/// <remarks>
+/// Initializes a new instance of the <see cref="FormatSupportInfo"/> class
+/// </remarks>
+/// <param name="format">The format being queried.</param>
+/// <param name="formatSupport">The format support.</param>
+/// <param name="computeSupport">The compute support.</param>
+/// <param name="multisampleMax">The multisample maximum.</param>
+internal class FormatSupportInfo(BufferFormat format,
+                                 D3D11.FormatSupport formatSupport,
+                                 D3D11.ComputeShaderFormatSupport computeSupport,
+                                 GorgonMultisampleInfo multisampleMax) : IGorgonFormatSupportInfo
 {
-    #region Properties.
+
     /// <summary>
     /// Property to return the format that is being queried for support.
     /// </summary>
     public BufferFormat Format
     {
         get;
-    }
+    } = format;
 
     /// <summary>
     /// Property to return the resource support for a format.
@@ -49,7 +59,7 @@ internal class FormatSupportInfo : IGorgonFormatSupportInfo
     public BufferFormatSupport FormatSupport
     {
         get;
-    }
+    } = (BufferFormatSupport)formatSupport;
 
     /// <summary>
     /// Property to return whether this format is suitable for use for presentation to the output device.
@@ -82,7 +92,7 @@ internal class FormatSupportInfo : IGorgonFormatSupportInfo
     public ComputeShaderFormatSupport ComputeSupport
     {
         get;
-    }
+    } = (ComputeShaderFormatSupport)computeSupport;
 
     /// <summary>
     /// Property to return the maximum multisample count and quality level support for the format.
@@ -90,43 +100,24 @@ internal class FormatSupportInfo : IGorgonFormatSupportInfo
     public GorgonMultisampleInfo MaxMultisampleCountQuality
     {
         get;
-    }
-    #endregion
+    } = multisampleMax;
 
-    #region Methods.
+
+
 
     /// <summary>
-    /// Function to determine if a format is suitable for the texture type specified by <see cref="ImageType"/>.
+    /// Function to determine if a format is suitable for the texture type specified by <see cref="ImageDataType"/>.
     /// </summary>
     /// <param name="imageType">The image type to evaluate.</param>
     /// <returns><b>true</b> if suitable, <b>false</b> if not.</returns>
-    public bool IsTextureFormat(ImageType imageType) => imageType switch
+    public bool IsTextureFormat(ImageDataType imageType) => imageType switch
     {
-        ImageType.Image1D => (FormatSupport & BufferFormatSupport.Texture1D) == BufferFormatSupport.Texture1D,
-        ImageType.Image2D => (FormatSupport & BufferFormatSupport.Texture2D) == BufferFormatSupport.Texture2D,
-        ImageType.Image3D => (FormatSupport & BufferFormatSupport.Texture3D) == BufferFormatSupport.Texture3D,
-        ImageType.ImageCube => (FormatSupport & BufferFormatSupport.TextureCube) == BufferFormatSupport.TextureCube,
+        ImageDataType.Image1D => (FormatSupport & BufferFormatSupport.Texture1D) == BufferFormatSupport.Texture1D,
+        ImageDataType.Image2D => (FormatSupport & BufferFormatSupport.Texture2D) == BufferFormatSupport.Texture2D,
+        ImageDataType.Image3D => (FormatSupport & BufferFormatSupport.Texture3D) == BufferFormatSupport.Texture3D,
+        ImageDataType.ImageCube => (FormatSupport & BufferFormatSupport.TextureCube) == BufferFormatSupport.TextureCube,
         _ => false,
     };
-    #endregion
 
-    #region Constructor/Finalizer.
-    /// <summary>
-    /// Initializes a new instance of the <see cref="FormatSupportInfo"/> class.
-    /// </summary>
-    /// <param name="format">The format being queried.</param>
-    /// <param name="formatSupport">The format support.</param>
-    /// <param name="computeSupport">The compute support.</param>
-    /// <param name="multisampleMax">The multisample maximum.</param>
-    public FormatSupportInfo(BufferFormat format,
-                                     D3D11.FormatSupport formatSupport,
-                                     D3D11.ComputeShaderFormatSupport computeSupport,
-                                     GorgonMultisampleInfo multisampleMax)
-    {
-        Format = format;
-        FormatSupport = (BufferFormatSupport)formatSupport;
-        ComputeSupport = (ComputeShaderFormatSupport)computeSupport;
-        MaxMultisampleCountQuality = multisampleMax;
-    }
-    #endregion
+
 }

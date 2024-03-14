@@ -1,6 +1,6 @@
-﻿#region MIT.
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2013 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,33 +11,31 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: Sunday, September 22, 2013 8:43:37 PM
 // 
-#endregion
 
-using System;
-using System.Collections.Generic;
+
 using Gorgon.Collections;
 using Gorgon.Properties;
 
 namespace Gorgon.IO;
 
 /// <summary>
-/// A collection of file extensions.
+/// A collection of file extensions
 /// </summary>
 public class GorgonFileExtensionCollection
     : GorgonBaseNamedObjectDictionary<GorgonFileExtension>
 {
-    #region Properties.
+
     /// <summary>
     /// Property to set or return an extension in the collection.
     /// </summary>
@@ -70,9 +68,9 @@ public class GorgonFileExtensionCollection
             UpdateItem(extension, value);
         }
     }
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to add a file extension to the collection.
     /// </summary>
@@ -137,9 +135,9 @@ public class GorgonFileExtensionCollection
     /// Function to clear all items from the collection.
     /// </summary>
     public void Clear() => Items.Clear();
-    #endregion
 
-    #region Constructor/Destructor.
+
+
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonFileExtensionCollection"/> class.
     /// </summary>
@@ -147,5 +145,5 @@ public class GorgonFileExtensionCollection
         : base(false)
     {
     }
-    #endregion
+
 }

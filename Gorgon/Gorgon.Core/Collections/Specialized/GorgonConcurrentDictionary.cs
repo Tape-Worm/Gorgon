@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2015 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,37 +11,35 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: Sunday, June 7, 2015 12:28:22 PM
 // 
-#endregion
+
 
 using System.Collections.Concurrent;
-using System.Collections.Generic;
 
 namespace Gorgon.Collections.Specialized;
 
 /// <summary>
-/// A custom concurrent dictionary that supplements the original <see cref="ConcurrentDictionary{TKey,TValue}"/> type by supplying a read-only interface.
+/// A custom concurrent dictionary that supplements the original <see cref="ConcurrentDictionary{TKey,TValue}"/> type by supplying a read-only interface
 /// </summary>
 /// <typeparam name="TK">The key type for the dictionary.</typeparam>
 /// <typeparam name="TV">The value type for the dictionary.</typeparam>
 /// <remarks>
 /// This type is the same as the <see cref="ConcurrentDictionary{TKey,TValue}"/> type, with the only difference being that it supports the <see cref="IReadOnlyDictionary{TKey,TValue}"/> 
-/// interface. See the documentation on <see cref="ConcurrentDictionary{TKey,TValue}"/> for more information.
+/// interface. See the documentation on <see cref="ConcurrentDictionary{TKey,TValue}"/> for more information
 /// </remarks>
 public class GorgonConcurrentDictionary<TK, TV>
     : ConcurrentDictionary<TK, TV>, IReadOnlyDictionary<TK, TV>
 {
-    #region Constructors.
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonConcurrentDictionary{TK, TV}"/> class.
     /// </summary>
@@ -108,9 +106,7 @@ public class GorgonConcurrentDictionary<TK, TV>
         : base(comparer)
     {
     }
-    #endregion
 
-    #region IReadOnlyDictionary<TK,TV> Members
     /// <summary>
     /// Gets a collection containing the keys in the <see cref="Dictionary{Tk, Tv}" />.
     /// </summary>
@@ -120,6 +116,4 @@ public class GorgonConcurrentDictionary<TK, TV>
     /// Gets a collection containing the values in the <see cref="Dictionary{Tk, Tv}" />.
     /// </summary>
     public new IEnumerable<TV> Values => base.Values;
-
-    #endregion
 }

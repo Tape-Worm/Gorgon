@@ -1,6 +1,6 @@
-﻿#region MIT.
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2012 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,29 +11,26 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: Sunday, December 9, 2012 4:43:49 PM
 // 
-#endregion
 
-using System;
-using System.Collections.Generic;
-using System.Threading;
+
 using Gorgon.Core;
 using D3D11 = SharpDX.Direct3D11;
 
 namespace Gorgon.Graphics.Core;
 
 /// <summary>
-/// The type of data in the resource.
+/// The type of data in the resource
 /// </summary>
 public enum GraphicsResourceType
 {
@@ -64,11 +61,11 @@ public enum GraphicsResourceType
 }
 
 /// <summary>
-/// Defines the intended usage resources.
+/// Defines the intended usage resources
 /// </summary>
 /// <remarks>
 /// <para>
-/// This defines how the resource should be used when rendering and whether or not it is CPU and/or GPU accessible.
+/// This defines how the resource should be used when rendering and whether or not it is CPU and/or GPU accessible
 /// </para>
 /// </remarks>
 public enum ResourceUsage
@@ -109,7 +106,7 @@ public enum ResourceUsage
 
 
 /// <summary>
-/// Priority used to evict a resource from video memory.
+/// Priority used to evict a resource from video memory
 /// </summary>
 public enum EvictionPriority
     : uint
@@ -146,24 +143,34 @@ public enum EvictionPriority
 }
 
 /// <summary>
-/// A base resource class for resource objects such as textures and buffers.
+/// A base resource class for resource objects such as textures and buffers
 /// </summary>
 /// <remarks>
 /// <para>
-/// Objects that inherit from this class will be considered a resource object that may (depending on usage) be bound to the pipeline.
+/// Objects that inherit from this class will be considered a resource object that may (depending on usage) be bound to the pipeline
 /// </para>
 /// </remarks>
-public abstract class GorgonGraphicsResource
-    : IGorgonNamedObject, IGorgonGraphicsObject, IGorgonNativeResource, IDisposable
+/// <remarks>
+/// Initializes a new instance of the <see cref="GorgonGraphicsResource" /> class
+/// </remarks>
+/// <param name="graphics">The graphics interface used to create this resource.</param>
+/// <remarks>
+/// <para>
+/// Names for the resource are required, but do not need to be unique. These are used to help with debugging and can be used for managing resources in an application
+/// </para>
+/// </remarks>
+/// <exception cref="ArgumentNullException">Thrown when the <paramref name="graphics"/> parameter is <b>null</b>.</exception> 
+public abstract class GorgonGraphicsResource(GorgonGraphics graphics)
+        : IGorgonNamedObject, IGorgonGraphicsObject, IGorgonNativeResource, IDisposable
 {
-    #region Variables.
+
     // Custom application data.
-    private readonly Dictionary<Guid, object> _appData = new();
+    private readonly Dictionary<Guid, object> _appData = [];
     // The Direct 3D 11 resource.
     private D3D11.Resource _resource;
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to set or return the Direct 3D resource object bound to this object.
     /// </summary>
@@ -208,7 +215,7 @@ public abstract class GorgonGraphicsResource
     public GorgonGraphics Graphics
     {
         get;
-    }
+    } = graphics ?? throw new ArgumentNullException(nameof(graphics));
 
     /// <summary>
     /// Property to return the type of data in the resource.
@@ -252,9 +259,9 @@ public abstract class GorgonGraphicsResource
     {
         get;
     }
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to generate a new name for a resource.
     /// </summary>
@@ -317,19 +324,8 @@ public abstract class GorgonGraphicsResource
 
         return result;
     }
-    #endregion
 
-    #region Constructor/Destructor.
-    /// <summary>
-    /// Initializes a new instance of the <see cref="GorgonGraphicsResource" /> class.
-    /// </summary>
-    /// <param name="graphics">The graphics interface used to create this resource.</param>
-    /// <remarks>
-    /// <para>
-    /// Names for the resource are required, but do not need to be unique. These are used to help with debugging and can be used for managing resources in an application.
-    /// </para>
-    /// </remarks>
-    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="graphics"/> parameter is <b>null</b>.</exception> 
-    protected GorgonGraphicsResource(GorgonGraphics graphics) => Graphics = graphics ?? throw new ArgumentNullException(nameof(graphics));
-    #endregion
+
+
+
 }

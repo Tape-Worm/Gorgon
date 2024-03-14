@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2018 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,21 +11,19 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: October 29, 2018 4:15:09 PM
 // 
-#endregion
 
-using System;
-using System.Threading.Tasks;
+
 using Gorgon.Editor.Content;
 using Gorgon.Editor.PlugIns;
 using Gorgon.Editor.Properties;
@@ -35,22 +33,22 @@ using Gorgon.Editor.UI.Views;
 namespace Gorgon.Editor.UI;
 
 /// <summary>
-/// Common functionality for an editor tool plug in view model.
+/// Common functionality for an editor tool plug in view model
 /// </summary>
 /// <typeparam name="T">The type of dependency injection object. Must be a class, and implement <see cref="IEditorToolViewModelInjection"/>.</typeparam>
 /// <remarks>
 /// <para>
-/// This base class provides functionality needed to communicate the state of the tool with its UI.
+/// This base class provides functionality needed to communicate the state of the tool with its UI
 /// </para>
 /// <para>
 /// An editor tool plug in is a special type of plug in that adds functionality to the editor via the main application ribbon. Tools can be anything from a special bit of functionality to manage 
 /// data, to batch processing, etc... To begin implementing an editor tool, developers must inherit from this type so that their tool model data is updated from the UI, and feedback is returned 
-/// to the tool UI.
+/// to the tool UI
 /// </para>
 /// <para>
 /// As an example, if you wanted to create a tool that converted all images in the file system to grayscale (why? why not?), you would define a view with a file list containing the images to convert,     
 /// and then create a BatchGrayScale view model based on this type and add an observable list to receive updates from the UI (e.g. when images are selected), and a command to process the image data 
-/// and write back to the file system.
+/// and write back to the file system
 /// </para>
 /// <para>
 /// Views that are associated with view models derived from this type must inherit from the <see cref="EditorToolBaseForm"/>. 
@@ -62,12 +60,12 @@ public abstract class EditorToolViewModelBase<T>
     : ViewModelBase<T, IHostContentServices>, IEditorTool
     where T : class, IEditorToolViewModelInjection
 {
-    #region Variables.
+
     // The command used to close the content.
     private IEditorAsyncCommand<CloseToolArgs> _closeCommand;
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to return the file manager used to manage content files.
     /// </summary>
@@ -102,9 +100,9 @@ public abstract class EditorToolViewModelBase<T>
             OnPropertyChanged();
         }
     }
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function called to close the tool.
     /// </summary>
@@ -169,11 +167,11 @@ public abstract class EditorToolViewModelBase<T>
         }
 
         ContentFileManager = injectionParameters.ContentFileManager;
-    }        
-    #endregion
+    }
 
-    #region Constructor/Finalizer.
+
+
     /// <summary>Initializes a new instance of the EditorContentCommon class.</summary>
     protected EditorToolViewModelBase() => CloseToolCommand = new EditorAsyncCommand<CloseToolArgs>(DoCloseToolAsync);
-    #endregion
+
 }

@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2019 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,32 +11,26 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: March 2, 2019 2:09:04 AM
 // 
-#endregion
 
-using System;
+
 using System.Buffers;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Globalization;
-using System.IO;
-using System.Linq;
 using System.Numerics;
-using System.Threading;
-using System.Threading.Tasks;
 using Gorgon.Animation;
 using Gorgon.Collections;
 using Gorgon.Core;
@@ -54,12 +48,12 @@ using Gorgon.Renderers;
 namespace Gorgon.Editor.AnimationEditor;
 
 /// <summary>
-/// Content view model for a animation.
+/// Content view model for a animation
 /// </summary>
 internal class AnimationContent
     : ContentEditorViewModelBase<AnimationContentParameters>, IAnimationContent
 {
-    #region Classes.
+
     /// <summary>
     /// Data stored for adding a track using undo/redo.
     /// </summary>
@@ -98,9 +92,9 @@ internal class AnimationContent
         // The list of keys to store.
         public Dictionary<ITrack, List<IKeyFrame>> Keys;
     }
-    #endregion
 
-    #region Variables.
+
+
     // The primary sprite.
     private (GorgonSprite sprite, IContentFile spriteFile, IContentFile textureFile) _primarySprite;
     // The background image to display for guiding.
@@ -122,16 +116,16 @@ internal class AnimationContent
     // Flag to indicate that the animation is looped.
     private bool _looping;
     // A list of tracks for synchronization with the observable collection.
-    private readonly List<ITrack> _trackList = new();
+    private readonly List<ITrack> _trackList = [];
     // The list of tracks unsupported by the editor.
     private IReadOnlyList<ITrack> _unsupportedTracks;
     // The list of selected tracks and keys.
-    private IReadOnlyList<TrackKeySelection> _selected = Array.Empty<TrackKeySelection>();
+    private IReadOnlyList<TrackKeySelection> _selected = [];
     // The starting position of the primary sprite.
     private Vector2 _primaryStart;
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to return the add track view model.
     /// </summary>
@@ -157,7 +151,7 @@ internal class AnimationContent
             OnPropertyChanging();
             _primaryStart = value;
             OnPropertyChanged();
-                            
+
             UpdatePrimarySprite();
 
             if (WorkingSprite is not null)
@@ -236,16 +230,16 @@ internal class AnimationContent
             _primarySprite = (value, _primarySprite.spriteFile, _primarySprite.textureFile);
             UpdatePrimarySprite();
             value?.CopyTo(WorkingSprite);
-            OnPropertyChanged();                
+            OnPropertyChanged();
         }
     }
 
     /// <summary>
     /// Property to return the sprite used in the animation preview (a copy of <see cref="PrimarySprite"/>).
     /// </summary>
-    public GorgonSprite WorkingSprite 
-    { 
-        get; 
+    public GorgonSprite WorkingSprite
+    {
+        get;
     } = new GorgonSprite();
 
     /// <summary>Property to return the length of the animation, in seconds.</summary>
@@ -336,7 +330,7 @@ internal class AnimationContent
         get => _selected;
         private set
         {
-            value ??= Array.Empty<TrackKeySelection>();
+            value ??= [];
 
             if ((value == _selected) || (_selected.SequenceEqual(value)))
             {
@@ -547,20 +541,20 @@ internal class AnimationContent
     {
         get;
     }
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to default the selection to the first keyframe in the first track.
     /// </summary>
     private void SelectDefault() => Selected = ((Tracks.Count > 0) && (Tracks[0].KeyFrames.Count > 0)) ? new[]
                                                                                                          {
-                                                                                                            new TrackKeySelection(0, Tracks[0], new[]
-                                                                                                                                                {
+                                                                                                            new TrackKeySelection(0, Tracks[0],
+                                                                                                                                                [
                                                                                                                                                     new TrackKeySelection.KeySelection(Tracks[0], 0, _fps)
-                                                                                                                                                })
+                                                                                                                                                ])
                                                                                                          }
-                                                                                                       : Array.Empty<TrackKeySelection>();
+                                                                                                       : [];
 
     /// <summary>
     /// Function to update the primary sprite position.
@@ -629,7 +623,7 @@ internal class AnimationContent
 
             _controller.Play(WorkingSprite, _animation);
             _controller.Time = currentTime;
-            _controller.Refresh();                
+            _controller.Refresh();
 
             NotifyPropertyChanged(nameof(WorkingSprite));
 
@@ -829,14 +823,14 @@ internal class AnimationContent
             spriteFile = ContentFileManager.GetFile(spritePath);
 
             ShowWaitPanel(string.Format(Resources.GORANM_TEXT_LOADING, spritePath.Ellipses(60, true)));
-            
+
             GorgonTexture2DView prevTexture = _primarySprite.sprite?.Texture;
 
             (GorgonSprite sprite, IContentFile textureFile) = await _contentServices.IOService.LoadSpriteAsync(spriteFile);
             // We have to mark this as open because it's the primary sprite, normally we wouldn't mark the sprite as open as 
             // we copy its data into a keyframe, this is not the case here.
             _contentServices.IOService.UnloadSprite(_primarySprite);
-            
+
             _primarySprite = (null, spriteFile, textureFile);
             PrimarySprite = sprite;
             spriteFile.IsOpen = true;
@@ -847,7 +841,7 @@ internal class AnimationContent
             if ((Settings.AddTextureTrackForPrimarySprite)
                 && (File.Metadata.Attributes.ContainsKey(CommonEditorConstants.IsNewAttr))
                 && (Tracks.Count == 0))
-            {                    
+            {
                 // Default to a new texture track.
                 ITrack track = await _contentServices.ViewModelFactory.CreateDefaultTextureTrackAsync(_primarySprite, MaxKeyCount);
                 Tracks.Add(track);
@@ -917,7 +911,7 @@ internal class AnimationContent
             {
                 currentTime = _selected.SelectMany(item => item.SelectedKeys)?.FirstOrDefault()?.TimeIndex ?? 0;
             }
-            _controller.Reset();                
+            _controller.Reset();
             _controller.Pause();
             _controller.Time = currentTime;
 
@@ -933,9 +927,9 @@ internal class AnimationContent
     /// Function to determine if the animation preview can be updated.
     /// </summary>
     /// <returns><b>true</b> if the animation preview can be updated, or <b>false</b> if not.</returns>
-    private bool CanUpdateAnimationPreview() => (_primarySprite.sprite is not null) 
-                                            && (_controller.CurrentAnimation is not null) 
-                                            && (_controller.State == AnimationState.Playing) 
+    private bool CanUpdateAnimationPreview() => (_primarySprite.sprite is not null)
+                                            && (_controller.CurrentAnimation is not null)
+                                            && (_controller.State == AnimationState.Playing)
                                             && (CurrentPanel is null)
                                             && (CommandContext is null);
 
@@ -1009,7 +1003,7 @@ internal class AnimationContent
 
         try
         {
-            AddTrack.SelectedTracks = Array.Empty<GorgonTrackRegistration>();
+            AddTrack.SelectedTracks = [];
             CurrentPanel = AddTrack;
         }
         catch (Exception ex)
@@ -1054,11 +1048,11 @@ internal class AnimationContent
     /// Function to determine if tracks can be added to the animation.
     /// </summary>
     /// <returns></returns>
-    private bool CanAddTrack() => (_primarySprite.sprite is not null) 
-                               && (CurrentPanel == AddTrack) 
+    private bool CanAddTrack() => (_primarySprite.sprite is not null)
+                               && (CurrentPanel == AddTrack)
                                && (CommandContext is null)
-                               && (AddTrack.AvailableTracks.Count > 0) 
-                               && (AddTrack is not null) 
+                               && (AddTrack.AvailableTracks.Count > 0)
+                               && (AddTrack is not null)
                                && (AddTrack.SelectedTracks.Count > 0);
 
 
@@ -1071,9 +1065,9 @@ internal class AnimationContent
 
         bool RemoveTracks(AddTrackUndoRedoData args)
         {
-            HostServices.BusyService.SetBusy();                
+            HostServices.BusyService.SetBusy();
 
-            args.RemovedTracks ??= new List<ITrack>();
+            args.RemovedTracks ??= [];
 
             try
             {
@@ -1425,7 +1419,7 @@ internal class AnimationContent
         {
             if ((args is null) || (args.Count == 0))
             {
-                Selected = Array.Empty<TrackKeySelection>();
+                Selected = [];
                 return;
             }
 
@@ -1440,13 +1434,13 @@ internal class AnimationContent
                 {
                     continue;
                 }
-                
+
                 var keySelection = new TrackKeySelection.KeySelection[keyIndices.Count];
 
                 for (int j = 0; j < keyIndices.Count; ++j)
                 {
                     int keyIndex = keyIndices[j];
-                    IKeyFrame keyFrame = selectedTrack.KeyFrames[keyIndex];                        
+                    IKeyFrame keyFrame = selectedTrack.KeyFrames[keyIndex];
 
                     keySelection[j] = new TrackKeySelection.KeySelection(selectedTrack, keyIndex, _fps);
                 }
@@ -1470,7 +1464,7 @@ internal class AnimationContent
             {
                 _controller.Time = timeIndex;
                 _controller.Refresh();
-            }                    
+            }
 
             Selected = selected;
 
@@ -1527,7 +1521,7 @@ internal class AnimationContent
             UpdatePrimarySprite();
             RebuildAnimation();
 
-            ContentState = ContentState.Modified;                
+            ContentState = ContentState.Modified;
         }
         catch (Exception ex)
         {
@@ -1615,13 +1609,13 @@ internal class AnimationContent
                 }
             }
 
-            Selected = new[]
-            {
-                new TrackKeySelection(_selected[0].TrackIndex, track, new []
-                {
+            Selected =
+            [
+                new TrackKeySelection(_selected[0].TrackIndex, track,
+                [
                     new TrackKeySelection.KeySelection(track, keyIndex, _fps)
-                })
-            };                
+                ])
+            ];
             _controller.Time = keyTime;
             NotifyPropertyChanged(nameof(PreviewKeyTime));
         }
@@ -1642,7 +1636,7 @@ internal class AnimationContent
                                             && (_selected.Count == 1)
                                             && (_selected[0].TrackIndex < Tracks.Count)
                                             && (_selected[0].SelectedKeys.Count == 1)
-                                            && (_selected[0].SelectedKeys[0].KeyIndex < _selected[0].Track.KeyFrames.Count - 1);                                                
+                                            && (_selected[0].SelectedKeys[0].KeyIndex < _selected[0].Track.KeyFrames.Count - 1);
 
     /// <summary>
     /// Function to move to the next key.
@@ -1678,13 +1672,13 @@ internal class AnimationContent
                 }
             }
 
-            Selected = new[]
-            {
-                new TrackKeySelection(_selected[0].TrackIndex, track, new []
-                {
+            Selected =
+            [
+                new TrackKeySelection(_selected[0].TrackIndex, track,
+                [
                     new TrackKeySelection.KeySelection(track, keyIndex, _fps)
-                })
-            };
+                ])
+            ];
             _controller.Time = keyTime;
             NotifyPropertyChanged(nameof(PreviewKeyTime));
         }
@@ -1729,13 +1723,13 @@ internal class AnimationContent
                 }
             }
 
-            Selected = new[]
-            {
-                new TrackKeySelection(_selected[0].TrackIndex, selectedTrack, new []
-                {
+            Selected =
+            [
+                new TrackKeySelection(_selected[0].TrackIndex, selectedTrack,
+                [
                     new TrackKeySelection.KeySelection(selectedTrack, 0, _fps)
-                })
-            };
+                ])
+            ];
             _controller.Time = animTime;
             NotifyPropertyChanged(nameof(PreviewKeyTime));
         }
@@ -1790,13 +1784,13 @@ internal class AnimationContent
                 }
             }
 
-            Selected = new[]
-            {
-                new TrackKeySelection(_selected[0].TrackIndex, selectedTrack, new []
-                {
+            Selected =
+            [
+                new TrackKeySelection(_selected[0].TrackIndex, selectedTrack,
+                [
                     new TrackKeySelection.KeySelection(selectedTrack, selectedTrack.KeyFrames.Count - 1, _fps)
-                })
-            };
+                ])
+            ];
             _controller.Time = animTime;
             NotifyPropertyChanged(nameof(PreviewKeyTime));
         }
@@ -1958,7 +1952,7 @@ internal class AnimationContent
             CurrentPanel = null;
 
             if (CommandContext == KeyEditor)
-            {                    
+            {
                 CommandContext = null;
                 RebuildAnimation();
                 return;
@@ -2046,15 +2040,15 @@ internal class AnimationContent
             }
 
             (string newName, float length, float fps, IContentFile primarySpriteFile, IContentFile bgTextureFile) = _contentServices.NewAnimation
-                                                                                                                                    .GetNewAnimationName(animationDirectory, 
-                                                                                                                                                         File.Name, 
-                                                                                                                                                         _primarySprite.spriteFile, 
+                                                                                                                                    .GetNewAnimationName(animationDirectory,
+                                                                                                                                                         File.Name,
+                                                                                                                                                         _primarySprite.spriteFile,
                                                                                                                                                          _backImage.file);
 
             if (newName is null)
             {
                 return;
-            }               
+            }
 
             string animationPath = animationDirectory + newName.FormatFileName();
 
@@ -2084,11 +2078,11 @@ internal class AnimationContent
             _contentServices.KeyProcessor.UnloadTextureKeyframes(Tracks);
 
             // Remove all tracks and keyframes.
-            Selected = Array.Empty<TrackKeySelection>();
+            Selected = [];
             Tracks.Clear();
 
             _contentServices.IOService.UnloadSprite(_primarySprite);
-            (GorgonSprite primarySprite, IContentFile spriteTextureFile) = await _contentServices.IOService.LoadSpriteAsync(primarySpriteFile);                
+            (GorgonSprite primarySprite, IContentFile spriteTextureFile) = await _contentServices.IOService.LoadSpriteAsync(primarySpriteFile);
             _primarySprite = (primarySprite, primarySpriteFile, spriteTextureFile);
 
             // Load the background texture.
@@ -2136,7 +2130,7 @@ internal class AnimationContent
     {
         base.OnInitialize(injectionParameters);
 
-        _unsupportedTracks = injectionParameters.ExcludedTracks ?? Array.Empty<ITrack>();
+        _unsupportedTracks = injectionParameters.ExcludedTracks ?? [];
         _animation = injectionParameters.Animation;
         Settings = injectionParameters.Settings;
         _primarySprite = (injectionParameters.PrimarySprite?.PrimarySprite, injectionParameters.PrimarySprite?.File, injectionParameters.PrimarySprite?.TextureFile);
@@ -2171,7 +2165,7 @@ internal class AnimationContent
         {
             float.TryParse(startY, NumberStyles.Float, CultureInfo.InvariantCulture, out y);
         }
-                   
+
         if (WorkingSprite is not null)
         {
             _controller.Play(WorkingSprite, _animation);
@@ -2201,7 +2195,7 @@ internal class AnimationContent
         foreach (ITrack track in Tracks)
         {
             track.PropertyChanged += Track_PropertyChanged;
-        }            
+        }
 
         AddTrack.OkCommand = new EditorCommand<object>(DoAddTrack, CanAddTrack);
         Properties.OkCommand = new EditorCommand<object>(DoUpdateAnimationPropertiesAsync, CanUpdateAnimationProperties);
@@ -2262,9 +2256,9 @@ internal class AnimationContent
                 return true;
         }
     }
-    #endregion
 
-    #region Constructor/Finalizer.
+
+
     /// <summary>Initializes a new instance of the <see cref="AnimationContent"/> class.</summary>
     public AnimationContent()
     {
@@ -2290,5 +2284,5 @@ internal class AnimationContent
         SaveContentCommand = new EditorAsyncCommand<SaveReason>(DoSaveAsync, CanSave);
         NewAnimationCommand = new EditorAsyncCommand<object>(DoCreateAnimationAsync, CanCreateAnimation);
     }
-    #endregion
+
 }

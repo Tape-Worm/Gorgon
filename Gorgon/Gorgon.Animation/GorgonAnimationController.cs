@@ -1,6 +1,6 @@
-﻿#region MIT.
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2012 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,22 +11,19 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: Monday, September 3, 2012 7:46:31 PM
 // 
-#endregion
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
+
 using System.Numerics;
 using Gorgon.Animation.Properties;
 using Gorgon.Diagnostics;
@@ -39,7 +36,7 @@ using DX = SharpDX;
 namespace Gorgon.Animation;
 
 /// <summary>
-/// The current state of the animation.
+/// The current state of the animation
 /// </summary>
 public enum AnimationState
 {
@@ -58,21 +55,21 @@ public enum AnimationState
 }
 
 /// <summary>
-	/// Base class for applying animations to an object.
-	/// </summary>
-	/// <typeparam name="T">The type of object that this controller will use.  The type passed in must be a reference type (i.e. a class).</typeparam>
-	/// <remarks>
-	/// <para>
-	/// A controller will update the object properties over a certain time frame (or continuously if looped) using a <see cref="IGorgonAnimation"/>.
-	/// </para>
-	/// <para>
-	/// This controller will advance the time for an animation, and coordinate the changes from interpolation (if supported) between <see cref="IGorgonKeyFrame"/> items on a <see cref="IGorgonAnimationTrack{T}"/>.
-	/// The values from the animation will then by applied to the object properties.
-	/// </para>
-	/// <para>
-	/// Applications can force the playing animation to jump to a specific <see cref="Time"/>, or increment the time step smoothly using the <see cref="Update"/> method. Typically, the <see cref="Update"/> 
-/// method should be called once per frame in the idle loop of the application.
-	/// </para>
+/// Base class for applying animations to an object
+/// </summary>
+/// <typeparam name="T">The type of object that this controller will use.  The type passed in must be a reference type (i.e. a class).</typeparam>
+/// <remarks>
+/// <para>
+/// A controller will update the object properties over a certain time frame (or continuously if looped) using a <see cref="IGorgonAnimation"/>
+/// </para>
+/// <para>
+/// This controller will advance the time for an animation, and coordinate the changes from interpolation (if supported) between <see cref="IGorgonKeyFrame"/> items on a <see cref="IGorgonAnimationTrack{T}"/>
+/// The values from the animation will then by applied to the object properties
+/// </para>
+/// <para>
+/// Applications can force the playing animation to jump to a specific <see cref="Time"/>, or increment the time step smoothly using the <see cref="Update"/> method. Typically, the <see cref="Update"/> 
+/// method should be called once per frame in the idle loop of the application
+/// </para>
 /// <para>
 /// This controller type is an abstract object, so developers must implement their own implementation of a controller to define how to animate their objects. This is typically very straight forward 
 /// since the controller uses several abstract methods that update the object properties with a value. More often than not, these methods typically contain <c>object.AnimatedProperty = value</c> and 
@@ -81,35 +78,35 @@ public enum AnimationState
 /// <para>
 /// The controller uses animation tracks to indicate which property on the object (specified by <typeparamref name="T"/>) it will update over time. These tracks are determined by a track registry 
 /// contained within the controller. These tracks are registered via the <see cref="RegisterTrack(GorgonTrackRegistration)"/> method which should be called in the constructor of the controller when 
-/// implementing a custom animation controller.
+/// implementing a custom animation controller
 /// </para>
 /// <para>
 /// Registered tracks use an object called <see cref="GorgonTrackRegistration"/> to define metadata for the track such as the type of values stored within a tracks <see cref="IGorgonKeyFrame"/> 
 /// items. The metadata also contains a <see cref="GorgonTrackRegistration.TrackName"/> property which is used for identifying a track when building an animation and determining which property to 
-/// update on the animated object via the <c>On(Type Name)Update</c> methods.
+/// update on the animated object via the <c>On(Type Name)Update</c> methods
 /// </para>
 /// <para>
-/// Applications can query the tracks registered with the controller via the <see cref="RegisteredTracks"/> property.
+/// Applications can query the tracks registered with the controller via the <see cref="RegisteredTracks"/> property
 /// </para>
-	/// <para>
-	/// <note type="important">
-	/// Please note that this is an abstract class. Applications will provide specific controllers for specific types.
-	/// </note>
-	/// </para>
 /// <para>
-/// <note type="information">
-/// Because this is a base class, not all controllers will support all track types, or even components of a track key frame.
+/// <note type="important">
+/// Please note that this is an abstract class. Applications will provide specific controllers for specific types
 /// </note>
 /// </para>
-	/// </remarks>
-	/// <seealso cref="IGorgonAnimation"/>
+/// <para>
+/// <note type="information">
+/// Because this is a base class, not all controllers will support all track types, or even components of a track key frame
+/// </note>
+/// </para>
+/// </remarks>
+/// <seealso cref="IGorgonAnimation"/>
 /// <seealso cref="GorgonTrackRegistration"/>
 /// <seealso cref="IGorgonKeyFrame"/>
 /// <seealso cref="IGorgonAnimationTrack{T}"/>
-	public abstract class GorgonAnimationController<T>
-    where T : class
+public abstract class GorgonAnimationController<T>
+where T : class
 {
-    #region Variables.
+
     // The time index.
     private float _time;
     // The loop count for the current animation.
@@ -119,12 +116,12 @@ public enum AnimationState
     // The current animation state.
     private AnimationState _state = AnimationState.Stopped;
     // The list of registered track names.
-    private readonly List<GorgonTrackRegistration> _trackNames = new();
+    private readonly List<GorgonTrackRegistration> _trackNames = [];
     // The list of registered track names that can be played with a given animation.
-    private readonly List<GorgonTrackRegistration> _playableTracks = new();
-    #endregion
+    private readonly List<GorgonTrackRegistration> _playableTracks = [];
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to return the list of available tracks used by this controller.
     /// </summary>
@@ -159,7 +156,7 @@ public enum AnimationState
     /// <summary>
     /// Property to set or return the current time index.
     /// </summary>
-	    public float Time
+    public float Time
     {
         get => _time;
         set
@@ -214,9 +211,9 @@ public enum AnimationState
             NotifyAnimation();
         }
     }
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to build up the playable track list.
     /// </summary>
@@ -448,7 +445,7 @@ public enum AnimationState
     /// <param name="track">The track currently being processed.</param>
     /// <param name="animObject">The object to update.</param>
     /// <param name="value">The value to apply.</param>
-	    protected abstract void OnColorUpdate(GorgonTrackRegistration track, T animObject, GorgonColor value);
+    protected abstract void OnColorUpdate(GorgonTrackRegistration track, T animObject, GorgonColor value);
 
     /// <summary>
     /// Function called when a SharpDX <c>RectangleF</c> value needs to be updated on the animated object.
@@ -540,7 +537,7 @@ public enum AnimationState
     /// <summary>
     /// Function to reset the currently playing animation back to the start of the animation.
     /// </summary>
-	    public void Reset()
+    public void Reset()
     {
         if (CurrentAnimation is null)
         {
@@ -618,7 +615,7 @@ public enum AnimationState
     /// <summary>
     /// Function to pause the currently executing animation.
     /// </summary>
-	    public void Pause()
+    public void Pause()
     {
         if ((CurrentAnimation is null) || (_animatedObject is null))
         {
@@ -661,5 +658,5 @@ public enum AnimationState
         _animatedObject = null;
         CurrentAnimation = null;
     }
-    #endregion
+
 }

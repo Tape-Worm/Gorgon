@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2015 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,40 +11,40 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: Wednesday, August 12, 2015 9:29:01 PM
 // 
-#endregion
+
 
 using Gorgon.Core;
 
 namespace Gorgon.Input;
 
 /// <summary>
-/// A representation of a gaming device axis.
+/// A representation of a gaming device axis
 /// </summary>
 /// <remarks>
-/// This will provide the current value for the axis that it represents, as well as its dead zone range. Users may set either of these values as required.
+/// This will provide the current value for the axis that it represents, as well as its dead zone range. Users may set either of these values as required
 /// </remarks>
 internal class GamingDeviceAxisProperties
     : IGorgonGamingDeviceAxis
 {
-    #region Variables.
+
     // The value for the axis.
     private int _value;
     // The default value for the axis.
     private readonly int _defaultValue;
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to return the identifier for the axis.
     /// </summary>
@@ -89,9 +89,9 @@ internal class GamingDeviceAxisProperties
         get;
         set;
     }
-    #endregion
 
-    #region Constructor/Finalizer.
+
+
     /// <summary>
     /// Initializes a new instance of the <see cref="GamingDeviceAxisProperties"/> class.
     /// </summary>
@@ -101,5 +101,5 @@ internal class GamingDeviceAxisProperties
         Axis = info.Axis;
         _defaultValue = info.DefaultValue;
     }
-    #endregion
+
 }

@@ -1,6 +1,6 @@
-﻿#region MIT.
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2012 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,21 +11,20 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: Monday, April 02, 2012 2:59:16 PM
 // 
-#endregion
+
 
 using System.Numerics;
-using System.Threading;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Renderers.Cameras;
@@ -35,12 +34,12 @@ using DX = SharpDX;
 namespace Gorgon.Renderers;
 
 /// <summary>
-/// An effect that sharpens (and optionally embosses) an image.
+/// An effect that sharpens (and optionally embosses) an image
 /// </summary>
 public class Gorgon2DSharpenEmbossEffect
     : Gorgon2DEffect, IGorgon2DCompositorEffect
 {
-    #region Variables.
+
     // Constant buffer for the sharpen/emboss information.
     private GorgonConstantBufferView _sharpenEmbossBuffer;
     // Pixel shader used to sharpen an image.
@@ -59,9 +58,9 @@ public class Gorgon2DSharpenEmbossEffect
     private bool _isUpdated = true;
     // The texture size used to calculate the emboss/sharpen edges.
     private DX.Size2F _textureSize = new(512.0f, 512.0f);
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to set or return the offset of the shapren/embossing edges.
     /// </summary>
@@ -107,9 +106,9 @@ public class Gorgon2DSharpenEmbossEffect
             _isUpdated = true;
         }
     }
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function called when the effect is being initialized.
     /// </summary>
@@ -259,14 +258,14 @@ public class Gorgon2DSharpenEmbossEffect
                                         new DX.RectangleF(0, 0, 1, 1));
         End();
     }
-    #endregion
 
-    #region Constructor/Destructor.
+
+
     /// <summary>
     /// Initializes a new instance of the <see cref="Gorgon2DSharpenEmbossEffect" /> class.
     /// </summary>
     /// <param name="renderer">The renderer used to render this effect.</param>
     public Gorgon2DSharpenEmbossEffect(Gorgon2D renderer)
         : base(renderer, Resources.GOR2D_EFFECT_SHARPEMBOSS, Resources.GOR2D_EFFECT_SHARPEMBOSS_DESC, 1) => Macros.Add(new GorgonShaderMacro("SHARPEN_EMBOSS_EFFECT"));
-    #endregion
+
 }

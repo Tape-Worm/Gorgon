@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2019 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,20 +11,19 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: April 27, 2019 11:35:57 AM
 // 
-#endregion
 
-using System;
+
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Math;
@@ -33,22 +32,22 @@ using DX = SharpDX;
 namespace Gorgon.Editor.Services;
 
 /// <summary>
-/// Data used to extract sprites from a texture using a grid.
+/// Data used to extract sprites from a texture using a grid
 /// </summary>
 /// <remarks>
 /// <para>
-/// Developers can use this to extract sprite information using a fixed size grid to retrieve texture coordinates from a texture passed to the service.
+/// Developers can use this to extract sprite information using a fixed size grid to retrieve texture coordinates from a texture passed to the service
 /// </para>
 /// </remarks>
 /// <seealso cref="ISpriteExtractorService"/>
 public class SpriteExtractionData
 {
-    #region Variables.
+
     // A weak reference to the texture so we don't hang onto it for eternity.
     private WeakReference<GorgonTexture2DView> _textureRef;
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to set or return whether to skip empty sprites.
     /// </summary>
@@ -142,5 +141,5 @@ public class SpriteExtractionData
     /// Property to return the number of sprites that will be extracted.
     /// </summary>
     public int SpriteCount => _textureRef is null ? 0 : (GridSize.Width.Min(MaxGridSize.Width).Max(1) * GridSize.Height.Min(MaxGridSize.Height).Max(1)) * ArrayCount;
-    #endregion
+
 }

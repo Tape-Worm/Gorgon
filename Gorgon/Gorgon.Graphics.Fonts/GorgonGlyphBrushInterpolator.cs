@@ -1,6 +1,6 @@
-﻿#region MIT.
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2014 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,45 +11,48 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: Sunday, March 2, 2014 9:34:26 PM
 // 
-#endregion
 
-using System;
-using Gorgon.Core;
+
 using Gorgon.Graphics.Fonts.Properties;
 using Gorgon.Math;
 
 namespace Gorgon.Graphics.Fonts;
 
 /// <summary>
-/// An interpolation value used to weight the color blending in a gradient brush.
+/// An interpolation value used to weight the color blending in a gradient brush
 /// </summary>
-public readonly struct GorgonGlyphBrushInterpolator
-    : IEquatable<GorgonGlyphBrushInterpolator>, IComparable<GorgonGlyphBrushInterpolator>
+/// <remarks>
+/// Initializes a new instance of the <see cref="GorgonGlyphBrushInterpolator"/> struct
+/// </remarks>
+/// <param name="weight">The weight in the interpolation.</param>
+/// <param name="color">The color at the interpolation weight.</param>
+public readonly struct GorgonGlyphBrushInterpolator(float weight, GorgonColor color)
+        : IEquatable<GorgonGlyphBrushInterpolator>, IComparable<GorgonGlyphBrushInterpolator>
 {
-    #region Properties.
+
     /// <summary>
     /// Property to return the interpolation weight.
     /// </summary>
-    public readonly float Weight;
+    public readonly float Weight = weight.Min(1.0f).Max(0);
 
     /// <summary>
     /// Property to return the interpolation color.
     /// </summary>
-    public readonly GorgonColor Color;
-    #endregion
+    public readonly GorgonColor Color = color;
 
-    #region Methods.
+
+
     /// <summary>
     /// Returns a <see cref="string" /> that represents this instance.
     /// </summary>
@@ -145,18 +148,8 @@ public readonly struct GorgonGlyphBrushInterpolator
     /// <param name="right">The right instance to compare.</param>
     /// <returns><b>true</b> if <paramref name="left"/> is greater than or equal to <paramref name="right"/>, <b>false</b> if not.</returns>
     public static bool operator >=(GorgonGlyphBrushInterpolator left, GorgonGlyphBrushInterpolator right) => left.CompareTo(right) >= 0;
-    #endregion
 
-    #region Constructor/Destructor.
-    /// <summary>
-    /// Initializes a new instance of the <see cref="GorgonGlyphBrushInterpolator"/> struct.
-    /// </summary>
-    /// <param name="weight">The weight in the interpolation.</param>
-    /// <param name="color">The color at the interpolation weight.</param>
-    public GorgonGlyphBrushInterpolator(float weight, GorgonColor color)
-    {
-        Weight = weight.Min(1.0f).Max(0);
-        Color = color;
-    }
-    #endregion
+
+
+
 }

@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2020 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,21 +11,19 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: December 1, 2020 9:29:00 PM
 // 
-#endregion
 
-using System;
-using System.IO;
+
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using Gorgon.Core;
@@ -37,7 +35,7 @@ using DX = SharpDX;
 namespace Gorgon.Native;
 
 /// <summary>
-/// A value type representing a pointer to native (unmanaged) memory.
+/// A value type representing a pointer to native (unmanaged) memory
 /// </summary>
 /// <remarks>
 /// <para>
@@ -50,7 +48,7 @@ namespace Gorgon.Native;
 /// </para>
 /// <para>
 /// This pointer type only wraps a native pointer to previously allocated memory, therefore it does <b>not</b> perform any memory allocation on its own. Gorgon includes the 
-/// <see cref="GorgonNativeBuffer{T}"/> for that purpose. The <see cref="GorgonNativeBuffer{T}"/> will implicitly convert to this type, so it can be used in situations where this type is required.
+/// <see cref="GorgonNativeBuffer{T}"/> for that purpose. The <see cref="GorgonNativeBuffer{T}"/> will implicitly convert to this type, so it can be used in situations where this type is required
 /// </para>
 /// <para>
 /// <note type="information">
@@ -65,7 +63,7 @@ namespace Gorgon.Native;
 /// <para>
 /// This type is ~3x slower for access than a regular native pointer (x64). This is due to the safety features available to ensure the pointer does not cause a buffer over/underrun. For pure speed, 
 /// nothing beats a native pointer (or <c>nint</c>) and if your code is sensitive to microsecond timings (i.e. it needs to be near realtime/blazing fast), then use a native pointer instead 
-/// (developers can cast this type to a native pointer). But do so with the understanding that all safety is off and memory corruption is a very real possibility.
+/// (developers can cast this type to a native pointer). But do so with the understanding that all safety is off and memory corruption is a very real possibility
 /// </para>
 /// <para>
 /// <h3>Before making a choice, ALWAYS profile your application with a profiler. Never assume that the fastest functionality is required when memory safety is on the line.</h3>
@@ -79,7 +77,7 @@ public unsafe readonly struct GorgonPtr<T>
     : IEquatable<GorgonPtr<T>>, IComparable<GorgonPtr<T>>
     where T : unmanaged
 {
-    #region Variables.
+
     /// <summary>
     /// Represents a null pointer.
     /// </summary>
@@ -95,9 +93,9 @@ public unsafe readonly struct GorgonPtr<T>
     /// The number of items of type <typeparamref name="T"/> stored within the memory block. 
     /// </summary>
     public readonly int Length;
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to return the size, in bytes, of the type represented by <typeparamref name="T"/>.
     /// </summary>
@@ -139,13 +137,13 @@ public unsafe readonly struct GorgonPtr<T>
             {
                 throw new ArgumentOutOfRangeException(nameof(index), string.Format(Resources.GOR_ERR_INDEX_OUT_OF_RANGE, index, 0, Length));
             }
-            
+
             return ref Unsafe.AsRef<T>(_ptr + index);
         }
     }
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Operator to determine if one pointer address is less than another.
     /// </summary>
@@ -338,7 +336,7 @@ public unsafe readonly struct GorgonPtr<T>
     /// <typeparam name="Tc">The type to convert to. Must be an unmanaged value type.</typeparam>
     /// <returns>The casted pointer.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public GorgonPtr<Tc> To<Tc>() where Tc : unmanaged => new((Tc *)_ptr, SizeInBytes / Unsafe.SizeOf<Tc>());
+    public GorgonPtr<Tc> To<Tc>() where Tc : unmanaged => new((Tc*)_ptr, SizeInBytes / Unsafe.SizeOf<Tc>());
 
     /// <summary>
     /// Operator to increment the pointer by the given index offset.
@@ -527,7 +525,7 @@ public unsafe readonly struct GorgonPtr<T>
             throw new ArgumentOutOfRangeException(nameof(SizeInBytes), string.Format(Resources.GOR_ERR_INDEX_OUT_OF_RANGE, 0, SizeInBytes));
         }
 
-        return ref Unsafe.AsRef<Tc>(offset + (byte *)_ptr);
+        return ref Unsafe.AsRef<Tc>(offset + (byte*)_ptr);
     }
 
     /// <summary>
@@ -735,7 +733,7 @@ public unsafe readonly struct GorgonPtr<T>
         fixed (T* destPtr = &destination[destIndex])
         {
             int typeSize = sizeof(T);
-            Unsafe.CopyBlock(destPtr, _ptr + sourceIndex , (uint)(count * typeSize));
+            Unsafe.CopyBlock(destPtr, _ptr + sourceIndex, (uint)(count * typeSize));
         }
     }
 
@@ -845,7 +843,7 @@ public unsafe readonly struct GorgonPtr<T>
 
         count *= sizeof(T);
 
-        return new UnmanagedMemoryStream((byte *)(_ptr + index), count.Value, count.Value, FileAccess.ReadWrite);
+        return new UnmanagedMemoryStream((byte*)(_ptr + index), count.Value, count.Value, FileAccess.ReadWrite);
     }
 
     /// <summary>
@@ -1184,7 +1182,7 @@ public unsafe readonly struct GorgonPtr<T>
 
         if (offset == 0)
         {
-            return new GorgonPtr<byte>((byte *)_ptr, SizeInBytes);
+            return new GorgonPtr<byte>((byte*)_ptr, SizeInBytes);
         }
 
         int sizeInBytes = SizeInBytes;
@@ -1274,14 +1272,14 @@ public unsafe readonly struct GorgonPtr<T>
                 return false;
             }
 
-            byte* leftData = (byte *)_ptr;
+            byte* leftData = (byte*)_ptr;
             byte* rightData = (byte*)other._ptr;
             int dataLength = SizeInBytes - (_index * TypeSize).Min(other.SizeInBytes - (other._index * TypeSize));
 
             while (dataLength > 0)
-            { 
+            {
                 if (dataLength > sizeof(long))
-                {                        
+                {
                     long left = *((long*)leftData);
                     long right = *((long*)rightData);
 
@@ -1298,8 +1296,8 @@ public unsafe readonly struct GorgonPtr<T>
 
                 if (dataLength > sizeof(int))
                 {
-                    int left = *((int *)leftData);
-                    int right = *((int *)rightData);
+                    int left = *((int*)leftData);
+                    int right = *((int*)rightData);
 
                     if (left != right)
                     {
@@ -1314,8 +1312,8 @@ public unsafe readonly struct GorgonPtr<T>
 
                 if (dataLength > sizeof(short))
                 {
-                    short left = *((short *)leftData);
-                    short right = *((short *)rightData);
+                    short left = *((short*)leftData);
+                    short right = *((short*)rightData);
 
                     if (left != right)
                     {
@@ -1341,9 +1339,9 @@ public unsafe readonly struct GorgonPtr<T>
 
         return true;
     }
-    #endregion
 
-    #region Constructor/Finalizer.       
+
+
     /// <summary>Initializes a new instance of the <see cref="GorgonPtr{T}" /> struct.</summary>
     /// <param name="ptr">The pointer to wrap.</param>
     /// <param name="indexOffset">The offset, in indices of this pointer within the memory block.</param>
@@ -1421,7 +1419,7 @@ public unsafe readonly struct GorgonPtr<T>
         }
 
         _index = 0;
-        _ptr = (T*)dataStream.DataPointer;            
+        _ptr = (T*)dataStream.DataPointer;
         Length = (int)dataStream.Length / sizeof(T);
     }
 
@@ -1457,7 +1455,7 @@ public unsafe readonly struct GorgonPtr<T>
         }
 
         _index = index;
-        _ptr = ((T *)buffer + index);
+        _ptr = ((T*)buffer + index);
         Length = count.Value;
     }
 
@@ -1520,5 +1518,5 @@ public unsafe readonly struct GorgonPtr<T>
         _ptr = pointer;
         Length = count;
     }
-    #endregion       
+
 }

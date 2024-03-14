@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2018 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,27 +11,23 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: August 11, 2018 1:54:00 PM
 // 
-#endregion
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace Gorgon.Graphics.Core;
 
 /// <summary>
-/// The method to use when locating the resources by name.
+/// The method to use when locating the resources by name
 /// </summary>
 public enum LocateFilterType
 {
@@ -70,11 +66,11 @@ public enum LocateFilterType
 }
 
 /// <summary>
-/// A locator extension for <see cref="GorgonGraphicsResource"/> objects.
+/// A locator extension for <see cref="GorgonGraphicsResource"/> objects
 /// </summary>
 public static class GorgonResourceLocator
 {
-    #region Methods.
+
     /// <summary>
     /// Function to perform a comparison of an item name to the name specified, using the filter type specified.
     /// </summary>
@@ -85,16 +81,16 @@ public static class GorgonResourceLocator
     /// <returns><b>true</b> if the resource name matches the filter type, or <b>false</b> if not.</returns>
     private static bool NameComparison(string name, string itemName, LocateFilterType filterType, StringComparison comparisonType) => !string.IsNullOrWhiteSpace(itemName)
 && filterType switch
-            {
-                LocateFilterType.StartsWith => itemName.StartsWith(name, comparisonType),
-                LocateFilterType.EndsWith => itemName.EndsWith(name, comparisonType),
-                LocateFilterType.Contains => itemName.IndexOf(name, comparisonType) != -1,
-                LocateFilterType.NotContains => itemName.IndexOf(name, comparisonType) == -1,
-                LocateFilterType.NotStartsWith => !itemName.StartsWith(name, comparisonType),
-                LocateFilterType.NotEndsWith => !itemName.EndsWith(name, comparisonType),
-                LocateFilterType.NotEqual => !string.Equals(name, itemName, comparisonType),
-                _ => string.Equals(name, itemName, comparisonType),
-            };
+{
+    LocateFilterType.StartsWith => itemName.StartsWith(name, comparisonType),
+    LocateFilterType.EndsWith => itemName.EndsWith(name, comparisonType),
+    LocateFilterType.Contains => itemName.IndexOf(name, comparisonType) != -1,
+    LocateFilterType.NotContains => itemName.IndexOf(name, comparisonType) == -1,
+    LocateFilterType.NotStartsWith => !itemName.StartsWith(name, comparisonType),
+    LocateFilterType.NotEndsWith => !itemName.EndsWith(name, comparisonType),
+    LocateFilterType.NotEqual => !string.Equals(name, itemName, comparisonType),
+    _ => string.Equals(name, itemName, comparisonType),
+};
 
     /// <summary>
     /// Function to locate a graphics resource by its name.
@@ -132,7 +128,7 @@ public static class GorgonResourceLocator
 #pragma warning disable IDE0046 // Convert to conditional expression
         if (string.IsNullOrWhiteSpace(name))
         {
-            return Enumerable.Empty<T>();
+            return [];
         }
 
         return graphics.GetDisposables()
@@ -178,5 +174,5 @@ public static class GorgonResourceLocator
                                        ? null
                                        : resource)
                        .Where(item => item is not null);
-    #endregion
+
 }

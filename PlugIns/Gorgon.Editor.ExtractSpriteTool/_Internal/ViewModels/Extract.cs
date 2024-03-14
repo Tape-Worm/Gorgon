@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2020 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,25 +11,19 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: May 25, 2020 9:52:13 PM
 // 
-#endregion
 
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
+
 using Gorgon.Diagnostics;
 using Gorgon.Editor.Content;
 using Gorgon.Editor.ExtractSpriteTool.Properties;
@@ -45,12 +39,12 @@ using DX = SharpDX;
 namespace Gorgon.Editor.ExtractSpriteTool;
 
 /// <summary>
-/// The extraction UI view model.
+/// The extraction UI view model
 /// </summary>
 internal class Extract
     : EditorToolViewModelBase<ExtractParameters>, IExtract
 {
-    #region Variables.
+
     // The data used for extraction.
     private SpriteExtractionData _extractData;
     // The settings for the plug in.
@@ -73,9 +67,9 @@ internal class Extract
     private int _currentPreviewSprite;
     // The file that contains the texture to extract from.
     private IContentFile _textureFile;
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to return the progress status of the extraction operation.
     /// </summary>
@@ -162,7 +156,7 @@ internal class Extract
                 return;
             }
 
-            OnPropertyChanging();                
+            OnPropertyChanging();
             _extractData.GridSize = value;
             OnPropertyChanged();
         }
@@ -378,9 +372,9 @@ internal class Extract
     {
         get;
     }
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to assign the color used to mask out empty regions.
     /// </summary>
@@ -472,7 +466,7 @@ internal class Extract
             {
                 return;
             }
-            
+
             _currentTask = spriteGenTask = Task.Run(() => _extractor.ExtractSprites(_extractData, imageData, UpdateProgress, _cancelSource.Token), _cancelSource.Token);
             IReadOnlyList<GorgonSprite> sprites = await spriteGenTask;
 
@@ -487,7 +481,7 @@ internal class Extract
                 CurrentPreviewSprite = sprites.Count - 1;
             }
 
-            Sprites = sprites;                
+            Sprites = sprites;
         }
         catch (OperationCanceledException)
         {
@@ -589,7 +583,7 @@ internal class Extract
     /// This is set up as an asynchronous method so that users may save their data asynchronously to keep the UI usable.
     /// </para>
     /// </remarks>
-    protected async override Task<bool> OnCloseToolTaskAsync() 
+    protected async override Task<bool> OnCloseToolTaskAsync()
     {
         // If we're executing a task, wait for it to finish.
         if (_currentTask is null)
@@ -597,7 +591,7 @@ internal class Extract
             return true;
         }
 
-        
+
         if (HostServices.MessageDisplay.ShowConfirmation(Resources.GOREST_CONFIRM_EXTRACT_IN_PROGRESS) == MessageResponse.No)
         {
             return false;
@@ -671,9 +665,9 @@ internal class Extract
         _cancelSource?.Dispose();
         base.Unload();
     }
-    #endregion
 
-    #region Constructor/Finalizer.
+
+
     /// <summary>Initializes a new instance of the <see cref="Extract"/> class.</summary>
     public Extract()
     {
@@ -684,5 +678,5 @@ internal class Extract
         CancelSpriteGenerationCommand = new EditorCommand<object>(DoCancelSpriteGeneration, CanCancelSpriteGeneration);
         SaveSpritesCommand = new EditorCommand<SaveSpritesArgs>(DoSaveSprites, CanSaveSprites);
     }
-    #endregion
+
 }

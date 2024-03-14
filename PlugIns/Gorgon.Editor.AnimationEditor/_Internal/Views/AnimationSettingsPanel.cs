@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2019 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,20 +11,19 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: April 20, 2019 2:19:56 PM
 // 
-#endregion
 
-using System;
+
 using System.ComponentModel;
 using Gorgon.Editor.UI;
 using Gorgon.Editor.UI.Views;
@@ -33,37 +32,37 @@ using DX = SharpDX;
 namespace Gorgon.Editor.AnimationEditor;
 
 /// <summary>
-/// The panel used to display settings for image codec support.
+/// The panel used to display settings for image codec support
 /// </summary>
 internal partial class AnimationSettingsPanel
     : SettingsBaseControl, IDataContext<ISettings>
 {
-    #region Properties.
+
     /// <summary>Property to return the ID of the panel.</summary>
     [Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-    public override string PanelID => DataContext?.ID.ToString() ?? Guid.Empty.ToString();
+    public override string PanelID => ViewModel?.ID.ToString() ?? Guid.Empty.ToString();
 
     /// <summary>Property to return the data context assigned to this view.</summary>
     [Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-    public ISettings DataContext
+    public ISettings ViewModel
     {
         get;
         private set;
     }
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>Handles the Click event of the CheckUnsupported control.</summary>
     /// <param name="sender">The source of the event.</param>
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
     private void CheckUnsupported_Click(object sender, EventArgs e)
     {
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             return;
         }
 
-        DataContext.WarnUnsupportedTracks = CheckUnsupported.Checked;
+        ViewModel.WarnUnsupportedTracks = CheckUnsupported.Checked;
     }
 
     /// <summary>Handles the Click event of the CheckAnimatePrimaryBg control.</summary>
@@ -71,12 +70,12 @@ internal partial class AnimationSettingsPanel
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
     private void CheckAnimatePrimaryBg_Click(object sender, EventArgs e)
     {
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             return;
         }
 
-        DataContext.AnimateNoPrimarySpriteBackground = CheckAnimatePrimaryBg.Checked;
+        ViewModel.AnimateNoPrimarySpriteBackground = CheckAnimatePrimaryBg.Checked;
     }
 
     /// <summary>Handles the Click event of the CheckOnionSkin control.</summary>
@@ -84,12 +83,12 @@ internal partial class AnimationSettingsPanel
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
     private void CheckOnionSkin_Click(object sender, EventArgs e)
     {
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             return;
         }
 
-        DataContext.UseOnionSkinning = CheckOnionSkin.Checked;
+        ViewModel.UseOnionSkinning = CheckOnionSkin.Checked;
     }
 
     /// <summary>Handles the Click event of the CheckAddTextureTrack control.</summary>
@@ -97,12 +96,12 @@ internal partial class AnimationSettingsPanel
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
     private void CheckAddTextureTrack_Click(object sender, EventArgs e)
     {
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             return;
         }
 
-        DataContext.AddTextureTrackForPrimarySprite = CheckAddTextureTrack.Checked;
+        ViewModel.AddTextureTrackForPrimarySprite = CheckAddTextureTrack.Checked;
     }
 
     /// <summary>Handles the ValueChanged event of the NumericXRes control.</summary>
@@ -110,12 +109,12 @@ internal partial class AnimationSettingsPanel
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
     private void NumericXRes_ValueChanged(object sender, EventArgs e)
     {
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             return;
         }
 
-        DataContext.DefaultResolution = new DX.Size2((int)NumericXRes.Value, (int)NumericYRes.Value);
+        ViewModel.DefaultResolution = new DX.Size2((int)NumericXRes.Value, (int)NumericYRes.Value);
     }
 
     /// <summary>
@@ -157,12 +156,12 @@ internal partial class AnimationSettingsPanel
     public void SetDataContext(ISettings dataContext)
     {
         InitializeFromDataContext(dataContext);
-        DataContext = dataContext;
+        ViewModel = dataContext;
     }
-    #endregion
 
-    #region Constructor/Finalizer.
+
+
     /// <summary>Initializes a new instance of the <see cref="AnimationSettingsPanel"/> class.</summary>
     public AnimationSettingsPanel() => InitializeComponent();
-    #endregion
+
 }

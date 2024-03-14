@@ -1,6 +1,6 @@
-﻿#region MIT.
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2013 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,21 +11,19 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: Friday, January 18, 2013 8:47:30 AM
 // 
-#endregion
 
-using System;
-using System.IO;
+
 using System.Text;
 using Gorgon.Core;
 using Gorgon.IO;
@@ -34,29 +32,29 @@ using Gorgon.UI;
 namespace Gorgon.Examples;
 
 /// <summary>
-/// Main application interface.
+/// Main application interface
 /// </summary>
 /// <remarks>
 /// In this example we will show how to write to the file system.  
 /// 
 /// Whenever we create a file system, it's created as a read-only file system.  This is fine for most uses, but we need to be
 /// able to write data into it.  The problem is that the file system data could be on read only media like a DVD or CD.  Gorgon's 
-/// virtual file system is based on PhysicsFS (http://icculus.org/physfs/), it uses the concept of a write directory.
+/// virtual file system is based on PhysicsFS (http://icculus.org/physfs/), it uses the concept of a write directory
 /// This means when you update a file or add one, it will get rerouted to the write directory.  The write directory MUST be a 
-/// physical directory on your hard drive and must be able to be written into.
+/// physical directory on your hard drive and must be able to be written into
 /// 
 /// Setting up a write directory is fairly simple: Create an instance of a GorgonFileSystemWriter and pass in the file system 
 /// that you wish to set up for writing, and the physical location on the windows file system where the data will be written into. 
 /// Once a writer is setup, the files in it will take precedenceover all files in the file system.  So, for example, if 
 /// SomeText.txt exists in root of the mounted folder, and the same file name exists in the physical file system directory, then 
-/// the version in the physical file system directory will be used for file I/O operations.
+/// the version in the physical file system directory will be used for file I/O operations
 /// 
 /// Here, we do exactly this.  We take the file from the root of the directory and read it in.  
 /// </remarks>
 public partial class Form
     : System.Windows.Forms.Form
 {
-    #region Variables.
+
     // Our file system.
     private GorgonFileSystem _fileSystem;
     // The file system writer.
@@ -65,9 +63,9 @@ public partial class Form
     private string _originalText = string.Empty;
     // Changed text.
     private string _changedText = string.Empty;
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Handles the TextChanged event of the textDisplay control.
     /// </summary>
@@ -161,9 +159,9 @@ public partial class Form
             UpdateInfo();
         }
     }
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to enable or disable the command buttons.
     /// </summary>
@@ -175,11 +173,11 @@ public partial class Form
     }
 
     /// <summary>
-		/// Function to update the information label.
-		/// </summary>
-		private void UpdateInfo() => labelInfo.Text = string.Equals(_originalText, textDisplay.Text, StringComparison.CurrentCulture)
-                             ? $"Using original text from {GorgonExample.GetResourcePath(@"FileSystems\FolderSystem\").FullName.Ellipses(100, true)}"
-                             : $"Using modified text from {Program.WriteDirectory.FullName.Ellipses(100, true)}";
+    /// Function to update the information label.
+    /// </summary>
+    private void UpdateInfo() => labelInfo.Text = string.Equals(_originalText, textDisplay.Text, StringComparison.CurrentCulture)
+                         ? $"Using original text from {GorgonExample.GetResourcePath(@"FileSystems\FolderSystem\").FullName.Ellipses(100, true)}"
+                         : $"Using modified text from {Program.WriteDirectory.FullName.Ellipses(100, true)}";
 
     /// <summary>
     /// Function to load the text into the file system.
@@ -255,12 +253,10 @@ public partial class Form
             UpdateInfo();
         }
     }
-    #endregion
 
-    #region Constructor/Destructor.
     /// <summary>
     /// Initializes a new instance of the <see cref="Form" /> class.
     /// </summary>
     public Form() => InitializeComponent();
-    #endregion
+
 }

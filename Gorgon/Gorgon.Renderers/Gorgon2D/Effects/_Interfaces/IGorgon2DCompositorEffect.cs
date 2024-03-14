@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2019 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,25 +11,25 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: November 13, 2019 12:21:01 AM
 // 
-#endregion
+
 
 using Gorgon.Graphics.Core;
 
 namespace Gorgon.Renderers;
 
 /// <summary>
-/// Defines an effect that can be used in a <see cref="Gorgon2DCompositor"/>.
+/// Defines an effect that can be used in a <see cref="Gorgon2DCompositor"/>
 /// </summary>
 public interface IGorgon2DCompositorEffect
 {
@@ -38,5 +38,5 @@ public interface IGorgon2DCompositorEffect
     /// </summary>
     /// <param name="texture">The texture to render into the next target.</param>
     /// <param name="output">The render target that will receive the final output.</param>
-    void Render(GorgonTexture2DView texture, GorgonRenderTargetView output);    
+    void Render(GorgonTexture2DView texture, GorgonRenderTargetView output);
 }

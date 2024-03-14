@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2018 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,20 +11,19 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: July 25, 2018 8:30:32 PM
 // 
-#endregion
 
-using System;
+
 using System.Numerics;
 using Gorgon.Core;
 using Gorgon.Math;
@@ -33,19 +32,19 @@ using Gorgon.Renderers.Data;
 namespace Gorgon.Renderers.Lights;
 
 /// <summary>
-/// Directional light properties for passing to a GPU lighting shader.
+/// Directional light properties for passing to a GPU lighting shader
 /// </summary>
-	public sealed class GorgonDirectionalLight
+public sealed class GorgonDirectionalLight
     : GorgonLightCommon, IGorgonNamedObject, IEquatable<GorgonDirectionalLight>
 {
-    #region Variables.
+
     // The direction for a directional light.
     private Vector3 _lightDirection;
     // The GPU data for the light.
     private GorgonGpuLightData _lightData;
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to set or return the type of light to render.
     /// </summary>
@@ -71,9 +70,9 @@ namespace Gorgon.Renderers.Lights;
             IsUpdated = true;
         }
     }
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>Indicates whether the current object is equal to another object of the same type.</summary>
     /// <param name="other">An object to compare with this object.</param>
     /// <returns>
@@ -103,8 +102,8 @@ namespace Gorgon.Renderers.Lights;
         if (IsUpdated)
         {
             _lightData = new GorgonGpuLightData(LightType,
-                                                new Vector3(-LightDirection.X, -LightDirection.Y, LightDirection.Z), 
-                                                Vector4.Zero, 
+                                                new Vector3(-LightDirection.X, -LightDirection.Y, LightDirection.Z),
+                                                Vector4.Zero,
                                                 Color,
                                                 new Vector4(SpecularPower, Intensity, SpecularIntensity, SpecularEnabled ? 1 : 0));
             IsUpdated = false;
@@ -112,9 +111,9 @@ namespace Gorgon.Renderers.Lights;
 
         return ref _lightData;
     }
-    #endregion
 
-    #region Constructor/Destructor.
+
+
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonDirectionalLight"/> class.
     /// </summary>
@@ -138,5 +137,5 @@ namespace Gorgon.Renderers.Lights;
 
         LightDirection = copy.LightDirection;
     }
-    #endregion
+
 }

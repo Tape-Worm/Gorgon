@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2019 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,20 +11,19 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: March 28, 2019 9:48:28 AM
 // 
-#endregion
 
-using System;
+
 using System.ComponentModel;
 using Gorgon.Editor.UI;
 using Gorgon.Editor.UI.Controls;
@@ -33,39 +32,39 @@ using Gorgon.Graphics;
 namespace Gorgon.Examples;
 
 /// <summary>
-/// A color selection control for the text.
+/// A color selection control for the text
 /// </summary>
 /// <remarks>
-/// This view is a sub panel of the main view. It shows up when input is required from the user before applying that input to the actual content.
+/// This view is a sub panel of the main view. It shows up when input is required from the user before applying that input to the actual content
 /// When the sub panel is activated it appears on the right hand side of the content view and can have an OK/Cancel button if the panel is modal 
-/// or it can apply its values to the content in real time if not.
+/// or it can apply its values to the content in real time if not
 /// 
 /// In this example, we use this sub panel to provide us with a color picker editor that will adjust the color of the text content. 
 /// 
-/// To implement a sub panel, inherit from the EditorSubPanelCommon class and implement an IDataContext interface.
+/// To implement a sub panel, inherit from the EditorSubPanelCommon class and implement an IDataContext interface
 /// </remarks>
 internal partial class TextColorView
     : EditorSubPanelCommon, IDataContext<ITextColor>
 {
-    #region Properties.
+
     /// <summary>
     /// Property to return the data context for the view.
     /// </summary>
     [Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-    public ITextColor DataContext
+    public ITextColor ViewModel
     {
         get;
         private set;
     }
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>Handles the ColorChanged event of the Picker control.</summary>
     /// <param name="sender">The source of the event.</param>
     /// <param name="e">The <see cref="ColorChangedEventArgs"/> instance containing the event data.</param>
     private void Picker_ColorChanged(object sender, ColorChangedEventArgs e)
     {
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             return;
         }
@@ -73,7 +72,7 @@ internal partial class TextColorView
         // When the color picker control is updated, we intercept its event and pass it back to the view model. This allows 
         // things like renderers to pick up the change and adjust the view for us.
 
-        DataContext.SelectedColor = e.Color;
+        ViewModel.SelectedColor = e.Color;
 
         // This method should be caused anytime there's a change. It will disable the control based on execution validation 
         // provided by a command object on the view model.
@@ -85,7 +84,7 @@ internal partial class TextColorView
     /// </summary>
     private void UnassignEvents()
     {
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             return;
         }
@@ -93,7 +92,7 @@ internal partial class TextColorView
         // Always unassign your view model events. Failure to do so can result in an event leak, causing the view to stay 
         // in memory for the lifetime of the application.
 
-        DataContext.PropertyChanged -= DataContext_PropertyChanged;
+        ViewModel.PropertyChanged -= DataContext_PropertyChanged;
     }
 
     /// <summary>Handles the PropertyChanged event of the DataContext control.</summary>
@@ -112,10 +111,10 @@ internal partial class TextColorView
         switch (e.PropertyName)
         {
             case nameof(ITextColor.OriginalColor):
-                Picker.OriginalColor = DataContext.OriginalColor;
+                Picker.OriginalColor = ViewModel.OriginalColor;
                 break;
             case nameof(ITextColor.SelectedColor):
-                Picker.SelectedColor = DataContext.SelectedColor;                    
+                Picker.SelectedColor = ViewModel.SelectedColor;
                 break;
         }
     }
@@ -128,7 +127,7 @@ internal partial class TextColorView
         UnassignEvents();
         Picker.OriginalColor = Picker.SelectedColor = GorgonColor.Black;
     }
-    
+
     /// <summary>
     /// Function to initialize the control with the data context.
     /// </summary>
@@ -155,12 +154,12 @@ internal partial class TextColorView
         // view model. This allows us to ensure that the operation doesn't cause any problems if state is not 
         // correct.
 
-        if ((DataContext?.OkCommand is null) || (!DataContext.OkCommand.CanExecute(null)))
+        if ((ViewModel?.OkCommand is null) || (!ViewModel.OkCommand.CanExecute(null)))
         {
             return;
         }
 
-        DataContext.OkCommand.Execute(null);
+        ViewModel.OkCommand.Execute(null);
     }
 
     /// <summary>Function to cancel the change.</summary>
@@ -168,12 +167,12 @@ internal partial class TextColorView
     {
         base.OnCancel();
 
-        if ((DataContext?.CancelCommand is null) || (!DataContext.CancelCommand.CanExecute(null)))
+        if ((ViewModel?.CancelCommand is null) || (!ViewModel.CancelCommand.CanExecute(null)))
         {
             return;
         }
 
-        DataContext.CancelCommand.Execute(null);
+        ViewModel.CancelCommand.Execute(null);
     }
 
     // This method validates our OK button on the panel. We use the command to check whether the state of the view model
@@ -186,7 +185,7 @@ internal partial class TextColorView
     /// Function to validate the state of the OK button.
     /// </summary>
     /// <returns><b>true</b> if the OK button is valid, <b>false</b> if not.</returns>
-    protected override bool OnValidateOk() => (DataContext?.OkCommand is not null) && (DataContext.OkCommand.CanExecute(null));
+    protected override bool OnValidateOk() => (ViewModel?.OkCommand is not null) && (ViewModel.OkCommand.CanExecute(null));
 
     /// <summary>Raises the <see cref="E:System.Windows.Forms.UserControl.Load"/> event.</summary>
     /// <param name="e">An <see cref="EventArgs"/> that contains the event data.</param>
@@ -199,9 +198,9 @@ internal partial class TextColorView
             return;
         }
 
-        DataContext?.Load();
+        ViewModel?.Load();
     }
-    
+
     /// <summary>Function to assign a data context to the view as a view model.</summary>
     /// <param name="dataContext">The data context to assign.</param>
     /// <remarks>Data contexts should be nullable, in that, they should reset the view back to its original state when the context is null.</remarks>
@@ -209,19 +208,19 @@ internal partial class TextColorView
     {
         InitializeFromDataContext(dataContext);
 
-        DataContext = dataContext;
+        ViewModel = dataContext;
 
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             return;
         }
 
-        DataContext.PropertyChanged += DataContext_PropertyChanged;
+        ViewModel.PropertyChanged += DataContext_PropertyChanged;
     }
-    #endregion
 
-    #region Constructor/Finalizer.
+
+
     /// <summary>Initializes a new instance of the <see cref="TextColorView"/> class.</summary>
     public TextColorView() => InitializeComponent();
-    #endregion
+
 }

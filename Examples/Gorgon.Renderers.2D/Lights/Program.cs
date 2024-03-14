@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2018 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,25 +11,20 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: July 28, 2018 11:33:52 AM
 // 
-#endregion
 
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
+
 using System.Numerics;
-using System.Windows.Forms;
 using Gorgon.Core;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
@@ -44,14 +39,14 @@ using DX = SharpDX;
 namespace Gorgon.Examples;
 
 /// <summary>
-/// The main entry point for the application.
+/// The main entry point for the application
 /// </summary>
 /// <remarks>
-/// This example shows how to use the G-Buffer and Lighting effect to provide lighting for your sprites.
+/// This example shows how to use the G-Buffer and Lighting effect to provide lighting for your sprites
 /// </remarks>
 static class Program
 {
-    #region Variables.
+
     // The primary graphics interface.
     private static GorgonGraphics _graphics;
     // The main "screen" for the application.
@@ -83,9 +78,9 @@ static class Program
     private static GorgonOrthoCamera _camera;
     // Flag to indicate we should rotate the logo.
     private static bool _rotate;
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function called when the application goes into an idle state.
     /// </summary>
@@ -164,16 +159,16 @@ static class Program
         if (_logoSprite.Angle > 360.0f)
         {
             _logoSprite.Angle -= 360.0f;
-        }                        
+        }
 
         // Draw the rest of the UI.
         _renderer.Begin();
 
         _renderer.DrawSprite(_torchSprite);
 
-        _renderer.DrawString($"Specular Power: {_light.SpecularPower:0.0}\n" + 
-                             $"Light [c #{GorgonColor.CornFlowerBlue.ToHex()}]Z/z[/c]: {_light.Position.Z:0}\n" + 
-                             $"Camera Position: {_camera.Position.X:0}, {_camera.Position.Y:0} ([c #{GorgonColor.CornFlowerBlue.ToHex()}]W[/c], [c #{GorgonColor.CornFlowerBlue.ToHex()}]A[/c], [c #{GorgonColor.CornFlowerBlue.ToHex()}]S[/c], [c #{GorgonColor.CornFlowerBlue.ToHex()}]D[/c])\n" + 
+        _renderer.DrawString($"Specular Power: {_light.SpecularPower:0.0}\n" +
+                             $"Light [c #{GorgonColor.CornFlowerBlue.ToHex()}]Z/z[/c]: {_light.Position.Z:0}\n" +
+                             $"Camera Position: {_camera.Position.X:0}, {_camera.Position.Y:0} ([c #{GorgonColor.CornFlowerBlue.ToHex()}]W[/c], [c #{GorgonColor.CornFlowerBlue.ToHex()}]A[/c], [c #{GorgonColor.CornFlowerBlue.ToHex()}]S[/c], [c #{GorgonColor.CornFlowerBlue.ToHex()}]D[/c])\n" +
                              $"[c #{GorgonColor.CornFlowerBlue.ToHex()}]R[/c]otation: {(_rotate ? "Yes" : "No")}",
                              new Vector2(0, 64));
         _renderer.End();
@@ -216,7 +211,7 @@ static class Program
                                               Name = "Gorgon2D Effects Example Swap Chain"
                                           });
 
-            _screen.SwapChainResized += Screen_SwapChainResized;                
+            _screen.SwapChainResized += Screen_SwapChainResized;
 
             _camera = new GorgonOrthoCamera(_graphics, new DX.Size2F(_screen.Width, _screen.Height))
             {
@@ -338,8 +333,8 @@ static class Program
             case Keys.C:
                 _lightEffect.CheckLightDepth = !_lightEffect.CheckLightDepth;
                 break;
-            case Keys.Z:                     
-                _light.Position = 
+            case Keys.Z:
+                _light.Position =
                     !e.Shift
                         ? new Vector3(_light.Position.X, _light.Position.Y, _light.Position.Z + 1.0f)
                         : new Vector3(_light.Position.X, _light.Position.Y, _light.Position.Z - 1.0f);
@@ -397,9 +392,7 @@ static class Program
     {
         try
         {
-#if NET6_0_OR_GREATER
             Application.SetHighDpiMode(HighDpiMode.PerMonitorV2);
-#endif
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
 
@@ -421,5 +414,5 @@ static class Program
             _graphics?.Dispose();
         }
     }
-    #endregion
+
 }

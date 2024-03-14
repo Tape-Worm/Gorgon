@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2016 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,23 +11,19 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: July 8, 2016 11:26:58 AM
 // 
-#endregion
 
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
+
 using Gorgon.Core;
 using Gorgon.Diagnostics;
 using Gorgon.Graphics.Core.Properties;
@@ -40,17 +36,17 @@ using DX = SharpDX;
 namespace Gorgon.Graphics.Core;
 
 /// <summary>
-/// A factory used to create various <see cref="GorgonShader"/> based types.
+/// A factory used to create various <see cref="GorgonShader"/> based types
 /// </summary>
 /// <remarks>
 /// <para>
 /// This factory is used to compile from source code or load shaders from a stream or file. Shaders such as the <see cref="GorgonPixelShader"/> cannot be created by using the <c>new</c> keyword and 
-/// must be instantiated via this factory.
+/// must be instantiated via this factory
 /// </para>
 /// </remarks>
 public static class GorgonShaderFactory
 {
-    #region Constants.
+
     /// <summary>
     /// The header chunk for a Gorgon binary shader file.
     /// </summary>
@@ -65,29 +61,29 @@ public static class GorgonShaderFactory
     /// The chunk ID for the chunk that contains the binary shader bytecode.
     /// </summary>
     public const string BinaryShaderByteCode = "BYTECODE";
-    #endregion
 
-    #region Variables.
+
+
     // A processor used to parse shader source code for include statements.
     private static readonly ShaderProcessor _processor = new();
 
     // A list of available shader types.
     private static readonly (Type, ShaderType, string)[] _shaderTypes =
-    {
+    [
         (typeof(GorgonVertexShader), ShaderType.Vertex, "vs_5_0"),
         (typeof(GorgonPixelShader), ShaderType.Pixel, "ps_5_0"),
         (typeof(GorgonGeometryShader), ShaderType.Geometry, "gs_5_0"),
         (typeof(GorgonHullShader), ShaderType.Hull, "hs_5_0"),
         (typeof(GorgonDomainShader), ShaderType.Domain, "ds_5_0"),
         (typeof(GorgonComputeShader), ShaderType.Compute, "cs_5_0")
-    };
+    ];
 
     // A list of factory objects used to create the actual shader objects.
     private static readonly Dictionary<ShaderType, ObjectActivator<GorgonShader>> _shaderFactory =
-        new();
-    #endregion
+        [];
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to return the list of <see cref="GorgonShaderInclude"/> definitions to include with compiled shaders.
     /// </summary>
@@ -99,9 +95,9 @@ public static class GorgonShaderFactory
     /// </remarks>
     /// <seealso cref="GorgonShaderInclude"/>
     public static IDictionary<string, GorgonShaderInclude> Includes => _processor.CachedIncludes;
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to load a shader from a <see cref="Stream"/> containing a Gorgon binary shader in chunked format.
     /// </summary>
@@ -175,10 +171,9 @@ public static class GorgonShaderFactory
         // We will store the shader as a Gorgon chunked binary format. 
         // This will break the shader into parts within the file to allow us the ability to read portions of the file.
         var chunkReader = new GorgonChunkFileReader(stream,
-                                                                      new[]
-                                                                      {
+                                                                      [
                                                                           BinaryShaderFileHeader.ChunkID()
-                                                                      });
+                                                                      ]);
 
         ShaderBytecode byteCode = null;
 
@@ -474,14 +469,14 @@ public static class GorgonShaderFactory
                                       string.Format(Resources.GORGFX_ERR_CANNOT_COMPILE_SHADER, cEx.Message.Replace("{", "{{").Replace("}", "}}")));
         }
     }
-    #endregion
 
-    #region Constructor.
+
+
     /// <summary>
     /// Initializes static members of the <see cref="GorgonShaderFactory" /> class.
     /// </summary>
     static GorgonShaderFactory()
-    {                        
+    {
         foreach ((Type Type, ShaderType Shader, _) in _shaderTypes)
         {
             _shaderFactory[Shader] = Type.CreateActivator<GorgonShader>(typeof(GorgonGraphics),
@@ -490,5 +485,5 @@ public static class GorgonShaderFactory
                                                                         typeof(ShaderBytecode));
         }
     }
-    #endregion
+
 }

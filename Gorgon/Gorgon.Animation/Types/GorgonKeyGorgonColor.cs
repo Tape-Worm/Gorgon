@@ -1,6 +1,6 @@
-﻿#region MIT.
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2012 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,26 +11,25 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: Wednesday, October 3, 2012 9:16:10 PM
 // 
-#endregion
 
-using System;
+
 using Gorgon.Graphics;
 
 namespace Gorgon.Animation;
 
 /// <summary>
-/// An animation key frame for a <see cref="GorgonColor"/> value.
+/// An animation key frame for a <see cref="GorgonColor"/> value
 /// </summary>
 /// <remarks>
 /// <para>
@@ -38,19 +37,19 @@ namespace Gorgon.Animation;
 /// </para>
 /// <para>
 /// The track that the key frame is on is used to interpolate the value between key frames. This method makes it so that only a few key frames are required for an animation rather then setting a value
-/// for every time index.
+/// for every time index
 /// </para>
 /// </remarks>
 /// <seealso cref="IGorgonAnimationTrack{T}"/>
 public class GorgonKeyGorgonColor
     : IGorgonKeyFrame
 {
-    #region Variables.
+
     // The value for the key frame.
     private GorgonColor _value;
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to set or return the value to store in the key frame.
     /// </summary>
@@ -72,17 +71,17 @@ public class GorgonKeyGorgonColor
     {
         get;
     } = typeof(GorgonColor);
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to clone an object.
     /// </summary>
     /// <returns>The cloned object.</returns>
     public IGorgonKeyFrame Clone() => new GorgonKeyGorgonColor(this);
-    #endregion
 
-    #region Constructor/Destructor.
+
+
     /// <summary>Initializes a new instance of the <see cref="GorgonKeyRectangle"/> class.</summary>
     /// <param name="key">The key to copy.</param>
     /// <exception cref="ArgumentNullException">Thrown when the <paramref name="key"/> parameter is <b>null</b>.</exception>
@@ -102,5 +101,5 @@ public class GorgonKeyGorgonColor
         Time = time;
         _value = value;
     }
-    #endregion
+
 }

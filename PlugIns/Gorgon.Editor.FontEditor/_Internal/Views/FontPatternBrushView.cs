@@ -1,6 +1,6 @@
-﻿#region MIT.
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2014 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,58 +11,53 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: Monday, March 10, 2014 12:44:57 AM
 // 
-#endregion
 
-using System;
+
 using System.ComponentModel;
-using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
-using System.Threading;
-using System.Windows.Forms;
 using Gorgon.Editor.FontEditor.Properties;
 using Gorgon.Editor.UI;
 using Gorgon.Editor.UI.Controls;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Fonts;
-using Gorgon.UI;
 
 namespace Gorgon.Editor.FontEditor;
 
 /// <summary>
-/// A panel used to dislpay hatch patterns for font glyphs.
+/// A panel used to dislpay hatch patterns for font glyphs
 /// </summary>
 internal partial class FontPatternBrushView
     : EditorSubPanelCommon, IDataContext<IFontPatternBrush>
 {
-    #region Variables.
+
     // Bitmap used to draw the preview.
     private Bitmap _previewBitmap;
     // Lock for reentrancy on events.
     private int _eventLock;
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>Property to return the data context assigned to this view.</summary>
-    public IFontPatternBrush DataContext
+    public IFontPatternBrush ViewModel
     {
         get;
         private set;
     }
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Handles the Paint event of the panelPreview control.
     /// </summary>
@@ -90,12 +85,12 @@ internal partial class FontPatternBrushView
     /// <param name="e">The <see cref="EventArgs" /> instance containing the event data.</param>
     private void ComboHatch_SelectedIndexChanged(object sender, EventArgs e)
     {
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             return;
         }
 
-        DataContext.Brush = GetHatchBrush();            
+        ViewModel.Brush = GetHatchBrush();
     }
 
     /// <summary>Handles the ColorChanged event of the PickerBackground control.</summary>
@@ -103,12 +98,12 @@ internal partial class FontPatternBrushView
     /// <param name="e">The <see cref="ColorChangedEventArgs" /> instance containing the event data.</param>
     private void PickerBackground_ColorChanged(object sender, ColorChangedEventArgs e)
     {
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             return;
         }
 
-        DataContext.Brush = GetHatchBrush();            
+        ViewModel.Brush = GetHatchBrush();
     }
 
     /// <summary>Handles the ColorChanged event of the PickerForeground control.</summary>
@@ -116,12 +111,12 @@ internal partial class FontPatternBrushView
     /// <param name="e">The <see cref="ColorChangedEventArgs" /> instance containing the event data.</param>
     private void PickerForeground_ColorChanged(object sender, ColorChangedEventArgs e)
     {
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             return;
         }
 
-        DataContext.Brush = GetHatchBrush();            
+        ViewModel.Brush = GetHatchBrush();
     }
 
     /// <summary>Handles the PropertyChanged event of the DataContext control.</summary>
@@ -134,16 +129,16 @@ internal partial class FontPatternBrushView
         switch (e.PropertyName)
         {
             case nameof(IFontPatternBrush.Brush):
-                ComboHatch.Style = (HatchStyle)DataContext.Brush.HatchStyle;
-                PickerForeground.SelectedColor = DataContext.Brush.ForegroundColor;
-                PickerBackground.SelectedColor = DataContext.Brush.BackgroundColor;
+                ComboHatch.Style = (HatchStyle)ViewModel.Brush.HatchStyle;
+                PickerForeground.SelectedColor = ViewModel.Brush.ForegroundColor;
+                PickerBackground.SelectedColor = ViewModel.Brush.BackgroundColor;
                 break;
             case nameof(IFontPatternBrush.OriginalColor):
-                PickerForeground.OriginalColor = DataContext.OriginalColor.Foreground;
-                PickerBackground.OriginalColor = DataContext.OriginalColor.Background;
+                PickerForeground.OriginalColor = ViewModel.OriginalColor.Foreground;
+                PickerBackground.OriginalColor = ViewModel.OriginalColor.Background;
                 break;
         }
-        
+
         HookEvents();
         ValidateOk();
     }
@@ -226,12 +221,12 @@ internal partial class FontPatternBrushView
     {
         UnhookEvents();
 
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             return;
         }
 
-        DataContext.PropertyChanged -= DataContext_PropertyChanged;
+        ViewModel.PropertyChanged -= DataContext_PropertyChanged;
     }
 
     /// <summary>
@@ -267,10 +262,10 @@ internal partial class FontPatternBrushView
     /// <returns>
     ///   <b>true</b> if the OK button is valid, <b>false</b> if not.</returns>
     protected override bool OnValidateOk()
-    {            
-        if (DataContext?.OkCommand is not null)
+    {
+        if (ViewModel?.OkCommand is not null)
         {
-            return DataContext.OkCommand.CanExecute(null);
+            return ViewModel.OkCommand.CanExecute(null);
         }
 
         return base.OnValidateOk();
@@ -279,9 +274,9 @@ internal partial class FontPatternBrushView
     /// <summary>Function to cancel the change.</summary>
     protected override void OnCancel()
     {
-        if (DataContext is not null)
+        if (ViewModel is not null)
         {
-            DataContext.IsActive = false;
+            ViewModel.IsActive = false;
         }
     }
 
@@ -290,12 +285,12 @@ internal partial class FontPatternBrushView
     {
         base.OnSubmit();
 
-        if ((DataContext?.OkCommand is null) || (!DataContext.OkCommand.CanExecute(null)))
+        if ((ViewModel?.OkCommand is null) || (!ViewModel.OkCommand.CanExecute(null)))
         {
             return;
         }
 
-        DataContext.OkCommand.Execute(null);
+        ViewModel.OkCommand.Execute(null);
     }
 
     /// <summary>
@@ -327,19 +322,19 @@ internal partial class FontPatternBrushView
 
         InitializeDataContext(dataContext);
 
-        DataContext = dataContext;
-        if (DataContext is null)
+        ViewModel = dataContext;
+        if (ViewModel is null)
         {
             return;
         }
-                    
-        DataContext.PropertyChanged += DataContext_PropertyChanged;
+
+        ViewModel.PropertyChanged += DataContext_PropertyChanged;
         HookEvents();
         ValidateOk();
     }
-    #endregion
 
-    #region Constructor/Destructor.
+
+
     /// <summary>
     /// Initializes a new instance of the <see cref="FontPatternBrushView"/> class.
     /// </summary>
@@ -348,5 +343,5 @@ internal partial class FontPatternBrushView
         InitializeComponent();
         ComboHatch.RefreshPatterns();
     }
-    #endregion
+
 }

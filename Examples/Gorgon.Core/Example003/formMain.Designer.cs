@@ -3,34 +3,32 @@ using System.Windows.Forms;
 
 namespace Gorgon.Examples;
 
-	partial class FormMain
-	{
-		/// <summary>
-		/// Required designer variable.
-		/// </summary>
-		private IContainer components = null;
+partial class FormMain
+{
+    /// <summary>
+    /// Required designer variable.
+    /// </summary>
+    private IContainer components = null;
 
-		/// <summary>
-		/// Clean up any resources being used.
-		/// </summary>
-		/// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
-		protected override void Dispose(bool disposing)
-		{
-			if (disposing && (components != null))
-			{
-				components.Dispose();
-			}
-			base.Dispose(disposing);
-		}
+    /// <summary>
+    /// Clean up any resources being used.
+    /// </summary>
+    /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+    protected override void Dispose(bool disposing)
+    {
+        if (disposing && (components != null))
+        {
+            components.Dispose();
+        }
+        base.Dispose(disposing);
+    }
 
-		#region Windows Form Designer generated code
-
-		/// <summary>
-		/// Required method for Designer support - do not modify
-		/// the contents of this method with the code editor.
-		/// </summary>
-		private void InitializeComponent()
-		{
+    /// <summary>
+    /// Required method for Designer support - do not modify
+    /// the contents of this method with the code editor.
+    /// </summary>
+    private void InitializeComponent()
+    {
         System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormMain));
         this.labelFPS = new System.Windows.Forms.Label();
         this.panelGraphics = new System.Windows.Forms.Panel();
@@ -93,7 +91,6 @@ namespace Gorgon.Examples;
         this.Controls.Add(this.panel1);
         this.Controls.Add(this.label1);
         this.DoubleBuffered = true;
-        this.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
         this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
         this.Name = "formMain";
         this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
@@ -103,13 +100,12 @@ namespace Gorgon.Examples;
         this.ResumeLayout(false);
         this.PerformLayout();
 
-		}
+    }
 
-		#endregion
 
-		private Label labelFPS;
-		private Panel panelGraphics;
-		private Label label1;
-		private Panel panel1;
-	}
 
+    private Label labelFPS;
+    private Panel panelGraphics;
+    private Label label1;
+    private Panel panel1;
+}

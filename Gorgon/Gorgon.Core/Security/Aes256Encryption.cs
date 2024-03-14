@@ -1,8 +1,5 @@
-﻿using System;
-using System.IO;
-using System.Security;
+﻿using System.Security;
 using System.Security.Cryptography;
-using System.Text;
 using Gorgon.Core;
 using Gorgon.Properties;
 using Microsoft.IO;
@@ -10,19 +7,24 @@ using Microsoft.IO;
 namespace Gorgon.Security;
 
 /// <summary>
-/// Encryption functionality that will encrypt or decrypt data based on an AES 256 crypto provider.
+/// Encryption functionality that will encrypt or decrypt data based on an AES 256 crypto provider
 /// </summary>
 public class Aes256Encryption
     : IEncryption
 {
-    #region Variables.
+
     // The stream pool used to retrieve memory streams.
-    private static readonly RecyclableMemoryStreamManager _streamManager = new(int.MaxValue / 2, int.MaxValue);
+    private static readonly RecyclableMemoryStreamManager _streamManager = new(new RecyclableMemoryStreamManager.Options
+    {
+        MaximumSmallPoolFreeBytes = int.MaxValue / 2,
+        MaximumLargePoolFreeBytes = int.MaxValue
+    });
+
     // The initialization vector and key.
     private readonly (byte[] IV, byte[] Key) _ivKey;
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to extract the symmetric key from the key data passed to the constructor.
     /// </summary>
@@ -69,7 +71,7 @@ public class Aes256Encryption
 
         if ((data is null) || (data.Length == 0))
         {
-            return Array.Empty<byte>();
+            return [];
         }
 
         using var aes = Aes.Create();
@@ -101,7 +103,7 @@ public class Aes256Encryption
 
         if ((data is null) || (data.Length == 0))
         {
-            return Array.Empty<byte>();
+            return [];
         }
 
         using var aes = Aes.Create();
@@ -128,7 +130,7 @@ public class Aes256Encryption
     {
         if (string.IsNullOrEmpty(value))
         {
-            return Array.Empty<byte>();
+            return [];
         }
 
         textEncoding ??= Encoding.UTF8;
@@ -203,12 +205,12 @@ public class Aes256Encryption
         }
 
         using var aes = Aes.Create();
-        using var hashGen = new Rfc2898DeriveBytes(password, salt, 100);
+        using var hashGen = new Rfc2898DeriveBytes(password, salt, 100, HashAlgorithmName.SHA3_256);
         return (hashGen.GetBytes(aes.BlockSize / 8), hashGen.GetBytes(aes.KeySize / 8));
     }
-    #endregion
 
-    #region Constructor/Finalizer.
+
+
     /// <summary>
     /// Initializes a new instance of the <see cref="Aes256Encryption"/> class.
     /// </summary>
@@ -270,5 +272,5 @@ public class Aes256Encryption
 
         _ivKey = (iv, key);
     }
-    #endregion
+
 }

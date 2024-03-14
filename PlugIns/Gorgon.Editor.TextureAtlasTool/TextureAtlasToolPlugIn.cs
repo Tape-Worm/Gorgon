@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2019 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,22 +11,19 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: March 2, 2019 11:15:34 AM
 // 
-#endregion
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
+
 using Gorgon.Editor.Content;
 using Gorgon.Editor.PlugIns;
 using Gorgon.Editor.Services;
@@ -40,17 +37,17 @@ using Gorgon.UI;
 namespace Gorgon.Editor.TextureAtlasTool;
 
 /// <summary>
-/// A plug in used to create a texture atlas.
+/// A plug in used to create a texture atlas
 /// </summary>
 /// <remarks>
 /// <para>
-/// This plug in varies from the Image atlas tool in that it uses sprites that are already defined and bound to separate images.
+/// This plug in varies from the Image atlas tool in that it uses sprites that are already defined and bound to separate images
 /// </para>
 /// </remarks>
 internal class TextureAtlasToolPlugIn
     : ToolPlugIn
 {
-    #region Variables.
+
     // The cached button definition.
     private ToolPlugInRibbonButton _button;
     // The default image codec to use.
@@ -61,15 +58,15 @@ internal class TextureAtlasToolPlugIn
     private SpriteFiles _fileVm;
     // The texture atlas view model.
     private TextureAtlas _textureAtlas;
-    #endregion
 
-    #region Methods.		
+
+
     /// <summary>
     /// Function to retrieve the sprite file entries from the file system.
     /// </summary>
     /// <returns>The flattened list of entries used for searching and the file system entry hierarchy.</returns>
     private (List<IContentFileExplorerSearchEntry> searchEntries, List<ContentFileExplorerDirectoryEntry> fileSystemEntries) GetFileEntries()
-    {            
+    {
         var searchEntries = new List<IContentFileExplorerSearchEntry>();
         var fileSystemEntries = new List<ContentFileExplorerDirectoryEntry>();
         ContentFileExplorerDirectoryEntry dirEntry = null;
@@ -110,7 +107,7 @@ internal class TextureAtlasToolPlugIn
                 continue;
             }
 
-            fileEntries = new List<ContentFileExplorerFileEntry>();
+            fileEntries = [];
             dirEntry = new ContentFileExplorerDirectoryEntry(subDir, fileEntries);
 
             fileSystemEntries.Add(dirEntry);
@@ -154,11 +151,11 @@ internal class TextureAtlasToolPlugIn
             _textureAtlas ??= new TextureAtlas();
 
             _fileVm.Initialize(new SpriteFilesParameters(entries, TemporaryFileSystem, new EditorContentSearchService(searchEntries), HostToolServices));
-            _textureAtlas.Initialize(new TextureAtlasParameters(_fileVm, 
+            _textureAtlas.Initialize(new TextureAtlasParameters(_fileVm,
                                                                 settings,
                                                                 new GorgonTextureAtlasService(HostToolServices.GraphicsContext.Renderer2D),
                                                                 new FileIOService(ContentFileManager, _defaultImageCodec, _defaultSpriteCodec),
-                                                                ContentFileManager, 
+                                                                ContentFileManager,
                                                                 HostToolServices));
 
             form = new FormAtlasGen(settings);
@@ -225,13 +222,13 @@ internal class TextureAtlasToolPlugIn
 
         base.OnShutdown();
     }
-    #endregion
 
-    #region Constructor/Finalizer.
+
+
     /// <summary>Initializes a new instance of the <see cref="TextureAtlasToolPlugIn"/> class.</summary>
     public TextureAtlasToolPlugIn()
         : base(Resources.GORTAG_PLUGIN_DESC)
     {
     }
-    #endregion
+
 }

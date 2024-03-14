@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2015 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,43 +11,41 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: Friday, December 11, 2015 9:55:34 PM
 // 
-#endregion
 
-using System;
-using System.Collections.Generic;
+
 using SharpDX.DXGI;
 using D3D11 = SharpDX.Direct3D11;
 
 namespace Gorgon.Graphics.Core;
 
 /// <summary>
-/// Provides information about a video adapter in the system.
+/// Provides information about a video adapter in the system
 /// </summary>
 /// <remarks>
 /// <para>
-/// This information may be for a physical hardware device, or a software rasterizer.  To determine which type this device falls under, se the <see cref="VideoDeviceType"/> property to determine the type of device.
+/// This information may be for a physical hardware device, or a software rasterizer.  To determine which type this device falls under, se the <see cref="VideoDeviceType"/> property to determine the type of device
 /// </para>
 /// </remarks>
 internal class VideoAdapterInfo
     : IGorgonVideoAdapterInfo
 {
-    #region Variables.
+
     // The DXGI adapter description
     private readonly AdapterDescription2 _adapterDesc;
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to return the maximum number of render targets allow to be assigned at the same time.
     /// </summary>
@@ -160,9 +158,9 @@ internal class VideoAdapterInfo
     {
         get;
     }
-    #endregion
 
-    #region Constructor.
+
+
     /// <summary>
     /// Initializes a new instance of the <see cref="VideoAdapterInfo" /> class.
     /// </summary>
@@ -200,5 +198,5 @@ internal class VideoAdapterInfo
         Outputs = new GorgonVideoAdapterOutputList(finalOutputs);
         FeatureSet = featureSet;
     }
-    #endregion
+
 }

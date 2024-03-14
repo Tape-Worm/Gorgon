@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2020 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,25 +11,20 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: August 16, 2020 11:22:55 PM
 // 
-#endregion
 
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
+
 using System.Numerics;
-using System.Windows.Forms;
 using Gorgon.Core;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
@@ -41,11 +36,11 @@ using DX = SharpDX;
 namespace Gorgon.Examples;
 
 /// <summary>
-/// Our example entry point.
+/// Our example entry point
 /// </summary>
 static class Program
 {
-    #region Variables.
+
     // The core graphics functionality.
     private static GorgonGraphics _graphics;
     // Our swap chain that represents our "Screen".
@@ -68,9 +63,9 @@ static class Program
     private static bool _showHelp = true;
     // Particles emit an explosion effect.
     private static bool _explosion = true;
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to update the emitter to change the particle effect.
     /// </summary>
@@ -96,7 +91,7 @@ static class Program
         _emitter.RadialAccelerationRange = (-1, 1);
         _emitter.Reset();
     }
-    
+
     /// <summary>
     /// Function to build the render target for blooming.
     /// </summary>
@@ -227,11 +222,11 @@ static class Program
             _bloom = new Gorgon2DBloomEffect(_renderer)
             {
                 BloomIntensity = 3.125f,
-                BlurAmount = 4.0f,                    
+                BlurAmount = 4.0f,
                 ColorIntensity = 2.0f,
                 Threshold = 1.02f,
             };
-              
+
             _bloom.Precache();
 
             GorgonExample.LoadResources(_graphics);
@@ -323,13 +318,11 @@ static class Program
     {
         try
         {
-#if NET6_0_OR_GREATER
             Application.SetHighDpiMode(HighDpiMode.PerMonitorV2);
-#endif
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
 
-            GorgonApplication.Run(Initialize(), Idle);                
+            GorgonApplication.Run(Initialize(), Idle);
         }
         catch (Exception ex)
         {
@@ -347,5 +340,5 @@ static class Program
             _graphics?.Dispose();
         }
     }
-    #endregion
+
 }

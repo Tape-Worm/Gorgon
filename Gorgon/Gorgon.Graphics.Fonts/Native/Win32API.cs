@@ -1,6 +1,6 @@
-﻿#region MIT.
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2011 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,23 +11,20 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: Sunday, July 24, 2011 10:15:39 PM
 // 
-#endregion
 
-using System;
-using System.Collections.Generic;
+
 using System.Diagnostics;
-using System.Drawing;
 using System.Runtime.InteropServices;
 using System.Security;
 using Gorgon.Core;
@@ -37,12 +34,12 @@ namespace Gorgon.Native;
 
 // ReSharper disable InconsistentNaming
 /// <summary>
-/// Win 32 API function calls.
+/// Win 32 API function calls
 /// </summary>
 [SuppressUnmanagedCodeSecurity]
-internal static unsafe class Win32API
+internal static unsafe partial class Win32API
 {
-    #region Variables.
+
     // Current device context.
     private static nint _hdc = IntPtr.Zero;
     // Font handle.
@@ -53,25 +50,25 @@ internal static unsafe class Win32API
     private static Font _tempFont;
     // Synchronization object for threading.
     private static readonly object _syncLock = new();
-    #endregion
 
-    #region Win32 Methods.
+
+
     /// <summary>
     /// The SelectObject function selects an object into the specified device context (DC). The new object replaces the previous object of the same type.
     /// </summary>
     /// <param name="hDC">A handle to the DC.</param>
     /// <param name="hObj">A handle to the object to be selected.</param>
     /// <returns>If the selected object is not a region and the function succeeds, the return value is a handle to the object being replaced</returns>
-    [DllImport("gdi32.dll", ExactSpelling = true)]
-    private static extern nint SelectObject(nint hDC, nint hObj);
+    [LibraryImport("gdi32.dll")]
+    private static partial nint SelectObject(nint hDC, nint hObj);
 
     /// <summary>
     /// The DeleteDC function deletes the specified device context (DC).
     /// </summary>
     /// <param name="hObj">A handle to the device context.</param>
     /// <returns>If the function succeeds, the return value is nonzero.  If the function fails, the return value is zero.</returns>
-    [DllImport("gdi32.dll", ExactSpelling = true, SetLastError = true)]
-    private static extern int DeleteObject(nint hObj);
+    [LibraryImport("gdi32.dll", SetLastError = true)]
+    private static partial int DeleteObject(nint hObj);
 
     /// <summary>
     /// The GetCharABCWidths function retrieves the widths, in logical units, of consecutive characters in a specified range from the current TrueType font. This function succeeds only with TrueType fonts.
@@ -81,9 +78,9 @@ internal static unsafe class Win32API
     /// <param name="uLastChar">The last character in the group of consecutive characters from the current font.</param>
     /// <param name="lpABC">A pointer to an array of ABC structures that receives the character widths, in logical units. This array must contain at least as many ABC structures as there are characters in the range specified by the uFirstChar and uLastChar parameters.</param>
     /// <returns><b>true</b> if successful, <b>false</b> if not.</returns>
-    [DllImport("gdi32.dll", EntryPoint = "GetCharABCWidthsW", CharSet = CharSet.Unicode)]
+    [LibraryImport("gdi32.dll", EntryPoint = "GetCharABCWidthsW")]
     [return: MarshalAs(UnmanagedType.Bool)]
-    private static extern bool GetCharABCWidthsW(nint hdc, uint uFirstChar, uint uLastChar, ABC* lpABC);
+    private static partial bool GetCharABCWidthsW(nint hdc, uint uFirstChar, uint uLastChar, ABC* lpABC);
 
     /// <summary>
     /// The GetKerningPairs function retrieves the character-kerning pairs for the currently selected font for the specified device context.
@@ -92,8 +89,8 @@ internal static unsafe class Win32API
     /// <param name="numberOfPairs">The number of pairs in the keyPairs array. If the font has more than nNumPairs kerning pairs, the function returns an error.</param>
     /// <param name="kernPairs">A pointer to an array of KERNINGPAIR structures that receives the kerning pairs. The array must contain at least as many structures as specified by the nNumPairs parameter. If this parameter is <b>null</b>, the function returns the total number of kerning pairs for the font.</param>
     /// <returns>If the function succeeds, the return value is the number of kerning pairs returned.  If the function fails, the return value is zero.</returns>
-    [DllImport("gdi32.dll", EntryPoint = "GetKerningPairsW", CharSet = CharSet.Unicode)]
-    private static extern uint GetKerningPairsW(nint hdc, uint numberOfPairs, KERNINGPAIR* kernPairs);
+    [LibraryImport("gdi32.dll", EntryPoint = "GetKerningPairsW")]
+    private static partial uint GetKerningPairsW(nint hdc, uint numberOfPairs, KERNINGPAIR* kernPairs);
 
     /// <summary>
     /// The SetMapMode function sets the mapping mode of the specified device context. The mapping mode defines the unit of measure used to transform page-space units into device-space units, and also defines the orientation of the device's x and y axes.
@@ -101,11 +98,11 @@ internal static unsafe class Win32API
     /// <param name="hdc">A handle to the device context.</param>
     /// <param name="fnMapMode">The new mapping mode.</param>
     /// <returns>If the function succeeds, the return value identifies the previous mapping mode.  If the function fails, the return value is zero.</returns>
-    [DllImport("gdi32.dll", EntryPoint = "SetMapMode", CharSet = CharSet.Auto)]
-    private static extern MapModes SetMapMode(nint hdc, MapModes fnMapMode);
-    #endregion
+    [LibraryImport("gdi32.dll", EntryPoint = "SetMapMode")]
+    private static partial MapModes SetMapMode(nint hdc, MapModes fnMapMode);
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to set the active font.
     /// </summary>
@@ -185,7 +182,7 @@ internal static unsafe class Win32API
             // If we have no pairs, then leave here.
             if (size == 0)
             {
-                return Array.Empty<KERNINGPAIR>();
+                return [];
             }
 
             pairs = new KERNINGPAIR[size];
@@ -242,13 +239,13 @@ internal static unsafe class Win32API
 
         return result;
     }
-    #endregion
 
-    #region Constructor.
+
+
     /// <summary>
     /// Initializes static members of the <see cref="Win32API"/> class.
     /// </summary>
     static Win32API() => Marshal.PrelinkAll(typeof(Win32API));
-    #endregion
+
 }
 // ReSharper restore InconsistentNaming

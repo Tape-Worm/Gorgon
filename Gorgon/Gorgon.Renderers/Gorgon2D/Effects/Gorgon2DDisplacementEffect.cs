@@ -1,6 +1,6 @@
-﻿#region MIT.
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2012 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,39 +11,35 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: Monday, April 09, 2012 7:14:08 AM
 // 
-#endregion
+
 
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using System.Threading;
-using Gorgon.Core;
-using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Renderers.Cameras;
 using Gorgon.Renderers.Properties;
-using DX = SharpDX;
 
 namespace Gorgon.Renderers;
 
 /// <summary>
-/// An effect that displaces the pixels on an image using the pixels from another image for weighting.
+/// An effect that displaces the pixels on an image using the pixels from another image for weighting
 /// </summary>
 public class Gorgon2DDisplacementEffect
     : Gorgon2DEffect
 {
-    #region Value Type.
+
     /// <summary>
     /// The constant buffer GPU data.
     /// </summary>
@@ -76,9 +72,9 @@ public class Gorgon2DDisplacementEffect
         [FieldOffset(16)]
         public Vector2 ChromaAbScale;
     }
-    #endregion
 
-    #region Variables.
+
+
     // The shader used for displacement.
     private GorgonPixelShader _displacementShader;
     private Gorgon2DShaderState<GorgonPixelShader> _displacementState;
@@ -100,9 +96,9 @@ public class Gorgon2DDisplacementEffect
     private GorgonTexture2DView _displaceTexture;
     // The output render target.
     private GorgonRenderTarget2DView _output;
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to set or return the strength of the displacement map.
     /// </summary>
@@ -184,23 +180,23 @@ public class Gorgon2DDisplacementEffect
         get;
         set;
     } = GorgonSamplerState.Default;
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function called when the effect is being initialized.
     /// </summary>
     /// <remarks>
     /// Use this method to set up the effect upon its creation.  For example, this method could be used to create the required shaders for the effect.
     /// </remarks>
-	    protected override void OnInitialize()
+    protected override void OnInitialize()
     {
         _displacementSettingsBuffer = GorgonConstantBufferView.CreateConstantBuffer(Graphics,
                                                                                     new
                                                                                     GorgonConstantBufferInfo(GpuData.SizeInBytes)
                                                                                     {
                                                                                         Name = "Gorgon2DDisplacementEffect Constant Buffer",
-                                                                                        Usage = ResourceUsage.Dynamic                                                                                            
+                                                                                        Usage = ResourceUsage.Dynamic
                                                                                     });
 
         _displacementShader = CompileShader<GorgonPixelShader>(Resources.BasicSprite, "GorgonPixelShaderDisplacementDecoder");
@@ -232,7 +228,7 @@ public class Gorgon2DDisplacementEffect
             ChromaAbScale = _chromaAbScale
         };
 
-        _displacementSettingsBuffer.Buffer.SetData(in data);            
+        _displacementSettingsBuffer.Buffer.SetData(in data);
         _isUpdated = false;
     }
 
@@ -242,7 +238,7 @@ public class Gorgon2DDisplacementEffect
     /// This method is called after all passes are finished and the effect is ready to complete its rendering. Developers should override this method to finalize any custom rendering. For example
     /// an effect author can use this method to render the final output of an effect to the final render target.
     /// </remarks>
-    protected override void OnAfterRender(GorgonRenderTargetView output) =>_currentRtv = null; 
+    protected override void OnAfterRender(GorgonRenderTargetView output) => _currentRtv = null;
 
     /// <summary>
     /// Function called prior to rendering a pass.
@@ -305,7 +301,7 @@ public class Gorgon2DDisplacementEffect
 
         displacementBuffer?.Dispose();
         shader?.Dispose();
-    }        
+    }
 
     /// <summary>
     /// Function to begin a batch for rendering the objects used to displace the target.
@@ -344,10 +340,10 @@ public class Gorgon2DDisplacementEffect
 
         if (BeginPass(0, output, camera) != PassContinuationState.Continue)
         {
-            EndRender(_currentRtv);                
+            EndRender(_currentRtv);
             return false;
         }
-        
+
         return true;
     }
 
@@ -368,14 +364,14 @@ public class Gorgon2DDisplacementEffect
         _displaceTexture = null;
         _output = null;
     }
-    #endregion
 
-    #region Constructor/Destructor.
+
+
     /// <summary>
     /// Initializes a new instance of the <see cref="Gorgon2DDisplacementEffect"/> class.
     /// </summary>
     /// <param name="renderer">The renderer used to render this effect.</param>
     public Gorgon2DDisplacementEffect(Gorgon2D renderer)
         : base(renderer, Resources.GOR2D_EFFECT_DISPLACEMENT, Resources.GOR2D_EFFECT_DISPLACEMENT_DESC, 1) => Macros.Add(new GorgonShaderMacro("DISPLACEMENT_EFFECT"));
-    #endregion
+
 }

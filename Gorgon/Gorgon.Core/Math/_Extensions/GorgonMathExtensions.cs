@@ -1,6 +1,6 @@
-﻿#region MIT.
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2012 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,26 +11,25 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: Friday, June 15, 2012 9:55:35 AM
 // 
-#endregion
 
-using System;
+
 using System.Runtime.CompilerServices;
 
 namespace Gorgon.Math;
 
 /// <summary>
-/// Fluent extensions for mathematical operations on various numeric types.
+/// Fluent extensions for mathematical operations on various numeric types
 /// </summary>
 /// <remarks>
 /// <para>
@@ -42,7 +41,7 @@ namespace Gorgon.Math;
 /// int myValueTooBig = 150;
 /// int myValueTooSmall = 5;
 /// 
-/// // Ensure the value does not exceed 100, but is greater than 10.
+/// // Ensure the value does not exceed 100, but is greater than 10
 /// Console.WriteLine($"{myValueTooBig.Min(100).Max(10)}, {myValueTooSmall.Min(100).Max(10)}");  
 ///
 /// // Outputs: 100, 10
@@ -54,7 +53,7 @@ namespace Gorgon.Math;
 /// </remarks>
 public static class GorgonMathExtensions
 {
-    #region Constants.
+
     // Constant containing the value used to convert degrees to radians.
     private const float DegConvert = ((float)System.Math.PI / 180.0f);
     // Constant containing the value used to convert radians to degrees.
@@ -64,9 +63,9 @@ public static class GorgonMathExtensions
     /// Constant value for &#x03C0;.
     /// </summary>
     public const float PI = 3.141593f;
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to perform an approximation of a sine calculation.
     /// </summary>
@@ -506,10 +505,10 @@ public static class GorgonMathExtensions
     public static bool EqualsEpsilon(this double left, double right, double epsilon = 1e-12) => Abs(right - left) <= epsilon;
 
     /// <summary>
-		/// Function to return the inverse of the square root for a <see cref="double"/> value.
-		/// </summary>
-		/// <param name="value">The value to get the inverse square root of.</param>
-		/// <returns>The inverted square root of the value.</returns>
+    /// Function to return the inverse of the square root for a <see cref="double"/> value.
+    /// </summary>
+    /// <param name="value">The value to get the inverse square root of.</param>
+    /// <returns>The inverted square root of the value.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static double InverseSqrt(this double value) => 1.0 / System.Math.Sqrt(value);
 
@@ -1334,5 +1333,5 @@ public static class GorgonMathExtensions
     /// <returns>The linearly interpolated value.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static decimal Lerp(this decimal from, decimal to, decimal amount) => ((1.0M - amount) * from) + (amount * to);
-    #endregion
+
 }

@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2016 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,31 +11,30 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: August 4, 2016 11:27:19 PM
 // 
-#endregion
 
-using System.Collections.Generic;
+
 using Gorgon.Graphics.Imaging.Properties;
 using SharpDX.WIC;
 
 namespace Gorgon.Graphics.Imaging.Codecs;
 
 /// <summary>
-/// A codec to handle read/writing of JPEG files.
+/// A codec to handle read/writing of JPEG files
 /// </summary>
 /// <remarks>
 /// <para>
-/// This codec will read and write lossy compression files using the Joint Photographics Experts Group (JPEG) format.
+/// This codec will read and write lossy compression files using the Joint Photographics Experts Group (JPEG) format
 /// </para>
 /// <para>
 /// This codec supports the following pixel formats:
@@ -46,36 +45,40 @@ namespace Gorgon.Graphics.Imaging.Codecs;
 ///		<item>
 ///			<description><see cref="BufferFormat.B8G8R8A8_UNorm"/> (Alpha channel is ignored)</description>
 ///		</item>
-	///		<item>
-	///			<description><see cref="BufferFormat.R8G8B8A8_UNorm"/> (Alpha channel is ignored)</description>
-	///		</item>
+///        <item>
+///            <description><see cref="BufferFormat.R8G8B8A8_UNorm"/> (Alpha channel is ignored)</description>
+///        </item>
 /// </list>
 /// </para>
 /// <para>
 /// <note type="important">
 /// <para>
-/// This codec requires the Windows Imaging Components (WIC) to be installed for the operating system.
+/// This codec requires the Windows Imaging Components (WIC) to be installed for the operating system
 /// </para>
 /// </note>
 /// </para>
 /// </remarks>
-public sealed class GorgonCodecJpeg
-    : GorgonCodecWic<GorgonJpegEncodingOptions, IGorgonWicDecodingOptions>
+/// <remarks>
+/// Initializes a new instance of the <see cref="GorgonCodecJpeg" /> class
+/// </remarks>
+/// <param name="encodingOptions">[Optional] Options to use when encoding a JPEG image.</param>
+public sealed class GorgonCodecJpeg(GorgonJpegEncodingOptions encodingOptions = null)
+        : GorgonCodecWic<GorgonJpegEncodingOptions, IGorgonWicDecodingOptions>("JPEG", Resources.GORIMG_DESC_JPG_CODEC, ["jpg", "jpeg", "jpe", "jif", "jfif", "jfi"], ContainerFormatGuids.Jpeg, encodingOptions, null)
 {
-    #region Variables.
+
     // Supported formats.
     private readonly BufferFormat[] _supportedFormats =
-    {
+    [
         BufferFormat.R8G8B8A8_UNorm,
         BufferFormat.B8G8R8A8_UNorm,
         BufferFormat.B8G8R8X8_UNorm
-    };
+    ];
 
     // Image quality for lossy compressed images.
     private float _imageQuality = 1.0f;
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to return the supported pixel formats for this codec.
     /// </summary>
@@ -105,16 +108,8 @@ public sealed class GorgonCodecJpeg
             _imageQuality = value;
         }
     }
-    #endregion
 
-    #region Constructor/Destructor.
-    /// <summary>
-    /// Initializes a new instance of the <see cref="GorgonCodecJpeg" /> class.
-    /// </summary>
-    /// <param name="encodingOptions">[Optional] Options to use when encoding a JPEG image.</param>
-    public GorgonCodecJpeg(GorgonJpegEncodingOptions encodingOptions = null)
-        : base("JPEG", Resources.GORIMG_DESC_JPG_CODEC, new[] { "jpg", "jpeg", "jpe", "jif", "jfif", "jfi" }, ContainerFormatGuids.Jpeg, encodingOptions, null)
-    {
-    }
-    #endregion
+
+
+
 }

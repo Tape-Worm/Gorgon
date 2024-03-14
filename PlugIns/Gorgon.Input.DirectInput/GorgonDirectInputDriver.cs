@@ -1,4 +1,4 @@
-﻿#region MIT
+﻿
 // 
 // Gorgon
 // Copyright (C) 2015 Michael Winsor
@@ -11,24 +11,19 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: Sunday, September 13, 2015 1:47:57 PM
 // 
-#endregion
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading;
+
 using Gorgon.Diagnostics;
 using Gorgon.Input.DirectInput.Properties;
 using DI = SharpDX.DirectInput;
@@ -36,98 +31,22 @@ using DI = SharpDX.DirectInput;
 namespace Gorgon.Input.DirectInput;
 
 /// <summary>
-/// The driver for DirectInput functionality.
+/// The driver for DirectInput functionality
 /// </summary>
 /// <remarks>
-/// This driver will enumerate all gaming devices except those covered by the XInput driver. To use those devices, use the XInput driver directly.
+/// This driver will enumerate all gaming devices except those covered by the XInput driver. To use those devices, use the XInput driver directly
 /// </remarks>
 internal sealed class GorgonDirectInputDriver
     : GorgonGamingDeviceDriver
 {
-    #region Variables.
+
     // Primary direct input interface.
     private Lazy<DI.DirectInput> _directInput;
-    // List of xinput device ID values.
-    private readonly Lazy<IEnumerable<string>> _xinputDeviceIDs;
     // The available axis mappings for the individual gaming devices.
-    private readonly Dictionary<IGorgonGamingDeviceInfo, IReadOnlyDictionary<GamingDeviceAxis, DI.DeviceObjectId>> _axisMappings = 
-                                new();
-    #endregion
+    private readonly Dictionary<IGorgonGamingDeviceInfo, IReadOnlyDictionary<GamingDeviceAxis, DI.DeviceObjectId>> _axisMappings =
+                                [];
 
-    #region Methods.
-#if FALSE // This code does not work with .NET 5 - System.Management does not work on .NET 5 (another screw up by Microsoft, it's SUPPOSED to work).
-    /// <summary>
-    /// Function to build the device ID for an XInput device.
-    /// </summary>
-    /// <param name="deviceName">The device name from WMI.</param>
-    /// <param name="pidIndex">The index of the PID in the WMI device ID.</param>
-    /// <param name="vidIndex">The index of the VID in the WMI device ID.</param>
-    /// <returns>A string containing the PID and VID portions of the device ID.</returns>
-    private static string GetXInputDeviceID(string deviceName, int pidIndex, int vidIndex)
-    {
-        var buffer = new StringBuilder();
-        string pidValue = deviceName.Substring(pidIndex + 4, 4);
-        string vidValue = deviceName.Substring(vidIndex + 4, 4);
 
-        buffer.Append(pidValue);
-        buffer.Append(vidValue);
-
-        return buffer.ToString();
-    }
-#endif
-    /// <summary>
-    /// Function to build a list of XInput device ID values.
-    /// </summary>
-    /// <returns>A list of XInput device ID values.</returns>
-    private static IEnumerable<string> GetXInputDeviceIDs()
-    {
-#if FALSE // This code does not work with .NET 5 - System.Management does not work on .NET 5 (another screw up by Microsoft, it's SUPPOSED to work).
-        // This monstrosity is based on the code at:
-        // https://msdn.microsoft.com/en-ca/library/windows/desktop/ee417014(v=vs.85).aspx
-        // 
-        using var search = new ManagementObjectSearcher("SELECT DeviceID FROM Win32_PnPEntity");
-        IEnumerable<string> xinputDevices = (from pnpDevice in search.Get().Cast<ManagementBaseObject>()
-                                             let deviceID = pnpDevice.GetPropertyValue("DeviceID")
-                                             where deviceID is string
-                                             let deviceName = deviceID.ToString()
-                                             let pidIndex = deviceName.IndexOf("PID_", StringComparison.OrdinalIgnoreCase)
-                                             let vidIndex = deviceName.IndexOf("VID_", StringComparison.OrdinalIgnoreCase)
-                                             where deviceName.IndexOf("IG_", StringComparison.OrdinalIgnoreCase) != -1
-                                                   && pidIndex != -1
-                                                   && vidIndex != -1
-                                             select GetXInputDeviceID(deviceName, pidIndex, vidIndex))
-            .ToArray();
-
-        return xinputDevices;
-#endif
-#pragma warning disable IDE0022 // Use expression body for methods
-        return Array.Empty<string>();
-#pragma warning restore IDE0022 // Use expression body for methods
-    }
-
-    /// <summary>
-    /// Function to determine if the device is an XInput controller.
-    /// </summary>
-    /// <param name="device">Device to evaluate.</param>
-    /// <returns><b>true</b> if the device is an xinput controller, <b>false</b> if not.</returns>
-    private bool IsXInputController(DI.DeviceInstance device)
-    {
-        StringBuilder buffer = new StringBuilder(device.ProductGuid.ToString()).Remove(0, 8);
-
-        foreach (string deviceID in _xinputDeviceIDs.Value)
-        {
-            buffer.Insert(0, deviceID);
-
-            if (new Guid(buffer.ToString()) == device.ProductGuid)
-            {
-                return true;
-            }
-
-            buffer.Remove(0, 8);
-        }
-
-        return false;
-    }
 
     /// <summary>Releases unmanaged and - optionally - managed resources.</summary>
     /// <param name="disposing">
@@ -166,14 +85,6 @@ internal sealed class GorgonDirectInputDriver
 
         bool FilterDiDevices(DI.DeviceInstance device)
         {
-            bool notXInputController = !IsXInputController(device);
-
-            if (!notXInputController)
-            {
-                Log.Print("WARNING: Found XInput controller.  The Direct Input driver does not support this type of controller.  Skipping...", LoggingLevel.Verbose);
-                return false;
-            }
-
             bool isAttached = _directInput.Value.IsDeviceAttached(device.InstanceGuid);
 
             if ((connectedOnly) || (isAttached))
@@ -222,23 +133,19 @@ internal sealed class GorgonDirectInputDriver
     /// on the object when you are done with the object so that those resources may be freed.
     /// </para>
     /// </remarks>
-    public override IGorgonGamingDevice CreateGamingDevice(IGorgonGamingDeviceInfo gamingDeviceInfo) 
+    public override IGorgonGamingDevice CreateGamingDevice(IGorgonGamingDeviceInfo gamingDeviceInfo)
         => new DirectInputDevice(gamingDeviceInfo, _directInput.Value, _axisMappings[gamingDeviceInfo])
-           {
-               // Attempt to acquire the device immediately.
-               IsAcquired = true
-           };
-#endregion
+        {
+            // Attempt to acquire the device immediately.
+            IsAcquired = true
+        };
 
-#region Constructor/Finalizer.
+
+
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonDirectInputDriver"/> class.
     /// </summary>
     public GorgonDirectInputDriver()
-        : base(Resources.GORINP_DI_DESC)
-    {
-        _directInput = new Lazy<DI.DirectInput>(() => new DI.DirectInput(), true);
-        _xinputDeviceIDs = new Lazy<IEnumerable<string>>(GetXInputDeviceIDs, true);
-    }
-#endregion
+        : base(Resources.GORINP_DI_DESC) => _directInput = new Lazy<DI.DirectInput>(() => new DI.DirectInput(), true);
+
 }

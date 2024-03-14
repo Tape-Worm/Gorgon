@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2019 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,50 +11,46 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: November 24, 2019 7:59:40 PM
 // 
-#endregion
 
-using System;
+
 using System.ComponentModel;
-using System.Drawing;
-using System.Threading;
-using System.Windows.Forms;
 
 namespace Gorgon.Editor.Views;
 
 /// <summary>
-/// An extended tree.
+/// An extended tree
 /// </summary>
 internal class TreeEx
     : TreeView
 {
-    #region Events.
+
     /// <summary>
     /// The event fired when the node edit is canceled.
     /// </summary>
     public event EventHandler EditCanceled;
-    #endregion
 
-    #region Variables.
+
+
     // Text box used to rename a node.
     private TextBox _renameBox;
     // The node being renamed.
     private TreeNode _renameNode;
     // The points for the expand/collapse icon polygon.
     private readonly PointF[] _expandIconPoints = new PointF[3];
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>Gets or sets a value indicating whether the label text of the tree nodes can be edited.</summary>
     [EditorBrowsable(EditorBrowsableState.Never), Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public new bool LabelEdit
@@ -121,7 +117,7 @@ internal class TreeEx
     public new bool ShowLines
     {
         get => false;
-        set 
+        set
         {
         }
     }
@@ -184,9 +180,9 @@ internal class TreeEx
     /// </summary>
     [Browsable(false)]
     public bool IsEditing => _renameNode is not null;
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Handles the LostFocus event of the _renameBox control.
     /// </summary>
@@ -243,14 +239,14 @@ internal class TreeEx
             _renameBox.KeyDown += RenameBox_KeyDown;
             _renameBox.LostFocus += RenameBox_LostFocus;
         }
-        
-        _renameBox.Text = node.Text;            
+
+        _renameBox.Text = node.Text;
         _renameBox.Top = node.Bounds.Top + 1;
         _renameBox.Left = 3;
         _renameBox.Width = ClientSize.Width - 6;
         _renameBox.Visible = true;
         _renameBox.Select();
-        _renameBox.SelectAll();            
+        _renameBox.SelectAll();
     }
 
     /// <summary>
@@ -293,10 +289,10 @@ internal class TreeEx
     }
 
     /// <summary>
-		/// Sends the specified message to the default window procedure.
-		/// </summary>
-		/// <param name="m">The Windows <see cref="Message" /> to process.</param>
-	    protected override void DefWndProc(ref Message m)
+    /// Sends the specified message to the default window procedure.
+    /// </summary>
+    /// <param name="m">The Windows <see cref="Message" /> to process.</param>
+    protected override void DefWndProc(ref Message m)
     {
         const int WM_LBUTTONDBLCLK = 0x203;
 
@@ -382,7 +378,7 @@ internal class TreeEx
                 return true;
             default:
                 return base.ProcessCmdKey(ref msg, keyData);
-        }            
+        }
     }
 
     /// <summary>Raises the <see cref="E:System.Windows.Forms.Control.MouseDown"/> event.</summary>
@@ -452,7 +448,7 @@ internal class TreeEx
 
         foreColor = (e.Node is DirectoryTreeNode dirNode) ? dirNode.ForeColor : e.Node.ForeColor;
 
-        if ((ImageList is not null) && (ImageList.Images.Count > 0) 
+        if ((ImageList is not null) && (ImageList.Images.Count > 0)
             && ((ImageIndex > -1) || (e.Node.ImageIndex > -1)))
         {
             int index = e.Node.ImageIndex > -1 ? e.Node.ImageIndex : ImageIndex;
@@ -462,9 +458,9 @@ internal class TreeEx
         e.Graphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.None;
         e.Graphics.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
 
-        position.X += (e.Node.Level * ((nodeIcon?.Width ?? 16) + 3)) + 8;            
+        position.X += (e.Node.Level * ((nodeIcon?.Width ?? 16) + 3)) + 8;
         float heightMid = ItemHeight * 0.5f;
-        
+
         if ((e.State & TreeNodeStates.Selected) == TreeNodeStates.Selected)
         {
             float cr = (SelectedNodeBackColor.R / 255.0f);
@@ -518,11 +514,11 @@ internal class TreeEx
         {
             using var brush = new SolidBrush(e.Node.BackColor);
             e.Graphics.FillRectangle(brush, e.Bounds);
-        }                       
+        }
 
         e.Graphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
 
-        if (e.Node.Nodes.Count > 0)            
+        if (e.Node.Nodes.Count > 0)
         {
             if (!e.Node.IsExpanded)
             {
@@ -559,7 +555,7 @@ internal class TreeEx
             position.X += 19;
         }
 
-        Font nodeFont = e.Node.NodeFont ?? Font;            
+        Font nodeFont = e.Node.NodeFont ?? Font;
         TextRenderer.DrawText(e.Graphics, e.Node.Text, nodeFont, new Rectangle(position.X, e.Bounds.Top, e.Bounds.Width - position.X, ItemHeight), foreColor, TextFormatFlags.VerticalCenter);
     }
 
@@ -575,7 +571,7 @@ internal class TreeEx
             return;
         }
 
-        ShowRenameBox(node);            
+        ShowRenameBox(node);
     }
 
     /// <summary>
@@ -603,20 +599,20 @@ internal class TreeEx
 
         HideRenameBox(true);
     }
-    #endregion
 
-    #region Constructor/Finalizer.
+
+
     /// <summary>Initializes a new instance of the <see cref="TreeEx"/> class.</summary>
     public TreeEx()
     {
         SetStyle(ControlStyles.AllPaintingInWmPaint | ControlStyles.OptimizedDoubleBuffer, true);
         base.DrawMode = TreeViewDrawMode.OwnerDrawAll;
-        
+
         CheckBoxes = false;
         base.HideSelection = false;
         ShowPlusMinus = true;
         ShowRootLines = ShowLines = false;
         FullRowSelect = true;
     }
-    #endregion
+
 }

@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2019 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,20 +11,19 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: January 21, 2019 8:31:11 AM
 // 
-#endregion
 
-using System.Linq;
+
 using Gorgon.Core;
 using Gorgon.Graphics.Imaging;
 using Gorgon.Math;
@@ -34,11 +33,11 @@ using DX = SharpDX;
 namespace Gorgon.Editor.ImageEditor;
 
 /// <summary>
-/// Provides functionality to update an image.
+/// Provides functionality to update an image
 /// </summary>
 internal class ImageUpdaterService : IImageUpdaterService
 {
-    #region Methods.
+
     /// <summary>
     /// Function to retrieve the starting point for an operaiton based on an alignment.
     /// </summary>
@@ -82,19 +81,19 @@ internal class ImageUpdaterService : IImageUpdaterService
     public IGorgonImage ConvertTo2D(IGorgonImage image, bool isCubeMap)
     {
         IGorgonImage result = null;
-#if NET6_0_OR_GREATER
+
         try
         {
             var info = new GorgonImageInfo(image)
             {
-                ImageType = isCubeMap ? ImageType.ImageCube : ImageType.Image2D,
+                ImageType = isCubeMap ? ImageDataType.ImageCube : ImageDataType.Image2D,
                 ArrayCount = image.ArrayCount,
                 Depth = 1
             };
 
             if ((isCubeMap) && ((image.ArrayCount % 6) != 0))
             {
-                int arrayCount = image.ArrayCount;                    
+                int arrayCount = image.ArrayCount;
 
                 while ((arrayCount % 6) != 0)
                 {
@@ -123,7 +122,7 @@ internal class ImageUpdaterService : IImageUpdaterService
             result?.Dispose();
             throw;
         }
-#endif
+
         return result;
     }
 
@@ -138,7 +137,7 @@ internal class ImageUpdaterService : IImageUpdaterService
         {
             result = new GorgonImage(new GorgonImageInfo(image)
             {
-                ImageType = ImageType.Image3D,
+                ImageType = ImageDataType.Image3D,
                 ArrayCount = 1,
                 Depth = 1
             });
@@ -198,9 +197,9 @@ internal class ImageUpdaterService : IImageUpdaterService
     /// <returns>A new image with the specified depth/array count, or the same image if no changes were made.</returns>
     public IGorgonImage ChangeArrayOrDepthCount(IGorgonImage sourceImage, int arrayOrDepthCount)
     {
-        int currentArrayOrDepth = sourceImage.ImageType == ImageType.Image3D ? sourceImage.Depth : sourceImage.ArrayCount;
-        int depthCount = sourceImage.ImageType == ImageType.Image3D ? arrayOrDepthCount : 1;
-        int arrayCount = sourceImage.ImageType != ImageType.Image3D ? arrayOrDepthCount : 1;
+        int currentArrayOrDepth = sourceImage.ImageType == ImageDataType.Image3D ? sourceImage.Depth : sourceImage.ArrayCount;
+        int depthCount = sourceImage.ImageType == ImageDataType.Image3D ? arrayOrDepthCount : 1;
+        int arrayCount = sourceImage.ImageType != ImageDataType.Image3D ? arrayOrDepthCount : 1;
 
         if (currentArrayOrDepth == arrayOrDepthCount)
         {
@@ -219,8 +218,8 @@ internal class ImageUpdaterService : IImageUpdaterService
             {
                 for (int depth = 0; depth < depthCount.Min(sourceImage.GetDepthCount(mip)); ++depth)
                 {
-                    IGorgonImageBuffer srcBuffer = sourceImage.Buffers[mip, sourceImage.ImageType == ImageType.Image3D ? depth : array];
-                    IGorgonImageBuffer destBuffer = newImage.Buffers[mip, sourceImage.ImageType == ImageType.Image3D ? depth : array];
+                    IGorgonImageBuffer srcBuffer = sourceImage.Buffers[mip, sourceImage.ImageType == ImageDataType.Image3D ? depth : array];
+                    IGorgonImageBuffer destBuffer = newImage.Buffers[mip, sourceImage.ImageType == ImageDataType.Image3D ? depth : array];
                     srcBuffer.CopyTo(destBuffer);
                 }
 
@@ -251,7 +250,7 @@ internal class ImageUpdaterService : IImageUpdaterService
 
         int depthCount = 1;
 
-        if (sourceImage.ImageType == ImageType.Image3D)
+        if (sourceImage.ImageType == ImageDataType.Image3D)
         {
             depthCount = sourceImage.GetDepthCount(currentMipLevel);
         }
@@ -268,8 +267,8 @@ internal class ImageUpdaterService : IImageUpdaterService
         {
             for (int depth = 0; depth < result.Depth; ++depth)
             {
-                IGorgonImageBuffer srcBuffer = sourceImage.Buffers[currentMipLevel, sourceImage.ImageType == ImageType.Image3D ? depth : array];
-                IGorgonImageBuffer destBuffer = result.Buffers[0, sourceImage.ImageType == ImageType.Image3D ? depth : array];
+                IGorgonImageBuffer srcBuffer = sourceImage.Buffers[currentMipLevel, sourceImage.ImageType == ImageDataType.Image3D ? depth : array];
+                IGorgonImageBuffer destBuffer = result.Buffers[0, sourceImage.ImageType == ImageDataType.Image3D ? depth : array];
 
                 srcBuffer.CopyTo(destBuffer);
             }
@@ -293,7 +292,7 @@ internal class ImageUpdaterService : IImageUpdaterService
 
         IGorgonImage result = new GorgonImage(new GorgonImageInfo(sourceImage)
         {
-            ImageType = ImageType.Image2D,
+            ImageType = ImageDataType.Image2D,
             Depth = 1
         });
 
@@ -373,7 +372,7 @@ internal class ImageUpdaterService : IImageUpdaterService
             {
                 for (int depth = 0; depth < maxDepth; ++depth)
                 {
-                    int depthOrArray = sourceImage.ImageType == ImageType.Image3D ? depth : array;
+                    int depthOrArray = sourceImage.ImageType == ImageDataType.Image3D ? depth : array;
                     IGorgonImageBuffer src = sourceImage.Buffers[mip, depthOrArray];
                     IGorgonImageBuffer dest = result.Buffers[mip, depthOrArray];
                     src.CopyTo(dest);
@@ -402,7 +401,7 @@ internal class ImageUpdaterService : IImageUpdaterService
     public void CopyTo(IGorgonImage srcImage, IGorgonImage destImage, int startMip, int startArrayOrDepth, Alignment alignment, bool clearDestination = true)
     {
         int mipCount = destImage.MipCount - startMip;
-        int arrayCount = destImage.ArrayCount - (destImage.ImageType == ImageType.Image3D ? 0 : startArrayOrDepth);
+        int arrayCount = destImage.ArrayCount - (destImage.ImageType == ImageDataType.Image3D ? 0 : startArrayOrDepth);
 
         int minMipCount = mipCount.Min(srcImage.MipCount);
         int minArrayCount = arrayCount.Min(srcImage.ArrayCount);
@@ -419,7 +418,7 @@ internal class ImageUpdaterService : IImageUpdaterService
                 for (int depth = 0; depth < minDepth; ++depth)
                 {
                     int destOffset;
-                    if (destImage.ImageType == ImageType.Image3D)
+                    if (destImage.ImageType == ImageDataType.Image3D)
                     {
                         destOffset = depth + startArrayOrDepth;
 
@@ -434,7 +433,7 @@ internal class ImageUpdaterService : IImageUpdaterService
                         destOffset = array + startArrayOrDepth;
                     }
 
-                    IGorgonImageBuffer srcBuffer = srcImage.Buffers[mip, srcImage.ImageType == ImageType.Image3D ? depth : array];
+                    IGorgonImageBuffer srcBuffer = srcImage.Buffers[mip, srcImage.ImageType == ImageDataType.Image3D ? depth : array];
                     IGorgonImageBuffer destBuffer = destImage.Buffers[mip + startMip, destOffset];
 
                     // Clear the destination buffer before copying.
@@ -473,5 +472,5 @@ internal class ImageUpdaterService : IImageUpdaterService
 
         return result;
     }
-#endregion
+
 }

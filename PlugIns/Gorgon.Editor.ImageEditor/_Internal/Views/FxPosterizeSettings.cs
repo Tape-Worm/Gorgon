@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2020 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,20 +11,19 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: March 24, 2020 11:25:54 PM
 // 
-#endregion
 
-using System;
+
 using System.ComponentModel;
 using Gorgon.Editor.UI;
 using Gorgon.Editor.UI.Controls;
@@ -32,21 +31,21 @@ using Gorgon.Editor.UI.Controls;
 namespace Gorgon.Editor.ImageEditor;
 
 /// <summary>
-/// Settings for the posterizer effect.
+/// Settings for the posterizer effect
 /// </summary>
-internal partial class FxPosterizeSettings 
+internal partial class FxPosterizeSettings
     : EditorSubPanelCommon, IDataContext<IFxPosterize>
 {
-    #region Properties.
+
     /// <summary>Property to return the data context assigned to this view.</summary>
-    public IFxPosterize DataContext
+    public IFxPosterize ViewModel
     {
         get;
         private set;
     }
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>Handles the ValueChanged event of the TrackAmount control.</summary>
     /// <param name="sender">The source of the event.</param>
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
@@ -57,12 +56,12 @@ internal partial class FxPosterizeSettings
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
     private void NumericAmount_ValueChanged(object sender, EventArgs e)
     {
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             return;
         }
 
-        TrackAmount.Value = DataContext.Amount = (int)NumericAmount.Value;
+        TrackAmount.Value = ViewModel.Amount = (int)NumericAmount.Value;
     }
 
     /// <summary>Function to submit the change.</summary>
@@ -70,12 +69,12 @@ internal partial class FxPosterizeSettings
     {
         base.OnSubmit();
 
-        if ((DataContext?.OkCommand is null) || (!DataContext.OkCommand.CanExecute(null)))
+        if ((ViewModel?.OkCommand is null) || (!ViewModel.OkCommand.CanExecute(null)))
         {
             return;
         }
 
-        DataContext.OkCommand.Execute(null);
+        ViewModel.OkCommand.Execute(null);
     }
 
     /// <summary>Function to cancel the change.</summary>
@@ -83,12 +82,12 @@ internal partial class FxPosterizeSettings
     {
         base.OnCancel();
 
-        if ((DataContext?.CancelCommand is null) || (!DataContext.CancelCommand.CanExecute(null)))
+        if ((ViewModel?.CancelCommand is null) || (!ViewModel.CancelCommand.CanExecute(null)))
         {
             return;
         }
 
-        DataContext.CancelCommand.Execute(null);
+        ViewModel.CancelCommand.Execute(null);
     }
 
     /// <summary>Handles the PropertyChanged event of the DataContext control.</summary>
@@ -99,7 +98,7 @@ internal partial class FxPosterizeSettings
         switch (e.PropertyName)
         {
             case nameof(IFxSharpen.Amount):
-                NumericAmount.Value = DataContext.Amount;
+                NumericAmount.Value = ViewModel.Amount;
                 break;
         }
     }
@@ -109,12 +108,12 @@ internal partial class FxPosterizeSettings
     /// </summary>
     private void UnassignEvents()
     {
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             return;
         }
 
-        DataContext.PropertyChanged -= DataContext_PropertyChanged;
+        ViewModel.PropertyChanged -= DataContext_PropertyChanged;
     }
 
     /// <summary>
@@ -143,19 +142,19 @@ internal partial class FxPosterizeSettings
 
         InitializeFromDataContext(dataContext);
 
-        DataContext = dataContext;
+        ViewModel = dataContext;
 
         if (dataContext is null)
         {
             return;
         }
 
-        DataContext.PropertyChanged += DataContext_PropertyChanged;
+        ViewModel.PropertyChanged += DataContext_PropertyChanged;
     }
-    #endregion
 
-    #region Constructor/Finalizer.
+
+
     /// <summary>Initializes a new instance of the <see cref="FxPosterizeSettings"/> class.</summary>
     public FxPosterizeSettings() => InitializeComponent();
-    #endregion
+
 }

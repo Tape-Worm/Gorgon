@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2020 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,24 +11,21 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: February 6, 2020 9:57:02 PM
 // 
-#endregion
 
-using System;
+
 using System.ComponentModel;
-using System.Linq;
 using System.Numerics;
-using System.Threading;
 using Gorgon.Core;
 using Gorgon.Editor.Tools;
 using Gorgon.Graphics;
@@ -40,7 +37,7 @@ using DX = SharpDX;
 namespace Gorgon.Editor.Rendering;
 
 /// <summary>
-/// A default implementation of a <see cref="IToolRenderer"/>.
+/// A default implementation of a <see cref="IToolRenderer"/>
 /// </summary>
 /// <typeparam name="T">The type of view model for the renderer. Must implement the <see cref="IEditorTool"/> interface, and be a reference type.</typeparam>
 /// <remarks>
@@ -48,11 +45,11 @@ namespace Gorgon.Editor.Rendering;
 /// This renderer does the bare minimum to present content on the view. Tool plug in UI developers should inherit from this class to take advantage of the default functionality it provides. 
 /// </para>
 /// <para>
-/// The default renderer provides basic support for rendering tool specific content.
+/// The default renderer provides basic support for rendering tool specific content
 /// </para>
 /// <para>
 /// Renderers will also receive access to the view model applied to the view, so the renderer can respond to changes on the tool UI and adjust the visuals appropriately. The view model must implement 
-/// the <see cref="IEditorTool"/> interface before they can be used with a renderer.
+/// the <see cref="IEditorTool"/> interface before they can be used with a renderer
 /// </para>
 /// </remarks>
 /// <seealso cref="IToolRenderer"/>
@@ -62,14 +59,14 @@ public class DefaultToolRenderer<T>
     : GorgonNamedObject, IToolRenderer
     where T : class, IEditorTool
 {
-    #region Variables.
+
     // Flag to indicate that the resources are loaded.
     private int _resourcesLoading;
     // The swap chain for the content view.
     private readonly GorgonSwapChain _swapChain;
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to return the default texture used to draw the background.
     /// </summary>
@@ -142,9 +139,9 @@ public class DefaultToolRenderer<T>
         get;
         private set;
     }
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>Function to assign a data context to the view as a view model.</summary>
     /// <param name="dataContext">The data context to assign.</param>
     /// <remarks>Data contexts should be nullable, in that, they should reset the view back to its original state when the context is null.</remarks>
@@ -249,7 +246,7 @@ public class DefaultToolRenderer<T>
     /// </remarks>
     protected virtual void OnPropertyChanged(string propertyName)
     {
-    
+
     }
 
     /// <summary>
@@ -273,7 +270,7 @@ public class DefaultToolRenderer<T>
     /// </para>
     /// </remarks>
     protected virtual void OnResizeEnd()
-    {            
+    {
     }
 
     /// <summary>
@@ -287,7 +284,7 @@ public class DefaultToolRenderer<T>
     /// </remarks>
     protected virtual void OnLoad()
     {
-        
+
     }
 
     /// <summary>
@@ -423,9 +420,9 @@ public class DefaultToolRenderer<T>
         BackgroundPattern?.Dispose();
         BackgroundPattern = null;
     }
-    #endregion
 
-    #region Constructor.
+
+
     /// <summary>Initializes a new instance of the <see cref="DefaultToolRenderer{T}"/> class.</summary>
     /// <param name="name">The name of the renderer.</param>
     /// <param name="renderer">The main renderer for the content view.</param>
@@ -440,5 +437,5 @@ public class DefaultToolRenderer<T>
 
         SetDataContext(dataContext);
     }
-    #endregion
+
 }

@@ -30,7 +30,7 @@ partial class FormMain
         base.Dispose(disposing);
     }
 
-    #region Windows Form Designer generated code
+
 
     /// <summary>
     /// Required method for Designer support - do not modify
@@ -527,7 +527,7 @@ partial class FormMain
         this.Controls.Add(this.Stage);
         this.Controls.Add(this.PanelWorkSpace);
         this.Controls.Add(this.RibbonMain);
-        this.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+        
         this.ForeColor = System.Drawing.Color.White;
         this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
         this.MinimumSize = new System.Drawing.Size(1023, 767);
@@ -573,7 +573,7 @@ partial class FormMain
         this.PerformLayout();
 
     }
-    #endregion
+
     private Krypton.Ribbon.KryptonRibbon RibbonMain;
     private Krypton.Ribbon.KryptonRibbonTab TabFileSystem;
     private Krypton.Ribbon.KryptonRibbonGroup RibbonGroupFileSystemNew;

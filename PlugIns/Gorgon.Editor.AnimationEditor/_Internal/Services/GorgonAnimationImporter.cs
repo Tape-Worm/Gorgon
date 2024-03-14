@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2018 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,24 +11,20 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: December 18, 2018 12:30:56 AM
 // 
-#endregion
 
-using System;
-using System.Collections.Generic;
+
 using System.Diagnostics;
-using System.IO;
-using System.Threading;
 using Gorgon.Animation;
 using Gorgon.Diagnostics;
 using Gorgon.Editor.Services;
@@ -40,34 +36,40 @@ using Gorgon.Renderers;
 namespace Gorgon.Editor.AnimationEditor.Services;
 
 /// <summary>
-/// A animation importer that reads in a animation file, and converts it into a Gorgon animation (v3) format image prior to import into the application.
+/// A animation importer that reads in a animation file, and converts it into a Gorgon animation (v3) format image prior to import into the application
 /// </summary>
-internal class GorgonAnimationImporter
-    : IEditorContentImporter
+/// <remarks>Initializes a new instance of the <see cref="GorgonAnimationImporter"/> class.</remarks>
+/// <param name="projectFileSystem">The read only file system used by the project.</param>
+/// <param name="tempFileSystem">The temporary file system to use for writing working data.</param>
+/// <param name="codecs">The animation codecs available to the system.</param>
+/// <param name="renderer">The renderer used to locate the image linked to the animation.</param>
+/// <param name="log">The log used for logging debug messages.</param>
+internal class GorgonAnimationImporter(IGorgonFileSystem projectFileSystem, IGorgonFileSystemWriter<Stream> tempFileSystem, CodecRegistry codecs, Gorgon2D renderer, IGorgonLog log)
+        : IEditorContentImporter
 {
-    #region Variables.
+
     // The log used for debug message logging.
-    private readonly IGorgonLog _log;
+    private readonly IGorgonLog _log = log ?? GorgonLog.NullLog;
     // The DDS codec used to import files.
     private readonly IGorgonImageCodec _ddsCodec = new GorgonCodecDds();
     // The renderer used to locate the image for the animation.
-    private readonly Gorgon2D _renderer;
+    private readonly Gorgon2D _renderer = renderer;
     // The animation codecs available to the system.
-    private readonly CodecRegistry _codecs;
+    private readonly CodecRegistry _codecs = codecs;
     // The read only project file system.
-    private readonly IGorgonFileSystem _projectFileSystem;
+    private readonly IGorgonFileSystem _projectFileSystem = projectFileSystem;
     // The temporary file system for writing working data.
-    private readonly IGorgonFileSystemWriter<Stream> _tempFileSystem;
+    private readonly IGorgonFileSystemWriter<Stream> _tempFileSystem = tempFileSystem;
     // The path to the temporary directory.
     private string _tempDirPath;
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>Property to return whether or not the imported file needs to be cleaned up after processing.</summary>
     public bool NeedsCleanup => true;
-    #endregion
 
-    #region Methods.
+
+
 
     /// <summary>
     /// Function to locate the associated texture file for a animation.
@@ -111,7 +113,7 @@ internal class GorgonAnimationImporter
         // Let's try and load the texture into memory.
         if (textureNames.Count == 0)
         {
-            return Array.Empty<GorgonTexture2DView>();
+            return [];
         }
 
         var textureForAnimation = new List<GorgonTexture2DView>();
@@ -166,7 +168,7 @@ internal class GorgonAnimationImporter
 
             IGorgonAnimationCodec sourceCodec = AnimationImporterPlugIn.GetCodec(physicalFilePath, _codecs);
             Debug.Assert(sourceCodec is not null, "We shouldn't be able to get this far without a codec.");
-            
+
             textures = GetTextures(physicalFilePath, sourceCodec);
 
             if (string.IsNullOrWhiteSpace(_tempDirPath))
@@ -196,7 +198,7 @@ internal class GorgonAnimationImporter
             animationCodec.Save(animation, outStream);
             fileStream.Dispose();
             outStream.Dispose();
-            
+
             return _tempFileSystem.FileSystem.GetFile(outputFilePath);
         }
         catch
@@ -239,22 +241,6 @@ internal class GorgonAnimationImporter
             _log.LogException(ex);
         }
     }
-    #endregion
 
-    #region Constructor/Finalizer.
-    /// <summary>Initializes a new instance of the <see cref="GorgonAnimationImporter"/> class.</summary>
-    /// <param name="projectFileSystem">The read only file system used by the project.</param>
-    /// <param name="tempFileSystem">The temporary file system to use for writing working data.</param>
-    /// <param name="codecs">The animation codecs available to the system.</param>
-    /// <param name="renderer">The renderer used to locate the image linked to the animation.</param>
-    /// <param name="log">The log used for logging debug messages.</param>
-    public GorgonAnimationImporter(IGorgonFileSystem projectFileSystem, IGorgonFileSystemWriter<Stream> tempFileSystem, CodecRegistry codecs, Gorgon2D renderer, IGorgonLog log)
-    {
-        _projectFileSystem = projectFileSystem;
-        _tempFileSystem = tempFileSystem;
-        _codecs = codecs;
-        _log = log ?? GorgonLog.NullLog;
-        _renderer = renderer;
-    }
-    #endregion
+
 }

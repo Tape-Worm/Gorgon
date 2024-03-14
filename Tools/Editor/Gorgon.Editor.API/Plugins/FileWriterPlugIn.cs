@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2018 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,24 +11,19 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: October 12, 2018 1:08:11 PM
 // 
-#endregion
 
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Threading;
-using System.Threading.Tasks;
+
 using Gorgon.Collections;
 using Gorgon.Core;
 using Gorgon.Editor.Properties;
@@ -37,7 +32,7 @@ using Gorgon.IO;
 namespace Gorgon.Editor.PlugIns;
 
 /// <summary>
-/// Flags to indicate the capabilities of the writer.
+/// Flags to indicate the capabilities of the writer
 /// </summary>
 [Flags]
 public enum WriterCapabilities
@@ -57,17 +52,17 @@ public enum WriterCapabilities
 }
 
 /// <summary>
-/// An interface for file output plug ins.
+/// An interface for file output plug ins
 /// </summary>
 public abstract class FileWriterPlugIn
     : EditorPlugIn
 {
-    #region Variables.
-    // Default compression amount.
-    private float _compressAmount = 0.5f;        
-    #endregion
 
-    #region Properties.
+    // Default compression amount.
+    private float _compressAmount = 0.5f;
+
+
+
     /// <summary>
     /// Property to return the equivalent type name for v2 of the Gorgon file writer plugin.
     /// </summary>
@@ -134,9 +129,9 @@ public abstract class FileWriterPlugIn
     /// Property to return the type of plug in.
     /// </summary>
     public sealed override PlugInType PlugInType => PlugInType.Writer;
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to write the file to the specified path.
     /// </summary>
@@ -253,9 +248,9 @@ public abstract class FileWriterPlugIn
     /// <param name="hostServices">The services to pass from the host application to the plug in.</param>
     /// <exception cref="ArgumentNullException">Thrown when the <paramref name="hostServices"/> parameter is <b>null</b>.</exception>
     public void Initialize(IHostServices hostServices) => HostServices = hostServices ?? throw new ArgumentNullException(nameof(hostServices));
-    #endregion
 
-    #region Constructor/Destructor.
+
+
     /// <summary>
     /// Initializes a new instance of the <see cref="FileWriterPlugIn"/> class.
     /// </summary>
@@ -279,5 +274,5 @@ public abstract class FileWriterPlugIn
 
         FileExtensions = extensions;
     }
-    #endregion
+
 }

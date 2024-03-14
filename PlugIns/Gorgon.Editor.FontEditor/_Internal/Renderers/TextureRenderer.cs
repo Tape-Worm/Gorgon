@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2020 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,50 +11,40 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: August 3, 2020 4:40:15 PM
 // 
-#endregion
 
-using System;
-using System.ComponentModel;
-using System.Drawing;
-using System.Linq;
+
 using System.Numerics;
-using DX = SharpDX;
-using Gorgon.Editor.FontEditor;
-using Gorgon.Editor.FontEditor.Properties;
 using Gorgon.Editor.Rendering;
-using Gorgon.Editor.UI;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
-using Gorgon.Graphics.Fonts;
 using Gorgon.Renderers;
-using Gorgon.Math;
-using System.Windows.Forms;
+using DX = SharpDX;
 
 namespace Gorgon.Editor.FontEditor;
 
 /// <summary>
-/// This is a renderer that will render the textures that make up the font.
+/// This is a renderer that will render the textures that make up the font
 /// </summary>
 internal class TextureRenderer
     : DefaultContentRenderer<IFontContent>
 {
-    #region Variables.
+
     // The editor context.
     private ITextureEditorContext _context;
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to retrieve the batch state for rendering.
     /// </summary>
@@ -70,7 +60,7 @@ internal class TextureRenderer
         {
             RenderRegion = new DX.RectangleF(0, 0, ClientSize.Width, ClientSize.Height);
             return;
-        }            
+        }
 
         float height = DataContext.WorkingFont.TextureHeight > ClientSize.Height ? DataContext.WorkingFont.TextureHeight : ClientSize.Height;
         float width = DataContext.WorkingFont.TextureWidth > ClientSize.Width ? DataContext.WorkingFont.TextureWidth : ClientSize.Width;
@@ -88,9 +78,9 @@ internal class TextureRenderer
         switch (propertyName)
         {
             case nameof(IFontContent.WorkingFont):
-                CalculateRenderRegion();                    
+                CalculateRenderRegion();
                 break;
-        }            
+        }
     }
 
     /// <summary>Function to render the background.</summary>
@@ -116,7 +106,7 @@ internal class TextureRenderer
         GorgonTexture2DView texture;
         DX.Size2F textureSize;
         DX.RectangleF textureRegion;
-        
+
         Renderer.Begin(GetBatch(), Camera);
 
         float xPos = 0;
@@ -125,7 +115,7 @@ internal class TextureRenderer
             texture = _context.Textures[l];
 
             for (int a = _context.SelectedArrayIndex - 1; a >= 0; --a)
-            {                    
+            {
                 textureSize = new(texture.Width * 0.9f, texture.Height * 0.9f);
                 xPos -= textureSize.Width + 8;
                 textureRegion = new DX.RectangleF((-textureSize.Width * 0.5f) + xPos, -textureSize.Height * 0.5f, textureSize.Width, textureSize.Height).Truncate();
@@ -137,7 +127,7 @@ internal class TextureRenderer
                 }
 
                 Renderer.DrawFilledRectangle(textureRegion, new GorgonColor(GorgonColor.Black, 0.25f));
-                Renderer.DrawFilledRectangle(textureRegion, new GorgonColor(GorgonColor.White, 0.25f), texture, new DX.RectangleF(0, 0, 1, 1), a, GorgonSamplerState.PointFiltering);                    
+                Renderer.DrawFilledRectangle(textureRegion, new GorgonColor(GorgonColor.White, 0.25f), texture, new DX.RectangleF(0, 0, 1, 1), a, GorgonSamplerState.PointFiltering);
             }
         }
 
@@ -186,14 +176,14 @@ internal class TextureRenderer
     /// Function to set the view to a default zoom level.
     /// </summary>
     public void DefaultZoom() => MoveTo(Vector2.Zero, 1);
-    #endregion
 
-    #region Constructor/Finalizer.
+
+
     /// <summary>Initializes a new instance of the <see cref="FontRenderer"/> class.</summary>
     /// <param name="renderer">The 2D renderer used to render our font.</param>
     /// <param name="mainRenderTarget">The main render target for the view.</param>
     /// <param name="dataContext">The view model for our text data.</param>
     public TextureRenderer(Gorgon2D renderer, GorgonSwapChain mainRenderTarget, IFontContent dataContext)
         : base("TextureEditor", renderer, mainRenderTarget, dataContext) => CanZoom = true;
-    #endregion
+
 }

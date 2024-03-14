@@ -1,6 +1,6 @@
-﻿#region MIT.
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2011 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,20 +11,19 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: Friday, September 02, 2011 6:32:30 AM
 // 
-#endregion
 
-using System;
+
 using System.Diagnostics.Contracts;
 using System.Drawing;
 using System.Numerics;
@@ -39,14 +38,14 @@ using DX = SharpDX;
 namespace Gorgon.Graphics;
 
 /// <summary>
-/// An immutable 4 component (Red, Green, Blue, and Alpha) color value.
+/// An immutable 4 component (Red, Green, Blue, and Alpha) color value
 /// </summary>
 /// <remarks>
 /// <para>
 /// This value type represents an RGBA (Red, Green, Blue, Alpha) color using a <see cref="float"/> for each color component. 
 /// </para>
 /// <para>
-/// Primarily this is used in graphical operations and can be converted to a <see cref="Color"/> value implicitly for use in <see cref="System.Drawing"/> operations.
+/// Primarily this is used in graphical operations and can be converted to a <see cref="Color"/> value implicitly for use in <see cref="System.Drawing"/> operations
 /// </para>
 /// </remarks>
 [Serializable]
@@ -54,7 +53,7 @@ namespace Gorgon.Graphics;
 public readonly struct GorgonColor
     : IGorgonEquatableByRef<GorgonColor>, ISerializable
 {
-    #region Variables.
+
     /// <summary>
     /// A completely transparent color.
     /// </summary>
@@ -289,9 +288,9 @@ public readonly struct GorgonColor
     /// The Alpha channel component.
     /// </summary>
     public readonly float Alpha;
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Determines whether the specified <see cref="object"/> is equal to this instance.
     /// </summary>
@@ -377,10 +376,10 @@ public readonly struct GorgonColor
     /// </summary>
     /// <param name="color">The color to clamp.</param>
     /// <returns>The clamped color.</returns>
-	    public static GorgonColor Clamp(GorgonColor color) => new(color.Red.Max(0).Min(1),
-                               color.Green.Max(0).Min(1),
-                               color.Blue.Max(0).Min(1),
-                               color.Alpha.Max(0).Min(1));
+    public static GorgonColor Clamp(GorgonColor color) => new(color.Red.Max(0).Min(1),
+                           color.Green.Max(0).Min(1),
+                           color.Blue.Max(0).Min(1),
+                           color.Alpha.Max(0).Min(1));
 
     /// <summary>
     /// Function to clamp the color ranges from 0 to 1.
@@ -394,12 +393,12 @@ public readonly struct GorgonColor
                                  color.Alpha.Max(0).Min(1));
 
     /// <summary>
-		/// Function to apply an alpha value to the specified <see cref="GorgonColor"/>.
+    /// Function to apply an alpha value to the specified <see cref="GorgonColor"/>.
     /// </summary>
-		/// <param name="color">The <see cref="GorgonColor"/> to update.</param>
+    /// <param name="color">The <see cref="GorgonColor"/> to update.</param>
     /// <param name="alpha">The alpha value to set.</param>
-		/// <param name="result">The resulting updated <see cref="GorgonColor"/>.</param>
-		/// <returns>A new <see cref="GorgonColor"/> instance with the same <see cref="Red"/>, <see cref="Green"/>, and <see cref="Blue"/> values but with a modified <see cref="Alpha"/> component.</returns>
+    /// <param name="result">The resulting updated <see cref="GorgonColor"/>.</param>
+    /// <returns>A new <see cref="GorgonColor"/> instance with the same <see cref="Red"/>, <see cref="Green"/>, and <see cref="Blue"/> values but with a modified <see cref="Alpha"/> component.</returns>
     public static void SetAlpha(in GorgonColor color, float alpha, out GorgonColor result) => result = new GorgonColor(color, alpha);
 
     /// <summary>
@@ -997,9 +996,9 @@ public readonly struct GorgonColor
         b = Blue;
         a = Alpha;
     }
-    #endregion
 
-    #region Constructor/Destructor.
+
+
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonColor"/> struct.
     /// </summary>
@@ -1084,7 +1083,7 @@ public readonly struct GorgonColor
     /// <param name="color">The base <see cref="GorgonColor"/>.</param>
     /// <param name="alpha">The alpha value to assign to the color.</param>
     /// <remarks>
-		/// This will retrieve the <see cref="Red"/>, <see cref="Green"/>, and <see cref="Blue"/> values from the <paramin name="color"/> parameter.
+    /// This will retrieve the <see cref="Red"/>, <see cref="Green"/>, and <see cref="Blue"/> values from the <paramin name="color"/> parameter.
     /// </remarks>
     public GorgonColor(GorgonColor color, float alpha)
     {
@@ -1118,5 +1117,5 @@ public readonly struct GorgonColor
         Green = ((colorValue >> 8) & 0xff) / 255.0f;
         Blue = (colorValue & 0xff) / 255.0f;
     }
-    #endregion
+
 }

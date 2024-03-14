@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2016 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: June 28, 2016 10:38:40 PM
 // 
-#endregion
+
 
 using Gorgon.Configuration;
 using Gorgon.Graphics.Imaging.Properties;
@@ -31,7 +31,7 @@ using SharpDX.WIC;
 namespace Gorgon.Graphics.Imaging.Codecs;
 
 /// <summary>
-/// Filter to apply for compression optimization.
+/// Filter to apply for compression optimization
 /// </summary>
 public enum PngFilter
 {
@@ -66,12 +66,12 @@ public enum PngFilter
 }
 
 /// <summary>
-/// Options used when encoding an image to a stream as a PNG file..
+/// Options used when encoding an image to a stream as a PNG file.
 /// </summary>
 public sealed class GorgonPngEncodingOptions
     : IGorgonWicEncodingOptions
 {
-    #region Properties.
+
     /// <summary>
     /// Property to set or return whether all frames in an image array should be persisted.
     /// </summary>
@@ -173,19 +173,19 @@ public sealed class GorgonPngEncodingOptions
     {
         get;
     }
-    #endregion
 
-    #region Constructor.
+
+
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonPngEncodingOptions"/> class.
     /// </summary>
-    public GorgonPngEncodingOptions() => Options = new GorgonOptionBag(new[]
-                                      {
+    public GorgonPngEncodingOptions() => Options = new GorgonOptionBag(
+                                      [
                                           GorgonOption.CreateOption(nameof(Dithering), ImageDithering.None, Resources.GORIMG_OPT_WIC_DITHERING),
                                           GorgonOption.CreateOption(nameof(Filter), PngFilter.None, Resources.GORIMG_OPT_PNG_FILTERING),
                                           GorgonOption.CreateOption(nameof(Interlacing), false, Resources.GORIMG_OPT_PNG_INTERLACED),
                                           GorgonOption.CreateOption(nameof(DpiX), 72, Resources.GORIMG_OPT_WIC_DPIX),
                                           GorgonOption.CreateOption(nameof(DpiY), 72, Resources.GORIMG_OPT_WIC_DPIY)
-                                      });
-    #endregion
+                                      ]);
+
 }

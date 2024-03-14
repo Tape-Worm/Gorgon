@@ -1,6 +1,6 @@
-#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2016 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: June 13, 2016 12:20:16 AM
 // 
-#endregion
+
 
 using Gorgon.Core;
 using D3D = SharpDX.Direct3D;
@@ -30,18 +30,18 @@ using D3D = SharpDX.Direct3D;
 namespace Gorgon.Graphics.Core;
 
 /// <summary>
-/// Defines the level of support for functionality for a <see cref="IGorgonVideoAdapterInfo"/>.
+/// Defines the level of support for functionality for a <see cref="IGorgonVideoAdapterInfo"/>
 /// </summary>
 /// <remarks>
 /// <para>
 /// A feature set is used to describe what functionality a video adapter can support when using Direct 3D. For example, shader model 5 shaders are only supported by devices that support Direct 3D 12.0
-/// or greater, and this will be reflected by a value of <see cref="Level_12_0"/>, or <see cref="Level_12_1"/>.
+/// or greater, and this will be reflected by a value of <see cref="Level_12_0"/>, or <see cref="Level_12_1"/>
 /// </para>
 /// <para>
 /// Feature levels do not necessarily mean the hardware is limited, it may be that a device does not support a feature because the current driver does not expose that functionality. 
 /// </para>
 /// <para>
-/// Applications can use this to define a minimum supported video adapter, or take an alternate code (potentially slower) path to achieve the same result.
+/// Applications can use this to define a minimum supported video adapter, or take an alternate code (potentially slower) path to achieve the same result
 /// </para>
 /// </remarks>
 public enum FeatureSet
@@ -61,7 +61,7 @@ public enum FeatureSet
 }
 
 /// <summary>
-/// Defines the type of video adapter.
+/// Defines the type of video adapter
 /// </summary>
 public enum VideoDeviceType
 {
@@ -76,12 +76,12 @@ public enum VideoDeviceType
 }
 
 /// <summary>
-/// Provides information about a video adapter in the system.
+/// Provides information about a video adapter in the system
 /// </summary>
 /// <remarks>
 /// <para>
 /// This information may be for a physical hardware adapter, or a software rasterizer.  To determine which type this device falls under, se the <see cref="VideoDeviceType"/> property to determine the 
-/// type of device.
+/// type of device
 /// </para>
 /// </remarks>
 public interface IGorgonVideoAdapterInfo
@@ -202,7 +202,7 @@ public interface IGorgonVideoAdapterInfo
     /// <summary>
     /// Property to return the amount of memory for the adapter, in bytes.
     /// </summary>
-	    GorgonVideoAdapterMemory Memory
+    GorgonVideoAdapterMemory Memory
     {
         get;
     }
@@ -210,7 +210,7 @@ public interface IGorgonVideoAdapterInfo
     /// <summary>
     /// Property to return the PCI bus information for the adapter.
     /// </summary>
-	    GorgonVideoAdapterPciInfo PciInfo
+    GorgonVideoAdapterPciInfo PciInfo
     {
         get;
     }

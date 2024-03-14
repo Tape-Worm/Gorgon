@@ -12,11 +12,11 @@
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>Contains functionality to access the various input devices attached to the system.</description>
     <releaseNotes></releaseNotes>
-    <copyright>Copyright 2023 Tape_Worm</copyright>
+    <copyright>Copyright 2024 Tape_Worm</copyright>
 
     <tags>Gorgon C# .NET SharpDX Graphics Windows Input XInput DirectInput RawInput WinForms</tags>
     <dependencies>
-      <group targetFramework="net6.0" >
+      <group targetFramework="net8.0" >
         <dependency id="Gorgon.Core.Debug" version="$version$-beta"/>
         <dependency id="Gorgon.Windows.Debug" version="$version$-beta"/>
       </group>
@@ -25,8 +25,8 @@
   <files>
     <file src=".\icon.png" target="images\Gorgon_Icon_64x64.png" />
     <file src=".\Gorgon.Input.debug.targets" target="build\Gorgon.Input.debug.targets" />
-    <file src="..\lib\Gorgon.Input.dll" target="lib\net6.0\Gorgon.Input.dll" />
-    <file src="..\lib\Gorgon.Input.xml" target="lib\net6.0\Gorgon.Input.xml" />
+    <file src="..\lib\Gorgon.Input.dll" target="lib\net8.0\Gorgon.Input.dll" />
+    <file src="..\lib\Gorgon.Input.xml" target="lib\net8.0\Gorgon.Input.xml" />
     <file src="..\PlugIns\Gorgon.Input.DirectInput.dll" target="build\plugins\Gorgon.DirectInput.dll" />
     <file src="..\PlugIns\Gorgon.Input.XInput.dll" target="build\plugins\Gorgon.Input.XInput.dll" />
     <file src="..\PlugIns\SharpDX.dll" target="build\plugins\SharpDX.dll" />    

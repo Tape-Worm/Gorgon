@@ -1,6 +1,6 @@
-#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2015 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,27 +11,26 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: Wednesday, August 12, 2015 11:04:36 PM
 // 
-#endregion
 
-using System;
+
 using System.Runtime.InteropServices;
 
 // ReSharper disable InconsistentNaming
 namespace Gorgon.Native;
 
 /// <summary>
-/// Enumeration containing the flags for raw mouse data.
+/// Enumeration containing the flags for raw mouse data
 /// </summary>
 [Flags]
 internal enum RawMouseFlags
@@ -48,7 +47,7 @@ internal enum RawMouseFlags
 }
 
 /// <summary>
-/// Enumeration containing the button data for raw mouse input.
+/// Enumeration containing the button data for raw mouse input
 /// </summary>
 [Flags]
 internal enum RawMouseButtons
@@ -81,7 +80,7 @@ internal enum RawMouseButtons
 }
 
 /// <summary>
-/// Mouse device info.
+/// Mouse device info
 /// </summary>
 [StructLayout(LayoutKind.Sequential)]
 internal struct RID_DEVICE_INFO_MOUSE

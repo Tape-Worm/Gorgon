@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2017 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,22 +11,20 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: April 2, 2017 2:04:59 PM
 // 
-#endregion
 
-using System;
+
 using System.Collections;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using Gorgon.Math;
@@ -34,27 +32,27 @@ using Gorgon.Math;
 namespace Gorgon.Collections;
 
 /// <summary>
-/// A special array type that is used to monitor and track changes to itself.
+/// A special array type that is used to monitor and track changes to itself
 /// </summary>
 /// <typeparam name="T">The type of data in the array.</typeparam>
 /// <returns>
 /// <para>
-/// Due to how the array determines dirty indices, the maximum size of the the array is 64 items.
+/// Due to how the array determines dirty indices, the maximum size of the the array is 64 items
 /// </para>
 /// </returns>
 public class GorgonArray<T>
     : IList<T>, IGorgonReadOnlyArray<T>
     where T : IEquatable<T>
 {
-    #region Variables.
+
     // The indices that are dirty.
     private long _dirtyIndices;
 
     // The last set of dirty items.
     private (int Start, int Count) _dirtyItems;
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to return the backing store to objects that need it.
     /// </summary>
@@ -103,9 +101,9 @@ public class GorgonArray<T>
             _dirtyIndices |= 1L << index;
         }
     }
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function called when a dirty item is assigned.
     /// </summary>
@@ -507,9 +505,9 @@ public class GorgonArray<T>
 
         // We have different dirty states, so this array is different than the other one.
     }
-    #endregion
 
-    #region Constructor/Finalizer.
+
+
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonArray{T}"/> class.
     /// </summary>
@@ -525,5 +523,5 @@ public class GorgonArray<T>
         BackingArray = new T[maxSize];
         _dirtyItems = (0, 0);
     }
-    #endregion
+
 }

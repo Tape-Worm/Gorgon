@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2020 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,23 +11,20 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: August 3, 2020 3:45:05 PM
 // 
-#endregion
 
-using System;
+
 using System.ComponentModel;
-using System.Numerics;
-using System.Windows.Forms;
 using Gorgon.Editor.Rendering;
 using Gorgon.Editor.Services;
 using Gorgon.Editor.UI;
@@ -38,12 +35,12 @@ using Gorgon.Graphics.Fonts;
 namespace Gorgon.Editor.FontEditor;
 
 /// <summary>
-/// The view for the font content.
+/// The view for the font content
 /// </summary>
-internal partial class FontContentView 
+internal partial class FontContentView
     : VisualContentBaseControl, IDataContext<IFontContent>
 {
-    #region Variables.
+
     // The renderer for our font data.
     private FontRenderer _renderer;
     // The marching ants selection rectangle.
@@ -52,9 +49,9 @@ internal partial class FontContentView
     private IRectClipperService _clipper;
     // The form containing the ribbon used to merge with the application ribbon.
     private readonly FormRibbon _ribbonForm;
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to set or return the font factory for our fonts.
     /// </summary>
@@ -66,18 +63,18 @@ internal partial class FontContentView
 
     /// <summary>Property to return the data context assigned to this view.</summary>
     [Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)] // <-- So we don't show up in the IDE.
-    public IFontContent DataContext
+    public IFontContent ViewModel
     {
         get;
         private set;
     }
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to validate the controls on the view.
     /// </summary>
-    private void ValidateButtons() => _ribbonForm.ValidateButtons();       
+    private void ValidateButtons() => _ribbonForm.ValidateButtons();
 
     /// <summary>
     /// Function to initialize the view from the data context.
@@ -90,7 +87,7 @@ internal partial class FontContentView
             ResetDataContext();
             return;
         }
-    }        
+    }
 
     /// <summary>Function called when a property is changed on the data context.</summary>
     /// <param name="propertyName">The name of the property that is updated.</param>
@@ -102,18 +99,18 @@ internal partial class FontContentView
         switch (propertyName)
         {
             case nameof(FontContent.CommandContext):
-                SwitchRenderer(DataContext.CommandContext?.Name ?? _renderer.Name, true);
+                SwitchRenderer(ViewModel.CommandContext?.Name ?? _renderer.Name, true);
                 break;
             case nameof(FontContent.CurrentPanel):
                 string rendererName = _renderer.Name;
 
-                if ((DataContext.CurrentPanel is not null) && (HasRenderer(DataContext.CurrentPanel.GetType().FullName)))
+                if ((ViewModel.CurrentPanel is not null) && (HasRenderer(ViewModel.CurrentPanel.GetType().FullName)))
                 {
-                    rendererName = DataContext.CurrentPanel.GetType().FullName;
+                    rendererName = ViewModel.CurrentPanel.GetType().FullName;
                 }
-                else if (DataContext.CommandContext is not null)
+                else if (ViewModel.CommandContext is not null)
                 {
-                    rendererName = DataContext.CommandContext.Name;
+                    rendererName = ViewModel.CommandContext.Name;
                 }
 
                 if ((Renderer is null) || (!string.Equals(Renderer.Name, rendererName, StringComparison.OrdinalIgnoreCase)))
@@ -139,7 +136,7 @@ internal partial class FontContentView
 
         var args = new SetTextureArgs(contentData.FilePaths[0]);
 
-        if ((DataContext?.TextureEditor?.TextureBrush?.LoadTextureCommand is null) || (!DataContext.TextureEditor.TextureBrush.LoadTextureCommand.CanExecute(args)))
+        if ((ViewModel?.TextureEditor?.TextureBrush?.LoadTextureCommand is null) || (!ViewModel.TextureEditor.TextureBrush.LoadTextureCommand.CanExecute(args)))
         {
             if (!args.Cancel)
             {
@@ -164,9 +161,9 @@ internal partial class FontContentView
 
         var args = new SetTextureArgs(contentData.FilePaths[0]);
 
-        if ((DataContext?.TextureEditor?.TextureBrush?.LoadTextureCommand is not null) && (DataContext.TextureEditor.TextureBrush.LoadTextureCommand.CanExecute(args)))
+        if ((ViewModel?.TextureEditor?.TextureBrush?.LoadTextureCommand is not null) && (ViewModel.TextureEditor.TextureBrush.LoadTextureCommand.CanExecute(args)))
         {
-            await DataContext.TextureEditor.TextureBrush.LoadTextureCommand.ExecuteAsync(args);
+            await ViewModel.TextureEditor.TextureBrush.LoadTextureCommand.ExecuteAsync(args);
         }
     }
 
@@ -188,11 +185,11 @@ internal partial class FontContentView
         // method is not defined on the base class for the renderer, so that if users don't require this can skip it.
         if (resetZoom)
         {
-            _renderer.DefaultZoom();                
+            _renderer.DefaultZoom();
         }
     }
 
-    /// <summary>Raises the <see cref="System.Windows.Forms.UserControl.Load"/> event.</summary>
+    /// <summary>Raises the <see cref="UserControl.Load"/> event.</summary>
     /// <param name="e">An <see cref="EventArgs"/> that contains the event data.</param>
     protected override void OnLoad(EventArgs e)
     {
@@ -208,7 +205,7 @@ internal partial class FontContentView
             _ribbonForm.CreateControl();
         }
 
-        DataContext?.Load();            
+        ViewModel?.Load();
         RenderControl?.Select();
 
         ValidateButtons();
@@ -220,7 +217,7 @@ internal partial class FontContentView
         _ants?.Dispose();
         _clipper?.Dispose();
 
-        DataContext?.Unload();
+        ViewModel?.Unload();
         base.OnShutdown();
     }
 
@@ -231,9 +228,9 @@ internal partial class FontContentView
     {
         _ants = new MarchingAnts(context.Renderer2D);
         _clipper = new RectClipperService(context.Renderer2D, _ants);
-        _renderer = new FontRenderer(context.Renderer2D, swapChain, DataContext);
-        TextureRenderer textureRenderer = new(context.Renderer2D, swapChain, DataContext);
-        TextureBrushRenderer brushRenderer = new(context.Renderer2D, swapChain, _clipper, DataContext);
+        _renderer = new FontRenderer(context.Renderer2D, swapChain, ViewModel);
+        TextureRenderer textureRenderer = new(context.Renderer2D, swapChain, ViewModel);
+        TextureBrushRenderer brushRenderer = new(context.Renderer2D, swapChain, _clipper, ViewModel);
 
         // Create any necessary resources for the renderer here.
         _renderer.CreateResources();
@@ -265,7 +262,7 @@ internal partial class FontContentView
 
         InitializeFromDataContext(dataContext);
 
-        DataContext = dataContext;
+        ViewModel = dataContext;
 
         _ribbonForm.SetDataContext(dataContext);
         FontOutline.SetDataContext(dataContext?.FontOutline);
@@ -277,9 +274,9 @@ internal partial class FontContentView
         FontGradientBrush.SetDataContext(dataContext?.TextureEditor.GradientBrush);
         FontTextureBrush.SetDataContext(dataContext?.TextureEditor.TextureBrush);
     }
-    #endregion
 
-    #region Constructor/Finalizer.
+
+
     /// <summary>Initializes a new instance of the <see cref="FontContentView"/> class.</summary>
     public FontContentView()
     {
@@ -297,5 +294,5 @@ internal partial class FontContentView
         RegisterChildPanel(typeof(FontGradientBrush).FullName, FontGradientBrush);
         RegisterChildPanel(typeof(FontTextureBrush).FullName, FontTextureBrush);
     }
-    #endregion
+
 }

@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2019 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,22 +11,19 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: March 15, 2019 4:03:29 PM
 // 
-#endregion
 
-using System;
-using System.IO;
-using System.Threading;
+
 using Gorgon.Editor.Properties;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
@@ -38,21 +35,21 @@ using DX = SharpDX;
 namespace Gorgon.Editor.Rendering;
 
 /// <summary>
-/// Draws a marching ants effect for a rectangle.
+/// Draws a marching ants effect for a rectangle
 /// </summary>
 public class MarchingAnts
     : IDisposable, IMarchingAnts
 {
-    #region Variables.
+
     // The texture used for the marching ants.
     private Lazy<GorgonTexture2DView> _marchAntsTexture;
     // The renderer to use.
     private readonly Gorgon2D _renderer;
     // The step for each movement of the ants.
     private float _step;
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.</summary>
     public void Dispose()
     {
@@ -102,9 +99,9 @@ public class MarchingAnts
                 Usage = ResourceUsage.Immutable
             });
     }
-    #endregion
 
-    #region Constructor/Finalizer.
+
+
     /// <summary>Initializes a new instance of the <see cref="MarchingAnts"/> class.</summary>
     /// <param name="renderer">The 2D renderer for the application.</param>
     public MarchingAnts(Gorgon2D renderer)
@@ -112,5 +109,5 @@ public class MarchingAnts
         _renderer = renderer;
         _marchAntsTexture = new Lazy<GorgonTexture2DView>(Build, true);
     }
-    #endregion
+
 }

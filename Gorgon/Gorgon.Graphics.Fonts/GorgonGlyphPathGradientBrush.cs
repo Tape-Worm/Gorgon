@@ -1,6 +1,6 @@
-﻿#region MIT.
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2013 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,23 +11,20 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: Saturday, October 12, 2013 9:10:02 PM
 // 
-#endregion
 
-using System.Collections.Generic;
-using System.Drawing;
+
 using System.Drawing.Drawing2D;
-using System.Linq;
 using System.Numerics;
 using Gorgon.IO;
 using Gorgon.Math;
@@ -35,11 +32,11 @@ using Gorgon.Math;
 namespace Gorgon.Graphics.Fonts;
 
 /// <summary>
-/// A brush that paints the font glyphs using a gradient that follows a specific path.
+/// A brush that paints the font glyphs using a gradient that follows a specific path
 /// </summary>
 /// <remarks>
 /// <para>
-/// This allows glyphs to be drawn using multiple colors that fade into one another.
+/// This allows glyphs to be drawn using multiple colors that fade into one another
 /// </para>
 /// </remarks>
 /// <seealso cref="GorgonGlyphSolidBrush"/>
@@ -49,7 +46,7 @@ namespace Gorgon.Graphics.Fonts;
 public class GorgonGlyphPathGradientBrush
     : GorgonGlyphBrush
 {
-    #region Properties.
+
     /// <summary>
     /// Property to return the type of brush.
     /// </summary>
@@ -130,9 +127,9 @@ public class GorgonGlyphPathGradientBrush
     {
         get;
     }
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>Function to write out the specifics of the font brush data to a file writer.</summary>
     /// <param name="writer">The writer used to write the brush data.</param>
     internal override void WriteBrushData(GorgonBinaryWriter writer)
@@ -344,19 +341,19 @@ public class GorgonGlyphPathGradientBrush
             && (brush.Interpolation.SequenceEqual(Interpolation))
             && (brush.SurroundColors.SequenceEqual(SurroundColors))));
     }
-    #endregion
 
-    #region Constructor
+
+
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonGlyphPathGradientBrush"/> class.
     /// </summary>
     public GorgonGlyphPathGradientBrush()
     {
-        Points = new List<Vector2>();
-        BlendFactors = new List<float>();
-        BlendPositions = new List<float>();
-        Interpolation = new List<GorgonGlyphBrushInterpolator>();
-        SurroundColors = new List<GorgonColor>();
+        Points = [];
+        BlendFactors = [];
+        BlendPositions = [];
+        Interpolation = [];
+        SurroundColors = [];
     }
-    #endregion
+
 }

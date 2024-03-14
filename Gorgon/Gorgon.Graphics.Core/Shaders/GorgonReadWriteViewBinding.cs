@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2018 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,31 +11,30 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: May 30, 2018 10:25:39 PM
 // 
-#endregion
 
-using System;
+
 using Gorgon.Core;
 using Gorgon.Graphics.Core.Properties;
 
 namespace Gorgon.Graphics.Core;
 
 /// <summary>
-/// A binding for a <see cref="GorgonReadWriteView"/>.
+/// A binding for a <see cref="GorgonReadWriteView"/>
 /// </summary>
 /// <remarks>
 /// <para>
-/// This allows a <see cref="GorgonReadWriteView"/> to be bound to the GPU pipeline for access by a <see cref="GorgonPixelShader"/>.
+/// This allows a <see cref="GorgonReadWriteView"/> to be bound to the GPU pipeline for access by a <see cref="GorgonPixelShader"/>
 /// </para>
 /// </remarks>
 /// <seealso cref="GorgonReadWriteView"/>
@@ -43,7 +42,7 @@ namespace Gorgon.Graphics.Core;
 public readonly struct GorgonReadWriteViewBinding
     : IGorgonEquatableByRef<GorgonReadWriteViewBinding>
 {
-    #region Variables.
+
     // A structured buffer unordered access view for quick access.
     private readonly GorgonStructuredReadWriteView _structuredUav;
 
@@ -65,16 +64,16 @@ public readonly struct GorgonReadWriteViewBinding
     /// The unordered access view to bind.
     /// </summary>
     public readonly GorgonReadWriteView ReadWriteView;
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to return the type of UAV if the UAV is for a structured buffer.
     /// </summary>
     public StructuredBufferReadWriteViewType ReadWriteViewType => _structuredUav?.ReadWriteViewType ?? StructuredBufferReadWriteViewType.None;
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Returns a <see cref="string" /> that represents this instance.
     /// </summary>
@@ -130,9 +129,9 @@ public readonly struct GorgonReadWriteViewBinding
     /// <param name="right">The right instance to compare.</param>
     /// <returns><b>true</b> if not equal, <b>false</b> if equal.</returns>
     public static bool operator !=(in GorgonReadWriteViewBinding left, in GorgonReadWriteViewBinding right) => !Equals(in left, in right);
-    #endregion
 
-    #region Constructor
+
+
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonReadWriteViewBinding"/> struct.
     /// </summary>
@@ -155,5 +154,5 @@ public readonly struct GorgonReadWriteViewBinding
         _structuredUav = readWriteView;
         InitialCount = initialCount;
     }
-    #endregion
+
 }

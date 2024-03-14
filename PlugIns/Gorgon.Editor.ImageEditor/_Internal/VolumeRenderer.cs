@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2019 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,21 +11,19 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: January 14, 2019 12:33:21 PM
 // 
-#endregion
 
-using System;
-using System.Linq;
+
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
@@ -39,12 +37,14 @@ using DX = SharpDX;
 namespace Gorgon.Editor.ImageEditor;
 
 /// <summary>
-/// A renderer used to render volumetric (3D) textures.
+/// A renderer used to render volumetric (3D) textures
 /// </summary>
-internal class VolumeRenderer
-    : IDisposable
+/// <remarks>Initializes a new instance of the <see cref="VolumeRenderer"/> class.</remarks>
+/// <param name="graphics">The graphics interface to use.</param>
+internal class VolumeRenderer(GorgonGraphics graphics)
+        : IDisposable
 {
-    #region Value Types.
+
     /// <summary>
     /// The parameters for rendering the volume.
     /// </summary>
@@ -60,11 +60,11 @@ internal class VolumeRenderer
         /// </summary>
         public int Iterations;
     }
-    #endregion
 
-    #region Variables.
+
+
     // The graphics interface to use.
-    private readonly GorgonGraphics _graphics;
+    private readonly GorgonGraphics _graphics = graphics;
     // The constant buffer holding the world/projection/view matrix transform.
     private GorgonConstantBuffer _cubeTransform;
     // Sections for the volumetric rendering.
@@ -100,9 +100,9 @@ internal class VolumeRenderer
     private GorgonTexture3DView _textureView;
     // The viewport for the cube.
     private DX.ViewportF _cubeView;
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to return the region on the screen to render the volume.
     /// </summary>
@@ -111,9 +111,9 @@ internal class VolumeRenderer
         get;
         private set;
     }
-    #endregion
 
-    #region Methods.
+
+
 
     /// <summary>
     /// Function to update the cube transform and send it to the GPU.
@@ -146,8 +146,8 @@ internal class VolumeRenderer
         {
             _volumeSections[i]?.Dispose();
             _volumeRtSections[i]?.Dispose();
-            _volumeRtSections[i] = GorgonRenderTarget2DView.CreateRenderTarget(_graphics, new GorgonTexture2DInfo((int)VolumeRegion.Width, 
-                                                                                                                       (int)VolumeRegion.Height, 
+            _volumeRtSections[i] = GorgonRenderTarget2DView.CreateRenderTarget(_graphics, new GorgonTexture2DInfo((int)VolumeRegion.Width,
+                                                                                                                       (int)VolumeRegion.Height,
                                                                                                                        BufferFormat.R16G16B16A16_Float)
             {
                 Name = $"Vol_RTV_{i}",
@@ -326,11 +326,6 @@ internal class VolumeRenderer
         _cubeDirShader = null;
         _cubeVs = null;
     }
-    #endregion
 
-    #region Constructor/Finalizer.
-    /// <summary>Initializes a new instance of the <see cref="VolumeRenderer"/> class.</summary>
-    /// <param name="graphics">The graphics interface to use.</param>
-    public VolumeRenderer(GorgonGraphics graphics) => _graphics = graphics;
-    #endregion
+
 }

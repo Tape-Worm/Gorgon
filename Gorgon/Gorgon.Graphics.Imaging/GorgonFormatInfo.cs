@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2015 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,35 +11,33 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: Thursday, December 10, 2015 1:10:04 AM
 // 
-#endregion
 
-#region DirectXTex 
+
 // Portions of this code is adapted from the DirectXTex library by Chuck Walburn:
 //
 // THIS CODE AND INFORMATION IS PROVIDED "AS IS" WITHOUT WARRANTY OF
 // ANY KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO
 // THE IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
-// PARTICULAR PURPOSE.
+// PARTICULAR PURPOSE
 //
-// Copyright (c) Microsoft Corporation. All rights reserved.
+// Copyright (c) Microsoft Corporation. All rights reserved
 //
 // http://go.microsoft.com/fwlink/?LinkId=248926
 //
 // DirectXTex: https://github.com/Microsoft/DirectXTex
-#endregion
 
-using System;
+
 using System.Diagnostics;
 using Gorgon.Graphics.Imaging;
 using Gorgon.Math;
@@ -47,7 +45,7 @@ using Gorgon.Math;
 namespace Gorgon.Graphics;
 
 /// <summary>
-/// Flags to handle legacy format types.
+/// Flags to handle legacy format types
 /// </summary>
 [Flags]
 public enum PitchFlags
@@ -91,16 +89,16 @@ public enum PitchFlags
 }
 
 /// <summary>
-/// Provides information for a specific DXGI Format.
+/// Provides information for a specific DXGI Format
 /// </summary>
 /// <remarks>
 /// <para>
-/// This object will return the specifics for a DXGI Format, such as its bit depth, format grouping, and other information about the format. This is useful for determining how to handle a formatted element in a buffer at the byte level.
+/// This object will return the specifics for a DXGI Format, such as its bit depth, format grouping, and other information about the format. This is useful for determining how to handle a formatted element in a buffer at the byte level
 /// </para>
 /// </remarks>
 public class GorgonFormatInfo
 {
-    #region Variables.
+
     // The number of bytes used by a single element of this format type.
     private int _sizeInBytes;
 
@@ -108,9 +106,9 @@ public class GorgonFormatInfo
     /// A default information type for the <see cref="BufferFormat.Unknown"/> format.
     /// </summary>
     public static readonly GorgonFormatInfo UnknownFormatInfo = new(BufferFormat.Unknown);
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to return the group for the format.
     /// </summary>
@@ -140,7 +138,7 @@ public class GorgonFormatInfo
     /// <summary>
     /// Property to return the number of components for the format.
     /// </summary>
-	    public int ComponentCount
+    public int ComponentCount
     {
         get;
         private set;
@@ -264,9 +262,9 @@ public class GorgonFormatInfo
     /// of 10 will use that color from the palette.
     /// </remarks>
     public bool IsPalettized => Format is BufferFormat.A8P8 or BufferFormat.P8;
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to retrieve whether this format has a depth component or not.
     /// </summary>
@@ -325,7 +323,7 @@ public class GorgonFormatInfo
     /// Function to retrieve the number of components that make up a format.
     /// </summary>
     /// <param name="format">The format to evaulate.</param>
-	    private void GetComponentCount(BufferFormat format) => ComponentCount = format switch
+    private void GetComponentCount(BufferFormat format) => ComponentCount = format switch
     {
         BufferFormat.R32G32B32A32_Typeless or BufferFormat.R32G32B32A32_Float or BufferFormat.R32G32B32A32_UInt or BufferFormat.R32G32B32A32_SInt or BufferFormat.R16G16B16A16_Typeless or BufferFormat.R16G16B16A16_Float or BufferFormat.R16G16B16A16_UNorm or BufferFormat.R16G16B16A16_UInt or BufferFormat.R16G16B16A16_SNorm or BufferFormat.R16G16B16A16_SInt or BufferFormat.R10G10B10A2_Typeless or BufferFormat.R10G10B10A2_UNorm or BufferFormat.R10G10B10A2_UInt or BufferFormat.R8G8B8A8_Typeless or BufferFormat.R8G8B8A8_UNorm or BufferFormat.R8G8B8A8_UNorm_SRgb or BufferFormat.R8G8B8A8_UInt or BufferFormat.R8G8B8A8_SNorm or BufferFormat.R8G8B8A8_SInt or BufferFormat.R8G8_B8G8_UNorm or BufferFormat.G8R8_G8B8_UNorm or BufferFormat.BC1_Typeless or BufferFormat.BC1_UNorm or BufferFormat.BC1_UNorm_SRgb or BufferFormat.BC2_Typeless or BufferFormat.BC2_UNorm or BufferFormat.BC2_UNorm_SRgb or BufferFormat.BC3_Typeless or BufferFormat.BC3_UNorm or BufferFormat.BC3_UNorm_SRgb or BufferFormat.BC4_Typeless or BufferFormat.BC4_UNorm or BufferFormat.BC4_SNorm or BufferFormat.BC5_Typeless or BufferFormat.BC5_UNorm or BufferFormat.BC5_SNorm or BufferFormat.B5G5R5A1_UNorm or BufferFormat.B8G8R8A8_UNorm or BufferFormat.B8G8R8X8_UNorm or BufferFormat.R10G10B10_Xr_Bias_A2_UNorm or BufferFormat.B8G8R8A8_Typeless or BufferFormat.B8G8R8A8_UNorm_SRgb or BufferFormat.B8G8R8X8_Typeless or BufferFormat.B8G8R8X8_UNorm_SRgb or BufferFormat.BC6H_Typeless or BufferFormat.BC6H_Uf16 or BufferFormat.BC6H_Sf16 or BufferFormat.BC7_Typeless or BufferFormat.BC7_UNorm or BufferFormat.BC7_UNorm_SRgb or BufferFormat.B4G4R4A4_UNorm => 4,
         BufferFormat.R11G11B10_Float or BufferFormat.R32G32B32_Typeless or BufferFormat.R32G32B32_Float or BufferFormat.R32G32B32_UInt or BufferFormat.R32G32B32_SInt or BufferFormat.B5G6R5_UNorm or BufferFormat.R9G9B9E5_Sharedexp => 3,
@@ -546,9 +544,9 @@ rowPitch = widthCounter * bpb;*/
                 // All other formats report height as-is.
                 _ => height,
             };
-    #endregion
 
-    #region Constructor/Destructor.
+
+
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonFormatInfo"/> class.
     /// </summary>
@@ -575,5 +573,5 @@ rowPitch = widthCounter * bpb;*/
         GetBitDepth(format);
         GetComponentCount(format);
     }
-    #endregion
+
 }

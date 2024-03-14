@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2020 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,27 +11,22 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: July 1, 2020 12:34:36 AM
 // 
-#endregion
 
-using System;
+
 using System.Buffers;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
 using System.Numerics;
-using System.Threading;
-using System.Threading.Tasks;
 using Gorgon.Animation;
 using Gorgon.Collections;
 using Gorgon.Editor.AnimationEditor.Properties;
@@ -43,12 +38,12 @@ using Gorgon.Math;
 namespace Gorgon.Editor.AnimationEditor;
 
 /// <summary>
-/// The view model for the key editor context.
+/// The view model for the key editor context
 /// </summary>
 internal class KeyEditorContext
     : EditorContext<KeyEditorContextParameters>, IKeyEditorContext
 {
-    #region Classes.
+
     /// <summary>
     /// Arguments for undoing or redoing a key assignment.
     /// </summary>
@@ -101,20 +96,20 @@ internal class KeyEditorContext
         public bool Move;
     }
 
-    #endregion
 
-    #region Constants.
+
+
     /// <summary>
     /// The name of the context.
     /// </summary>
     public const string ContextName = "ContextKeyEditor";
-    #endregion
 
-    #region Variables.
+
+
     // The project file manager.
     private IContentFileManager _fileManager;
     // The list of sprites selected for loading texture keys.
-    private readonly List<IContentFile> _selectedSprites = new();
+    private readonly List<IContentFile> _selectedSprites = [];
     // Services from the plug in.
     private ContentServices _contentServices;
     // The current editor for floating point values.
@@ -123,9 +118,9 @@ internal class KeyEditorContext
     private GorgonSpriteAnimationController _controller;
     // The animation content.
     private IAnimationContent _content;
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to return the key value editor.
     /// </summary>
@@ -250,9 +245,9 @@ internal class KeyEditorContext
     {
         get;
     }
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>Handles the PropertyChanged event of the Content control.</summary>
     /// <param name="sender">The source of the event.</param>
     /// <param name="e">The <see cref="PropertyChangedEventArgs"/> instance containing the event data.</param>
@@ -419,7 +414,7 @@ internal class KeyEditorContext
 
             TrackKeySelection selectedTrack = _content.Selected[0];
             TrackKeySelection.KeySelection selectedKey = _content.Selected[0].SelectedKeys[0];
-            Vector4? value = selectedKey.KeyFrame?.FloatValue ?? _contentServices.KeyProcessor.GetTrackFloatValues(selectedTrack.Track, selectedKey.TimeIndex, 
+            Vector4? value = selectedKey.KeyFrame?.FloatValue ?? _contentServices.KeyProcessor.GetTrackFloatValues(selectedTrack.Track, selectedKey.TimeIndex,
                                                                                                                       _controller.CurrentAnimation, _content.WorkingSprite);
 
             // Reset the track/key value.
@@ -439,7 +434,7 @@ internal class KeyEditorContext
                     if (value is not null)
                     {
                         ColorKeysEditor.Value = value.Value;
-                    }                        
+                    }
                     break;
                 case AnimationTrackKeyType.Single:
                 case AnimationTrackKeyType.Vector2:
@@ -449,7 +444,7 @@ internal class KeyEditorContext
                     if (value is not null)
                     {
                         FloatKeysEditor.Value = value.Value;
-                    }                        
+                    }
                     break;
                 case AnimationTrackKeyType.Texture2D:
                     CurrentEditor = null;
@@ -529,7 +524,7 @@ internal class KeyEditorContext
             new()
             {
                 SelectedKeys = new List<TrackKeySelection.KeySelection>(_content.Selected[0].SelectedKeys.Select(item => new TrackKeySelection.KeySelection(item))),
-            };            
+            };
 
         void SetupKeyframeBuffer(ITrack track, ref IKeyFrame[] buffer)
         {
@@ -547,7 +542,7 @@ internal class KeyEditorContext
             {
                 ShowWaitPanel(Resources.GORANM_TEXT_SETTING_KEY);
 
-                int fileIndex = 0;                    
+                int fileIndex = 0;
                 ITrack currentTrack = null;
 
                 foreach (TrackKeySelection.KeySelection key in keys)
@@ -640,7 +635,7 @@ internal class KeyEditorContext
         SetKeyUndoRedoArgs undoArgs = CreateArgs();
         SetKeyUndoRedoArgs redoArgs = CreateArgs();
 
-        await SetAsync(redoArgs.SelectedKeys, selectedFiles, floatValues);            
+        await SetAsync(redoArgs.SelectedKeys, selectedFiles, floatValues);
 
         if (redoArgs is not null)
         {
@@ -852,7 +847,7 @@ internal class KeyEditorContext
         };
         undoArgs = new CopyMoveUndoArgs
         {
-            Keys = new List<(ITrack, Stack<TrackKeySelection.KeySelection>)>()
+            Keys = []
         };
 
         Task RedoTask(CopyMoveRedoArgs args, CancellationToken _) => CopyMoveAsync(args, null);
@@ -926,7 +921,7 @@ internal class KeyEditorContext
         }
         catch (Exception ex)
         {
-            HostServices.MessageDisplay.ShowError(ex, Resources.GORANM_ERR_SETTING_KEY);                
+            HostServices.MessageDisplay.ShowError(ex, Resources.GORANM_ERR_SETTING_KEY);
         }
     }
 
@@ -945,7 +940,7 @@ internal class KeyEditorContext
         IEnumerable<IContentFile> files = paths.Where(item => !string.IsNullOrWhiteSpace(item))
                                                .Select(item => _fileManager.GetFile(item));
 
-        return files.All(item => (item is not null) && (_contentServices.IOService.IsContentSprite(item)));                                                   
+        return files.All(item => (item is not null) && (_contentServices.IOService.IsContentSprite(item)));
     }
 
     /// <summary>
@@ -1256,7 +1251,7 @@ internal class KeyEditorContext
                 Operation = copyData.Operation
             });
 
-            NotifyPropertyChanged(nameof(PasteDataCommand));                
+            NotifyPropertyChanged(nameof(PasteDataCommand));
         }
         catch (Exception ex) when (copyData.Operation == CopyMoveOperation.Copy)
         {
@@ -1283,7 +1278,7 @@ internal class KeyEditorContext
         _content = injectionParameters.Content;
         _fileManager = injectionParameters.FileManager;
         _contentServices = injectionParameters.ContentServices;
-        _controller = injectionParameters.AnimationController;            
+        _controller = injectionParameters.AnimationController;
         FloatKeysEditor = injectionParameters.FloatValueKeyEditor;
         ColorKeysEditor = injectionParameters.ColorValueKeyEditor;
     }
@@ -1300,7 +1295,7 @@ internal class KeyEditorContext
     /// </remarks>
     /// <seealso cref="ViewModelBase{T, THs}.Initialize(T)" />
     /// <seealso cref="ViewModelBase{T, THs}.Unload" />
-    protected override void OnLoad() 
+    protected override void OnLoad()
     {
         base.OnLoad();
 
@@ -1308,7 +1303,7 @@ internal class KeyEditorContext
         HostServices.ClipboardService.Clear();
         _content.PropertyChanged += Content_PropertyChanged;
 
-        ShowEditorPanel();            
+        ShowEditorPanel();
     }
 
     /// <summary>Function called when the associated view is unloaded.</summary>
@@ -1329,9 +1324,9 @@ internal class KeyEditorContext
 
         base.OnUnload();
     }
-    #endregion
 
-    #region Constructor/Finalizer.
+
+
     /// <summary>Initializes a new instance of the <see cref="KeyEditorContext"/> class.</summary>
     public KeyEditorContext()
     {
@@ -1345,5 +1340,5 @@ internal class KeyEditorContext
         PasteDataCommand = new EditorAsyncCommand<object>(DoPasteKeyframesAsync, CanPasteKeyframes);
         CopyMoveFramesCommand = new EditorAsyncCommand<KeyFrameCopyMoveData>(DoCopyMoveFramesAsync, CanCopyMoveFrames);
     }
-    #endregion
+
 }

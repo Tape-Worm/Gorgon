@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2016 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,25 +11,25 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: June 20, 2016 9:23:44 PM
 // 
-#endregion
+
 
 namespace Gorgon.Graphics.Imaging;
 
 /// <summary>
-/// Type of image data.
+/// Type of image data
 /// </summary>
-public enum ImageType
+public enum ImageDataType
 {
     /// <summary>
     /// Unknown.
@@ -54,15 +54,15 @@ public enum ImageType
 }
 
 /// <summary>
-/// Provides information about an image.
+/// Provides information about an image
 /// </summary>
 public interface IGorgonImageInfo
 {
-    #region Properties.
+
     /// <summary>
     /// Property to return the type of image data.
     /// </summary>
-    ImageType ImageType
+    ImageDataType ImageType
     {
         get;
     }
@@ -167,7 +167,7 @@ public interface IGorgonImageInfo
     /// This only applies to 1D and 2D images.  This parameter will be set to a value of 1 for a 3D image.
     /// </para>
     /// <para>
-    /// If the <see cref="ImageType"/> is <see cref="ImageType.ImageCube"/>, then this value should be set to a multiple of 6. If it is not, then Gorgon will adjust this value to be a multiple of 
+    /// If the <see cref="ImageType"/> is <see cref="ImageDataType.ImageCube"/>, then this value should be set to a multiple of 6. If it is not, then Gorgon will adjust this value to be a multiple of 
     /// 6 if this image is to be used as a cube map.
     /// </para>
     /// <para>
@@ -178,5 +178,5 @@ public interface IGorgonImageInfo
     {
         get;
     }
-    #endregion
+
 }

@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2018 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,29 +11,23 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: October 12, 2018 1:38:47 PM
 // 
-#endregion
 
-using System;
+
 using System.Buffers;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
-using System.IO;
-using System.Linq;
 using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 using System.Xml.Linq;
 using Gorgon.Core;
 using Gorgon.Editor.GorPackWriter.Properties;
@@ -45,12 +39,12 @@ using Microsoft.IO;
 namespace Gorgon.Editor.GorPackWriterPlugIn;
 
 /// <summary>
-/// Gorgon packed file writer plug in interface.
+/// Gorgon packed file writer plug in interface
 /// </summary>
 internal class GorPackWriterPlugIn
     : FileWriterPlugIn
 {
-    #region Constants.
+
     // The header for the file.
     private const string FileHeader = "GORPACK1.SharpZip.BZ2";
     // The type name for v2 of the Gorgon file writer plugin.
@@ -59,16 +53,20 @@ internal class GorPackWriterPlugIn
     /// The maximum size of a write transfer buffer, in bytes.
     /// </summary>
     public const int MaxBufferSize = 1048575;
-    #endregion
 
-    #region Variables.
+
+
     // The memory stream manager for efficient memory usage.
-    private static readonly RecyclableMemoryStreamManager _memStreamManager = new(1_048_576, 16_777_216);
+    private static readonly RecyclableMemoryStreamManager _memStreamManager = new(new RecyclableMemoryStreamManager.Options
+    {
+        MaximumSmallPoolFreeBytes = 1_048_576,
+        MaximumLargePoolFreeBytes = 16_777_216
+    });
     // The global buffer used to write out data to a stream.
     private byte[] _globalWriteBuffer;
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>Property to return the equivalent type name for v2 of the Gorgon file writer plugin.</summary>
     /// <remarks>This is here to facilitate importing of file metadata from v2 of the gorgon editor files. Only specify a compatible type here, otherwise things will go wrong.</remarks>
     public override string V2PlugInName => EquivV2PlugIn;
@@ -78,9 +76,9 @@ internal class GorPackWriterPlugIn
     /// </summary>
     /// <value>The capabilities.</value>
     public override WriterCapabilities Capabilities => WriterCapabilities.Compression;
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to create a new path node.
     /// </summary>
@@ -101,7 +99,7 @@ internal class GorPackWriterPlugIn
     /// <param name="file">File to retrieve information from.</param>
     /// <param name="position">Position of the file in the packed data.</param>
     /// <param name="size">Size of the compressed file in the packed data.</param>
-		/// <param name="compressedSize">Compressed size of the file.</param>
+    /// <param name="compressedSize">Compressed size of the file.</param>
     /// <returns>A new node element with the file information.</returns>
     private static XElement CreateFileNode(FileInfo file, long position, long size, long compressedSize) =>
                             new("File",
@@ -597,7 +595,7 @@ internal class GorPackWriterPlugIn
             // Copy file layout to a compressed data block.
             byte[] fatData = Encoding.UTF8.GetBytes(fat.ToStringWithDeclaration());
             fatStream = _memStreamManager.GetStream(fatData);
-            compressedFatStream =_memStreamManager.GetStream();
+            compressedFatStream = _memStreamManager.GetStream();
 
             CompressData(fatStream, compressedFatStream, _globalWriteBuffer, (int)(Compression * 9), cancelToken);
 
@@ -643,15 +641,15 @@ internal class GorPackWriterPlugIn
             }
         }
     }
-    #endregion
 
-    #region Constructor/Destructor.
+
+
     /// <summary>
     /// Initializes a new instance of the <see cref="GorPackWriterPlugIn"/> class.
     /// </summary>
     public GorPackWriterPlugIn()
-        : base(Resources.GORPKW_DESC, new[] { new GorgonFileExtension("gorPack", Resources.GORPKW_GORPACK_FILE_EXT_DESC) })
+        : base(Resources.GORPKW_DESC, [new GorgonFileExtension("gorPack", Resources.GORPKW_GORPACK_FILE_EXT_DESC)])
     {
     }
-    #endregion
+
 }

@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2019 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,45 +11,47 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: May 24, 2019 3:33:44 PM
 // 
-#endregion
+
 
 using System.Numerics;
 
 namespace Gorgon.Examples;
 
 /// <summary>
-/// Another space ship object.
+/// Another space ship object
 /// </summary>
 /// <remarks>
-/// This is a prop space ship that we'll use to add more variety to the scene.
+/// This is a prop space ship that we'll use to add more variety to the scene
 /// </remarks>
-internal class BigShip
+/// <remarks>Initializes a new instance of the <see cref="BigShip"/> class.</remarks>
+/// <param name="layer">The layer.</param>
+internal class BigShip(SpritesLayer layer)
 {
-    #region Variables.
+
     // The ship sprite.
     private SpriteEntity _ship;
     // The ship sprite illumination map.
     private SpriteEntity _shipIllum;
     // The layer containing the sprite(s) for this ship.
-    private readonly SpritesLayer _layer;
+    private readonly SpritesLayer _layer = layer;
     // The angle of rotation.
     private float _angle;
     // Position of the ship.
     private Vector2 _position;
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to set or return the angle of rotation, in degrees, for the ship.
     /// </summary>
@@ -75,9 +77,9 @@ internal class BigShip
             UpdateEntityPositions();
         }
     }
-    #endregion
 
-    #region Methods.		
+
+
     /// <summary>
     /// Function to update the entity positions to match the position of the ship.
     /// </summary>
@@ -107,11 +109,6 @@ internal class BigShip
         _shipIllum.Scale = 4;
         UpdateEntityPositions();
     }
-    #endregion
 
-    #region Constructor/Finalizer.
-    /// <summary>Initializes a new instance of the <see cref="BigShip"/> class.</summary>
-    /// <param name="layer">The layer.</param>
-    public BigShip(SpritesLayer layer) => _layer = layer;
-    #endregion
+
 }

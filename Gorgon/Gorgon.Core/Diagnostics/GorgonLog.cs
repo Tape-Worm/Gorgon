@@ -1,6 +1,6 @@
-﻿#region MIT.
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2011 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,26 +11,21 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: Tuesday, June 14, 2011 8:50:49 PM
 // 
-#endregion
 
-using System;
+
 using System.Collections;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading;
 using Gorgon.Core;
 using Gorgon.Diagnostics.LogProviders;
 using Gorgon.Properties;
@@ -38,12 +33,12 @@ using Gorgon.Properties;
 namespace Gorgon.Diagnostics;
 
 /// <summary>
-/// Base class for logging objects.
+/// Base class for logging objects
 /// </summary>
 public abstract class GorgonLog
     : IGorgonThreadedLog
 {
-    #region Variables.
+
     // Logging filter.
     private LoggingLevel _filterLevel = LoggingLevel.All;
     // Buffer used to send data to the log file.
@@ -55,16 +50,16 @@ public abstract class GorgonLog
     // The application version.
     private readonly Version _appVersion;
 
-    #region Variables.
+
     /// <summary>
     /// An instance of a log that does no logging and merely contains empty methods.
     /// </summary>
     public static readonly IGorgonLog NullLog = new LogDummy();
-    #endregion
 
-    #endregion
 
-    #region Properties.
+
+
+
     /// <summary>
     /// Property to return the ID of the thread that created the log object.
     /// </summary>
@@ -111,9 +106,9 @@ public abstract class GorgonLog
         get;
         protected set;
     }
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to format a stack trace to be more presentable.
     /// </summary>
@@ -351,7 +346,7 @@ public abstract class GorgonLog
         if (ThreadID != Environment.CurrentManagedThreadId)
         {
             lines = _threadBuffers.GetOrAdd(Environment.CurrentManagedThreadId,
-                                            id => new List<string>());
+                                            id => []);
         }
 
         if ((string.IsNullOrEmpty(formatSpecifier)) || (formatSpecifier == "\n") || (formatSpecifier == "\r"))
@@ -439,9 +434,9 @@ public abstract class GorgonLog
 
         Provider.Open($"**** {LogApplication} (Version {_appVersion?.ToString() ?? "N/A"}) logging begins on thread ID 0x{ThreadID.FormatHex()} ****\r\n{(LogFilterLevel != LoggingLevel.NoLogging ? $"**** Filter level: {LogFilterLevel}\r\n" : string.Empty)}");
     }
-    #endregion
 
-    #region Constructor/Destructor.
+
+
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonLog"/> class.
     /// </summary>
@@ -472,5 +467,5 @@ public abstract class GorgonLog
 
         _appVersion = version;
     }
-    #endregion
+
 }

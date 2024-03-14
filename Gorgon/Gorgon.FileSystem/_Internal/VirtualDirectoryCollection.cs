@@ -1,6 +1,6 @@
-﻿#region MIT.
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2011 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,43 +11,43 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: Monday, June 27, 2011 8:59:02 AM
 // 
-#endregion
 
-using System;
+
 using System.Collections;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using Gorgon.Collections;
 using Gorgon.IO.Properties;
 
 namespace Gorgon.IO;
 
 /// <summary>
-/// A collection of file system virtual directories.
+/// A collection of file system virtual directories
 /// </summary>
-internal class VirtualDirectoryCollection
-    : IGorgonNamedObjectReadOnlyDictionary<IGorgonVirtualDirectory>
+/// <remarks>
+/// Initializes a new instance of the <see cref="VirtualDirectoryCollection" /> class
+/// </remarks>
+/// <param name="parent">The parent directory that owns this collection.</param>
+internal class VirtualDirectoryCollection(VirtualDirectory parent)
+        : IGorgonNamedObjectReadOnlyDictionary<IGorgonVirtualDirectory>
 {
-    #region Variables.
+
     // The backing store for the directories.
     private readonly Dictionary<string, VirtualDirectory> _directories = new(StringComparer.OrdinalIgnoreCase);
     // The parent directory that owns this collection.
-    private readonly VirtualDirectory _parent;
-    #endregion
+    private readonly VirtualDirectory _parent = parent;
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to return a directory by its name.
     /// </summary>
@@ -81,9 +81,9 @@ internal class VirtualDirectoryCollection
     /// The number of elements in the collection. 
     /// </returns>
     public int Count => _directories.Count;
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Adds an item to the <see cref="ICollection{T}" />.
     /// </summary>
@@ -277,13 +277,8 @@ internal class VirtualDirectoryCollection
         value = directory;
         return true;
     }
-    #endregion
 
-    #region Constructor.
-    /// <summary>
-    /// Initializes a new instance of the <see cref="VirtualDirectoryCollection" /> class.
-    /// </summary>
-    /// <param name="parent">The parent directory that owns this collection.</param>
-    public VirtualDirectoryCollection(VirtualDirectory parent) => _parent = parent;
-    #endregion
+
+
+
 }

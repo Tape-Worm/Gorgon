@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2018 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,23 +11,20 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: March 29, 2018 11:54:42 AM
 // 
-#endregion
 
-using System;
+
 using System.Collections;
-using System.Collections.Generic;
-using System.IO;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using Gorgon.Math;
@@ -37,18 +34,18 @@ using DX = SharpDX;
 namespace Gorgon.Native;
 
 /// <summary>
-/// Provides a buffer that uses native (unmanaged) memory to store its data.
+/// Provides a buffer that uses native (unmanaged) memory to store its data
 /// </summary>
 /// <typeparam name="T">The type of data to store in the buffer. Must be an unmanaged value type.</typeparam>
 /// <remarks>
 /// <para>
 /// This buffer works similarly to an array or span type, only it is backed by unmanaged memory. This allows applications to use it for things like interop between native and managed code, or to have 
 /// a buffer that allows the developer to control its lifetime. And, unlike a native pointer, it is safe for use because it will handle out of bounds errors correctly instead of just trashing memory 
-/// arbitrarily.
+/// arbitrarily
 /// </para>
 /// <para>
 /// Because this buffer is backed by native memory and the developer is repsonsible for its lifetime, it is important to ensure that the <see cref="IDisposable.Dispose"/> method is called on this 
-/// object when it is no longer needed. Failure to do so may result in a memory leak.
+/// object when it is no longer needed. Failure to do so may result in a memory leak
 /// <note type="tip">
 /// The object will be finalized and the memory will ultimately be freed then, but this can still have a negative impact on the application. 
 /// </note>
@@ -61,33 +58,33 @@ namespace Gorgon.Native;
 /// // Create a buffer of 10 DateTime objects
 /// GorgonNativeBuffer<DateTime> dateInBuffer = new GorgonNativeBuffer<DateTime>(10);
 /// 
-/// // This will write today's date to the buffer at the second date/time index.
+/// // This will write today's date to the buffer at the second date/time index
 /// dateInBuffer[1] = DateTime.Now;
 /// 
 /// ref DateTime currentDateTime = ref dateInBuffer[1];
-/// // This will write back today's date plus 5 years to the buffer.
+/// // This will write back today's date plus 5 years to the buffer
 /// currentDateTime = DateTime.Now.AddYears(5);
 /// ]]>
 /// </code>
 /// </para>
 /// <para>
-/// The buffer can also be used to pin an array or value type and act on those items as native memory. Please note that the standard disclaimers about pinning still apply.
+/// The buffer can also be used to pin an array or value type and act on those items as native memory. Please note that the standard disclaimers about pinning still apply
 /// </para>
 /// </remarks>
 public sealed class GorgonNativeBuffer<T>
     : IDisposable, IReadOnlyList<T>
     where T : unmanaged
 {
-    #region Variables.
+
     // The pointer to unmanaged memory.
     private GorgonPtr<T> _memoryBlock;
     // A pinned array.
     private GCHandle _pinnedArray;
     // Flag to indicate that we allocated this memory ourselves.
     private readonly bool _ownsMemory;
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to return whether this buffer is an alias of a pointer.
     /// </summary>
@@ -135,9 +132,9 @@ public sealed class GorgonNativeBuffer<T>
     /// </summary>
     /// <exception cref="IndexOutOfRangeException">Thrown if the index is less than 0, or greater than/equal to <see cref="Length"/>.</exception>
     public ref T this[int index] => ref _memoryBlock[index];
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to validate parameters used to create a native buffer from a managed array.
     /// </summary>
@@ -236,7 +233,7 @@ public sealed class GorgonNativeBuffer<T>
     /// <paramref name="destination"/> buffer to accomodate the amount of data required.
     /// </para>
     /// </remarks>
-    public void CopyTo(GorgonNativeBuffer<T> destination, int sourceIndex = 0, int? count = null, int destIndex = 0) 
+    public void CopyTo(GorgonNativeBuffer<T> destination, int sourceIndex = 0, int? count = null, int destIndex = 0)
     {
         if (destination is null)
         {
@@ -304,7 +301,7 @@ public sealed class GorgonNativeBuffer<T>
     public static GorgonNativeBuffer<T> Pin(T[] array, int index = 0, int? count = null)
     {
         count ??= array.Length - index;
-        
+
         ValidateArrayParams(array, index, count.Value);
 
         int typeSize = Unsafe.SizeOf<T>();
@@ -439,7 +436,7 @@ public sealed class GorgonNativeBuffer<T>
     /// </note>
     /// </para>
     /// </remarks>
-    public static unsafe void* ToPointer(GorgonNativeBuffer<T> buffer) => buffer is null ? null : (void *)buffer._memoryBlock;
+    public static unsafe void* ToPointer(GorgonNativeBuffer<T> buffer) => buffer is null ? null : (void*)buffer._memoryBlock;
 
     /// <summary>
     /// Implicit operator to return the pointer to the underlying data in the buffer.
@@ -589,9 +586,9 @@ public sealed class GorgonNativeBuffer<T>
     /// <summary>Returns an enumerator that iterates through a collection.</summary>
     /// <returns>An <see cref="IEnumerator"/> object that can be used to iterate through the collection.</returns>
     IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
-    #endregion
 
-    #region Constructor/Finalizer.
+
+
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonNativeBuffer{T}" /> class.
     /// </summary>
@@ -602,7 +599,7 @@ public sealed class GorgonNativeBuffer<T>
     {
         TypeSize = Unsafe.SizeOf<T>();
         _pinnedArray = pinnedData;
-        _memoryBlock = new GorgonPtr<T>(_pinnedArray.AddrOfPinnedObject() + offset, size);            
+        _memoryBlock = new GorgonPtr<T>(_pinnedArray.AddrOfPinnedObject() + offset, size);
     }
 
     /// <summary>
@@ -659,5 +656,5 @@ public sealed class GorgonNativeBuffer<T>
     {
         Dispose();
     }
-    #endregion
+
 }

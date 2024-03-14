@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2020 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,22 +11,20 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: June 24, 2020 2:54:40 PM
 // 
-#endregion
+
 
 using System.Buffers;
-using System.Collections.Generic;
-using System.Linq;
 using System.Numerics;
 using Gorgon.Animation;
 using Gorgon.Graphics;
@@ -36,16 +34,16 @@ using DX = SharpDX;
 namespace Gorgon.Editor.AnimationEditor;
 
 /// <summary>
-/// A factory to build animations.
+/// A factory to build animations
 /// </summary>
 internal static class AnimationFactory
 {
-    #region Variables.
+
     // The builder used to create the animation.
     private static readonly GorgonAnimationBuilder _builder = new();
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to build animation tracks for single floating point value manipualtion.
     /// </summary>
@@ -191,7 +189,7 @@ internal static class AnimationFactory
     private static void BuildTextureTracks(IEnumerable<ITrack> tracks)
     {
         foreach (ITrack track in tracks)
-        {                
+        {
             IGorgonTrackKeyBuilder<GorgonKeyTexture2D> keyBuilder = _builder.Edit2DTexture(track.Name);
 
             // There is no interpolation for texture tracks (not yet at least).
@@ -293,5 +291,5 @@ internal static class AnimationFactory
 
         return result;
     }
-    #endregion
+
 }

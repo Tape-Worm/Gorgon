@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Numerics;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Numerics;
 using Assimp;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
@@ -15,19 +9,19 @@ using Gorgon.Renderers.Geometry;
 namespace Gorgon.Examples;
 
 /// <summary>
-/// Model data to render.
+/// Model data to render
 /// </summary>
 internal class Model
     : IDisposable
 {
-    #region Variables.
+
     // The list of meshes to render.
-    private readonly Dictionary<Material, List<(int BaseStart, int Start, int Count)>> _meshes = new();
+    private readonly Dictionary<Material, List<(int BaseStart, int Start, int Count)>> _meshes = [];
     // The world matrix for this model.
     private System.Numerics.Matrix4x4 _worldMatrix;
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to return the list of meshes to render.
     /// </summary>
@@ -122,9 +116,9 @@ internal class Model
         get;
         set;
     }
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to retrieve the list of materials for the model.
     /// </summary>
@@ -133,7 +127,7 @@ internal class Model
     /// <returns>A list of model materials associated with their textures.</returns>
     private static IReadOnlyList<Material> GetMaterials(List<Assimp.Material> sceneMaterials, IReadOnlyDictionary<string, GorgonTexture2DView> textures)
     {
-        List<Material> materials = new();
+        List<Material> materials = [];
 
         for (int m = 0; m < sceneMaterials.Count; ++m)
         {
@@ -178,7 +172,7 @@ internal class Model
     /// <param name="scene">The scene containing the mesh data.</param>
     /// <param name="materials">The list of materials for the model.</param>
     private void ImportData(GorgonGraphics graphics, Scene scene, IReadOnlyList<Material> materials)
-    {            
+    {
         int vertexCount = scene.Meshes.Sum(item => item.VertexCount);
         int indexCount = scene.Meshes.Sum(item => item.Faces.Sum(item2 => item2.IndexCount));
 
@@ -205,20 +199,20 @@ internal class Model
         {
             Mesh mesh = scene.Meshes[i1];
             short[] meshIndices = mesh.GetShortIndices();
-            
-            Material material = materials[mesh.MaterialIndex];                
+
+            Material material = materials[mesh.MaterialIndex];
 
             if (!_meshes.TryGetValue(material, out List<(int BaseStart, int start, int count)> indexList))
             {
-                _meshes[material] = indexList = new List<(int BaseStart, int start, int count)>();
-            }                
+                _meshes[material] = indexList = [];
+            }
 
             indexList.Add((vertexIndex, indexStart, meshIndices.Length));
 
             for (int j = 0; j < meshIndices.Length; ++j)
             {
                 indices[j + indexStart] = meshIndices[j];
-            }                
+            }
 
             indexStart += meshIndices.Length;
 
@@ -241,8 +235,8 @@ internal class Model
                                                                             new GorgonColor(color.R, color.G, color.B, color.A),
                                                                             new Vector2(uv.X, -uv.Y));
 
-                vertices[vertexIndex++] = vertex;                    
-            }                
+                vertices[vertexIndex++] = vertex;
+            }
         }
 
         VertexData.SetData<GorgonVertexPosNormColorUv>(vertices);
@@ -260,7 +254,7 @@ internal class Model
     /// Property to return the world matrix for the model.
     /// </summary>
     /// <returns>The read only reference to the world matrix for the model.</returns>
-    public ref readonly System.Numerics.Matrix4x4 GetWorldMatrix() 
+    public ref readonly System.Numerics.Matrix4x4 GetWorldMatrix()
     {
         var quatRotation = System.Numerics.Quaternion.CreateFromYawPitchRoll(RotateY.ToRadians(), RotateX.ToRadians(), 0);
         _worldMatrix = System.Numerics.Matrix4x4.CreateFromQuaternion(quatRotation);
@@ -305,7 +299,7 @@ internal class Model
                 continue;
             }
 
-            string texturePath = Path.Combine(modelDir, id);                
+            string texturePath = Path.Combine(modelDir, id);
             textures[id] = GorgonTexture2DView.FromFile(graphics, texturePath, tgaCodec);
         }
     }
@@ -321,9 +315,9 @@ internal class Model
     {
         using AssimpContext context = new();
         Scene scene = context.ImportFile(filePath, PostProcessSteps.MakeLeftHanded | PostProcessSteps.FlipWindingOrder | PostProcessSteps.GenerateSmoothNormals);
-        
+
         Model result = new();
-        
+
         PopulateTextureList(graphics, filePath, scene.Materials, textures);
         IReadOnlyList<Material> materials = GetMaterials(scene.Materials, textures);
 
@@ -331,5 +325,5 @@ internal class Model
 
         return result;
     }
-    #endregion
+
 }

@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2018 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,25 +11,22 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: April 6, 2018 8:15:10 AM
 // 
-#endregion
 
-using System;
-using System.Collections.Generic;
+
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
-using System.Threading;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
 using Gorgon.Graphics.Core.Properties;
@@ -44,7 +41,7 @@ using DX = SharpDX;
 namespace Gorgon.Graphics.Core;
 
 /// <summary>
-/// The primary object for the Gorgon Graphics system.
+/// The primary object for the Gorgon Graphics system
 /// </summary>
 /// <remarks>
 /// <para>
@@ -52,23 +49,23 @@ namespace Gorgon.Graphics.Core;
 /// </para>
 /// <para>
 /// Typically, a graphics object is assigned to a single <see cref="IGorgonVideoAdapterInfo"/> to provide access to the functionality of that video adapter. If the system has more than once video adapter 
-/// installed then access to subsequent devices can be given by creating a new instance of this object with the appropriate <see cref="IGorgonVideoAdapterInfo"/>.
+/// installed then access to subsequent devices can be given by creating a new instance of this object with the appropriate <see cref="IGorgonVideoAdapterInfo"/>
 /// </para>
 /// <para>
 /// <note type="tip">
 /// <para>
 /// To determine what devices are attached to the system, use a <see cref="EnumerateAdapters"/> method to retreive a list of applicable video adapters. This will contain a list of 
-/// <see cref="IGorgonVideoAdapterInfo"/> objects suitable for construction of the graphics object.
+/// <see cref="IGorgonVideoAdapterInfo"/> objects suitable for construction of the graphics object
 /// </para>
 /// </note>
 /// </para>
 /// <para>
 /// When creating a graphics object, the user can choose which feature set they will support for a given <see cref="IGorgonVideoAdapterInfo"/> so that older devices may be used. The actual feature set 
-/// support is provided by the <see cref="IGorgonVideoAdapterInfo.FeatureSet"/> on the <see cref="IGorgonVideoAdapterInfo"/> interface.
+/// support is provided by the <see cref="IGorgonVideoAdapterInfo.FeatureSet"/> on the <see cref="IGorgonVideoAdapterInfo"/> interface
 /// </para>
 /// <para>
 /// This object is quite simple in its functionality. It provides some state assignment, and a means to submit a <see cref="GorgonDrawCallCommon">draw call</see> so that graphics information can be 
-/// rendered.
+/// rendered
 /// </para>
 /// <para><h3>Rendering</h3></para>
 /// <para>
@@ -83,7 +80,7 @@ namespace Gorgon.Graphics.Core;
 /// <para>
 /// When drawing, Gorgon will determine the minimum required state to send with the final draw call, ensuring no redundant states are set. This type of rendering provides a performance gain since it will 
 /// only set the absolute minimum unique state it needs when the draw call is actually sent to the GPU. This means the user can set the state for a draw call as much as they want without that state being 
-/// sent to the GPU.
+/// sent to the GPU
 /// </para>
 /// <para>
 /// <h3>Debugging Support</h3>
@@ -91,15 +88,15 @@ namespace Gorgon.Graphics.Core;
 /// <para>
 /// Applications can enable Direct 3D debugging by setting to the <see cref="IsDebugEnabled"/> property to <b>true</b>. This will allow developers to examine underlying failures when rendering using 
 /// Direct 3D. Gorgon also provides memory tracking for any underlying Direct 3D objects when the <see cref="IsObjectTrackingEnabled"/> is set to <b>true</b>. This is useful if a 
-/// <see cref="IDisposable.Dispose"/> call was forgotten by the developer.
+/// <see cref="IDisposable.Dispose"/> call was forgotten by the developer
 /// </para>
 /// <para>
 /// However, it is not enough to just set these flags to <b>true</b> to enable debugging. Users must also use the DirectX control panel (<c>Debug -> Graphics -> DirectX Control Panel</c>) provided by 
 /// Visual Studio in order to turn on debugging. Finally, the user must then turn on Native debugging in the Project properties of their application (under the <b>Debug</b> tab) so that any debug 
-/// output can be seen in the Output window while running the application.
+/// output can be seen in the Output window while running the application
 /// </para>
 /// <para>
-/// If using a <b>DEBUG</b> compiled version of Gorgon (recommended for development), then the <see cref="IsDebugEnabled"/> property will automatically be set to <b>true</b>.
+/// If using a <b>DEBUG</b> compiled version of Gorgon (recommended for development), then the <see cref="IsDebugEnabled"/> property will automatically be set to <b>true</b>
 /// </para>
 /// </remarks>
 /// <seealso cref="IGorgonVideoAdapterInfo"/>
@@ -108,7 +105,7 @@ namespace Gorgon.Graphics.Core;
 public sealed class GorgonGraphics
     : IGorgonNativeResource, IDisposable
 {
-    #region Events.
+
     /// <summary>
     /// Event triggered before a render target is changed.
     /// </summary>
@@ -138,9 +135,9 @@ public sealed class GorgonGraphics
     /// Event triggered when the depth/stencil buffer has been changed.
     /// </summary>
     public event EventHandler DepthStencilChanged;
-    #endregion
 
-    #region Constants.
+
+
     /// <summary>
     /// The minimum build number required for the Windows 10 operating system.
     /// </summary>
@@ -150,9 +147,9 @@ public sealed class GorgonGraphics
     /// The name of the shader file data used for include files that wish to use the include shader.
     /// </summary>
     public const string BlitterShaderIncludeFileName = "__Gorgon_TextureBlitter_Shader__";
-    #endregion
 
-    #region Variables.
+
+
 
     // The D3D 11.x device context.
     private D3D11.DeviceContext4 _deviceContext;
@@ -181,9 +178,9 @@ public sealed class GorgonGraphics
 
     // The timer used to trigger a clean up of cached render targets.
     private readonly GorgonTimerQpc _rtExpireTimer = new();
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to return the Direct 3D 11.x device context for this graphics instance.
     /// </summary>
@@ -383,9 +380,9 @@ public sealed class GorgonGraphics
     /// </para>
     /// </remarks>        
     nint IGorgonNativeResource.Handle => D3DDevice.NativePointer;
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to retrieve the multi sample maximum quality level support for a given format.
     /// </summary>
@@ -431,7 +428,7 @@ public sealed class GorgonGraphics
 
         using (var factory2 = new Factory2(IsDebugEnabled))
         {
-            resultFactory = factory2.QueryInterface<Factory5>();                
+            resultFactory = factory2.QueryInterface<Factory5>();
 
             using Adapter adapter = (adapterInfo.VideoDeviceType == VideoDeviceType.Hardware
                                           ? resultFactory.GetAdapter1(adapterInfo.Index)
@@ -594,7 +591,7 @@ public sealed class GorgonGraphics
     /// </summary>
     private void ReportLiveObjectsInternal(D3D11.Device device)
     {
-        using D3D11.DeviceDebug debugDevice = new(device);            
+        using D3D11.DeviceDebug debugDevice = new(device);
         debugDevice.ReportLiveDeviceObjects(D3D11.ReportingLevel.IgnoreInternal);
     }
 
@@ -1082,7 +1079,7 @@ public sealed class GorgonGraphics
         drawIndexCall.ValidateObject(nameof(drawIndexCall));
         SetDrawStates(drawIndexCall.D3DState, blendFactor ?? GorgonColor.White, blendSampleMask, stencilReference);
         D3DDeviceContext.DrawIndexedInstanced(drawIndexCall.IndexCount,
-                                              instanceCount,                                                  
+                                              instanceCount,
                                               drawIndexCall.IndexStart,
                                               drawIndexCall.BaseVertexIndex,
                                               startInstanceLocation);
@@ -1269,9 +1266,9 @@ public sealed class GorgonGraphics
         }
 #endif
     }
-    #endregion
 
-    #region Constructor/Destructor.
+
+
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonGraphics"/> class.
     /// </summary>
@@ -1382,5 +1379,5 @@ public sealed class GorgonGraphics
         IsDebugEnabled = true;
 #endif
     }
-    #endregion
+
 }

@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2021 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,31 +11,29 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: September 7, 2021 11:04:32 PM
 // 
-#endregion
 
-using System.Collections.Generic;
+
 using Gorgon.Math;
 
 namespace Gorgon.Editor.FontEditor;
 
 /// <summary>
-/// Comparer class for sorting the weight nodes.
+/// Comparer class for sorting the weight nodes
 /// </summary>
 internal class WeightHandleComparer
     : IComparer<WeightHandle>
 {
-    #region IComparer<WeightHandle> Members
     /// <summary>
     /// Compares two objects and returns a value indicating whether one is less than, equal to, or greater than the other.
     /// </summary>
@@ -59,5 +57,5 @@ internal class WeightHandleComparer
 
         return x.Weight < y.Weight ? -1 : 1;
     }
-    #endregion
+
 }

@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2017 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: July 5, 2017 11:30:50 PM
 // 
-#endregion
+
 
 using Gorgon.Core;
 using D3D = SharpDX.Direct3D;
@@ -32,12 +32,12 @@ using DXGI = SharpDX.DXGI;
 namespace Gorgon.Graphics.Core;
 
 /// <summary>
-/// A shader resource view for <see cref="GorgonBuffer"/> containing structured data.
+/// A shader resource view for <see cref="GorgonBuffer"/> containing structured data
 /// </summary>
 /// <remarks>
 /// <para>
 /// This is a generic view to allow a <see cref="GorgonBuffer"/> to be bound to the GPU pipeline as a structured buffer resource. The buffer must have been created with the <see cref="BufferBinding.Shader"/> 
-/// flag in its <see cref="IGorgonBufferInfo.Binding"/> property, and have a <see cref="IGorgonBufferInfo.StructureSize"/> greater than 0.
+/// flag in its <see cref="IGorgonBufferInfo.Binding"/> property, and have a <see cref="IGorgonBufferInfo.StructureSize"/> greater than 0
 /// </para>
 /// <para>
 /// This type of view will allow shaders to access the data in the buffer by treating each data item as an "element".  The size of these elements is depends on the size of an individual "structure" in 
@@ -48,7 +48,7 @@ namespace Gorgon.Graphics.Core;
 public sealed class GorgonStructuredView
     : GorgonBufferViewCommon, IGorgonBufferInfo
 {
-    #region Properties.
+
     /// <summary>
     /// Property to return the size of an element, in bytes.
     /// </summary>
@@ -117,9 +117,9 @@ public sealed class GorgonStructuredView
     /// Property to return the name of this object.
     /// </summary>
     string IGorgonNamedObject.Name => Buffer?.Name;
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>Function to retrieve the necessary parameters to create the native view.</summary>
     /// <returns>A tuple containing the parameters.</returns>
     private protected override ref readonly D3D11.ShaderResourceViewDescription1 OnGetSrvParams()
@@ -138,9 +138,9 @@ public sealed class GorgonStructuredView
 
         return ref SrvDesc;
     }
-    #endregion
 
-    #region Constructor/Finalizer.
+
+
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonStructuredView"/> class.
     /// </summary>
@@ -155,5 +155,5 @@ public sealed class GorgonStructuredView
         : base(buffer, startingElement, elementCount, totalElementCount)
     {
     }
-    #endregion
+
 }

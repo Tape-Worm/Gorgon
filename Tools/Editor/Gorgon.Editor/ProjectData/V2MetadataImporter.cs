@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2018 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,22 +11,19 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: October 30, 2018 12:48:54 PM
 // 
-#endregion
 
-using System;
-using System.Collections.Generic;
-using System.IO;
+
 using System.Xml.Linq;
 using Gorgon.Diagnostics;
 using Gorgon.Editor.Metadata;
@@ -35,11 +32,15 @@ using Gorgon.IO;
 namespace Gorgon.Editor.ProjectData;
 
 /// <summary>
-/// Handles importing of metadata from v2 of Gorgon's file structure.
+/// Handles importing of metadata from v2 of Gorgon's file structure
 /// </summary>
-internal class V2MetadataImporter
+/// <remarks>Initializes a new instance of the V2MetadataImporter class.</remarks>
+/// <param name="metadataFile">The file containing the v2 metadata.</param>
+/// <param name="log">The log interface for debug messages.</param>
+/// <exception cref="ArgumentNullException">Thrown when the <paramref name="metadataFile"/> parameter is <b>null</b>.</exception>
+internal class V2MetadataImporter(string metadataFile, IGorgonLog log)
 {
-    #region Constants.
+
     // The name of the root node in the metadata.
     private const string RootNodeName = "Gorgon.Editor.MetaData";
     // The name of the file node in the metadata.
@@ -51,16 +52,16 @@ internal class V2MetadataImporter
     /// The name of the v2 metadata file.
     /// </summary>
     public const string V2MetadataFilename = ".gorgon.editor.metadata";
-    #endregion
 
-    #region Variables.
+
+
     // The file containing the metadata.
-    private readonly string _file;
+    private readonly string _file = metadataFile ?? throw new ArgumentNullException(nameof(metadataFile));
     // The log interface for debug messages.
-    private readonly IGorgonLog _log;
-    #endregion
+    private readonly IGorgonLog _log = log ?? GorgonLog.NullLog;
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to import the files in the metadata.
     /// </summary>
@@ -141,17 +142,6 @@ internal class V2MetadataImporter
         }
         _log.Print("Imported v2 Gorgon Editor metadata.", LoggingLevel.Simple);
     }
-    #endregion
 
-    #region Constructor/Finalizer.
-    /// <summary>Initializes a new instance of the V2MetadataImporter class.</summary>
-    /// <param name="metadataFile">The file containing the v2 metadata.</param>
-    /// <param name="log">The log interface for debug messages.</param>
-    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="metadataFile"/> parameter is <b>null</b>.</exception>
-    public V2MetadataImporter(string metadataFile, IGorgonLog log)
-    {
-        _log = log ?? GorgonLog.NullLog;
-        _file = metadataFile ?? throw new ArgumentNullException(nameof(metadataFile));            
-    }
-    #endregion
+
 }

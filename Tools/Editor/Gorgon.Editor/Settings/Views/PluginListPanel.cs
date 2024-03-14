@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2019 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,23 +11,20 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: April 19, 2019 12:51:39 PM
 // 
-#endregion
 
-using System;
+
 using System.ComponentModel;
-using System.Drawing;
-using System.Windows.Forms;
 using Gorgon.Editor.PlugIns;
 using Gorgon.Editor.Properties;
 using Gorgon.Editor.UI;
@@ -37,26 +34,26 @@ using Gorgon.Editor.ViewModels;
 namespace Gorgon.Editor.Views;
 
 /// <summary>
-/// General settings for the application.
+/// General settings for the application
 /// </summary>
 internal partial class PlugInListPanel
     : SettingsBaseControl, IDataContext<ISettingsPlugInsList>
 {
-    #region Properties.
+
     /// <summary>Property to return the ID of the panel.</summary>
     [Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-    public override string PanelID => DataContext?.ID.ToString() ?? Guid.Empty.ToString();
+    public override string PanelID => ViewModel?.ID.ToString() ?? Guid.Empty.ToString();
 
     /// <summary>Property to return the data context assigned to this view.</summary>
     [Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-    public ISettingsPlugInsList DataContext
+    public ISettingsPlugInsList ViewModel
     {
         get;
         private set;
     }
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>Handles the PropertyChanged event of the DataContext control.</summary>
     /// <param name="sender">The source of the event.</param>
     /// <param name="e">The <see cref="PropertyChangedEventArgs"/> instance containing the event data.</param>
@@ -65,7 +62,7 @@ internal partial class PlugInListPanel
         switch (e.PropertyName)
         {
             case nameof(ISettingsPlugInsList.Current):
-                TextStatus.Text = DataContext.Current?.DisabledReason ?? string.Empty;
+                TextStatus.Text = ViewModel.Current?.DisabledReason ?? string.Empty;
                 break;
         }
     }
@@ -76,12 +73,12 @@ internal partial class PlugInListPanel
     private void ListPlugIns_SelectedIndexChanged(object sender, EventArgs e)
     {
         int selectedIndex = ListPlugIns.SelectedIndices.Count > 0 ? ListPlugIns.SelectedIndices[0] : -1;
-        if ((DataContext?.SelectPlugInCommand is null) || (!DataContext.SelectPlugInCommand.CanExecute(selectedIndex)))
+        if ((ViewModel?.SelectPlugInCommand is null) || (!ViewModel.SelectPlugInCommand.CanExecute(selectedIndex)))
         {
             return;
         }
 
-        DataContext.SelectPlugInCommand.Execute(selectedIndex);
+        ViewModel.SelectPlugInCommand.Execute(selectedIndex);
     }
 
     /// <summary>
@@ -153,12 +150,12 @@ internal partial class PlugInListPanel
     /// </summary>
     private void UnassignEvents()
     {
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             return;
         }
 
-        DataContext.PropertyChanged -= DataContext_PropertyChanged;
+        ViewModel.PropertyChanged -= DataContext_PropertyChanged;
     }
 
     /// <summary>
@@ -194,19 +191,19 @@ internal partial class PlugInListPanel
         UnassignEvents();
 
         InitializeFromDataContext(dataContext);
-        DataContext = dataContext;
+        ViewModel = dataContext;
 
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             return;
         }
 
-        DataContext.PropertyChanged += DataContext_PropertyChanged;
+        ViewModel.PropertyChanged += DataContext_PropertyChanged;
     }
-    #endregion
 
-    #region Constructor/Finalizer.
+
+
     /// <summary>Initializes a new instance of the <see cref="PlugInListPanel"/> class.</summary>
     public PlugInListPanel() => InitializeComponent();
-    #endregion
+
 }

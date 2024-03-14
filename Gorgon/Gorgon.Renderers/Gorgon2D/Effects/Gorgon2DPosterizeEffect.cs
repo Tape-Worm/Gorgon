@@ -1,6 +1,6 @@
-﻿#region MIT.
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2012 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,22 +11,20 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: Thursday, April 05, 2012 8:23:51 AM
 // 
-#endregion
 
-using System;
+
 using System.Runtime.InteropServices;
-using System.Threading;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Math;
@@ -37,56 +35,49 @@ using DX = SharpDX;
 namespace Gorgon.Renderers;
 
 /// <summary>
-/// An effect that renders a posterized image.
+/// An effect that renders a posterized image
 /// </summary>
 /// <remarks>
 /// <para>
-/// This will perform a posterize operation, which will reduce the number of colors in the image.
+/// This will perform a posterize operation, which will reduce the number of colors in the image
 /// </para>
 /// </remarks>
 public class Gorgon2DPosterizedEffect
     : Gorgon2DEffect, IGorgon2DCompositorEffect
 {
-    #region Value Types.
+
     /// <summary>
     /// Settings for the effect shader.
     /// </summary>
+    /// <remarks>
+    /// Initializes a new instance of the <see cref="Settings"/> struct.
+    /// </remarks>
+    /// <param name="useAlpha">if set to <b>true</b> [use alpha].</param>
+    /// <param name="power">The power.</param>
+    /// <param name="count">The number of colors.</param>
     [StructLayout(LayoutKind.Sequential, Pack = 16)]
-    private readonly struct Settings
+    private readonly struct Settings(bool useAlpha, float power, int count)
     {
         // Flag to posterize the alpha channel.
-        private readonly int _posterizeAlpha;                               
+        private readonly int _posterizeAlpha = Convert.ToInt32(useAlpha);
 
         /// <summary>
         /// Gamma for the posterization.
         /// </summary>
-        public readonly float PosterizeGamma;
+        public readonly float PosterizeGamma = power;
         /// <summary>
         /// Number of colors to reduce down to.
         /// </summary>
-        public readonly int PosterizeColorCount;
+        public readonly int PosterizeColorCount = count;
 
         /// <summary>
         /// Property to return whether to posterize the alpha channel.
         /// </summary>
         public bool PosterizeAlpha => _posterizeAlpha != 0;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="Settings"/> struct.
-        /// </summary>
-        /// <param name="useAlpha">if set to <b>true</b> [use alpha].</param>
-        /// <param name="power">The power.</param>
-        /// <param name="count">The number of colors.</param>
-        public Settings(bool useAlpha, float power, int count)
-        {
-            _posterizeAlpha = Convert.ToInt32(useAlpha);
-            PosterizeGamma = power;
-            PosterizeColorCount = count;
-        }
     }
-    #endregion
 
-    #region Variables.
+
+
     // Buffer for the posterize effect.
     private GorgonConstantBufferView _posterizeBuffer;
     // The shader used to render the effect.
@@ -98,9 +89,9 @@ public class Gorgon2DPosterizedEffect
     private Settings _settings;
     // Flag to indicate that the parameters have been updated.
     private bool _isUpdated = true;
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to set or return whether to posterize the alpha channel.
     /// </summary>
@@ -159,9 +150,9 @@ public class Gorgon2DPosterizedEffect
             _isUpdated = true;
         }
     }
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function called when the effect is being initialized.
     /// </summary>
@@ -291,9 +282,9 @@ public class Gorgon2DPosterizedEffect
                                         new DX.RectangleF(0, 0, 1, 1));
         End();
     }
-    #endregion
 
-    #region Constructor/Destructor.
+
+
     /// <summary>
     /// Initializes a new instance of the <see cref="Gorgon2DPosterizedEffect" /> class.
     /// </summary>
@@ -304,5 +295,5 @@ public class Gorgon2DPosterizedEffect
         _settings = new Settings(false, 1.0f, 4);
         Macros.Add(new GorgonShaderMacro("POSTERIZE_EFFECT"));
     }
-    #endregion
+
 }

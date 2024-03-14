@@ -1,6 +1,6 @@
-#region MIT.
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2013 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,28 +11,22 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: Sunday, January 13, 2013 6:49:00 PM
 // 
-#endregion
 
-using System;
-using System.Collections.Generic;
+
 using System.Diagnostics;
-using System.Drawing;
-using System.IO;
-using System.Linq;
 using System.Numerics;
 using System.Reflection;
-using System.Windows.Forms;
 using Gorgon.Core;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
@@ -44,38 +38,38 @@ using Gorgon.PlugIns;
 using Gorgon.Renderers;
 using Gorgon.UI;
 using DX = SharpDX;
-using FontStyle = Gorgon.Graphics.Fonts.FontStyle;
+
 using GorgonMouseButtons = Gorgon.Input.MouseButtons;
 
 namespace Gorgon.Examples;
 
 /// <summary>
-/// Main application form.
+/// Main application form
 /// </summary>
 /// <remarks>
-/// This is an updated version of the INeedYourInput example from the previous version of Gorgon.
+/// This is an updated version of the INeedYourInput example from the previous version of Gorgon
 /// 
 /// The keys for the example are as follows:
-/// F - Switch between full screen and windowed mode.
-/// Up arrow - Increase pen radius.
-/// Down arrow - Decrease pen radius.
-/// F1, F2, F3 - Switch between modulated, additive and no blending respectively.
-/// C - Clear the buffer.
-/// J - Switch to raw input and joysticks (if available).  Press J to cycle through joysticks and to get back to the win forms keyboard/mouse interface.
-/// ESC - Close the example.
+/// F - Switch between full screen and windowed mode
+/// Up arrow - Increase pen radius
+/// Down arrow - Decrease pen radius
+/// F1, F2, F3 - Switch between modulated, additive and no blending respectively
+/// C - Clear the buffer
+/// J - Switch to raw input and joysticks (if available).  Press J to cycle through joysticks and to get back to the win forms keyboard/mouse interface
+/// ESC - Close the example
 /// 
 /// Mouse controls:
-/// Left mouse button - Draw with blue pen.
-/// Right mouse button - Draw with red pen.
-/// Scroll wheel - Increase/decrease pen size.
+/// Left mouse button - Draw with blue pen
+/// Right mouse button - Draw with red pen
+/// Scroll wheel - Increase/decrease pen size
 /// 
 /// Joystick control:
-/// Primary button - Draw with black pen.
+/// Primary button - Draw with black pen
 /// </remarks>
 public partial class MainForm
     : Form
 {
-    #region Variables.
+
     // The graphics interface.
     private GorgonGraphics _graphics;
     // Primary swap chain.
@@ -126,9 +120,9 @@ public partial class MainForm
     private readonly Gorgon2DBatchStateBuilder _blendBuilder = new();
     // Our assembly cache for our plugins.
     private GorgonMefPlugInCache _assemblyCache;
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Handles the <see cref="E:KeyDown" /> event.
     /// </summary>
@@ -624,7 +618,7 @@ public partial class MainForm
             // Get available gaming device driver plug ins.
             _drivers = factory.LoadAllDrivers(Path.Combine(GorgonExample.GetPlugInPath().FullName, "Gorgon.Input.*.dll"));
 
-            _joystickList = new List<IGorgonGamingDevice>();
+            _joystickList = [];
 
             // Get all gaming devices from the drivers.
             foreach (IGorgonGamingDeviceDriver driver in _drivers)
@@ -679,11 +673,11 @@ public partial class MainForm
 
             // Create the text font.
             _fontFactory = new GorgonFontFactory(_graphics);
-            _font = _fontFactory.GetFont(new GorgonFontInfo("Arial", 9.0f, FontHeightMode.Points)
+            _font = _fontFactory.GetFont(new GorgonFontInfo("Arial", 9.0f, GorgonFontHeightMode.Points)
             {
                 Name = "Arial 9pt",
-                FontStyle = FontStyle.Bold,
-                AntiAliasingMode = FontAntiAliasMode.AntiAlias
+                FontStyle = GorgonFontStyle.Bold,
+                AntiAliasingMode = GorgonFontAntiAliasMode.AntiAlias
             });
 
             // Create text sprite.
@@ -701,7 +695,7 @@ public partial class MainForm
             _backBufferView = _backBuffer.GetShaderResourceView();
 
             // Clear our backup image to white to match our primary screen.
-            using (IGorgonImage image = new GorgonImage(new GorgonImageInfo(ImageType.Image2D, _screen.Format)
+            using (IGorgonImage image = new GorgonImage(new GorgonImageInfo(ImageDataType.Image2D, _screen.Format)
             {
                 Width = _screen.Width,
                 Height = _screen.Height,
@@ -768,12 +762,10 @@ public partial class MainForm
             GorgonApplication.Quit();
         }
     }
-    #endregion
 
-    #region Constructor/Destructor.
     /// <summary>
     /// Constructor.
     /// </summary>
     public MainForm() => InitializeComponent();
-    #endregion
+
 }

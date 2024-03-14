@@ -21,7 +21,7 @@ partial class FormOverlay
         base.Dispose(disposing);
     }
 
-    #region Windows Form Designer generated code
+
 
     /// <summary>
     /// Required method for Designer support - do not modify
@@ -40,7 +40,7 @@ partial class FormOverlay
         this.ClientSize = new System.Drawing.Size(904, 670);
         this.ControlBox = false;
         this.DoubleBuffered = true;
-        this.Font = new System.Drawing.Font("Segoe UI", 9F);
+        
         this.ForeColor = System.Drawing.Color.Black;
         this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
         this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
@@ -56,5 +56,5 @@ partial class FormOverlay
 
     }
 
-    #endregion
+
 }

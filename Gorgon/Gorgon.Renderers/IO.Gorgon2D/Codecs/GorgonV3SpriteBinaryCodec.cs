@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2018 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,21 +11,19 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: August 11, 2018 3:43:13 PM
 // 
-#endregion
 
-using System;
-using System.IO;
+
 using System.Numerics;
 using Gorgon.Core;
 using Gorgon.Graphics;
@@ -37,12 +35,17 @@ using DX = SharpDX;
 namespace Gorgon.IO;
 
 /// <summary>
-/// A codec that can read and write a binary formatted version of Gorgon v3 sprite data.
+/// A codec that can read and write a binary formatted version of Gorgon v3 sprite data
 /// </summary>
-public class GorgonV3SpriteBinaryCodec
-    : GorgonSpriteCodecCommon
+/// <remarks>
+/// Initializes a new instance of the <see cref="GorgonV3SpriteBinaryCodec"/> class
+/// </remarks>
+/// <param name="renderer">The renderer used for resource handling.</param>
+/// <exception cref="ArgumentNullException">Thrown when the <paramref name="renderer"/> parameter is <b>null</b>.</exception>
+public class GorgonV3SpriteBinaryCodec(Gorgon2D renderer)
+        : GorgonSpriteCodecCommon(renderer, Resources.GOR2DIO_V3_BIN_CODEC, Resources.GOR2DIO_V3_BIN_CODEC_DESCRIPTION)
 {
-    #region Properties.
+
     /// <summary>
     /// The sprite data chunk ID.
     /// </summary>
@@ -74,9 +77,9 @@ public class GorgonV3SpriteBinaryCodec
     /// Property to return the version of sprite data that the codec supports.
     /// </summary>
     public override Version Version => CurrentVersion;
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to load the texture information.
     /// </summary>
@@ -137,10 +140,9 @@ public class GorgonV3SpriteBinaryCodec
     protected override GorgonSprite OnReadFromStream(Stream stream, int byteCount, GorgonTexture2DView overrideTexture)
     {
         var reader = new GorgonChunkFileReader(stream,
-                                               new[]
-                                               {
+                                               [
                                                    CurrentFileHeader
-                                               });
+                                               ]);
         GorgonBinaryReader binReader = null;
         var sprite = new GorgonSprite();
 
@@ -341,7 +343,7 @@ public class GorgonV3SpriteBinaryCodec
                 return false;
             }
 
-            reader = new GorgonChunkFileReader(stream, new[] { CurrentFileHeader });
+            reader = new GorgonChunkFileReader(stream, [CurrentFileHeader]);
             reader.Open();
             return IsReadableChunkFile(reader);
         }
@@ -367,7 +369,7 @@ public class GorgonV3SpriteBinaryCodec
 
         try
         {
-            reader = new GorgonChunkFileReader(stream, new[] { CurrentFileHeader });
+            reader = new GorgonChunkFileReader(stream, [CurrentFileHeader]);
             reader.Open();
             if (!IsReadableChunkFile(reader))
             {
@@ -392,18 +394,6 @@ public class GorgonV3SpriteBinaryCodec
             reader?.Close();
         }
     }
-    #endregion
 
-    #region Constructor/Finalizer.
-    /// <summary>
-    /// Initializes a new instance of the <see cref="GorgonV3SpriteBinaryCodec"/> class.
-    /// </summary>
-    /// <param name="renderer">The renderer used for resource handling.</param>
-    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="renderer"/> parameter is <b>null</b>.</exception>
-    public GorgonV3SpriteBinaryCodec(Gorgon2D renderer)
-        : base(renderer, Resources.GOR2DIO_V3_BIN_CODEC, Resources.GOR2DIO_V3_BIN_CODEC_DESCRIPTION)
-    {
 
-    }
-    #endregion
 }

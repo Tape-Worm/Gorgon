@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2019 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,24 +11,21 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: May 9, 2019 7:50:58 AM
 // 
-#endregion
 
-using System;
+
 using System.ComponentModel;
 using System.Numerics;
-using System.Threading;
-using System.Windows.Forms;
 using Gorgon.Editor.Rendering;
 using Gorgon.Editor.TextureAtlasTool.Properties;
 using Gorgon.Editor.UI;
@@ -44,12 +41,12 @@ using DX = SharpDX;
 namespace Gorgon.Editor.TextureAtlasTool;
 
 /// <summary>
-/// A dialog used for sprite selection.
+/// A dialog used for sprite selection
 /// </summary>
 internal partial class FormSpriteSelector
     : Form, IDataContext<ISpriteFiles>
 {
-    #region Variables.
+
     // Flag to indicate that the form is being designed in the IDE.
     private readonly bool _isDesignTime;
     // The graphics context for the application.
@@ -60,26 +57,26 @@ internal partial class FormSpriteSelector
     private GorgonTexture2DView _previewImage;
     // The previous idle function.
     private Func<bool> _oldIdle;
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>Property to return the data context assigned to this view.</summary>
     [Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-    public ISpriteFiles DataContext
+    public ISpriteFiles ViewModel
     {
         get;
         private set;
     }
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to validate the controls on the form.
     /// </summary>
     private void ValidateControls()
     {
-        ButtonLabelMultiSprite.Visible = DataContext?.SelectedFiles.Count < 2;
-        ButtonLoad.Enabled = DataContext?.ConfirmLoadCommand?.CanExecute(null) ?? false;
+        ButtonLabelMultiSprite.Visible = ViewModel?.SelectedFiles.Count < 2;
+        ButtonLoad.Enabled = ViewModel?.ConfirmLoadCommand?.CanExecute(null) ?? false;
     }
 
     /// <summary>Handles the Search event of the ContentFileExplorer control.</summary>
@@ -87,12 +84,12 @@ internal partial class FormSpriteSelector
     /// <param name="e">The <see cref="GorgonSearchEventArgs"/> instance containing the event data.</param>
     private void ContentFileExplorer_Search(object sender, GorgonSearchEventArgs e)
     {
-        if ((DataContext?.SearchCommand is null) || (!DataContext.SearchCommand.CanExecute(e.SearchText)))
+        if ((ViewModel?.SearchCommand is null) || (!ViewModel.SearchCommand.CanExecute(e.SearchText)))
         {
             return;
         }
 
-        DataContext.SearchCommand.Execute(e.SearchText);
+        ViewModel.SearchCommand.Execute(e.SearchText);
         ValidateControls();
     }
 
@@ -102,12 +99,12 @@ internal partial class FormSpriteSelector
     /// <param name="e">The e.</param>
     private async void ContentFileExplorer_FileEntriesFocused(object sender, ContentFileEntriesFocusedArgs e)
     {
-        if ((DataContext?.RefreshSpritePreviewCommand is null) || (!DataContext.RefreshSpritePreviewCommand.CanExecute(e.FocusedFiles)))
+        if ((ViewModel?.RefreshSpritePreviewCommand is null) || (!ViewModel.RefreshSpritePreviewCommand.CanExecute(e.FocusedFiles)))
         {
             return;
         }
 
-        await DataContext.RefreshSpritePreviewCommand.ExecuteAsync(e.FocusedFiles);
+        await ViewModel.RefreshSpritePreviewCommand.ExecuteAsync(e.FocusedFiles);
         ValidateControls();
     }
 
@@ -121,12 +118,12 @@ internal partial class FormSpriteSelector
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
     private void ButtonLoad_Click(object sender, EventArgs e)
     {
-        if ((DataContext?.ConfirmLoadCommand is null) || (!DataContext.ConfirmLoadCommand.CanExecute(null)))
+        if ((ViewModel?.ConfirmLoadCommand is null) || (!ViewModel.ConfirmLoadCommand.CanExecute(null)))
         {
             return;
         }
 
-        DataContext.ConfirmLoadCommand.Execute(null);
+        ViewModel.ConfirmLoadCommand.Execute(null);
     }
 
     /// <summary>Handles the PropertyChanged event of the DataContext control.</summary>
@@ -137,7 +134,7 @@ internal partial class FormSpriteSelector
         switch (e.PropertyName)
         {
             case nameof(ISpriteFiles.PreviewImage):
-                UpdateRenderImage(DataContext.PreviewImage);
+                UpdateRenderImage(ViewModel.PreviewImage);
                 break;
         }
 
@@ -209,7 +206,7 @@ internal partial class FormSpriteSelector
 
         // Render the sprite image.
         if (_previewImage is not null)
-        {                
+        {
             float scale = (renderRegion.Width / _previewImage.Width).Min(renderRegion.Height / _previewImage.Height);
             float width = _previewImage.Width * scale;
             float height = _previewImage.Height * scale;
@@ -221,8 +218,8 @@ internal partial class FormSpriteSelector
         else
         {
             DX.Size2F size = Resources.GORTAG_TEXT_SELECT_SPRITE.MeasureText(_graphicsContext.Renderer2D.DefaultFont, false);
-            _graphicsContext.Renderer2D.DrawString(Resources.GORTAG_TEXT_SELECT_SPRITE, 
-                                                    new Vector2(renderRegion.X + halfClient.X - size.Width * 0.5f, renderRegion.Y + halfClient.Y - size.Height * 0.5f), 
+            _graphicsContext.Renderer2D.DrawString(Resources.GORTAG_TEXT_SELECT_SPRITE,
+                                                    new Vector2(renderRegion.X + halfClient.X - size.Width * 0.5f, renderRegion.Y + halfClient.Y - size.Height * 0.5f),
                                                     color: GorgonColor.White);
         }
         _graphicsContext.Renderer2D.End();
@@ -266,12 +263,12 @@ internal partial class FormSpriteSelector
     /// </summary>
     private void UnassignEvents()
     {
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             return;
         }
 
-        DataContext.PropertyChanged -= DataContext_PropertyChanged;
+        ViewModel.PropertyChanged -= DataContext_PropertyChanged;
     }
 
     /// <summary>
@@ -305,7 +302,7 @@ internal partial class FormSpriteSelector
             return;
         }
 
-        DataContext?.Unload();
+        ViewModel?.Unload();
     }
 
     /// <summary>Raises the Load event.</summary>
@@ -319,7 +316,7 @@ internal partial class FormSpriteSelector
             return;
         }
 
-        DataContext?.Load();
+        ViewModel?.Load();
 
         ValidateControls();
     }
@@ -341,7 +338,7 @@ internal partial class FormSpriteSelector
 
         _swapChain = context.LeaseSwapPresenter(PanelPreviewRender);
         _oldIdle = GorgonApplication.IdleMethod;
-        GorgonApplication.IdleMethod = Idle;            
+        GorgonApplication.IdleMethod = Idle;
     }
 
     /// <summary>Function to assign a data context to the view as a view model.</summary>
@@ -352,23 +349,23 @@ internal partial class FormSpriteSelector
         UnassignEvents();
 
         InitializeFromDataContext(dataContext);
-        DataContext = dataContext;
+        ViewModel = dataContext;
 
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             return;
         }
-        
-        DataContext.PropertyChanged += DataContext_PropertyChanged;
-    }
-    #endregion
 
-    #region Constructor/Finalizer.
+        ViewModel.PropertyChanged += DataContext_PropertyChanged;
+    }
+
+
+
     /// <summary>Initializes a new instance of the <see cref="FormSpriteSelector"/> class.</summary>
     public FormSpriteSelector()
     {
         _isDesignTime = LicenseManager.UsageMode == LicenseUsageMode.Designtime;
         InitializeComponent();
     }
-    #endregion
+
 }

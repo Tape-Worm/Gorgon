@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2021 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,29 +11,29 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: January 25, 2021 12:55:54 PM
 // 
-#endregion
+
 
 using System.Buffers;
 
 namespace Gorgon.Memory;
 
 /// <summary>
-/// Class to return array pools with a specific maximum size for the arrays that are pooled.
+/// Class to return array pools with a specific maximum size for the arrays that are pooled
 /// </summary>
 public static class GorgonArrayPool<T>
 {
-    #region Properties.
+
     /// <summary>
     /// Property to return an array pool with a maximum size of 1,048,576 items per array.
     /// </summary>
@@ -61,9 +61,9 @@ public static class GorgonArrayPool<T>
     /// Property to return an array pool with a maximum size of 1,073,741,824 items per array.
     /// </summary>
     public static ArrayPool<T> SharedHuge { get; } = ArrayPool<T>.Create(1_073_741_824, 5);
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to return the best suited pool based on the requested array size.
     /// </summary>
@@ -91,5 +91,5 @@ public static class GorgonArrayPool<T>
 #pragma warning restore IDE0046 // Convert to conditional expression
 
     }
-    #endregion
+
 }

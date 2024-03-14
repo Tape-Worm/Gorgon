@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2019 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,32 +11,35 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: December 2, 2019 8:32:27 AM
 // 
-#endregion
 
-using System;
+
 using Gorgon.Editor.PlugIns;
 using Gorgon.IO;
 
 namespace Gorgon.Editor.ViewModels;
 
 /// <summary>
-/// Parameters for the <see cref="Directory"/> view model.
+/// Parameters for the <see cref="Directory"/> view model
 /// </summary>
-internal class DirectoryParameters
-    : ViewModelCommonParameters
+/// <remarks>Initializes a new instance of the <see cref="DirectoryParameters"/> class.</remarks>
+/// <param name="hostServices">The services from the host application.</param>
+/// <param name="factory">The factory used to create view models.</param>
+/// <exception cref="ArgumentNullException">Thrown when any of the required parameters are <b>null</b>.</exception>
+internal class DirectoryParameters(IHostContentServices hostServices, ViewModelFactory factory)
+        : ViewModelCommonParameters(hostServices, factory)
 {
-    #region Properties.
+
     /// <summary>
     /// Property to set or return the virtual directory represented by the view model.
     /// </summary>
@@ -63,16 +66,8 @@ internal class DirectoryParameters
         get;
         set;
     }
-    #endregion
 
-    #region Constructor.
-    /// <summary>Initializes a new instance of the <see cref="DirectoryParameters"/> class.</summary>
-    /// <param name="hostServices">The services from the host application.</param>
-    /// <param name="factory">The factory used to create view models.</param>
-    /// <exception cref="ArgumentNullException">Thrown when any of the required parameters are <b>null</b>.</exception>
-    public DirectoryParameters(IHostContentServices hostServices, ViewModelFactory factory)
-        : base(hostServices, factory)
-    {
-    }
-    #endregion
+
+
+
 }

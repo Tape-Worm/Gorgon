@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2017 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,37 +11,34 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: July 5, 2017 2:44:43 PM
 // 
-#endregion
 
-using System;
 
 namespace Gorgon.Graphics.Core;
 
-#if NET6_0_OR_GREATER
 /// <summary>
-/// Provides the necessary information required to set up a generic unstructured buffer.
+/// Provides the necessary information required to set up a generic unstructured buffer
 /// </summary>
 /// <param name="SizeInBytes">The size of the buffer, in bytes.</param>
 /// <remarks>
 /// <para>
-/// For buffers that set <see cref="IGorgonBufferInfo.AllowRawView"/> to <b>true</b>, the <see cref="SizeInBytes"/> value will be rounded up to the nearest multiple of 4 at buffer creation time.
+/// For buffers that set <see cref="IGorgonBufferInfo.AllowRawView"/> to <b>true</b>, the <see cref="SizeInBytes"/> value will be rounded up to the nearest multiple of 4 at buffer creation time
 /// </para>
 /// </remarks>
 public record GorgonBufferInfo(int SizeInBytes)
     : IGorgonBufferInfo
 {
-#region Constructor/Finalizer.
+
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonBufferInfo"/> class.
     /// </summary>
@@ -58,9 +55,9 @@ public record GorgonBufferInfo(int SizeInBytes)
         AllowRawView = info.AllowRawView;
         IndirectArgs = info.IndirectArgs;
     }
-#endregion
 
-#region Properties.
+
+
     /// <summary>
     /// Property to return whether to allow the CPU read access to the buffer.
     /// </summary>
@@ -190,107 +187,5 @@ public record GorgonBufferInfo(int SizeInBytes)
         get;
         init;
     } = GorgonGraphicsResource.GenerateName(GorgonBuffer.NamePrefix);
-#endregion
+
 }
-#else
-/// <summary>
-/// Provides the necessary information required to set up a generic unstructured buffer.
-/// </summary>
-public class GorgonBufferInfo
-    : IGorgonBufferInfo
-{
-    #region Properties.
-    /// <summary>
-    /// Property to set or return whether to allow the CPU read access to the buffer.
-    /// </summary>
-    public bool AllowCpuRead
-    {
-        get;
-        set;
-    }
-
-    /// <summary>
-    /// Property to set or return the intended usage for binding to the GPU.
-    /// </summary>
-    public ResourceUsage Usage
-    {
-        get;
-        set;
-    }
-
-    /// <summary>
-    /// Property to return the size of the buffer, in bytes.
-    /// </summary>
-    public int SizeInBytes
-    {
-        get;
-        set;
-    }
-
-    /// <summary>
-    /// Property to return the type of binding for the GPU.
-    /// </summary>
-    public BufferBinding Binding
-    {
-        get;
-        set;
-    }
-
-    /// <summary>
-    /// Property to return whether the buffer will contain indirect argument data.
-    /// </summary>
-    public bool IndirectArgs
-    {
-        get;
-        set;
-    }
-
-    /// <summary>
-    /// Property to return the size, in bytes, of an individual structure in a structured buffer.
-    /// </summary>
-    public int StructureSize
-    {
-        get;
-        set;
-    }
-
-    /// <summary>
-    /// Property to return whether to allow raw unordered views of the buffer.
-    /// </summary>
-    public bool AllowRawView
-    {
-        get;
-        set;
-    }
-
-    /// <summary>
-    /// Property to return the name of this object.
-    /// </summary>
-    public string Name
-    {
-        get;
-        set;
-    }
-    #endregion
-
-    #region Constructor/Finalizer.
-    /// <summary>
-    /// Initializes a new instance of the <see cref="GorgonBufferInfo"/> class.
-    /// </summary>
-    /// <param name="info">The buffer information to copy.</param>
-    /// <param name="newName">[Optional] The new name for the buffer.</param>
-    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="info"/> parameter is <b>null</b>.</exception>
-    public GorgonBufferInfo(IGorgonBufferInfo info, string newName = null)
-    {
-        Name = newName;
-        Usage = info.Usage;
-        SizeInBytes = info.SizeInBytes;
-        Binding = info.Binding;
-        AllowCpuRead = info.AllowCpuRead;
-        StructureSize = info.StructureSize;
-        AllowRawView = info.AllowRawView;
-        IndirectArgs = info.IndirectArgs;
-    }
-    #endregion
-}
-#endif

@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2016 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,23 +11,19 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: June 20, 2016 11:49:00 PM
 // 
-#endregion
 
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
+
 using Gorgon.Core;
 using Gorgon.Graphics.Imaging.Codecs;
 using Gorgon.Graphics.Imaging.Properties;
@@ -40,7 +36,7 @@ using DX = SharpDX;
 namespace Gorgon.Graphics.Imaging;
 
 /// <summary>
-/// The type of resize to perform.
+/// The type of resize to perform
 /// </summary>
 enum ResizeMode
 {
@@ -59,12 +55,12 @@ enum ResizeMode
 }
 
 /// <summary>
-/// Utilities that use WIC (Windows Imaging Component) to perform image manipulation operations.
+/// Utilities that use WIC (Windows Imaging Component) to perform image manipulation operations
 /// </summary> 
 class WicUtilities
     : IDisposable
 {
-    #region Constants.
+
     // Encoding option for interlacing.
     private const string EncOptInterlacing = "Interlacing";
     // Encoding option for filtering.
@@ -75,132 +71,118 @@ class WicUtilities
     private const string DecOptPalette = "Palette";
     // Decoding option for the alpha threshold.
     private const string DecOptAlphaThreshold = "AlphaThreshold";
-    #endregion
 
-    #region Value Types.
+
+
     /// <summary>
     /// A value to hold a WIC to Gorgon buffer format value.
     /// </summary>
-    private readonly struct WICGorgonFormat
+    /// <remarks>
+    /// Initializes a new instance of the <see cref="WICGorgonFormat" /> struct.
+    /// </remarks>
+    /// <param name="guid">The GUID.</param>
+    /// <param name="format">The format.</param>
+    private readonly struct WICGorgonFormat(Guid guid, BufferFormat format)
     {
         /// <summary>
         /// WIC GUID to convert from/to.
         /// </summary>
-        public readonly Guid WICGuid;
+        public readonly Guid WICGuid = guid;
         /// <summary>
         /// Gorgon buffer format to convert from/to.
         /// </summary>
-        public readonly BufferFormat Format;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="WICGorgonFormat" /> struct.
-        /// </summary>
-        /// <param name="guid">The GUID.</param>
-        /// <param name="format">The format.</param>
-        public WICGorgonFormat(Guid guid, BufferFormat format)
-        {
-            WICGuid = guid;
-            Format = format;
-        }
+        public readonly BufferFormat Format = format;
     }
 
     /// <summary>
     /// A value to hold a nearest supported format conversion.
     /// </summary>
-    private readonly struct WICNearest
+    /// <remarks>
+    /// Initializes a new instance of the <see cref="WICNearest" /> struct.
+    /// </remarks>
+    /// <param name="source">The source.</param>
+    /// <param name="dest">The destination.</param>
+    private readonly struct WICNearest(Guid source, Guid dest)
     {
         /// <summary>
         /// Source format to convert from.
         /// </summary>
-        public readonly Guid Source;
+        public readonly Guid Source = source;
         /// <summary>
         /// Destination format to convert to.
         /// </summary>
-        public readonly Guid Destination;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="WICNearest" /> struct.
-        /// </summary>
-        /// <param name="source">The source.</param>
-        /// <param name="dest">The destination.</param>
-        public WICNearest(Guid source, Guid dest)
-        {
-            Source = source;
-            Destination = dest;
-        }
+        public readonly Guid Destination = dest;
     }
-    #endregion
 
-    #region Conversion Tables.
     // Formats for conversion between Gorgon and WIC.
     private readonly WICGorgonFormat[] _wicDXGIFormats =
-    {
-        new WICGorgonFormat(PixelFormat.Format128bppRGBAFloat, BufferFormat.R32G32B32A32_Float),
-        new WICGorgonFormat(PixelFormat.Format64bppRGBAHalf, BufferFormat.R16G16B16A16_Float),
-        new WICGorgonFormat(PixelFormat.Format64bppRGBA, BufferFormat.R16G16B16A16_UNorm),
-        new WICGorgonFormat(PixelFormat.Format32bppRGBA, BufferFormat.R8G8B8A8_UNorm),
-        new WICGorgonFormat(PixelFormat.Format32bppBGRA, BufferFormat.B8G8R8A8_UNorm),
-        new WICGorgonFormat(PixelFormat.Format32bppBGR, BufferFormat.B8G8R8X8_UNorm),
-        new WICGorgonFormat(PixelFormat.Format32bppRGBA1010102XR,BufferFormat.R10G10B10_Xr_Bias_A2_UNorm),
-        new WICGorgonFormat(PixelFormat.Format32bppRGBA1010102, BufferFormat.R10G10B10A2_UNorm),
-        new WICGorgonFormat(PixelFormat.Format32bppRGBE, BufferFormat.R9G9B9E5_Sharedexp),
-        new WICGorgonFormat(PixelFormat.Format16bppBGR565, BufferFormat.B5G6R5_UNorm),
-        new WICGorgonFormat(PixelFormat.Format16bppBGRA5551, BufferFormat.B5G5R5A1_UNorm),
-        new WICGorgonFormat(PixelFormat.Format32bppRGBE, BufferFormat.R9G9B9E5_Sharedexp),
-        new WICGorgonFormat(PixelFormat.Format32bppGrayFloat, BufferFormat.R32_Float),
-        new WICGorgonFormat(PixelFormat.Format16bppGrayHalf, BufferFormat.R16_Float),
-        new WICGorgonFormat(PixelFormat.Format16bppGray, BufferFormat.R16_UNorm),
-        new WICGorgonFormat(PixelFormat.Format8bppGray, BufferFormat.R8_UNorm),
-        new WICGorgonFormat(PixelFormat.Format8bppAlpha, BufferFormat.A8_UNorm)
-    };
+    [
+        new(PixelFormat.Format128bppRGBAFloat, BufferFormat.R32G32B32A32_Float),
+        new(PixelFormat.Format64bppRGBAHalf, BufferFormat.R16G16B16A16_Float),
+        new(PixelFormat.Format64bppRGBA, BufferFormat.R16G16B16A16_UNorm),
+        new(PixelFormat.Format32bppRGBA, BufferFormat.R8G8B8A8_UNorm),
+        new(PixelFormat.Format32bppBGRA, BufferFormat.B8G8R8A8_UNorm),
+        new(PixelFormat.Format32bppBGR, BufferFormat.B8G8R8X8_UNorm),
+        new(PixelFormat.Format32bppRGBA1010102XR,BufferFormat.R10G10B10_Xr_Bias_A2_UNorm),
+        new(PixelFormat.Format32bppRGBA1010102, BufferFormat.R10G10B10A2_UNorm),
+        new(PixelFormat.Format32bppRGBE, BufferFormat.R9G9B9E5_Sharedexp),
+        new(PixelFormat.Format16bppBGR565, BufferFormat.B5G6R5_UNorm),
+        new(PixelFormat.Format16bppBGRA5551, BufferFormat.B5G5R5A1_UNorm),
+        new(PixelFormat.Format32bppRGBE, BufferFormat.R9G9B9E5_Sharedexp),
+        new(PixelFormat.Format32bppGrayFloat, BufferFormat.R32_Float),
+        new(PixelFormat.Format16bppGrayHalf, BufferFormat.R16_Float),
+        new(PixelFormat.Format16bppGray, BufferFormat.R16_UNorm),
+        new(PixelFormat.Format8bppGray, BufferFormat.R8_UNorm),
+        new(PixelFormat.Format8bppAlpha, BufferFormat.A8_UNorm)
+    ];
 
     // Best fit for supported format conversions.
     private readonly WICNearest[] _wicBestFitFormat =
-    {
-        new WICNearest(PixelFormat.Format1bppIndexed, PixelFormat.Format32bppRGBA),
-        new WICNearest(PixelFormat.Format2bppIndexed, PixelFormat.Format32bppRGBA),
-        new WICNearest(PixelFormat.Format4bppIndexed, PixelFormat.Format32bppRGBA),
-        new WICNearest(PixelFormat.Format8bppIndexed, PixelFormat.Format32bppRGBA),
-        new WICNearest(PixelFormat.Format2bppGray, PixelFormat.Format8bppGray),
-        new WICNearest(PixelFormat.Format4bppGray, PixelFormat.Format8bppGray),
-        new WICNearest(PixelFormat.Format16bppGrayFixedPoint, PixelFormat.Format16bppGrayHalf),
-        new WICNearest(PixelFormat.Format32bppGrayFixedPoint, PixelFormat.Format32bppGrayFloat),
-        new WICNearest(PixelFormat.Format16bppBGR555, PixelFormat.Format16bppBGRA5551),
-        new WICNearest(PixelFormat.Format32bppBGR101010, PixelFormat.Format32bppRGBA1010102),
-        new WICNearest(PixelFormat.Format24bppBGR, PixelFormat.Format32bppRGBA),
-        new WICNearest(PixelFormat.Format24bppRGB, PixelFormat.Format32bppRGBA),
-        new WICNearest(PixelFormat.Format32bppPBGRA, PixelFormat.Format32bppRGBA),
-        new WICNearest(PixelFormat.Format32bppPRGBA, PixelFormat.Format32bppRGBA),
-        new WICNearest(PixelFormat.Format48bppRGB, PixelFormat.Format64bppRGBA),
-        new WICNearest(PixelFormat.Format48bppBGR, PixelFormat.Format64bppRGBA),
-        new WICNearest(PixelFormat.Format64bppBGRA, PixelFormat.Format64bppRGBA),
-        new WICNearest(PixelFormat.Format64bppPRGBA, PixelFormat.Format64bppRGBA),
-        new WICNearest(PixelFormat.Format64bppPBGRA, PixelFormat.Format64bppRGBA),
-        new WICNearest(PixelFormat.Format48bppRGBFixedPoint, PixelFormat.Format64bppRGBAHalf),
-        new WICNearest(PixelFormat.Format48bppBGRFixedPoint, PixelFormat.Format64bppRGBAHalf),
-        new WICNearest(PixelFormat.Format64bppRGBAFixedPoint, PixelFormat.Format64bppRGBAHalf),
-        new WICNearest(PixelFormat.Format64bppBGRAFixedPoint, PixelFormat.Format64bppRGBAHalf),
-        new WICNearest(PixelFormat.Format64bppRGBFixedPoint, PixelFormat.Format64bppRGBAHalf),
-        new WICNearest(PixelFormat.Format64bppRGBHalf, PixelFormat.Format64bppRGBAHalf),
-        new WICNearest(PixelFormat.Format48bppRGBHalf, PixelFormat.Format64bppRGBAHalf),
-        new WICNearest(PixelFormat.Format128bppPRGBAFloat, PixelFormat.Format128bppRGBAFloat),
-        new WICNearest(PixelFormat.Format128bppRGBFloat, PixelFormat.Format128bppRGBAFloat),
-        new WICNearest(PixelFormat.Format128bppRGBAFixedPoint, PixelFormat.Format128bppRGBAFloat),
-        new WICNearest(PixelFormat.Format128bppRGBFixedPoint, PixelFormat.Format128bppRGBAFloat),
-        new WICNearest(PixelFormat.Format32bppCMYK, PixelFormat.Format32bppRGBA),
-        new WICNearest(PixelFormat.Format64bppCMYK, PixelFormat.Format64bppRGBA),
-        new WICNearest(PixelFormat.Format40bppCMYKAlpha, PixelFormat.Format64bppRGBA),
-        new WICNearest(PixelFormat.Format80bppCMYKAlpha, PixelFormat.Format64bppRGBA),
-        new WICNearest(PixelFormat.Format96bppRGBFixedPoint, PixelFormat.Format128bppRGBAFloat)
-    };
-    #endregion
+    [
+        new(PixelFormat.Format1bppIndexed, PixelFormat.Format32bppRGBA),
+        new(PixelFormat.Format2bppIndexed, PixelFormat.Format32bppRGBA),
+        new(PixelFormat.Format4bppIndexed, PixelFormat.Format32bppRGBA),
+        new(PixelFormat.Format8bppIndexed, PixelFormat.Format32bppRGBA),
+        new(PixelFormat.Format2bppGray, PixelFormat.Format8bppGray),
+        new(PixelFormat.Format4bppGray, PixelFormat.Format8bppGray),
+        new(PixelFormat.Format16bppGrayFixedPoint, PixelFormat.Format16bppGrayHalf),
+        new(PixelFormat.Format32bppGrayFixedPoint, PixelFormat.Format32bppGrayFloat),
+        new(PixelFormat.Format16bppBGR555, PixelFormat.Format16bppBGRA5551),
+        new(PixelFormat.Format32bppBGR101010, PixelFormat.Format32bppRGBA1010102),
+        new(PixelFormat.Format24bppBGR, PixelFormat.Format32bppRGBA),
+        new(PixelFormat.Format24bppRGB, PixelFormat.Format32bppRGBA),
+        new(PixelFormat.Format32bppPBGRA, PixelFormat.Format32bppRGBA),
+        new(PixelFormat.Format32bppPRGBA, PixelFormat.Format32bppRGBA),
+        new(PixelFormat.Format48bppRGB, PixelFormat.Format64bppRGBA),
+        new(PixelFormat.Format48bppBGR, PixelFormat.Format64bppRGBA),
+        new(PixelFormat.Format64bppBGRA, PixelFormat.Format64bppRGBA),
+        new(PixelFormat.Format64bppPRGBA, PixelFormat.Format64bppRGBA),
+        new(PixelFormat.Format64bppPBGRA, PixelFormat.Format64bppRGBA),
+        new(PixelFormat.Format48bppRGBFixedPoint, PixelFormat.Format64bppRGBAHalf),
+        new(PixelFormat.Format48bppBGRFixedPoint, PixelFormat.Format64bppRGBAHalf),
+        new(PixelFormat.Format64bppRGBAFixedPoint, PixelFormat.Format64bppRGBAHalf),
+        new(PixelFormat.Format64bppBGRAFixedPoint, PixelFormat.Format64bppRGBAHalf),
+        new(PixelFormat.Format64bppRGBFixedPoint, PixelFormat.Format64bppRGBAHalf),
+        new(PixelFormat.Format64bppRGBHalf, PixelFormat.Format64bppRGBAHalf),
+        new(PixelFormat.Format48bppRGBHalf, PixelFormat.Format64bppRGBAHalf),
+        new(PixelFormat.Format128bppPRGBAFloat, PixelFormat.Format128bppRGBAFloat),
+        new(PixelFormat.Format128bppRGBFloat, PixelFormat.Format128bppRGBAFloat),
+        new(PixelFormat.Format128bppRGBAFixedPoint, PixelFormat.Format128bppRGBAFloat),
+        new(PixelFormat.Format128bppRGBFixedPoint, PixelFormat.Format128bppRGBAFloat),
+        new(PixelFormat.Format32bppCMYK, PixelFormat.Format32bppRGBA),
+        new(PixelFormat.Format64bppCMYK, PixelFormat.Format64bppRGBA),
+        new(PixelFormat.Format40bppCMYKAlpha, PixelFormat.Format64bppRGBA),
+        new(PixelFormat.Format80bppCMYKAlpha, PixelFormat.Format64bppRGBA),
+        new(PixelFormat.Format96bppRGBFixedPoint, PixelFormat.Format128bppRGBAFloat)
+    ];
 
-    #region Variables.
+
+
     // The WIC factory.
     private readonly ImagingFactory _factory;
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to find the best buffer format for a given pixel format.
     /// </summary>
@@ -428,7 +410,7 @@ class WicUtilities
             return null;
         }
 
-        IList<GorgonColor> paletteColors = options?.Options[DecOptPalette].GetValue<IList<GorgonColor>>() ?? Array.Empty<GorgonColor>();
+        IList<GorgonColor> paletteColors = options?.Options[DecOptPalette].GetValue<IList<GorgonColor>>() ?? [];
         float alpha = options?.Options[DecOptAlphaThreshold].GetValue<float>() ?? 0.0f;
 
         // If there are no colors set, then extract it from the frame.
@@ -481,7 +463,7 @@ class WicUtilities
             return null;
         }
 
-        IList<GorgonColor> paletteColors = options?.Options[DecOptPalette].GetValue<IList<GorgonColor>>() ?? Array.Empty<GorgonColor>();
+        IList<GorgonColor> paletteColors = options?.Options[DecOptPalette].GetValue<IList<GorgonColor>>() ?? [];
         float alpha = options?.Options[DecOptAlphaThreshold].GetValue<float>() ?? 0.0f;
         Palette wicPalette;
 
@@ -622,7 +604,7 @@ class WicUtilities
 
         if (sourceGuid == Guid.Empty)
         {
-            return Array.Empty<BufferFormat>();
+            return [];
         }
 
         var result = new List<BufferFormat>();
@@ -704,7 +686,7 @@ class WicUtilities
             arrayCount = decoder.FrameCount.Max(1);
         }
 
-        return (new GorgonImageInfo(ImageType.Image2D, format)
+        return (new GorgonImageInfo(ImageDataType.Image2D, format)
         {
             Width = frame.Size.Width,
             Height = frame.Size.Height,
@@ -991,7 +973,7 @@ class WicUtilities
 
             if (!decoder.DecoderInfo.IsMultiframeSupported)
             {
-                return Array.Empty<DX.Point>();
+                return [];
             }
 
             var result = new DX.Point[decoder.FrameCount];
@@ -1143,8 +1125,8 @@ class WicUtilities
                 {
                     for (int depth = 0; depth < mipDepth; ++depth)
                     {
-                        IGorgonImageBuffer sourceBuffer = destImageData.Buffers[0, destImageData.ImageType == ImageType.Image3D ? (destImageData.Depth / mipDepth) * depth : array];
-                        IGorgonImageBuffer destBuffer = destImageData.Buffers[mipLevel, destImageData.ImageType == ImageType.Image3D ? depth : array];
+                        IGorgonImageBuffer sourceBuffer = destImageData.Buffers[0, destImageData.ImageType == ImageDataType.Image3D ? (destImageData.Depth / mipDepth) * depth : array];
+                        IGorgonImageBuffer destBuffer = destImageData.Buffers[mipLevel, destImageData.ImageType == ImageDataType.Image3D ? depth : array];
 
                         bitmap = GetBitmap(sourceBuffer, pixelFormat);
 
@@ -1222,8 +1204,8 @@ class WicUtilities
 
                     for (int depth = 0; depth < mipDepth; ++depth)
                     {
-                        IGorgonImageBuffer destBuffer = result.Buffers[mip, workingImage.ImageType == ImageType.Image3D ? depth : array];
-                        IGorgonImageBuffer srcBuffer = workingImage.Buffers[mip, workingImage.ImageType == ImageType.Image3D ? depth : array];
+                        IGorgonImageBuffer destBuffer = result.Buffers[mip, workingImage.ImageType == ImageDataType.Image3D ? depth : array];
+                        IGorgonImageBuffer srcBuffer = workingImage.Buffers[mip, workingImage.ImageType == ImageDataType.Image3D ? depth : array];
 
                         bitmap = GetBitmap(srcBuffer, pixelFormat);
 
@@ -1301,8 +1283,8 @@ class WicUtilities
                     for (int depth = 0; depth < depthCount; depth++)
                     {
                         // Get the array/mip/depth buffer.
-                        IGorgonImageBuffer destBuffer = result.Buffers[mip, imageData.ImageType == ImageType.Image3D ? depth : array];
-                        IGorgonImageBuffer srcBuffer = imageData.Buffers[mip, imageData.ImageType == ImageType.Image3D ? depth : array];
+                        IGorgonImageBuffer destBuffer = result.Buffers[mip, imageData.ImageType == ImageDataType.Image3D ? depth : array];
+                        IGorgonImageBuffer srcBuffer = imageData.Buffers[mip, imageData.ImageType == ImageDataType.Image3D ? depth : array];
                         var rect = new DX.DataRectangle(srcBuffer.Data, srcBuffer.PitchInformation.RowPitch);
 
                         Bitmap bitmap = null;
@@ -1340,7 +1322,7 @@ class WicUtilities
                             bitmap?.Dispose();
                         }
                     }
-                }                  
+                }
             }
 
             return result;
@@ -1382,7 +1364,7 @@ class WicUtilities
 
             if (!decoder.DecoderInfo.IsMultiframeSupported)
             {
-                return Array.Empty<int>();
+                return [];
             }
 
             int[] result = new int[decoder.FrameCount];
@@ -1419,12 +1401,12 @@ class WicUtilities
     /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
     /// </summary>
     public void Dispose() => _factory?.Dispose();
-    #endregion
 
-    #region Constructor/Finalizer.
+
+
     /// <summary>
     /// Initializes a new instance of the <see cref="WicUtilities"/> class.
     /// </summary>
     public WicUtilities() => _factory = new ImagingFactory();
-    #endregion
+
 }

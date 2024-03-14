@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2019 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,23 +11,20 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: April 28, 2019 12:15:14 PM
 // 
-#endregion
 
-using System;
+
 using System.ComponentModel;
-using System.IO;
-using System.Windows.Forms;
 using Gorgon.Editor.UI;
 using Gorgon.Editor.ViewModels;
 using Gorgon.UI;
@@ -35,17 +32,17 @@ using Gorgon.UI;
 namespace Gorgon.Editor;
 
 /// <summary>
-/// A folder browser for the project file system.
+/// A folder browser for the project file system
 /// </summary>
 internal partial class FormFileSystemFolderBrowser
     : Form, IDataContext<IFileExplorer>
 {
-    #region Variables.
+
     // The currently active directory.
     private IDirectory _currentDirectory;
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to set or return the description to display on the browser.
     /// </summary>
@@ -58,7 +55,7 @@ internal partial class FormFileSystemFolderBrowser
 
     /// <summary>Property to return the data context assigned to this view.</summary>
     [Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-    public IFileExplorer DataContext
+    public IFileExplorer ViewModel
     {
         get;
         private set;
@@ -69,9 +66,9 @@ internal partial class FormFileSystemFolderBrowser
     /// </summary>
     [Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public string CurrentDirectory => FolderBrowser.CurrentDirectory;
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to retrieve the current directory as an <see cref="IDirectory"/> object.
     /// </summary>
@@ -80,12 +77,12 @@ internal partial class FormFileSystemFolderBrowser
     private IDirectory GetDirectory(string path)
     {
         var args = new GetDirectoryArgs(path);
-        if ((DataContext?.GetDirectoryCommand is null) || (!DataContext.GetDirectoryCommand.CanExecute(args)))
+        if ((ViewModel?.GetDirectoryCommand is null) || (!ViewModel.GetDirectoryCommand.CanExecute(args)))
         {
             return null;
         }
 
-        DataContext.GetDirectoryCommand.Execute(args);
+        ViewModel.GetDirectoryCommand.Execute(args);
         return args.Directory;
     }
 
@@ -94,7 +91,7 @@ internal partial class FormFileSystemFolderBrowser
     /// <param name="e">The event parameters.</param>
     private async void FolderBrowser_FolderDeleting(object sender, FolderDeleteArgs e)
     {
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             e.Cancel = true;
             return;
@@ -110,12 +107,12 @@ internal partial class FormFileSystemFolderBrowser
 
         var args = new DeleteArgs(dir.ID);
 
-        if ((DataContext.DeleteDirectoryCommand is null) || (!DataContext.DeleteDirectoryCommand.CanExecute(args)))
+        if ((ViewModel.DeleteDirectoryCommand is null) || (!ViewModel.DeleteDirectoryCommand.CanExecute(args)))
         {
             return;
         }
 
-        e.DeleteTask = DataContext.DeleteDirectoryCommand.ExecuteAsync(args);
+        e.DeleteTask = ViewModel.DeleteDirectoryCommand.ExecuteAsync(args);
         await e.DeleteTask;
 
         e.Cancel = !args.ItemsDeleted;
@@ -129,7 +126,7 @@ internal partial class FormFileSystemFolderBrowser
     /// <param name="e">The event parameters.</param>
     private void FolderBrowser_FolderAdding(object sender, FolderAddArgs e)
     {
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             e.Cancel = true;
             return;
@@ -138,15 +135,15 @@ internal partial class FormFileSystemFolderBrowser
         var args = new CreateDirectoryArgs
         {
             Name = e.DirectoryName,
-            ParentDirectory = _currentDirectory ?? DataContext.Root
+            ParentDirectory = _currentDirectory ?? ViewModel.Root
         };
 
-        if ((DataContext.CreateDirectoryCommand is null) || (!DataContext.CreateDirectoryCommand.CanExecute(args)))
+        if ((ViewModel.CreateDirectoryCommand is null) || (!ViewModel.CreateDirectoryCommand.CanExecute(args)))
         {
             return;
         }
 
-        DataContext.CreateDirectoryCommand.Execute(args);
+        ViewModel.CreateDirectoryCommand.Execute(args);
 
         if (args.Directory is null)
         {
@@ -161,7 +158,7 @@ internal partial class FormFileSystemFolderBrowser
     /// <param name="e">The event parameters.</param>
     private void FolderBrowser_FolderRenaming(object sender, FolderRenameArgs e)
     {
-        if (DataContext?.RenameDirectoryCommand is null)
+        if (ViewModel?.RenameDirectoryCommand is null)
         {
             e.Cancel = true;
             return;
@@ -180,13 +177,13 @@ internal partial class FormFileSystemFolderBrowser
             ID = prevDir.ID
         };
 
-        if (!DataContext.RenameDirectoryCommand.CanExecute(args))
+        if (!ViewModel.RenameDirectoryCommand.CanExecute(args))
         {
             e.Cancel = true;
             return;
         }
-        
-        DataContext.RenameDirectoryCommand.Execute(args);
+
+        ViewModel.RenameDirectoryCommand.Execute(args);
 
         e.Cancel = args.Cancel;
         e.RenameHandled = true;
@@ -202,7 +199,7 @@ internal partial class FormFileSystemFolderBrowser
     /// <param name="e">The e.</param>
     private void FolderBrowser_FolderEntered(object sender, FolderSelectedArgs e)
     {
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             return;
         }
@@ -216,7 +213,7 @@ internal partial class FormFileSystemFolderBrowser
     /// </summary>
     private void UnassignEvents()
     {
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             return;
         }
@@ -283,12 +280,12 @@ internal partial class FormFileSystemFolderBrowser
 
         InitializeFromDataContext(dataContext);
 
-        DataContext = dataContext;
+        ViewModel = dataContext;
     }
-    #endregion
 
-    #region Constructor/Finalizer.
+
+
     /// <summary>Initializes a new instance of the <see cref="FormFileSystemFolderBrowser"/> class.</summary>
     public FormFileSystemFolderBrowser() => InitializeComponent();
-    #endregion
+
 }

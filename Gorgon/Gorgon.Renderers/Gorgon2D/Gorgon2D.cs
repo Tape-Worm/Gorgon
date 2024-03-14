@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2018 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,27 +11,24 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: June 6, 2018 12:53:53 PM
 // 
-#endregion
 
-using System;
-using System.Collections.Generic;
+
 using System.ComponentModel;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
-using System.Threading;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
 using Gorgon.Graphics;
@@ -48,7 +45,7 @@ using DX = SharpDX;
 namespace Gorgon.Renderers;
 
 /// <summary>
-/// Provides 2D rendering functionality.
+/// Provides 2D rendering functionality
 /// </summary>
 /// <remarks>
 /// <para>
@@ -56,7 +53,7 @@ namespace Gorgon.Renderers;
 /// </para>
 /// <para>
 /// This is a batching renderer, which means that items that need to be drawn are done as a group of items sharing a common global state during rendering (this includes pixel and vertex shaders). Which 
-/// global states/shaders are applied can be defined by the user via the <see cref="Gorgon2DBatchState"/> object which is passed to the <see cref="Begin"/> method.
+/// global states/shaders are applied can be defined by the user via the <see cref="Gorgon2DBatchState"/> object which is passed to the <see cref="Begin"/> method
 /// </para>
 /// <para>
 /// Because this is a batching renderer, applications must inform the renderer when to start rendering items via the <see cref="Begin"/> method, and when to end rendering using the <see cref="End"/> 
@@ -67,7 +64,7 @@ namespace Gorgon.Renderers;
 /// <para>
 /// While all drawing must be done between these calls. Changing the current render target, viewport and/or depth/stencil on the <see cref="GorgonGraphics"/> interface while rendering is not allowed 
 /// and will generate an exception if an attempt to change those items is made.  This means that applications must perform target changes, viewport changes, and/or depth/stencil changes prior to 
-/// calling <see cref="Begin"/>, or after <see cref="End"/>.
+/// calling <see cref="Begin"/>, or after <see cref="End"/>
 /// </para>
 /// </note>
 /// </para>
@@ -75,13 +72,13 @@ namespace Gorgon.Renderers;
 /// To render, an application must start the process by calling the <see cref="Begin"/> method, draw the desired items, and then call the <see cref="End"/> method. This render block segregates drawing 
 /// by global states.  So, for example, if the user wishes to change the blending mode, a call to <see cref="Begin"/> with the <see cref="Gorgon2DBatchState"/> set up for the appropriate blending mode 
 /// is made. When finished, the user will call the <see cref="End"/> method. These blocks batch all rendering commands until the <see cref="End"/> method is called, and this allows for high performance 
-/// 2D rendering.
+/// 2D rendering
 /// </para>
 /// <para>
 /// Because this renderer uses batching to achieve its performance, it is worth noting that calls to draw items will share the same global state via the <see cref="GorgonBlendState"/>,
 /// <see cref="GorgonDepthStencilState"/> and <see cref="GorgonRasterState"/> state objects. This includes pixel shaders and vertex shaders, and their associated resources.  And users can send custom
 /// states and shaders to the <see cref="Begin"/> method. However, when a new item is drawn with a different <see cref="GorgonTexture2DView"/>, or <see cref="GorgonSamplerState"/>, a state change will 
-/// be performaned on behalf of the user (for sake of convenience). This means that too many texture/sampler changes between sprites may cause a performance issue.
+/// be performaned on behalf of the user (for sake of convenience). This means that too many texture/sampler changes between sprites may cause a performance issue
 /// </para>
 /// </remarks>
 /// <seealso cref="GorgonGraphics"/>
@@ -89,7 +86,7 @@ namespace Gorgon.Renderers;
 public sealed class Gorgon2D
     : IGorgon2DFluent, IGorgon2DDrawingFluent, IGorgonGraphicsObject
 {
-    #region Value Types.
+
     /// <summary>
     /// The common miscellaneous values to pass to the shaders.
     /// </summary>
@@ -143,9 +140,9 @@ public sealed class Gorgon2D
             Texture0 = new Vector2(srv?.Width ?? -1, srv?.Height ?? -1);
         }
     }
-    #endregion
 
-    #region Constants.        
+
+
     // The renderer is not initialized.        
     private const int Uninitialized = 0;
 
@@ -179,9 +176,9 @@ public sealed class Gorgon2D
     /// The name of the shaders used by the <see cref="Gorgon2DLightingEffect"/>.
     /// </summary>
     public const string GorgonLightingShaderIncludeName = "Gorgon2DLightingShader";
-    #endregion
 
-    #region Variables.
+
+
     // The flag to indicate that the renderer is initialized.
     private int _initialized = Uninitialized;
     // World matrix vertex shader.
@@ -233,13 +230,13 @@ public sealed class Gorgon2D
     // The renderable for primitives (lines, rectangles, etc...)
     private readonly BatchRenderable _primitiveRenderable = new()
     {
-        Vertices = new Gorgon2DVertex[]
-        {
-            new Gorgon2DVertex(Vector2.Zero, GorgonColor.White, Vector4.Zero, new Vector2(1, 0)),
-            new Gorgon2DVertex(Vector2.Zero, GorgonColor.White, Vector4.Zero, new Vector2(1, 0)),
-            new Gorgon2DVertex(Vector2.Zero, GorgonColor.White, Vector4.Zero, new Vector2(1, 0)),
-            new Gorgon2DVertex(Vector2.Zero, GorgonColor.White, Vector4.Zero, new Vector2(1, 0)),
-        }
+        Vertices =
+        [
+            new(Vector2.Zero, GorgonColor.White, Vector4.Zero, new Vector2(1, 0)),
+            new(Vector2.Zero, GorgonColor.White, Vector4.Zero, new Vector2(1, 0)),
+            new(Vector2.Zero, GorgonColor.White, Vector4.Zero, new Vector2(1, 0)),
+            new(Vector2.Zero, GorgonColor.White, Vector4.Zero, new Vector2(1, 0)),
+        ]
     };
     // The 2D camera used to render the data.
     private GorgonCameraCommon _defaultCamera;
@@ -257,9 +254,9 @@ public sealed class Gorgon2D
     private Vector4 _currentTimingValues;
     // The previous frame count.
     private ulong _lastFrameCount;
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to return a black texture to pass to shaders when no texture is specified.
     /// </summary>
@@ -342,9 +339,9 @@ public sealed class Gorgon2D
     {
         get;
     }
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to flush the queued up changes to the GPU.
     /// </summary>
@@ -410,12 +407,12 @@ public sealed class Gorgon2D
         if ((!flush)
             && (((useIndices) && (_currentDrawIndexCall is not null)) || ((!useIndices) && (_currentDrawCall is not null))))
         {
-            if ((_lastRenderable is not null) && (renderable is not null) && (BatchRenderable.AreStatesSame(_lastRenderable, renderable)))                    
+            if ((_lastRenderable is not null) && (renderable is not null) && (BatchRenderable.AreStatesSame(_lastRenderable, renderable)))
             {
                 return;
             }
         }
-        
+
         // Flush any pending draw calls.
         Flush();
 
@@ -872,7 +869,7 @@ public sealed class Gorgon2D
         {
             Initialize();
         }
-        
+
         _cameraController.UpdateCamera(camera ?? _defaultCamera);
         CurrentCamera = camera;
 
@@ -905,7 +902,7 @@ public sealed class Gorgon2D
         if (_timingValuesBuffer is not null)
         {
             if (_currentBatchState.PixelShaderState.RwConstantBuffers[12] is null)
-            {                    
+            {
                 _currentBatchState.PixelShaderState.RwConstantBuffers[12] = _timingValuesBuffer;
             }
 
@@ -1920,7 +1917,7 @@ public sealed class Gorgon2D
         };
 
         // Get cross products of start and end points.
-        var cross = Vector2.Multiply(Vector2.Normalize(new Vector2(bounds.Height, -bounds.Width)), thickness * 0.5f);            
+        var cross = Vector2.Multiply(Vector2.Normalize(new Vector2(bounds.Height, -bounds.Width)), thickness * 0.5f);
 
         var start1 = new Vector2((x1 + cross.X).FastCeiling(), (y1 + cross.Y).FastCeiling());
         var end1 = new Vector2((x2 + cross.X).FastCeiling(), (y2 + cross.Y).FastCeiling());
@@ -2511,7 +2508,6 @@ public sealed class Gorgon2D
         Interlocked.Exchange(ref _initialized, Uninitialized);
     }
 
-    #region Fluent
     /// <summary>
     /// Function to perform an arbitrary update of any required logic while rendering.
     /// </summary>
@@ -2688,10 +2684,8 @@ public sealed class Gorgon2D
 
         return this;
     }
-    #endregion
-    #endregion
 
-    #region Constructor/Finalizer.
+
     /// <summary>
     /// Initializes a new instance of the <see cref="Gorgon2D"/> class.
     /// </summary>
@@ -2721,5 +2715,5 @@ public sealed class Gorgon2D
 
         _defaultCamera = defaultCamera;
     }
-    #endregion
+
 }

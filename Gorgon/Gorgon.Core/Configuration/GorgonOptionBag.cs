@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2016 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,33 +11,31 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: June 29, 2016 8:13:58 PM
 // 
-#endregion
 
-using System;
-using System.Collections.Generic;
+
 using Gorgon.Collections.Specialized;
 using Gorgon.Properties;
 
 namespace Gorgon.Configuration;
 
 /// <summary>
-/// Provides a functionality for setting and reading various options from a predefined option bag.
+/// Provides a functionality for setting and reading various options from a predefined option bag
 /// </summary>
 public sealed class GorgonOptionBag
     : GorgonNamedObjectList<IGorgonOption>, IGorgonOptionBag
 {
-    #region Methods.
+
     /// <summary>
     /// Function to retrieve the value for an option.
     /// </summary>
@@ -61,9 +59,7 @@ public sealed class GorgonOptionBag
 
         GetItemByName(optionName).SetValue(value);
     }
-    #endregion
 
-    #region Constructor.
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonOptionBag"/> class.
     /// </summary>
@@ -90,5 +86,5 @@ public sealed class GorgonOptionBag
             Add(option);
         }
     }
-    #endregion
+
 }

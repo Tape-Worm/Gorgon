@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2021 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,46 +11,47 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: January 3, 2021 11:59:00 PM
 // 
-#endregion
 
-using System;
+
 using System.Runtime.CompilerServices;
 using D3D11 = SharpDX.Direct3D11;
 
 namespace Gorgon.Graphics.Core;
 
 /// <summary>
-/// A cache for holding previously defined pipeline state objects.
+/// A cache for holding previously defined pipeline state objects
 /// </summary>
-internal class PipelineStateCache
-    : IDisposable
+/// <remarks>Initializes a new instance of the <see cref="PipelineStateCache" /> class.</remarks>
+/// <param name="device">The Direct3D device.</param>
+internal class PipelineStateCache(D3D11.Device5 device)
+        : IDisposable
 {
-    #region Constants.
+
     // The initial size for the cache.
     private const int InitialCacheSize = 16;
-    #endregion
 
-    #region Variables.
+
+
     // A syncrhonization lock for multiple thread when dealing with the pipeline state cache.
     private readonly object _stateLock = new();
     // A list of cached pipeline states.
     private GorgonPipelineState[] _cachedPipelineStates = new GorgonPipelineState[InitialCacheSize];
     // The Direct 3D device.
-    private readonly D3D11.Device5 _device;
-    #endregion
+    private readonly D3D11.Device5 _device = device;
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to invalidate the cache data.
     /// </summary>
@@ -92,14 +93,14 @@ internal class PipelineStateCache
         PipelineStateChanges inheritedState = (cachedState.PrimitiveType == newState.PrimitiveType) ? PipelineStateChanges.Topology : PipelineStateChanges.None;
         inheritedState |= (cachedState.VertexShader == newState.VertexShader) ? PipelineStateChanges.VertexShader : PipelineStateChanges.None;
         inheritedState |= (cachedState.PixelShader == newState.PixelShader) ? PipelineStateChanges.PixelShader : PipelineStateChanges.None;
-        inheritedState |= (cachedState.GeometryShader == newState.GeometryShader) ? PipelineStateChanges.GeometryShader : PipelineStateChanges.None;                        
+        inheritedState |= (cachedState.GeometryShader == newState.GeometryShader) ? PipelineStateChanges.GeometryShader : PipelineStateChanges.None;
         inheritedState |= (cachedState.DomainShader == newState.DomainShader) ? PipelineStateChanges.DomainShader : PipelineStateChanges.None;
         inheritedState |= (cachedState.HullShader == newState.HullShader) ? PipelineStateChanges.HullShader : PipelineStateChanges.None;
         inheritedState |= (cachedState.RasterState.Equals(newState.RasterState)) ? PipelineStateChanges.RasterState : PipelineStateChanges.None;
         inheritedState |= ((cachedState.RwBlendStates.Equals(newState.RwBlendStates))
                             && (cachedState.IsAlphaToCoverageEnabled == newState.IsAlphaToCoverageEnabled)
                             && (cachedState.IsIndependentBlendingEnabled == newState.IsIndependentBlendingEnabled)) ? PipelineStateChanges.BlendState : PipelineStateChanges.None;
-        inheritedState |= ((cachedState.DepthStencilState is not null) 
+        inheritedState |= ((cachedState.DepthStencilState is not null)
                             && (cachedState.DepthStencilState.Equals(newState.DepthStencilState))) ? PipelineStateChanges.DepthStencilState : PipelineStateChanges.None;
 
         return inheritedState;
@@ -137,8 +138,8 @@ internal class PipelineStateCache
             return;
         }
 
-        pipelineState.D3DBlendState = pipelineState.RwBlendStates.BuildD3D11BlendState(_device, 
-                                                                                        pipelineState.IsAlphaToCoverageEnabled, 
+        pipelineState.D3DBlendState = pipelineState.RwBlendStates.BuildD3D11BlendState(_device,
+                                                                                        pipelineState.IsAlphaToCoverageEnabled,
                                                                                         pipelineState.IsIndependentBlendingEnabled);
     }
 
@@ -164,7 +165,7 @@ internal class PipelineStateCache
                 blendState = newState.D3DBlendState;
 
                 if ((depthStencilState == state.D3DDepthStencilState) && (depthStencilState is not null)
-                    && (rasterState == state.D3DRasterState)  && (rasterState is not null)
+                    && (rasterState == state.D3DRasterState) && (rasterState is not null)
                     && (blendState == state.D3DBlendState) && (blendState is not null))
                 {
                     return state;
@@ -181,7 +182,7 @@ internal class PipelineStateCache
             int index = 0;
 
             while (index < _cachedPipelineStates.Length)
-            {   
+            {
                 GorgonPipelineState cachedState = _cachedPipelineStates[index];
 
                 // We haven't taken this slot yet.
@@ -191,7 +192,7 @@ internal class PipelineStateCache
                 }
 
                 PipelineStateChanges inheritedState = CompareState(cachedState, newState);
-                
+
                 if ((inheritedState & PipelineStateChanges.RasterState) == PipelineStateChanges.RasterState)
                 {
                     rasterState = cachedState.D3DRasterState;
@@ -222,7 +223,7 @@ internal class PipelineStateCache
             {
                 ID = index
             };
-            InitializePipelineState(resultState, blendState, depthStencilState, rasterState);                
+            InitializePipelineState(resultState, blendState, depthStencilState, rasterState);
             _cachedPipelineStates[index] = resultState;
             return resultState;
         }
@@ -241,11 +242,6 @@ internal class PipelineStateCache
 
     /// <summary>Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.</summary>
     public void Dispose() => InvalidateCache();
-    #endregion
 
-    #region Constructor/Finalizer.
-    /// <summary>Initializes a new instance of the <see cref="PipelineStateCache" /> class.</summary>
-    /// <param name="device">The Direct3D device.</param>
-    public PipelineStateCache(D3D11.Device5 device) => _device = device;
-    #endregion
+
 }

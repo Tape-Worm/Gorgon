@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2020 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,25 +11,21 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: February 10, 2020 10:19:46 PM
 // 
-#endregion
 
-using System;
-using System.Linq;
+
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using System.Threading;
-using System.Windows.Forms;
 using Gorgon.Animation;
 using Gorgon.Editor.ImageEditor.Properties;
 using Gorgon.Editor.ImageEditor.ViewModels;
@@ -41,12 +37,12 @@ using Gorgon.Renderers;
 namespace Gorgon.Editor.ImageEditor;
 
 /// <summary>
-/// A common class for the texture viewers.
+/// A common class for the texture viewers
 /// </summary>
 internal abstract class TextureViewer
     : DefaultContentRenderer<IImageContent>, ITextureViewer
 {
-    #region Value Types.
+
     /// <summary>
     /// Parameters to pass to the texture shader(s).
     /// </summary>
@@ -67,9 +63,9 @@ internal abstract class TextureViewer
         /// </summary>
         public float MipLevel;
     }
-    #endregion
 
-    #region Variables.
+
+
     // The pixel shader for rendering an image.
     private GorgonPixelShader _imageShader;
     // The parameters for the texture viewer shader.
@@ -88,9 +84,9 @@ internal abstract class TextureViewer
     private readonly GorgonAnimationBuilder _animationBuilder = new();
     // Flag to indicate that the texture needs refreshing.
     private bool _textureNeedsUpdate = true;
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to return the batch state for rendering the texture.
     /// </summary>
@@ -133,9 +129,9 @@ internal abstract class TextureViewer
         get;
         set;
     }
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to update the texture parameters for rendering.
     /// </summary>
@@ -169,7 +165,7 @@ internal abstract class TextureViewer
             {
                 return;
             }
-            
+
             shader.Dispose();
             cBuffer?.Dispose();
         }
@@ -181,7 +177,7 @@ internal abstract class TextureViewer
     /// Function called during resource creation.
     /// </summary>
     protected virtual void OnCreateResources()
-    {        
+    {
     }
 
     /// <summary>
@@ -416,9 +412,9 @@ internal abstract class TextureViewer
 
         OnCreateResources();
     }
-    #endregion
 
-    #region Constructor.
+
+
     /// <summary>Initializes a new instance of the <see cref="TextureViewer"/> class.</summary>
     /// <param name="name">The name of the renderer.</param>
     /// <param name="shaderName">The name of the shader to use for rendering the texture.</param>
@@ -427,10 +423,10 @@ internal abstract class TextureViewer
     /// <param name="swapChain">The swap chain for the content view.</param>
     /// <param name="dataContext">The view model to assign to the renderer.</param>        
     protected TextureViewer(string name, string shaderName, int textureSlot, Gorgon2D renderer, GorgonSwapChain swapChain, IImageContent dataContext)
-        : base(name, renderer, swapChain, dataContext) 
+        : base(name, renderer, swapChain, dataContext)
     {
         _shaderName = shaderName;
         _textureSlot = textureSlot.Max(0).Min(_slots.Length - 1);
     }
-    #endregion
+
 }

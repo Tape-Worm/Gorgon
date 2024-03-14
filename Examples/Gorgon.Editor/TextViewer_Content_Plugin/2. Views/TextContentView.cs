@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2020 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,20 +11,19 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: August 3, 2020 3:45:05 PM
 // 
-#endregion
 
-using System;
+
 using System.ComponentModel;
 using Gorgon.Editor.Rendering;
 using Gorgon.Editor.UI;
@@ -34,30 +33,30 @@ using Gorgon.Graphics.Core;
 namespace Gorgon.Examples;
 
 /// <summary>
-/// This is our actual view used to display and edit the content.
+/// This is our actual view used to display and edit the content
 /// </summary>
 /// <remarks>
 /// This is the main UI that will display our content. It provides functionality suited for editing content that requires Gorgon's 2D 
-/// rendering capabilities.
+/// rendering capabilities
 /// 
 /// For creating an editor view, we need to inherit from the VisualContentBaseControl (if rendering is required, otherwise the 
 /// EditorBaseControl can be used for more basic/customizable view functionality), and implement the IDataContext{T} interface. This 
-/// provides us with the properties/methods for assigning a view model as the data context for the UI.
+/// provides us with the properties/methods for assigning a view model as the data context for the UI
 /// 
 /// As mentioned in the plug in class, the UI in the content plug in (and everywhere else in the editor really) uses the MVVM pattern
 /// (Model-View-View Model), or, rather, a somewhat bastardized version of it. This allows us to provide a separation between the user 
 /// interface and the data that we're working on. In MVVM, the view never works directly on the model data, we use the view model to 
 /// act as a conduit to interact with the data and UI. The view model acts as a presenter by sending the model data to the view, and 
-/// a controller by receiving commands from the view to act upon the data.
+/// a controller by receiving commands from the view to act upon the data
 /// 
 /// This particular content view's base class has functionality that already includes the ability to scroll around the content if it 
 /// doesn't fit within the client space of the control, host custom rendering for content using Gorgon's 2D graphics API, and drag 
 /// and drop functionality. 
 /// </remarks>
-internal partial class TextContentView 
+internal partial class TextContentView
     : VisualContentBaseControl, IDataContext<ITextContent>
 {
-    #region Variables.
+
     // The renderer for our text data.
     // 
     // We use this to display our content data using Gorgon's 2D functionality. It also has built-in functionality for panning and 
@@ -67,19 +66,19 @@ internal partial class TextContentView
 
     // The form containing the ribbon used to merge with the application ribbon.
     private readonly FormRibbon _formRibbon;
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>Property to return the data context assigned to this view.</summary>
     [Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)] // <-- So we don't show up in the IDE.
-    public ITextContent DataContext
+    public ITextContent ViewModel
     {
         get;
         private set;
     }
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to initialize the view from the data context.
     /// </summary>
@@ -118,7 +117,7 @@ internal partial class TextContentView
         // method is not defined on the base class for the renderer, so that if users don't require this can skip it.
         if (resetZoom)
         {
-            _renderer.DefaultZoom();                
+            _renderer.DefaultZoom();
         }
     }
 
@@ -143,10 +142,10 @@ internal partial class TextContentView
 
         // Always call the OnLoad for the data context here so the view model can perform any required initialization
         // after the control is created and loaded.
-        DataContext?.Load();            
+        ViewModel?.Load();
 
         // The control that we render our content into is selectable, so we should default selection into it.
-        RenderControl?.Select();            
+        RenderControl?.Select();
     }
 
     /// <summary>Function called to shut down the view and perform any clean up required (including user defined graphics objects).</summary>
@@ -154,7 +153,7 @@ internal partial class TextContentView
     {
         // Always call unload when the control is shutting down. This will enable us to perform any necessary clean up 
         // on the view model.
-        DataContext?.Unload();
+        ViewModel?.Unload();
         base.OnShutdown();
     }
 
@@ -169,7 +168,7 @@ internal partial class TextContentView
         // It provides us with the graphics context from the editor application that contains instances 
         // of our graphics and 2D renderer interfaces. A default swap chain is also provided so that 
         // we can render into our view.
-        _renderer = new TextRenderer(context.Renderer2D, swapChain, context.FontFactory, DataContext);
+        _renderer = new TextRenderer(context.Renderer2D, swapChain, context.FontFactory, ViewModel);
         // Create any necessary resources for the renderer here.
         _renderer.CreateResources();
 
@@ -204,7 +203,7 @@ internal partial class TextContentView
 
         InitializeFromDataContext(dataContext);
 
-        DataContext = dataContext;
+        ViewModel = dataContext;
 
         // If we have any controls embedded on the control (or associated with the control in the case of the ribbon) that have 
         // view model support, we need to assign their view models as well. These can be child view models, or the current view 
@@ -213,11 +212,11 @@ internal partial class TextContentView
         // In this case we have a color picker UI panel that appears when we change the text color, and it will need a view 
         // model. This view model is a child view model off of our main view model.
         _formRibbon.SetDataContext(dataContext);
-        TextColorPicker.SetDataContext(dataContext?.TextColor);               
+        TextColorPicker.SetDataContext(dataContext?.TextColor);
     }
-    #endregion
 
-    #region Constructor/Finalizer.
+
+
     /// <summary>Initializes a new instance of the <see cref="TextContentView"/> class.</summary>
     public TextContentView()
     {
@@ -244,5 +243,5 @@ internal partial class TextContentView
         // instance of the sub panel control.
         RegisterChildPanel(typeof(TextColor).FullName, TextColorPicker);
     }
-    #endregion
+
 }

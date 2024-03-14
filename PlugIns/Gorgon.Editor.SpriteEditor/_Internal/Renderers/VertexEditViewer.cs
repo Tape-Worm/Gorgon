@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2019 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,24 +11,22 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: April 8, 2019 5:03:58 PM
 // 
-#endregion
 
-using System;
+
 using System.Buffers;
 using System.ComponentModel;
 using System.Numerics;
-using System.Windows.Forms;
 using Gorgon.Editor.Rendering;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
@@ -38,12 +36,17 @@ using DX = SharpDX;
 namespace Gorgon.Editor.SpriteEditor;
 
 /// <summary>
-/// A renderer to use with the vertex offset editing tool.
+/// A renderer to use with the vertex offset editing tool
 /// </summary>
-internal class VertexEditViewer
-    : SingleSpriteViewer
+/// <remarks>Initializes a new instance of the <see cref="VertexEditViewer"/> class.</remarks>
+/// <param name="dataContext">The sprite view model.</param>        
+/// <param name="swapChain">The swap chain for the render area.</param>
+/// <param name="renderer">The 2D renderer for the application.</param>
+/// <param name="vertexEditor">The editor used to modify the sprite vertices.</param>        
+internal class VertexEditViewer(Gorgon2D renderer, GorgonSwapChain swapChain, ISpriteContent dataContext, SpriteVertexEditService vertexEditor)
+        : SingleSpriteViewer(SpriteVertexEditContext.ViewerName, renderer, swapChain, dataContext)
 {
-    #region Events.
+
     // Event triggered when toggling the manual input UI.
     private event EventHandler ToggleManualInputEvent;
 
@@ -72,19 +75,19 @@ internal class VertexEditViewer
             ToggleManualInputEvent -= value;
         }
     }
-    #endregion
 
-    #region Variables.
+
+
     // The editor used to update the sprite vertices.
-    private readonly SpriteVertexEditService _vertexEditor;
-    #endregion
+    private readonly SpriteVertexEditService _vertexEditor = vertexEditor;
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to set the vertices in the vertex editor service.
     /// </summary>
     private void SetEditorVertices()
-    {            
+    {
         // Transform the vertex offsets into sprite local space.
         Vector2[] vertices = ArrayPool<Vector2>.Shared.Rent(Sprite.CornerOffsets.Count);
         vertices[0] = DataContext.SpriteVertexEditContext.Vertices[0];
@@ -92,7 +95,7 @@ internal class VertexEditViewer
         vertices[2] = new Vector2(Sprite.Size.Width + DataContext.SpriteVertexEditContext.Vertices[2].X, Sprite.Size.Height + DataContext.SpriteVertexEditContext.Vertices[2].Y);
         vertices[3] = new Vector2(DataContext.SpriteVertexEditContext.Vertices[3].X, Sprite.Size.Height + DataContext.SpriteVertexEditContext.Vertices[3].Y);
         _vertexEditor.Vertices = vertices;
-        ArrayPool<Vector2>.Shared.Return(vertices,true);
+        ArrayPool<Vector2>.Shared.Return(vertices, true);
     }
 
     /// <summary>
@@ -134,7 +137,7 @@ internal class VertexEditViewer
         verts[3] = new Vector2(_vertexEditor.Vertices[3].X, _vertexEditor.Vertices[3].Y - Sprite.Size.Height);
 
         DataContext.SpriteVertexEditContext.Vertices = verts;
-        DataContext.SpriteVertexEditContext.Offset = DataContext.SpriteVertexEditContext.Vertices[DataContext.SpriteVertexEditContext.SelectedVertexIndex];            
+        DataContext.SpriteVertexEditContext.Offset = DataContext.SpriteVertexEditContext.Vertices[DataContext.SpriteVertexEditContext.SelectedVertexIndex];
 
         ArrayPool<Vector2>.Shared.Return(verts, true);
     }
@@ -255,7 +258,7 @@ internal class VertexEditViewer
 
         Renderer.Begin();
         _vertexEditor.Render();
-        Renderer.End();            
+        Renderer.End();
     }
 
     /// <summary>Function called when the renderer needs to load any resource data.</summary>
@@ -302,20 +305,11 @@ internal class VertexEditViewer
     {
         if (disposing)
         {
-            ToggleManualInputEvent = null;                
+            ToggleManualInputEvent = null;
         }
 
         base.Dispose(disposing);
     }
-    #endregion
 
-    #region Constructor/Finalizer.
-    /// <summary>Initializes a new instance of the <see cref="VertexEditViewer"/> class.</summary>
-    /// <param name="dataContext">The sprite view model.</param>        
-    /// <param name="swapChain">The swap chain for the render area.</param>
-    /// <param name="renderer">The 2D renderer for the application.</param>
-    /// <param name="vertexEditor">The editor used to modify the sprite vertices.</param>        
-    public VertexEditViewer(Gorgon2D renderer, GorgonSwapChain swapChain, ISpriteContent dataContext, SpriteVertexEditService vertexEditor)
-        : base(SpriteVertexEditContext.ViewerName, renderer, swapChain, dataContext) => _vertexEditor = vertexEditor;
-    #endregion
+
 }

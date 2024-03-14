@@ -20,7 +20,7 @@ partial class GorgonWaitMessagePanel
         base.Dispose(disposing);
     }
 
-    #region Component Designer generated code
+
 
     /// <summary> 
     /// Required method for Designer support - do not modify 
@@ -82,7 +82,7 @@ partial class GorgonWaitMessagePanel
 
     }
 
-    #endregion
+
     private System.Windows.Forms.TableLayoutPanel PanelWait;
     private System.Windows.Forms.Label LabelWaitMessage;
     private System.Windows.Forms.PictureBox ImageWait;

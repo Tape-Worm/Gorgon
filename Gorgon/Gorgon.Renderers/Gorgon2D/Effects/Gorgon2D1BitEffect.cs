@@ -1,6 +1,6 @@
-﻿#region MIT.
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2012 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,22 +11,20 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: Monday, April 02, 2012 2:59:16 PM
 // 
-#endregion
 
-using System;
+
 using System.Runtime.InteropServices;
-using System.Threading;
 using Gorgon.Core;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
@@ -37,36 +35,43 @@ using DX = SharpDX;
 namespace Gorgon.Renderers;
 
 /// <summary>
-/// An effect that renders an image as if it were 1 bit image.
+/// An effect that renders an image as if it were 1 bit image
 /// </summary>
 /// <remarks>
 /// <para>
 /// This effect renders a 1-bit color image by using a <see cref="Threshold"/> to determine which bit is on, and which is off.  If a color value falls within the <see cref="Threshold"/>, then a bit is 
-/// set as on, otherwise it will be set as off.
+/// set as on, otherwise it will be set as off
 /// </para>
 /// </remarks>
 public class Gorgon2D1BitEffect
     : Gorgon2DEffect, IGorgon2DCompositorEffect
 {
-    #region Value Types.
+
     /// <summary>
     /// Settings for the effect shader.
     /// </summary>
+    /// <remarks>
+    /// Initializes a new instance of the <see cref="Settings"/> struct.
+    /// </remarks>
+    /// <param name="range">The range.</param>
+    /// <param name="average">if set to <b>true</b> [average].</param>
+    /// <param name="invert">if set to <b>true</b> [invert].</param>
+    /// <param name="useAlpha">if set to <b>true</b> [use alpha].</param>
     [StructLayout(LayoutKind.Explicit, Size = 32)]
-    private readonly struct Settings
+    private readonly struct Settings(GorgonRangeF range, bool average, bool invert, bool useAlpha)
     {
         [FieldOffset(0)]
-        private readonly int _useAverage;           // Flag to indicate that the average of the texel colors should be used.
+        private readonly int _useAverage = Convert.ToInt32(average);           // Flag to indicate that the average of the texel colors should be used.
         [FieldOffset(4)]
-        private readonly int _invert;               // Flag to invert the texel colors.
+        private readonly int _invert = Convert.ToInt32(invert);               // Flag to invert the texel colors.
         [FieldOffset(8)]
-        private readonly int _useAlpha;             // Flag to indicate that the alpha channel should be included.
+        private readonly int _useAlpha = Convert.ToInt32(useAlpha);             // Flag to indicate that the alpha channel should be included.
 
         /// <summary>
         /// Range of values that are considered "on".
         /// </summary>
         [FieldOffset(16)]
-        public readonly GorgonRangeF WhiteRange;
+        public readonly GorgonRangeF WhiteRange = range;
 
         /// <summary>
         /// Flag to indicate that the average of the texel colors should be used.
@@ -82,25 +87,10 @@ public class Gorgon2D1BitEffect
         /// Flag to indicate that the alpha channel should be included.
         /// </summary>
         public bool UseAlpha => _useAlpha != 0;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="Settings"/> struct.
-        /// </summary>
-        /// <param name="range">The range.</param>
-        /// <param name="average">if set to <b>true</b> [average].</param>
-        /// <param name="invert">if set to <b>true</b> [invert].</param>
-        /// <param name="useAlpha">if set to <b>true</b> [use alpha].</param>
-        public Settings(GorgonRangeF range, bool average, bool invert, bool useAlpha)
-        {
-            WhiteRange = range;
-            _useAverage = Convert.ToInt32(average);
-            _invert = Convert.ToInt32(invert);
-            _useAlpha = Convert.ToInt32(useAlpha);
-        }
     }
-    #endregion
 
-    #region Variables.
+
+
     // Constant buffer for the 1 bit information.
     private GorgonConstantBufferView _1BitBuffer;
     // Settings for the effect.
@@ -113,9 +103,9 @@ public class Gorgon2D1BitEffect
     private Gorgon2DShaderState<GorgonPixelShader> _shaderState;
     // The batch state to render.
     private Gorgon2DBatchState _batchState;
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to set or return whether to use an average of the texel colors or to use a grayscale calculation.
     /// </summary>
@@ -188,9 +178,9 @@ public class Gorgon2D1BitEffect
             _isUpdated = true;
         }
     }
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function called to initialize the effect.
     /// </summary>
@@ -324,9 +314,9 @@ public class Gorgon2D1BitEffect
                                         new DX.RectangleF(0, 0, 1, 1));
         End();
     }
-    #endregion
 
-    #region Constructor/Destructor.
+
+
     /// <summary>
     /// Initializes a new instance of the <see cref="Gorgon2D1BitEffect"/> class.
     /// </summary>
@@ -338,5 +328,5 @@ public class Gorgon2D1BitEffect
         Macros.Add(new GorgonShaderMacro("GRAYSCALE_EFFECT"));
         Macros.Add(new GorgonShaderMacro("ONEBIT_EFFECT"));
     }
-    #endregion
+
 }

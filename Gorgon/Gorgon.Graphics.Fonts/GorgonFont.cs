@@ -1,6 +1,6 @@
-﻿#region MIT.
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2012 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,26 +11,21 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: Friday, April 13, 2012 6:51:08 AM
 // 
-#endregion
 
-using System;
-using System.Collections.Generic;
-using System.Drawing;
+
 using System.Drawing.Imaging;
 using System.Drawing.Text;
-using System.Linq;
-using System.Threading.Tasks;
 using Gorgon.Core;
 using Gorgon.Graphics.Core;
 using Gorgon.Graphics.Fonts.Properties;
@@ -42,26 +37,26 @@ using DX = SharpDX;
 namespace Gorgon.Graphics.Fonts;
 
 /// <summary>
-/// A font used to render text data.
+/// A font used to render text data
 /// </summary>
 /// <remarks>
 /// <para>
 /// This type contains all the necessary information used to render glyphs to represent characters on the screen. Complete kerning information is provided as well (if available on the original font object), 
-/// and can be customized by the user.
+/// and can be customized by the user
 /// </para>
 /// <para>
-/// The font also contains a customizable glyph collection that users can modify to provide custom glyph to character mapping (e.g. a special texture used for a single character).
+/// The font also contains a customizable glyph collection that users can modify to provide custom glyph to character mapping (e.g. a special texture used for a single character)
 /// </para>
 /// </remarks>
 public sealed class GorgonFont
     : GorgonNamedObject, IGorgonFontInfo, IDisposable
 {
-    #region Variables.
+
     // The information used to generate the font.
     private readonly GorgonFontInfo _info;
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to return the factory that registered this font.
     /// </summary>
@@ -159,10 +154,10 @@ public sealed class GorgonFont
     /// This will affect the <see cref="Size" /> value in that it will alter the meaning of the units.
     /// </para>
     ///   <para>
-    /// The default value is <see cref="FontHeightMode.Pixels" />.
+    /// The default value is <see cref="GorgonFontHeightMode.Pixels" />.
     /// </para>
     /// </remarks>
-    public FontHeightMode FontHeightMode => _info.FontHeightMode;
+    public GorgonFontHeightMode FontHeightMode => _info.FontHeightMode;
 
     /// <summary>Property to return the font family name to generate the font from.</summary>
     public string FontFamilyName => _info.FontFamilyName;
@@ -173,8 +168,8 @@ public sealed class GorgonFont
     /// This sets the height of the font.
     /// </para>
     ///   <para>
-    /// This is affected by the <see cref="Fonts.FontHeightMode" />. If the <see cref="FontHeightMode" /> is set to <see cref="FontHeightMode.Points" />, then this unit is the height
-    /// size height for the font. Otherwise, this represents the font height in <see cref="FontHeightMode.Pixels" />.
+    /// This is affected by the <see cref="Fonts.GorgonFontHeightMode" />. If the <see cref="FontHeightMode" /> is set to <see cref="GorgonFontHeightMode.Points" />, then this unit is the height
+    /// size height for the font. Otherwise, this represents the font height in <see cref="GorgonFontHeightMode.Pixels" />.
     /// </para>
     /// </remarks>
     public float Size => _info.Size;
@@ -233,10 +228,10 @@ public sealed class GorgonFont
     ///     </note>
     ///   </para>
     ///   <para>
-    /// The default value is <see cref="FontAntiAliasMode.AntiAlias" />.
+    /// The default value is <see cref="GorgonFontAntiAliasMode.AntiAlias" />.
     /// </para>
     /// </remarks>
-    public FontAntiAliasMode AntiAliasingMode => _info.AntiAliasingMode;
+    public GorgonFontAntiAliasMode AntiAliasingMode => _info.AntiAliasingMode;
 
     /// <summary>Property to return the size of an outline.</summary>
     /// <remarks>
@@ -308,7 +303,7 @@ public sealed class GorgonFont
 
     /// <summary>Property to return the style for the font.</summary>
     /// <remarks>The default value is <see cref="System.Drawing.FontStyle.Regular" />.</remarks>
-    public FontStyle FontStyle => _info.FontStyle;
+    public GorgonFontStyle FontStyle => _info.FontStyle;
 
     /// <summary>Property to return a default character to use in place of a character that cannot be found in the font.</summary>
     /// <remarks>
@@ -353,9 +348,9 @@ public sealed class GorgonFont
     /// </para>
     /// </remarks>
     public bool UseKerningPairs => _info.UseKerningPairs;
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to copy bitmap data to a texture.
     /// </summary>
@@ -478,7 +473,7 @@ public sealed class GorgonFont
     {
         var result = new List<(IGorgonImage, IEnumerable<GlyphInfo>)>();
 
-        var imageSettings = new GorgonImageInfo(ImageType.Image2D, BufferFormat.R8G8B8A8_UNorm)
+        var imageSettings = new GorgonImageInfo(ImageDataType.Image2D, BufferFormat.R8G8B8A8_UNorm)
         {
             Width = _info.TextureWidth,
             Height = _info.TextureHeight,
@@ -497,15 +492,14 @@ public sealed class GorgonFont
         {
             if ((image is null) || (arrayIndex >= Graphics.VideoAdapter.MaxTextureArrayCount))
             {
-#if NET6_0_OR_GREATER
                 imageSettings = imageSettings with
                 {
                     ArrayCount = bitmapCount.Min(Graphics.VideoAdapter.MaxTextureArrayCount)
                 };
-#endif
+
                 arrayIndex = 0;
 
-                glyphs = new List<GlyphInfo>();
+                glyphs = [];
                 image = new GorgonImage(imageSettings);
                 result.Add((image, glyphs));
             }
@@ -549,12 +543,10 @@ public sealed class GorgonFont
         {
             if (textureSettings.ArrayCount != image.ArrayCount)
             {
-#if NET6_0_OR_GREATER
                 textureSettings = textureSettings with
                 {
                     ArrayCount = image.ArrayCount
                 };
-#endif
             }
 
             GorgonTexture2D texture = image.ToTexture2D(Graphics, new GorgonTexture2DLoadOptions
@@ -857,9 +849,9 @@ public sealed class GorgonFont
             }
         }
     }
-    #endregion
 
-    #region Constructor/Destructor.
+
+
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonFont"/> class.
     /// </summary>
@@ -876,8 +868,8 @@ public sealed class GorgonFont
             Brush = info.Brush?.Clone()
         };
 
-        Glyphs = new GorgonGlyphCollection();
+        Glyphs = [];
         KerningPairs = new Dictionary<GorgonKerningPair, int>();
     }
-    #endregion
+
 }

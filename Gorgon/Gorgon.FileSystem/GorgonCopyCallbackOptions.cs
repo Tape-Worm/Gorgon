@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2020 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,26 +11,23 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: January 5, 2020 10:33:13 PM
 // 
-#endregion
 
-using System;
-using System.Threading;
 
 namespace Gorgon.IO;
 
 /// <summary>
-/// A value indicating how to handle a file conflict in the file system.
+/// A value indicating how to handle a file conflict in the file system
 /// </summary>
 public enum FileConflictResolution
 {
@@ -69,7 +66,7 @@ public enum FileConflictResolution
 }
 
 /// <summary>
-/// Callback options for copying a directory or file.
+/// Callback options for copying a directory or file
 /// </summary>
 /// <remarks>
 /// <para>
@@ -77,7 +74,7 @@ public enum FileConflictResolution
 /// </para>
 /// <para>
 /// The typical use case for these callbacks/cancelation support is with a UI that reports progress, and allows the user to determine how to handle file overwriting. The cancellation support is provided 
-/// for asynchronous copying, especially in cases where lots of data is being copied and a considerable amount of time is consumed during the copy.
+/// for asynchronous copying, especially in cases where lots of data is being copied and a considerable amount of time is consumed during the copy
 /// </para>
 /// </remarks>
 public class GorgonCopyCallbackOptions

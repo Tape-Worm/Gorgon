@@ -1,6 +1,6 @@
-﻿#region MIT.
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2013 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,53 +11,44 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: Tuesday, January 1, 2013 7:38:21 PM
 // 
-#endregion
+
 
 using Gorgon.PlugIns;
 
 namespace Gorgon.Examples;
 
 /// <summary>
-/// Here's where we define the entry point interface for the plug in.
+/// Here's where we define the entry point interface for the plug in
 /// 
 /// This object houses the actual plug in information and is what Gorgon will look for when enumerating
 /// plug in objects from an assembly.  The object inherits from GorgonPlugIn, and this is how Gorgon will
 /// tell if it's a plug in object or not.  This object must be implemented by each plug in assembly so that
-/// it can return the proper objects/information back to the plug in host.
+/// it can return the proper objects/information back to the plug in host
 /// 
 /// In this example, we use the TextColorPlugIn to create our plug in interfaces which are implemented in our 
-/// plug in assemblies.
+/// plug in assemblies
 /// </summary>	
-public abstract class TextColorPlugIn
-    : GorgonPlugIn
+/// <remarks>
+/// Initializes a new instance of the <see cref="TextColorPlugIn" /> class
+/// </remarks>
+/// <param name="description">This is a friendly description for the plug in.</param>
+public abstract class TextColorPlugIn(string description)
+        : GorgonPlugIn(description)
 {
-    #region Methods.
     /// <summary>
     /// Define our abstract method to create our specified text writers.
     /// </summary>
     /// <returns>The text color writer specific to the plug in.</returns>
     public abstract TextColorWriter CreateWriter();
-    #endregion
-
-    #region Constructor/Destructor.
-    /// <summary>
-    /// Initializes a new instance of the <see cref="TextColorPlugIn" /> class.
-    /// </summary>
-    /// <param name="description">This is a friendly description for the plug in.</param>
-    protected TextColorPlugIn(string description)
-        : base(description)
-    {
-    }
-    #endregion
 }

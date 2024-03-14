@@ -1,11 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using Gorgon.Properties;
+﻿using Gorgon.Properties;
 
 namespace Gorgon.Collections;
 
 /// <summary>
-/// Extension methods for items that were inexplicably omitted from the <see cref="IReadOnlyList{T}"/> interface.
+/// Extension methods for items that were inexplicably omitted from the <see cref="IReadOnlyList{T}"/> interface
 /// </summary>
 public static class GorgonIReadOnlyListExtensions
 {

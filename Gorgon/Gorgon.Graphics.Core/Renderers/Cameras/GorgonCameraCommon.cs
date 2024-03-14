@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2021 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,21 +11,19 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: January 13, 2021 7:35:06 PM
 // 
-#endregion
 
-using System;
-using System.Linq;
+
 using System.Numerics;
 using Gorgon.Core;
 using Gorgon.Graphics.Core;
@@ -35,7 +33,7 @@ using DX = SharpDX;
 namespace Gorgon.Renderers.Cameras;
 
 /// <summary>
-/// Flags representing the changes made to a camera.
+/// Flags representing the changes made to a camera
 /// </summary>
 [Flags()]
 public enum CameraChange
@@ -71,12 +69,12 @@ public enum CameraChange
 }
 
 /// <summary>
-/// Common functionality for a camera.
+/// Common functionality for a camera
 /// </summary>
 public abstract class GorgonCameraCommon
     : IGorgonGraphicsObject, IGorgonNamedObject
 {
-    #region Variables.
+
     // The raw projection matrix.
     private Matrix4x4 _projectionMatrix = Matrix4x4.Identity;
     // The raw view matrix.
@@ -91,9 +89,9 @@ public abstract class GorgonCameraCommon
     private WeakReference<GorgonRenderTargetView> _target;
     // The position of the camera.
     private Vector3 _position;
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to return direct access to the position data by reference.
     /// </summary>
@@ -297,9 +295,9 @@ public abstract class GorgonCameraCommon
     {
         get;
     }
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to retrieve the render target assigned to this camera.
     /// </summary>
@@ -329,7 +327,7 @@ public abstract class GorgonCameraCommon
             UpdateViewMatrix(ref _viewMatrix);
             Changes &= ~CameraChange.View;
         }
-        
+
         return ref _viewMatrix;
     }
 
@@ -344,7 +342,7 @@ public abstract class GorgonCameraCommon
             UpdateProjectionMatrix(ref _projectionMatrix);
             Changes &= ~CameraChange.Projection;
         }
-        
+
         return ref _projectionMatrix;
     }
 
@@ -540,9 +538,9 @@ public abstract class GorgonCameraCommon
     /// Function to discard pending changes on the camera.
     /// </summary>        
     public void DiscardChanges() => Changes = CameraChange.None;
-    #endregion
 
-    #region Constructor/Finalizer.
+
+
     /// <summary>Initializes a new instance of the <see cref="GorgonCameraCommon" /> class.</summary>
     /// <param name="graphics">The graphics interface to use with this object.</param>
     /// <param name="viewDimensions">The view dimensions.</param>
@@ -558,6 +556,6 @@ public abstract class GorgonCameraCommon
         MinimumDepth = minDepth;
         MaximumDepth = maximumDepth.Max(1.0f);
     }
-    #endregion
+
 
 }

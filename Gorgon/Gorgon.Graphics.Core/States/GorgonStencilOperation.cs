@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2016 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,31 +11,28 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: July 29, 2016 7:31:42 PM
 // 
-#endregion
 
-using System;
-using Gorgon.Core;
 
 namespace Gorgon.Graphics.Core;
 
 /// <summary>
-/// Information used to create the stencil portion of a <see cref="GorgonDepthStencilState"/>.
+/// Information used to create the stencil portion of a <see cref="GorgonDepthStencilState"/>
 /// </summary>
 public class GorgonStencilOperation
     : IEquatable<GorgonStencilOperation>
 {
-    #region Properties.
+
     /// <summary>
     /// Property to set or return the comparison function to use for stencil operations.
     /// </summary>
@@ -88,9 +85,9 @@ public class GorgonStencilOperation
         get;
         internal set;
     }
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>Indicates whether the current object is equal to another object of the same type.</summary>
     /// <param name="other">An object to compare with this object.</param>
     /// <returns>
@@ -115,9 +112,9 @@ public class GorgonStencilOperation
     /// A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table. 
     /// </returns>
     public override int GetHashCode() => HashCode.Combine(Comparison, DepthFailOperation, FailOperation, PassOperation);
-    #endregion
 
-    #region Constructor/Finalizer.
+
+
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonStencilOperation"/> class.
     /// </summary>
@@ -140,5 +137,5 @@ public class GorgonStencilOperation
         FailOperation = StencilOperation.Keep;
         PassOperation = StencilOperation.Keep;
     }
-    #endregion
+
 }

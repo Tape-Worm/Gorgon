@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2018 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: August 18, 2018 7:52:17 PM
 // 
-#endregion
+
 
 using System.Numerics;
 using Gorgon.Graphics;
@@ -33,7 +33,7 @@ using DX = SharpDX;
 namespace Gorgon.Animation;
 
 /// <summary>
-/// A processor used to process the tracks for an animation.
+/// A processor used to process the tracks for an animation
 /// </summary>
 internal static class TrackKeyProcessor
 {
@@ -44,7 +44,7 @@ internal static class TrackKeyProcessor
     /// <param name="time">The current time for the animation.</param>
     /// <param name="result">The result value to apply to the float object property.</param>
     /// <returns><b>true</b> if there's a value to update, <b>false</b> if not.</returns>
-	    public static bool TryUpdateSingle(IGorgonAnimationTrack<GorgonKeySingle> track, float time, out float result)
+    public static bool TryUpdateSingle(IGorgonAnimationTrack<GorgonKeySingle> track, float time, out float result)
     {
         switch (track.KeyFrames.Count)
         {
@@ -53,7 +53,7 @@ internal static class TrackKeyProcessor
                 return false;
             case 1:
                 result = track.KeyFrames[0].Value;
-                return true;                
+                return true;
         }
 
         GorgonKeySingle firstKey = track.KeyFrames[0];
@@ -97,7 +97,7 @@ internal static class TrackKeyProcessor
     /// <param name="time">The current time for the animation.</param>
     /// <param name="result">The result value to apply to the vector2 object property.</param>
     /// <returns><b>true</b> if there's a value to update, <b>false</b> if not.</returns>
-	    public static bool TryUpdateVector2(IGorgonAnimationTrack<GorgonKeyVector2> track, float time, out Vector2 result)
+    public static bool TryUpdateVector2(IGorgonAnimationTrack<GorgonKeyVector2> track, float time, out Vector2 result)
     {
         switch (track.KeyFrames.Count)
         {
@@ -150,7 +150,7 @@ internal static class TrackKeyProcessor
     /// <param name="time">The current time for the animation.</param>
     /// <param name="result">The result value to apply to the vector3 object property.</param>
     /// <returns><b>true</b> if there's a value to update, <b>false</b> if not.</returns>
-	    public static bool TryUpdateVector3(IGorgonAnimationTrack<GorgonKeyVector3> track, float time, out Vector3 result)
+    public static bool TryUpdateVector3(IGorgonAnimationTrack<GorgonKeyVector3> track, float time, out Vector3 result)
     {
         switch (track.KeyFrames.Count)
         {
@@ -203,7 +203,7 @@ internal static class TrackKeyProcessor
     /// <param name="time">The current time for the animation.</param>
     /// <param name="result">The result value to apply to the vector3 object property.</param>
     /// <returns><b>true</b> if there's a value to update, <b>false</b> if not.</returns>
-	    public static bool TryUpdateVector4(IGorgonAnimationTrack<GorgonKeyVector4> track, float time, out Vector4 result)
+    public static bool TryUpdateVector4(IGorgonAnimationTrack<GorgonKeyVector4> track, float time, out Vector4 result)
     {
         switch (track.KeyFrames.Count)
         {
@@ -248,7 +248,7 @@ internal static class TrackKeyProcessor
     /// <param name="time">The current time for the animation.</param>
     /// <param name="result">The result value to apply to the vector3 object property.</param>
     /// <returns><b>true</b> if there's a value to update, <b>false</b> if not.</returns>
-	    public static bool TryUpdateQuaternion(IGorgonAnimationTrack<GorgonKeyQuaternion> track, float time, out Quaternion result)
+    public static bool TryUpdateQuaternion(IGorgonAnimationTrack<GorgonKeyQuaternion> track, float time, out Quaternion result)
     {
         switch (track.KeyFrames.Count)
         {

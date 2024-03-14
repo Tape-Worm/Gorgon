@@ -1,6 +1,4 @@
-using System;
-using System.Collections.Generic;
-using Gorgon.Core;
+﻿using Gorgon.Core;
 using Gorgon.Native;
 using BCn = BCnEncoder.Encoder;
 using WIC = SharpDX.WIC;
@@ -8,7 +6,7 @@ using WIC = SharpDX.WIC;
 namespace Gorgon.Graphics.Imaging;
 
 /// <summary>
-/// Filter for dithering an image when it is downsampled to a lower bit depth.
+/// Filter for dithering an image when it is downsampled to a lower bit depth
 /// </summary>
 public enum ImageDithering
 {
@@ -45,7 +43,7 @@ public enum ImageDithering
 }
 
 /// <summary>
-/// Filter to be applied to an image that's been stretched or shrunk.
+/// Filter to be applied to an image that's been stretched or shrunk
 /// </summary>
 public enum ImageFilter
 {
@@ -68,7 +66,7 @@ public enum ImageFilter
 }
 
 /// <summary>
-/// The levels of quality to apply to the block compression functionality. The higher the quality, the slower the compression routine will be.
+/// The levels of quality to apply to the block compression functionality. The higher the quality, the slower the compression routine will be
 /// </summary>
 public enum BcCompressionQuality
 {
@@ -87,21 +85,21 @@ public enum BcCompressionQuality
 }
 
 /// <summary>
-/// Holds raw data that is used to represent an image.
+/// Holds raw data that is used to represent an image
 /// </summary>
 /// <remarks>
 /// <para>
 /// The <see cref="GorgonImage"/> object will hold a blob of data and represent that data as a series of pixels to be displayed, or manipulated. This image type is capable of representing standard 2D 
-/// images, but can also represent 1D and 3D images. And, depending on the type of image, there is also support for mip map levels, and arrayed images.
+/// images, but can also represent 1D and 3D images. And, depending on the type of image, there is also support for mip map levels, and arrayed images
 /// </para>
 /// <para>
 /// Images can access their data directly through a <see cref="GorgonNativeBuffer{T}"/> interface that allows safe access to raw, unmanaged memory where the image data is stored. In cases where images have 
 /// multiple parts like depth slices for a 3D image, or an array for 2D images, this object will provide access through a series of buffers that will point to the individual locations for depth slices, 
-/// array indices, and mip map levels. These buffers will also provide their own <see cref="GorgonNativeBuffer{T}"/> that will allow safe and direct access to the native memory where the buffer is located.
+/// array indices, and mip map levels. These buffers will also provide their own <see cref="GorgonNativeBuffer{T}"/> that will allow safe and direct access to the native memory where the buffer is located
 /// </para>
 /// <para>
 /// Because this object stored data in native memory instead of on the heaps provided by .NET, this object should be disposed by calling its <see cref="IDisposable.Dispose"/> method when it is no 
-/// longer required. Failure to do so might cause a memory leak until the garbage collector can deal with it.
+/// longer required. Failure to do so might cause a memory leak until the garbage collector can deal with it
 /// </para>
 /// </remarks>
 public interface IGorgonImage

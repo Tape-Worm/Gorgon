@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2018 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,37 +11,40 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: August 31, 2018 2:35:59 PM
 // 
-#endregion
 
-using System;
 
 namespace Gorgon.Editor.UI;
 
 /// <summary>
-/// Event arguments for the <see cref="IViewModel.WaitPanelActivated"/> event.
+/// Event arguments for the <see cref="IViewModel.WaitPanelActivated"/> event
 /// </summary>
-public class WaitPanelActivateArgs
-    : EventArgs
+/// <remarks>
+/// Initializes a new instance of the <see cref="WaitPanelActivateArgs"/> class
+/// </remarks>
+/// <param name="message">The message to display on the wait panel overlay.</param>
+/// <param name="title">The title for the for wait panel overlay.</param>
+public class WaitPanelActivateArgs(string message, string title)
+        : EventArgs
 {
-    #region Properties.
+
     /// <summary>
     /// Property to return the message for the wait panel overlay.
     /// </summary>
     public string Message
     {
         get;
-    }
+    } = message ?? string.Empty;
 
     /// <summary>
     /// Property to return the title for the wait panel overlay.
@@ -49,19 +52,7 @@ public class WaitPanelActivateArgs
     public string Title
     {
         get;
-    }
-    #endregion
+    } = title ?? string.Empty;
 
-    #region Constructor/Finalizer.
-    /// <summary>
-    /// Initializes a new instance of the <see cref="WaitPanelActivateArgs"/> class.
-    /// </summary>
-    /// <param name="message">The message to display on the wait panel overlay.</param>
-    /// <param name="title">The title for the for wait panel overlay.</param>
-    public WaitPanelActivateArgs(string message, string title)
-    {
-        Message = message ?? string.Empty;
-        Title = title ?? string.Empty;
-    }
-    #endregion
+
 }

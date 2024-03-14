@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2019 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,23 +11,20 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: May 24, 2019 3:33:44 PM
 // 
-#endregion
 
-using System.Linq;
+
 using System.Numerics;
-using System.Threading;
-using System.Windows.Forms;
 using Gorgon.Animation;
 using Gorgon.Graphics;
 using Gorgon.Input;
@@ -38,34 +35,36 @@ using Gorgon.Timing;
 namespace Gorgon.Examples;
 
 /// <summary>
-/// A space ship object.
+/// A space ship object
 /// </summary>
 /// <remarks>
 /// This is our space ship that we'll fly around the scene. It's a stand alone object in that it doesn't care about the rendering system powering the scene. It just knows 
-/// that it's a space ship and nothing more than that.
+/// that it's a space ship and nothing more than that
 /// 
-/// Internally it holds our sprite entities that we use to compose our spaceship and it will apply the necessary positioning adjustments to those entities.
+/// Internally it holds our sprite entities that we use to compose our spaceship and it will apply the necessary positioning adjustments to those entities
 /// 
 /// It can have the layer camera controller attached so that user input can affect the scene.  By making the controller an attachable object, we can give camera control to 
-/// other objects so we can get a different point of view.
+/// other objects so we can get a different point of view
 /// 
-/// We also have an "AI" attachable object. This allows us to use an object to set up some actions based on inputs to allow the computer to control the ship.
+/// We also have an "AI" attachable object. This allows us to use an object to set up some actions based on inputs to allow the computer to control the ship
 /// </remarks>
-internal class Ship
+/// <remarks>Initializes a new instance of the <see cref="Ship"/> class.</remarks>
+/// <param name="layer">The layer.</param>
+internal class Ship(SpritesLayer layer)
 {
-    #region Variables.
+
     // The ship sprite.
     private SpriteEntity _ship;
     // The engine sprite.
     private SpriteEntity _engine;
     // The layer containing the sprite(s) for this ship.
-    private readonly SpritesLayer _layer;
+    private readonly SpritesLayer _layer = layer;
     // The controller for the layers.
     private LayerCamera _layerController;
     // The angle of rotation.
     private float _angle;
     // The controller for the engine animation.
-    private readonly GorgonSpriteAnimationController _engineAnimationController;
+    private readonly GorgonSpriteAnimationController _engineAnimationController = new();
     // Flag to indicate that we are slowing down.
     private bool _isSlowing;
     // Are we moving backwards?
@@ -76,9 +75,9 @@ internal class Ship
     private Vector2 _position;
     // The laughable AI.
     private DummyAi _ai;
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to return the speed of the ship.
     /// </summary>
@@ -160,9 +159,9 @@ internal class Ship
             UpdateEntityPositions();
         }
     }
-    #endregion
 
-    #region Methods.		
+
+
     /// <summary>
     /// Function to update the entity positions to match the position of the ship.
     /// </summary>
@@ -358,15 +357,6 @@ internal class Ship
 
         UpdateEntityPositions();
     }
-    #endregion
 
-    #region Constructor/Finalizer.
-    /// <summary>Initializes a new instance of the <see cref="Ship"/> class.</summary>
-    /// <param name="layer">The layer.</param>
-    public Ship(SpritesLayer layer)
-    {
-        _layer = layer;
-        _engineAnimationController = new GorgonSpriteAnimationController();
-    }
-    #endregion
+
 }

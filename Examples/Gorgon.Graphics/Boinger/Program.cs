@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2017 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,25 +11,21 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: March 2, 2017 7:46:37 PM
 // 
-#endregion
 
-using System;
-using System.Collections.Generic;
-using System.Drawing;
+
 using System.Numerics;
 using System.Runtime.CompilerServices;
-using System.Windows.Forms;
 using Gorgon.Examples.Properties;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
@@ -46,46 +42,46 @@ using DX = SharpDX;
 namespace Gorgon.Examples;
 
 /// <summary>
-	/// This is an example of using the base graphics API.  It's very similar to how Direct 3D 11 works, but with some enhancements
-	/// to deal with poor error support and other "gotchas" that tend to pop up.  It also has some time saving functionality to
-	/// deal with mundane tasks like setting up a swap chain, pixel shaders, etc...
-	/// 
-	/// This example is a recreation of the Amiga "Boing" demo (https://www.youtube.com/watch?v=8EpOq5H8wUI).
-	/// 
-	/// 
-	/// Before I go any further: This example is NOT a good example of how to write a 3D application.  
-	/// A good 3D renderer is a monster to write, this example just shows a user the flexibility of Gorgon and that it's capable 
-	/// of rendering 3D with the lower API level.  Any funky 3D only tricks or complicated scene graph mechanisms that you might 
-	/// expect are up to the developer to figure out and write.
-	/// 
-	/// Anyway, on with the show....
-	/// 
-	/// In this example we create a swap chain, and set up the application for 3D rendering and build 2 types of objects:  
-	/// * 2 planes (1 for the floor and another for the rear wall)
-	/// * A sphere.  
-	/// 
-	/// Once the initialization is done, we render the objects.  We transform the sphere using a world matrix for its rotation,
-	/// translation and scaling.  Note that there's a shadow under the sphere, this is just the same sphere drawn again without
-	/// a texture and a diffuse hardcoded shader (see shader.hlsl).  To get the shadow in there, we turn off depth-writing, which
-	/// enables us to render the shadow without it interferring with any geometry but still respecting the depth buffer.
-	/// 
-	/// One thing to note is the use of the 2D renderer for drawing text.  I had 2 options here:
-	/// 1. Draw the text manually myself.  And, there was no way in hell I was doing that.
-	/// 2. Use the 2D renderer.
-	/// 
-	/// You'll note that in the render loop, before we render the text, we call _2D.Begin().  This sets up the initial state for
-	/// 2D rendering.  Then we call the 2D functions to render a little window, and some text. And finally, we call _2D.End() and
-	/// that renders the batched 2D commands.
-	/// 
-	/// This example is considered advanced, and a firm understanding of a graphics API like Direct 3D 11.2 is recommended.
-	/// It's also very "low level", in that there's not a whole lot that's done for you by the API.  It's a very manual process to 
-	/// get everything initialized and thus there's a lot of set up code.  This is unlike the 2D renderer, which takes very little
-	/// effort to get up and running (technically, you barely have to touch the base graphics library to get the 2D renderer doing
-	/// something useful).
-	/// </summary>
-	internal static class Program
+/// This is an example of using the base graphics API.  It's very similar to how Direct 3D 11 works, but with some enhancements
+/// to deal with poor error support and other "gotchas" that tend to pop up.  It also has some time saving functionality to
+/// deal with mundane tasks like setting up a swap chain, pixel shaders, etc..
+/// 
+/// This example is a recreation of the Amiga "Boing" demo (https://www.youtube.com/watch?v=8EpOq5H8wUI)
+/// 
+/// 
+/// Before I go any further: This example is NOT a good example of how to write a 3D application.  
+/// A good 3D renderer is a monster to write, this example just shows a user the flexibility of Gorgon and that it's capable 
+/// of rendering 3D with the lower API level.  Any funky 3D only tricks or complicated scene graph mechanisms that you might 
+/// expect are up to the developer to figure out and write
+/// 
+/// Anyway, on with the show...
+/// 
+/// In this example we create a swap chain, and set up the application for 3D rendering and build 2 types of objects:  
+/// * 2 planes (1 for the floor and another for the rear wall)
+/// * A sphere.  
+/// 
+/// Once the initialization is done, we render the objects.  We transform the sphere using a world matrix for its rotation,
+/// translation and scaling.  Note that there's a shadow under the sphere, this is just the same sphere drawn again without
+/// a texture and a diffuse hardcoded shader (see shader.hlsl).  To get the shadow in there, we turn off depth-writing, which
+/// enables us to render the shadow without it interferring with any geometry but still respecting the depth buffer
+/// 
+/// One thing to note is the use of the 2D renderer for drawing text.  I had 2 options here:
+/// 1. Draw the text manually myself.  And, there was no way in hell I was doing that
+/// 2. Use the 2D renderer
+/// 
+/// You'll note that in the render loop, before we render the text, we call _2D.Begin().  This sets up the initial state for
+/// 2D rendering.  Then we call the 2D functions to render a little window, and some text. And finally, we call _2D.End() and
+/// that renders the batched 2D commands
+/// 
+/// This example is considered advanced, and a firm understanding of a graphics API like Direct 3D 11.2 is recommended
+/// It's also very "low level", in that there's not a whole lot that's done for you by the API.  It's a very manual process to 
+/// get everything initialized and thus there's a lot of set up code.  This is unlike the 2D renderer, which takes very little
+/// effort to get up and running (technically, you barely have to touch the base graphics library to get the 2D renderer doing
+/// something useful)
+/// </summary>
+internal static class Program
 {
-    #region Variables.
+
     // Format for our depth/stencil buffer.
     private static BufferFormat _depthFormat;
     // Main application form.
@@ -130,9 +126,9 @@ namespace Gorgon.Examples;
     private static GorgonVideoMode _selectedVideoMode;
     // The draw call used to render the plane(s).
     private static readonly GorgonDrawIndexCall[] _drawCalls = new GorgonDrawIndexCall[3];
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to update the ball position.
     /// </summary>
@@ -217,10 +213,10 @@ namespace Gorgon.Examples;
     }
 
     /// <summary>
-		/// Function to handle idle time for the application.
-		/// </summary>
-		/// <returns><b>true</b> to continue processing, <b>false</b> to stop.</returns>
-		private static bool Idle()
+    /// Function to handle idle time for the application.
+    /// </summary>
+    /// <returns><b>true</b> to continue processing, <b>false</b> to stop.</returns>
+    private static bool Idle()
     {
         // Animate the ball.
         UpdateBall();
@@ -317,12 +313,12 @@ namespace Gorgon.Examples;
     {
         GorgonGraphics graphics = null;
         BufferFormat[] depthFormats =
-        {
+        [
             BufferFormat.D32_Float,
             BufferFormat.D32_Float_S8X24_UInt,
             BufferFormat.D24_UNorm_S8_UInt,
             BufferFormat.D16_UNorm
-        };
+        ];
 
         // Find out which devices we have installed in the system.
         IReadOnlyList<IGorgonVideoAdapterInfo> deviceList = GorgonGraphics.EnumerateAdapters();
@@ -376,7 +372,7 @@ namespace Gorgon.Examples;
     /// </summary>
     /// <param name="width">The width of the depth buffer.</param>
     /// <param name="height">The height of the depth buffer.</param>
-	    private static void BuildDepthBuffer(int width, int height)
+    private static void BuildDepthBuffer(int width, int height)
     {
         _graphics.SetDepthStencil(null);
         _depthBuffer?.Dispose();
@@ -391,7 +387,7 @@ namespace Gorgon.Examples;
     /// <summary>
     /// Function to initialize the GPU resource objects.
     /// </summary>
-	    private static void InitializeGpuResources()
+    private static void InitializeGpuResources()
     {
         _graphics = CreateGraphicsInterface();
 
@@ -486,7 +482,7 @@ namespace Gorgon.Examples;
     /// <summary>
     /// Function to initialize the states for the objects to draw.
     /// </summary>
-	    private static void InitializeStates()
+    private static void InitializeStates()
     {
         var drawBuilder = new GorgonDrawIndexCallBuilder();
         var stateBuilder = new GorgonPipelineStateBuilder(_graphics);
@@ -551,8 +547,8 @@ namespace Gorgon.Examples;
             DX.Size2F textureSize = _texture.ToTexel(new DX.Size2(511, 511));
 
             // And here we set up the planes with a material, and initial positioning.
-            _planes = new[]
-                      {
+            _planes =
+                      [
                           new Plane(_graphics, _inputLayout, new Vector2(3.5f), new DX.RectangleF(0, 0, textureSize.Width, textureSize.Height))
                           {
                               Material = new Material
@@ -570,7 +566,7 @@ namespace Gorgon.Examples;
                               Position = new Vector3(0, -3.5f, 3.5f),
                               Rotation = new Vector3(90.0f, 0, 0)
                           }
-                      };
+                      ];
 
             // Create our sphere.
             // Again, here we're using texels to align the texture coordinates to the other image packed into the texture (atlasing).  
@@ -655,7 +651,7 @@ namespace Gorgon.Examples;
         BuildDepthBuffer(e.Size.Width, e.Size.Height);
         _graphics.SetDepthStencil(_depthBuffer);
     }
-    #endregion
+
 
     /// <summary>
     /// The main entry point for the application.
@@ -663,9 +659,7 @@ namespace Gorgon.Examples;
     [STAThread]
     private static void Main()
     {
-#if NET6_0_OR_GREATER
         Application.SetHighDpiMode(HighDpiMode.PerMonitorV2);
-#endif
         Application.EnableVisualStyles();
         Application.SetCompatibleTextRenderingDefault(false);
 

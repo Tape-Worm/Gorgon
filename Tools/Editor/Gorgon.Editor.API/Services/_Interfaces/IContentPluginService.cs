@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2018 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,21 +11,19 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: October 29, 2018 1:04:03 PM
 // 
-#endregion
 
-using System.Collections.Generic;
-using System.IO;
+
 using Gorgon.Editor.Content;
 using Gorgon.Editor.Metadata;
 using Gorgon.Editor.PlugIns;
@@ -35,7 +33,7 @@ using Newtonsoft.Json;
 namespace Gorgon.Editor.Services;
 
 /// <summary>
-/// The state for the plugin when associated with an included item.
+/// The state for the plugin when associated with an included item
 /// </summary>
 public enum MetadataPlugInState
 {
@@ -55,12 +53,12 @@ public enum MetadataPlugInState
 
 
 /// <summary>
-/// Provides access to the various content specific plugins in the application.
+/// Provides access to the various content specific plugins in the application
 /// </summary>
 public interface IContentPlugInService
     : IDisabledPlugInService
 {
-    #region Properties.
+
     /// <summary>
     /// Property to return the list of content plugins loaded in to the application.
     /// </summary>
@@ -85,9 +83,9 @@ public interface IContentPlugInService
         get;
         set;
     }
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to retrieve the appropriate content importer for the file specified.
     /// </summary>
@@ -147,5 +145,5 @@ public interface IContentPlugInService
     /// </para>
     /// </remarks>
     void WriteContentSettings<T>(string name, T contentSettings, params JsonConverter[] converters) where T : class;
-    #endregion
+
 }

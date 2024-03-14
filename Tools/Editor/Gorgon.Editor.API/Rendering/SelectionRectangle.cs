@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2019 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,25 +11,21 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: February 24, 2019 5:25:42 PM
 // 
-#endregion
 
-using System;
+
 using System.Diagnostics;
-using System.IO;
-using System.Linq;
 using System.Numerics;
-using System.Threading;
 using Gorgon.Editor.Properties;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
@@ -42,21 +38,21 @@ using DX = SharpDX;
 namespace Gorgon.Editor.Rendering;
 
 /// <summary>
-/// Used to render a selection rectangle on the UI.
+/// Used to render a selection rectangle on the UI
 /// </summary>
 public class SelectionRectangle
     : IDisposable, ISelectionRectangle
 {
-    #region Variables.
+
     // The renderer to use.
     private readonly Gorgon2D _renderer;
     // The texture to use for the selection overlay.
     private readonly Lazy<GorgonTexture2DView> _selectionTexture;
     // The offset of the texture within the selection rectangle.
     private Vector2 _selectionTextureOffset;
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to set or return the color for the selection rectangle.
     /// </summary>
@@ -83,9 +79,9 @@ public class SelectionRectangle
         get;
         set;
     } = new Vector2(16, 16);
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to create the selection texture.
     /// </summary>
@@ -151,9 +147,9 @@ public class SelectionRectangle
             _selectionTexture.Value.Dispose();
         }
     }
-    #endregion
 
-    #region Constructor/Finalizer.
+
+
     /// <summary>Initializes a new instance of the <see cref="SelectionRectangle"/> class.</summary>
     /// <param name="graphics">The graphics context to use.</param>
     /// <exception cref="ArgumentNullException">Thrown when the <paramref name="graphics"/> parameter is <b>null</b>.</exception>
@@ -167,5 +163,5 @@ public class SelectionRectangle
         _renderer = graphics.Renderer2D;
         _selectionTexture = new Lazy<GorgonTexture2DView>(CreateSelectionTexture, LazyThreadSafetyMode.ExecutionAndPublication);
     }
-    #endregion
+
 }

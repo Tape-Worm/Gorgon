@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2019 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,47 +11,45 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: January 16, 2019 8:16:45 PM
 // 
-#endregion
 
-using System;
+
 using System.ComponentModel;
-using System.Windows.Forms;
 using System.Windows.Forms.Design;
 
 namespace Gorgon.UI;
 
 /// <summary>
-/// A control used to provide a visual means of specifying an anchor setting.
+/// A control used to provide a visual means of specifying an anchor setting
 /// </summary>
 [ToolboxItem(true), Designer(typeof(GorgonAlignmentPickerDesigner))]
 public partial class GorgonAlignmentPicker
     : UserControl
 {
-    #region Variables.
+
     // The current alignment.
     private Alignment _alignment = Alignment.Center;
-    #endregion
 
-    #region Events.
+
+
     /// <summary>
     /// Event triggered when the alignment value changes.
     /// </summary>
     [Description("Event fired with the alignment property changes."), Category("Alignment")]
     public event EventHandler AlignmentChanged;
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to return the currently selected alignment.
     /// </summary>
@@ -70,9 +68,9 @@ public partial class GorgonAlignmentPicker
             CheckButton();
         }
     }
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to update the button state based on the current alignment.
     /// </summary>
@@ -140,9 +138,9 @@ public partial class GorgonAlignmentPicker
     /// <param name="height">The new <see cref="P:System.Windows.Forms.Control.Height"/> property value of the control.</param>
     /// <param name="specified">A bitwise combination of the <see cref="BoundsSpecified"/> values.</param>
     protected override void SetBoundsCore(int x, int y, int width, int height, BoundsSpecified specified) => base.SetBoundsCore(x, y, 105, 105, specified);
-    #endregion
 
-    #region Constructor/Finalizer.
+
+
     /// <summary>Initializes a new instance of the <see cref="GorgonAlignmentPicker"/> class.</summary>
     public GorgonAlignmentPicker()
     {
@@ -158,11 +156,11 @@ public partial class GorgonAlignmentPicker
         radioBottomRight.Tag = Alignment.LowerRight;
         radioCenter.Tag = Alignment.Center;
     }
-    #endregion
+
 }
 
 /// <summary>
-/// A designer for overriding design elements.
+/// A designer for overriding design elements
 /// </summary>
 internal class GorgonAlignmentPickerDesigner
     : ControlDesigner

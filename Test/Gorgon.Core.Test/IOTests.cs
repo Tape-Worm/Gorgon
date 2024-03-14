@@ -8,266 +8,266 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Gorgon.Core.Test
 {
-	[TestClass]
-	public class IOTests
-	{
-		[StructLayout(LayoutKind.Sequential, Pack = 4)]
-		private struct MyStruct
-		{
-			public int MyInt;
-			[MarshalAs(UnmanagedType.ByValTStr, SizeConst = 256)]
-			public string MyStr;
-		}
+    [TestClass]
+    public class IOTests
+    {
+        [StructLayout(LayoutKind.Sequential, Pack = 4)]
+        private struct MyStruct
+        {
+            public int MyInt;
+            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 256)]
+            public string MyStr;
+        }
 
-		[TestMethod]
-		public void DataStreamMarshalTest()
-		{
-			MyStruct[] items = new MyStruct[50];
+        [TestMethod]
+        public void DataStreamMarshalTest()
+        {
+            MyStruct[] items = new MyStruct[50];
 
-			for (int i = 0; i < items.Length; ++i)
-			{
-				items[i] = new MyStruct
-				           {
-					           MyInt = i,
-					           MyStr = "String #" + i + "\0"
-				           };
-			}
+            for (int i = 0; i < items.Length; ++i)
+            {
+                items[i] = new MyStruct
+                           {
+                               MyInt = i,
+                               MyStr = "String #" + i + "\0"
+                           };
+            }
 
-			using (GorgonDataStream stream = GorgonDataStream.MarshalArrayToStream(items))
-			{
-				byte[] expected = Resources.DataStreamMarshalOut1;
+            using (GorgonDataStream stream = GorgonDataStream.MarshalArrayToStream(items))
+            {
+                byte[] expected = Resources.DataStreamMarshalOut1;
 
-				// Not sure how I can test the validity of the data?
-				byte[] dataBlock = new byte[stream.Length];
-				
-				stream.Read(dataBlock, 0, dataBlock.Length);
+                // Not sure how I can test the validity of the data?
+                byte[] dataBlock = new byte[stream.Length];
 
-				Assert.IsTrue(expected.SequenceEqual(dataBlock));
-			}
-		}
+                stream.Read(dataBlock, 0, dataBlock.Length);
 
-		[TestMethod]
-		public void CopyToStreamTest()
-		{
-			using (MemoryStream stream1 = new MemoryStream(Resources.DataStreamMarshalOut1))
-			{
-				using (MemoryStream stream2 = new MemoryStream())
-				{
-					int copied = stream1.CopyToStream(stream2, Resources.DataStreamMarshalOut1.Length / 2, 2048);
+                Assert.IsTrue(expected.SequenceEqual(dataBlock));
+            }
+        }
 
-					Assert.AreEqual(Resources.DataStreamMarshalOut1.Length / 2, copied);
+        [TestMethod]
+        public void CopyToStreamTest()
+        {
+            using (MemoryStream stream1 = new MemoryStream(Resources.DataStreamMarshalOut1))
+            {
+                using (MemoryStream stream2 = new MemoryStream())
+                {
+                    int copied = stream1.CopyToStream(stream2, Resources.DataStreamMarshalOut1.Length / 2, 2048);
 
-					stream2.Position = 0;
-					byte[] actual = stream2.ToArray();
+                    Assert.AreEqual(Resources.DataStreamMarshalOut1.Length / 2, copied);
 
-					for (int i = 0; i < copied; ++i)
-					{
-						Assert.AreEqual(Resources.DataStreamMarshalOut1[i], actual[i]);
-					}
-				}
-			}
-		}
+                    stream2.Position = 0;
+                    byte[] actual = stream2.ToArray();
 
-
-		[TestMethod]
-		public void ChunkIDTest()
-		{
-			const UInt64 expectedId1 = 0x4B4E484354534554;
-			const UInt64 expectedId2 = 0x54534554;
-			string chunk1 = "TESTCHNK";
-			string chunk2 = "TEST";
-			string chunk3 = "TESTCHNKABCDEF";
+                    for (int i = 0; i < copied; ++i)
+                    {
+                        Assert.AreEqual(Resources.DataStreamMarshalOut1[i], actual[i]);
+                    }
+                }
+            }
+        }
 
 
-			UInt64 id = chunk1.ChunkID();
+        [TestMethod]
+        public void ChunkIDTest()
+        {
+            const UInt64 expectedId1 = 0x4B4E484354534554;
+            const UInt64 expectedId2 = 0x54534554;
+            string chunk1 = "TESTCHNK";
+            string chunk2 = "TEST";
+            string chunk3 = "TESTCHNKABCDEF";
 
-			Assert.AreEqual(expectedId1, id);
 
-			id = chunk2.ChunkID();
+            UInt64 id = chunk1.ChunkID();
 
-			Assert.AreEqual(expectedId2, id);
+            Assert.AreEqual(expectedId1, id);
 
-			id = chunk3.ChunkID();
+            id = chunk2.ChunkID();
 
-			Assert.AreEqual(expectedId1, id);
-		}
+            Assert.AreEqual(expectedId2, id);
 
-		[TestMethod]
-		public void StreamWrapperTest()
-		{
-			byte[] block1 =
-			{
-				0,
-				1,
-				2,
-				3,
-				4,
-				5,
-				6,
-				7,
-				8,
-				9,
-				10
-			};
+            id = chunk3.ChunkID();
 
-			using (MemoryStream stream = new MemoryStream())
-			{
-				stream.Write(block1, 0, block1.Length);
-				stream.Position = 0;
+            Assert.AreEqual(expectedId1, id);
+        }
 
-				using (GorgonStreamWrapper wrapper = new GorgonStreamWrapper(stream, 6, 5))
-				{
-					byte[] actualBytes = new byte[5];
+        [TestMethod]
+        public void StreamWrapperTest()
+        {
+            byte[] block1 =
+            {
+                0,
+                1,
+                2,
+                3,
+                4,
+                5,
+                6,
+                7,
+                8,
+                9,
+                10
+            };
 
-					Assert.AreEqual(5, wrapper.Read(actualBytes, 0, 5));
+            using (MemoryStream stream = new MemoryStream())
+            {
+                stream.Write(block1, 0, block1.Length);
+                stream.Position = 0;
 
-					for (int i = 0; i < actualBytes.Length; ++i)
-					{
-						Assert.AreEqual(block1[i + 6], actualBytes[i]);
-					}
+                using (GorgonStreamWrapper wrapper = new GorgonStreamWrapper(stream, 6, 5))
+                {
+                    byte[] actualBytes = new byte[5];
 
-					Assert.AreEqual(wrapper.Length, wrapper.Position);
-				}
+                    Assert.AreEqual(5, wrapper.Read(actualBytes, 0, 5));
 
-				Assert.AreEqual(0, stream.Position);
+                    for (int i = 0; i < actualBytes.Length; ++i)
+                    {
+                        Assert.AreEqual(block1[i + 6], actualBytes[i]);
+                    }
 
-				using (GorgonStreamWrapper wrapper = new GorgonStreamWrapper(stream, 6, 5))
-				{
-					byte[] actualBytes = new byte[8];
+                    Assert.AreEqual(wrapper.Length, wrapper.Position);
+                }
 
-					Assert.AreEqual(5, wrapper.Read(actualBytes, 0, 8));
-				}
+                Assert.AreEqual(0, stream.Position);
 
-				using (GorgonStreamWrapper wrapper = new GorgonStreamWrapper(stream, 2))
-				{
-					byte[] actualBytes = new byte[3];
+                using (GorgonStreamWrapper wrapper = new GorgonStreamWrapper(stream, 6, 5))
+                {
+                    byte[] actualBytes = new byte[8];
 
-					wrapper.Seek(3, SeekOrigin.Begin);
-					wrapper.Read(actualBytes, 0, 3);
+                    Assert.AreEqual(5, wrapper.Read(actualBytes, 0, 8));
+                }
 
-					for (int i = 0; i < actualBytes.Length; ++i)
-					{
-						Assert.AreEqual(block1[i + 5], actualBytes[i]);	
-					}
+                using (GorgonStreamWrapper wrapper = new GorgonStreamWrapper(stream, 2))
+                {
+                    byte[] actualBytes = new byte[3];
 
-					wrapper.Seek(-3, SeekOrigin.End);
-					wrapper.Read(actualBytes, 0, 3);
+                    wrapper.Seek(3, SeekOrigin.Begin);
+                    wrapper.Read(actualBytes, 0, 3);
 
-					for (int i = 0; i < actualBytes.Length; ++i)
-					{
-						Assert.AreEqual(block1[block1.Length - 3 + i], actualBytes[i]);
-					}
-				}
-			}
-		}
+                    for (int i = 0; i < actualBytes.Length; ++i)
+                    {
+                        Assert.AreEqual(block1[i + 5], actualBytes[i]);    
+                    }
 
-		[TestMethod]
-		public void ChunkReaderWriter()
-		{
-			const string stringChunk = "STRSCHNK";
-			const string intChunk = "INTSCHNK";
-			const string header = "TheHeader";
+                    wrapper.Seek(-3, SeekOrigin.End);
+                    wrapper.Read(actualBytes, 0, 3);
 
-			string[] strs =
-			{
-				"Cow",
-				"Dog",
-				"Cat",
-				"Rabbit",
-				"Duck"
-			};
+                    for (int i = 0; i < actualBytes.Length; ++i)
+                    {
+                        Assert.AreEqual(block1[block1.Length - 3 + i], actualBytes[i]);
+                    }
+                }
+            }
+        }
 
-			int[] ints =
-			{
-				32,
-				11,
-				89,
-				64,
-				87,
-				77,
-				16,
-				2,
-				42
-			};
+        [TestMethod]
+        public void ChunkReaderWriter()
+        {
+            const string stringChunk = "STRSCHNK";
+            const string intChunk = "INTSCHNK";
+            const string header = "TheHeader";
 
-			int expectedStrLength = strs.Length;
-			int expectedIntsLength = ints.Length;
+            string[] strs =
+            {
+                "Cow",
+                "Dog",
+                "Cat",
+                "Rabbit",
+                "Duck"
+            };
 
-			using (MemoryStream stream = new MemoryStream())
-			{
-				var fileWriter = new GorgonChunkFileWriter(stream, header.ChunkID());
-				fileWriter.Open();
+            int[] ints =
+            {
+                32,
+                11,
+                89,
+                64,
+                87,
+                77,
+                16,
+                2,
+                42
+            };
 
-				GorgonBinaryWriter writer = fileWriter.OpenChunk(stringChunk.ChunkID());
+            int expectedStrLength = strs.Length;
+            int expectedIntsLength = ints.Length;
 
-				writer.Write(strs.Length);
+            using (MemoryStream stream = new MemoryStream())
+            {
+                var fileWriter = new GorgonChunkFileWriter(stream, header.ChunkID());
+                fileWriter.Open();
 
-				foreach (string str in strs)
-				{
-					writer.Write(str);
-				}
+                GorgonBinaryWriter writer = fileWriter.OpenChunk(stringChunk.ChunkID());
 
-				fileWriter.CloseChunk();
+                writer.Write(strs.Length);
 
-				writer = fileWriter.OpenChunk(intChunk.ChunkID());
+                foreach (string str in strs)
+                {
+                    writer.Write(str);
+                }
 
-				writer.Write(ints.Length);
+                fileWriter.CloseChunk();
 
-				foreach (int intVal in ints)
-				{
-					writer.Write(intVal);
-				}
+                writer = fileWriter.OpenChunk(intChunk.ChunkID());
 
-				fileWriter.CloseChunk();
-				
-				fileWriter.Close();
+                writer.Write(ints.Length);
 
-				stream.Position = 0;
+                foreach (int intVal in ints)
+                {
+                    writer.Write(intVal);
+                }
 
-				var fileReader = new GorgonChunkFileReader(stream,
-				                                           new[]
-				                                           {
-					                                           header.ChunkID()
-				                                           });
+                fileWriter.CloseChunk();
 
-				fileReader.Open();
+                fileWriter.Close();
 
-				GorgonBinaryReader reader = fileReader.OpenChunk(intChunk.ChunkID());
+                stream.Position = 0;
 
-				int numInts = reader.ReadInt32();
+                var fileReader = new GorgonChunkFileReader(stream,
+                                                           new[]
+                                                           {
+                                                               header.ChunkID()
+                                                           });
 
-				Assert.AreEqual(expectedIntsLength, numInts);
+                fileReader.Open();
 
-				int[] intVals = new int[numInts];
+                GorgonBinaryReader reader = fileReader.OpenChunk(intChunk.ChunkID());
 
-				for (int i = 0; i < numInts; ++i)
-				{
-					intVals[i] = reader.ReadInt32();
-				}
+                int numInts = reader.ReadInt32();
 
-				Assert.IsTrue(ints.SequenceEqual(intVals));
+                Assert.AreEqual(expectedIntsLength, numInts);
 
-				fileReader.CloseChunk();
+                int[] intVals = new int[numInts];
 
-				reader = fileReader.OpenChunk(stringChunk.ChunkID());
+                for (int i = 0; i < numInts; ++i)
+                {
+                    intVals[i] = reader.ReadInt32();
+                }
 
-				int numStrs = reader.ReadInt32();
+                Assert.IsTrue(ints.SequenceEqual(intVals));
 
-				Assert.AreEqual(expectedStrLength, numStrs);
+                fileReader.CloseChunk();
 
-				string[] strVals = new string[numStrs];
+                reader = fileReader.OpenChunk(stringChunk.ChunkID());
 
-				for (int i = 0; i < numStrs; ++i)
-				{
-					strVals[i] = reader.ReadString();
-				}
+                int numStrs = reader.ReadInt32();
 
-				Assert.IsTrue(strs.SequenceEqual(strVals));
+                Assert.AreEqual(expectedStrLength, numStrs);
 
-				fileReader.CloseChunk();
+                string[] strVals = new string[numStrs];
 
-				fileReader.Close();
-			}
-		}
-	}
+                for (int i = 0; i < numStrs; ++i)
+                {
+                    strVals[i] = reader.ReadString();
+                }
+
+                Assert.IsTrue(strs.SequenceEqual(strVals));
+
+                fileReader.CloseChunk();
+
+                fileReader.Close();
+            }
+        }
+    }
 }

@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2019 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,22 +11,19 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: March 2, 2019 11:15:34 AM
 // 
-#endregion
 
-using System;
-using System.IO;
-using System.Linq;
+
 using Gorgon.Editor.PlugIns;
 using Gorgon.Editor.Services;
 using Gorgon.Editor.SpriteEditor.Properties;
@@ -38,12 +35,12 @@ using Gorgon.PlugIns;
 namespace Gorgon.Editor.SpriteEditor;
 
 /// <summary>
-/// A plugin used to build an importer for sprite data.
+/// A plugin used to build an importer for sprite data
 /// </summary>
 internal class SpriteImporterPlugIn
     : ContentImportPlugIn
 {
-    #region Variables.
+
     // The image editor settings.
     private IImportSettings _settings;
 
@@ -57,9 +54,9 @@ internal class SpriteImporterPlugIn
     /// </summary>
     public readonly static string SettingsFilename = typeof(SpriteImporterPlugIn).FullName;
 
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to retrieve the codec used by the sprite.
     /// </summary>
@@ -74,7 +71,7 @@ internal class SpriteImporterPlugIn
         {
             return null;
         }
-                
+
         var extension = new GorgonFileExtension(fileExtension);
 
         // Since all Gorgon's sprite files use the same extension, we'll have to be a little more aggressive when determining type.
@@ -116,7 +113,7 @@ internal class SpriteImporterPlugIn
         SpriteImportSettings settings = HostContentServices.ContentPlugInService.ReadContentSettings<SpriteImportSettings>(SettingsFilename);
 
         settings ??= new SpriteImportSettings();
-        
+
         _codecs = new CodecRegistry(_pluginCache, HostContentServices.GraphicsContext.Renderer2D, HostContentServices.Log);
         _codecs.LoadFromSettings(settings);
 
@@ -174,13 +171,13 @@ internal class SpriteImporterPlugIn
     /// </para>
     /// </remarks>
     protected override bool OnCanOpenContent(string filePath) => GetCodec(filePath, _codecs) is not null;
-    #endregion
 
-    #region Constructor/Finalizer.
+
+
     /// <summary>Initializes a new instance of the <see cref="SpriteImporterPlugIn"/> class.</summary>
     public SpriteImporterPlugIn()
         : base(Resources.GORSPR_IMPORT_DESC)
-    {            
+    {
     }
-    #endregion
+
 }

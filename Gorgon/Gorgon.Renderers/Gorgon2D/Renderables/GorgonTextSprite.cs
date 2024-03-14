@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2018 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,22 +11,19 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: June 7, 2018 3:13:51 PM
 // 
-#endregion
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
+
 using System.Numerics;
 using System.Text;
 using Gorgon.Core;
@@ -41,7 +38,7 @@ using DX = SharpDX;
 namespace Gorgon.Renderers;
 
 /// <summary>
-/// Determines how text should be rendered.
+/// Determines how text should be rendered
 /// </summary>
 public enum TextDrawMode
 {
@@ -70,11 +67,11 @@ public enum TextDrawMode
 }
 
 /// <summary>
-/// A class that defines a sprite that is used to display text.
+/// A class that defines a sprite that is used to display text
 /// </summary>
 public class GorgonTextSprite
 {
-    #region Variables.
+
     // The text to render.
     private string _text;
     // Text with embedded codes.
@@ -93,9 +90,9 @@ public class GorgonTextSprite
     /// It is exposed an internal variable (which goes against C# best practices) for performance reasons (property accesses add up over time).
     /// </summary>
     internal readonly TextRenderable Renderable = new();
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to return whether or not the sprite has had its position, size, texture information, or object space vertices updated since it was last drawn.
     /// </summary>
@@ -581,9 +578,9 @@ public class GorgonTextSprite
             renderable.StateChanged = true;
         }
     }
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to update the boundaries on the text sprite.
     /// </summary>
@@ -605,7 +602,7 @@ public class GorgonTextSprite
     {
         if (_formattedText.Length == 0)
         {
-            Renderable.Lines = Array.Empty<string>();
+            Renderable.Lines = [];
             return;
         }
 
@@ -617,9 +614,9 @@ public class GorgonTextSprite
         Renderable.HasVertexChanges = true;
         Renderable.VertexCountChanged = (Renderable.Vertices is null) || (estimatedVertexCount > Renderable.Vertices.Length);
     }
-    #endregion
 
-    #region Constructor/Finalizer.
+
+
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonTextSprite"/> class.
     /// </summary>
@@ -632,5 +629,5 @@ public class GorgonTextSprite
         Text = text ?? string.Empty;
         GlyphCornerColors = new GorgonGlyphColors(GorgonColor.White, Renderable);
     }
-    #endregion
+
 }

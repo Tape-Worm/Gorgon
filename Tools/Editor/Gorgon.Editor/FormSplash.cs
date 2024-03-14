@@ -1,6 +1,6 @@
-﻿#region MIT.
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2013 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,38 +11,36 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: Monday, September 23, 2013 12:02:10 AM
 // 
-#endregion
 
-using System;
-using System.Windows.Forms;
+
 using Gorgon.Diagnostics;
 using Gorgon.Editor.Properties;
 
 namespace Gorgon.Editor;
 
 /// <summary>
-/// Splash screen form.
+/// Splash screen form
 /// </summary>
 partial class FormSplash
     : Form
 {
-    #region Variables.
+
     // The application version number.
     private readonly Version _appVersion;
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to set or return the text shown in the information label.
     /// </summary>
@@ -59,9 +57,9 @@ partial class FormSplash
             labelInfo.Refresh();
         }
     }
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to update the version text.
     /// </summary>
@@ -97,9 +95,9 @@ partial class FormSplash
 
         InfoText = Resources.GOREDIT_TEXT_INITIALIZING;
     }
-    #endregion
 
-    #region Constructor.
+
+
     /// <summary>
     /// Initializes a new instance of the <see cref="FormSplash"/> class.
     /// </summary>
@@ -109,5 +107,5 @@ partial class FormSplash
 
         _appVersion = GetType().Assembly.GetName().Version;
     }
-    #endregion
+
 }

@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2019 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,23 +11,19 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: April 24, 2019 1:54:37 PM
 // 
-#endregion
 
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
+
 using System.Reflection;
 using Gorgon.Diagnostics;
 using Gorgon.Editor.PlugIns;
@@ -39,29 +35,33 @@ using Gorgon.Renderers;
 namespace Gorgon.Editor.SpriteEditor;
 
 /// <summary>
-/// A registry for the sprite codecs used by the plug ins in this assembly.
+/// A registry for the sprite codecs used by the plug ins in this assembly
 /// </summary>
-internal class CodecRegistry
+/// <remarks>Initializes a new instance of the <see cref="CodecRegistry"/> class.</remarks>
+/// <param name="pluginCache">The cache of plug in assemblies.</param>
+/// <param name="renderer">The 2D renderer for the application.</param>
+/// <param name="log">The log for debug output.</param>
+internal class CodecRegistry(GorgonMefPlugInCache pluginCache, Gorgon2D renderer, IGorgonLog log)
 {
-    #region Variables.
-    // The cache containing the plug in assemblies.
-    private readonly GorgonMefPlugInCache _pluginCache;
-    // The service used to manage the plug ins.
-    private readonly IGorgonPlugInService _pluginService;
-    // The log.
-    private readonly IGorgonLog _log;
-    // The 2D renderer for the application.
-    private readonly Gorgon2D _renderer;
-    #endregion
 
-    #region Properties.
+    // The cache containing the plug in assemblies.
+    private readonly GorgonMefPlugInCache _pluginCache = pluginCache;
+    // The service used to manage the plug ins.
+    private readonly IGorgonPlugInService _pluginService = new GorgonMefPlugInService(pluginCache);
+    // The log.
+    private readonly IGorgonLog _log = log;
+    // The 2D renderer for the application.
+    private readonly Gorgon2D _renderer = renderer;
+
+
+
     /// <summary>
     /// Property to return the list of codecs.
     /// </summary>
     public IList<IGorgonSpriteCodec> Codecs
     {
         get;
-    } = new List<IGorgonSpriteCodec>();
+    } = [];
 
     /// <summary>
     /// Property to return the codecs cross referenced with known file extension types.
@@ -69,7 +69,7 @@ internal class CodecRegistry
     public IList<(GorgonFileExtension extension, IGorgonSpriteCodec codec)> CodecFileTypes
     {
         get;
-    } = new List<(GorgonFileExtension extension, IGorgonSpriteCodec codec)>();
+    } = [];
 
     /// <summary>
     /// Property to return the list of sprite codec plug ins.
@@ -77,10 +77,10 @@ internal class CodecRegistry
     public IList<GorgonSpriteCodecPlugIn> CodecPlugIns
     {
         get;
-    } = new List<GorgonSpriteCodecPlugIn>();
-    #endregion
+    } = [];
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to load external sprite codec plug ins.
     /// </summary>
@@ -179,7 +179,7 @@ internal class CodecRegistry
         var result = new List<GorgonSpriteCodecPlugIn>();
         _log.Print("Loading sprite codecs...", LoggingLevel.Intermediate);
 
-        IReadOnlyList<PlugInAssemblyState> assemblies = _pluginCache.ValidateAndLoadAssemblies(new[] { path }, _log);
+        IReadOnlyList<PlugInAssemblyState> assemblies = _pluginCache.ValidateAndLoadAssemblies([path], _log);
 
         if (assemblies.Count == 0)
         {
@@ -286,19 +286,6 @@ internal class CodecRegistry
             CodecFileTypes.Add(codecFile);
         }
     }
-    #endregion
 
-    #region Constructor/Finalizer.
-    /// <summary>Initializes a new instance of the <see cref="CodecRegistry"/> class.</summary>
-    /// <param name="pluginCache">The cache of plug in assemblies.</param>
-    /// <param name="renderer">The 2D renderer for the application.</param>
-    /// <param name="log">The log for debug output.</param>
-    public CodecRegistry(GorgonMefPlugInCache pluginCache, Gorgon2D renderer, IGorgonLog log)
-    {
-        _pluginCache = pluginCache;
-        _renderer = renderer;
-        _pluginService = new GorgonMefPlugInService(pluginCache);
-        _log = log;
-    }
-    #endregion
+
 }

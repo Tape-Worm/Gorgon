@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2017 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,38 +11,36 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: February 8, 2017 7:22:29 PM
 // 
-#endregion
 
-using System;
+
 using System.Collections;
-using System.Collections.Generic;
 using System.Numerics;
 
 namespace Gorgon.Renderers;
 
 /// <summary>
-/// Defines the offsets for each corner of a rectangle.
+/// Defines the offsets for each corner of a rectangle
 /// </summary>
 public class GorgonRectangleOffsets
     : IReadOnlyList<Vector3>
 {
-    #region Variables.
+
     // The renderable object to update.
     private readonly BatchRenderable _renderable;
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to set or return the corner offset value by index.
     /// </summary>
@@ -176,9 +174,9 @@ public class GorgonRectangleOffsets
             yield return this[i];
         }
     }
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to assign a single offset to all corners.
     /// </summary>
@@ -214,13 +212,13 @@ public class GorgonRectangleOffsets
         destination.UpperRight = UpperRight;
         destination.UpperLeft = UpperLeft;
     }
-    #endregion
 
-    #region Constructor
+
+
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonRectangleOffsets"/> class.
     /// </summary>
     /// <param name="renderable">The renderable to update.</param>
     internal GorgonRectangleOffsets(BatchRenderable renderable) => _renderable = renderable;
-    #endregion
+
 }

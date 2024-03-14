@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2016 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: August 15, 2016 11:30:16 PM
 // 
-#endregion
+
 
 using Gorgon.Configuration;
 using Gorgon.Graphics.Imaging.Properties;
@@ -30,12 +30,12 @@ using Gorgon.Graphics.Imaging.Properties;
 namespace Gorgon.Graphics.Imaging.Codecs;
 
 /// <summary>
-/// Options used when decoding an image from a stream as a TGA file.
+/// Options used when decoding an image from a stream as a TGA file
 /// </summary>
 public class GorgonTgaDecodingOptions
     : IGorgonImageCodecDecodingOptions
 {
-    #region Properties.
+
     /// <summary>
     /// Property to return the list of options available to the codec.
     /// </summary>
@@ -80,15 +80,15 @@ public class GorgonTgaDecodingOptions
 
         set => Options.SetOptionValue(nameof(SetZeroAlphaAsOpaque), value);
     }
-    #endregion
 
-    #region Constructor/Finalizer.
+
+
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonTgaDecodingOptions"/> class.
     /// </summary>
-    public GorgonTgaDecodingOptions() => Options = new GorgonOptionBag(new[]
-                                      {
+    public GorgonTgaDecodingOptions() => Options = new GorgonOptionBag(
+                                      [
                                           GorgonOption.CreateOption(nameof(SetZeroAlphaAsOpaque), true, Resources.GORIMG_OPT_TGA_SETZEROALPHA_OPAQUE)
-                                      });
-    #endregion
+                                      ]);
+
 }

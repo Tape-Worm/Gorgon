@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2018 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,30 +11,29 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: August 18, 2018 1:17:00 PM
 // 
-#endregion
 
-using System;
+
 using Gorgon.Math;
 
 namespace Gorgon.Animation;
 
 /// <summary>
-/// Value type containing information about the nearest keys for a time position.
+/// Value type containing information about the nearest keys for a time position
 /// </summary>
 public static class TweenKey
 {
-    #region Methods.
+
     /// <summary>
     /// Function to search for the previous and next key for a specific time code.
     /// </summary>
@@ -133,5 +132,5 @@ public static class TweenKey
                    ? (prevKey, nextKey, prevKeyIndex, 0.0f)
                    : (prevKey, nextKey, prevKeyIndex, ((requestedTime - prevKey.Time) / keyDelta).Min(1.0f).Max(0));
     }
-    #endregion
+
 }

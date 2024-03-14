@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2021 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,65 +11,56 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: August 28, 2021 7:27:39 PM
 // 
-#endregion
 
-using System;
-using System.Numerics;
-using System.Collections.Generic;
+
 using System.Diagnostics;
-using System.Drawing;
-using System.IO;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
-using System.Windows.Forms;
-using Drawing = System.Drawing;
-using Microsoft.IO;
-using DX = SharpDX;
+using System.Numerics;
 using Gorgon.Core;
 using Gorgon.Editor.Content;
+using Gorgon.Editor.FontEditor.Properties;
 using Gorgon.Editor.Metadata;
 using Gorgon.Editor.PlugIns;
 using Gorgon.Editor.Services;
 using Gorgon.Editor.UI;
+using Gorgon.Graphics;
+using Gorgon.Graphics.Core;
+using Gorgon.Graphics.Fonts;
+using Gorgon.Graphics.Fonts.Codecs;
 using Gorgon.Graphics.Imaging;
+using Gorgon.Graphics.Imaging.Codecs;
 using Gorgon.Graphics.Imaging.GdiPlus;
 using Gorgon.IO;
-using Gorgon.Editor.FontEditor.Properties;
-using Gorgon.Graphics.Fonts.Codecs;
-using Gorgon.Graphics.Fonts;
-using System.Linq;
-using Gorgon.Graphics.Core;
-using Gorgon.Graphics;
 using Gorgon.Renderers;
 using Gorgon.UI;
-using Gorgon.Graphics.Imaging.Codecs;
+using Microsoft.IO;
+using Drawing = System.Drawing;
+using DX = SharpDX;
 
 namespace Gorgon.Editor.FontEditor;
 
 /// <summary>
-/// The plugin used for editing/creating fonts.
+/// The plugin used for editing/creating fonts
 /// </summary>
 internal class FontEditorPlugin
     : ContentPlugIn, IContentPlugInMetadata
 {
-    #region Constants.
+
     // The attribute key name for the animation codec attribute.
     private const string CodecAttr = "AnimationCodec";
-    #endregion
 
-    #region Variables.
+
+
     // No thumbnail image.
     private IGorgonImage _noThumbnail;
     // The global settings for the plug in.
@@ -87,9 +78,9 @@ internal class FontEditorPlugin
     /// The name of the settings file.
     /// </summary>
     public static readonly string SettingsName = typeof(FontEditorPlugin).FullName;
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to return the cached fonts for the font editor.
     /// </summary>
@@ -133,9 +124,9 @@ internal class FontEditorPlugin
     /// Plug in developers can override this to default the file name extension for their content when creating new content with <see cref="GetDefaultContentAsync(string, HashSet{string})"/>.
     /// </remarks>
     protected override GorgonFileExtension DefaultFileExtension => new(_defaultCodec.DefaultFileExtension, Resources.GORFNT_TEXT_FILE_OPEN_DESC);
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to update the font cache.
     /// </summary>
@@ -261,7 +252,7 @@ internal class FontEditorPlugin
             return Task.FromResult<(string, RecyclableMemoryStream)>((string.Empty, null));
         }
 
-        using GorgonFont font = _fontFactory.GetFont(fontInfo);            
+        using GorgonFont font = _fontFactory.GetFont(fontInfo);
 
         var stream = CommonEditorResources.MemoryStreamManager.GetStream() as RecyclableMemoryStream;
         _defaultCodec.Save(font, stream);
@@ -328,17 +319,17 @@ internal class FontEditorPlugin
                                                                                         fontPatternBrush,
                                                                                         fontGradientBrush,
                                                                                         fontTextureBrush,
-                                                                                        undoService,                                                                                             
+                                                                                        undoService,
                                                                                         HostContentServices));
 
-            content.Initialize(new FontContentParameters(fontService, 
-                                                                        settings, 
-                                                                        fontOutline, 
+            content.Initialize(new FontContentParameters(fontService,
+                                                                        settings,
+                                                                        fontOutline,
                                                                         textureEditor,
                                                                         fontCharSelection,
-                                                                        undoService, 
-                                                                        fileManager, 
-                                                                        file, 
+                                                                        undoService,
+                                                                        fileManager,
+                                                                        file,
                                                                         HostContentServices));
 
             return content;
@@ -429,7 +420,7 @@ internal class FontEditorPlugin
             return false;
         }
 
-        UpdateFileMetadataAttributes(file.Metadata.Attributes);            
+        UpdateFileMetadataAttributes(file.Metadata.Attributes);
         return true;
     }
 
@@ -510,9 +501,9 @@ internal class FontEditorPlugin
     /// <summary>Function to retrieve the icon used for new content creation.</summary>
     /// <returns>An image for the icon.</returns>
     public Image GetNewIcon() => Resources.font_24x24;
-    #endregion
 
-    #region Constructor/Finalizer.
+
+
     // When we construct the plug in object, we'll need to send back a friendly description 
     // for display purposes.
 
@@ -526,5 +517,5 @@ internal class FontEditorPlugin
 
     /// <summary>Initializes static members of the <see cref="FontEditorPlugin" /> class.</summary>
     static FontEditorPlugin() => UpdateCachedFonts();
-    #endregion
+
 }

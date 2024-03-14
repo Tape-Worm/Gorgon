@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2020 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,24 +11,20 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: July 19, 2020 12:02:56 AM
 // 
-#endregion
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
+
 using System.Numerics;
-using System.Windows.Forms;
 using Gorgon.Editor.Rendering;
 using Gorgon.Editor.Services;
 using Gorgon.Graphics;
@@ -39,23 +35,23 @@ using DX = SharpDX;
 namespace Gorgon.Editor.AnimationEditor;
 
 /// <summary>
-/// The service used to edit sprite vertices for an animation.
+/// The service used to edit sprite vertices for an animation
 /// </summary>
 internal class VertexEditService
 {
-    #region Variables.
+
     // The renderer used to draw the UI.
     private readonly Gorgon2D _renderer;
     // The list of vertices to update.
     private readonly Vector2[] _vertices = new Vector2[4];
     // The handles for grabbing.
     private readonly RectHandle[] _handles =
-    {
-        new RectHandle(),
-        new RectHandle(),
-        new RectHandle(),
-        new RectHandle()
-    };
+    [
+        new(),
+        new(),
+        new(),
+        new()
+    ];
     // The vertex positions, in screen space.
     private readonly Vector2[] _screenVertices = new Vector2[4];
     // The currently selected corner.
@@ -70,9 +66,9 @@ internal class VertexEditService
     private Vector2 _dragHandlePos;
     // The camera used to render the UI.
     private GorgonOrthoCamera _camera;
-    #endregion
 
-    #region Events.
+
+
     // Event triggered when the vertex coordinates have been altered.        
     private event EventHandler<VertexChangedEventArgs> VerticesChangedEvent;
 
@@ -101,9 +97,9 @@ internal class VertexEditService
             VerticesChangedEvent -= value;
         }
     }
-    #endregion
 
-    #region Properties.		
+
+
     /// <summary>
     /// Property to set or return the camera being used.
     /// </summary>
@@ -182,9 +178,9 @@ internal class VertexEditService
             SetupHandles();
         }
     }
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to raise the <see cref="VerticesChangedEvent"/> event.
     /// </summary>
@@ -437,7 +433,7 @@ internal class VertexEditService
         }
 
         if (vertexIndex == -1)
-        {                
+        {
             return false;
         }
 
@@ -458,7 +454,7 @@ internal class VertexEditService
         GetActiveHandle();
 
         if ((args.MouseButtons != MouseButtons.Left) || (vertexIndex == -1))
-        {                
+        {
             return false;
         }
 
@@ -520,9 +516,9 @@ internal class VertexEditService
 
     /// <summary>Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.</summary>
     public void Dispose() => VerticesChangedEvent = null;
-    #endregion
 
-    #region Constructor/Finalizer.
+
+
     /// <summary>Initializes a new instance of the <see cref="VertexEditService"/> class.</summary>
     /// <param name="renderer">The 2D renderer for the application.</param>
     public VertexEditService(Gorgon2D renderer)
@@ -530,7 +526,7 @@ internal class VertexEditService
         _renderer = renderer;
 
         _handles[2].HandleCursor = _handles[0].HandleCursor =
-        _handles[3].HandleCursor = _handles[1].HandleCursor = Cursors.Cross;            
+        _handles[3].HandleCursor = _handles[1].HandleCursor = Cursors.Cross;
     }
-    #endregion
+
 }

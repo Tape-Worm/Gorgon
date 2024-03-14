@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2018 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,28 +11,25 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: March 26, 2018 9:46:27 AM
 // 
-#endregion
 
-using System;
-using System.Collections.Generic;
 
 namespace Gorgon.Diagnostics;
 
 // ReSharper disable InconsistentNaming
 
 /// <summary>
-/// CPU/OS platform type.
+/// CPU/OS platform type
 /// </summary>
 public enum PlatformArchitecture
 {
@@ -49,11 +46,11 @@ public enum PlatformArchitecture
 // ReSharper restore InconsistentNaming
 
 /// <summary>
-/// Provides information about the current platform.
+/// Provides information about the current platform
 /// </summary>
 /// <remarks>
 /// <para>
-/// Ths interface will only be implemented on a platform specific assembly (e.g. Gorgon.Windows) since it requires platform specific functionality.
+/// Ths interface will only be implemented on a platform specific assembly (e.g. Gorgon.Windows) since it requires platform specific functionality
 /// </para>
 /// </remarks>
 public interface IGorgonComputerInfo

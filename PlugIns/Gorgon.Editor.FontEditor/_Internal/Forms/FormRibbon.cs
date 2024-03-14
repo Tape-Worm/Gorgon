@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2021 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,56 +11,50 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: February 13, 2021 4:04:07 PM
 // 
-#endregion
 
-using System;
-using System.Collections.Generic;
+
 using System.ComponentModel;
-using System.Linq;
 using System.Numerics;
-using Drawing = System.Drawing;
-using System.Windows.Forms;
 using Gorgon.Editor.FontEditor.Properties;
 using Gorgon.Editor.Rendering;
 using Gorgon.Editor.UI;
-using Gorgon.Graphics.Imaging;
-using Krypton.Toolkit;
 using Gorgon.Graphics.Fonts;
+using Krypton.Toolkit;
 
 namespace Gorgon.Editor.FontEditor;
 
 /// <summary>
-/// Provides a ribbon interface for the plug in view.
+/// Provides a ribbon interface for the plug in view
 /// </summary>
 internal partial class FormRibbon
     : KryptonForm, IDataContext<IFontContent>
 {
-    #region Variables.
+
     // The list of menu items associated with the zoom level.
-    private readonly Dictionary<ZoomLevels, ToolStripMenuItem> _menuZoomItems = new();
+    private readonly Dictionary<ZoomLevels, ToolStripMenuItem> _menuZoomItems = [];
 
     // The current zoom level.
     private ZoomLevels _zoomLevel = ZoomLevels.ToWindow;
     // The renderer for the content.
     private IContentRenderer _contentRenderer;
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to set or return the data context for the ribbon on the form.
     /// </summary>
-    public IFontContent DataContext
+    public IFontContent ViewModel
     {
         get;
         private set;
@@ -95,9 +89,9 @@ internal partial class FormRibbon
             UpdateZoomMenu();
         }
     }
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>Handles the ZoomScale event of the ContentRenderer control.</summary>
     /// <param name="sender">The source of the event.</param>
     /// <param name="e">The <see cref="ZoomScaleEventArgs"/> instance containing the event data.</param>
@@ -141,9 +135,9 @@ internal partial class FormRibbon
         switch (e.PropertyName)
         {
             case nameof(IFontContent.CommandContext):
-                if (DataContext.CommandContext is not null)
+                if (ViewModel.CommandContext is not null)
                 {
-                    DataContext.CommandContext.PropertyChanged -= CommandContext_PropertyChanged;
+                    ViewModel.CommandContext.PropertyChanged -= CommandContext_PropertyChanged;
                 }
                 break;
         }
@@ -157,30 +151,30 @@ internal partial class FormRibbon
         switch (e.PropertyName)
         {
             case nameof(IFontContent.FontFamily):
-                ComboFonts.Text = DataContext.FontFamily;
+                ComboFonts.Text = ViewModel.FontFamily;
                 break;
             case nameof(IFontContent.FontSize):
                 NumericSize.ValueChanged -= NumericSize_ValueChanged;
-                NumericSize.Value = (decimal)DataContext.FontSize;
+                NumericSize.Value = (decimal)ViewModel.FontSize;
                 NumericSize.ValueChanged += NumericSize_ValueChanged;
                 break;
             case nameof(IFontContent.FontUnits):
-                RadioPointUnits.Checked = DataContext.FontUnits == FontHeightMode.Points;
+                RadioPointUnits.Checked = ViewModel.FontUnits == GorgonFontHeightMode.Points;
                 RadioPixelUnits.Checked = !RadioPointUnits.Checked;
                 break;
             case nameof(IFontContent.IsBold):
-                CheckBold.Checked = DataContext.IsBold;
+                CheckBold.Checked = ViewModel.IsBold;
                 break;
             case nameof(IFontContent.IsItalic):
-                CheckItalics.Checked = DataContext.IsItalic;
+                CheckItalics.Checked = ViewModel.IsItalic;
                 break;
             case nameof(IFontContent.IsAntiAliased):
-                CheckAntiAlias.Checked = DataContext.IsAntiAliased;
+                CheckAntiAlias.Checked = ViewModel.IsAntiAliased;
                 break;
             case nameof(IFontContent.CommandContext):
-                if (DataContext.CommandContext is not null)
+                if (ViewModel.CommandContext is not null)
                 {
-                    DataContext.CommandContext.PropertyChanged += CommandContext_PropertyChanged;
+                    ViewModel.CommandContext.PropertyChanged += CommandContext_PropertyChanged;
                 }
                 break;
         }
@@ -196,7 +190,7 @@ internal partial class FormRibbon
         switch (e.PropertyName)
         {
             case nameof(ITextureEditorContext.UsePremultipliedAlpha):
-                CheckPremultiply.Checked = DataContext.TextureEditor.UsePremultipliedAlpha;
+                CheckPremultiply.Checked = ViewModel.TextureEditor.UsePremultipliedAlpha;
                 break;
         }
         ValidateButtons();
@@ -207,12 +201,12 @@ internal partial class FormRibbon
     /// <param name="e">The <see cref="EventArgs" /> instance containing the event data.</param>
     private void MenuItemSolid_Click(object sender, EventArgs e)
     {
-        if ((DataContext?.TextureEditor?.ActivateSolidBrushCommand is null) || (!DataContext.TextureEditor.ActivateSolidBrushCommand.CanExecute(null)))
+        if ((ViewModel?.TextureEditor?.ActivateSolidBrushCommand is null) || (!ViewModel.TextureEditor.ActivateSolidBrushCommand.CanExecute(null)))
         {
             return;
         }
 
-        DataContext.TextureEditor.ActivateSolidBrushCommand.Execute(null);
+        ViewModel.TextureEditor.ActivateSolidBrushCommand.Execute(null);
         ValidateButtons();
     }
 
@@ -221,12 +215,12 @@ internal partial class FormRibbon
     /// <param name="e">The <see cref="EventArgs" /> instance containing the event data.</param>
     private void MenuItemPattern_Click(object sender, EventArgs e)
     {
-        if ((DataContext?.TextureEditor?.ActivatePatternBrushCommand is null) || (!DataContext.TextureEditor.ActivatePatternBrushCommand.CanExecute(null)))
+        if ((ViewModel?.TextureEditor?.ActivatePatternBrushCommand is null) || (!ViewModel.TextureEditor.ActivatePatternBrushCommand.CanExecute(null)))
         {
             return;
         }
 
-        DataContext.TextureEditor.ActivatePatternBrushCommand.Execute(null);
+        ViewModel.TextureEditor.ActivatePatternBrushCommand.Execute(null);
         ValidateButtons();
     }
 
@@ -236,12 +230,12 @@ internal partial class FormRibbon
     /// <param name="e">The <see cref="EventArgs" /> instance containing the event data.</param>
     private void MenuItemGradient_Click(object sender, EventArgs e)
     {
-        if ((DataContext?.TextureEditor?.ActivateGradientBrushCommand is null) || (!DataContext.TextureEditor.ActivateGradientBrushCommand.CanExecute(null)))
+        if ((ViewModel?.TextureEditor?.ActivateGradientBrushCommand is null) || (!ViewModel.TextureEditor.ActivateGradientBrushCommand.CanExecute(null)))
         {
             return;
         }
 
-        DataContext.TextureEditor.ActivateGradientBrushCommand.Execute(null);
+        ViewModel.TextureEditor.ActivateGradientBrushCommand.Execute(null);
         ValidateButtons();
     }
 
@@ -250,12 +244,12 @@ internal partial class FormRibbon
     /// <param name="e">The <see cref="EventArgs" /> instance containing the event data.</param>
     private void MenuItemTextured_Click(object sender, EventArgs e)
     {
-        if ((DataContext?.TextureEditor?.ActivateTextureBrushCommand is null) || (!DataContext.TextureEditor.ActivateTextureBrushCommand.CanExecute(null)))
+        if ((ViewModel?.TextureEditor?.ActivateTextureBrushCommand is null) || (!ViewModel.TextureEditor.ActivateTextureBrushCommand.CanExecute(null)))
         {
             return;
         }
 
-        DataContext.TextureEditor.ActivateTextureBrushCommand.Execute(null);
+        ViewModel.TextureEditor.ActivateTextureBrushCommand.Execute(null);
         ValidateButtons();
     }
 
@@ -264,12 +258,12 @@ internal partial class FormRibbon
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
     private async void ButtonSave_Click(object sender, EventArgs e)
     {
-        if ((DataContext?.SaveContentCommand is null) || (!DataContext.SaveContentCommand.CanExecute(SaveReason.UserSave)))
+        if ((ViewModel?.SaveContentCommand is null) || (!ViewModel.SaveContentCommand.CanExecute(SaveReason.UserSave)))
         {
             return;
         }
 
-        await DataContext.SaveContentCommand.ExecuteAsync(SaveReason.UserSave);
+        await ViewModel.SaveContentCommand.ExecuteAsync(SaveReason.UserSave);
         ValidateButtons();
     }
 
@@ -278,12 +272,12 @@ internal partial class FormRibbon
     /// <param name="e">The <see cref="EventArgs" /> instance containing the event data.</param>
     private void ButtonCharacterSelection_Click(object sender, EventArgs e)
     {
-        if ((DataContext?.ActivateCharacterSelectionCommand is null) || (!DataContext.ActivateCharacterSelectionCommand.CanExecute(null)))
+        if ((ViewModel?.ActivateCharacterSelectionCommand is null) || (!ViewModel.ActivateCharacterSelectionCommand.CanExecute(null)))
         {
             return;
         }
 
-        DataContext.ActivateCharacterSelectionCommand.Execute(null);
+        ViewModel.ActivateCharacterSelectionCommand.Execute(null);
     }
 
     /// <summary>Handles the CheckedChanged event of the CheckBold control.</summary>
@@ -291,12 +285,12 @@ internal partial class FormRibbon
     /// <param name="e">The <see cref="EventArgs" /> instance containing the event data.</param>
     private async void CheckBold_CheckedChanged(object sender, EventArgs e)
     {
-        if ((DataContext?.SetBoldCommand is null) || (!DataContext.SetBoldCommand.CanExecute(CheckBold.Checked)))
+        if ((ViewModel?.SetBoldCommand is null) || (!ViewModel.SetBoldCommand.CanExecute(CheckBold.Checked)))
         {
             return;
         }
 
-        await DataContext.SetBoldCommand.ExecuteAsync(CheckBold.Checked);
+        await ViewModel.SetBoldCommand.ExecuteAsync(CheckBold.Checked);
         ValidateButtons();
     }
 
@@ -305,12 +299,12 @@ internal partial class FormRibbon
     /// <param name="e">The <see cref="EventArgs" /> instance containing the event data.</param>
     private async void CheckItalics_CheckedChanged(object sender, EventArgs e)
     {
-        if ((DataContext?.SetItalicCommand is null) || (!DataContext.SetItalicCommand.CanExecute(CheckItalics.Checked)))
+        if ((ViewModel?.SetItalicCommand is null) || (!ViewModel.SetItalicCommand.CanExecute(CheckItalics.Checked)))
         {
             return;
         }
 
-        await DataContext.SetItalicCommand.ExecuteAsync(CheckItalics.Checked);
+        await ViewModel.SetItalicCommand.ExecuteAsync(CheckItalics.Checked);
         ValidateButtons();
     }
 
@@ -319,12 +313,12 @@ internal partial class FormRibbon
     /// <param name="e">The <see cref="EventArgs" /> instance containing the event data.</param>
     private async void CheckAntiAlias_CheckedChanged(object sender, EventArgs e)
     {
-        if ((DataContext?.SetAntiAliasCommand is null) || (!DataContext.SetItalicCommand.CanExecute(CheckAntiAlias.Checked)))
+        if ((ViewModel?.SetAntiAliasCommand is null) || (!ViewModel.SetItalicCommand.CanExecute(CheckAntiAlias.Checked)))
         {
             return;
         }
 
-        await DataContext.SetAntiAliasCommand.ExecuteAsync(CheckAntiAlias.Checked);
+        await ViewModel.SetAntiAliasCommand.ExecuteAsync(CheckAntiAlias.Checked);
         ValidateButtons();
     }
 
@@ -333,12 +327,12 @@ internal partial class FormRibbon
     /// <param name="e">The <see cref="EventArgs" /> instance containing the event data.</param>
     private async void CheckPremultiply_Click(object sender, EventArgs e)
     {
-        if ((DataContext?.TextureEditor?.SetPremultipliedCommand is null) || (!DataContext.TextureEditor.SetPremultipliedCommand.CanExecute(CheckPremultiply.Checked)))
+        if ((ViewModel?.TextureEditor?.SetPremultipliedCommand is null) || (!ViewModel.TextureEditor.SetPremultipliedCommand.CanExecute(CheckPremultiply.Checked)))
         {
             return;
         }
 
-        await DataContext.TextureEditor.SetPremultipliedCommand.ExecuteAsync(CheckPremultiply.Checked);
+        await ViewModel.TextureEditor.SetPremultipliedCommand.ExecuteAsync(CheckPremultiply.Checked);
         ValidateButtons();
     }
 
@@ -347,12 +341,12 @@ internal partial class FormRibbon
     /// <param name="e">The <see cref="EventArgs" /> instance containing the event data.</param>
     private async void RadioPointUnits_CheckedChanged(object sender, EventArgs e)
     {
-        if ((DataContext?.SetFontUnitsCommand is null) || (!DataContext.SetFontUnitsCommand.CanExecute(RadioPointUnits.Checked)))
+        if ((ViewModel?.SetFontUnitsCommand is null) || (!ViewModel.SetFontUnitsCommand.CanExecute(RadioPointUnits.Checked)))
         {
             return;
         }
 
-        await DataContext.SetFontUnitsCommand.ExecuteAsync(RadioPointUnits.Checked);
+        await ViewModel.SetFontUnitsCommand.ExecuteAsync(RadioPointUnits.Checked);
         ValidateButtons();
     }
 
@@ -361,12 +355,12 @@ internal partial class FormRibbon
     /// <param name="e">The <see cref="EventArgs" /> instance containing the event data.</param>
     private async void RadioPixelUnits_CheckedChanged(object sender, EventArgs e)
     {
-        if ((DataContext?.SetFontUnitsCommand is null) || (!DataContext.SetFontUnitsCommand.CanExecute(!RadioPixelUnits.Checked)))
+        if ((ViewModel?.SetFontUnitsCommand is null) || (!ViewModel.SetFontUnitsCommand.CanExecute(!RadioPixelUnits.Checked)))
         {
             return;
         }
 
-        await DataContext.SetFontUnitsCommand.ExecuteAsync(!RadioPixelUnits.Checked);
+        await ViewModel.SetFontUnitsCommand.ExecuteAsync(!RadioPixelUnits.Checked);
         ValidateButtons();
     }
 
@@ -376,15 +370,15 @@ internal partial class FormRibbon
     private void UnassignEvents()
     {
         ComboFonts.SelectedIndexChanged -= ComboFonts_SelectedIndexChanged;
-        NumericSize.ValueChanged -= NumericSize_ValueChanged;            
+        NumericSize.ValueChanged -= NumericSize_ValueChanged;
 
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             return;
         }
 
-        DataContext.PropertyChanging -= DataContext_PropertyChanging;
-        DataContext.PropertyChanged -= DataContext_PropertyChanged;
+        ViewModel.PropertyChanging -= DataContext_PropertyChanging;
+        ViewModel.PropertyChanged -= DataContext_PropertyChanged;
     }
 
     /// <summary>
@@ -404,12 +398,12 @@ internal partial class FormRibbon
     {
         float value = (float)NumericSize.Value;
 
-        if ((DataContext?.SetSizeCommand is null) || (!DataContext.SetSizeCommand.CanExecute(value)))
+        if ((ViewModel?.SetSizeCommand is null) || (!ViewModel.SetSizeCommand.CanExecute(value)))
         {
             return;
         }
 
-        await DataContext.SetSizeCommand.ExecuteAsync(value);
+        await ViewModel.SetSizeCommand.ExecuteAsync(value);
     }
 
     /// <summary>Handles the SelectedIndexChanged event of the ComboFonts control.</summary>
@@ -417,12 +411,12 @@ internal partial class FormRibbon
     /// <param name="e">The <see cref="EventArgs" /> instance containing the event data.</param>
     private async void ComboFonts_SelectedIndexChanged(object sender, EventArgs e)
     {
-        if ((DataContext?.SetFontFamilyCommand is null) || (!DataContext.SetFontFamilyCommand.CanExecute(ComboFonts.Text)))
+        if ((ViewModel?.SetFontFamilyCommand is null) || (!ViewModel.SetFontFamilyCommand.CanExecute(ComboFonts.Text)))
         {
             return;
         }
 
-        await DataContext.SetFontFamilyCommand.ExecuteAsync(ComboFonts.Text);
+        await ViewModel.SetFontFamilyCommand.ExecuteAsync(ComboFonts.Text);
     }
 
     /// <summary>Handles the Click event of the ItemZoomToWindow control.</summary>
@@ -458,12 +452,12 @@ internal partial class FormRibbon
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
     private void ButtonFontUndo_Click(object sender, EventArgs e)
     {
-        if ((DataContext?.UndoCommand is null) || (!DataContext.UndoCommand.CanExecute(null)))
+        if ((ViewModel?.UndoCommand is null) || (!ViewModel.UndoCommand.CanExecute(null)))
         {
             return;
         }
 
-        DataContext.UndoCommand.Execute(null);
+        ViewModel.UndoCommand.Execute(null);
         ValidateButtons();
     }
 
@@ -472,12 +466,12 @@ internal partial class FormRibbon
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
     private void ButtonFontRedo_Click(object sender, EventArgs e)
     {
-        if ((DataContext?.RedoCommand is null) || (!DataContext.RedoCommand.CanExecute(null)))
+        if ((ViewModel?.RedoCommand is null) || (!ViewModel.RedoCommand.CanExecute(null)))
         {
             return;
         }
 
-        DataContext.RedoCommand.Execute(null);
+        ViewModel.RedoCommand.Execute(null);
         ValidateButtons();
     }
 
@@ -487,12 +481,12 @@ internal partial class FormRibbon
     /// <param name="e">The <see cref="EventArgs" /> instance containing the event data.</param>
     private void ButtonOutline_Click(object sender, EventArgs e)
     {
-        if ((DataContext?.ActivateOutlineCommand is null) || (!DataContext.ActivateOutlineCommand.CanExecute(ButtonOutline.Checked)))
+        if ((ViewModel?.ActivateOutlineCommand is null) || (!ViewModel.ActivateOutlineCommand.CanExecute(ButtonOutline.Checked)))
         {
             return;
         }
 
-        DataContext.ActivateOutlineCommand.Execute(ButtonOutline.Checked);
+        ViewModel.ActivateOutlineCommand.Execute(ButtonOutline.Checked);
         ValidateButtons();
     }
 
@@ -501,12 +495,12 @@ internal partial class FormRibbon
     /// <param name="e">The <see cref="EventArgs" /> instance containing the event data.</param>
     private void ButtonTexture_Click(object sender, EventArgs e)
     {
-        if ((DataContext?.ActivateTextureContextCommand is null) || (!DataContext.ActivateTextureContextCommand.CanExecute(null)))
+        if ((ViewModel?.ActivateTextureContextCommand is null) || (!ViewModel.ActivateTextureContextCommand.CanExecute(null)))
         {
             return;
         }
 
-        DataContext.ActivateTextureContextCommand.Execute(null);
+        ViewModel.ActivateTextureContextCommand.Execute(null);
         ValidateButtons();
     }
 
@@ -515,12 +509,12 @@ internal partial class FormRibbon
     /// <param name="e">The <see cref="EventArgs" /> instance containing the event data.</param>
     private void ButtonPrevTexture_Click(object sender, EventArgs e)
     {
-        if ((DataContext?.TextureEditor?.PrevTextureCommand is null) || (!DataContext.TextureEditor.PrevTextureCommand.CanExecute(null)))
+        if ((ViewModel?.TextureEditor?.PrevTextureCommand is null) || (!ViewModel.TextureEditor.PrevTextureCommand.CanExecute(null)))
         {
             return;
         }
 
-        DataContext.TextureEditor.PrevTextureCommand.Execute(null);
+        ViewModel.TextureEditor.PrevTextureCommand.Execute(null);
         ValidateButtons();
     }
 
@@ -529,12 +523,12 @@ internal partial class FormRibbon
     /// <param name="e">The <see cref="EventArgs" /> instance containing the event data.</param>
     private void ButtonNextTexture_Click(object sender, EventArgs e)
     {
-        if ((DataContext?.TextureEditor?.NextTextureCommand is null) || (!DataContext.TextureEditor.NextTextureCommand.CanExecute(null)))
+        if ((ViewModel?.TextureEditor?.NextTextureCommand is null) || (!ViewModel.TextureEditor.NextTextureCommand.CanExecute(null)))
         {
             return;
         }
 
-        DataContext.TextureEditor.NextTextureCommand.Execute(null);
+        ViewModel.TextureEditor.NextTextureCommand.Execute(null);
         ValidateButtons();
     }
 
@@ -543,12 +537,12 @@ internal partial class FormRibbon
     /// <param name="e">The <see cref="EventArgs" /> instance containing the event data.</param>
     private void ButtonfirstTexture_Click(object sender, EventArgs e)
     {
-        if ((DataContext?.TextureEditor?.FirstTextureCommand is null) || (!DataContext.TextureEditor.FirstTextureCommand.CanExecute(null)))
+        if ((ViewModel?.TextureEditor?.FirstTextureCommand is null) || (!ViewModel.TextureEditor.FirstTextureCommand.CanExecute(null)))
         {
             return;
         }
 
-        DataContext.TextureEditor.FirstTextureCommand.Execute(null);
+        ViewModel.TextureEditor.FirstTextureCommand.Execute(null);
         ValidateButtons();
     }
 
@@ -557,12 +551,12 @@ internal partial class FormRibbon
     /// <param name="e">The <see cref="EventArgs" /> instance containing the event data.</param>
     private void ButtonLastTexture_Click(object sender, EventArgs e)
     {
-        if ((DataContext?.TextureEditor?.LastTextureCommand is null) || (!DataContext.TextureEditor.LastTextureCommand.CanExecute(null)))
+        if ((ViewModel?.TextureEditor?.LastTextureCommand is null) || (!ViewModel.TextureEditor.LastTextureCommand.CanExecute(null)))
         {
             return;
         }
 
-        DataContext.TextureEditor.LastTextureCommand.Execute(null);
+        ViewModel.TextureEditor.LastTextureCommand.Execute(null);
         ValidateButtons();
     }
 
@@ -571,12 +565,12 @@ internal partial class FormRibbon
     /// <param name="e">The <see cref="EventArgs" /> instance containing the event data.</param>
     private void ButtonResizeTexture_Click(object sender, EventArgs e)
     {
-        if ((DataContext?.TextureEditor?.ActivateTextureSizeCommand is null) || (!DataContext.TextureEditor.ActivateTextureSizeCommand.CanExecute(null)))
+        if ((ViewModel?.TextureEditor?.ActivateTextureSizeCommand is null) || (!ViewModel.TextureEditor.ActivateTextureSizeCommand.CanExecute(null)))
         {
             return;
         }
 
-        DataContext.TextureEditor.ActivateTextureSizeCommand.Execute(null);
+        ViewModel.TextureEditor.ActivateTextureSizeCommand.Execute(null);
         ValidateButtons();
     }
 
@@ -585,12 +579,12 @@ internal partial class FormRibbon
     /// <param name="e">The <see cref="EventArgs" /> instance containing the event data.</param>
     private void ButtonGlyphPad_Click(object sender, EventArgs e)
     {
-        if ((DataContext?.TextureEditor?.ActivatePaddingCommand is null) || (!DataContext.TextureEditor.ActivatePaddingCommand.CanExecute(null)))
+        if ((ViewModel?.TextureEditor?.ActivatePaddingCommand is null) || (!ViewModel.TextureEditor.ActivatePaddingCommand.CanExecute(null)))
         {
             return;
         }
 
-        DataContext.TextureEditor.ActivatePaddingCommand.Execute(null);
+        ViewModel.TextureEditor.ActivatePaddingCommand.Execute(null);
         ValidateButtons();
     }
 
@@ -599,12 +593,12 @@ internal partial class FormRibbon
     /// <param name="e">The <see cref="EventArgs" /> instance containing the event data.</param>
     private async void ButtonNew_Click(object sender, EventArgs e)
     {
-        if ((DataContext?.NewFontCommand is null) || (!DataContext.NewFontCommand.CanExecute(null)))
+        if ((ViewModel?.NewFontCommand is null) || (!ViewModel.NewFontCommand.CanExecute(null)))
         {
             return;
         }
 
-        await DataContext.NewFontCommand.ExecuteAsync(null);
+        await ViewModel.NewFontCommand.ExecuteAsync(null);
         ValidateButtons();
     }
 
@@ -624,7 +618,7 @@ internal partial class FormRibbon
         ComboFonts.RefreshFonts(true);
         ComboFonts.Text = dataContext.FontFamily;
         NumericSize.Value = (decimal)dataContext.FontSize;
-        RadioPointUnits.Checked = dataContext.FontUnits == FontHeightMode.Points;
+        RadioPointUnits.Checked = dataContext.FontUnits == GorgonFontHeightMode.Points;
         RadioPixelUnits.Checked = !RadioPointUnits.Checked;
         CheckBold.Checked = dataContext.IsBold;
         CheckItalics.Checked = dataContext.IsItalic;
@@ -638,30 +632,30 @@ internal partial class FormRibbon
     public void ValidateButtons()
     {
         ButtonZoom.Enabled = _contentRenderer?.CanZoom ?? true;
-        LabelFontFamily.Enabled = CustomFonts.Enabled = ComboFonts.Enabled = DataContext?.SetFontFamilyCommand?.CanExecute(ComboFonts.Text) ?? false;
-        RadioPointUnits.Enabled = RadioPixelUnits.Enabled = DataContext?.SetFontUnitsCommand?.CanExecute(true) ?? false;
-        ButtonSaveFont.Enabled = DataContext?.SaveContentCommand?.CanExecute(SaveReason.UserSave) ?? false;
-        ButtonTextUndo.Enabled = DataContext?.UndoCommand?.CanExecute(null) ?? false;
-        ButtonTextRedo.Enabled = DataContext?.RedoCommand?.CanExecute(null) ?? false;
-        CheckBold.Enabled = DataContext?.SetBoldCommand?.CanExecute(true) ?? false;
-        CheckItalics.Enabled = DataContext?.SetItalicCommand?.CanExecute(true) ?? false;
-        CheckAntiAlias.Enabled = DataContext?.SetAntiAliasCommand?.CanExecute(true) ?? false;
-        LabelSize.Enabled = CustomControlSize.Enabled = NumericSize.Enabled = DataContext?.SetSizeCommand?.CanExecute((float)NumericSize.Value) ?? false;
-        ButtonOutline.Enabled = DataContext?.ActivateOutlineCommand?.CanExecute(ButtonOutline.Checked) ?? false;
-        ButtonTexture.Enabled = DataContext?.ActivateTextureContextCommand?.CanExecute(null) ?? false;
-        CheckPremultiply.Enabled = DataContext?.TextureEditor?.SetPremultipliedCommand?.CanExecute(true) ?? false;
-        ButtonPrevTexture.Enabled = DataContext?.TextureEditor?.PrevTextureCommand?.CanExecute(null) ?? false;
-        ButtonNextTexture.Enabled = DataContext?.TextureEditor?.NextTextureCommand?.CanExecute(null) ?? false;
-        ButtonfirstTexture.Enabled = DataContext?.TextureEditor?.FirstTextureCommand?.CanExecute(null) ?? false;
-        ButtonLastTexture.Enabled = DataContext?.TextureEditor?.LastTextureCommand?.CanExecute(null) ?? false;
-        ButtonResizeTexture.Enabled = DataContext?.TextureEditor?.ActivateTextureSizeCommand?.CanExecute(null) ?? false;
-        ButtonGlyphPad.Enabled = DataContext?.TextureEditor?.ActivatePaddingCommand?.CanExecute(null) ?? false;
-        ButtonCharacterSelection.Enabled = DataContext?.ActivateCharacterSelectionCommand?.CanExecute(null) ?? false;
-        ButtonNew.Enabled = DataContext?.NewFontCommand?.CanExecute(null) ?? false;
-        MenuItemSolid.Enabled = DataContext?.TextureEditor?.ActivateSolidBrushCommand?.CanExecute(null) ?? false;
-        MenuItemPattern.Enabled = DataContext?.TextureEditor?.ActivatePatternBrushCommand?.CanExecute(null) ?? false;
-        MenuItemGradient.Enabled = DataContext?.TextureEditor?.ActivateGradientBrushCommand?.CanExecute(null) ?? false;
-        MenuItemTextured.Enabled = DataContext?.TextureEditor?.ActivateTextureBrushCommand?.CanExecute(null) ?? false;
+        LabelFontFamily.Enabled = CustomFonts.Enabled = ComboFonts.Enabled = ViewModel?.SetFontFamilyCommand?.CanExecute(ComboFonts.Text) ?? false;
+        RadioPointUnits.Enabled = RadioPixelUnits.Enabled = ViewModel?.SetFontUnitsCommand?.CanExecute(true) ?? false;
+        ButtonSaveFont.Enabled = ViewModel?.SaveContentCommand?.CanExecute(SaveReason.UserSave) ?? false;
+        ButtonTextUndo.Enabled = ViewModel?.UndoCommand?.CanExecute(null) ?? false;
+        ButtonTextRedo.Enabled = ViewModel?.RedoCommand?.CanExecute(null) ?? false;
+        CheckBold.Enabled = ViewModel?.SetBoldCommand?.CanExecute(true) ?? false;
+        CheckItalics.Enabled = ViewModel?.SetItalicCommand?.CanExecute(true) ?? false;
+        CheckAntiAlias.Enabled = ViewModel?.SetAntiAliasCommand?.CanExecute(true) ?? false;
+        LabelSize.Enabled = CustomControlSize.Enabled = NumericSize.Enabled = ViewModel?.SetSizeCommand?.CanExecute((float)NumericSize.Value) ?? false;
+        ButtonOutline.Enabled = ViewModel?.ActivateOutlineCommand?.CanExecute(ButtonOutline.Checked) ?? false;
+        ButtonTexture.Enabled = ViewModel?.ActivateTextureContextCommand?.CanExecute(null) ?? false;
+        CheckPremultiply.Enabled = ViewModel?.TextureEditor?.SetPremultipliedCommand?.CanExecute(true) ?? false;
+        ButtonPrevTexture.Enabled = ViewModel?.TextureEditor?.PrevTextureCommand?.CanExecute(null) ?? false;
+        ButtonNextTexture.Enabled = ViewModel?.TextureEditor?.NextTextureCommand?.CanExecute(null) ?? false;
+        ButtonfirstTexture.Enabled = ViewModel?.TextureEditor?.FirstTextureCommand?.CanExecute(null) ?? false;
+        ButtonLastTexture.Enabled = ViewModel?.TextureEditor?.LastTextureCommand?.CanExecute(null) ?? false;
+        ButtonResizeTexture.Enabled = ViewModel?.TextureEditor?.ActivateTextureSizeCommand?.CanExecute(null) ?? false;
+        ButtonGlyphPad.Enabled = ViewModel?.TextureEditor?.ActivatePaddingCommand?.CanExecute(null) ?? false;
+        ButtonCharacterSelection.Enabled = ViewModel?.ActivateCharacterSelectionCommand?.CanExecute(null) ?? false;
+        ButtonNew.Enabled = ViewModel?.NewFontCommand?.CanExecute(null) ?? false;
+        MenuItemSolid.Enabled = ViewModel?.TextureEditor?.ActivateSolidBrushCommand?.CanExecute(null) ?? false;
+        MenuItemPattern.Enabled = ViewModel?.TextureEditor?.ActivatePatternBrushCommand?.CanExecute(null) ?? false;
+        MenuItemGradient.Enabled = ViewModel?.TextureEditor?.ActivateGradientBrushCommand?.CanExecute(null) ?? false;
+        MenuItemTextured.Enabled = ViewModel?.TextureEditor?.ActivateTextureBrushCommand?.CanExecute(null) ?? false;
     }
 
     /// <summary>Function to assign a data context to the view as a view model.</summary>
@@ -673,22 +667,22 @@ internal partial class FormRibbon
 
         InitializeFromDataContext(dataContext);
 
-        DataContext = dataContext;
+        ViewModel = dataContext;
         ValidateButtons();
 
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             return;
         }
 
-        DataContext.PropertyChanging += DataContext_PropertyChanging;
-        DataContext.PropertyChanged += DataContext_PropertyChanged;            
+        ViewModel.PropertyChanging += DataContext_PropertyChanging;
+        ViewModel.PropertyChanged += DataContext_PropertyChanged;
         ComboFonts.SelectedIndexChanged += ComboFonts_SelectedIndexChanged;
         NumericSize.ValueChanged += NumericSize_ValueChanged;
-    }        
-    #endregion
+    }
 
-    #region Constructor.
+
+
     /// <summary>Initializes a new instance of the FormRibbon class.</summary>
     public FormRibbon()
     {
@@ -706,5 +700,5 @@ internal partial class FormRibbon
             _menuZoomItems[level] = menuItem;
         }
     }
-    #endregion
+
 }

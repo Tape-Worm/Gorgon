@@ -26,7 +26,7 @@ partial class StageRecent
         base.Dispose(disposing);
     }
 
-    #region Component Designer generated code
+
 
     /// <summary> 
     /// Required method for Designer support - do not modify 
@@ -145,7 +145,7 @@ partial class StageRecent
 
     }
 
-    #endregion
+
 
     private System.Windows.Forms.Panel PanelRecent;
     private System.Windows.Forms.Panel PanelBorder;

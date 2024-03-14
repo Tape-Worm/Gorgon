@@ -1,6 +1,6 @@
-﻿#region MIT.
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2013 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,23 +11,19 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: Saturday, February 23, 2013 4:00:19 PM
 // 
-#endregion
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Windows.Forms;
+
 using Gorgon.Core;
 using Gorgon.Diagnostics;
 using SharpDX.DXGI;
@@ -37,7 +33,7 @@ using D3D11 = SharpDX.Direct3D11;
 namespace Gorgon.Graphics.Core;
 
 /// <summary>
-/// Functionality to retrieve information about the installed video adapters on the system.
+/// Functionality to retrieve information about the installed video adapters on the system
 /// </summary>
 internal class VideoAdapterEnumerator
 {
@@ -69,7 +65,7 @@ internal class VideoAdapterEnumerator
             return null;
         }
 
-        var result = new VideoAdapterInfo(index, warpAdapter4, featureSet.Value, new Dictionary<string, VideoOutputInfo>(), VideoDeviceType.Software);
+        var result = new VideoAdapterInfo(index, warpAdapter4, featureSet.Value, [], VideoDeviceType.Software);
 
         PrintLog(result, log);
 
@@ -134,7 +130,7 @@ internal class VideoAdapterEnumerator
             .Where(item => (d3dDevice.CheckFormatSupport(item) & D3D11.FormatSupport.Display) == D3D11.FormatSupport.Display)
             .ToArray();
 
-        IEnumerable<ModeDescription1> result = Enumerable.Empty<ModeDescription1>();
+        IEnumerable<ModeDescription1> result = [];
 
         // Test each format for display compatibility.
         return formats.Aggregate(result,

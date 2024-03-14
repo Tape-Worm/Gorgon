@@ -12,11 +12,11 @@
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>The API for accessing content file systems created by the Gorgon Editor from an application. It can also be used to create plug ins for the Editor application.</description>
     <releaseNotes></releaseNotes>
-    <copyright>Copyright 2023 Tape_Worm</copyright>
+    <copyright>Copyright 2024 Tape_Worm</copyright>
 
     <tags>Gorgon C# .NET Direct3D SharpDX Graphics 2D Windows Input GorgonEditor Animation</tags>
     <dependencies>
-      <group targetFramework="net6.0" >
+      <group targetFramework="net8.0" >
         <dependency id="Krypton.Ribbon.Lite.Signed" version="5.550.2103"/>        
         <dependency id="Gorgon.Renderers.Gorgon2D.Debug" version="$version$-beta"/>
         <dependency id="Gorgon.Input.Debug" version="$version$-beta"/>        
@@ -25,8 +25,8 @@
   </metadata>
   <files>
     <file src=".\icon.png" target="images\Gorgon_Icon_64x64.png" />
-    <file src="..\Tools\net6.0-windows\Gorgon.Editor.API.dll" target="lib\net6.0\Gorgon.Editor.API.dll" />
-    <file src="..\Tools\net6.0-windows\Gorgon.Editor.API.xml" target="lib\net6.0\Gorgon.Editor.API.xml" />
-    <file src="..\Tools\net6.0-windows\WinFormsColor.dll" target="lib\net6.0\WinFormsColor.dll" />
+    <file src="..\Tools\net8.0-windows\Gorgon.Editor.API.dll" target="lib\net8.0\Gorgon.Editor.API.dll" />
+    <file src="..\Tools\net8.0-windows\Gorgon.Editor.API.xml" target="lib\net8.0\Gorgon.Editor.API.xml" />
+    <file src="..\Tools\net8.0-windows\WinFormsColor.dll" target="lib\net8.0\WinFormsColor.dll" />
   </files>
 </package>

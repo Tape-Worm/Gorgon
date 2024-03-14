@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2018 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,27 +11,22 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: March 25, 2018 3:01:41 PM
 // 
-#endregion
 
-using System;
+
 using System.Collections.Concurrent;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
 using Gorgon.Properties;
@@ -39,38 +34,38 @@ using Gorgon.Properties;
 namespace Gorgon.PlugIns;
 
 /// <summary>
-/// A service to create, cache and return <see cref="GorgonPlugIn"/> instances by using the built in Microsoft Extensibility Framework as its provider.
+/// A service to create, cache and return <see cref="GorgonPlugIn"/> instances by using the built in Microsoft Extensibility Framework as its provider
 /// </summary>
 /// <remarks>
 /// <para>
 /// This service object is meant to instantiate, and cache instances of <see cref="GorgonPlugIn"/> objects contained within external assemblies loaded by the <see cref="GorgonMefPlugInService"/>. 
-/// It also allows the user to unload plugin instances when necessary.
+/// It also allows the user to unload plugin instances when necessary
 /// </para>
 /// <para>
 /// A plugin can be any class within an assembly that inherits from the <see cref="GorgonPlugIn"/> base object. When the service is created, it will retrieve a list of all known plugins types that exist 
 /// in previously loaded plugin assemblies (this list can also be updated with the <see cref="ScanPlugIns"/> method). PlugIns are not created until they are requested from the service via the 
 /// <see cref="GetPlugIn{T}"/> or <see cref="GetPlugIns{T}"/> methods. When these methods are called, they will instantiate the plugin type, and cache it for quick retrieval on subsequent calls to the 
-/// methods.
+/// methods
 /// </para>
 /// <note type="tip">
-/// A plugin assembly may contain many or one plugin type, otherwise it is not considered when enumerating plugin types.
+/// A plugin assembly may contain many or one plugin type, otherwise it is not considered when enumerating plugin types
 /// </note>
 /// <para>
 /// <para>
 /// <h3>Defining your own plugin</h3>
-/// While any class can be a plugin within an assembly, Gorgon uses the following strategy to define a plugin assembly.
+/// While any class can be a plugin within an assembly, Gorgon uses the following strategy to define a plugin assembly
 /// </para>
 /// <h3>In your host assembly (an application, DLL, etc...):</h3>
 /// <code language="csharp">
 /// <![CDATA[
 /// // This will go into your host assembly (e.g. an application, another DLL, etc...)
-/// // This defines the functionality that you wish to override in your plugin assembly.
+/// // This defines the functionality that you wish to override in your plugin assembly
 /// public abstract class FunctionalityBase
 /// {
 ///		public abstract int DoSomething();
 /// }
 /// 
-/// // This too will go into the host assembly and be overridden in your plugin assembly.
+/// // This too will go into the host assembly and be overridden in your plugin assembly
 /// public abstract class FunctionalityPlugIn
 ///		: GorgonPlugIn
 /// {
@@ -84,14 +79,14 @@ namespace Gorgon.PlugIns;
 /// </code>
 /// <h3>In your plugin assembly:</h3>
 /// <note type="tip">
-/// Be sure to reference your host assembly in the plugin assembly project.
+/// Be sure to reference your host assembly in the plugin assembly project
 /// </note>
 /// <code language="csharp">
 /// <![CDATA[
-/// // We put the namespace here because when loading the plugin in our example below, we need to give a fully qualified name for the type that we're loading.
+/// // We put the namespace here because when loading the plugin in our example below, we need to give a fully qualified name for the type that we're loading
 /// namespace Fully.Qualified.Name
 /// {
-///		// Typically Gorgon makes the extension classes internal, but they can have a public accessor if you wish.
+///		// Typically Gorgon makes the extension classes internal, but they can have a public accessor if you wish
 ///		class ConcreteFunctionality
 ///			: FunctionalityBase
 ///		{
@@ -123,7 +118,7 @@ namespace Gorgon.PlugIns;
 /// This example shows how to load a plugin and get its plugin instance. It will use the <c>ConcreteFunctionalityPlugIn</c> above:
 /// <code language="csharp"> 
 /// <![CDATA[
-/// // Our base functionality.
+/// // Our base functionality
 /// private FunctionalityBase _functionality;
 /// private GorgonMefPlugInCache _assemblies;
 /// 
@@ -131,10 +126,10 @@ namespace Gorgon.PlugIns;
 /// {
 ///		assemblies = new GorgonMefPlugInCache();
 ///		
-///		// For brevity, we've omitted checking to see if the assembly is valid and such.
+///		// For brevity, we've omitted checking to see if the assembly is valid and such
 ///		// In the real world, you should always determine whether the assembly can be loaded 
-///		// before calling the Load method.
-///		_assemblies.LoadPlugInAssemblies("Your\Directory\Here", "file search pattern");  // You can pass a wild card like *.dll, *.exe, etc..., or an absolute file name like "MyPlugin.dll".
+///		// before calling the Load method
+///		_assemblies.LoadPlugInAssemblies("Your\Directory\Here", "file search pattern");  // You can pass a wild card like *.dll, *.exe, etc..., or an absolute file name like "MyPlugin.dll"
 /// 			
 ///		IGorgonPlugInService pluginService = new GorgonMefPlugInService(_assemblies);
 /// 
@@ -152,28 +147,33 @@ namespace Gorgon.PlugIns;
 /// ]]>
 /// </code>
 /// </example>
-public sealed class GorgonMefPlugInService
-    : IGorgonPlugInService
+/// <remarks>
+/// Initializes a new instance of the <see cref="GorgonMefPlugInService"/> class
+/// </remarks>
+/// <param name="mefCache">The cache of MEF plugin assemblies.</param>
+/// <exception cref="ArgumentNullException">Thrown when the <paramref name="mefCache"/> parameter is <b>null</b>.</exception>
+public sealed class GorgonMefPlugInService(GorgonMefPlugInCache mefCache)
+        : IGorgonPlugInService
 {
-    #region Variables.
+
     // The MEF plugin assembly cache.
-    private readonly GorgonMefPlugInCache _cache;
+    private readonly GorgonMefPlugInCache _cache = mefCache ?? throw new ArgumentNullException(nameof(mefCache));
     // The application log file.
-    private readonly IGorgonLog _log;
+    private readonly IGorgonLog _log = mefCache.Log ?? GorgonLog.NullLog;
     // List of previously loaded plugins.
     private readonly ConcurrentDictionary<string, Lazy<GorgonPlugIn, IDictionary<string, object>>> _loadedPlugIns = new(StringComparer.OrdinalIgnoreCase);
     // Flag to indicate whether or not the plugins have been scanned.
     private int _scanned;
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to return the number of plugins that are currently loaded in this service.
     /// </summary>
     public int LoadedPlugInCount => _loadedPlugIns.Count;
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to unload a plugin by its name.
     /// </summary>
@@ -240,7 +240,7 @@ public sealed class GorgonMefPlugInService
         }
 
         return assemblyName is null
-            ? _loadedPlugIns.Keys.ToArray()
+            ? [.. _loadedPlugIns.Keys]
             : _loadedPlugIns.Where(item =>
                                     {
                                         Debug.Assert(item.Value.Metadata.ContainsKey("Assembly"), "Assembly info not found.");
@@ -411,18 +411,6 @@ public sealed class GorgonMefPlugInService
             DisposePlugIn(plugin);
         }
     }
-    #endregion
 
-    #region Constructor/Finalizer.
-    /// <summary>
-    /// Initializes a new instance of the <see cref="GorgonMefPlugInService"/> class.
-    /// </summary>
-    /// <param name="mefCache">The cache of MEF plugin assemblies.</param>
-    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="mefCache"/> parameter is <b>null</b>.</exception>
-    public GorgonMefPlugInService(GorgonMefPlugInCache mefCache)
-    {
-        _cache = mefCache ?? throw new ArgumentNullException(nameof(mefCache));
-        _log = mefCache.Log ?? GorgonLog.NullLog;
-    }
-    #endregion
+
 }

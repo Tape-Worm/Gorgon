@@ -1,6 +1,6 @@
-﻿#region MIT.
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2011 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,23 +11,20 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: Sunday, July 03, 2011 9:16:14 AM
 // 
-#endregion
 
-using System;
-using System.Collections.Generic;
+
 using System.Globalization;
-using System.IO;
 using System.Text;
 using System.Xml.Linq;
 using Gorgon.IO.GorPack.Properties;
@@ -38,27 +35,27 @@ using Microsoft.IO;
 namespace Gorgon.IO.GorPack;
 
 /// <summary>
-/// A file system provider for Gorgon BZip2 compressed packed files.
+/// A file system provider for Gorgon BZip2 compressed packed files
 /// </summary>
 /// <remarks>
-/// The BZip2 compressed pack files are written by an older (1.x) version of Gorgon.  This provider will enable the new file system interface to be able to read these files.
+/// The BZip2 compressed pack files are written by an older (1.x) version of Gorgon.  This provider will enable the new file system interface to be able to read these files
 /// </remarks>
 internal class GorPackProvider
     : GorgonFileSystemProvider
 {
-    #region Constants.
+
     /// <summary>
     /// The pack file header.
     /// </summary>
     public const string GorPackHeader = "GORPACK1.SharpZip.BZ2";
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>Property to return whether this provider only gives read only access to the physical file system.</summary>
     public override bool IsReadOnly => true;
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to decompress a data block.
     /// </summary>
@@ -314,9 +311,9 @@ internal class GorPackProvider
 
         return (string.Equals(header, GorPackHeader));
     }
-    #endregion
 
-    #region Constructor/Destructor.
+
+
     /// <summary>
     /// Initializes a new instance of the <see cref="GorPackProvider"/> class.
     /// </summary>
@@ -325,5 +322,5 @@ internal class GorPackProvider
                               {
                                   new GorgonFileExtension("gorPack", Resources.GORFS_GORPACK_FILE_DESC)
                               };
-    #endregion
+
 }

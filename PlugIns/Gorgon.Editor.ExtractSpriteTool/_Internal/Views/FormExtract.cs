@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2019 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,22 +11,20 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: April 24, 2019 6:55:01 PM
 // 
-#endregion
 
-using System;
+
 using System.ComponentModel;
-using System.Windows.Forms;
 using Gorgon.Editor.ExtractSpriteTool.Properties;
 using Gorgon.Editor.Rendering;
 using Gorgon.Editor.UI;
@@ -38,15 +36,15 @@ using DX = SharpDX;
 namespace Gorgon.Editor.ExtractSpriteTool;
 
 /// <summary>
-/// The main view for the tool.
+/// The main view for the tool
 /// </summary>
 internal partial class FormExtract
     : EditorToolBaseForm, IDataContext<IExtract>
 {
-    #region Properties.
+
     [Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     /// <summary>Property to return the data context assigned to this view.</summary>
-    public IExtract DataContext
+    public IExtract ViewModel
     {
         get;
         private set;
@@ -61,15 +59,15 @@ internal partial class FormExtract
         get;
         private set;
     }
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to validate the controls on the form.
     /// </summary>
     private void ValidateControls()
     {
-        if (DataContext?.Texture is null)
+        if (ViewModel?.Texture is null)
         {
             foreach (Control ctl in Controls)
             {
@@ -78,14 +76,14 @@ internal partial class FormExtract
             return;
         }
 
-        TableSpritePreview.Visible = DataContext.IsInSpritePreview;
-        ButtonNextSprite.Enabled = DataContext.NextPreviewSpriteCommand?.CanExecute(null) ?? false;
-        ButtonPrevSprite.Enabled = DataContext.PrevPreviewSpriteCommand?.CanExecute(null) ?? false;
-        CheckPreviewSprites.Enabled = (DataContext.Sprites is not null) && (DataContext.Sprites.Count > 0);
-        TableSkipMaskColor.Enabled = (!DataContext.IsGenerating) && (DataContext.SetEmptySpriteMaskColorCommand?.CanExecute(null) ?? false);
+        TableSpritePreview.Visible = ViewModel.IsInSpritePreview;
+        ButtonNextSprite.Enabled = ViewModel.NextPreviewSpriteCommand?.CanExecute(null) ?? false;
+        ButtonPrevSprite.Enabled = ViewModel.PrevPreviewSpriteCommand?.CanExecute(null) ?? false;
+        CheckPreviewSprites.Enabled = (ViewModel.Sprites is not null) && (ViewModel.Sprites.Count > 0);
+        TableSkipMaskColor.Enabled = (!ViewModel.IsGenerating) && (ViewModel.SetEmptySpriteMaskColorCommand?.CanExecute(null) ?? false);
 
-        ButtonOk.Enabled = DataContext.SaveSpritesCommand?.CanExecute(null) ?? false;
-        LabelArrayRange.Visible = LabelArrayCount.Visible = LabelArrayStart.Visible = NumericArrayIndex.Visible = NumericArrayCount.Visible = DataContext.Texture?.Texture.ArrayCount > 1;
+        ButtonOk.Enabled = ViewModel.SaveSpritesCommand?.CanExecute(null) ?? false;
+        LabelArrayRange.Visible = LabelArrayCount.Visible = LabelArrayStart.Visible = NumericArrayIndex.Visible = NumericArrayCount.Visible = ViewModel.Texture?.Texture.ArrayCount > 1;
     }
 
     /// <summary>Handles the Click event of the SkipColor control.</summary>
@@ -93,12 +91,12 @@ internal partial class FormExtract
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
     private void SkipColor_Click(object sender, EventArgs e)
     {
-        if ((DataContext?.SetEmptySpriteMaskColorCommand is null) || (!DataContext.SetEmptySpriteMaskColorCommand.CanExecute(null)))
+        if ((ViewModel?.SetEmptySpriteMaskColorCommand is null) || (!ViewModel.SetEmptySpriteMaskColorCommand.CanExecute(null)))
         {
             return;
         }
 
-        DataContext.SetEmptySpriteMaskColorCommand.Execute(null);
+        ViewModel.SetEmptySpriteMaskColorCommand.Execute(null);
     }
 
     /// <summary>Handles the ValueChanged event of the NumericCellWidth control.</summary>
@@ -106,12 +104,12 @@ internal partial class FormExtract
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
     private void NumericCellWidth_ValueChanged(object sender, EventArgs e)
     {
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             return;
         }
 
-        DataContext.CellSize = new DX.Size2((int)NumericCellWidth.Value, DataContext.CellSize.Height);
+        ViewModel.CellSize = new DX.Size2((int)NumericCellWidth.Value, ViewModel.CellSize.Height);
     }
 
     /// <summary>Handles the ValueChanged event of the NumericCellHeight control.</summary>
@@ -119,12 +117,12 @@ internal partial class FormExtract
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
     private void NumericCellHeight_ValueChanged(object sender, EventArgs e)
     {
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             return;
         }
 
-        DataContext.CellSize = new DX.Size2(DataContext.CellSize.Width, (int)NumericCellHeight.Value);
+        ViewModel.CellSize = new DX.Size2(ViewModel.CellSize.Width, (int)NumericCellHeight.Value);
     }
 
     /// <summary>Handles the ValueChanged event of the NumericOffsetX control.</summary>
@@ -132,12 +130,12 @@ internal partial class FormExtract
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
     private void NumericOffsetX_ValueChanged(object sender, EventArgs e)
     {
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             return;
         }
 
-        DataContext.GridOffset = new DX.Point((int)NumericOffsetX.Value, DataContext.GridOffset.Y);
+        ViewModel.GridOffset = new DX.Point((int)NumericOffsetX.Value, ViewModel.GridOffset.Y);
     }
 
     /// <summary>Handles the ValueChanged event of the NumericOffsetY control.</summary>
@@ -145,12 +143,12 @@ internal partial class FormExtract
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
     private void NumericOffsetY_ValueChanged(object sender, EventArgs e)
     {
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             return;
         }
 
-        DataContext.GridOffset = new DX.Point(DataContext.GridOffset.X, (int)NumericOffsetY.Value);
+        ViewModel.GridOffset = new DX.Point(ViewModel.GridOffset.X, (int)NumericOffsetY.Value);
     }
 
     /// <summary>Handles the ValueChanged event of the NumericColumnCount control.</summary>
@@ -158,12 +156,12 @@ internal partial class FormExtract
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
     private void NumericColumnCount_ValueChanged(object sender, EventArgs e)
     {
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             return;
         }
 
-        DataContext.GridSize = new DX.Size2((int)NumericColumnCount.Value, DataContext.GridSize.Height);
+        ViewModel.GridSize = new DX.Size2((int)NumericColumnCount.Value, ViewModel.GridSize.Height);
     }
 
     /// <summary>Handles the ValueChanged event of the NumericRowCount control.</summary>
@@ -171,12 +169,12 @@ internal partial class FormExtract
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
     private void NumericRowCount_ValueChanged(object sender, EventArgs e)
     {
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             return;
         }
 
-        DataContext.GridSize = new DX.Size2(DataContext.GridSize.Width, (int)NumericRowCount.Value);
+        ViewModel.GridSize = new DX.Size2(ViewModel.GridSize.Width, (int)NumericRowCount.Value);
     }
 
     /// <summary>Handles the ValueChanged event of the NumericArrayIndex control.</summary>
@@ -184,12 +182,12 @@ internal partial class FormExtract
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
     private void NumericArrayIndex_ValueChanged(object sender, EventArgs e)
     {
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             return;
         }
 
-        DataContext.StartArrayIndex = (int)NumericArrayIndex.Value;
+        ViewModel.StartArrayIndex = (int)NumericArrayIndex.Value;
     }
 
     /// <summary>Handles the ValueChanged event of the NumericArrayCount control.</summary>
@@ -197,12 +195,12 @@ internal partial class FormExtract
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
     private void NumericArrayCount_ValueChanged(object sender, EventArgs e)
     {
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             return;
         }
 
-        DataContext.ArrayCount = (int)NumericArrayCount.Value;
+        ViewModel.ArrayCount = (int)NumericArrayCount.Value;
     }
 
     /// <summary>Handles the Click event of the ButtonGenerate control.</summary>
@@ -210,7 +208,7 @@ internal partial class FormExtract
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
     private async void ButtonGenerate_Click(object sender, EventArgs e)
     {
-        if ((DataContext?.GenerateSpritesCommand is null) || (!DataContext.GenerateSpritesCommand.CanExecute(null)))
+        if ((ViewModel?.GenerateSpritesCommand is null) || (!ViewModel.GenerateSpritesCommand.CanExecute(null)))
         {
             return;
         }
@@ -220,7 +218,7 @@ internal partial class FormExtract
         ButtonOk.Enabled = ButtonGenerate.Enabled = false;
         try
         {
-            await DataContext.GenerateSpritesCommand.ExecuteAsync(null);
+            await ViewModel.GenerateSpritesCommand.ExecuteAsync(null);
         }
         finally
         {
@@ -238,12 +236,12 @@ internal partial class FormExtract
     {
         var args = new SaveSpritesArgs();
 
-        if ((DataContext?.SaveSpritesCommand is null) || (!DataContext.SaveSpritesCommand.CanExecute(args)))
+        if ((ViewModel?.SaveSpritesCommand is null) || (!ViewModel.SaveSpritesCommand.CanExecute(args)))
         {
             return;
         }
 
-        DataContext.SaveSpritesCommand.Execute(args);
+        ViewModel.SaveSpritesCommand.Execute(args);
 
         if (args.Cancel)
         {
@@ -259,12 +257,12 @@ internal partial class FormExtract
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
     private void ButtonNextSprite_Click(object sender, EventArgs e)
     {
-        if ((DataContext?.NextPreviewSpriteCommand is null) || (!DataContext.NextPreviewSpriteCommand.CanExecute(null)))
+        if ((ViewModel?.NextPreviewSpriteCommand is null) || (!ViewModel.NextPreviewSpriteCommand.CanExecute(null)))
         {
             return;
         }
 
-        DataContext.NextPreviewSpriteCommand.Execute(null);
+        ViewModel.NextPreviewSpriteCommand.Execute(null);
         ValidateControls();
     }
 
@@ -273,12 +271,12 @@ internal partial class FormExtract
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
     private void ButtonPrevSprite_Click(object sender, EventArgs e)
     {
-        if ((DataContext?.PrevPreviewSpriteCommand is null) || (!DataContext.PrevPreviewSpriteCommand.CanExecute(null)))
+        if ((ViewModel?.PrevPreviewSpriteCommand is null) || (!ViewModel.PrevPreviewSpriteCommand.CanExecute(null)))
         {
             return;
         }
 
-        DataContext.PrevPreviewSpriteCommand.Execute(null);
+        ViewModel.PrevPreviewSpriteCommand.Execute(null);
         ValidateControls();
     }
 
@@ -287,12 +285,12 @@ internal partial class FormExtract
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
     private void CheckPreviewSprites_CheckedChanged(object sender, EventArgs e)
     {
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             return;
         }
 
-        DataContext.IsInSpritePreview = CheckPreviewSprites.Checked;
+        ViewModel.IsInSpritePreview = CheckPreviewSprites.Checked;
         ValidateControls();
     }
 
@@ -301,12 +299,12 @@ internal partial class FormExtract
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
     private void CheckSkipEmpty_Click(object sender, EventArgs e)
     {
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             return;
         }
 
-        DataContext.SkipEmpty = CheckSkipEmpty.Checked;
+        ViewModel.SkipEmpty = CheckSkipEmpty.Checked;
         ValidateControls();
     }
 
@@ -324,11 +322,11 @@ internal partial class FormExtract
     ///   <span class="nu">
     ///     <span class="keyword">true</span> (<span class="keyword">True</span> in Visual Basic)</span> if the keystroke was processed and consumed by the control; otherwise, <span class="keyword"><span class="languageSpecificText"><span class="cs">false</span><span class="vb">False</span><span class="cpp">false</span></span></span><span class="nu"><span class="keyword">false</span> (<span class="keyword">False</span> in Visual Basic)</span> to allow further processing.
     /// </returns>
-    protected override bool ProcessCmdKey(ref Message msg, Keys keyData) 
+    protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
     {
-        if ((keyData == Keys.Escape) && (DataContext?.CancelSpriteGenerationCommand is not null) && (DataContext.CancelSpriteGenerationCommand.CanExecute(null)))
+        if ((keyData == Keys.Escape) && (ViewModel?.CancelSpriteGenerationCommand is not null) && (ViewModel.CancelSpriteGenerationCommand.CanExecute(null)))
         {
-            DataContext.CancelSpriteGenerationCommand.Execute(null);
+            ViewModel.CancelSpriteGenerationCommand.Execute(null);
             ValidateControls();
             return true;
         }
@@ -341,7 +339,7 @@ internal partial class FormExtract
     /// <param name="e">The <see cref="PreviewKeyDownEventArgs"/> instance containing the event data.</param>
     private void PanelRender_PreviewKeyDown(object sender, PreviewKeyDownEventArgs e)
     {
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             return;
         }
@@ -359,25 +357,25 @@ internal partial class FormExtract
                 break;
             case Keys.Left:
             case Keys.Oemcomma:
-                if (DataContext.IsInSpritePreview)
+                if (ViewModel.IsInSpritePreview)
                 {
                     ButtonPrevSprite.PerformClick();
                 }
                 else
                 {
-                    DataContext.StartArrayIndex--;
+                    ViewModel.StartArrayIndex--;
                 }
                 e.IsInputKey = true;
                 break;
             case Keys.Right:
             case Keys.OemPeriod:
-                if (DataContext.IsInSpritePreview)
+                if (ViewModel.IsInSpritePreview)
                 {
                     ButtonNextSprite.PerformClick();
                 }
                 else
                 {
-                    DataContext.StartArrayIndex++;
+                    ViewModel.StartArrayIndex++;
                 }
                 e.IsInputKey = true;
                 break;
@@ -390,12 +388,12 @@ internal partial class FormExtract
     /// <param name="e">The <see cref="MouseEventArgs"/> instance containing the event data.</param>
     private void PanelRender_MouseWheel(object sender, MouseEventArgs e)
     {
-        if ((DataContext is null) || (DataContext.IsGenerating))
+        if ((ViewModel is null) || (ViewModel.IsGenerating))
         {
             return;
         }
 
-        if (DataContext.IsInSpritePreview)
+        if (ViewModel.IsInSpritePreview)
         {
             if (e.Delta < 0)
             {
@@ -442,38 +440,38 @@ internal partial class FormExtract
         {
             case nameof(IExtract.StartArrayIndex):
                 int currentIndex = (int)NumericArrayIndex.Value;
-                if (currentIndex != DataContext.StartArrayIndex)
+                if (currentIndex != ViewModel.StartArrayIndex)
                 {
-                    NumericArrayIndex.Value = DataContext.StartArrayIndex;
+                    NumericArrayIndex.Value = ViewModel.StartArrayIndex;
                 }
                 break;
             case nameof(IExtract.SpritePreviewCount):
             case nameof(IExtract.CurrentPreviewSprite):
-                UpdateSpritePreviewLabel(DataContext);
+                UpdateSpritePreviewLabel(ViewModel);
                 break;
             case nameof(IExtract.IsInSpritePreview):
-                CheckPreviewSprites.Checked = DataContext.IsInSpritePreview;
+                CheckPreviewSprites.Checked = ViewModel.IsInSpritePreview;
                 break;
             case nameof(IExtract.GridOffset):
-                NumericCellWidth.Maximum = DataContext.Texture.Width - DataContext.GridOffset.X;
-                NumericCellHeight.Maximum = DataContext.Texture.Height - DataContext.GridOffset.Y;
+                NumericCellWidth.Maximum = ViewModel.Texture.Width - ViewModel.GridOffset.X;
+                NumericCellHeight.Maximum = ViewModel.Texture.Height - ViewModel.GridOffset.Y;
                 break;
             case nameof(IExtract.CellSize):
-                NumericOffsetX.Maximum = DataContext.Texture.Width - DataContext.CellSize.Width;
-                NumericOffsetY.Maximum = DataContext.Texture.Height - DataContext.CellSize.Height;
+                NumericOffsetX.Maximum = ViewModel.Texture.Width - ViewModel.CellSize.Width;
+                NumericOffsetY.Maximum = ViewModel.Texture.Height - ViewModel.CellSize.Height;
                 break;
             case nameof(IExtract.MaxGridSize):
-                NumericColumnCount.Maximum = DataContext.MaxGridSize.Width;
-                NumericRowCount.Maximum = DataContext.MaxGridSize.Height;
+                NumericColumnCount.Maximum = ViewModel.MaxGridSize.Width;
+                NumericRowCount.Maximum = ViewModel.MaxGridSize.Height;
                 break;
             case nameof(IExtract.MaxArrayCount):
-                NumericArrayCount.Maximum = DataContext.MaxArrayCount;
+                NumericArrayCount.Maximum = ViewModel.MaxArrayCount;
                 break;
             case nameof(IExtract.MaxArrayIndex):
-                NumericArrayIndex.Maximum = DataContext.MaxArrayIndex;
+                NumericArrayIndex.Maximum = ViewModel.MaxArrayIndex;
                 break;
             case nameof(IExtract.SkipMaskColor):
-                SkipColor.Color = DataContext.SkipMaskColor;
+                SkipColor.Color = ViewModel.SkipMaskColor;
                 break;
         }
 
@@ -510,14 +508,14 @@ internal partial class FormExtract
         NumericOffsetX.Value = dataContext.GridOffset.X.Min((int)NumericOffsetX.Maximum).Max(0);
         NumericOffsetY.Value = dataContext.GridOffset.Y.Min((int)NumericOffsetY.Maximum).Max(0);
         NumericArrayCount.Value = dataContext.ArrayCount.Min((int)NumericArrayCount.Maximum).Max(1);
-        NumericArrayIndex.Value = dataContext.StartArrayIndex.Min((int)NumericArrayIndex.Maximum).Max(0);            
+        NumericArrayIndex.Value = dataContext.StartArrayIndex.Min((int)NumericArrayIndex.Maximum).Max(0);
 
         UpdateSpritePreviewLabel(dataContext);
     }
 
     /// <summary>Raises the <see cref="Form.Resize"/> event.</summary>
     /// <param name="e">An <see cref="EventArgs"/> that contains the event data.</param>
-    protected override void OnResize(EventArgs e) 
+    protected override void OnResize(EventArgs e)
     {
         base.OnResize(e);
 
@@ -553,11 +551,11 @@ internal partial class FormExtract
     /// </para>
     /// </remarks>
     /// <seealso cref="M:Gorgon.Editor.UI.Views.EditorToolBaseForm.OnShutdownGraphics" />
-    protected override void OnSetupGraphics(IGraphicsContext graphicsContext, GorgonSwapChain swapChain) 
+    protected override void OnSetupGraphics(IGraphicsContext graphicsContext, GorgonSwapChain swapChain)
     {
         base.OnSetupGraphics(graphicsContext, swapChain);
 
-        var extractRenderer = new Renderer(graphicsContext.Renderer2D, swapChain, DataContext);
+        var extractRenderer = new Renderer(graphicsContext.Renderer2D, swapChain, ViewModel);
         AddRenderer(extractRenderer.Name, extractRenderer);
         SwitchRenderer(extractRenderer.Name);
     }
@@ -585,15 +583,15 @@ internal partial class FormExtract
 
         InitializeFromDataContext(dataContext);
 
-        DataContext = dataContext;
+        ViewModel = dataContext;
     }
-    #endregion
 
-    #region Constructor/Finalizer.
+
+
     /// <summary>Initializes a new instance of the <see cref="FormExtract"/> class.</summary>
     /// <param name="settings">The settings.</param>
     public FormExtract(ExtractSpriteToolSettings settings)
-        : this() 
+        : this()
     {
         Settings = settings;
         PanelRender.MouseWheel += PanelRender_MouseWheel;
@@ -601,5 +599,5 @@ internal partial class FormExtract
 
     /// <summary>Initializes a new instance of the <see cref="FormExtract"/> class.</summary>
     public FormExtract() => InitializeComponent();
-    #endregion
+
 }

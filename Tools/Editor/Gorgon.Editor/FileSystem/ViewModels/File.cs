@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2019 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,22 +11,19 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: December 7, 2019 11:55:10 AM
 // 
-#endregion
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
+
 using Gorgon.Diagnostics;
 using Gorgon.Editor.Content;
 using Gorgon.Editor.Metadata;
@@ -38,17 +35,17 @@ using Gorgon.IO;
 namespace Gorgon.Editor.ViewModels;
 
 /// <summary>
-/// A virtual file for the <see cref="IFileExplorer"/> view model.
+/// A virtual file for the <see cref="IFileExplorer"/> view model
 /// </summary>
 internal class File
     : ViewModelBase<FileParameters, IHostServices>, IFile, IContentFile
 {
-    #region Constants.
+
     // The name of the default icon.
     private const string DefaultIconName = "generic_file_20x20.png";
-    #endregion
 
-    #region Variables.
+
+
     // The synchronization lock for the rename event.
     private readonly object _eventLock = new();
     // The virtual file wrapped by this view model.
@@ -67,9 +64,9 @@ internal class File
     private bool _isChanged;
     // File type.
     private string _type = Resources.GOREDIT_TEXT_UNKNOWN;
-    #endregion
 
-    #region Events.
+
+
     // The event triggered when a file is renamed.
     private event EventHandler<ContentFileRenamedEventArgs> RenamedEvent;
 
@@ -102,9 +99,9 @@ internal class File
             }
         }
     }
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to return the type of file.
     /// </summary>
@@ -283,9 +280,9 @@ internal class File
     {
         get;
     }
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to refresh the data for the file.
     /// </summary>
@@ -392,7 +389,7 @@ internal class File
 
         if (!Metadata.DependsOn.TryGetValue(file.Metadata.ContentMetadata.ContentTypeID, out List<string> paths))
         {
-            Metadata.DependsOn[file.Metadata.ContentMetadata.ContentTypeID] = paths = new List<string>();
+            Metadata.DependsOn[file.Metadata.ContentMetadata.ContentTypeID] = paths = [];
         }
 
         if (!paths.Any(item => string.Equals(file.Path, item, StringComparison.OrdinalIgnoreCase)))
@@ -414,7 +411,7 @@ internal class File
         {
             return;
         }
-        
+
         string path = paths.FirstOrDefault(item => string.Equals(item, file.Path, StringComparison.OrdinalIgnoreCase));
         paths.Remove(path);
     }
@@ -427,9 +424,9 @@ internal class File
 
     /// <summary>Function called to refresh the information about the file.</summary>
     void IContentFile.Refresh() => RefreshFileData();
-    #endregion
 
-    #region Constructor/Finalizer.
+
+
     /// <summary>Initializes a new instance of the <see cref="File"/> class.</summary>
     public File()
     {
@@ -437,5 +434,5 @@ internal class File
         RefreshCommand = new EditorCommand<object>(DoRefreshFileData);
         RenameCommand = new EditorCommand<RenameArgs>(DoRename);
     }
-    #endregion
+
 }

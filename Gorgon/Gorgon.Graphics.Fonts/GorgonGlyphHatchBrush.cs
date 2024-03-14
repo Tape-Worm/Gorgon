@@ -1,6 +1,6 @@
-﻿#region MIT.
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2013 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,27 +11,26 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: Saturday, October 12, 2013 11:22:36 PM
 // 
-#endregion
 
-using System.Drawing;
+
 using System.Drawing.Drawing2D;
 using Gorgon.IO;
 
 namespace Gorgon.Graphics.Fonts;
 
 /// <summary>
-/// The patterns used to draw the glyphs.
+/// The patterns used to draw the glyphs
 /// </summary>
 public enum GlyphBrushHatchStyle
 {
@@ -317,7 +316,7 @@ public enum GlyphBrushHatchStyle
 }
 
 /// <summary>
-/// A brush used to draw glyphs using a hatching patterns.
+/// A brush used to draw glyphs using a hatching patterns
 /// </summary>
 /// <seealso cref="GorgonGlyphSolidBrush"/>
 /// <seealso cref="GorgonGlyphLinearGradientBrush"/>
@@ -326,7 +325,7 @@ public enum GlyphBrushHatchStyle
 public class GorgonGlyphHatchBrush
     : GorgonGlyphBrush
 {
-    #region Properties.
+
     /// <summary>
     /// Property to return the type of brush.
     /// </summary>
@@ -358,9 +357,9 @@ public class GorgonGlyphHatchBrush
         get;
         set;
     }
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to convert this brush to the equivalent GDI+ brush type.
     /// </summary>
@@ -418,5 +417,5 @@ public class GorgonGlyphHatchBrush
             && (brush.BackgroundColor == BackgroundColor)
             && (brush.ForegroundColor == ForegroundColor)));
     }
-    #endregion
+
 }

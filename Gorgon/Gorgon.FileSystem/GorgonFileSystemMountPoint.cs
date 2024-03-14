@@ -1,6 +1,6 @@
-﻿#region MIT.
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2013 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,20 +11,19 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: Saturday, January 19, 2013 4:13:55 PM
 // 
-#endregion
 
-using System;
+
 using Gorgon.Core;
 using Gorgon.IO.Properties;
 using Gorgon.IO.Providers;
@@ -32,12 +31,12 @@ using Gorgon.IO.Providers;
 namespace Gorgon.IO;
 
 /// <summary>
-/// A mount point for the virtual file system.
+/// A mount point for the virtual file system
 /// </summary>
 public readonly struct GorgonFileSystemMountPoint
     : IGorgonEquatableByRef<GorgonFileSystemMountPoint>
 {
-    #region Variables.
+
     /// <summary>
     /// Flag to indicate whether the mount point is a fake mount point or not (i.e. it has no real physical location).
     /// </summary>
@@ -55,9 +54,9 @@ public readonly struct GorgonFileSystemMountPoint
     /// The virtual location of the mount point.
     /// </summary>
     public readonly string MountLocation;
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to determine if two instances are equal.
     /// </summary>
@@ -124,9 +123,9 @@ public readonly struct GorgonFileSystemMountPoint
     /// <param name="right">Right instance to compare.</param>
     /// <returns><b>true</b> if not equal, <b>false</b> if equal.</returns>
     public static bool operator !=(in GorgonFileSystemMountPoint left, in GorgonFileSystemMountPoint right) => !Equals(in left, in right);
-    #endregion
 
-    #region Constructor/Destructor.
+
+
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonFileSystemMountPoint" /> struct.
     /// </summary>
@@ -163,5 +162,5 @@ public readonly struct GorgonFileSystemMountPoint
         MountLocation = mountLocation;
         IsFakeMount = isFakeMountPoint;
     }
-    #endregion
+
 }

@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2019 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,27 +11,21 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: March 2, 2019 2:09:04 AM
 // 
-#endregion
 
-using System;
-using System.Collections.Generic;
+
 using System.ComponentModel;
-using System.IO;
-using System.Linq;
 using System.Numerics;
-using System.Threading;
-using System.Threading.Tasks;
 using Gorgon.Editor.Content;
 using Gorgon.Editor.Services;
 using Gorgon.Editor.SpriteEditor.Properties;
@@ -47,12 +41,12 @@ using DX = SharpDX;
 namespace Gorgon.Editor.SpriteEditor;
 
 /// <summary>
-/// Content view model for a sprite.
+/// Content view model for a sprite
 /// </summary>
 internal class SpriteContent
     : ContentEditorViewModelBase<SpriteContentParameters>, ISpriteContent
 {
-    #region Classes.
+
     /// <summary>
     /// Arguments for an undo/redo operation.
     /// </summary>
@@ -87,17 +81,17 @@ internal class SpriteContent
         /// </summary>
         public GorgonSamplerState SamplerState;
     }
-    #endregion
 
-    #region Variables.
+
+
     // The default color for a sprite.
-    private static readonly GorgonColor[] _defaultColor = new GorgonColor[]
-    {
+    private static readonly GorgonColor[] _defaultColor =
+    [
         GorgonColor.White,
         GorgonColor.White,
         GorgonColor.White,
         GorgonColor.White
-    };
+    ];
 
     // The sprite content services.
     private SpriteContentServices _contentServices;
@@ -111,9 +105,9 @@ internal class SpriteContent
     private IContentFile _originalTexture;
     // The currently active panel.
     private IHostedPanelViewModel _currentPanel;
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to return the sprite color editor.
     /// </summary>
@@ -497,9 +491,9 @@ internal class SpriteContent
         get;
         private set;
     }
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>Handles the PropertyChanged event of the ColorEditor control.</summary>
     /// <param name="sender">The source of the event.</param>
     /// <param name="e">The <see cref="PropertyChangedEventArgs"/> instance containing the event data.</param>
@@ -562,7 +556,7 @@ internal class SpriteContent
 
         IGorgonImageInfo metadata = _contentServices.TextureService.GetImageMetadata(file);
 
-        args.Cancel = metadata.ImageType is not ImageType.Image2D and not ImageType.ImageCube;
+        args.Cancel = metadata.ImageType is not ImageDataType.Image2D and not ImageDataType.ImageCube;
 
         return !args.Cancel;
     }
@@ -587,7 +581,7 @@ internal class SpriteContent
             return false;
         }
 
-        if (imageInfo.ImageType is ImageType.Image1D or ImageType.Image3D)
+        if (imageInfo.ImageType is ImageDataType.Image1D or ImageDataType.Image3D)
         {
             HostServices.MessageDisplay.ShowError(Resources.GORSPR_ERR_NOT_2D_IMAGE);
             return false;
@@ -834,7 +828,7 @@ internal class SpriteContent
             if (Size != size)
             {
                 Size = size;
-                TextureCoordinates = new DX.RectangleF(TextureCoordinates.X, TextureCoordinates.Y, size.Width / _sprite.Texture.Width, size.Height / _sprite.Texture.Height);                    
+                TextureCoordinates = new DX.RectangleF(TextureCoordinates.X, TextureCoordinates.Y, size.Width / _sprite.Texture.Width, size.Height / _sprite.Texture.Height);
                 ContentState = ContentState.Modified;
             }
 
@@ -922,12 +916,12 @@ internal class SpriteContent
 
         var colorUndoArgs = new SpriteUndoArgs
         {
-            VertexColor = _sprite.CornerColors.ToArray()
+            VertexColor = [.. _sprite.CornerColors]
         };
 
         var colorRedoArgs = new SpriteUndoArgs
         {
-            VertexColor = ColorEditor.SpriteColor.ToArray()
+            VertexColor = [.. ColorEditor.SpriteColor]
         };
 
         if (!SetColor(colorRedoArgs.VertexColor))
@@ -943,7 +937,7 @@ internal class SpriteContent
     /// Function to determine if the current vertex offset changes can be comitted.
     /// </summary>
     /// <returns><b>true</b> if the vertex offset changes can be comitted, <b>false</b> if not.</returns>
-    private bool CanCommitVertexOffsets() => (CurrentPanel is null) 
+    private bool CanCommitVertexOffsets() => (CurrentPanel is null)
                                           && (!_sprite.CornerOffsets.Select(item => new Vector2(item.X, item.Y))
                                                                     .SequenceEqual(SpriteVertexEditContext.Vertices));
 
@@ -984,7 +978,7 @@ internal class SpriteContent
 
         var vtxUndoArgs = new SpriteUndoArgs
         {
-            VertexOffset = _sprite.CornerOffsets.ToArray()
+            VertexOffset = [.. _sprite.CornerOffsets]
         };
 
         Vector3[] verts = SpriteVertexEditContext.Vertices.Select(item => new Vector3(item.X, item.Y, 0)).ToArray();
@@ -1117,7 +1111,7 @@ internal class SpriteContent
         {
             TextureCoordinates = Texture.ToPixel(TextureCoordinates).ToRectangleF(),
             ArrayIndex = ArrayIndex,
-            VertexOffset = _sprite.CornerOffsets.ToArray()
+            VertexOffset = [.. _sprite.CornerOffsets]
         };
         var texCoordRedoArgs = new SpriteUndoArgs
         {
@@ -1193,7 +1187,7 @@ internal class SpriteContent
         {
             TextureCoordinates = Texture.ToPixel(TextureCoordinates).ToRectangleF(),
             ArrayIndex = ArrayIndex,
-            VertexOffset = _sprite.CornerOffsets.ToArray()
+            VertexOffset = [.. _sprite.CornerOffsets]
         };
         var texCoordRedoArgs = new SpriteUndoArgs
         {
@@ -1381,7 +1375,7 @@ internal class SpriteContent
     /// Function to determine if the changes to sprite texture wrapping can be committed back to the sprite.
     /// </summary>
     /// <returns><b>true</b> if the changes can be committed, <b>false</b> if not.</returns>
-    private bool CanCommitWrappingChange() => ((WrappingEditor is not null) && (Texture is not null) 
+    private bool CanCommitWrappingChange() => ((WrappingEditor is not null) && (Texture is not null)
         && ((SamplerState.WrapU != WrappingEditor.HorizontalWrapping)
              || (SamplerState.WrapV != WrappingEditor.VerticalWrapping)
              || (!SamplerState.BorderColor.Equals(WrappingEditor.BorderColor))));
@@ -1453,7 +1447,7 @@ internal class SpriteContent
         }
 
         var halfSprite = new Vector2(Size.Width * 0.5f, Size.Height * 0.5f);
-        Vector2 anchorPosition = new Vector2(_sprite.Anchor.X * Size.Width - halfSprite.X, 
+        Vector2 anchorPosition = new Vector2(_sprite.Anchor.X * Size.Width - halfSprite.X,
                                                    _sprite.Anchor.Y * Size.Height - halfSprite.Y).Truncate();
         return (!AnchorEditor.Anchor.Equals(anchorPosition));
     }
@@ -1494,7 +1488,7 @@ internal class SpriteContent
             SetAnchor(redoArgs.Anchor);
             return Task.CompletedTask;
         }
-                    
+
         var anchorUndoArgs = new SpriteUndoArgs
         {
             Anchor = _sprite.Anchor
@@ -1575,7 +1569,7 @@ internal class SpriteContent
                                                                   .Build();
                 }
                 break;
-        }                                  
+        }
 
         var anchorUndoArgs = new SpriteUndoArgs
         {
@@ -1773,9 +1767,9 @@ internal class SpriteContent
                 return true;
         }
     }
-    #endregion
 
-    #region Constructor/Finalizer.
+
+
     /// <summary>Initializes a new instance of the <see cref="SpriteContent"/> class.</summary>
     public SpriteContent()
     {
@@ -1789,8 +1783,8 @@ internal class SpriteContent
         SpriteVertexOffsetCommand = new EditorCommand<object>(DoSpriteVertexOffset, CanSpriteVertexOffset);
         ShowAnchorEditorCommand = new EditorCommand<object>(DoShowSpriteAnchorEditor, CanShowAnchorEditor);
         ShowWrappingEditorCommand = new EditorCommand<object>(DoShowWrappingEditor, CanShowWrappingEditor);
-        SetTextureFilteringCommand = new EditorCommand<SampleFilter>(DoSetTextureFilter, CanSetTextureFilter);            
+        SetTextureFilteringCommand = new EditorCommand<SampleFilter>(DoSetTextureFilter, CanSetTextureFilter);
         SetTextureCommand = new EditorAsyncCommand<SetTextureArgs>(DoSetTexture, CanSetTexture);
     }
-    #endregion
+
 }

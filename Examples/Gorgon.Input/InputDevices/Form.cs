@@ -1,6 +1,6 @@
-﻿#region MIT.
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2013 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,22 +11,19 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: Saturday, January 5, 2013 3:33:05 PM
 // 
-#endregion
 
-using System;
-using System.Drawing;
-using System.Windows.Forms;
+
 using Gorgon.Core;
 using Gorgon.Examples.Properties;
 using Gorgon.Input;
@@ -40,14 +37,14 @@ using GorgonMouseButtons = Gorgon.Input.MouseButtons;
 namespace Gorgon.Examples;
 
 /// <summary>
-/// Our main form for the example.
+/// Our main form for the example
 /// </summary>
 /// <remarks>
 /// This example shows how to use Gorgon's Raw Input functionality to control the mouse and keyboard. 
 /// 
 /// The Raw Input interface gives low level access to Human Interface Devices such as a keyboard and mouse. It will also 
 /// allow use of individual mice and keyboards if there is more than one of these devices attached to your system. This 
-/// has the advantage of enabling users to use, for example, 2 mice that perform different functions in your application.
+/// has the advantage of enabling users to use, for example, 2 mice that perform different functions in your application
 /// 
 /// Raw Input is by its very nature, raw data. The devices will send their data to the application in a pretty much 
 /// unprocessed form. Raw Keyboard data is the same as you'd get in standard windows events, and as such doesn't offer 
@@ -60,36 +57,36 @@ namespace Gorgon.Examples;
 /// to the raw input data, that cursor movement may seem off. The best practices would recommend that Raw Input be only 
 /// used for things where the ballistics would offer a negative experience, and use Windows mouse events for things like 
 /// GUIs. This example will help illustrate the subtle things that need to be done in order to use Raw Input as a GUI 
-/// system (again, this is not recommended).
+/// system (again, this is not recommended)
 /// 
 /// The Raw Input data is passed to the GorgonRawKeyboard and GorgonRawMouse objects. When a WM_INPUT (raw input) event 
 /// comes in to the application message queue, the data is parsed and sent to the appropriate device. This allows us to 
 /// check the state of the mouse and/or keyboard at any point in the application. These objects also implement events 
-/// similar to those of Windows Forms keyboard/mouse events (in fact, this is the preferred usage).
+/// similar to those of Windows Forms keyboard/mouse events (in fact, this is the preferred usage)
 /// 
 /// If you're curious about the "BufferContext" stuff, that's all from GDI+ (System.Drawing) and allows us to set up a 
-/// double buffer scenario so our mouse cursor can be drawn without flicker.  But that is not the scope of this example.
+/// double buffer scenario so our mouse cursor can be drawn without flicker.  But that is not the scope of this example
 /// 
 /// To create the raw mouse and keyboard object we only need to do the following:
-/// 1. Create the GorgonRawInput object. This will coordinate how the devices talk with their objects.
+/// 1. Create the GorgonRawInput object. This will coordinate how the devices talk with their objects
 /// 2. Create a GorgonRawMouse and GorgonRawKeyboard object. 
-/// 3. Register those devices with the GorgonRawInput.RegisterDevice(...) method.
+/// 3. Register those devices with the GorgonRawInput.RegisterDevice(...) method
 /// 
 /// This example will use both polling and events for the raw input devices. To see the difference between the two, do 
 /// the following while running the example:
-/// 1. Hold down the left mouse button while in event mode (default), and move around.  The spray effect updates.
+/// 1. Hold down the left mouse button while in event mode (default), and move around.  The spray effect updates
 /// 2. Stop moving (but keep the left button pressed). The spray effect stops updating.  This is because there are no events
-///    being fired and the events are the methods that update the spray effect.
-/// 3. Now change to polling by pressing the "P" key.
+///    being fired and the events are the methods that update the spray effect
+/// 3. Now change to polling by pressing the "P" key
 /// 4. Hold down the left mouse button and notice that the spray keeps updating regardless of whether we're moving.  
 /// 
 /// You will also notice that the cursor may move slower while polling. This is because it is being updated on every iteration 
 /// of the window message loop. This has the effect if retrieving the relative mouse position every time (and resetting it). 
-/// And because of this, the amount of relative movement will appear smaller.
+/// And because of this, the amount of relative movement will appear smaller
 /// </remarks>
 public partial class Form : System.Windows.Forms.Form
 {
-    #region Variables.
+
     // The spray effect.
     private Spray _spray;
     // Our mouse cursor.
@@ -112,16 +109,16 @@ public partial class Form : System.Windows.Forms.Form
     private bool _usePolling;
     // Timer used to refresh the labels.
     private readonly GorgonTimerQpc _labelTimer = new();
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to return the mid point of the display panel size, in screen space.
     /// </summary>
     private Point DisplayHalfSize => new(panelDisplay.ClientSize.Width / 2, panelDisplay.ClientSize.Height / 2);
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Handles the Paint event of the panelMouse control.
     /// </summary>
@@ -515,12 +512,10 @@ public partial class Form : System.Windows.Forms.Form
 
         _spray?.Dispose();
     }
-    #endregion
 
-    #region Constructor/Destructor.
     /// <summary>
     /// Initializes a new instance of the <see cref="Form" /> class.
     /// </summary>
     public Form() => InitializeComponent();
-    #endregion
+
 }

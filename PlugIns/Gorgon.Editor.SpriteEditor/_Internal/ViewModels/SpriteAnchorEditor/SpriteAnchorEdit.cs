@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2020 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,22 +11,19 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: May 19, 2020 12:51:42 PM
 // 
-#endregion
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
+
 using System.Numerics;
 using Gorgon.Editor.UI;
 using Gorgon.Graphics;
@@ -36,12 +33,12 @@ using DX = SharpDX;
 namespace Gorgon.Editor.SpriteEditor;
 
 /// <summary>
-/// The view model for the sprite anchor editor.
+/// The view model for the sprite anchor editor
 /// </summary>
 internal class SpriteAnchorEdit
     : HostedPanelViewModelBase<SpriteAnchorEditParameters>, ISpriteAnchorEdit
 {
-    #region Variables.
+
     // The anchor point.
     private Vector2 _anchor;
     // The boundaries for the anchor.
@@ -54,9 +51,9 @@ internal class SpriteAnchorEdit
     private bool _previewScaling;
     // Flag to indicate that preview rotation is active.
     private bool _previewRotation;
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>Property to return whether the panel is modal.</summary>
     public override bool IsModal => true;
 
@@ -99,7 +96,7 @@ internal class SpriteAnchorEdit
     }
 
     /// <summary>Property to return the boundaries for the anchor point.</summary>
-    public DX.Rectangle Bounds 
+    public DX.Rectangle Bounds
     {
         get => _bounds;
         set
@@ -184,14 +181,14 @@ internal class SpriteAnchorEdit
                 _spriteBounds[i] = value[i].Truncate();
             }
             MidPoint = new Vector2(range.Left + range.Width * 0.5f, range.Top + range.Height * 0.5f).Truncate();
-            OnPropertyChanged();                
+            OnPropertyChanged();
         }
     }
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>Function to inject dependencies for the view model.</summary>
     /// <param name="injectionParameters">The parameters to inject.</param>
     protected override void OnInitialize(SpriteAnchorEditParameters injectionParameters) => _bounds = injectionParameters.Bounds;
-    #endregion
+
 }

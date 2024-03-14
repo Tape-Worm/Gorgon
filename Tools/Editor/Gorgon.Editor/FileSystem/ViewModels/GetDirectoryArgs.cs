@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2020 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,25 +11,27 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: August 22, 2020 4:21:39 PM
 // 
-#endregion
+
 
 namespace Gorgon.Editor.ViewModels;
 
 /// <summary>
-/// Arguments for the <see cref="IFileExplorer.GetDirectoryCommand"/>.
+/// Arguments for the <see cref="IFileExplorer.GetDirectoryCommand"/>
 /// </summary>
-internal class GetDirectoryArgs
+/// <remarks>Initializes a new instance of the <see cref="GetDirectoryArgs"/> class.</remarks>
+/// <param name="path">The path to the directory to retrieve.</param>
+internal class GetDirectoryArgs(string path)
 {
     /// <summary>
     /// Property to return the path for the directory to retrieve.
@@ -37,7 +39,7 @@ internal class GetDirectoryArgs
     public string Path
     {
         get;
-    }
+    } = path;
 
     /// <summary>
     /// Property to set or return the <see cref="IDirectory"/> for the supplied <see cref="Path"/>.
@@ -47,8 +49,4 @@ internal class GetDirectoryArgs
         get;
         set;
     }
-
-    /// <summary>Initializes a new instance of the <see cref="GetDirectoryArgs"/> class.</summary>
-    /// <param name="path">The path to the directory to retrieve.</param>
-    public GetDirectoryArgs(string path) => Path = path;
 }

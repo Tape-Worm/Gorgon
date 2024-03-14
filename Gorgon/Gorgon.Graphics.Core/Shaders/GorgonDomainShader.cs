@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2017 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,21 +11,19 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: July 27, 2017 12:42:58 PM
 // 
-#endregion
 
-using System.IO;
-using System.Threading;
+
 using Gorgon.Diagnostics;
 using SharpDX.D3DCompiler;
 using D3D11 = SharpDX.Direct3D11;
@@ -33,27 +31,27 @@ using D3D11 = SharpDX.Direct3D11;
 namespace Gorgon.Graphics.Core;
 
 /// <summary>
-/// A shader that can be used in the tesselation of geometry.
+/// A shader that can be used in the tesselation of geometry
 /// </summary>
 /// <remarks>
 /// <para>
 /// A domain shader is a program that calculates a vertex position of a subdivided point in an output patch. This shader is run once per tessellator stage output point and has read-only access to the 
-/// tessellator stage output UV coordinates, the hull shader output patch, and the hull shader output patch constants.
+/// tessellator stage output UV coordinates, the hull shader output patch, and the hull shader output patch constants
 /// </para>
 /// <para>
 /// In Gorgon, shaders can be compiled from a string containing source code via the <see cref="GorgonShaderFactory"/>, or loaded from a <see cref="Stream"/> or file for quicker access. The 
-/// <see cref="GorgonShaderFactory"/> is required to compile or read shaders, they cannot be created via the <c>new</c> keyword.
+/// <see cref="GorgonShaderFactory"/> is required to compile or read shaders, they cannot be created via the <c>new</c> keyword
 /// </para>
 /// </remarks>
 public sealed class GorgonDomainShader
     : GorgonShader
 {
-    #region Variables.
+
     // The D3D 11 Domain Shader.
     private D3D11.DomainShader _shader;
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to set or return the Direct3D domain shader.
     /// </summary>
@@ -63,9 +61,9 @@ public sealed class GorgonDomainShader
     /// Property to return the type of shader.
     /// </summary>
     public override ShaderType ShaderType => ShaderType.Domain;
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
     /// </summary>
@@ -81,9 +79,9 @@ public sealed class GorgonDomainShader
 
         base.Dispose();
     }
-    #endregion
 
-    #region Constructor/Destructor.
+
+
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonDomainShader" /> class.
     /// </summary>
@@ -96,5 +94,5 @@ public sealed class GorgonDomainShader
         {
             DebugName = name + "_ID3D11DomainShader"
         };
-    #endregion
+
 }

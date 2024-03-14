@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2019 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,22 +11,19 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: April 18, 2019 8:48:54 AM
 // 
-#endregion
 
-using System;
-using System.IO;
-using System.Threading;
+
 using Gorgon.Diagnostics;
 using Gorgon.Editor.Content;
 using Gorgon.IO;
@@ -34,32 +31,34 @@ using Gorgon.IO;
 namespace Gorgon.Editor.PlugIns;
 
 /// <summary>
-/// Base class for a plug in that provides basic utility functionality.
+/// Base class for a plug in that provides basic utility functionality
 /// </summary>
 /// <remarks>
 /// <para>
 /// Tool plug ins, unlike content plug ins, are independent plug ins that provide their own UI (if necessary) that do various jobs in the editor. They will be placed into a tab on the ribbon 
-/// called "Tools" and provide global functionality across the editor and don't necessarily have to restrict themselves to one type of content.
+/// called "Tools" and provide global functionality across the editor and don't necessarily have to restrict themselves to one type of content
 /// </para>
 /// <para>
 /// A typical use of a tool plug in would be to display a dialog that allows mass actions on content files.  For example, a dialog that sequentially renames a list of content files so that they're 
-/// postfixed with "original_name (number)" would be a use case for a tool plug in.
+/// postfixed with "original_name (number)" would be a use case for a tool plug in
 /// </para>
 /// <para>
-/// Because these plug ins are independent, there is no interaction with the editor UI beyond providing information to display a button on the ribbon.
+/// Because these plug ins are independent, there is no interaction with the editor UI beyond providing information to display a button on the ribbon
 /// </para>
 /// </remarks>
-public abstract class ToolPlugIn
-    : EditorPlugIn
+/// <remarks>Initializes a new instance of the <see cref="ToolPlugIn"/> class.</remarks>
+/// <param name="description">Optional description of the plugin.</param>
+public abstract class ToolPlugIn(string description)
+        : EditorPlugIn(description)
 {
-    #region Variables.
+
     // Flag to indicate that the plugin is initialized.
     private int _initialized;
     // Tool services passed in from the host application.
     private IHostContentServices _hostToolServices;
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to return the services from the host application.
     /// </summary>
@@ -104,9 +103,9 @@ public abstract class ToolPlugIn
 
     /// <summary>Property to return the type of this plug in.</summary>
     public sealed override PlugInType PlugInType => PlugInType.Tool;
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to allow custom plug ins to implement custom actions when a project is created/opened.
     /// </summary>
@@ -229,16 +228,7 @@ public abstract class ToolPlugIn
 
         OnInitialize();
     }
-    #endregion
 
-    #region Constructor/Finalizer.
-    /// <summary>Initializes a new instance of the <see cref="ToolPlugIn"/> class.</summary>
-    /// <param name="description">Optional description of the plugin.</param>
-    protected ToolPlugIn(string description)
-        : base(description)
-    {
 
-    }
-    #endregion
 
 }

@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2018 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,25 +11,25 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: June 7, 2018 3:43:19 PM
 // 
-#endregion
+
 
 using Gorgon.Memory;
 
 namespace Gorgon.Core;
 
 /// <summary>
-/// An interface that defines a standard set of functionality for a builder pattern object.
+/// An interface that defines a standard set of functionality for a builder pattern object
 /// </summary>
 /// <typeparam name="TB">The type of builder. Used to return a fluent interface for the builder.</typeparam>
 /// <typeparam name="TBo">The type of object produced by the builder.</typeparam>
@@ -39,7 +39,7 @@ namespace Gorgon.Core;
 /// This interface is used to define a fluent builder pattern for creating objects.  
 /// </para>
 /// <para>
-/// Unlike the <see cref="IGorgonFluentBuilder{TB, TBo}"/> interface, this one defines an allocator type <typeparamref name="TBa"/>.
+/// Unlike the <see cref="IGorgonFluentBuilder{TB, TBo}"/> interface, this one defines an allocator type <typeparamref name="TBa"/>
 /// </para>
 /// </remarks>
 /// <seealso cref="GorgonRingPool{T}"/>

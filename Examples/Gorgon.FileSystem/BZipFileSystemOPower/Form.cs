@@ -1,6 +1,6 @@
-#region MIT.
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2013 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,27 +11,21 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: Saturday, January 19, 2013 7:32:49 PM
 // 
-#endregion
 
-using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.IO;
-using System.Linq;
+
 using System.Numerics;
 using System.Text;
-using System.Windows.Forms;
 using Gorgon.Core;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
@@ -46,28 +40,28 @@ using Gorgon.Renderers;
 using Gorgon.Timing;
 using Gorgon.UI;
 using DX = SharpDX;
-using FontStyle = Gorgon.Graphics.Fonts.FontStyle;
+
 
 namespace Gorgon.Examples;
 
 /// <summary>
-/// Main application form.
+/// Main application form
 /// </summary>
 /// <remarks>
-/// This example is a port of the Gorgon 1.x BZip packed file system example into Gorgon 3.x.
+/// This example is a port of the Gorgon 1.x BZip packed file system example into Gorgon 3.x
 /// 
 /// In this example we mount a Gorgon packed file as a virtual file system and pull in an image, 
-/// some Gorgon 2.0 sprites, the backing sprite image and some text for display.
+/// some Gorgon 2.0 sprites, the backing sprite image and some text for display
 /// 
 /// The difference between this example and the folder file system example is that we're loading
 /// a packed file from the previous version of Gorgon as a file system.  The scenario is the same
 /// as loading a zip file:  Load the provider plug in into the file system, and mount the packed
-/// file.
+/// file
 /// </remarks>
-	public partial class Form
+public partial class Form
     : System.Windows.Forms.Form
 {
-    #region Variables.
+
     // The plug in assembly cache.
     private GorgonMefPlugInCache _assemblyCache;
     // The file system.
@@ -104,9 +98,9 @@ namespace Gorgon.Examples;
     private bool _showHelp = true;
     // Show rendering statistics.	
     private bool _showStats;
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to load the Gorgon pack file provider plugin.
     /// </summary>
@@ -130,7 +124,7 @@ namespace Gorgon.Examples;
     /// <summary>
     /// Function to reset the blur targets to the original image.
     /// </summary>
-	    private void ResetBlur()
+    private void ResetBlur()
     {
         _sprites[2].Scale = new Vector2(1.0f, 1.0f);
 
@@ -307,10 +301,10 @@ namespace Gorgon.Examples;
         GorgonExample.LoadResources(_graphics);
 
         // Create fonts.
-        _textFont = GorgonExample.Fonts.GetFont(new GorgonFontInfo("GiGi", 24.0f, FontHeightMode.Points)
+        _textFont = GorgonExample.Fonts.GetFont(new GorgonFontInfo("GiGi", 24.0f, GorgonFontHeightMode.Points)
         {
             Name = "GiGi_24pt",
-            AntiAliasingMode = FontAntiAliasMode.AntiAlias,
+            AntiAliasingMode = GorgonFontAntiAliasMode.AntiAlias,
             TextureWidth = 512,
             TextureHeight = 256
         });
@@ -318,11 +312,11 @@ namespace Gorgon.Examples;
         // Use the form font for this one.
         _helpFont = GorgonExample.Fonts.GetFont(new GorgonFontInfo(Font.FontFamily.Name,
                                                             Font.Size,
-                                                            Font.Unit == GraphicsUnit.Pixel ? FontHeightMode.Pixels : FontHeightMode.Points)            
+                                                            Font.Unit == GraphicsUnit.Pixel ? GorgonFontHeightMode.Pixels : GorgonFontHeightMode.Points)
         {
             Name = "Form Font",
-            AntiAliasingMode = FontAntiAliasMode.AntiAlias,
-            FontStyle = FontStyle.Bold
+            AntiAliasingMode = GorgonFontAntiAliasMode.AntiAlias,
+            FontStyle = GorgonFontStyle.Bold
         });
 
         // Get the Gorgon BZip packed file provider and create a file system that we can use it with.
@@ -346,14 +340,14 @@ namespace Gorgon.Examples;
         // This is how you would get the sprites in v2 of Gorgon:
         /*_spriteImage = _graphics.Textures.FromMemory<GorgonTexture2D>("0_HardVacuum", LoadFile("/Images/0_HardVacuum.png"), new GorgonCodecPNG());
 
-		    // Get the sprites.
-		    // The sprites in the file system are from version 1.0 of Gorgon.
-		    // This version is backwards compatible and can load any version
-		    // of the sprites produced by older versions of Gorgon.
-		    _sprites = new GorgonSprite[3];
-		    _sprites[0] = _renderer.Renderables.FromMemory<GorgonSprite>("Base", LoadFile("/Sprites/base.gorSprite"));
-		    _sprites[1] = _renderer.Renderables.FromMemory<GorgonSprite>("Mother", LoadFile("/Sprites/Mother.gorSprite"));
-		    _sprites[2] = _renderer.Renderables.FromMemory<GorgonSprite>("Mother2c", LoadFile("/Sprites/Mother2c.gorSprite"));
+            // Get the sprites.
+            // The sprites in the file system are from version 1.0 of Gorgon.
+            // This version is backwards compatible and can load any version
+            // of the sprites produced by older versions of Gorgon.
+            _sprites = new GorgonSprite[3];
+            _sprites[0] = _renderer.Renderables.FromMemory<GorgonSprite>("Base", LoadFile("/Sprites/base.gorSprite"));
+            _sprites[1] = _renderer.Renderables.FromMemory<GorgonSprite>("Mother", LoadFile("/Sprites/Mother.gorSprite"));
+            _sprites[2] = _renderer.Renderables.FromMemory<GorgonSprite>("Mother2c", LoadFile("/Sprites/Mother2c.gorSprite"));
         */
 
         // Get poetry.            
@@ -466,12 +460,10 @@ namespace Gorgon.Examples;
             Cursor = Cursors.Default;
         }
     }
-    #endregion
 
-    #region Constructor/Destructor.
     /// <summary>
     /// Constructor.
     /// </summary>
     public Form() => InitializeComponent();
-    #endregion
+
 }

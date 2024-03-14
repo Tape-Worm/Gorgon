@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2018 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,22 +11,19 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: August 25, 2018 2:35:12 PM
 // 
-#endregion
 
-using System;
-using System.Collections.Generic;
-using System.IO;
+
 using Gorgon.Animation;
 using Gorgon.Core;
 using Gorgon.Graphics.Core;
@@ -35,13 +32,13 @@ using Gorgon.Renderers;
 namespace Gorgon.IO;
 
 /// <summary>
-/// An interface used to serialize or deserialize a <see cref="IGorgonAnimation"/>.
+/// An interface used to serialize or deserialize a <see cref="IGorgonAnimation"/>
 /// </summary>
 /// <seealso cref="IGorgonAnimation"/>
 public interface IGorgonAnimationCodec
     : IGorgonNamedObject
 {
-    #region Properties.
+
     /// <summary>
     /// Property to return the friendly description of the format.
     /// </summary>
@@ -97,9 +94,9 @@ public interface IGorgonAnimationCodec
     {
         get;
     }
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to retrieve the names of the textures associated with the animation.
     /// </summary>
@@ -168,5 +165,5 @@ public interface IGorgonAnimationCodec
     /// <exception cref="EndOfStreamException">Thrown if the current <paramref name="stream"/> position, plus the size of the data exceeds the length of the stream.</exception>
     /// <exception cref="NotSupportedException">This method is not supported by this codec.</exception>
     bool IsReadable(Stream stream);
-    #endregion
+
 }

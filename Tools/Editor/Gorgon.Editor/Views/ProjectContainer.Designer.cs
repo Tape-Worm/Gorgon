@@ -30,7 +30,7 @@ partial class ProjectContainer
         base.Dispose(disposing);
     }
 
-    #region Component Designer generated code
+
 
     /// <summary> 
     /// Required method for Designer support - do not modify 
@@ -158,7 +158,7 @@ partial class ProjectContainer
 
     }
 
-    #endregion
+
     public FileExploder FileExplorer;
     private System.Windows.Forms.Panel PanelContent;
     private ContentPreviewPanel Preview;

@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2018 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,24 +11,20 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: August 25, 2018 10:57:09 AM
 // 
-#endregion
 
-using System;
-using System.Collections.Generic;
-using System.IO;
+
 using System.Numerics;
-using System.Windows.Forms;
 using Gorgon.Core;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
@@ -39,14 +35,15 @@ using Gorgon.Renderers;
 using Gorgon.UI;
 using DX = SharpDX;
 
+
 namespace Gorgon.Examples;
 
 /// <summary>
-/// The entry point for the example application.
+/// The entry point for the example application
 /// </summary>
 static class Program
 {
-    #region Constants.
+
     // Text to display for "help".
     private const string HelpText = @"Help:
 F1 - Show/hide this text.
@@ -54,9 +51,9 @@ S - Show frame stats.
 Click - move other ship into foreground.
 Mousewheel - blur/sharpen background.
 ESC - Quit.";
-    #endregion
 
-    #region Variables.
+
+
     // The graphics interface.
     private static GorgonGraphics _graphics;
     // Our swap chain representing our "screen".
@@ -92,13 +89,13 @@ ESC - Quit.";
     private static GorgonFont _helpFont;
     // Flag to indicate that the help text should be visible.
     private static bool _showHelp = true;
-    #endregion
 
-    #region Properties.
 
-    #endregion
 
-    #region Methods.
+
+
+
+
     /// <summary>
     /// Function to draw the lower layer.
     /// </summary>
@@ -263,8 +260,8 @@ ESC - Quit.";
             _graphics = new GorgonGraphics(adapters[0], log: GorgonApplication.Log);
 
             // Create our "screen".
-            _screen = new GorgonSwapChain(_graphics, window, new GorgonSwapChainInfo(ExampleConfig.Default.Resolution.Width, 
-                                                                                          ExampleConfig.Default.Resolution.Height, 
+            _screen = new GorgonSwapChain(_graphics, window, new GorgonSwapChainInfo(ExampleConfig.Default.Resolution.Width,
+                                                                                          ExampleConfig.Default.Resolution.Height,
                                                                                           BufferFormat.R8G8B8A8_UNorm)
             {
                 Name = "TheShadowGn0s Screen Swap chain"
@@ -343,10 +340,10 @@ ESC - Quit.";
 
             GorgonExample.LoadResources(_graphics);
 
-            _helpFont = GorgonExample.Fonts.GetFont(new GorgonFontInfo("Segoe UI", 12.0f, FontHeightMode.Points)
+            _helpFont = GorgonExample.Fonts.GetFont(new GorgonFontInfo("Segoe UI", 12.0f, GorgonFontHeightMode.Points)
             {
                 Name = "Segoe UI 12pt Bold, Outlined",
-                FontStyle = FontStyle.Bold,
+                FontStyle = GorgonFontStyle.Bold,
                 OutlineColor2 = GorgonColor.Black,
                 OutlineColor1 = GorgonColor.Black,
                 OutlineSize = 2,
@@ -438,9 +435,9 @@ ESC - Quit.";
     /// <param name="sender">The source of the event.</param>
     /// <param name="e">The <see cref="MouseEventArgs"/> instance containing the event data.</param>
     private static void Window_MouseMove(object sender, MouseEventArgs e) => _fgSprite.Position = new Vector2(e.X, e.Y);
-    #endregion
 
-    #region Constructor/Finalizer.
+
+
     /// <summary>
     /// The main entry point for the application.
     /// </summary>
@@ -449,9 +446,7 @@ ESC - Quit.";
     {
         try
         {
-#if NET6_0_OR_GREATER
             Application.SetHighDpiMode(HighDpiMode.PerMonitorV2);
-#endif
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
 
@@ -479,5 +474,5 @@ ESC - Quit.";
             _graphics?.Dispose();
         }
     }
-    #endregion
+
 }

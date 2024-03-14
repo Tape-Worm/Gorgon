@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2019 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,20 +11,19 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: March 25, 2019 9:47:13 AM
 // 
-#endregion
 
-using System;
+
 using Gorgon.Editor.PlugIns;
 using Gorgon.Editor.Services;
 using Gorgon.Editor.UI;
@@ -33,19 +32,26 @@ using Gorgon.PlugIns;
 namespace Gorgon.Editor.AnimationEditor;
 
 /// <summary>
-/// The parameters to pass to the <see cref="Settings"/> view model.
+/// The parameters to pass to the <see cref="Settings"/> view model
 /// </summary>
-internal class ImportSettingsParameters
-    : PlugInsCategoryViewModelParameters
+/// <remarks>Initializes a new instance of the <see cref="ImportSettingsParameters"/> class.</remarks>
+/// <param name="settings">The plug in settings.</param>
+/// <param name="codecs">The codec registry.</param>
+/// <param name="openCodecDialog">The service used to locate plug in assemblies for loading.</param>
+/// <param name="plugInCache">The cache for plug in assemblies.</param>
+/// <param name="hostServices">Common application services.</param>
+/// <exception cref="ArgumentNullException">Thrown when any parameter is <strong>null</strong>.</exception>
+internal class ImportSettingsParameters(AnimationImportSettings settings, CodecRegistry codecs, IFileDialogService openCodecDialog, GorgonMefPlugInCache plugInCache, IHostContentServices hostServices)
+        : PlugInsCategoryViewModelParameters(openCodecDialog, plugInCache, hostServices)
 {
-    #region Properties.
+
     /// <summary>
     /// Property to return the settings for the plug in.
     /// </summary>
     public AnimationImportSettings Settings
     {
         get;
-    }
+    } = settings ?? throw new ArgumentNullException(nameof(settings));
 
     /// <summary>
     /// Property to return the codec registry.
@@ -53,22 +59,7 @@ internal class ImportSettingsParameters
     public CodecRegistry Codecs
     {
         get;
-    }
-    #endregion
+    } = codecs ?? throw new ArgumentNullException(nameof(settings));
 
-    #region Constructor/Finalizer.
-    /// <summary>Initializes a new instance of the <see cref="ImportSettingsParameters"/> class.</summary>
-    /// <param name="settings">The plug in settings.</param>
-    /// <param name="codecs">The codec registry.</param>
-    /// <param name="openCodecDialog">The service used to locate plug in assemblies for loading.</param>
-    /// <param name="plugInCache">The cache for plug in assemblies.</param>
-    /// <param name="hostServices">Common application services.</param>
-    /// <exception cref="ArgumentNullException">Thrown when any parameter is <strong>null</strong>.</exception>
-    public ImportSettingsParameters(AnimationImportSettings settings, CodecRegistry codecs, IFileDialogService openCodecDialog, GorgonMefPlugInCache plugInCache, IHostContentServices hostServices)
-        : base(openCodecDialog, plugInCache, hostServices)
-    {
-        Settings = settings ?? throw new ArgumentNullException(nameof(settings));
-        Codecs = codecs ?? throw new ArgumentNullException(nameof(settings));            
-    }
-    #endregion
+
 }

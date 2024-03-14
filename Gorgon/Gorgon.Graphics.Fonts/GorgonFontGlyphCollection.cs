@@ -1,6 +1,6 @@
-﻿#region MIT.
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2013 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,39 +11,36 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: Sunday, September 22, 2013 11:35:47 AM
 // 
-#endregion
 
-using System;
+
 using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
 using Gorgon.Graphics.Core;
 
 namespace Gorgon.Graphics.Fonts;
 
 /// <summary>
-/// A collection of glyphs for a <see cref="GorgonFont"/>.
+/// A collection of glyphs for a <see cref="GorgonFont"/>
 /// </summary>
 public sealed class GorgonGlyphCollection
     : IReadOnlyList<GorgonGlyph>
 {
-    #region Variables.
+
     // The list of glyphs.
     private readonly SortedList<char, GorgonGlyph> _list;
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Gets the number of elements contained in the <see cref="ICollection{T}"/>.
     /// </summary>
@@ -66,9 +63,9 @@ public sealed class GorgonGlyphCollection
         get => _list[character];
         internal set => _list[character] = value;
     }
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Adds an item to the <see cref="ICollection{T}" />.
     /// </summary>
@@ -151,7 +148,7 @@ public sealed class GorgonGlyphCollection
     /// <param name="character">Character for the glyph.</param>
     /// <param name="glyph">The glyph in the list.</param>
     /// <returns><b>true</b> if found, <b>false</b> if not.</returns>
-	    public bool TryGetValue(char character, out GorgonGlyph glyph) => _list.TryGetValue(character, out glyph);
+    public bool TryGetValue(char character, out GorgonGlyph glyph) => _list.TryGetValue(character, out glyph);
 
     /// <summary>
     /// Function to retrieve the glyphs in this collection grouped by their respective textures.
@@ -168,11 +165,11 @@ public sealed class GorgonGlyphCollection
                                                                              where glyph.TextureView is not null
                                                                              group glyph by glyph.TextureView.Texture;
 
-        return groupedGlyphs.ToDictionary(k => k.Key, v => (IReadOnlyList<GorgonGlyph>)v.ToArray());
+        return groupedGlyphs.ToDictionary(k => k.Key, v => (IReadOnlyList<GorgonGlyph>)[.. v]);
     }
-    #endregion
 
-    #region Constructor/Destructor.
+
+
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonGlyphCollection"/> class.
     /// </summary>
@@ -190,5 +187,5 @@ public sealed class GorgonGlyphCollection
     /// Initializes a new instance of the <see cref="GorgonGlyphCollection"/> class.
     /// </summary>
     internal GorgonGlyphCollection() => _list = new SortedList<char, GorgonGlyph>(255);
-    #endregion
+
 }

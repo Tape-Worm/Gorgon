@@ -1,6 +1,6 @@
-﻿#region MIT.
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2012 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,20 +11,19 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: Sunday, December 30, 2012 2:35:20 PM
 // 
-#endregion
 
-using System;
+
 using System.Numerics;
 using Gorgon.Graphics.Core;
 using Gorgon.Math;
@@ -33,12 +32,12 @@ using Gorgon.Renderers.Geometry;
 namespace Gorgon.Examples;
 
 /// <summary>
-/// The base model object.
+/// The base model object
 /// </summary>
 internal abstract class Model
     : IDisposable
 {
-    #region Variables.
+
     // Our world matrix.
     private Matrix4x4 _worldMatrix = Matrix4x4.Identity;
     // Our position matrix.
@@ -59,9 +58,9 @@ internal abstract class Model
     private bool _isScaleChanged;
     // Flag to inidcate that our rotation has been updated.
     private bool _isRotationChanged;
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to return the input layout of the vertices for the mesh stored within this model.
     /// </summary>
@@ -179,9 +178,9 @@ internal abstract class Model
             _isRotationChanged = true;
         }
     }
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to update the transformation matrix of the plane.
     /// </summary>
@@ -232,9 +231,7 @@ internal abstract class Model
         }
         IndexBuffer?.Dispose();
     }
-    #endregion
 
-    #region Constructor/Destructor.
     /// <summary>
     /// Initializes a new instance of the <see cref="Model" /> class.
     /// </summary>
@@ -245,5 +242,5 @@ internal abstract class Model
         InputLayout = inputLayout;
         VertexBufferBindings = new GorgonVertexBufferBindings(InputLayout);
     }
-    #endregion
+
 }

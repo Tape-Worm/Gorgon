@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2019 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,25 +11,20 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: May 19, 2019 11:01:36 PM
 // 
-#endregion
 
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
+
 using System.Numerics;
-using System.Threading.Tasks;
 using Gorgon.Animation;
 using Gorgon.Core;
 using Gorgon.Editor;
@@ -46,26 +41,29 @@ using DX = SharpDX;
 namespace Gorgon.Examples;
 
 /// <summary>
-/// The resource management system.
+/// The resource management system
 /// </summary>
 /// <remarks>
 /// This is responsible for caching all of our data for the scene. We load sprites, textures, 3D meshes, post processing effects and individual effects into the manager 
-/// and then access them via dictionaries so we can get at our data by name.
+/// and then access them via dictionaries so we can get at our data by name
 /// </remarks>
-internal class ResourceManagement
-    : IDisposable
+/// <remarks>Initializes a new instance of the <see cref="ResourceManagement"/> class.</remarks>
+/// <param name="renderer">The renderer for the application.</param>
+/// <param name="plugIns>The plugin service used to load file system providers.</param>
+internal class ResourceManagement(Gorgon2D renderer, GorgonMefPlugInCache plugIns)
+        : IDisposable
 {
-    #region Variables.
+
     // The cache used to hold texture data.
-    private readonly GorgonTextureCache<GorgonTexture2D> _textureCache;
+    private readonly GorgonTextureCache<GorgonTexture2D> _textureCache = new(renderer.Graphics);
     // The loader used to read content data from the file system.
     private IGorgonContentLoader _contentLoader;
     // The graphics interface for the application.
-    private readonly GorgonGraphics _graphics;
+    private readonly GorgonGraphics _graphics = renderer.Graphics;
     // The 2D renderer interface for the application.
-    private readonly Gorgon2D _renderer;
+    private readonly Gorgon2D _renderer = renderer;
     // The plug in service for the application.
-    private readonly GorgonMefPlugInCache _plugIns;
+    private readonly GorgonMefPlugInCache _plugIns = plugIns;
     // The file system where resources are kept.
     private IGorgonFileSystem _fileSystem;
     // The list of shaders.
@@ -79,9 +77,9 @@ internal class ResourceManagement
     private readonly Dictionary<string, Gorgon2DCompositor> _postProcess = new(StringComparer.OrdinalIgnoreCase);
     // The list of effects used by the application.
     private readonly Dictionary<string, Gorgon2DEffect> _effects = new(StringComparer.OrdinalIgnoreCase);
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to return the effects used by the application.
     /// </summary>
@@ -129,9 +127,9 @@ internal class ResourceManagement
     /// Propert to return all of the post process compositors.
     /// </summary>
     public IReadOnlyDictionary<string, Gorgon2DCompositor> PostProcessCompositors => _postProcess;
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to load the images for the textures.
     /// </summary>
@@ -144,7 +142,7 @@ internal class ResourceManagement
         IReadOnlyList<IGorgonVirtualFile> textureFiles = _fileSystem.GetContentItems(path, CommonEditorContentTypes.ImageType);
 
         foreach (IGorgonVirtualFile imagePath in textureFiles)
-        {                
+        {
             result[imagePath.FullPath] = await _contentLoader.LoadTextureAsync(imagePath.FullPath);
         }
 
@@ -196,7 +194,7 @@ internal class ResourceManagement
             .SetKey(new GorgonKeyVector3(600, new Vector3(100, 180, 180)))
             .SetKey(new GorgonKeyVector3(1200, new Vector3(0, 360, 180)))
             .SetInterpolationMode(TrackInterpolationMode.Linear)
-            .EndEdit()                
+            .EndEdit()
             .Build("CloudRotation");
 
         cloudRotation.IsLooped = true;
@@ -247,7 +245,7 @@ internal class ResourceManagement
             .Clear()
             .InitialClearColor(GorgonColor.BlackTransparent)
             .FinalClearColor(GorgonColor.BlackTransparent)
-            .EffectPass("Bloom", bloom)                
+            .EffectPass("Bloom", bloom)
             .EffectPass("Chromatic Aberration", chromatic);
 
         _postProcess["Final Pass"] = finalPostProcess;
@@ -285,8 +283,8 @@ internal class ResourceManagement
             {
                 SpecularPower = 0.0f,
                 PixelShader = "PlanetPS",				// The 3D model materials are quite simple.  They just reference their resources by name. We do live in the age of super duper 
-					VertexShader = "PlanetVS",				// fast computers, so doing a few lookups is not going to kill our performance. This allows us to weakly reference the resources 
-					Textures =								// which in turn keeps things nicely decoupled.
+                    VertexShader = "PlanetVS",                // fast computers, so doing a few lookups is not going to kill our performance. This allows us to weakly reference the resources 
+                    Textures =                                // which in turn keeps things nicely decoupled.
                 {
                     [0] = "/images/earthmap1k",
                     [1] = "/images/earthbump1k_NRM.dds",
@@ -360,12 +358,12 @@ internal class ResourceManagement
     {
         // Load the file system containing our application data (sprites, images, etc...)
         IGorgonFileSystemProviderFactory providerFactory = new GorgonFileSystemProviderFactory(_plugIns, GorgonApplication.Log);
-        IGorgonFileSystemProvider provider = providerFactory.CreateProvider(Path.Combine(GorgonExample.GetPlugInPath().FullName, "Gorgon.FileSystem.GorPack.dll"), 
+        IGorgonFileSystemProvider provider = providerFactory.CreateProvider(Path.Combine(GorgonExample.GetPlugInPath().FullName, "Gorgon.FileSystem.GorPack.dll"),
                                                                             "Gorgon.IO.GorPack.GorPackProvider");
         _fileSystem = new GorgonFileSystem(provider, GorgonApplication.Log);
         _fileSystem.Mount(path);
 
-        _contentLoader = _fileSystem.CreateContentLoader(_renderer, _textureCache);            
+        _contentLoader = _fileSystem.CreateContentLoader(_renderer, _textureCache);
     }
 
     /// <summary>
@@ -429,18 +427,6 @@ internal class ResourceManagement
             compositor.Value.Dispose();
         }
     }
-    #endregion
 
-    #region Constructor/Finalizer.
-    /// <summary>Initializes a new instance of the <see cref="ResourceManagement"/> class.</summary>
-    /// <param name="renderer">The renderer for the application.</param>
-    /// <param name="plugIns>The plugin service used to load file system providers.</param>
-    public ResourceManagement(Gorgon2D renderer, GorgonMefPlugInCache plugIns)
-    {
-        _renderer = renderer;
-        _graphics = renderer.Graphics;
-        _plugIns = plugIns;
-        _textureCache = new GorgonTextureCache<GorgonTexture2D>(renderer.Graphics);
-    }
-    #endregion
+
 }

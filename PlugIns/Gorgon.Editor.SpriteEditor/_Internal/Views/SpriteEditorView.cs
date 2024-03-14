@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2019 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,26 +11,21 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: March 14, 2019 11:33:25 AM
 // 
-#endregion
 
-using System;
+
 using System.ComponentModel;
-using System.Drawing;
-using System.IO;
-using System.Linq;
 using System.Numerics;
-using System.Windows.Forms;
 using Gorgon.Editor.Rendering;
 using Gorgon.Editor.Services;
 using Gorgon.Editor.SpriteEditor.Properties;
@@ -45,12 +40,12 @@ using DX = SharpDX;
 namespace Gorgon.Editor.SpriteEditor;
 
 /// <summary>
-/// The primary view for the sprite editor.
+/// The primary view for the sprite editor
 /// </summary>
 internal partial class SpriteEditorView
     : VisualContentBaseControl, IDataContext<ISpriteContent>
 {
-    #region Variables.
+
     // The form for the ribbon.
     private readonly FormRibbon _ribbonForm;
     // The rectangle clipping service used to capture sprite data.
@@ -58,11 +53,11 @@ internal partial class SpriteEditorView
     // The service used to edit the sprite vertices.
     private SpriteVertexEditService _vertexEditService;
     // The picking service used to capture sprite data.
-    private PickClipperService _pickService;        
+    private PickClipperService _pickService;
     // The anchor editing service.
     private IAnchorEditService _anchorService;
     // Marching ants renderer.
-    private IMarchingAnts _marchAnts;        
+    private IMarchingAnts _marchAnts;
     // Manual input for the sprite clipping rectangle.
     private readonly FormManualRectangleEdit _manualRectEditor;
     // Manual input for the sprite vertex editing.
@@ -75,28 +70,28 @@ internal partial class SpriteEditorView
     private ISpriteInfo _spriteInfo;
     // The current sprite texture array index updater.
     private IArrayUpdate _arrayUpdater;
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>Property to return the data context assigned to this view.</summary>
     [Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-    public ISpriteContent DataContext
+    public ISpriteContent ViewModel
     {
         get;
         private set;
     }
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to validate the controls on the view.
     /// </summary>
     private void ValidateButtons()
     {
         _ribbonForm.ValidateButtons();
-        _ribbonForm.ButtonZoomSprite.Enabled = (DataContext?.Texture is not null) && (Renderer?.CanZoom ?? false);
-        
-        if (DataContext?.Texture is null)
+        _ribbonForm.ButtonZoomSprite.Enabled = (ViewModel?.Texture is not null) && (Renderer?.CanZoom ?? false);
+
+        if (ViewModel?.Texture is null)
         {
             LabelSpriteInfo.Visible = false;
             LabelArrayIndex.Visible = LabelArrayIndexDetails.Visible = ButtonNextArrayIndex.Visible = ButtonPrevArrayIndex.Visible = false;
@@ -115,7 +110,7 @@ internal partial class SpriteEditorView
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
     private void ButtonPrevArrayIndex_Click(object sender, EventArgs e)
     {
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             return;
         }
@@ -135,7 +130,7 @@ internal partial class SpriteEditorView
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
     private void ButtonNextArrayIndex_Click(object sender, EventArgs e)
     {
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             return;
         }
@@ -157,13 +152,13 @@ internal partial class SpriteEditorView
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
     private void ParentForm_Move(object sender, EventArgs e)
     {
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             return;
         }
 
-        ManualInputWindowPositioning(_manualRectEditor, DataContext.Settings.ManualRectangleEditorBounds);
-        ManualInputWindowPositioning(_manualVertexEditor, DataContext.Settings.ManualVertexEditorBounds);
+        ManualInputWindowPositioning(_manualRectEditor, ViewModel.Settings.ManualRectangleEditorBounds);
+        ManualInputWindowPositioning(_manualVertexEditor, ViewModel.Settings.ManualVertexEditorBounds);
     }
 
     /// <summary>Handles the PropertyChanged event of the SpritePickContext control.</summary>
@@ -219,16 +214,16 @@ internal partial class SpriteEditorView
         {
             // Disable to stop the form from being dragged any further.
             form.Enabled = false;
-            if (DataContext is not null)
+            if (ViewModel is not null)
             {
-                DataContext.Settings.ManualVertexEditorBounds = null;
+                ViewModel.Settings.ManualVertexEditorBounds = null;
             }
-            ManualInputWindowPositioning(form, DataContext.Settings.ManualVertexEditorBounds);
+            ManualInputWindowPositioning(form, ViewModel.Settings.ManualVertexEditorBounds);
             form.Enabled = true;
             return;
         }
 
-        DataContext.Settings.ManualVertexEditorBounds = new DX.Rectangle(form.DesktopBounds.Left,
+        ViewModel.Settings.ManualVertexEditorBounds = new DX.Rectangle(form.DesktopBounds.Left,
                                                                             form.DesktopBounds.Top,
                                                                             form.DesktopBounds.Width,
                                                                             form.DesktopBounds.Height);
@@ -249,17 +244,17 @@ internal partial class SpriteEditorView
         {
             // Disable to stop the form from being dragged any further.
             form.Enabled = false;
-            if (DataContext is not null)
+            if (ViewModel is not null)
             {
-                DataContext.Settings.ManualRectangleEditorBounds = null;
+                ViewModel.Settings.ManualRectangleEditorBounds = null;
             }
-            ManualInputWindowPositioning(form, DataContext.Settings.ManualRectangleEditorBounds);
+            ManualInputWindowPositioning(form, ViewModel.Settings.ManualRectangleEditorBounds);
             form.Enabled = true;
             return;
         }
 
-        DataContext.Settings.ManualRectangleEditorBounds = new DX.Rectangle(form.DesktopBounds.Left, 
-                                                                            form.DesktopBounds.Top, 
+        ViewModel.Settings.ManualRectangleEditorBounds = new DX.Rectangle(form.DesktopBounds.Left,
+                                                                            form.DesktopBounds.Top,
                                                                             form.DesktopBounds.Width,
                                                                             form.DesktopBounds.Height);
     }
@@ -269,7 +264,7 @@ internal partial class SpriteEditorView
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
     private void ManualVertexInput_ClosePanel(object sender, FormClosingEventArgs e)
     {
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             return;
         }
@@ -288,7 +283,7 @@ internal partial class SpriteEditorView
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
     private void ManualInput_ClosePanel(object sender, FormClosingEventArgs e)
     {
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             return;
         }
@@ -317,7 +312,7 @@ internal partial class SpriteEditorView
         }
 
         _manualVertexEditor.Show(GorgonApplication.MainForm);
-        ManualInputWindowPositioning(_manualVertexEditor, DataContext.Settings.ManualVertexEditorBounds);
+        ManualInputWindowPositioning(_manualVertexEditor, ViewModel.Settings.ManualVertexEditorBounds);
 
         _ribbonForm.ButtonSpriteCornerManualInput.Checked = true;
         _ribbonForm.ValidateButtons();
@@ -326,7 +321,7 @@ internal partial class SpriteEditorView
     /// <summary>Handles the ToggleManualInput event of the ClipViewer control.</summary>
     /// <param name="sender">The source of the event.</param>
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
-    private void ClipViewer_ToggleManualInput(object sender, EventArgs e) 
+    private void ClipViewer_ToggleManualInput(object sender, EventArgs e)
     {
         if (_manualRectEditor.Visible)
         {
@@ -338,8 +333,8 @@ internal partial class SpriteEditorView
         }
 
         _manualRectEditor.Show(GorgonApplication.MainForm);
-        ManualInputWindowPositioning(_manualRectEditor, DataContext.Settings.ManualRectangleEditorBounds);
-                    
+        ManualInputWindowPositioning(_manualRectEditor, ViewModel.Settings.ManualRectangleEditorBounds);
+
         _ribbonForm.ButtonClipManualInput.Checked = true;
         _ribbonForm.ValidateButtons();
     }
@@ -349,7 +344,7 @@ internal partial class SpriteEditorView
     /// <param name="e">The <see cref="PreviewKeyDownEventArgs"/> instance containing the event data.</param>
     private void PanelRenderWindow_PreviewKeyDown(object sender, PreviewKeyDownEventArgs e)
     {
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             return;
         }
@@ -360,7 +355,7 @@ internal partial class SpriteEditorView
                 if (_ribbonForm.ButtonSpriteClipApply.Enabled)
                 {
                     _ribbonForm.ButtonSpriteClipApply.PerformClick();
-                    e.IsInputKey = true;                        
+                    e.IsInputKey = true;
                 }
                 break;
             case Keys.Escape:
@@ -397,11 +392,11 @@ internal partial class SpriteEditorView
         _arrayUpdater = null;
 
         if (dataContext is null)
-        {                
+        {
             ResetDataContext();
             return;
         }
-        
+
         _ribbonForm.SetDataContext(dataContext);
         _manualRectEditor.SetDataContext(dataContext?.SpriteClipContext);
         _manualVertexEditor.SetDataContext(dataContext?.SpriteVertexEditContext);
@@ -412,7 +407,7 @@ internal partial class SpriteEditorView
 
         UpdateArrayPanel();
         UpdateSpriteDimensionsPanel();
-                    
+
         if (dataContext?.SpriteClipContext is not null)
         {
             dataContext.SpriteClipContext.PropertyChanged += SpriteClipContext_PropertyChanged;
@@ -429,7 +424,7 @@ internal partial class SpriteEditorView
     /// </summary>
     private void UpdateSpriteDimensionsPanel()
     {
-        string spriteInfoText = _spriteInfo?.SpriteInfo ?? string.Empty;            
+        string spriteInfoText = _spriteInfo?.SpriteInfo ?? string.Empty;
 
         if (string.Equals(spriteInfoText, LabelSpriteInfo.Text, StringComparison.CurrentCulture))
         {
@@ -479,11 +474,11 @@ internal partial class SpriteEditorView
         {
             e.Effect = DragDropEffects.None;
             return;
-        }            
-        
+        }
+
         var args = new SetTextureArgs(contentData.FilePaths[0]);
 
-        if ((DataContext?.SetTextureCommand is null) || (!DataContext.SetTextureCommand.CanExecute(args)))
+        if ((ViewModel?.SetTextureCommand is null) || (!ViewModel.SetTextureCommand.CanExecute(args)))
         {
             if (!args.Cancel)
             {
@@ -508,9 +503,9 @@ internal partial class SpriteEditorView
 
         var args = new SetTextureArgs(contentData.FilePaths[0]);
 
-        if ((DataContext?.SetTextureCommand is not null) && (DataContext.SetTextureCommand.CanExecute(args)))
+        if ((ViewModel?.SetTextureCommand is not null) && (ViewModel.SetTextureCommand.CanExecute(args)))
         {
-            await DataContext.SetTextureCommand.ExecuteAsync(args);
+            await ViewModel.SetTextureCommand.ExecuteAsync(args);
         }
     }
 
@@ -524,15 +519,15 @@ internal partial class SpriteEditorView
         switch (propertyName)
         {
             case nameof(ISpriteContent.CommandContext):
-                DataContext.CommandContext?.Unload();
+                ViewModel.CommandContext?.Unload();
                 RenderControl.Cursor = Cursor.Current = Cursors.Default;
                 ValidateButtons();
                 break;
             case nameof(ISpriteContent.SpriteClipContext):
-                DataContext.SpriteClipContext.PropertyChanged -= SpriteClipContext_PropertyChanged;
+                ViewModel.SpriteClipContext.PropertyChanged -= SpriteClipContext_PropertyChanged;
                 break;
             case nameof(ISpriteContent.SpritePickContext):
-                DataContext.SpritePickContext.PropertyChanged -= SpritePickContext_PropertyChanged;
+                ViewModel.SpritePickContext.PropertyChanged -= SpritePickContext_PropertyChanged;
                 break;
         }
     }
@@ -559,9 +554,9 @@ internal partial class SpriteEditorView
                 UpdateSpriteDimensionsPanel();
                 break;
             case nameof(ISpriteContent.CurrentPanel):
-                if ((DataContext.CurrentPanel is null) || (!HasRenderer(DataContext.CurrentPanel.GetType().FullName)))
+                if ((ViewModel.CurrentPanel is null) || (!HasRenderer(ViewModel.CurrentPanel.GetType().FullName)))
                 {
-                    rendererName = DataContext.Texture is not null ? DefaultSpriteViewer.ViewerName : NoTextureViewer.ViewerName;
+                    rendererName = ViewModel.Texture is not null ? DefaultSpriteViewer.ViewerName : NoTextureViewer.ViewerName;
 
                     if (string.Equals(Renderer?.Name, rendererName, StringComparison.OrdinalIgnoreCase))
                     {
@@ -570,7 +565,7 @@ internal partial class SpriteEditorView
                 }
                 else
                 {
-                    rendererName = DataContext.CurrentPanel.GetType().FullName;
+                    rendererName = ViewModel.CurrentPanel.GetType().FullName;
                 }
 
                 // Only switch if we're not on the same renderer.
@@ -583,17 +578,17 @@ internal partial class SpriteEditorView
                 UpdateArrayPanel();
                 break;
             case nameof(ISpriteContent.CommandContext):
-                _spriteInfo = (DataContext.CommandContext as ISpriteInfo) ?? DataContext; 
-                _arrayUpdater = DataContext.CommandContext as IArrayUpdate;                    
+                _spriteInfo = (ViewModel.CommandContext as ISpriteInfo) ?? ViewModel;
+                _arrayUpdater = ViewModel.CommandContext as IArrayUpdate;
 
-                if ((DataContext.CommandContext is null) || (!HasRenderer(DataContext.CommandContext.Name)))
+                if ((ViewModel.CommandContext is null) || (!HasRenderer(ViewModel.CommandContext.Name)))
                 {
-                    rendererName = DataContext.Texture is not null ? DefaultSpriteViewer.ViewerName : NoTextureViewer.ViewerName;
+                    rendererName = ViewModel.Texture is not null ? DefaultSpriteViewer.ViewerName : NoTextureViewer.ViewerName;
                 }
                 else
                 {
-                    DataContext.CommandContext.Load();
-                    rendererName = DataContext.CommandContext.Name;                        
+                    ViewModel.CommandContext.Load();
+                    rendererName = ViewModel.CommandContext.Name;
                 }
 
                 // Only switch if we're not on the same renderer.
@@ -604,16 +599,16 @@ internal partial class SpriteEditorView
                 UpdateSpriteDimensionsPanel();
                 UpdateArrayPanel();
                 break;
-            case nameof(ISpriteContent.ArrayIndex):                                        
+            case nameof(ISpriteContent.ArrayIndex):
                 UpdateArrayPanel();
                 break;
             case nameof(ISpriteContent.SpriteClipContext):
-                _manualRectEditor.SetDataContext(DataContext.SpriteClipContext);
-                DataContext.SpriteClipContext.PropertyChanged += SpriteClipContext_PropertyChanged;                    
+                _manualRectEditor.SetDataContext(ViewModel.SpriteClipContext);
+                ViewModel.SpriteClipContext.PropertyChanged += SpriteClipContext_PropertyChanged;
                 break;
             case nameof(ISpriteContent.SpritePickContext):
-                SpritePickMaskColor.SetDataContext(DataContext.SpritePickContext.SpritePickMaskEditor);
-                DataContext.SpritePickContext.PropertyChanged += SpritePickContext_PropertyChanged;
+                SpritePickMaskColor.SetDataContext(ViewModel.SpritePickContext.SpritePickMaskEditor);
+                ViewModel.SpritePickContext.PropertyChanged += SpritePickContext_PropertyChanged;
                 break;
         }
 
@@ -626,21 +621,21 @@ internal partial class SpriteEditorView
     {
         base.OnResize(e);
 
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             return;
         }
 
-        ManualInputWindowPositioning(_manualRectEditor, DataContext.Settings.ManualRectangleEditorBounds);
-        ManualInputWindowPositioning(_manualVertexEditor, DataContext.Settings.ManualVertexEditorBounds);
+        ManualInputWindowPositioning(_manualRectEditor, ViewModel.Settings.ManualRectangleEditorBounds);
+        ManualInputWindowPositioning(_manualVertexEditor, ViewModel.Settings.ManualVertexEditorBounds);
     }
 
     /// <summary>Function called to shut down the view and perform any clean up required (including user defined graphics objects).</summary>
     protected override void OnShutdown()
     {
-        DataContext?.Unload();
-                    
-        _clipperService?.Dispose();            
+        ViewModel?.Unload();
+
+        _clipperService?.Dispose();
         _vertexEditService?.Dispose();
         _marchAnts?.Dispose();
         _anchorTexture?.Dispose();
@@ -715,7 +710,7 @@ internal partial class SpriteEditorView
             Size = new DX.Size2F(_anchorTexture.Width, _anchorTexture.Height),
             // Place the hotspot on rope hole at the top of the handle.
             Anchor = new Vector2(0.5f, 0.125f)
-        }, DataContext?.AnchorEditor?.Bounds ?? new DX.Rectangle
+        }, ViewModel?.AnchorEditor?.Bounds ?? new DX.Rectangle
         {
             Left = -context.Graphics.VideoAdapter.MaxTextureWidth / 2,
             Top = -context.Graphics.VideoAdapter.MaxTextureHeight / 2,
@@ -723,14 +718,14 @@ internal partial class SpriteEditorView
             Bottom = context.Graphics.VideoAdapter.MaxTextureHeight / 2 - 1,
         });
 
-        ISpriteViewer noTexture = new NoTextureViewer(context.Renderer2D, swapChain, DataContext);
-        ISpriteViewer defaultViewer = new DefaultSpriteViewer(context.Renderer2D, swapChain, DataContext, _marchAnts);            
-        var clipViewer = new ClipSpriteViewer(context.Renderer2D, swapChain, DataContext, _clipperService);
-        var pickViewer = new PickSpriteViewer(context.Renderer2D, swapChain, DataContext, _pickService, _marchAnts);
-        var colorEditViewer = new ColorEditViewer(context.Renderer2D, swapChain, DataContext);
-        var vertexEditViewer = new VertexEditViewer(context.Renderer2D, swapChain, DataContext, _vertexEditService);
-        var anchorEditViewer = new AnchorEditViewer(context.Renderer2D, swapChain, DataContext, _anchorService);
-        var wrapEditViewer = new TextureWrapViewer(context.Renderer2D, swapChain, DataContext);
+        ISpriteViewer noTexture = new NoTextureViewer(context.Renderer2D, swapChain, ViewModel);
+        ISpriteViewer defaultViewer = new DefaultSpriteViewer(context.Renderer2D, swapChain, ViewModel, _marchAnts);
+        var clipViewer = new ClipSpriteViewer(context.Renderer2D, swapChain, ViewModel, _clipperService);
+        var pickViewer = new PickSpriteViewer(context.Renderer2D, swapChain, ViewModel, _pickService, _marchAnts);
+        var colorEditViewer = new ColorEditViewer(context.Renderer2D, swapChain, ViewModel);
+        var vertexEditViewer = new VertexEditViewer(context.Renderer2D, swapChain, ViewModel, _vertexEditService);
+        var anchorEditViewer = new AnchorEditViewer(context.Renderer2D, swapChain, ViewModel, _anchorService);
+        var wrapEditViewer = new TextureWrapViewer(context.Renderer2D, swapChain, ViewModel);
         noTexture.CreateResources();
         defaultViewer.CreateResources();
         clipViewer.CreateResources();
@@ -740,7 +735,7 @@ internal partial class SpriteEditorView
         anchorEditViewer.CreateResources();
         wrapEditViewer.CreateResources();
 
-        AddRenderer(noTexture.Name, noTexture);            
+        AddRenderer(noTexture.Name, noTexture);
         AddRenderer(defaultViewer.Name, defaultViewer);
         AddRenderer(clipViewer.Name, clipViewer);
         AddRenderer(pickViewer.Name, pickViewer);
@@ -749,7 +744,7 @@ internal partial class SpriteEditorView
         AddRenderer(anchorEditViewer.Name, anchorEditViewer);
         AddRenderer(wrapEditViewer.Name, wrapEditViewer);
 
-        string currentRenderer = DataContext.Texture is null ? noTexture.Name : defaultViewer.Name;
+        string currentRenderer = ViewModel.Texture is null ? noTexture.Name : defaultViewer.Name;
         SwitchRenderer(currentRenderer, true);
 
         clipViewer.ToggleManualInput += ClipViewer_ToggleManualInput;
@@ -774,7 +769,7 @@ internal partial class SpriteEditorView
             _ribbonForm.CreateControl();
         }
 
-        DataContext?.Load();
+        ViewModel?.Load();
         ShowFocusState(true);
         RenderControl?.Select();
 
@@ -816,8 +811,8 @@ internal partial class SpriteEditorView
             if (!Screen.AllScreens.Any(item => item.WorkingArea.Contains(pt)))
             {
                 manualInput.Location = RenderControl.PointToScreen(new Point(RenderControl.ClientSize.Width - manualInput.Width, 0));
-                DataContext.Settings.ManualRectangleEditorBounds = null;
-                DataContext.Settings.ManualVertexEditorBounds = null;
+                ViewModel.Settings.ManualRectangleEditorBounds = null;
+                ViewModel.Settings.ManualVertexEditorBounds = null;
                 return;
             }
 
@@ -834,14 +829,14 @@ internal partial class SpriteEditorView
     {
         base.UnassignEvents();
 
-        if (DataContext?.SpriteClipContext is not null)
+        if (ViewModel?.SpriteClipContext is not null)
         {
-            DataContext.SpriteClipContext.PropertyChanged -= SpriteClipContext_PropertyChanged;
+            ViewModel.SpriteClipContext.PropertyChanged -= SpriteClipContext_PropertyChanged;
         }
 
-        if (DataContext?.SpritePickContext is not null)
+        if (ViewModel?.SpritePickContext is not null)
         {
-            DataContext.SpritePickContext.PropertyChanged -= SpritePickContext_PropertyChanged;
+            ViewModel.SpritePickContext.PropertyChanged -= SpritePickContext_PropertyChanged;
         }
     }
 
@@ -854,11 +849,11 @@ internal partial class SpriteEditorView
 
         InitializeFromDataContext(dataContext);
 
-        DataContext = dataContext;
+        ViewModel = dataContext;
     }
-    #endregion
 
-    #region Constructor/Finalizer.
+
+
     /// <summary>Initializes a new instance of the <see cref="SpriteEditorView"/> class.</summary>
     public SpriteEditorView()
     {
@@ -873,7 +868,7 @@ internal partial class SpriteEditorView
         {
             RenderWindow.PreviewKeyDown += PanelRenderWindow_PreviewKeyDown;
         }
-        
+
         _manualRectEditor = new FormManualRectangleEdit();
         _manualRectEditor.ResizeEnd += ManualInput_ResizeEnd;
         _manualRectEditor.FormClosing += ManualInput_ClosePanel;
@@ -884,8 +879,8 @@ internal partial class SpriteEditorView
 
         RegisterChildPanel(typeof(SpriteColorEdit).FullName, SpriteColorSelector);
         RegisterChildPanel(typeof(SpritePickMaskEditor).FullName, SpritePickMaskColor);
-        RegisterChildPanel(typeof(SpriteAnchorEdit).FullName, SpriteAnchorSelector);            
+        RegisterChildPanel(typeof(SpriteAnchorEdit).FullName, SpriteAnchorSelector);
         RegisterChildPanel(typeof(SpriteTextureWrapEdit).FullName, SpriteWrapping);
     }
-    #endregion
+
 }

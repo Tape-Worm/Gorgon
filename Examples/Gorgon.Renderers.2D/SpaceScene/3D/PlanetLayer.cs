@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2019 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,22 +11,19 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: May 18, 2019 7:32:37 PM
 // 
-#endregion
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
+
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
@@ -40,26 +37,27 @@ using DX = SharpDX;
 namespace Gorgon.Examples;
 
 /// <summary>
-/// The layer responsible for rendering our planet entities.
+/// The layer responsible for rendering our planet entities
 /// </summary>
 /// <remarks>
 /// <para>
-/// This is the layer responsible for rendering our planet(s) using a 3D renderer.
+/// This is the layer responsible for rendering our planet(s) using a 3D renderer
 /// </para>
 /// <para>
 /// This kind of a mini 3D renderer, but I want to stress: <b>IN NO WAY</b> is this the best way to do this. And in fact, it's set up just for this example so many liberties and shortcuts were 
-/// taken. Please do not use this in your own code.
+/// taken. Please do not use this in your own code
 /// </para>
 /// </remarks>
-internal class PlanetLayer
-    : Layer, IDisposable
+/// <remarks>Initializes a new instance of the <see cref="PlanetLayer"/> class.</remarks>
+/// <param name="graphics">The graphics interface for the application.</param>
+/// <param name="resources">The resources for the application.</param>
+internal class PlanetLayer(GorgonGraphics graphics, ResourceManagement resources)
+        : Layer, IDisposable
 {
-    #region Constants.
+
     // The maximum number of available lights.
     private const int MaxLights = 8;
-    #endregion
 
-    #region Value Types.
     /// <summary>
     /// Material data.
     /// </summary>
@@ -81,19 +79,18 @@ internal class PlanetLayer
         /// </summary>
         public float SpecularPower;
     }
-    #endregion
 
-    #region Variables.
+
     // The application graphics interface.
-    private readonly GorgonGraphics _graphics;
+    private readonly GorgonGraphics _graphics = graphics;
     // The application resources.
-    private readonly ResourceManagement _resources;
+    private readonly ResourceManagement _resources = resources;
     // The layout for a 3D vertex.
     private GorgonInputLayout _vertexLayout;
     // The pipeline state for rendering the planet.
-    private readonly GorgonPipelineStateBuilder _stateBuilder;
+    private readonly GorgonPipelineStateBuilder _stateBuilder = new(graphics);
     // The builder for create a draw call.
-    private readonly GorgonDrawIndexCallBuilder _drawCallBuilder;
+    private readonly GorgonDrawIndexCallBuilder _drawCallBuilder = new();
     // A constant buffer for holding the projection*view matrix.
     private GorgonConstantBufferView _viewProjectionBuffer;
     // A constant buffer for holding the world transformation matrix.
@@ -114,20 +111,20 @@ internal class PlanetLayer
     // A combination of both matrices. This is calculated on every frame update when the view/projection is updated.
     private Matrix4x4 _viewProjection;
     // Flag to indicate that we can draw the planet or not.
-    private readonly List<Planet> _drawPlanets = new();
-    #endregion
+    private readonly List<Planet> _drawPlanets = [];
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to return a list of 3D planets to render.
     /// </summary>
     public IList<Planet> Planets
     {
         get;
-    } = new List<Planet>();
-    #endregion
+    } = [];
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to build up the constant buffer data for our shaders.
     /// </summary>
@@ -151,7 +148,7 @@ internal class PlanetLayer
                                                 new GorgonConstantBufferInfo(Unsafe.SizeOf<GorgonGpuLightData>() * MaxLights)
                                                 {
                                                     Name = "LightDataBuffer",
-                                                    Usage = ResourceUsage.Default                                                        
+                                                    Usage = ResourceUsage.Default
                                                 });
     }
 
@@ -292,7 +289,7 @@ internal class PlanetLayer
     /// </summary>
     public override void LoadResources()
     {
-        _drawCalls = new List<GorgonDrawIndexCall>();
+        _drawCalls = [];
         BuildConstantBuffers();
 
         for (int i = 0; i < Planets.Count; ++i)
@@ -395,19 +392,6 @@ internal class PlanetLayer
         _lightBuffer?.Dispose();
         _vertexLayout?.Dispose();
     }
-    #endregion
 
-    #region Constructor/Finalizer.
-    /// <summary>Initializes a new instance of the <see cref="PlanetLayer"/> class.</summary>
-    /// <param name="graphics">The graphics interface for the application.</param>
-    /// <param name="resources">The resources for the application.</param>
-    public PlanetLayer(GorgonGraphics graphics, ResourceManagement resources)
-    {
-        _graphics = graphics;
-        _resources = resources;
 
-        _stateBuilder = new GorgonPipelineStateBuilder(graphics);
-        _drawCallBuilder = new GorgonDrawIndexCallBuilder();
-    }
-    #endregion
 }

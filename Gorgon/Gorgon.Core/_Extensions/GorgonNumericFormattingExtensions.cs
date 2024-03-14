@@ -1,6 +1,6 @@
-﻿#region MIT.
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2011 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,20 +11,19 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: Thursday, August 25, 2011 8:10:31 PM
 // 
-#endregion
 
-using System;
+
 using System.Globalization;
 using Gorgon.Math;
 using Gorgon.Properties;
@@ -32,11 +31,11 @@ using Gorgon.Properties;
 namespace Gorgon.Core;
 
 /// <summary>
-/// Extension methods to provide formatting on numeric values for memory and hexadecimal values.
+/// Extension methods to provide formatting on numeric values for memory and hexadecimal values
 /// </summary>
 public static class GorgonNumericFormattingExtension
 {
-    #region Methods.
+
     /// <summary>
     /// FUnction to return a string formatted to the current culture.
     /// </summary>
@@ -623,5 +622,5 @@ public static class GorgonNumericFormattingExtension
     public static string FormatHex(this nuint pointer) => Environment.Is64BitProcess
                    ? ((long)pointer).ToString("x").PadLeft(16, '0')
                    : ((int)pointer).ToString("x").PadLeft(8, '0');
-    #endregion
+
 }

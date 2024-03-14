@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2018 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,23 +11,19 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: August 25, 2018 2:43:32 PM
 // 
-#endregion
 
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
+
 using System.Numerics;
 using Gorgon.Animation;
 using Gorgon.Core;
@@ -41,16 +37,16 @@ using DX = SharpDX;
 namespace Gorgon.IO;
 
 /// <summary>
-/// A codec used to import sprite animations from version 1 of Gorgon.
+/// A codec used to import sprite animations from version 1 of Gorgon
 /// </summary>
 public class GorgonV1AnimationCodec
     : GorgonAnimationCodecCommon
 {
-    #region Variables.
 
-    #endregion
 
-    #region Properties.
+
+
+
     /// <summary>
     /// Property to return whether or not the codec can decode animation data.
     /// </summary>
@@ -68,9 +64,9 @@ public class GorgonV1AnimationCodec
     {
         get;
     } = new Version(1, 2);
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to save the animation data to a stream.
     /// </summary>
@@ -800,7 +796,7 @@ public class GorgonV1AnimationCodec
     /// <param name="stream">The stream containing the texture data.</param>
     /// <returns>The names of the texture associated with the animations, or an empty list if no textures were found.</returns>
     /// <remarks>This implementation does not do anything.</remarks>
-    protected override IReadOnlyList<string> OnGetAssociatedTextureNames(Stream stream) => Array.Empty<string>();
+    protected override IReadOnlyList<string> OnGetAssociatedTextureNames(Stream stream) => [];
 
     /// <summary>
     /// Function to determine the number of animations in the sprite.
@@ -990,18 +986,18 @@ public class GorgonV1AnimationCodec
             ? throw new EndOfStreamException()
             : OnReadMultipleFromStream(stream, false);
     }
-    #endregion
 
-    #region Constructor/Finalizer.
+
+
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonV1AnimationCodec"/> class.
     /// </summary>
     /// <param name="renderer">The renderer used for resource handling.</param>
     /// <exception cref="ArgumentNullException">Thrown when the <paramref name="renderer"/> is <b>null</b>.</exception>
     public GorgonV1AnimationCodec(Gorgon2D renderer)
-        : base(renderer, Resources.GOR2DIO_V1_ANIM_CODEC, Resources.GOR2DIO_V1_ANIM_CODEC_DESCRIPTION) => FileExtensions = new[]
-                         {
+        : base(renderer, Resources.GOR2DIO_V1_ANIM_CODEC, Resources.GOR2DIO_V1_ANIM_CODEC_DESCRIPTION) => FileExtensions =
+                         [
                              new GorgonFileExtension(".gorSprite", Resources.GOR2DIO_SPRITE_FILE_EXTENSION_DESC),
-                         };
-    #endregion
+                         ];
+
 }

@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2021 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,45 +11,36 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: September 1, 2021 6:49:26 PM
 // 
-#endregion
 
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
-using Drawing = System.Drawing;
+
+using System.Diagnostics;
 using Gorgon.Editor.Content;
 using Gorgon.Graphics.Core;
 using Gorgon.Graphics.Fonts;
 using Gorgon.Graphics.Fonts.Codecs;
 using Gorgon.IO;
-using System.Windows.Forms;
-using Gorgon.Editor.FontEditor.Properties;
-using System.Diagnostics;
+
 
 namespace Gorgon.Editor.FontEditor;
 
 /// <summary>
-/// The service used to handle fonts.
+/// The service used to handle fonts
 /// </summary>
 internal class FontService
     : IDisposable
 {
-    #region Variables.
+
     // The factory used to build fonts.
     private readonly GorgonFontFactory _factory;
     // The worker font.
@@ -61,9 +52,9 @@ internal class FontService
     // The lock used to ensure that the font generation remains non-reentrant.
     private int _lock;
     // The textures for the font.
-    private readonly List<GorgonTexture2DView> _textures = new();
+    private readonly List<GorgonTexture2DView> _textures = [];
     // The list of glyphs, grouped by texture.
-    private readonly Dictionary<GorgonTexture2DView, IReadOnlyList<GorgonGlyph>> _textureGlyphs = new();
+    private readonly Dictionary<GorgonTexture2DView, IReadOnlyList<GorgonGlyph>> _textureGlyphs = [];
 
     /// <summary>
     /// Default character list.
@@ -71,9 +62,9 @@ internal class FontService
     public static readonly IEnumerable<char> DefaultCharacters = Enumerable.Range(32, 224)
                                                                            .Select(Convert.ToChar)
                                                                            .Where(c => !char.IsControl(c));
-    #endregion
 
-    #region Events.
+
+
     /// <summary>
     /// Event fired before the font is updated.
     /// </summary>
@@ -82,7 +73,7 @@ internal class FontService
     /// Event fired after the font is updated.
     /// </summary>
     private event EventHandler FontUpdatedEvent;
-    
+
     /// <summary>
     /// Event fired before the font is updated.
     /// </summary>
@@ -134,9 +125,9 @@ internal class FontService
             FontUpdatedEvent -= value;
         }
     }
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to return the textures for the font.
     /// </summary>
@@ -160,9 +151,9 @@ internal class FontService
     /// Property to return the current worker font.
     /// </summary>
     public GorgonFont WorkerFont => _font;
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to retrieve the list of textures for the font.
     /// </summary>
@@ -183,7 +174,7 @@ internal class FontService
                                                                    where glyphs.TextureView is not null
                                                                    group glyphs by glyphs.TextureView))
         {
-            _textureGlyphs[g.Key] = g.ToArray();
+            _textureGlyphs[g.Key] = [.. g];
         }
 
         TotalTextureArrayCount = _textures.Sum(item => item.ArrayCount);
@@ -225,9 +216,9 @@ internal class FontService
         {
             FontName = Path.GetFileName(fontPath) ?? string.Empty,
             FontSize = prevFont?.Size ?? 9.0f,
-            FontHeightMode = prevFont?.FontHeightMode ?? FontHeightMode.Points,                
-            FontStyle = prevFont?.FontStyle ?? FontStyle.Normal,
-            AntiAliasingMode = prevFont?.AntiAliasingMode ?? FontAntiAliasMode.AntiAlias,
+            FontHeightMode = prevFont?.FontHeightMode ?? GorgonFontHeightMode.Points,
+            FontStyle = prevFont?.FontStyle ?? GorgonFontStyle.Normal,
+            AntiAliasingMode = prevFont?.AntiAliasingMode ?? GorgonFontAntiAliasMode.AntiAlias,
             TextureWidth = prevFont?.TextureWidth ?? 512,
             TextureHeight = prevFont?.TextureHeight ?? 512,
             Characters = prevFont?.Characters ?? DefaultCharacters,
@@ -306,11 +297,11 @@ internal class FontService
         finally
         {
             Interlocked.Exchange(ref _lock, 0);
-        }            
+        }
     }
-    #endregion
 
-    #region Constructor/Finalizer.
+
+
     /// <summary>Initializes a new instance of the <see cref="FontService" /> class.</summary>
     /// <param name="factory">The factory used to build the font.</param>
     /// <param name="font">The current font to use as the worker font.</param>
@@ -325,5 +316,5 @@ internal class FontService
 
         GetTextures();
     }
-    #endregion        
+
 }

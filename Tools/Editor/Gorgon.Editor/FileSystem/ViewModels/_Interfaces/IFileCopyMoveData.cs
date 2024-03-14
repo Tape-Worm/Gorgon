@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2020 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,25 +11,23 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: January 12, 2020 3:22:37 PM
 // 
-#endregion
 
-using System.Collections.Generic;
 
 namespace Gorgon.Editor.ViewModels;
 
 /// <summary>
-/// Information used for moving/copying files.
+/// Information used for moving/copying files
 /// </summary>
 internal interface IFileCopyMoveData
 {
@@ -39,7 +37,7 @@ internal interface IFileCopyMoveData
     IReadOnlyList<string> SourceFiles
     {
         get;
-    }        
+    }
 
     /// <summary>
     /// Property to return the path of the directory that is the target for the copy/move operation.

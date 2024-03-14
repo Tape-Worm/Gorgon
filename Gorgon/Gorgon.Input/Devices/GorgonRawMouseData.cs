@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2015 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,29 +11,28 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: Saturday, August 1, 2015 1:03:26 PM
 // 
-#endregion
 
-using System;
+
 using DX = SharpDX;
 
 namespace Gorgon.Input;
 
 /// <summary>
-/// The current state for the mouse buttons.
+/// The current state for the mouse buttons
 /// </summary>
 /// <remarks>
-/// This is used by the <see cref="GorgonRawMouseData"/> value type to determine if a specific button is being held down, or released. It is not intended for use in general applications.
+/// This is used by the <see cref="GorgonRawMouseData"/> value type to determine if a specific button is being held down, or released. It is not intended for use in general applications
 /// </remarks>
 [Flags]
 public enum MouseButtonState
@@ -86,7 +85,7 @@ public enum MouseButtonState
 }
 
 /// <summary>
-/// A representation of the Raw Input data received from <c>WM_INPUT</c>.
+/// A representation of the Raw Input data received from <c>WM_INPUT</c>
 /// </summary>
 /// <remarks>
 /// <para>
@@ -94,10 +93,15 @@ public enum MouseButtonState
 /// appropriate <see cref="GorgonRawMouse"/> object to be turned into state for that device. 
 /// </para>
 /// <para>
-/// This type is not intended for use by applications.
+/// This type is not intended for use by applications
 /// </para>
 /// </remarks>
-public readonly struct GorgonRawMouseData
+/// <remarks>Initializes a new instance of the <see cref="GorgonRawMouseData" /> struct.</remarks>
+/// <param name="position">The position of the mouse.</param>
+/// <param name="mouseWheel">The mouse wheel delta value.</param>
+/// <param name="mouseButton">The mouse buttons that are held down.</param>
+/// <param name="relative"><b>true</b> if the positioning is relative, <b>false</b> if absolute.</param>
+public readonly struct GorgonRawMouseData(DX.Point position, short mouseWheel, MouseButtonState mouseButton, bool relative)
 {
     /// <summary>
     /// The current position of the mouse.
@@ -106,33 +110,20 @@ public readonly struct GorgonRawMouseData
     /// If the <see cref="IsRelative"/> value is set to <b>true</b>, then this value will be a relative value based on the last known position of the mouse. Otherwise, this will return the absolute 
     /// position of the mouse.
     /// </remarks>
-    public readonly DX.Point Position;
+    public readonly DX.Point Position = position;
 
     /// <summary>
     /// The change in the mouse wheel since the last event.
     /// </summary>
-    public readonly short MouseWheelDelta;
+    public readonly short MouseWheelDelta = mouseWheel;
 
     /// <summary>
     /// The state of the mouse button
     /// </summary>
-    public readonly MouseButtonState ButtonState;
+    public readonly MouseButtonState ButtonState = mouseButton;
 
     /// <summary>
     /// Flag to indicate whether the <see cref="Position"/> value is relative or not.
     /// </summary>
-    public readonly bool IsRelative;
-
-    /// <summary>Initializes a new instance of the <see cref="GorgonRawMouseData" /> struct.</summary>
-    /// <param name="position">The position of the mouse.</param>
-    /// <param name="mouseWheel">The mouse wheel delta value.</param>
-    /// <param name="mouseButton">The mouse buttons that are held down.</param>
-    /// <param name="relative"><b>true</b> if the positioning is relative, <b>false</b> if absolute.</param>
-    public GorgonRawMouseData(DX.Point position, short mouseWheel, MouseButtonState mouseButton, bool relative)
-    {
-        Position = position;
-        MouseWheelDelta = mouseWheel;
-        ButtonState = mouseButton;
-        IsRelative = relative;
-    }
+    public readonly bool IsRelative = relative;
 }

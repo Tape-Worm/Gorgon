@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2016 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,27 +11,26 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: August 16, 2016 1:03:56 PM
 // 
-#endregion
 
-using System;
+
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 namespace Gorgon.Graphics.Imaging.Codecs;
 
 /// <summary>
-/// Flags to convert older DDS files (pre-DX10).
+/// Flags to convert older DDS files (pre-DX10)
 /// </summary>
 [Flags]
 internal enum DdsConversionFlags
@@ -95,7 +94,7 @@ internal enum DdsConversionFlags
 }
 
 /// <summary>
-/// Flags for the header.
+/// Flags for the header
 /// </summary>
 [Flags]
 internal enum DdsHeaderFlags
@@ -132,7 +131,7 @@ internal enum DdsHeaderFlags
 }
 
 /// <summary>
-/// Misc. flags for the header.
+/// Misc. flags for the header
 /// </summary>
 [Flags]
 internal enum DdsHeaderMiscFlags
@@ -145,7 +144,7 @@ internal enum DdsHeaderMiscFlags
 }
 
 /// <summary>
-/// Flags for the pixel format.
+/// Flags for the pixel format
 /// </summary>
 [Flags]
 internal enum DdsPixelFormatFlags
@@ -183,7 +182,7 @@ internal enum DdsPixelFormatFlags
 
 // ReSharper disable InconsistentNaming
 /// <summary>
-/// DDS surface flags.
+/// DDS surface flags
 /// </summary>
 [Flags]
 internal enum DdsCaps1
@@ -204,7 +203,7 @@ internal enum DdsCaps1
 }
 
 /// <summary>
-/// DDS cube map directions.
+/// DDS cube map directions
 /// </summary>
 [Flags]
 internal enum DdsCaps2
@@ -250,39 +249,32 @@ internal enum DdsCaps2
 // ReSharper restore InconsistentNaming
 
 /// <summary>
-/// DDS legacy conversion type.
+/// DDS legacy conversion type
 /// </summary>
-internal readonly struct DdsLegacyConversion
+/// <remarks>
+/// Initializes a new instance of the <see cref="DdsLegacyConversion" /> struct
+/// </remarks>
+/// <param name="format">The format.</param>
+/// <param name="flags">The flags.</param>
+/// <param name="pixelFormat">The pixel format.</param>
+internal readonly struct DdsLegacyConversion(BufferFormat format, DdsConversionFlags flags, DdsPixelFormat pixelFormat)
 {
     /// <summary>
     /// Buffer format.
     /// </summary>
-    public readonly BufferFormat Format;
+    public readonly BufferFormat Format = format;
     /// <summary>
     /// Conversion flags.
     /// </summary>
-    public readonly DdsConversionFlags Flags;
+    public readonly DdsConversionFlags Flags = flags;
     /// <summary>
     /// Pixel format.
     /// </summary>
-    public readonly DdsPixelFormat PixelFormat;
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="DdsLegacyConversion" /> struct.
-    /// </summary>
-    /// <param name="format">The format.</param>
-    /// <param name="flags">The flags.</param>
-    /// <param name="pixelFormat">The pixel format.</param>
-    public DdsLegacyConversion(BufferFormat format, DdsConversionFlags flags, DdsPixelFormat pixelFormat)
-    {
-        Format = format;
-        Flags = flags;
-        PixelFormat = pixelFormat;
-    }
+    public readonly DdsPixelFormat PixelFormat = pixelFormat;
 }
 
 /// <summary>
-/// DDS file header.
+/// DDS file header
 /// </summary>
 [StructLayout(LayoutKind.Sequential, Pack = 1)]
 internal struct DdsHeader
@@ -356,7 +348,7 @@ internal struct DdsHeader
 }
 
 /// <summary>
-/// DDS DirectX 10 header.
+/// DDS DirectX 10 header
 /// </summary>
 [StructLayout(LayoutKind.Sequential, Pack = 1)]
 internal struct Dx10Header
@@ -368,7 +360,7 @@ internal struct Dx10Header
     /// <summary>
     /// Resource dimension.
     /// </summary>
-    public ImageType ResourceDimension;
+    public ImageDataType ResourceDimension;
     /// <summary>
     /// Miscellaneous flags.
     /// </summary>
@@ -384,63 +376,51 @@ internal struct Dx10Header
 }
 
 /// <summary>
-/// Pixel format descriptor.
+/// Pixel format descriptor
 /// </summary>
+/// <remarks>
+/// Initializes a new instance of the <see cref="DdsPixelFormat" /> struct
+/// </remarks>
+/// <param name="flags">The flags.</param>
+/// <param name="fourCC">The four CC.</param>
+/// <param name="bitCount">The bit count.</param>
+/// <param name="rMask">The r mask.</param>
+/// <param name="gMask">The g mask.</param>
+/// <param name="bMask">The b mask.</param>
+/// <param name="aMask">A mask.</param>
 [StructLayout(LayoutKind.Sequential, Pack = 1)]
-internal readonly struct DdsPixelFormat
+internal readonly struct DdsPixelFormat(DdsPixelFormatFlags flags, uint fourCC, uint bitCount, uint rMask, uint gMask, uint bMask, uint aMask)
 {
     /// <summary>
     /// Size of the format, in bytes.
     /// </summary>
-    public readonly uint SizeInBytes;
+    public readonly uint SizeInBytes = (uint)Unsafe.SizeOf<DdsPixelFormat>();
     /// <summary>
     /// Flags for the format.
     /// </summary>
-    public readonly DdsPixelFormatFlags Flags;
+    public readonly DdsPixelFormatFlags Flags = flags;
     /// <summary>
     /// FOURCC value.
     /// </summary>
-    public readonly uint FourCC;
+    public readonly uint FourCC = fourCC;
     /// <summary>
     /// Number of bits per pixel.
     /// </summary>
-    public readonly uint BitCount;
+    public readonly uint BitCount = bitCount;
     /// <summary>
     /// Bit mask for the R component.
     /// </summary>
-    public readonly uint RBitMask;
+    public readonly uint RBitMask = rMask;
     /// <summary>
     /// Bit mask for the G component.
     /// </summary>
-    public readonly uint GBitMask;
+    public readonly uint GBitMask = gMask;
     /// <summary>
     /// Bit mask for the B component.
     /// </summary>
-    public readonly uint BBitMask;
+    public readonly uint BBitMask = bMask;
     /// <summary>
     /// Bit mask for the A component.
     /// </summary>
-    public readonly uint ABitMask;
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="DdsPixelFormat" /> struct.
-    /// </summary>
-    /// <param name="flags">The flags.</param>
-    /// <param name="fourCC">The four CC.</param>
-    /// <param name="bitCount">The bit count.</param>
-    /// <param name="rMask">The r mask.</param>
-    /// <param name="gMask">The g mask.</param>
-    /// <param name="bMask">The b mask.</param>
-    /// <param name="aMask">A mask.</param>
-    public DdsPixelFormat(DdsPixelFormatFlags flags, uint fourCC, uint bitCount, uint rMask, uint gMask, uint bMask, uint aMask)
-    {
-        SizeInBytes = (uint)Unsafe.SizeOf<DdsPixelFormat>();
-        Flags = flags;
-        FourCC = fourCC;
-        BitCount = bitCount;
-        RBitMask = rMask;
-        GBitMask = gMask;
-        BBitMask = bMask;
-        ABitMask = aMask;
-    }
+    public readonly uint ABitMask = aMask;
 }

@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2017 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,22 +11,19 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: March 5, 2017 10:05:08 PM
 // 
-#endregion
 
-using System;
-using System.Collections.Generic;
-using System.IO;
+
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using Gorgon.Core;
@@ -38,18 +35,17 @@ using Gorgon.IO;
 namespace Gorgon.Examples;
 
 /// <summary>
-/// Our TV image codec.
+/// Our TV image codec
 /// </summary>
 /// <remarks>
-/// This codec will encode and decode image data as 1 channel/pixel to make the image look similar to the line patterns on a CRT tv screen.
+/// This codec will encode and decode image data as 1 channel/pixel to make the image look similar to the line patterns on a CRT tv screen
 /// <para>
-/// To create a codec, we must inherit the GorgonImageCodec object and implement functionality to load and save image data to and from a stream.
+/// To create a codec, we must inherit the GorgonImageCodec object and implement functionality to load and save image data to and from a stream
 /// </para>
 /// </remarks>
 internal class TvImageCodec
     : GorgonImageCodec<IGorgonImageCodecEncodingOptions, IGorgonImageCodecDecodingOptions>
 {
-    #region Value Types.
     /// <summary>
     /// The header for our image format.
     /// </summary>
@@ -67,31 +63,31 @@ internal class TvImageCodec
         /// <summary>
         /// The magic number that identifies the image data as our desired format.
         /// </summary>
-			public long MagicValueData;
+        public long MagicValueData;
         /// <summary>
         /// The width of the image.
         /// </summary>
-			public int Width;
+        public int Width;
         /// <summary>
         /// The height of the image.
         /// </summary>
-			public int Height;
+        public int Height;
     }
-    #endregion
 
-    #region Variables.
+
+
     // The magic number to identify the file.
     private const long MagicValue = 0x3074724356543020;
 
     // Formats supported by the image.
     // We need to tell Gorgon which pixel formats this image codec stores its data as.  Otherwise, the image will not look right when it's loaded.
     private readonly BufferFormat[] _supportedFormats =
-    {
+    [
         BufferFormat.R8G8B8A8_UNorm
-    };
-    #endregion
+    ];
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to return the friendly description of the format.
     /// </summary>
@@ -128,9 +124,9 @@ internal class TvImageCodec
     /// Property to return whether the image codec supports block compression.
     /// </summary>
     public override bool SupportsBlockCompression => false;
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to read the meta data for the image.
     /// </summary>
@@ -171,7 +167,7 @@ internal class TvImageCodec
             throw new ArgumentException(@"The image in this stream has an invalid width/height.", nameof(stream));
         }
 
-        return new GorgonImageInfo(ImageType.Image2D, BufferFormat.R8G8B8A8_UNorm)
+        return new GorgonImageInfo(ImageDataType.Image2D, BufferFormat.R8G8B8A8_UNorm)
         {
             Width = header.Width,
             Height = header.Height
@@ -245,20 +241,20 @@ internal class TvImageCodec
     }
 
     /// <summary>
-	    /// Function to persist a <see cref="IGorgonImage"/> to a stream.
-	    /// </summary>
-	    /// <param name="imageData">A <see cref="IGorgonImage"/> to persist to the stream.</param>
-	    /// <param name="stream">The stream that will receive the image data.</param>
-	    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="stream"/>, or the <paramref name="imageData"/> parameter is <b>null</b>.</exception>
-	    /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="stream"/> is read only.</exception>
-	    /// <exception cref="NotSupportedException">Thrown when the image data in the stream has a pixel format that is unsupported by the codec.</exception>
-	    /// <remarks>
-	    /// <para>
-	    /// When persisting image data via a codec, the image must have a format that the codec can recognize. This list of supported formats is provided by the <see cref="SupportedPixelFormats"/> 
-	    /// property. Applications may convert their image data a supported format before saving the data using a codec.
-	    /// </para>
-	    /// </remarks>
-	    public override void Save(IGorgonImage imageData, Stream stream)
+    /// Function to persist a <see cref="IGorgonImage"/> to a stream.
+    /// </summary>
+    /// <param name="imageData">A <see cref="IGorgonImage"/> to persist to the stream.</param>
+    /// <param name="stream">The stream that will receive the image data.</param>
+    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="stream"/>, or the <paramref name="imageData"/> parameter is <b>null</b>.</exception>
+    /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="stream"/> is read only.</exception>
+    /// <exception cref="NotSupportedException">Thrown when the image data in the stream has a pixel format that is unsupported by the codec.</exception>
+    /// <remarks>
+    /// <para>
+    /// When persisting image data via a codec, the image must have a format that the codec can recognize. This list of supported formats is provided by the <see cref="SupportedPixelFormats"/> 
+    /// property. Applications may convert their image data a supported format before saving the data using a codec.
+    /// </para>
+    /// </remarks>
+    public override void Save(IGorgonImage imageData, Stream stream)
     {
         if (imageData.Format != BufferFormat.R8G8B8A8_UNorm)
         {
@@ -445,9 +441,7 @@ internal class TvImageCodec
             stream.Position = position;
         }
     }
-    #endregion
 
-    #region Constructor
     /// <summary>
     /// Initializes a new instance of the <see cref="TvImageCodec"/> class.
     /// </summary>
@@ -456,9 +450,6 @@ internal class TvImageCodec
         // Tell the codec which image file name extensions are commonly used to 
         // identify the image data type.  This is use by applications to determine 
         // which codec to use when loading an image.
-        CodecCommonExtensions = new[]
-                                {
-                                    "tv"
-                                };
-    #endregion
+        CodecCommonExtensions = ["tv"];
+
 }

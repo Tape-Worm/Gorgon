@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2018 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,23 +11,19 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: October 29, 2018 1:19:30 PM
 // 
-#endregion
 
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
+
 using System.Text;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
@@ -41,12 +37,15 @@ using Newtonsoft.Json;
 namespace Gorgon.Editor.Services;
 
 /// <summary>
-/// The service used for managing the tool plugins.
+/// The service used for managing the tool plugins
 /// </summary>
-internal class ToolPlugInService
-    : IToolPlugInService, IDisposable
+/// <remarks>Initializes a new instance of the ToolPlugInService class.</remarks>
+/// <param name="settingsDirectory">The directory that will contain settings for the content plug ins.</param>
+/// <param name="hostServices">The host appplication services to pass to the plug ins.</param>
+internal class ToolPlugInService(string settingsDirectory, IHostContentServices hostServices)
+        : IToolPlugInService, IDisposable
 {
-    #region Variables.
+
     // The plugin list.
     private readonly Dictionary<string, ToolPlugIn> _plugins = new(StringComparer.OrdinalIgnoreCase);
     // The list of disabled tool plug ins.
@@ -54,12 +53,12 @@ internal class ToolPlugInService
     // The list of ribbon buttons for all tools.
     private readonly Dictionary<string, IReadOnlyList<IToolPlugInRibbonButton>> _ribbonButtons = new(StringComparer.CurrentCultureIgnoreCase);
     // The directory that contains the settings for the plug ins.
-    private readonly string _settingsDir;
+    private readonly string _settingsDir = settingsDirectory;
     // The host application services to pass to the plug ins.
-    private readonly IHostContentServices _hostServices;
-    #endregion
+    private readonly IHostContentServices _hostServices = hostServices;
 
-    #region Properties.
+
+
     /// <summary>Property to return the list of tool plugins loaded in to the application.</summary>
     /// <value>The plugins.</value>
     public IReadOnlyDictionary<string, ToolPlugIn> PlugIns => _plugins;
@@ -71,9 +70,9 @@ internal class ToolPlugInService
     /// Property to return the UI buttons for the tool plug in.
     /// </summary>
     public IReadOnlyDictionary<string, IReadOnlyList<IToolPlugInRibbonButton>> RibbonButtons => _ribbonButtons;
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to return the file for the content plug in settings.
     /// </summary>
@@ -121,7 +120,7 @@ internal class ToolPlugInService
             }
             else
             {
-                _ribbonButtons[button.GroupName] = buttons = new List<IToolPlugInRibbonButton>();
+                _ribbonButtons[button.GroupName] = buttons = [];
             }
 
             buttons.Add(button);
@@ -345,16 +344,8 @@ internal class ToolPlugInService
 
         ClearToolButtons();
     }
-    #endregion
 
-    #region Constructor.
-    /// <summary>Initializes a new instance of the ToolPlugInService class.</summary>
-    /// <param name="settingsDirectory">The directory that will contain settings for the content plug ins.</param>
-    /// <param name="hostServices">The host appplication services to pass to the plug ins.</param>
-    public ToolPlugInService(string settingsDirectory, IHostContentServices hostServices)
-    {
-        _settingsDir = settingsDirectory;
-        _hostServices = hostServices;
-    }
-    #endregion
+
+
+
 }

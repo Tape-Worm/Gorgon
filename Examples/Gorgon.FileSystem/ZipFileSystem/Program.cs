@@ -1,6 +1,6 @@
-﻿#region MIT.
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2013 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,22 +11,19 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: Thursday, January 17, 2013 11:07:10 PM
 // 
-#endregion
 
-using System;
-using System.IO;
-using System.Linq;
+
 using Gorgon.Core;
 using Gorgon.Diagnostics;
 using Gorgon.IO;
@@ -36,12 +33,12 @@ using Gorgon.PlugIns;
 namespace Gorgon.Examples;
 
 /// <summary>
-/// Example entry point.
+/// Example entry point
 /// </summary>
 /// <remarks>
 /// Gorgon is capable of making use of Virtual File Systems.  This is quite different from the file system type that was in the
 /// first version of Gorgon which was really nothing more than a compressed file reader/writer (even though it could mount 
-/// folders).
+/// folders)
 /// 
 /// Virtual File Systems take a directory, or some packed data file and mount it as a root directory.  Any subsequent directories
 /// and files inside of the directory (or file) are mapped to be relative to the root point on the file system.  For example,
@@ -50,35 +47,67 @@ namespace Gorgon.Examples;
 /// that was mounted as the root of the VFS.  This allows for a certain level of security to keep users from writing or reading
 /// areas outside of the intended directory structure.  
 /// 
-/// Gorgon's VFS is modeled after the PhysFS project (http://icculus.org/physfs/).
+/// Gorgon's VFS is modeled after the PhysFS project (http://icculus.org/physfs/)
 /// 
 /// In this example, we'll mount a zip file as the root of the virtual file system.  All sub directories and files under the root 
 /// directory will become accessible from the virtual file system.  The program will enumerate the directories and files and list 
-/// them in the console window with relevant file information.
+/// them in the console window with relevant file information
 /// </remarks>
 internal static class Program
 {
-    #region Constants.
-    private const string PlugInName = "Gorgon.IO.Zip.ZipProvider";
-    #endregion
 
-    #region Variables.
+    private const string PlugInName = "Gorgon.IO.Zip.ZipProvider";
+
+
+
     // The plugin assemblies.
     private static GorgonMefPlugInCache _pluginAssemblies;
     // File system.
     private static GorgonFileSystem _fileSystem;
     // The log file used for debug logging.
     private static IGorgonLog _log;
-    #endregion
 
-    #region Methods.
+
+
+    /// <summary>
+    /// Function to retrieve the directory that contains the plugins for an application.
+    /// </summary>
+    /// <param name="pluginDirectory">The directory containing the plug ins.</param>
+    /// <returns>A directory information object for the plugin path.</returns>
+    private static DirectoryInfo GetPlugInPath(DirectoryInfo pluginDirectory)
+    {
+        string path = pluginDirectory.FullName;
+
+        if (string.IsNullOrWhiteSpace(path))
+        {
+            throw new IOException("No plug in path has been assigned.");
+        }
+
+        if (path.Contains("{0}"))
+        {
+#if DEBUG
+            path = string.Format(path, "Debug");
+#else
+            path = string.Format(path, "Release");					
+#endif
+        }
+
+        if (!path.EndsWith(Path.DirectorySeparatorChar.ToString()))
+        {
+            path += Path.DirectorySeparatorChar.ToString();
+        }
+
+        return new DirectoryInfo(Path.GetFullPath(path));
+    }
+
     /// <summary>
     /// Function to load the zip file provider plugin.
     /// </summary>
+    /// <param name="pluginDirectory">The directory containing the plug ins.</param>
     /// <returns><b>true</b> if successfully loaded, <b>false</b> if not.</returns>
-    private static bool LoadZipProviderPlugIn()
+    private static bool LoadZipProviderPlugIn(DirectoryInfo pluginDirectory)
     {
-        var zipProviderFile = new FileInfo(Path.Combine(GorgonExample.GetPlugInPath().FullName.FormatDirectory(Path.DirectorySeparatorChar), "Gorgon.FileSystem.Zip.dll"));
+        var zipProviderFile = new FileInfo(Path.Combine(GetPlugInPath(pluginDirectory).FullName.FormatDirectory(Path.DirectorySeparatorChar), "Gorgon.FileSystem.Zip.dll"));
 
         // Check to see if the file exists.
         if (!zipProviderFile.Exists)
@@ -124,8 +153,8 @@ internal static class Program
     /// </summary>
     private static void Main()
     {
-        GorgonExample.ResourceBaseDirectory = new DirectoryInfo(ExampleConfig.Default.ResourceLocation);
-        GorgonExample.PlugInLocationDirectory = new DirectoryInfo(ExampleConfig.Default.PlugInLocation);
+        DirectoryInfo resourceBaseDirectory = new(Path.Combine(ExampleConfig.Default.ResourceLocation, "FileSystems", "FileSystem.zip"));
+        DirectoryInfo plugInLocationDirectory = new(ExampleConfig.Default.PlugInLocation);
 
         _log = new GorgonTextFileLog("ZipFileSystem", "Tape_Worm");
         _log.LogStart();
@@ -149,7 +178,7 @@ internal static class Program
             // Unlike the folder file system example, we need to load
             // a provider to handle zip files before trying to mount
             // one.
-            if (!LoadZipProviderPlugIn())
+            if (!LoadZipProviderPlugIn(plugInLocationDirectory))
             {
                 return;
             }
@@ -165,12 +194,11 @@ internal static class Program
             // would load files from the system into memory when mounting a 
             // directory.  While this version only loads directory and file 
             // information when mounting.  This is considerably more efficient.
-            string physicalPath = Path.Combine(GorgonExample.GetResourcePath(@"FileSystems").FullName, "FileSystem.zip");
-            _fileSystem.Mount(physicalPath);
+            _fileSystem.Mount(resourceBaseDirectory.FullName);
 
             Console.Write("\nMounted: ");
             Console.ForegroundColor = ConsoleColor.Cyan;
-            Console.Write("'{0}'", physicalPath.Ellipses(Console.WindowWidth - 20, true));
+            Console.Write("'{0}'", resourceBaseDirectory.FullName.Ellipses(Console.WindowWidth - 20, true));
             Console.ForegroundColor = ConsoleColor.White;
             Console.Write(" as ");
             Console.ForegroundColor = ConsoleColor.Cyan;
@@ -232,5 +260,5 @@ internal static class Program
             _log.LogEnd();
         }
     }
-    #endregion
+
 }

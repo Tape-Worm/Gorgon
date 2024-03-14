@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2015 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: Wednesday, August 12, 2015 9:25:53 PM
 // 
-#endregion
+
 
 using Gorgon.Core;
 using Gorgon.Input.Properties;
@@ -30,22 +30,28 @@ using Gorgon.Input.Properties;
 namespace Gorgon.Input;
 
 /// <summary>
-/// Information about a gaming device axis.
+/// Information about a gaming device axis
 /// </summary>
 /// <remarks>
 /// This will provide information about the range of movement for the axis, as well as a default value for when the axis is centered or whatever the resting position may be. This default is set by 
-/// the <see cref="IGorgonGamingDeviceDriver"/> upon enumeration of the devices.
+/// the <see cref="IGorgonGamingDeviceDriver"/> upon enumeration of the devices
 /// </remarks>
-public class GorgonGamingDeviceAxisInfo
+/// <remarks>
+/// Initializes a new instance of the <see cref="GorgonGamingDeviceAxisInfo"/> struct
+/// </remarks>
+/// <param name="axis">The identifier for the axis.</param>
+/// <param name="range">The range of the axis.</param>
+/// <param name="defaultValue">The default value for the axis when in resting position.</param>
+public class GorgonGamingDeviceAxisInfo(GamingDeviceAxis axis, GorgonRange range, int defaultValue)
 {
-    #region Variables.
+
     /// <summary>
     /// Property to return the identifier for the axis.
     /// </summary>
     public GamingDeviceAxis Axis
     {
         get;
-    }
+    } = axis;
 
     /// <summary>
     /// Property to return the range of the axis.
@@ -56,7 +62,7 @@ public class GorgonGamingDeviceAxisInfo
     public GorgonRange Range
     {
         get;
-    }
+    } = range;
 
     /// <summary>
     /// Property to return the default value for the resting position of the axis.
@@ -68,30 +74,18 @@ public class GorgonGamingDeviceAxisInfo
     public int DefaultValue
     {
         get;
-    }
-    #endregion
+    } = defaultValue;
 
-    #region Methods.
+
+
     /// <summary>
     /// Returns a <see cref="string" /> that represents this instance.
     /// </summary>
     /// <returns>A <see cref="string" /> that represents this instance.</returns>
     public override string ToString() => string.Format(Resources.GORINP_TOSTR_JOYSTICKAXIS, Axis, Range.Minimum, Range.Maximum);
-    #endregion
 
-    #region Constructor.
-    /// <summary>
-    /// Initializes a new instance of the <see cref="GorgonGamingDeviceAxisInfo"/> struct.
-    /// </summary>
-    /// <param name="axis">The identifier for the axis.</param>
-    /// <param name="range">The range of the axis.</param>
-    /// <param name="defaultValue">The default value for the axis when in resting position.</param>
-    public GorgonGamingDeviceAxisInfo(GamingDeviceAxis axis, GorgonRange range, int defaultValue)
-    {
-        Axis = axis;
-        Range = range;
-        DefaultValue = defaultValue;
-    }
-    #endregion
+
+
+
 
 }

@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2019 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,25 +11,22 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: March 28, 2019 9:48:28 AM
 // 
-#endregion
 
-using System;
-using System.Collections.Generic;
+
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Diagnostics;
-using System.Linq;
 using Gorgon.Animation;
 using Gorgon.Editor.UI;
 using Gorgon.Editor.UI.Controls;
@@ -37,16 +34,18 @@ using Gorgon.Editor.UI.Controls;
 namespace Gorgon.Editor.AnimationEditor;
 
 /// <summary>
-/// A panel used to add new tracks to an animation.
+/// A panel used to add new tracks to an animation
 /// </summary>
 internal partial class AnimationAddTrack
     : EditorSubPanelCommon, IDataContext<IAddTrack>
 {
-    #region Classes.
+
     /// <summary>
     /// A list box item for the track.
     /// </summary>
-    private class TrackListItem
+    /// <remarks>Initializes a new instance of the <see cref="TrackListItem"/> class.</remarks>
+    /// <param name="track">The track.</param>
+    private class TrackListItem(GorgonTrackRegistration track)
     {
         /// <summary>
         /// Property to return the track.
@@ -54,34 +53,30 @@ internal partial class AnimationAddTrack
         public GorgonTrackRegistration TrackRegistration
         {
             get;
-        }
+        } = track;
 
         /// <summary>Returns a <see cref="string"/> that represents this instance.</summary>
         /// <returns>A <see cref="string"/> that represents this instance.</returns>
         public override string ToString() => TrackRegistration.Description;
-
-        /// <summary>Initializes a new instance of the <see cref="TrackListItem"/> class.</summary>
-        /// <param name="track">The track.</param>
-        public TrackListItem(GorgonTrackRegistration track) => TrackRegistration = track;
     }
-    #endregion
 
-    #region Variables.
-    #endregion
 
-    #region Properties.
+
+
+
+
     /// <summary>
     /// Property to return the data context for the view.
     /// </summary>
     [Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-    public IAddTrack DataContext
+    public IAddTrack ViewModel
     {
         get;
         private set;
     }
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>Handles the CollectionChanged event of the AvailableTracks control.</summary>
     /// <param name="sender">The source of the event.</param>
     /// <param name="e">The <see cref="NotifyCollectionChangedEventArgs"/> instance containing the event data.</param>
@@ -138,12 +133,12 @@ internal partial class AnimationAddTrack
     /// </summary>
     private void UnassignEvents()
     {
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             return;
         }
 
-        DataContext.AvailableTracks.CollectionChanged -= AvailableTracks_CollectionChanged;
+        ViewModel.AvailableTracks.CollectionChanged -= AvailableTracks_CollectionChanged;
     }
 
     /// <summary>Handles the SelectedValueChanged event of the ListTracks control.</summary>
@@ -153,12 +148,12 @@ internal partial class AnimationAddTrack
     {
         IReadOnlyList<GorgonTrackRegistration> selectedTracks = ListTracks.SelectedItems.OfType<TrackListItem>().Select(item => item.TrackRegistration).ToArray();
 
-        if ((DataContext?.SelectTracksCommand is null) || (!DataContext.SelectTracksCommand.CanExecute(selectedTracks)))
+        if ((ViewModel?.SelectTracksCommand is null) || (!ViewModel.SelectTracksCommand.CanExecute(selectedTracks)))
         {
             return;
         }
 
-        DataContext.SelectTracksCommand.Execute(selectedTracks);
+        ViewModel.SelectTracksCommand.Execute(selectedTracks);
         ValidateOk();
     }
 
@@ -167,7 +162,7 @@ internal partial class AnimationAddTrack
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
     private void ListTracks_DoubleClick(object sender, EventArgs e)
     {
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             return;
         }
@@ -206,7 +201,7 @@ internal partial class AnimationAddTrack
     /// Function to reset the values on the control for a null data context.
     /// </summary>
     private void ResetDataContext() => FillList(null);
-    
+
     /// <summary>
     /// Function to initialize the control with the data context.
     /// </summary>
@@ -227,12 +222,12 @@ internal partial class AnimationAddTrack
     {
         base.OnSubmit();
 
-        if ((DataContext?.OkCommand is null) || (!DataContext.OkCommand.CanExecute(null)))
+        if ((ViewModel?.OkCommand is null) || (!ViewModel.OkCommand.CanExecute(null)))
         {
             return;
         }
 
-        DataContext.OkCommand.Execute(null);
+        ViewModel.OkCommand.Execute(null);
     }
 
     /// <summary>Function to cancel the change.</summary>
@@ -240,20 +235,20 @@ internal partial class AnimationAddTrack
     {
         base.OnCancel();
 
-        if ((DataContext?.CancelCommand is null) || (!DataContext.CancelCommand.CanExecute(null)))
+        if ((ViewModel?.CancelCommand is null) || (!ViewModel.CancelCommand.CanExecute(null)))
         {
             return;
         }
 
-        DataContext.CancelCommand.Execute(null);
+        ViewModel.CancelCommand.Execute(null);
     }
 
     /// <summary>
     /// Function to validate the state of the OK button.
     /// </summary>
     /// <returns><b>true</b> if the OK button is valid, <b>false</b> if not.</returns>
-    protected override bool OnValidateOk() => (DataContext?.OkCommand is not null) && (DataContext.OkCommand.CanExecute(null));
-    
+    protected override bool OnValidateOk() => (ViewModel?.OkCommand is not null) && (ViewModel.OkCommand.CanExecute(null));
+
     /// <summary>Raises the <see cref="System.Windows.Forms.UserControl.Load"/> event.</summary>
     /// <param name="e">An <see cref="EventArgs"/> that contains the event data.</param>
     protected override void OnLoad(EventArgs e)
@@ -265,9 +260,9 @@ internal partial class AnimationAddTrack
             return;
         }
 
-        DataContext?.Load();
+        ViewModel?.Load();
     }
-    
+
     /// <summary>Function to assign a data context to the view as a view model.</summary>
     /// <param name="dataContext">The data context to assign.</param>
     /// <remarks>Data contexts should be nullable, in that, they should reset the view back to its original state when the context is null.</remarks>
@@ -277,22 +272,22 @@ internal partial class AnimationAddTrack
 
         InitializeFromDataContext(dataContext);
 
-        DataContext = dataContext;
+        ViewModel = dataContext;
 
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             ValidateOk();
             return;
         }
 
-        DataContext.AvailableTracks.CollectionChanged += AvailableTracks_CollectionChanged;
+        ViewModel.AvailableTracks.CollectionChanged += AvailableTracks_CollectionChanged;
 
         ValidateOk();
     }
-    #endregion
 
-    #region Constructor/Finalizer.
+
+
     /// <summary>Initializes a new instance of the <see cref="AnimationAddTrack"/> class.</summary>
     public AnimationAddTrack() => InitializeComponent();
-    #endregion
+
 }

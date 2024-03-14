@@ -21,13 +21,13 @@ partial class FormManualRectangleEdit
         if (disposing)
         {                
             UnassignEvents();
-            DataContext?.Unload();
+            ViewModel?.Unload();
         }
 
         base.Dispose(disposing);
     }
 
-    #region Windows Form Designer generated code
+
 
     /// <summary>
     /// Required method for Designer support - do not modify
@@ -241,7 +241,7 @@ partial class FormManualRectangleEdit
         this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
         this.ClientSize = new System.Drawing.Size(358, 243);
         this.Controls.Add(this.PanelRect);
-        this.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+        
         this.ForeColor = System.Drawing.Color.White;
         this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
         this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
@@ -262,7 +262,7 @@ partial class FormManualRectangleEdit
 
     }
 
-    #endregion
+
 
     private System.Windows.Forms.Panel PanelRect;
     private System.Windows.Forms.Label LabelBottom;

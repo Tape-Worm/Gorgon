@@ -1,6 +1,6 @@
-#region MIT.
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2011 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,35 +11,33 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: Saturday, June 18, 2011 4:21:26 PM
 // 
-#endregion
 
-using System;
 
 namespace Gorgon.UI;
 
 /// <summary>
-/// Dialog for error messages.
+/// Dialog for error messages
 /// </summary>
 internal partial class ErrorDialog
 {
-    #region Variables.
+
     private int _lastWidth;                 // Last used width.
     private string _errorDetails;           // Error details.
     private int _detailHeight;              // Height for details panel.
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to set or return whether to open the detail panel when the dialog is shown.
     /// </summary>
@@ -70,9 +68,9 @@ internal partial class ErrorDialog
             ValidateFunctions();
         }
     }
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Handles the Click event of the detailsButton control.
     /// </summary>
@@ -163,9 +161,9 @@ internal partial class ErrorDialog
 
         DrawMessage(g, maxTextHeight);
     }
-    #endregion
 
-    #region Constructor/Destructor.
+
+
     /// <summary>
     /// Constructor.
     /// </summary>
@@ -177,5 +175,5 @@ internal partial class ErrorDialog
         ShowDetailPanel = false;
         _errorDetails = "";
     }
-    #endregion
+
 }

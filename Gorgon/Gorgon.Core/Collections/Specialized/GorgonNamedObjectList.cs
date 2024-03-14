@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2015 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,42 +11,44 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: Thursday, May 21, 2015 11:21:36 PM
 // 
-#endregion
 
-using System;
-using System.Collections.Generic;
+
 using Gorgon.Core;
 
 namespace Gorgon.Collections.Specialized;
 
 /// <summary>
-/// A list to contain <see cref="IGorgonNamedObject"/> types.
+/// A list to contain <see cref="IGorgonNamedObject"/> types
 /// </summary>
 /// <typeparam name="T">The type of object to store in the list. Must implement the <see cref="IGorgonNamedObject"/> interface.</typeparam>
 /// <remarks>
 /// <para>
-/// This is a concrete implementation of the <see cref="GorgonBaseNamedObjectList{T}"/> type.
+/// This is a concrete implementation of the <see cref="GorgonBaseNamedObjectList{T}"/> type
 /// </para>
 /// <para>
-/// This collection is <b><i>not</i></b> thread safe.
+/// This collection is <b><i>not</i></b> thread safe
 /// </para>
 /// </remarks>
-public class GorgonNamedObjectList<T>
-    : GorgonBaseNamedObjectList<T>
+/// <remarks>
+/// Initializes a new instance of the <see cref="GorgonNamedObjectList{T}"/> class
+/// </remarks>
+/// <param name="caseSensitive">[Optional] <b>true</b> to use case sensitive keys, <b>false</b> to ignore casing.</param>
+public class GorgonNamedObjectList<T>(bool caseSensitive = true)
+    : GorgonBaseNamedObjectList<T>(caseSensitive)
     where T : IGorgonNamedObject
 {
-    #region Properties.
+
     /// <summary>
     /// Property to set or return an item in this list by index.
     /// </summary>
@@ -61,9 +63,9 @@ public class GorgonNamedObjectList<T>
     /// </summary>
     public T this[string name] => GetItemByName(name);
 
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to clear the items from the list.
     /// </summary>
@@ -132,18 +134,7 @@ public class GorgonNamedObjectList<T>
     /// <param name="name">Name of the item to remove.</param>
     /// <exception cref="KeyNotFoundException">Thrown when no item with the specified <paramref name="name"/> can be found.</exception>
     public void Remove(string name) => RemoveItemByName(name);
-    #endregion
 
-    #region Constructor/Finalizer.
-    /// <summary>
-    /// Initializes a new instance of the <see cref="GorgonNamedObjectList{T}"/> class.
-    /// </summary>
-    /// <param name="caseSensitive">[Optional] <b>true</b> to use case sensitive keys, <b>false</b> to ignore casing.</param>
-    public GorgonNamedObjectList(bool caseSensitive = true)
-        : base(caseSensitive)
-    {
 
-    }
-    #endregion
 
 }

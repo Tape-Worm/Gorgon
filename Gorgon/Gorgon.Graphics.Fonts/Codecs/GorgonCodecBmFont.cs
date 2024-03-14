@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2017 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,31 +11,27 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: February 24, 2017 9:03:08 AM
 // 
-#endregion
 
-using System;
-using System.Collections.Generic;
-using System.IO;
+
 using System.Text;
-using System.Threading.Tasks;
 using Gorgon.Core;
 using Gorgon.Graphics.Fonts.Properties;
 
 namespace Gorgon.Graphics.Fonts.Codecs;
 
 /// <summary>
-/// A font codec used to read font data using the BmFont format.
+/// A font codec used to read font data using the BmFont format
 /// </summary>
 /// <remarks>
 /// <para>
@@ -57,7 +53,7 @@ namespace Gorgon.Graphics.Fonts.Codecs;
 public class GorgonCodecBmFont
     : GorgonFontCodec
 {
-    #region Constants.
+
     // The line with the font information.
     private const string InfoLine = "info";
     // The line with common information.
@@ -92,9 +88,9 @@ public class GorgonCodecBmFont
     private const string CharIdTag = "id";
     // The tag that indicates whether the font has an outline.
     private const string OutlineTag = "outline";
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to return the default filename extension for font files.
     /// </summary>
@@ -133,9 +129,9 @@ public class GorgonCodecBmFont
     /// Property to return the abbreviated name of the codec (e.g. GorFont).
     /// </summary>
     public override string Codec => "BmFont";
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to break a series of line items into a list of key/value pairs for processing.
     /// </summary>
@@ -168,7 +164,7 @@ public class GorgonCodecBmFont
 
             string key = lineItems[..valueSep].Trim();
             string value = string.Empty;
-            
+
             lineItems = lineItems[(valueSep + 1)..].Trim();
 
             if (lineItems.Length == 0)
@@ -202,11 +198,11 @@ public class GorgonCodecBmFont
                     value = lineItems[..valueEndSep].Trim();
                     lineItems = lineItems[(valueEndSep + 1)..].Trim();
                 }
-                else 
+                else
                 {
                     value = lineItems;
-                    lineItems = string.Empty;                        
-                }                    
+                    lineItems = string.Empty;
+                }
             }
 
             result[key] = value;
@@ -243,20 +239,20 @@ public class GorgonCodecBmFont
         string aa = keyValues[AaTag];
         string spacing = keyValues[SpacingTag];
         string outline = keyValues[OutlineTag];
-        FontStyle style = FontStyle.Normal;
+        GorgonFontStyle style = GorgonFontStyle.Normal;
 
         if ((string.Equals(bold, "1", StringComparison.OrdinalIgnoreCase))
             && (string.Equals(italic, "1", StringComparison.OrdinalIgnoreCase)))
         {
-            style = FontStyle.BoldItalics;
+            style = GorgonFontStyle.BoldItalics;
         }
         else if (string.Equals(italic, "1", StringComparison.OrdinalIgnoreCase))
         {
-            style = FontStyle.Italics;
+            style = GorgonFontStyle.Italics;
         }
         else if (string.Equals(bold, "1", StringComparison.OrdinalIgnoreCase))
         {
-            style = FontStyle.Bold;
+            style = GorgonFontStyle.Bold;
         }
 
         int packSpacing = 1;
@@ -273,13 +269,13 @@ public class GorgonCodecBmFont
         int.TryParse(outline, out int outlineSize);
 
         // Create with required settings.
-        var result = new GorgonFontInfo(face, Convert.ToSingle(size), FontHeightMode.Pixels)
-        {                
+        var result = new GorgonFontInfo(face, Convert.ToSingle(size), GorgonFontHeightMode.Pixels)
+        {
             PackingSpacing = packSpacing,
             FontStyle = style,
-            AntiAliasingMode = ((aa.Length > 0) && (string.Equals(aa, "1", StringComparison.OrdinalIgnoreCase))) ? FontAntiAliasMode.AntiAlias : FontAntiAliasMode.None,
+            AntiAliasingMode = ((aa.Length > 0) && (string.Equals(aa, "1", StringComparison.OrdinalIgnoreCase))) ? GorgonFontAntiAliasMode.AntiAlias : GorgonFontAntiAliasMode.None,
             DefaultCharacter = ' ',
-            Brush = new GorgonGlyphSolidBrush(),   
+            Brush = new GorgonGlyphSolidBrush(),
             OutlineColor1 = outlineSize > 0 ? GorgonColor.Black : GorgonColor.BlackTransparent,
             OutlineColor2 = outlineSize > 0 ? GorgonColor.Black : GorgonColor.BlackTransparent,
             OutlineSize = outlineSize
@@ -383,7 +379,7 @@ public class GorgonCodecBmFont
     private static bool ParseKerning(StreamReader reader)
     {
         if (reader.EndOfStream)
-        {                
+        {
             return false;
         }
 
@@ -440,14 +436,12 @@ public class GorgonCodecBmFont
         string characters = ParseCharacters(reader);
         ParseKerning(reader);
 
-#if NET6_0_OR_GREATER
         result = result with
         {
             Characters = characters,
             TextureWidth = textureInfo.TextureWidth,
             TextureHeight = textureInfo.TextureHeight
         };
-#endif
 
         return result;
     }
@@ -532,18 +526,18 @@ public class GorgonCodecBmFont
             stream.Position = position;
         }
     }
-    #endregion
 
-    #region Constructor/Finalizer.
+
+
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonCodecBmFont" /> class.
     /// </summary>
     /// <param name="factory">The font factory that holds cached font information.</param>
     /// <exception cref="ArgumentNullException">Thrown when the <paramref name="factory"/> parameter is <b>null</b>.</exception>
     public GorgonCodecBmFont(GorgonFontFactory factory)
-        : base(factory) => CodecCommonExtensions = new[]
-                                {
+        : base(factory) => CodecCommonExtensions =
+                                [
                                     ".fnt"
-                                };
-    #endregion
+                                ];
+
 }

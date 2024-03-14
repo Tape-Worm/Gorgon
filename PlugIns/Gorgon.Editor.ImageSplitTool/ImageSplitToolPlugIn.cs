@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2019 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,23 +11,19 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: March 2, 2019 11:15:34 AM
 // 
-#endregion
 
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
+
 using Gorgon.Editor.Content;
 using Gorgon.Editor.ImageSplitTool.Properties;
 using Gorgon.Editor.PlugIns;
@@ -40,17 +36,17 @@ using Gorgon.UI;
 namespace Gorgon.Editor.ImageSplitTool;
 
 /// <summary>
-/// A plug in used to split a texture atlas up by using the sprites associated with it.
+/// A plug in used to split a texture atlas up by using the sprites associated with it
 /// </summary>
 internal class ImageSplitToolPlugIn
     : ToolPlugIn
 {
-    #region Variables.
+
     // The cached button definition.
     private ToolPlugInRibbonButton _button;
-    #endregion
 
-    #region Methods.		
+
+
     /// <summary>
     /// Function to retrieve the sprite file entries from the file system.
     /// </summary>
@@ -82,7 +78,7 @@ internal class ImageSplitToolPlugIn
 
                 if (!imagesAndSprites.TryGetValue(imageFile, out IReadOnlyList<IContentFile> dependencyFiles))
                 {
-                    spriteContentFiles = new List<IContentFile>();
+                    spriteContentFiles = [];
                     imagesAndSprites[imageFile] = spriteContentFiles;
                 }
                 else
@@ -116,7 +112,7 @@ internal class ImageSplitToolPlugIn
                 || (spriteDepends.Count < 2))
             {
                 continue;
-            }                
+            }
 
             var fileEntry = new ContentFileExplorerFileEntry(file, dirEntry);
             if (selectedFiles.Any(item => string.Equals(item, file.Path, StringComparison.OrdinalIgnoreCase)))
@@ -141,7 +137,7 @@ internal class ImageSplitToolPlugIn
 
             GatherSpriteDependencies();
 
-            fileEntries = new List<ContentFileExplorerFileEntry>();
+            fileEntries = [];
             dirEntry = new ContentFileExplorerDirectoryEntry(subDir, fileEntries);
 
             foreach (IContentFile file in imageFiles)
@@ -215,17 +211,17 @@ internal class ImageSplitToolPlugIn
 
             var splitter = new ImageSelection();
 
-            var textureSplitterService = new TextureAtlasSplitter(HostToolServices.GraphicsContext.Renderer2D, 
+            var textureSplitterService = new TextureAtlasSplitter(HostToolServices.GraphicsContext.Renderer2D,
                                                                   imagesAndSprites,
-                                                                  ContentFileManager,  
-                                                                  new GorgonCodecDds(), 
+                                                                  ContentFileManager,
+                                                                  new GorgonCodecDds(),
                                                                   new GorgonV3SpriteBinaryCodec(HostToolServices.GraphicsContext.Renderer2D), HostToolServices.Log);
 
-            splitter.Initialize(new SplitParameters(entries,                                                          
-                                                     new EditorContentSearchService(searchEntries), 
-                                                     ContentFileManager, 
+            splitter.Initialize(new SplitParameters(entries,
+                                                     new EditorContentSearchService(searchEntries),
+                                                     ContentFileManager,
                                                      TemporaryFileSystem,
-                                                     settings, 
+                                                     settings,
                                                      textureSplitterService,
                                                      HostToolServices));
 
@@ -239,7 +235,7 @@ internal class ImageSplitToolPlugIn
             HostToolServices.ToolPlugInService.WriteContentSettings(typeof(ImageSplitToolPlugIn).FullName, settings);
         }
         catch (Exception ex)
-        {                
+        {
             HostServices.MessageDisplay.ShowError(ex, Resources.GORIST_ERR_LAUNCH);
         }
         finally
@@ -269,7 +265,7 @@ internal class ImageSplitToolPlugIn
     protected override IToolPlugInRibbonButton OnGetToolButton()
     {
         _button.ClickCallback ??= ShowForm;
-        
+
         _button.CanExecute ??= CanShowForm;
 
         return _button;
@@ -299,13 +295,13 @@ internal class ImageSplitToolPlugIn
 
         base.OnShutdown();
     }
-    #endregion
 
-    #region Constructor/Finalizer.
+
+
     /// <summary>Initializes a new instance of the <see cref="ImageSplitToolPlugIn"/> class.</summary>
     public ImageSplitToolPlugIn()
-        : base(Resources.GORIST_PLUGIN_DESC) 
-    {        
+        : base(Resources.GORIST_PLUGIN_DESC)
+    {
     }
-    #endregion
+
 }

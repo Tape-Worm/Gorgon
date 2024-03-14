@@ -12,11 +12,11 @@
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>Contains functionality to render Gorgon graphics into a WPF surface.</description>
     <releaseNotes></releaseNotes>
-    <copyright>Copyright 2023 Tape_Worm</copyright>
+    <copyright>Copyright 2024 Tape_Worm</copyright>
 
     <tags>Gorgon C# .NET Direct3D SharpDX Graphics 2D Windows WPF</tags>
     <dependencies>
-      <group targetFramework="net6.0" >
+      <group targetFramework="net8.0" >
         <dependency id="Gorgon.Graphics.Core.Debug" version="$version$-beta"/>
       </group>
     </dependencies>
@@ -25,8 +25,8 @@
     <file src=".\icon.png" target="images\Gorgon_Icon_64x64.png" />
     <file src=".\Gorgon.Graphics.Wpf.debug.targets" target="build\Gorgon.Graphics.Wpf.debug.targets" />
     <file src="..\lib\ijwhost.dll" target="build\ijwhost.dll" />
-    <file src="..\lib\Microsoft.Wpf.Interop.DirectX.dll" target="build\net6.0\Microsoft.Wpf.Interop.DirectX.dll" />
-    <file src="..\lib\Gorgon.Graphics.Wpf.dll" target="lib\net6.0\Gorgon.Graphics.Wpf.dll" />
-    <file src="..\lib\Gorgon.Graphics.Wpf.xml" target="lib\net6.0\Gorgon.Graphics.Wpf.xml" />    
+    <file src="..\lib\Microsoft.Wpf.Interop.DirectX.dll" target="build\net8.0\Microsoft.Wpf.Interop.DirectX.dll" />
+    <file src="..\lib\Gorgon.Graphics.Wpf.dll" target="lib\net8.0\Gorgon.Graphics.Wpf.dll" />
+    <file src="..\lib\Gorgon.Graphics.Wpf.xml" target="lib\net8.0\Gorgon.Graphics.Wpf.xml" />    
   </files>
 </package>

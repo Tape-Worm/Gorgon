@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2018 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,24 +11,21 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: March 22, 2018 11:34:55 AM
 // 
-#endregion
 
-using System;
+
 using System.Diagnostics;
-using System.IO;
 using System.Text;
-using System.Threading;
 using Gorgon.Native;
 using Gorgon.Windows.Properties;
 using Microsoft.Win32.SafeHandles;
@@ -36,12 +33,12 @@ using Microsoft.Win32.SafeHandles;
 namespace Gorgon.Diagnostics.LogProviders;
 
 /// <summary>
-/// A provider used to store logging messages to a console window.
+/// A provider used to store logging messages to a console window
 /// </summary>
 internal class LogConsoleProvider
     : IGorgonLogProvider
 {
-    #region Enums.
+
     /// <summary>
     /// The type of message to display.
     /// </summary>
@@ -68,9 +65,9 @@ internal class LogConsoleProvider
         /// </summary>
         Warning2
     }
-    #endregion
 
-    #region Variables.
+
+
     // Message strings used to determine the type of message.
     private readonly string _exceptionLine = $"\t{Resources.GOR_LOG_EXCEPTION.ToUpper()}!!";
     private readonly string _errorLine = $"] {Resources.GOR_LOG_ERROR}";
@@ -81,9 +78,9 @@ internal class LogConsoleProvider
     private int _hasConsole;
     // Flag to indicate that we own the console window.
     private bool _ownsConsole;
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to close the data store for writing.
     /// </summary>
@@ -190,7 +187,7 @@ internal class LogConsoleProvider
     /// <param name="message">The message to parse.</param>
     /// <returns>The array containing each line.</returns>
     private static string[] GetLines(string message) => string.IsNullOrWhiteSpace(message)
-            ? Array.Empty<string>()
+            ? []
             : message.Split(new[]
                              {
                                  '\r',
@@ -288,10 +285,9 @@ internal class LogConsoleProvider
         }
         else
         {
-            lines = new[]
-                    {
+            lines = [
                         message
-                    };
+                    ];
         }
 
         MessageType messageType = MessageType.Normal;
@@ -318,5 +314,5 @@ internal class LogConsoleProvider
             FormatLine(lines[i], messageType);
         }
     }
-    #endregion
+
 }

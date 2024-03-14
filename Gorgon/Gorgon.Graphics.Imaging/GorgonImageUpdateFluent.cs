@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2020 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,23 +11,20 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: December 27, 2020 4:49:31 PM
 // 
-#endregion
 
-using System;
+
 using System.Collections.Concurrent;
-using System.Linq;
-using System.Threading;
 using Gorgon.Core;
 using Gorgon.Graphics.Imaging.Properties;
 using Gorgon.Math;
@@ -39,7 +36,7 @@ using DX = SharpDX;
 namespace Gorgon.Graphics.Imaging;
 
 /// <summary>
-/// An anchor for repositioning the image after the image has been expanded.
+/// An anchor for repositioning the image after the image has been expanded
 /// </summary>
 public enum ImageExpandAnchor
 {
@@ -82,19 +79,19 @@ public enum ImageExpandAnchor
 }
 
 /// <summary>
-/// Operations for the <see cref="IGorgonImageUpdateFluent"/> interface.
+/// Operations for the <see cref="IGorgonImageUpdateFluent"/> interface
 /// </summary>
 public partial class GorgonImage
     : IGorgonImageUpdateFluent
 {
-    #region Variables.
+
     // Commands to execute when EndUpdate is called.
     private readonly ConcurrentQueue<Action> _commands = new();
     // WIC utility functions for editing the image.
     private WicUtilities _wic;
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to perform image format conversion.
     /// </summary>
@@ -253,8 +250,8 @@ public partial class GorgonImage
 
                 for (int depth = 0; depth < depthCount; depth++)
                 {
-                    IGorgonImageBuffer destBuffer = destImage.Buffers[mip, ImageType == ImageType.Image3D ? depth : array];
-                    IGorgonImageBuffer srcBuffer = Buffers[mip, ImageType == ImageType.Image3D ? depth : array];
+                    IGorgonImageBuffer destBuffer = destImage.Buffers[mip, ImageType == ImageDataType.Image3D ? depth : array];
+                    IGorgonImageBuffer srcBuffer = Buffers[mip, ImageType == ImageDataType.Image3D ? depth : array];
 
                     ConvertPixelsFromB4G4R4A4(destBuffer, srcBuffer);
                 }
@@ -317,8 +314,8 @@ public partial class GorgonImage
 
                     for (int depth = 0; depth < depthCount; depth++)
                     {
-                        IGorgonImageBuffer destBuffer = workingImage.Buffers[mip, destInfo.ImageType == ImageType.Image3D ? depth : array];
-                        IGorgonImageBuffer srcBuffer = tempBuffer.Buffers[mip, tempBuffer.ImageType == ImageType.Image3D ? depth : array];
+                        IGorgonImageBuffer destBuffer = workingImage.Buffers[mip, destInfo.ImageType == ImageDataType.Image3D ? depth : array];
+                        IGorgonImageBuffer srcBuffer = tempBuffer.Buffers[mip, tempBuffer.ImageType == ImageDataType.Image3D ? depth : array];
 
                         ConvertPixelsToB4G4R4A4(destBuffer, srcBuffer);
                     }
@@ -421,7 +418,7 @@ public partial class GorgonImage
     /// Function to crop the image to the rectangle passed to the parameters.
     /// </summary>
     /// <param name="cropRect">The rectangle that will be used to crop the image.</param>
-    /// <param name="newDepth">The new depth for the image (for <see cref="ImageType.Image3D"/> images).</param>
+    /// <param name="newDepth">The new depth for the image (for <see cref="ImageDataType.Image3D"/> images).</param>
     /// <returns>A <see cref="IGorgonImage"/> containing the resized image.</returns>
     /// <exception cref="ArgumentOutOfRangeException">Thrown if the <paramref name="newDepth"/> parameter is less than 1.</exception>
     /// <remarks>
@@ -434,7 +431,7 @@ public partial class GorgonImage
     {
         newDepth ??= Depth.Max(1);
 
-        if ((newDepth < 1) && (ImageType == ImageType.Image3D))
+        if ((newDepth < 1) && (ImageType == ImageDataType.Image3D))
         {
             throw new ArgumentOutOfRangeException(Resources.GORIMG_ERR_IMAGE_DEPTH_TOO_SMALL, nameof(newDepth));
         }
@@ -444,11 +441,11 @@ public partial class GorgonImage
             // Only use the appropriate dimensions.
             switch (ImageType)
             {
-                case ImageType.Image1D:
+                case ImageDataType.Image1D:
                     cropRect.Height = Height;
                     break;
-                case ImageType.Image2D:
-                case ImageType.ImageCube:
+                case ImageDataType.Image2D:
+                case ImageDataType.ImageCube:
                     newDepth = Depth;
                     break;
             }
@@ -517,11 +514,11 @@ public partial class GorgonImage
             // Only use the appropriate dimensions.
             switch (ImageType)
             {
-                case ImageType.Image1D:
+                case ImageDataType.Image1D:
                     newHeight = Height;
                     break;
-                case ImageType.Image2D:
-                case ImageType.ImageCube:
+                case ImageDataType.Image2D:
+                case ImageDataType.ImageCube:
                     newDepth = Depth;
                     break;
             }
@@ -585,8 +582,8 @@ public partial class GorgonImage
     /// Function to resize the image to a new width, height and/or depth.
     /// </summary>
     /// <param name="newWidth">The new width for the image.</param>
-    /// <param name="newHeight">The new height for the image (for <see cref="ImageType.Image2D"/> and <see cref="ImageType.ImageCube"/> images).</param>
-    /// <param name="newDepth">The new depth for the image (for <see cref="ImageType.Image3D"/> images).</param>
+    /// <param name="newHeight">The new height for the image (for <see cref="ImageDataType.Image2D"/> and <see cref="ImageDataType.ImageCube"/> images).</param>
+    /// <param name="newDepth">The new depth for the image (for <see cref="ImageDataType.Image3D"/> images).</param>
     /// <param name="filter">[Optional] The type of filtering to apply to the scaled image to help smooth larger and smaller images.</param>
     /// <returns>A <see cref="IGorgonImage"/> containing the resized image.</returns>
     /// <exception cref="ArgumentOutOfRangeException">Thrown if the <paramref name="newWidth"/>, <paramref name="newHeight"/>, or <paramref name="newDepth"/> parameters are less than 1.</exception>
@@ -605,12 +602,12 @@ public partial class GorgonImage
 
         newDepth ??= Depth.Max(1);
 
-        if ((newHeight < 1) && ((ImageType == ImageType.Image2D) || (ImageType == ImageType.ImageCube)))
+        if ((newHeight < 1) && ((ImageType == ImageDataType.Image2D) || (ImageType == ImageDataType.ImageCube)))
         {
             throw new ArgumentOutOfRangeException(Resources.GORIMG_ERR_IMAGE_HEIGHT_TOO_SMALL, nameof(newHeight));
         }
 
-        if ((newDepth < 1) && (ImageType == ImageType.Image3D))
+        if ((newDepth < 1) && (ImageType == ImageDataType.Image3D))
         {
             throw new ArgumentOutOfRangeException(Resources.GORIMG_ERR_IMAGE_DEPTH_TOO_SMALL, nameof(newDepth));
         }
@@ -620,11 +617,11 @@ public partial class GorgonImage
             // Only use the appropriate dimensions.
             switch (ImageType)
             {
-                case ImageType.Image1D:
+                case ImageDataType.Image1D:
                     newHeight = Height;
                     break;
-                case ImageType.Image2D:
-                case ImageType.ImageCube:
+                case ImageDataType.Image2D:
+                case ImageDataType.ImageCube:
                     newDepth = Depth;
                     break;
             }
@@ -709,14 +706,12 @@ public partial class GorgonImage
                 return;
             }
 
-#if NET6_0_OR_GREATER
             _imageInfo = _imageInfo with
             {
                 HasPreMultipliedAlpha = false
             };
-#endif
 
-            int arrayOrDepth = ImageType == ImageType.Image3D ? Depth : ArrayCount;
+            int arrayOrDepth = ImageType == ImageDataType.Image3D ? Depth : ArrayCount;
 
             for (int mip = 0; mip < MipCount; ++mip)
             {
@@ -761,14 +756,12 @@ public partial class GorgonImage
                 return;
             }
 
-#if NET6_0_OR_GREATER
             _imageInfo = _imageInfo with
             {
                 HasPreMultipliedAlpha = true
             };
-#endif
 
-            int arrayOrDepth = ImageType == ImageType.Image3D ? Depth : ArrayCount;
+            int arrayOrDepth = ImageType == ImageDataType.Image3D ? Depth : ArrayCount;
 
             for (int mip = 0; mip < MipCount; ++mip)
             {
@@ -904,7 +897,7 @@ public partial class GorgonImage
                     {
                         for (int depthSlice = 0; depthSlice < GetDepthCount(mip); ++depthSlice)
                         {
-                            int depthArrayIndex = ImageType != ImageType.Image3D ? arrayIndex : depthSlice;
+                            int depthArrayIndex = ImageType != ImageDataType.Image3D ? arrayIndex : depthSlice;
                             IGorgonImageBuffer buffer = workImage.Buffers[mip, depthArrayIndex];
                             using GorgonNativeBuffer<byte> compressedData = encoder.EncodeToRawBytes(buffer.Data,
                                                                                                       buffer.Width,
@@ -974,5 +967,5 @@ public partial class GorgonImage
         }
         return this;
     }
-    #endregion
+
 }

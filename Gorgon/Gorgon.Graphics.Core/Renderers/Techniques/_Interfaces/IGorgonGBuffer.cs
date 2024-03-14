@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2021 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,25 +11,25 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: April 19, 2021 10:52:46 PM
 // 
-#endregion
+
 
 using Gorgon.Graphics.Core;
 
 namespace Gorgon.Renderers.Techniques;
 
 /// <summary>
-/// Defines a gbuffer for use with deferred rendering scenarios.
+/// Defines a gbuffer for use with deferred rendering scenarios
 /// </summary>
 public interface IGorgonGBuffer
 {
@@ -105,7 +105,7 @@ public interface IGorgonGBuffer
         get;
     }
 
-    #region Methods.
+
     /// <summary>
     /// Function to clear the GBuffer.
     /// </summary>
@@ -117,5 +117,5 @@ public interface IGorgonGBuffer
     /// <param name="width">The width of the gbuffer texture.</param>
     /// <param name="height">The height of the gbuffer texture.</param>
     void Resize(int width, int height);
-    #endregion
+
 }

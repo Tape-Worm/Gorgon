@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2018 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,31 +11,29 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: September 17, 2018 8:19:33 AM
 // 
-#endregion
 
-using System;
-using System.Runtime.Serialization;
+
 using Gorgon.Properties;
 
 namespace Gorgon;
 
 /// <summary>
-/// Exception to be thrown when an argument is missing.
+/// Exception to be thrown when an argument is missing
 /// </summary>
 /// <remarks>
 /// <para>
-/// The ideal use case for this exception is when a method expects a structure of data with specific members and a required member is not initialized (e.g. <b>null</b>).
+/// The ideal use case for this exception is when a method expects a structure of data with specific members and a required member is not initialized (e.g. <b>null</b>)
 /// </para>
 /// </remarks>
 [Serializable]
@@ -61,16 +59,6 @@ public class ArgumentMissingException
     /// <param name="innerException">The exception that is the cause of the current exception, or a <b>null</b> reference if no inner exception is specified. </param>
     public ArgumentMissingException(string memberName, string parameterName, Exception innerException)
         : base(string.Format(Resources.GOR_ERR_ARGUMENT_MISSING, memberName, parameterName), innerException)
-    {
-    }
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="ArgumentMissingException"/> class.
-    /// </summary>
-    /// <param name="info">The object that holds the serialized object data.</param>
-    /// <param name="context">The contextual information about the source or destination.</param>
-    protected ArgumentMissingException(SerializationInfo info, StreamingContext context)
-        : base(info, context)
     {
     }
 }

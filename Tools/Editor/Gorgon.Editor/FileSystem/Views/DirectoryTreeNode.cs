@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2019 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,37 +11,34 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: December 8, 2019 3:20:08 PM
 // 
-#endregion
 
-using System;
+
 using System.ComponentModel;
-using System.Drawing;
-using System.Windows.Forms;
 using Gorgon.Editor.UI;
 using Gorgon.Editor.ViewModels;
 
 namespace Gorgon.Editor.Views;
 
 /// <summary>
-/// An tree node, representing a directory, for the <see cref="TreeEx"/> control.
+/// An tree node, representing a directory, for the <see cref="TreeEx"/> control
 /// </summary>
 internal class DirectoryTreeNode
     : TreeNode, IDataContext<IDirectory>
 {
-    #region Properties.
+
     /// <summary>Property to return the data context assigned to this view.</summary>
-    public IDirectory DataContext
+    public IDirectory ViewModel
     {
         get;
         private set;
@@ -50,16 +47,16 @@ internal class DirectoryTreeNode
     /// <summary>Gets or sets the foreground color of the tree node.</summary>
     public new Color ForeColor
     {
-        get => (DataContext is IExcludable excluded)
-                && (!DataContext.IsCut)
+        get => (ViewModel is IExcludable excluded)
+                && (!ViewModel.IsCut)
                 && (excluded.IsExcluded)
                 ? DarkFormsRenderer.ExcludedColor
                 : base.ForeColor;
         set => base.ForeColor = value;
     }
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>Handles the PropertyChanged event of the DataContext control.</summary>
     /// <param name="sender">The source of the event.</param>
     /// <param name="e">The <see cref="PropertyChangedEventArgs"/> instance containing the event data.</param>
@@ -68,21 +65,21 @@ internal class DirectoryTreeNode
         switch (e.PropertyName)
         {
             case nameof(IDirectory.Name):
-                if (!string.Equals(Text, DataContext.Name, StringComparison.CurrentCultureIgnoreCase))
+                if (!string.Equals(Text, ViewModel.Name, StringComparison.CurrentCultureIgnoreCase))
                 {
-                    Text = DataContext.Name;
+                    Text = ViewModel.Name;
                 }
                 break;
             case nameof(IDirectory.ID):
-                if (!string.Equals(Name, DataContext.ID, StringComparison.CurrentCultureIgnoreCase))
+                if (!string.Equals(Name, ViewModel.ID, StringComparison.CurrentCultureIgnoreCase))
                 {
-                    Name = DataContext.ID;
+                    Name = ViewModel.ID;
                 }
                 break;
             case nameof(IDirectory.ImageName):
-                if (!string.Equals(ImageKey, DataContext.ImageName, StringComparison.CurrentCultureIgnoreCase))
+                if (!string.Equals(ImageKey, ViewModel.ImageName, StringComparison.CurrentCultureIgnoreCase))
                 {
-                    ImageKey = DataContext.ImageName;
+                    ImageKey = ViewModel.ImageName;
                 }
                 break;
             case nameof(IExcludable.IsExcluded):
@@ -96,12 +93,12 @@ internal class DirectoryTreeNode
     /// </summary>
     private void UnassignEvents()
     {
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             return;
         }
 
-        DataContext.PropertyChanged -= DataContext_PropertyChanged;
+        ViewModel.PropertyChanged -= DataContext_PropertyChanged;
     }
 
     /// <summary>
@@ -114,23 +111,23 @@ internal class DirectoryTreeNode
         {
             return;
         }
-        
+
         dataContext.PropertyChanged += DataContext_PropertyChanged;
     }
-    
+
     /// <summary>
     /// Function to revert the control back to the default state when the data context is not assigned.
     /// </summary>
     private void ResetDataContext()
     {
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             return;
         }
 
         UnassignEvents();
-        DataContext.Unload();
-        DataContext = null;
+        ViewModel.Unload();
+        ViewModel = null;
 
         ImageKey = string.Empty;
         Name = string.Empty;
@@ -162,8 +159,8 @@ internal class DirectoryTreeNode
         InitializeFromDataContext(dataContext);
 
         AssignEvents(dataContext);
-        
-        DataContext = dataContext;
+
+        ViewModel = dataContext;
     }
-    #endregion
+
 }

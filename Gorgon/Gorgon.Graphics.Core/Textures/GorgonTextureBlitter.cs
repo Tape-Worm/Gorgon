@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2017 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,23 +11,21 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: March 6, 2017 10:47:10 PM
 // 
-#endregion
 
-using System;
+
 using System.Numerics;
 using System.Runtime.CompilerServices;
-using System.Threading;
 using Gorgon.Graphics.Core.Properties;
 using Gorgon.Math;
 using Gorgon.Renderers.Cameras;
@@ -37,12 +35,12 @@ using DX = SharpDX;
 namespace Gorgon.Graphics.Core;
 
 /// <summary>
-/// Provides functionality for blitting a texture to the currently active <see cref="GorgonGraphics.RenderTargets">render target</see>.
+/// Provides functionality for blitting a texture to the currently active <see cref="GorgonGraphics.RenderTargets">render target</see>
 /// </summary>
 public class GorgonTextureBlitter
     : IDisposable
 {
-    #region Variables.
+
     // The graphics interface that owns this instance.
     private readonly GorgonGraphics _graphics;
     // The vertices used to blit the texture.
@@ -87,9 +85,9 @@ public class GorgonTextureBlitter
     private GorgonTexture2DView _defaultTexture;
     // The camera space for blitting the texture.
     private readonly GorgonOrthoCamera _camera;
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to initialize the blitter.
     /// </summary>
@@ -137,7 +135,7 @@ public class GorgonTextureBlitter
                 [0] = GorgonVertexBufferBinding.CreateVertexBuffer<GorgonVertexPosColorUv>(_graphics, new GorgonVertexBufferInfo(GorgonVertexPosColorUv.SizeInBytes * 4)
                 {
                     Name = "Gorgon Blitter Vertex Buffer",
-                    Binding = VertexIndexBufferBinding.None,                        
+                    Binding = VertexIndexBufferBinding.None,
                     Usage = ResourceUsage.Dynamic
                 })
             };
@@ -159,7 +157,7 @@ public class GorgonTextureBlitter
                       .VertexRange(0, 3)
                       .SamplerState(ShaderType.Pixel, GorgonSamplerState.PointFiltering);
 
-            
+
             _blitPso = _blitPsoBuilder.VertexShader(_blitVertexShader)
                                       .BlendState(GorgonBlendState.NoBlending)
                                       .DepthStencilState(GorgonDepthStencilState.Default)
@@ -203,7 +201,7 @@ public class GorgonTextureBlitter
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private void UpdateProjection()
     {
-        if (_graphics.RenderTargets[0] is null)            
+        if (_graphics.RenderTargets[0] is null)
         {
             return;
         }
@@ -220,7 +218,7 @@ public class GorgonTextureBlitter
         _wvpBuffer.Buffer.SetData(in projectionMatrix);
 
         // Since we only care about the projection matrix, we can disregard the view changes so we don't continuously repeat the projection calculations.
-        _camera.DiscardChanges();            
+        _camera.DiscardChanges();
     }
 
     /// <summary>
@@ -247,7 +245,7 @@ public class GorgonTextureBlitter
 
         _fullScreenDraw = _fsBuilder.ShaderResource(ShaderType.Pixel, texture)
                                     .SamplerState(ShaderType.Pixel, samplerState)
-                                    .Build(_drawAllocator);                      
+                                    .Build(_drawAllocator);
     }
 
     /// <summary>
@@ -258,7 +256,7 @@ public class GorgonTextureBlitter
     /// <param name="samplerState">The sampler state for the texture.</param>
     /// <param name="shader">The pixel shader to use.</param>
     /// <param name="constantBuffers">Constant buffers for the pixel shader, if required.</param>
-	    private void GetDrawCall(GorgonTexture2DView texture, GorgonBlendState blendState, GorgonSamplerState samplerState, GorgonPixelShader shader, GorgonConstantBuffers constantBuffers)
+    private void GetDrawCall(GorgonTexture2DView texture, GorgonBlendState blendState, GorgonSamplerState samplerState, GorgonPixelShader shader, GorgonConstantBuffers constantBuffers)
     {
         if ((_blitDraw is not null)
             && (shader == _blitPixelShader)
@@ -283,7 +281,7 @@ public class GorgonTextureBlitter
 
         _blitDraw = _blitBuilder.ConstantBuffers(ShaderType.Pixel, constantBuffers)
                                 .SamplerState(ShaderType.Pixel, samplerState)
-                                .ShaderResource(ShaderType.Pixel, texture)                                        
+                                .ShaderResource(ShaderType.Pixel, texture)
                                 .Build(_drawAllocator);
     }
 
@@ -415,7 +413,7 @@ public class GorgonTextureBlitter
         samplerState ??= GorgonSamplerState.Default;
 
         pixelShaderConstants ??= _emptyPsConstants;
-        
+
         GetDrawCall(texture, blendState, samplerState, pixelShader, pixelShaderConstants);
 
         // Calculate position on the texture.
@@ -469,9 +467,9 @@ public class GorgonTextureBlitter
         _blitVertexShader?.Dispose();
         _blitPixelShader?.Dispose();
     }
-    #endregion
 
-    #region Constructor/Finalizer.
+
+
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonTextureBlitter"/> class.
     /// </summary>
@@ -484,5 +482,5 @@ public class GorgonTextureBlitter
         _fsPsoBuilder = new GorgonPipelineStateBuilder(_graphics);
         _camera = new GorgonOrthoCamera(_graphics, DX.Size2F.Empty, name: "Blitter camera");
     }
-    #endregion
+
 }

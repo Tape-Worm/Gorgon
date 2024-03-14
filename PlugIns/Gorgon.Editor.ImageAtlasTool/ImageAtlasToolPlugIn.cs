@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2019 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,22 +11,19 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: March 2, 2019 11:15:34 AM
 // 
-#endregion
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
+
 using Gorgon.Editor.Content;
 using Gorgon.Editor.ImageAtlasTool.Properties;
 using Gorgon.Editor.PlugIns;
@@ -40,18 +37,18 @@ using Gorgon.UI;
 namespace Gorgon.Editor.ImageAtlasTool;
 
 /// <summary>
-/// A plug in used to build a texture atlas from a series of individual images, and optionally create images using the resulting texture atlas.
+/// A plug in used to build a texture atlas from a series of individual images, and optionally create images using the resulting texture atlas
 /// </summary>
 /// <remarks>
 /// <para>
 /// This plug in is different from the texture atlas generator tool in that it uses individual image files to create the atlas. This is useful in the case where each separate image file is a sprite  
-/// (like back in the olden DOS days and is not performant with GPUs). This allows content creators just to create a single image for a sprite, without having to build a sprite for each image.
+/// (like back in the olden DOS days and is not performant with GPUs). This allows content creators just to create a single image for a sprite, without having to build a sprite for each image
 /// </para>
 /// </remarks>
 internal class ImageAtlasToolPlugIn
     : ToolPlugIn
 {
-    #region Variables.
+
     // The cached button definition.
     private ToolPlugInRibbonButton _button;
     // The default image codec to use.
@@ -62,15 +59,15 @@ internal class ImageAtlasToolPlugIn
     private ImageFiles _fileVm;
     // The texture atlas view model.
     private ImageAtlas _textureAtlas;
-    #endregion
 
-    #region Methods.		
+
+
     /// <summary>
     /// Function to retrieve the image file entries from the file system.
     /// </summary>
     /// <returns>The flattened list of entries used for searching and the file system entry hierarchy.</returns>
     private (List<IContentFileExplorerSearchEntry> searchEntries, List<ContentFileExplorerDirectoryEntry> fileSystemEntries) GetFileEntries()
-    {            
+    {
         var searchEntries = new List<IContentFileExplorerSearchEntry>();
         var fileSystemEntries = new List<ContentFileExplorerDirectoryEntry>();
         ContentFileExplorerDirectoryEntry dirEntry = null;
@@ -111,7 +108,7 @@ internal class ImageAtlasToolPlugIn
                 continue;
             }
 
-            fileEntries = new List<ContentFileExplorerFileEntry>();
+            fileEntries = [];
             dirEntry = new ContentFileExplorerDirectoryEntry(subDir, fileEntries);
 
             fileSystemEntries.Add(dirEntry);
@@ -155,11 +152,11 @@ internal class ImageAtlasToolPlugIn
             _textureAtlas ??= new ImageAtlas();
 
             _fileVm.Initialize(new ImageFilesParameters(entries, TemporaryFileSystem, new EditorContentSearchService(searchEntries), HostToolServices));
-            _textureAtlas.Initialize(new ImageAtlasParameters(_fileVm, 
+            _textureAtlas.Initialize(new ImageAtlasParameters(_fileVm,
                                                                 settings,
                                                                 new GorgonTextureAtlasService(HostToolServices.GraphicsContext.Renderer2D),
                                                                 new FileIOService(ContentFileManager, _defaultImageCodec, _defaultSpriteCodec),
-                                                                ContentFileManager, 
+                                                                ContentFileManager,
                                                                 HostToolServices));
 
             form = new FormAtlasGen(settings);
@@ -226,13 +223,13 @@ internal class ImageAtlasToolPlugIn
 
         base.OnShutdown();
     }
-    #endregion
 
-    #region Constructor/Finalizer.
+
+
     /// <summary>Initializes a new instance of the <see cref="ImageAtlasToolPlugIn"/> class.</summary>
     public ImageAtlasToolPlugIn()
         : base(Resources.GORIAG_PLUGIN_DESC)
     {
     }
-    #endregion
+
 }

@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2018 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,24 +11,19 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: November 17, 2018 1:26:14 PM
 // 
-#endregion
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
+
 using Gorgon.Core;
 using Gorgon.Diagnostics;
 using Gorgon.Editor.UI;
@@ -36,23 +31,26 @@ using Gorgon.Editor.UI;
 namespace Gorgon.Editor.Services;
 
 /// <summary>
-/// The service used to perform an undo/redo operation.
+/// The service used to perform an undo/redo operation
 /// </summary>
-internal class UndoService
-    : IUndoService
+/// <remarks>Initializes a new instance of the <see cref="UndoService"/> class.</remarks>
+/// <param name="log">The log used for debug messaging.</param>
+/// <exception cref="ArgumentNullException">Thrown when the <paramref name="log" /> parameter is <strong>null</strong>.</exception>
+internal class UndoService(IGorgonLog log)
+        : IUndoService
 {
-    #region Variables.
+
     // The log used for debug messaging.
-    private readonly IGorgonLog _log;
+    private readonly IGorgonLog _log = log ?? GorgonLog.NullLog;
     // The index of the current undo item in the stack.
     private int _undoIndex = -1;
     // The stack of undo items.
-    private readonly List<IUndoCommand> _undoStack = new();
+    private readonly List<IUndoCommand> _undoStack = [];
     // The cancellation source cancelling the undo/redo operation.
     private CancellationTokenSource _cancelSource;
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to return whether or not the service can undo.
     /// </summary>
@@ -67,9 +65,9 @@ internal class UndoService
     /// Property to return the undo items in the undo stack.
     /// </summary>
     public IEnumerable<string> UndoItems => _undoStack.Select(item => item.Description);
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to assign a command to the undo stack.
     /// </summary>
@@ -234,12 +232,6 @@ internal class UndoService
             _cancelSource = null;
         }
     }
-    #endregion
 
-    #region Constructor/Finalizer.
-    /// <summary>Initializes a new instance of the <see cref="UndoService"/> class.</summary>
-    /// <param name="log">The log used for debug messaging.</param>
-    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="log" /> parameter is <strong>null</strong>.</exception>
-    public UndoService(IGorgonLog log) => _log = log ?? GorgonLog.NullLog;
-    #endregion
+
 }

@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2019 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,24 +11,21 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: May 9, 2019 7:50:58 AM
 // 
-#endregion
 
-using System;
+
 using System.ComponentModel;
 using System.Numerics;
-using System.Threading;
-using System.Windows.Forms;
 using Gorgon.Editor.ImageAtlasTool.Properties;
 using Gorgon.Editor.Rendering;
 using Gorgon.Editor.UI;
@@ -44,12 +41,12 @@ using DX = SharpDX;
 namespace Gorgon.Editor.ImageAtlasTool;
 
 /// <summary>
-/// A dialog used for image selection.
+/// A dialog used for image selection
 /// </summary>
 internal partial class FormImageSelector
     : Form, IDataContext<IImageFiles>
 {
-    #region Variables.
+
     // Flag to indicate that the form is being designed in the IDE.
     private readonly bool _isDesignTime;
     // The graphics context for the application.
@@ -64,26 +61,26 @@ internal partial class FormImageSelector
     private readonly SynchronizationContext _syncContext;
     // The current state of the close operation.
     private int _closeState;
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>Property to return the data context assigned to this view.</summary>
     [Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-    public IImageFiles DataContext
+    public IImageFiles ViewModel
     {
         get;
         private set;
     }
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to validate the controls on the form.
     /// </summary>
     private void ValidateControls()
     {
-        ButtonLabelMultiImage.Visible = DataContext?.SelectedFiles.Count < 2;
-        ButtonLoad.Enabled = DataContext?.ConfirmLoadCommand?.CanExecute(null) ?? false;
+        ButtonLabelMultiImage.Visible = ViewModel?.SelectedFiles.Count < 2;
+        ButtonLoad.Enabled = ViewModel?.ConfirmLoadCommand?.CanExecute(null) ?? false;
     }
 
     /// <summary>Handles the Search event of the ContentFileExplorer control.</summary>
@@ -91,12 +88,12 @@ internal partial class FormImageSelector
     /// <param name="e">The <see cref="GorgonSearchEventArgs"/> instance containing the event data.</param>
     private void ContentFileExplorer_Search(object sender, GorgonSearchEventArgs e)
     {
-        if ((DataContext?.SearchCommand is null) || (!DataContext.SearchCommand.CanExecute(e.SearchText)))
+        if ((ViewModel?.SearchCommand is null) || (!ViewModel.SearchCommand.CanExecute(e.SearchText)))
         {
             return;
         }
 
-        DataContext.SearchCommand.Execute(e.SearchText);
+        ViewModel.SearchCommand.Execute(e.SearchText);
         ValidateControls();
     }
 
@@ -106,12 +103,12 @@ internal partial class FormImageSelector
     /// <param name="e">The e.</param>
     private async void ContentFileExplorer_FileEntriesFocused(object sender, ContentFileEntriesFocusedArgs e)
     {
-        if ((DataContext?.RefreshImagePreviewCommand is null) || (!DataContext.RefreshImagePreviewCommand.CanExecute(e.FocusedFiles)))
+        if ((ViewModel?.RefreshImagePreviewCommand is null) || (!ViewModel.RefreshImagePreviewCommand.CanExecute(e.FocusedFiles)))
         {
             return;
         }
 
-        await DataContext.RefreshImagePreviewCommand.ExecuteAsync(e.FocusedFiles);
+        await ViewModel.RefreshImagePreviewCommand.ExecuteAsync(e.FocusedFiles);
         ValidateControls();
     }
 
@@ -125,7 +122,7 @@ internal partial class FormImageSelector
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
     private async void ButtonLoad_Click(object sender, EventArgs e)
     {
-        if ((DataContext?.ConfirmLoadCommand is null) || (!DataContext.ConfirmLoadCommand.CanExecute(null)))
+        if ((ViewModel?.ConfirmLoadCommand is null) || (!ViewModel.ConfirmLoadCommand.CanExecute(null)))
         {
             return;
         }
@@ -134,7 +131,7 @@ internal partial class FormImageSelector
         LabelLoading.Visible = true;
         SplitFileSelector.Visible = false;
 
-        await DataContext.ConfirmLoadCommand.ExecuteAsync(null);
+        await ViewModel.ConfirmLoadCommand.ExecuteAsync(null);
 
         LabelLoading.Visible = false;
         SplitFileSelector.Visible = true;
@@ -150,10 +147,10 @@ internal partial class FormImageSelector
         switch (e.PropertyName)
         {
             case nameof(IImageFiles.PreviewImage):
-                UpdateRenderImage(DataContext.PreviewImage);
+                UpdateRenderImage(ViewModel.PreviewImage);
                 break;
             case nameof(IImageFiles.LoadingImage):
-                _syncContext.Send(_ => LabelLoading.Text = string.Format(Resources.GORIAG_TEXT_LOADING_IMAGE, DataContext.LoadingImage), null);
+                _syncContext.Send(_ => LabelLoading.Text = string.Format(Resources.GORIAG_TEXT_LOADING_IMAGE, ViewModel.LoadingImage), null);
                 return;
         }
 
@@ -225,7 +222,7 @@ internal partial class FormImageSelector
 
         // Render the sprite image.
         if (_previewImage is not null)
-        {                
+        {
             float scale = (renderRegion.Width / _previewImage.Width).Min(renderRegion.Height / _previewImage.Height);
             float width = _previewImage.Width * scale;
             float height = _previewImage.Height * scale;
@@ -237,8 +234,8 @@ internal partial class FormImageSelector
         else
         {
             DX.Size2F size = Resources.GORIAG_TEXT_SELECT_IMAGE.MeasureText(_graphicsContext.Renderer2D.DefaultFont, false);
-            _graphicsContext.Renderer2D.DrawString(Resources.GORIAG_TEXT_SELECT_IMAGE, 
-                                                    new Vector2(renderRegion.X + halfClient.X - size.Width * 0.5f, renderRegion.Y + halfClient.Y - size.Height * 0.5f), 
+            _graphicsContext.Renderer2D.DrawString(Resources.GORIAG_TEXT_SELECT_IMAGE,
+                                                    new Vector2(renderRegion.X + halfClient.X - size.Width * 0.5f, renderRegion.Y + halfClient.Y - size.Height * 0.5f),
                                                     color: GorgonColor.White);
         }
         _graphicsContext.Renderer2D.End();
@@ -282,12 +279,12 @@ internal partial class FormImageSelector
     /// </summary>
     private void UnassignEvents()
     {
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             return;
         }
 
-        DataContext.PropertyChanged -= DataContext_PropertyChanged;
+        ViewModel.PropertyChanged -= DataContext_PropertyChanged;
     }
 
     /// <summary>
@@ -321,19 +318,19 @@ internal partial class FormImageSelector
             return;
         }
 
-        if ((_closeState == 1) || (DataContext?.CancelCommand is null) || (!DataContext.CancelCommand.CanExecute(null)))
+        if ((_closeState == 1) || (ViewModel?.CancelCommand is null) || (!ViewModel.CancelCommand.CanExecute(null)))
         {
             _closeState = 0;
-            DataContext?.Unload();
+            ViewModel?.Unload();
             return;
         }
 
         e.Cancel = true;
-        await DataContext.CancelCommand.ExecuteAsync(null);
+        await ViewModel.CancelCommand.ExecuteAsync(null);
 
         e.Cancel = false;
         _closeState = 1;
-        DataContext?.Unload();
+        ViewModel?.Unload();
     }
 
     /// <summary>Raises the Load event.</summary>
@@ -347,7 +344,7 @@ internal partial class FormImageSelector
             return;
         }
 
-        DataContext?.Load();
+        ViewModel?.Load();
 
         ValidateControls();
     }
@@ -369,7 +366,7 @@ internal partial class FormImageSelector
 
         _swapChain = context.LeaseSwapPresenter(PanelPreviewRender);
         _oldIdle = GorgonApplication.IdleMethod;
-        GorgonApplication.IdleMethod = Idle;            
+        GorgonApplication.IdleMethod = Idle;
     }
 
     /// <summary>Function to assign a data context to the view as a view model.</summary>
@@ -380,18 +377,18 @@ internal partial class FormImageSelector
         UnassignEvents();
 
         InitializeFromDataContext(dataContext);
-        DataContext = dataContext;
+        ViewModel = dataContext;
 
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             return;
         }
-        
-        DataContext.PropertyChanged += DataContext_PropertyChanged;
-    }
-    #endregion
 
-    #region Constructor/Finalizer.
+        ViewModel.PropertyChanged += DataContext_PropertyChanged;
+    }
+
+
+
     /// <summary>Initializes a new instance of the <see cref="FormImageSelector"/> class.</summary>
     public FormImageSelector()
     {
@@ -400,5 +397,5 @@ internal partial class FormImageSelector
 
         _syncContext = SynchronizationContext.Current;
     }
-    #endregion
+
 }

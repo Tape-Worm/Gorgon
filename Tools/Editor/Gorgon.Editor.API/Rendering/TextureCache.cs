@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2020 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,25 +11,19 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: June 21, 2020 12:18:20 AM
 // 
-#endregion
 
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
+
 using Gorgon.Diagnostics;
 using Gorgon.Editor.Content;
 using Gorgon.Editor.Properties;
@@ -42,7 +36,7 @@ namespace Gorgon.Editor.Rendering;
 
 
 /// <summary>
-/// A texture cache used to keep textures resident for use over a user defined lifetime.
+/// A texture cache used to keep textures resident for use over a user defined lifetime
 /// </summary>
 /// <remarks>
 /// <para>
@@ -52,18 +46,25 @@ namespace Gorgon.Editor.Rendering;
 /// <para>
 /// This is where the texture cache can be used to solve the problem. A texture cache will keep the textures resident in memory as long as they're being used. When a texture is requested by passing in 
 /// its <see cref="IContentFile"/> it will load the texture if it is not previously cached, or if the actual texture object was disposed. If the texture was previously cached, then the cached texture 
-/// will be returned, incrementing an internal count, which is used to determine how many items are using the texture.
+/// will be returned, incrementing an internal count, which is used to determine how many items are using the texture
 /// </para>
 /// <para>
 /// When a texture is no longer required, the texture should <b>not</b> be disposed. Instead, use the texture cache to return the texture which will automatically dispose of it when no more objects 
-/// are using it. If the texture is required again, then retrieving it from the texture cache will load the texture again.
+/// are using it. If the texture is required again, then retrieving it from the texture cache will load the texture again
 /// </para>
 /// </remarks>
 /// <seealso cref="IContentFile"/>
-public class TextureCache
-    : ITextureCache
+/// <remarks>Initializes a new instance of the <see cref="TextureCache"/> class.</remarks>
+/// <param name="graphics">The graphics interface used to create textures.</param>
+/// <param name="fileManager">The file manager for the project file system.</param>
+/// <param name="tempWriter">The temporary writer used to write temporary data.</param>
+/// <param name="codec">The image codec.</param>
+/// <param name="log">The logging interface for capturing debug messages.</param>
+/// <exception cref="ArgumentNullException">Thrown when any of the parameters are <b>null</b>.</exception>
+public class TextureCache(GorgonGraphics graphics, IContentFileManager fileManager, IGorgonFileSystemWriter<Stream> tempWriter, IGorgonImageCodec codec, IGorgonLog log)
+        : ITextureCache
 {
-    #region Classes.
+
     /// <summary>
     /// An entry in the texture cache.
     /// </summary>
@@ -100,31 +101,31 @@ public class TextureCache
             texture?.Dispose();
         }
     }
-    #endregion
 
-    #region Constants.
+
+
     // The path to the texture cache directory.
     private const string CacheDirectory = "/Gorgon.Editor/TextureCache/";
-    #endregion
 
-    #region Variables.
+
+
     // The graphics interface used to create the textures.
-    private readonly GorgonGraphics _graphics;
+    private readonly GorgonGraphics _graphics = graphics ?? throw new ArgumentNullException(nameof(graphics));
     // The project file system manager.
-    private readonly IContentFileManager _fileManager;
+    private readonly IContentFileManager _fileManager = fileManager ?? throw new ArgumentNullException(nameof(fileManager));
     // The writer used to write files to the temporary area.
-    private readonly IGorgonFileSystemWriter<Stream> _tempWriter;
+    private readonly IGorgonFileSystemWriter<Stream> _tempWriter = tempWriter ?? throw new ArgumentNullException(nameof(tempWriter));
     // The cache that holds the textures and redirected file name.
-    private readonly Dictionary<IContentFile, TextureEntry> _cache = new();
+    private readonly Dictionary<IContentFile, TextureEntry> _cache = [];
     // The codec used to load the image.
-    private readonly IGorgonImageCodec _codec;
+    private readonly IGorgonImageCodec _codec = codec ?? throw new ArgumentNullException(nameof(codec));
     // The directory for the cached files.
     private IGorgonVirtualDirectory _cacheDirectory;
     // The log interface for capturing debug messages.
-    private readonly IGorgonLog _log;
-    #endregion
+    private readonly IGorgonLog _log = log ?? throw new ArgumentNullException(nameof(log));
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to load a texture for the texture cache.
     /// </summary>
@@ -290,9 +291,9 @@ public class TextureCache
             return false;
         }
 
-        TextureEntry entry = _cache.Values.FirstOrDefault(item => (item.Texture is not null) 
-                                                               && (item.Texture.TryGetTarget(out GorgonTexture2DView itemTexture)) 
-                                                               && (itemTexture == texture) 
+        TextureEntry entry = _cache.Values.FirstOrDefault(item => (item.Texture is not null)
+                                                               && (item.Texture.TryGetTarget(out GorgonTexture2DView itemTexture))
+                                                               && (itemTexture == texture)
                                                                && (itemTexture.Texture is not null));
 
         if (entry is null)
@@ -479,7 +480,7 @@ public class TextureCache
                 _log.Print($"Texture '{file.Path}' exists in cache with {entry.Users} users.", LoggingLevel.Verbose);
                 return entry.Users;
             }
-            
+
             Interlocked.Exchange(ref entry.Texture, new WeakReference<GorgonTexture2DView>(texture));
             _log.Print($"Texture '{file.Path}' exists in cache, but has been collected. Refreshing with {entry.Users} users.", LoggingLevel.Verbose);
             return entry.Users;
@@ -555,23 +556,6 @@ public class TextureCache
 
         return entry.Users;
     }
-    #endregion
 
-    #region Constructor/Finalizer.
-    /// <summary>Initializes a new instance of the <see cref="TextureCache"/> class.</summary>
-    /// <param name="graphics">The graphics interface used to create textures.</param>
-    /// <param name="fileManager">The file manager for the project file system.</param>
-    /// <param name="tempWriter">The temporary writer used to write temporary data.</param>
-    /// <param name="codec">The image codec.</param>
-    /// <param name="log">The logging interface for capturing debug messages.</param>
-    /// <exception cref="ArgumentNullException">Thrown when any of the parameters are <b>null</b>.</exception>
-    public TextureCache(GorgonGraphics graphics, IContentFileManager fileManager, IGorgonFileSystemWriter<Stream> tempWriter, IGorgonImageCodec codec, IGorgonLog log)
-    {
-        _graphics = graphics ?? throw new ArgumentNullException(nameof(graphics));
-        _fileManager = fileManager ?? throw new ArgumentNullException(nameof(fileManager));
-        _tempWriter = tempWriter ?? throw new ArgumentNullException(nameof(tempWriter));
-        _codec = codec ?? throw new ArgumentNullException(nameof(codec));
-        _log = log ?? throw new ArgumentNullException(nameof(log));
-    }
-    #endregion
+
 }

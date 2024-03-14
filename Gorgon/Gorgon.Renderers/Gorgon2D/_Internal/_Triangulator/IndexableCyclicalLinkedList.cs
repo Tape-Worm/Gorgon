@@ -1,17 +1,15 @@
-// Triangulator source code by Nick Gravelyn.
+﻿// Triangulator source code by Nick Gravelyn
 // https://github.com/nickgravelyn/Triangulator
 //
-// Licensed under the MIT license.
+// Licensed under the MIT license
 // https://github.com/nickgravelyn/Triangulator/blob/master/LICENSE
-
-using System.Collections.Generic;
 
 namespace GorgonTriangulator;
 
 /// <summary>
 /// Implements a LinkedList that is both indexable as well as cyclical. Thus
 /// indexing into the list with an out-of-bounds index will automatically cycle
-/// around the list to find a valid node.
+/// around the list to find a valid node
 /// </summary>
 internal class IndexableCyclicalLinkedList<T> : LinkedList<T>
 {

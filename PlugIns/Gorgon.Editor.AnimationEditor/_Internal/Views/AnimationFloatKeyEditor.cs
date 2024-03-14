@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2020 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,25 +11,21 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: July 4, 2020 10:31:35 PM
 // 
-#endregion
 
-using System;
+
 using System.ComponentModel;
-using System.Linq;
 using System.Numerics;
-using System.Threading;
-using System.Windows.Forms;
 using Gorgon.Editor.AnimationEditor.Properties;
 using Gorgon.Editor.UI;
 using Gorgon.Editor.UI.Controls;
@@ -38,27 +34,27 @@ using Gorgon.Math;
 namespace Gorgon.Editor.AnimationEditor;
 
 /// <summary>
-/// The panel used to display settings for image codec support.
+/// The panel used to display settings for image codec support
 /// </summary>
 internal partial class AnimationFloatKeyEditor
     : EditorSubPanelCommon, IDataContext<IKeyValueEditor>
 {
-    #region Variables.
+
     // The lock for events.
     private int _numericEventsAssigned = 1;
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>Property to return the data context assigned to this view.</summary>
     [Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-    public IKeyValueEditor DataContext
+    public IKeyValueEditor ViewModel
     {
         get;
         private set;
     }
-    #endregion
 
-    #region Methods.       
+
+
     /// <summary>Handles the PropertyChanged event of the DataContext control.</summary>
     /// <param name="sender">The source of the event.</param>
     /// <param name="e">The <see cref="PropertyChangedEventArgs"/> instance containing the event data.</param>
@@ -67,14 +63,14 @@ internal partial class AnimationFloatKeyEditor
         switch (e.PropertyName)
         {
             case nameof(IKeyValueEditor.Title):
-                Text = DataContext.Title;
+                Text = ViewModel.Title;
                 break;
             case nameof(IKeyValueEditor.Track):
-                UpdateWithMetadata(DataContext.Track?.Track.KeyMetadata);
-                SetNumericValues(DataContext);
+                UpdateWithMetadata(ViewModel.Track?.Track.KeyMetadata);
+                SetNumericValues(ViewModel);
                 break;
             case nameof(IKeyValueEditor.Value):
-                SetNumericValues(DataContext);
+                SetNumericValues(ViewModel);
                 break;
         }
     }
@@ -84,12 +80,12 @@ internal partial class AnimationFloatKeyEditor
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
     private void NumericValue1_ValueChanged(object sender, EventArgs e)
     {
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             return;
         }
 
-        DataContext.Value = new Vector4((float)NumericValue1.Value.Round(NumericValue1.DecimalPlaces), DataContext.Value.Y, DataContext.Value.Z, DataContext.Value.W);
+        ViewModel.Value = new Vector4((float)NumericValue1.Value.Round(NumericValue1.DecimalPlaces), ViewModel.Value.Y, ViewModel.Value.Z, ViewModel.Value.W);
     }
 
     /// <summary>Handles the ValueChanged event of the NumericValue2 control.</summary>
@@ -97,12 +93,12 @@ internal partial class AnimationFloatKeyEditor
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
     private void NumericValue2_ValueChanged(object sender, EventArgs e)
     {
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             return;
         }
 
-        DataContext.Value = new Vector4(DataContext.Value.X, (float)NumericValue2.Value.Round(NumericValue2.DecimalPlaces), DataContext.Value.Z, DataContext.Value.W);
+        ViewModel.Value = new Vector4(ViewModel.Value.X, (float)NumericValue2.Value.Round(NumericValue2.DecimalPlaces), ViewModel.Value.Z, ViewModel.Value.W);
     }
 
     /// <summary>Handles the ValueChanged event of the NumericValue3 control.</summary>
@@ -110,12 +106,12 @@ internal partial class AnimationFloatKeyEditor
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
     private void NumericValue3_ValueChanged(object sender, EventArgs e)
     {
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             return;
         }
 
-        DataContext.Value = new Vector4(DataContext.Value.X, DataContext.Value.Y, (float)NumericValue3.Value.Round(NumericValue3.DecimalPlaces), DataContext.Value.W);
+        ViewModel.Value = new Vector4(ViewModel.Value.X, ViewModel.Value.Y, (float)NumericValue3.Value.Round(NumericValue3.DecimalPlaces), ViewModel.Value.W);
     }
 
     /// <summary>Handles the ValueChanged event of the NumericValue4 control.</summary>
@@ -123,12 +119,12 @@ internal partial class AnimationFloatKeyEditor
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
     private void NumericValue4_ValueChanged(object sender, EventArgs e)
     {
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             return;
         }
 
-        DataContext.Value = new Vector4(DataContext.Value.X, DataContext.Value.Y, DataContext.Value.Z, (float)NumericValue4.Value.Round(NumericValue4.DecimalPlaces));
+        ViewModel.Value = new Vector4(ViewModel.Value.X, ViewModel.Value.Y, ViewModel.Value.Z, (float)NumericValue4.Value.Round(NumericValue4.DecimalPlaces));
     }
 
     /// <summary>
@@ -254,12 +250,12 @@ internal partial class AnimationFloatKeyEditor
     /// </summary>
     private void UnassignEvents()
     {
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             return;
         }
 
-        DataContext.PropertyChanged -= DataContext_PropertyChanged;
+        ViewModel.PropertyChanged -= DataContext_PropertyChanged;
     }
 
     /// <summary>
@@ -297,19 +293,19 @@ internal partial class AnimationFloatKeyEditor
         UnassignEvents();
 
         InitializeFromDataContext(dataContext);
-        DataContext = dataContext;
+        ViewModel = dataContext;
 
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             return;
         }
 
-        DataContext.PropertyChanged += DataContext_PropertyChanged;
-    }        
-    #endregion
+        ViewModel.PropertyChanged += DataContext_PropertyChanged;
+    }
 
-    #region Constructor/Finalizer.
+
+
     /// <summary>Initializes a new instance of the <see cref="AnimationFloatKeyEditor"/> class.</summary>
     public AnimationFloatKeyEditor() => InitializeComponent();
-    #endregion
+
 }

@@ -28,7 +28,7 @@ partial class FormNewSprite
         base.Dispose(disposing);
     }
 
-    #region Windows Form Designer generated code
+
 
     /// <summary>
     /// Required method for Designer support - do not modify
@@ -332,7 +332,7 @@ partial class FormNewSprite
         this.Controls.Add(this.TableTextureSelection);
         this.Controls.Add(this.TableName);
         this.Controls.Add(this.PanelButtons);
-        this.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+        
         this.ForeColor = System.Drawing.Color.White;
         this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
         this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
@@ -358,7 +358,7 @@ partial class FormNewSprite
 
     }
 
-    #endregion
+
 
     private Gorgon.UI.GorgonCueTextBox TextName;
     private System.Windows.Forms.TableLayoutPanel TableName;

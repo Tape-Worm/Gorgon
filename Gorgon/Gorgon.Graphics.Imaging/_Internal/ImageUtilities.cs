@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2016 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,20 +11,19 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: June 29, 2016 10:49:02 PM
 // 
-#endregion
 
-using System;
+
 using System.Runtime.CompilerServices;
 using Gorgon.Core;
 using Gorgon.Graphics.Imaging.Properties;
@@ -35,7 +34,7 @@ using DX = SharpDX;
 namespace Gorgon.Graphics.Imaging;
 
 /// <summary>
-/// Flags to control how pixel conversion should be handled.
+/// Flags to control how pixel conversion should be handled
 /// </summary>
 [Flags]
 public enum ImageBitFlags
@@ -55,7 +54,7 @@ public enum ImageBitFlags
 }
 
 /// <summary>
-/// Utilities to facilitate in manipulating image data.
+/// Utilities to facilitate in manipulating image data
 /// </summary>
 static class ImageUtilities
 {
@@ -830,7 +829,7 @@ static class ImageUtilities
                 return;
             case BufferFormat.R16G16B16A16_SNorm:
             case BufferFormat.R16G16B16A16_SInt:
-                {                        
+                {
                     short* srcPtr = (short*)src;
                     short* destPtr = (short*)dest;
 
@@ -1000,7 +999,7 @@ static class ImageUtilities
                     }
                 }
                 return;
-            case BufferFormat.R32G32B32A32_Float:                
+            case BufferFormat.R32G32B32A32_Float:
                 {
                     float* srcPtr = (float*)src;
                     float* destPtr = (float*)dest;
@@ -1032,7 +1031,7 @@ static class ImageUtilities
                     ushort* destPtr = (ushort*)dest;
 
                     for (int i = 0; i < size; i += 8)
-                    {                            
+                    {
                         ushort srcAlpha = *(srcPtr + 3);
 
                         if (srcAlpha == 0)
@@ -1059,7 +1058,7 @@ static class ImageUtilities
                 {
                     var srcPtr = (DX.Half*)src;
                     var destPtr = (DX.Half*)dest;
-                    
+
                     for (int i = 0; i < size; i += 8)
                     {
                         DX.Half srcAlpha = (*(srcPtr + 3));
@@ -1113,7 +1112,7 @@ static class ImageUtilities
             case BufferFormat.B8G8R8A8_Typeless:
             case BufferFormat.B8G8R8A8_UNorm:
             case BufferFormat.B8G8R8A8_UNorm_SRgb:
-                {                        
+                {
                     uint* srcPtr = (uint*)src;
                     uint* destPtr = (uint*)dest;
 

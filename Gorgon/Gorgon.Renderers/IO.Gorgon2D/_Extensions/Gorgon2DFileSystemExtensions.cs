@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2018 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,48 +11,44 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: August 12, 2018 7:31:50 PM
 // 
-#endregion
 
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
+
 using Gorgon.Animation;
 using Gorgon.Core;
 using Gorgon.Graphics.Core;
 using Gorgon.Graphics.Imaging.Codecs;
 using Gorgon.IO.Properties;
 using Gorgon.Renderers;
-using SharpDX;
+using DX = SharpDX;
 
 namespace Gorgon.IO.Extensions;
 
 /// <summary>
-/// Extension methods for loading sprite data from file systems.
+/// Extension methods for loading sprite data from file systems
 /// </summary>
 public static class Gorgon2DFileSystemExtensions
 {
-    #region Variables.
+
     // The default texture loading options supplied when a texture is loaded.
     private readonly static GorgonTexture2DLoadOptions _defaultLoadOptions = new()
     {
         Binding = TextureBinding.ShaderResource,
         Usage = ResourceUsage.Default
     };
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to determine the polygonal sprite codec to use when loading the sprite.
     /// </summary>
@@ -124,7 +120,7 @@ public static class Gorgon2DFileSystemExtensions
         {
             if (!textureStream.CanSeek)
             {
-                Stream newStream = new DataStream((int)textureStream.Length, true, true);
+                Stream newStream = new DX.DataStream((int)textureStream.Length, true, true);
                 textureStream.CopyTo(newStream);
                 newStream.Position = 0;
                 textureStream.Dispose();
@@ -236,7 +232,7 @@ public static class Gorgon2DFileSystemExtensions
 
         options.Name = name;
         options.Binding &= ~TextureBinding.DepthStencil;
-        
+
         if ((options.Binding & TextureBinding.ShaderResource) != TextureBinding.ShaderResource)
         {
             options.Binding |= TextureBinding.ShaderResource;
@@ -313,15 +309,15 @@ public static class Gorgon2DFileSystemExtensions
         if ((imageCodecs is null) || (!imageCodecs.Any()))
         {
             // If we don't specify any codecs, then use the built in ones.
-            imageCodecs = new IGorgonImageCodec[]
-                     {
+            imageCodecs =
+                     [
                          new GorgonCodecPng(),
                          new GorgonCodecBmp(),
                          new GorgonCodecDds(),
                          new GorgonCodecGif(),
                          new GorgonCodecJpeg(),
                          new GorgonCodecTga(),
-                     };
+                     ];
         }
         else
         {
@@ -332,13 +328,13 @@ public static class Gorgon2DFileSystemExtensions
         if ((spriteCodecs is null) || (!spriteCodecs.Any()))
         {
             // Use all built-in codecs if we haven't asked for any.
-            spriteCodecs = new IGorgonSpriteCodec[]
-                           {
+            spriteCodecs =
+                           [
                                new GorgonV3SpriteBinaryCodec(renderer),
                                new GorgonV3SpriteJsonCodec(renderer),
                                new GorgonV2SpriteCodec(renderer),
                                new GorgonV1SpriteBinaryCodec(renderer),
-                           };
+                           ];
         }
         else
         {
@@ -353,7 +349,7 @@ public static class Gorgon2DFileSystemExtensions
         {
             if (!spriteStream.CanSeek)
             {
-                Stream newStream = new DataStream((int)spriteStream.Length, true, true);
+                Stream newStream = new DX.DataStream((int)spriteStream.Length, true, true);
                 spriteStream.CopyTo(newStream);
                 spriteStream.Dispose();
                 newStream.Position = 0;
@@ -464,15 +460,15 @@ public static class Gorgon2DFileSystemExtensions
         if ((imageCodecs is null) || (!imageCodecs.Any()))
         {
             // If we don't specify any codecs, then use the built in ones.
-            imageCodecs = new IGorgonImageCodec[]
-                     {
+            imageCodecs =
+                     [
                          new GorgonCodecPng(),
                          new GorgonCodecBmp(),
                          new GorgonCodecDds(),
                          new GorgonCodecGif(),
                          new GorgonCodecJpeg(),
                          new GorgonCodecTga(),
-                     };
+                     ];
         }
         else
         {
@@ -483,11 +479,11 @@ public static class Gorgon2DFileSystemExtensions
         if ((spriteCodecs is null) || (!spriteCodecs.Any()))
         {
             // Use all built-in codecs if we haven't asked for any.
-            spriteCodecs = new IGorgonPolySpriteCodec[]
-                           {
+            spriteCodecs =
+                           [
                                new GorgonV3PolySpriteBinaryCodec(renderer),
                                new GorgonV3PolySpriteJsonCodec(renderer)
-                           };
+                           ];
         }
         else
         {
@@ -501,7 +497,7 @@ public static class Gorgon2DFileSystemExtensions
         {
             if (!spriteStream.CanSeek)
             {
-                Stream newStream = new DataStream((int)spriteStream.Length, true, true);
+                Stream newStream = new DX.DataStream((int)spriteStream.Length, true, true);
                 spriteStream.CopyTo(newStream);
                 newStream.Position = 0;
                 spriteStream.Dispose();
@@ -612,15 +608,15 @@ public static class Gorgon2DFileSystemExtensions
         if ((imageCodecs is null) || (!imageCodecs.Any()))
         {
             // If we don't specify any codecs, then use the built in ones.
-            imageCodecs = new IGorgonImageCodec[]
-                     {
+            imageCodecs =
+                     [
                          new GorgonCodecPng(),
                          new GorgonCodecBmp(),
                          new GorgonCodecDds(),
                          new GorgonCodecGif(),
                          new GorgonCodecJpeg(),
                          new GorgonCodecTga(),
-                     };
+                     ];
         }
         else
         {
@@ -631,14 +627,14 @@ public static class Gorgon2DFileSystemExtensions
         if ((animationCodecs is null) || (!animationCodecs.Any()))
         {
             // Use all built-in codecs if we haven't asked for any.
-            animationCodecs = new IGorgonAnimationCodec[]
-                           {
+            animationCodecs =
+                           [
                                new GorgonV31AnimationBinaryCodec(renderer),
                                new GorgonV31AnimationJsonCodec(renderer),
                                new GorgonV3AnimationBinaryCodec(renderer),
                                new GorgonV3AnimationJsonCodec(renderer),
                                new GorgonV1AnimationCodec(renderer)
-                           };
+                           ];
         }
         else
         {
@@ -652,7 +648,7 @@ public static class Gorgon2DFileSystemExtensions
         {
             if (!animStream.CanSeek)
             {
-                Stream newStream = new DataStream((int)animStream.Length, true, true);
+                Stream newStream = new DX.DataStream((int)animStream.Length, true, true);
                 animStream.CopyTo(newStream);
                 newStream.Position = 0;
 
@@ -703,10 +699,10 @@ public static class Gorgon2DFileSystemExtensions
 
                     if ((needsCoordinateFix) && (textureKey.Value is not null))
                     {
-                        textureKey.TextureCoordinates = new RectangleF(textureKey.TextureCoordinates.X / textureKey.Value.Width,
-                                                                       textureKey.TextureCoordinates.Y / textureKey.Value.Height,
-                                                                       textureKey.TextureCoordinates.Width / textureKey.Value.Width,
-                                                                       textureKey.TextureCoordinates.Height / textureKey.Value.Height);
+                        textureKey.TextureCoordinates = new DX.RectangleF(textureKey.TextureCoordinates.X / textureKey.Value.Width,
+                                                                          textureKey.TextureCoordinates.Y / textureKey.Value.Height,
+                                                                          textureKey.TextureCoordinates.Width / textureKey.Value.Width,
+                                                                          textureKey.TextureCoordinates.Height / textureKey.Value.Height);
                     }
                 }
             }
@@ -718,5 +714,5 @@ public static class Gorgon2DFileSystemExtensions
             animStream?.Dispose();
         }
     }
-    #endregion
+
 }

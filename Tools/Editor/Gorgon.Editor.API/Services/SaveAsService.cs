@@ -1,29 +1,24 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
-using Gorgon.Editor;
-using Gorgon.Editor.Content;
+﻿using Gorgon.Editor.Content;
 using Gorgon.Editor.UI.Controls;
 using Gorgon.UI;
 
 namespace Gorgon.Editor.Services;
 
 /// <summary>
-/// A service used to present a save as dialog for the project file system.
+/// A service used to present a save as dialog for the project file system
 /// </summary>
-public class SaveAsService
-    : ISaveAsService
+/// <remarks>Initializes a new instance of the <see cref="SaveAsService" /> class.</remarks>
+/// <param name="fileManager">The file manager for the project.</param>
+/// <exception cref="ArgumentNullException">Thrown when the <paramref name="fileManager"/> parameter is <b>null</b>.</exception>
+public class SaveAsService(IContentFileManager fileManager)
+        : ISaveAsService
 {
-    #region Variables.
-    // The file manager for the project.
-    private readonly IContentFileManager _fileManager;
-    #endregion
 
-    #region Methods.
+    // The file manager for the project.
+    private readonly IContentFileManager _fileManager = fileManager ?? throw new ArgumentNullException(nameof(fileManager));
+
+
+
     /// <summary>
     /// Function to present a means of providing a path for a save as operation.
     /// </summary>
@@ -57,13 +52,6 @@ public class SaveAsService
             saveDialog.Dispose();
         }
     }
-    #endregion
 
-    #region Constructor/Finalizer.
-    /// <summary>Initializes a new instance of the <see cref="SaveAsService" /> class.</summary>
-    /// <param name="fileManager">The file manager for the project.</param>
-    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="fileManager"/> parameter is <b>null</b>.</exception>
-    public SaveAsService(IContentFileManager fileManager)
-        => _fileManager = fileManager ?? throw new ArgumentNullException(nameof(fileManager));
-    #endregion
+
 }

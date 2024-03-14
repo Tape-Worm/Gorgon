@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2017 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,24 +11,20 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: March 2, 2017 7:46:50 PM
 // 
-#endregion
 
-using System;
-using System.Collections.Generic;
-using System.Drawing;
+
 using System.Numerics;
-using System.Windows.Forms;
 using Gorgon.Examples.Properties;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
@@ -39,28 +35,28 @@ using DX = SharpDX;
 namespace Gorgon.Examples;
 
 /// <summary>
-/// This is an example based on the MiniTri example that will draw a single triangle.
+/// This is an example based on the MiniTri example that will draw a single triangle
 /// 
-/// Here we will use shaders, a vertex buffer, an input layout and a constant buffer to define how to render a multicolored triangle to the window.
+/// Here we will use shaders, a vertex buffer, an input layout and a constant buffer to define how to render a multicolored triangle to the window
 /// 
 /// This example is a little more complex than the Initialization example, and requires more code to set everything up. But, compared to a Direct 
-/// 3D version of this code, it is still much more simple.
+/// 3D version of this code, it is still much more simple
 /// 
 /// We render the triangle by submitting a draw call to the GPU via a GorgonDrawCall object that will contain everything the GPU needs to know in 
 /// order to render the triangle. Resources, such as the vertex buffer, and constant buffer are tied to the draw call and the pipeline state, 
-/// which contains things like culling information, pixel shader, and vertex shader will also be assigned to the draw call.
+/// which contains things like culling information, pixel shader, and vertex shader will also be assigned to the draw call
 /// 
 /// Gorgon is smart enough to know if a draw call has been submitted already and will only assign the resources and state once (unless the call is 
-/// changed). This provides a big performance boost. Of course, for a single triangle like the one in this example, this really doesn't matter.
+/// changed). This provides a big performance boost. Of course, for a single triangle like the one in this example, this really doesn't matter
 /// 
 /// The biggest advantage of using this method of submitting draw calls is that, unlike Direct 3D, the calls are stateless. This way we can avoid 
 /// things like state bleed where a previously forgotten state will interfere with a subsequent draw call. It does this by ensuring the draw call 
 /// has all of the information it needs (hence why a draw call has so many fields), and will set that state per call (of course, if a state has 
-/// not changed, it will not set it because there's no need).
+/// not changed, it will not set it because there's no need)
 /// </summary>
 internal static class Program
 {
-    #region Variables.
+
     // The graphics interface for the application.
     private static GorgonGraphics _graphics;
     // Our primary swap chain.
@@ -80,9 +76,9 @@ internal static class Program
     // A draw call tells the GPU what to draw, and what special states to apply when rendering. This will be submitted to our GorgonGraphics object so that the 
     // GPU can queue up the data for rendering.
     private static GorgonDrawCall _drawCall;
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to handle idle time for the application.
     /// </summary>
@@ -126,11 +122,11 @@ internal static class Program
     {
         // Define the points that make up our triangle.
         // We'll push it back half a unit along the Z-Axis so that we can see it.
-        MiniTriVertex[] vertices = {
+        MiniTriVertex[] vertices = [
                            new MiniTriVertex(new Vector3(0, 0.5f, 1.0f), new GorgonColor(1, 0, 0)),
                            new MiniTriVertex(new Vector3(0.5f, -0.5f, 1.0f), new GorgonColor(0, 1, 0)),
                            new MiniTriVertex(new Vector3(-0.5f, -0.5f, 1.0f), new GorgonColor(0, 0, 1))
-                       };
+                       ];
 
         // Create the vertex buffer.
         //
@@ -161,7 +157,7 @@ internal static class Program
         var camera = new GorgonPerspectiveCamera(_graphics, new DX.Size2F(_swap.Width, _swap.Height), 0.125f, 1000.0f)
         {
             Fov = 65.0f
-        };            
+        };
 
         // Create our constant buffer.
         //
@@ -283,7 +279,7 @@ internal static class Program
             GorgonExample.EndInit();
         }
     }
-    #endregion
+
 
     /// <summary>
     /// The main entry point for the application.
@@ -291,9 +287,7 @@ internal static class Program
     [STAThread]
     private static void Main()
     {
-#if NET6_0_OR_GREATER
         Application.SetHighDpiMode(HighDpiMode.PerMonitorV2);
-#endif
         Application.EnableVisualStyles();
         Application.SetCompatibleTextRenderingDefault(false);
 

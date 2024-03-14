@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2021 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,44 +11,35 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: September 10, 2021 12:45:27 PM
 // 
-#endregion
 
-using System;
-using System.Collections.Generic;
-using System.Drawing.Drawing2D;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using DX = SharpDX;
-using Gorgon.Editor.Services;
+
+using Gorgon.Editor.FontEditor.Properties;
 using Gorgon.Editor.UI;
-using Gorgon.Graphics.Core;
 using Gorgon.Graphics.Fonts;
 using Gorgon.Graphics.Imaging;
-using Gorgon.Editor.Content;
-using Gorgon.Editor.FontEditor.Properties;
 using Gorgon.Math;
+using DX = SharpDX;
 
 namespace Gorgon.Editor.FontEditor;
 
 /// <summary>
-/// The view model for the texture brush editor.
+/// The view model for the texture brush editor
 /// </summary>
 internal class FontTextureBrush
     : HostedPanelViewModelBase<FontTextureBrushParameters>, IFontTextureBrush, IFontBrush
 {
-    #region Variables.
+
     // The brush used to paint the glyphs.
     private GorgonGlyphTextureBrush _brush;
     // The texture for the brush.
@@ -64,9 +55,9 @@ internal class FontTextureBrush
     /// The default brush.
     /// </summary>
     public static readonly GorgonGlyphTextureBrush DefaultBrush = new(null);
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>Property to return whether the panel is modal.</summary>
     public override bool IsModal => true;
 
@@ -105,7 +96,7 @@ internal class FontTextureBrush
             }
 
             OnPropertyChanging();
-            _region = value;                
+            _region = value;
             OnPropertyChanged();
         }
     }
@@ -150,9 +141,9 @@ internal class FontTextureBrush
     /// Property to set or return the brush used to render the glyphs.
     /// </summary>
     GorgonGlyphBrush IFontBrush.Brush => Brush;
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to extract the information from the current brush.
     /// </summary>
@@ -172,8 +163,8 @@ internal class FontTextureBrush
         {
             Region = new DX.RectangleF(0, 0, 1, 1);
         }
-        
-        WrapMode = brush.WrapMode;   
+
+        WrapMode = brush.WrapMode;
     }
 
     /// <summary>
@@ -185,7 +176,7 @@ internal class FontTextureBrush
         {
             return;
         }
-        
+
         GorgonGlyphTextureBrush brush = new(_texture)
         {
             TextureRegion = new DX.RectangleF(_region.X / _texture.Width, _region.Y / _texture.Height, _region.Width / _texture.Width, _region.Height / _texture.Height),
@@ -316,9 +307,9 @@ internal class FontTextureBrush
 
         base.OnUnload();
     }
-    #endregion
 
-    #region Constructor/Finalizer.
+
+
     /// <summary>Initializes a new instance of the <see cref="FontTextureBrush" /> class.</summary>
     public FontTextureBrush()
     {
@@ -326,5 +317,5 @@ internal class FontTextureBrush
         SetRegionCommand = new EditorCommand<DX.RectangleF>(DoSetRegion, CanSetRegion);
         SetWrappingModeCommand = new EditorCommand<GlyphBrushWrapMode>(DoSetWrapMode);
     }
-    #endregion
+
 }

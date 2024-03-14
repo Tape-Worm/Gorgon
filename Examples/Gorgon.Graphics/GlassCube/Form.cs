@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2017 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,25 +11,21 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: March 4, 2017 10:22:14 AM
 // 
-#endregion
 
-using System;
-using System.Collections.Generic;
-using System.IO;
+
 using System.Numerics;
 using System.Runtime.CompilerServices;
-using System.Windows.Forms;
 using Gorgon.Core;
 using Gorgon.Examples.Properties;
 using Gorgon.Graphics;
@@ -44,16 +40,16 @@ using DX = SharpDX;
 namespace Gorgon.Examples;
 
 /// <summary>
-/// The main window for our example.
+/// The main window for our example
 /// </summary>
 public partial class Form : System.Windows.Forms.Form
 {
-    #region Constants.
+
     // The target delta time.
     private const float TargetDelta = 1 / 60.0f;
-    #endregion
 
-    #region Variables.
+
+
     // The primary graphics interface.
     private GorgonGraphics _graphics;
     // The swap chain for displaying the graphics.
@@ -84,9 +80,9 @@ public partial class Form : System.Windows.Forms.Form
     private float _accumulator;
     // The timer used for updating the text block.
     private IGorgonTimer _timer;
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>Handles the Resize event of the AfterSwapChain control.</summary>
     /// <param name="sender">The source of the event.</param>
     /// <param name="e">The <see cref="SwapChainResizedEventArgs" /> instance containing the event data.</param>
@@ -99,7 +95,7 @@ public partial class Form : System.Windows.Forms.Form
 
         _camera.ViewDimensions = e.Size.ToSize2F();
     }
-            
+
     /// <summary>
     /// Function to update the world/view/projection matrix.
     /// </summary>
@@ -129,10 +125,10 @@ public partial class Form : System.Windows.Forms.Form
     }
 
     /// <summary>
-		/// Function to handle idle time for the application.
-		/// </summary>
-		/// <returns><b>true</b> to continue processing, <b>false</b> to stop.</returns>
-		private bool Idle()
+    /// Function to handle idle time for the application.
+    /// </summary>
+    /// <returns><b>true</b> to continue processing, <b>false</b> to stop.</returns>
+    private bool Idle()
     {
         int jitter1 = GorgonRandom.RandomInt32(1, 3);
         int jitter2 = GorgonRandom.RandomInt32(1, 3);
@@ -174,15 +170,15 @@ public partial class Form : System.Windows.Forms.Form
 
             if (_drawCall == _drawCallPixel)
             {
-                _cube.RotateXYZ(((int)_rotation.X / jitter1) * jitter1, 
-                                ((int)_rotation.Y / jitter2) * jitter2, 
+                _cube.RotateXYZ(((int)_rotation.X / jitter1) * jitter1,
+                                ((int)_rotation.Y / jitter2) * jitter2,
                                 ((int)_rotation.Z / jitter3) * jitter3);
             }
             else
             {
                 _cube.RotateXYZ(_rotation.X, _rotation.Y, _rotation.Z);
             }
-            
+
             _accumulator -= TargetDelta;
         }
 
@@ -192,7 +188,7 @@ public partial class Form : System.Windows.Forms.Form
         // And, as always, send the cube to the GPU for rendering.
         _graphics.Submit(_drawCall);
 
-        GorgonExample.BlitLogo(_graphics);                
+        GorgonExample.BlitLogo(_graphics);
 
         _swap.Present(1);
         return true;
@@ -222,14 +218,14 @@ public partial class Form : System.Windows.Forms.Form
         // Create our constant buffer so we can send our transformation information to the shader.
         _wvpBuffer = GorgonConstantBufferView.CreateConstantBuffer(_graphics, new GorgonConstantBufferInfo(Unsafe.SizeOf<Matrix4x4>())
         {
-            Name = "GlassCube WVP Constant Buffer"                
+            Name = "GlassCube WVP Constant Buffer"
         });
 
         // Pull the camera back 1.5 units on the Z axis. Otherwise, we'd end up inside of the cube.
         _camera = new GorgonPerspectiveCamera(_graphics, new DX.Size2F(ClientSize.Width, ClientSize.Height), 0.1f, 10.0f, "GlassCube Camera")
         {
             Fov = 60.0f,
-            Position = new Vector3(0.0f, 0.0f, -1.5f)                
+            Position = new Vector3(0.0f, 0.0f, -1.5f)
         };
 
         _cube = new Cube(_graphics, _inputLayout);
@@ -282,7 +278,7 @@ public partial class Form : System.Windows.Forms.Form
     {
         if (keyData == Keys.Escape)
         {
-            Close();                
+            Close();
             return true;
         }
 
@@ -372,12 +368,9 @@ public partial class Form : System.Windows.Forms.Form
             GorgonApplication.Quit();
         }
     }
-    #endregion
 
-    #region Constructor.
     /// <summary>
     /// Constructor.
     /// </summary>
     public Form() => InitializeComponent();
-    #endregion
 }

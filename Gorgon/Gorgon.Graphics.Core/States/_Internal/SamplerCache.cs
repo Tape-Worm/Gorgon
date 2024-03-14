@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2021 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,45 +11,46 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: January 4, 2021 12:38:32 PM
 // 
-#endregion
 
-using System;
+
 using D3D11 = SharpDX.Direct3D11;
 
 namespace Gorgon.Graphics.Core;
 
 /// <summary>
-/// A cache for holding sampler state objects.
+/// A cache for holding sampler state objects
 /// </summary>
-internal class SamplerCache
-    : IDisposable
+/// <remarks>Initializes a new instance of the <see cref="SamplerCache" /> class.</remarks>
+/// <param name="device">The D3D11 device object for creating samplers.</param>
+internal class SamplerCache(D3D11.Device5 device)
+        : IDisposable
 {
-    #region Constants.
+
     // The size of the initial cache.
     private const int InitialCacheSize = 8;
-    #endregion
 
-    #region Variables.
+
+
     // The D3D11 device object for creating samplers.
-    private readonly D3D11.Device5 _device;
+    private readonly D3D11.Device5 _device = device;
     // A list of cached pipeline states.
     private GorgonSamplerState[] _cachedSamplers = new GorgonSamplerState[InitialCacheSize];
     // A syncrhonization lock for multiple thread when dealing with the sampler cache.
     private readonly object _samplerLock = new();
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to invalidate the cache data.
     /// </summary>
@@ -91,7 +92,7 @@ internal class SamplerCache
                 {
                     return state;
                 }
-                                    
+
                 newState.ID = int.MinValue;
             }
 
@@ -113,7 +114,7 @@ internal class SamplerCache
                 if (cached?.Equals(newState) ?? false)
                 {
                     return cached;
-                }                    
+                }
 
                 ++index;
             }
@@ -164,11 +165,6 @@ internal class SamplerCache
             _cachedSamplers[4] = GorgonSamplerState.PointFilteringWrapping;
         }
     }
-    #endregion
 
-    #region Constructor/Finalizer.
-    /// <summary>Initializes a new instance of the <see cref="SamplerCache" /> class.</summary>
-    /// <param name="device">The D3D11 device object for creating samplers.</param>
-    public SamplerCache(D3D11.Device5 device) => _device = device;        
-    #endregion
+
 }

@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2019 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: May 20, 2019 11:37:29 PM
 // 
-#endregion
+
 
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
@@ -32,12 +32,14 @@ using DX = SharpDX;
 namespace Gorgon.Examples;
 
 /// <summary>
-/// Represents a layer used for 2D drawing.
+/// Represents a layer used for 2D drawing
 /// </summary>
-internal abstract class Layer2D
-    : Layer
+/// <remarks>Initializes a new instance of the <see cref="Layer2D"/> class.</remarks>
+/// <param name="renderer">The 2D renderer for the application.</param>
+internal abstract class Layer2D(Gorgon2D renderer)
+        : Layer
 {
-    #region Properties.
+
     /// <summary>
     /// Property to return the graphics interface for the applicaton.
     /// </summary>
@@ -49,10 +51,10 @@ internal abstract class Layer2D
     protected Gorgon2D Renderer
     {
         get;
-    }
-    #endregion
+    } = renderer;
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to blit the specified texture into the current output target.
     /// </summary>
@@ -66,12 +68,7 @@ internal abstract class Layer2D
             textureCoordinates ?? new DX.RectangleF(0, 0, 1, 1),
             textureSampler: samplerState ?? GorgonSamplerState.Default,
             depth: 0.1f);
-    #endregion
 
-    #region Constructor/Finalizer.
-    /// <summary>Initializes a new instance of the <see cref="Layer2D"/> class.</summary>
-    /// <param name="renderer">The 2D renderer for the application.</param>
-    protected Layer2D(Gorgon2D renderer) => Renderer = renderer;
-    #endregion
+
 
 }

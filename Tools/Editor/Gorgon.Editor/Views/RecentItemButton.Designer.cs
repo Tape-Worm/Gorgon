@@ -20,7 +20,7 @@ partial class RecentItemButton
         base.Dispose(disposing);
     }
 
-    #region Component Designer generated code
+
 
     /// <summary> 
     /// Required method for Designer support - do not modify 
@@ -213,7 +213,7 @@ partial class RecentItemButton
 
     }
 
-    #endregion
+
 
     private System.Windows.Forms.TableLayoutPanel TableItem;
     private System.Windows.Forms.Label LabelDateTime;
