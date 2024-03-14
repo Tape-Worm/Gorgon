@@ -307,7 +307,7 @@ internal static partial class RawInputApi
     /// <param name="pData">Data returned.</param>
     /// <param name="pcbSize">Size of the data to return.</param>
     /// <returns>0 if successful, otherwise an error code.</returns>
-    [LibraryImport("user32.dll")]
+    [LibraryImport("user32.dll", EntryPoint = "GetRawInputDeviceInfoW")]
     private static unsafe partial int GetRawInputDeviceInfo(nint hDevice, RawInputCommand uiCommand, void* pData, ref int pcbSize);
 
     /// <summary>

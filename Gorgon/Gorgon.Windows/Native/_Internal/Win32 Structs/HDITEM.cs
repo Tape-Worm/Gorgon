@@ -25,6 +25,7 @@
 #endregion
 
 using System.Runtime.InteropServices;
+using System.Runtime.InteropServices.Marshalling;
 
 // ReSharper disable InconsistentNaming
 namespace Gorgon.Native;
@@ -36,8 +37,7 @@ namespace Gorgon.Native;
 internal struct HDITEM
 {
     public uint mask;
-    public int cxy;
-    [MarshalAs(UnmanagedType.LPTStr)]
+    public int cxy;    
     public string pszText;
     public nint hbm;
     public int cchTextMax;

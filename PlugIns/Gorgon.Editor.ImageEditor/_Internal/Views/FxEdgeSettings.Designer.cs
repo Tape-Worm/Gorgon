@@ -141,8 +141,7 @@ partial class FxEdgeSettings
         this.PickerLineColor.Name = "PickerLineColor";
         this.PickerLineColor.Padding = new System.Windows.Forms.Padding(10, 0, 0, 0);
         this.PickerLineColor.Size = new System.Drawing.Size(264, 220);
-        this.PickerLineColor.TabIndex = 0;
-        this.PickerLineColor.ValuePercentual = ((System.Drawing.PointF)(resources.GetObject("PickerLineColor.ValuePercentual")));
+        this.PickerLineColor.TabIndex = 0;        
         this.PickerLineColor.ValueChanged += new System.EventHandler(this.PickerLineColor_ValueChanged);
         // 
         // SliderAlpha

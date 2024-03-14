@@ -24,11 +24,19 @@
 // 
 #endregion
 
-using System.Drawing;
 using System.Runtime.InteropServices;
 
-// ReSharper disable InconsistentNaming
 namespace Gorgon.Native;
+
+/// <summary>
+/// A Win32 point structure.
+/// </summary>
+[StructLayout(LayoutKind.Sequential)]
+internal struct Point
+{
+    public int X;
+    public int Y;
+}
 
 /// <summary>
 /// Value type representing a Window message.

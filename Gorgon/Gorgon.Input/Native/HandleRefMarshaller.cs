@@ -1,7 +1,5 @@
-﻿#region MIT.
-// 
-// Gorgon.
-// Copyright (C) 2013 Michael Winsor
+﻿// Gorgon.
+// Copyright (C) 2024 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -20,39 +18,24 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: Saturday, January 5, 2013 3:29:58 PM
-// 
-#endregion
+// Created: March 14, 2024 12:38:54 AM
+//
 
-using System;
-using System.Windows.Forms;
-using Gorgon.UI;
+using System.Runtime.InteropServices;
+using System.Runtime.InteropServices.Marshalling;
 
-namespace Gorgon.Examples;
+namespace Gorgon.Input.Native;
 
 /// <summary>
-/// Example entry point.
+/// A marshaller used to convert a <see cref="HandleRef"/> to an unmanaged value.
 /// </summary>
-/// <remarks>To see a description of this example, look in formMain.cs</remarks>
-internal static class Program
+[CustomMarshaller(typeof(HandleRef), MarshalMode.ManagedToUnmanagedIn, typeof(HandleRefMarshaller))]   
+internal static unsafe class HandleRefMarshaller
 {
     /// <summary>
-    /// The main entry point for the application.
+    /// Function to convert the <see cref="HandleRef"/> to an unmanaged value.
     /// </summary>
-    [STAThread]
-    private static void Main()
-    {
-        try
-        {
-            Application.SetHighDpiMode(HighDpiMode.PerMonitorV2);
-            Application.EnableVisualStyles();
-            Application.SetCompatibleTextRenderingDefault(false);
-
-            GorgonApplication.Run(new Form());
-        }
-        catch (Exception ex)
-        {
-            GorgonExample.HandleException(ex);
-        }
-    }
+    /// <param name="managed">The value to marshal.</param>
+    /// <returns>The marshalled value.</returns>
+    public static nint ConvertToUnmanaged(HandleRef managed) => managed.Handle;
 }

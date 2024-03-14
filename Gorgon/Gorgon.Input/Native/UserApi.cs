@@ -26,9 +26,11 @@ using System;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using System.Runtime.InteropServices.Marshalling;
 using System.Security;
 using System.Windows.Forms;
 using Gorgon.Input;
+using Gorgon.Input.Native;
 using Gorgon.Input.Properties;
 
 namespace Gorgon.Native;
@@ -113,8 +115,8 @@ internal static partial class UserApi
     /// <param name="hwnd">Window handle to retrieve information from.</param>
     /// <param name="index">Type of information.</param>
     /// <returns>A pointer to the information.</returns>
-    [DllImport("user32.dll", EntryPoint = "GetWindowLong", CharSet = CharSet.Unicode)]
-    private static extern nint GetWindowLongx86(HandleRef hwnd, int index);
+    [LibraryImport("user32.dll", EntryPoint = "GetWindowLongW")]
+    private static partial nint GetWindowLongx86([MarshalUsing(typeof(HandleRefMarshaller))] HandleRef hwnd, int index);
 
     /// <summary>
     /// Function to retrieve information about the specified window.
@@ -122,8 +124,8 @@ internal static partial class UserApi
     /// <param name="hwnd">Window handle to retrieve information from.</param>
     /// <param name="index">Type of information.</param>
     /// <returns>A pointer to the information.</returns>
-    [DllImport("user32.dll", EntryPoint = "GetWindowLongPtr", CharSet = CharSet.Unicode)]
-    private static extern nint GetWindowLongx64(HandleRef hwnd, int index);
+    [LibraryImport("user32.dll", EntryPoint = "GetWindowLongPtrW")]
+    private static partial nint GetWindowLongx64([MarshalUsing(typeof(HandleRefMarshaller))] HandleRef hwnd, int index);
 
     /// <summary>
     /// Function to set information for the specified window.
@@ -132,8 +134,8 @@ internal static partial class UserApi
     /// <param name="index">Type of information.</param>
     /// <param name="info">Information to set.</param>
     /// <returns>A pointer to the previous information, or 0 if not successful.</returns>
-    [DllImport("user32.dll", EntryPoint = "SetWindowLong", CharSet = CharSet.Unicode)]
-    private static extern nint SetWindowLongx86(HandleRef hwnd, int index, nint info);
+    [LibraryImport("user32.dll", EntryPoint = "SetWindowLongW")]
+    private static partial nint SetWindowLongx86([MarshalUsing(typeof(HandleRefMarshaller))] HandleRef hwnd, int index, nint info);
 
     /// <summary>
     /// Function to set information for the specified window.
@@ -142,8 +144,8 @@ internal static partial class UserApi
     /// <param name="index">Type of information.</param>
     /// <param name="info">Information to set.</param>
     /// <returns>A pointer to the previous information, or 0 if not successful.</returns>
-    [DllImport("user32.dll", EntryPoint = "SetWindowLongPtr", CharSet = CharSet.Unicode)]
-    private static extern nint SetWindowLongx64(HandleRef hwnd, int index, nint info);
+    [LibraryImport("user32.dll", EntryPoint = "SetWindowLongPtrW")]
+    private static partial nint SetWindowLongx64([MarshalUsing(typeof(HandleRefMarshaller))] HandleRef hwnd, int index, nint info);
 
     /// <summary>
     /// Function to set the visibility of the pointing device cursor.

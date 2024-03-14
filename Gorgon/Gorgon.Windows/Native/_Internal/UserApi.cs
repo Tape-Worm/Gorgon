@@ -23,6 +23,7 @@
 // 
 
 using System.Runtime.InteropServices;
+using System.Runtime.InteropServices.Marshalling;
 using System.Security;
 
 namespace Gorgon.Native;
@@ -52,9 +53,8 @@ internal static partial class UserApi
     /// <param name="flags">Flags for the function.</param>
     /// <returns><b>true</b> if messages are ready for processing, <b>false</b> if not.</returns>
     [return: MarshalAs(UnmanagedType.Bool)]
-    [DllImport("user32.dll", EntryPoint = "PeekMessageW")]
-#pragma warning disable SYSLIB1054 // Use 'LibraryImportAttribute' instead of 'DllImportAttribute' to generate P/Invoke marshalling code at compile time
-    public static extern bool PeekMessage(out MSG msg, nint hwnd, uint wFilterMin, uint wFilterMax, uint flags);
+    [LibraryImport("user32.dll", EntryPoint = "PeekMessageW")]
+    public static partial bool PeekMessage(out MSG msg, nint hwnd, uint wFilterMin, uint wFilterMax, uint flags);
 
     /// <summary>
     /// Function to send a message to a window.
@@ -75,9 +75,8 @@ internal static partial class UserApi
     /// <param name="wParam"></param>
     /// <param name="lParam"></param>
     /// <returns></returns>
-    [DllImport("user32.dll", EntryPoint = "SendMessageW", SetLastError = true)]
-    public static extern nint SendMessage(nint hWnd, uint msg, nint wParam, ref HDITEM lParam);
-#pragma warning restore SYSLIB1054 // Use 'LibraryImportAttribute' instead of 'DllImportAttribute' to generate P/Invoke marshalling code at compile time
+    [LibraryImport("user32.dll", EntryPoint = "SendMessageW", SetLastError = true)]
+    public static partial nint SendMessage(nint hWnd, uint msg, nint wParam, [MarshalUsing(typeof(HdItemMarshaller))] ref HDITEM lParam);
 
     /// <summary>
     /// Function to retrieve the device context for a window.
