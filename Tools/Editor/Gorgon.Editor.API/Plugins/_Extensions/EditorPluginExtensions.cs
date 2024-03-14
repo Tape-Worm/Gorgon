@@ -40,7 +40,7 @@ public static class EditorPlugInExtensions
     /// </summary>
     /// <param name="pluginType">The plug in type to evaluate.</param>
     /// <returns>The friendly description.</returns>
-    public static string GetDescription(this PlugInType pluginType) 
+    public static string GetDescription(this PlugInType pluginType)
     {
         return pluginType switch
         {

@@ -42,7 +42,7 @@ namespace Gorgon.Editor.ImageEditor;
 /// <param name="swapChain">The swap chain for the content view.</param>
 /// <param name="dataContext">The view model to assign to the renderer.</param>
 internal class Texture2DViewer(Gorgon2D renderer, GorgonSwapChain swapChain, IImageContent dataContext)
-        : TextureViewer(ImageType.Image2D.ToString(), "Gorgon2DTextureArrayView", 0, renderer, swapChain, dataContext)
+        : TextureViewer(ImageDataType.Image2D.ToString(), "Gorgon2DTextureArrayView", 0, renderer, swapChain, dataContext)
 {
     #region Variables.
     // The texture view.
@@ -68,7 +68,7 @@ internal class Texture2DViewer(Gorgon2D renderer, GorgonSwapChain swapChain, IIm
     /// </summary>
     protected override void CreateTexture()
     {
-        if ((DataContext?.ImageData is null) || (DataContext.ImageType != ImageType.Image2D))
+        if ((DataContext?.ImageData is null) || (DataContext.ImageType != ImageDataType.Image2D))
         {
             RenderRegion = DX.RectangleF.Empty;
             return;

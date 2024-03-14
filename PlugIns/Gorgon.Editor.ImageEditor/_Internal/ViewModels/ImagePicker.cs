@@ -106,7 +106,7 @@ internal class ImagePicker
     /// <summary>
     /// Property to return the number of array indices or depth slices.
     /// </summary>
-    public int ArrayCount => _targetImage is null ? 0 : (_targetImage.ImageType == ImageType.Image3D ? MipDepth : _targetImage.ArrayCount);
+    public int ArrayCount => _targetImage is null ? 0 : (_targetImage.ImageType == ImageDataType.Image3D ? MipDepth : _targetImage.ArrayCount);
 
     /// <summary>
     /// Property to return the number of mip levels.
@@ -152,7 +152,7 @@ internal class ImagePicker
     {
         get => _targetImage is null
                 ? 0
-                : _currentArrayDepth.Max(0).Min(_targetImage.ImageType == ImageType.Image3D ? _targetImage.GetDepthCount(_mipLevel) - 1 : _targetImage.ArrayCount - 1);
+                : _currentArrayDepth.Max(0).Min(_targetImage.ImageType == ImageDataType.Image3D ? _targetImage.GetDepthCount(_mipLevel) - 1 : _targetImage.ArrayCount - 1);
         set
         {
             if ((_currentArrayDepth == value) || (_targetImage is null))
@@ -196,14 +196,14 @@ internal class ImagePicker
         {
             _targetImage?.Dispose();
 
-            OnPropertyChanging();                
+            OnPropertyChanging();
             _targetImage = value;
             OnPropertyChanged();
 
             NotifyPropertyChanged(nameof(ArrayCount));
             NotifyPropertyChanged(nameof(MipCount));
 
-            CropResizeSettings.TargetImageSize = new DX.Size2(_targetImage?.Width ?? 0, _targetImage?.Height ?? 0);                
+            CropResizeSettings.TargetImageSize = new DX.Size2(_targetImage?.Width ?? 0, _targetImage?.Height ?? 0);
         }
     }
 
@@ -248,7 +248,7 @@ internal class ImagePicker
     /// Property to return the command to select a file.
     /// </summary>
     public IEditorCommand<ImagePickerImportData> SelectFileCommand
-    {   
+    {
         get;
     }
 
@@ -264,7 +264,7 @@ internal class ImagePicker
             }
 
             OnPropertyChanging();
-            _selectedFile =value;
+            _selectedFile = value;
             OnPropertyChanged();
         }
     }
@@ -469,7 +469,7 @@ internal class ImagePicker
         HostServices.BusyService.SetBusy();
 
         try
-        {                
+        {
             image = CropResizeSettings.ImportImage;
 
             CropResizeMode mode = CropResizeSettings.CurrentMode;
@@ -478,7 +478,7 @@ internal class ImagePicker
             ImageFilter filter = CropResizeSettings.ImageFilter;
 
             CropResizeSettings.ImportImage = null;
-            NeedsTransformation = false;                
+            NeedsTransformation = false;
 
             UpdateTargetImage(image, alignment, mode, filter, keepRatio);
         }
@@ -516,7 +516,7 @@ internal class ImagePicker
             SourceHasMultipleSubresources = false;
 
             // Convert the image into a single slice with a single mip channel.
-            newImage = new GorgonImage(new GorgonImageInfo(ImageType.Image2D, image.Format)
+            newImage = new GorgonImage(new GorgonImageInfo(ImageDataType.Image2D, image.Format)
             {
                 Width = width,
                 Height = height,
@@ -526,7 +526,7 @@ internal class ImagePicker
             });
 
             // Copy the selected slice into a new source image.
-            image.Buffers[mipLevel, arrayDepth].CopyTo(newImage.Buffers[0]);                
+            image.Buffers[mipLevel, arrayDepth].CopyTo(newImage.Buffers[0]);
 
             SourcePicker.SourceImage = null;
 
@@ -536,7 +536,7 @@ internal class ImagePicker
                 return;
             }
 
-            UpdateTargetImage(newImage, Alignment.UpperLeft, CropResizeMode.None, ImageFilter.Point, false);                
+            UpdateTargetImage(newImage, Alignment.UpperLeft, CropResizeMode.None, ImageFilter.Point, false);
         }
         catch (Exception ex)
         {
@@ -554,7 +554,7 @@ internal class ImagePicker
     /// Function to determine if a subresource on the image can be restored to its original state.
     /// </summary>
     /// <returns><b>true</b> if the subresource can be restored, <b>false</b> if not.</returns>
-    private bool CanRestore() => ChangedSubResources.Contains((CurrentArrayIndexDepthSlice, CurrentMipLevel));         
+    private bool CanRestore() => ChangedSubResources.Contains((CurrentArrayIndexDepthSlice, CurrentMipLevel));
 
     /// <summary>
     /// Function to restore a subresource image to the original.
@@ -614,7 +614,7 @@ internal class ImagePicker
                         if (!importImage.CanConvertToFormat(_targetImage.Format))
                         {
                             throw new GorgonException(GorgonResult.CannotRead, string.Format(Resources.GORIMG_ERR_CONVERT_FORMAT, _targetImage.Format));
-                        }                            
+                        }
                     }
 
                     return importImage;
@@ -678,7 +678,7 @@ internal class ImagePicker
             NotifyPropertyChanging(nameof(ImageData));
             NotifyPropertyChanged(nameof(ImageData));*/
         }
-        catch(Exception ex)
+        catch (Exception ex)
         {
             imageToImport?.Dispose();
             HostServices.MessageDisplay.ShowError(ex, string.Format(Resources.GORIMG_ERR_IMPORT_FAIL, _selectedFile?.OriginalFilePath));
@@ -705,7 +705,7 @@ internal class ImagePicker
         HostServices.BusyService.SetBusy();
 
         try
-        {                
+        {
             SelectedFile = data;
         }
         catch (Exception ex)
@@ -788,10 +788,10 @@ internal class ImagePicker
     /// </remarks>
     protected override void OnInitialize(ImagePickerParameters injectionParameters)
     {
-        _targetImageFile = injectionParameters.File;    
+        _targetImageFile = injectionParameters.File;
         _ioService = injectionParameters.ImageServices.ImageIO;
         _imageUpdater = injectionParameters.ImageServices.ImageUpdater;
-        CropResizeSettings = injectionParameters.CropResizeSettings;            
+        CropResizeSettings = injectionParameters.CropResizeSettings;
         SourcePicker = injectionParameters.SourceImagePicker;
         Settings = injectionParameters.Settings;
     }

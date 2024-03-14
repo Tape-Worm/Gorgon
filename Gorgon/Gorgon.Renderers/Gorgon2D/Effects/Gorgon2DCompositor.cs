@@ -148,7 +148,7 @@ public class Gorgon2DCompositor(Gorgon2D renderer)
     {
         FreeResources();
 
-        _pingTarget = Graphics.TemporaryTargets.Rent(new GorgonTexture2DInfo(outputTarget.Width, outputTarget.Height, outputTarget.Format) 
+        _pingTarget = Graphics.TemporaryTargets.Rent(new GorgonTexture2DInfo(outputTarget.Width, outputTarget.Height, outputTarget.Format)
         {
             Name = "Gorgon 2D Post Process Ping Render Target",
             Binding = TextureBinding.ShaderResource

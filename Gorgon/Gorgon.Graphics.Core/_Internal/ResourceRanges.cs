@@ -30,7 +30,7 @@ namespace Gorgon.Graphics.Core;
 /// <summary>
 /// The list of ranges indicating what indices have changed for resource arrays.
 /// </summary>
-internal class ResourceRanges        
+internal class ResourceRanges
 {
     /// <summary>
     /// The resources that have changed.

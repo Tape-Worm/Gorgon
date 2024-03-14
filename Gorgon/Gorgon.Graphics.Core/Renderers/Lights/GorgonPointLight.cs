@@ -190,7 +190,7 @@ public sealed class GorgonPointLight
         {
             _lightData = new GorgonGpuLightData(LightType,
                                                 new Vector3(Position.X, Position.Y, -Position.Z),
-                                                new Vector4(_attenuationA, _attenuationB, _attenuationC, _range), 
+                                                new Vector4(_attenuationA, _attenuationB, _attenuationC, _range),
                                                 Color,
                                                 new Vector4(SpecularPower, Intensity, SpecularIntensity, SpecularEnabled ? 1 : 0));
             IsUpdated = false;

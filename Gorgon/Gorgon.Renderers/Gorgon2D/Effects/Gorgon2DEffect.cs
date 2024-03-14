@@ -548,7 +548,7 @@ public abstract class Gorgon2DEffect(Gorgon2D renderer, string effectName, strin
                 OnAfterRenderPass(index, output);
             }
 
-            _passResultState = PassContinuationState.Stop;                
+            _passResultState = PassContinuationState.Stop;
         }
         finally
         {

@@ -130,7 +130,7 @@ internal class Sphere
         VertexBufferBindings[0] = GorgonVertexBufferBinding.CreateVertexBuffer<GorgonVertexPosUv>(graphics,
                                                                                 new GorgonVertexBufferInfo(Vertices.Length * GorgonVertexPosUv.SizeInBytes)
                                                                                 {
-                                                                                    Name = "Sphere Vertex Buffer",                                                                                        
+                                                                                    Name = "Sphere Vertex Buffer",
                                                                                     Usage = ResourceUsage.Immutable
                                                                                 },
                                                                                 Vertices);

@@ -79,7 +79,7 @@ public abstract class GorgonShaderResourceView(GorgonGraphicsResource resource)
         ref readonly D3D11.ShaderResourceViewDescription1 desc = ref OnGetSrvParams();
 
         try
-        {                
+        {
             Native = new D3D11.ShaderResourceView1(Graphics.D3DDevice, Resource.D3DResource, desc)
             {
                 DebugName = $"{Resource.Name}_SRV"
@@ -94,7 +94,7 @@ public abstract class GorgonShaderResourceView(GorgonGraphicsResource resource)
             if ((uint)sDXEx.ResultCode.Code == 0x80070057)
             {
                 throw new GorgonException(GorgonResult.CannotCreate,
-                                          string.Format(Resources.GORGFX_ERR_VIEW_CANNOT_CAST_FORMAT,                                                            
+                                          string.Format(Resources.GORGFX_ERR_VIEW_CANNOT_CAST_FORMAT,
                                                         (BufferFormat)desc.Format));
             }
 

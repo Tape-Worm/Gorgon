@@ -33,7 +33,7 @@ namespace Gorgon.Editor.ImageEditor;
 /// <summary>
 /// The settings for the emboss effect.
 /// </summary>
-internal partial class FxEmbossSettings 
+internal partial class FxEmbossSettings
     : EditorSubPanelCommon, IDataContext<IFxEmboss>
 {
     #region Properties.

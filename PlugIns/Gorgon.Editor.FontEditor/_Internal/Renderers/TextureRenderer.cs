@@ -25,11 +25,11 @@
 #endregion
 
 using System.Numerics;
-using DX = SharpDX;
 using Gorgon.Editor.Rendering;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Renderers;
+using DX = SharpDX;
 
 namespace Gorgon.Editor.FontEditor;
 
@@ -60,7 +60,7 @@ internal class TextureRenderer
         {
             RenderRegion = new DX.RectangleF(0, 0, ClientSize.Width, ClientSize.Height);
             return;
-        }            
+        }
 
         float height = DataContext.WorkingFont.TextureHeight > ClientSize.Height ? DataContext.WorkingFont.TextureHeight : ClientSize.Height;
         float width = DataContext.WorkingFont.TextureWidth > ClientSize.Width ? DataContext.WorkingFont.TextureWidth : ClientSize.Width;
@@ -78,9 +78,9 @@ internal class TextureRenderer
         switch (propertyName)
         {
             case nameof(IFontContent.WorkingFont):
-                CalculateRenderRegion();                    
+                CalculateRenderRegion();
                 break;
-        }            
+        }
     }
 
     /// <summary>Function to render the background.</summary>
@@ -115,7 +115,7 @@ internal class TextureRenderer
             texture = _context.Textures[l];
 
             for (int a = _context.SelectedArrayIndex - 1; a >= 0; --a)
-            {                    
+            {
                 textureSize = new(texture.Width * 0.9f, texture.Height * 0.9f);
                 xPos -= textureSize.Width + 8;
                 textureRegion = new DX.RectangleF((-textureSize.Width * 0.5f) + xPos, -textureSize.Height * 0.5f, textureSize.Width, textureSize.Height).Truncate();
@@ -127,7 +127,7 @@ internal class TextureRenderer
                 }
 
                 Renderer.DrawFilledRectangle(textureRegion, new GorgonColor(GorgonColor.Black, 0.25f));
-                Renderer.DrawFilledRectangle(textureRegion, new GorgonColor(GorgonColor.White, 0.25f), texture, new DX.RectangleF(0, 0, 1, 1), a, GorgonSamplerState.PointFiltering);                    
+                Renderer.DrawFilledRectangle(textureRegion, new GorgonColor(GorgonColor.White, 0.25f), texture, new DX.RectangleF(0, 0, 1, 1), a, GorgonSamplerState.PointFiltering);
             }
         }
 

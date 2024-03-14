@@ -114,7 +114,7 @@ internal partial class TextColorView
                 Picker.OriginalColor = ViewModel.OriginalColor;
                 break;
             case nameof(ITextColor.SelectedColor):
-                Picker.SelectedColor = ViewModel.SelectedColor;                    
+                Picker.SelectedColor = ViewModel.SelectedColor;
                 break;
         }
     }

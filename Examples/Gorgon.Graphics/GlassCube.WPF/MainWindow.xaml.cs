@@ -76,7 +76,7 @@ namespace Gorgon.Examples;
 /// 
 /// * A maximum frame rate of 60 frames per second is enforced by WPF. There is no stable way around this at this time.
 /// </summary>
-public partial class MainWindow 
+public partial class MainWindow
     : Window
 {
     #region Constants.
@@ -116,7 +116,7 @@ public partial class MainWindow
     // The timer used for updating the text block.
     private IGorgonTimer _timer;
     // The starting point for dragging.
-    private Point? _dragStart;        
+    private Point? _dragStart;
     // Flag to indicate that the window is being dragged.
     private bool _isDragging;
     #endregion
@@ -164,10 +164,10 @@ public partial class MainWindow
     }
 
     /// <summary>
-        /// Function to handle idle time for the application.
-        /// </summary>
-        /// <returns><b>true</b> to continue processing, <b>false</b> to stop.</returns>
-        private bool Idle()
+    /// Function to handle idle time for the application.
+    /// </summary>
+    /// <returns><b>true</b> to continue processing, <b>false</b> to stop.</returns>
+    private bool Idle()
     {
         int jitter1 = GorgonRandom.RandomInt32(1, 3);
         int jitter2 = GorgonRandom.RandomInt32(1, 3);
@@ -260,7 +260,7 @@ public partial class MainWindow
         // Create our constant buffer so we can send our transformation information to the shader.
         _wvpBuffer = GorgonConstantBufferView.CreateConstantBuffer(_graphics, new GorgonConstantBufferInfo(Unsafe.SizeOf<Matrix4x4>())
         {
-            Name = "GlassCube WVP Constant Buffer"                
+            Name = "GlassCube WVP Constant Buffer"
         });
 
         // Pull the camera back 1.5 units on the Z axis. Otherwise, we'd end up inside of the cube.
@@ -305,7 +305,7 @@ public partial class MainWindow
     {
         try
         {
-            GorgonExample.ResourceBaseDirectory = new System.IO.DirectoryInfo(ExampleConfig.Default.ResourceLocation);                
+            GorgonExample.ResourceBaseDirectory = new System.IO.DirectoryInfo(ExampleConfig.Default.ResourceLocation);
 
             // Initialize Gorgon as we have in the other examples.
             // Find out which devices we have installed in the system.
@@ -313,9 +313,9 @@ public partial class MainWindow
 
             if (deviceList.Count == 0)
             {
-                MessageBox.Show("There are no suitable video adapters available in the system. This example is unable to continue and will now exit.", 
-                                "Error", 
-                                MessageBoxButton.OK, 
+                MessageBox.Show("There are no suitable video adapters available in the system. This example is unable to continue and will now exit.",
+                                "Error",
+                                MessageBoxButton.OK,
                                 MessageBoxImage.Error);
 
                 Close();

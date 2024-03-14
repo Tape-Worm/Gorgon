@@ -213,10 +213,10 @@ internal static class Program
     }
 
     /// <summary>
-        /// Function to handle idle time for the application.
-        /// </summary>
-        /// <returns><b>true</b> to continue processing, <b>false</b> to stop.</returns>
-        private static bool Idle()
+    /// Function to handle idle time for the application.
+    /// </summary>
+    /// <returns><b>true</b> to continue processing, <b>false</b> to stop.</returns>
+    private static bool Idle()
     {
         // Animate the ball.
         UpdateBall();
@@ -372,7 +372,7 @@ internal static class Program
     /// </summary>
     /// <param name="width">The width of the depth buffer.</param>
     /// <param name="height">The height of the depth buffer.</param>
-        private static void BuildDepthBuffer(int width, int height)
+    private static void BuildDepthBuffer(int width, int height)
     {
         _graphics.SetDepthStencil(null);
         _depthBuffer?.Dispose();
@@ -387,7 +387,7 @@ internal static class Program
     /// <summary>
     /// Function to initialize the GPU resource objects.
     /// </summary>
-        private static void InitializeGpuResources()
+    private static void InitializeGpuResources()
     {
         _graphics = CreateGraphicsInterface();
 
@@ -482,7 +482,7 @@ internal static class Program
     /// <summary>
     /// Function to initialize the states for the objects to draw.
     /// </summary>
-        private static void InitializeStates()
+    private static void InitializeStates()
     {
         var drawBuilder = new GorgonDrawIndexCallBuilder();
         var stateBuilder = new GorgonPipelineStateBuilder(_graphics);
@@ -659,9 +659,7 @@ internal static class Program
     [STAThread]
     private static void Main()
     {
-#if NET6_0_OR_GREATER
         Application.SetHighDpiMode(HighDpiMode.PerMonitorV2);
-#endif
         Application.EnableVisualStyles();
         Application.SetCompatibleTextRenderingDefault(false);
 

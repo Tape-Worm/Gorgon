@@ -222,7 +222,7 @@ internal partial class FormImageSelector
 
         // Render the sprite image.
         if (_previewImage is not null)
-        {                
+        {
             float scale = (renderRegion.Width / _previewImage.Width).Min(renderRegion.Height / _previewImage.Height);
             float width = _previewImage.Width * scale;
             float height = _previewImage.Height * scale;
@@ -234,8 +234,8 @@ internal partial class FormImageSelector
         else
         {
             DX.Size2F size = Resources.GORIAG_TEXT_SELECT_IMAGE.MeasureText(_graphicsContext.Renderer2D.DefaultFont, false);
-            _graphicsContext.Renderer2D.DrawString(Resources.GORIAG_TEXT_SELECT_IMAGE, 
-                                                    new Vector2(renderRegion.X + halfClient.X - size.Width * 0.5f, renderRegion.Y + halfClient.Y - size.Height * 0.5f), 
+            _graphicsContext.Renderer2D.DrawString(Resources.GORIAG_TEXT_SELECT_IMAGE,
+                                                    new Vector2(renderRegion.X + halfClient.X - size.Width * 0.5f, renderRegion.Y + halfClient.Y - size.Height * 0.5f),
                                                     color: GorgonColor.White);
         }
         _graphicsContext.Renderer2D.End();
@@ -366,7 +366,7 @@ internal partial class FormImageSelector
 
         _swapChain = context.LeaseSwapPresenter(PanelPreviewRender);
         _oldIdle = GorgonApplication.IdleMethod;
-        GorgonApplication.IdleMethod = Idle;            
+        GorgonApplication.IdleMethod = Idle;
     }
 
     /// <summary>Function to assign a data context to the view as a view model.</summary>

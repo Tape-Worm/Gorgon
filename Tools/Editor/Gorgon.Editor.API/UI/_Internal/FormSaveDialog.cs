@@ -35,7 +35,7 @@ namespace Gorgon.Editor.UI.Controls;
 /// <summary>
 /// A dialog used to save files back to the file system.
 /// </summary>
-internal partial class FormSaveDialog 
+internal partial class FormSaveDialog
     : Form
 {
     #region Variables.
@@ -192,7 +192,7 @@ internal partial class FormSaveDialog
         CurrentDirectory = FileExplorer.CurrentDirectory;
 
         if (e.FocusedFiles.Count > 0)
-        {                
+        {
             TextFileName.Text = e.FocusedFiles[0].FullPath;
             return;
         }
@@ -210,7 +210,7 @@ internal partial class FormSaveDialog
         FileExplorer.Entries = null;
 
         if (FileManager is null)
-        {                
+        {
             return;
         }
 
@@ -245,7 +245,7 @@ internal partial class FormSaveDialog
             if (!dirs.TryGetValue(dirName, out ContentFileExplorerDirectoryEntry dirEntry))
             {
                 continue;
-            }               
+            }
 
             var fileEntries = (List<ContentFileExplorerFileEntry>)dirEntry.Files;
             ContentFileExplorerFileEntry contentFile = new(file, dirEntry);

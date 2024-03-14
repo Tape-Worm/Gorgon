@@ -233,7 +233,7 @@ public sealed class GorgonNativeBuffer<T>
     /// <paramref name="destination"/> buffer to accomodate the amount of data required.
     /// </para>
     /// </remarks>
-    public void CopyTo(GorgonNativeBuffer<T> destination, int sourceIndex = 0, int? count = null, int destIndex = 0) 
+    public void CopyTo(GorgonNativeBuffer<T> destination, int sourceIndex = 0, int? count = null, int destIndex = 0)
     {
         if (destination is null)
         {
@@ -436,7 +436,7 @@ public sealed class GorgonNativeBuffer<T>
     /// </note>
     /// </para>
     /// </remarks>
-    public static unsafe void* ToPointer(GorgonNativeBuffer<T> buffer) => buffer is null ? null : (void *)buffer._memoryBlock;
+    public static unsafe void* ToPointer(GorgonNativeBuffer<T> buffer) => buffer is null ? null : (void*)buffer._memoryBlock;
 
     /// <summary>
     /// Implicit operator to return the pointer to the underlying data in the buffer.
@@ -599,7 +599,7 @@ public sealed class GorgonNativeBuffer<T>
     {
         TypeSize = Unsafe.SizeOf<T>();
         _pinnedArray = pinnedData;
-        _memoryBlock = new GorgonPtr<T>(_pinnedArray.AddrOfPinnedObject() + offset, size);            
+        _memoryBlock = new GorgonPtr<T>(_pinnedArray.AddrOfPinnedObject() + offset, size);
     }
 
     /// <summary>

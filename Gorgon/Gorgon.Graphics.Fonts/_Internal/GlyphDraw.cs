@@ -370,7 +370,7 @@ internal class GlyphDraw(IGorgonFontInfo fontInfo, GdiFontData fontData)
 
         switch (_fontInfo.AntiAliasingMode)
         {
-            case FontAntiAliasMode.AntiAlias:
+            case GorgonFontAntiAliasMode.AntiAlias:
                 oldGraphics.SmoothingMode = SmoothingMode.AntiAlias;
                 oldGraphics.InterpolationMode = InterpolationMode.HighQualityBicubic;
                 break;
@@ -536,7 +536,7 @@ internal class GlyphDraw(IGorgonFontInfo fontInfo, GdiFontData fontData)
 
             switch (_fontInfo.AntiAliasingMode)
             {
-                case FontAntiAliasMode.AntiAlias:
+                case GorgonFontAntiAliasMode.AntiAlias:
                     glyphGraphics.SmoothingMode = SmoothingMode.AntiAlias;
                     glyphGraphics.InterpolationMode = InterpolationMode.HighQualityBicubic;
                     break;

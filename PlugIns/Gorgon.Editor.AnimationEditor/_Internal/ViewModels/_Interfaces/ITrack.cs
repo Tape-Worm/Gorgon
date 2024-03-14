@@ -34,7 +34,7 @@ namespace Gorgon.Editor.AnimationEditor;
 /// A view model for an animation track.
 /// </summary>
 internal interface ITrack
-    : IViewModel, IGorgonNamedObject        
+    : IViewModel, IGorgonNamedObject
 {
     /// <summary>
     /// Property to return the ID for the track registration.

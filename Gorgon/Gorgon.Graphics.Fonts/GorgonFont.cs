@@ -154,10 +154,10 @@ public sealed class GorgonFont
     /// This will affect the <see cref="Size" /> value in that it will alter the meaning of the units.
     /// </para>
     ///   <para>
-    /// The default value is <see cref="FontHeightMode.Pixels" />.
+    /// The default value is <see cref="GorgonFontHeightMode.Pixels" />.
     /// </para>
     /// </remarks>
-    public FontHeightMode FontHeightMode => _info.FontHeightMode;
+    public GorgonFontHeightMode FontHeightMode => _info.FontHeightMode;
 
     /// <summary>Property to return the font family name to generate the font from.</summary>
     public string FontFamilyName => _info.FontFamilyName;
@@ -168,8 +168,8 @@ public sealed class GorgonFont
     /// This sets the height of the font.
     /// </para>
     ///   <para>
-    /// This is affected by the <see cref="Fonts.FontHeightMode" />. If the <see cref="FontHeightMode" /> is set to <see cref="FontHeightMode.Points" />, then this unit is the height
-    /// size height for the font. Otherwise, this represents the font height in <see cref="FontHeightMode.Pixels" />.
+    /// This is affected by the <see cref="Fonts.GorgonFontHeightMode" />. If the <see cref="FontHeightMode" /> is set to <see cref="GorgonFontHeightMode.Points" />, then this unit is the height
+    /// size height for the font. Otherwise, this represents the font height in <see cref="GorgonFontHeightMode.Pixels" />.
     /// </para>
     /// </remarks>
     public float Size => _info.Size;
@@ -228,10 +228,10 @@ public sealed class GorgonFont
     ///     </note>
     ///   </para>
     ///   <para>
-    /// The default value is <see cref="FontAntiAliasMode.AntiAlias" />.
+    /// The default value is <see cref="GorgonFontAntiAliasMode.AntiAlias" />.
     /// </para>
     /// </remarks>
-    public FontAntiAliasMode AntiAliasingMode => _info.AntiAliasingMode;
+    public GorgonFontAntiAliasMode AntiAliasingMode => _info.AntiAliasingMode;
 
     /// <summary>Property to return the size of an outline.</summary>
     /// <remarks>
@@ -303,7 +303,7 @@ public sealed class GorgonFont
 
     /// <summary>Property to return the style for the font.</summary>
     /// <remarks>The default value is <see cref="System.Drawing.FontStyle.Regular" />.</remarks>
-    public FontStyle FontStyle => _info.FontStyle;
+    public GorgonFontStyle FontStyle => _info.FontStyle;
 
     /// <summary>Property to return a default character to use in place of a character that cannot be found in the font.</summary>
     /// <remarks>
@@ -473,7 +473,7 @@ public sealed class GorgonFont
     {
         var result = new List<(IGorgonImage, IEnumerable<GlyphInfo>)>();
 
-        var imageSettings = new GorgonImageInfo(ImageType.Image2D, BufferFormat.R8G8B8A8_UNorm)
+        var imageSettings = new GorgonImageInfo(ImageDataType.Image2D, BufferFormat.R8G8B8A8_UNorm)
         {
             Width = _info.TextureWidth,
             Height = _info.TextureHeight,
@@ -492,12 +492,11 @@ public sealed class GorgonFont
         {
             if ((image is null) || (arrayIndex >= Graphics.VideoAdapter.MaxTextureArrayCount))
             {
-#if NET6_0_OR_GREATER
                 imageSettings = imageSettings with
                 {
                     ArrayCount = bitmapCount.Min(Graphics.VideoAdapter.MaxTextureArrayCount)
                 };
-#endif
+
                 arrayIndex = 0;
 
                 glyphs = [];
@@ -544,12 +543,10 @@ public sealed class GorgonFont
         {
             if (textureSettings.ArrayCount != image.ArrayCount)
             {
-#if NET6_0_OR_GREATER
                 textureSettings = textureSettings with
                 {
                     ArrayCount = image.ArrayCount
                 };
-#endif
             }
 
             GorgonTexture2D texture = image.ToTexture2D(Graphics, new GorgonTexture2DLoadOptions

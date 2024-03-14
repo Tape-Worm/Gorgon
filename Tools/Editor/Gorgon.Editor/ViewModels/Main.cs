@@ -635,7 +635,7 @@ internal class Main
     {
         IProjectEditor current = CurrentProject;
 
-        ShowWaitPanel(Resources.GOREDIT_TEXT_CREATING_PROJECT);            
+        ShowWaitPanel(Resources.GOREDIT_TEXT_CREATING_PROJECT);
 
         try
         {
@@ -829,7 +829,7 @@ internal class Main
     {
         BrowseProjectCommand = new EditorCommand<object>(DoOpenProjectAsync);
         OpenPackFileCommand = new EditorCommand<object>(DoOpenPackFileAsync, CanOpenProjects);
-        AppClosingAsyncCommand = new EditorAsyncCommand<AppCloseArgs>(DoAppCloseAsync);            
+        AppClosingAsyncCommand = new EditorAsyncCommand<AppCloseArgs>(DoAppCloseAsync);
     }
     #endregion
 }

@@ -87,7 +87,7 @@ public struct GorgonVertexPosColor
     /// <param name="color">The diffuse color for the vertex.</param>
     public GorgonVertexPosColor(Vector3 pos, GorgonColor color)
     {
-        Position = new Vector4(pos, 1);            
+        Position = new Vector4(pos, 1);
         Color = color;
     }
 
@@ -96,7 +96,7 @@ public struct GorgonVertexPosColor
     /// <param name="color">The diffuse color for the vertex.</param>
     public GorgonVertexPosColor(Vector4 pos, GorgonColor color)
     {
-        Position = pos;            
+        Position = pos;
         Color = color;
     }
     #endregion

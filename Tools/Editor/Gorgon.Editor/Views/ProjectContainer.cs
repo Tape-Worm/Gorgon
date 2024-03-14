@@ -295,7 +295,7 @@ internal partial class ProjectContainer
         var rows = (GridRowsDragData)data.GetData(dataType);
 
         return rows.SourceFiles.Count != 1 ? null : rows.SourceFiles[0];
-    }        
+    }
 
     /// <summary>Handles the IsRenamingChanged event of the FileExplorer control.</summary>
     /// <param name="sender">The source of the event.</param>
@@ -416,8 +416,8 @@ internal partial class ProjectContainer
             EventHandler<ContentRibbonEventArgs> handler = null;
 
             lock (_eventLock)
-            {                    
-                handler = RibbonRemovedEvent;                    
+            {
+                handler = RibbonRemovedEvent;
             }
 
             handler?.Invoke(this, new ContentRibbonEventArgs(ribbon));

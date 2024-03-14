@@ -172,8 +172,8 @@ internal class Cube
         VertexBuffer = GorgonVertexBuffer.Create<GorgonVertexPosNormUvTangent>(graphics,
                                                  new GorgonVertexBufferInfo(GorgonVertexPosNormUvTangent.SizeInBytes * vertexData.Length)
                                                  {
-                                                    Name = "CubeVB",
-                                                    Usage = ResourceUsage.Immutable
+                                                     Name = "CubeVB",
+                                                     Usage = ResourceUsage.Immutable
                                                  },
                                                  vertexData);
 

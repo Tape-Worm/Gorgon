@@ -688,7 +688,7 @@ class WicUtilities
             arrayCount = decoder.FrameCount.Max(1);
         }
 
-        return (new GorgonImageInfo(ImageType.Image2D, format)
+        return (new GorgonImageInfo(ImageDataType.Image2D, format)
         {
             Width = frame.Size.Width,
             Height = frame.Size.Height,
@@ -1127,8 +1127,8 @@ class WicUtilities
                 {
                     for (int depth = 0; depth < mipDepth; ++depth)
                     {
-                        IGorgonImageBuffer sourceBuffer = destImageData.Buffers[0, destImageData.ImageType == ImageType.Image3D ? (destImageData.Depth / mipDepth) * depth : array];
-                        IGorgonImageBuffer destBuffer = destImageData.Buffers[mipLevel, destImageData.ImageType == ImageType.Image3D ? depth : array];
+                        IGorgonImageBuffer sourceBuffer = destImageData.Buffers[0, destImageData.ImageType == ImageDataType.Image3D ? (destImageData.Depth / mipDepth) * depth : array];
+                        IGorgonImageBuffer destBuffer = destImageData.Buffers[mipLevel, destImageData.ImageType == ImageDataType.Image3D ? depth : array];
 
                         bitmap = GetBitmap(sourceBuffer, pixelFormat);
 
@@ -1206,8 +1206,8 @@ class WicUtilities
 
                     for (int depth = 0; depth < mipDepth; ++depth)
                     {
-                        IGorgonImageBuffer destBuffer = result.Buffers[mip, workingImage.ImageType == ImageType.Image3D ? depth : array];
-                        IGorgonImageBuffer srcBuffer = workingImage.Buffers[mip, workingImage.ImageType == ImageType.Image3D ? depth : array];
+                        IGorgonImageBuffer destBuffer = result.Buffers[mip, workingImage.ImageType == ImageDataType.Image3D ? depth : array];
+                        IGorgonImageBuffer srcBuffer = workingImage.Buffers[mip, workingImage.ImageType == ImageDataType.Image3D ? depth : array];
 
                         bitmap = GetBitmap(srcBuffer, pixelFormat);
 
@@ -1285,8 +1285,8 @@ class WicUtilities
                     for (int depth = 0; depth < depthCount; depth++)
                     {
                         // Get the array/mip/depth buffer.
-                        IGorgonImageBuffer destBuffer = result.Buffers[mip, imageData.ImageType == ImageType.Image3D ? depth : array];
-                        IGorgonImageBuffer srcBuffer = imageData.Buffers[mip, imageData.ImageType == ImageType.Image3D ? depth : array];
+                        IGorgonImageBuffer destBuffer = result.Buffers[mip, imageData.ImageType == ImageDataType.Image3D ? depth : array];
+                        IGorgonImageBuffer srcBuffer = imageData.Buffers[mip, imageData.ImageType == ImageDataType.Image3D ? depth : array];
                         var rect = new DX.DataRectangle(srcBuffer.Data, srcBuffer.PitchInformation.RowPitch);
 
                         Bitmap bitmap = null;
@@ -1324,7 +1324,7 @@ class WicUtilities
                             bitmap?.Dispose();
                         }
                     }
-                }                  
+                }
             }
 
             return result;

@@ -230,16 +230,16 @@ internal class AnimationContent
             _primarySprite = (value, _primarySprite.spriteFile, _primarySprite.textureFile);
             UpdatePrimarySprite();
             value?.CopyTo(WorkingSprite);
-            OnPropertyChanged();                
+            OnPropertyChanged();
         }
     }
 
     /// <summary>
     /// Property to return the sprite used in the animation preview (a copy of <see cref="PrimarySprite"/>).
     /// </summary>
-    public GorgonSprite WorkingSprite 
-    { 
-        get; 
+    public GorgonSprite WorkingSprite
+    {
+        get;
     } = new GorgonSprite();
 
     /// <summary>Property to return the length of the animation, in seconds.</summary>
@@ -623,7 +623,7 @@ internal class AnimationContent
 
             _controller.Play(WorkingSprite, _animation);
             _controller.Time = currentTime;
-            _controller.Refresh();                
+            _controller.Refresh();
 
             NotifyPropertyChanged(nameof(WorkingSprite));
 
@@ -841,7 +841,7 @@ internal class AnimationContent
             if ((Settings.AddTextureTrackForPrimarySprite)
                 && (File.Metadata.Attributes.ContainsKey(CommonEditorConstants.IsNewAttr))
                 && (Tracks.Count == 0))
-            {                    
+            {
                 // Default to a new texture track.
                 ITrack track = await _contentServices.ViewModelFactory.CreateDefaultTextureTrackAsync(_primarySprite, MaxKeyCount);
                 Tracks.Add(track);
@@ -911,7 +911,7 @@ internal class AnimationContent
             {
                 currentTime = _selected.SelectMany(item => item.SelectedKeys)?.FirstOrDefault()?.TimeIndex ?? 0;
             }
-            _controller.Reset();                
+            _controller.Reset();
             _controller.Pause();
             _controller.Time = currentTime;
 
@@ -927,9 +927,9 @@ internal class AnimationContent
     /// Function to determine if the animation preview can be updated.
     /// </summary>
     /// <returns><b>true</b> if the animation preview can be updated, or <b>false</b> if not.</returns>
-    private bool CanUpdateAnimationPreview() => (_primarySprite.sprite is not null) 
-                                            && (_controller.CurrentAnimation is not null) 
-                                            && (_controller.State == AnimationState.Playing) 
+    private bool CanUpdateAnimationPreview() => (_primarySprite.sprite is not null)
+                                            && (_controller.CurrentAnimation is not null)
+                                            && (_controller.State == AnimationState.Playing)
                                             && (CurrentPanel is null)
                                             && (CommandContext is null);
 
@@ -1048,11 +1048,11 @@ internal class AnimationContent
     /// Function to determine if tracks can be added to the animation.
     /// </summary>
     /// <returns></returns>
-    private bool CanAddTrack() => (_primarySprite.sprite is not null) 
-                               && (CurrentPanel == AddTrack) 
+    private bool CanAddTrack() => (_primarySprite.sprite is not null)
+                               && (CurrentPanel == AddTrack)
                                && (CommandContext is null)
-                               && (AddTrack.AvailableTracks.Count > 0) 
-                               && (AddTrack is not null) 
+                               && (AddTrack.AvailableTracks.Count > 0)
+                               && (AddTrack is not null)
                                && (AddTrack.SelectedTracks.Count > 0);
 
 
@@ -1065,7 +1065,7 @@ internal class AnimationContent
 
         bool RemoveTracks(AddTrackUndoRedoData args)
         {
-            HostServices.BusyService.SetBusy();                
+            HostServices.BusyService.SetBusy();
 
             args.RemovedTracks ??= [];
 
@@ -1440,7 +1440,7 @@ internal class AnimationContent
                 for (int j = 0; j < keyIndices.Count; ++j)
                 {
                     int keyIndex = keyIndices[j];
-                    IKeyFrame keyFrame = selectedTrack.KeyFrames[keyIndex];                        
+                    IKeyFrame keyFrame = selectedTrack.KeyFrames[keyIndex];
 
                     keySelection[j] = new TrackKeySelection.KeySelection(selectedTrack, keyIndex, _fps);
                 }
@@ -1464,7 +1464,7 @@ internal class AnimationContent
             {
                 _controller.Time = timeIndex;
                 _controller.Refresh();
-            }                    
+            }
 
             Selected = selected;
 
@@ -1521,7 +1521,7 @@ internal class AnimationContent
             UpdatePrimarySprite();
             RebuildAnimation();
 
-            ContentState = ContentState.Modified;                
+            ContentState = ContentState.Modified;
         }
         catch (Exception ex)
         {
@@ -1615,7 +1615,7 @@ internal class AnimationContent
                 [
                     new TrackKeySelection.KeySelection(track, keyIndex, _fps)
                 ])
-            ];                
+            ];
             _controller.Time = keyTime;
             NotifyPropertyChanged(nameof(PreviewKeyTime));
         }
@@ -1636,7 +1636,7 @@ internal class AnimationContent
                                             && (_selected.Count == 1)
                                             && (_selected[0].TrackIndex < Tracks.Count)
                                             && (_selected[0].SelectedKeys.Count == 1)
-                                            && (_selected[0].SelectedKeys[0].KeyIndex < _selected[0].Track.KeyFrames.Count - 1);                                                
+                                            && (_selected[0].SelectedKeys[0].KeyIndex < _selected[0].Track.KeyFrames.Count - 1);
 
     /// <summary>
     /// Function to move to the next key.
@@ -1952,7 +1952,7 @@ internal class AnimationContent
             CurrentPanel = null;
 
             if (CommandContext == KeyEditor)
-            {                    
+            {
                 CommandContext = null;
                 RebuildAnimation();
                 return;
@@ -2040,15 +2040,15 @@ internal class AnimationContent
             }
 
             (string newName, float length, float fps, IContentFile primarySpriteFile, IContentFile bgTextureFile) = _contentServices.NewAnimation
-                                                                                                                                    .GetNewAnimationName(animationDirectory, 
-                                                                                                                                                         File.Name, 
-                                                                                                                                                         _primarySprite.spriteFile, 
+                                                                                                                                    .GetNewAnimationName(animationDirectory,
+                                                                                                                                                         File.Name,
+                                                                                                                                                         _primarySprite.spriteFile,
                                                                                                                                                          _backImage.file);
 
             if (newName is null)
             {
                 return;
-            }               
+            }
 
             string animationPath = animationDirectory + newName.FormatFileName();
 
@@ -2082,7 +2082,7 @@ internal class AnimationContent
             Tracks.Clear();
 
             _contentServices.IOService.UnloadSprite(_primarySprite);
-            (GorgonSprite primarySprite, IContentFile spriteTextureFile) = await _contentServices.IOService.LoadSpriteAsync(primarySpriteFile);                
+            (GorgonSprite primarySprite, IContentFile spriteTextureFile) = await _contentServices.IOService.LoadSpriteAsync(primarySpriteFile);
             _primarySprite = (primarySprite, primarySpriteFile, spriteTextureFile);
 
             // Load the background texture.
@@ -2195,7 +2195,7 @@ internal class AnimationContent
         foreach (ITrack track in Tracks)
         {
             track.PropertyChanged += Track_PropertyChanged;
-        }            
+        }
 
         AddTrack.OkCommand = new EditorCommand<object>(DoAddTrack, CanAddTrack);
         Properties.OkCommand = new EditorCommand<object>(DoUpdateAnimationPropertiesAsync, CanUpdateAnimationProperties);

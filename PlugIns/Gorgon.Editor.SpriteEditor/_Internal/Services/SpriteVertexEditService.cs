@@ -445,7 +445,7 @@ internal class SpriteVertexEditService
                 _dragHandlePos = Vector2.Zero;
                 _localStartDrag = Vector2.Zero;
                 IsDragging = false;
-                return true;                    
+                return true;
             case Keys.D1:
                 SelectedVertexIndex = 0;
                 _dragHandlePos = Vector2.Zero;
@@ -598,7 +598,7 @@ internal class SpriteVertexEditService
         }
 
         if (SelectedVertexIndex == -1)
-        {                
+        {
             return false;
         }
 

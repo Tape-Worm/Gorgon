@@ -61,7 +61,7 @@ public sealed class GorgonConstantBuffers
     /// <summary>
     /// Property to return the start of the view.
     /// </summary>
-        internal int[] ViewStart
+    internal int[] ViewStart
     {
         get;
     } = new int[MaximumConstantBufferCount];
@@ -103,7 +103,7 @@ public sealed class GorgonConstantBuffers
     /// </summary>
     /// <param name="resource">The resource to look up.</param>
     /// <returns>The index, if found. -1 if not.</returns>
-        internal int IndexOf(GorgonGraphicsResource resource)
+    internal int IndexOf(GorgonGraphicsResource resource)
     {
         (int start, int count) = GetDirtyItems(true);
 

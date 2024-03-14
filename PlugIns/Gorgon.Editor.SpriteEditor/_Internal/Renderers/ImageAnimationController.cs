@@ -68,7 +68,7 @@ internal class ImageAnimationController
     /// <param name="animObject">The object to update.</param>
     /// <param name="value">The value to apply.</param>
     protected override void OnVector2ValueUpdate(GorgonTrackRegistration track, ISpriteViewer animObject, Vector2 value)
-    {        
+    {
     }
 
     /// <summary>Function called when a 3D vector value needs to be updated on the animated object.</summary>

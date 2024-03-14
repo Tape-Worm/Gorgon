@@ -167,7 +167,7 @@ internal interface IAnimationContent
     ObservableCollection<ITrack> Tracks
     {
         get;
-    }       
+    }
 
     /// <summary>
     /// Property to return the list of tracks and keys that were selected.

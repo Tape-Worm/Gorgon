@@ -113,12 +113,12 @@ internal class DataGridViewEx
             handler?.Invoke(this, new CellsDragEventArgs(_dragCells, e.Button));
 
             _dragRegion = Rectangle.Empty;
-            _dragCells.Clear();                
+            _dragCells.Clear();
         }
 
         // Disable the "drag to select".
         if ((SelectedCells.Count > 0) && (e.Button != MouseButtons.None))
-        {                
+        {
             return;
         }
 
@@ -158,7 +158,7 @@ internal class DataGridViewEx
         {
             base.OnMouseDown(e);
             return;
-        }            
+        }
 
         DataGridViewCell cell = Rows[hit.RowIndex].Cells[hit.ColumnIndex];
 
@@ -171,7 +171,7 @@ internal class DataGridViewEx
             ClearSelection();
             Interlocked.Exchange(ref _noFireSelectEvent, 0);
 
-            cell.Selected = true;                
+            cell.Selected = true;
         }
 
         if ((SelectedCells.Count > 0) && (cell.Selected))

@@ -159,16 +159,16 @@ static class Program
         if (_logoSprite.Angle > 360.0f)
         {
             _logoSprite.Angle -= 360.0f;
-        }                        
+        }
 
         // Draw the rest of the UI.
         _renderer.Begin();
 
         _renderer.DrawSprite(_torchSprite);
 
-        _renderer.DrawString($"Specular Power: {_light.SpecularPower:0.0}\n" + 
-                             $"Light [c #{GorgonColor.CornFlowerBlue.ToHex()}]Z/z[/c]: {_light.Position.Z:0}\n" + 
-                             $"Camera Position: {_camera.Position.X:0}, {_camera.Position.Y:0} ([c #{GorgonColor.CornFlowerBlue.ToHex()}]W[/c], [c #{GorgonColor.CornFlowerBlue.ToHex()}]A[/c], [c #{GorgonColor.CornFlowerBlue.ToHex()}]S[/c], [c #{GorgonColor.CornFlowerBlue.ToHex()}]D[/c])\n" + 
+        _renderer.DrawString($"Specular Power: {_light.SpecularPower:0.0}\n" +
+                             $"Light [c #{GorgonColor.CornFlowerBlue.ToHex()}]Z/z[/c]: {_light.Position.Z:0}\n" +
+                             $"Camera Position: {_camera.Position.X:0}, {_camera.Position.Y:0} ([c #{GorgonColor.CornFlowerBlue.ToHex()}]W[/c], [c #{GorgonColor.CornFlowerBlue.ToHex()}]A[/c], [c #{GorgonColor.CornFlowerBlue.ToHex()}]S[/c], [c #{GorgonColor.CornFlowerBlue.ToHex()}]D[/c])\n" +
                              $"[c #{GorgonColor.CornFlowerBlue.ToHex()}]R[/c]otation: {(_rotate ? "Yes" : "No")}",
                              new Vector2(0, 64));
         _renderer.End();
@@ -211,7 +211,7 @@ static class Program
                                               Name = "Gorgon2D Effects Example Swap Chain"
                                           });
 
-            _screen.SwapChainResized += Screen_SwapChainResized;                
+            _screen.SwapChainResized += Screen_SwapChainResized;
 
             _camera = new GorgonOrthoCamera(_graphics, new DX.Size2F(_screen.Width, _screen.Height))
             {
@@ -333,8 +333,8 @@ static class Program
             case Keys.C:
                 _lightEffect.CheckLightDepth = !_lightEffect.CheckLightDepth;
                 break;
-            case Keys.Z:                     
-                _light.Position = 
+            case Keys.Z:
+                _light.Position =
                     !e.Shift
                         ? new Vector3(_light.Position.X, _light.Position.Y, _light.Position.Z + 1.0f)
                         : new Vector3(_light.Position.X, _light.Position.Y, _light.Position.Z - 1.0f);
@@ -392,9 +392,7 @@ static class Program
     {
         try
         {
-#if NET6_0_OR_GREATER
             Application.SetHighDpiMode(HighDpiMode.PerMonitorV2);
-#endif
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
 

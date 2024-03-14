@@ -139,7 +139,7 @@ public class GorgonFormatInfo
     /// <summary>
     /// Property to return the number of components for the format.
     /// </summary>
-        public int ComponentCount
+    public int ComponentCount
     {
         get;
         private set;
@@ -324,7 +324,7 @@ public class GorgonFormatInfo
     /// Function to retrieve the number of components that make up a format.
     /// </summary>
     /// <param name="format">The format to evaulate.</param>
-        private void GetComponentCount(BufferFormat format) => ComponentCount = format switch
+    private void GetComponentCount(BufferFormat format) => ComponentCount = format switch
     {
         BufferFormat.R32G32B32A32_Typeless or BufferFormat.R32G32B32A32_Float or BufferFormat.R32G32B32A32_UInt or BufferFormat.R32G32B32A32_SInt or BufferFormat.R16G16B16A16_Typeless or BufferFormat.R16G16B16A16_Float or BufferFormat.R16G16B16A16_UNorm or BufferFormat.R16G16B16A16_UInt or BufferFormat.R16G16B16A16_SNorm or BufferFormat.R16G16B16A16_SInt or BufferFormat.R10G10B10A2_Typeless or BufferFormat.R10G10B10A2_UNorm or BufferFormat.R10G10B10A2_UInt or BufferFormat.R8G8B8A8_Typeless or BufferFormat.R8G8B8A8_UNorm or BufferFormat.R8G8B8A8_UNorm_SRgb or BufferFormat.R8G8B8A8_UInt or BufferFormat.R8G8B8A8_SNorm or BufferFormat.R8G8B8A8_SInt or BufferFormat.R8G8_B8G8_UNorm or BufferFormat.G8R8_G8B8_UNorm or BufferFormat.BC1_Typeless or BufferFormat.BC1_UNorm or BufferFormat.BC1_UNorm_SRgb or BufferFormat.BC2_Typeless or BufferFormat.BC2_UNorm or BufferFormat.BC2_UNorm_SRgb or BufferFormat.BC3_Typeless or BufferFormat.BC3_UNorm or BufferFormat.BC3_UNorm_SRgb or BufferFormat.BC4_Typeless or BufferFormat.BC4_UNorm or BufferFormat.BC4_SNorm or BufferFormat.BC5_Typeless or BufferFormat.BC5_UNorm or BufferFormat.BC5_SNorm or BufferFormat.B5G5R5A1_UNorm or BufferFormat.B8G8R8A8_UNorm or BufferFormat.B8G8R8X8_UNorm or BufferFormat.R10G10B10_Xr_Bias_A2_UNorm or BufferFormat.B8G8R8A8_Typeless or BufferFormat.B8G8R8A8_UNorm_SRgb or BufferFormat.B8G8R8X8_Typeless or BufferFormat.B8G8R8X8_UNorm_SRgb or BufferFormat.BC6H_Typeless or BufferFormat.BC6H_Uf16 or BufferFormat.BC6H_Sf16 or BufferFormat.BC7_Typeless or BufferFormat.BC7_UNorm or BufferFormat.BC7_UNorm_SRgb or BufferFormat.B4G4R4A4_UNorm => 4,
         BufferFormat.R11G11B10_Float or BufferFormat.R32G32B32_Typeless or BufferFormat.R32G32B32_Float or BufferFormat.R32G32B32_UInt or BufferFormat.R32G32B32_SInt or BufferFormat.B5G6R5_UNorm or BufferFormat.R9G9B9E5_Sharedexp => 3,

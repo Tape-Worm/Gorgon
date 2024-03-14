@@ -136,7 +136,7 @@ internal class SceneRenderer
             }
 
             FlipToScreen(sceneSrv);
-        }            
+        }
         else
         {
             for (int i = 0; i < _postProcessGroups.Count; ++i)

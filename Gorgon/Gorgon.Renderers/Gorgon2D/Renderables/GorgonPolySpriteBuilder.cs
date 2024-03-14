@@ -505,7 +505,7 @@ public class GorgonPolySpriteBuilder(Gorgon2D renderer)
         _triangulator.EnsureWindingOrder(newSprite.Renderable.Vertices, WindingOrder.CounterClockwise);
 
         // Split the polygon hull into triangles.
-        (int[] indices, DX.RectangleF bounds) = _triangulator.Triangulate(newSprite.Renderable.Vertices, WindingOrder.CounterClockwise);            
+        (int[] indices, DX.RectangleF bounds) = _triangulator.Triangulate(newSprite.Renderable.Vertices, WindingOrder.CounterClockwise);
 
         newSprite.RwIndices = indices;
 

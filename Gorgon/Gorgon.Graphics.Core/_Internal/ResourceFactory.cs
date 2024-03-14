@@ -109,11 +109,11 @@ internal static class ResourceFactory
         int dataBoxIndex = 0;
 
         for (int mipIndex = 0; mipIndex < desc.MipLevels; ++mipIndex)
-        {   
+        {
             for (int depthSlice = 0; depthSlice < depthLevel; ++depthSlice)
             {
                 IGorgonImageBuffer buffer = image.Buffers[mipIndex, depthSlice];
-                dataBoxes[dataBoxIndex++] = new DX.DataBox(buffer.Data, buffer.PitchInformation.RowPitch, buffer.PitchInformation.SlicePitch);                    
+                dataBoxes[dataBoxIndex++] = new DX.DataBox(buffer.Data, buffer.PitchInformation.RowPitch, buffer.PitchInformation.SlicePitch);
             }
 
             depthLevel >>= 1;

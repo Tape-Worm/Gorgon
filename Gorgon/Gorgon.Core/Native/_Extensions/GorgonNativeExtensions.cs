@@ -146,7 +146,7 @@ public static class GorgonNativeExtensions
             || ((stream.Position + countBytes) > stream.Length))
         {
             throw new ArgumentException(string.Format(Resources.GOR_ERR_DATABUFF_SIZE_OFFSET_TOO_LARGE, index, count));
-        }            
+        }
 
         var result = new GorgonNativeBuffer<T>(count.Value);
         using var reader = new GorgonBinaryReader(stream, true);

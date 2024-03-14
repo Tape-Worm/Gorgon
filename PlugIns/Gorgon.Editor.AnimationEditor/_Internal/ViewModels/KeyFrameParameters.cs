@@ -149,7 +149,7 @@ internal class KeyFrameParameters
         : base(hostServices)
     {
         Time = key.Time;
-        KeyType = AnimationTrackKeyType.Texture2D;            
+        KeyType = AnimationTrackKeyType.Texture2D;
         TextureValue = new TextureValue(key.Value, textureFile, key.TextureArrayIndex, key.TextureCoordinates);
     }
 

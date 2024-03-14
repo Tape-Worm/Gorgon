@@ -60,7 +60,7 @@ internal class ColorEditViewer(Gorgon2D renderer, GorgonSwapChain swapChain, ISp
     /// Function to set the selected colors.
     /// </summary>
     private void SetSelectedColors()
-    {            
+    {
         for (int i = 0; i < _selected.Length; ++i)
         {
             if (_selected[i])
@@ -321,7 +321,7 @@ internal class ColorEditViewer(Gorgon2D renderer, GorgonSwapChain swapChain, ISp
     /// <summary>Function called to render the sprite data.</summary>
     protected override void DrawSprite()
     {
-        base.DrawSprite();                       
+        base.DrawSprite();
 
         Renderer.Begin();
 

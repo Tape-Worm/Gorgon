@@ -152,7 +152,7 @@ public class GorgonWaitOverlay
             case FormWindowState.Minimized:
                 _waitForm.Visible = false;
                 break;
-            default:                    
+            default:
                 _waitForm.Visible = true;
                 _waitForm.Refresh();
                 break;
@@ -195,7 +195,7 @@ public class GorgonWaitOverlay
 
         if (message is not null)
         {
-            _waitForm.Wait.WaitMessage = message;                    
+            _waitForm.Wait.WaitMessage = message;
         }
 
         if (image is not null)
@@ -242,7 +242,7 @@ public class GorgonWaitOverlay
         {
             parentForm.Layout -= ParentForm_Layout;
             parentForm.FormClosed -= ParentForm_FormClosed;
-            parentForm.Move -= Parent_Move;   
+            parentForm.Move -= Parent_Move;
         }
 
         if (parent is not null)
@@ -257,7 +257,7 @@ public class GorgonWaitOverlay
         if (_overlay.IsValueCreated)
         {
             _overlay.Value.Hide();
-        }            
+        }
     }
     #endregion
 }

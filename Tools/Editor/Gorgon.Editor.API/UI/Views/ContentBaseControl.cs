@@ -432,7 +432,7 @@ public partial class ContentBaseControl
             foreach (Control hostControl in PanelHostControls.Controls.OfType<Control>().Where(item => item != control))
             {
                 hostControl.Visible = false;
-            }                
+            }
 
             control.Left = 0;
             control.Top = 0;

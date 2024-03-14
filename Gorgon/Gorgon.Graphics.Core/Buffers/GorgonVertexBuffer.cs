@@ -120,7 +120,7 @@ public sealed class GorgonVertexBuffer
     /// <summary>
     /// The prefix to assign to a default name.
     /// </summary>
-        internal const string NamePrefix = nameof(GorgonVertexBuffer);
+    internal const string NamePrefix = nameof(GorgonVertexBuffer);
     #endregion
 
     #region Variables.
@@ -272,7 +272,7 @@ public sealed class GorgonVertexBuffer
     /// </remarks>
     /// <seealso cref="GorgonVertexBufferInfo"/>
     public static GorgonVertexBuffer Create<T>(GorgonGraphics graphics, GorgonVertexBufferInfo info, ReadOnlySpan<T> initialData = default)
-        where T : unmanaged            
+        where T : unmanaged
     {
         if (graphics is null)
         {
@@ -290,8 +290,8 @@ public sealed class GorgonVertexBuffer
         }
 
         unsafe
-        {                
-            int size = initialData.Length * sizeof(T);                
+        {
+            int size = initialData.Length * sizeof(T);
 
             if (info.SizeInBytes < 1)
             {

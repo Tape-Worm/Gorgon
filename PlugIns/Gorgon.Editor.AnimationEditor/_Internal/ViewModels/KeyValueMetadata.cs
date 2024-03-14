@@ -95,7 +95,7 @@ internal class KeyValueMetadata
 
         _valueData[valueIndex] = new MetadataValues
         {
-            DisplayName = (string.IsNullOrWhiteSpace(displayName) ? string.Format(Resources.GORANM_TEXT_DEFAULT_VALUE_NAME, valueIndex + 1) : displayName),   
+            DisplayName = (string.IsNullOrWhiteSpace(displayName) ? string.Format(Resources.GORANM_TEXT_DEFAULT_VALUE_NAME, valueIndex + 1) : displayName),
             DecimalCount = decimalCount,
             MinMax = new GorgonRangeF(min, max)
         };

@@ -157,7 +157,7 @@ internal static class Program
         var camera = new GorgonPerspectiveCamera(_graphics, new DX.Size2F(_swap.Width, _swap.Height), 0.125f, 1000.0f)
         {
             Fov = 65.0f
-        };            
+        };
 
         // Create our constant buffer.
         //
@@ -287,9 +287,7 @@ internal static class Program
     [STAThread]
     private static void Main()
     {
-#if NET6_0_OR_GREATER
         Application.SetHighDpiMode(HighDpiMode.PerMonitorV2);
-#endif
         Application.EnableVisualStyles();
         Application.SetCompatibleTextRenderingDefault(false);
 

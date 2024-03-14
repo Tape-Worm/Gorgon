@@ -38,7 +38,7 @@ using Gorgon.PlugIns;
 using Gorgon.Renderers;
 using Gorgon.UI;
 using DX = SharpDX;
-using FontStyle = Gorgon.Graphics.Fonts.FontStyle;
+
 using GorgonMouseButtons = Gorgon.Input.MouseButtons;
 
 namespace Gorgon.Examples;
@@ -673,11 +673,11 @@ public partial class MainForm
 
             // Create the text font.
             _fontFactory = new GorgonFontFactory(_graphics);
-            _font = _fontFactory.GetFont(new GorgonFontInfo("Arial", 9.0f, FontHeightMode.Points)
+            _font = _fontFactory.GetFont(new GorgonFontInfo("Arial", 9.0f, GorgonFontHeightMode.Points)
             {
                 Name = "Arial 9pt",
-                FontStyle = FontStyle.Bold,
-                AntiAliasingMode = FontAntiAliasMode.AntiAlias
+                FontStyle = GorgonFontStyle.Bold,
+                AntiAliasingMode = GorgonFontAntiAliasMode.AntiAlias
             });
 
             // Create text sprite.
@@ -695,7 +695,7 @@ public partial class MainForm
             _backBufferView = _backBuffer.GetShaderResourceView();
 
             // Clear our backup image to white to match our primary screen.
-            using (IGorgonImage image = new GorgonImage(new GorgonImageInfo(ImageType.Image2D, _screen.Format)
+            using (IGorgonImage image = new GorgonImage(new GorgonImageInfo(ImageDataType.Image2D, _screen.Format)
             {
                 Width = _screen.Width,
                 Height = _screen.Height,

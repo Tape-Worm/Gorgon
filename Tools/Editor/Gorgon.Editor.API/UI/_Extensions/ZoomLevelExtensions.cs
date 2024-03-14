@@ -152,7 +152,7 @@ public static class ZoomLevelExtensions
 
             if (scale.EqualsEpsilon(zoomScale))
             {
-                result =  _levels[i];
+                result = _levels[i];
                 break;
             }
         }

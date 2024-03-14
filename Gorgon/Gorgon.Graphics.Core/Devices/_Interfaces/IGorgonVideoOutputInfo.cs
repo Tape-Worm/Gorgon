@@ -77,7 +77,7 @@ public interface IGorgonVideoOutputInfo
     /// <summary>
     /// Property to return the adapter that owns this output.
     /// </summary>
-        IGorgonVideoAdapterInfo Adapter
+    IGorgonVideoAdapterInfo Adapter
     {
         get;
     }

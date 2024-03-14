@@ -45,7 +45,7 @@ namespace Gorgon.Editor.ImageEditor;
 /// <summary>
 /// Dialog for assigning a list of images to array indices, depth slices, and mip levels.
 /// </summary>
-internal partial class FormImagePicker 
+internal partial class FormImagePicker
     : Form, IDataContext<IImagePicker>
 {
     #region Variables.
@@ -77,7 +77,7 @@ internal partial class FormImagePicker
     // The flag to indicate that we are resetting the selection.
     private bool _resetSelection;
     // The currently selected file.
-    private ListViewItem _selectedFile;        
+    private ListViewItem _selectedFile;
     // The wait panel to display when a long running operation is running.
     private readonly WaitPanelDisplay _waitPanel;
     // The progress panel to display when a long running operation is running.
@@ -113,7 +113,7 @@ internal partial class FormImagePicker
     {
         if (dataContext is null)
         {
-            ButtonOK.Enabled = ListImages.Enabled = TableArrayDepthControls.Enabled = false;                
+            ButtonOK.Enabled = ListImages.Enabled = TableArrayDepthControls.Enabled = false;
             return;
         }
 
@@ -121,7 +121,7 @@ internal partial class FormImagePicker
 
         bool enableList = dataContext.SelectFileCommand?.CanExecute(data) ?? false;
         PanelDialogButtons.Visible = LabelImportDesc.Visible = ListImages.Visible = enableList;
-        TableArrayDepthControls.Visible = enableList;            
+        TableArrayDepthControls.Visible = enableList;
 
         LabelAnchor.Visible = AlignmentPicker.Visible = dataContext.CropResizeSettings.CurrentMode is CropResizeMode.Crop or CropResizeMode.None;
         LabelResizeAnchor.Visible = AlignmentResize.Visible = (dataContext.CropResizeSettings.CurrentMode == CropResizeMode.Resize)
@@ -185,11 +185,11 @@ internal partial class FormImagePicker
 
         Text = string.Format(Resources.GORIMG_CAPTION_IMG_PICKER, dataContext.TargetImageName);
         LabelImportDesc.Text = string.Format(Resources.GORIMG_TEXT_IMG_PICKER_INSTRUCTION, dataContext.TargetImageName.Ellipses(65));
-        LabelArrayDepth.Text = dataContext.ImageData.ImageType == ImageType.Image3D ? Resources.GORIMG_TEXT_DEPTH_SLICE : Resources.GORIMG_TEXT_ARRAY_INDEX;
-        LabelArrayDepthIndex.Text = $"{dataContext.CurrentArrayIndexDepthSlice + 1}/{(dataContext.ImageData.ImageType == ImageType.Image3D ? dataContext.MipDepth : dataContext.ArrayCount)}";
-        LabelMipMapLevel.Text = dataContext.ImageData.ImageType == ImageType.Image3D 
-                ? $"{dataContext.CurrentMipLevel + 1}/{dataContext.MipCount} ({dataContext.MipWidth}x{dataContext.MipHeight}x{dataContext.MipDepth})" 
-                : $"{dataContext.CurrentMipLevel + 1}/{dataContext.MipCount} ({dataContext.MipWidth}x{dataContext.MipHeight})";            
+        LabelArrayDepth.Text = dataContext.ImageData.ImageType == ImageDataType.Image3D ? Resources.GORIMG_TEXT_DEPTH_SLICE : Resources.GORIMG_TEXT_ARRAY_INDEX;
+        LabelArrayDepthIndex.Text = $"{dataContext.CurrentArrayIndexDepthSlice + 1}/{(dataContext.ImageData.ImageType == ImageDataType.Image3D ? dataContext.MipDepth : dataContext.ArrayCount)}";
+        LabelMipMapLevel.Text = dataContext.ImageData.ImageType == ImageDataType.Image3D
+                ? $"{dataContext.CurrentMipLevel + 1}/{dataContext.MipCount} ({dataContext.MipWidth}x{dataContext.MipHeight}x{dataContext.MipDepth})"
+                : $"{dataContext.CurrentMipLevel + 1}/{dataContext.MipCount} ({dataContext.MipWidth}x{dataContext.MipHeight})";
     }
 
     /// <summary>
@@ -203,10 +203,10 @@ internal partial class FormImagePicker
             return;
         }
 
-        LabelSourceImport.Text = string.Format(dataContext.SourceImage.ImageType == ImageType.Image3D ? Resources.GORIMG_TEXT_SRC_IMG_PICKER_DESC_DEPTH : Resources.GORIMG_TEXT_SRC_IMG_PICKER_DESC_ARRAY,
+        LabelSourceImport.Text = string.Format(dataContext.SourceImage.ImageType == ImageDataType.Image3D ? Resources.GORIMG_TEXT_SRC_IMG_PICKER_DESC_DEPTH : Resources.GORIMG_TEXT_SRC_IMG_PICKER_DESC_ARRAY,
                                                dataContext.ImageName);
-        LabelSourceArrayDepth.Text = dataContext.SourceImage.ImageType == ImageType.Image3D ? Resources.GORIMG_TEXT_DEPTH_SLICE : Resources.GORIMG_TEXT_ARRAY_INDEX;
-        LabelSrcArray.Text = $"{dataContext.CurrentArrayIndexDepthSlice + 1}/{(dataContext.SourceImage.ImageType == ImageType.Image3D ? dataContext.MipDepth : dataContext.ArrayCount)}";
+        LabelSourceArrayDepth.Text = dataContext.SourceImage.ImageType == ImageDataType.Image3D ? Resources.GORIMG_TEXT_DEPTH_SLICE : Resources.GORIMG_TEXT_ARRAY_INDEX;
+        LabelSrcArray.Text = $"{dataContext.CurrentArrayIndexDepthSlice + 1}/{(dataContext.SourceImage.ImageType == ImageDataType.Image3D ? dataContext.MipDepth : dataContext.ArrayCount)}";
         LabelSrcMips.Text = $"{dataContext.CurrentMipLevel + 1}/{dataContext.MipCount}";
     }
 
@@ -346,7 +346,7 @@ internal partial class FormImagePicker
         // Update the shader to display the correct depth slice/mip level.
         var tParams = new TextureViewer.TextureParams
         {
-            DepthSlice = image.ImageType == ImageType.Image3D ? (float)ViewModel.SourcePicker.CurrentArrayIndexDepthSlice / ViewModel.SourcePicker.MipDepth : 0,
+            DepthSlice = image.ImageType == ImageDataType.Image3D ? (float)ViewModel.SourcePicker.CurrentArrayIndexDepthSlice / ViewModel.SourcePicker.MipDepth : 0,
             MipLevel = ViewModel.SourcePicker.CurrentMipLevel
         };
         _textureParameters.Buffer.SetData(in tParams);
@@ -358,16 +358,16 @@ internal partial class FormImagePicker
         renderer.DrawFilledRectangle(new DX.RectangleF(0, 0, PanelArrayDepth.ClientSize.Width, PanelArrayDepth.ClientSize.Height),
                                      GorgonColor.White,
                                      _bgTextureView,
-                                     new DX.RectangleF(0, 0, (float)PanelArrayDepth.ClientSize.Width / _bgTextureView.Width, (float)PanelArrayDepth.ClientSize.Height / _bgTextureView.Height));            
+                                     new DX.RectangleF(0, 0, (float)PanelArrayDepth.ClientSize.Width / _bgTextureView.Width, (float)PanelArrayDepth.ClientSize.Height / _bgTextureView.Height));
         renderer.End();
 
         // Draw source image.
-        renderer.Begin(image.ImageType == ImageType.Image3D ? _batchSource3DState : _batch2DState);
+        renderer.Begin(image.ImageType == ImageDataType.Image3D ? _batchSource3DState : _batch2DState);
         renderer.DrawFilledRectangle(imageBounds,
                                      GorgonColor.White,
-                                     image.ImageType == ImageType.Image3D ? null : _sourceTexture2D,
+                                     image.ImageType == ImageDataType.Image3D ? null : _sourceTexture2D,
                                      new DX.RectangleF(0, 0, 1, 1),
-                                     image.ImageType == ImageType.Image3D ? 0 : ViewModel.SourcePicker.CurrentArrayIndexDepthSlice,
+                                     image.ImageType == ImageDataType.Image3D ? 0 : ViewModel.SourcePicker.CurrentArrayIndexDepthSlice,
                                      textureSampler: GorgonSamplerState.PointFiltering);
         renderer.End();
 
@@ -400,7 +400,7 @@ internal partial class FormImagePicker
         // Update the shader to display the correct depth slice/mip level.
         var tParams = new TextureViewer.TextureParams
         {
-            DepthSlice = image.ImageType == ImageType.Image3D ? (float)ViewModel.CurrentArrayIndexDepthSlice / ViewModel.MipDepth : 0,
+            DepthSlice = image.ImageType == ImageDataType.Image3D ? (float)ViewModel.CurrentArrayIndexDepthSlice / ViewModel.MipDepth : 0,
             MipLevel = ViewModel.CurrentMipLevel
         };
         _textureParameters.Buffer.SetData(in tParams);
@@ -419,12 +419,12 @@ internal partial class FormImagePicker
 
         // Draw the target texture.
         var imageBounds = new DX.RectangleF((int)x, (int)y, (int)width, (int)height);
-        renderer.Begin(image.ImageType == ImageType.Image3D ? _batch3DState : _batch2DState);
+        renderer.Begin(image.ImageType == ImageDataType.Image3D ? _batch3DState : _batch2DState);
         renderer.DrawFilledRectangle(imageBounds,
                                      GorgonColor.White,
-                                     image.ImageType == ImageType.Image3D ? null : _imageTexture2D,
+                                     image.ImageType == ImageDataType.Image3D ? null : _imageTexture2D,
                                      new DX.RectangleF(0, 0, 1, 1),
-                                     image.ImageType == ImageType.Image3D ? 0 : ViewModel.CurrentArrayIndexDepthSlice,
+                                     image.ImageType == ImageDataType.Image3D ? 0 : ViewModel.CurrentArrayIndexDepthSlice,
                                      textureSampler: GorgonSamplerState.PointFiltering);
         renderer.End();
 
@@ -456,7 +456,7 @@ internal partial class FormImagePicker
 
         CleanupSourceImagePicking();
 
-        GorgonTexture2DView view =  Interlocked.Exchange(ref _bgTextureView, null);            
+        GorgonTexture2DView view = Interlocked.Exchange(ref _bgTextureView, null);
         GorgonTexture2D texture = Interlocked.Exchange(ref _bgTexture, null);
         GorgonSwapChain swapChain = Interlocked.Exchange(ref _imageSwapChain, null);
 
@@ -494,7 +494,7 @@ internal partial class FormImagePicker
             return;
         }
 
-        if (ViewModel.SourcePicker.SourceImage.ImageType != ImageType.Image3D)
+        if (ViewModel.SourcePicker.SourceImage.ImageType != ImageDataType.Image3D)
         {
             _sourceTexture2D = GorgonTexture2DView.CreateTexture(GraphicsContext.Graphics, new GorgonTexture2DInfo(ViewModel.SourcePicker.SourceImage.Width,
                                                                                                                         ViewModel.SourcePicker.SourceImage.Height,
@@ -544,7 +544,7 @@ internal partial class FormImagePicker
         oldTexture3D?.Dispose();
         oldTexture2D?.Dispose();
 
-        if (ViewModel.ImageData.ImageType != ImageType.Image3D)
+        if (ViewModel.ImageData.ImageType != ImageDataType.Image3D)
         {
             _imageTexture2D = GorgonTexture2DView.CreateTexture(GraphicsContext.Graphics, new GorgonTexture2DInfo(ViewModel.ImageData.Width,
                                                                                                                        ViewModel.ImageData.Height,
@@ -571,8 +571,8 @@ internal partial class FormImagePicker
             }, ViewModel.ImageData);
         }
 
-        var shaderBuilder = new Gorgon2DShaderStateBuilder<GorgonPixelShader>();            
-        var batchBuilder = new Gorgon2DBatchStateBuilder();            
+        var shaderBuilder = new Gorgon2DShaderStateBuilder<GorgonPixelShader>();
+        var batchBuilder = new Gorgon2DBatchStateBuilder();
 
         _batch2DState = batchBuilder.PixelShaderState(shaderBuilder
                             .ConstantBuffer(_textureParameters, 1)
@@ -584,7 +584,7 @@ internal partial class FormImagePicker
                             .ShaderResource(_imageTexture3D, 1)
                             .SamplerState(GorgonSamplerState.PointFiltering, 1)
                             .Shader(_imageShader3D))
-                        .Build();            
+                        .Build();
         _batchPreviewState = batchBuilder.Clear()
                             .RasterState(GorgonRasterState.ScissorRectanglesEnabled)
                         .Build();
@@ -886,7 +886,7 @@ internal partial class FormImagePicker
     {
         if ((ViewModel?.CancelImportFileCommand is null) || (!ViewModel.CancelImportFileCommand.CanExecute(null)))
         {
-            return;    
+            return;
         }
 
         ViewModel.CancelImportFileCommand.Execute(null);
@@ -1195,7 +1195,7 @@ internal partial class FormImagePicker
                 if (_prevIdle is not null)
                 {
                     GorgonApplication.IdleMethod = _prevIdle;
-                }                    
+                }
                 CleanupGraphics();
                 break;
         }
@@ -1236,7 +1236,7 @@ internal partial class FormImagePicker
                 break;
             case nameof(IImagePicker.SelectedFile):
                 if (ViewModel.SelectedFile is null)
-                {                        
+                {
                     break;
                 }
 
@@ -1253,7 +1253,7 @@ internal partial class FormImagePicker
                 if (!ViewModel.IsActive)
                 {
                     ViewModel.Unload();
-                    ResetDataContext();                        
+                    ResetDataContext();
                     Hide();
                     break;
                 }
@@ -1279,7 +1279,7 @@ internal partial class FormImagePicker
         ImageFiles.Images.Clear();
 
         if ((dataContext?.FilesToImport is null) || (dataContext.FilesToImport.Count == 0))
-        {                
+        {
             return;
         }
 
@@ -1333,7 +1333,7 @@ internal partial class FormImagePicker
                     Name = data.FromFile.FullPath,
                     Text = fileName,
                     ImageKey = data.OriginalFilePath,
-                    ToolTipText = data.OriginalMetadata.ImageType == ImageType.Image3D ? 
+                    ToolTipText = data.OriginalMetadata.ImageType == ImageDataType.Image3D ?
                                 string.Format(Resources.GORIMG_TIP_IMAGE3D, data.OriginalMetadata.ImageType, data.OriginalMetadata.Width, data.OriginalMetadata.Height, data.OriginalMetadata.Depth, data.OriginalMetadata.Format, data.OriginalMetadata.MipCount)
                               : string.Format(Resources.GORIMG_TIP_IMAGE2D, data.OriginalMetadata.ImageType, data.OriginalMetadata.Width, data.OriginalMetadata.Height, data.OriginalMetadata.Format, data.OriginalMetadata.ArrayCount, data.OriginalMetadata.MipCount)
                 };
@@ -1361,12 +1361,12 @@ internal partial class FormImagePicker
 
         ViewModel.ChangedSubResources.CollectionChanged -= ChangedSubResources_CollectionChanged;
         ViewModel.PropertyChanging -= DataContext_PropertyChanging;
-        ViewModel.PropertyChanged -= DataContext_PropertyChanged;            
+        ViewModel.PropertyChanged -= DataContext_PropertyChanged;
         ViewModel.CropResizeSettings.PropertyChanged -= CropResizeSettings_PropertyChanged;
         ViewModel.CropResizeSettings.PropertyChanging -= CropResizeSettings_PropertyChanging;
         ViewModel.SourcePicker.PropertyChanging -= SourcePicker_PropertyChanging;
         ViewModel.SourcePicker.PropertyChanged -= SourcePicker_PropertyChanged;
-    }        
+    }
 
     /// <summary>
     /// Function to reset the view back to its original state.
@@ -1442,7 +1442,7 @@ internal partial class FormImagePicker
         else
         {
             WindowState = FormWindowState.Normal;
-        }                        
+        }
     }
 
     /// <summary>Raises the <see cref="Form.FormClosing"/> event.</summary>
@@ -1465,7 +1465,7 @@ internal partial class FormImagePicker
                 ViewModel.Settings.PickerWidth = Size.Width;
                 ViewModel.Settings.PickerHeight = Size.Height;
             }
-        }           
+        }
 
         if ((ViewModel?.DeactivateCommand is not null) && (ViewModel.DeactivateCommand.CanExecute(null)))
         {
@@ -1507,7 +1507,7 @@ internal partial class FormImagePicker
 
     #region Constructor/Finalizer.
     /// <summary>Initializes a new instance of the <see cref="FormImagePicker"/> class.</summary>
-    public FormImagePicker() 
+    public FormImagePicker()
     {
         InitializeComponent();
 

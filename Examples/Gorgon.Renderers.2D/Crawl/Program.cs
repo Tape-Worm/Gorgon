@@ -34,7 +34,7 @@ using Gorgon.Renderers;
 using Gorgon.Timing;
 using Gorgon.UI;
 using DX = SharpDX;
-using FontStyle = Gorgon.Graphics.Fonts.FontStyle;
+
 
 namespace Gorgon.Examples;
 
@@ -213,10 +213,10 @@ static class Program
             CreateTargets();
 
             // Set up our text sprite so we can render formatted text to the render target.
-            _crawlText = new GorgonTextSprite(GorgonExample.Fonts.GetFont(new GorgonFontInfo("Arial", 36.0f, FontHeightMode.Points)
+            _crawlText = new GorgonTextSprite(GorgonExample.Fonts.GetFont(new GorgonFontInfo("Arial", 36.0f, GorgonFontHeightMode.Points)
             {
                 Name = "Arial SW",
-                FontStyle = FontStyle.Bold,
+                FontStyle = GorgonFontStyle.Bold,
                 Characters = Resources.CrawlText.Distinct()
             }))
             {
@@ -265,9 +265,7 @@ static class Program
     {
         try
         {
-#if NET6_0_OR_GREATER
             Application.SetHighDpiMode(HighDpiMode.PerMonitorV2);
-#endif
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
 

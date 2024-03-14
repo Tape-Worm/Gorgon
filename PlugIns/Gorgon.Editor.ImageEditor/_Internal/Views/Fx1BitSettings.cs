@@ -74,7 +74,7 @@ internal partial class Fx1BitSettings
             return;
         }
 
-        ViewModel.MinWhiteThreshold = TrackMinThreshold.Value = (int)NumericMinThreshold.Value;            
+        ViewModel.MinWhiteThreshold = TrackMinThreshold.Value = (int)NumericMinThreshold.Value;
     }
 
     /// <summary>Handles the ValueChanged event of the NumericMaxThreshold control.</summary>

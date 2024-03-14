@@ -43,7 +43,7 @@ internal partial class FormProgress : Form
             e.Cancel = true;
         }
 
-        base.OnFormClosing(e);            
+        base.OnFormClosing(e);
     }
 
     /// <summary>Raises the <see cref="Form.Shown"/> event.</summary>
@@ -101,7 +101,7 @@ internal partial class FormProgress : Form
         CenterToParent();
         Focus();
         Progress.Focus();
-    }        
+    }
 
     /// <summary>Forces the control to invalidate its client area and immediately redraw itself and any child controls.</summary>
     public override void Refresh()

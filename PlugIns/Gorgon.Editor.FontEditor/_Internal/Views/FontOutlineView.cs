@@ -101,7 +101,7 @@ internal partial class FontOutlineView
             return;
         }
 
-        LabelSize.Enabled = NumericSize.Enabled = true;            
+        LabelSize.Enabled = NumericSize.Enabled = true;
         LabelStartColor.Enabled = ColorStart.Enabled = ViewModel.OutlineSize > 0;
         LabelEndColor.Enabled = ColorEnd.Enabled = ViewModel.OutlineSize > 2;
     }
@@ -202,9 +202,9 @@ internal partial class FontOutlineView
         UnassignEvents();
 
         NumericSize.Value = 0;
-        ColorStart.OriginalColor = 
-        ColorStart.SelectedColor = 
-        ColorEnd.OriginalColor = 
+        ColorStart.OriginalColor =
+        ColorStart.SelectedColor =
+        ColorEnd.OriginalColor =
         ColorEnd.SelectedColor = GorgonColor.BlackTransparent;
     }
 
@@ -241,7 +241,7 @@ internal partial class FontOutlineView
     }
 
     /// <summary>Function to cancel the change.</summary>
-    protected override void OnCancel() 
+    protected override void OnCancel()
     {
         if (ViewModel is not null)
         {
@@ -301,7 +301,7 @@ internal partial class FontOutlineView
 
         ViewModel.PropertyChanged += DataContext_PropertyChanged;
         ValidateControls();
-    }        
+    }
     #endregion
 
     #region Constructor/Finalizer.

@@ -49,7 +49,7 @@ public class GorgonPipelineStatisticsQuery(GorgonGraphics graphics, string name 
     /// <param name="result">The result of the query.</param>
     /// <returns><b>true</b> if the query results are ready to be consumed, or <b>false</b> if not.</returns>
     protected override bool OnGetData(out GorgonPipelineStatsResult result)
-    {            
+    {
         if (!Graphics.D3DDeviceContext.GetData(D3dQuery, out D3D11.QueryDataPipelineStatistics data))
         {
             result = default;

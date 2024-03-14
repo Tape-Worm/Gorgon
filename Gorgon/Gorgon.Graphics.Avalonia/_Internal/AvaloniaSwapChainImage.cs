@@ -1,7 +1,7 @@
-﻿using Avalonia.Platform;
+﻿using Avalonia;
+using Avalonia.Platform;
 using Avalonia.Rendering.Composition;
 using Gorgon.Graphics.Core;
-using Avalonia;
 
 namespace Gorgon.Graphics.Avalonia;
 
@@ -66,8 +66,8 @@ internal class AvaloniaSwapChainImage
     /// </summary>
     public GorgonGraphics Graphics
     {
-        get; 
-        private set; 
+        get;
+        private set;
     }
 
     /// <summary>
@@ -89,7 +89,7 @@ internal class AvaloniaSwapChainImage
     /// <summary>
     /// Property to return the height of the image, in pixels.
     /// </summary>
-    public int Height => _pixelSize.Height;    
+    public int Height => _pixelSize.Height;
     #endregion
 
     #region Methods.
@@ -158,7 +158,7 @@ internal class AvaloniaSwapChainImage
     /// <summary>
     /// Function that needs to be called prior to rendering.
     /// </summary>
-    public void Begin() => _sharedTexture?.Acquire(0, int.MaxValue);    
+    public void Begin() => _sharedTexture?.Acquire(0, int.MaxValue);
 
     /// <summary>
     /// Function end rendering and send the rendering data to the Avalonia surface.

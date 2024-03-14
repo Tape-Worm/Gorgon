@@ -93,7 +93,7 @@ internal class SpriteClipContext
             }
 
             OnPropertyChanging();
-            NotifyPropertyChanging(nameof(ISpriteInfo.SpriteInfo));                
+            NotifyPropertyChanging(nameof(ISpriteInfo.SpriteInfo));
 
             _rect = value;
             OnPropertyChanged();

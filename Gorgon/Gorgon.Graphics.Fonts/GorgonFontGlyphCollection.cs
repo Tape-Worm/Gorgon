@@ -148,7 +148,7 @@ public sealed class GorgonGlyphCollection
     /// <param name="character">Character for the glyph.</param>
     /// <param name="glyph">The glyph in the list.</param>
     /// <returns><b>true</b> if found, <b>false</b> if not.</returns>
-        public bool TryGetValue(char character, out GorgonGlyph glyph) => _list.TryGetValue(character, out glyph);
+    public bool TryGetValue(char character, out GorgonGlyph glyph) => _list.TryGetValue(character, out glyph);
 
     /// <summary>
     /// Function to retrieve the glyphs in this collection grouped by their respective textures.

@@ -148,7 +148,7 @@ public sealed class GorgonTexture1D
     /// <summary>
     /// Property to return the type of image data.
     /// </summary>
-    ImageType IGorgonImageInfo.ImageType => ImageType.Image1D;
+    ImageDataType IGorgonImageInfo.ImageType => ImageDataType.Image1D;
 
     /// <summary>
     /// Property to return the height of an image, in pixels.
@@ -283,7 +283,7 @@ public sealed class GorgonTexture1D
         }
 
         // Ensure that we can actually use our requested format as a texture.
-        if ((Format == BufferFormat.Unknown) || (!Graphics.FormatSupport[Format].IsTextureFormat(ImageType.Image1D)))
+        if ((Format == BufferFormat.Unknown) || (!Graphics.FormatSupport[Format].IsTextureFormat(ImageDataType.Image1D)))
         {
             throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_TEXTURE_FORMAT_NOT_SUPPORTED, Format, @"1D"));
         }
@@ -306,7 +306,6 @@ public sealed class GorgonTexture1D
         // Ensure the number of mip levels is not outside of the range for the width/height.
         int mipLevels = MipLevels.Min(GorgonImage.CalculateMaxMipCount(Width, 1, 1)).Max(1);
 
-#if NET6_0_OR_GREATER
         if (mipLevels != _info.MipLevels)
         {
             _info = _info with
@@ -314,7 +313,6 @@ public sealed class GorgonTexture1D
                 MipLevels = mipLevels
             };
         }
-#endif
 
         if (mipLevels <= 1)
         {
@@ -431,7 +429,7 @@ public sealed class GorgonTexture1D
     /// <param name="format">The format for the texture.</param>
     /// <param name="mipCount">The number of mip map levels.</param>
     /// <returns>The number of bytes for the texture.</returns>
-    public static int CalculateSizeInBytes(int width, int arrayCount, BufferFormat format, int mipCount) => GorgonImage.CalculateSizeInBytes(ImageType.Image1D,
+    public static int CalculateSizeInBytes(int width, int arrayCount, BufferFormat format, int mipCount) => GorgonImage.CalculateSizeInBytes(ImageDataType.Image1D,
                                                 width,
                                                 1,
                                                 arrayCount,
@@ -900,7 +898,7 @@ public sealed class GorgonTexture1D
     public GorgonTexture1D GetStagingTexture()
     {
         var info = new GorgonTexture1DInfo(_info)
-        {                
+        {
             Name = $"{Name}_[Staging]",
             Usage = ResourceUsage.Staging,
             Binding = TextureBinding.None
@@ -1125,7 +1123,7 @@ public sealed class GorgonTexture1D
                 index = arrayIndex.Value.Min(ArrayCount - 1).Max(0);
             }
 
-            image = new GorgonImage(new GorgonImageInfo(ImageType.Image1D, stagingTexture.Format)
+            image = new GorgonImage(new GorgonImageInfo(ImageDataType.Image1D, stagingTexture.Format)
             {
                 Width = (Width >> mipLevel).Max(1),
                 Height = 1,
@@ -1157,11 +1155,11 @@ public sealed class GorgonTexture1D
     }
 
     /// <summary>
-        /// Function to convert this texture to a <see cref="IGorgonImage"/>.
-        /// </summary>
-        /// <returns>A new <see cref="IGorgonImage"/> containing the texture data.</returns>
-        /// <exception cref="GorgonException">Thrown when this texture has a <see cref="GorgonGraphicsResource.Usage"/> set to <see cref="ResourceUsage.Immutable"/>.</exception>
-        public IGorgonImage ToImage()
+    /// Function to convert this texture to a <see cref="IGorgonImage"/>.
+    /// </summary>
+    /// <returns>A new <see cref="IGorgonImage"/> containing the texture data.</returns>
+    /// <exception cref="GorgonException">Thrown when this texture has a <see cref="GorgonGraphicsResource.Usage"/> set to <see cref="ResourceUsage.Immutable"/>.</exception>
+    public IGorgonImage ToImage()
     {
         GorgonTexture1D stagingTexture = this;
         GorgonImage image = null;
@@ -1173,7 +1171,7 @@ public sealed class GorgonTexture1D
                 stagingTexture = GetStagingTexture();
             }
 
-            image = new GorgonImage(new GorgonImageInfo(ImageType.Image1D, stagingTexture.Format)
+            image = new GorgonImage(new GorgonImageInfo(ImageDataType.Image1D, stagingTexture.Format)
             {
                 Width = Width,
                 Height = 1,
@@ -1272,7 +1270,7 @@ public sealed class GorgonTexture1D
     /// are left at 0, then all array indices will be accessible. 
     /// </para>
     /// </remarks>
-        public GorgonTexture1DView GetShaderResourceView(BufferFormat format = BufferFormat.Unknown, int firstMipLevel = 0, int mipCount = 0, int arrayIndex = 0, int arrayCount = 0)
+    public GorgonTexture1DView GetShaderResourceView(BufferFormat format = BufferFormat.Unknown, int firstMipLevel = 0, int mipCount = 0, int arrayIndex = 0, int arrayCount = 0)
     {
         if (format == BufferFormat.Unknown)
         {

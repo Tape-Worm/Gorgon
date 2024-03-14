@@ -202,7 +202,7 @@ public interface IGorgonVideoAdapterInfo
     /// <summary>
     /// Property to return the amount of memory for the adapter, in bytes.
     /// </summary>
-        GorgonVideoAdapterMemory Memory
+    GorgonVideoAdapterMemory Memory
     {
         get;
     }
@@ -210,7 +210,7 @@ public interface IGorgonVideoAdapterInfo
     /// <summary>
     /// Property to return the PCI bus information for the adapter.
     /// </summary>
-        GorgonVideoAdapterPciInfo PciInfo
+    GorgonVideoAdapterPciInfo PciInfo
     {
         get;
     }

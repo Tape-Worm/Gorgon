@@ -142,7 +142,7 @@ internal class ResourceManagement(Gorgon2D renderer, GorgonMefPlugInCache plugIn
         IReadOnlyList<IGorgonVirtualFile> textureFiles = _fileSystem.GetContentItems(path, CommonEditorContentTypes.ImageType);
 
         foreach (IGorgonVirtualFile imagePath in textureFiles)
-        {                
+        {
             result[imagePath.FullPath] = await _contentLoader.LoadTextureAsync(imagePath.FullPath);
         }
 
@@ -194,7 +194,7 @@ internal class ResourceManagement(Gorgon2D renderer, GorgonMefPlugInCache plugIn
             .SetKey(new GorgonKeyVector3(600, new Vector3(100, 180, 180)))
             .SetKey(new GorgonKeyVector3(1200, new Vector3(0, 360, 180)))
             .SetInterpolationMode(TrackInterpolationMode.Linear)
-            .EndEdit()                
+            .EndEdit()
             .Build("CloudRotation");
 
         cloudRotation.IsLooped = true;
@@ -245,7 +245,7 @@ internal class ResourceManagement(Gorgon2D renderer, GorgonMefPlugInCache plugIn
             .Clear()
             .InitialClearColor(GorgonColor.BlackTransparent)
             .FinalClearColor(GorgonColor.BlackTransparent)
-            .EffectPass("Bloom", bloom)                
+            .EffectPass("Bloom", bloom)
             .EffectPass("Chromatic Aberration", chromatic);
 
         _postProcess["Final Pass"] = finalPostProcess;
@@ -358,12 +358,12 @@ internal class ResourceManagement(Gorgon2D renderer, GorgonMefPlugInCache plugIn
     {
         // Load the file system containing our application data (sprites, images, etc...)
         IGorgonFileSystemProviderFactory providerFactory = new GorgonFileSystemProviderFactory(_plugIns, GorgonApplication.Log);
-        IGorgonFileSystemProvider provider = providerFactory.CreateProvider(Path.Combine(GorgonExample.GetPlugInPath().FullName, "Gorgon.FileSystem.GorPack.dll"), 
+        IGorgonFileSystemProvider provider = providerFactory.CreateProvider(Path.Combine(GorgonExample.GetPlugInPath().FullName, "Gorgon.FileSystem.GorPack.dll"),
                                                                             "Gorgon.IO.GorPack.GorPackProvider");
         _fileSystem = new GorgonFileSystem(provider, GorgonApplication.Log);
         _fileSystem.Mount(path);
 
-        _contentLoader = _fileSystem.CreateContentLoader(_renderer, _textureCache);            
+        _contentLoader = _fileSystem.CreateContentLoader(_renderer, _textureCache);
     }
 
     /// <summary>

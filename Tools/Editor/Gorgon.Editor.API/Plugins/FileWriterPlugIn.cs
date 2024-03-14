@@ -59,7 +59,7 @@ public abstract class FileWriterPlugIn
 {
     #region Variables.
     // Default compression amount.
-    private float _compressAmount = 0.5f;        
+    private float _compressAmount = 0.5f;
     #endregion
 
     #region Properties.

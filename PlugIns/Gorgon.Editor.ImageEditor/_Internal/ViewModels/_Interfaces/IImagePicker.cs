@@ -138,7 +138,7 @@ internal interface IImagePicker
     /// Property to return the currently selected file.
     /// </summary>
     ImagePickerImportData SelectedFile
-    {   
+    {
         get;
     }
 
@@ -202,7 +202,7 @@ internal interface IImagePicker
     /// Property to return the command to select a file.
     /// </summary>
     IEditorCommand<ImagePickerImportData> SelectFileCommand
-    {   
+    {
         get;
     }
 
@@ -227,7 +227,7 @@ internal interface IImagePicker
     /// </summary>
     IEditorCommand<object> CancelImportFileCommand
     {
-        get;    
+        get;
     }
 
     /// <summary>

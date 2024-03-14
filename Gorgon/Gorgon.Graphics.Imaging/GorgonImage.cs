@@ -98,7 +98,7 @@ public partial class GorgonImage
     /// <summary>
     /// Property to return the type of image data.
     /// </summary>
-    public ImageType ImageType => _imageInfo.ImageType;
+    public ImageDataType ImageType => _imageInfo.ImageType;
 
     /// <summary>
     /// Property to return the width of an image, in pixels.
@@ -176,7 +176,7 @@ public partial class GorgonImage
         if (!data.IsEmpty)
         {
             data.CopyTo(_imagePtr);
-        }            
+        }
 
         _imageBuffers = new ImageBufferList(this);
         _imageBuffers.CreateBuffers(in _imagePtr);
@@ -188,20 +188,19 @@ public partial class GorgonImage
     /// <param name="info">Information used to create this image.</param>
     private void SanitizeInfo(GorgonImageInfo info)
     {
-#if NET6_0_OR_GREATER
         int maxMipCount = CalculateMaxMipCount(info);
 
         GorgonImageInfo newInfo = info with
         {
             // Validate depth count.
-            Depth = info.ImageType != ImageType.Image3D ? 1 : info.Depth.Max(1),
+            Depth = info.ImageType != ImageDataType.Image3D ? 1 : info.Depth.Max(1),
             Height = info.Height.Max(1),
             // Validate the array size.
-            ArrayCount = info.ImageType == ImageType.Image3D ? 1 : info.ArrayCount.Max(1),
+            ArrayCount = info.ImageType == ImageDataType.Image3D ? 1 : info.ArrayCount.Max(1),
             MipCount = info.MipCount.Min(maxMipCount).Max(1)
         };
 
-        if (newInfo.ImageType == ImageType.ImageCube)
+        if (newInfo.ImageType == ImageDataType.ImageCube)
         {
             int cubeArrayCount = newInfo.ArrayCount;
 
@@ -218,7 +217,6 @@ public partial class GorgonImage
         }
 
         _imageInfo = newInfo;
-#endif
     }
 
     /// <summary>
@@ -227,7 +225,7 @@ public partial class GorgonImage
     /// <param name="imageType">The type of image.</param>
     /// <param name="width">Width of the image.</param>
     /// <param name="height">Height of the image.</param>
-    /// <param name="arrayCountOrDepth">The number of array indices for <see cref="ImageType.Image1D"/> or <see cref="ImageType.Image2D"/> images, or the number of depth slices for a <see cref="ImageType.Image3D"/>.</param>
+    /// <param name="arrayCountOrDepth">The number of array indices for <see cref="ImageDataType.Image1D"/> or <see cref="ImageDataType.Image2D"/> images, or the number of depth slices for a <see cref="ImageDataType.Image3D"/>.</param>
     /// <param name="format">Format of the image.</param>
     /// <param name="mipCount">[Optional] Number of mip-map levels in the image.</param>
     /// <param name="pitchFlags">[Optional] Flags used to influence the row pitch of the image.</param>
@@ -238,7 +236,7 @@ public partial class GorgonImage
     /// The <paramref name="pitchFlags"/> parameter is used to compensate in cases where the original image data is not laid out correctly (such as with older DirectDraw DDS images).
     /// </para>
     /// </remarks>
-    public static int CalculateSizeInBytes(ImageType imageType, int width, int height, int arrayCountOrDepth, BufferFormat format, int mipCount = 1, PitchFlags pitchFlags = PitchFlags.None)
+    public static int CalculateSizeInBytes(ImageDataType imageType, int width, int height, int arrayCountOrDepth, BufferFormat format, int mipCount = 1, PitchFlags pitchFlags = PitchFlags.None)
     {
         if (format == BufferFormat.Unknown)
         {
@@ -257,8 +255,8 @@ public partial class GorgonImage
             throw new GorgonException(GorgonResult.FormatNotSupported, string.Format(Resources.GORIMG_ERR_FORMAT_NOT_SUPPORTED, format));
         }
 
-        int arrayCount = imageType == ImageType.Image3D ? 1 : arrayCountOrDepth;
-        int depthCount = imageType == ImageType.Image3D ? arrayCountOrDepth : 1;
+        int arrayCount = imageType == ImageDataType.Image3D ? 1 : arrayCountOrDepth;
+        int depthCount = imageType == ImageDataType.Image3D ? arrayCountOrDepth : 1;
 
         for (int array = 0; array < arrayCount; ++array)
         {
@@ -307,7 +305,7 @@ public partial class GorgonImage
             : CalculateSizeInBytes(info.ImageType,
                               info.Width,
                               info.Height,
-                              info.ImageType == ImageType.Image3D ? info.Depth : info.ArrayCount,
+                              info.ImageType == ImageDataType.Image3D ? info.Depth : info.ArrayCount,
                               info.Format,
                               info.MipCount,
                               pitchFlags);
@@ -582,7 +580,7 @@ public partial class GorgonImage
                     {
                         for (int depthSlice = 0; depthSlice < GetDepthCount(mip); ++depthSlice)
                         {
-                            int depthArrayIndex = ImageType != ImageType.Image3D ? arrayIndex : depthSlice;
+                            int depthArrayIndex = ImageType != ImageDataType.Image3D ? arrayIndex : depthSlice;
                             IGorgonImageBuffer buffer = Buffers[mip, depthArrayIndex];
 
                             using GorgonNativeBuffer<byte> decompressedData = decoder.Decode(buffer.Data, buffer.Width, buffer.Height, useBC1Alpha, Format);
@@ -640,7 +638,7 @@ public partial class GorgonImage
     /// </para>
     /// </remarks>
     /// <seealso cref="IGorgonImageUpdateFinalize.EndUpdate"/>
-    public IGorgonImageUpdateFluent BeginUpdate() 
+    public IGorgonImageUpdateFluent BeginUpdate()
     {
         if ((FormatInfo.IsCompressed) || (FormatInfo.IsTypeless))
         {
@@ -732,14 +730,14 @@ public partial class GorgonImage
         }
 
         if ((info.Height < 1) &&
-            ((info.ImageType == ImageType.ImageCube)
-            || (info.ImageType == ImageType.Image2D)
-            || (info.ImageType == ImageType.Image3D)))
+            ((info.ImageType == ImageDataType.ImageCube)
+            || (info.ImageType == ImageDataType.Image2D)
+            || (info.ImageType == ImageDataType.Image3D)))
         {
             throw new ArgumentException(Resources.GORIMG_ERR_IMAGE_HEIGHT_TOO_SMALL, nameof(info));
         }
 
-        if ((info.Depth < 1) && (info.ImageType == ImageType.Image3D))
+        if ((info.Depth < 1) && (info.ImageType == ImageDataType.Image3D))
         {
             throw new ArgumentException(Resources.GORIMG_ERR_IMAGE_DEPTH_TOO_SMALL, nameof(info));
         }

@@ -189,14 +189,14 @@ public class Gorgon2DDisplacementEffect
     /// <remarks>
     /// Use this method to set up the effect upon its creation.  For example, this method could be used to create the required shaders for the effect.
     /// </remarks>
-        protected override void OnInitialize()
+    protected override void OnInitialize()
     {
         _displacementSettingsBuffer = GorgonConstantBufferView.CreateConstantBuffer(Graphics,
                                                                                     new
                                                                                     GorgonConstantBufferInfo(GpuData.SizeInBytes)
                                                                                     {
                                                                                         Name = "Gorgon2DDisplacementEffect Constant Buffer",
-                                                                                        Usage = ResourceUsage.Dynamic                                                                                            
+                                                                                        Usage = ResourceUsage.Dynamic
                                                                                     });
 
         _displacementShader = CompileShader<GorgonPixelShader>(Resources.BasicSprite, "GorgonPixelShaderDisplacementDecoder");
@@ -228,7 +228,7 @@ public class Gorgon2DDisplacementEffect
             ChromaAbScale = _chromaAbScale
         };
 
-        _displacementSettingsBuffer.Buffer.SetData(in data);            
+        _displacementSettingsBuffer.Buffer.SetData(in data);
         _isUpdated = false;
     }
 
@@ -238,7 +238,7 @@ public class Gorgon2DDisplacementEffect
     /// This method is called after all passes are finished and the effect is ready to complete its rendering. Developers should override this method to finalize any custom rendering. For example
     /// an effect author can use this method to render the final output of an effect to the final render target.
     /// </remarks>
-    protected override void OnAfterRender(GorgonRenderTargetView output) =>_currentRtv = null; 
+    protected override void OnAfterRender(GorgonRenderTargetView output) => _currentRtv = null;
 
     /// <summary>
     /// Function called prior to rendering a pass.
@@ -301,7 +301,7 @@ public class Gorgon2DDisplacementEffect
 
         displacementBuffer?.Dispose();
         shader?.Dispose();
-    }        
+    }
 
     /// <summary>
     /// Function to begin a batch for rendering the objects used to displace the target.
@@ -340,7 +340,7 @@ public class Gorgon2DDisplacementEffect
 
         if (BeginPass(0, output, camera) != PassContinuationState.Continue)
         {
-            EndRender(_currentRtv);                
+            EndRender(_currentRtv);
             return false;
         }
 

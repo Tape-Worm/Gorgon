@@ -37,7 +37,7 @@ namespace Gorgon.Editor.FontEditor;
 /// <summary>
 /// The view for the font content.
 /// </summary>
-internal partial class FontContentView 
+internal partial class FontContentView
     : VisualContentBaseControl, IDataContext<IFontContent>
 {
     #region Variables.
@@ -74,7 +74,7 @@ internal partial class FontContentView
     /// <summary>
     /// Function to validate the controls on the view.
     /// </summary>
-    private void ValidateButtons() => _ribbonForm.ValidateButtons();       
+    private void ValidateButtons() => _ribbonForm.ValidateButtons();
 
     /// <summary>
     /// Function to initialize the view from the data context.
@@ -87,7 +87,7 @@ internal partial class FontContentView
             ResetDataContext();
             return;
         }
-    }        
+    }
 
     /// <summary>Function called when a property is changed on the data context.</summary>
     /// <param name="propertyName">The name of the property that is updated.</param>
@@ -185,7 +185,7 @@ internal partial class FontContentView
         // method is not defined on the base class for the renderer, so that if users don't require this can skip it.
         if (resetZoom)
         {
-            _renderer.DefaultZoom();                
+            _renderer.DefaultZoom();
         }
     }
 
@@ -205,7 +205,7 @@ internal partial class FontContentView
             _ribbonForm.CreateControl();
         }
 
-        ViewModel?.Load();            
+        ViewModel?.Load();
         RenderControl?.Select();
 
         ValidateButtons();

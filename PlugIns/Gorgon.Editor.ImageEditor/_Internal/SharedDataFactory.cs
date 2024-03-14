@@ -48,7 +48,7 @@ internal static class SharedDataFactory
     // The factory that creates/loads the codec registry.
     private static readonly Lazy<ICodecRegistry> _codecRegistryFactory;
     // The factory that creates/loads the settings view model.
-    private static readonly Lazy<(Settings settings, SettingsPlugins pluginSettings)> _settingsViewModelFactory;        
+    private static readonly Lazy<(Settings settings, SettingsPlugins pluginSettings)> _settingsViewModelFactory;
     #endregion
 
     #region Methods.

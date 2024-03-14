@@ -35,7 +35,7 @@ namespace Gorgon.Editor.ImageEditor;
 /// <summary>
 /// The settings for the edge filter effect.
 /// </summary>
-internal partial class FxEdgeSettings 
+internal partial class FxEdgeSettings
     : EditorSubPanelCommon, IDataContext<IFxEdgeDetect>
 {
     #region Properties.
@@ -190,7 +190,7 @@ internal partial class FxEdgeSettings
     private void InitializeFromDataContext(IFxEdgeDetect dataContext)
     {
         if (dataContext is null)
-        {                
+        {
             TrackThreshold.Value = 50;
             SliderAlpha.ValuePercentual = 1.0f;
             ColorPreview.Color = Color.Black;
@@ -208,7 +208,7 @@ internal partial class FxEdgeSettings
         ColorPreview.Color = dataContext.LineColor.ToColor();
         LabelColorValue.Text = string.Format(Resources.GORIMG_TEXT_COLOR_VALUES, (int)(255 * dataContext.LineColor.Red),
                                                                                  (int)(255 * dataContext.LineColor.Green),
-                                                                                 (int)(255 * dataContext.LineColor.Blue), 
+                                                                                 (int)(255 * dataContext.LineColor.Blue),
                                                                                  (int)(255 * dataContext.LineColor.Alpha));
         PickerLineColor.ValuePercentual = new PointF(((Color)dataContext.LineColor).GetHue(), ((Color)dataContext.LineColor).GetSaturation());
         CheckOverlay.Checked = dataContext.Overlay;

@@ -104,7 +104,7 @@ public class Gorgon2DBurnDodgeEffect
                                                                          new GorgonConstantBufferInfo(16)
                                                                          {
                                                                              Name = "Gorgon 2D Burn/Dodge Effect Constant Buffer",
-                                                                             Usage = ResourceUsage.Default                                                                                 
+                                                                             Usage = ResourceUsage.Default
                                                                          });
 
         _dodgeBurnShader = CompileShader<GorgonPixelShader>(Resources.BasicSprite, "GorgonPixelShaderBurnDodge");

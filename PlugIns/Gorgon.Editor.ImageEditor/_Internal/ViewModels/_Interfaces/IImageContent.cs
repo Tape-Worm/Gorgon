@@ -25,12 +25,12 @@
 #endregion
 
 using System.Collections.ObjectModel;
-using Drawing = System.Drawing;
 using Gorgon.Editor.UI;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Graphics.Imaging;
 using Gorgon.Graphics.Imaging.Codecs;
+using Drawing = System.Drawing;
 
 namespace Gorgon.Editor.ImageEditor.ViewModels;
 
@@ -115,7 +115,7 @@ internal interface IImageContent
     /// <summary>
     /// Property to return the type of image that is loaded.
     /// </summary>
-    ImageType ImageType
+    ImageDataType ImageType
     {
         get;
     }
@@ -246,7 +246,7 @@ internal interface IImageContent
     /// <summary>
     /// Property to return the command to execute when changing the image type.
     /// </summary>
-    IEditorCommand<ImageType> ChangeImageTypeCommand
+    IEditorCommand<ImageDataType> ChangeImageTypeCommand
     {
         get;
     }

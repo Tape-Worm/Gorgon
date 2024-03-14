@@ -73,7 +73,7 @@ public class GorgonPolySpriteAnimationController
     /// <summary>
     /// The track registration for the depth value of the sprite.
     /// </summary>
-    public static readonly GorgonTrackRegistration DepthTrack = new(nameof(GorgonPolySprite.Depth), Resources.GORANM_TEXT_DEPTH,AnimationTrackKeyType.Single);
+    public static readonly GorgonTrackRegistration DepthTrack = new(nameof(GorgonPolySprite.Depth), Resources.GORANM_TEXT_DEPTH, AnimationTrackKeyType.Single);
     /// <summary>
     /// The track registration for the texture array index for the sprite.
     /// </summary>
@@ -193,7 +193,7 @@ public class GorgonPolySpriteAnimationController
         }
 
         if (track.ID != ScaledSizeTrack.ID)
-        {                
+        {
             return;
         }
 
@@ -226,7 +226,7 @@ public class GorgonPolySpriteAnimationController
     protected override void OnColorUpdate(GorgonTrackRegistration track, GorgonPolySprite animObject, GorgonColor value)
     {
         if (track.ID != ColorTrack.ID)
-        {                
+        {
             return;
         }
 

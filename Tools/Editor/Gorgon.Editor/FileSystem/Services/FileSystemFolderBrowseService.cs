@@ -78,7 +78,7 @@ internal class FileSystemFolderBrowseService(IMain mainViewModel)
             throw new IOException(Resources.GOREDIT_ERR_NO_ROOT);
         }
 
-        IDirectory initialDirectory = initialPath == "/" ? _mainViewModel.CurrentProject?.FileExplorer.Root 
+        IDirectory initialDirectory = initialPath == "/" ? _mainViewModel.CurrentProject?.FileExplorer.Root
                                                          : _mainViewModel.CurrentProject?.FileExplorer.Root.Directories.Traverse(d => d.Directories)
                                                                 .FirstOrDefault(d => string.Equals(d.FullPath, initialPath, StringComparison.OrdinalIgnoreCase));
 

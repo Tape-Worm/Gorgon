@@ -105,8 +105,8 @@ internal class FileSystemClipboardHandler
     /// <returns><b>true</b> if data can be pasted, <b>false</b> if not.</returns>
     private bool CanPasteData()
     {
-        if ((!HasData) 
-            || (_fileExplorer?.CopyDirectoryCommand is null) 
+        if ((!HasData)
+            || (_fileExplorer?.CopyDirectoryCommand is null)
             || (_fileExplorer.CopyFileCommand is null)
             || (_fileExplorer.MoveDirectoryCommand is null)
             || (_fileExplorer.MoveFileCommand is null))
@@ -151,7 +151,7 @@ internal class FileSystemClipboardHandler
         {
             if (_clipboardService.IsType<DirectoryCopyMoveData>())
             {
-                DirectoryCopyMoveData directoryData = _clipboardService.GetData<DirectoryCopyMoveData>();                    
+                DirectoryCopyMoveData directoryData = _clipboardService.GetData<DirectoryCopyMoveData>();
 
                 if (directoryData is null)
                 {
@@ -175,7 +175,7 @@ internal class FileSystemClipboardHandler
                         _clipboardService.Clear();
                         HasData = false;
                         break;
-                }                   
+                }
 
                 return;
             }
@@ -250,13 +250,13 @@ internal class FileSystemClipboardHandler
         Type argsType = args?.GetType();
 
         if (argsType is null)
-        {                
+        {
             return true;
         }
 
         if (_supportedDataTypeFile.IsAssignableFrom(argsType))
         {
-            var fileData = (FileCopyMoveData)args;                
+            var fileData = (FileCopyMoveData)args;
             return (fileData.SourceFiles is not null) && (fileData.SourceFiles.Count > 0);
         }
 

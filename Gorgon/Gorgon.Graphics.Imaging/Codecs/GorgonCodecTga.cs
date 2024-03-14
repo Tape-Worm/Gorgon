@@ -296,7 +296,7 @@ public sealed class GorgonCodecTga
                 throw new IOException(string.Format(Resources.GORIMG_ERR_FORMAT_NOT_SUPPORTED, header.ImageType));
         }
 
-        var settings = new GorgonImageInfo(ImageType.Image2D, pixelFormat)
+        var settings = new GorgonImageInfo(ImageDataType.Image2D, pixelFormat)
         {
             MipCount = 1,
             ArrayCount = 1,
@@ -635,7 +635,7 @@ public sealed class GorgonCodecTga
         bool setOpaque = true;
         bool flipHorizontal = (conversionFlags & TGAConversionFlags.InvertX) == TGAConversionFlags.InvertX;
         bool expand = (conversionFlags & TGAConversionFlags.Expand) == TGAConversionFlags.Expand;
-        byte* destPtr = (byte *)dest;
+        byte* destPtr = (byte*)dest;
 
         for (int x = 0; x < width;)
         {

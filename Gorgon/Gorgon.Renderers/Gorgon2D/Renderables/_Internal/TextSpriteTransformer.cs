@@ -223,9 +223,9 @@ internal class TextSpriteTransformer
                                   1.0f);
 
         var cosSin = new Vector2(cos, sin);
-        v0.Angle = 
-        v1.Angle = 
-        v2.Angle = 
+        v0.Angle =
+        v1.Angle =
+        v2.Angle =
         v3.Angle = cosSin;
     }
 

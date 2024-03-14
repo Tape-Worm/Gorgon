@@ -33,7 +33,7 @@ namespace Gorgon.Editor.UI.Controls;
 /// <summary>
 /// A control used to pick an alpha (transparency) value.
 /// </summary>
-public partial class AlphaPicker 
+public partial class AlphaPicker
     : UserControl
 {
     #region Variables.

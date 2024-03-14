@@ -272,7 +272,7 @@ public class GorgonBinaryReader(Stream input, Encoding encoder, bool keepStreamO
     /// </para>
     /// </note>
     /// </remarks>
-    public void ReadRange<T>(Span<T> buffer) 
+    public void ReadRange<T>(Span<T> buffer)
         where T : unmanaged => Read(ref Unsafe.As<T, byte>(ref buffer[0]), Unsafe.SizeOf<T>() * buffer.Length);
 
     /// <summary>
@@ -337,7 +337,7 @@ public class GorgonBinaryReader(Stream input, Encoding encoder, bool keepStreamO
         }
 
         unsafe
-        {        
+        {
             Read((pointer + startIndex), Unsafe.SizeOf<T>() * count.Value);
         }
     }

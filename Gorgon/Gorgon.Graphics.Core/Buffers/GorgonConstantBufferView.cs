@@ -278,7 +278,7 @@ public sealed class GorgonConstantBufferView
         var buffer = new GorgonConstantBuffer(graphics, new GorgonConstantBufferInfo(Unsafe.SizeOf<T>())
         {
             Name = name,
-            Usage = usage                
+            Usage = usage
         });
         buffer.SetData(in value);
         GorgonConstantBufferView view = buffer.GetView(firstElement, elementCount);
@@ -336,7 +336,7 @@ public sealed class GorgonConstantBufferView
         var buffer = new GorgonConstantBuffer(graphics, new GorgonConstantBufferInfo(Unsafe.SizeOf<T>() * value.Length)
         {
             Name = name,
-            Usage = usage                
+            Usage = usage
         });
         buffer.SetData(value);
         GorgonConstantBufferView view = buffer.GetView(firstElement, elementCount);

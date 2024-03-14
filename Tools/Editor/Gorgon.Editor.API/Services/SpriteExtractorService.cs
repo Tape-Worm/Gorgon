@@ -119,7 +119,7 @@ public class SpriteExtractorService(Gorgon2D renderer, IContentFileManager fileM
 
         try
         {
-            IGorgonImage resultImage = new GorgonImage(new GorgonImageInfo(ImageType.Image2D, targetFormat)
+            IGorgonImage resultImage = new GorgonImage(new GorgonImageInfo(ImageDataType.Image2D, targetFormat)
             {
                 Width = texture.Width,
                 Height = texture.Height,

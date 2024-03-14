@@ -102,8 +102,8 @@ public sealed class GorgonDirectionalLight
         if (IsUpdated)
         {
             _lightData = new GorgonGpuLightData(LightType,
-                                                new Vector3(-LightDirection.X, -LightDirection.Y, LightDirection.Z), 
-                                                Vector4.Zero, 
+                                                new Vector3(-LightDirection.X, -LightDirection.Y, LightDirection.Z),
+                                                Vector4.Zero,
                                                 Color,
                                                 new Vector4(SpecularPower, Intensity, SpecularIntensity, SpecularEnabled ? 1 : 0));
             IsUpdated = false;

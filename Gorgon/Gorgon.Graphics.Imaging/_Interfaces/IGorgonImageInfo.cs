@@ -29,7 +29,7 @@ namespace Gorgon.Graphics.Imaging;
 /// <summary>
 /// Type of image data.
 /// </summary>
-public enum ImageType
+public enum ImageDataType
 {
     /// <summary>
     /// Unknown.
@@ -62,7 +62,7 @@ public interface IGorgonImageInfo
     /// <summary>
     /// Property to return the type of image data.
     /// </summary>
-    ImageType ImageType
+    ImageDataType ImageType
     {
         get;
     }
@@ -167,7 +167,7 @@ public interface IGorgonImageInfo
     /// This only applies to 1D and 2D images.  This parameter will be set to a value of 1 for a 3D image.
     /// </para>
     /// <para>
-    /// If the <see cref="ImageType"/> is <see cref="ImageType.ImageCube"/>, then this value should be set to a multiple of 6. If it is not, then Gorgon will adjust this value to be a multiple of 
+    /// If the <see cref="ImageType"/> is <see cref="ImageDataType.ImageCube"/>, then this value should be set to a multiple of 6. If it is not, then Gorgon will adjust this value to be a multiple of 
     /// 6 if this image is to be used as a cube map.
     /// </para>
     /// <para>

@@ -67,7 +67,7 @@ public sealed class GorgonTexture1DReadWriteView
     /// <summary>
     /// Property to return the type of image data.
     /// </summary>
-    ImageType IGorgonImageInfo.ImageType => ImageType.Image1D;
+    ImageDataType IGorgonImageInfo.ImageType => ImageDataType.Image1D;
 
     /// <summary>
     /// Property to return the height of an image, in pixels.

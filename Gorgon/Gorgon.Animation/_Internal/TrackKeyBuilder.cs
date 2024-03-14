@@ -36,10 +36,10 @@ internal class TrackKeyBuilder<T>(GorgonAnimationBuilder parent)
     /// <summary>
     /// Property to return whether this track is initially disabled or enabled.
     /// </summary>
-    public bool IsEnabled 
-    { 
-        get; 
-        private set; 
+    public bool IsEnabled
+    {
+        get;
+        private set;
     } = true;
 
     /// <summary>

@@ -554,8 +554,8 @@ public class GorgonRawInput
     {
         // Multiple threads should -not- call dispose.
         lock (_syncLock)
-        {                
-            UnhookRawInput();                
+        {
+            UnhookRawInput();
 
             _mouseDevices.Clear();
             _keyboardDevices.Clear();

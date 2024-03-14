@@ -100,7 +100,7 @@ public abstract class GorgonShader
     /// <summary>
     /// Property to return the ID for the shader.
     /// </summary>
-        public long ID
+    public long ID
     {
         get;
     }

@@ -41,6 +41,6 @@ public class Gorgon2DShaderStatePoolAllocator<T>
     /// <summary>Initializes a new instance of the <see cref="Gorgon2DShaderStatePoolAllocator{T}"/> class.</summary>
     /// <param name="objectCount">[Optional] The number of objects to initialize the pool with.</param>
     public Gorgon2DShaderStatePoolAllocator(int objectCount = 128)
-        : base(objectCount) => ItemAllocator = () => new Gorgon2DShaderState<T>();        
-    #endregion        
+        : base(objectCount) => ItemAllocator = () => new Gorgon2DShaderState<T>();
+    #endregion
 }

@@ -121,7 +121,7 @@ internal partial class FormNewSprite
     /// <param name="sender">The source of the event.</param>
     /// <param name="e">The <see cref="ContentFileEntrySelectedEventArgs"/> instance containing the event data.</param>
     private async void FileTextures_FileEntrySelected(object sender, ContentFileEntrySelectedEventArgs e)
-    {            
+    {
         IGorgonImage image = null;
         Stream imageStream = null;
 

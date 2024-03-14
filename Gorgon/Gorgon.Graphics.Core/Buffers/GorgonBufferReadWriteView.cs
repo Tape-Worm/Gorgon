@@ -159,7 +159,7 @@ public sealed class GorgonBufferReadWriteView
             Format = (DXGI.Format)Format
         };
 
-        return ref UavDesc;                
+        return ref UavDesc;
     }
     #endregion
 

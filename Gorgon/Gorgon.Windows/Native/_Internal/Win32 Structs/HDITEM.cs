@@ -38,7 +38,7 @@ namespace Gorgon.Native;
 internal struct HDITEM
 {
     public uint mask;
-    public int cxy;    
+    public int cxy;
     public string pszText;
     public nint hbm;
     public int cchTextMax;

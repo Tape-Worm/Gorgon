@@ -116,7 +116,7 @@ internal partial class FormAtlasGen
         }
 
         using (_spriteSelector = new FormSpriteSelector())
-        {                
+        {
             _spriteSelector.SetDataContext(ViewModel.SpriteFiles);
             _spriteSelector.SetGraphicsContext(GraphicsContext);
             if (_spriteSelector.ShowDialog(this) == DialogResult.Cancel)
@@ -212,7 +212,7 @@ internal partial class FormAtlasGen
             return;
         }
 
-        ViewModel.MaxArrayCount = (int)NumericArrayIndex.Value;            
+        ViewModel.MaxArrayCount = (int)NumericArrayIndex.Value;
     }
 
     /// <summary>Handles the ValueChanged event of the NumericPadding control.</summary>
@@ -290,7 +290,7 @@ internal partial class FormAtlasGen
     /// <summary>Function called when a property was changed on the data context.</summary>
     /// <param name="propertyName">The name of the property that was changed.</param>
     /// <remarks>Developers should override this method when detecting property changes on the data context instead of assigning their own event handlers.</remarks>
-    protected override void OnPropertyChanged(string propertyName) 
+    protected override void OnPropertyChanged(string propertyName)
     {
         switch (propertyName)
         {
@@ -396,7 +396,7 @@ internal partial class FormAtlasGen
 
     /// <summary>Raises the <see cref="Control.Resize"/> event.</summary>
     /// <param name="e">An <see cref="EventArgs"/> that contains the event data.</param>
-    protected override void OnResize(EventArgs e) 
+    protected override void OnResize(EventArgs e)
     {
         base.OnResize(e);
 

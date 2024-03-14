@@ -84,7 +84,7 @@ internal class FileSystemWriteStream(string writePath, FileMode fileMode)
             base.Dispose(disposing);
 
             if (disposing)
-            {                    
+            {
                 OnCloseCallback?.Invoke(this);
             }
         }

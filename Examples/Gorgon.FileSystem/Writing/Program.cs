@@ -47,7 +47,7 @@ internal static class Program
     /// <summary>
     /// Property to return the directory where we'll be writing into.
     /// </summary>
-        public static DirectoryInfo WriteDirectory
+    public static DirectoryInfo WriteDirectory
     {
         get;
         private set;
@@ -67,9 +67,7 @@ internal static class Program
 
         try
         {
-#if NET6_0_OR_GREATER
             Application.SetHighDpiMode(HighDpiMode.PerMonitorV2);
-#endif
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
 

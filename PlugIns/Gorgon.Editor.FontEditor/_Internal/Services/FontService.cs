@@ -24,13 +24,13 @@
 // 
 #endregion
 
+using System.Diagnostics;
 using Gorgon.Editor.Content;
 using Gorgon.Graphics.Core;
 using Gorgon.Graphics.Fonts;
 using Gorgon.Graphics.Fonts.Codecs;
 using Gorgon.IO;
-using System.Diagnostics;
-using FontStyle = Gorgon.Graphics.Fonts.FontStyle;
+
 
 namespace Gorgon.Editor.FontEditor;
 
@@ -216,9 +216,9 @@ internal class FontService
         {
             FontName = Path.GetFileName(fontPath) ?? string.Empty,
             FontSize = prevFont?.Size ?? 9.0f,
-            FontHeightMode = prevFont?.FontHeightMode ?? FontHeightMode.Points,                
-            FontStyle = prevFont?.FontStyle ?? FontStyle.Normal,
-            AntiAliasingMode = prevFont?.AntiAliasingMode ?? FontAntiAliasMode.AntiAlias,
+            FontHeightMode = prevFont?.FontHeightMode ?? GorgonFontHeightMode.Points,
+            FontStyle = prevFont?.FontStyle ?? GorgonFontStyle.Normal,
+            AntiAliasingMode = prevFont?.AntiAliasingMode ?? GorgonFontAntiAliasMode.AntiAlias,
             TextureWidth = prevFont?.TextureWidth ?? 512,
             TextureHeight = prevFont?.TextureHeight ?? 512,
             Characters = prevFont?.Characters ?? DefaultCharacters,
@@ -297,7 +297,7 @@ internal class FontService
         finally
         {
             Interlocked.Exchange(ref _lock, 0);
-        }            
+        }
     }
     #endregion
 

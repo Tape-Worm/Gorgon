@@ -34,7 +34,7 @@ using Gorgon.IO;
 using Gorgon.Renderers;
 using Gorgon.UI;
 using DX = SharpDX;
-using FontStyle = Gorgon.Graphics.Fonts.FontStyle;
+
 
 namespace Gorgon.Examples;
 
@@ -260,8 +260,8 @@ ESC - Quit.";
             _graphics = new GorgonGraphics(adapters[0], log: GorgonApplication.Log);
 
             // Create our "screen".
-            _screen = new GorgonSwapChain(_graphics, window, new GorgonSwapChainInfo(ExampleConfig.Default.Resolution.Width, 
-                                                                                          ExampleConfig.Default.Resolution.Height, 
+            _screen = new GorgonSwapChain(_graphics, window, new GorgonSwapChainInfo(ExampleConfig.Default.Resolution.Width,
+                                                                                          ExampleConfig.Default.Resolution.Height,
                                                                                           BufferFormat.R8G8B8A8_UNorm)
             {
                 Name = "TheShadowGn0s Screen Swap chain"
@@ -340,10 +340,10 @@ ESC - Quit.";
 
             GorgonExample.LoadResources(_graphics);
 
-            _helpFont = GorgonExample.Fonts.GetFont(new GorgonFontInfo("Segoe UI", 12.0f, FontHeightMode.Points)
+            _helpFont = GorgonExample.Fonts.GetFont(new GorgonFontInfo("Segoe UI", 12.0f, GorgonFontHeightMode.Points)
             {
                 Name = "Segoe UI 12pt Bold, Outlined",
-                FontStyle = FontStyle.Bold,
+                FontStyle = GorgonFontStyle.Bold,
                 OutlineColor2 = GorgonColor.Black,
                 OutlineColor1 = GorgonColor.Black,
                 OutlineSize = 2,
@@ -446,9 +446,7 @@ ESC - Quit.";
     {
         try
         {
-#if NET6_0_OR_GREATER
             Application.SetHighDpiMode(HighDpiMode.PerMonitorV2);
-#endif
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
 

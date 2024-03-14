@@ -49,7 +49,7 @@ public class GorgonTimestampDisjointQuery(GorgonGraphics graphics, string name =
     /// <param name="result">The result of the query.</param>
     /// <returns><b>true</b> if the query results are ready to be consumed, or <b>false</b> if not.</returns>
     protected override bool OnGetData(out GorgonTimestampDisjointResult result)
-    {            
+    {
         if (!Graphics.D3DDeviceContext.GetData(D3dQuery, out D3D11.QueryDataTimestampDisjoint data))
         {
             result = default;

@@ -61,7 +61,7 @@ public class GorgonSamplerState
     /// <summary>
     /// A sampler state that turns on texture wrapping when texture coordinates exceed the range of the texture size.
     /// </summary>
-        public static readonly GorgonSamplerState Wrapping = new()
+    public static readonly GorgonSamplerState Wrapping = new()
     {
         WrapU = TextureWrap.Wrap,
         WrapV = TextureWrap.Wrap,
@@ -365,7 +365,7 @@ public class GorgonSamplerState
         hashCode.Add(MinimumLevelOfDetail);
         hashCode.Add(MaximumLevelOfDetail);
         hashCode.Add(MipLevelOfDetailBias);
-        return hashCode.ToHashCode();            
+        return hashCode.ToHashCode();
     }
     #endregion
 

@@ -466,16 +466,16 @@ public static class GorgonIOExtensions
     /// Function to format a filename with safe characters.
     /// </summary>
     /// <param name="path">The path containing the filename to evaluate.</param>
-        /// <returns>A safe filename formatted with placeholder characters if invalid characters are found.</returns>
-        /// <remarks>
-        /// <para>
-        /// This will replace any illegal filename characters with the underscore character.
-        /// </para>
-        /// <para>
-        /// If <b>null</b> or <see cref="string.Empty"/> are passed to this method, then an empty string will be returned. If the path does not contain a 
-        /// filename, then an empty string will be returned as well.
-        /// </para>
-        /// </remarks>
+    /// <returns>A safe filename formatted with placeholder characters if invalid characters are found.</returns>
+    /// <remarks>
+    /// <para>
+    /// This will replace any illegal filename characters with the underscore character.
+    /// </para>
+    /// <para>
+    /// If <b>null</b> or <see cref="string.Empty"/> are passed to this method, then an empty string will be returned. If the path does not contain a 
+    /// filename, then an empty string will be returned as well.
+    /// </para>
+    /// </remarks>
     public static string FormatFileName(this string path)
     {
         if (string.IsNullOrWhiteSpace(path))
@@ -515,9 +515,9 @@ public static class GorgonIOExtensions
     /// passed to <paramref name="directorySeparator"/>.
     /// </para>
     /// <para>
-        /// If <b>null</b> or <see cref="string.Empty"/> are passed to this method, then an empty string will be returned. If the path contains only a filename, 
-        /// that string will be formatted as though it were a directory path.
-        /// </para>
+    /// If <b>null</b> or <see cref="string.Empty"/> are passed to this method, then an empty string will be returned. If the path contains only a filename, 
+    /// that string will be formatted as though it were a directory path.
+    /// </para>
     /// </remarks>
     public static string FormatDirectory(this string path, char directorySeparator)
     {
@@ -629,21 +629,21 @@ public static class GorgonIOExtensions
     /// Function to format a path with safe characters.
     /// </summary>
     /// <param name="path">Path to the file or folder to format.</param>
-        /// <param name="directorySeparator">Directory separator character to use.</param>
+    /// <param name="directorySeparator">Directory separator character to use.</param>
     /// <returns>A safe path formatted with placeholder characters if invalid characters are found.</returns>
     /// <remarks>
     /// <para>
     /// If the path contains directories, they will be formatted according to the formatting applied by <see cref="FormatDirectory"/>, and if the path contains a filename, it will be 
     /// formatted according to the formatting applied by the <see cref="FormatFileName"/> method.
-        /// </para>
-        /// <para>
-        /// If the last character in <paramref name="path"/> is not the same as the <paramref name="directorySeparator"/> parameter, then that last part of the path will be treated as a file. 
-        /// </para>
-        /// <para>
-        /// If no directories are present in the path, then the see <paramref name="directorySeparator"/> is ignored.
-        /// </para>
-        /// </remarks>
-        public static string FormatPath(this string path, char directorySeparator)
+    /// </para>
+    /// <para>
+    /// If the last character in <paramref name="path"/> is not the same as the <paramref name="directorySeparator"/> parameter, then that last part of the path will be treated as a file. 
+    /// </para>
+    /// <para>
+    /// If no directories are present in the path, then the see <paramref name="directorySeparator"/> is ignored.
+    /// </para>
+    /// </remarks>
+    public static string FormatPath(this string path, char directorySeparator)
     {
         if (string.IsNullOrWhiteSpace(path))
         {

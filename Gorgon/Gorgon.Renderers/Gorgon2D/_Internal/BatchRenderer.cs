@@ -140,7 +140,7 @@ internal sealed class BatchRenderer
                                                                                      new GorgonVertexBufferInfo(Gorgon2DVertex.SizeInBytes * (MaxSpriteCount * 4))
                                                                                      {
                                                                                          Usage = ResourceUsage.Dynamic,
-                                                                                         Binding = VertexIndexBufferBinding.None                                                                                             
+                                                                                         Binding = VertexIndexBufferBinding.None
                                                                                      });
 
         IndexBuffer = new GorgonIndexBuffer(Graphics,

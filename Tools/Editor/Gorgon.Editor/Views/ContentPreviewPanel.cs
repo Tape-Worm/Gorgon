@@ -154,13 +154,13 @@ internal partial class ContentPreviewPanel
     {
         _swapChain = GraphicsContext.LeaseSwapPresenter(PanelDisplay);
         _renderer = GraphicsContext.Renderer2D;
-        _titleFont = GraphicsContext.FontFactory.GetFont(new GorgonFontInfo(Font.FontFamily.Name, 10.0f, FontHeightMode.Points)
+        _titleFont = GraphicsContext.FontFactory.GetFont(new GorgonFontInfo(Font.FontFamily.Name, 10.0f, GorgonFontHeightMode.Points)
         {
             Name = "PreviewTitleFont",
             OutlineSize = 2,
             OutlineColor1 = GorgonColor.Black,
             OutlineColor2 = GorgonColor.Black,
-            FontStyle = Graphics.Fonts.FontStyle.Bold
+            FontStyle = Graphics.Fonts.GorgonFontStyle.Bold
         });
 
         _titleText = new GorgonTextSprite(_titleFont)

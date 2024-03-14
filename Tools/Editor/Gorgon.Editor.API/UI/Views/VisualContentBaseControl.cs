@@ -225,7 +225,7 @@ public partial class VisualContentBaseControl
     {
         DisableScrollEvents();
         try
-        {                
+        {
             ScrollHorizontal.Value = (int)e.Offset.X.Min(ScrollHorizontal.Maximum - 1).Max(ScrollHorizontal.Minimum);
             ScrollVertical.Value = (int)e.Offset.Y.Min(ScrollVertical.Maximum - 1).Max(ScrollVertical.Minimum);
         }
@@ -348,7 +348,7 @@ public partial class VisualContentBaseControl
 
     /// <summary>Raises the <see cref="Control.Resize"/> event.</summary>
     /// <param name="e">An <see cref="EventArgs"/> that contains the event data.</param>
-    protected override void OnResize(EventArgs e) 
+    protected override void OnResize(EventArgs e)
     {
         base.OnResize(e);
 
@@ -384,7 +384,7 @@ public partial class VisualContentBaseControl
         }
 
         ShowHostedPanel(hostControl);
-        SetupScrollBars();            
+        SetupScrollBars();
     }
 
     /// <summary>Function called when a property is changing on the data context.</summary>
@@ -580,13 +580,13 @@ public partial class VisualContentBaseControl
         SetupScrollBars();
 
         if ((resetZoom) || (offset is null))
-        {                
+        {
             Renderer.MoveTo(new Vector2(ClientSize.Width * 0.5f, ClientSize.Height * 0.5f), -1);
         }
         else
         {
             Renderer.SetZoom(zoomLevel.GetScale());
-            Renderer.SetOffset(offset.Value);                
+            Renderer.SetOffset(offset.Value);
         }
 
         OnSwitchRenderer(Renderer, resetZoom);
@@ -682,9 +682,9 @@ public partial class VisualContentBaseControl
     protected override void OnShutdown()
     {
         foreach (IContentRenderer renderer in _renderers.Values)
-        {                
+        {
             renderer?.Dispose();
-        }            
+        }
 
         base.OnShutdown();
     }
@@ -707,7 +707,7 @@ public partial class VisualContentBaseControl
         // Force keyboard focus to our render window.
         ShowFocusState(true);
         RenderControl.Select();
-    }        
+    }
     #endregion
 
     #region Constructor/Finalizer.

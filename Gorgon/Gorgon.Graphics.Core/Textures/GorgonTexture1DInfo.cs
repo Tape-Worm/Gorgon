@@ -28,7 +28,6 @@ using Gorgon.Graphics.Imaging;
 
 namespace Gorgon.Graphics.Core;
 
-#if NET6_0_OR_GREATER
 /// <summary>
 /// Information used to create a 1D texture object.
 /// </summary>
@@ -37,7 +36,7 @@ namespace Gorgon.Graphics.Core;
 public record GorgonTexture1DInfo(int Width, BufferFormat Format)
     : IGorgonTexture1DInfo, IGorgonImageInfo
 {
-#region Constructor.
+    #region Constructor.
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonTexture1DInfo"/> class.
     /// </summary>
@@ -52,9 +51,9 @@ public record GorgonTexture1DInfo(int Width, BufferFormat Format)
         MipLevels = info.MipLevels;
         Usage = info.Usage;
     }
-#endregion
+    #endregion
 
-#region Properties.
+    #region Properties.
     /// <summary>
     /// Property to return the name of the texture.
     /// </summary>
@@ -131,7 +130,7 @@ public record GorgonTexture1DInfo(int Width, BufferFormat Format)
     /// <summary>
     /// Property to return the type of image data.
     /// </summary>
-    ImageType IGorgonImageInfo.ImageType => ImageType.Image1D;
+    ImageDataType IGorgonImageInfo.ImageType => ImageDataType.Image1D;
 
     /// <summary>
     /// Property to return the height of an image, in pixels.
@@ -172,137 +171,5 @@ public record GorgonTexture1DInfo(int Width, BufferFormat Format)
     /// Property to return whether the size of the texture is a power of 2 or not.
     /// </summary>
     bool IGorgonImageInfo.IsPowerOfTwo => ((Width == 0) || (Width & (Width - 1)) == 0);
-#endregion
-}
-#else
-/// <summary>
-/// Information used to create a texture object.
-/// </summary>
-public class GorgonTexture1DInfo
-    : IGorgonTexture1DInfo, IGorgonImageInfo
-{
-    #region Properties.
-    /// <summary>
-    /// Property to return the name of the texture.
-    /// </summary>
-    public string Name
-    {
-        get;
-        set;
-    }
-
-    /// <summary>
-    /// Property to return the width of the texture, in pixels.
-    /// </summary>
-    public int Width
-    {
-        get;
-        set;
-    }
-
-    /// <summary>
-    /// Property to return the number of array levels for a texture.
-    /// </summary>
-    public int ArrayCount
-    {
-        get;
-        set;
-    }
-
-    /// <summary>
-    /// Property to return the format of the texture.
-    /// </summary>
-    public BufferFormat Format
-    {
-        get;
-        set;
-    }
-
-    /// <summary>
-    /// Property to return the number of mip-map levels for the texture.
-    /// </summary>
-    public int MipLevels
-    {
-        get;
-        set;
-    }
-
-    /// <summary>
-    /// Property to return the intended usage flags for this texture.
-    /// </summary>
-    public ResourceUsage Usage
-    {
-        get;
-        set;
-    }
-
-    /// <summary>
-    /// Property to return the flags to determine how the texture will be bound with the pipeline when rendering.
-    /// </summary>
-    public TextureBinding Binding
-    {
-        get;
-        set;
-    }
-
-    /// <summary>
-    /// Property to return the type of image data.
-    /// </summary>
-    ImageType IGorgonImageInfo.ImageType => ImageType.Image1D;
-
-    /// <summary>
-    /// Property to return the height of an image, in pixels.
-    /// </summary>
-    int IGorgonImageInfo.Height => 1;
-
-    /// <summary>
-    /// Property to return the depth of an image, in pixels.
-    /// </summary>
-    int IGorgonImageInfo.Depth => 1;
-
-    /// <summary>
-    /// Property to return whether the image data is using premultiplied alpha.
-    /// </summary>
-    bool IGorgonImageInfo.HasPreMultipliedAlpha => false;
-
-    /// <summary>
-    /// Property to return the number of mip map levels in the image.
-    /// </summary>
-    int IGorgonImageInfo.MipCount => MipLevels;
-
-    /// <summary>
-    /// Property to return whether the size of the texture is a power of 2 or not.
-    /// </summary>
-    bool IGorgonImageInfo.IsPowerOfTwo => ((Width == 0) || (Width & (Width - 1)) == 0);
-    #endregion
-
-    #region Constructor/Finalizer.
-    /// <summary>
-    /// Initializes a new instance of the <see cref="GorgonTexture1DInfo"/> class.
-    /// </summary>
-    /// <param name="width">The width.</param>
-    /// <param name="format">The format.</param>
-    public GorgonTexture1DInfo(int width, BufferFormat format)
-    {
-        Width = width;
-        Format = format;
-    }
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="GorgonTexture1DInfo"/> class.
-    /// </summary>
-    /// <param name="info">A <see cref="IGorgonTexture1DInfo"/> to copy settings from.</param>
-    /// <param name="newName">[Optional] The new name for the texture.</param>
-    public GorgonTexture1DInfo(IGorgonTexture1DInfo info, string newName = null)
-    {
-        Name = newName;
-        Format = info.Format;
-        ArrayCount = info.ArrayCount;
-        Binding = info.Binding;
-        MipLevels = info.MipLevels;
-        Usage = info.Usage;
-        Width = info.Width;
-    }
     #endregion
 }
-#endif

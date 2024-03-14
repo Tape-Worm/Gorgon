@@ -52,24 +52,24 @@ namespace Gorgon.Graphics.Core;
 /// <exception cref="ArgumentNullException">Thrown when the <paramref name="resource"/>, or the <paramref name="formatInfo"/> parameter is <b>null</b>.</exception>
 public abstract class GorgonRenderTargetView(GorgonGraphicsResource resource, BufferFormat format, GorgonFormatInfo formatInfo)
                 : GorgonResourceView(resource)
+{
+    #region Properties.
+    /// <summary>
+    /// Property to return the native D3D depth/stencil view.
+    /// </summary>
+    internal D3D11.RenderTargetView1 Native
     {
-        #region Properties.
-        /// <summary>
-        /// Property to return the native D3D depth/stencil view.
-        /// </summary>
-        internal D3D11.RenderTargetView1 Native
-        {
-            get;
-            set;
-        }
+        get;
+        set;
+    }
 
-        /// <summary>
-        /// Property to return the flags to determine how the texture will be bound with the pipeline when rendering.
-        /// </summary>
-        public abstract TextureBinding Binding
-        {
-            get;
-        }
+    /// <summary>
+    /// Property to return the flags to determine how the texture will be bound with the pipeline when rendering.
+    /// </summary>
+    public abstract TextureBinding Binding
+    {
+        get;
+    }
 
     /// <summary>
     /// Property to return the format used to interpret this view.
@@ -91,39 +91,39 @@ public abstract class GorgonRenderTargetView(GorgonGraphicsResource resource, Bu
     /// Property to return the width of the render target view.
     /// </summary>
     public abstract int Width
-        {
-            get;
-        }
+    {
+        get;
+    }
 
-        /// <summary>
-        /// Property to return the height of the render target view.
-        /// </summary>
-        public abstract int Height
-        {
-            get;
-        }
-        #endregion
+    /// <summary>
+    /// Property to return the height of the render target view.
+    /// </summary>
+    public abstract int Height
+    {
+        get;
+    }
+    #endregion
 
-        #region Methods.
-        /// <summary>
-        /// Function to clear the contents of the render target for this view.
-        /// </summary>
-        /// <param name="color">Color to use when clearing the render target view.</param>
-        /// <remarks>
-        /// <para>
-        /// This will clear the render target view to the specified <paramref name="color"/>.  
-        /// </para>
-        /// </remarks>
-        public void Clear(in GorgonColor color)
-        {
-            Graphics.D3DDeviceContext.ClearRenderTargetView(Native, color.ToRawColor4());
+    #region Methods.
+    /// <summary>
+    /// Function to clear the contents of the render target for this view.
+    /// </summary>
+    /// <param name="color">Color to use when clearing the render target view.</param>
+    /// <remarks>
+    /// <para>
+    /// This will clear the render target view to the specified <paramref name="color"/>.  
+    /// </para>
+    /// </remarks>
+    public void Clear(in GorgonColor color)
+    {
+        Graphics.D3DDeviceContext.ClearRenderTargetView(Native, color.ToRawColor4());
 
-            ref GorgonGraphicsStatistics stats = ref Graphics.RwStatistics;
-            unchecked
-            {
-                ++stats._clearCount;
-            }
+        ref GorgonGraphicsStatistics stats = ref Graphics.RwStatistics;
+        unchecked
+        {
+            ++stats._clearCount;
         }
+    }
 
     #endregion
     #region Constructor/Destructor.

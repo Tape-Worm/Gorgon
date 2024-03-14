@@ -185,7 +185,7 @@ public class Cube
                                             new GorgonIndexBufferInfo(indices.Length)
                                             {
                                                 Name = "GlassCube Index Buffer",
-                                                Usage = ResourceUsage.Immutable,                                                    
+                                                Usage = ResourceUsage.Immutable,
                                                 Use16BitIndices = true
                                             },
                                             indices);

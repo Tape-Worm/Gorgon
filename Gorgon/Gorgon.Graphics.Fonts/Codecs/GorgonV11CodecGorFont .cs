@@ -103,13 +103,13 @@ public sealed class GorgonCodecGorFont
     private static GorgonFontInfo GetFontInfo(GorgonChunkFileReader fontFile, string name)
     {
         GorgonBinaryReader reader = fontFile.OpenChunk(FontInfoChunk);
-        var info = new GorgonFontInfo(reader.ReadString(), reader.ReadSingle(), reader.ReadValue<FontHeightMode>())
+        var info = new GorgonFontInfo(reader.ReadString(), reader.ReadSingle(), reader.ReadValue<GorgonFontHeightMode>())
         {
             Name = name,
-            FontStyle = reader.ReadValue<FontStyle>(),
+            FontStyle = reader.ReadValue<GorgonFontStyle>(),
             DefaultCharacter = reader.ReadChar(),
             Characters = reader.ReadString(),
-            AntiAliasingMode = reader.ReadValue<FontAntiAliasMode>(),
+            AntiAliasingMode = reader.ReadValue<GorgonFontAntiAliasMode>(),
             OutlineColor1 = new GorgonColor(reader.ReadInt32()),
             OutlineColor2 = new GorgonColor(reader.ReadInt32()),
             OutlineSize = reader.ReadInt32(),
@@ -124,7 +124,7 @@ public sealed class GorgonCodecGorFont
         }
 
         reader = fontFile.OpenChunk(TextureInfoChunk);
-#if NET6_0_OR_GREATER
+
         info = info with
         {
             PackingSpacing = reader.ReadInt32(),
@@ -132,7 +132,7 @@ public sealed class GorgonCodecGorFont
             TextureHeight = reader.ReadInt32(),
             UsePremultipliedTextures = reader.ReadBoolean()
         };
-#endif
+
         fontFile.CloseChunk();
 
         return info;
@@ -176,7 +176,7 @@ public sealed class GorgonCodecGorFont
             writer.Write(fontInfo.PackingSpacing);
             writer.Write(fontInfo.TextureWidth);
             writer.Write(fontInfo.TextureHeight);
-            writer.Write(fontInfo.UsePremultipliedTextures);                
+            writer.Write(fontInfo.UsePremultipliedTextures);
             fontFile.CloseChunk();
 
             if (fontInfo.Brush is not null)
@@ -270,12 +270,10 @@ public sealed class GorgonCodecGorFont
                 fontBrush = new GorgonGlyphSolidBrush();
             }
 
-#if NET6_0_OR_GREATER
             fontInfo = fontInfo with
             {
                 Brush = fontBrush
             };
-#endif
 
             return await Factory.GetFontAsync(fontInfo);
         }
@@ -338,12 +336,10 @@ public sealed class GorgonCodecGorFont
                 fontBrush = new GorgonGlyphSolidBrush();
             }
 
-#if NET6_0_OR_GREATER
             fontInfo = fontInfo with
             {
                 Brush = fontBrush
             };
-#endif
 
             return Factory.GetFont(fontInfo);
         }

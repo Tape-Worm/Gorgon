@@ -46,7 +46,7 @@ public class ImportedEventArgs
     public IReadOnlyList<IGorgonVirtualFile> VirtualFiles
     {
         get;
-    }              
+    }
 
     /// <summary>
     /// Property to return the destination directory for the import operation.
@@ -60,8 +60,8 @@ public class ImportedEventArgs
     /// <param name="dest">The destination directory for the import.</param>
     /// <param name="directories">The list of virtual directories that were imported.</param>
     /// <param name="files">The list of virtual files that were imported.</param>
-    internal ImportedEventArgs(IGorgonVirtualDirectory dest, 
-                                            IReadOnlyList<IGorgonVirtualDirectory> directories, 
+    internal ImportedEventArgs(IGorgonVirtualDirectory dest,
+                                            IReadOnlyList<IGorgonVirtualDirectory> directories,
                                             IReadOnlyList<IGorgonVirtualFile> files)
     {
         Destination = dest;

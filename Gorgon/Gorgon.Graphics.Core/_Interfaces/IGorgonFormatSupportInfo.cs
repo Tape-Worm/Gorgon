@@ -24,7 +24,7 @@
 // 
 #endregion
 
-using ImageType = Gorgon.Graphics.Imaging.ImageType;
+using Gorgon.Graphics.Imaging;
 
 namespace Gorgon.Graphics.Core;
 
@@ -106,9 +106,9 @@ public interface IGorgonFormatSupportInfo
     }
 
     /// <summary>
-    /// Function to determine if a format is suitable for the texture type specified by <see cref="ImageType"/>.
+    /// Function to determine if a format is suitable for the texture type specified by <see cref="ImageDataType"/>.
     /// </summary>
     /// <param name="imageType">The image type to evaluate.</param>
     /// <returns><b>true</b> if suitable, <b>false</b> if not.</returns>
-    bool IsTextureFormat(ImageType imageType);
+    bool IsTextureFormat(ImageDataType imageType);
 }

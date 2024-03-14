@@ -92,7 +92,7 @@ namespace Gorgon.Editor.UI;
 public abstract class ViewModelBase<T, THs>
     : PropertyMonitor, IViewModel
     where THs : IHostServices
-    where T : class, IViewModelInjection<THs>        
+    where T : class, IViewModelInjection<THs>
 {
     #region Events.
     /// <summary>

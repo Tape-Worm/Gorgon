@@ -117,7 +117,7 @@ public class GorgonPerspectiveCamera(GorgonGraphics graphics, DX.Size2F viewDime
     /// Function to update the view matrix.
     /// </summary>
     protected override void UpdateViewMatrix(ref Matrix4x4 viewMatrix)
-    {               
+    {
         bool hasRotation = (Changes & CameraChange.Rotation) == CameraChange.Rotation;
         bool hasTranslate = (Changes & CameraChange.Position) == CameraChange.Position;
         // There is no scaling for this camera type.
@@ -226,7 +226,7 @@ public class GorgonPerspectiveCamera(GorgonGraphics graphics, DX.Size2F viewDime
         lookMatrix.M43 = -Vector3.Dot(zaxis, PositionRef);
         lookMatrix.M44 = 1f;
 
-        _rotationQuat = Quaternion.Conjugate(Quaternion.CreateFromRotationMatrix(lookMatrix));            
+        _rotationQuat = Quaternion.Conjugate(Quaternion.CreateFromRotationMatrix(lookMatrix));
         Changes |= CameraChange.View | CameraChange.Rotation;
     }
 

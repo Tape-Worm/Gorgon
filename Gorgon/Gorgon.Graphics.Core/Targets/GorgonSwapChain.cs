@@ -583,7 +583,7 @@ public sealed class GorgonSwapChain
     {
         try
         {
-            if ((e.AffectedControl != Window) 
+            if ((e.AffectedControl != Window)
                 || ((!string.Equals(e.AffectedProperty, nameof(Window.Size), StringComparison.OrdinalIgnoreCase))
                 && (!string.Equals(e.AffectedProperty, nameof(Window.Bounds), StringComparison.OrdinalIgnoreCase))))
             {
@@ -778,14 +778,12 @@ public sealed class GorgonSwapChain
             throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_FORMAT_NOT_SUPPORTED, info.Format));
         }
 
-#if NET6_0_OR_GREATER
         // Constrain sizes.            
         info = info with
         {
             Width = info.Width.Min(Graphics.VideoAdapter.MaxTextureWidth).Max(1),
             Height = info.Height.Min(Graphics.VideoAdapter.MaxTextureHeight).Max(1)
         };
-#endif
     }
 
     /// <summary>
@@ -870,14 +868,14 @@ public sealed class GorgonSwapChain
             // Ensure that we have an up-to-date copy of the video mode information.
             _fullScreenVideoMode = modeDesc.ToGorgonVideoMode();
             FullscreenOutput = output;
-#if NET6_0_OR_GREATER
+
             _info = _info with
             {
                 Width = _fullScreenVideoMode.Value.Width,
                 Height = _fullScreenVideoMode.Value.Height,
                 Format = _fullScreenVideoMode.Value.Format
             };
-#endif
+
             _isFullScreenBorderless = true;
 
             Graphics.Log.Print($"SwapChain '{Name}': Full screen borderless windowed mode was set.  Final mode: {FullScreenVideoMode}.  Swap chain back buffer size: {_info.Width}x{_info.Height}, Format: {_info.Format}",
@@ -985,7 +983,7 @@ public sealed class GorgonSwapChain
             _resizeState.IsScreenStateTransition = true;
             _resizeState.ResizeFormat = resizeMode.Format;
 
-            DXGISwapChain.ResizeTarget(ref resizeMode);                
+            DXGISwapChain.ResizeTarget(ref resizeMode);
 
             DXGI.Rational refreshRate = resizeMode.RefreshRate;
             DXGISwapChain.SetFullscreenState(true, dxgiOutput6);
@@ -1005,14 +1003,13 @@ public sealed class GorgonSwapChain
             _fullScreenVideoMode = resizeMode.ToGorgonVideoMode();
             FullscreenOutput = output;
 
-#if NET6_0_OR_GREATER
             _info = _info with
             {
                 Width = _fullScreenVideoMode.Value.Width,
                 Height = _fullScreenVideoMode.Value.Height,
                 Format = _fullScreenVideoMode.Value.Format
             };
-#endif
+
             _resizeState.PreviousVideoMode = _fullScreenVideoMode;
             _resizeState.PreviousOutput = FullscreenOutput;
 
@@ -1095,14 +1092,14 @@ public sealed class GorgonSwapChain
             _resizeState.ResizeFormat = desc.Format;
 
             DXGISwapChain.ResizeTarget(ref desc);
-#if NET6_0_OR_GREATER
+
             _info = _info with
             {
                 Width = desc.Width,
                 Height = desc.Height,
                 Format = (BufferFormat)desc.Format
             };
-#endif
+
             Graphics.Log.Print($"SwapChain '{Name}': Windowed mode restored. Back buffer size: {_info.Width}x{_info.Height}, Format: {_info.Format}.", LoggingLevel.Verbose);
         }
         catch (Exception ex)
@@ -1163,13 +1160,12 @@ public sealed class GorgonSwapChain
         DXGISwapChain.ResizeBuffers((IsWindowed || _isFullScreenBorderless) ? 2 : 3, newWidth, newHeight, _resizeState.ResizeFormat, flags);
 
         var oldSize = new DX.Size2(_info.Width, _info.Height);
-#if NET6_0_OR_GREATER
+
         _info = _info with
         {
             Width = newWidth,
             Height = newHeight
-        };            
-#endif
+        };
 
         CreateResources(rtvIndex);
 
@@ -1449,6 +1445,6 @@ public sealed class GorgonSwapChain
         ParentForm.Activated += ParentForm_Activated;
         ParentForm.Deactivate += ParentForm_Deactivated;
 
-    }        
+    }
     #endregion
 }

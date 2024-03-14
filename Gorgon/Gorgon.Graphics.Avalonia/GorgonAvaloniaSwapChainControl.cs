@@ -115,7 +115,7 @@ public class GorgonAvaloniaSwapChainControl
             await swapChain.DisposeAsync();
         }
 
-        surface?.Dispose();             
+        surface?.Dispose();
     }
 
     /// <summary>
@@ -184,7 +184,7 @@ public class GorgonAvaloniaSwapChainControl
         _nextFrameQueued = true;
         _compositor?.RequestCompositionUpdate(Update);
 
-        GorgonTiming.Update();        
+        GorgonTiming.Update();
     }
 
     /// <summary>

@@ -87,7 +87,7 @@ internal class VertexEditViewer(Gorgon2D renderer, GorgonSwapChain swapChain, IS
     /// Function to set the vertices in the vertex editor service.
     /// </summary>
     private void SetEditorVertices()
-    {            
+    {
         // Transform the vertex offsets into sprite local space.
         Vector2[] vertices = ArrayPool<Vector2>.Shared.Rent(Sprite.CornerOffsets.Count);
         vertices[0] = DataContext.SpriteVertexEditContext.Vertices[0];
@@ -95,7 +95,7 @@ internal class VertexEditViewer(Gorgon2D renderer, GorgonSwapChain swapChain, IS
         vertices[2] = new Vector2(Sprite.Size.Width + DataContext.SpriteVertexEditContext.Vertices[2].X, Sprite.Size.Height + DataContext.SpriteVertexEditContext.Vertices[2].Y);
         vertices[3] = new Vector2(DataContext.SpriteVertexEditContext.Vertices[3].X, Sprite.Size.Height + DataContext.SpriteVertexEditContext.Vertices[3].Y);
         _vertexEditor.Vertices = vertices;
-        ArrayPool<Vector2>.Shared.Return(vertices,true);
+        ArrayPool<Vector2>.Shared.Return(vertices, true);
     }
 
     /// <summary>
@@ -137,7 +137,7 @@ internal class VertexEditViewer(Gorgon2D renderer, GorgonSwapChain swapChain, IS
         verts[3] = new Vector2(_vertexEditor.Vertices[3].X, _vertexEditor.Vertices[3].Y - Sprite.Size.Height);
 
         DataContext.SpriteVertexEditContext.Vertices = verts;
-        DataContext.SpriteVertexEditContext.Offset = DataContext.SpriteVertexEditContext.Vertices[DataContext.SpriteVertexEditContext.SelectedVertexIndex];            
+        DataContext.SpriteVertexEditContext.Offset = DataContext.SpriteVertexEditContext.Vertices[DataContext.SpriteVertexEditContext.SelectedVertexIndex];
 
         ArrayPool<Vector2>.Shared.Return(verts, true);
     }
@@ -258,7 +258,7 @@ internal class VertexEditViewer(Gorgon2D renderer, GorgonSwapChain swapChain, IS
 
         Renderer.Begin();
         _vertexEditor.Render();
-        Renderer.End();            
+        Renderer.End();
     }
 
     /// <summary>Function called when the renderer needs to load any resource data.</summary>
@@ -305,7 +305,7 @@ internal class VertexEditViewer(Gorgon2D renderer, GorgonSwapChain swapChain, IS
     {
         if (disposing)
         {
-            ToggleManualInputEvent = null;                
+            ToggleManualInputEvent = null;
         }
 
         base.Dispose(disposing);

@@ -72,7 +72,7 @@ internal class NoTextureViewer
     protected sealed override void OnRenderBackground()
     {
         float newSize = RenderRegion.Width < RenderRegion.Height ? RenderRegion.Width : RenderRegion.Height;
-        var size = new DX.Size2F(newSize.Min(_noImage.Width), newSize.Min(_noImage.Width));            
+        var size = new DX.Size2F(newSize.Min(_noImage.Width), newSize.Min(_noImage.Width));
         var halfClient = new DX.Size2F(RenderRegion.Width * 0.5f, RenderRegion.Height * 0.5f);
         var pos = new Vector2((int)(halfClient.Width - size.Width * 0.5f), (int)(halfClient.Height - size.Height * 0.5f));
 
@@ -112,7 +112,7 @@ internal class NoTextureViewer
     {
         CanPanHorizontally = false;
         CanPanHorizontally = false;
-        CanZoom = false;            
+        CanZoom = false;
     }
     #endregion
 }

@@ -192,7 +192,7 @@ internal partial class FormNewAnimation
                 PictureSpritePreview.Image = null;
                 image?.Dispose();
                 return;
-            }                
+            }
 
             if (image.Format != BufferFormat.R8G8B8A8_UNorm)
             {
@@ -353,9 +353,9 @@ internal partial class FormNewAnimation
             return;
         }
 
-        FillFileList(_textures.Where(item => item.Name.IndexOf(e.SearchText, StringComparison.CurrentCultureIgnoreCase) > -1).ToArray(), 
-                     BackgroundTextureFile, 
-                     FileBgTextures, 
+        FillFileList(_textures.Where(item => item.Name.IndexOf(e.SearchText, StringComparison.CurrentCultureIgnoreCase) > -1).ToArray(),
+                     BackgroundTextureFile,
+                     FileBgTextures,
                      FileTextures_FileEntrySelected);
     }
 

@@ -53,7 +53,7 @@ public class ProgressPanelDisplay
     /// Function to unassign the events from the view model.
     /// </summary>
     private void UnassignEvents()
-    {            
+    {
         _progressCancelAction?.Invoke();
 
         if (_viewModel is null)
@@ -136,7 +136,7 @@ public class ProgressPanelDisplay
             OverlayColor = Graphics.GorgonColor.Black
         };
         _progressTimer = new GorgonTimerQpc();
-    }        
+    }
     #endregion
 
 }

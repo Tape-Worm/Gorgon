@@ -157,7 +157,7 @@ internal class ComboFonts
             }
 
             families = families.Where(item => !Items.Cast<string>().Any(subItem => string.Equals(subItem, item, StringComparison.CurrentCultureIgnoreCase)))
-                               .OrderBy(item => item, StringComparer.CurrentCultureIgnoreCase);                
+                               .OrderBy(item => item, StringComparer.CurrentCultureIgnoreCase);
         }
 
         foreach (string font in families)

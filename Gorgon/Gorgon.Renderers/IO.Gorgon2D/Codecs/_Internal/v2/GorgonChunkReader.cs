@@ -71,11 +71,11 @@ internal class GorgonChunkReader(Stream stream)
     }
 
     /// <summary>
-        /// Function to read a signed byte from the stream.
-        /// </summary>
-        /// <returns>The signed byte in the stream.</returns>
-        /// <exception cref="IOException">Thrown when the stream is write-only.</exception>
-        public sbyte ReadSByte()
+    /// Function to read a signed byte from the stream.
+    /// </summary>
+    /// <returns>The signed byte in the stream.</returns>
+    /// <exception cref="IOException">Thrown when the stream is write-only.</exception>
+    public sbyte ReadSByte()
     {
         ValidateAccess(false);
 

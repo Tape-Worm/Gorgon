@@ -106,7 +106,7 @@ internal class Program
                                          new GorgonBufferInfo(Unsafe.SizeOf<OutputData>() * MaxValues)
                                          {
                                              Name = "OutputData",
-                                             Usage = ResourceUsage.Default,                                                 
+                                             Usage = ResourceUsage.Default,
                                              Binding = BufferBinding.ReadWrite,
                                              StructureSize = Unsafe.SizeOf<OutputData>(),
                                              AllowCpuRead = true

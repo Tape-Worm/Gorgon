@@ -122,7 +122,7 @@ public struct GorgonRay(Vector3 position, Vector3 direction)
         nearPoint = nearPoint.Unproject(viewport.X, viewport.Y, viewport.Width, viewport.Height, viewport.MinDepth, viewport.MaxDepth, in worldViewProjection);
         farPoint = farPoint.Unproject(viewport.X, viewport.Y, viewport.Width, viewport.Height, viewport.MinDepth, viewport.MaxDepth, in worldViewProjection);
 
-        var direction = Vector3.Normalize(farPoint - nearPoint);            
+        var direction = Vector3.Normalize(farPoint - nearPoint);
 
         return new GorgonRay(nearPoint, direction);
     }

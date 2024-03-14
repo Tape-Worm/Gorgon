@@ -238,13 +238,11 @@ public sealed class GorgonBuffer
 
         if ((bufferInfo.SizeInBytes != sizeInBytes) || (bufferInfo.StructureSize != structureSize))
         {
-#if NET6_0_OR_GREATER
             bufferInfo = bufferInfo with
             {
                 StructureSize = structureSize,
                 SizeInBytes = sizeInBytes
             };
-#endif
         }
 
         return new D3D11.BufferDescription
@@ -317,12 +315,10 @@ public sealed class GorgonBuffer
         // Implicitly allow reading for staging resources.
         if (_info.Usage == ResourceUsage.Staging)
         {
-#if NET6_0_OR_GREATER
             _info = _info with
             {
                 AllowCpuRead = true
             };
-#endif
         }
 
         Log.Print($"{Name} Generic Buffer: Creating D3D11 buffer. Size: {SizeInBytes} bytes", LoggingLevel.Simple);

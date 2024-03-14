@@ -230,7 +230,7 @@ public class GorgonGlyphTextureBrush
     /// Function to convert this brush into a regular image.
     /// </summary>
     /// <returns>A new <see cref="IGorgonImage"/> containing the brush image data.</returns>
-    public IGorgonImage ToGorgonImage() => new GorgonImage(new GorgonImageInfo(ImageType.Image2D, BufferFormat.R8G8B8A8_UNorm)
+    public IGorgonImage ToGorgonImage() => new GorgonImage(new GorgonImageInfo(ImageDataType.Image2D, BufferFormat.R8G8B8A8_UNorm)
     {
         Width = _width,
         Height = _height
@@ -314,7 +314,7 @@ public class GorgonGlyphTextureBrush
             throw new ArgumentException(string.Format(Resources.GORGFX_ERR_FORMAT_NOT_SUPPORTED, textureImage.Format), nameof(textureImage));
         }
 
-        if (textureImage.ImageType != ImageType.Image2D)
+        if (textureImage.ImageType != ImageDataType.Image2D)
         {
             throw new ArgumentException(Resources.GORGFX_ERR_FONT_GLYPH_IMAGE_NOT_2D, nameof(textureImage));
         }
@@ -337,7 +337,7 @@ public class GorgonGlyphTextureBrush
         _height = tempImage.Height;
 
         _imageData = new byte[tempImage.Buffers[0].PitchInformation.SlicePitch];
-        tempImage.Buffers[0].Data.CopyTo(_imageData.AsSpan());            
+        tempImage.Buffers[0].Data.CopyTo(_imageData.AsSpan());
         TextureRegion = new DX.RectangleF(0, 0, 1, 1);
     }
     #endregion

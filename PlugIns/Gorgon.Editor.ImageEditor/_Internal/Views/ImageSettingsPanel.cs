@@ -115,8 +115,8 @@ internal partial class ImageSettingsPanel
             return;
         }
 
-        TextPath.Text = dataContext?.ImageEditorApplicationPath ?? string.Empty;            
-    }        
+        TextPath.Text = dataContext?.ImageEditorApplicationPath ?? string.Empty;
+    }
 
     /// <summary>Function to assign a data context to the view as a view model.</summary>
     /// <param name="dataContext">The data context to assign.</param>

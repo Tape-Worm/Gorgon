@@ -38,7 +38,7 @@ namespace Gorgon.Editor.FontEditor;
 /// <summary>
 /// A panel that will allow for editing of a linear gradient brush.
 /// </summary>
-internal partial class FontGradientBrushView 
+internal partial class FontGradientBrushView
     : EditorSubPanelCommon, IDataContext<IFontGradientBrush>
 {
     #region Variables.
@@ -106,7 +106,7 @@ internal partial class FontGradientBrushView
         DrawGradientDisplay();
         DrawControls();
         ValidateControls();
-        HookEvents();            
+        HookEvents();
     }
 
     /// <summary>Handles the ColorChanged event of the PickerNodeColor control.</summary>
@@ -260,7 +260,7 @@ internal partial class FontGradientBrushView
             {
                 graphicsSurface.Dispose();
             }
-        }            
+        }
     }
 
     /// <summary>
@@ -428,7 +428,7 @@ internal partial class FontGradientBrushView
 
         ViewModel.ScaleAngle = CheckScaleAngle.Checked;
 
-        DrawPreview();            
+        DrawPreview();
         ValidateControls();
     }
 
@@ -445,7 +445,7 @@ internal partial class FontGradientBrushView
         }
 
         ViewModel.Angle = (float)NumericAngle.Value;
-        DrawPreview();            
+        DrawPreview();
     }
 
     /// <summary>
@@ -716,7 +716,7 @@ internal partial class FontGradientBrushView
         var interpColors = new ColorBlend(ViewModel.Nodes.Count);
 
         int counter = 0;
-        foreach(WeightHandle handle in ViewModel.Nodes)
+        foreach (WeightHandle handle in ViewModel.Nodes)
         {
             interpColors.Colors[counter] = handle.Color;
             interpColors.Positions[counter] = handle.Weight;
@@ -782,10 +782,10 @@ internal partial class FontGradientBrushView
     /// </summary>
     private void ResetDataContext()
     {
-        CheckUseGamma.Checked = 
+        CheckUseGamma.Checked =
         CheckScaleAngle.Checked = false;
         NumericSelectedWeight.Value =
-        NumericAngle.Value = 0M;            
+        NumericAngle.Value = 0M;
     }
 
     /// <summary>

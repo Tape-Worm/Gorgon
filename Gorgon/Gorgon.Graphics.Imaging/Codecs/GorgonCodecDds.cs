@@ -352,7 +352,7 @@ public sealed class GorgonCodecDds
     /// <param name="reader">The reader used to read the information from the underlying stream.</param>
     /// <param name="flags">Conversion flags.</param>
     /// <returns>A new image settings object.</returns>
-    private (ImageType ImageType, BufferFormat Format, Dx10Header Header) ReadDX10Header(GorgonBinaryReader reader, out DdsConversionFlags flags)
+    private (ImageDataType ImageType, BufferFormat Format, Dx10Header Header) ReadDX10Header(GorgonBinaryReader reader, out DdsConversionFlags flags)
     {
         Dx10Header dx10Header = reader.ReadValue<Dx10Header>();
         flags = DdsConversionFlags.DX10;
@@ -474,7 +474,7 @@ public sealed class GorgonCodecDds
     /// <returns>New image settings.</returns>
     private GorgonImageInfo ReadHeader(GorgonBinaryReader reader, long size, DdsLegacyFlags legacyFlags, out DdsConversionFlags conversionFlags)
     {
-        ImageType imageType = ImageType.Image2D;
+        ImageDataType imageType = ImageDataType.Image2D;
         int arrayCount = 1;
 
         // Read the magic # from the header.
@@ -514,7 +514,7 @@ public sealed class GorgonCodecDds
 
             (imageType, format, dx10settings) = ReadDX10Header(reader, out conversionFlags);
 
-            if ((imageType == ImageType.Image3D) && ((header.Flags & DdsHeaderFlags.Volume) != DdsHeaderFlags.Volume))
+            if ((imageType == ImageDataType.Image3D) && ((header.Flags & DdsHeaderFlags.Volume) != DdsHeaderFlags.Volume))
             {
                 throw new IOException(string.Format(Resources.GORIMG_ERR_FILE_FORMAT_NOT_CORRECT, Codec));
             }
@@ -524,7 +524,7 @@ public sealed class GorgonCodecDds
             if ((dx10settings.MiscFlags & DdsHeaderMiscFlags.TextureCube) == DdsHeaderMiscFlags.TextureCube)
             {
                 arrayCount *= 6;
-                imageType = ImageType.ImageCube;
+                imageType = ImageDataType.ImageCube;
             }
         }
         else
@@ -539,7 +539,7 @@ public sealed class GorgonCodecDds
             // If we actually have a volume texture, or we want to make one.
             if ((header.Flags & DdsHeaderFlags.Volume) == DdsHeaderFlags.Volume)
             {
-                imageType = ImageType.Image3D;
+                imageType = ImageDataType.Image3D;
             }
             else
             {
@@ -551,7 +551,7 @@ public sealed class GorgonCodecDds
                         throw new IOException(string.Format(Resources.GORIMG_ERR_FILE_FORMAT_NOT_CORRECT, Codec));
                     }
 
-                    imageType = ImageType.ImageCube;
+                    imageType = ImageDataType.ImageCube;
                     arrayCount = 6;
                 }
             }
@@ -562,7 +562,7 @@ public sealed class GorgonCodecDds
         if ((formatInfo.IsCompressed)
             && (((header.Width % 4) != 0) || ((header.Height % 4) != 0)))
         {
-            throw new IOException(string.Format(Resources.GORIMG_ERR_FILE_FORMAT_NOT_CORRECT, Codec), 
+            throw new IOException(string.Format(Resources.GORIMG_ERR_FILE_FORMAT_NOT_CORRECT, Codec),
                 new GorgonException(GorgonResult.CannotRead, string.Format(Resources.GORIMG_ERR_COMPRESSED_SIZE_INCORRECT, header.Width, header.Height)));
         }
 
@@ -823,7 +823,7 @@ public sealed class GorgonCodecDds
         DdsPixelFormat? format = null;
         var formatInfo = new GorgonFormatInfo(settings.Format);
 
-        if ((settings.ArrayCount > 1) && ((settings.ArrayCount != 6) || (settings.ImageType != ImageType.Image2D) || (settings.ImageType != ImageType.ImageCube)))
+        if ((settings.ArrayCount > 1) && ((settings.ArrayCount != 6) || (settings.ImageType != ImageDataType.Image2D) || (settings.ImageType != ImageDataType.ImageCube)))
         {
             flags |= DdsLegacyFlags.ForceDX10;
         }
@@ -939,23 +939,23 @@ public sealed class GorgonCodecDds
 
         switch (settings.ImageType)
         {
-            case ImageType.Image1D:
+            case ImageDataType.Image1D:
                 header.Width = (uint)settings.Width;
                 header.Depth = header.Height = 1;
                 break;
-            case ImageType.ImageCube:
-            case ImageType.Image2D:
+            case ImageDataType.ImageCube:
+            case ImageDataType.Image2D:
                 header.Width = (uint)settings.Width;
                 header.Height = (uint)settings.Height;
                 header.Depth = 1;
 
-                if (settings.ImageType == ImageType.ImageCube)
+                if (settings.ImageType == ImageDataType.ImageCube)
                 {
                     header.Caps1 |= DdsCaps1.CubeMap;
                     header.Caps2 |= DdsCaps2.AllFaces;
                 }
                 break;
-            case ImageType.Image3D:
+            case ImageDataType.Image3D:
                 header.Width = (uint)settings.Width;
                 header.Height = (uint)settings.Height;
                 header.Depth = (uint)settings.Depth;
@@ -995,14 +995,14 @@ public sealed class GorgonCodecDds
         Dx10Header dx10Header = default;
 
         dx10Header.Format = settings.Format;
-        if (settings.ImageType != ImageType.ImageCube)
+        if (settings.ImageType != ImageDataType.ImageCube)
         {
             dx10Header.ResourceDimension = settings.ImageType;
             dx10Header.ArrayCount = (uint)settings.ArrayCount;
         }
         else
         {
-            dx10Header.ResourceDimension = ImageType.Image2D;
+            dx10Header.ResourceDimension = ImageDataType.Image2D;
             dx10Header.MiscFlags |= DdsHeaderMiscFlags.TextureCube;
             dx10Header.ArrayCount = (uint)(settings.ArrayCount / 6);
         }
@@ -1191,7 +1191,7 @@ public sealed class GorgonCodecDds
         finally
         {
             lineBuffer?.Dispose();
-        }            
+        }
     }
 
     /// <summary>
@@ -1330,9 +1330,9 @@ public sealed class GorgonCodecDds
         // Write image data.
         switch (imageData.ImageType)
         {
-            case ImageType.Image1D:
-            case ImageType.Image2D:
-            case ImageType.ImageCube:
+            case ImageDataType.Image1D:
+            case ImageDataType.Image2D:
+            case ImageDataType.ImageCube:
                 for (int array = 0; array < imageData.ArrayCount; array++)
                 {
                     for (int mipLevel = 0; mipLevel < imageData.MipCount; mipLevel++)
@@ -1342,7 +1342,7 @@ public sealed class GorgonCodecDds
                     }
                 }
                 break;
-            case ImageType.Image3D:
+            case ImageDataType.Image3D:
                 int depth = imageData.Depth;
                 for (int mipLevel = 0; mipLevel < imageData.MipCount; mipLevel++)
                 {

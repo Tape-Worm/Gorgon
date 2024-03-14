@@ -177,7 +177,7 @@ internal abstract class TextureViewer
     /// Function called during resource creation.
     /// </summary>
     protected virtual void OnCreateResources()
-    {        
+    {
     }
 
     /// <summary>
@@ -423,7 +423,7 @@ internal abstract class TextureViewer
     /// <param name="swapChain">The swap chain for the content view.</param>
     /// <param name="dataContext">The view model to assign to the renderer.</param>        
     protected TextureViewer(string name, string shaderName, int textureSlot, Gorgon2D renderer, GorgonSwapChain swapChain, IImageContent dataContext)
-        : base(name, renderer, swapChain, dataContext) 
+        : base(name, renderer, swapChain, dataContext)
     {
         _shaderName = shaderName;
         _textureSlot = textureSlot.Max(0).Min(_slots.Length - 1);

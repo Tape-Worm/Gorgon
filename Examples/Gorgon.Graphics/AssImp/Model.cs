@@ -172,7 +172,7 @@ internal class Model
     /// <param name="scene">The scene containing the mesh data.</param>
     /// <param name="materials">The list of materials for the model.</param>
     private void ImportData(GorgonGraphics graphics, Scene scene, IReadOnlyList<Material> materials)
-    {            
+    {
         int vertexCount = scene.Meshes.Sum(item => item.VertexCount);
         int indexCount = scene.Meshes.Sum(item => item.Faces.Sum(item2 => item2.IndexCount));
 
@@ -200,19 +200,19 @@ internal class Model
             Mesh mesh = scene.Meshes[i1];
             short[] meshIndices = mesh.GetShortIndices();
 
-            Material material = materials[mesh.MaterialIndex];                
+            Material material = materials[mesh.MaterialIndex];
 
             if (!_meshes.TryGetValue(material, out List<(int BaseStart, int start, int count)> indexList))
             {
                 _meshes[material] = indexList = [];
-            }                
+            }
 
             indexList.Add((vertexIndex, indexStart, meshIndices.Length));
 
             for (int j = 0; j < meshIndices.Length; ++j)
             {
                 indices[j + indexStart] = meshIndices[j];
-            }                
+            }
 
             indexStart += meshIndices.Length;
 
@@ -235,8 +235,8 @@ internal class Model
                                                                             new GorgonColor(color.R, color.G, color.B, color.A),
                                                                             new Vector2(uv.X, -uv.Y));
 
-                vertices[vertexIndex++] = vertex;                    
-            }                
+                vertices[vertexIndex++] = vertex;
+            }
         }
 
         VertexData.SetData<GorgonVertexPosNormColorUv>(vertices);
@@ -254,7 +254,7 @@ internal class Model
     /// Property to return the world matrix for the model.
     /// </summary>
     /// <returns>The read only reference to the world matrix for the model.</returns>
-    public ref readonly System.Numerics.Matrix4x4 GetWorldMatrix() 
+    public ref readonly System.Numerics.Matrix4x4 GetWorldMatrix()
     {
         var quatRotation = System.Numerics.Quaternion.CreateFromYawPitchRoll(RotateY.ToRadians(), RotateX.ToRadians(), 0);
         _worldMatrix = System.Numerics.Matrix4x4.CreateFromQuaternion(quatRotation);
@@ -299,7 +299,7 @@ internal class Model
                 continue;
             }
 
-            string texturePath = Path.Combine(modelDir, id);                
+            string texturePath = Path.Combine(modelDir, id);
             textures[id] = GorgonTexture2DView.FromFile(graphics, texturePath, tgaCodec);
         }
     }

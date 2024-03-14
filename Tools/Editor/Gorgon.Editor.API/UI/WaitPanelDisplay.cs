@@ -36,7 +36,7 @@ public class WaitPanelDisplay
 {
     #region Variables.
     // The form to display for the wait panel.
-    private readonly GorgonWaitOverlay _waitForm;   
+    private readonly GorgonWaitOverlay _waitForm;
     // The view model to hook into.
     private IViewModel _viewModel;
     // The form to parent the wait panel.

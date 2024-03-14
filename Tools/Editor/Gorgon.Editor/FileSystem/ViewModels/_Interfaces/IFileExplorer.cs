@@ -154,7 +154,7 @@ internal interface IFileExplorer
     IEditorAsyncCommand<IDirectoryCopyMoveData> CopyDirectoryCommand
     {
         get;
-    }        
+    }
 
     /// <summary>
     /// Property to return the command used to move a directory.

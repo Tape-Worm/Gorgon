@@ -235,7 +235,7 @@ internal partial class FontTextureSizeView
 
         ViewModel.PropertyChanged += DataContext_PropertyChanged;
         ValidateOk();
-    }        
+    }
     #endregion
 
     #region Constructor/Finalizer.

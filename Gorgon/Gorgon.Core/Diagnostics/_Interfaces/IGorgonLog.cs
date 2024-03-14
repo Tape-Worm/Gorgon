@@ -59,7 +59,7 @@ public interface IGorgonLog
     /// <summary>
     /// Property to return the provider for this log.
     /// </summary>
-        IGorgonLogProvider Provider
+    IGorgonLogProvider Provider
     {
         get;
     }
@@ -86,12 +86,12 @@ public interface IGorgonLog
     /// <summary>
     /// Function to perform any one time inital logging.
     /// </summary>
-        void LogStart();
+    void LogStart();
 
     /// <summary>
     /// Function to perform any one time final logging.
     /// </summary>
-        void LogEnd();
+    void LogEnd();
 
     /// <summary>
     /// Function to send an exception to the log.

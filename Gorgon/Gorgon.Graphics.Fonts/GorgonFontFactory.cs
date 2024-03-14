@@ -278,7 +278,7 @@ public sealed class GorgonFontFactory
     /// If the <paramref name="size"/> parameter is not specified, then the entire length of the stream will be used.
     /// </para>
     /// </remarks>
-        public FontFamily LoadTrueTypeFontFamily(Stream stream, int? size = null)
+    public FontFamily LoadTrueTypeFontFamily(Stream stream, int? size = null)
     {
         if (stream is null)
         {
@@ -340,7 +340,7 @@ public sealed class GorgonFontFactory
     /// Use this to load a true type from the disk into the factory. The factory will use this to build a <see cref="GorgonFont"/> based on your font.
     /// </para>
     /// </remarks>
-        public FontFamily LoadTrueTypeFontFamily(string path)
+    public FontFamily LoadTrueTypeFontFamily(string path)
     {
         if (path is null)
         {
@@ -542,10 +542,10 @@ public sealed class GorgonFontFactory
             // Create the default font.
             var result = new GorgonFont("Gorgon_Font_Default_SegoeUI_9pt",
                                         this,
-                                        new GorgonFontInfo("Segoe UI", 9, FontHeightMode.Points)
+                                        new GorgonFontInfo("Segoe UI", 9, GorgonFontHeightMode.Points)
                                         {
-                                            AntiAliasingMode = FontAntiAliasMode.AntiAlias,
-                                            FontStyle = FontStyle.Bold,
+                                            AntiAliasingMode = GorgonFontAntiAliasMode.AntiAlias,
+                                            FontStyle = GorgonFontStyle.Bold,
                                             OutlineSize = 0
                                         });
 

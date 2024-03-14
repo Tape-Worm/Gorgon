@@ -259,10 +259,10 @@ internal class ImageSelection
 
                 _previewCancelSource?.Cancel();
                 (await _loadPreviewTask)?.Dispose();
-                _loadPreviewTask = null;                    
+                _loadPreviewTask = null;
             }
 
-            _previewImage?.Dispose();                
+            _previewImage?.Dispose();
 
             if ((files is null) || (files.Count == 0))
             {

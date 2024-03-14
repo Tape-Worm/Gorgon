@@ -173,7 +173,7 @@ public class GorgonWpfTarget
     /// <summary>Property to return the graphics interface that built this object.</summary>
     public GorgonGraphics Graphics
     {
-        get;                    
+        get;
     }
 
     /// <summary>Property to return the function to call when rendering occurs.</summary>
@@ -208,7 +208,7 @@ public class GorgonWpfTarget
         Texture?.Dispose();
 
         RenderTargetView = GorgonRenderTarget2DView.CreateInteropRenderTarget(Graphics, surfacePtr, Name);
-        Texture = RenderTargetView.Texture;            
+        Texture = RenderTargetView.Texture;
     }
 
     /// <summary>
@@ -254,7 +254,7 @@ public class GorgonWpfTarget
             return;
         }
 
-        if (needsNewRtv) 
+        if (needsNewRtv)
         {
             BuildRenderTarget(surfacePtr);
         }

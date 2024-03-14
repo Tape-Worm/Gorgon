@@ -31,7 +31,7 @@ using Gorgon.Graphics.Core;
 using Gorgon.Graphics.Fonts;
 using Gorgon.Renderers;
 using DX = SharpDX;
-using FontStyle = Gorgon.Graphics.Fonts.FontStyle;
+
 
 namespace Gorgon.Examples;
 
@@ -92,7 +92,7 @@ internal class TextRenderer(Gorgon2D renderer, GorgonSwapChain mainRenderTarget,
                 break;
         }
 
-        _textSprite.Text = DataContext.Text.WordWrap(_textSprite.Font, RenderRegion.Width);           
+        _textSprite.Text = DataContext.Text.WordWrap(_textSprite.Font, RenderRegion.Width);
 
     }
 
@@ -112,7 +112,7 @@ internal class TextRenderer(Gorgon2D renderer, GorgonSwapChain mainRenderTarget,
     /// <summary>Releases unmanaged and - optionally - managed resources.</summary>
     /// <param name="disposing">
     ///   <c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
-    protected override void Dispose(bool disposing) 
+    protected override void Dispose(bool disposing)
     {
         if (disposing)
         {
@@ -263,18 +263,18 @@ internal class TextRenderer(Gorgon2D renderer, GorgonSwapChain mainRenderTarget,
     /// <summary>Function to create resources required for the lifetime of the viewer.</summary>
     public void CreateResources()
     {
-        _arial = _fontFactory.GetFont(new GorgonFontInfo("Arial", 9.0f, FontHeightMode.Points)
+        _arial = _fontFactory.GetFont(new GorgonFontInfo("Arial", 9.0f, GorgonFontHeightMode.Points)
         {
             Name = "Arial 9pt",
-            FontStyle = FontStyle.Bold
+            FontStyle = GorgonFontStyle.Bold
         });
 
-        _timesNewRoman = _fontFactory.GetFont(new GorgonFontInfo("Times New Roman", 18.0f, FontHeightMode.Points)
+        _timesNewRoman = _fontFactory.GetFont(new GorgonFontInfo("Times New Roman", 18.0f, GorgonFontHeightMode.Points)
         {
             Name = "Times New Roman 18pt"
         });
 
-        _papyrus = _fontFactory.GetFont(new GorgonFontInfo("Papyrus", 20.0f, FontHeightMode.Points)
+        _papyrus = _fontFactory.GetFont(new GorgonFontInfo("Papyrus", 20.0f, GorgonFontHeightMode.Points)
         {
             Name = "Papyrus 20pt",
             OutlineColor1 = GorgonColor.Black,

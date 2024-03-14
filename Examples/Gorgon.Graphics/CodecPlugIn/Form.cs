@@ -182,7 +182,7 @@ public partial class Form : System.Windows.Forms.Form
 
         GorgonExample.UnloadResources();
 
-        _pluginCache?.Dispose();            
+        _pluginCache?.Dispose();
         _texture?.Dispose();
         _swap?.Dispose();
         _graphics?.Dispose();

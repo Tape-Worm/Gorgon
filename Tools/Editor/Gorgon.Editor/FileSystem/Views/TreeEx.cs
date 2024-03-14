@@ -117,7 +117,7 @@ internal class TreeEx
     public new bool ShowLines
     {
         get => false;
-        set 
+        set
         {
         }
     }
@@ -240,13 +240,13 @@ internal class TreeEx
             _renameBox.LostFocus += RenameBox_LostFocus;
         }
 
-        _renameBox.Text = node.Text;            
+        _renameBox.Text = node.Text;
         _renameBox.Top = node.Bounds.Top + 1;
         _renameBox.Left = 3;
         _renameBox.Width = ClientSize.Width - 6;
         _renameBox.Visible = true;
         _renameBox.Select();
-        _renameBox.SelectAll();            
+        _renameBox.SelectAll();
     }
 
     /// <summary>
@@ -289,10 +289,10 @@ internal class TreeEx
     }
 
     /// <summary>
-        /// Sends the specified message to the default window procedure.
-        /// </summary>
-        /// <param name="m">The Windows <see cref="Message" /> to process.</param>
-        protected override void DefWndProc(ref Message m)
+    /// Sends the specified message to the default window procedure.
+    /// </summary>
+    /// <param name="m">The Windows <see cref="Message" /> to process.</param>
+    protected override void DefWndProc(ref Message m)
     {
         const int WM_LBUTTONDBLCLK = 0x203;
 
@@ -378,7 +378,7 @@ internal class TreeEx
                 return true;
             default:
                 return base.ProcessCmdKey(ref msg, keyData);
-        }            
+        }
     }
 
     /// <summary>Raises the <see cref="E:System.Windows.Forms.Control.MouseDown"/> event.</summary>
@@ -448,7 +448,7 @@ internal class TreeEx
 
         foreColor = (e.Node is DirectoryTreeNode dirNode) ? dirNode.ForeColor : e.Node.ForeColor;
 
-        if ((ImageList is not null) && (ImageList.Images.Count > 0) 
+        if ((ImageList is not null) && (ImageList.Images.Count > 0)
             && ((ImageIndex > -1) || (e.Node.ImageIndex > -1)))
         {
             int index = e.Node.ImageIndex > -1 ? e.Node.ImageIndex : ImageIndex;
@@ -458,7 +458,7 @@ internal class TreeEx
         e.Graphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.None;
         e.Graphics.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
 
-        position.X += (e.Node.Level * ((nodeIcon?.Width ?? 16) + 3)) + 8;            
+        position.X += (e.Node.Level * ((nodeIcon?.Width ?? 16) + 3)) + 8;
         float heightMid = ItemHeight * 0.5f;
 
         if ((e.State & TreeNodeStates.Selected) == TreeNodeStates.Selected)
@@ -514,11 +514,11 @@ internal class TreeEx
         {
             using var brush = new SolidBrush(e.Node.BackColor);
             e.Graphics.FillRectangle(brush, e.Bounds);
-        }                       
+        }
 
         e.Graphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
 
-        if (e.Node.Nodes.Count > 0)            
+        if (e.Node.Nodes.Count > 0)
         {
             if (!e.Node.IsExpanded)
             {
@@ -555,7 +555,7 @@ internal class TreeEx
             position.X += 19;
         }
 
-        Font nodeFont = e.Node.NodeFont ?? Font;            
+        Font nodeFont = e.Node.NodeFont ?? Font;
         TextRenderer.DrawText(e.Graphics, e.Node.Text, nodeFont, new Rectangle(position.X, e.Bounds.Top, e.Bounds.Width - position.X, ItemHeight), foreColor, TextFormatFlags.VerticalCenter);
     }
 
@@ -571,7 +571,7 @@ internal class TreeEx
             return;
         }
 
-        ShowRenameBox(node);            
+        ShowRenameBox(node);
     }
 
     /// <summary>

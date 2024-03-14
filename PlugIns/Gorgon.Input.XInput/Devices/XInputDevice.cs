@@ -250,7 +250,7 @@ internal class XInputDevice
     {
         // XInput devices don't lose acquisition when the application loses focus.
         IsAcquired = true;
-        _info = deviceInfo;            
+        _info = deviceInfo;
         _controller = new XI.Controller(deviceInfo.DeviceID.ToUserIndex());
 
         if (Axis.Contains(GamingDeviceAxis.XAxis))

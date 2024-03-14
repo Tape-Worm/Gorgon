@@ -70,7 +70,7 @@ internal partial class StageRecent
                 AddRecentItem(item);
                 break;
             case NotifyCollectionChangedAction.Remove:
-                item = (RecentItem)e.OldItems[0];                    
+                item = (RecentItem)e.OldItems[0];
                 RemoveRecentItem(item);
                 break;
             case NotifyCollectionChangedAction.Reset:
@@ -287,7 +287,7 @@ internal partial class StageRecent
         }
 
         ViewModel.Files.CollectionChanged += Files_CollectionChanged;
-    }        
+    }
     #endregion
 
     #region Constructor/Finalizer.

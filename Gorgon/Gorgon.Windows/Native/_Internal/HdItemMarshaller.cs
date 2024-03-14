@@ -40,7 +40,7 @@ internal unsafe static class HdItemMarshaller
     {
         public uint mask;
         public int cxy;
-        public byte *pszText;
+        public byte* pszText;
         public nint hbm;
         public int cchTextMax;
         public int fmt;

@@ -89,7 +89,7 @@ public class GorgonAABBVisual
     {
         var vertexBuffer = new GorgonVertexBuffer(Graphics, new GorgonVertexBufferInfo(_lineVertices.Length * Unsafe.SizeOf<Vector3>())
         {
-            Name = "AABB Visual VertexBuffer",                
+            Name = "AABB Visual VertexBuffer",
             Usage = ResourceUsage.Dynamic
         });
 
@@ -97,7 +97,7 @@ public class GorgonAABBVisual
 
         _constantBuffer = GorgonConstantBufferView.CreateConstantBuffer(Graphics, new GorgonConstantBufferInfo(Unsafe.SizeOf<Matrix4x4>())
         {
-            Name = "AABB Visual ConstantBufer",                
+            Name = "AABB Visual ConstantBufer",
             Usage = ResourceUsage.Dynamic
         });
 
@@ -124,7 +124,7 @@ public class GorgonAABBVisual
         _lineVertices[0] = aabb.BottomLeftBack;
         _lineVertices[2] = _lineVertices[1] = aabb.TopLeftBack;
         _lineVertices[4] = _lineVertices[3] = aabb.TopLeftFront;
-        _lineVertices[6] = _lineVertices[5] = aabb.BottomLeftFront;                
+        _lineVertices[6] = _lineVertices[5] = aabb.BottomLeftFront;
         _lineVertices[7] = _lineVertices[0];
 
         // Right

@@ -407,7 +407,7 @@ public sealed class Gorgon2D
         if ((!flush)
             && (((useIndices) && (_currentDrawIndexCall is not null)) || ((!useIndices) && (_currentDrawCall is not null))))
         {
-            if ((_lastRenderable is not null) && (renderable is not null) && (BatchRenderable.AreStatesSame(_lastRenderable, renderable)))                    
+            if ((_lastRenderable is not null) && (renderable is not null) && (BatchRenderable.AreStatesSame(_lastRenderable, renderable)))
             {
                 return;
             }
@@ -902,7 +902,7 @@ public sealed class Gorgon2D
         if (_timingValuesBuffer is not null)
         {
             if (_currentBatchState.PixelShaderState.RwConstantBuffers[12] is null)
-            {                    
+            {
                 _currentBatchState.PixelShaderState.RwConstantBuffers[12] = _timingValuesBuffer;
             }
 
@@ -1917,7 +1917,7 @@ public sealed class Gorgon2D
         };
 
         // Get cross products of start and end points.
-        var cross = Vector2.Multiply(Vector2.Normalize(new Vector2(bounds.Height, -bounds.Width)), thickness * 0.5f);            
+        var cross = Vector2.Multiply(Vector2.Normalize(new Vector2(bounds.Height, -bounds.Width)), thickness * 0.5f);
 
         var start1 = new Vector2((x1 + cross.X).FastCeiling(), (y1 + cross.Y).FastCeiling());
         var end1 = new Vector2((x2 + cross.X).FastCeiling(), (y2 + cross.Y).FastCeiling());

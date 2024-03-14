@@ -37,7 +37,7 @@ public class GorgonOverlay
 {
     #region Variables.
     // The form used to display the overlay.
-    private FormOverlay _overlayForm;        
+    private FormOverlay _overlayForm;
 
     // The parent control for the overlay.
     private WeakReference<Control> _parent;

@@ -86,7 +86,7 @@ internal class TextureFxViewer
             case nameof(IFxOneBit.MinWhiteThreshold):
                 _oneBitMin = DataContext.FxContext.OneBitSettings.MinWhiteThreshold;
                 break;
-            case nameof(IFxOneBit.MaxWhiteThreshold):                    
+            case nameof(IFxOneBit.MaxWhiteThreshold):
                 _oneBitMax = DataContext.FxContext.OneBitSettings.MaxWhiteThreshold;
                 break;
             case nameof(IFxOneBit.Invert):
@@ -172,7 +172,7 @@ internal class TextureFxViewer
                 _passes = DataContext.FxContext.BlurSettings.BlurAmount;
                 RenderFx();
                 break;
-        }            
+        }
     }
 
     /// <summary>
@@ -227,7 +227,7 @@ internal class TextureFxViewer
     {
         Graphics.SetRenderTarget(MainRenderTarget);
 
-        var color = new GorgonColor(GorgonColor.White, Opacity);            
+        var color = new GorgonColor(GorgonColor.White, Opacity);
 
         Renderer.Begin(BatchState, Camera);
         Renderer.DrawFilledRectangle(new DX.RectangleF(RenderRegion.Width * -0.5f,

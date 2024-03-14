@@ -211,12 +211,11 @@ public class Gorgon2DGaussBlurEffect
             }
 
             _blurTargetFormat = value;
-#if NET6_0_OR_GREATER
+
             _blurRtvInfo = _blurRtvInfo with
             {
                 Format = value
             };
-#endif
         }
     }
     /// <summary>
@@ -255,7 +254,6 @@ public class Gorgon2DGaussBlurEffect
             value.Width = value.Width.Max(3).Min(Graphics.VideoAdapter.MaxTextureWidth);
             value.Height = value.Height.Max(3).Min(Graphics.VideoAdapter.MaxTextureHeight);
 
-#if NET6_0_OR_GREATER
             if (_blurRtvInfo is not null)
             {
                 _blurRtvInfo = _blurRtvInfo with
@@ -264,7 +262,6 @@ public class Gorgon2DGaussBlurEffect
                     Height = value.Height
                 };
             }
-#endif
 
             _renderTargetSize = value;
             _needOffsetUpdate = true;

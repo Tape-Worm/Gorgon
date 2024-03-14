@@ -156,7 +156,7 @@ public class GorgonV3PolySpriteBinaryCodec(Gorgon2D renderer)
                                                [
                                                    CurrentFileHeader
                                                ]);
-        GorgonBinaryReader binReader = null;            
+        GorgonBinaryReader binReader = null;
         GorgonPolySpriteVertex[] vertices;
         int[] indices = null;
 
@@ -211,7 +211,7 @@ public class GorgonV3PolySpriteBinaryCodec(Gorgon2D renderer)
                 binReader = reader.OpenChunk(TextureData);
                 texture = LoadTexture(binReader, overrideTexture, out textureOffset, out textureScale, out textureArrayIndex);
                 reader.CloseChunk();
-            }                
+            }
 
             GorgonSamplerState samplerState = null;
             if (reader.Chunks.Contains(TextureSamplerData))

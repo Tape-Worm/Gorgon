@@ -216,10 +216,10 @@ internal class ImageFiles
 
                 _cancelSource?.Cancel();
                 (await _loadPreviewTask)?.Dispose();
-                _loadPreviewTask = null;                    
+                _loadPreviewTask = null;
             }
 
-            PreviewImage?.Dispose();                
+            PreviewImage?.Dispose();
 
             if ((files is null) || (files.Count == 0))
             {
@@ -360,8 +360,8 @@ internal class ImageFiles
 
         _cancelSource?.Cancel();
 
-        IGorgonImage currentImage = Interlocked.Exchange(ref _previewImage, null);            
-        Interlocked.Exchange(ref _loadPreviewTask, null);            
+        IGorgonImage currentImage = Interlocked.Exchange(ref _previewImage, null);
+        Interlocked.Exchange(ref _loadPreviewTask, null);
         currentImage?.Dispose();
 
         base.OnUnload();

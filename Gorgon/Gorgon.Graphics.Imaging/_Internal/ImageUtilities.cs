@@ -829,7 +829,7 @@ static class ImageUtilities
                 return;
             case BufferFormat.R16G16B16A16_SNorm:
             case BufferFormat.R16G16B16A16_SInt:
-                {                        
+                {
                     short* srcPtr = (short*)src;
                     short* destPtr = (short*)dest;
 
@@ -999,7 +999,7 @@ static class ImageUtilities
                     }
                 }
                 return;
-            case BufferFormat.R32G32B32A32_Float:                
+            case BufferFormat.R32G32B32A32_Float:
                 {
                     float* srcPtr = (float*)src;
                     float* destPtr = (float*)dest;
@@ -1031,7 +1031,7 @@ static class ImageUtilities
                     ushort* destPtr = (ushort*)dest;
 
                     for (int i = 0; i < size; i += 8)
-                    {                            
+                    {
                         ushort srcAlpha = *(srcPtr + 3);
 
                         if (srcAlpha == 0)
@@ -1112,7 +1112,7 @@ static class ImageUtilities
             case BufferFormat.B8G8R8A8_Typeless:
             case BufferFormat.B8G8R8A8_UNorm:
             case BufferFormat.B8G8R8A8_UNorm_SRgb:
-                {                        
+                {
                     uint* srcPtr = (uint*)src;
                     uint* destPtr = (uint*)dest;
 

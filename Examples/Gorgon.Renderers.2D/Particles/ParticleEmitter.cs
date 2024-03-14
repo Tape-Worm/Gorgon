@@ -386,7 +386,7 @@ public class ParticleEmitter
                 float angle = Direction.ToRadians() - pi2 + GorgonRandom.RandomSingle(0, spreadRad) - spreadRad * 0.5f;
                 if (Relative)
                 {
-                    var diff = Vector2.Subtract(_previousPosition, _position);                        
+                    var diff = Vector2.Subtract(_previousPosition, _position);
                     angle += diff.Y.ATan(diff.X) + pi2;
                 }
 
@@ -572,8 +572,8 @@ public class ParticleEmitter
         RadialAccelerationRange = (0.0f, 0.0f);
         ParticleRotationRange = (0.0f, 0.0f);
         Spread = 360.0f;
-        Direction = 0.0f;            
-        ColorRange = (GorgonColor.LightYellow, new GorgonColor(GorgonColor.OrangeRed, 0.0f));            
+        Direction = 0.0f;
+        ColorRange = (GorgonColor.LightYellow, new GorgonColor(GorgonColor.OrangeRed, 0.0f));
 
         // Force particle creation (assume 60 FPS).
         CreateParticles(1 / 60.0f);

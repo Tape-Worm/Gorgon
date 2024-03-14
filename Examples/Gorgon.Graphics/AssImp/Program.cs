@@ -1,15 +1,15 @@
 ﻿using System.Numerics;
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using Gorgon.Examples.Properties;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
+using Gorgon.Renderers;
+using Gorgon.Renderers.Cameras;
 using Gorgon.Renderers.Geometry;
+using Gorgon.Timing;
 using Gorgon.UI;
 using DX = SharpDX;
-using Gorgon.Renderers.Cameras;
-using System.Runtime.CompilerServices;
-using Gorgon.Timing;
-using Gorgon.Renderers;
-using System.Runtime.InteropServices;
 
 namespace Gorgon.Examples;
 
@@ -111,7 +111,7 @@ internal static class Program
     /// </summary>
     /// <param name="width">The width of the depth buffer.</param>
     /// <param name="height">The height of the depth buffer.</param>
-        private static void BuildDepthBuffer(int width, int height)
+    private static void BuildDepthBuffer(int width, int height)
     {
         _graphics.SetDepthStencil(null);
         _depthBuffer?.Dispose();
@@ -141,7 +141,7 @@ internal static class Program
         ref readonly Matrix4x4 projMatrix = ref _camera.GetProjectionMatrix();
 
         var temp = Matrix4x4.Multiply(world, viewMatrix);
-        var wvp = Matrix4x4.Multiply(temp, projMatrix);                       
+        var wvp = Matrix4x4.Multiply(temp, projMatrix);
 
         ref Matrix4x4 gpuWorld = ref _matrixGpu.WorldMatrix;
         ref Matrix4x4 gpuWvp = ref _matrixGpu.WvpMatrix;
@@ -157,10 +157,10 @@ internal static class Program
     }
 
     /// <summary>
-        /// Function to handle idle time for the application.
-        /// </summary>
-        /// <returns><b>true</b> to continue processing, <b>false</b> to stop.</returns>
-        private static bool Idle()
+    /// Function to handle idle time for the application.
+    /// </summary>
+    /// <returns><b>true</b> to continue processing, <b>false</b> to stop.</returns>
+    private static bool Idle()
     {
         // Send our matrices to the GPU.
         UpdateWVP(in _model.GetWorldMatrix());
@@ -228,7 +228,7 @@ internal static class Program
     /// <summary>
     /// Function to initialize the states for the objects to draw.
     /// </summary>
-        private static void InitializeStates()
+    private static void InitializeStates()
     {
         var drawBuilder = new GorgonDrawIndexCallBuilder();
         var stateBuilder = new GorgonPipelineStateBuilder(_graphics);
@@ -248,7 +248,7 @@ internal static class Program
                                              .ConstantBuffer(ShaderType.Pixel, _materialBuffer)
                                              .PipelineState(stateBuilder.DepthStencilState(GorgonDepthStencilState.DepthStencilEnabled)
                                                                         .PrimitiveType(PrimitiveType.TriangleList)
-                                                                        .PixelShader(_pixelShader)                                                              
+                                                                        .PixelShader(_pixelShader)
                                                                         .VertexShader(_vertexShader))
                                              .Build();
         }
@@ -293,9 +293,9 @@ internal static class Program
                                           new GorgonSwapChainInfo(ExampleConfig.Default.Resolution.Width,
                                                                      ExampleConfig.Default.Resolution.Height,
                                                                      BufferFormat.R8G8B8A8_UNorm)
-                                               {
-                                                   Name = "Main"
-                                               });
+                                          {
+                                              Name = "Main"
+                                          });
 
             // Create a 2D renderer so we can draw information.
             _renderer2d = new Gorgon2D(_graphics);
@@ -335,7 +335,7 @@ internal static class Program
             // Create a depth buffer so that the model draws correctly.
             BuildDepthBuffer(_screen.Width, _screen.Height);
 
-            _model = Model.Load(_graphics, Path.Combine(GorgonExample.GetResourcePath(@"Models\AssImp").FullName, "NCC1701A.ms3d"), _textureList);                
+            _model = Model.Load(_graphics, Path.Combine(GorgonExample.GetResourcePath(@"Models\AssImp").FullName, "NCC1701A.ms3d"), _textureList);
 
             // Set up stuff.
             InitializeStates();

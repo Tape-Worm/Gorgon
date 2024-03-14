@@ -87,7 +87,7 @@ public abstract class GorgonResourceView
     /// Function to perform the creation of a specific kind of view.
     /// </summary>
     /// <returns>The view that was created.</returns>
-    private protected abstract D3D11.ResourceView OnCreateNativeView();        
+    private protected abstract D3D11.ResourceView OnCreateNativeView();
 
     /// <summary>
     /// Function to initialize the buffer view.

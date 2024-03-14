@@ -143,10 +143,10 @@ internal class SimpleRenderer
     /// <summary>
     /// Property to return the camera used for rendering.
     /// </summary>
-    public GorgonPerspectiveCamera Camera 
-    { 
+    public GorgonPerspectiveCamera Camera
+    {
         get;
-        set; 
+        set;
     }
 
     /// <summary>
@@ -317,7 +317,7 @@ internal class SimpleRenderer
         _viewProjectionBuffer = new GorgonConstantBuffer(_graphics,
                                                          new GorgonConstantBufferInfo(Unsafe.SizeOf<ViewProjectionData>())
                                                          {
-                                                             Name = "Projection/View Buffer",                                                                 
+                                                             Name = "Projection/View Buffer",
                                                              Usage = ResourceUsage.Dynamic
                                                          }).GetView();
 
@@ -332,7 +332,7 @@ internal class SimpleRenderer
                                                  new GorgonConstantBufferInfo(Unsafe.SizeOf<Vector3>())
                                                  {
                                                      Name = "CameraBuffer",
-                                                     Usage = ResourceUsage.Dynamic                                                         
+                                                     Usage = ResourceUsage.Dynamic
                                                  }).GetView();
 
         _materialBuffer = new GorgonConstantBuffer(_graphics,
@@ -346,7 +346,7 @@ internal class SimpleRenderer
                                                 new GorgonConstantBufferInfo(GorgonGpuLightData.SizeInBytes * MaxLights)
                                                 {
                                                     Name = "LightDataBuffer",
-                                                    Usage = ResourceUsage.Dynamic                                                        
+                                                    Usage = ResourceUsage.Dynamic
                                                 }).GetView();
 
         // Initialize the constant buffers.
@@ -381,7 +381,7 @@ internal class SimpleRenderer
             SpecularPower = material.SpecularPower
         };
         _materialBuffer.Buffer.SetData(in materialData);
-    }        
+    }
 
     /// <summary>
     /// Function to render the scene.

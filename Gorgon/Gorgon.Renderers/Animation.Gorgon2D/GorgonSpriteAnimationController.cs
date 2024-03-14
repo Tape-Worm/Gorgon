@@ -113,7 +113,7 @@ public class GorgonSpriteAnimationController
     /// <summary>
     /// The track registration for the texture array index for the sprite.
     /// </summary>
-    public static readonly GorgonTrackRegistration TextureArrayIndexTrack = new(nameof(GorgonSprite.TextureArrayIndex), Resources.GORANM_TEXT_TEXTURE_ARRAY_INDEX ,AnimationTrackKeyType.Single, TrackInterpolationMode.None);
+    public static readonly GorgonTrackRegistration TextureArrayIndexTrack = new(nameof(GorgonSprite.TextureArrayIndex), Resources.GORANM_TEXT_TEXTURE_ARRAY_INDEX, AnimationTrackKeyType.Single, TrackInterpolationMode.None);
     /// <summary>
     /// The track registration for the opacity of the sprite.
     /// </summary>
@@ -433,7 +433,7 @@ public class GorgonSpriteAnimationController
     protected override void OnTexture2DUpdate(GorgonTrackRegistration track, GorgonSprite animObject, GorgonTexture2DView texture, DX.RectangleF textureCoordinates, int textureArrayIndex)
     {
         if (track.ID != TextureTrack.ID)
-        {                
+        {
             return;
         }
 

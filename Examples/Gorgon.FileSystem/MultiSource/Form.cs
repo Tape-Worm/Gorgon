@@ -213,7 +213,7 @@ public partial class Form
         var providerFactory = new GorgonFileSystemProviderFactory(_cache, Program.Log);
         IGorgonFileSystemProvider provider = providerFactory.CreateProvider(Path.Combine(GorgonExample.GetPlugInPath().FullName, "Gorgon.FileSystem.Zip.DLL"), zipProviderPlugInName);
 
-        _fileSystem = new GorgonFileSystem(provider, Program.Log);           
+        _fileSystem = new GorgonFileSystem(provider, Program.Log);
     }
 
     /// <summary>

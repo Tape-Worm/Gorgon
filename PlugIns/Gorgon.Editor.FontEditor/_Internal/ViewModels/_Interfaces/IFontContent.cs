@@ -72,7 +72,7 @@ internal interface IFontContent
     /// </summary>
     string FontFamily
     {
-        get;            
+        get;
     }
 
     /// <summary>
@@ -86,7 +86,7 @@ internal interface IFontContent
     /// <summary>
     /// Property to return the units for the font size.
     /// </summary>
-    FontHeightMode FontUnits
+    GorgonFontHeightMode FontUnits
     {
         get;
     }

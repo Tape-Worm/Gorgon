@@ -26,9 +26,9 @@
 
 using System.ComponentModel;
 using System.Globalization;
-using Drawing = System.Drawing;
 using Gorgon.Math;
 using Krypton.Ribbon;
+using Drawing = System.Drawing;
 
 namespace Gorgon.Editor;
 

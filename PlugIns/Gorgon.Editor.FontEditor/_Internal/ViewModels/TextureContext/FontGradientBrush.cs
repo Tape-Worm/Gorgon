@@ -131,12 +131,12 @@ internal class FontGradientBrush
             value ??= DefaultBrush;
 
             if ((_brush == value) || (_brush.Equals(value)))
-            {                    
+            {
                 return;
             }
 
             OnPropertyChanging();
-            _brush = value;                
+            _brush = value;
             OnPropertyChanged();
         }
     }
@@ -409,7 +409,7 @@ internal class FontGradientBrush
 
             SelectedNode = node;
         }
-        catch(Exception ex)
+        catch (Exception ex)
         {
             HostServices.MessageDisplay.ShowError(ex, Resources.GORFNT_ERR_DUPE_NODE);
         }

@@ -227,7 +227,7 @@ internal partial class AnimationProperties
         }
         finally
         {
-            EnableEvents();                
+            EnableEvents();
         }
     }
 
@@ -295,7 +295,7 @@ internal partial class AnimationProperties
             return;
         }
 
-        ViewModel.PropertyChanged += DataContext_PropertyChanged;            
+        ViewModel.PropertyChanged += DataContext_PropertyChanged;
     }
     #endregion
 

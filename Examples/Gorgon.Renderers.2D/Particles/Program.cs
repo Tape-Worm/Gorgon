@@ -222,7 +222,7 @@ static class Program
             _bloom = new Gorgon2DBloomEffect(_renderer)
             {
                 BloomIntensity = 3.125f,
-                BlurAmount = 4.0f,                    
+                BlurAmount = 4.0f,
                 ColorIntensity = 2.0f,
                 Threshold = 1.02f,
             };
@@ -318,13 +318,11 @@ static class Program
     {
         try
         {
-#if NET6_0_OR_GREATER
             Application.SetHighDpiMode(HighDpiMode.PerMonitorV2);
-#endif
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
 
-            GorgonApplication.Run(Initialize(), Idle);                
+            GorgonApplication.Run(Initialize(), Idle);
         }
         catch (Exception ex)
         {

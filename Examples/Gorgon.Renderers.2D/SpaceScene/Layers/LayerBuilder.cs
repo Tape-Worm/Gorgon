@@ -141,7 +141,7 @@ internal static class LayerBuilder
             LocalLightPosition = new Vector3(0, 0, -10000.0f),
             Layers =
             {
-                planetLayer 
+                planetLayer
             }
         });
 
@@ -204,7 +204,7 @@ internal static class LayerBuilder
             {
                 new Light(new GorgonDirectionalLight
                 {
-                    Intensity = 0.5f,                        
+                    Intensity = 0.5f,
                     LightDirection = new Vector3(1.0f, 0.0f, 0.7071068f),
                     SpecularEnabled = true,
                     SpecularPower = 512.0f,

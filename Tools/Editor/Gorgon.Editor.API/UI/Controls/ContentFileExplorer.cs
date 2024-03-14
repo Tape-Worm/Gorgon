@@ -196,14 +196,14 @@ public partial class ContentFileExplorer
     public bool MultiSelect
     {
         get => GridFiles.MultiSelect;
-        set 
+        set
         {
             if (value == GridFiles.MultiSelect)
             {
                 return;
             }
 
-            GridFiles.MultiSelect = value;                
+            GridFiles.MultiSelect = value;
 
             GetCheckboxHeader();
         }
@@ -534,12 +534,12 @@ public partial class ContentFileExplorer
         {
             FileEntriesFocused?.Invoke(this, new ContentFileEntriesFocusedArgs(null));
             return;
-        }            
+        }
 
         var fileList = new List<ContentFileExplorerFileEntry>();
-        var args = new ContentFileEntriesFocusedArgs(fileList);            
+        var args = new ContentFileEntriesFocusedArgs(fileList);
 
-        foreach(DataGridViewRow row in GridFiles.SelectedRows.OfType<DataGridViewRow>().Reverse())
+        foreach (DataGridViewRow row in GridFiles.SelectedRows.OfType<DataGridViewRow>().Reverse())
         {
             if (_rowFilesXref.TryGetValue(row, out ContentFileExplorerFileEntry fileEntry))
             {
@@ -720,7 +720,7 @@ public partial class ContentFileExplorer
         DataGridViewRow row = GridFiles.Rows[e.RowIndex];
 
         if ((IsDirectoryRow(row)) && (_rowDirsXref.TryGetValue(row, out ContentFileExplorerDirectoryEntry dirEntry)))
-        {                
+        {
             if (!MultiSelect)
             {
                 _currentDirectory = dirEntry.FullPath;
@@ -743,12 +743,12 @@ public partial class ContentFileExplorer
                 }
 
                 otherFileEntry.IsSelected = false;
-            }                
+            }
         }
 
         if (_rowFilesXref.TryGetValue(row, out ContentFileExplorerFileEntry fileEntry))
         {
-            if (GridFiles.SelectedRows.Count == 1) 
+            if (GridFiles.SelectedRows.Count == 1)
             {
                 if (!MultiSelect)
                 {

@@ -42,7 +42,7 @@ internal static class FileSystemExtensions
     /// </para>
     /// </remarks>
     public static bool IsValidFile(this System.IO.FileInfo file)
-    {            
+    {
         System.IO.FileAttributes attribs = file.Attributes;
 
         return (((attribs & System.IO.FileAttributes.Hidden) != System.IO.FileAttributes.Hidden)
@@ -59,7 +59,7 @@ internal static class FileSystemExtensions
     public static long GetTotalByteCount(this IDirectory directory, bool recursive)
     {
         long result = 0;
-        IEnumerable<string> files = System.IO.Directory.EnumerateFiles(directory.PhysicalPath, "*", 
+        IEnumerable<string> files = System.IO.Directory.EnumerateFiles(directory.PhysicalPath, "*",
             recursive ? System.IO.SearchOption.AllDirectories : System.IO.SearchOption.TopDirectoryOnly);
 
         foreach (string filePath in files)

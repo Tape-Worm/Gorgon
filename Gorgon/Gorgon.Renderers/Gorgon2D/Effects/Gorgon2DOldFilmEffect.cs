@@ -349,7 +349,7 @@ public class Gorgon2DOldFilmEffect
     /// <remarks>
     /// If this value is <b>null</b>, then the entire output render target region is used to draw the dirt/hair.
     /// </remarks>
-        public DX.RectangleF? DirtRegion
+    public DX.RectangleF? DirtRegion
     {
         get;
         set;
@@ -373,7 +373,7 @@ public class Gorgon2DOldFilmEffect
     {
         int textureSize = NoiseTextureSize.Min(128).Max(16);
 
-        using var image = new GorgonImage(new GorgonImageInfo(ImageType.Image2D, BufferFormat.R8_UNorm)
+        using var image = new GorgonImage(new GorgonImageInfo(ImageDataType.Image2D, BufferFormat.R8_UNorm)
         {
             Width = textureSize,
             Height = textureSize
@@ -648,14 +648,14 @@ public class Gorgon2DOldFilmEffect
         switch (BeginPass(0, output))
         {
             case PassContinuationState.Continue:
-                Renderer.DrawFilledRectangle(new DX.RectangleF(ShakeOffset.X, ShakeOffset.Y, output.Width, output.Height), GorgonColor.White, texture, new DX.RectangleF(0, 0, 1, 1));                    
+                Renderer.DrawFilledRectangle(new DX.RectangleF(ShakeOffset.X, ShakeOffset.Y, output.Width, output.Height), GorgonColor.White, texture, new DX.RectangleF(0, 0, 1, 1));
                 break;
             default:
                 EndRender(null);
                 return;
         }
 
-        EndPass(0, output);            
+        EndPass(0, output);
 
         EndRender(output);
     }

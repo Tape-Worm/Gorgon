@@ -302,7 +302,7 @@ internal class AnimationEditorPlugIn
                 case GorgonSpriteAnimationController.UpperLeftColorTrackName:
                 case GorgonSpriteAnimationController.UpperRightColorTrackName:
                 case GorgonSpriteAnimationController.LowerLeftColorTrackName:
-                case GorgonSpriteAnimationController.LowerRightColorTrackName:                    
+                case GorgonSpriteAnimationController.LowerRightColorTrackName:
                     // Skip these tracks, we'll be using another editor for them.
                     continue;
                 default:
@@ -461,7 +461,7 @@ internal class AnimationEditorPlugIn
 
                 if ((!string.IsNullOrWhiteSpace(textureKey.TextureName)) && (textureKey.Value is null))
                 {
-                    textureKey.Value = textures.Textures[textureIndex];                        
+                    textureKey.Value = textures.Textures[textureIndex];
                 }
             }
         }
@@ -498,7 +498,7 @@ internal class AnimationEditorPlugIn
             keyFrames = ArrayPool<IKeyFrame>.Shared.Rent(keyCount);
 
             for (int i = 0; i < track.Value.KeyFrames.Count; i++)
-            {                    
+            {
                 GorgonKeySingle key = track.Value.KeyFrames[i];
                 var keyFrame = new KeyFrame();
                 keyFrame.Initialize(new KeyFrameParameters(key, HostContentServices));
@@ -672,7 +672,7 @@ internal class AnimationEditorPlugIn
             keyFrames = ArrayPool<IKeyFrame>.Shared.Rent(keyCount);
 
             for (int i = 0; i < track.Value.KeyFrames.Count; i++)
-            {                    
+            {
                 GorgonKeyTexture2D key = track.Value.KeyFrames[i];
                 int index = GetKeyIndex(key);
 
@@ -763,11 +763,11 @@ internal class AnimationEditorPlugIn
             track.Value.IsEnabled = !excluded;
 
             var newTrack = new Track();
-            newTrack.Initialize(new TrackParameters(registration, 
-                                                    track.Value.InterpolationMode, 
-                                                    track.Value.SupportsInterpolation, 
-                                                    keyCount, 
-                                                    _undoService, 
+            newTrack.Initialize(new TrackParameters(registration,
+                                                    track.Value.InterpolationMode,
+                                                    track.Value.SupportsInterpolation,
+                                                    keyCount,
+                                                    _undoService,
                                                     HostContentServices)
             {
                 KeyMetadata = metadata
@@ -868,14 +868,14 @@ internal class AnimationEditorPlugIn
         // Creates an animation object and converts it to a byte array.
         RecyclableMemoryStream CreateAnimation(string name, float length, float fps, IContentFile primarySpriteFile, IContentFile bgTextureFile)
         {
-            var builder = new GorgonAnimationBuilder();                
+            var builder = new GorgonAnimationBuilder();
 
             metadata.Attributes[CodecAttr] = _defaultCodec.GetType().FullName;
             metadata.Attributes[CommonEditorConstants.IsNewAttr] = bool.TrueString;
 
             if ((bgTextureFile is not null) && (ContentFileManager.FileExists(bgTextureFile.Path)))
             {
-                HostContentServices.Log.Print($"Assigning '{bgTextureFile.Path}' as background image for animation.", LoggingLevel.Verbose);                    
+                HostContentServices.Log.Print($"Assigning '{bgTextureFile.Path}' as background image for animation.", LoggingLevel.Verbose);
                 metadata.DependsOn[BgImageDependencyName] =
                 [
                     bgTextureFile.Path
@@ -892,7 +892,7 @@ internal class AnimationEditorPlugIn
                 if ((!string.IsNullOrWhiteSpace(texturePath)) && (ContentFileManager.FileExists(texturePath)))
                 {
                     if (_settings.AddTextureTrackForPrimarySprite)
-                    {                            
+                    {
                         builder.Edit2DTexture(GorgonSpriteAnimationController.TextureTrack.TrackName)
                                .SetKey(new GorgonKeyTexture2D(0, texturePath, sprite.TextureRegion, sprite.TextureArrayIndex))
                                .EndEdit();
@@ -979,7 +979,8 @@ internal class AnimationEditorPlugIn
         if ((trackRegistration.SupportedInterpolation & TrackInterpolationMode.Linear) == TrackInterpolationMode.Linear)
         {
             trackInterpolationMode = TrackInterpolationMode.Linear;
-        } else if ((trackRegistration.SupportedInterpolation & TrackInterpolationMode.Spline) == TrackInterpolationMode.Spline)
+        }
+        else if ((trackRegistration.SupportedInterpolation & TrackInterpolationMode.Spline) == TrackInterpolationMode.Spline)
         {
             trackInterpolationMode = TrackInterpolationMode.Spline;
         }
@@ -987,11 +988,11 @@ internal class AnimationEditorPlugIn
         _keyMetadata.TryGetValue(trackRegistration.ID, out KeyValueMetadata metadata);
 
         var track = new Track();
-        track.Initialize(new TrackParameters(trackRegistration, 
-                                             trackInterpolationMode, 
-                                             trackRegistration.SupportedInterpolation, 
-                                             keyCount, 
-                                             _undoService, 
+        track.Initialize(new TrackParameters(trackRegistration,
+                                             trackInterpolationMode,
+                                             trackRegistration.SupportedInterpolation,
+                                             keyCount,
+                                             _undoService,
                                              HostContentServices)
         {
             KeyMetadata = metadata
@@ -1159,8 +1160,8 @@ internal class AnimationEditorPlugIn
 
             _ioService = new AnimationIOService(ContentFileManager,
                                                 _textureCache,
-                                                _defaultCodec,                                                    
-                                                _defaultSpriteCodec, 
+                                                _defaultCodec,
+                                                _defaultSpriteCodec,
                                                 HostContentServices.Log);
             var keyProcessor = new KeyProcessorService(_textureCache, HostContentServices.Log);
             var contentServices = new ContentServices(_ioService, _textureCache, undoService, keyProcessor, _newAnimation, this);
@@ -1201,7 +1202,7 @@ internal class AnimationEditorPlugIn
 
             GetKeys(animation, tracks, fileManager, maxKeyCount);
 
-            IEnumerable<ITrack> textureTracks = tracks.Where(item => (item.ID == GorgonSpriteAnimationController.TextureTrack.ID) 
+            IEnumerable<ITrack> textureTracks = tracks.Where(item => (item.ID == GorgonSpriteAnimationController.TextureTrack.ID)
                                                           && (item.KeyFrames.Any(item2 => item2 is not null)));
             foreach (ITrack track in textureTracks)
             {
@@ -1219,7 +1220,7 @@ internal class AnimationEditorPlugIn
             newTrack.Initialize(new AddTrackParameters(availableTracks, HostContentServices));
 
             var animProperties = new AnimProperties();
-            animProperties.Initialize(new PropertiesParameters(animation, HostContentServices));                
+            animProperties.Initialize(new PropertiesParameters(animation, HostContentServices));
 
             var floatKeyEditor = new KeyValueEditor();
             floatKeyEditor.Initialize(new HostedPanelViewModelParameters(HostContentServices));
@@ -1239,14 +1240,14 @@ internal class AnimationEditorPlugIn
                                                               keyEditor,
                                                               controller,
                                                               _pluginSettings,
-                                                              fileManager,                                                                  
+                                                              fileManager,
                                                               contentServices,
                                                               HostContentServices)
-                                {
-                                    PrimarySprite = primarySprite,
-                                    BackgroundTexture = bgTexture,
-                                    BackgroundTextureFile = bgTextureFile
-                                });
+            {
+                PrimarySprite = primarySprite,
+                BackgroundTexture = bgTexture,
+                BackgroundTextureFile = bgTextureFile
+            });
 
             return content;
         }
@@ -1314,7 +1315,7 @@ internal class AnimationEditorPlugIn
         _pluginSettings.Initialize(new SettingsParameters(_settings, HostContentServices));
 
         ViewFactory.Register<ISettings>(() => new AnimationSettingsPanel());
-        ViewFactory.Register<IAnimationContent>(() => new AnimationEditorView(settings));            
+        ViewFactory.Register<IAnimationContent>(() => new AnimationEditorView(settings));
     }
     #endregion
 

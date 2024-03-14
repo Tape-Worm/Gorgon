@@ -154,7 +154,7 @@ internal class SingleAnimationViewer(Gorgon2D renderer, GorgonSwapChain swapChai
         else if (args.Shift)
         {
             amount = 45;
-        }            
+        }
 
         switch (args.KeyCode)
         {
@@ -207,7 +207,7 @@ internal class SingleAnimationViewer(Gorgon2D renderer, GorgonSwapChain swapChai
         var aabbCircle = new DX.RectangleF(aabb.Left, aabb.Top, aabb.Width > aabb.Height ? aabb.Width : aabb.Height, aabb.Height > aabb.Width ? aabb.Height : aabb.Width);
 
         aabbCircle.X -= (aabbCircle.Width * 0.5f) - (aabb.Width * 0.5f);
-        aabbCircle.Y -= (aabbCircle.Height * 0.5f) - (aabb.Height * 0.5f);            
+        aabbCircle.Y -= (aabbCircle.Height * 0.5f) - (aabb.Height * 0.5f);
 
         Renderer.Begin(Gorgon2DBatchState.InvertedBlend);
         Renderer.DrawEllipse(aabbCircle, GorgonColor.GreenPure, thickness: 4);

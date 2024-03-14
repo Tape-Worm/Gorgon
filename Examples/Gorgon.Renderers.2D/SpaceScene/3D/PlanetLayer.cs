@@ -151,7 +151,7 @@ internal class PlanetLayer(GorgonGraphics graphics, ResourceManagement resources
                                                 new GorgonConstantBufferInfo(Unsafe.SizeOf<GorgonGpuLightData>() * MaxLights)
                                                 {
                                                     Name = "LightDataBuffer",
-                                                    Usage = ResourceUsage.Default                                                        
+                                                    Usage = ResourceUsage.Default
                                                 });
     }
 

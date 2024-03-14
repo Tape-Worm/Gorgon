@@ -50,7 +50,7 @@ internal static class GorgonGraphicExtensions
         if ((graphics is null) || (string.IsNullOrWhiteSpace(textureName)))
         {
             return null;
-        }            
+        }
 
         IEnumerable<GorgonTexture2D> textureResources = graphics.LocateResourcesByName<GorgonTexture2D>(textureName).Where(item => item is not null);
         int resourceCount = textureResources.Count();

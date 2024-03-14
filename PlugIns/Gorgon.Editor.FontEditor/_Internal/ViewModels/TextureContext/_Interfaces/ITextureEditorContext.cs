@@ -24,10 +24,10 @@
 // 
 #endregion
 
-using DX = SharpDX;
 using Gorgon.Editor.UI;
 using Gorgon.Graphics.Core;
 using Gorgon.Graphics.Fonts;
+using DX = SharpDX;
 
 namespace Gorgon.Editor.FontEditor;
 

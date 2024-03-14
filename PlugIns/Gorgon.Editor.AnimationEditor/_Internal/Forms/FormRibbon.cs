@@ -245,7 +245,7 @@ internal partial class FormRibbon
             return;
         }
 
-        _currentUndoHandler.UndoCommand.Execute(null);            
+        _currentUndoHandler.UndoCommand.Execute(null);
         ValidateButtons();
     }
 
@@ -470,7 +470,7 @@ internal partial class FormRibbon
         }
 
         var args = new KeyFrameCopyMoveData
-        {                
+        {
             KeyFrames = ViewModel.Selected,
             Operation = CopyMoveOperation.Copy
         };
@@ -673,7 +673,7 @@ internal partial class FormRibbon
 
         ViewModel.KeyEditor.PropertyChanged += KeyEditor_PropertyChanged;
         ViewModel.PropertyChanged -= DataContext_PropertyChanged;
-    }        
+    }
 
     /// <summary>
     /// Function to reset the view when no data context is assigned.
@@ -753,7 +753,7 @@ internal partial class FormRibbon
         EnableRibbon(false);
 
         if (ViewModel is null)
-        {                
+        {
             return;
         }
 
@@ -765,7 +765,7 @@ internal partial class FormRibbon
         ButtonAnimationLoadBack.Enabled = ViewModel?.LoadBackgroundImageCommand?.CanExecute(null) ?? false;
         ButtonAnimationClearBack.Enabled = ViewModel?.ClearBackgroundImageCommand?.CanExecute(null) ?? false;
         ButtonAnimationKeyUndo.Enabled = ButtonAnimationUndo.Enabled = _currentUndoHandler?.UndoCommand?.CanExecute(null) ?? false;
-        ButtonAnimationKeyRedo.Enabled = ButtonAnimationRedo.Enabled = _currentUndoHandler?.RedoCommand?.CanExecute(null) ?? false;            
+        ButtonAnimationKeyRedo.Enabled = ButtonAnimationRedo.Enabled = _currentUndoHandler?.RedoCommand?.CanExecute(null) ?? false;
         ButtonAnimationSprite.Enabled = ViewModel.LoadSpriteCommand?.CanExecute(null) ?? false;
         ButtonAnimPlay.Enabled = ViewModel.PlayAnimationCommand?.CanExecute(null) ?? false;
         ButtonAnimStop.Enabled = ViewModel.StopAnimationCommand?.CanExecute(null) ?? false;
@@ -820,7 +820,7 @@ internal partial class FormRibbon
 
         ViewModel.KeyEditor.PropertyChanged += KeyEditor_PropertyChanged;
         ViewModel.PropertyChanged += DataContext_PropertyChanged;
-    }        
+    }
     #endregion
 
     #region Constructor.

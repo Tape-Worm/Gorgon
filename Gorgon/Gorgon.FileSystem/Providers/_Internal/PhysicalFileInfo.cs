@@ -135,7 +135,7 @@ internal class PhysicalFileInfo
         _pathBuffer.Replace(Path.DirectorySeparatorChar, '/');
         _pathBuffer.Append(_fileInfo.Name);
 
-        VirtualPath = _pathBuffer.ToString() ;
+        VirtualPath = _pathBuffer.ToString();
     }
     #endregion
 
@@ -163,6 +163,6 @@ internal class PhysicalFileInfo
         _physicalRoot = physicalRoot;
         _fileInfo = file;
         VirtualPath = virtualPath;
-    }        
+    }
     #endregion
 }

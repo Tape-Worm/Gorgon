@@ -36,9 +36,7 @@ static class Program
     [STAThread]
     static void Main()
     {
-#if NET6_0_OR_GREATER
         Application.SetHighDpiMode(HighDpiMode.PerMonitorV2);
-#endif
         Application.EnableVisualStyles();
         Application.SetCompatibleTextRenderingDefault(false);
 

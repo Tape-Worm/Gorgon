@@ -57,7 +57,7 @@ internal class FileSystemSearchSystem(IDirectory rootDirectory)
         {
             Resources.GOREDIT_SEARCH_KEYWORD_DEPENDS_ON,
             Resources.GOREDIT_SEARCH_KEYWORD_DEPENDS_ON
-        }        
+        }
     };
     #endregion
 
@@ -220,7 +220,7 @@ internal class FileSystemSearchSystem(IDirectory rootDirectory)
             case SearchMode.EndsWith when file.Name.EndsWith(modeSearchText, StringComparison.CurrentCultureIgnoreCase):
             case SearchMode.Contains when (file.Name.IndexOf(modeSearchText, StringComparison.CurrentCultureIgnoreCase) != -1):
             case SearchMode.All:
-                return true;                    
+                return true;
         }
 
         return false;
@@ -330,7 +330,7 @@ internal class FileSystemSearchSystem(IDirectory rootDirectory)
             if ((!string.IsNullOrWhiteSpace(keyword)) && (!CheckItemAttribute(node, keyword, keywordValue)))
             {
                 continue;
-            }                
+            }
 
             if (MatchesWildcard(mode, node, modeSearchText))
             {

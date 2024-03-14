@@ -135,7 +135,7 @@ internal class SpriteEditorPlugIn
     {
         using Stream stream = ContentFileManager.OpenStream(file.Path, FileMode.Open);
         IGorgonImageInfo metadata = _ddsCodec.GetMetaData(stream);
-        return metadata.ImageType is not ImageType.Image3D and not ImageType.Image1D;
+        return metadata.ImageType is not ImageDataType.Image3D and not ImageDataType.Image1D;
     }
 
     /// <summary>
@@ -162,7 +162,7 @@ internal class SpriteEditorPlugIn
 
         if (textureNames is null)
         {
-            dependencyList[CommonEditorContentTypes.ImageType] = textureNames = [];                
+            dependencyList[CommonEditorContentTypes.ImageType] = textureNames = [];
         }
 
         // Remove any duplicate names.
@@ -239,7 +239,7 @@ internal class SpriteEditorPlugIn
         lock (_syncLock)
         {
             try
-            {                    
+            {
                 rtv = GorgonRenderTarget2DView.CreateRenderTarget(HostContentServices.GraphicsContext.Graphics, new GorgonTexture2DInfo((int)(bounds.Width * scale),
                                                                                                                                              (int)(bounds.Height * scale),
                                                                                                                                              BufferFormat.R8G8B8A8_UNorm)
@@ -264,7 +264,7 @@ internal class SpriteEditorPlugIn
 
                 // If our bounding box is not the same width/height as the sprite definition, then we've likely changed the offsets of the vertices.
                 // To display this accurately, we need to find the anchor point for the center of the AABB.
-                sprite.Anchor = new Vector2((bounds.Left + bounds.Width * 0.5f) / sprite.Size.Width, 
+                sprite.Anchor = new Vector2((bounds.Left + bounds.Width * 0.5f) / sprite.Size.Width,
                                                (bounds.Top + bounds.Height * 0.5f) / sprite.Size.Height);
                 sprite.Position = new Vector2(rtv.Width * 0.5f, rtv.Height * 0.5f);
 
@@ -332,7 +332,7 @@ internal class SpriteEditorPlugIn
             }
 
             // Locate the texture for the sprite.
-            IContentFile imageFile = FindImage(content);                
+            IContentFile imageFile = FindImage(content);
 
             // If we couldn't locate the texture based on the dependency information, try to locate it from the embedded information 
             // in the sprite data. We will not be updating the dependency metadata here, it will be updated when we open the sprite.
@@ -504,7 +504,7 @@ internal class SpriteEditorPlugIn
         IContentFile imageFile;
         GorgonSprite sprite;
         SpriteTextureService textureService;
-        Stream stream = null;            
+        Stream stream = null;
 
         try
         {
@@ -528,7 +528,7 @@ internal class SpriteEditorPlugIn
                 imageFile = null;
             }
 
-            var settings = new Settings();                
+            var settings = new Settings();
             settings.Initialize(new SettingsParameters(_settings, HostContentServices));
 
             var spritePickMaskEditor = new SpritePickMaskEditor();
@@ -556,7 +556,7 @@ internal class SpriteEditorPlugIn
             var spriteVertexEditContext = new SpriteVertexEditContext();
 
             var spriteContentServices = new SpriteContentServices(new NewSpriteService(fileManager, _ddsCodec),
-                                                                  textureService, 
+                                                                  textureService,
                                                                   undoService,
                                                                   builder);
 
@@ -595,7 +595,7 @@ internal class SpriteEditorPlugIn
         finally
         {
             stream?.Dispose();
-        }            
+        }
     }
 
     /// <summary>Function to provide clean up for the plugin.</summary>
@@ -708,7 +708,7 @@ internal class SpriteEditorPlugIn
                                             .ToArray();
 
         using (var formName = new FormNewSprite
-        {                
+        {
             ImageCodec = _ddsCodec,
             FileManager = ContentFileManager,
             Text = Resources.GORSPR_CAPTION_SPRITE_NAME,
@@ -718,7 +718,7 @@ internal class SpriteEditorPlugIn
         {
             formName.FillTextures(textures);
             if (formName.ShowDialog(GorgonApplication.MainForm) == DialogResult.OK)
-            {                    
+            {
                 return Task.FromResult((formName.ObjectName, CreateSprite(formName.SpriteSize, formName.TextureFile)));
             }
         }
@@ -801,7 +801,8 @@ internal class SpriteEditorPlugIn
             // We're done on the main thread, we can switch to another thread to write the image.
             Cursor.Current = Cursors.Default;
 
-            await Task.Run(() => {
+            await Task.Run(() =>
+            {
                 using Stream stream = TemporaryFileSystem.OpenStream(filePath, FileMode.Create);
                 pngCodec.Save(thumbnailImage, stream);
             }, cancelToken);

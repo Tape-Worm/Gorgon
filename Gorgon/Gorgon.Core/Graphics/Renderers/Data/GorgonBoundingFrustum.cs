@@ -128,7 +128,7 @@ public enum FrustumCorner
 /// Defines a frustum which can be used in frustum culling, zoom to Extents (zoom to fit) operations, 
 /// (matrix, frustum, camera) interchange, and many kind of intersection testing.
 /// </summary>
-public class GorgonBoundingFrustum 
+public class GorgonBoundingFrustum
 {
     #region Classes.        
     /// <summary>
@@ -185,7 +185,7 @@ public class GorgonBoundingFrustum
 
         /// <summary>Returns an enumerator that iterates through a collection.</summary>
         /// <returns>An <see cref="IEnumerator">IEnumerator</see> object that can be used to iterate through the collection.</returns>
-        IEnumerator IEnumerable.GetEnumerator() => _corners.GetEnumerator();            
+        IEnumerator IEnumerable.GetEnumerator() => _corners.GetEnumerator();
         #endregion
     }
 
@@ -245,7 +245,7 @@ public class GorgonBoundingFrustum
         /// <returns>An <see cref="IEnumerator">IEnumerator</see> object that can be used to iterate through the collection.</returns>
         IEnumerator IEnumerable.GetEnumerator() => _planes.GetEnumerator();
         #endregion
-    }        
+    }
     #endregion
 
     #region Properties.
@@ -321,7 +321,7 @@ public class GorgonBoundingFrustum
     /// </summary>
     /// <param name="viewProjMatrix">The combined view and projection matrix.</param>
     /// <returns>The new bounding frustum.</returns>
-    public static GorgonBoundingFrustum Create(in Matrix4x4 viewProjMatrix) 
+    public static GorgonBoundingFrustum Create(in Matrix4x4 viewProjMatrix)
     {
         //http://www.chadvernon.com/blog/resources/directx9/frustum-culling/
 
@@ -513,7 +513,7 @@ public class GorgonBoundingFrustum
     /// <returns>With of the frustum at the specified depth</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public float GetWidthAtDepth(float depth)
-    {            
+    {
         float hAngle = (GorgonMathExtensions.PI * 0.5f - (Vector3.Dot(Planes[FrustumPlane.Near].Normal, Planes[FrustumPlane.Left].Normal)).ACos());
         return hAngle.Tan() * depth * 2;
     }

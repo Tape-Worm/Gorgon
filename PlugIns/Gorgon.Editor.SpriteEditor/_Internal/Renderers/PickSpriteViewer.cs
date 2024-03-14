@@ -108,7 +108,7 @@ internal class PickSpriteViewer(Gorgon2D renderer, GorgonSwapChain swapChain, IS
     {
         GorgonRenderTargetView prevTarget = Graphics.RenderTargets[0];
         GorgonRangeF? prevAlphaTest = Renderer.PrimitiveAlphaTestRange;
-        var clearRegion = _sprite.Texture.ToPixel(_sprite.TextureRegion).ToRectangleF();            
+        var clearRegion = _sprite.Texture.ToPixel(_sprite.TextureRegion).ToRectangleF();
 
         _spriteTarget.Clear(GorgonColor.BlackTransparent);
 
@@ -178,7 +178,7 @@ internal class PickSpriteViewer(Gorgon2D renderer, GorgonSwapChain swapChain, IS
     /// <param name="args">The arguments for the event.</param>
     /// <remarks>Developers can override this method to handle a mouse move event in their own content view.</remarks>
     protected override void OnMouseMove(MouseArgs args)
-    {   
+    {
         base.OnMouseMove(args);
 
         var position = new Vector2(args.CameraSpacePosition.X + RenderRegion.Width * 0.5f,
@@ -202,7 +202,7 @@ internal class PickSpriteViewer(Gorgon2D renderer, GorgonSwapChain swapChain, IS
         // We'll need to draw the marching ants rectangle in standard client space. 
         // So, we can just get the camera to tell us where that is.
         var spriteTopLeft = new Vector3(_spriteRegion.Left, _spriteRegion.Top, 0);
-        var spriteBottomRight = new Vector3(_spriteRegion.Right, _spriteRegion.Bottom, 0);            
+        var spriteBottomRight = new Vector3(_spriteRegion.Right, _spriteRegion.Bottom, 0);
         Camera.Unproject(in spriteTopLeft, out Vector3 transformedTopLeft);
         Camera.Unproject(in spriteBottomRight, out Vector3 transformedBottomRight);
 
@@ -255,7 +255,7 @@ internal class PickSpriteViewer(Gorgon2D renderer, GorgonSwapChain swapChain, IS
         _sprite.Color = GorgonColor.White;
         _sprite.Texture = DataContext.Texture;
         _sprite.TextureArrayIndex = DataContext.ArrayIndex;
-        _sprite.TextureSampler = GorgonSamplerState.PointFiltering;            
+        _sprite.TextureSampler = GorgonSamplerState.PointFiltering;
 
         DataContext.SpritePickContext.SpriteRectangle = DataContext.Texture.ToPixel(DataContext.TextureCoordinates).ToRectangleF();
 
@@ -308,7 +308,7 @@ internal class PickSpriteViewer(Gorgon2D renderer, GorgonSwapChain swapChain, IS
     protected override void OnPropertyChanged(string propertyName)
     {
         switch (propertyName)
-        {                
+        {
             case nameof(ISpriteContent.Texture):
                 UpdateWorkingSprite();
                 break;

@@ -75,7 +75,7 @@ public sealed class GorgonTexture2DReadWriteView
     /// <summary>
     /// Property to return the type of image data.
     /// </summary>
-    ImageType IGorgonImageInfo.ImageType => IsCubeMap ? ImageType.ImageCube : ImageType.Image2D;
+    ImageDataType IGorgonImageInfo.ImageType => IsCubeMap ? ImageDataType.ImageCube : ImageDataType.Image2D;
 
     /// <summary>
     /// Property to return the depth of an image, in pixels.

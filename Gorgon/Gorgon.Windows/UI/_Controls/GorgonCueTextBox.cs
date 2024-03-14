@@ -111,8 +111,8 @@ public class GorgonCueTextBox
 
                 if ((!string.IsNullOrEmpty(Text))
                     || (string.IsNullOrWhiteSpace(_cueText))
-                    || (Focused))                    
-                {                        
+                    || (Focused))
+                {
                     break;
                 }
 

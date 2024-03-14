@@ -360,7 +360,7 @@ internal struct Dx10Header
     /// <summary>
     /// Resource dimension.
     /// </summary>
-    public ImageType ResourceDimension;
+    public ImageDataType ResourceDimension;
     /// <summary>
     /// Miscellaneous flags.
     /// </summary>

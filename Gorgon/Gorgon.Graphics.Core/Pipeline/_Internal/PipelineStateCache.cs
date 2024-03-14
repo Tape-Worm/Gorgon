@@ -93,14 +93,14 @@ internal class PipelineStateCache(D3D11.Device5 device)
         PipelineStateChanges inheritedState = (cachedState.PrimitiveType == newState.PrimitiveType) ? PipelineStateChanges.Topology : PipelineStateChanges.None;
         inheritedState |= (cachedState.VertexShader == newState.VertexShader) ? PipelineStateChanges.VertexShader : PipelineStateChanges.None;
         inheritedState |= (cachedState.PixelShader == newState.PixelShader) ? PipelineStateChanges.PixelShader : PipelineStateChanges.None;
-        inheritedState |= (cachedState.GeometryShader == newState.GeometryShader) ? PipelineStateChanges.GeometryShader : PipelineStateChanges.None;                        
+        inheritedState |= (cachedState.GeometryShader == newState.GeometryShader) ? PipelineStateChanges.GeometryShader : PipelineStateChanges.None;
         inheritedState |= (cachedState.DomainShader == newState.DomainShader) ? PipelineStateChanges.DomainShader : PipelineStateChanges.None;
         inheritedState |= (cachedState.HullShader == newState.HullShader) ? PipelineStateChanges.HullShader : PipelineStateChanges.None;
         inheritedState |= (cachedState.RasterState.Equals(newState.RasterState)) ? PipelineStateChanges.RasterState : PipelineStateChanges.None;
         inheritedState |= ((cachedState.RwBlendStates.Equals(newState.RwBlendStates))
                             && (cachedState.IsAlphaToCoverageEnabled == newState.IsAlphaToCoverageEnabled)
                             && (cachedState.IsIndependentBlendingEnabled == newState.IsIndependentBlendingEnabled)) ? PipelineStateChanges.BlendState : PipelineStateChanges.None;
-        inheritedState |= ((cachedState.DepthStencilState is not null) 
+        inheritedState |= ((cachedState.DepthStencilState is not null)
                             && (cachedState.DepthStencilState.Equals(newState.DepthStencilState))) ? PipelineStateChanges.DepthStencilState : PipelineStateChanges.None;
 
         return inheritedState;
@@ -138,8 +138,8 @@ internal class PipelineStateCache(D3D11.Device5 device)
             return;
         }
 
-        pipelineState.D3DBlendState = pipelineState.RwBlendStates.BuildD3D11BlendState(_device, 
-                                                                                        pipelineState.IsAlphaToCoverageEnabled, 
+        pipelineState.D3DBlendState = pipelineState.RwBlendStates.BuildD3D11BlendState(_device,
+                                                                                        pipelineState.IsAlphaToCoverageEnabled,
                                                                                         pipelineState.IsIndependentBlendingEnabled);
     }
 
@@ -165,7 +165,7 @@ internal class PipelineStateCache(D3D11.Device5 device)
                 blendState = newState.D3DBlendState;
 
                 if ((depthStencilState == state.D3DDepthStencilState) && (depthStencilState is not null)
-                    && (rasterState == state.D3DRasterState)  && (rasterState is not null)
+                    && (rasterState == state.D3DRasterState) && (rasterState is not null)
                     && (blendState == state.D3DBlendState) && (blendState is not null))
                 {
                     return state;
@@ -182,7 +182,7 @@ internal class PipelineStateCache(D3D11.Device5 device)
             int index = 0;
 
             while (index < _cachedPipelineStates.Length)
-            {   
+            {
                 GorgonPipelineState cachedState = _cachedPipelineStates[index];
 
                 // We haven't taken this slot yet.
@@ -223,7 +223,7 @@ internal class PipelineStateCache(D3D11.Device5 device)
             {
                 ID = index
             };
-            InitializePipelineState(resultState, blendState, depthStencilState, rasterState);                
+            InitializePipelineState(resultState, blendState, depthStencilState, rasterState);
             _cachedPipelineStates[index] = resultState;
             return resultState;
         }

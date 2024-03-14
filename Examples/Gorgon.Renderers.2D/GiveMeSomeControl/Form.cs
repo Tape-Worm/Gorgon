@@ -34,7 +34,7 @@ using Gorgon.Graphics.Imaging.Codecs;
 using Gorgon.Renderers;
 using Gorgon.UI;
 using DX = SharpDX;
-using FontStyle = Gorgon.Graphics.Fonts.FontStyle;
+
 
 namespace Gorgon.Examples;
 
@@ -170,7 +170,7 @@ public partial class Form
         _rightPanel = new GorgonSwapChain(_graphics,
                                           GroupControl2,
                                           new GorgonSwapChainInfo(_leftPanel, "Right Panel SwapChain")
-                                          {                                                  
+                                          {
                                               Width = GroupControl2.ClientSize.Width,
                                               Height = GroupControl2.ClientSize.Height
                                           });
@@ -204,14 +204,14 @@ public partial class Form
 
         GorgonExample.LoadResources(_graphics);
 
-        _appFont = GorgonExample.Fonts.GetFont(new GorgonFontInfo(Font.FontFamily.Name, Font.Size * 1.33333f, FontHeightMode.Points)
+        _appFont = GorgonExample.Fonts.GetFont(new GorgonFontInfo(Font.FontFamily.Name, Font.Size * 1.33333f, GorgonFontHeightMode.Points)
         {
             Name = "Form Font",
             Characters = "SpdtoxDrag me!\u2190:1234567890.",
             TextureWidth = 128,
             TextureHeight = 128,
             OutlineSize = 2,
-            FontStyle = FontStyle.Bold,
+            FontStyle = GorgonFontStyle.Bold,
             OutlineColor1 = GorgonColor.Black,
             OutlineColor2 = GorgonColor.Black
         });

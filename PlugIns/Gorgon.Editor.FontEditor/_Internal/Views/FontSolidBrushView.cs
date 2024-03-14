@@ -107,7 +107,7 @@ internal partial class FontSolidBrushView
     {
         if (ViewModel is null)
         {
-            LabelBrushColor.Enabled = 
+            LabelBrushColor.Enabled =
             PickerSolidBrush.Enabled = false;
             ValidateOk();
             return;
@@ -197,7 +197,7 @@ internal partial class FontSolidBrushView
     }
 
     /// <summary>Function to cancel the change.</summary>
-    protected override void OnCancel() 
+    protected override void OnCancel()
     {
         if (ViewModel is not null)
         {
@@ -257,7 +257,7 @@ internal partial class FontSolidBrushView
 
         ViewModel.PropertyChanged += DataContext_PropertyChanged;
         ValidateControls();
-    }        
+    }
     #endregion
 
     #region Constructor/Finalizer.

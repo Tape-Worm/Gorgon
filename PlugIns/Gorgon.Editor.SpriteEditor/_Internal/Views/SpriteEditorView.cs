@@ -53,11 +53,11 @@ internal partial class SpriteEditorView
     // The service used to edit the sprite vertices.
     private SpriteVertexEditService _vertexEditService;
     // The picking service used to capture sprite data.
-    private PickClipperService _pickService;        
+    private PickClipperService _pickService;
     // The anchor editing service.
     private IAnchorEditService _anchorService;
     // Marching ants renderer.
-    private IMarchingAnts _marchAnts;        
+    private IMarchingAnts _marchAnts;
     // Manual input for the sprite clipping rectangle.
     private readonly FormManualRectangleEdit _manualRectEditor;
     // Manual input for the sprite vertex editing.
@@ -253,8 +253,8 @@ internal partial class SpriteEditorView
             return;
         }
 
-        ViewModel.Settings.ManualRectangleEditorBounds = new DX.Rectangle(form.DesktopBounds.Left, 
-                                                                            form.DesktopBounds.Top, 
+        ViewModel.Settings.ManualRectangleEditorBounds = new DX.Rectangle(form.DesktopBounds.Left,
+                                                                            form.DesktopBounds.Top,
                                                                             form.DesktopBounds.Width,
                                                                             form.DesktopBounds.Height);
     }
@@ -321,7 +321,7 @@ internal partial class SpriteEditorView
     /// <summary>Handles the ToggleManualInput event of the ClipViewer control.</summary>
     /// <param name="sender">The source of the event.</param>
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
-    private void ClipViewer_ToggleManualInput(object sender, EventArgs e) 
+    private void ClipViewer_ToggleManualInput(object sender, EventArgs e)
     {
         if (_manualRectEditor.Visible)
         {
@@ -355,7 +355,7 @@ internal partial class SpriteEditorView
                 if (_ribbonForm.ButtonSpriteClipApply.Enabled)
                 {
                     _ribbonForm.ButtonSpriteClipApply.PerformClick();
-                    e.IsInputKey = true;                        
+                    e.IsInputKey = true;
                 }
                 break;
             case Keys.Escape:
@@ -392,7 +392,7 @@ internal partial class SpriteEditorView
         _arrayUpdater = null;
 
         if (dataContext is null)
-        {                
+        {
             ResetDataContext();
             return;
         }
@@ -424,7 +424,7 @@ internal partial class SpriteEditorView
     /// </summary>
     private void UpdateSpriteDimensionsPanel()
     {
-        string spriteInfoText = _spriteInfo?.SpriteInfo ?? string.Empty;            
+        string spriteInfoText = _spriteInfo?.SpriteInfo ?? string.Empty;
 
         if (string.Equals(spriteInfoText, LabelSpriteInfo.Text, StringComparison.CurrentCulture))
         {
@@ -474,7 +474,7 @@ internal partial class SpriteEditorView
         {
             e.Effect = DragDropEffects.None;
             return;
-        }            
+        }
 
         var args = new SetTextureArgs(contentData.FilePaths[0]);
 
@@ -578,8 +578,8 @@ internal partial class SpriteEditorView
                 UpdateArrayPanel();
                 break;
             case nameof(ISpriteContent.CommandContext):
-                _spriteInfo = (ViewModel.CommandContext as ISpriteInfo) ?? ViewModel; 
-                _arrayUpdater = ViewModel.CommandContext as IArrayUpdate;                    
+                _spriteInfo = (ViewModel.CommandContext as ISpriteInfo) ?? ViewModel;
+                _arrayUpdater = ViewModel.CommandContext as IArrayUpdate;
 
                 if ((ViewModel.CommandContext is null) || (!HasRenderer(ViewModel.CommandContext.Name)))
                 {
@@ -588,7 +588,7 @@ internal partial class SpriteEditorView
                 else
                 {
                     ViewModel.CommandContext.Load();
-                    rendererName = ViewModel.CommandContext.Name;                        
+                    rendererName = ViewModel.CommandContext.Name;
                 }
 
                 // Only switch if we're not on the same renderer.
@@ -599,12 +599,12 @@ internal partial class SpriteEditorView
                 UpdateSpriteDimensionsPanel();
                 UpdateArrayPanel();
                 break;
-            case nameof(ISpriteContent.ArrayIndex):                                        
+            case nameof(ISpriteContent.ArrayIndex):
                 UpdateArrayPanel();
                 break;
             case nameof(ISpriteContent.SpriteClipContext):
                 _manualRectEditor.SetDataContext(ViewModel.SpriteClipContext);
-                ViewModel.SpriteClipContext.PropertyChanged += SpriteClipContext_PropertyChanged;                    
+                ViewModel.SpriteClipContext.PropertyChanged += SpriteClipContext_PropertyChanged;
                 break;
             case nameof(ISpriteContent.SpritePickContext):
                 SpritePickMaskColor.SetDataContext(ViewModel.SpritePickContext.SpritePickMaskEditor);
@@ -635,7 +635,7 @@ internal partial class SpriteEditorView
     {
         ViewModel?.Unload();
 
-        _clipperService?.Dispose();            
+        _clipperService?.Dispose();
         _vertexEditService?.Dispose();
         _marchAnts?.Dispose();
         _anchorTexture?.Dispose();
@@ -719,7 +719,7 @@ internal partial class SpriteEditorView
         });
 
         ISpriteViewer noTexture = new NoTextureViewer(context.Renderer2D, swapChain, ViewModel);
-        ISpriteViewer defaultViewer = new DefaultSpriteViewer(context.Renderer2D, swapChain, ViewModel, _marchAnts);            
+        ISpriteViewer defaultViewer = new DefaultSpriteViewer(context.Renderer2D, swapChain, ViewModel, _marchAnts);
         var clipViewer = new ClipSpriteViewer(context.Renderer2D, swapChain, ViewModel, _clipperService);
         var pickViewer = new PickSpriteViewer(context.Renderer2D, swapChain, ViewModel, _pickService, _marchAnts);
         var colorEditViewer = new ColorEditViewer(context.Renderer2D, swapChain, ViewModel);
@@ -735,7 +735,7 @@ internal partial class SpriteEditorView
         anchorEditViewer.CreateResources();
         wrapEditViewer.CreateResources();
 
-        AddRenderer(noTexture.Name, noTexture);            
+        AddRenderer(noTexture.Name, noTexture);
         AddRenderer(defaultViewer.Name, defaultViewer);
         AddRenderer(clipViewer.Name, clipViewer);
         AddRenderer(pickViewer.Name, pickViewer);
@@ -879,7 +879,7 @@ internal partial class SpriteEditorView
 
         RegisterChildPanel(typeof(SpriteColorEdit).FullName, SpriteColorSelector);
         RegisterChildPanel(typeof(SpritePickMaskEditor).FullName, SpritePickMaskColor);
-        RegisterChildPanel(typeof(SpriteAnchorEdit).FullName, SpriteAnchorSelector);            
+        RegisterChildPanel(typeof(SpriteAnchorEdit).FullName, SpriteAnchorSelector);
         RegisterChildPanel(typeof(SpriteTextureWrapEdit).FullName, SpriteWrapping);
     }
     #endregion

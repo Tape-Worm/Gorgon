@@ -359,7 +359,7 @@ internal class TextContent
             Text = ChangeText(null)
         };
 
-        Task UndoRedoAction(TextChangeUndoRedo args, CancellationToken cancelToken) 
+        Task UndoRedoAction(TextChangeUndoRedo args, CancellationToken cancelToken)
         {
             ChangeText(args.Text);
             return Task.CompletedTask;
@@ -536,7 +536,7 @@ internal class TextContent
         if (ContentState == ContentState.Unmodified)
         {
             return true;
-        }            
+        }
 
         MessageResponse response = HostServices.MessageDisplay.ShowConfirmation($"The file '{File.Name}' has unsaved changes.\n\nWould you like to save now?", allowCancel: true);
 

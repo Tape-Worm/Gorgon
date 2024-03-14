@@ -96,7 +96,7 @@ internal class SpriteAnchorEdit
     }
 
     /// <summary>Property to return the boundaries for the anchor point.</summary>
-    public DX.Rectangle Bounds 
+    public DX.Rectangle Bounds
     {
         get => _bounds;
         set
@@ -181,7 +181,7 @@ internal class SpriteAnchorEdit
                 _spriteBounds[i] = value[i].Truncate();
             }
             MidPoint = new Vector2(range.Left + range.Width * 0.5f, range.Top + range.Height * 0.5f).Truncate();
-            OnPropertyChanged();                
+            OnPropertyChanged();
         }
     }
     #endregion

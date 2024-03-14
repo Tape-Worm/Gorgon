@@ -198,11 +198,11 @@ public class GorgonCodecBmFont
                     value = lineItems[..valueEndSep].Trim();
                     lineItems = lineItems[(valueEndSep + 1)..].Trim();
                 }
-                else 
+                else
                 {
                     value = lineItems;
-                    lineItems = string.Empty;                        
-                }                    
+                    lineItems = string.Empty;
+                }
             }
 
             result[key] = value;
@@ -239,20 +239,20 @@ public class GorgonCodecBmFont
         string aa = keyValues[AaTag];
         string spacing = keyValues[SpacingTag];
         string outline = keyValues[OutlineTag];
-        FontStyle style = FontStyle.Normal;
+        GorgonFontStyle style = GorgonFontStyle.Normal;
 
         if ((string.Equals(bold, "1", StringComparison.OrdinalIgnoreCase))
             && (string.Equals(italic, "1", StringComparison.OrdinalIgnoreCase)))
         {
-            style = FontStyle.BoldItalics;
+            style = GorgonFontStyle.BoldItalics;
         }
         else if (string.Equals(italic, "1", StringComparison.OrdinalIgnoreCase))
         {
-            style = FontStyle.Italics;
+            style = GorgonFontStyle.Italics;
         }
         else if (string.Equals(bold, "1", StringComparison.OrdinalIgnoreCase))
         {
-            style = FontStyle.Bold;
+            style = GorgonFontStyle.Bold;
         }
 
         int packSpacing = 1;
@@ -269,13 +269,13 @@ public class GorgonCodecBmFont
         int.TryParse(outline, out int outlineSize);
 
         // Create with required settings.
-        var result = new GorgonFontInfo(face, Convert.ToSingle(size), FontHeightMode.Pixels)
-        {                
+        var result = new GorgonFontInfo(face, Convert.ToSingle(size), GorgonFontHeightMode.Pixels)
+        {
             PackingSpacing = packSpacing,
             FontStyle = style,
-            AntiAliasingMode = ((aa.Length > 0) && (string.Equals(aa, "1", StringComparison.OrdinalIgnoreCase))) ? FontAntiAliasMode.AntiAlias : FontAntiAliasMode.None,
+            AntiAliasingMode = ((aa.Length > 0) && (string.Equals(aa, "1", StringComparison.OrdinalIgnoreCase))) ? GorgonFontAntiAliasMode.AntiAlias : GorgonFontAntiAliasMode.None,
             DefaultCharacter = ' ',
-            Brush = new GorgonGlyphSolidBrush(),   
+            Brush = new GorgonGlyphSolidBrush(),
             OutlineColor1 = outlineSize > 0 ? GorgonColor.Black : GorgonColor.BlackTransparent,
             OutlineColor2 = outlineSize > 0 ? GorgonColor.Black : GorgonColor.BlackTransparent,
             OutlineSize = outlineSize
@@ -379,7 +379,7 @@ public class GorgonCodecBmFont
     private static bool ParseKerning(StreamReader reader)
     {
         if (reader.EndOfStream)
-        {                
+        {
             return false;
         }
 
@@ -436,14 +436,12 @@ public class GorgonCodecBmFont
         string characters = ParseCharacters(reader);
         ParseKerning(reader);
 
-#if NET6_0_OR_GREATER
         result = result with
         {
             Characters = characters,
             TextureWidth = textureInfo.TextureWidth,
             TextureHeight = textureInfo.TextureHeight
         };
-#endif
 
         return result;
     }

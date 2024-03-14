@@ -67,14 +67,14 @@ internal abstract class GorgonChunkedFormat
     private ulong _currentChunk;                                            // Our current chunk.
     private long _chunkStart;                                               // The start of the current chunk.
     private long _chunkEnd;                                                 // The end of the current chunk.
-    private uint _chunkSize;												// Size of the chunk.
+    private uint _chunkSize;                                                // Size of the chunk.
     #endregion
 
     #region Properties.
     /// <summary>
     /// Property to set or return the temporary buffer for large reads/writes.
     /// </summary>
-        protected byte[] TempBuffer
+    protected byte[] TempBuffer
     {
         get;
         set;

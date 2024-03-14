@@ -123,8 +123,8 @@ static class Program
         _graphics.SetDepthStencil(_depthStencil);
 
         // When we resize, the projection matrix will go out of date, so we need to update our constant buffer with an updated projection.
-        _camera.ViewDimensions = e.Size.ToSize2F();            
-        ref readonly Matrix4x4 projection = ref _camera.GetProjectionMatrix();            
+        _camera.ViewDimensions = e.Size.ToSize2F();
+        ref readonly Matrix4x4 projection = ref _camera.GetProjectionMatrix();
         _vsConstants.Buffer.SetData(in projection);
     }
 
@@ -289,7 +289,7 @@ static class Program
             _vsConstants = GorgonConstantBufferView.CreateConstantBuffer(_graphics,
                                                                          new GorgonConstantBufferInfo((Unsafe.SizeOf<Matrix4x4>() * 2) + Unsafe.SizeOf<Vector4>())
                                                                          {
-                                                                             Name = "WorldProjection CBuffer"                                                                                 
+                                                                             Name = "WorldProjection CBuffer"
                                                                          });
             _vsConstants.Buffer.SetData(in _camera.GetProjectionMatrix(), copyMode: CopyMode.Discard);
             _vsConstants.Buffer.SetData(in _worldMatrix, 64, CopyMode.NoOverwrite);
@@ -321,9 +321,7 @@ static class Program
     {
         try
         {
-#if NET6_0_OR_GREATER
             Application.SetHighDpiMode(HighDpiMode.PerMonitorV2);
-#endif
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
 

@@ -115,14 +115,14 @@ internal partial class FormRibbon
     {
         if (dataContext is null)
         {
-            ButtonImageType.TextLine1 = ImageType.Unknown.ToString();
+            ButtonImageType.TextLine1 = ImageDataType.Unknown.ToString();
             return;
         }
 
         ToolStripMenuItem currentItem = dataContext.ImageType switch
         {
-            ImageType.ImageCube => ItemCubeMap,
-            ImageType.Image3D => Item3DImage,
+            ImageDataType.ImageCube => ItemCubeMap,
+            ImageDataType.Image3D => Item3DImage,
             _ => Item2DImage,
         };
         foreach (ToolStripMenuItem item in MenuImageType.Items.OfType<ToolStripMenuItem>().Where(item => item != currentItem))
@@ -617,7 +617,7 @@ internal partial class FormRibbon
         ButtonDimensions.Enabled = ViewModel.ShowImageDimensionsCommand?.CanExecute(null) ?? false;
         ButtonGenerateMipMaps.Enabled = ViewModel.ShowMipGenerationCommand?.CanExecute(null) ?? false;
         ButtonImageFormat.Enabled = ViewModel.ConvertFormatCommand?.CanExecute(BufferFormat.Unknown) ?? false;
-        ButtonImageType.Enabled = ViewModel.ChangeImageTypeCommand?.CanExecute(ImageType.Unknown) ?? false;
+        ButtonImageType.Enabled = ViewModel.ChangeImageTypeCommand?.CanExecute(ImageDataType.Unknown) ?? false;
         ButtonImageUndo.Enabled = ViewModel.UndoCommand?.CanExecute(null) ?? false;
         ButtonImageRedo.Enabled = ViewModel.RedoCommand?.CanExecute(null) ?? false;
         ButtonExport.Enabled = ViewModel.ExportImageCommand?.CanExecute(null) ?? false;
@@ -635,7 +635,7 @@ internal partial class FormRibbon
         ButtonFxDodge.Enabled = (!ButtonFx.Enabled) && (ViewModel.FxContext?.DodgeCommand?.CanExecute(null) ?? false);
         ButtonFxPosterize.Enabled = (!ButtonFx.Enabled) && (ViewModel.FxContext?.ShowPosterizeCommand?.CanExecute(null) ?? false);
         ButtonFxOneBit.Enabled = (!ButtonFx.Enabled) && (ViewModel.FxContext?.ShowOneBitCommand?.CanExecute(null) ?? false);
-        ButtonFxApply.Enabled = (!ButtonFx.Enabled) && (ViewModel.FxContext?.ApplyCommand?.CanExecute(null) ?? false);            
+        ButtonFxApply.Enabled = (!ButtonFx.Enabled) && (ViewModel.FxContext?.ApplyCommand?.CanExecute(null) ?? false);
 
         if (ViewModel.ChangeImageTypeCommand is null)
         {
@@ -643,9 +643,9 @@ internal partial class FormRibbon
             return;
         }
 
-        Item2DImage.Enabled = ViewModel.ChangeImageTypeCommand.CanExecute(ImageType.Image2D);
-        Item3DImage.Enabled = ViewModel.ChangeImageTypeCommand.CanExecute(ImageType.Image3D);
-        ItemCubeMap.Enabled = ViewModel.ChangeImageTypeCommand.CanExecute(ImageType.ImageCube);
+        Item2DImage.Enabled = ViewModel.ChangeImageTypeCommand.CanExecute(ImageDataType.Image2D);
+        Item3DImage.Enabled = ViewModel.ChangeImageTypeCommand.CanExecute(ImageDataType.Image3D);
+        ItemCubeMap.Enabled = ViewModel.ChangeImageTypeCommand.CanExecute(ImageDataType.ImageCube);
     }
 
     /// <summary>
@@ -868,7 +868,7 @@ internal partial class FormRibbon
             return;
         }
 
-        var imageType = (ImageType)item.Tag;
+        var imageType = (ImageDataType)item.Tag;
 
         if ((ViewModel?.ChangeImageTypeCommand is null)
             || (!ViewModel.ChangeImageTypeCommand.CanExecute(imageType))
@@ -928,7 +928,7 @@ internal partial class FormRibbon
         {
             ButtonEditInApp.ImageSmall = dataContext.ExternalEditorInfo.IconSmall;
         }
-    }        
+    }
 
     /// <summary>
     /// Function to initialize the view based on the data context.
@@ -984,7 +984,7 @@ internal partial class FormRibbon
         {
             ViewModel.Codecs.CollectionChanged += Codecs_CollectionChanged;
         }
-    }        
+    }
 
     /// <summary>
     /// Function to reset the zoom back to the default.
@@ -1002,9 +1002,9 @@ internal partial class FormRibbon
     {
         InitializeComponent();
 
-        Item2DImage.Tag = ImageType.Image2D;
-        ItemCubeMap.Tag = ImageType.ImageCube;
-        Item3DImage.Tag = ImageType.Image3D;
+        Item2DImage.Tag = ImageDataType.Image2D;
+        ItemCubeMap.Tag = ImageDataType.ImageCube;
+        Item3DImage.Tag = ImageDataType.Image3D;
 
         foreach (ToolStripMenuItem menuItem in MenuZoom.Items.OfType<ToolStripMenuItem>())
         {

@@ -72,7 +72,7 @@ internal class AddTrack
             {
                 _selectedTracks.AddRange(value);
             }
-            OnPropertyChanged();                
+            OnPropertyChanged();
         }
     }
 

@@ -88,7 +88,7 @@ internal class SourceImagePicker
     /// <summary>
     /// Property to return the number of array indices.
     /// </summary>
-    public int ArrayCount => _sourceImage is null ? 0 : _sourceImage.ImageType == ImageType.Image3D ? MipDepth : _sourceImage.ArrayCount;
+    public int ArrayCount => _sourceImage is null ? 0 : _sourceImage.ImageType == ImageDataType.Image3D ? MipDepth : _sourceImage.ArrayCount;
 
     /// <summary>
     /// Property to return the number of mip levels.
@@ -117,7 +117,7 @@ internal class SourceImagePicker
     {
         get => _sourceImage is null
                 ? 0
-                : (_currentArrayDepth.Max(0).Min(_sourceImage.ImageType == ImageType.Image3D ? _sourceImage.GetDepthCount(_mipLevel) - 1 : _sourceImage.ArrayCount - 1));
+                : (_currentArrayDepth.Max(0).Min(_sourceImage.ImageType == ImageDataType.Image3D ? _sourceImage.GetDepthCount(_mipLevel) - 1 : _sourceImage.ArrayCount - 1));
         set
         {
             if ((_currentArrayDepth == value) || (_sourceImage is null))
@@ -166,7 +166,7 @@ internal class SourceImagePicker
     /// </para>
     /// </remarks>
     protected override void OnInitialize(SourceImagePickerParameters injectionParameters)
-    {            
+    {
     }
 
     /// <summary>Function called when the associated view is loaded.</summary>

@@ -56,7 +56,7 @@ public sealed class GorgonTexture3DView
     /// <summary>
     /// Property to return the type of image data.
     /// </summary>
-    ImageType IGorgonImageInfo.ImageType => ImageType.Image3D;
+    ImageDataType IGorgonImageInfo.ImageType => ImageDataType.Image3D;
 
     /// <summary>
     /// Property to return whether the image data is using premultiplied alpha.

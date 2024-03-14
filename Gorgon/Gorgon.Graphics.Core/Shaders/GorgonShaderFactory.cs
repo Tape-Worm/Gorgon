@@ -476,7 +476,7 @@ public static class GorgonShaderFactory
     /// Initializes static members of the <see cref="GorgonShaderFactory" /> class.
     /// </summary>
     static GorgonShaderFactory()
-    {                        
+    {
         foreach ((Type Type, ShaderType Shader, _) in _shaderTypes)
         {
             _shaderFactory[Shader] = Type.CreateActivator<GorgonShader>(typeof(GorgonGraphics),

@@ -189,7 +189,7 @@ internal static class AnimationFactory
     private static void BuildTextureTracks(IEnumerable<ITrack> tracks)
     {
         foreach (ITrack track in tracks)
-        {                
+        {
             IGorgonTrackKeyBuilder<GorgonKeyTexture2D> keyBuilder = _builder.Edit2DTexture(track.Name);
 
             // There is no interpolation for texture tracks (not yet at least).

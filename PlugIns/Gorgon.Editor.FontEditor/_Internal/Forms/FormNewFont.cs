@@ -24,12 +24,12 @@
 // 
 #endregion
 
-using Drawing = System.Drawing;
+using Gorgon.Graphics;
 using Gorgon.Graphics.Fonts;
 using Gorgon.IO;
 using Gorgon.UI;
-using Gorgon.Graphics;
-using FontStyle = Gorgon.Graphics.Fonts.FontStyle;
+using Drawing = System.Drawing;
+
 
 namespace Gorgon.Editor.FontEditor;
 
@@ -66,10 +66,10 @@ internal partial class FormNewFont
     /// <summary>
     /// Property to return whether to use points or pixels for the font size.
     /// </summary>
-    public FontHeightMode FontHeightMode
+    public GorgonFontHeightMode FontHeightMode
     {
-        get => RadioPoints.Checked ? FontHeightMode.Points : FontHeightMode.Pixels;
-        set => RadioPoints.Checked = value != FontHeightMode.Pixels;
+        get => RadioPoints.Checked ? GorgonFontHeightMode.Points : GorgonFontHeightMode.Pixels;
+        set => RadioPoints.Checked = value != GorgonFontHeightMode.Pixels;
     }
 
     /// <summary>
@@ -89,24 +89,24 @@ internal partial class FormNewFont
     /// <summary>
     /// Property to return the font style.
     /// </summary>
-    public FontStyle FontStyle
+    public GorgonFontStyle FontStyle
     {
         get
         {
-            FontStyle result = FontStyle.Normal;
+            GorgonFontStyle result = GorgonFontStyle.Normal;
 
             if ((CheckItalics.Checked) && (CheckBold.Checked))
             {
-                result = FontStyle.BoldItalics;
+                result = GorgonFontStyle.BoldItalics;
             }
             else if (CheckBold.Checked)
             {
-                result = FontStyle.Bold;
-            } 
+                result = GorgonFontStyle.Bold;
+            }
             else if (CheckItalics.Checked)
             {
-                result = FontStyle.Italics;
-            }                
+                result = GorgonFontStyle.Italics;
+            }
 
             return result;
         }
@@ -114,15 +114,15 @@ internal partial class FormNewFont
         {
             switch (value)
             {
-                case FontStyle.BoldItalics:
+                case GorgonFontStyle.BoldItalics:
                     CheckBold.Checked = true;
                     CheckItalics.Checked = true;
                     break;
-                case FontStyle.Bold:
+                case GorgonFontStyle.Bold:
                     CheckBold.Checked = true;
                     CheckItalics.Checked = false;
                     break;
-                case FontStyle.Italics:
+                case GorgonFontStyle.Italics:
                     CheckBold.Checked = false;
                     CheckItalics.Checked = true;
                     break;
@@ -203,10 +203,10 @@ internal partial class FormNewFont
     /// The default value is <see cref="F:Gorgon.Graphics.Fonts.FontAntiAliasMode.AntiAlias" />.
     /// </para>
     /// </remarks>
-    public FontAntiAliasMode AntiAliasingMode
+    public GorgonFontAntiAliasMode AntiAliasingMode
     {
-        get => CheckAntiAliased.Checked ? FontAntiAliasMode.AntiAlias : FontAntiAliasMode.None;
-        set => CheckAntiAliased.Checked = value == FontAntiAliasMode.AntiAlias;
+        get => CheckAntiAliased.Checked ? GorgonFontAntiAliasMode.AntiAlias : GorgonFontAntiAliasMode.None;
+        set => CheckAntiAliased.Checked = value == GorgonFontAntiAliasMode.AntiAlias;
     }
 
     /// <summary>Property to return the size of an outline.</summary>
@@ -347,8 +347,8 @@ internal partial class FormNewFont
             }
             else
             {
-                CheckBold.Enabled = family.IsStyleAvailable(Drawing.FontStyle.Bold) && family.IsStyleAvailable(Drawing.FontStyle.Regular);                    
-                CheckItalics.Enabled = family.IsStyleAvailable(Drawing.FontStyle.Italic) && family.IsStyleAvailable(Drawing.FontStyle.Regular);                    
+                CheckBold.Enabled = family.IsStyleAvailable(Drawing.FontStyle.Bold) && family.IsStyleAvailable(Drawing.FontStyle.Regular);
+                CheckItalics.Enabled = family.IsStyleAvailable(Drawing.FontStyle.Italic) && family.IsStyleAvailable(Drawing.FontStyle.Regular);
 
                 ButtonOK.Enabled = TextFontName.Text.Length > 0;
             }
@@ -386,7 +386,7 @@ internal partial class FormNewFont
             style |= Drawing.FontStyle.Italic;
         }
 
-        _font = new Drawing.Font(ComboFontFamilies.Text, FontSize, style, FontHeightMode == FontHeightMode.Pixels ? Drawing.GraphicsUnit.Pixel : Drawing.GraphicsUnit.Point);
+        _font = new Drawing.Font(ComboFontFamilies.Text, FontSize, style, FontHeightMode == GorgonFontHeightMode.Pixels ? Drawing.GraphicsUnit.Pixel : Drawing.GraphicsUnit.Point);
         labelPreview.Font = _font;
     }
 

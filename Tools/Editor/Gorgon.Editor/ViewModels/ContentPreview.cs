@@ -238,7 +238,7 @@ internal class ContentPreview
             }
 
             PreviewImage?.Dispose();
-            PreviewImage = image;                
+            PreviewImage = image;
 
             _contentFile = file;
         }
@@ -282,11 +282,11 @@ internal class ContentPreview
 
                 if (_fileExplorer.SelectedFiles.Count > 0)
                 {
-                    file = _contentFileManager.GetFile(_fileExplorer.SelectedFiles[^1].FullPath);                        
+                    file = _contentFileManager.GetFile(_fileExplorer.SelectedFiles[^1].FullPath);
                 }
 
                 _fileExplorer.SelectedFiles.CollectionChanged += SelectedFiles_CollectionChanged;
-                await LoadImagePreviewAsync(file);                    
+                await LoadImagePreviewAsync(file);
                 break;
             case nameof(IFileExplorer.SelectedDirectory):
                 HookFileEvents();
@@ -444,7 +444,7 @@ internal class ContentPreview
         foreach (IFile file in directory.Files)
         {
             file.PropertyChanged += File_PropertyChanged;
-        }            
+        }
     }
 
     /// <summary>Function to inject dependencies for the view model.</summary>
@@ -482,7 +482,7 @@ internal class ContentPreview
     {
         _cancelSource?.Cancel();
 
-        UnhookFileEvents();            
+        UnhookFileEvents();
         _fileExplorer.SelectedFiles.CollectionChanged -= SelectedFiles_CollectionChanged;
         _fileExplorer.PropertyChanged -= FileExplorer_PropertyChanged;
         _fileExplorer.PropertyChanging -= FileExplorer_PropertyChanging;

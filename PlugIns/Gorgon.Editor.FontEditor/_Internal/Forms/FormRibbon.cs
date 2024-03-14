@@ -29,8 +29,8 @@ using System.Numerics;
 using Gorgon.Editor.FontEditor.Properties;
 using Gorgon.Editor.Rendering;
 using Gorgon.Editor.UI;
-using Krypton.Toolkit;
 using Gorgon.Graphics.Fonts;
+using Krypton.Toolkit;
 
 namespace Gorgon.Editor.FontEditor;
 
@@ -159,7 +159,7 @@ internal partial class FormRibbon
                 NumericSize.ValueChanged += NumericSize_ValueChanged;
                 break;
             case nameof(IFontContent.FontUnits):
-                RadioPointUnits.Checked = ViewModel.FontUnits == FontHeightMode.Points;
+                RadioPointUnits.Checked = ViewModel.FontUnits == GorgonFontHeightMode.Points;
                 RadioPixelUnits.Checked = !RadioPointUnits.Checked;
                 break;
             case nameof(IFontContent.IsBold):
@@ -370,7 +370,7 @@ internal partial class FormRibbon
     private void UnassignEvents()
     {
         ComboFonts.SelectedIndexChanged -= ComboFonts_SelectedIndexChanged;
-        NumericSize.ValueChanged -= NumericSize_ValueChanged;            
+        NumericSize.ValueChanged -= NumericSize_ValueChanged;
 
         if (ViewModel is null)
         {
@@ -618,7 +618,7 @@ internal partial class FormRibbon
         ComboFonts.RefreshFonts(true);
         ComboFonts.Text = dataContext.FontFamily;
         NumericSize.Value = (decimal)dataContext.FontSize;
-        RadioPointUnits.Checked = dataContext.FontUnits == FontHeightMode.Points;
+        RadioPointUnits.Checked = dataContext.FontUnits == GorgonFontHeightMode.Points;
         RadioPixelUnits.Checked = !RadioPointUnits.Checked;
         CheckBold.Checked = dataContext.IsBold;
         CheckItalics.Checked = dataContext.IsItalic;
@@ -676,10 +676,10 @@ internal partial class FormRibbon
         }
 
         ViewModel.PropertyChanging += DataContext_PropertyChanging;
-        ViewModel.PropertyChanged += DataContext_PropertyChanged;            
+        ViewModel.PropertyChanged += DataContext_PropertyChanged;
         ComboFonts.SelectedIndexChanged += ComboFonts_SelectedIndexChanged;
         NumericSize.ValueChanged += NumericSize_ValueChanged;
-    }        
+    }
     #endregion
 
     #region Constructor.

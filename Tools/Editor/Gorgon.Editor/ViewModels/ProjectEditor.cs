@@ -97,7 +97,7 @@ internal class ProjectEditor
     /// <summary>
     /// Property to return the available tool plug in button definitions for the application.
     /// </summary>
-    public IReadOnlyDictionary<string, IReadOnlyList<IToolPlugInRibbonButton>> ToolButtons 
+    public IReadOnlyDictionary<string, IReadOnlyList<IToolPlugInRibbonButton>> ToolButtons
     {
         get => _toolButtons;
         private set
@@ -273,7 +273,7 @@ internal class ProjectEditor
     /// </summary>
     public IEditorAsyncCommand<CancelEventArgs> SaveProjectToPackFileCommand
     {
-        get;            
+        get;
     }
 
     /// <summary>
@@ -436,7 +436,7 @@ internal class ProjectEditor
                 if (CurrentContent.ContentState == ContentState.Unmodified)
                 {
                     // If the state turns to unmodified, then refresh the thumbnail.
-                    RefreshFilePreview(CurrentContent.File.Path);                            
+                    RefreshFilePreview(CurrentContent.File.Path);
                 }
                 break;
             case nameof(IEditorContent.CommandContext):
@@ -822,12 +822,12 @@ internal class ProjectEditor
         string contentName = null;
 
         try
-        {                
+        {
             IContentPlugInMetadata metadata = _contentCreators.FirstOrDefault(item => id == item.NewIconID);
 
             Debug.Assert(metadata is not null, $"Could not locate the content plugin metadata for {id}.");
 
-            ShowWaitPanel(string.Format(Resources.GOREDIT_TEXT_CREATING_CONTENT, metadata.ContentType));                                
+            ShowWaitPanel(string.Format(Resources.GOREDIT_TEXT_CREATING_CONTENT, metadata.ContentType));
 
             ContentPlugIn plugin = HostServices.ContentPlugInService.PlugIns.FirstOrDefault(item => item.Value == metadata).Value;
 
@@ -874,7 +874,7 @@ internal class ProjectEditor
             foreach (ReadOnlyMemory<byte> memory in contentData.GetReadOnlySequence())
             {
                 contentStream.Write(memory.Span);
-            }                
+            }
             contentStream.Dispose();
 
             file = ContentFileManager.GetFile(path);
@@ -891,13 +891,13 @@ internal class ProjectEditor
             foreach (KeyValuePair<string, List<string>> dependency in contentMetadata.DependsOn)
             {
                 file.Metadata.DependsOn[dependency.Key] = new List<string>(dependency.Value);
-            }                
+            }
 
             // Indicate that this file is new.
             file.Metadata.Attributes[CommonEditorConstants.IsNewAttr] = bool.TrueString;
             file.RefreshMetadata();
 
-            SaveProjectMetadata();                    
+            SaveProjectMetadata();
         }
         catch (Exception ex)
         {
@@ -912,7 +912,7 @@ internal class ProjectEditor
         }
         finally
         {
-            contentStream?.Dispose();   
+            contentStream?.Dispose();
             HideWaitPanel();
         }
 
@@ -992,7 +992,7 @@ internal class ProjectEditor
     {
         base.OnLoad();
 
-        HostServices.BusyService.SetBusy();            
+        HostServices.BusyService.SetBusy();
 
         try
         {
@@ -1009,7 +1009,7 @@ internal class ProjectEditor
                 ContentPreviewer.IsEnabled = _settings.ShowContentPreview;
             }
 
-            AssignEvents();                
+            AssignEvents();
         }
         catch (Exception ex)
         {
@@ -1019,7 +1019,7 @@ internal class ProjectEditor
         {
             HostServices.BusyService.SetIdle();
         }
-    }        
+    }
 
     /// <summary>
     /// Function called when the associated view is unloaded.
@@ -1047,7 +1047,7 @@ internal class ProjectEditor
 
     #region Constructor.
     /// <summary>Initializes a new instance of the <see cref="ProjectEditor"/> class.</summary>
-    public ProjectEditor() 
+    public ProjectEditor()
     {
         BeforeCloseCommand = new EditorAsyncCommand<CancelEventArgs>(DoBeforeCloseAsync);
         AfterCloseCommand = new EditorCommand<object>(DoAfterClose);

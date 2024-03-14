@@ -181,9 +181,8 @@ static class Program
     static void Main(string[] args)
     {
         Boot booter = null;
-#if NET6_0_OR_GREATER
+
         Application.SetHighDpiMode(HighDpiMode.PerMonitorV2);
-#endif
         Application.EnableVisualStyles();
         Application.SetCompatibleTextRenderingDefault(false);
 
@@ -209,5 +208,5 @@ static class Program
             CommonEditorResources.UnloadResources();
         }
     }
-#endregion
+    #endregion
 }

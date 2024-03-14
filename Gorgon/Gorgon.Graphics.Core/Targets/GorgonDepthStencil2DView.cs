@@ -46,25 +46,25 @@ namespace Gorgon.Graphics.Core;
 /// </para>
 /// </remarks>
 [Flags]
-    public enum DepthStencilViewFlags
-    {
-        /// <summary>
-        /// Depth and stencil buffers are read-write.
-        /// </summary>
-        None = D3D11.DepthStencilViewFlags.None,
-        /// <summary>
-        /// <para>
-        /// Indicates that depth values are read only.
-        /// </para>
-        /// </summary>
-        ReadOnlyDepth = D3D11.DepthStencilViewFlags.ReadOnlyDepth,
-        /// <summary>
-        /// <para>
-        /// Indicates that stencil values are read only.
-        /// </para>
-        /// </summary>
-        ReadOnlyStencil = D3D11.DepthStencilViewFlags.ReadOnlyStencil
-    }
+public enum DepthStencilViewFlags
+{
+    /// <summary>
+    /// Depth and stencil buffers are read-write.
+    /// </summary>
+    None = D3D11.DepthStencilViewFlags.None,
+    /// <summary>
+    /// <para>
+    /// Indicates that depth values are read only.
+    /// </para>
+    /// </summary>
+    ReadOnlyDepth = D3D11.DepthStencilViewFlags.ReadOnlyDepth,
+    /// <summary>
+    /// <para>
+    /// Indicates that stencil values are read only.
+    /// </para>
+    /// </summary>
+    ReadOnlyStencil = D3D11.DepthStencilViewFlags.ReadOnlyStencil
+}
 
 /// <summary>
 /// A depth/stencil view for textures.
@@ -95,7 +95,7 @@ public sealed class GorgonDepthStencil2DView
     /// <summary>
     /// Property to return the type of image data.
     /// </summary>
-    ImageType IGorgonImageInfo.ImageType => IsCubeMap ? ImageType.ImageCube : ImageType.Image2D;
+    ImageDataType IGorgonImageInfo.ImageType => IsCubeMap ? ImageDataType.ImageCube : ImageDataType.Image2D;
 
     /// <summary>
     /// Property to return the depth of an image, in pixels.

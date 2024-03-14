@@ -34,7 +34,7 @@ namespace Gorgon.Editor.ImageEditor;
 /// <summary>
 /// Settings for the blur effect.
 /// </summary>
-internal partial class FxBlurSettings 
+internal partial class FxBlurSettings
     : EditorSubPanelCommon, IDataContext<IFxBlur>
 {
     #region Properties.
@@ -153,7 +153,7 @@ internal partial class FxBlurSettings
         }
 
         ViewModel.PropertyChanged += DataContext_PropertyChanged;
-    }        
+    }
     #endregion
 
     #region Constructor/Finalizer.

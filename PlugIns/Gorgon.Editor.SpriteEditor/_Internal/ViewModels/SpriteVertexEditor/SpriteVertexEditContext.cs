@@ -226,7 +226,7 @@ internal class SpriteVertexEditContext
     protected override void OnInitialize(SpriteVertexEditContextParameters injectionParameters)
     {
         _hostServices = injectionParameters.HostServices;
-        _spriteContent = injectionParameters.SpriteContent;            
+        _spriteContent = injectionParameters.SpriteContent;
     }
 
     /// <summary>Function called when the associated view is loaded.</summary>

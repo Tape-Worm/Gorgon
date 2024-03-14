@@ -202,15 +202,15 @@ internal partial class AnimationEditorView
 
         e.Effect = DragDropEffects.None;
 
-        if (contentData is null) 
-        {                
+        if (contentData is null)
+        {
             return;
         }
 
         if ((_spriteLoader?.LoadSpriteCommand is not null) && (_spriteLoader.LoadSpriteCommand.CanExecute(contentData.FilePaths)))
         {
             e.Effect = DragDropEffects.Move;
-        }            
+        }
     }
 
     /// <summary>Function to handle a drag drop event on the render control.</summary>
@@ -258,8 +258,8 @@ internal partial class AnimationEditorView
             case nameof(IAnimationContent.CurrentPanel):
             case nameof(IAnimationContent.Selected):
                 if ((ViewModel.PrimarySprite is null)
-                    || (ViewModel.CommandContext != ViewModel.KeyEditor) 
-                    || (ViewModel.Selected.Count == 0) 
+                    || (ViewModel.CommandContext != ViewModel.KeyEditor)
+                    || (ViewModel.Selected.Count == 0)
                     || (!HasRenderer(ViewModel.Selected[0].Track.KeyType.ToString())))
                 {
                     rendererName = ViewModel.PrimarySprite is not null ? DefaultAnimationViewer.ViewerName : NoPrimarySpriteViewer.ViewerName;
@@ -382,7 +382,7 @@ internal partial class AnimationEditorView
         SwitchRenderer(ViewModel.PrimarySprite is null ? noSprite.Name : defaultView.Name, true);
 
         ValidateButtons();
-    }        
+    }
 
     /// <summary>Raises the <see cref="UserControl.Load"/> event.</summary>
     /// <param name="e">An <see cref="EventArgs"/> that contains the event data.</param>
@@ -409,7 +409,7 @@ internal partial class AnimationEditorView
 
     /// <summary>Function to unassign events for the data context.</summary>
     protected override void UnassignEvents()
-    {            
+    {
         base.UnassignEvents();
 
         if (ViewModel is null)

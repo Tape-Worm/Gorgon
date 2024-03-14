@@ -97,7 +97,7 @@ public struct GorgonVertexPosColorUv
     public GorgonVertexPosColorUv(Vector3 pos, GorgonColor color, Vector2 uv)
     {
         Position = new Vector4(pos, 1);
-        UV = uv;            
+        UV = uv;
         Color = color;
     }
 

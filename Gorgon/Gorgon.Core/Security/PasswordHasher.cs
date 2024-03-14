@@ -44,10 +44,8 @@ public static class PasswordHasher
     private const int PasswordHashIterations = 20000;
     // The size, in bytes, of the SHA1 hash.
     private const int HashSize = 20;
-#if NET6_0_OR_GREATER
     // The length of the salt.
     private const int SaltLength = 64;
-#endif
 
     /// <summary>
     /// The maximum unhashed password length.
@@ -59,13 +57,11 @@ public static class PasswordHasher
     #endregion
 
     #region Methods.
-#if NET6_0_OR_GREATER
     /// <summary>
     /// Function to generate a salt value.
     /// </summary>
     /// <returns>A byte array containing the salt data.</returns>
     public static byte[] GenerateSalt() => RandomNumberGenerator.GetBytes(SaltLength);
-#endif
 
     /// <summary>
     /// Function to hash and salt a password and return a base-64 encoded string containing encrypted hash and salt values.

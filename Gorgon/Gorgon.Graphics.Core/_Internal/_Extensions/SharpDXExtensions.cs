@@ -41,9 +41,9 @@ internal static class SharpDXExtensions
     /// <param name="desc">The description to convert.</param>
     /// <param name="name">The name of the swap chain.</param>
     /// <returns>A new <see cref="GorgonSwapChainInfo"/>.</returns>
-        public static GorgonSwapChainInfo ToSwapChainInfo(this SwapChainDescription1 desc, string name) => new(desc.Width, desc.Height, (BufferFormat)desc.Format)
+    public static GorgonSwapChainInfo ToSwapChainInfo(this SwapChainDescription1 desc, string name) => new(desc.Width, desc.Height, (BufferFormat)desc.Format)
     {
-        Name = name,            
+        Name = name,
         StretchBackBuffer = desc.Scaling != Scaling.None
     };
 
@@ -168,7 +168,7 @@ internal static class SharpDXExtensions
     /// </summary>
     /// <param name="binding">The binding to convert.</param>
     /// <returns>The D3D11 vertex buffer binding.</returns>
-        public static D3D11.VertexBufferBinding ToVertexBufferBinding(this in GorgonVertexBufferBinding binding) => new(binding.VertexBuffer?.Native, binding.Stride, binding.Offset);
+    public static D3D11.VertexBufferBinding ToVertexBufferBinding(this in GorgonVertexBufferBinding binding) => new(binding.VertexBuffer?.Native, binding.Stride, binding.Offset);
 
     /// <summary>
     /// Function to convert a <see cref="GorgonMultisampleInfo"/> to a DXGI multi sample description.

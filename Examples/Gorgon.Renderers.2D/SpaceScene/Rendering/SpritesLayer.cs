@@ -159,11 +159,11 @@ internal class SpritesLayer(Gorgon2D renderer, IReadOnlyDictionary<string, Gorgo
             return;
         }
 
-        if ((GBuffer is not null) && 
+        if ((GBuffer is not null) &&
             ((GBuffer.Diffuse.Width != rtv.Width) || (GBuffer.Diffuse.Height != rtv.Height)))
         {
             GBuffer.Resize(rtv.Width, rtv.Height);
-        }                       
+        }
 
         for (int i = 0; i < _drawList.Count; ++i)
         {
@@ -192,7 +192,7 @@ internal class SpritesLayer(Gorgon2D renderer, IReadOnlyDictionary<string, Gorgo
                 {
                     if (wasLit)
                     {
-                        GBuffer.End();                            
+                        GBuffer.End();
                         if ((DeferredLighter is not null) && (DeferredLighter.Lights.Count > 0))
                         {
                             DeferredLighter.Render(GBuffer, rtv);

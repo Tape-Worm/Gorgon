@@ -31,7 +31,7 @@ namespace Gorgon.Graphics.Fonts;
 /// <summary>
 /// Anti-aliasing modes for the font.
 /// </summary>
-public enum FontAntiAliasMode
+public enum GorgonFontAntiAliasMode
 {
     /// <summary>
     /// No anti-aliasing.
@@ -46,7 +46,7 @@ public enum FontAntiAliasMode
 /// <summary>
 /// Font height mode.
 /// </summary>
-public enum FontHeightMode
+public enum GorgonFontHeightMode
 {
     /// <summary>
     /// Point size.
@@ -61,7 +61,7 @@ public enum FontHeightMode
 /// <summary>
 /// Font style.
 /// </summary>
-public enum FontStyle
+public enum GorgonFontStyle
 {
     /// <summary>
     /// Normal font without bold or italics.
@@ -79,25 +79,6 @@ public enum FontStyle
     /// Bolded and italicized font.
     /// </summary>
     BoldItalics = 3
-}
-
-/// <summary>
-/// The type of compression to apply to font textures.
-/// </summary>
-public enum FontTextureCompression
-{
-    /// <summary>
-    /// No compression.
-    /// </summary>
-    None = 0,
-    /// <summary>
-    /// Fast compression, lower quality.
-    /// </summary>
-    Fast = 1,
-    /// <summary>
-    /// Slow compression, higher quality.
-    /// </summary>
-    Quality = 2
 }
 
 /// <summary>
@@ -122,10 +103,10 @@ public interface IGorgonFontInfo
     /// This will affect the <see cref="Size"/> value in that it will alter the meaning of the units.
     /// </para>
     /// <para>
-    /// The default value is <see cref="FontHeightMode.Pixels"/>.
+    /// The default value is <see cref="GorgonFontHeightMode.Pixels"/>.
     /// </para>
     /// </remarks>
-    FontHeightMode FontHeightMode
+    GorgonFontHeightMode FontHeightMode
     {
         get;
     }
@@ -146,8 +127,8 @@ public interface IGorgonFontInfo
     /// This sets the height of the font.
     /// </para>
     /// <para>
-    /// This is affected by the <see cref="Fonts.FontHeightMode"/>. If the <see cref="FontHeightMode"/> is set to <see cref="FontHeightMode.Points"/>, then this unit is the height 
-    /// size height for the font. Otherwise, this represents the font height in <see cref="FontHeightMode.Pixels"/>.
+    /// This is affected by the <see cref="Fonts.GorgonFontHeightMode"/>. If the <see cref="FontHeightMode"/> is set to <see cref="GorgonFontHeightMode.Points"/>, then this unit is the height 
+    /// size height for the font. Otherwise, this represents the font height in <see cref="GorgonFontHeightMode.Pixels"/>.
     /// </para>
     /// </remarks>
     float Size
@@ -226,10 +207,10 @@ public interface IGorgonFontInfo
     /// </note>
     /// </para>
     /// <para>
-    /// The default value is <see cref="FontAntiAliasMode.AntiAlias"/>.
+    /// The default value is <see cref="GorgonFontAntiAliasMode.AntiAlias"/>.
     /// </para>
     /// </remarks>
-    FontAntiAliasMode AntiAliasingMode
+    GorgonFontAntiAliasMode AntiAliasingMode
     {
         get;
     }
@@ -336,9 +317,9 @@ public interface IGorgonFontInfo
     /// Property to return the style for the font.
     /// </summary>
     /// <remarks>
-    /// The default value is <see cref="FontStyle.Normal"/>.
+    /// The default value is <see cref="GorgonFontStyle.Normal"/>.
     /// </remarks>
-    FontStyle FontStyle
+    GorgonFontStyle FontStyle
     {
         get;
     }

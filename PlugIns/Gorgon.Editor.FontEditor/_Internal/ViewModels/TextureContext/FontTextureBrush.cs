@@ -24,12 +24,12 @@
 // 
 #endregion
 
-using DX = SharpDX;
+using Gorgon.Editor.FontEditor.Properties;
 using Gorgon.Editor.UI;
 using Gorgon.Graphics.Fonts;
 using Gorgon.Graphics.Imaging;
-using Gorgon.Editor.FontEditor.Properties;
 using Gorgon.Math;
+using DX = SharpDX;
 
 namespace Gorgon.Editor.FontEditor;
 
@@ -96,7 +96,7 @@ internal class FontTextureBrush
             }
 
             OnPropertyChanging();
-            _region = value;                
+            _region = value;
             OnPropertyChanged();
         }
     }
@@ -164,7 +164,7 @@ internal class FontTextureBrush
             Region = new DX.RectangleF(0, 0, 1, 1);
         }
 
-        WrapMode = brush.WrapMode;   
+        WrapMode = brush.WrapMode;
     }
 
     /// <summary>

@@ -29,7 +29,6 @@ using DX = SharpDX;
 
 namespace Gorgon.Graphics.Fonts;
 
-#if NET6_0_OR_GREATER
 /// <summary>
 /// Provides information used to create a new <see cref="GorgonFont"/>.
 /// </summary>
@@ -39,13 +38,13 @@ namespace Gorgon.Graphics.Fonts;
 /// <remarks>
 /// <para>
 /// The <paramref cref="Size"/> represents the height of the font, including ascent and descent. This is affected by the <paramref cref="FontHeightMode"/>. If the <param cref="FontHeightMode"/> is set 
-/// to <see cref="FontHeightMode.Points"/>, then this unit is the height size height for the font. Otherwise, this represents the font height in <see cref="FontHeightMode.Pixels"/>.
+/// to <see cref="GorgonFontHeightMode.Points"/>, then this unit is the height size height for the font. Otherwise, this represents the font height in <see cref="GorgonFontHeightMode.Pixels"/>.
 /// </para>
 /// </remarks>
-public record GorgonFontInfo(string FontFamilyName, float Size, FontHeightMode FontHeightMode)
+public record GorgonFontInfo(string FontFamilyName, float Size, GorgonFontHeightMode FontHeightMode)
     : IGorgonFontInfo
 {
-#region Constructor/Destructor.
+    #region Constructor/Destructor.
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonFontInfo"/> class.
     /// </summary>
@@ -68,18 +67,18 @@ public record GorgonFontInfo(string FontFamilyName, float Size, FontHeightMode F
         UsePremultipliedTextures = fontInfo.UsePremultipliedTextures;
         UseKerningPairs = fontInfo.UseKerningPairs;
     }
-#endregion
+    #endregion
 
-#region Variables.
+    #region Variables.
     // Texture size.
     private DX.Size2 _textureSize = new(256, 256);
     // The list of characters supported by the font.
     private char[] _characters = Enumerable.Range(32, 224).Select(Convert.ToChar).Where(c => !char.IsControl(c)).ToArray();
     // Packing spacing.
     private int _packSpace = 1;
-#endregion
+    #endregion
 
-#region Properties.
+    #region Properties.
     /// <summary>
     /// Property to return the width of the texture(s) used as the backing store for the bitmap font data.
     /// </summary>
@@ -219,14 +218,14 @@ public record GorgonFontInfo(string FontFamilyName, float Size, FontHeightMode F
     /// </note>
     /// </para>
     /// <para>
-    /// The default value is <see cref="FontAntiAliasMode.AntiAlias"/>.
+    /// The default value is <see cref="GorgonFontAntiAliasMode.AntiAlias"/>.
     /// </para>
     /// </remarks>
-    public FontAntiAliasMode AntiAliasingMode
+    public GorgonFontAntiAliasMode AntiAliasingMode
     {
         get;
         init;
-    } = FontAntiAliasMode.AntiAlias;
+    } = GorgonFontAntiAliasMode.AntiAlias;
 
     /// <summary>
     /// Property to return the size of an outline.
@@ -314,13 +313,13 @@ public record GorgonFontInfo(string FontFamilyName, float Size, FontHeightMode F
     /// Property to return the style for the font.
     /// </summary>
     /// <remarks>
-    /// The default value is <see cref="FontStyle.Normal"/>.
+    /// The default value is <see cref="GorgonFontStyle.Normal"/>.
     /// </remarks>
-    public FontStyle FontStyle
+    public GorgonFontStyle FontStyle
     {
         get;
         init;
-    } = FontStyle.Normal;
+    } = GorgonFontStyle.Normal;
 
     /// <summary>
     /// Property to return a default character to use in place of a character that cannot be found in the font.
@@ -399,228 +398,10 @@ public record GorgonFontInfo(string FontFamilyName, float Size, FontHeightMode F
     /// <summary>
     /// Property to return the name of the font object.
     /// </summary>
-        public string Name
+    public string Name
     {
         get;
         init;
     } = $"{FontFamilyName} {Size} {FontHeightMode}";
-#endregion
-}
-#else
-/// <summary>
-/// Provides information used to create a new <see cref="GorgonFont"/>.
-/// </summary>
-public class GorgonFontInfo
-    : IGorgonFontInfo
-{
-    #region Properties.
-    /// <summary>
-    /// Property to return whether the font height is in pixels or in points.
-    /// </summary>
-    public FontHeightMode FontHeightMode
-    {
-        get;
-        set;
-    }
-
-    /// <summary>
-    /// Property to return the font family name to generate the font from.
-    /// </summary>
-    public string FontFamilyName
-    {
-        get;
-        set;
-    }
-
-    /// <summary>
-    /// Property to return the font size.
-    /// </summary>
-    public float Size
-    {
-        get;
-        set;
-    }
-
-    /// <summary>
-    /// Property to return the width of the texture(s) used as the backing store for the bitmap font data.
-    /// </summary>
-    public int TextureWidth
-    {
-        get;
-        set;
-    }
-
-    /// <summary>
-    /// Property to return the height of the texture(s) used as the backing store for the bitmap font data.
-    /// </summary>
-    public int TextureHeight
-    {
-        get;
-        set;
-    }
-
-    /// <summary>
-    /// Property to return whether premultiplied textures are used when generating the glyphs for the font.
-    /// </summary>
-    public bool UsePremultipliedTextures
-    {
-        get;
-        set;
-    }
-
-    /// <summary>
-    /// Property to return the list of available characters to use as glyphs within the font.
-    /// </summary>
-    public IEnumerable<char> Characters
-    {
-        get;
-        set;
-    }
-
-    /// <summary>
-    /// Property to return the anti-aliasing mode for the font.
-    /// </summary>
-    public FontAntiAliasMode AntiAliasingMode
-    {
-        get;
-        set;
-    }
-
-    /// <summary>
-    /// Property to return the size of an outline.
-    /// </summary>
-    public int OutlineSize
-    {
-        get;
-        set;
-    }
-
-    /// <summary>
-    /// Property to return the starting color of the outline.
-    /// </summary>
-    public GorgonColor OutlineColor1
-    {
-        get;
-        set;
-    }
-
-    /// <summary>
-    /// Property to return the ending color of the outline.
-    /// </summary>
-    public GorgonColor OutlineColor2
-    {
-        get;
-        set;
-    }
-
-    /// <summary>
-    /// Property to return a <see cref="GorgonGlyphBrush"/> to use for special effects on the glyphs for the font.
-    /// </summary>
-    public GorgonGlyphBrush Brush
-    {
-        get;
-        set;
-    }
-
-    /// <summary>
-    /// Property to return the style for the font.
-    /// </summary>
-    public FontStyle FontStyle
-    {
-        get;
-        set;
-    }
-
-    /// <summary>
-    /// Property to return a default character to use in place of a character that cannot be found in the font.
-    /// </summary>
-    public char DefaultCharacter
-    {
-        get;
-        set;
-    }
-
-    /// <summary>
-    /// Property to return the spacing (in pixels) used between font glyphs on the backing texture.
-    /// </summary>
-    public int PackingSpacing
-    {
-        get;
-        set;
-    }
-
-    /// <summary>
-    /// Property to return whether to include kerning pair information in the font.
-    /// </summary>
-    public bool UseKerningPairs
-    {
-        get;
-        set;
-    }
-
-    /// <summary>
-    /// Property to return the name of the font object.
-    /// </summary>
-        public string Name
-    {
-        get;
-        set;
-    }
-
-    /// <summary>Property to return the type of compression to apply to the font textures.</summary>
-    public FontTextureCompression Compression
-    {
-        get;
-        set;
-    }
-    #endregion
-
-    #region Constructor/Destructor.
-    /// <summary>
-    /// Initializes a new instance of the <see cref="GorgonFontInfo"/> class.
-    /// </summary>
-    /// <param name="fontInfo">The font information to copy.</param>
-    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="fontInfo"/> parameter is <b>null</b>.</exception>
-    public GorgonFontInfo(IGorgonFontInfo fontInfo)
-    {
-        FontHeightMode = fontInfo.FontHeightMode;
-        AntiAliasingMode = fontInfo.AntiAliasingMode;
-        Brush = fontInfo.Brush;
-        DefaultCharacter = fontInfo.DefaultCharacter;
-        Characters = fontInfo.Characters;
-        FontFamilyName = fontInfo.FontFamilyName;
-        FontStyle = fontInfo.FontStyle;
-        OutlineColor1 = fontInfo.OutlineColor1;
-        OutlineColor2 = fontInfo.OutlineColor2;
-        OutlineSize = fontInfo.OutlineSize;
-        PackingSpacing = fontInfo.PackingSpacing;
-        Size = fontInfo.Size;
-        TextureWidth = fontInfo.TextureWidth;
-        TextureHeight = fontInfo.TextureHeight;
-        UsePremultipliedTextures = fontInfo.UsePremultipliedTextures;
-        UseKerningPairs = fontInfo.UseKerningPairs;
-    }
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="GorgonFontInfo"/> class.
-    /// </summary>
-    /// <param name="fontFamily">The name of the font family to derive the font from.</param>
-    /// <param name="size">The height of the font.</param>
-    /// <param name="heightMode">[Optional] The type of units to express the font height in.</param>
-    public GorgonFontInfo(string fontFamily, float size, FontHeightMode heightMode)
-    {
-        Name = string.Empty;
-        UseKerningPairs = true;
-        FontHeightMode = heightMode;
-        OutlineColor1 = GorgonColor.Transparent;
-        OutlineColor2 = GorgonColor.Transparent;
-        OutlineSize = 0;
-        FontStyle = FontStyle.Normal;
-        DefaultCharacter = ' ';
-        AntiAliasingMode = FontAntiAliasMode.AntiAlias;
-        Size = size;
-        FontFamilyName = fontFamily;
-    }
     #endregion
 }
-#endif

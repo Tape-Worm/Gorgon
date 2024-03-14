@@ -53,7 +53,7 @@ namespace Gorgon.Examples;
 /// doesn't fit within the client space of the control, host custom rendering for content using Gorgon's 2D graphics API, and drag 
 /// and drop functionality. 
 /// </remarks>
-internal partial class TextContentView 
+internal partial class TextContentView
     : VisualContentBaseControl, IDataContext<ITextContent>
 {
     #region Variables.
@@ -117,7 +117,7 @@ internal partial class TextContentView
         // method is not defined on the base class for the renderer, so that if users don't require this can skip it.
         if (resetZoom)
         {
-            _renderer.DefaultZoom();                
+            _renderer.DefaultZoom();
         }
     }
 
@@ -142,10 +142,10 @@ internal partial class TextContentView
 
         // Always call the OnLoad for the data context here so the view model can perform any required initialization
         // after the control is created and loaded.
-        ViewModel?.Load();            
+        ViewModel?.Load();
 
         // The control that we render our content into is selectable, so we should default selection into it.
-        RenderControl?.Select();            
+        RenderControl?.Select();
     }
 
     /// <summary>Function called to shut down the view and perform any clean up required (including user defined graphics objects).</summary>
@@ -212,7 +212,7 @@ internal partial class TextContentView
         // In this case we have a color picker UI panel that appears when we change the text color, and it will need a view 
         // model. This view model is a child view model off of our main view model.
         _formRibbon.SetDataContext(dataContext);
-        TextColorPicker.SetDataContext(dataContext?.TextColor);               
+        TextColorPicker.SetDataContext(dataContext?.TextColor);
     }
     #endregion
 

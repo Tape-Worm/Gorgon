@@ -141,7 +141,7 @@ public class GorgonPool<T>
     /// If the <paramref name="finalizer"/> callback method is supplied, then the object will have a chance to be cleaned up prior to putting it back into the pool. 
     /// </para>
     /// </remarks>
-        public void Deallocate(ref T item, Action<T> finalizer = null)
+    public void Deallocate(ref T item, Action<T> finalizer = null)
     {
         if (item is null)
         {

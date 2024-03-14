@@ -81,7 +81,7 @@ public sealed class GorgonTexture3D
     /// <summary>
     /// Property to return the type of image data.
     /// </summary>
-    ImageType IGorgonImageInfo.ImageType => ImageType.Image3D;
+    ImageDataType IGorgonImageInfo.ImageType => ImageDataType.Image3D;
 
     /// <summary>
     /// Property to return whether the image data is using premultiplied alpha.
@@ -332,7 +332,7 @@ public sealed class GorgonTexture3D
         }
 
         // Ensure that we can actually use our requested format as a texture.
-        if ((Format == BufferFormat.Unknown) || (!Graphics.FormatSupport[Format].IsTextureFormat(ImageType.Image3D)))
+        if ((Format == BufferFormat.Unknown) || (!Graphics.FormatSupport[Format].IsTextureFormat(ImageDataType.Image3D)))
         {
             throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_TEXTURE_FORMAT_NOT_SUPPORTED, Format, @"3D"));
         }
@@ -364,7 +364,6 @@ public sealed class GorgonTexture3D
         // Ensure the number of mip levels is not outside of the range for the width/height.
         int mipLevels = MipLevels.Min(GorgonImage.CalculateMaxMipCount(Width, Height, 1)).Max(1);
 
-#if NET6_0_OR_GREATER
         if (mipLevels != _info.MipLevels)
         {
             _info = _info with
@@ -372,7 +371,6 @@ public sealed class GorgonTexture3D
                 MipLevels = mipLevels
             };
         }
-#endif
 
         if (MipLevels > 1)
         {
@@ -518,7 +516,7 @@ public sealed class GorgonTexture3D
     /// <param name="format">The format for the texture.</param>
     /// <param name="mipCount">The number of mip map levels.</param>
     /// <returns>The number of bytes for the texture.</returns>
-    public static int CalculateSizeInBytes(int width, int height, int depth, BufferFormat format, int mipCount) => GorgonImage.CalculateSizeInBytes(ImageType.Image3D,
+    public static int CalculateSizeInBytes(int width, int height, int depth, BufferFormat format, int mipCount) => GorgonImage.CalculateSizeInBytes(ImageDataType.Image3D,
                                                 width,
                                                 height,
                                                 depth,
@@ -1021,7 +1019,6 @@ public sealed class GorgonTexture3D
     /// </para>
     /// </remarks>
     public GorgonTexture3D GetStagingTexture()
-#if NET6_0_OR_GREATER
     {
         GorgonTexture3DInfo info = _info with
         {
@@ -1036,9 +1033,6 @@ public sealed class GorgonTexture3D
 
         return staging;
     }
-#else
-        => null;
-#endif
 
     /// <summary>
     /// Function to update the texture, or a sub section of the texture with data from a <see cref="IGorgonImageBuffer"/> contained within a <see cref="IGorgonImage"/>.
@@ -1270,7 +1264,7 @@ public sealed class GorgonTexture3D
                 slice = depthSlice.Value.Min(Depth - 1).Max(0);
             }
 
-            image = new GorgonImage(new GorgonImageInfo(ImageType.Image3D, stagingTexture.Format)
+            image = new GorgonImage(new GorgonImageInfo(ImageDataType.Image3D, stagingTexture.Format)
             {
                 Width = (Width >> mipLevel).Max(1),
                 Height = (Height >> mipLevel).Max(1),
@@ -1320,7 +1314,7 @@ public sealed class GorgonTexture3D
                 stagingTexture = GetStagingTexture();
             }
 
-            image = new GorgonImage(new GorgonImageInfo(ImageType.Image3D, stagingTexture.Format)
+            image = new GorgonImage(new GorgonImageInfo(ImageDataType.Image3D, stagingTexture.Format)
             {
                 Width = Width,
                 Height = Height,
@@ -1876,7 +1870,7 @@ public sealed class GorgonTexture3D
     /// <summary>Function to retrieve a default shader resource view.</summary>
     /// <returns>The default shader resource view for the texture.</returns>
     GorgonShaderResourceView IGorgonTextureResource.GetShaderResourceView() => GetShaderResourceView();
-#endregion
+    #endregion
 
     #region Constructor/Finalizer.
     /// <summary>
@@ -1937,5 +1931,5 @@ public sealed class GorgonTexture3D
 
         this.RegisterDisposable(graphics);
     }
-#endregion
+    #endregion
 }

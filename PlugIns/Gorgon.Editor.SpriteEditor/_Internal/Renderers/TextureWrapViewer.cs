@@ -89,7 +89,7 @@ internal class TextureWrapViewer
         RenderRegion = rect;
 
         DataContext.WrappingEditor.PropertyChanged += WrappingEditor_PropertyChanged;
-    }        
+    }
 
     /// <summary>Function to set the default zoom/offset for the viewer.</summary>
     public override void DefaultZoom()

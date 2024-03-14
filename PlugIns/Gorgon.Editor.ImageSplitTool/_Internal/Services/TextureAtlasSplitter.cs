@@ -220,7 +220,7 @@ internal class TextureAtlasSplitter
     private IReadOnlyList<(string newImagePath, IGorgonImage image, string newSpritePath, GorgonSprite sprite)> SplitImage(IReadOnlyList<(IContentFile file, GorgonSprite sprite)> sprites, string outputDirectory, ref ConfirmationResult response)
     {
         // The list of images from the sprites.
-        var result = new List<(string newImagePath, IGorgonImage image, string newSpritePath, GorgonSprite sprite)>();            
+        var result = new List<(string newImagePath, IGorgonImage image, string newSpritePath, GorgonSprite sprite)>();
         string imageFileExtension = _imageCodec.CodecCommonExtensions.Count > 0 ? _imageCodec.CodecCommonExtensions[0] : string.Empty;
         string spriteFileExtension = _spriteCodec.FileExtensions.Count > 0 ? _spriteCodec.FileExtensions[0].Extension : string.Empty;
 
@@ -356,7 +356,7 @@ internal class TextureAtlasSplitter
                     Name = imageFile.Name,
                     MipLevels = imageData.MipCount,
                     ArrayCount = imageData.ArrayCount
-                }, imageData);                    
+                }, imageData);
 
                 // Retrieve any sprites associated with the texture atlas.
                 sprites = await Task.Run(() => LoadSprites(spriteFiles, textureAtlas, cancelToken), cancelToken);
@@ -395,7 +395,7 @@ internal class TextureAtlasSplitter
                 }
                 imageData?.Dispose();
                 textureAtlas?.Dispose();
-            }                
+            }
         }
     }
     #endregion

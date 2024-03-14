@@ -44,7 +44,7 @@ namespace Gorgon.Editor.ImageEditor;
 /// <param name="swapChain">The swap chain for the content view.</param>
 /// <param name="dataContext">The view model to assign to the renderer.</param>
 internal class Texture3DViewer(Gorgon2D renderer, GorgonSwapChain swapChain, IImageContent dataContext)
-        : TextureViewer(ImageType.Image3D.ToString(), "Gorgon3DTextureView", 1, renderer, swapChain, dataContext)
+        : TextureViewer(ImageDataType.Image3D.ToString(), "Gorgon3DTextureView", 1, renderer, swapChain, dataContext)
 {
     #region Variables.
     // The texture to display.
@@ -69,7 +69,7 @@ internal class Texture3DViewer(Gorgon2D renderer, GorgonSwapChain swapChain, IIm
     /// <summary>Function to create the texture for the view.</summary>
     protected override void CreateTexture()
     {
-        if ((DataContext?.ImageData is null) || (DataContext.ImageType != ImageType.Image3D))
+        if ((DataContext?.ImageData is null) || (DataContext.ImageType != ImageDataType.Image3D))
         {
             RenderRegion = DX.RectangleF.Empty;
             return;
@@ -144,12 +144,12 @@ internal class Texture3DViewer(Gorgon2D renderer, GorgonSwapChain swapChain, IIm
     }
 
     /// <summary>Function called during resource creation.</summary>
-    protected override void OnCreateResources() 
+    protected override void OnCreateResources()
     {
         base.OnCreateResources();
 
         _volRenderer = new VolumeRenderer(Graphics);
-        _volRenderer.CreateResources(ClientSize);            
+        _volRenderer.CreateResources(ClientSize);
     }
 
     #endregion

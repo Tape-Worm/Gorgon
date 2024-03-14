@@ -395,7 +395,7 @@ internal static partial class RawInputApi
     /// <returns>The raw input device structure if the device type was previously registered. Or <b>null</b> if not.</returns>
     public static RAWINPUTDEVICE? GetDeviceRegistration(HIDUsage usage)
     {
-        uint deviceCount = 0;            
+        uint deviceCount = 0;
 
         unsafe
         {

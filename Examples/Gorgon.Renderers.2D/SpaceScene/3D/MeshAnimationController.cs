@@ -93,7 +93,7 @@ internal class MeshAnimationController
     /// <param name="animObject">The object to update.</param>
     /// <param name="value">The value to apply.</param>
     protected override void OnColorUpdate(GorgonTrackRegistration track, MoveableMesh animObject, GorgonColor value)
-    {        
+    {
     }
 
     /// <summary>Function called when a SharpDX <c>RectangleF</c> value needs to be updated on the animated object.</summary>
@@ -101,7 +101,7 @@ internal class MeshAnimationController
     /// <param name="animObject">The object to update.</param>
     /// <param name="value">The value to apply.</param>
     protected override void OnRectangleUpdate(GorgonTrackRegistration track, MoveableMesh animObject, DX.RectangleF value)
-    {        
+    {
     }
 
     /// <summary>Function called when a single floating point value needs to be updated on the animated object.</summary>

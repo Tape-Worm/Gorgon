@@ -446,7 +446,7 @@ public class RectClipperService
                 };
 
                 if ((_clipBounds) && (!Bounds.IsEmpty))
-                {                        
+                {
                     if (moveRect.Left < Bounds.Left)
                     {
                         moveRect.Left = Bounds.Left;
@@ -460,7 +460,7 @@ public class RectClipperService
                     }
 
                     if (moveRect.Right > Bounds.Right)
-                    {                            
+                    {
                         moveRect.Left = Bounds.Right - size.Width;
                         moveRect.Width = size.Width;
                     }
@@ -469,7 +469,7 @@ public class RectClipperService
                     {
                         moveRect.Top = Bounds.Bottom - size.Height;
                         moveRect.Height = size.Height;
-                    }                        
+                    }
                 }
 
                 Rectangle = moveRect;
@@ -638,7 +638,7 @@ public class RectClipperService
         switch (key)
         {
             case Keys.Up:
-            case Keys.NumPad8:                                       
+            case Keys.NumPad8:
                 _localMousePosition = new Vector2(_localMousePosition.X, _localMousePosition.Y - offset);
                 break;
             case Keys.Down:

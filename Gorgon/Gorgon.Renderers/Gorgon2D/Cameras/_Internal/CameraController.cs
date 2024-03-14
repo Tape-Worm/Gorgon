@@ -88,7 +88,7 @@ internal class CameraController
         // Build the view/projection matrix.
         ref readonly Matrix4x4 viewMatrix = ref camera.GetViewMatrix();
         ref readonly Matrix4x4 projMatrix = ref camera.GetProjectionMatrix();
-        _viewProjectionMatrix = Matrix4x4.Multiply(viewMatrix, projMatrix);            
+        _viewProjectionMatrix = Matrix4x4.Multiply(viewMatrix, projMatrix);
         CameraBuffer.Buffer.SetData(in _viewProjectionMatrix);
 
         _current = camera;

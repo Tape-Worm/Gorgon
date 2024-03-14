@@ -53,8 +53,8 @@ public enum LightType
 /// <summary>
 /// Base common properties for a light.
 /// </summary>
-    public abstract class GorgonLightCommon
-    : IGorgonNamedObject
+public abstract class GorgonLightCommon
+: IGorgonNamedObject
 {
     #region Variables.
     // The color for a light.
@@ -73,10 +73,10 @@ public enum LightType
     /// <summary>
     /// Property to return whether the light was updated or not.
     /// </summary>
-    public bool IsUpdated 
-    { 
-        get; 
-        protected set; 
+    public bool IsUpdated
+    {
+        get;
+        protected set;
     } = true;
 
     /// <summary>

@@ -114,10 +114,10 @@ internal class KeyProcessorService(ITextureCache textureCache, IGorgonLog log)
             return null;
         }
 
-        textureValue = new TextureValue(await _textureCache.GetTextureAsync(textureValue.TextureFile), 
-                                                                            textureValue.TextureFile, 
-                                                                            textureValue.ArrayIndex, 
-                                                                            textureValue.TextureCoordinates);                
+        textureValue = new TextureValue(await _textureCache.GetTextureAsync(textureValue.TextureFile),
+                                                                            textureValue.TextureFile,
+                                                                            textureValue.ArrayIndex,
+                                                                            textureValue.TextureCoordinates);
 
         destKeyFrame.TextureValue = textureValue;
 
@@ -240,7 +240,7 @@ internal class KeyProcessorService(ITextureCache textureCache, IGorgonLog log)
     /// <param name="workingSprite">The working sprite to update.</param>
     /// <returns>The floating point values at the specified time.</returns>
     public Vector4? GetTrackFloatValues(ITrack track, float time, IGorgonAnimation animation, GorgonSprite workingSprite)
-    {            
+    {
         if ((animation is null) || (workingSprite is null))
         {
             return null;

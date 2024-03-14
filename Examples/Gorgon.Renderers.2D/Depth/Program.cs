@@ -265,7 +265,7 @@ static class Program
         walkLeftFrames.RemoveAt(5); // This frame is broken.
         walkLeftFrames.Add(walkLeftFrames[3]); // We need to repeat these frames to get fluid motion.
         walkLeftFrames.Insert(3, walkLeftFrames[0]);
-        walkLeftFrames.Insert(3, walkLeftFrames[1]);            
+        walkLeftFrames.Insert(3, walkLeftFrames[1]);
 
         float time = 0;
 
@@ -314,7 +314,7 @@ static class Program
         time = 0;
         animBuilder.Clear();
         foreach (GorgonSprite sprite in walkLeftFrames)
-        {                
+        {
             animBuilder.Edit2DTexture("Texture")
                         .SetKey(new GorgonKeyTexture2D(time, sprite.Texture, sprite.TextureRegion, 0))
                         .EndEdit();
@@ -434,9 +434,7 @@ static class Program
     {
         try
         {
-#if NET6_0_OR_GREATER
             Application.SetHighDpiMode(HighDpiMode.PerMonitorV2);
-#endif
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
 
@@ -444,7 +442,7 @@ static class Program
             WindowsFormsSynchronizationContext.AutoInstall = false;
             SynchronizationContext.SetSynchronizationContext(new WindowsFormsSynchronizationContext());
 
-            FormMain window = GorgonExample.Initialize(new DX.Size2(ExampleConfig.Default.Resolution.Width, ExampleConfig.Default.Resolution.Height), "Depth", 
+            FormMain window = GorgonExample.Initialize(new DX.Size2(ExampleConfig.Default.Resolution.Width, ExampleConfig.Default.Resolution.Height), "Depth",
                                                        async (o, _) => await InitializeAsync((FormMain)o));
 
             GorgonApplication.Run(window, Idle);

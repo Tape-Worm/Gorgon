@@ -131,7 +131,7 @@ public class AnchorEditService : IAnchorEditService
     /// </summary>
     private void UpdateCursor()
     {
-        if (IsDragging) 
+        if (IsDragging)
         {
             return;
         }
@@ -227,7 +227,7 @@ public class AnchorEditService : IAnchorEditService
         UpdateCursor();
 
         if (IsDragging)
-        {                
+        {
             IsDragging = false;
             return true;
         }

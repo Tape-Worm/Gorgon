@@ -127,7 +127,7 @@ public static class GorgonTextFormat
     /// </para>
     /// </remarks>
     public static string FormatStringForRendering(this string renderText, int tabSpacing = 4)
-    {            
+    {
         if (string.IsNullOrEmpty(renderText))
         {
             return string.Empty;

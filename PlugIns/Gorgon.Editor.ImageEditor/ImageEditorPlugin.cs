@@ -25,7 +25,6 @@
 #endregion
 
 using System.Diagnostics;
-using Drawing = System.Drawing;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
 using Gorgon.Editor.Content;
@@ -42,6 +41,7 @@ using Gorgon.Graphics.Imaging.Codecs;
 using Gorgon.Graphics.Imaging.GdiPlus;
 using Gorgon.IO;
 using Gorgon.Math;
+using Drawing = System.Drawing;
 using DX = SharpDX;
 
 namespace Gorgon.Editor.ImageEditor;
@@ -101,7 +101,7 @@ internal class ImageEditorPlugIn
     public override string ContentTypeID => CommonEditorContentTypes.ImageType;
 
     /// <summary>Property to return the friendly (i.e shown on the UI) name for the type of content.</summary>
-    public string ContentType => Resources.GORIMG_CONTENT_TYPE;        
+    public string ContentType => Resources.GORIMG_CONTENT_TYPE;
     #endregion
 
     #region Methods.
@@ -306,7 +306,7 @@ internal class ImageEditorPlugIn
         });
 
         var services = new ImageEditorServices
-        {                
+        {
             HostContentServices = HostContentServices,
             ImageIO = imageIO,
             UndoService = undoService,
@@ -336,7 +336,7 @@ internal class ImageEditorPlugIn
         cropResizeSettings.Initialize(injector);
         dimensionSettings.Initialize(new DimensionSettingsParameters(HostContentServices));
         mipSettings.Initialize(injector);
-        sourceImagePicker.Initialize(new SourceImagePickerParameters(HostContentServices));            
+        sourceImagePicker.Initialize(new SourceImagePickerParameters(HostContentServices));
         blurSettings.Initialize(injector);
         sharpenSettings.Initialize(injector);
         embossSettings.Initialize(injector);
@@ -434,7 +434,7 @@ internal class ImageEditorPlugIn
         IGorgonImageInfo metadata = _ddsCodec.GetMetaData(stream);
 
         // We won't be supporting 1D images in this editor.
-        if (metadata.ImageType is ImageType.Image1D or ImageType.Unknown)
+        if (metadata.ImageType is ImageDataType.Image1D or ImageDataType.Unknown)
         {
             return false;
         }
@@ -516,7 +516,8 @@ internal class ImageEditorPlugIn
             // We're done on the main thread, we can switch to another thread to write the image.
             Cursor.Current = Cursors.Default;
 
-            await Task.Run(() => {
+            await Task.Run(() =>
+            {
                 using Stream stream = TemporaryFileSystem.OpenStream(filePath, FileMode.Create);
                 pngCodec.Save(thumbImage, stream);
             }, cancelToken);

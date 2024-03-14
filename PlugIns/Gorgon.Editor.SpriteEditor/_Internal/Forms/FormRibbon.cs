@@ -150,7 +150,7 @@ internal partial class FormRibbon
     /// <param name="dataContext">The current data context.</param>
     private void SetToolStates(ISpriteContent dataContext)
     {
-        KryptonRibbonGroupButton button;            
+        KryptonRibbonGroupButton button;
 
         if (dataContext.CommandContext is null)
         {
@@ -297,7 +297,7 @@ internal partial class FormRibbon
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
     private void ButtonFixedSize_Click(object sender, EventArgs e)
     {
-        DX.Size2F? size = ButtonFixedSize.Checked ?  new DX.Size2F((float)NumericFixedWidth.Value, (float)NumericFixedHeight.Value) : null;
+        DX.Size2F? size = ButtonFixedSize.Checked ? new DX.Size2F((float)NumericFixedWidth.Value, (float)NumericFixedHeight.Value) : null;
 
         if ((ViewModel?.SpriteClipContext?.FixedSizeCommand is null) || (!ViewModel.SpriteClipContext.FixedSizeCommand.CanExecute(size)))
         {
@@ -882,7 +882,7 @@ internal partial class FormRibbon
         {
             EnableRibbon(false);
             return;
-        }            
+        }
 
         ButtonNewSprite.Enabled = ViewModel.NewSpriteCommand?.CanExecute(null) ?? false;
         ButtonClipSprite.Enabled = ViewModel.SpriteClipCommand?.CanExecute(null) ?? false;
@@ -920,9 +920,9 @@ internal partial class FormRibbon
 
             LabelFixedHeight.Enabled =
                 LabelFixedWidth.Enabled =
-                NumericFixedWidth.Enabled = 
+                NumericFixedWidth.Enabled =
                 NumericFixedWidth.NumericUpDown.Enabled =
-                NumericFixedHeight.Enabled = 
+                NumericFixedHeight.Enabled =
                 NumericFixedHeight.NumericUpDown.Enabled = ViewModel.SpriteClipContext.FixedSize is not null;
 
             ButtonClipManualInput.Enabled = ViewModel.SpriteClipContext == ViewModel.CommandContext;

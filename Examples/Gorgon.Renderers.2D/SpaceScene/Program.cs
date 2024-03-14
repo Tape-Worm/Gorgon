@@ -36,7 +36,7 @@ using Gorgon.Renderers;
 using Gorgon.Renderers.Cameras;
 using Gorgon.UI;
 using DX = SharpDX;
-using FontStyle = Gorgon.Graphics.Fonts.FontStyle;
+
 
 namespace Gorgon.Examples;
 
@@ -293,7 +293,7 @@ static class Program
 
             // Retrieve the list of video adapters. We can do this on a background thread because there's no interaction between other threads and the 
             // underlying D3D backend yet.
-            var videoDevices = await Task.Run(() => GorgonGraphics.EnumerateAdapters(log: GorgonApplication.Log));                
+            var videoDevices = await Task.Run(() => GorgonGraphics.EnumerateAdapters(log: GorgonApplication.Log));
 
             if (videoDevices.Count == 0)
             {
@@ -346,13 +346,13 @@ static class Program
             SetupScene();
 
             // Build up a font to use for rendering any GUI text.
-            _helpFont = GorgonExample.Fonts.GetFont(new GorgonFontInfo("Segoe UI", 10.0f, FontHeightMode.Points)
+            _helpFont = GorgonExample.Fonts.GetFont(new GorgonFontInfo("Segoe UI", 10.0f, GorgonFontHeightMode.Points)
             {
                 Name = "Segoe UI 10pt",
                 OutlineSize = 2,
                 Characters = (Resources.Instructions + "yQHS:1234567890x").Distinct().ToArray(),
-                FontStyle = FontStyle.Bold,
-                AntiAliasingMode = FontAntiAliasMode.AntiAlias,
+                FontStyle = GorgonFontStyle.Bold,
+                AntiAliasingMode = GorgonFontAntiAliasMode.AntiAlias,
                 OutlineColor1 = GorgonColor.Black,
                 OutlineColor2 = GorgonColor.Black
             });

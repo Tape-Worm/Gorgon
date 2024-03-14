@@ -182,7 +182,7 @@ public class GorgonSpriteColors
             return;
         }
 
-       ulColor = urColor = llColor = lrColor = color;
+        ulColor = urColor = llColor = lrColor = color;
     }
 
     /// <summary>

@@ -32,7 +32,7 @@ namespace Gorgon.Editor.PlugIns;
 /// <summary>
 /// A list of services passed from the host application to plug ins.
 /// </summary>
-public interface IHostServices        
+public interface IHostServices
 {
     /// <summary>
     /// Property to return the log for debug messages.

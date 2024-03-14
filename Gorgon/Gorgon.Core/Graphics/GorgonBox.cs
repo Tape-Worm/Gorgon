@@ -45,7 +45,7 @@ public struct GorgonBox
     /// <summary>
     /// An empty box.
     /// </summary>
-        public static readonly GorgonBox Empty = new()
+    public static readonly GorgonBox Empty = new()
     {
         X = 0,
         Y = 0,
@@ -56,9 +56,9 @@ public struct GorgonBox
     };
 
     /// <summary>
-        /// Horizontal position.
-        /// </summary>
-        public int X;
+    /// Horizontal position.
+    /// </summary>
+    public int X;
     /// <summary>
     /// Vertical position
     /// </summary>
@@ -85,7 +85,7 @@ public struct GorgonBox
     /// <summary>
     /// Property to determine if the box is empty.
     /// </summary>
-        public readonly bool IsEmpty => Width == 0 && Height == 0 && Depth == 0 && X == 0 && Y == 0 && Z == 0;
+    public readonly bool IsEmpty => Width == 0 && Height == 0 && Depth == 0 && X == 0 && Y == 0 && Z == 0;
 
     /// <summary>
     /// Property to set or return the left value for the box.
@@ -151,7 +151,7 @@ public struct GorgonBox
     /// <param name="bottom">Bottom coordinate.</param>
     /// <param name="back">Back coordinate.</param>
     /// <returns>A new box with the specified coordinates.</returns>
-        public static GorgonBox FromTLFRBB(int top, int left, int front, int right, int bottom, int back) => new()
+    public static GorgonBox FromTLFRBB(int top, int left, int front, int right, int bottom, int back) => new()
     {
         X = left,
         Y = top,
@@ -167,7 +167,7 @@ public struct GorgonBox
     /// <param name="box1">First box to intersect.</param>
     /// <param name="box2">Second box to intersect.</param>
     /// <param name="result">The resulting intersected box.</param>
-        public static void Intersect(in GorgonBox box1, in GorgonBox box2, out GorgonBox result)
+    public static void Intersect(in GorgonBox box1, in GorgonBox box2, out GorgonBox result)
     {
         int left = box2.Left.Max(box1.Left);
         int top = box2.Top.Max(box1.Top);
@@ -205,7 +205,7 @@ public struct GorgonBox
     /// </summary>
     /// <param name="box">Box to intersect.</param>
     /// <returns>The intersection between this box and the other box.</returns>
-        public readonly GorgonBox Intersect(GorgonBox box)
+    public readonly GorgonBox Intersect(GorgonBox box)
     {
 
         Intersect(in this, in box, out GorgonBox result);
@@ -219,8 +219,8 @@ public struct GorgonBox
     /// <param name="left">The left instance to compare.</param>
     /// <param name="right">The right instance to compare.</param>
     /// <returns><b>true</b> if equal, <b>false</b> if not.</returns>
-        public static bool Equals(in GorgonBox left, in GorgonBox right) => ((left.X == right.X) && (left.Y == right.Y) && (left.Z == right.Z)
-                && (left.Width == right.Width) && (left.Height == right.Height) && (left.Depth == right.Depth));
+    public static bool Equals(in GorgonBox left, in GorgonBox right) => ((left.X == right.X) && (left.Y == right.Y) && (left.Z == right.Z)
+            && (left.Width == right.Width) && (left.Height == right.Height) && (left.Depth == right.Depth));
 
     /// <summary>
     /// Determines whether the specified <see cref="object" /> is equal to this instance.
@@ -229,7 +229,7 @@ public struct GorgonBox
     /// <returns>
     ///   <b>true</b> if the specified <see cref="object" /> is equal to this instance; otherwise, <b>false</b>.
     /// </returns>
-        public override readonly bool Equals(object obj) => obj is GorgonBox box ? box.Equals(in this) : base.Equals(obj);
+    public override readonly bool Equals(object obj) => obj is GorgonBox box ? box.Equals(in this) : base.Equals(obj);
 
     /// <summary>
     /// Operator to determine if 2 instances are equal.
@@ -237,7 +237,7 @@ public struct GorgonBox
     /// <param name="left">The left instance to compare.</param>
     /// <param name="right">The right instance to compare.</param>
     /// <returns><b>true</b> if equal, <b>false</b> if not.</returns>
-        public static bool operator ==(GorgonBox left, GorgonBox right) => Equals(in left, in right);
+    public static bool operator ==(GorgonBox left, GorgonBox right) => Equals(in left, in right);
 
     /// <summary>
     /// Operator to determine if 2 instances are not equal.

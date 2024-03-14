@@ -26,16 +26,16 @@
 
 using System.ComponentModel;
 using System.Numerics;
-using DX = SharpDX;
+using Gorgon.Core;
 using Gorgon.Editor.FontEditor.Properties;
 using Gorgon.Editor.Rendering;
+using Gorgon.Editor.Services;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
-using Gorgon.Renderers;
-using Gorgon.Math;
 using Gorgon.Graphics.Imaging.Codecs;
-using Gorgon.Core;
-using Gorgon.Editor.Services;
+using Gorgon.Math;
+using Gorgon.Renderers;
+using DX = SharpDX;
 
 namespace Gorgon.Editor.FontEditor;
 
@@ -286,7 +286,7 @@ internal class TextureBrushRenderer(Gorgon2D renderer, GorgonSwapChain mainRende
                                     GorgonColor.White,
                                     _targetTexture,
                                     new DX.RectangleF(0, 0, 1, 1),
-                                    textureSampler: GorgonSamplerState.PointFiltering);            
+                                    textureSampler: GorgonSamplerState.PointFiltering);
         Renderer.End();
 
         Renderer.Begin();
@@ -301,7 +301,7 @@ internal class TextureBrushRenderer(Gorgon2D renderer, GorgonSwapChain mainRende
     /// </remarks>
     protected override void OnLoad()
     {
-        RenderRegion = new DX.RectangleF(0, 0, _context.Texture?.Width ?? ClientSize.Width, _context.Texture?.Height ?? ClientSize.Height);            
+        RenderRegion = new DX.RectangleF(0, 0, _context.Texture?.Width ?? ClientSize.Width, _context.Texture?.Height ?? ClientSize.Height);
 
         if (_context.Texture is not null)
         {
@@ -367,7 +367,7 @@ internal class TextureBrushRenderer(Gorgon2D renderer, GorgonSwapChain mainRende
             Usage = ResourceUsage.Immutable
         });
 
-        _context = DataContext.TextureEditor.TextureBrush;            
+        _context = DataContext.TextureEditor.TextureBrush;
     }
 
     /// <summary>

@@ -32,7 +32,7 @@ namespace Gorgon.Examples;
 /// <remarks>
 /// This is just a standard control. No view model or MVVM support. It's used to support the text editor service.
 /// </remarks>
-internal partial class FormTextEditor 
+internal partial class FormTextEditor
     : Form
 {
     #region Properties.

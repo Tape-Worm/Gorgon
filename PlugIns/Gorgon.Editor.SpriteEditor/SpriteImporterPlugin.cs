@@ -177,7 +177,7 @@ internal class SpriteImporterPlugIn
     /// <summary>Initializes a new instance of the <see cref="SpriteImporterPlugIn"/> class.</summary>
     public SpriteImporterPlugIn()
         : base(Resources.GORSPR_IMPORT_DESC)
-    {            
+    {
     }
     #endregion
 }

@@ -418,7 +418,7 @@ internal class FxService(IGraphicsContext graphics)
             srcBuffer.CopyTo(_workingImage.Buffers[0]);
         }
 
-        _edgeDetect.TextureSize = _sharpEmboss.TextureSize = new DX.Size2F(_workingImage.Width, _workingImage.Height);   
+        _edgeDetect.TextureSize = _sharpEmboss.TextureSize = new DX.Size2F(_workingImage.Width, _workingImage.Height);
 
         CreateTexture();
     }
@@ -442,7 +442,7 @@ internal class FxService(IGraphicsContext graphics)
         {
             EdgeThreshold = 0.5f,
             LineThickness = 1.0f,
-            LineColor = GorgonColor.Black                
+            LineColor = GorgonColor.Black
         };
         _blur = new Gorgon2DGaussBlurEffect(_graphics.Renderer2D, 9)
         {

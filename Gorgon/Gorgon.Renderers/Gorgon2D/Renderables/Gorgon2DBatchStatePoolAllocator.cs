@@ -38,6 +38,6 @@ public class Gorgon2DBatchStatePoolAllocator
     /// <summary>Initializes a new instance of the <see cref="Gorgon2DBatchStatePoolAllocator"/> class.</summary>
     /// <param name="objectCount">[Optional] The number of objects to initialize the pool with.</param>
     public Gorgon2DBatchStatePoolAllocator(int objectCount = 1024)
-        : base(objectCount) => ItemAllocator = () => new Gorgon2DBatchState();        
-    #endregion        
+        : base(objectCount) => ItemAllocator = () => new Gorgon2DBatchState();
+    #endregion
 }

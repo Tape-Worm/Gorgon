@@ -56,7 +56,7 @@ public interface IGorgonImageUpdateFluent
     /// Function to crop the image to the rectangle passed to the parameters.
     /// </summary>
     /// <param name="cropRect">The rectangle that will be used to crop the image.</param>
-    /// <param name="newDepth">[Optional] The new depth for the image (for <see cref="ImageType.Image3D"/> images).</param>
+    /// <param name="newDepth">[Optional] The new depth for the image (for <see cref="ImageDataType.Image3D"/> images).</param>
     /// <returns>A <see cref="IGorgonImage"/> containing the resized image.</returns>
     /// <remarks>
     /// <para>
@@ -88,14 +88,14 @@ public interface IGorgonImageUpdateFluent
     /// If a user wishes to resize the image, then call the <see cref="Resize"/> method, of if they wish to crop an image, use the <see cref="Crop"/> method.
     /// </para>
     /// </remarks>
-        IGorgonImageUpdateFluent Expand(int newWidth, int newHeight, int? newDepth = null, ImageExpandAnchor anchor = ImageExpandAnchor.UpperLeft);
+    IGorgonImageUpdateFluent Expand(int newWidth, int newHeight, int? newDepth = null, ImageExpandAnchor anchor = ImageExpandAnchor.UpperLeft);
 
     /// <summary>
     /// Function to resize the image to a new width, height and/or depth.
     /// </summary>
     /// <param name="newWidth">The new width for the image.</param>
-    /// <param name="newHeight">The new height for the image (for <see cref="ImageType.Image2D"/> and <see cref="ImageType.ImageCube"/> images).</param>
-    /// <param name="newDepth">[Optional] The new depth for the image (for <see cref="ImageType.Image3D"/> images).</param>
+    /// <param name="newHeight">The new height for the image (for <see cref="ImageDataType.Image2D"/> and <see cref="ImageDataType.ImageCube"/> images).</param>
+    /// <param name="newDepth">[Optional] The new depth for the image (for <see cref="ImageDataType.Image3D"/> images).</param>
     /// <param name="filter">[Optional] The type of filtering to apply to the scaled image to help smooth larger and smaller images.</param>
     /// <returns>A <see cref="IGorgonImage"/> containing the resized image.</returns>
     /// <remarks>

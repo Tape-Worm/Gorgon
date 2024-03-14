@@ -263,7 +263,7 @@ public class GorgonV3AnimationBinaryCodec(Gorgon2D renderer)
             if (reader.Chunks.Contains(PositionData))
             {
                 binReader = reader.OpenChunk(PositionData);
-                TrackInterpolationMode interpolation =  binReader.ReadValue<TrackInterpolationMode>();
+                TrackInterpolationMode interpolation = binReader.ReadValue<TrackInterpolationMode>();
                 keyCount = binReader.ReadInt32();
 
                 IGorgonTrackKeyBuilder<GorgonKeyVector2> track = builder.EditVector2("Position")

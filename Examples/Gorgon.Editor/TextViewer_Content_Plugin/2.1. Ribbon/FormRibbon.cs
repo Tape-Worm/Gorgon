@@ -448,7 +448,7 @@ internal partial class FormRibbon
         }
 
         ViewModel.PropertyChanged += DataContext_PropertyChanged;
-    }        
+    }
 
     /// <summary>
     /// Function to reset the zoom back to the default.
@@ -471,9 +471,9 @@ internal partial class FormRibbon
     {
         InitializeComponent();
 
-        ItemArial.Tag = ImageType.Image2D;
-        ItemTimesNewRoman.Tag = ImageType.ImageCube;
-        ItemPapyrus.Tag = ImageType.Image3D;
+        ItemArial.Tag = ImageDataType.Image2D;
+        ItemTimesNewRoman.Tag = ImageDataType.ImageCube;
+        ItemPapyrus.Tag = ImageDataType.Image3D;
 
         foreach (ToolStripMenuItem menuItem in MenuZoom.Items.OfType<ToolStripMenuItem>())
         {

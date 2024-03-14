@@ -93,7 +93,7 @@ internal class Plane
                                             new GorgonIndexBufferInfo(Indices.Length)
                                             {
                                                 Name = "Plane Index Buffer",
-                                                Usage = ResourceUsage.Immutable,                                                    
+                                                Usage = ResourceUsage.Immutable,
                                                 Use16BitIndices = true
                                             },
                                             Indices);

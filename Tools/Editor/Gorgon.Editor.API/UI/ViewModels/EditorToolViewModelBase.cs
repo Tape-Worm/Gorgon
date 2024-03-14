@@ -167,7 +167,7 @@ public abstract class EditorToolViewModelBase<T>
         }
 
         ContentFileManager = injectionParameters.ContentFileManager;
-    }        
+    }
     #endregion
 
     #region Constructor/Finalizer.

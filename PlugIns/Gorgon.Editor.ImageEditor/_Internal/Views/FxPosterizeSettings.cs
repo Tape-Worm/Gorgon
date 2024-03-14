@@ -33,7 +33,7 @@ namespace Gorgon.Editor.ImageEditor;
 /// <summary>
 /// Settings for the posterizer effect.
 /// </summary>
-internal partial class FxPosterizeSettings 
+internal partial class FxPosterizeSettings
     : EditorSubPanelCommon, IDataContext<IFxPosterize>
 {
     #region Properties.

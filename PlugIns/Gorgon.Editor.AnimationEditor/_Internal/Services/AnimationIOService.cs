@@ -414,7 +414,7 @@ internal class AnimationIOService(IContentFileManager fileManager, ITextureCache
     /// <param name="textureFiles">The texture files used by the keyframes in the animation.</param>
     /// <param name="excluded">The list of tracks that are excluded from the animation.</param>
     /// <returns>The file containing the animation.</returns>
-    public async Task<IContentFile> SaveAnimation(string path, IGorgonAnimation animation, IContentFile backgroundImage, Vector2 startPos, IContentFile primarySpriteFile, IReadOnlyList<IContentFile> textureFiles, IReadOnlyList<ITrack> excluded) 
+    public async Task<IContentFile> SaveAnimation(string path, IGorgonAnimation animation, IContentFile backgroundImage, Vector2 startPos, IContentFile primarySpriteFile, IReadOnlyList<IContentFile> textureFiles, IReadOnlyList<ITrack> excluded)
     {
         Stream stream = null;
         IContentFile animFile = null;
@@ -475,12 +475,12 @@ internal class AnimationIOService(IContentFileManager fileManager, ITextureCache
                 animFile.Metadata.DependsOn[AnimationEditorPlugIn.BgImageDependencyName] = [backgroundImage.Path];
             }
 
-            animFile.LinkContent(primarySpriteFile);                
+            animFile.LinkContent(primarySpriteFile);
 
             if ((textureFiles is not null) && (textureFiles.Count > 0))
             {
 
-                var files = new List<string>();                    
+                var files = new List<string>();
 
                 for (int i = 0; i < textureFiles.Count; ++i)
                 {

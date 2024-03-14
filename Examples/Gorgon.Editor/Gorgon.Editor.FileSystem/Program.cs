@@ -53,7 +53,7 @@ static class Program
     // Our swap chain that represents our "Screen".
     private static GorgonSwapChain _screen;
     // Our 2D renderer used to draw our sprites.
-    private static Gorgon2D _renderer;        
+    private static Gorgon2D _renderer;
     // The cache that will be used to manage the lifetimes of our texture resources.
     private static GorgonTextureCache<GorgonTexture2D> _textureCache;
     // The loader used to read content from the editor file system.
@@ -83,7 +83,7 @@ static class Program
         // The Gorgon packed file provider plug in dll.
         const string gorPackDll = "Gorgon.FileSystem.GorPack.dll";
         // The name of the Gorgon packed file plugin.
-        const string gorPackPlugInName = "Gorgon.IO.GorPack.GorPackProvider";            
+        const string gorPackPlugInName = "Gorgon.IO.GorPack.GorPackProvider";
 
         // Like the zip file example, we'll just create the plugin infrastructure, grab the provider object 
         // and get rid of the plugin stuff since we won't need it again.
@@ -104,7 +104,7 @@ static class Program
 
         _screen.RenderTargetView.Clear(new GorgonColor(0.333333f, 0.752941f, 0.850980f));
 
-        var scale = new Vector2(_screen.Width / (float)ExampleConfig.Default.Resolution.Width, 
+        var scale = new Vector2(_screen.Width / (float)ExampleConfig.Default.Resolution.Width,
                                    _screen.Height / (float)ExampleConfig.Default.Resolution.Height);
 
         _dudeBro.Position = new Vector2(_screen.Width * 0.5f, -139 + _backGround.Height * scale.Y * 0.5f);
@@ -241,9 +241,7 @@ static class Program
     {
         try
         {
-#if NET6_0_OR_GREATER
             Application.SetHighDpiMode(HighDpiMode.PerMonitorV2);
-#endif
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
 
@@ -252,7 +250,7 @@ static class Program
             SynchronizationContext.SetSynchronizationContext(new WindowsFormsSynchronizationContext());
 
             // Create the window, and size it to our resolution.
-            FormMain window = GorgonExample.Initialize(new DX.Size2(ExampleConfig.Default.Resolution.Width, ExampleConfig.Default.Resolution.Height), 
+            FormMain window = GorgonExample.Initialize(new DX.Size2(ExampleConfig.Default.Resolution.Width, ExampleConfig.Default.Resolution.Height),
                                                        "Gorgon.Editor.FileSystem - Loading content from an editor file system example.",
                                                        async (sender, _) => await InitializeAsync(sender as FormMain));
 

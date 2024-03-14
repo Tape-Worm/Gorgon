@@ -142,7 +142,7 @@ public sealed class GorgonConstantBuffer
     /// <summary>
     /// Property to return the number of 4 component floating point values (16 bytes) that can be stored in this buffer.
     /// </summary>
-        public int TotalConstantCount
+    public int TotalConstantCount
     {
         get;
         private set;
@@ -161,12 +161,10 @@ public sealed class GorgonConstantBuffer
 
         if (newSize != _info.SizeInBytes)
         {
-#if NET6_0_OR_GREATER
             _info = _info with
             {
                 SizeInBytes = newSize
             };
-#endif
         }
 
         TotalConstantCount = _info.SizeInBytes / (sizeof(float) * 4);

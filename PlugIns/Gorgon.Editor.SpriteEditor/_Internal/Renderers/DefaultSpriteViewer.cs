@@ -120,11 +120,11 @@ internal class DefaultSpriteViewer(Gorgon2D renderer, GorgonSwapChain swapChain,
 
         DX.Rectangle spriteTextureLocation = DataContext.Texture.ToPixel(DataContext.TextureCoordinates);
 
-        _sprite.Position = new Vector2(spriteTextureLocation.X + (int)(RenderRegion.Width * -0.5f), 
+        _sprite.Position = new Vector2(spriteTextureLocation.X + (int)(RenderRegion.Width * -0.5f),
                                           spriteTextureLocation.Y + (int)(RenderRegion.Height * -0.5f));
         _sprite.Size = DataContext.Size;
 
-        _spriteRegion = Renderer.MeasureSprite(_sprite);            
+        _spriteRegion = Renderer.MeasureSprite(_sprite);
     }
 
     /// <summary>
@@ -163,7 +163,7 @@ internal class DefaultSpriteViewer(Gorgon2D renderer, GorgonSwapChain swapChain,
     private void RenderSpriteTexture()
     {
         GorgonRenderTargetView prevTarget = Graphics.RenderTargets[0];
-        GorgonRangeF? prevAlphaTest = Renderer.PrimitiveAlphaTestRange;            
+        GorgonRangeF? prevAlphaTest = Renderer.PrimitiveAlphaTestRange;
         var clearRegion = DataContext.Texture.ToPixel(_sprite.TextureRegion).ToRectangleF();
 
         _spriteTarget.Clear(GorgonColor.BlackTransparent);
@@ -180,7 +180,7 @@ internal class DefaultSpriteViewer(Gorgon2D renderer, GorgonSwapChain swapChain,
                                      GorgonSamplerState.PointFiltering);
 
         // Remove the area where the sprite is located.
-        Renderer.DrawFilledRectangle(clearRegion, GorgonColor.BlackTransparent);            
+        Renderer.DrawFilledRectangle(clearRegion, GorgonColor.BlackTransparent);
 
         Renderer.End();
         Renderer.PrimitiveAlphaTestRange = prevAlphaTest;
@@ -263,12 +263,12 @@ internal class DefaultSpriteViewer(Gorgon2D renderer, GorgonSwapChain swapChain,
                                     textureSampler: GorgonSamplerState.PointFiltering);
 
         Renderer.DrawSprite(_sprite);
-        Renderer.End();            
+        Renderer.End();
 
         // Draw in client space.
         Renderer.Begin();
 
-        Renderer.DrawEllipse(new DX.RectangleF(transformedAnchor.X - 4, transformedAnchor.Y - 4, 8, 8), GorgonColor.Black);            
+        Renderer.DrawEllipse(new DX.RectangleF(transformedAnchor.X - 4, transformedAnchor.Y - 4, 8, 8), GorgonColor.Black);
         Renderer.DrawEllipse(new DX.RectangleF(transformedAnchor.X - 3, transformedAnchor.Y - 3, 6, 6), GorgonColor.White);
 
         _marchAnts.Animate();

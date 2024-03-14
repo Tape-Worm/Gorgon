@@ -614,7 +614,7 @@ public class GorgonFileSystemWriter
 
         path = path.FormatDirectory('/');
 
-        PrepareWriteArea();            
+        PrepareWriteArea();
 
         string writePath = GetWriteDirectoryPath(path);
 
@@ -887,7 +887,7 @@ public class GorgonFileSystemWriter
         }
 
         IGorgonVirtualFile[] files = paths.Where(item => !string.IsNullOrWhiteSpace(item))
-                                              .Select(item => FileSystem.GetFile(item))                                      
+                                              .Select(item => FileSystem.GetFile(item))
                                               .ToArray();
 
         if (files.Length == 0)
@@ -979,7 +979,7 @@ public class GorgonFileSystemWriter
         string newPhysicalPath = GetWriteFilePath(file.Directory.FullPath, newName);
 
         if (!file.MountPoint.Provider.IsReadOnly)
-        {            
+        {
             if (File.Exists(physicalPath))
             {
                 File.Move(physicalPath, newPhysicalPath);
@@ -1046,7 +1046,7 @@ public class GorgonFileSystemWriter
         if (directory.Parent is null)
         {
             return;
-        }            
+        }
 
         if (newName.Any(item => _invalidFileNameChars.IndexOf(item) != -1))
         {
@@ -1220,7 +1220,7 @@ public class GorgonFileSystemWriter
                 if (destDir is null)
                 {
                     destDir = CreateDirectory(destDirPath);
-                    dirsCopied.Add((srcDir, destDir));                        
+                    dirsCopied.Add((srcDir, destDir));
                 }
 
                 if (!filesToCopy.TryGetValue(srcDir, out IEnumerable<IGorgonVirtualFile> files))
@@ -1251,7 +1251,7 @@ public class GorgonFileSystemWriter
                         }
 
                         switch (conflictRes)
-                        {                                
+                        {
                             case FileConflictResolution.Skip:
                             case FileConflictResolution.SkipAll:
                                 continue;
@@ -1263,7 +1263,7 @@ public class GorgonFileSystemWriter
                         }
                     }
 
-                    BlockCopyFile(srcFile, destFilePath, progressCallback, cancelToken);                        
+                    BlockCopyFile(srcFile, destFilePath, progressCallback, cancelToken);
 
                     // Delete the source file, we won't need it anymore.                        
                     if ((File.Exists(srcFile.PhysicalFile.FullPath)) && (!_mountPoint.Provider.IsReadOnly))
@@ -1292,7 +1292,7 @@ public class GorgonFileSystemWriter
                 string physicalPath = _mountPoint.Provider.MapToPhysicalPath(srcDir.FullPath, _mountPoint);
                 if ((Directory.Exists(physicalPath)) && (!_mountPoint.Provider.IsReadOnly))
                 {
-                    Directory.Delete(physicalPath);                        
+                    Directory.Delete(physicalPath);
                 }
 
                 // If we deleted the directory and we haven't created one (because it probably already existed), then just add a src directory 
@@ -1643,7 +1643,7 @@ public class GorgonFileSystemWriter
                 {
                     filesCopied.Add((srcFile, destFile));
                 }
-            }                
+            }
 
             OnMoveComplete();
         }
@@ -1756,10 +1756,10 @@ public class GorgonFileSystemWriter
                 bool fileExists = destDirectory.Files.Contains(file.Name);
                 bool directoryExists = destDirectory.Directories.Contains(file.Name);
 
-                if ((conflictRes != FileConflictResolution.OverwriteAll) && (conflictCallback is not null) 
+                if ((conflictRes != FileConflictResolution.OverwriteAll) && (conflictCallback is not null)
                     && ((fileExists) || (directoryExists)))
                 {
-                    if ((directoryExists) 
+                    if ((directoryExists)
                         || ((conflictRes != FileConflictResolution.RenameAll) && (conflictRes != FileConflictResolution.SkipAll)))
                     {
                         // If we're copying the file to the same directory, we're essentially duplicating the file with a new name.
@@ -1804,7 +1804,7 @@ public class GorgonFileSystemWriter
         }
         finally
         {
-            GorgonArrayPool<byte>.SharedTiny.Return(_writeBuffer,true);
+            GorgonArrayPool<byte>.SharedTiny.Return(_writeBuffer, true);
         }
     }
 
@@ -2057,7 +2057,7 @@ public class GorgonFileSystemWriter
                                 fileName = GetNewName(destDirPath, fileName);
                                 destFilePath = Path.Combine(destDirPath, fileName);
                                 break;
-                            case FileConflictResolution.Cancel:                                    
+                            case FileConflictResolution.Cancel:
                                 return;
                             case FileConflictResolution.Exception:
                                 throw new IOException(string.Format(Resources.GORFS_ERR_FILE_EXISTS, destFilePath));
@@ -2403,7 +2403,7 @@ public class GorgonFileSystemWriter
         handler?.Invoke(this, new VirtualFileOpenedEventArgs(file, result));
 
         return result;
-    }        
+    }
     #endregion
 
     #region Constructor.

@@ -33,7 +33,7 @@ using Gorgon.Graphics.Fonts;
 using Gorgon.Graphics.Imaging;
 using Gorgon.Renderers;
 using DX = SharpDX;
-using FontStyle = Gorgon.Graphics.Fonts.FontStyle;
+
 
 namespace Gorgon.Editor.ImageEditor;
 
@@ -46,7 +46,7 @@ namespace Gorgon.Editor.ImageEditor;
 /// <param name="fontFactory">The font factory used to generate the font for the glyphs.</param>
 /// <param name="dataContext">The view model to assign to the renderer.</param>
 internal class TextureCubeViewer(Gorgon2D renderer, GorgonSwapChain swapChain, GorgonFontFactory fontFactory, IImageContent dataContext)
-        : TextureViewer(ImageType.ImageCube.ToString(), "Gorgon2DTextureArrayView", 0, renderer, swapChain, dataContext)
+        : TextureViewer(ImageDataType.ImageCube.ToString(), "Gorgon2DTextureArrayView", 0, renderer, swapChain, dataContext)
 {
     #region Variables.
     // The texture to display.
@@ -93,7 +93,7 @@ internal class TextureCubeViewer(Gorgon2D renderer, GorgonSwapChain swapChain, G
     /// <summary>Function to create the texture for display.</summary>
     protected override void CreateTexture()
     {
-        if ((DataContext?.ImageData is null) || (DataContext.ImageType != ImageType.ImageCube))
+        if ((DataContext?.ImageData is null) || (DataContext.ImageType != ImageDataType.ImageCube))
         {
             RenderRegion = DX.RectangleF.Empty;
             return;
@@ -128,7 +128,7 @@ internal class TextureCubeViewer(Gorgon2D renderer, GorgonSwapChain swapChain, G
         int cubeGroup = (DataContext.CurrentArrayIndex / 6) * 6;
 
         for (int i = 0; i < _cubeImageBounds.Length; ++i)
-        {                
+        {
             if (_cubeImageBounds[i].Contains(args.CameraSpacePosition.X, args.CameraSpacePosition.Y))
             {
                 DataContext.CurrentArrayIndex = cubeGroup + i;
@@ -209,13 +209,13 @@ internal class TextureCubeViewer(Gorgon2D renderer, GorgonSwapChain swapChain, G
     /// <summary>Function called during resource creation.</summary>
     protected override void OnCreateResources()
     {
-        _axisFont = _fontFactory.GetFont(new GorgonFontInfo("Segoe UI", 12, FontHeightMode.Points)
+        _axisFont = _fontFactory.GetFont(new GorgonFontInfo("Segoe UI", 12, GorgonFontHeightMode.Points)
         {
             Name = "Segoe UI Bold 12pt - Axis Font",
             OutlineColor1 = GorgonColor.Black,
             OutlineColor2 = GorgonColor.Black,
             OutlineSize = 3,
-            FontStyle = FontStyle.Bold
+            FontStyle = GorgonFontStyle.Bold
         });
 
         _selectionRect = new MarchingAnts(Renderer);

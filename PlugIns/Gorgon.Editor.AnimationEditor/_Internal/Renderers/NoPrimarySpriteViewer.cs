@@ -111,7 +111,7 @@ internal class NoPrimarySpriteViewer
         if (disposing)
         {
             DestroyTarget();
-            _noSprite?.Dispose();                
+            _noSprite?.Dispose();
             _oldFilm?.Dispose();
         }
 
@@ -204,7 +204,7 @@ internal class NoPrimarySpriteViewer
             Usage = ResourceUsage.Immutable
         });
 
-        _font = _fontFactory.GetFont(new GorgonFontInfo("Century", 64.0f, FontHeightMode.Points)
+        _font = _fontFactory.GetFont(new GorgonFontInfo("Century", 64.0f, GorgonFontHeightMode.Points)
         {
             Name = "No Preview Sprite Font",
             OutlineSize = 4,
@@ -225,7 +225,7 @@ internal class NoPrimarySpriteViewer
         _displayText = new GorgonTextSprite(_font, Resources.GORANM_TEXT_NO_SPRITE.WordWrap(_font, RenderRegion.Width))
         {
             Alignment = Alignment.Center,
-            Color = GorgonColor.White,                
+            Color = GorgonColor.White,
             LayoutArea = RenderRegion.Size,
             DrawMode = TextDrawMode.OutlinedGlyphs
         };

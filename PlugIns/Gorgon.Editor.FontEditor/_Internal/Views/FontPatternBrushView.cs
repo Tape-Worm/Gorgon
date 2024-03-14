@@ -90,7 +90,7 @@ internal partial class FontPatternBrushView
             return;
         }
 
-        ViewModel.Brush = GetHatchBrush();            
+        ViewModel.Brush = GetHatchBrush();
     }
 
     /// <summary>Handles the ColorChanged event of the PickerBackground control.</summary>
@@ -103,7 +103,7 @@ internal partial class FontPatternBrushView
             return;
         }
 
-        ViewModel.Brush = GetHatchBrush();            
+        ViewModel.Brush = GetHatchBrush();
     }
 
     /// <summary>Handles the ColorChanged event of the PickerForeground control.</summary>
@@ -116,7 +116,7 @@ internal partial class FontPatternBrushView
             return;
         }
 
-        ViewModel.Brush = GetHatchBrush();            
+        ViewModel.Brush = GetHatchBrush();
     }
 
     /// <summary>Handles the PropertyChanged event of the DataContext control.</summary>
@@ -262,7 +262,7 @@ internal partial class FontPatternBrushView
     /// <returns>
     ///   <b>true</b> if the OK button is valid, <b>false</b> if not.</returns>
     protected override bool OnValidateOk()
-    {            
+    {
         if (ViewModel?.OkCommand is not null)
         {
             return ViewModel.OkCommand.CanExecute(null);

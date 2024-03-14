@@ -228,7 +228,7 @@ internal class ProjectManager(FileSystemProviders providers, IGorgonLog log)
 
         foreach (IGorgonVirtualDirectory directory in directories)
         {
-            string dirPath = Path.Combine(fileSystemDir, directory.FullPath.FormatDirectory(Path.DirectorySeparatorChar)[1..]);                
+            string dirPath = Path.Combine(fileSystemDir, directory.FullPath.FormatDirectory(Path.DirectorySeparatorChar)[1..]);
 
             if (Directory.Exists(dirPath))
             {
@@ -374,7 +374,7 @@ internal class ProjectManager(FileSystemProviders providers, IGorgonLog log)
 
         using (var reader = new StreamReader(metaDataFile, Encoding.UTF8))
         {
-            string readJsonData = reader.ReadToEnd();                
+            string readJsonData = reader.ReadToEnd();
 
             switch (projectVersion)
             {

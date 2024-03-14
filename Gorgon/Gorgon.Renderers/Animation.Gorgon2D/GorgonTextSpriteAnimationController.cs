@@ -159,7 +159,7 @@ public class GorgonTextSpriteAnimationController
         }
 
         if (track.ID != ScaledSizeTrack.ID)
-        {                
+        {
             return;
         }
 
@@ -178,7 +178,7 @@ public class GorgonTextSpriteAnimationController
         }
 
         animObject.Position = new Vector2(value.X, value.Y);
-        animObject.Depth = value.Z;                
+        animObject.Depth = value.Z;
     }
 
     /// <summary>Function called when a 4D vector value needs to be updated on the animated object.</summary>

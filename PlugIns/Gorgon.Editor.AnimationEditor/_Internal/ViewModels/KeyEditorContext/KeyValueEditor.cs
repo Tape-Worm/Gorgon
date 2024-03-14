@@ -141,7 +141,7 @@ internal class KeyValueEditor
     /// Function used to notify when the <see cref="Track"/> property is assigned.
     /// </summary>
     protected virtual void OnTrackSet()
-    {        
+    {
     }
     #endregion
 }

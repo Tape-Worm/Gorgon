@@ -199,12 +199,12 @@ public class GorgonV31AnimationJsonCodec(Gorgon2D renderer)
         where Tc : JsonConverter<Tk>
     {
         if ((!reader.Read()) || (reader.TokenType != JsonToken.StartObject))
-        {                
+        {
             return;
         }
 
         while ((reader.Read()) && (reader.TokenType != JsonToken.EndObject))
-        {                
+        {
             List<Tk> keys = ReadKeyData<Tk, Tc>(reader, converter, out (TrackInterpolationMode interpolation, bool enabled, string trackName) trackProps);
             track[trackProps.trackName] = (keys, trackProps.interpolation, trackProps.enabled);
         }
@@ -268,7 +268,7 @@ public class GorgonV31AnimationJsonCodec(Gorgon2D renderer)
                                                 if ((!string.IsNullOrWhiteSpace(textureName)) && (!result.Contains(textureName)))
                                                 {
                                                     result.Add(textureName);
-                                                }                                                    
+                                                }
                                                 break;
                                         }
                                     }

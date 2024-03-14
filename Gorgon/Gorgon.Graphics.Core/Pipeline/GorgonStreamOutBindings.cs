@@ -91,7 +91,7 @@ public sealed class GorgonStreamOutBindings
     /// For the sake of efficiency, this checks the dirty items in the list only.
     /// </para>
     /// </remarks>
-        internal int IndexOf(GorgonGraphicsResource buffer)
+    internal int IndexOf(GorgonGraphicsResource buffer)
     {
         (int start, int count) = GetDirtyItems(true);
 

@@ -64,7 +64,7 @@ internal class IcoSphere
     /// <param name="pos">Position of the vertex.</param>
     /// <returns>The new index.</returns>
     private int AddVertex(Vector3 pos)
-    {            
+    {
         _vertices.Add(Vector3.Normalize(pos));
         return _index++;
     }
@@ -206,7 +206,7 @@ internal class IcoSphere
             var v2 = new Vector3(vertexList[indexList[i + 2]].UV, 0);
 
             var diff1 = Vector3.Subtract(v0, v1);
-            var diff2 =Vector3.Subtract(v2, v1);
+            var diff2 = Vector3.Subtract(v2, v1);
             var cross = Vector3.Cross(diff1, diff2);
 
             if (cross.Z <= 0)
@@ -358,7 +358,7 @@ internal class IcoSphere
                                                 new GorgonVertexBufferInfo(vertexData.Length * GorgonVertexPosNormUvTangent.SizeInBytes)
                                                 {
                                                     Name = "IcoSphereVertexBuffer",
-                                                    Usage = ResourceUsage.Immutable                                                        
+                                                    Usage = ResourceUsage.Immutable
                                                 },
                                                 vertexData);
         IndexBuffer = new GorgonIndexBuffer(graphics,

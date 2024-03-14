@@ -31,8 +31,8 @@ using System.Runtime.InteropServices;
 using Gorgon.Core;
 using Gorgon.Graphics.Core.Properties;
 using Gorgon.Reflection;
-using DX = SharpDX;
 using D3D11 = SharpDX.Direct3D11;
+using DX = SharpDX;
 
 namespace Gorgon.Graphics.Core;
 
@@ -120,12 +120,10 @@ public sealed class GorgonInputLayout
             typeof(DX.Half4),
             BufferFormat.R16G16B16A16_Float
         },
-#if NET6_0_OR_GREATER
         {
             typeof(Half),
             BufferFormat.R16_Float
         },
-#endif
         {
             typeof(DX.Int3),
             BufferFormat.R32G32B32_SInt
@@ -318,7 +316,6 @@ public sealed class GorgonInputLayout
         return result;
     }
 
-#if NET6_0_OR_GREATER
     /// <summary>
     /// Function to build an input layout using the fields from a value type.
     /// </summary>
@@ -416,19 +413,9 @@ public sealed class GorgonInputLayout
     /// </para>
     /// </remarks>
     /// <seealso cref="GorgonReflectionExtensions.IsFieldSafeForNative"/>
-#else
-    /// <summary>
-    /// 
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="graphics"></param>
-    /// <param name="shader"></param>
-    /// <returns></returns>
-#endif
     public static GorgonInputLayout CreateUsingType<T>(GorgonGraphics graphics, GorgonVertexShader shader)
         where T : unmanaged => CreateUsingType(graphics, typeof(T), shader);
 
-#if NET6_0_OR_GREATER
     /// <summary>
     /// Function to build an input layout using the fields from a value type.
     /// </summary>
@@ -527,17 +514,6 @@ public sealed class GorgonInputLayout
     /// </para>
     /// </remarks>
     /// <seealso cref="GorgonReflectionExtensions.IsFieldSafeForNative"/>
-#else
-    /// <summary>
-    /// 
-    /// </summary>
-    /// <param name="graphics"></param>
-    /// <param name="type"></param>
-    /// <param name="shader"></param>
-    /// <returns></returns>
-    /// <exception cref="ArgumentNullException"></exception>
-    /// <exception cref="ArgumentException"></exception>
-#endif
     public static GorgonInputLayout CreateUsingType(GorgonGraphics graphics, Type type, GorgonVertexShader shader)
     {
         if (graphics is null)
@@ -572,7 +548,6 @@ public sealed class GorgonInputLayout
     public static IReadOnlyList<GorgonInputElement> ElementsFromType<T>()
         where T : unmanaged => ElementsFromType(typeof(T));
 
-#if NET6_0_OR_GREATER
     /// <summary>
     /// Function to retrieve the input elements corresponding to fields on a type.
     /// </summary>
@@ -668,16 +643,6 @@ public sealed class GorgonInputLayout
     /// </para>
     /// </remarks>
     /// <seealso cref="GorgonReflectionExtensions.IsFieldSafeForNative"/>
-#else
-    /// <summary>
-    /// 
-    /// </summary>
-    /// <param name="type"></param>
-    /// <returns></returns>
-    /// <exception cref="ArgumentNullException"></exception>
-    /// <exception cref="ArgumentException"></exception>
-    /// <exception cref="GorgonException"></exception>
-#endif
     public static IReadOnlyList<GorgonInputElement> ElementsFromType(Type type)
     {
         if (type is null)
@@ -741,7 +706,7 @@ public sealed class GorgonInputLayout
     /// </para>
     /// </remarks>
     /// <seealso cref="GorgonStreamOutLayout"/>
-        public GorgonStreamOutLayout ToStreamOutLayout(int stream = 0, byte slot = 0)
+    public GorgonStreamOutLayout ToStreamOutLayout(int stream = 0, byte slot = 0)
     {
         var elements = new GorgonStreamOutElement[_elements.Length];
 
@@ -861,8 +826,8 @@ public sealed class GorgonInputLayout
         {
             GorgonInputElement element = Elements[i];
 
-            if ((string.Equals(context, element.Context, StringComparison.OrdinalIgnoreCase)) 
-                && (index == element.Index) 
+            if ((string.Equals(context, element.Context, StringComparison.OrdinalIgnoreCase))
+                && (index == element.Index)
                 && ((slot is null) || (slot.Value == element.Slot)))
             {
                 return element;
@@ -916,9 +881,9 @@ public sealed class GorgonInputLayout
 
         this.UnregisterDisposable(Graphics);
     }
-#endregion
+    #endregion
 
-#region Constructor/Destructor.
+    #region Constructor/Destructor.
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonInputLayout"/> class.
     /// </summary>
@@ -967,5 +932,5 @@ public sealed class GorgonInputLayout
 
         this.RegisterDisposable(graphics);
     }
-#endregion
+    #endregion
 }

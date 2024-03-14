@@ -32,7 +32,6 @@ using Gorgon.Reflection;
 
 namespace Gorgon.Graphics.Core;
 
-#if NET6_0_OR_GREATER
 /// <summary>
 /// Provides information on how to set up a constant buffer.
 /// </summary>
@@ -40,7 +39,7 @@ namespace Gorgon.Graphics.Core;
 public record GorgonConstantBufferInfo(int SizeInBytes)
     : IGorgonConstantBufferInfo
 {
-#region Constructor/Finalizer.
+    #region Constructor/Finalizer.
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonConstantBufferInfo"/> class.
     /// </summary>
@@ -52,9 +51,9 @@ public record GorgonConstantBufferInfo(int SizeInBytes)
         Name = info.Name;
         Usage = info.Usage;
     }
-#endregion
+    #endregion
 
-#region Properties.
+    #region Properties.
     /// <summary>
     /// Property to return the intended usage flags for this buffer.
     /// </summary>
@@ -75,9 +74,9 @@ public record GorgonConstantBufferInfo(int SizeInBytes)
         get;
         init;
     } = GorgonGraphicsResource.GenerateName(GorgonConstantBuffer.NamePrefix);
-#endregion
+    #endregion
 
-#region Methods.
+    #region Methods.
     /// <summary>
     /// Function to create a <see cref="IGorgonConstantBufferInfo"/> based on the type representing a vertex.
     /// </summary>
@@ -137,62 +136,5 @@ public record GorgonConstantBufferInfo(int SizeInBytes)
 
         throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_TYPE_NOT_VALID_FOR_NATIVE, dataType.FullName));
     }
-#endregion
-}
-#else
-/// <summary>
-/// Provides information on how to set up a constant buffer.
-/// </summary>
-public class GorgonConstantBufferInfo
-    : IGorgonConstantBufferInfo
-{
-    #region Properties.
-    /// <summary>
-    /// Property to set or return the intended usage flags for this buffer.
-    /// </summary>
-    public ResourceUsage Usage
-    {
-        get;
-        set;
-    }
-
-    /// <summary>
-    /// Property to set or return the number of bytes to allocate for the buffer.
-    /// </summary>
-    public int SizeInBytes
-    {
-        get;
-        set;
-    }
-
-    /// <summary>
-    /// Property to return the name of this object.
-    /// </summary>
-    public string Name
-    {
-        get;
-        set;
-    }
-    #endregion
-
-    #region Constructor/Finalizer.
-    /// <summary>
-    /// Initializes a new instance of the <see cref="GorgonConstantBufferInfo"/> class.
-    /// </summary>
-    /// <param name="size"></param>
-    public GorgonConstantBufferInfo(int size) => SizeInBytes = size;
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="GorgonConstantBufferInfo"/> class.
-    /// </summary>
-    /// <param name="info">A <see cref="IGorgonConstantBufferInfo"/> to copy settings from.</param>
-    /// <param name="newName">[Optional] The new name for the buffer.</param>
-    public GorgonConstantBufferInfo(IGorgonConstantBufferInfo info, string newName = null)
-    {
-        Name = newName;
-        SizeInBytes = info.SizeInBytes;
-        Usage = info.Usage;
-    }
     #endregion
 }
-#endif

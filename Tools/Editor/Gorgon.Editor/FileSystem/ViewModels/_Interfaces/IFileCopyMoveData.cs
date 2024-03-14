@@ -37,7 +37,7 @@ internal interface IFileCopyMoveData
     IReadOnlyList<string> SourceFiles
     {
         get;
-    }        
+    }
 
     /// <summary>
     /// Property to return the path of the directory that is the target for the copy/move operation.

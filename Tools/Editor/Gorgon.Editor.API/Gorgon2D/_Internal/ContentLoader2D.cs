@@ -215,7 +215,7 @@ internal class ContentLoader2D(IGorgonFileSystem fileSystem, IProjectMetadata me
             {
                 Name = path,
                 Binding = TextureBinding.ShaderResource,
-                IsTextureCube = image.ImageType == ImageType.ImageCube,
+                IsTextureCube = image.ImageType == ImageDataType.ImageCube,
                 Usage = ResourceUsage.Immutable
             });
         }
@@ -268,7 +268,7 @@ internal class ContentLoader2D(IGorgonFileSystem fileSystem, IProjectMetadata me
                                      .Where(item => item != null));
         }
 
-        return dependencies.ToDictionary(k => k.Key, 
+        return dependencies.ToDictionary(k => k.Key,
                                         v => (IReadOnlyList<IGorgonVirtualFile>)v.Value, StringComparer.OrdinalIgnoreCase);
     }
 
@@ -377,7 +377,7 @@ internal class ContentLoader2D(IGorgonFileSystem fileSystem, IProjectMetadata me
 
         _graphics.Log.Print($"Loading animation '{path}'...", LoggingLevel.Verbose);
 
-        if ((metadata.DependsOn.TryGetValue(CommonEditorContentTypes.ImageType, out List<string> paths)) 
+        if ((metadata.DependsOn.TryGetValue(CommonEditorContentTypes.ImageType, out List<string> paths))
             && (paths is not null)
             && (paths.Count > 0))
         {
@@ -402,7 +402,7 @@ internal class ContentLoader2D(IGorgonFileSystem fileSystem, IProjectMetadata me
             else
             {
                 textureOverrides = textureOverrides.Concat(dependencyTasks.Select(item => item.Result.GetShaderResourceView()));
-            }                
+            }
         }
 
         using Stream stream = animationFile.OpenStream();
@@ -572,7 +572,7 @@ internal class ContentLoader2D(IGorgonFileSystem fileSystem, IProjectMetadata me
             {
                 Name = path,
                 Binding = TextureBinding.ShaderResource,
-                IsTextureCube = image.ImageType == ImageType.ImageCube,
+                IsTextureCube = image.ImageType == ImageDataType.ImageCube,
                 Usage = ResourceUsage.Immutable
             });
         }

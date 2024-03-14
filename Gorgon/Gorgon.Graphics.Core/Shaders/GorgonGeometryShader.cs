@@ -62,7 +62,7 @@ public sealed class GorgonGeometryShader
     /// <remarks>
     /// If this geometry shader is capable of performing stream output, then this value will be non <b>null</b>. Otherwise, it will not be capable of supporting stream output.
     /// </remarks>
-        public GorgonStreamOutLayout StreamOutLayout
+    public GorgonStreamOutLayout StreamOutLayout
     {
         get;
         private set;

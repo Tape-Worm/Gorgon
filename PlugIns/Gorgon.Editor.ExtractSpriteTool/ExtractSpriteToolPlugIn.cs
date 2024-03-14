@@ -93,7 +93,7 @@ internal class ExtractSpriteToolPlugIn
 
             IGorgonImageInfo metaData = _defaultImageCodec.GetMetaData(fileStream);
 
-            if (metaData.ImageType is not ImageType.Image2D and not ImageType.ImageCube)
+            if (metaData.ImageType is not ImageDataType.Image2D and not ImageDataType.ImageCube)
             {
                 return false;
             }
@@ -162,13 +162,13 @@ internal class ExtractSpriteToolPlugIn
             _extractData.CellSize = settings.GridCellSize;
 
             var extractViewModel = new Extract();
-            extractViewModel.Initialize(new ExtractParameters(settings, 
-                                                              _extractData, 
+            extractViewModel.Initialize(new ExtractParameters(settings,
+                                                              _extractData,
                                                               new SpriteExtractorService(HostToolServices.GraphicsContext.Renderer2D,
                                                                                          ContentFileManager,
                                                                                          new GorgonV3SpriteBinaryCodec(HostToolServices.GraphicsContext.Renderer2D)),
                                                               ContentFileManager.GetFile(textureFile),
-                                                              ContentFileManager, 
+                                                              ContentFileManager,
                                                               HostToolServices));
 
             form = new FormExtract(settings);
@@ -183,7 +183,7 @@ internal class ExtractSpriteToolPlugIn
             HostToolServices.ToolPlugInService.WriteContentSettings(typeof(ExtractSpriteToolPlugIn).FullName, settings);
         }
         catch (Exception ex)
-        {                
+        {
             HostServices.MessageDisplay.ShowError(ex, Resources.GOREST_ERR_LAUNCH);
         }
         finally
@@ -253,8 +253,8 @@ internal class ExtractSpriteToolPlugIn
     #region Constructor/Finalizer.
     /// <summary>Initializes a new instance of the <see cref="ExtractSpriteToolPlugIn"/> class.</summary>
     public ExtractSpriteToolPlugIn()
-        : base(Resources.GOREST_PLUGIN_DESC) 
-    {        
+        : base(Resources.GOREST_PLUGIN_DESC)
+    {
     }
     #endregion
 }

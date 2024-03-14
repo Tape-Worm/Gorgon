@@ -226,14 +226,14 @@ public abstract class GorgonQuery<T>
 
         Graphics.D3DDeviceContext.End(_d3dQuery);
         Interlocked.Exchange(ref _isRunning, 0);
-    }        
+    }
 
     /// <summary>Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.</summary>
     public void Dispose()
     {
         D3D11.Query query = Interlocked.Exchange(ref _d3dQuery, null);
         this.UnregisterDisposable(Graphics);
-        query?.Dispose();            
+        query?.Dispose();
     }
     #endregion
 
@@ -245,8 +245,8 @@ public abstract class GorgonQuery<T>
     protected GorgonQuery(GorgonGraphics graphics, string name)
     {
         Graphics = graphics ?? throw new ArgumentNullException(nameof(graphics));
-        Name = string.IsNullOrWhiteSpace(name) ? $"{GetType().Name}_{Guid.NewGuid():N}" : name;            
+        Name = string.IsNullOrWhiteSpace(name) ? $"{GetType().Name}_{Guid.NewGuid():N}" : name;
         Initialize();
-    }        
+    }
     #endregion
 }

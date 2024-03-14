@@ -121,7 +121,7 @@ public partial class EditorToolBaseForm
 
             _renderControl = value;
         }
-    }        
+    }
     #endregion
 
     #region Methods.
@@ -187,14 +187,14 @@ public partial class EditorToolBaseForm
         OnShutdownGraphics();
 
         foreach (IToolRenderer renderer in _renderers.Values)
-        {                
+        {
             renderer.Dispose();
         }
 
         _renderers.Clear();
 
         GorgonSwapChain swapChain = Interlocked.Exchange(ref _swapChain, null);
-        IGraphicsContext context = Interlocked.Exchange(ref _graphicsContext, null);            
+        IGraphicsContext context = Interlocked.Exchange(ref _graphicsContext, null);
 
         GorgonApplication.AllowBackground = _oldBackgroundState;
 
@@ -270,7 +270,7 @@ public partial class EditorToolBaseForm
     /// </para>
     /// </remarks>
     protected virtual void OnRenderWindowDragDrop(DragEventArgs e)
-    {        
+    {
     }
 
     /// <summary>

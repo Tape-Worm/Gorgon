@@ -132,7 +132,7 @@ public static class GorgonApplication
         remove
         {
             if (value is null)
-            {                    
+            {
                 return;
             }
 

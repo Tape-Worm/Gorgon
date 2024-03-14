@@ -47,7 +47,7 @@ public sealed class GorgonSamplerStates
     /// <summary>
     /// Property to return the native samplers.
     /// </summary>
-        internal D3D11.SamplerState[] Native
+    internal D3D11.SamplerState[] Native
     {
         get;
     } = new D3D11.SamplerState[MaximumSamplerStateCount];

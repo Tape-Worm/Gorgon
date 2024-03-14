@@ -66,7 +66,7 @@ internal class TextureAtlasToolPlugIn
     /// </summary>
     /// <returns>The flattened list of entries used for searching and the file system entry hierarchy.</returns>
     private (List<IContentFileExplorerSearchEntry> searchEntries, List<ContentFileExplorerDirectoryEntry> fileSystemEntries) GetFileEntries()
-    {            
+    {
         var searchEntries = new List<IContentFileExplorerSearchEntry>();
         var fileSystemEntries = new List<ContentFileExplorerDirectoryEntry>();
         ContentFileExplorerDirectoryEntry dirEntry = null;
@@ -151,11 +151,11 @@ internal class TextureAtlasToolPlugIn
             _textureAtlas ??= new TextureAtlas();
 
             _fileVm.Initialize(new SpriteFilesParameters(entries, TemporaryFileSystem, new EditorContentSearchService(searchEntries), HostToolServices));
-            _textureAtlas.Initialize(new TextureAtlasParameters(_fileVm, 
+            _textureAtlas.Initialize(new TextureAtlasParameters(_fileVm,
                                                                 settings,
                                                                 new GorgonTextureAtlasService(HostToolServices.GraphicsContext.Renderer2D),
                                                                 new FileIOService(ContentFileManager, _defaultImageCodec, _defaultSpriteCodec),
-                                                                ContentFileManager, 
+                                                                ContentFileManager,
                                                                 HostToolServices));
 
             form = new FormAtlasGen(settings);

@@ -416,7 +416,7 @@ public abstract class GorgonAnimationCodecCommon
         {
             stream.Position = position;
         }
-    }        
+    }
     #endregion
 
     #region Constructor/Finalizer.

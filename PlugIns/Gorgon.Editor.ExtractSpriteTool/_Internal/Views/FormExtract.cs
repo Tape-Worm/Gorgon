@@ -322,7 +322,7 @@ internal partial class FormExtract
     ///   <span class="nu">
     ///     <span class="keyword">true</span> (<span class="keyword">True</span> in Visual Basic)</span> if the keystroke was processed and consumed by the control; otherwise, <span class="keyword"><span class="languageSpecificText"><span class="cs">false</span><span class="vb">False</span><span class="cpp">false</span></span></span><span class="nu"><span class="keyword">false</span> (<span class="keyword">False</span> in Visual Basic)</span> to allow further processing.
     /// </returns>
-    protected override bool ProcessCmdKey(ref Message msg, Keys keyData) 
+    protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
     {
         if ((keyData == Keys.Escape) && (ViewModel?.CancelSpriteGenerationCommand is not null) && (ViewModel.CancelSpriteGenerationCommand.CanExecute(null)))
         {
@@ -508,14 +508,14 @@ internal partial class FormExtract
         NumericOffsetX.Value = dataContext.GridOffset.X.Min((int)NumericOffsetX.Maximum).Max(0);
         NumericOffsetY.Value = dataContext.GridOffset.Y.Min((int)NumericOffsetY.Maximum).Max(0);
         NumericArrayCount.Value = dataContext.ArrayCount.Min((int)NumericArrayCount.Maximum).Max(1);
-        NumericArrayIndex.Value = dataContext.StartArrayIndex.Min((int)NumericArrayIndex.Maximum).Max(0);            
+        NumericArrayIndex.Value = dataContext.StartArrayIndex.Min((int)NumericArrayIndex.Maximum).Max(0);
 
         UpdateSpritePreviewLabel(dataContext);
     }
 
     /// <summary>Raises the <see cref="Form.Resize"/> event.</summary>
     /// <param name="e">An <see cref="EventArgs"/> that contains the event data.</param>
-    protected override void OnResize(EventArgs e) 
+    protected override void OnResize(EventArgs e)
     {
         base.OnResize(e);
 
@@ -551,7 +551,7 @@ internal partial class FormExtract
     /// </para>
     /// </remarks>
     /// <seealso cref="M:Gorgon.Editor.UI.Views.EditorToolBaseForm.OnShutdownGraphics" />
-    protected override void OnSetupGraphics(IGraphicsContext graphicsContext, GorgonSwapChain swapChain) 
+    protected override void OnSetupGraphics(IGraphicsContext graphicsContext, GorgonSwapChain swapChain)
     {
         base.OnSetupGraphics(graphicsContext, swapChain);
 
@@ -591,7 +591,7 @@ internal partial class FormExtract
     /// <summary>Initializes a new instance of the <see cref="FormExtract"/> class.</summary>
     /// <param name="settings">The settings.</param>
     public FormExtract(ExtractSpriteToolSettings settings)
-        : this() 
+        : this()
     {
         Settings = settings;
         PanelRender.MouseWheel += PanelRender_MouseWheel;

@@ -83,13 +83,13 @@ internal class FontRenderer(Gorgon2D renderer, GorgonSwapChain mainRenderTarget,
         switch (propertyName)
         {
             case nameof(IFontContent.FontUnits):
-                _textSprite.TextureSampler = DataContext.FontUnits == FontHeightMode.Points ? GorgonSamplerState.AnisotropicFiltering : GorgonSamplerState.PointFiltering;
+                _textSprite.TextureSampler = DataContext.FontUnits == GorgonFontHeightMode.Points ? GorgonSamplerState.AnisotropicFiltering : GorgonSamplerState.PointFiltering;
                 break;
-            case nameof(IFontContent.WorkingFont):                                        
+            case nameof(IFontContent.WorkingFont):
                 DX.Size2F regionSize = Resources.GORFNT_TEXT_DEFAULT_MAIN_PREVIEW.MeasureText(DataContext.WorkingFont, DataContext.WorkingFont.HasOutline, wordWrapWidth: ClientSize.Width).Floor();
                 RenderRegion = new DX.RectangleF(0, 0, regionSize.Width + 32, regionSize.Height + 32);
 
-                _textSprite.Font = DataContext.WorkingFont;                    
+                _textSprite.Font = DataContext.WorkingFont;
                 _textSprite.Text = Resources.GORFNT_TEXT_DEFAULT_MAIN_PREVIEW.WordWrap(DataContext.WorkingFont, ClientSize.Width);
                 break;
         }
@@ -151,16 +151,16 @@ internal class FontRenderer(Gorgon2D renderer, GorgonSwapChain mainRenderTarget,
         RenderRegion = new DX.RectangleF(0, 0, regionSize.Width + 32, regionSize.Height + 32);
         _textSprite.Font = DataContext.WorkingFont;
         _textSprite.Text = Resources.GORFNT_TEXT_DEFAULT_MAIN_PREVIEW.WordWrap(DataContext.WorkingFont, ClientSize.Width);
-        _textSprite.TextureSampler = DataContext.FontUnits == FontHeightMode.Points ? GorgonSamplerState.AnisotropicFiltering : GorgonSamplerState.PointFiltering;
+        _textSprite.TextureSampler = DataContext.FontUnits == GorgonFontHeightMode.Points ? GorgonSamplerState.AnisotropicFiltering : GorgonSamplerState.PointFiltering;
     }
 
     /// <summary>Function to create resources required for the lifetime of the viewer.</summary>
-    public void CreateResources() 
+    public void CreateResources()
         => _textSprite = new GorgonTextSprite(DataContext.WorkingFont)
-    {
-        Color = GorgonColor.Black,
-        Text = "Should not see me"
-    };
+        {
+            Color = GorgonColor.Black,
+            Text = "Should not see me"
+        };
 
     /// <summary>
     /// Function to set the view to a default zoom level.

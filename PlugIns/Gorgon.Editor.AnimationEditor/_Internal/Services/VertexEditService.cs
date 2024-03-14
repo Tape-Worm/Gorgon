@@ -433,7 +433,7 @@ internal class VertexEditService
         }
 
         if (vertexIndex == -1)
-        {                
+        {
             return false;
         }
 
@@ -454,7 +454,7 @@ internal class VertexEditService
         GetActiveHandle();
 
         if ((args.MouseButtons != MouseButtons.Left) || (vertexIndex == -1))
-        {                
+        {
             return false;
         }
 
@@ -526,7 +526,7 @@ internal class VertexEditService
         _renderer = renderer;
 
         _handles[2].HandleCursor = _handles[0].HandleCursor =
-        _handles[3].HandleCursor = _handles[1].HandleCursor = Cursors.Cross;            
+        _handles[3].HandleCursor = _handles[1].HandleCursor = Cursors.Cross;
     }
     #endregion
 }

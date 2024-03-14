@@ -140,7 +140,7 @@ internal class SingleSpriteViewer
         var textureSize = new DX.RectangleF(0, 0, RenderRegion.Width / BackgroundPattern.Width * Camera.Zoom.X, RenderRegion.Height / BackgroundPattern.Height * Camera.Zoom.X);
 
         Renderer.Begin(camera: Camera);
-        Renderer.DrawFilledRectangle(new DX.RectangleF(RenderRegion.Width * -0.5f, RenderRegion.Height * -0.5f, RenderRegion.Width, RenderRegion.Height), new GorgonColor(GorgonColor.White, TextureOpacity), BackgroundPattern, textureSize);            
+        Renderer.DrawFilledRectangle(new DX.RectangleF(RenderRegion.Width * -0.5f, RenderRegion.Height * -0.5f, RenderRegion.Width, RenderRegion.Height), new GorgonColor(GorgonColor.White, TextureOpacity), BackgroundPattern, textureSize);
         Renderer.End();
 
         Renderer.Begin();
@@ -218,6 +218,6 @@ internal class SingleSpriteViewer
     /// <param name="swapChain">The swap chain for the render area.</param>
     /// <param name="dataContext">The graphics interface for the application.</param>
     protected SingleSpriteViewer(string name, Gorgon2D renderer, GorgonSwapChain swapChain, ISpriteContent dataContext)
-        : base(name, renderer, swapChain, dataContext) => Sprite = new GorgonSprite();            
+        : base(name, renderer, swapChain, dataContext) => Sprite = new GorgonSprite();
     #endregion
 }

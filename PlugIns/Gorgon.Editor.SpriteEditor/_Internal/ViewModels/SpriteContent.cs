@@ -556,7 +556,7 @@ internal class SpriteContent
 
         IGorgonImageInfo metadata = _contentServices.TextureService.GetImageMetadata(file);
 
-        args.Cancel = metadata.ImageType is not ImageType.Image2D and not ImageType.ImageCube;
+        args.Cancel = metadata.ImageType is not ImageDataType.Image2D and not ImageDataType.ImageCube;
 
         return !args.Cancel;
     }
@@ -581,7 +581,7 @@ internal class SpriteContent
             return false;
         }
 
-        if (imageInfo.ImageType is ImageType.Image1D or ImageType.Image3D)
+        if (imageInfo.ImageType is ImageDataType.Image1D or ImageDataType.Image3D)
         {
             HostServices.MessageDisplay.ShowError(Resources.GORSPR_ERR_NOT_2D_IMAGE);
             return false;
@@ -828,7 +828,7 @@ internal class SpriteContent
             if (Size != size)
             {
                 Size = size;
-                TextureCoordinates = new DX.RectangleF(TextureCoordinates.X, TextureCoordinates.Y, size.Width / _sprite.Texture.Width, size.Height / _sprite.Texture.Height);                    
+                TextureCoordinates = new DX.RectangleF(TextureCoordinates.X, TextureCoordinates.Y, size.Width / _sprite.Texture.Width, size.Height / _sprite.Texture.Height);
                 ContentState = ContentState.Modified;
             }
 
@@ -937,7 +937,7 @@ internal class SpriteContent
     /// Function to determine if the current vertex offset changes can be comitted.
     /// </summary>
     /// <returns><b>true</b> if the vertex offset changes can be comitted, <b>false</b> if not.</returns>
-    private bool CanCommitVertexOffsets() => (CurrentPanel is null) 
+    private bool CanCommitVertexOffsets() => (CurrentPanel is null)
                                           && (!_sprite.CornerOffsets.Select(item => new Vector2(item.X, item.Y))
                                                                     .SequenceEqual(SpriteVertexEditContext.Vertices));
 
@@ -1375,7 +1375,7 @@ internal class SpriteContent
     /// Function to determine if the changes to sprite texture wrapping can be committed back to the sprite.
     /// </summary>
     /// <returns><b>true</b> if the changes can be committed, <b>false</b> if not.</returns>
-    private bool CanCommitWrappingChange() => ((WrappingEditor is not null) && (Texture is not null) 
+    private bool CanCommitWrappingChange() => ((WrappingEditor is not null) && (Texture is not null)
         && ((SamplerState.WrapU != WrappingEditor.HorizontalWrapping)
              || (SamplerState.WrapV != WrappingEditor.VerticalWrapping)
              || (!SamplerState.BorderColor.Equals(WrappingEditor.BorderColor))));
@@ -1447,7 +1447,7 @@ internal class SpriteContent
         }
 
         var halfSprite = new Vector2(Size.Width * 0.5f, Size.Height * 0.5f);
-        Vector2 anchorPosition = new Vector2(_sprite.Anchor.X * Size.Width - halfSprite.X, 
+        Vector2 anchorPosition = new Vector2(_sprite.Anchor.X * Size.Width - halfSprite.X,
                                                    _sprite.Anchor.Y * Size.Height - halfSprite.Y).Truncate();
         return (!AnchorEditor.Anchor.Equals(anchorPosition));
     }
@@ -1569,7 +1569,7 @@ internal class SpriteContent
                                                                   .Build();
                 }
                 break;
-        }                                  
+        }
 
         var anchorUndoArgs = new SpriteUndoArgs
         {
@@ -1783,7 +1783,7 @@ internal class SpriteContent
         SpriteVertexOffsetCommand = new EditorCommand<object>(DoSpriteVertexOffset, CanSpriteVertexOffset);
         ShowAnchorEditorCommand = new EditorCommand<object>(DoShowSpriteAnchorEditor, CanShowAnchorEditor);
         ShowWrappingEditorCommand = new EditorCommand<object>(DoShowWrappingEditor, CanShowWrappingEditor);
-        SetTextureFilteringCommand = new EditorCommand<SampleFilter>(DoSetTextureFilter, CanSetTextureFilter);            
+        SetTextureFilteringCommand = new EditorCommand<SampleFilter>(DoSetTextureFilter, CanSetTextureFilter);
         SetTextureCommand = new EditorAsyncCommand<SetTextureArgs>(DoSetTexture, CanSetTexture);
     }
     #endregion

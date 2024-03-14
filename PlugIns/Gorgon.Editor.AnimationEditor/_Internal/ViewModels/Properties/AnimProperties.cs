@@ -43,7 +43,7 @@ internal class AnimProperties
     // Flag to indicate that the animation is looping.
     private bool _looped;
     // The number of loops before the animation ends.
-    private int _loopCount;        
+    private int _loopCount;
     #endregion
 
     #region Properties.
@@ -81,7 +81,7 @@ internal class AnimProperties
             }
 
             NotifyPropertyChanging(nameof(KeyCount));
-            OnPropertyChanging();                
+            OnPropertyChanging();
             _fps = value;
             OnPropertyChanged();
             NotifyPropertyChanged(nameof(KeyCount));

@@ -122,7 +122,7 @@ internal class ClipSpriteViewer
     private void RenderSpriteTexture()
     {
         GorgonRenderTargetView prevTarget = Graphics.RenderTargets[0];
-        GorgonRangeF? prevAlphaTest = Renderer.PrimitiveAlphaTestRange;            
+        GorgonRangeF? prevAlphaTest = Renderer.PrimitiveAlphaTestRange;
         var clearRegion = _sprite.Texture.ToPixel(_sprite.TextureRegion).ToRectangleF();
 
         _spriteTarget.Clear(GorgonColor.BlackTransparent);
@@ -139,7 +139,7 @@ internal class ClipSpriteViewer
                                      GorgonSamplerState.PointFiltering);
 
         // Remove the area where the sprite is located.
-        Renderer.DrawFilledRectangle(clearRegion, GorgonColor.BlackTransparent);            
+        Renderer.DrawFilledRectangle(clearRegion, GorgonColor.BlackTransparent);
 
         Renderer.End();
         Renderer.PrimitiveAlphaTestRange = prevAlphaTest;
@@ -256,14 +256,14 @@ internal class ClipSpriteViewer
     /// <param name="disposing">
     ///   <c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
     protected override void Dispose(bool disposing)
-    {           
+    {
         if (disposing)
         {
             ToggleManualInputEvent = null;
         }
 
         base.Dispose(disposing);
-    }        
+    }
 
     /// <summary>Function to handle a mouse move event.</summary>
     /// <param name="args">The arguments for the event.</param>
@@ -297,7 +297,7 @@ internal class ClipSpriteViewer
     /// <remarks>Developers can override this method to handle a preview key down event in their own content view.</remarks>
     protected override void OnPreviewKeyDown(PreviewKeyDownEventArgs args)
     {
-        args.IsInputKey = _clipper.KeyDown(args.KeyCode, args.Modifiers);            
+        args.IsInputKey = _clipper.KeyDown(args.KeyCode, args.Modifiers);
         base.OnPreviewKeyDown(args);
     }
 
@@ -332,15 +332,15 @@ internal class ClipSpriteViewer
 
         DataContext.SpriteClipContext.PropertyChanged += SpriteClipContext_PropertyChanged;
         _clipper.KeyboardIconClicked += Clipper_KeyboardIconClicked;
-    }        
+    }
 
     /// <summary>Function called when the renderer needs to clean up any resource data.</summary>
     /// <remarks>Developers should always override this method if they've overridden the <see cref="DefaultContentRenderer{T}.OnLoad"/> method. Failure to do so can cause memory leakage.</remarks>
     protected override void OnUnload()
     {
         DataContext.SpriteClipContext.PropertyChanged -= SpriteClipContext_PropertyChanged;
-        _clipper.RectChanged -= Clipper_RectChanged;            
-        _clipper.KeyboardIconClicked -= Clipper_KeyboardIconClicked;                        
+        _clipper.RectChanged -= Clipper_RectChanged;
+        _clipper.KeyboardIconClicked -= Clipper_KeyboardIconClicked;
 
         DestroySpriteTexture();
         base.OnUnload();
@@ -349,7 +349,7 @@ internal class ClipSpriteViewer
     /// <summary>Function to draw the sprite.</summary>
     protected override void DrawSprite()
     {
-        var halfRegion = new Vector2(RenderRegion.Width * -0.5f, RenderRegion.Height * -0.5f);            
+        var halfRegion = new Vector2(RenderRegion.Width * -0.5f, RenderRegion.Height * -0.5f);
 
         RenderSpriteTexture();
 
@@ -360,11 +360,11 @@ internal class ClipSpriteViewer
                                                        RenderRegion.Height),
                                     new GorgonColor(GorgonColor.White, TextureOpacity),
                                     _spriteTexture,
-                                    new DX.RectangleF(0, 0, 1, 1),                                        
+                                    new DX.RectangleF(0, 0, 1, 1),
                                     textureSampler: GorgonSamplerState.PointFiltering);
 
         Renderer.DrawSprite(_sprite);
-        Renderer.End();            
+        Renderer.End();
 
         // Draw in client space.
         Renderer.Begin();
@@ -403,7 +403,7 @@ internal class ClipSpriteViewer
         TextureOpacity = 0.5f;
 
         _sprite = new GorgonSprite();
-        _clipper = selectionRect;            
+        _clipper = selectionRect;
     }
     #endregion
 }

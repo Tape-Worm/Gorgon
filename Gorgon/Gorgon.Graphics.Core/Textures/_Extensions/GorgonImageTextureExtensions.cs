@@ -181,9 +181,9 @@ public static class GorgonImageTextureExtensions
             Name = options.Name,
             ArrayCount = 1,
             MipLevels = 1,
-            Binding = TextureBinding.ShaderResource | options.Binding,                
+            Binding = TextureBinding.ShaderResource | options.Binding,
             Usage = options.Usage,
-            IsCubeMap = (options.IsTextureCube is null) ? image.ImageType == ImageType.ImageCube : options.IsTextureCube.Value,
+            IsCubeMap = (options.IsTextureCube is null) ? image.ImageType == ImageDataType.ImageCube : options.IsTextureCube.Value,
             MultisampleInfo = options.MultisampleInfo
         }, image);
     }
@@ -259,7 +259,7 @@ public static class GorgonImageTextureExtensions
             MipLevels = image.MipCount,
             Binding = TextureBinding.ShaderResource | options.Binding,
             Usage = options.Usage,
-            IsCubeMap = (options.IsTextureCube is null) ? image.ImageType == ImageType.ImageCube : options.IsTextureCube.Value,
+            IsCubeMap = (options.IsTextureCube is null) ? image.ImageType == ImageDataType.ImageCube : options.IsTextureCube.Value,
             MultisampleInfo = options.MultisampleInfo
         }, image);
     }

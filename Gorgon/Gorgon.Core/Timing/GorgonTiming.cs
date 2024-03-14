@@ -411,7 +411,7 @@ public static class GorgonTiming
             frameDelta = maxDelta;
         }
 
-        UnscaledDelta = (float)frameDelta / 1000.0f;            
+        UnscaledDelta = (float)frameDelta / 1000.0f;
 
         // If the delta is 0, then put in the smallest possible positive value.
         if (Delta < 1e-6f)
@@ -541,7 +541,7 @@ public static class GorgonTiming
         _lastTime = 0.0;
         _lastTimerValue = 0.0;
         _averageFPSTotal = 0.0f;
-        _averageUnscaledDeltaTotal = 0.0f;            
+        _averageUnscaledDeltaTotal = 0.0f;
 
         _timer?.Reset();
     }

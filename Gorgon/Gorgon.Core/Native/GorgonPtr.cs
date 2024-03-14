@@ -336,7 +336,7 @@ public unsafe readonly struct GorgonPtr<T>
     /// <typeparam name="Tc">The type to convert to. Must be an unmanaged value type.</typeparam>
     /// <returns>The casted pointer.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public GorgonPtr<Tc> To<Tc>() where Tc : unmanaged => new((Tc *)_ptr, SizeInBytes / Unsafe.SizeOf<Tc>());
+    public GorgonPtr<Tc> To<Tc>() where Tc : unmanaged => new((Tc*)_ptr, SizeInBytes / Unsafe.SizeOf<Tc>());
 
     /// <summary>
     /// Operator to increment the pointer by the given index offset.
@@ -525,7 +525,7 @@ public unsafe readonly struct GorgonPtr<T>
             throw new ArgumentOutOfRangeException(nameof(SizeInBytes), string.Format(Resources.GOR_ERR_INDEX_OUT_OF_RANGE, 0, SizeInBytes));
         }
 
-        return ref Unsafe.AsRef<Tc>(offset + (byte *)_ptr);
+        return ref Unsafe.AsRef<Tc>(offset + (byte*)_ptr);
     }
 
     /// <summary>
@@ -733,7 +733,7 @@ public unsafe readonly struct GorgonPtr<T>
         fixed (T* destPtr = &destination[destIndex])
         {
             int typeSize = sizeof(T);
-            Unsafe.CopyBlock(destPtr, _ptr + sourceIndex , (uint)(count * typeSize));
+            Unsafe.CopyBlock(destPtr, _ptr + sourceIndex, (uint)(count * typeSize));
         }
     }
 
@@ -843,7 +843,7 @@ public unsafe readonly struct GorgonPtr<T>
 
         count *= sizeof(T);
 
-        return new UnmanagedMemoryStream((byte *)(_ptr + index), count.Value, count.Value, FileAccess.ReadWrite);
+        return new UnmanagedMemoryStream((byte*)(_ptr + index), count.Value, count.Value, FileAccess.ReadWrite);
     }
 
     /// <summary>
@@ -1182,7 +1182,7 @@ public unsafe readonly struct GorgonPtr<T>
 
         if (offset == 0)
         {
-            return new GorgonPtr<byte>((byte *)_ptr, SizeInBytes);
+            return new GorgonPtr<byte>((byte*)_ptr, SizeInBytes);
         }
 
         int sizeInBytes = SizeInBytes;
@@ -1272,14 +1272,14 @@ public unsafe readonly struct GorgonPtr<T>
                 return false;
             }
 
-            byte* leftData = (byte *)_ptr;
+            byte* leftData = (byte*)_ptr;
             byte* rightData = (byte*)other._ptr;
             int dataLength = SizeInBytes - (_index * TypeSize).Min(other.SizeInBytes - (other._index * TypeSize));
 
             while (dataLength > 0)
-            { 
+            {
                 if (dataLength > sizeof(long))
-                {                        
+                {
                     long left = *((long*)leftData);
                     long right = *((long*)rightData);
 
@@ -1296,8 +1296,8 @@ public unsafe readonly struct GorgonPtr<T>
 
                 if (dataLength > sizeof(int))
                 {
-                    int left = *((int *)leftData);
-                    int right = *((int *)rightData);
+                    int left = *((int*)leftData);
+                    int right = *((int*)rightData);
 
                     if (left != right)
                     {
@@ -1312,8 +1312,8 @@ public unsafe readonly struct GorgonPtr<T>
 
                 if (dataLength > sizeof(short))
                 {
-                    short left = *((short *)leftData);
-                    short right = *((short *)rightData);
+                    short left = *((short*)leftData);
+                    short right = *((short*)rightData);
 
                     if (left != right)
                     {
@@ -1419,7 +1419,7 @@ public unsafe readonly struct GorgonPtr<T>
         }
 
         _index = 0;
-        _ptr = (T*)dataStream.DataPointer;            
+        _ptr = (T*)dataStream.DataPointer;
         Length = (int)dataStream.Length / sizeof(T);
     }
 
@@ -1455,7 +1455,7 @@ public unsafe readonly struct GorgonPtr<T>
         }
 
         _index = index;
-        _ptr = ((T *)buffer + index);
+        _ptr = ((T*)buffer + index);
         Length = count.Value;
     }
 

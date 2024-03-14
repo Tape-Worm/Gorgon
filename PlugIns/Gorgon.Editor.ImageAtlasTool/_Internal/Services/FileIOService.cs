@@ -217,12 +217,12 @@ internal class FileIOService(IContentFileManager fileSystem, IGorgonImageCodec i
 
                 if ((spriteFile is not null)
                     && (spriteFile.Metadata.DependsOn.TryGetValue(CommonEditorContentTypes.ImageType, out List<string> oldTexturePaths))
-                    && (oldTexturePaths.Count > 0) 
+                    && (oldTexturePaths.Count > 0)
                     && (_fileSystem.FileExists(oldTexturePaths[0])))
                 {
                     IContentFile oldTextureFile = _fileSystem.GetFile(oldTexturePaths[0]);
                     spriteFile.UnlinkContent(oldTextureFile);
-                }                                       
+                }
 
                 outStream = _fileSystem.OpenStream(spritePath, FileMode.Create);
                 _defaultSpriteCodec.Save(sprite, outStream);
@@ -231,14 +231,14 @@ internal class FileIOService(IContentFileManager fileSystem, IGorgonImageCodec i
                 spriteFile = _fileSystem.GetFile(spritePath);
                 spriteFile.LinkContent(textureFile);
 
-                textureFile.Refresh();                    
+                textureFile.Refresh();
                 spriteFile.Refresh();
             }
         }
         finally
         {
             outStream?.Dispose();
-            image?.Dispose();                
+            image?.Dispose();
         }
     }
 

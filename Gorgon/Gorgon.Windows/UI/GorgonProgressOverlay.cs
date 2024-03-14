@@ -290,7 +290,7 @@ public class GorgonProgressOverlay
         if (_overlay.IsValueCreated)
         {
             _overlay.Value.Hide();
-        }           
+        }
     }
     #endregion
 }

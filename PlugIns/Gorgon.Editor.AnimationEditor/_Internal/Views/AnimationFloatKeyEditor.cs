@@ -301,7 +301,7 @@ internal partial class AnimationFloatKeyEditor
         }
 
         ViewModel.PropertyChanged += DataContext_PropertyChanged;
-    }        
+    }
     #endregion
 
     #region Constructor/Finalizer.

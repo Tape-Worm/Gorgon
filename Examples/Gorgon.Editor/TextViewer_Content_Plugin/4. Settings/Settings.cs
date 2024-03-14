@@ -55,7 +55,7 @@ internal class Settings
             _settings.DefaultFont = value;
             OnPropertyChanged();
         }
-    }        
+    }
 
     /// <summary>Property to return the name of this object.</summary>
     public override string Name => "Example Plug in - Text Content";

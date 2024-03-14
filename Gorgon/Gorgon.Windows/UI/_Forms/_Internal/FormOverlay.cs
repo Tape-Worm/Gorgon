@@ -29,7 +29,7 @@ namespace Gorgon.UI;
 /// <summary>
 /// The form used to display the translucent overlay.
 /// </summary>
-public partial class FormOverlay 
+public partial class FormOverlay
     : Form
 {
     #region Properties.

@@ -55,7 +55,7 @@ public sealed class GorgonTexture1DView
     /// <summary>
     /// Property to return the type of image data.
     /// </summary>
-    ImageType IGorgonImageInfo.ImageType => ImageType.Image1D;
+    ImageDataType IGorgonImageInfo.ImageType => ImageDataType.Image1D;
 
     /// <summary>
     /// Property to return the height of an image, in pixels.
@@ -219,7 +219,7 @@ public sealed class GorgonTexture1DView
             Dimension = Texture.ArrayCount > 1
                                        ? D3D.ShaderResourceViewDimension.Texture1DArray
                                        : D3D.ShaderResourceViewDimension.Texture1D,
-            Texture1DArray = 
+            Texture1DArray =
                         {
                            MipLevels = MipCount,
                            MostDetailedMip = MipSlice,

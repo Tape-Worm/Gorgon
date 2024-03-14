@@ -384,7 +384,7 @@ internal class ImageIOService(IGorgonImageCodec defaultCodec,
         {
             image?.Dispose();
             return (null, null, null);
-        }            
+        }
 
         // Create a thumbnail from the image.
         if (image.CanConvertToFormat(BufferFormat.R8G8B8A8_UNorm))
@@ -489,7 +489,7 @@ internal class ImageIOService(IGorgonImageCodec defaultCodec,
         // Copy to a working file.
         using (Stream outStream = ScratchArea.OpenStream(name, FileMode.Create))
         {
-            file.CopyTo(outStream);                
+            file.CopyTo(outStream);
         }
         workFile = ScratchArea.FileSystem.GetFile(name);
 

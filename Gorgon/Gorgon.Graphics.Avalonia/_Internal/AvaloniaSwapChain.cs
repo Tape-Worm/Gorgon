@@ -24,8 +24,8 @@
 // 
 #endregion
 
-using Avalonia.Rendering.Composition;
 using Avalonia;
+using Avalonia.Rendering.Composition;
 using Gorgon.Graphics.Core;
 
 namespace Gorgon.Graphics.Avalonia;
@@ -80,11 +80,11 @@ internal class AvaloniaSwapChain(GorgonGraphics graphics, ICompositionGpuInterop
             AvaloniaSwapChainImage image = _pendingImages[c];
             bool noResize = (image.Width == pixelSize.Width) && (image.Height == pixelSize.Height);
 
-            if ((image.ImageState == AvaloniaImageState.Error) 
+            if ((image.ImageState == AvaloniaImageState.Error)
                 || ((!noResize) && (image.ImageState == AvaloniaImageState.Available)))
             {
                 image?.DisposeAsync();
-                _pendingImages.RemoveAt(c);                
+                _pendingImages.RemoveAt(c);
             }
 
             if ((noResize) && (image.ImageState == AvaloniaImageState.Available))
@@ -108,7 +108,7 @@ internal class AvaloniaSwapChain(GorgonGraphics graphics, ICompositionGpuInterop
     /// </summary>
     /// <param name="pixelSize">The size of the swap chain.</param>
     public GorgonRenderTarget2DView BeginRendering(PixelSize pixelSize)
-    {       
+    {
         AvaloniaSwapChainImage image = GetImage(pixelSize);
 
         image.Begin();

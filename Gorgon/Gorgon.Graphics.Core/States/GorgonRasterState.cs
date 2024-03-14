@@ -65,7 +65,7 @@ public class GorgonRasterState
     public static GorgonRasterState ScissorRectanglesEnabled
     {
         get;
-    } =new GorgonRasterState
+    } = new GorgonRasterState
     {
         ScissorRectsEnabled = true
     };
@@ -400,10 +400,10 @@ public class GorgonRasterState
         hashCode.Add(IsAntialiasedLineEnabled);
         hashCode.Add(CullMode);
         hashCode.Add(DepthBias);
-        hashCode.Add(DepthBiasClamp);   
-        hashCode.Add(IsDepthClippingEnabled);   
-        hashCode.Add(FillMode); 
-        hashCode.Add(ForcedReadWriteViewSampleCount);  
+        hashCode.Add(DepthBiasClamp);
+        hashCode.Add(IsDepthClippingEnabled);
+        hashCode.Add(FillMode);
+        hashCode.Add(ForcedReadWriteViewSampleCount);
         hashCode.Add(IsFrontCounterClockwise);
         hashCode.Add(IsMultisamplingEnabled);
         hashCode.Add(ScissorRectsEnabled);

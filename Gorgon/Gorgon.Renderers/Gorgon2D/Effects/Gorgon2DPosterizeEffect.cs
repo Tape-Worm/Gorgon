@@ -59,7 +59,7 @@ public class Gorgon2DPosterizedEffect
     private readonly struct Settings(bool useAlpha, float power, int count)
     {
         // Flag to posterize the alpha channel.
-        private readonly int _posterizeAlpha = Convert.ToInt32(useAlpha);                               
+        private readonly int _posterizeAlpha = Convert.ToInt32(useAlpha);
 
         /// <summary>
         /// Gamma for the posterization.

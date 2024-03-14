@@ -38,7 +38,7 @@ using Gorgon.Renderers;
 using Gorgon.Timing;
 using Gorgon.UI;
 using DX = SharpDX;
-using FontStyle = Gorgon.Graphics.Fonts.FontStyle;
+
 
 namespace Gorgon.Examples;
 
@@ -283,10 +283,10 @@ public partial class Form
         GorgonExample.LoadResources(_graphics);
 
         // Create fonts.
-        _textFont = GorgonExample.Fonts.GetFont(new GorgonFontInfo("GiGi", 24.0f, FontHeightMode.Points)
+        _textFont = GorgonExample.Fonts.GetFont(new GorgonFontInfo("GiGi", 24.0f, GorgonFontHeightMode.Points)
         {
             Name = "GiGi_24pt",
-            AntiAliasingMode = FontAntiAliasMode.AntiAlias,
+            AntiAliasingMode = GorgonFontAntiAliasMode.AntiAlias,
             TextureWidth = 512,
             TextureHeight = 256
         });
@@ -294,11 +294,11 @@ public partial class Form
         // Use the form font for this one.
         _helpFont = GorgonExample.Fonts.GetFont(new GorgonFontInfo(Font.FontFamily.Name,
                                                             Font.Size,
-                                                            Font.Unit == GraphicsUnit.Pixel ? FontHeightMode.Pixels : FontHeightMode.Points)
+                                                            Font.Unit == GraphicsUnit.Pixel ? GorgonFontHeightMode.Pixels : GorgonFontHeightMode.Points)
         {
             Name = "Form Font",
-            AntiAliasingMode = FontAntiAliasMode.AntiAlias,
-            FontStyle = FontStyle.Bold
+            AntiAliasingMode = GorgonFontAntiAliasMode.AntiAlias,
+            FontStyle = GorgonFontStyle.Bold
         });
 
         // Create our file system and mount the resources.

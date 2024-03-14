@@ -257,7 +257,7 @@ internal class FxContext
 
         try
         {
-            _fxService.SetImage(imageData, _imageContent.ImageType == ImageType.Image3D ? _imageContent.CurrentDepthSlice : _imageContent.CurrentArrayIndex, _imageContent.CurrentMipLevel);
+            _fxService.SetImage(imageData, _imageContent.ImageType == ImageDataType.Image3D ? _imageContent.CurrentDepthSlice : _imageContent.CurrentArrayIndex, _imageContent.CurrentMipLevel);
         }
         catch (Exception ex)
         {
@@ -577,7 +577,7 @@ internal class FxContext
     protected override void OnInitialize(FxContextParameters injectionParameters)
     {
         _imageContent = injectionParameters.ImageContent;
-        _hostServices = injectionParameters.HostServices;            
+        _hostServices = injectionParameters.HostServices;
         _fxService = injectionParameters.FxService;
 
         BlurSettings = injectionParameters.BlurSettings;

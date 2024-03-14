@@ -70,7 +70,7 @@ internal class TrackKeySelection(int trackIndex, ITrack track, IReadOnlyList<Tra
         /// <remarks>
         /// This value may be <b>null</b> if no keyframe was assigned at the <see cref="KeyIndex"/>.
         /// </remarks>
-        public IKeyFrame KeyFrame 
+        public IKeyFrame KeyFrame
         {
             get;
             set;

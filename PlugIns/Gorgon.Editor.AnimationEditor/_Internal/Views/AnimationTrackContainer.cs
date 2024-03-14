@@ -223,8 +223,8 @@ internal partial class AnimationTrackContainer
             Name = $"TrackInterpolation",
             ReadOnly = false,
             DataPropertyName = null,
-            Frozen = true,                
-            FlatStyle = FlatStyle.Flat                
+            Frozen = true,
+            FlatStyle = FlatStyle.Flat
         };
 
         // We'll use our columns as key values.
@@ -463,7 +463,7 @@ internal partial class AnimationTrackContainer
                 GridTrackKeys.ClearSelection();
                 GridTrackKeys.Rows[lastSelRowIndex].Cells[0].Selected = true;
             }
-            return new[] { 
+            return new[] {
                 (lastSelRowIndex, (IReadOnlyList<int>)[])
             };
         }
@@ -477,7 +477,7 @@ internal partial class AnimationTrackContainer
             {
                 keyIndices = [];
                 result.Add((cell.RowIndex, keyIndices));
-                rowID = cell.RowIndex;                    
+                rowID = cell.RowIndex;
             }
 
             int columnIndex = cell.ColumnIndex - 1;
@@ -506,7 +506,7 @@ internal partial class AnimationTrackContainer
         int colEnd = colStart + GridTrackKeys.DisplayedColumnCount(false) - 2;
         int rowStart = GridTrackKeys.FirstDisplayedScrollingRowIndex;
         int rowEnd = rowStart + GridTrackKeys.DisplayedRowCount(false);
-        if ((lastSelCell is null) 
+        if ((lastSelCell is null)
             || ((lastSelCell.RowIndex >= rowStart) && (lastSelCell.RowIndex <= rowEnd) && (lastSelCell.ColumnIndex >= colStart) && (lastSelCell.ColumnIndex <= colEnd)))
         {
             return;
@@ -590,7 +590,7 @@ internal partial class AnimationTrackContainer
         }
         finally
         {
-            EnableGridEvents();                
+            EnableGridEvents();
         }
     }
 
@@ -793,7 +793,7 @@ internal partial class AnimationTrackContainer
         ResetDataContext();
 
         if (dataContext is null)
-        {                
+        {
             return;
         }
 
@@ -853,7 +853,7 @@ internal partial class AnimationTrackContainer
         ViewModel.PropertyChanged += DataContext_PropertyChanged;
         ViewModel.PropertyChanging += DataContext_PropertyChanging;
         ViewModel.Tracks.CollectionChanged += Tracks_CollectionChanged;
-    }        
+    }
     #endregion
 
     #region Constructor.
@@ -862,7 +862,7 @@ internal partial class AnimationTrackContainer
     {
         InitializeComponent();
 
-        var selected = GorgonColor.Lerp(Color.LimeGreen, GridTrackKeys.DefaultCellStyle.SelectionBackColor, 0.4f);            
+        var selected = GorgonColor.Lerp(Color.LimeGreen, GridTrackKeys.DefaultCellStyle.SelectionBackColor, 0.4f);
 
         _activeCellStyle = new DataGridViewCellStyle(GridTrackKeys.DefaultCellStyle)
         {

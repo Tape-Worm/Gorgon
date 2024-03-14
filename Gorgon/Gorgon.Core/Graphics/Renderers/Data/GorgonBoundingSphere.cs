@@ -248,7 +248,7 @@ public readonly struct GorgonBoundingSphere(in Vector3 center, float radius)
     {
         unchecked
         {
-            return HashCode.Combine(Center, Radius);                
+            return HashCode.Combine(Center, Radius);
         }
     }
 

@@ -33,7 +33,7 @@ using Gorgon.Graphics.Core;
 using Gorgon.Graphics.Fonts;
 using Gorgon.Renderers;
 using DX = SharpDX;
-using FontStyle = Gorgon.Graphics.Fonts.FontStyle;
+
 
 namespace Gorgon.Editor.AnimationEditor;
 
@@ -117,14 +117,14 @@ internal class DefaultAnimationViewer(Gorgon2D renderer, GorgonSwapChain swapCha
     {
         base.OnLoad();
 
-        _font = Fonts.GetFont(new GorgonFontInfo("Segoe UI", 18.0f, FontHeightMode.Points)
+        _font = Fonts.GetFont(new GorgonFontInfo("Segoe UI", 18.0f, GorgonFontHeightMode.Points)
         {
             Name = "Segoe UI 18 pt",
-            FontStyle = FontStyle.Bold,
+            FontStyle = GorgonFontStyle.Bold,
             Characters = Resources.GORANM_TEXT_TEXTURE_KEY_ASSIGN.Distinct(),
             OutlineColor1 = GorgonColor.Black,
             OutlineColor2 = GorgonColor.Black,
-            AntiAliasingMode = FontAntiAliasMode.AntiAlias,
+            AntiAliasingMode = GorgonFontAntiAliasMode.AntiAlias,
             OutlineSize = 3
         });
 
@@ -232,7 +232,7 @@ internal class DefaultAnimationViewer(Gorgon2D renderer, GorgonSwapChain swapCha
     /// <summary>Function to handle a mouse up event.</summary>
     /// <param name="args">The arguments for the event.</param>
     /// <remarks>Developers can override this method to handle a mouse up event in their own content view.</remarks>
-    protected override void OnMouseUp(MouseArgs args) 
+    protected override void OnMouseUp(MouseArgs args)
     {
         if ((_allowMove) && (Clipper?.MouseUp(args) ?? false))
         {
@@ -280,7 +280,7 @@ internal class DefaultAnimationViewer(Gorgon2D renderer, GorgonSwapChain swapCha
         }
 
         DataContext.UpdateAnimationPreviewCommand.Execute(null);
-    }        
+    }
 
     /// <summary>Function to set the default zoom/offset for the viewer.</summary>
     public override void DefaultZoom()

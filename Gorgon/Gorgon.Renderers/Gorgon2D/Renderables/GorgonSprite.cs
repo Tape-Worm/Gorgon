@@ -66,7 +66,7 @@ public class GorgonSprite
     [JsonIgnore]
     public bool IsUpdated => Renderable.HasTextureChanges
                                  || Renderable.HasTransformChanges
-                                 || Renderable.HasVertexChanges;            
+                                 || Renderable.HasVertexChanges;
 
     /// <summary>
     /// Property to return the interface that allows colors to be assigned to each corner of the sprite.
@@ -246,7 +246,7 @@ public class GorgonSprite
 
             anchor.X = value.X / bounds.Width;
             anchor.Y = value.Y / bounds.Height;
-            Renderable.HasVertexChanges = true;    
+            Renderable.HasVertexChanges = true;
         }
     }
 

@@ -73,7 +73,7 @@ internal class NewAnimationService(IContentFileManager fileManager, IGorgonSprit
     {
         using Stream stream = _fileManager.OpenStream(file.Path, FileMode.Open);
         IGorgonImageInfo metadata = _imageCodec.GetMetaData(stream);
-        return metadata.ImageType is not ImageType.Image3D and not ImageType.Image1D;
+        return metadata.ImageType is not ImageDataType.Image3D and not ImageDataType.Image1D;
     }
 
     /// <summary>

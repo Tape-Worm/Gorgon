@@ -78,7 +78,7 @@ internal partial class ImageEditorView
 
         LabelMipDetails.Visible = LabelMipLevel.Visible = ButtonPrevMip.Visible = ButtonNextMip.Visible = ViewModel.MipCount > 1;
         LabelArrayIndexDetails.Visible = LabelArrayIndex.Visible = ButtonPrevArrayIndex.Visible = ButtonNextArrayIndex.Visible = ViewModel.ArrayCount > 1;
-        LabelDepthSliceDetails.Visible = LabelDepthSlice.Visible = ButtonPrevDepthSlice.Visible = ButtonNextDepthSlice.Visible = ViewModel.ImageType == ImageType.Image3D;
+        LabelDepthSliceDetails.Visible = LabelDepthSlice.Visible = ButtonPrevDepthSlice.Visible = ButtonNextDepthSlice.Visible = ViewModel.ImageType == ImageDataType.Image3D;
 
         ButtonNextMip.Enabled = (ViewModel.CurrentPanel is null) && (ViewModel.CommandContext is null) && (ViewModel.CurrentMipLevel < ViewModel.MipCount - 1);
         ButtonPrevMip.Enabled = (ViewModel.CurrentPanel is null) && (ViewModel.CommandContext is null) && (ViewModel.CurrentMipLevel > 0);
@@ -106,7 +106,7 @@ internal partial class ImageEditorView
                 {
                     _imagePickerForm.Hide();
                 }
-                break;           
+                break;
         }
     }
 
@@ -122,8 +122,8 @@ internal partial class ImageEditorView
             return;
         }
 
-        _ribbonForm.SetDataContext(dataContext);            
-        _imagePickerForm.SetDataContext(dataContext.ImagePicker);            
+        _ribbonForm.SetDataContext(dataContext);
+        _imagePickerForm.SetDataContext(dataContext.ImagePicker);
         CropResizeSettings.SetDataContext(dataContext.CropOrResizeSettings);
         DimensionSettings.SetDataContext(dataContext.DimensionSettings);
         GenMipMapSettings.SetDataContext(dataContext.MipMapSettings);
@@ -135,7 +135,7 @@ internal partial class ImageEditorView
         FxPosterizeSettings.SetDataContext(dataContext.FxContext.PosterizeSettings);
         Fx1BitSettings.SetDataContext(dataContext.FxContext.OneBitSettings);
 
-        if (dataContext.ImageType == ImageType.Image3D)
+        if (dataContext.ImageType == ImageDataType.Image3D)
         {
             UpdateDepthSliceDetails(dataContext);
         }
@@ -290,7 +290,7 @@ internal partial class ImageEditorView
         IContentFileDragData contentData = GetContentFileDragDropData<IContentFileDragData>(e);
 
         if (contentData is null)
-        {                
+        {
             return;
         }
 
@@ -390,10 +390,10 @@ internal partial class ImageEditorView
                 UpdateArrayDetails(ViewModel);
                 break;
             case nameof(IImageContent.CurrentDepthSlice):
-                UpdateDepthSliceDetails(ViewModel);                    
+                UpdateDepthSliceDetails(ViewModel);
                 break;
             case nameof(IImageContent.CurrentMipLevel):
-                UpdateMipDetails(ViewModel);                    
+                UpdateMipDetails(ViewModel);
                 break;
             case nameof(IImageContent.CommandContext):
                 if ((ViewModel.CommandContext is null) || (!HasRenderer(ViewModel.CommandContext.Name)))
@@ -542,7 +542,7 @@ internal partial class ImageEditorView
         InitializeFromDataContext(dataContext);
 
         ViewModel = dataContext;
-    }        
+    }
     #endregion
 
     #region Constructor/Finalizer.

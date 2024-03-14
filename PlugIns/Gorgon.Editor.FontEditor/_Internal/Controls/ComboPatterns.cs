@@ -41,7 +41,7 @@ internal class ComboPatterns
     // List of patterns.
     private readonly SortedDictionary<string, HatchStyle> _patternList = new(StringComparer.OrdinalIgnoreCase);
     // Proper name buffer.
-    private readonly StringBuilder _properName = new(128);													                    
+    private readonly StringBuilder _properName = new(128);
     #endregion
 
     #region Properties.

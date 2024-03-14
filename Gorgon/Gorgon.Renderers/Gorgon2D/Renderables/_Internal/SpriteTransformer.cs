@@ -57,11 +57,11 @@ internal class SpriteTransformer
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static void UpdateTextureCoordinates(Gorgon2DVertex[] vertices, BatchRenderable renderable)
     {
-        var rightBottom = new Vector4(renderable.HorizontalFlip ? renderable.TextureRegion.Left : renderable.TextureRegion.Right, 
-                                             renderable.VerticalFlip ? renderable.TextureRegion.Top : renderable.TextureRegion.Bottom, 
+        var rightBottom = new Vector4(renderable.HorizontalFlip ? renderable.TextureRegion.Left : renderable.TextureRegion.Right,
+                                             renderable.VerticalFlip ? renderable.TextureRegion.Top : renderable.TextureRegion.Bottom,
                                              renderable.TextureArrayIndex, 1.0f);
-        var leftTop = new Vector4(renderable.HorizontalFlip ? renderable.TextureRegion.Right : renderable.TextureRegion.Left, 
-                                         renderable.VerticalFlip ? renderable.TextureRegion.Bottom : renderable.TextureRegion.Top, 
+        var leftTop = new Vector4(renderable.HorizontalFlip ? renderable.TextureRegion.Right : renderable.TextureRegion.Left,
+                                         renderable.VerticalFlip ? renderable.TextureRegion.Bottom : renderable.TextureRegion.Top,
                                          renderable.TextureArrayIndex, 1.0f);
 
         if ((!renderable.LowerLeftOffset.Equals(Vector3.Zero))
@@ -76,7 +76,7 @@ internal class SpriteTransformer
         vertices[0].UV = leftTop;
         vertices[1].UV = new Vector4(rightBottom.X, leftTop.Y, renderable.TextureArrayIndex, 1.0f);
         vertices[2].UV = new Vector4(leftTop.X, rightBottom.Y, renderable.TextureArrayIndex, 1.0f);
-        vertices[3].UV = rightBottom;            
+        vertices[3].UV = rightBottom;
     }
 
     /// <summary>
@@ -110,11 +110,11 @@ internal class SpriteTransformer
         float cross = va.X * vb.Y - va.Y * vb.X;
 
         if (cross == 0)
-        {                                
+        {
             return;
         }
 
-        var vc = Vector2.Subtract(v0, v1);            
+        var vc = Vector2.Subtract(v0, v1);
         float u = (va.X * vc.Y - va.Y * vc.X) / cross;
         float v = (vb.X * vc.Y - vb.Y * vc.X) / cross;
 
@@ -152,7 +152,7 @@ internal class SpriteTransformer
     /// <param name="angleSin">The sine of the rotation angle.</param>
     /// <param name="angleCos">The cosine of the rotation angle.</param>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static void TransformVertices(BatchRenderable renderable,                                              
+    private static void TransformVertices(BatchRenderable renderable,
                                           float angleSin,
                                           float angleCos)
     {
@@ -166,9 +166,9 @@ internal class SpriteTransformer
         ref Gorgon2DVertex v3 = ref renderable.Vertices[2];
         ref Gorgon2DVertex v4 = ref renderable.Vertices[3];
 
-        v1.Angle = 
+        v1.Angle =
         v2.Angle =
-        v3.Angle = 
+        v3.Angle =
         v4.Angle = new Vector2(angleCos, angleSin);
 
         upperLeft = Vector2.Multiply(upperLeft, renderable.Scale);
@@ -214,13 +214,13 @@ internal class SpriteTransformer
             float rads = renderable.AngleDegs.ToRadians();
 
             TransformVertices(renderable, rads.FastSin(), rads.FastCos());
-            renderable.HasTransformChanges = false;                
+            renderable.HasTransformChanges = false;
         }
 
         if (renderable.HasTextureChanges)
         {
-            UpdateTextureCoordinates(renderable.Vertices, renderable);                                       
+            UpdateTextureCoordinates(renderable.Vertices, renderable);
             renderable.HasTextureChanges = false;
-        }            
+        }
     }
 }

@@ -100,7 +100,7 @@ internal class Settings
             }
 
             OnPropertyChanging();
-             _alphaRange = new GorgonRange(value.Minimum, value.Maximum);
+            _alphaRange = new GorgonRange(value.Minimum, value.Maximum);
             _settings.AlphaRangeMin = value.Minimum;
             _settings.AlphaRangeMax = value.Maximum;
             OnPropertyChanged();
@@ -213,10 +213,10 @@ internal class Settings
     /// <remarks>
     /// Applications should call this when setting up the view model for complex operations and/or dependency injection. The constructor should only be used for simple set up and initialization of objects.
     /// </remarks>
-    protected override void OnInitialize(SettingsParameters injectionParameters)            
+    protected override void OnInitialize(SettingsParameters injectionParameters)
     {
         _settings = injectionParameters.Settings;
-        _alphaRange = new GorgonRange(_settings.AlphaRangeMin, _settings.AlphaRangeMax);            
+        _alphaRange = new GorgonRange(_settings.AlphaRangeMin, _settings.AlphaRangeMax);
     }
     #endregion
 

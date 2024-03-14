@@ -212,7 +212,7 @@ internal class ViewModelFactory(Editor.EditorSettings settings, ProjectManager p
         {
             IGorgonVirtualDirectory subDir = subDirs[i];
             IDirectory subDirParent = null;
-            IDirectory fileDir = null;                
+            IDirectory fileDir = null;
 
             if (subDir.Parent is not null)
             {
@@ -302,7 +302,7 @@ internal class ViewModelFactory(Editor.EditorSettings settings, ProjectManager p
 
         foreach (ContentPlugIn plugIn in _hostContentServices.ContentPlugInService.PlugIns.Values)
         {
-            plugIn.RegisterSearchKeywords(searchService);                
+            plugIn.RegisterSearchKeywords(searchService);
         }
 
         return result;
@@ -416,7 +416,7 @@ internal class ViewModelFactory(Editor.EditorSettings settings, ProjectManager p
 
         if (parent is IExcludable excludeParent)
         {
-            newDir.IsExcluded = excludeParent.IsExcluded; 
+            newDir.IsExcluded = excludeParent.IsExcluded;
         }
 
         parent.Directories.Add(newDir);
@@ -478,7 +478,7 @@ internal class ViewModelFactory(Editor.EditorSettings settings, ProjectManager p
     /// <param name="gpuName">The name of the GPU used by the application.</param>
     /// <returns>A new instance of the main view model.</returns>
     public IMain CreateMainViewModel(string gpuName)
-    {            
+    {
         IDirectoryLocateService dirLocator = new DirectoryLocateService();
         ISettingsPlugInsList pluginList = CreatePlugInListViewModel();
 
@@ -500,7 +500,7 @@ internal class ViewModelFactory(Editor.EditorSettings settings, ProjectManager p
 
         var newProjectVm = new NewProject
         {
-            GPUName = gpuName,                
+            GPUName = gpuName,
         };
         var recentFilesVm = new Recent();
 
@@ -526,8 +526,8 @@ internal class ViewModelFactory(Editor.EditorSettings settings, ProjectManager p
             NewProject = newProjectVm,
             Settings = settingsVm,
             RecentFiles = recentFilesVm,
-            ProjectManager = _projectManager,                
-            OpenDialog = new EditorFileOpenDialogService(_settings, _fileSystemProviders)                        
+            ProjectManager = _projectManager,
+            OpenDialog = new EditorFileOpenDialogService(_settings, _fileSystemProviders)
         });
 
         return mainVm;
@@ -587,7 +587,7 @@ internal class ViewModelFactory(Editor.EditorSettings settings, ProjectManager p
             SaveDialog = new EditorFileSaveDialogService(_settings, _fileSystemProviders),
             FileExplorer = fileExplorer,
             ContentFileManager = fileExplorer,
-            ContentPreviewer = previewer,                
+            ContentPreviewer = previewer,
             EditorSettings = _settings,
             Project = projectData,
             ProjectManager = _projectManager,

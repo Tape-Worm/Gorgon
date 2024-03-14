@@ -225,7 +225,7 @@ public class GorgonTextureCache<T>(GorgonGraphics graphics)
         }
 
         return true;
-    }        
+    }
 
     /// <summary>
     /// Function to retrieve a cached texture (or load one if it's not available).
@@ -265,7 +265,7 @@ public class GorgonTextureCache<T>(GorgonGraphics graphics)
     {
         if (textureName is null)
         {
-            throw new ArgumentNullException(nameof(textureName));                
+            throw new ArgumentNullException(nameof(textureName));
         }
 
         if (string.IsNullOrWhiteSpace(textureName))
@@ -395,7 +395,7 @@ public class GorgonTextureCache<T>(GorgonGraphics graphics)
     /// </note>
     /// </para>
     /// </remarks>
-    public T FindTexture(string textureName)            
+    public T FindTexture(string textureName)
     {
         if (textureName is null)
         {

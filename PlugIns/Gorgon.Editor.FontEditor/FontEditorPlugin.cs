@@ -24,28 +24,28 @@
 // 
 #endregion
 
-using System.Numerics;
 using System.Diagnostics;
-using Drawing = System.Drawing;
-using Microsoft.IO;
-using DX = SharpDX;
+using System.Numerics;
 using Gorgon.Core;
 using Gorgon.Editor.Content;
+using Gorgon.Editor.FontEditor.Properties;
 using Gorgon.Editor.Metadata;
 using Gorgon.Editor.PlugIns;
 using Gorgon.Editor.Services;
 using Gorgon.Editor.UI;
+using Gorgon.Graphics;
+using Gorgon.Graphics.Core;
+using Gorgon.Graphics.Fonts;
+using Gorgon.Graphics.Fonts.Codecs;
 using Gorgon.Graphics.Imaging;
+using Gorgon.Graphics.Imaging.Codecs;
 using Gorgon.Graphics.Imaging.GdiPlus;
 using Gorgon.IO;
-using Gorgon.Editor.FontEditor.Properties;
-using Gorgon.Graphics.Fonts.Codecs;
-using Gorgon.Graphics.Fonts;
-using Gorgon.Graphics.Core;
-using Gorgon.Graphics;
 using Gorgon.Renderers;
 using Gorgon.UI;
-using Gorgon.Graphics.Imaging.Codecs;
+using Microsoft.IO;
+using Drawing = System.Drawing;
+using DX = SharpDX;
 
 namespace Gorgon.Editor.FontEditor;
 
@@ -252,7 +252,7 @@ internal class FontEditorPlugin
             return Task.FromResult<(string, RecyclableMemoryStream)>((string.Empty, null));
         }
 
-        using GorgonFont font = _fontFactory.GetFont(fontInfo);            
+        using GorgonFont font = _fontFactory.GetFont(fontInfo);
 
         var stream = CommonEditorResources.MemoryStreamManager.GetStream() as RecyclableMemoryStream;
         _defaultCodec.Save(font, stream);
@@ -319,17 +319,17 @@ internal class FontEditorPlugin
                                                                                         fontPatternBrush,
                                                                                         fontGradientBrush,
                                                                                         fontTextureBrush,
-                                                                                        undoService,                                                                                             
+                                                                                        undoService,
                                                                                         HostContentServices));
 
-            content.Initialize(new FontContentParameters(fontService, 
-                                                                        settings, 
-                                                                        fontOutline, 
+            content.Initialize(new FontContentParameters(fontService,
+                                                                        settings,
+                                                                        fontOutline,
                                                                         textureEditor,
                                                                         fontCharSelection,
-                                                                        undoService, 
-                                                                        fileManager, 
-                                                                        file, 
+                                                                        undoService,
+                                                                        fileManager,
+                                                                        file,
                                                                         HostContentServices));
 
             return content;
@@ -420,7 +420,7 @@ internal class FontEditorPlugin
             return false;
         }
 
-        UpdateFileMetadataAttributes(file.Metadata.Attributes);            
+        UpdateFileMetadataAttributes(file.Metadata.Attributes);
         return true;
     }
 

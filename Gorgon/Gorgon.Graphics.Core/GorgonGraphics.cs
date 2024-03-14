@@ -428,7 +428,7 @@ public sealed class GorgonGraphics
 
         using (var factory2 = new Factory2(IsDebugEnabled))
         {
-            resultFactory = factory2.QueryInterface<Factory5>();                
+            resultFactory = factory2.QueryInterface<Factory5>();
 
             using Adapter adapter = (adapterInfo.VideoDeviceType == VideoDeviceType.Hardware
                                           ? resultFactory.GetAdapter1(adapterInfo.Index)
@@ -591,7 +591,7 @@ public sealed class GorgonGraphics
     /// </summary>
     private void ReportLiveObjectsInternal(D3D11.Device device)
     {
-        using D3D11.DeviceDebug debugDevice = new(device);            
+        using D3D11.DeviceDebug debugDevice = new(device);
         debugDevice.ReportLiveDeviceObjects(D3D11.ReportingLevel.IgnoreInternal);
     }
 
@@ -1079,7 +1079,7 @@ public sealed class GorgonGraphics
         drawIndexCall.ValidateObject(nameof(drawIndexCall));
         SetDrawStates(drawIndexCall.D3DState, blendFactor ?? GorgonColor.White, blendSampleMask, stencilReference);
         D3DDeviceContext.DrawIndexedInstanced(drawIndexCall.IndexCount,
-                                              instanceCount,                                                  
+                                              instanceCount,
                                               drawIndexCall.IndexStart,
                                               drawIndexCall.BaseVertexIndex,
                                               startInstanceLocation);

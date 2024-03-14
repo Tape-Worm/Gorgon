@@ -97,7 +97,7 @@ public class DefaultContentRenderer<T>
     // The controller for a camera animation.
     private readonly CameraAnimationController<T> _camAnimController;
     // The builder for an animation.
-    private readonly GorgonAnimationBuilder _animBuilder = new();        
+    private readonly GorgonAnimationBuilder _animBuilder = new();
     // The animation for manipulating the camera.
     private IGorgonAnimation _cameraAnimation;
     // Flag to indicate that panning is enabled.
@@ -196,7 +196,7 @@ public class DefaultContentRenderer<T>
                 }
 
                 _zoomEvent += value;
-            }              
+            }
         }
         remove
         {
@@ -504,7 +504,7 @@ public class DefaultContentRenderer<T>
 
         if (((_mouseArgs.Modifiers & Keys.Control) == Keys.Control) && (CanZoom))
         {
-            float targetZoomSize = (_mouseArgs.MouseWheelDelta < 0 ? _camera.Zoom.X.GetPrevNearest() 
+            float targetZoomSize = (_mouseArgs.MouseWheelDelta < 0 ? _camera.Zoom.X.GetPrevNearest()
                                                                    : _camera.Zoom.X.GetNextNearest()).GetScale();
 
             MoveTo(_mouseArgs.ClientPosition.ToVector2(), targetZoomSize);
@@ -526,7 +526,7 @@ public class DefaultContentRenderer<T>
             else
             {
                 newOffset.Y = (_camera.Position.Y + vertAmount).Max(-regionHeight).Min(regionHeight);
-            }                
+            }
         }
 
         if ((CanPanHorizontally) && ((_mouseArgs.Modifiers & Keys.Shift) == Keys.Shift))
@@ -537,11 +537,11 @@ public class DefaultContentRenderer<T>
             }
             else
             {
-                newOffset.X = (_camera.Position.X + horzAmount).Max(-regionWidth).Min(regionWidth);                    
-            }                
+                newOffset.X = (_camera.Position.X + horzAmount).Max(-regionWidth).Min(regionWidth);
+            }
         }
 
-        SetOffset(new Vector2(newOffset.X, newOffset.Y));            
+        SetOffset(new Vector2(newOffset.X, newOffset.Y));
     }
 
     /// <summary>Handles the MouseMove event of the Window control.</summary>
@@ -566,7 +566,7 @@ public class DefaultContentRenderer<T>
         Vector2 startDrag = _panDragStart.Value;
         Vector2 endDrag = new Vector2(_mouseArgs.ClientPosition.X, _mouseArgs.ClientPosition.Y) / _camera.Zoom.X;
         var delta = Vector2.Subtract(startDrag, endDrag);
-        var newOffset = Vector2.Add(camPos, delta);            
+        var newOffset = Vector2.Add(camPos, delta);
 
         var halfContentSize = new Vector2(RenderRegion.Width * 0.5f, RenderRegion.Height * 0.5f);
 
@@ -809,7 +809,7 @@ public class DefaultContentRenderer<T>
         if ((region.Width < 1) || (region.Height < 1))
         {
             region = new DX.RectangleF(region.X, region.Y, 1, 1);
-        }                
+        }
 
         var scaling = new Vector2(ClientSize.Width / region.Width, ClientSize.Height / region.Height);
         float scaleValue = scaling.X.Min(scaling.Y);
@@ -922,7 +922,7 @@ public class DefaultContentRenderer<T>
     /// </para>
     /// </remarks>
     protected virtual void OnKeyDown(KeyEventArgs args)
-    {        
+    {
     }
 
     /// <summary>
@@ -960,7 +960,7 @@ public class DefaultContentRenderer<T>
     /// </para>
     /// </remarks>
     protected virtual void OnResizeEnd()
-    {            
+    {
     }
 
     /// <summary>
@@ -1048,7 +1048,7 @@ public class DefaultContentRenderer<T>
     /// </para>
     /// </remarks>
     protected virtual void OnCameraZoomed()
-    {        
+    {
     }
 
     /// <summary>
@@ -1313,7 +1313,7 @@ public class DefaultContentRenderer<T>
         if (Camera is null)
         {
             return;
-        }            
+        }
 
         _camera.Position = new Vector3(CanPanHorizontally ? offset.X : _camera.Position.X, CanPanVertically ? offset.Y : _camera.Position.Y, 0);
         OnOffset();

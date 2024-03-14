@@ -237,7 +237,7 @@ internal class NewProject
         // Do not allow us to write to the main windows or system folders, that'd be bad.
         if ((forbiddenPaths.Any(item => string.Equals(directory, item, StringComparison.OrdinalIgnoreCase)))
             || (System.IO.Directory.GetParent(directory) is null))
-        {                
+        {
             InvalidPathReason = string.Format(Resources.GOREDIT_ERR_NOT_AUTHORIZED, directory.Ellipses(45, true));
             return false;
         }
@@ -481,7 +481,7 @@ internal class NewProject
     protected override void OnInitialize(NewProjectParameters injectionParameters)
     {
         _settings = injectionParameters.EditorSettings;
-        _projectManager = injectionParameters.ProjectManager;            
+        _projectManager = injectionParameters.ProjectManager;
         _directoryLocator = injectionParameters.DirectoryLocator;
 
         string lastWorkspace = Path.GetFullPath(string.IsNullOrWhiteSpace(_settings.LastProjectWorkingDirectory) ? _defaultProjectPath : _settings.LastProjectWorkingDirectory);

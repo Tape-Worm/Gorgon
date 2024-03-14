@@ -112,7 +112,7 @@ internal class ImageSplitToolPlugIn
                 || (spriteDepends.Count < 2))
             {
                 continue;
-            }                
+            }
 
             var fileEntry = new ContentFileExplorerFileEntry(file, dirEntry);
             if (selectedFiles.Any(item => string.Equals(item, file.Path, StringComparison.OrdinalIgnoreCase)))
@@ -211,17 +211,17 @@ internal class ImageSplitToolPlugIn
 
             var splitter = new ImageSelection();
 
-            var textureSplitterService = new TextureAtlasSplitter(HostToolServices.GraphicsContext.Renderer2D, 
+            var textureSplitterService = new TextureAtlasSplitter(HostToolServices.GraphicsContext.Renderer2D,
                                                                   imagesAndSprites,
-                                                                  ContentFileManager,  
-                                                                  new GorgonCodecDds(), 
+                                                                  ContentFileManager,
+                                                                  new GorgonCodecDds(),
                                                                   new GorgonV3SpriteBinaryCodec(HostToolServices.GraphicsContext.Renderer2D), HostToolServices.Log);
 
-            splitter.Initialize(new SplitParameters(entries,                                                          
-                                                     new EditorContentSearchService(searchEntries), 
-                                                     ContentFileManager, 
+            splitter.Initialize(new SplitParameters(entries,
+                                                     new EditorContentSearchService(searchEntries),
+                                                     ContentFileManager,
                                                      TemporaryFileSystem,
-                                                     settings, 
+                                                     settings,
                                                      textureSplitterService,
                                                      HostToolServices));
 
@@ -235,7 +235,7 @@ internal class ImageSplitToolPlugIn
             HostToolServices.ToolPlugInService.WriteContentSettings(typeof(ImageSplitToolPlugIn).FullName, settings);
         }
         catch (Exception ex)
-        {                
+        {
             HostServices.MessageDisplay.ShowError(ex, Resources.GORIST_ERR_LAUNCH);
         }
         finally
@@ -300,8 +300,8 @@ internal class ImageSplitToolPlugIn
     #region Constructor/Finalizer.
     /// <summary>Initializes a new instance of the <see cref="ImageSplitToolPlugIn"/> class.</summary>
     public ImageSplitToolPlugIn()
-        : base(Resources.GORIST_PLUGIN_DESC) 
-    {        
+        : base(Resources.GORIST_PLUGIN_DESC)
+    {
     }
     #endregion
 }

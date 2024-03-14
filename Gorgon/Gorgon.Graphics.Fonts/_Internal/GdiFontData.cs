@@ -110,13 +110,13 @@ internal class GdiFontData
 
         switch (fontInfo.FontStyle)
         {
-            case FontStyle.Bold:
+            case GorgonFontStyle.Bold:
                 style = System.Drawing.FontStyle.Bold;
                 break;
-            case FontStyle.Italics:
+            case GorgonFontStyle.Italics:
                 style = System.Drawing.FontStyle.Italic;
                 break;
-            case FontStyle.BoldItalics:
+            case GorgonFontStyle.BoldItalics:
                 style = System.Drawing.FontStyle.Bold | System.Drawing.FontStyle.Italic;
                 break;
         }
@@ -129,7 +129,7 @@ internal class GdiFontData
 
 
         // Scale the font appropriately.
-        if (fontInfo.FontHeightMode == FontHeightMode.Points)
+        if (fontInfo.FontHeightMode == GorgonFontHeightMode.Points)
         {
             // Convert the internal font to pixel size.
             result.Font = new Font(fontFamily,

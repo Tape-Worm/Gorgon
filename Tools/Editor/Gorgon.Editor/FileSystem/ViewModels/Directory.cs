@@ -283,7 +283,7 @@ internal class Directory
     /// </summary>
     public Directory()
     {
-        ID =  Guid.NewGuid().ToString("N");
+        ID = Guid.NewGuid().ToString("N");
         GetSizeInBytesCommand = new EditorCommand<GetSizeInBytesCommandArgs>(DoGetSizeInBytes);
         ParentRenamedCommand = new EditorCommand<object>(DoParentRenamed);
         RenameCommand = new EditorCommand<RenameArgs>(DoRename, CanRename);

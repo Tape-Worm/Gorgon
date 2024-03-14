@@ -291,9 +291,9 @@ public class TextureCache(GorgonGraphics graphics, IContentFileManager fileManag
             return false;
         }
 
-        TextureEntry entry = _cache.Values.FirstOrDefault(item => (item.Texture is not null) 
-                                                               && (item.Texture.TryGetTarget(out GorgonTexture2DView itemTexture)) 
-                                                               && (itemTexture == texture) 
+        TextureEntry entry = _cache.Values.FirstOrDefault(item => (item.Texture is not null)
+                                                               && (item.Texture.TryGetTarget(out GorgonTexture2DView itemTexture))
+                                                               && (itemTexture == texture)
                                                                && (itemTexture.Texture is not null));
 
         if (entry is null)

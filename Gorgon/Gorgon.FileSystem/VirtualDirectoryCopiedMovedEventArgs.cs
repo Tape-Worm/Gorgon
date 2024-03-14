@@ -61,8 +61,8 @@ public class VirtualDirectoryCopiedMovedEventArgs
     /// <param name="dest">The destination directory for the copy.</param>
     /// <param name="directories">The list of virtual directories that were moved.</param>
     /// <param name="files">The list of virtual files that were moved.</param>
-    internal VirtualDirectoryCopiedMovedEventArgs(IGorgonVirtualDirectory dest, 
-                                            IReadOnlyList<(IGorgonVirtualDirectory src, IGorgonVirtualDirectory dest)> directories, 
+    internal VirtualDirectoryCopiedMovedEventArgs(IGorgonVirtualDirectory dest,
+                                            IReadOnlyList<(IGorgonVirtualDirectory src, IGorgonVirtualDirectory dest)> directories,
                                             IReadOnlyList<(IGorgonVirtualFile src, IGorgonVirtualFile dest)> files)
     {
         Destination = dest;

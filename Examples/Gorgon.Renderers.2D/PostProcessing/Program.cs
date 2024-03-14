@@ -90,7 +90,7 @@ static class Program
     // The offset of the mouse cursor when dragging started.
     private static Vector2 _dragOffset;
     // The starting position of the drag.
-    private static Vector2 _dragStart;        
+    private static Vector2 _dragStart;
     #endregion
 
     #region Methods.
@@ -603,9 +603,7 @@ static class Program
     {
         try
         {
-#if NET6_0_OR_GREATER
             Application.SetHighDpiMode(HighDpiMode.PerMonitorV2);
-#endif
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
 
@@ -629,7 +627,7 @@ static class Program
 
             if (_compositor is not null)
             {
-                _blurEffect?.Dispose();        
+                _blurEffect?.Dispose();
                 _grayScaleEffect?.Dispose();
                 _posterizeEffect?.Dispose();
                 _1BitEffect?.Dispose();

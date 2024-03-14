@@ -206,7 +206,7 @@ public class Gorgon2DLightingEffect(Gorgon2D renderer)
             Renderer.DrawFilledRectangle(new DX.RectangleF(0, 0, output.Width, output.Height),
                                         GorgonColor.White,
                                         diffuse,
-                                        new DX.RectangleF(0, 0, 1, 1),                                            
+                                        new DX.RectangleF(0, 0, 1, 1),
                                         textureSampler: GorgonSamplerState.Default);
 
             EndPass(i, output);
@@ -257,7 +257,7 @@ public class Gorgon2DLightingEffect(Gorgon2D renderer)
 
         if ((statesChanged) || (_pixelLitShaderState is null))
         {
-            builders.PixelShaderBuilder.Clear()                                           
+            builders.PixelShaderBuilder.Clear()
                                        .ConstantBuffer(_lightBuffer, 1)
                                        .ConstantBuffer(_globalBuffer, 2)
                                        .SamplerState(GorgonSamplerState.Default, 0)
@@ -347,14 +347,14 @@ public class Gorgon2DLightingEffect(Gorgon2D renderer)
         _globalBuffer = GorgonConstantBufferView.CreateConstantBuffer(Graphics,
                                                                       new GorgonConstantBufferInfo(Unsafe.SizeOf<GlobalEffectData>())
                                                                       {
-                                                                          Name = "Global light effect data.",                                                                              
+                                                                          Name = "Global light effect data.",
                                                                           Usage = ResourceUsage.Dynamic
                                                                       });
 
         _lightBuffer = GorgonConstantBufferView.CreateConstantBuffer(Graphics,
                                                                    new GorgonConstantBufferInfo(GorgonGpuLightData.SizeInBytes)
                                                                    {
-                                                                       Name = "Deferred Lighting Light Data Buffer",                                                                           
+                                                                       Name = "Deferred Lighting Light Data Buffer",
                                                                        Usage = ResourceUsage.Dynamic
                                                                    });
 

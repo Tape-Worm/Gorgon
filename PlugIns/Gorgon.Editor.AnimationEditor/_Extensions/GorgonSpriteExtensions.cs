@@ -44,7 +44,7 @@ internal static class GorgonSpriteExtensions
     public static Vector4 GetFloatValues(this GorgonSprite sprite, TrackSpriteProperty property) => sprite is null
             ? Vector4.Zero
             : property switch
-    {
+            {
                 TrackSpriteProperty.Angle => new Vector4(sprite.Angle, 0, 0, 0),
                 TrackSpriteProperty.Opacity => new Vector4(sprite.Color.Alpha, 0, 0, 0),
                 TrackSpriteProperty.Color => sprite.Color,

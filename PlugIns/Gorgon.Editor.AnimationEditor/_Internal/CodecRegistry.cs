@@ -278,8 +278,8 @@ internal class CodecRegistry(GorgonMefPlugInCache pluginCache, Gorgon2D renderer
         LoadCodecPlugIns(settings);
 
         IEnumerable<(GorgonFileExtension extension, IGorgonAnimationCodec codec)> codecGrouping = from codec in Codecs
-                                                                                               from extension in codec.FileExtensions
-                                                                                               select (extension, codec);
+                                                                                                  from extension in codec.FileExtensions
+                                                                                                  select (extension, codec);
 
         foreach ((GorgonFileExtension extension, IGorgonAnimationCodec codec) codecFile in codecGrouping)
         {

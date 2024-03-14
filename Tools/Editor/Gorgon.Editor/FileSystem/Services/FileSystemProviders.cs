@@ -304,7 +304,7 @@ internal class FileSystemProviders(IHostServices hostServices)
                 _writers[writer.GetType().FullName] = writer;
             }
             catch (Exception ex)
-            {                    
+            {
                 _hostServices.Log.Print($"ERROR: Cannot create file system writer plug in '{writer.Name}'.", LoggingLevel.Simple);
                 _hostServices.Log.LogException(ex);
 

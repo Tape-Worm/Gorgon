@@ -103,7 +103,7 @@ static class Program
     {
         // Pick a font to use with outlines.
         int fontWithOutlineIndex = GorgonRandom.RandomInt32(1, 5);
-        _glowIndex = GorgonRandom.RandomInt32(fontWithOutlineIndex + 1, fontWithOutlineIndex + 5);            
+        _glowIndex = GorgonRandom.RandomInt32(fontWithOutlineIndex + 1, fontWithOutlineIndex + 5);
         int fontWithGradient = GorgonRandom.RandomInt32(_glowIndex + 1, _glowIndex + 5);
         int fontWithTexture = GorgonRandom.RandomInt32(fontWithGradient + 1, fontWithGradient + 5).Min(_fontFamilies.Count - 1);
 
@@ -165,10 +165,10 @@ static class Program
 
             var fontInfo = new GorgonFontInfo(fontFamily,
                                               30.25f,
-                                              FontHeightMode.Pixels)
+                                              GorgonFontHeightMode.Pixels)
             {
                 Name = fontName,
-                AntiAliasingMode = FontAntiAliasMode.AntiAlias,
+                AntiAliasingMode = GorgonFontAntiAliasMode.AntiAlias,
                 OutlineSize = outlineSize,
                 OutlineColor1 = outlineColor1,
                 OutlineColor2 = outlineColor2,
@@ -192,7 +192,7 @@ static class Program
     /// <param name="window">The window containing the loading message.</param>
     /// <returns>The font families to use when building the bitmap fonts.</returns>
     private static Task<IReadOnlyList<Drawing.FontFamily>> LoadTrueTypeFontsAsync(FormMain window)
-    {            
+    {
         // Load in a bunch of true type fonts.
         DirectoryInfo dirInfo = GorgonExample.GetResourcePath("Fonts");
         FileInfo[] files = dirInfo.GetFiles("*.ttf", SearchOption.TopDirectoryOnly);
@@ -233,7 +233,7 @@ static class Program
     /// </summary>
     /// <returns><b>true</b> to continue executing, <b>false</b> to stop.</returns>
     private static bool Idle()
-    {            
+    {
         GorgonFont currentFont = _font[_fontIndex];
 
         if (_startTime < 0)
@@ -429,9 +429,7 @@ static class Program
     {
         try
         {
-#if NET6_0_OR_GREATER
             Application.SetHighDpiMode(HighDpiMode.PerMonitorV2);
-#endif
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
 

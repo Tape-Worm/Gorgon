@@ -88,7 +88,7 @@ class ImageBufferList
 
             mipLevel.ValidateRange(nameof(mipLevel), 0, _imageInfo.MipCount);
 
-            if (_imageInfo.ImageType == ImageType.Image3D)
+            if (_imageInfo.ImageType == ImageDataType.Image3D)
             {
                 depthSliceOrArrayIndex.ValidateRange("arrayIndexDepthSlice", 0, _imageInfo.Depth);
                 offsetSize = MipOffsetSize[mipLevel];
@@ -215,7 +215,7 @@ class ImageBufferList
 
         mipLevel = mipLevel.Max(0).Min(_imageInfo.MipCount - 1);
 
-        if (_imageInfo.ImageType == ImageType.Image3D)
+        if (_imageInfo.ImageType == ImageDataType.Image3D)
         {
             depthSliceOrArrayIndex = depthSliceOrArrayIndex.Max(0).Min(_imageInfo.Depth - 1);
             offsetSize = MipOffsetSize[mipLevel];

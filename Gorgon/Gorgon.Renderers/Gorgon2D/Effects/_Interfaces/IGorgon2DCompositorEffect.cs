@@ -38,5 +38,5 @@ public interface IGorgon2DCompositorEffect
     /// </summary>
     /// <param name="texture">The texture to render into the next target.</param>
     /// <param name="output">The render target that will receive the final output.</param>
-    void Render(GorgonTexture2DView texture, GorgonRenderTargetView output);    
+    void Render(GorgonTexture2DView texture, GorgonRenderTargetView output);
 }

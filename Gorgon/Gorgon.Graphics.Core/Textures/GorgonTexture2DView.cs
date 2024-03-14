@@ -56,7 +56,7 @@ public sealed class GorgonTexture2DView
     /// <summary>
     /// Property to return the type of image data.
     /// </summary>
-    ImageType IGorgonImageInfo.ImageType => IsCubeMap ? ImageType.ImageCube : ImageType.Image2D;
+    ImageDataType IGorgonImageInfo.ImageType => IsCubeMap ? ImageDataType.ImageCube : ImageDataType.Image2D;
 
     /// <summary>
     /// Property to return the depth of an image, in pixels.
@@ -869,12 +869,12 @@ public sealed class GorgonTexture2DView
 
         using IGorgonImage image = codec.FromFile(filePath);
         options ??= new GorgonTexture2DLoadOptions
-            {
-                Name = Path.GetFileNameWithoutExtension(filePath),
-                Usage = ResourceUsage.Default,
-                Binding = TextureBinding.ShaderResource,
-                IsTextureCube = image.ImageType == ImageType.ImageCube
-            };
+        {
+            Name = Path.GetFileNameWithoutExtension(filePath),
+            Usage = ResourceUsage.Default,
+            Binding = TextureBinding.ShaderResource,
+            IsTextureCube = image.ImageType == ImageDataType.ImageCube
+        };
         GorgonTexture2D texture = image.ToTexture2D(graphics, options);
         GorgonTexture2DView view = texture.GetShaderResourceView();
         view.OwnsResource = true;

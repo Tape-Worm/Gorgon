@@ -376,12 +376,12 @@ internal class DimensionSettings
             }
 
             MipSupport = false;
-            MaxDepthOrArrayIndices = image.ImageType == ImageType.Image3D ? _videoAdapter.MaxTexture3DDepth : _videoAdapter.MaxTextureArrayCount;
+            MaxDepthOrArrayIndices = image.ImageType == ImageDataType.Image3D ? _videoAdapter.MaxTexture3DDepth : _videoAdapter.MaxTextureArrayCount;
             MaxHeight = _videoAdapter.MaxTextureHeight;
             MaxWidth = _videoAdapter.MaxTextureWidth;
 
-            _arrayIndexStep = image.ImageType == ImageType.ImageCube ? 6 : 1;
-            _depthSlicesOrArrayIndices = image.ImageType == ImageType.Image3D ? image.Depth : image.ArrayCount;
+            _arrayIndexStep = image.ImageType == ImageDataType.ImageCube ? 6 : 1;
+            _depthSlicesOrArrayIndices = image.ImageType == ImageDataType.Image3D ? image.Depth : image.ArrayCount;
             _height = image.Height;
             _width = image.Width;
             _mipLevels = image.MipCount;
@@ -391,7 +391,7 @@ internal class DimensionSettings
             NotifyPropertyChanged(nameof(Height));
             NotifyPropertyChanged(nameof(DepthSlicesOrArrayIndices));
 
-            HasDepth = image.ImageType == ImageType.Image3D;
+            HasDepth = image.ImageType == ImageDataType.Image3D;
         }
         catch (Exception ex)
         {

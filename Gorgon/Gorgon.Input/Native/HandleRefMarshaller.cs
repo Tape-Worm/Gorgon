@@ -29,7 +29,7 @@ namespace Gorgon.Input.Native;
 /// <summary>
 /// A marshaller used to convert a <see cref="HandleRef"/> to an unmanaged value.
 /// </summary>
-[CustomMarshaller(typeof(HandleRef), MarshalMode.ManagedToUnmanagedIn, typeof(HandleRefMarshaller))]   
+[CustomMarshaller(typeof(HandleRef), MarshalMode.ManagedToUnmanagedIn, typeof(HandleRefMarshaller))]
 internal static unsafe class HandleRefMarshaller
 {
     /// <summary>

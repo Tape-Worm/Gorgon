@@ -733,7 +733,7 @@ public class GorgonAnimationBuilder
                                  .Concat(_quatTracks.SelectMany(item => item.Value.Keys).DefaultIfEmpty())
                                  .Concat(_rectangleTracks.SelectMany(item => item.Value.Keys).DefaultIfEmpty())
                                  .Concat(_colorTracks.SelectMany(item => item.Value.Keys).DefaultIfEmpty())
-                                 .Concat(_textureTracks.SelectMany(item => item.Value.Keys).DefaultIfEmpty())                                 
+                                 .Concat(_textureTracks.SelectMany(item => item.Value.Keys).DefaultIfEmpty())
                                  .Max(item => item?.Time ?? 0)) + minFrameTime;
 
         return new AnimationData(name, fps, length.Value.Max(minFrameTime))

@@ -44,7 +44,7 @@ internal static class TrackKeyProcessor
     /// <param name="time">The current time for the animation.</param>
     /// <param name="result">The result value to apply to the float object property.</param>
     /// <returns><b>true</b> if there's a value to update, <b>false</b> if not.</returns>
-        public static bool TryUpdateSingle(IGorgonAnimationTrack<GorgonKeySingle> track, float time, out float result)
+    public static bool TryUpdateSingle(IGorgonAnimationTrack<GorgonKeySingle> track, float time, out float result)
     {
         switch (track.KeyFrames.Count)
         {
@@ -53,7 +53,7 @@ internal static class TrackKeyProcessor
                 return false;
             case 1:
                 result = track.KeyFrames[0].Value;
-                return true;                
+                return true;
         }
 
         GorgonKeySingle firstKey = track.KeyFrames[0];
@@ -97,7 +97,7 @@ internal static class TrackKeyProcessor
     /// <param name="time">The current time for the animation.</param>
     /// <param name="result">The result value to apply to the vector2 object property.</param>
     /// <returns><b>true</b> if there's a value to update, <b>false</b> if not.</returns>
-        public static bool TryUpdateVector2(IGorgonAnimationTrack<GorgonKeyVector2> track, float time, out Vector2 result)
+    public static bool TryUpdateVector2(IGorgonAnimationTrack<GorgonKeyVector2> track, float time, out Vector2 result)
     {
         switch (track.KeyFrames.Count)
         {
@@ -150,7 +150,7 @@ internal static class TrackKeyProcessor
     /// <param name="time">The current time for the animation.</param>
     /// <param name="result">The result value to apply to the vector3 object property.</param>
     /// <returns><b>true</b> if there's a value to update, <b>false</b> if not.</returns>
-        public static bool TryUpdateVector3(IGorgonAnimationTrack<GorgonKeyVector3> track, float time, out Vector3 result)
+    public static bool TryUpdateVector3(IGorgonAnimationTrack<GorgonKeyVector3> track, float time, out Vector3 result)
     {
         switch (track.KeyFrames.Count)
         {
@@ -203,7 +203,7 @@ internal static class TrackKeyProcessor
     /// <param name="time">The current time for the animation.</param>
     /// <param name="result">The result value to apply to the vector3 object property.</param>
     /// <returns><b>true</b> if there's a value to update, <b>false</b> if not.</returns>
-        public static bool TryUpdateVector4(IGorgonAnimationTrack<GorgonKeyVector4> track, float time, out Vector4 result)
+    public static bool TryUpdateVector4(IGorgonAnimationTrack<GorgonKeyVector4> track, float time, out Vector4 result)
     {
         switch (track.KeyFrames.Count)
         {
@@ -248,7 +248,7 @@ internal static class TrackKeyProcessor
     /// <param name="time">The current time for the animation.</param>
     /// <param name="result">The result value to apply to the vector3 object property.</param>
     /// <returns><b>true</b> if there's a value to update, <b>false</b> if not.</returns>
-        public static bool TryUpdateQuaternion(IGorgonAnimationTrack<GorgonKeyQuaternion> track, float time, out Quaternion result)
+    public static bool TryUpdateQuaternion(IGorgonAnimationTrack<GorgonKeyQuaternion> track, float time, out Quaternion result)
     {
         switch (track.KeyFrames.Count)
         {

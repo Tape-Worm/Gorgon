@@ -1084,7 +1084,7 @@ public static class GorgonIntersections
         var point = Vector3.Cross(temp, direction);
 
         line.Position = point;
-        line.Direction = Vector3.Normalize(direction);            
+        line.Direction = Vector3.Normalize(direction);
 
         return true;
     }
@@ -1262,7 +1262,7 @@ public static class GorgonIntersections
     /// <param name="point">The point to test.</param>
     /// <returns>The type of containment the two objects have.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static Containment BoxContainsPoint(in GorgonBoundingBox box, in Vector3 point) 
+    public static Containment BoxContainsPoint(in GorgonBoundingBox box, in Vector3 point)
         => ((box.Minimum.X <= point.X) && (box.Maximum.X >= point.X) &&
             (box.Minimum.Y <= point.Y) && (box.Maximum.Y >= point.Y) &&
             (box.Minimum.Z <= point.Z) && (box.Maximum.Z >= point.Z))

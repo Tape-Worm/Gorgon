@@ -424,7 +424,7 @@ public abstract class ContentEditorViewModelBase<T>
 
         ContentFileManager = injectionParameters.ContentFileManager;
         _filesSelected = ContentFileManager.GetSelectedFiles().Count > 0;
-        _file = injectionParameters.File;            
+        _file = injectionParameters.File;
 
         if (_file is null)
         {
@@ -439,7 +439,7 @@ public abstract class ContentEditorViewModelBase<T>
         _file.Renamed += File_Renamed;
         ContentFileManager.SelectedFilesChanged += ContentFileManager_SelectedFilesChanged;
 
-    }        
+    }
 
     /// <summary>Function called when the associated view is unloaded.</summary>
     /// <remarks>This method is used to perform tear down and clean up of resources.</remarks>

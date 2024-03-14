@@ -106,7 +106,7 @@ internal class AudioPlayback
                                    source.Stop();
                                }
                                finally
-                               {                                       
+                               {
                                    buffer.Stream?.Dispose();
                                    source.Dispose();
                                    stream?.Dispose();

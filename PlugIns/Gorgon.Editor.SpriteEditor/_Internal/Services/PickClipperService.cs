@@ -88,8 +88,8 @@ internal class PickClipperService
     /// </summary>
     public int Padding
     {
-        get => _padding;            
-        set => _padding = value.Max(0).Min(16);                
+        get => _padding;
+        set => _padding = value.Max(0).Min(16);
     }
 
     /// <summary>

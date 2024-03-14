@@ -146,8 +146,8 @@ internal class VolumeRenderer(GorgonGraphics graphics)
         {
             _volumeSections[i]?.Dispose();
             _volumeRtSections[i]?.Dispose();
-            _volumeRtSections[i] = GorgonRenderTarget2DView.CreateRenderTarget(_graphics, new GorgonTexture2DInfo((int)VolumeRegion.Width, 
-                                                                                                                       (int)VolumeRegion.Height, 
+            _volumeRtSections[i] = GorgonRenderTarget2DView.CreateRenderTarget(_graphics, new GorgonTexture2DInfo((int)VolumeRegion.Width,
+                                                                                                                       (int)VolumeRegion.Height,
                                                                                                                        BufferFormat.R16G16B16A16_Float)
             {
                 Name = $"Vol_RTV_{i}",

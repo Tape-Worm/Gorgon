@@ -156,7 +156,7 @@ internal class Extract
                 return;
             }
 
-            OnPropertyChanging();                
+            OnPropertyChanging();
             _extractData.GridSize = value;
             OnPropertyChanged();
         }
@@ -481,7 +481,7 @@ internal class Extract
                 CurrentPreviewSprite = sprites.Count - 1;
             }
 
-            Sprites = sprites;                
+            Sprites = sprites;
         }
         catch (OperationCanceledException)
         {
@@ -583,7 +583,7 @@ internal class Extract
     /// This is set up as an asynchronous method so that users may save their data asynchronously to keep the UI usable.
     /// </para>
     /// </remarks>
-    protected async override Task<bool> OnCloseToolTaskAsync() 
+    protected async override Task<bool> OnCloseToolTaskAsync()
     {
         // If we're executing a task, wait for it to finish.
         if (_currentTask is null)

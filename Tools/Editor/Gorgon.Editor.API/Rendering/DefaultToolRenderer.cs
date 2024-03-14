@@ -270,7 +270,7 @@ public class DefaultToolRenderer<T>
     /// </para>
     /// </remarks>
     protected virtual void OnResizeEnd()
-    {            
+    {
     }
 
     /// <summary>

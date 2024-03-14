@@ -31,7 +31,7 @@ namespace Gorgon.Graphics.Wpf;
 /// <summary>
 /// Information used to define a WPF render target.
 /// </summary>
-public class GorgonWpfTargetInfo 
+public class GorgonWpfTargetInfo
     : IGorgonWpfTargetInfo
 {
     #region Properties.

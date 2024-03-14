@@ -59,7 +59,7 @@ internal class GorPackWriterPlugIn
     // The memory stream manager for efficient memory usage.
     private static readonly RecyclableMemoryStreamManager _memStreamManager = new(new RecyclableMemoryStreamManager.Options
     {
-        MaximumSmallPoolFreeBytes = 1_048_576, 
+        MaximumSmallPoolFreeBytes = 1_048_576,
         MaximumLargePoolFreeBytes = 16_777_216
     });
     // The global buffer used to write out data to a stream.
@@ -99,7 +99,7 @@ internal class GorPackWriterPlugIn
     /// <param name="file">File to retrieve information from.</param>
     /// <param name="position">Position of the file in the packed data.</param>
     /// <param name="size">Size of the compressed file in the packed data.</param>
-        /// <param name="compressedSize">Compressed size of the file.</param>
+    /// <param name="compressedSize">Compressed size of the file.</param>
     /// <returns>A new node element with the file information.</returns>
     private static XElement CreateFileNode(FileInfo file, long position, long size, long compressedSize) =>
                             new("File",
@@ -595,7 +595,7 @@ internal class GorPackWriterPlugIn
             // Copy file layout to a compressed data block.
             byte[] fatData = Encoding.UTF8.GetBytes(fat.ToStringWithDeclaration());
             fatStream = _memStreamManager.GetStream(fatData);
-            compressedFatStream =_memStreamManager.GetStream();
+            compressedFatStream = _memStreamManager.GetStream();
 
             CompressData(fatStream, compressedFatStream, _globalWriteBuffer, (int)(Compression * 9), cancelToken);
 

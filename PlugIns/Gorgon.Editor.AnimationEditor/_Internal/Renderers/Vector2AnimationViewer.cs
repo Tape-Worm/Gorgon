@@ -139,7 +139,7 @@ internal class Vector2AnimationViewer(Gorgon2D renderer, GorgonSwapChain swapCha
     /// <summary>Handles the RectChanged event of the Clipper control.</summary>
     /// <param name="sender">The source of the event.</param>
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
-    private void Clipper_RectChanged(object sender, EventArgs e) 
+    private void Clipper_RectChanged(object sender, EventArgs e)
     {
         switch (SelectedTrackID)
         {
@@ -333,7 +333,7 @@ internal class Vector2AnimationViewer(Gorgon2D renderer, GorgonSwapChain swapCha
         }
 
         switch (propertyName)
-        {                
+        {
             case nameof(IKeyValueEditor.Value):
                 UpdateSprite();
                 break;
@@ -577,7 +577,7 @@ internal class Vector2AnimationViewer(Gorgon2D renderer, GorgonSwapChain swapCha
     /// </remarks>
     protected override void OnLoad()
     {
-        base.OnLoad();            
+        base.OnLoad();
 
         _vertexEditor.Camera = _anchorEdit.Camera = Clipper.Camera = Camera;
         Clipper.Bounds = RenderRegion;

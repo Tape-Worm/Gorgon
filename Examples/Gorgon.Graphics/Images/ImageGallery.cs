@@ -103,7 +103,7 @@ class ImageGallery
     private void CreateCustomImage()
     {
         // Create the image at the original size.
-        var sourceImage = new GorgonImage(new GorgonImageInfo(ImageType.Image2D, BufferFormat.R8G8B8A8_UNorm)
+        var sourceImage = new GorgonImage(new GorgonImageInfo(ImageDataType.Image2D, BufferFormat.R8G8B8A8_UNorm)
         {
             Width = 320,
             Height = 240

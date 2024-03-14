@@ -186,7 +186,7 @@ internal partial class RecentItemButton
             ButtonDelete.Visible = false;
             BackColor = DarkFormsRenderer.DarkBackground;
             PanelFileDate.BackColor = DarkFormsRenderer.WindowBackground;
-        }            
+        }
     }
 
     /// <summary>Raises the <see cref="E:System.Windows.Forms.UserControl.Load"/> event.</summary>

@@ -114,7 +114,7 @@ internal class SamplerCache(D3D11.Device5 device)
                 if (cached?.Equals(newState) ?? false)
                 {
                     return cached;
-                }                    
+                }
 
                 ++index;
             }

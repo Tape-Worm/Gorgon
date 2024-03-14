@@ -25,13 +25,13 @@
 #endregion
 
 using System.ComponentModel;
-using DX = SharpDX;
 using Gorgon.Editor.FontEditor.Properties;
 using Gorgon.Editor.UI;
 using Gorgon.Editor.UI.Controls;
 using Gorgon.Graphics.Fonts;
 using Gorgon.Graphics.Imaging;
 using Gorgon.Math;
+using DX = SharpDX;
 
 namespace Gorgon.Editor.FontEditor;
 
@@ -74,7 +74,7 @@ internal partial class FontTextureBrushView
         NumericRight.ValueChanged -= Numeric_ValueChanged;
         NumericBottom.ValueChanged -= Numeric_ValueChanged;
         ComboWrapMode.SelectedIndexChanged -= ComboWrapMode_SelectedIndexChanged;
-    }        
+    }
 
     /// <summary>
     /// Function to hook events.
@@ -124,7 +124,7 @@ internal partial class FontTextureBrushView
     /// <param name="e">The <see cref="EventArgs" /> instance containing the event data.</param>
     private void ComboWrapMode_SelectedIndexChanged(object sender, EventArgs e)
     {
-        var item = (WrapModeComboItem)ComboWrapMode.SelectedItem;            
+        var item = (WrapModeComboItem)ComboWrapMode.SelectedItem;
 
         if ((ViewModel?.SetWrappingModeCommand is null) || (!ViewModel.SetWrappingModeCommand.CanExecute(item.WrapMode)))
         {
@@ -261,7 +261,7 @@ internal partial class FontTextureBrushView
     }
 
     /// <summary>Function to cancel the change.</summary>
-    protected override void OnCancel() 
+    protected override void OnCancel()
     {
         if (ViewModel is not null)
         {
@@ -326,7 +326,7 @@ internal partial class FontTextureBrushView
 
     #region Constructor/Finalizer.
     /// <summary>Initializes a new instance of the <see cref="FontTextureBrushView"/> class.</summary>
-    public FontTextureBrushView() 
+    public FontTextureBrushView()
     {
         InitializeComponent();
 

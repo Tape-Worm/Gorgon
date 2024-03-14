@@ -136,7 +136,7 @@ internal class DataGridViewEx
         if (IsCurrentCellInEditMode)
         {
             base.OnMouseDown(e);
-            return;    
+            return;
         }
 
         Focus();
@@ -153,16 +153,16 @@ internal class DataGridViewEx
             return;
         }
 
-        DataGridViewRow row = Rows[hit.RowIndex];            
+        DataGridViewRow row = Rows[hit.RowIndex];
 
-        if ((!row.Selected) 
-            && (SelectedRows.Count > 0) 
-            && ((ModifierKeys & Keys.Shift) != Keys.Shift) 
+        if ((!row.Selected)
+            && (SelectedRows.Count > 0)
+            && ((ModifierKeys & Keys.Shift) != Keys.Shift)
             && ((ModifierKeys & Keys.Control) != Keys.Control))
         {
             ClearSelection();
             row.Selected = true;
-        }            
+        }
 
         if ((SelectedRows.Count > 0) && (row.Selected))
         {
@@ -206,7 +206,7 @@ internal class DataGridViewEx
     /// <param name="e">An <see cref="EventArgs"/> that contains the event data.</param>
     protected override void OnGotFocus(EventArgs e)
     {
-        Refresh();            
+        Refresh();
         base.OnGotFocus(e);
     }
 
@@ -215,19 +215,19 @@ internal class DataGridViewEx
     protected override void OnCellPainting(DataGridViewCellPaintingEventArgs e)
     {
         base.OnCellPainting(e);
-        if ((Focused) 
-            || ((e.State & DataGridViewElementStates.Selected) != DataGridViewElementStates.Selected) 
+        if ((Focused)
+            || ((e.State & DataGridViewElementStates.Selected) != DataGridViewElementStates.Selected)
             || ((e.PaintParts & DataGridViewPaintParts.Background) != DataGridViewPaintParts.Background)
             || (!Columns[e.ColumnIndex].Visible)
             || (IsCurrentCellInEditMode))
-        {                
+        {
             return;
         }
 
-        e.PaintBackground(new Rectangle(0, e.CellBounds.Y, ClientSize.Width - 1, e.CellBounds.Height), false);            
+        e.PaintBackground(new Rectangle(0, e.CellBounds.Y, ClientSize.Width - 1, e.CellBounds.Height), false);
 
         using (var pen = new Pen(e.CellStyle.SelectionBackColor))
-        {                
+        {
             var r = new Rectangle(e.ClipBounds.X, e.CellBounds.Y, e.ClipBounds.Width - 1, e.CellBounds.Height - 1);
             pen.DashStyle = System.Drawing.Drawing2D.DashStyle.Dot;
             e.Graphics.DrawRectangle(pen, r);

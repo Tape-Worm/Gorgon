@@ -125,7 +125,7 @@ internal class SpritePickContext
             }
 
             OnPropertyChanging();
-            NotifyPropertyChanging(nameof(ISpriteInfo.SpriteInfo));                
+            NotifyPropertyChanging(nameof(ISpriteInfo.SpriteInfo));
 
             _rect = value;
             OnPropertyChanged();
@@ -344,7 +344,7 @@ internal class SpritePickContext
         _hostServices = injectionParameters.HostServices;
         _spriteContent = injectionParameters.SpriteContent;
         _textureService = injectionParameters.TextureService;
-        SpritePickMaskEditor = injectionParameters.SpritePickMaskEditor;            
+        SpritePickMaskEditor = injectionParameters.SpritePickMaskEditor;
 
         _arrayIndex = _spriteContent.ArrayIndex;
         _rect = _spriteContent.Texture?.ToPixel(_spriteContent.TextureCoordinates).ToRectangleF() ?? DX.RectangleF.Empty;

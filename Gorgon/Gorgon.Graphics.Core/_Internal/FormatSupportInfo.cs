@@ -24,8 +24,8 @@
 // 
 #endregion
 
+using Gorgon.Graphics.Imaging;
 using D3D11 = SharpDX.Direct3D11;
-using ImageType = Gorgon.Graphics.Imaging.ImageType;
 
 namespace Gorgon.Graphics.Core;
 
@@ -106,16 +106,16 @@ internal class FormatSupportInfo(BufferFormat format,
     #region Methods.
 
     /// <summary>
-    /// Function to determine if a format is suitable for the texture type specified by <see cref="ImageType"/>.
+    /// Function to determine if a format is suitable for the texture type specified by <see cref="ImageDataType"/>.
     /// </summary>
     /// <param name="imageType">The image type to evaluate.</param>
     /// <returns><b>true</b> if suitable, <b>false</b> if not.</returns>
-    public bool IsTextureFormat(ImageType imageType) => imageType switch
+    public bool IsTextureFormat(ImageDataType imageType) => imageType switch
     {
-        ImageType.Image1D => (FormatSupport & BufferFormatSupport.Texture1D) == BufferFormatSupport.Texture1D,
-        ImageType.Image2D => (FormatSupport & BufferFormatSupport.Texture2D) == BufferFormatSupport.Texture2D,
-        ImageType.Image3D => (FormatSupport & BufferFormatSupport.Texture3D) == BufferFormatSupport.Texture3D,
-        ImageType.ImageCube => (FormatSupport & BufferFormatSupport.TextureCube) == BufferFormatSupport.TextureCube,
+        ImageDataType.Image1D => (FormatSupport & BufferFormatSupport.Texture1D) == BufferFormatSupport.Texture1D,
+        ImageDataType.Image2D => (FormatSupport & BufferFormatSupport.Texture2D) == BufferFormatSupport.Texture2D,
+        ImageDataType.Image3D => (FormatSupport & BufferFormatSupport.Texture3D) == BufferFormatSupport.Texture3D,
+        ImageDataType.ImageCube => (FormatSupport & BufferFormatSupport.TextureCube) == BufferFormatSupport.TextureCube,
         _ => false,
     };
 

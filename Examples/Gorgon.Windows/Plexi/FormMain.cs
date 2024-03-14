@@ -86,7 +86,7 @@ public partial class FormMain
         {
             var timer = new GorgonTimerQpc();
             int count = 0;
-            var wait = new SpinWait();                
+            var wait = new SpinWait();
 
             while ((isRunning) && (count < 10))
             {

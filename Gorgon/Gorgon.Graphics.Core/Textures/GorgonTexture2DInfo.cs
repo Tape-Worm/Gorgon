@@ -28,7 +28,6 @@ using Gorgon.Graphics.Imaging;
 
 namespace Gorgon.Graphics.Core;
 
-#if NET6_0_OR_GREATER
 /// <summary>
 /// Information used to create a texture object.
 /// </summary>
@@ -38,7 +37,7 @@ namespace Gorgon.Graphics.Core;
 public record GorgonTexture2DInfo(int Width, int Height, BufferFormat Format)
     : IGorgonTexture2DInfo, IGorgonImageInfo
 {
-#region Constructor.
+    #region Constructor.
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonTexture2DInfo"/> class.
     /// </summary>
@@ -56,13 +55,13 @@ public record GorgonTexture2DInfo(int Width, int Height, BufferFormat Format)
         Usage = info.Usage;
         Shared = info.Shared;
     }
-#endregion
+    #endregion
 
-#region Properties.
+    #region Properties.
     /// <summary>
     /// Property to return the type of image data.
     /// </summary>
-    ImageType IGorgonImageInfo.ImageType => IsCubeMap ? ImageType.ImageCube : ImageType.Image2D;
+    ImageDataType IGorgonImageInfo.ImageType => IsCubeMap ? ImageDataType.ImageCube : ImageDataType.Image2D;
 
     /// <summary>
     /// Property to return the depth of an image, in pixels.
@@ -207,181 +206,5 @@ public record GorgonTexture2DInfo(int Width, int Height, BufferFormat Format)
         get;
         init;
     }
-#endregion
-}
-#else
-/// <summary>
-/// Information used to create a texture object.
-/// </summary>
-public class GorgonTexture2DInfo
-    : IGorgonTexture2DInfo, IGorgonImageInfo
-{
-    #region Properties.
-    /// <summary>
-    /// Property to return the type of image data.
-    /// </summary>
-    ImageType IGorgonImageInfo.ImageType => IsCubeMap ? ImageType.ImageCube : ImageType.Image2D;
-
-    /// <summary>
-    /// Property to return the depth of an image, in pixels.
-    /// </summary>
-    int IGorgonImageInfo.Depth => 1;
-
-    /// <summary>
-    /// Property to return whether the image data is using premultiplied alpha.
-    /// </summary>
-    bool IGorgonImageInfo.HasPreMultipliedAlpha => false;
-
-    /// <summary>
-    /// Property to return the number of mip map levels in the image.
-    /// </summary>
-    int IGorgonImageInfo.MipCount => MipLevels;
-
-    /// <summary>
-    /// Property to return whether the size of the texture is a power of 2 or not.
-    /// </summary>
-    bool IGorgonImageInfo.IsPowerOfTwo => ((Width == 0) || (Width & (Width - 1)) == 0)
-                                          && ((Height == 0) || (Height & (Height - 1)) == 0);
-
-    /// <summary>
-    /// Property to return the name of the texture.
-    /// </summary>
-    public string Name
-    {
-        get;
-        set;
-    }
-
-    /// <summary>
-    /// Property to return the width of the texture, in pixels.
-    /// </summary>
-    public int Width
-    {
-        get;
-        set;
-    }
-
-    /// <summary>
-    /// Property to return the height of the texture, in pixels.
-    /// </summary>
-    public int Height
-    {
-        get;
-        set;
-    }
-
-    /// <summary>
-    /// Property to return the number of array levels for a 1D or 2D texture.
-    /// </summary>
-    public int ArrayCount
-    {
-        get;
-        set;
-    }
-
-    /// <summary>
-    /// Property to return whether this 2D texture is a cube map.
-    /// </summary>
-    public bool IsCubeMap
-    {
-        get;
-        set;
-    }
-
-    /// <summary>
-    /// Property to return the format of the texture.
-    /// </summary>
-    public BufferFormat Format
-    {
-        get;
-        set;
-    }
-
-    /// <summary>
-    /// Property to return the number of mip-map levels for the texture.
-    /// </summary>
-    public int MipLevels
-    {
-        get;
-        set;
-    }
-
-    /// <summary>
-    /// Property to return the multisample quality and count for this texture.
-    /// </summary>
-    public GorgonMultisampleInfo MultisampleInfo
-    {
-        get;
-        set;
-    }
-
-    /// <summary>
-    /// Property to return the intended usage flags for this texture.
-    /// </summary>
-    public ResourceUsage Usage
-    {
-        get;
-        set;
-    }
-
-    /// <summary>
-    /// Property to return the flags to determine how the texture will be bound with the pipeline when rendering.
-    /// </summary>
-    public TextureBinding Binding
-    {
-        get;
-        set;
-    }
-
-    /// <summary>Property to return whether this texture can be shared with other graphics interfaces.</summary>
-    public TextureSharingOptions Shared
-    {
-        get;
-        set;
-    }
-    #endregion
-
-    #region Methods.
-    /// <summary>
-    /// Function to copy another information object to this object with a new name.
-    /// </summary>
-    /// <param name="name">The name of the object.</param>
-    /// <param name="info">The destination for the copied data.</param>
-    internal void Copy(string name, IGorgonTexture2DInfo info)
-    {
-        Name = name;
-        Format = info.Format;
-        ArrayCount = info.ArrayCount;
-        Binding = info.Binding;
-        Height = info.Height;
-        IsCubeMap = info.IsCubeMap;
-        MipLevels = info.MipLevels;
-        MultisampleInfo = info.MultisampleInfo;
-        Usage = info.Usage;
-        Width = info.Width;
-        Shared = info.Shared;
-    }
-    #endregion
-
-    #region Constructor/Finalizer.
-    /// <summary>Initializes a new instance of the <see cref="GorgonTexture2DInfo" /> class.</summary>
-    /// <param name="width">The width.</param>
-    /// <param name="height">The height.</param>
-    /// <param name="format">The format.</param>
-    public GorgonTexture2DInfo(int width, int height, BufferFormat format)
-    {
-        Width = width;
-        Height = height;
-        Format = format;
-    }
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="GorgonTexture2DInfo"/> class.
-    /// </summary>
-    /// <param name="info">A <see cref="IGorgonTexture2DInfo"/> to copy settings from.</param>
-    /// <param name="newName">[Optional] The new name for the texture.</param>
-    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="info"/> parameter is <b>null</b>.</exception>
-    public GorgonTexture2DInfo(IGorgonTexture2DInfo info, string newName = null) => Copy(string.IsNullOrEmpty(newName) ? info.Name : newName, info);
     #endregion
 }
-#endif

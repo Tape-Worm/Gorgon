@@ -34,7 +34,7 @@ using Gorgon.Graphics.Fonts;
 using Gorgon.IO;
 using Gorgon.Math;
 using Drawing = System.Drawing;
-using FontStyle = Gorgon.Graphics.Fonts.FontStyle;
+
 
 namespace Gorgon.Editor.FontEditor;
 
@@ -133,16 +133,16 @@ internal class FontContent
             }
 
             OnPropertyChanging();
-            Drawing.FontFamily family = Interlocked.Exchange(ref _fontFamily, null);
+
+            FontFamily family = Interlocked.Exchange(ref _fontFamily, null);
             family?.Dispose();
-            _fontFamily = new Drawing.FontFamily(value);
-#if NET6_0_OR_GREATER
+            _fontFamily = new FontFamily(value);
             _info = _info with
             {
                 FontFamilyName = value,
                 Name = $"{value} {_info.Size} {_info.FontHeightMode}"
             };
-#endif
+
             OnPropertyChanged();
         }
     }
@@ -161,13 +161,13 @@ internal class FontContent
             }
 
             OnPropertyChanging();
-#if NET6_0_OR_GREATER
+
             _info = _info with
             {
                 Size = value,
                 Name = $"{_info.FontFamilyName} {value} {_info.FontHeightMode}"
             };
-#endif
+
             OnPropertyChanged();
         }
     }
@@ -175,7 +175,7 @@ internal class FontContent
     /// <summary>
     /// Property to return the units for the font size.
     /// </summary>
-    public FontHeightMode FontUnits
+    public GorgonFontHeightMode FontUnits
     {
         get => _info.FontHeightMode;
         private set
@@ -186,13 +186,11 @@ internal class FontContent
             }
 
             OnPropertyChanging();
-#if NET6_0_OR_GREATER
             _info = _info with
             {
                 FontHeightMode = value,
                 Name = $"{_info.FontFamilyName} {_info.Size} {value}"
             };
-#endif
             OnPropertyChanged();
         }
     }
@@ -211,13 +209,11 @@ internal class FontContent
             }
 
             OnPropertyChanging();
-#if NET6_0_OR_GREATER
             _isBold = value;
             _info = _info with
             {
                 FontStyle = GetFontStyle(value, IsItalic)
             };
-#endif
             OnPropertyChanged();
         }
     }
@@ -236,13 +232,11 @@ internal class FontContent
             }
 
             OnPropertyChanging();
-#if NET6_0_OR_GREATER
             _isItalic = value;
             _info = _info with
             {
                 FontStyle = GetFontStyle(IsBold, value)
             };
-#endif
             OnPropertyChanged();
         }
     }
@@ -252,22 +246,20 @@ internal class FontContent
     /// </summary>
     public bool IsAntiAliased
     {
-        get => _info.AntiAliasingMode == FontAntiAliasMode.AntiAlias;
+        get => _info.AntiAliasingMode == GorgonFontAntiAliasMode.AntiAlias;
         set
         {
-            if (((value) && (_info.AntiAliasingMode == FontAntiAliasMode.AntiAlias))
-                || ((!value) && (_info.AntiAliasingMode == FontAntiAliasMode.None)))
+            if (((value) && (_info.AntiAliasingMode == GorgonFontAntiAliasMode.AntiAlias))
+                || ((!value) && (_info.AntiAliasingMode == GorgonFontAntiAliasMode.None)))
             {
                 return;
             }
 
             OnPropertyChanging();
-#if NET6_0_OR_GREATER
             _info = _info with
             {
-                AntiAliasingMode = value ? FontAntiAliasMode.AntiAlias : FontAntiAliasMode.None
+                AntiAliasingMode = value ? GorgonFontAntiAliasMode.AntiAlias : GorgonFontAntiAliasMode.None
             };
-#endif
             OnPropertyChanged();
         }
     }
@@ -428,41 +420,33 @@ internal class FontContent
                 CurrentPanel = TextureEditor.CurrentPanel;
                 break;
             case nameof(ITextureEditorContext.CurrentBrush):
-#if NET6_0_OR_GREATER
                 _info = _info with
                 {
                     Brush = TextureEditor.CurrentBrush
                 };
                 ContentState = ContentState.Modified;
-#endif
                 break;
             case nameof(ITextureEditorContext.FontPadding):
-#if NET6_0_OR_GREATER
                 _info = _info with
                 {
                     PackingSpacing = TextureEditor.FontPadding.Padding
                 };
                 ContentState = ContentState.Modified;
-#endif
                 break;
             case nameof(ITextureEditorContext.TextureSize):
-#if NET6_0_OR_GREATER
                 _info = _info with
                 {
                     TextureHeight = TextureEditor.TextureSize.Height,
                     TextureWidth = TextureEditor.TextureSize.Width
                 };
                 ContentState = ContentState.Modified;
-#endif
                 break;
             case nameof(ITextureEditorContext.UsePremultipliedAlpha):
-#if NET6_0_OR_GREATER
                 _info = _info with
                 {
                     UsePremultipliedTextures = TextureEditor.UsePremultipliedAlpha
                 };
                 ContentState = ContentState.Modified;
-#endif
                 break;
         }
     }
@@ -490,7 +474,6 @@ internal class FontContent
     /// <returns>A task for asynchronous operation.</returns>
     private async Task UpdateFontOutlineAsync()
     {
-#if NET6_0_OR_GREATER
         async Task<bool> UpdateFontAsync(GorgonFontInfo args)
         {
             try
@@ -537,37 +520,30 @@ internal class FontContent
         }
 
         _undoService.Record(Resources.GORFNT_UNDO_OUTLINE, Action, Action, undoArgs, redoArgs);
-#else
-#pragma warning disable IDE0022 // Use expression body for methods
-        await Task.CompletedTask;
-#pragma warning restore IDE0022 // Use expression body for methods
-#endif
     }
 
-#if NET6_0_OR_GREATER
     /// <summary>
     /// Function to retrieve the font style from the style flags.
     /// </summary>
     /// <param name="isBold"><b>true</b> if the bold flag is set.</param>
     /// <param name="isItalic"><b>false</b> if the italic flag is set.</param>
     /// <returns>The font style.</returns>
-    private FontStyle GetFontStyle(bool isBold, bool isItalic)
+    private GorgonFontStyle GetFontStyle(bool isBold, bool isItalic)
     {
-        FontStyle result = FontStyle.Normal;
+        GorgonFontStyle result = GorgonFontStyle.Normal;
 
         if (isBold)
         {
-            result = !isItalic ? FontStyle.Bold : FontStyle.BoldItalics;
+            result = !isItalic ? GorgonFontStyle.Bold : GorgonFontStyle.BoldItalics;
         }
 
         if (isItalic)
         {
-            result = !isBold ? FontStyle.Italics : FontStyle.BoldItalics;
+            result = !isBold ? GorgonFontStyle.Italics : GorgonFontStyle.BoldItalics;
         }
 
         return result;
     }
-#endif
 
     /// <summary>
     /// Function to determine if the font can have its style set to italic.
@@ -597,7 +573,7 @@ internal class FontContent
 
             try
             {
-                IsItalic = args.FontStyle is FontStyle.Italics or FontStyle.BoldItalics;
+                IsItalic = args.FontStyle is GorgonFontStyle.Italics or GorgonFontStyle.BoldItalics;
                 _info = await _fontService.UpdateFontAsync(args);
 
                 ContentState = ContentState.Modified;
@@ -659,14 +635,13 @@ internal class FontContent
     /// <returns>A task for asynchronous operation.</returns>
     private async Task DoSetBoldAsync(bool flag)
     {
-#if NET6_0_OR_GREATER
         async Task<bool> SetBoldAsync(GorgonFontInfo args)
         {
             ShowWaitPanel(Resources.GORFNT_TEXT_PLEASE_WAIT_GEN_FONT);
 
             try
             {
-                IsBold = args.FontStyle is FontStyle.Bold or FontStyle.BoldItalics;
+                IsBold = args.FontStyle is GorgonFontStyle.Bold or GorgonFontStyle.BoldItalics;
                 _info = await _fontService.UpdateFontAsync(args);
 
                 ContentState = ContentState.Modified;
@@ -704,11 +679,6 @@ internal class FontContent
 
         _undoService.Record(Resources.GORFNT_UNDO_BOLD, UndoRedoActionAsync, UndoRedoActionAsync, undoArgs, redoArgs);
         NotifyPropertyChanged(nameof(UndoCommand));
-#else
-#pragma warning disable IDE0022 // Use expression body for methods
-        await Task.CompletedTask;
-#pragma warning restore IDE0022 // Use expression body for methods
-#endif
     }
 
     /// <summary>
@@ -725,14 +695,13 @@ internal class FontContent
     /// <returns>A task for asynchronous operation.</returns>
     private async Task DoSetAntiAliasAsync(bool flag)
     {
-#if NET6_0_OR_GREATER
         async Task<bool> SetAntiAliasAsync(GorgonFontInfo args)
         {
             ShowWaitPanel(Resources.GORFNT_TEXT_PLEASE_WAIT_GEN_FONT);
 
             try
             {
-                IsAntiAliased = args.AntiAliasingMode == FontAntiAliasMode.AntiAlias;
+                IsAntiAliased = args.AntiAliasingMode == GorgonFontAntiAliasMode.AntiAlias;
                 _info = await _fontService.UpdateFontAsync(args);
 
                 ContentState = ContentState.Modified;
@@ -760,7 +729,7 @@ internal class FontContent
         GorgonFontInfo undoArgs = new(_info);
         GorgonFontInfo redoArgs = _info with
         {
-            AntiAliasingMode = flag ? FontAntiAliasMode.AntiAlias : FontAntiAliasMode.None
+            AntiAliasingMode = flag ? GorgonFontAntiAliasMode.AntiAlias : GorgonFontAntiAliasMode.None
         };
 
         if (!(await SetAntiAliasAsync(redoArgs)))
@@ -770,11 +739,6 @@ internal class FontContent
 
         _undoService.Record(Resources.GORFNT_UNDO_ANTIALIAS, UndoRedoActionAsync, UndoRedoActionAsync, undoArgs, redoArgs);
         NotifyPropertyChanged(nameof(UndoCommand));
-#else
-#pragma warning disable IDE0022 // Use expression body for methods
-        await Task.CompletedTask;
-#pragma warning restore IDE0022 // Use expression body for methods
-#endif
     }
 
     /// <summary>
@@ -791,7 +755,6 @@ internal class FontContent
     /// <returns>A task for asynchronous operation.</returns>
     private async Task DoSetFontUnitsAsync(bool points)
     {
-#if NET6_0_OR_GREATER
         async Task<bool> SetUnitsAsync(GorgonFontInfo args)
         {
             ShowWaitPanel(Resources.GORFNT_TEXT_PLEASE_WAIT_GEN_FONT);
@@ -817,7 +780,7 @@ internal class FontContent
         }
 
 
-        if (points == (FontUnits == FontHeightMode.Points))
+        if (points == (FontUnits == GorgonFontHeightMode.Points))
         {
             return;
         }
@@ -827,7 +790,7 @@ internal class FontContent
         GorgonFontInfo undoArgs = new(_info);
         GorgonFontInfo redoArgs = _info with
         {
-            FontHeightMode = points ? FontHeightMode.Points : FontHeightMode.Pixels
+            FontHeightMode = points ? GorgonFontHeightMode.Points : GorgonFontHeightMode.Pixels
         };
 
         if (!(await SetUnitsAsync(redoArgs)))
@@ -837,11 +800,6 @@ internal class FontContent
 
         _undoService.Record(points ? Resources.GORFNT_UNDO_POINTS : Resources.GORFNT_UNDO_PIXEL, UndoRedoActionAsync, UndoRedoActionAsync, undoArgs, redoArgs);
         NotifyPropertyChanged(nameof(UndoCommand));
-#else
-#pragma warning disable IDE0022 // Use expression body for methods
-        await Task.CompletedTask;
-#pragma warning restore IDE0022 // Use expression body for methods
-#endif
     }
 
     /// <summary>
@@ -858,7 +816,6 @@ internal class FontContent
     /// <returns>A task for asynchronous operation.</returns>
     private async Task DoSetSizeAsync(float value)
     {
-#if NET6_0_OR_GREATER
         async Task<bool> SetSizeAsync(GorgonFontInfo args)
         {
             ShowWaitPanel(Resources.GORFNT_TEXT_PLEASE_WAIT_GEN_FONT);
@@ -866,7 +823,7 @@ internal class FontContent
             try
             {
                 FontSize = args.Size;
-                _info = await _fontService.UpdateFontAsync(args);                    
+                _info = await _fontService.UpdateFontAsync(args);
                 ContentState = ContentState.Modified;
 
                 return true;
@@ -897,11 +854,6 @@ internal class FontContent
 
         _undoService.Record(Resources.GORFNT_UNDO_FONT_SIZE, UndoRedoActionAsync, UndoRedoActionAsync, undoArgs, redoArgs);
         NotifyPropertyChanged(nameof(UndoCommand));
-#else
-#pragma warning disable IDE0022 // Use expression body for methods
-        await Task.CompletedTask;
-#pragma warning restore IDE0022 // Use expression body for methods
-#endif
     }
 
     /// <summary>
@@ -918,16 +870,15 @@ internal class FontContent
     /// <returns>A task for asynchronous operation.</returns>
     private async Task DoSetFontFamilyAsync(string fontFamily)
     {
-#if NET6_0_OR_GREATER
         async Task<bool> SetFamilyAsync(GorgonFontInfo args)
-        {                
+        {
             ShowWaitPanel(Resources.GORFNT_TEXT_PLEASE_WAIT_GEN_FONT);
 
             try
             {
                 FontFamily = args.FontFamilyName;
-                IsBold = args.FontStyle is FontStyle.Bold or FontStyle.BoldItalics;
-                IsItalic = args.FontStyle is FontStyle.Italics or FontStyle.BoldItalics;
+                IsBold = args.FontStyle is GorgonFontStyle.Bold or GorgonFontStyle.BoldItalics;
+                IsItalic = args.FontStyle is GorgonFontStyle.Italics or GorgonFontStyle.BoldItalics;
                 _info = await _fontService.UpdateFontAsync(args);
 
                 ContentState = ContentState.Modified;
@@ -940,7 +891,7 @@ internal class FontContent
                 return false;
             }
             finally
-            {                    
+            {
                 HideWaitPanel();
             }
         }
@@ -952,11 +903,11 @@ internal class FontContent
         try
         {
             GorgonFontInfo undoArgs = new(_info);
-            bool isBold = _info.FontStyle is FontStyle.Bold or FontStyle.BoldItalics;
-            bool isItalic = _info.FontStyle is FontStyle.Italics or FontStyle.BoldItalics;
+            bool isBold = _info.FontStyle is GorgonFontStyle.Bold or GorgonFontStyle.BoldItalics;
+            bool isItalic = _info.FontStyle is GorgonFontStyle.Italics or GorgonFontStyle.BoldItalics;
 
 
-            if ((!localFamily.IsStyleAvailable(Drawing.FontStyle.Regular)) && (_info.FontStyle == FontStyle.Normal))
+            if ((!localFamily.IsStyleAvailable(Drawing.FontStyle.Regular)) && (_info.FontStyle == GorgonFontStyle.Normal))
             {
                 // Try to set the bold or italic version.
                 isBold = true;
@@ -999,11 +950,6 @@ internal class FontContent
         {
             localFamily.Dispose();
         }
-#else
-#pragma warning disable IDE0022 // Use expression body for methods
-        await Task.CompletedTask;
-#pragma warning restore IDE0022 // Use expression body for methods
-#endif
     }
 
     /// <summary>
@@ -1142,7 +1088,6 @@ internal class FontContent
     /// </summary>
     private async void DoSelectCharactersAsync()
     {
-#if NET6_0_OR_GREATER
         async Task<bool> SelectCharsAsync(GorgonFontInfo args)
         {
             ShowWaitPanel(Resources.GORFNT_TEXT_PLEASE_WAIT_GEN_FONT);
@@ -1182,11 +1127,6 @@ internal class FontContent
 
         _undoService.Record(Resources.GORFNT_UNDO_SELECT_CHARS, UndoRedoActionAsync, UndoRedoActionAsync, undoArgs, redoArgs);
         NotifyPropertyChanged(nameof(UndoCommand));
-#else
-#pragma warning disable IDE0022 // Use expression body for methods
-        await Task.CompletedTask;
-#pragma warning restore IDE0022 // Use expression body for methods
-#endif
     }
 
     /// <summary>
@@ -1368,8 +1308,8 @@ internal class FontContent
         TextureEditor = injectionParameters.TextureEditorContext;
 
         _info = new GorgonFontInfo(WorkingFont);
-        _isBold = _info.FontStyle is FontStyle.Bold or FontStyle.BoldItalics;
-        _isItalic = _info.FontStyle is FontStyle.Italics or FontStyle.BoldItalics;
+        _isBold = _info.FontStyle is GorgonFontStyle.Bold or GorgonFontStyle.BoldItalics;
+        _isItalic = _info.FontStyle is GorgonFontStyle.Italics or GorgonFontStyle.BoldItalics;
 
         _fontFamily = new Drawing.FontFamily(_info.FontFamilyName);
     }

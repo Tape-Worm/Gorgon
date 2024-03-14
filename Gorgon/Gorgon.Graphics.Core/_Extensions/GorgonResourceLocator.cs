@@ -81,16 +81,16 @@ public static class GorgonResourceLocator
     /// <returns><b>true</b> if the resource name matches the filter type, or <b>false</b> if not.</returns>
     private static bool NameComparison(string name, string itemName, LocateFilterType filterType, StringComparison comparisonType) => !string.IsNullOrWhiteSpace(itemName)
 && filterType switch
-            {
-                LocateFilterType.StartsWith => itemName.StartsWith(name, comparisonType),
-                LocateFilterType.EndsWith => itemName.EndsWith(name, comparisonType),
-                LocateFilterType.Contains => itemName.IndexOf(name, comparisonType) != -1,
-                LocateFilterType.NotContains => itemName.IndexOf(name, comparisonType) == -1,
-                LocateFilterType.NotStartsWith => !itemName.StartsWith(name, comparisonType),
-                LocateFilterType.NotEndsWith => !itemName.EndsWith(name, comparisonType),
-                LocateFilterType.NotEqual => !string.Equals(name, itemName, comparisonType),
-                _ => string.Equals(name, itemName, comparisonType),
-            };
+{
+    LocateFilterType.StartsWith => itemName.StartsWith(name, comparisonType),
+    LocateFilterType.EndsWith => itemName.EndsWith(name, comparisonType),
+    LocateFilterType.Contains => itemName.IndexOf(name, comparisonType) != -1,
+    LocateFilterType.NotContains => itemName.IndexOf(name, comparisonType) == -1,
+    LocateFilterType.NotStartsWith => !itemName.StartsWith(name, comparisonType),
+    LocateFilterType.NotEndsWith => !itemName.EndsWith(name, comparisonType),
+    LocateFilterType.NotEqual => !string.Equals(name, itemName, comparisonType),
+    _ => string.Equals(name, itemName, comparisonType),
+};
 
     /// <summary>
     /// Function to locate a graphics resource by its name.

@@ -73,7 +73,7 @@ public class GorgonFrustumVisual
     {
         var vertexBuffer = new GorgonVertexBuffer(Graphics, new GorgonVertexBufferInfo(_lineVertices.Length * Unsafe.SizeOf<Vector3>())
         {
-            Name = "Frustum Visual VertexBuffer",                
+            Name = "Frustum Visual VertexBuffer",
             Usage = ResourceUsage.Dynamic
         });
 
@@ -113,9 +113,9 @@ public class GorgonFrustumVisual
     private void BuildBox(GorgonBoundingFrustum frustum)
     {
         // Left            
-        _lineVertices[0] = frustum.Corners[FrustumCorner.BottomLeftFar]; 
+        _lineVertices[0] = frustum.Corners[FrustumCorner.BottomLeftFar];
         _lineVertices[2] = _lineVertices[1] = frustum.Corners[FrustumCorner.TopLeftFar];
-        _lineVertices[4] = _lineVertices[3] = frustum.Corners[FrustumCorner.TopLeftNear]; 
+        _lineVertices[4] = _lineVertices[3] = frustum.Corners[FrustumCorner.TopLeftNear];
         _lineVertices[6] = _lineVertices[5] = frustum.Corners[FrustumCorner.BottomLeftNear];
         _lineVertices[7] = _lineVertices[0];
 
@@ -123,7 +123,7 @@ public class GorgonFrustumVisual
         _lineVertices[8] = frustum.Corners[FrustumCorner.BottomRightFar];
         _lineVertices[10] = _lineVertices[9] = frustum.Corners[FrustumCorner.TopRightFar];
         _lineVertices[12] = _lineVertices[11] = frustum.Corners[FrustumCorner.TopRightNear];
-        _lineVertices[14] = _lineVertices[13] = frustum.Corners[FrustumCorner.BottomRightNear];                
+        _lineVertices[14] = _lineVertices[13] = frustum.Corners[FrustumCorner.BottomRightNear];
         _lineVertices[15] = _lineVertices[8];
 
         // Bottom

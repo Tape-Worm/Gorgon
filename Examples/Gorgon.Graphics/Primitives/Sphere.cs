@@ -89,7 +89,7 @@ internal class Sphere
 
                 var normal = Vector3.Multiply(position, 2.0f);
                 position = Vector3.Transform(position, _orientation);
-                normal = Vector3.Normalize(Vector3.Transform(normal, _orientation));                    
+                normal = Vector3.Normalize(Vector3.Transform(normal, _orientation));
 
                 // Create the vertex.
                 textureDelta.X *= textureCoordinates.Width;

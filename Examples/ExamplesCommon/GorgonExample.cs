@@ -39,7 +39,7 @@ using Gorgon.Timing;
 using Gorgon.UI;
 using Drawing = System.Drawing;
 using DX = SharpDX;
-using FontStyle = Gorgon.Graphics.Fonts.FontStyle;
+
 
 namespace Gorgon.Examples;
 
@@ -225,7 +225,7 @@ public static class GorgonExample
         // We won't include these in the draw call count. 
         ref readonly GorgonGraphicsStatistics stats = ref graphics.Statistics;
 
-        _statsText.Length = 0;            
+        _statsText.Length = 0;
         _statsText.AppendFormat("Average FPS: {0:0.0}\nFrame Delta: {1:0.00#} seconds\nDraw Call Count: {2} ({3} triangles)", GorgonTiming.AverageFPS, GorgonTiming.Delta, stats.DrawCallCount, stats.TriangleCount);
 
         DX.Size2F measure = _statsText.ToString().MeasureText(_statsFont, true);
@@ -324,11 +324,11 @@ public static class GorgonExample
         _blitter = new GorgonTextureBlitter(graphics);
 
         _factory = new GorgonFontFactory(graphics);
-        _statsFont = _factory.GetFont(new GorgonFontInfo("Segoe UI", 9, FontHeightMode.Points)
+        _statsFont = _factory.GetFont(new GorgonFontInfo("Segoe UI", 9, GorgonFontHeightMode.Points)
         {
             Name = "Segoe UI 9pt Bold Outlined",
-            AntiAliasingMode = FontAntiAliasMode.AntiAlias,
-            FontStyle = FontStyle.Bold,
+            AntiAliasingMode = GorgonFontAntiAliasMode.AntiAlias,
+            FontStyle = GorgonFontStyle.Bold,
             OutlineColor1 = GorgonColor.Black,
             OutlineColor2 = GorgonColor.Black,
             OutlineSize = 2,

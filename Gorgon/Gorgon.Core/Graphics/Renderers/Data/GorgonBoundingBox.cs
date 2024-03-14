@@ -86,7 +86,7 @@ namespace Gorgon.Renderers.Data;
 /// Represents an axis-aligned bounding box in three dimensional space.
 /// </summary>
 [StructLayout(LayoutKind.Sequential, Pack = 4)]
-public readonly struct GorgonBoundingBox 
+public readonly struct GorgonBoundingBox
     : IGorgonEquatableByRef<GorgonBoundingBox>
 {
     #region Variables.
@@ -255,7 +255,7 @@ public readonly struct GorgonBoundingBox
     /// </summary>
     /// <param name="sphere">The sphere that will designate the extents of the box.</param>
     /// <param name="result">When the method completes, contains the newly constructed bounding box.</param>
-    public static void FromSphere(in GorgonBoundingSphere sphere, out GorgonBoundingBox result) 
+    public static void FromSphere(in GorgonBoundingSphere sphere, out GorgonBoundingBox result)
                            => result = new GorgonBoundingBox(new Vector3(sphere.Center.X - sphere.Radius, sphere.Center.Y - sphere.Radius, sphere.Center.Z - sphere.Radius),
                                        new Vector3(sphere.Center.X + sphere.Radius, sphere.Center.Y + sphere.Radius, sphere.Center.Z + sphere.Radius));
 
@@ -268,7 +268,7 @@ public readonly struct GorgonBoundingBox
     /// <param name="result">When the method completes, contains the newly constructed bounding box.</param>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static void Merge(in GorgonBoundingBox value1, in GorgonBoundingBox value2, out GorgonBoundingBox result)
-        => result = new GorgonBoundingBox(value1.Minimum.Min(value2.Minimum), value1.Maximum.Max(value2.Maximum));        
+        => result = new GorgonBoundingBox(value1.Minimum.Min(value2.Minimum), value1.Maximum.Max(value2.Maximum));
 
     /// <summary>
     /// Function to intersect two Axis Aligned Bounding Boxes.

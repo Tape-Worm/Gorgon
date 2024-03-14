@@ -39,9 +39,8 @@ internal class Program
     [STAThread()]
     private static void Main()
     {
-#if NET6_0_OR_GREATER
         Application.SetHighDpiMode(HighDpiMode.PerMonitorV2);
-#endif
+
         // This is here for any windows forms elements that get displayed.
         // Without this, the elements will not use the visual styles and will 
         // default to older styles.
@@ -52,9 +51,9 @@ internal class Program
         {
             GorgonApplication.Run(new FormMain());
         }
-        catch(Exception ex)
+        catch (Exception ex)
         {
             GorgonDialogs.ErrorBox(null, ex);
         }
-    }        
+    }
 }

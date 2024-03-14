@@ -326,7 +326,7 @@ internal class Boot
         {
             Program.Log.LogException(ex);
             GorgonDialogs.ErrorBox(_splash, Resources.GOREDIT_ERR_LOADING_PLUGINS, Resources.GOREDIT_ERR_ERROR, ex);
-        }            
+        }
     }
 
     /// <summary>
@@ -353,7 +353,7 @@ internal class Boot
         }
 
         try
-        {                
+        {
             _splash.InfoText = Resources.GOREDIT_TEXT_LOADING_CONTENT_PLUGINS;
             _contentPlugIns.LoadContentPlugIns(_pluginCache, contentPlugInsDir);
         }
@@ -472,7 +472,7 @@ internal class Boot
             else
             {
                 windowState = (FormWindowState)settings.WindowState;
-            }                
+            }
 
             _mainForm.SetDataContext(mainViewModel);
 

@@ -134,7 +134,7 @@ internal class ContentPlugInService
         {
             try
             {
-                _hostServices.Log.Print($"Creating content plug in '{plugin.Name}'...", LoggingLevel.Simple);                    
+                _hostServices.Log.Print($"Creating content plug in '{plugin.Name}'...", LoggingLevel.Simple);
                 plugin.Initialize(_hostServices);
 
                 // Check to see if this plug in can continue.

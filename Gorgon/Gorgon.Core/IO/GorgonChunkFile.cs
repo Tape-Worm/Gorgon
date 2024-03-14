@@ -92,7 +92,7 @@ public abstract class GorgonChunkFile<T>
     /// <summary>
     /// Property to return whether or not the file is open.
     /// </summary>
-        public bool IsOpen
+    public bool IsOpen
     {
         get;
         private set;

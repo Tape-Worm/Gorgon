@@ -319,7 +319,7 @@ public class Gorgon2DBloomEffect
         float logSize = ((float)maxSize).Log(2) + BlurAmount - 10;
         float floorLog = logSize.FastFloor();
 
-        int sampleIterations = (int)floorLog.Min(MaxIterations).Max(1);            
+        int sampleIterations = (int)floorLog.Min(MaxIterations).Max(1);
         float knee = linearThreshold * BrightPassCurveKnee + 1e-5f;
 
         settings.FilterValues = new Vector4(linearThreshold, linearThreshold - knee, knee * 2, 0.25f / knee);
@@ -533,7 +533,7 @@ public class Gorgon2DBloomEffect
 
                 return _pass0State;
             case 1:
-                if ((_finalPassBatchState is not null) 
+                if ((_finalPassBatchState is not null)
                     && (_finalPassBatchState.PixelShaderState.ShaderResources[1] == _blurSrv)
                     && (_finalPassBatchState.PixelShaderState.ShaderResources[2] == DirtTexture))
                 {
@@ -673,7 +673,7 @@ public class Gorgon2DBloomEffect
         else
         {
             EndRender(null);
-        }            
+        }
     }
 
     /// <summary>Function called to initialize the effect.</summary>
@@ -683,7 +683,7 @@ public class Gorgon2DBloomEffect
         _settingsBuffer = GorgonConstantBufferView.CreateConstantBuffer(Graphics, in _settings, "Bloom Settings Buffer");
         _textureSettingsBuffer = GorgonConstantBufferView.CreateConstantBuffer(Graphics, new GorgonConstantBufferInfo(Unsafe.SizeOf<Vector2>())
         {
-            Name = "Texture Settings Buffer",                
+            Name = "Texture Settings Buffer",
             Usage = ResourceUsage.Dynamic
         });
 
@@ -707,6 +707,6 @@ public class Gorgon2DBloomEffect
 
         _sceneTargetInfo = new BloomTextureInfo(_targetInfo, "Bloom Source Image");
         _blurTargetInfo = new BloomTextureInfo(_targetInfo, "Blurred/Filtered Target");
-    }    
+    }
     #endregion
 }

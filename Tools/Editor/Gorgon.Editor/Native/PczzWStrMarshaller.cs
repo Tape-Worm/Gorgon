@@ -43,7 +43,7 @@ internal unsafe static class PczzWStrMarshaller
     public static byte* ConvertToUnmanaged(string managed)
     {
         if (managed is null)
-        {        
+        {
             return null;
         }
 

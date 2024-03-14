@@ -151,7 +151,7 @@ internal class SettingsPlugInListItem
         Name = injectionParameters.Name;
         Type = injectionParameters.Type;
         State = injectionParameters.State ?? string.Empty;
-        DisabledReason = string.IsNullOrWhiteSpace(injectionParameters.DisabledReason) ? $"{injectionParameters.Description}\r\n\r\n{Resources.GOREDIT_TEXT_PLUGIN_LOADED_SUCCESSFULLY}" 
+        DisabledReason = string.IsNullOrWhiteSpace(injectionParameters.DisabledReason) ? $"{injectionParameters.Description}\r\n\r\n{Resources.GOREDIT_TEXT_PLUGIN_LOADED_SUCCESSFULLY}"
                                                                                         : injectionParameters.DisabledReason;
         Path = injectionParameters.Path;
     }

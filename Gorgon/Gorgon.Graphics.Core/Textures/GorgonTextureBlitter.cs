@@ -135,7 +135,7 @@ public class GorgonTextureBlitter
                 [0] = GorgonVertexBufferBinding.CreateVertexBuffer<GorgonVertexPosColorUv>(_graphics, new GorgonVertexBufferInfo(GorgonVertexPosColorUv.SizeInBytes * 4)
                 {
                     Name = "Gorgon Blitter Vertex Buffer",
-                    Binding = VertexIndexBufferBinding.None,                        
+                    Binding = VertexIndexBufferBinding.None,
                     Usage = ResourceUsage.Dynamic
                 })
             };
@@ -201,7 +201,7 @@ public class GorgonTextureBlitter
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private void UpdateProjection()
     {
-        if (_graphics.RenderTargets[0] is null)            
+        if (_graphics.RenderTargets[0] is null)
         {
             return;
         }
@@ -218,7 +218,7 @@ public class GorgonTextureBlitter
         _wvpBuffer.Buffer.SetData(in projectionMatrix);
 
         // Since we only care about the projection matrix, we can disregard the view changes so we don't continuously repeat the projection calculations.
-        _camera.DiscardChanges();            
+        _camera.DiscardChanges();
     }
 
     /// <summary>
@@ -245,7 +245,7 @@ public class GorgonTextureBlitter
 
         _fullScreenDraw = _fsBuilder.ShaderResource(ShaderType.Pixel, texture)
                                     .SamplerState(ShaderType.Pixel, samplerState)
-                                    .Build(_drawAllocator);                      
+                                    .Build(_drawAllocator);
     }
 
     /// <summary>
@@ -256,7 +256,7 @@ public class GorgonTextureBlitter
     /// <param name="samplerState">The sampler state for the texture.</param>
     /// <param name="shader">The pixel shader to use.</param>
     /// <param name="constantBuffers">Constant buffers for the pixel shader, if required.</param>
-        private void GetDrawCall(GorgonTexture2DView texture, GorgonBlendState blendState, GorgonSamplerState samplerState, GorgonPixelShader shader, GorgonConstantBuffers constantBuffers)
+    private void GetDrawCall(GorgonTexture2DView texture, GorgonBlendState blendState, GorgonSamplerState samplerState, GorgonPixelShader shader, GorgonConstantBuffers constantBuffers)
     {
         if ((_blitDraw is not null)
             && (shader == _blitPixelShader)
@@ -281,7 +281,7 @@ public class GorgonTextureBlitter
 
         _blitDraw = _blitBuilder.ConstantBuffers(ShaderType.Pixel, constantBuffers)
                                 .SamplerState(ShaderType.Pixel, samplerState)
-                                .ShaderResource(ShaderType.Pixel, texture)                                        
+                                .ShaderResource(ShaderType.Pixel, texture)
                                 .Build(_drawAllocator);
     }
 

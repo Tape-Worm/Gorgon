@@ -163,7 +163,7 @@ public abstract class GorgonReadWriteView(GorgonGraphicsResource resource)
     /// This method works on any unordered access view that does not require format conversion.  Unordered access views for raw/structured buffers only use the first value.
     /// </para>
     /// </remarks>
-    public void Clear(float value1, float value2, float value3, float value4) => Resource.Graphics.D3DDeviceContext.ClearUnorderedAccessView(Native, 
+    public void Clear(float value1, float value2, float value3, float value4) => Resource.Graphics.D3DDeviceContext.ClearUnorderedAccessView(Native,
                                                                              new DX.Mathematics.Interop.RawInt4((int)value1, (int)value2, (int)value3, (int)value4));
 
     /// <summary>

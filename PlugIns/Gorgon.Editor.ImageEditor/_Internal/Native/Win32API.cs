@@ -287,7 +287,7 @@ internal static partial class Win32API
 
         try
         {
-            
+
             if (AssocQueryString(AssociationFlags.DontRemapCLSID | AssociationFlags.RemapRunDLL,
                             AssociationStringType.Executable,
                             filePath,

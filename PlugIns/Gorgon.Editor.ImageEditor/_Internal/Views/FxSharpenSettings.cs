@@ -33,7 +33,7 @@ namespace Gorgon.Editor.ImageEditor;
 /// <summary>
 /// The settings for the sharpen effect.
 /// </summary>
-internal partial class FxSharpenSettings 
+internal partial class FxSharpenSettings
     : EditorSubPanelCommon, IDataContext<IFxSharpen>
 {
     #region Properties.

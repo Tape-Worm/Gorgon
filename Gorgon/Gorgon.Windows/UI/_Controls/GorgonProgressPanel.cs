@@ -370,12 +370,12 @@ public partial class GorgonProgressPanel
         base.OnLoad(e);
 
         ButtonCancel.Select();
-    }                
+    }
 
     /// <summary>
     /// Function to cancel the operation.
     /// </summary>
-    public void Cancel() 
+    public void Cancel()
     {
         if (!AllowCancellation)
         {

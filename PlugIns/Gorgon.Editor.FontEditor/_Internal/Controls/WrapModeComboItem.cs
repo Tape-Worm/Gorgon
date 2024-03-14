@@ -42,7 +42,7 @@ internal struct WrapModeComboItem(GlyphBrushWrapMode wrapMode, string text)
 {
     #region Variables.
     // Item text.
-    private readonly string _text = text;			
+    private readonly string _text = text;
 
     /// <summary>
     /// The wrapping mode.

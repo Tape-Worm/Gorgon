@@ -116,6 +116,6 @@ internal class FontSolidBrush
     {
         _brush = DefaultBrush;
         base.Unload();
-    }        
+    }
     #endregion
 }

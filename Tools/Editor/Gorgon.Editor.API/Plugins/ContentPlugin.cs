@@ -265,7 +265,7 @@ public abstract class ContentPlugIn(string description)
     {
         // First try to ensure the generated name is available.
         int count = 0;
-        string defaultExtension = (string.IsNullOrWhiteSpace(generatedName)) || (string.IsNullOrWhiteSpace(DefaultFileExtension.Extension)) ? string.Empty : ("." + DefaultFileExtension.Extension);            
+        string defaultExtension = (string.IsNullOrWhiteSpace(generatedName)) || (string.IsNullOrWhiteSpace(DefaultFileExtension.Extension)) ? string.Empty : ("." + DefaultFileExtension.Extension);
 
         if (!string.IsNullOrWhiteSpace(generatedName))
         {
@@ -277,7 +277,7 @@ public abstract class ContentPlugIn(string description)
             }
 
             generatedName = fileName;
-        }           
+        }
 
         do
         {

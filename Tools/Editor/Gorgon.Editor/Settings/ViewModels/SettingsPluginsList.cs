@@ -109,7 +109,7 @@ internal class SettingsPlugInsList
     /// <remarks>
     /// Applications should call this when setting up the view model for complex operations and/or dependency injection. The constructor should only be used for simple set up and initialization of objects.
     /// </remarks>
-    protected override void OnInitialize(SettingsPlugInsListParameters injectionParameters) => PlugIns = new ObservableCollection<ISettingsPlugInListItem>(injectionParameters.PlugIns?.OrderBy(item => item.Name, StringComparer.CurrentCultureIgnoreCase));        
+    protected override void OnInitialize(SettingsPlugInsListParameters injectionParameters) => PlugIns = new ObservableCollection<ISettingsPlugInListItem>(injectionParameters.PlugIns?.OrderBy(item => item.Name, StringComparer.CurrentCultureIgnoreCase));
     #endregion
 
     #region Constructor/Finalizer.

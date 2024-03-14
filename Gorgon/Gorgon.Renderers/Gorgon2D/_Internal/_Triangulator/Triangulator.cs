@@ -433,9 +433,9 @@ internal enum WindingOrder
     /// <summary>
     /// Clockwise winding for vertices.
     /// </summary>
-        Clockwise,
+    Clockwise,
     /// <summary>
     /// Counterclockwise winding for vertices.
     /// </summary>
-        CounterClockwise
+    CounterClockwise
 }

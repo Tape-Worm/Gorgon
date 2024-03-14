@@ -656,8 +656,8 @@ public class GorgonPolySprite
         newSprite.Renderable.VertexBuffer = GorgonVertexBufferBinding.CreateVertexBuffer<Gorgon2DVertex>(graphics, new GorgonVertexBufferInfo(newSprite.Renderable.Vertices.Length * Gorgon2DVertex.SizeInBytes)
         {
             Usage = ResourceUsage.Immutable,
-            Binding = VertexIndexBufferBinding.None                
-        }, newSprite.Renderable.Vertices);                
+            Binding = VertexIndexBufferBinding.None
+        }, newSprite.Renderable.Vertices);
 
         return newSprite;
     }
@@ -669,6 +669,6 @@ public class GorgonPolySprite
     /// </summary>
     internal GorgonPolySprite()
     {
-    }        
+    }
     #endregion
 }

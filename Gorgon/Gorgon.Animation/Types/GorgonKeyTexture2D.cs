@@ -85,7 +85,7 @@ public class GorgonKeyTexture2D
     /// <summary>
     /// Property to set or return the texture array index to use on a texture array.
     /// </summary>
-        public ref int TextureArrayIndex => ref _textureArrayIndex;
+    public ref int TextureArrayIndex => ref _textureArrayIndex;
 
     /// <summary>
     /// Property to set or return the texture coordinates.

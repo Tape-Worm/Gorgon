@@ -114,10 +114,10 @@ internal class TempTargetTextureInfo
     /// This value is defaulted to <see cref="TextureBinding.ShaderResource" />.
     /// </para>
     /// </remarks>
-    public TextureBinding Binding 
-    { 
-        get; 
-        private set; 
+    public TextureBinding Binding
+    {
+        get;
+        private set;
     } = TextureBinding.ShaderResource | TextureBinding.RenderTarget;
 
     /// <summary>Property to return whether this texture can be shared with other graphics interfaces.</summary>
