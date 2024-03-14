@@ -197,9 +197,9 @@ partial class FormRibbon
         this.ButtonNewSprite.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.N)));
         this.ButtonNewSprite.TextLine1 = "New";
         this.ButtonNewSprite.TextLine2 = "Sprite";
-        this.ButtonNewSprite.ToolTipBody = "Creates a new sprite based on the current sprite being edited.\r\n\r\nAll sprite prop" +
+        this.ButtonNewSprite.ToolTipValues.Description = "Creates a new sprite based on the current sprite being edited.\r\n\r\nAll sprite prop" +
 "erties (except the name) will be copied to the \r\nnew sprite.";
-        this.ButtonNewSprite.ToolTipTitle = "New sprite";
+        this.ButtonNewSprite.ToolTipValues.Heading = "New sprite";
         this.ButtonNewSprite.Click += new System.EventHandler(this.ButtonNewSprite_Click);
         // 
         // ButtonSaveSprite
@@ -211,8 +211,8 @@ partial class FormRibbon
         this.ButtonSaveSprite.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.S)));
         this.ButtonSaveSprite.TextLine1 = "Save";
         this.ButtonSaveSprite.TextLine2 = "Sprite";
-        this.ButtonSaveSprite.ToolTipBody = "Updates the sprite file in the file system with the current changes.";
-        this.ButtonSaveSprite.ToolTipTitle = "Save Sprite";
+        this.ButtonSaveSprite.ToolTipValues.Description = "Updates the sprite file in the file system with the current changes.";
+        this.ButtonSaveSprite.ToolTipValues.Heading = "Save Sprite";
         this.ButtonSaveSprite.Click += new System.EventHandler(this.ButtonSaveSprite_Click);
         // 
         // GroupSpriteEdit
@@ -241,8 +241,8 @@ partial class FormRibbon
         this.ButtonClipSprite.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.K)));
         this.ButtonClipSprite.TextLine1 = "Clip";
         this.ButtonClipSprite.TextLine2 = "Sprite";
-        this.ButtonClipSprite.ToolTipBody = "Use a rectangular selection to define the dimensions of the sprite.";
-        this.ButtonClipSprite.ToolTipTitle = "Clip sprite";
+        this.ButtonClipSprite.ToolTipValues.Description = "Use a rectangular selection to define the dimensions of the sprite.";
+        this.ButtonClipSprite.ToolTipValues.Heading = "Clip sprite";
         this.ButtonClipSprite.Click += new System.EventHandler(this.ButtonClipSprite_Click);
         // 
         // ButtonPickSprite
@@ -253,10 +253,10 @@ partial class FormRibbon
         this.ButtonPickSprite.KeyTip = "P";
         this.ButtonPickSprite.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.P)));
         this.ButtonPickSprite.TextLine1 = "Pick";
-        this.ButtonPickSprite.ToolTipBody = "Defines a sprites dimensions by clicking on the image and having Gorgon determine" +
+        this.ButtonPickSprite.ToolTipValues.Description = "Defines a sprites dimensions by clicking on the image and having Gorgon determine" +
 " the extents.\r\n\r\nThis will only work on images that can be converted to a 32 bit" +
 " RGBA or BGRA pixel format.";
-        this.ButtonPickSprite.ToolTipTitle = "Pick sprite";
+        this.ButtonPickSprite.ToolTipValues.Heading = "Pick sprite";
         this.ButtonPickSprite.Click += new System.EventHandler(this.ButtonPickSprite_Click);
         // 
         // kryptonRibbonGroupLines2
@@ -272,8 +272,8 @@ partial class FormRibbon
         this.ButtonSpriteUndo.KeyTip = "U";
         this.ButtonSpriteUndo.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Z)));
         this.ButtonSpriteUndo.TextLine1 = "Undo";
-        this.ButtonSpriteUndo.ToolTipBody = "Reverts the previous change made to the sprite\r\n.";
-        this.ButtonSpriteUndo.ToolTipTitle = "Undo";
+        this.ButtonSpriteUndo.ToolTipValues.Description = "Reverts the previous change made to the sprite\r\n.";
+        this.ButtonSpriteUndo.ToolTipValues.Heading = "Undo";
         this.ButtonSpriteUndo.Click += new System.EventHandler(this.ButtonSpriteUndo_Click);
         // 
         // ButtonSpriteRedo
@@ -283,8 +283,8 @@ partial class FormRibbon
         this.ButtonSpriteRedo.KeyTip = "R";
         this.ButtonSpriteRedo.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Y)));
         this.ButtonSpriteRedo.TextLine1 = "Redo";
-        this.ButtonSpriteRedo.ToolTipBody = "Restores the next change made to the sprite.";
-        this.ButtonSpriteRedo.ToolTipTitle = "Redo";
+        this.ButtonSpriteRedo.ToolTipValues.Description = "Restores the next change made to the sprite.";
+        this.ButtonSpriteRedo.ToolTipValues.Heading = "Redo";
         this.ButtonSpriteRedo.Click += new System.EventHandler(this.ButtonSpriteRedo_Click);
         // 
         // GroupSprite
@@ -313,8 +313,8 @@ partial class FormRibbon
         this.ButtonSpriteColor.KeyTip = "C";
         this.ButtonSpriteColor.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.C)));
         this.ButtonSpriteColor.TextLine1 = "Color";
-        this.ButtonSpriteColor.ToolTipBody = "Defines the color tint, and/or opacity to apply to the sprite.";
-        this.ButtonSpriteColor.ToolTipTitle = "Sprite color";
+        this.ButtonSpriteColor.ToolTipValues.Description = "Defines the color tint, and/or opacity to apply to the sprite.";
+        this.ButtonSpriteColor.ToolTipValues.Heading = "Sprite color";
         this.ButtonSpriteColor.Click += new System.EventHandler(this.ButtonSpriteColor_Click);
         // 
         // ButtonSpriteAnchor
@@ -324,9 +324,9 @@ partial class FormRibbon
         this.ButtonSpriteAnchor.KeyTip = "A";
         this.ButtonSpriteAnchor.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.A)));
         this.ButtonSpriteAnchor.TextLine1 = "Anchor";
-        this.ButtonSpriteAnchor.ToolTipBody = "Defines the anchor point on the sprite where rotations, scaling and positioning a" +
+        this.ButtonSpriteAnchor.ToolTipValues.Description = "Defines the anchor point on the sprite where rotations, scaling and positioning a" +
 "ll center on.";
-        this.ButtonSpriteAnchor.ToolTipTitle = "Sprite anchor";
+        this.ButtonSpriteAnchor.ToolTipValues.Heading = "Sprite anchor";
         this.ButtonSpriteAnchor.Click += new System.EventHandler(this.ButtonSpriteAnchor_Click);
         // 
         // ButtonSpriteVertexOffsets
@@ -338,9 +338,9 @@ partial class FormRibbon
         this.ButtonSpriteVertexOffsets.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.V)));
         this.ButtonSpriteVertexOffsets.TextLine1 = "Corner";
         this.ButtonSpriteVertexOffsets.TextLine2 = "Offsets";
-        this.ButtonSpriteVertexOffsets.ToolTipBody = "Adds an offset to an individual corner on the sprite rectangle, to create a defor" +
+        this.ButtonSpriteVertexOffsets.ToolTipValues.Description = "Adds an offset to an individual corner on the sprite rectangle, to create a defor" +
 "med sprite.";
-        this.ButtonSpriteVertexOffsets.ToolTipTitle = "Sprite vertex offsets";
+        this.ButtonSpriteVertexOffsets.ToolTipValues.Heading = "Sprite vertex offsets";
         this.ButtonSpriteVertexOffsets.Click += new System.EventHandler(this.ButtonSpriteVertexOffsets_Click);
         // 
         // LinesSprite1
@@ -358,10 +358,10 @@ partial class FormRibbon
         this.ButtonSpriteTextureFilter.KeyTip = "F";
         this.ButtonSpriteTextureFilter.TextLine1 = "Texture";
         this.ButtonSpriteTextureFilter.TextLine2 = "Filtering";
-        this.ButtonSpriteTextureFilter.ToolTipBody = "Defines the type of texture filtering to apply to the sprite when it is scaled/ro" +
+        this.ButtonSpriteTextureFilter.ToolTipValues.Description = "Defines the type of texture filtering to apply to the sprite when it is scaled/ro" +
 "tated.";
-        this.ButtonSpriteTextureFilter.ToolTipStyle = Krypton.Toolkit.LabelStyle.KeyTip;
-        this.ButtonSpriteTextureFilter.ToolTipTitle = "Texture filtering";
+        this.ButtonSpriteTextureFilter.ToolTipValues.ToolTipStyle = Krypton.Toolkit.LabelStyle.KeyTip;
+        this.ButtonSpriteTextureFilter.ToolTipValues.Heading = "Texture filtering";
         // 
         // MenuFiltering
         // 
@@ -398,9 +398,9 @@ partial class FormRibbon
         this.ButtonSpriteTextureWrap.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.W)));
         this.ButtonSpriteTextureWrap.TextLine1 = "Texture";
         this.ButtonSpriteTextureWrap.TextLine2 = "Wrapping";
-        this.ButtonSpriteTextureWrap.ToolTipBody = "The type of wrapping to perform when the image texture size is smaller than the s" +
+        this.ButtonSpriteTextureWrap.ToolTipValues.Description = "The type of wrapping to perform when the image texture size is smaller than the s" +
 "prite dimensions.";
-        this.ButtonSpriteTextureWrap.ToolTipTitle = "Texture wrapping";
+        this.ButtonSpriteTextureWrap.ToolTipValues.Heading = "Texture wrapping";
         this.ButtonSpriteTextureWrap.Click += new System.EventHandler(this.ButtonSpriteTextureWrap_Click);
         // 
         // LinesSprite2
@@ -416,8 +416,8 @@ partial class FormRibbon
         this.ButtonZoomSprite.ImageSmall = global::Gorgon.Editor.SpriteEditor.Properties.Resources.zoom_16x16;
         this.ButtonZoomSprite.KeyTip = "Z";
         this.ButtonZoomSprite.TextLine1 = "Zoom";
-        this.ButtonZoomSprite.ToolTipBody = resources.GetString("ButtonZoomSprite.ToolTipBody");
-        this.ButtonZoomSprite.ToolTipTitle = "Zoom";
+        this.ButtonZoomSprite.ToolTipValues.Description = resources.GetString("ButtonZoomSprite.ToolTipValues.Description");
+        this.ButtonZoomSprite.ToolTipValues.Heading = "Zoom";
         // 
         // MenuZoom
         // 
@@ -574,8 +574,8 @@ partial class FormRibbon
         this.ButtonSpriteClipApply.ImageSmall = global::Gorgon.Editor.SpriteEditor.Properties.Resources.confirm_16x16;
         this.ButtonSpriteClipApply.KeyTip = "A";
         this.ButtonSpriteClipApply.TextLine1 = "Apply";
-        this.ButtonSpriteClipApply.ToolTipBody = "Applies the current rectangle region to the sprite.";
-        this.ButtonSpriteClipApply.ToolTipTitle = "Apply";
+        this.ButtonSpriteClipApply.ToolTipValues.Description = "Applies the current rectangle region to the sprite.";
+        this.ButtonSpriteClipApply.ToolTipValues.Heading = "Apply";
         this.ButtonSpriteClipApply.Click += new System.EventHandler(this.ButtonSpriteClipApply_Click);
         // 
         // ButtonSpriteClipCancel
@@ -584,8 +584,8 @@ partial class FormRibbon
         this.ButtonSpriteClipCancel.ImageSmall = global::Gorgon.Editor.SpriteEditor.Properties.Resources.cancel_16x16;
         this.ButtonSpriteClipCancel.KeyTip = "C";
         this.ButtonSpriteClipCancel.TextLine1 = "Cancel";
-        this.ButtonSpriteClipCancel.ToolTipBody = "Cancels this clipping operation.";
-        this.ButtonSpriteClipCancel.ToolTipTitle = "Cancel";
+        this.ButtonSpriteClipCancel.ToolTipValues.Description = "Cancels this clipping operation.";
+        this.ButtonSpriteClipCancel.ToolTipValues.Heading = "Cancel";
         this.ButtonSpriteClipCancel.Click += new System.EventHandler(this.ButtonSpriteClipCancel_Click);
         // 
         // RibbonGroupManualClipping
@@ -616,9 +616,9 @@ partial class FormRibbon
         this.ButtonClipManualInput.KeyTip = "N";
         this.ButtonClipManualInput.TextLine1 = "Numeric";
         this.ButtonClipManualInput.TextLine2 = "Entry";
-        this.ButtonClipManualInput.ToolTipBody = "Allows for precise adjustment of the sprite clipping rectangle via numeric values" +
+        this.ButtonClipManualInput.ToolTipValues.Description = "Allows for precise adjustment of the sprite clipping rectangle via numeric values" +
 " typed in by the user.";
-        this.ButtonClipManualInput.ToolTipTitle = "Numeric entry";
+        this.ButtonClipManualInput.ToolTipValues.Heading = "Numeric entry";
         // 
         // ButtonSpriteClipFullSize
         // 
@@ -626,8 +626,8 @@ partial class FormRibbon
         this.ButtonSpriteClipFullSize.ImageSmall = global::Gorgon.Editor.SpriteEditor.Properties.Resources.full_size_16x16;
         this.ButtonSpriteClipFullSize.KeyTip = "F";
         this.ButtonSpriteClipFullSize.TextLine1 = "Full Size";
-        this.ButtonSpriteClipFullSize.ToolTipBody = "This will set the sprite dimensions to the full size of the sprite.";
-        this.ButtonSpriteClipFullSize.ToolTipTitle = "Full size";
+        this.ButtonSpriteClipFullSize.ToolTipValues.Description = "This will set the sprite dimensions to the full size of the sprite.";
+        this.ButtonSpriteClipFullSize.ToolTipValues.Heading = "Full size";
         this.ButtonSpriteClipFullSize.Click += new System.EventHandler(this.ButtonSpriteClipFullSize_Click);
         // 
         // kryptonRibbonGroupTriple7
@@ -642,9 +642,9 @@ partial class FormRibbon
         this.ButtonFixedSize.ImageSmall = global::Gorgon.Editor.SpriteEditor.Properties.Resources.fixed_size_16x16;
         this.ButtonFixedSize.KeyTip = "X";
         this.ButtonFixedSize.TextLine1 = "Fixed Size";
-        this.ButtonFixedSize.ToolTipBody = "Locks the width and height of the clipping rectangle \r\nto the respective values i" +
+        this.ButtonFixedSize.ToolTipValues.Description = "Locks the width and height of the clipping rectangle \r\nto the respective values i" +
 "n the text boxes.";
-        this.ButtonFixedSize.ToolTipTitle = "Fixed Size";
+        this.ButtonFixedSize.ToolTipValues.Heading = "Fixed Size";
         this.ButtonFixedSize.Click += new System.EventHandler(this.ButtonFixedSize_Click);
         // 
         // kryptonRibbonGroupTriple8
@@ -747,8 +747,8 @@ partial class FormRibbon
         this.ButtonSpriteCornerOffsetApply.ImageSmall = global::Gorgon.Editor.SpriteEditor.Properties.Resources.confirm_16x16;
         this.ButtonSpriteCornerOffsetApply.KeyTip = "A";
         this.ButtonSpriteCornerOffsetApply.TextLine1 = "Apply";
-        this.ButtonSpriteCornerOffsetApply.ToolTipBody = "Applies the corner offset changes to the current sprite.\r\n";
-        this.ButtonSpriteCornerOffsetApply.ToolTipTitle = "Apply";
+        this.ButtonSpriteCornerOffsetApply.ToolTipValues.Description = "Applies the corner offset changes to the current sprite.\r\n";
+        this.ButtonSpriteCornerOffsetApply.ToolTipValues.Heading = "Apply";
         this.ButtonSpriteCornerOffsetApply.Click += new System.EventHandler(this.ButtonSpriteCornerOffsetApply_Click);
         // 
         // ButtonSpriteCornerOffsetCancel
@@ -757,8 +757,8 @@ partial class FormRibbon
         this.ButtonSpriteCornerOffsetCancel.ImageSmall = global::Gorgon.Editor.SpriteEditor.Properties.Resources.cancel_16x16;
         this.ButtonSpriteCornerOffsetCancel.KeyTip = "C";
         this.ButtonSpriteCornerOffsetCancel.TextLine1 = "Cancel";
-        this.ButtonSpriteCornerOffsetCancel.ToolTipBody = "Cancels this corner offset operation.";
-        this.ButtonSpriteCornerOffsetCancel.ToolTipTitle = "Cancel";
+        this.ButtonSpriteCornerOffsetCancel.ToolTipValues.Description = "Cancels this corner offset operation.";
+        this.ButtonSpriteCornerOffsetCancel.ToolTipValues.Heading = "Cancel";
         this.ButtonSpriteCornerOffsetCancel.Click += new System.EventHandler(this.ButtonSpriteCornerOffsetCancel_Click);
         // 
         // RibbonGroupSpriteVertexCorner
@@ -785,8 +785,8 @@ partial class FormRibbon
         this.ButtonSpriteCornerManualInput.KeyTip = "N";
         this.ButtonSpriteCornerManualInput.TextLine1 = "Numeric";
         this.ButtonSpriteCornerManualInput.TextLine2 = "Entry";
-        this.ButtonSpriteCornerManualInput.ToolTipBody = resources.GetString("ButtonSpriteCornerManualInput.ToolTipBody");
-        this.ButtonSpriteCornerManualInput.ToolTipTitle = "Numeric entry";
+        this.ButtonSpriteCornerManualInput.ToolTipValues.Description = resources.GetString("ButtonSpriteCornerManualInput.ToolTipValues.Description");
+        this.ButtonSpriteCornerManualInput.ToolTipValues.Heading = "Numeric entry";
         // 
         // ButtonSpriteCornerReset
         // 
@@ -794,8 +794,8 @@ partial class FormRibbon
         this.ButtonSpriteCornerReset.ImageSmall = global::Gorgon.Editor.SpriteEditor.Properties.Resources.reset_16x16;
         this.ButtonSpriteCornerReset.KeyTip = "R";
         this.ButtonSpriteCornerReset.TextLine1 = "Reset";
-        this.ButtonSpriteCornerReset.ToolTipBody = "Resets the selected corner back to 0x0.";
-        this.ButtonSpriteCornerReset.ToolTipTitle = "Reset";
+        this.ButtonSpriteCornerReset.ToolTipValues.Description = "Resets the selected corner back to 0x0.";
+        this.ButtonSpriteCornerReset.ToolTipValues.Heading = "Reset";
         this.ButtonSpriteCornerReset.Click += new System.EventHandler(this.ButtonSpriteCornerReset_Click);
         // 
         // RibbonTabSpritePick
@@ -828,8 +828,8 @@ partial class FormRibbon
         this.ButtonSpritePickApply.ImageSmall = global::Gorgon.Editor.SpriteEditor.Properties.Resources.confirm_16x16;
         this.ButtonSpritePickApply.KeyTip = "A";
         this.ButtonSpritePickApply.TextLine1 = "Apply";
-        this.ButtonSpritePickApply.ToolTipBody = "Applies the current rectangle region to the sprite.";
-        this.ButtonSpritePickApply.ToolTipTitle = "Apply";
+        this.ButtonSpritePickApply.ToolTipValues.Description = "Applies the current rectangle region to the sprite.";
+        this.ButtonSpritePickApply.ToolTipValues.Heading = "Apply";
         this.ButtonSpritePickApply.Click += new System.EventHandler(this.ButtonSpritePickApply_Click);
         // 
         // ButtonSpritePickCancel
@@ -838,8 +838,8 @@ partial class FormRibbon
         this.ButtonSpritePickCancel.ImageSmall = global::Gorgon.Editor.SpriteEditor.Properties.Resources.cancel_16x16;
         this.ButtonSpritePickCancel.KeyTip = "C";
         this.ButtonSpritePickCancel.TextLine1 = "Cancel";
-        this.ButtonSpritePickCancel.ToolTipBody = "Cancels this clipping operation.";
-        this.ButtonSpritePickCancel.ToolTipTitle = "Cancel";
+        this.ButtonSpritePickCancel.ToolTipValues.Description = "Cancels this clipping operation.";
+        this.ButtonSpritePickCancel.ToolTipValues.Heading = "Cancel";
         this.ButtonSpritePickCancel.Click += new System.EventHandler(this.ButtonSpritePickCancel_Click);
         // 
         // RibbonGroupRegion
@@ -865,10 +865,10 @@ partial class FormRibbon
         this.ButtonPickMaskColor.KeyTip = "M";
         this.ButtonPickMaskColor.TextLine1 = "Masking";
         this.ButtonPickMaskColor.TextLine2 = "Color";
-        this.ButtonPickMaskColor.ToolTipBody = "Defines the color or alpha value used as the boundary for the sprite picking oper" +
+        this.ButtonPickMaskColor.ToolTipValues.Description = "Defines the color or alpha value used as the boundary for the sprite picking oper" +
 "ation.\r\n\r\nThis color or alpha value is used to determine the extents of the spri" +
 "te.";
-        this.ButtonPickMaskColor.ToolTipTitle = "Masking color";
+        this.ButtonPickMaskColor.ToolTipValues.Heading = "Masking color";
         this.ButtonPickMaskColor.Click += new System.EventHandler(this.ButtonPickMaskColor_Click);
         // 
         // kryptonRibbonGroupLines1
@@ -882,9 +882,9 @@ partial class FormRibbon
         this.LabelPadding.ImageLarge = global::Gorgon.Editor.SpriteEditor.Properties.Resources.pick_padding_48x48;
         this.LabelPadding.ImageSmall = global::Gorgon.Editor.SpriteEditor.Properties.Resources.pick_padding_16x16;
         this.LabelPadding.TextLine1 = "Padding";
-        this.LabelPadding.ToolTipBody = "Expands (or contracts) the selection rectangle by the number of pixels specified." +
+        this.LabelPadding.ToolTipValues.Description = "Expands (or contracts) the selection rectangle by the number of pixels specified." +
 "";
-        this.LabelPadding.ToolTipTitle = "Padding";
+        this.LabelPadding.ToolTipValues.Heading = "Padding";
         // 
         // NumericPadding
         // 

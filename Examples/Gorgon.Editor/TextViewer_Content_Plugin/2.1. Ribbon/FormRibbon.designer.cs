@@ -124,8 +124,8 @@ partial class FormRibbon
         this.ButtonSaveText.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.S)));
         this.ButtonSaveText.TextLine1 = "Save";
         this.ButtonSaveText.TextLine2 = "Text";
-        this.ButtonSaveText.ToolTipBody = "Updates the text file in the file system with the current changes.";
-        this.ButtonSaveText.ToolTipTitle = "Save";
+        this.ButtonSaveText.ToolTipValues.Description = "Updates the text file in the file system with the current changes.";
+        this.ButtonSaveText.ToolTipValues.Heading = "Save";
         this.ButtonSaveText.Click += new System.EventHandler(this.ButtonSave_Click);
         // 
         // GroupTextEdit
@@ -150,8 +150,8 @@ partial class FormRibbon
         this.ButtonTextUndo.KeyTip = "Z";
         this.ButtonTextUndo.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Z)));
         this.ButtonTextUndo.TextLine1 = "Undo";
-        this.ButtonTextUndo.ToolTipBody = "Restores the text back to the original text before it was changed.";
-        this.ButtonTextUndo.ToolTipTitle = "Undo";
+        this.ButtonTextUndo.ToolTipValues.Description = "Restores the text back to the original text before it was changed.";
+        this.ButtonTextUndo.ToolTipValues.Heading = "Undo";
         this.ButtonTextUndo.Click += new System.EventHandler(this.ButtonTextUndo_Click);
         // 
         // ButtonTextRedo
@@ -161,8 +161,8 @@ partial class FormRibbon
         this.ButtonTextRedo.KeyTip = "Y";
         this.ButtonTextRedo.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Y)));
         this.ButtonTextRedo.TextLine1 = "Redo";
-        this.ButtonTextRedo.ToolTipBody = "Resets the text to the changed text.";
-        this.ButtonTextRedo.ToolTipTitle = "Redo";
+        this.ButtonTextRedo.ToolTipValues.Description = "Resets the text to the changed text.";
+        this.ButtonTextRedo.ToolTipValues.Heading = "Redo";
         this.ButtonTextRedo.Click += new System.EventHandler(this.ButtonTextRedo_Click);
         // 
         // GroupText
@@ -191,8 +191,8 @@ partial class FormRibbon
         this.ButtonFont.KeyTip = "F";
         this.ButtonFont.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.F)));
         this.ButtonFont.TextLine1 = "Font";
-        this.ButtonFont.ToolTipBody = "Sets the font used to render the text.";
-        this.ButtonFont.ToolTipTitle = "Font";
+        this.ButtonFont.ToolTipValues.Description = "Sets the font used to render the text.";
+        this.ButtonFont.ToolTipValues.Heading = "Font";
         // 
         // MenuFonts
         // 
@@ -243,8 +243,8 @@ partial class FormRibbon
         this.ButtonTextColor.KeyTip = "C";
         this.ButtonTextColor.TextLine1 = "Text";
         this.ButtonTextColor.TextLine2 = "Color";
-        this.ButtonTextColor.ToolTipBody = "Changes the color of the text.";
-        this.ButtonTextColor.ToolTipTitle = "Color";
+        this.ButtonTextColor.ToolTipValues.Description = "Changes the color of the text.";
+        this.ButtonTextColor.ToolTipValues.Heading = "Color";
         this.ButtonTextColor.Click += new System.EventHandler(this.ButtonTextColor_Click);
         // 
         // ButtonChangeText
@@ -254,8 +254,8 @@ partial class FormRibbon
         this.ButtonChangeText.KeyTip = "T";
         this.ButtonChangeText.TextLine1 = "Change";
         this.ButtonChangeText.TextLine2 = "Text";
-        this.ButtonChangeText.ToolTipBody = "Opens up the text input panel so the user can input new text.";
-        this.ButtonChangeText.ToolTipTitle = "Change Text";
+        this.ButtonChangeText.ToolTipValues.Description = "Opens up the text input panel so the user can input new text.";
+        this.ButtonChangeText.ToolTipValues.Heading = "Change Text";
         this.ButtonChangeText.Click += new System.EventHandler(this.ButtonChangeText_Click);
         // 
         // kryptonRibbonGroupLines3
@@ -271,8 +271,8 @@ partial class FormRibbon
         this.ButtonZoom.ImageSmall = global::Gorgon.Examples.Properties.Resources.zoom_16x16;
         this.ButtonZoom.KeyTip = "Z";
         this.ButtonZoom.TextLine1 = "Zoom";
-        this.ButtonZoom.ToolTipBody = "Zooms in or out on the content by the specified percentage.";
-        this.ButtonZoom.ToolTipTitle = "Zoom";
+        this.ButtonZoom.ToolTipValues.Description = "Zooms in or out on the content by the specified percentage.";
+        this.ButtonZoom.ToolTipValues.Heading = "Zoom";
         // 
         // MenuZoom
         // 

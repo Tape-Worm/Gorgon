@@ -256,8 +256,8 @@ internal partial class FormMain
 
                 if (!string.IsNullOrWhiteSpace(button.Description))
                 {
-                    newButton.ToolTipTitle = button.DisplayText;
-                    newButton.ToolTipBody = button.Description;
+                    newButton.ToolTipValues.Heading = button.DisplayText;
+                    newButton.ToolTipValues.Description = button.Description;
                 }
 
                 newButton.Click += ToolButton_Click;
@@ -1435,5 +1435,4 @@ internal partial class FormMain
     /// <param name="settings">The settings for the application.</param>
     public FormMain(EditorSettings settings)
         : this() => PanelProject.Settings = _settings = settings;
-
 }

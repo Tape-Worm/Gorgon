@@ -15,7 +15,7 @@ partial class FormMain
     /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
     protected override void Dispose(bool disposing)
     {
-        if (disposing)                
+        if (disposing)
         {
             RemoveNewIcons();
             _progressForm.Dispose();
@@ -41,7 +41,7 @@ partial class FormMain
         this.components = new System.ComponentModel.Container();
         System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormMain));
         this.RibbonMain = new Krypton.Ribbon.KryptonRibbon();
-        this.MainPalette = new Krypton.Toolkit.KryptonPalette(this.components);
+        this.MainPalette = new Krypton.Toolkit.KryptonCustomPaletteBase(this.components);
         this.TabFileSystem = new Krypton.Ribbon.KryptonRibbonTab();
         this.RibbonGroupFileSystemNew = new Krypton.Ribbon.KryptonRibbonGroup();
         this.GroupCreate = new Krypton.Ribbon.KryptonRibbonGroupTriple();
@@ -117,14 +117,14 @@ partial class FormMain
         this.RibbonMain.StateCommon.RibbonGeneral.DropArrowLight = System.Drawing.Color.FromArgb(((int)(((byte)(45)))), ((int)(((byte)(45)))), ((int)(((byte)(48)))));
         this.RibbonMain.StateCommon.RibbonGeneral.GroupSeparatorDark = System.Drawing.Color.FromArgb(((int)(((byte)(45)))), ((int)(((byte)(45)))), ((int)(((byte)(48)))));
         this.RibbonMain.StateCommon.RibbonGeneral.GroupSeparatorLight = System.Drawing.Color.FromArgb(((int)(((byte)(45)))), ((int)(((byte)(45)))), ((int)(((byte)(48)))));
-        this.RibbonMain.StateCommon.RibbonGeneral.RibbonShape = Krypton.Toolkit.PaletteRibbonShape.Office365;
+        this.RibbonMain.StateCommon.RibbonGeneral.RibbonShape = Krypton.Toolkit.PaletteRibbonShape.Microsoft365;
         this.RibbonMain.StateCommon.RibbonGeneral.TabSeparatorColor = System.Drawing.Color.FromArgb(((int)(((byte)(45)))), ((int)(((byte)(45)))), ((int)(((byte)(48)))));
         this.RibbonMain.StateCommon.RibbonGeneral.TextFont = new System.Drawing.Font("Segoe UI", 9F);
-        this.RibbonMain.StateCommon.RibbonGroupArea.BackColor1 = System.Drawing.Color.FromArgb(((int)(((byte)(45)))), ((int)(((byte)(45)))), ((int)(((byte)(48)))));
-        this.RibbonMain.StateCommon.RibbonGroupArea.BackColor2 = System.Drawing.Color.FromArgb(((int)(((byte)(35)))), ((int)(((byte)(35)))), ((int)(((byte)(37)))));
-        this.RibbonMain.StateCommon.RibbonGroupArea.BackColor3 = System.Drawing.Color.FromArgb(((int)(((byte)(35)))), ((int)(((byte)(35)))), ((int)(((byte)(37)))));
-        this.RibbonMain.StateCommon.RibbonGroupArea.BackColor4 = System.Drawing.Color.FromArgb(((int)(((byte)(35)))), ((int)(((byte)(35)))), ((int)(((byte)(37)))));
-        this.RibbonMain.StateCommon.RibbonGroupArea.BackColor5 = System.Drawing.Color.FromArgb(((int)(((byte)(35)))), ((int)(((byte)(35)))), ((int)(((byte)(37)))));
+        this.RibbonMain.StateCommon.RibbonGroupBackArea.BackColor1 = System.Drawing.Color.FromArgb(((int)(((byte)(45)))), ((int)(((byte)(45)))), ((int)(((byte)(48)))));
+        this.RibbonMain.StateCommon.RibbonGroupBackArea.BackColor2 = System.Drawing.Color.FromArgb(((int)(((byte)(35)))), ((int)(((byte)(35)))), ((int)(((byte)(37)))));
+        this.RibbonMain.StateCommon.RibbonGroupBackArea.BackColor3 = System.Drawing.Color.FromArgb(((int)(((byte)(35)))), ((int)(((byte)(35)))), ((int)(((byte)(37)))));
+        this.RibbonMain.StateCommon.RibbonGroupBackArea.BackColor4 = System.Drawing.Color.FromArgb(((int)(((byte)(35)))), ((int)(((byte)(35)))), ((int)(((byte)(37)))));
+        this.RibbonMain.StateCommon.RibbonGroupBackArea.BackColor5 = System.Drawing.Color.FromArgb(((int)(((byte)(35)))), ((int)(((byte)(35)))), ((int)(((byte)(37)))));
         this.RibbonMain.StateCommon.RibbonGroupButtonText.TextColor = System.Drawing.Color.White;
         this.RibbonMain.StateCommon.RibbonGroupCheckBoxText.TextColor = System.Drawing.Color.White;
         this.RibbonMain.StateCommon.RibbonGroupLabelText.TextColor = System.Drawing.Color.White;
@@ -176,7 +176,7 @@ partial class FormMain
         // 
         // MainPalette
         // 
-        this.MainPalette.BasePaletteMode = Krypton.Toolkit.PaletteMode.Office365Black;
+        this.MainPalette.BasePaletteMode = Krypton.Toolkit.PaletteMode.Microsoft365Black;
         this.MainPalette.ButtonStyles.ButtonButtonSpec.OverrideDefault.Border.Draw = Krypton.Toolkit.InheritBool.False;
         this.MainPalette.ButtonStyles.ButtonButtonSpec.OverrideDefault.Border.DrawBorders = Krypton.Toolkit.PaletteDrawBorders.None;
         this.MainPalette.ButtonStyles.ButtonButtonSpec.OverrideFocus.Border.Draw = Krypton.Toolkit.InheritBool.False;
@@ -186,8 +186,8 @@ partial class FormMain
         this.MainPalette.ButtonStyles.ButtonButtonSpec.StateCheckedNormal.Border.Color1 = System.Drawing.Color.SteelBlue;
         this.MainPalette.ButtonStyles.ButtonButtonSpec.StateCheckedNormal.Border.Color2 = System.Drawing.Color.SteelBlue;
         this.MainPalette.ButtonStyles.ButtonButtonSpec.StateCheckedNormal.Border.Draw = Krypton.Toolkit.InheritBool.True;
-        this.MainPalette.ButtonStyles.ButtonButtonSpec.StateCheckedNormal.Border.DrawBorders = ((Krypton.Toolkit.PaletteDrawBorders)((((Krypton.Toolkit.PaletteDrawBorders.Top | Krypton.Toolkit.PaletteDrawBorders.Bottom) 
-        | Krypton.Toolkit.PaletteDrawBorders.Left) 
+        this.MainPalette.ButtonStyles.ButtonButtonSpec.StateCheckedNormal.Border.DrawBorders = ((Krypton.Toolkit.PaletteDrawBorders)((((Krypton.Toolkit.PaletteDrawBorders.Top | Krypton.Toolkit.PaletteDrawBorders.Bottom)
+        | Krypton.Toolkit.PaletteDrawBorders.Left)
         | Krypton.Toolkit.PaletteDrawBorders.Right)));
         this.MainPalette.ButtonStyles.ButtonButtonSpec.StateCheckedNormal.Border.GraphicsHint = Krypton.Toolkit.PaletteGraphicsHint.None;
         this.MainPalette.ButtonStyles.ButtonButtonSpec.StateCheckedNormal.Border.Rounding = 0;
@@ -217,7 +217,6 @@ partial class FormMain
         this.MainPalette.ButtonStyles.ButtonButtonSpec.StateTracking.Border.DrawBorders = Krypton.Toolkit.PaletteDrawBorders.None;
         this.MainPalette.ButtonStyles.ButtonButtonSpec.StateTracking.Border.GraphicsHint = Krypton.Toolkit.PaletteGraphicsHint.None;
         this.MainPalette.ButtonStyles.ButtonButtonSpec.StateTracking.Border.Width = 0;
-        this.MainPalette.CustomisedKryptonPaletteFilePath = null;
         // 
         // TabFileSystem
         // 
@@ -255,7 +254,7 @@ partial class FormMain
         this.ButtonCreate.ImageSmall = global::Gorgon.Editor.Properties.Resources.new_content_16x16;
         this.ButtonCreate.KeyTip = "C";
         this.ButtonCreate.TextLine1 = "Create";
-        this.ButtonCreate.ToolTipBody = "Creates new content items.\r\n\r\nNote that some plug ins do not allow the creation o" +
+        this.ButtonCreate.ToolTipValues.Description = "Creates new content items.\r\n\r\nNote that some plug ins do not allow the creation o" +
 "f content.";
         // 
         // MenuCreate
@@ -282,7 +281,7 @@ partial class FormMain
         this.ButtonOpenContent.KeyTip = "O";
         this.ButtonOpenContent.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.O)));
         this.ButtonOpenContent.TextLine1 = "Open";
-        this.ButtonOpenContent.ToolTipBody = "Opens the currently selected file in the editor.\r\n\r\nIf the file is not handled by" +
+        this.ButtonOpenContent.ToolTipValues.Description = "Opens the currently selected file in the editor.\r\n\r\nIf the file is not handled by" +
 " the editor because it lacks an appropriate plug in, then this button will be di" +
 "sabled.";
         this.ButtonOpenContent.Click += new System.EventHandler(this.ButtonOpenContent_Click);
@@ -295,7 +294,7 @@ partial class FormMain
         this.ButtonFileSystemNewDirectory.KeyTip = "D";
         this.ButtonFileSystemNewDirectory.TextLine1 = "Create";
         this.ButtonFileSystemNewDirectory.TextLine2 = "Directory";
-        this.ButtonFileSystemNewDirectory.ToolTipBody = "Create a new directory";
+        this.ButtonFileSystemNewDirectory.ToolTipValues.Description = "Create a new directory";
         this.ButtonFileSystemNewDirectory.Click += new System.EventHandler(this.ButtonFileSystemNewDirectory_Click);
         // 
         // kryptonRibbonGroupLines3
@@ -310,7 +309,7 @@ partial class FormMain
         this.ButtonImport.ImageSmall = global::Gorgon.Editor.Properties.Resources.import_16x16;
         this.ButtonImport.KeyTip = "I";
         this.ButtonImport.TextLine1 = "Import";
-        this.ButtonImport.ToolTipBody = "Import a directory into the selected directory or root directory.";
+        this.ButtonImport.ToolTipValues.Description = "Import a directory into the selected directory or root directory.";
         this.ButtonImport.Click += new System.EventHandler(this.ButtonImport_Click);
         // 
         // ButtonExport
@@ -320,7 +319,7 @@ partial class FormMain
         this.ButtonExport.ImageSmall = global::Gorgon.Editor.Properties.Resources.export_16x16;
         this.ButtonExport.KeyTip = "E";
         this.ButtonExport.TextLine1 = "Export";
-        this.ButtonExport.ToolTipBody = "Export the selected directory or file system.";
+        this.ButtonExport.ToolTipValues.Description = "Export the selected directory or file system.";
         this.ButtonExport.Click += new System.EventHandler(this.ButtonExport_Click);
         // 
         // GroupFileSystemEdit
@@ -346,7 +345,7 @@ partial class FormMain
         this.ButtonFileSystemPaste.KeyTip = "V";
         this.ButtonFileSystemPaste.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.V)));
         this.ButtonFileSystemPaste.TextLine1 = "Paste";
-        this.ButtonFileSystemPaste.ToolTipBody = "Paste the copied or cut file or directory from the editor.";
+        this.ButtonFileSystemPaste.ToolTipValues.Description = "Paste the copied or cut file or directory from the editor.";
         this.ButtonFileSystemPaste.Click += new System.EventHandler(this.ButtonFileSystemPaste_Click);
         // 
         // kryptonRibbonGroupLines2
@@ -363,7 +362,7 @@ partial class FormMain
         this.ButtonFileSystemCopy.KeyTip = "C";
         this.ButtonFileSystemCopy.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.C)));
         this.ButtonFileSystemCopy.TextLine1 = "Copy";
-        this.ButtonFileSystemCopy.ToolTipBody = "Copy the selected file/directory to the clipboard.";
+        this.ButtonFileSystemCopy.ToolTipValues.Description = "Copy the selected file/directory to the clipboard.";
         this.ButtonFileSystemCopy.Click += new System.EventHandler(this.ButtonFileSystemCopy_Click);
         // 
         // ButtonFileSystemCut
@@ -374,7 +373,7 @@ partial class FormMain
         this.ButtonFileSystemCut.KeyTip = "X";
         this.ButtonFileSystemCut.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.X)));
         this.ButtonFileSystemCut.TextLine1 = "Cut";
-        this.ButtonFileSystemCut.ToolTipBody = "Cut the selected file or directory into the clipboard.";
+        this.ButtonFileSystemCut.ToolTipValues.Description = "Cut the selected file or directory into the clipboard.";
         this.ButtonFileSystemCut.Click += new System.EventHandler(this.ButtonFileSystemCut_Click);
         // 
         // RibbonGroupFileSystemOrganize
@@ -402,7 +401,7 @@ partial class FormMain
         this.ButtonFileSystemDelete.ImageSmall = global::Gorgon.Editor.Properties.Resources.icons8_16x16;
         this.ButtonFileSystemDelete.KeyTip = "L";
         this.ButtonFileSystemDelete.TextLine1 = "Delete";
-        this.ButtonFileSystemDelete.ToolTipBody = "Delete the selected file or directory.";
+        this.ButtonFileSystemDelete.ToolTipValues.Description = "Delete the selected file or directory.";
         this.ButtonFileSystemDelete.Click += new System.EventHandler(this.ButtonFileSystemDelete_Click);
         // 
         // ButtonFileSystemDeleteAll
@@ -413,7 +412,7 @@ partial class FormMain
         this.ButtonFileSystemDeleteAll.KeyTip = "L";
         this.ButtonFileSystemDeleteAll.TextLine1 = "Delete";
         this.ButtonFileSystemDeleteAll.TextLine2 = "All";
-        this.ButtonFileSystemDeleteAll.ToolTipBody = "Delete all files and directories from the file system.";
+        this.ButtonFileSystemDeleteAll.ToolTipValues.Description = "Delete all files and directories from the file system.";
         this.ButtonFileSystemDeleteAll.Visible = false;
         this.ButtonFileSystemDeleteAll.Click += new System.EventHandler(this.ButtonFileSystemDeleteAll_Click);
         // 
@@ -431,7 +430,7 @@ partial class FormMain
         this.ButtonFileSystemRename.KeyTip = "R";
         this.ButtonFileSystemRename.ShortcutKeys = System.Windows.Forms.Keys.F2;
         this.ButtonFileSystemRename.TextLine1 = "Rename";
-        this.ButtonFileSystemRename.ToolTipBody = "Rename the selected file or directory.";
+        this.ButtonFileSystemRename.ToolTipValues.Description = "Rename the selected file or directory.";
         this.ButtonFileSystemRename.Click += new System.EventHandler(this.ButtonFileSystemRename_Click);
         // 
         // ButtonFileSystemRefresh
@@ -441,7 +440,7 @@ partial class FormMain
         this.ButtonFileSystemRefresh.KeyTip = "F";
         this.ButtonFileSystemRefresh.ShortcutKeys = System.Windows.Forms.Keys.F5;
         this.ButtonFileSystemRefresh.TextLine1 = "Refresh";
-        this.ButtonFileSystemRefresh.ToolTipBody = "Refreshes the file system and reassociates content files with their plug ins.";
+        this.ButtonFileSystemRefresh.ToolTipValues.Description = "Refreshes the file system and reassociates content files with their plug ins.";
         this.ButtonFileSystemRefresh.Click += new System.EventHandler(this.ButtonFileSystemRefresh_Click);
         // 
         // kryptonRibbonGroupLines1
@@ -458,7 +457,7 @@ partial class FormMain
         this.ButtonFileSystemPanel.ImageSmall = global::Gorgon.Editor.Properties.Resources.file_explorer_16x16;
         this.ButtonFileSystemPanel.KeyTip = "F";
         this.ButtonFileSystemPanel.TextLine1 = "File Explorer";
-        this.ButtonFileSystemPanel.ToolTipBody = "Show/hide the file explorer panel.";
+        this.ButtonFileSystemPanel.ToolTipValues.Description = "Show/hide the file explorer panel.";
         this.ButtonFileSystemPanel.Click += new System.EventHandler(this.ButtonFileSystemPanel_Click);
         // 
         // ButtonFileSystemPreview
@@ -469,7 +468,7 @@ partial class FormMain
         this.ButtonFileSystemPreview.ImageSmall = global::Gorgon.Editor.Properties.Resources.content_preview_16x16;
         this.ButtonFileSystemPreview.KeyTip = "P";
         this.ButtonFileSystemPreview.TextLine1 = "Content Preview";
-        this.ButtonFileSystemPreview.ToolTipBody = "Show/hide the content preview panel.";
+        this.ButtonFileSystemPreview.ToolTipValues.Description = "Show/hide the content preview panel.";
         this.ButtonFileSystemPreview.Click += new System.EventHandler(this.ButtonFileSystemPreview_Click);
         // 
         // RibbonTabEditorTools
@@ -533,7 +532,7 @@ partial class FormMain
         this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
         this.MinimumSize = new System.Drawing.Size(1023, 767);
         this.Name = "FormMain";
-        this.PaletteMode = Krypton.Toolkit.PaletteMode.Office365Black;
+        this.PaletteMode = Krypton.Toolkit.PaletteMode.Microsoft365Black;
         this.ShadowValues.BlurDistance = 1D;
         this.ShadowValues.Colour = System.Drawing.Color.FromArgb(((int)(((byte)(45)))), ((int)(((byte)(45)))), ((int)(((byte)(48)))));
         this.ShadowValues.Offset = new System.Drawing.Point(0, 0);
@@ -543,8 +542,8 @@ partial class FormMain
         this.StateCommon.Back.Color2 = System.Drawing.Color.FromArgb(((int)(((byte)(28)))), ((int)(((byte)(28)))), ((int)(((byte)(28)))));
         this.StateCommon.Border.Color1 = System.Drawing.Color.FromArgb(((int)(((byte)(35)))), ((int)(((byte)(35)))), ((int)(((byte)(37)))));
         this.StateCommon.Border.Color2 = System.Drawing.Color.FromArgb(((int)(((byte)(35)))), ((int)(((byte)(35)))), ((int)(((byte)(37)))));
-        this.StateCommon.Border.DrawBorders = ((Krypton.Toolkit.PaletteDrawBorders)((((Krypton.Toolkit.PaletteDrawBorders.Top | Krypton.Toolkit.PaletteDrawBorders.Bottom) 
-        | Krypton.Toolkit.PaletteDrawBorders.Left) 
+        this.StateCommon.Border.DrawBorders = ((Krypton.Toolkit.PaletteDrawBorders)((((Krypton.Toolkit.PaletteDrawBorders.Top | Krypton.Toolkit.PaletteDrawBorders.Bottom)
+        | Krypton.Toolkit.PaletteDrawBorders.Left)
         | Krypton.Toolkit.PaletteDrawBorders.Right)));
         this.StateCommon.Header.Back.Color1 = System.Drawing.Color.FromArgb(((int)(((byte)(35)))), ((int)(((byte)(35)))), ((int)(((byte)(37)))));
         this.StateCommon.Header.Back.Color2 = System.Drawing.Color.FromArgb(((int)(((byte)(35)))), ((int)(((byte)(35)))), ((int)(((byte)(37)))));
@@ -561,8 +560,8 @@ partial class FormMain
         this.StateInactive.Header.Back.Color2 = System.Drawing.Color.FromArgb(((int)(((byte)(28)))), ((int)(((byte)(28)))), ((int)(((byte)(28)))));
         this.StateInactive.Header.Border.Color1 = System.Drawing.Color.Black;
         this.StateInactive.Header.Border.Color2 = System.Drawing.Color.Black;
-        this.StateInactive.Header.Border.DrawBorders = ((Krypton.Toolkit.PaletteDrawBorders)((((Krypton.Toolkit.PaletteDrawBorders.Top | Krypton.Toolkit.PaletteDrawBorders.Bottom) 
-        | Krypton.Toolkit.PaletteDrawBorders.Left) 
+        this.StateInactive.Header.Border.DrawBorders = ((Krypton.Toolkit.PaletteDrawBorders)((((Krypton.Toolkit.PaletteDrawBorders.Top | Krypton.Toolkit.PaletteDrawBorders.Bottom)
+        | Krypton.Toolkit.PaletteDrawBorders.Left)
         | Krypton.Toolkit.PaletteDrawBorders.Right)));
         this.StateInactive.Header.Content.ShortText.Color1 = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
         this.StateInactive.Header.Content.ShortText.Color2 = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
@@ -603,7 +602,7 @@ partial class FormMain
     private Krypton.Ribbon.KryptonRibbonGroupSeparator kryptonRibbonGroupSeparator2;
     private System.Windows.Forms.ContextMenuStrip MenuCreate;
     private Krypton.Ribbon.KryptonRibbonTab RibbonTabEditorTools;
-    private Krypton.Toolkit.KryptonPalette MainPalette;
+    private Krypton.Toolkit.KryptonCustomPaletteBase MainPalette;
     private Krypton.Ribbon.KryptonRibbonGroupSeparator kryptonRibbonGroupSeparator3;
     private Krypton.Ribbon.KryptonRibbonGroupLines kryptonRibbonGroupLines1;
     private Krypton.Ribbon.KryptonRibbonGroupButton ButtonFileSystemPanel;
