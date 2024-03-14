@@ -47,7 +47,7 @@ namespace Gorgon.Editor.ViewModels;
 /// <param name="contentServices">Common host services to pass into plug ins.</param>        
 internal class ViewModelFactory(Editor.EditorSettings settings, ProjectManager projectManager, FileSystemProviders fileSystemProviders, HostContentServices contentServices)
 {
-        
+
     // The buffer to hold directory paths.
     private readonly Dictionary<string, IDirectory> _directoryBuffer = new(StringComparer.OrdinalIgnoreCase);
     // The host content services.

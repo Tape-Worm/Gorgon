@@ -65,7 +65,7 @@ internal sealed class FolderFileSystemProvider
 
     /// <summary>Property to return whether this provider only gives read only access to the physical file system.</summary>
     public override bool IsReadOnly => false;
- 
+
 
 
     /// <summary>

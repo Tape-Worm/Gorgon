@@ -96,7 +96,7 @@ namespace Gorgon.Renderers;
 public class Gorgon2DLightingEffect(Gorgon2D renderer)
         : Gorgon2DEffect(renderer, Resources.GOR2D_EFFECT_LIGHTING, Resources.GOR2D_EFFECT_LIGHTING_DESC, 1)
 {
- 
+
     // Constant buffer data for global data.
     [StructLayout(LayoutKind.Sequential, Size = 64, Pack = 16)]
     private struct GlobalEffectData
@@ -120,7 +120,7 @@ public class Gorgon2DLightingEffect(Gorgon2D renderer)
     }
 
 
-        
+
     // Our custom vertex shader for per pixel lighting.
     private GorgonVertexShader _vertexLitTransformShader;
     private Gorgon2DShaderState<GorgonVertexShader> _vertexLitShaderState;

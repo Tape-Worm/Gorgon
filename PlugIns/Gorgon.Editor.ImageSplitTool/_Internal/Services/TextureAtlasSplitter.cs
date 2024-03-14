@@ -418,5 +418,5 @@ internal class TextureAtlasSplitter
         _spriteCodec = spriteCodec;
         _log = log;
     }
-        
+
 }

@@ -44,7 +44,7 @@ namespace Gorgon.Editor.ImageEditor;
 internal class VolumeRenderer(GorgonGraphics graphics)
         : IDisposable
 {
- 
+
     /// <summary>
     /// The parameters for rendering the volume.
     /// </summary>

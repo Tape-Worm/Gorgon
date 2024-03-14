@@ -130,7 +130,7 @@ internal class SpriteTextureWrapEdit
             OnPropertyChanged();
         }
     }
-        
+
 
 
     /// <summary>

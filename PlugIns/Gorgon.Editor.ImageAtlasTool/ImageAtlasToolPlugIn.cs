@@ -61,7 +61,7 @@ internal class ImageAtlasToolPlugIn
     private ImageAtlas _textureAtlas;
 
 
-		
+
     /// <summary>
     /// Function to retrieve the image file entries from the file system.
     /// </summary>

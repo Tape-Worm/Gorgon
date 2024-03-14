@@ -147,7 +147,7 @@ public class GorgonStreamWrapper
     }
 
 
-		
+
 
     /// <summary>
     /// Begins an asynchronous read operation. (Consider using <see cref="Stream.ReadAsync(byte[],int,int)"/> instead; see the Remarks section.)

@@ -60,7 +60,7 @@ internal class TextureAtlasToolPlugIn
     private TextureAtlas _textureAtlas;
 
 
-		
+
     /// <summary>
     /// Function to retrieve the sprite file entries from the file system.
     /// </summary>

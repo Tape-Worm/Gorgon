@@ -288,6 +288,6 @@ internal class RenderTargetFactory(GorgonGraphics graphics)
     }
 
 
-		
+
 
 }

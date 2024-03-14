@@ -73,7 +73,7 @@ class WicUtilities
     private const string DecOptAlphaThreshold = "AlphaThreshold";
 
 
- 
+
     /// <summary>
     /// A value to hold a WIC to Gorgon buffer format value.
     /// </summary>

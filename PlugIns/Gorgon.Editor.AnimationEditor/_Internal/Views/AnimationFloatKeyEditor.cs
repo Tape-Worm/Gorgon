@@ -54,7 +54,7 @@ internal partial class AnimationFloatKeyEditor
     }
 
 
-       
+
     /// <summary>Handles the PropertyChanged event of the DataContext control.</summary>
     /// <param name="sender">The source of the event.</param>
     /// <param name="e">The <see cref="PropertyChangedEventArgs"/> instance containing the event data.</param>

@@ -46,7 +46,7 @@ internal class ImageSplitToolPlugIn
     private ToolPlugInRibbonButton _button;
 
 
-		
+
     /// <summary>
     /// Function to retrieve the sprite file entries from the file system.
     /// </summary>

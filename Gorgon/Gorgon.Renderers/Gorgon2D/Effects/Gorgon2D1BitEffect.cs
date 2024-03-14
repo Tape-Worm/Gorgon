@@ -46,7 +46,7 @@ namespace Gorgon.Renderers;
 public class Gorgon2D1BitEffect
     : Gorgon2DEffect, IGorgon2DCompositorEffect
 {
- 
+
     /// <summary>
     /// Settings for the effect shader.
     /// </summary>

@@ -52,7 +52,7 @@ internal enum ClipMask
 /// </summary>
 internal class PickClipperService
 {
- 
+
     /// <summary>
     /// Stores a span of lines that form the boundaries of where to clip.
     /// </summary>

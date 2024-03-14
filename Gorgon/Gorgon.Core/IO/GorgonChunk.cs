@@ -41,7 +41,7 @@ namespace Gorgon.IO;
 public readonly struct GorgonChunk(ulong id, int size, ulong offset)
         : IGorgonEquatableByRef<GorgonChunk>
 {
-		
+
     /// <summary>
     /// An empty chunk.
     /// </summary>

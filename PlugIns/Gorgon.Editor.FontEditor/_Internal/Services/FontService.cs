@@ -316,5 +316,5 @@ internal class FontService
 
         GetTextures();
     }
-        
+
 }

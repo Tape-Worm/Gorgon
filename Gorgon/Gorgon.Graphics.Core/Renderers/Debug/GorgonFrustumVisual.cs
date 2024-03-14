@@ -38,7 +38,7 @@ namespace Gorgon.Renderers.Debug;
 public class GorgonFrustumVisual
     : IGorgonGraphicsObject, IDisposable
 {
-        
+
     // The builder used to build draw calls.
     private readonly GorgonDrawCallBuilder _builder = new();
     // The draw call to submit to the graphics interface.

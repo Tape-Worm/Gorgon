@@ -1341,7 +1341,7 @@ public unsafe readonly struct GorgonPtr<T>
     }
 
 
-       
+
     /// <summary>Initializes a new instance of the <see cref="GorgonPtr{T}" /> struct.</summary>
     /// <param name="ptr">The pointer to wrap.</param>
     /// <param name="indexOffset">The offset, in indices of this pointer within the memory block.</param>
@@ -1518,5 +1518,5 @@ public unsafe readonly struct GorgonPtr<T>
         _ptr = pointer;
         Length = count;
     }
-       
+
 }

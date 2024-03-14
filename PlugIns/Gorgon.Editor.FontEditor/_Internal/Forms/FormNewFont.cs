@@ -44,7 +44,7 @@ internal partial class FormNewFont
     private Drawing.Font _font;
 
 
-                
+
     /// <summary>
     /// Property to return the font name.
     /// </summary>

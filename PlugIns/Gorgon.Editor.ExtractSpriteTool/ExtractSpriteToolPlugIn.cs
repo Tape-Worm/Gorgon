@@ -53,7 +53,7 @@ internal class ExtractSpriteToolPlugIn
     private readonly SpriteExtractionData _extractData = new();
 
 
-		
+
     /// <summary>
     /// Function to determine if the form can be shown.
     /// </summary>

@@ -117,7 +117,7 @@ internal class Project
     } = new Dictionary<string, ProjectItemMetadata>(StringComparer.OrdinalIgnoreCase);
 
 
-        
+
     /// <summary>Initializes a new instance of the Project class.</summary>
     [JsonConstructor]
     public Project()

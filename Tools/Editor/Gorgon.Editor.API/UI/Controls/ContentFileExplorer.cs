@@ -52,7 +52,7 @@ public partial class ContentFileExplorer
     private class FileComparer(DataGridView gridView, DataGridViewColumn directory, DataGridViewColumn directoryName, DataGridViewColumn file)
                 : IComparer<DataGridViewRow>, IComparer
     {
-    
+
         // The grid containing the data to sort.
         private readonly DataGridView _grid = gridView;
         // The column containing the directory flag.
@@ -61,9 +61,9 @@ public partial class ContentFileExplorer
         private readonly DataGridViewColumn _columnDirectoryName = directoryName;
         // The column containing the file path.
         private readonly DataGridViewColumn _columnFile = file;
-    
 
-    
+
+
         /// <summary>Compares two objects and returns a value indicating whether one is less than, equal to, or greater than the other.</summary>
         /// <param name="x">The first object to compare.</param>
         /// <param name="y">The second object to compare.</param>
@@ -110,9 +110,9 @@ public partial class ContentFileExplorer
         /// </returns>
         int IComparer.Compare(object x, object y) => Compare((DataGridViewRow)x, (DataGridViewRow)y);
 
-    
-    
-    
+
+
+
     }
 
 

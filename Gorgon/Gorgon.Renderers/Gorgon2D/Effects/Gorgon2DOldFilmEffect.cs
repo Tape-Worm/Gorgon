@@ -54,7 +54,7 @@ public class Gorgon2DOldFilmEffect
     public const string Gorgon2DFilmGrainIncludeName = "FilmGrainShaders";
 
 
- 
+
     /// <summary>
     /// Settings for scratches.
     /// </summary>

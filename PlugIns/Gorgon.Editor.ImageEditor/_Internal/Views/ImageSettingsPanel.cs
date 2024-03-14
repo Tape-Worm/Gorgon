@@ -51,7 +51,7 @@ internal partial class ImageSettingsPanel
     }
 
 
-        
+
     /// <summary>Handles the Click event of the ButtonClear control.</summary>
     /// <param name="sender">The source of the event.</param>
     /// <param name="e">The <see cref="T:System.EventArgs">EventArgs</see> instance containing the event data.</param>

@@ -88,5 +88,5 @@ internal class BlendStateArray
         : base(D3D11.OutputMergerStage.SimultaneousRenderTargetCount)
     {
     }
-        
+
 }

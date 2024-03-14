@@ -106,7 +106,7 @@ public readonly struct GorgonResult
     /// Cannot compile the source code.
     /// </summary>
     public static GorgonResult CannotCompile => new(nameof(CannotCompile), ErrorBase + 11, Resources.GOR_RESULT_DESC_CANNOT_COMPILE);
-    
+
 
 
     /// <summary>

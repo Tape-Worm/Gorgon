@@ -79,7 +79,7 @@ internal class BigShip(SpritesLayer layer)
     }
 
 
-		
+
     /// <summary>
     /// Function to update the entity positions to match the position of the ship.
     /// </summary>

@@ -38,7 +38,7 @@ namespace Gorgon.Renderers.Debug;
 public class GorgonAABBVisual
     : IGorgonGraphicsObject, IDisposable
 {
-        
+
     // The builders used to build draw calls.
     private readonly GorgonDrawCallBuilder _builder = new();
     private GorgonPipelineStateBuilder _psoBuilder;

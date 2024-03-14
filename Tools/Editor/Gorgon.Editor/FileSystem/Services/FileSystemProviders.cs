@@ -53,7 +53,7 @@ internal class FileSystemProviders(IHostServices hostServices)
     private readonly IHostServices _hostServices = hostServices ?? throw new ArgumentNullException(nameof(hostServices));
 
 
-                
+
     /// <summary>
     /// Property to return the list of disabled provider plug ins.
     /// </summary>

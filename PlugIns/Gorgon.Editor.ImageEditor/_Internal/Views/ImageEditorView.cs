@@ -44,7 +44,7 @@ namespace Gorgon.Editor.ImageEditor;
 internal partial class ImageEditorView
     : VisualContentBaseControl, IDataContext<IImageContent>
 {
-        
+
     // The form for the ribbon.
     private readonly FormRibbon _ribbonForm;
     // The form for the image picker.

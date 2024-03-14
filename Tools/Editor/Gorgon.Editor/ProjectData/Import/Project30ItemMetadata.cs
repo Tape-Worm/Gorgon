@@ -34,7 +34,7 @@ namespace Gorgon.Editor.Metadata;
 /// </summary>
 public class Project30ItemMetadata
 {
-        
+
     /// <summary>
     /// Property to set or return the name of the plugin associated with the metadata file path.
     /// </summary>

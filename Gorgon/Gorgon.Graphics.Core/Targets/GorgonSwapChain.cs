@@ -106,12 +106,12 @@ public sealed class GorgonSwapChain
     /// </summary>
     private class ResizeState
     {
-    
+
         // Previous video mode.
         private GorgonVideoMode? _prevVideoMode;
-    
 
-    
+
+
         /// <summary>
         /// Property to set or return the format to use when entering fullscreen mode.
         /// </summary>
@@ -151,7 +151,7 @@ public sealed class GorgonSwapChain
         /// <summary>
         /// The previous video mode when transitioning back to windowed mode.
         /// </summary>
-        public ref GorgonVideoMode? PreviousVideoMode => ref _prevVideoMode;    
+        public ref GorgonVideoMode? PreviousVideoMode => ref _prevVideoMode;
     }
 
 

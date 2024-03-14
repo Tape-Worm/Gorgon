@@ -92,7 +92,7 @@ namespace Gorgon.Renderers;
 public class Gorgon2DBloomEffect
     : Gorgon2DEffect, IGorgon2DCompositorEffect
 {
- 
+
     /// <summary>
     /// Settings to apply when bright pass filtering.
     /// </summary>

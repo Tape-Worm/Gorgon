@@ -166,7 +166,7 @@ internal class SpriteVertexEditService
     }
 
 
-		
+
     /// <summary>
     /// Property to set or return the camera being used.
     /// </summary>

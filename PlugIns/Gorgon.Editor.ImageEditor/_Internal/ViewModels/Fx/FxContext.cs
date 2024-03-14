@@ -50,7 +50,7 @@ internal class FxContext
     private IFxService _fxService;
 
 
-        
+
     /// <summary>
     /// Property to return the view model for the blur fx settings.
     /// </summary>
@@ -246,7 +246,7 @@ internal class FxContext
     }
 
 
-        
+
     /// <summary>
     /// Function to set the working image for the blur effect.
     /// </summary>

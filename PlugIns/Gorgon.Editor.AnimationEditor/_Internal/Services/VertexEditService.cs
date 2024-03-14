@@ -99,7 +99,7 @@ internal class VertexEditService
     }
 
 
-		
+
     /// <summary>
     /// Property to set or return the camera being used.
     /// </summary>

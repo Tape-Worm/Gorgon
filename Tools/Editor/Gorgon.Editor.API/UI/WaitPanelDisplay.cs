@@ -114,5 +114,5 @@ public class WaitPanelDisplay
             OverlayColor = Graphics.GorgonColor.Black
         };
     }
-       
+
 }

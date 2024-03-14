@@ -40,7 +40,7 @@ namespace Gorgon.Renderers;
 public class Gorgon2DSobelEdgeDetectEffect
     : Gorgon2DEffect, IGorgon2DCompositorEffect
 {
- 
+
     /// <summary>
     /// Settings for the effect shader.
     /// </summary>

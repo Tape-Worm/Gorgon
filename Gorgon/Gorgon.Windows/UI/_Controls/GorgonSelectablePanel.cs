@@ -102,7 +102,7 @@ public class GorgonSelectablePanel
     }
 
 
-        
+
     /// <summary>Raises the <see cref="RenderToBitmap"/> event.</summary>
     /// <param name="e">A <see cref="PaintEventArgs"/> that contains the event data.</param>
     protected override void OnPrint(PaintEventArgs e)

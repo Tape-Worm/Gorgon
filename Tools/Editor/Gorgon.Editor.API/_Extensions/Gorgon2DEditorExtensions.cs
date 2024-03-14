@@ -25,13 +25,8 @@
 
 
 using Gorgon.Core;
-using Gorgon.Editor;
-using Gorgon.Editor.Metadata;
 using Gorgon.Editor.ProjectData;
-using Gorgon.Editor.Properties;
 using Gorgon.Graphics.Core;
-using Gorgon.Graphics.Imaging;
-using Gorgon.Graphics.Imaging.Codecs;
 using Gorgon.Renderers;
 
 namespace Gorgon.IO;

@@ -63,7 +63,7 @@ public enum WaveType
 public class Gorgon2DWaveEffect(Gorgon2D renderer)
         : Gorgon2DEffect(renderer, Resources.GOR2D_EFFECT_WAVE, Resources.GOR2D_EFFECT_WAVE_DESC, 1), IGorgon2DCompositorEffect
 {
- 
+
     /// <summary>
     /// Settings for the effect shader.
     /// </summary>

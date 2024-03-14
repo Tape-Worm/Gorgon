@@ -136,7 +136,7 @@ public sealed class GorgonRawReadWriteView
     string IGorgonNamedObject.Name => Buffer?.Name;
 
 
-        
+
     /// <summary>Function to retrieve the necessary parameters to create the native view.</summary>
     /// <returns>The D3D11 UAV descriptor.</returns>
     private protected override ref readonly D3D11.UnorderedAccessViewDescription1 OnGetUavParams()

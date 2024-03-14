@@ -72,7 +72,7 @@ public class GorgonAnimationBuilder
     private readonly Dictionary<string, TrackKeyBuilder<GorgonKeyTexture2D>> _textureTracks = new(StringComparer.OrdinalIgnoreCase);
 
 
-       
+
     /// <summary>
     /// Function to edit a track that uses single floating point values for its key frame values.
     /// </summary>

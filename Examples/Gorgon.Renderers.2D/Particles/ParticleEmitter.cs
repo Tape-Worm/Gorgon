@@ -50,7 +50,7 @@ public class ParticleEmitter
     /// </summary>
     private class Particle
     {
-    
+
         /// <summary>
         /// Position of the particle.
         /// </summary>
@@ -103,7 +103,7 @@ public class ParticleEmitter
         /// Terminal age of the particle.
         /// </summary>
         public float TerminalAge;
-   
+
 
         /// <summary>
         /// Function to copy the contents of this particle to another particle.
@@ -125,7 +125,7 @@ public class ParticleEmitter
             particle.Age = Age;
             particle.TerminalAge = TerminalAge;
         }
-    
+
     }
 
 

@@ -135,12 +135,12 @@ public class GorgonBoundingFrustum
     public class CornerList
         : IEnumerable<Vector3>
     {
-    
+
         // The vectors indicating the corners of the frustum.
         private readonly Vector3[] _corners = new Vector3[8];
-    
 
-    
+
+
         /// <summary>
         /// Property to return the number of corners in the frustum.
         /// </summary>
@@ -155,9 +155,9 @@ public class GorgonBoundingFrustum
         /// Property to return a readonly reference to the plane by index.
         /// </summary>
         public ref readonly Vector3 this[int index] => ref _corners[index];
-    
 
-    
+
+
         /// <summary>
         /// Function to assign a corner.
         /// </summary>
@@ -184,7 +184,7 @@ public class GorgonBoundingFrustum
         /// <summary>Returns an enumerator that iterates through a collection.</summary>
         /// <returns>An <see cref="IEnumerator">IEnumerator</see> object that can be used to iterate through the collection.</returns>
         IEnumerator IEnumerable.GetEnumerator() => _corners.GetEnumerator();
-    
+
     }
 
     /// <summary>
@@ -193,12 +193,12 @@ public class GorgonBoundingFrustum
     public class PlaneList
         : IEnumerable<Plane>
     {
-    
+
         // The list of planes for the frustum.
         private readonly Plane[] _planes = new Plane[6];
-    
 
-    
+
+
         /// <summary>
         /// Property to return the number of planes in the frustum.
         /// </summary>
@@ -213,9 +213,9 @@ public class GorgonBoundingFrustum
         /// Property to return a readonly reference to the plane by index.
         /// </summary>
         public ref readonly Plane this[int index] => ref _planes[index];
-    
 
-    
+
+
         /// <summary>
         /// Function to assign a plane.
         /// </summary>
@@ -242,7 +242,7 @@ public class GorgonBoundingFrustum
         /// <summary>Returns an enumerator that iterates through a collection.</summary>
         /// <returns>An <see cref="IEnumerator">IEnumerator</see> object that can be used to iterate through the collection.</returns>
         IEnumerator IEnumerable.GetEnumerator() => _planes.GetEnumerator();
-    
+
     }
 
 

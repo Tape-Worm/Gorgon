@@ -42,7 +42,7 @@ namespace Gorgon.Editor.ImageEditor;
 internal abstract class TextureViewer
     : DefaultContentRenderer<IImageContent>, ITextureViewer
 {
- 
+
     /// <summary>
     /// Parameters to pass to the texture shader(s).
     /// </summary>

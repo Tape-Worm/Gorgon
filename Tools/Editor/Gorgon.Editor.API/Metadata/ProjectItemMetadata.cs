@@ -41,7 +41,7 @@ public class ProjectItemMetadata
     private IContentPlugInMetadata _contentMetadata;
 
 
-        
+
     /// <summary>
     /// Property to return the ID for the item.
     /// </summary>        

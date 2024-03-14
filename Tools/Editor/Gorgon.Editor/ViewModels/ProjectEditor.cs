@@ -61,7 +61,7 @@ internal enum ProjectItemType
 internal class ProjectEditor
     : ViewModelBase<ProjectEditorParameters, IHostContentServices>, IProjectEditor
 {
-        
+
     /// <summary>
     /// Metadata naming for the project item type attribute.
     /// </summary>

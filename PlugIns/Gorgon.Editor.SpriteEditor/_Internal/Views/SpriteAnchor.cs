@@ -58,7 +58,7 @@ internal partial class SpriteAnchor
     }
 
 
-        
+
     /// <summary>
     /// Function to set the mid points for the edges of the sprite.
     /// </summary>

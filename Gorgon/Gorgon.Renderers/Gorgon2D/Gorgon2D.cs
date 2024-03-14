@@ -86,7 +86,7 @@ namespace Gorgon.Renderers;
 public sealed class Gorgon2D
     : IGorgon2DFluent, IGorgon2DDrawingFluent, IGorgonGraphicsObject
 {
- 
+
     /// <summary>
     /// The common miscellaneous values to pass to the shaders.
     /// </summary>
@@ -142,7 +142,7 @@ public sealed class Gorgon2D
     }
 
 
-        
+
     // The renderer is not initialized.        
     private const int Uninitialized = 0;
 
@@ -2684,7 +2684,7 @@ public sealed class Gorgon2D
 
         return this;
     }
-    
+
 
     /// <summary>
     /// Initializes a new instance of the <see cref="Gorgon2D"/> class.
@@ -2715,5 +2715,5 @@ public sealed class Gorgon2D
 
         _defaultCamera = defaultCamera;
     }
-    
+
 }
