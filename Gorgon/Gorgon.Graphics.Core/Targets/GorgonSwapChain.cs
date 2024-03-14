@@ -723,7 +723,7 @@ public sealed class GorgonSwapChain
             }
         }
 
-        GorgonRenderTargetView[] rtvs = Graphics.RenderTargets.ToArray();
+        GorgonRenderTargetView[] rtvs = [.. Graphics.RenderTargets];
         rtvs[targetIndex] = _targetView;
         Graphics.SetRenderTargets(rtvs, dsv);
     }

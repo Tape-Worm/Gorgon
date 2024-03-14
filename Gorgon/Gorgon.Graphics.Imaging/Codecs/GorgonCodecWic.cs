@@ -54,11 +54,11 @@ public abstract class GorgonCodecWic<TWicEncOpt, TWicDecOpt>
     #region Variables.
     // Supported formats.
     private readonly BufferFormat[] _supportedFormats =
-    {
+    [
         BufferFormat.R8G8B8A8_UNorm,
         BufferFormat.B8G8R8A8_UNorm,
         BufferFormat.B8G8R8X8_UNorm
-    };
+    ];
     #endregion
 
     #region Properties
@@ -340,7 +340,7 @@ public abstract class GorgonCodecWic<TWicEncOpt, TWicDecOpt>
     {
         if (!SupportsMultipleFrames)
         {
-            return Array.Empty<DX.Point>();
+            return [];
         }
 
         var wic = new WicUtilities();
@@ -349,7 +349,7 @@ public abstract class GorgonCodecWic<TWicEncOpt, TWicDecOpt>
         {
             if ((FrameOffsetMetadataNames is null) || (FrameOffsetMetadataNames.Count == 0))
             {
-                return Array.Empty<DX.Point>();
+                return [];
             }
 
             IReadOnlyList<DX.Point> result = wic.GetFrameOffsetMetadata(stream, SupportedFileFormat, FrameOffsetMetadataNames);
@@ -442,7 +442,7 @@ public abstract class GorgonCodecWic<TWicEncOpt, TWicDecOpt>
 
         Codec = codec;
         CodecDescription = description ?? string.Empty;
-        CodecCommonExtensions = extensions ?? Array.Empty<string>();
+        CodecCommonExtensions = extensions ?? [];
         SupportedFileFormat = containerGUID;
     }
     #endregion

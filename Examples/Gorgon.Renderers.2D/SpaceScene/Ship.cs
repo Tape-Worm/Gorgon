@@ -51,7 +51,9 @@ namespace Gorgon.Examples;
 /// 
 /// We also have an "AI" attachable object. This allows us to use an object to set up some actions based on inputs to allow the computer to control the ship.
 /// </remarks>
-internal class Ship
+/// <remarks>Initializes a new instance of the <see cref="Ship"/> class.</remarks>
+/// <param name="layer">The layer.</param>
+internal class Ship(SpritesLayer layer)
 {
     #region Variables.
     // The ship sprite.
@@ -59,13 +61,13 @@ internal class Ship
     // The engine sprite.
     private SpriteEntity _engine;
     // The layer containing the sprite(s) for this ship.
-    private readonly SpritesLayer _layer;
+    private readonly SpritesLayer _layer = layer;
     // The controller for the layers.
     private LayerCamera _layerController;
     // The angle of rotation.
     private float _angle;
     // The controller for the engine animation.
-    private readonly GorgonSpriteAnimationController _engineAnimationController;
+    private readonly GorgonSpriteAnimationController _engineAnimationController = new();
     // Flag to indicate that we are slowing down.
     private bool _isSlowing;
     // Are we moving backwards?
@@ -358,15 +360,6 @@ internal class Ship
 
         UpdateEntityPositions();
     }
-    #endregion
 
-    #region Constructor/Finalizer.
-    /// <summary>Initializes a new instance of the <see cref="Ship"/> class.</summary>
-    /// <param name="layer">The layer.</param>
-    public Ship(SpritesLayer layer)
-    {
-        _layer = layer;
-        _engineAnimationController = new GorgonSpriteAnimationController();
-    }
     #endregion
 }

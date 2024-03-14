@@ -46,16 +46,22 @@ public class Gorgon2DSobelEdgeDetectEffect
     /// <summary>
     /// Settings for the effect shader.
     /// </summary>
+    /// <remarks>
+    /// Initializes a new instance of the <see cref="Settings"/> struct.
+    /// </remarks>
+    /// <param name="linecolor">The linecolor.</param>
+    /// <param name="texelSize">Size of the texel.</param>
+    /// <param name="threshold">The threshold.</param>
     [StructLayout(LayoutKind.Sequential, Pack = 4, Size = 32)]
-    private readonly struct Settings
+    private readonly struct Settings(GorgonColor linecolor, Vector2 texelSize, float threshold)
     {
         // Texel size and threshold.
-        private readonly Vector4 _texelThreshold;
+        private readonly Vector4 _texelThreshold = new(texelSize, threshold, 0);
 
         /// <summary>
         /// Line color.
         /// </summary>
-        public readonly GorgonColor LineColor;
+        public readonly GorgonColor LineColor = linecolor;
 
         /// <summary>
         /// Property to return the size of a texel.
@@ -66,18 +72,6 @@ public class Gorgon2DSobelEdgeDetectEffect
         /// Property to return the threshold for the effect.
         /// </summary>
         public float Threshold => _texelThreshold.Z;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="Settings"/> struct.
-        /// </summary>
-        /// <param name="linecolor">The linecolor.</param>
-        /// <param name="texelSize">Size of the texel.</param>
-        /// <param name="threshold">The threshold.</param>
-        public Settings(GorgonColor linecolor, Vector2 texelSize, float threshold)
-        {
-            LineColor = linecolor;
-            _texelThreshold = new Vector4(texelSize, threshold, 0);
-        }
     }
     #endregion
 

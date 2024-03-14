@@ -42,13 +42,17 @@ namespace Gorgon.Editor.SpriteEditor;
 /// <summary>
 /// The service used to query for new sprite information.
 /// </summary>
-internal class NewSpriteService 
+/// <remarks>Initializes a new instance of the <see cref="NewSpriteService"/> class.</remarks>
+/// <param name="fileManager">The project file manager.</param>
+/// <param name="imageCodec">The image codec for loading texture data.</param>
+/// <exception cref="ArgumentNullException">Thrown when the <paramref name="fileManager"/> parameter is <b>null</b>.</exception>
+internal class NewSpriteService(IContentFileManager fileManager, IGorgonImageCodec imageCodec)
 {
     #region Variables.
     // The file manager for the project file system.
-    private readonly IContentFileManager _fileManager;
+    private readonly IContentFileManager _fileManager = fileManager ?? throw new ArgumentNullException(nameof(fileManager));
     // The image codec for loading texture data.
-    private readonly IGorgonImageCodec _imageCodec;
+    private readonly IGorgonImageCodec _imageCodec = imageCodec ?? throw new ArgumentNullException(nameof(imageCodec));
     #endregion
 
     #region Methods.
@@ -113,17 +117,8 @@ internal class NewSpriteService
             ? (newSpriteForm.ObjectName, newSpriteForm.TextureFile, newSpriteForm.SpriteSize)
             : (null, null, DX.Size2F.Zero);
     }
-    #endregion
 
+    #endregion
     #region Constructor.
-    /// <summary>Initializes a new instance of the <see cref="NewSpriteService"/> class.</summary>
-    /// <param name="fileManager">The project file manager.</param>
-    /// <param name="imageCodec">The image codec for loading texture data.</param>
-    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="fileManager"/> parameter is <b>null</b>.</exception>
-    public NewSpriteService(IContentFileManager fileManager, IGorgonImageCodec imageCodec)
-    {
-        _fileManager = fileManager ?? throw new ArgumentNullException(nameof(fileManager));
-        _imageCodec = imageCodec ?? throw new ArgumentNullException(nameof(imageCodec));
-    }
     #endregion
 }

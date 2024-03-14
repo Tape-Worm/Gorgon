@@ -42,8 +42,14 @@ namespace Gorgon.IO;
 /// This object extends the functionality of the <see cref="BinaryWriter"/> type by adding extra functions to write to a pointer (or <c>nint</c>), and to generic value types.
 /// </para>
 /// </remarks>
-public class GorgonBinaryWriter
-    : BinaryWriter
+/// <remarks>
+/// Initializes a new instance of the <see cref="GorgonBinaryWriter"/> class.
+/// </remarks>
+/// <param name="output">Output stream.</param>
+/// <param name="encoder">Encoding for the binary writer.</param>
+/// <param name="keepStreamOpen">[Optional] <b>true</b> to keep the underlying stream open when the writer is closed, <b>false</b> to close when done.</param>
+public class GorgonBinaryWriter(Stream output, Encoding encoder, bool keepStreamOpen = false)
+        : BinaryWriter(output, encoder, keepStreamOpen)
 {
     #region Variables.
     // The size of the temporary buffer used to stream data out.
@@ -83,7 +89,7 @@ public class GorgonBinaryWriter
     public bool KeepStreamOpen
     {
         get;
-    }
+    } = keepStreamOpen;
     #endregion
 
     #region Methods.
@@ -390,17 +396,9 @@ public class GorgonBinaryWriter
             Write((value + startIndex), count.Value * Unsafe.SizeOf<T>());
         }
     }
-    #endregion
 
+    #endregion
     #region Constructor/Destructor.
-    /// <summary>
-    /// Initializes a new instance of the <see cref="GorgonBinaryWriter"/> class.
-    /// </summary>
-    /// <param name="output">Output stream.</param>
-    /// <param name="encoder">Encoding for the binary writer.</param>
-    /// <param name="keepStreamOpen">[Optional] <b>true</b> to keep the underlying stream open when the writer is closed, <b>false</b> to close when done.</param>
-    public GorgonBinaryWriter(Stream output, Encoding encoder, bool keepStreamOpen = false)
-        : base(output, encoder, keepStreamOpen) => KeepStreamOpen = keepStreamOpen;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonBinaryWriter"/> class.

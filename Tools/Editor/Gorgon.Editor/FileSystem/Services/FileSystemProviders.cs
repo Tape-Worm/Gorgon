@@ -41,7 +41,10 @@ namespace Gorgon.Editor.Services;
 /// <summary>
 /// Functionality to capture and load file system providers from plugins.
 /// </summary>
-internal class FileSystemProviders
+/// <remarks>Initializes a new instance of the <see cref="FileSystemProviders"/> class.</remarks>
+/// <param name="hostServices">Services to pass around to the plug ins from the host application.</param>
+/// <exception cref="ArgumentNullException">Thrown when the <paramref name="commonServices"/> parameter is <b>null</b>.</exception>
+internal class FileSystemProviders(IHostServices hostServices)
 {
     #region Variables.
     // A list of available file system reader providers.
@@ -51,7 +54,7 @@ internal class FileSystemProviders
     // A list of disabled plug ins.
     private readonly Dictionary<string, IDisabledPlugIn> _disabled = new(StringComparer.OrdinalIgnoreCase);
     // Common application services.
-    private readonly IHostServices _hostServices;
+    private readonly IHostServices _hostServices = hostServices ?? throw new ArgumentNullException(nameof(hostServices));
     #endregion
 
     #region Properties.                
@@ -222,7 +225,7 @@ internal class FileSystemProviders
 
             if (!result.TryGetValue(description, out List<GorgonFileExtension> extensions))
             {
-                result[description] = extensions = new List<GorgonFileExtension>();
+                result[description] = extensions = [];
             }
 
             extensions.AddRange(provider.Value.PreferredExtensions.OrderBy(item => item.Extension));
@@ -313,12 +316,8 @@ internal class FileSystemProviders
             }
         }
     }
-    #endregion
 
+    #endregion
     #region Constructor.
-    /// <summary>Initializes a new instance of the <see cref="FileSystemProviders"/> class.</summary>
-    /// <param name="hostServices">Services to pass around to the plug ins from the host application.</param>
-    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="commonServices"/> parameter is <b>null</b>.</exception>
-    public FileSystemProviders(IHostServices hostServices) => _hostServices = hostServices ?? throw new ArgumentNullException(nameof(hostServices));
     #endregion
 }

@@ -58,7 +58,7 @@ internal class SpriteFiles
     // The service used to search through the files.
     private ISearchService<IContentFileExplorerSearchEntry> _searchService;
     // The list of selected files.
-    private readonly List<ContentFileExplorerFileEntry> _selected = new();
+    private readonly List<ContentFileExplorerFileEntry> _selected = [];
     // The task used to load the preview.
     private Task<IGorgonImage> _loadPreviewTask;
     // The cancellation source.
@@ -85,7 +85,7 @@ internal class SpriteFiles
         get => _selected;
         private set
         {
-            value ??= Array.Empty<ContentFileExplorerFileEntry>();
+            value ??= [];
 
             if (value.SequenceEqual(_selected))
             {

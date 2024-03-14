@@ -38,7 +38,9 @@ namespace Gorgon.Graphics.Core;
 /// <summary>
 /// Functionality for evaluating state changes.
 /// </summary>
-internal class StateEvaluator
+/// <remarks>Initializes a new instance of the <see cref="StateEvaluator" /> class.</remarks>
+/// <param name="graphics">The graphics interface that owns this evaluator.</param>
+internal class StateEvaluator(GorgonGraphics graphics)
 {
         #region Variables.
         // The previous stencil reference value.
@@ -48,9 +50,9 @@ internal class StateEvaluator
         // The previous blend factor.
         private GorgonColor _blendFactor = GorgonColor.White;
         // The log for debug messages.
-        private readonly IGorgonLog _log;
+        private readonly IGorgonLog _log = graphics.Log;
         // The device context.
-        private readonly GorgonGraphics _graphics;
+        private readonly GorgonGraphics _graphics = graphics;
 
         // The previously assigned pipeline state.
         private readonly GorgonPipelineState _prevPipelineState = new()
@@ -827,15 +829,8 @@ internal class StateEvaluator
             _blendFactor = GorgonColor.White;
             _blendSampleMask = int.MinValue;
         }
-        #endregion
 
-        #region Constructor.
-        /// <summary>Initializes a new instance of the <see cref="StateEvaluator" /> class.</summary>
-        /// <param name="graphics">The graphics interface that owns this evaluator.</param>
-        public StateEvaluator(GorgonGraphics graphics)
-        {
-            _log = graphics.Log;
-            _graphics = graphics;
-        }
-        #endregion
-    }
+    #endregion
+    #region Constructor.
+    #endregion
+}

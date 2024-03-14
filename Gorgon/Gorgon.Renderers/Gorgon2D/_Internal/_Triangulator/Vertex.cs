@@ -9,17 +9,11 @@ using System.Numerics;
 
 namespace GorgonTriangulator;
 
-internal readonly struct Vertex
-    : IEquatable<Vertex>
+internal readonly struct Vertex(Vector2 position, int index)
+        : IEquatable<Vertex>
 {
-    public readonly Vector2 Position;
-    public readonly int Index;
-
-    public Vertex(Vector2 position, int index)
-    {
-        Position = position;
-        Index = index;
-    }
+    public readonly Vector2 Position = position;
+    public readonly int Index = index;
 
     public override bool Equals(object obj) => obj is Vertex vertex ? Equals(vertex) : base.Equals(obj);
 

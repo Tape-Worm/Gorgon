@@ -34,27 +34,32 @@ namespace Gorgon.Renderers;
 /// An immutable value for alpha testing.
 /// </summary>
 /// <remarks>This will define the range of alpha values to clip.  An alpha value that falls between the lower and upper range will not be rendered.</remarks>
+/// <remarks>
+/// Initializes a new instance of the <see cref="AlphaTestData"/> struct.
+/// </remarks>
+/// <param name="isEnabled"><b>true</b> to enable alpha testing, <b>false</b> to disable.</param>
+/// <param name="alphaRange">The alpha range to clip.</param>
 [StructLayout(LayoutKind.Sequential, Pack = 1, Size = 16)]
-internal readonly struct AlphaTestData
-    : IEquatable<AlphaTestData>
+internal readonly struct AlphaTestData(bool isEnabled, GorgonRangeF alphaRange)
+        : IEquatable<AlphaTestData>
 {
     #region Variables.
     /// <summary>
     /// 4 byte compatiable flag for constant buffer.
     /// </summary>
-    public readonly int IsEnabled;
+    public readonly int IsEnabled = isEnabled ? 1 : 0;
 
     /// <summary>
     /// Lower alpha value.
     /// </summary>
     /// <remarks>If the alpha is higher than this value, it will be clipped.</remarks>
-    public readonly float LowerAlpha;
+    public readonly float LowerAlpha = alphaRange.Minimum;
 
     /// <summary>
     /// Upper alpha value.
     /// </summary>
     /// <remarks>If the alpha is lower than this value, it will be clipped.</remarks>
-    public readonly float UpperAlpha;
+    public readonly float UpperAlpha = alphaRange.Maximum;
     #endregion
 
     #region Methods.
@@ -86,20 +91,9 @@ internal readonly struct AlphaTestData
     /// A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table. 
     /// </returns>
     public override int GetHashCode() => HashCode.Combine(IsEnabled, LowerAlpha, UpperAlpha);
-    #endregion
 
+    #endregion
     #region Constructor/Destructor.
-    /// <summary>
-    /// Initializes a new instance of the <see cref="AlphaTestData"/> struct.
-    /// </summary>
-    /// <param name="isEnabled"><b>true</b> to enable alpha testing, <b>false</b> to disable.</param>
-    /// <param name="alphaRange">The alpha range to clip.</param>
-    public AlphaTestData(bool isEnabled, GorgonRangeF alphaRange)
-    {
-        IsEnabled = isEnabled ? 1 : 0;
-        LowerAlpha = alphaRange.Minimum;
-        UpperAlpha = alphaRange.Maximum;
-    }
     #endregion
 
     #region IEquatable<Gorgon2DAlphaTest> Members

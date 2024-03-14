@@ -233,13 +233,13 @@ public sealed class Gorgon2D
     // The renderable for primitives (lines, rectangles, etc...)
     private readonly BatchRenderable _primitiveRenderable = new()
     {
-        Vertices = new Gorgon2DVertex[]
-        {
-            new Gorgon2DVertex(Vector2.Zero, GorgonColor.White, Vector4.Zero, new Vector2(1, 0)),
-            new Gorgon2DVertex(Vector2.Zero, GorgonColor.White, Vector4.Zero, new Vector2(1, 0)),
-            new Gorgon2DVertex(Vector2.Zero, GorgonColor.White, Vector4.Zero, new Vector2(1, 0)),
-            new Gorgon2DVertex(Vector2.Zero, GorgonColor.White, Vector4.Zero, new Vector2(1, 0)),
-        }
+        Vertices =
+        [
+            new(Vector2.Zero, GorgonColor.White, Vector4.Zero, new Vector2(1, 0)),
+            new(Vector2.Zero, GorgonColor.White, Vector4.Zero, new Vector2(1, 0)),
+            new(Vector2.Zero, GorgonColor.White, Vector4.Zero, new Vector2(1, 0)),
+            new(Vector2.Zero, GorgonColor.White, Vector4.Zero, new Vector2(1, 0)),
+        ]
     };
     // The 2D camera used to render the data.
     private GorgonCameraCommon _defaultCamera;

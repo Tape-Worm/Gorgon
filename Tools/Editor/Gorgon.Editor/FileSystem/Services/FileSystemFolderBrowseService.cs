@@ -40,12 +40,14 @@ namespace Gorgon.Editor.Services;
 /// <summary>
 /// An interface used to browse the file system folder structure.
 /// </summary>
-internal class FileSystemFolderBrowseService
-    : IFileSystemFolderBrowseService
+/// <remarks>Initializes a new instance of the <see cref="FileSystemFolderBrowseService"/> class.</remarks>
+/// <param name="mainViewModel">The main view model for the application.</param>
+internal class FileSystemFolderBrowseService(IMain mainViewModel)
+        : IFileSystemFolderBrowseService
 {
     #region Variables.
     // The main view model for the application.
-    private readonly IMain _mainViewModel;
+    private readonly IMain _mainViewModel = mainViewModel ?? throw new ArgumentNullException(nameof(mainViewModel));
     #endregion
 
     #region Methods.
@@ -95,11 +97,8 @@ internal class FileSystemFolderBrowseService
         browser.SetInitialPath(initialDirectory);
         return browser.ShowDialog(GetParentForm()) != DialogResult.OK ? null : browser.CurrentDirectory.FormatDirectory('/');
     }
-    #endregion
 
+    #endregion
     #region Constructor.
-    /// <summary>Initializes a new instance of the <see cref="FileSystemFolderBrowseService"/> class.</summary>
-    /// <param name="mainViewModel">The main view model for the application.</param>
-    public FileSystemFolderBrowseService(IMain mainViewModel) => _mainViewModel = mainViewModel ?? throw new ArgumentNullException(nameof(mainViewModel));
     #endregion
 }

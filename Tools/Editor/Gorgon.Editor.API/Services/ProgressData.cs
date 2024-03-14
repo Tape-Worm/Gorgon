@@ -29,23 +29,17 @@ namespace Gorgon.Editor.Services;
 /// <summary>
 /// Value type used to relay progress back to a subscriber.
 /// </summary>
-public readonly struct ProgressData
+/// <remarks>Initializes a new instance of the <see cref="ProgressData"/> struct.</remarks>
+/// <param name="current">The current item.</param>
+/// <param name="total">The total number of items.</param>
+public readonly struct ProgressData(int current, int total)
 {
     /// <summary>
     /// The current value being processed.
     /// </summary>
-    public readonly int Current;
+    public readonly int Current = current;
     /// <summary>
     /// The total number of items to process.
     /// </summary>
-    public readonly int Total;
-
-    /// <summary>Initializes a new instance of the <see cref="ProgressData"/> struct.</summary>
-    /// <param name="current">The current item.</param>
-    /// <param name="total">The total number of items.</param>
-    public ProgressData(int current, int total)
-    {
-        Current = current;
-        Total = total;
-    }
+    public readonly int Total = total;
 }

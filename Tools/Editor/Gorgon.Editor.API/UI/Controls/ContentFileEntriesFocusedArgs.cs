@@ -32,8 +32,10 @@ namespace Gorgon.Editor.UI.Controls;
 /// <summary>
 /// Event arguments for the <see cref="ContentFileExplorer.FileEntriesFocused"/> event.
 /// </summary>
-public class ContentFileEntriesFocusedArgs
-    : EventArgs
+/// <remarks>Initializes a new instance of the <see cref="ContentFileEntriesFocusedArgs"/> class.</remarks>
+/// <param name="focusedFiles">The focused files.</param>
+public class ContentFileEntriesFocusedArgs(IReadOnlyList<ContentFileExplorerFileEntry> focusedFiles)
+        : EventArgs
 {
     /// <summary>
     /// Property to return the files that were focused in the file selector.
@@ -41,9 +43,5 @@ public class ContentFileEntriesFocusedArgs
     public IReadOnlyList<ContentFileExplorerFileEntry> FocusedFiles
     {
         get;
-    }
-
-    /// <summary>Initializes a new instance of the <see cref="ContentFileEntriesFocusedArgs"/> class.</summary>
-    /// <param name="focusedFiles">The focused files.</param>
-    public ContentFileEntriesFocusedArgs(IReadOnlyList<ContentFileExplorerFileEntry> focusedFiles) => FocusedFiles = focusedFiles ?? Array.Empty<ContentFileExplorerFileEntry>();
+    } = focusedFiles ?? [];
 }

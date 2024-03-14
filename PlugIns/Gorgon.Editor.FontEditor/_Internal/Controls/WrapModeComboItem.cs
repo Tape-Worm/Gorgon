@@ -34,17 +34,22 @@ namespace Gorgon.Editor.FontEditor;
 /// <summary>
 /// A wrap mode combo box item.
 /// </summary>
-internal struct WrapModeComboItem
-    : IEquatable<WrapModeComboItem>
+/// <remarks>
+/// Initializes a new instance of the <see cref="WrapModeComboItem"/> class.
+/// </remarks>
+/// <param name="wrapMode">The wrap mode.</param>
+/// <param name="text">The text.</param>
+internal struct WrapModeComboItem(GlyphBrushWrapMode wrapMode, string text)
+        : IEquatable<WrapModeComboItem>
 {
     #region Variables.
     // Item text.
-    private readonly string _text;			
+    private readonly string _text = text;			
 
     /// <summary>
     /// The wrapping mode.
     /// </summary>
-    public readonly GlyphBrushWrapMode WrapMode;
+    public readonly GlyphBrushWrapMode WrapMode = wrapMode;
     #endregion
 
     #region Methods.
@@ -110,19 +115,9 @@ internal struct WrapModeComboItem
     /// A <see cref="string" /> that represents this instance.
     /// </returns>
     public override readonly string ToString() => _text;
-    #endregion
 
+    #endregion
     #region Constructor/Destructor.
-    /// <summary>
-    /// Initializes a new instance of the <see cref="WrapModeComboItem"/> class.
-    /// </summary>
-    /// <param name="wrapMode">The wrap mode.</param>
-    /// <param name="text">The text.</param>
-    public WrapModeComboItem(GlyphBrushWrapMode wrapMode, string text)
-    {
-        WrapMode = wrapMode;
-        _text = text;
-    }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="WrapModeComboItem"/> struct.

@@ -1,7 +1,6 @@
-﻿#region MIT.
-// 
+﻿// 
 // Gorgon.
-// Copyright (C) 2013 Michael Winsor
+// Copyright (C) 2024 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -22,7 +21,6 @@
 // 
 // Created: Sunday, March 10, 2013 11:07:01 PM
 // 
-#endregion
 
 using System;
 using System.Collections.Generic;
@@ -31,7 +29,6 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Security;
-using System.Windows.Forms;
 using Gorgon.Core;
 using Gorgon.Editor.FontEditor.Properties;
 using Gorgon.Native;
@@ -42,25 +39,21 @@ namespace Gorgon.Editor.FontEditor;
 /// Win32 functions.
 /// </summary>
 [SuppressUnmanagedCodeSecurity]
-internal static class Win32API
+internal static partial class Win32API
 {
-    #region Variables.
     // List of ranges.
     private static IDictionary<string, GorgonRange> _ranges;
     // List of code point names.
-    private static IDictionary<int, string> _codePointNames;			
-    #endregion
+    private static IDictionary<int, string> _codePointNames;
 
-    #region Methods.
-    // ReSharper disable InconsistentNaming
     /// <summary>
     /// Gets the ranges supported by a font.
     /// </summary>
     /// <param name="hdc">Device context.</param>
     /// <param name="lpgs">Font ranges.</param>
     /// <returns></returns>
-    [DllImport("gdi32.dll")]
-    private static extern uint GetFontUnicodeRanges(IntPtr hdc, IntPtr lpgs);
+    [LibraryImport("gdi32.dll")]
+    private static partial uint GetFontUnicodeRanges(IntPtr hdc, IntPtr lpgs);
 
     /// <summary>
     /// Selects an object into the device context.
@@ -68,29 +61,8 @@ internal static class Win32API
     /// <param name="hDC">Device context.</param>
     /// <param name="hObject">Object to select.</param>
     /// <returns>The previous object.</returns>
-    [DllImport("gdi32.dll")]
-    public extern static IntPtr SelectObject(IntPtr hDC, IntPtr hObject);
-
-    /// <summary>
-    /// Convert a virtual key to ascii.
-    /// </summary>
-    /// <param name="uVirtKey"></param>
-    /// <param name="uScanCode"></param>
-    /// <param name="lpbKeyState"></param>
-    /// <param name="lpChar"></param>
-    /// <param name="cchBuff"></param>
-    /// <param name="uFlags"></param>
-    /// <returns></returns>
-    [DllImport("user32.dll", CharSet=CharSet.Unicode)]
-    private extern static int ToUnicode(int uVirtKey, int uScanCode , byte[] lpbKeyState, [Out] char[] lpChar, int cchBuff, int uFlags);
-
-    /// <summary>
-    /// Retrieves the current keyboard state.
-    /// </summary>
-    /// <param name="lpbKeyState"></param>
-    /// <returns></returns>
-    [DllImport("user32.dll")]
-    private extern static int GetKeyboardState(byte[] lpbKeyState);
+    [LibraryImport("gdi32.dll")]
+    public static partial IntPtr SelectObject(IntPtr hDC, IntPtr hObject);
 
     /// <summary>
     /// Function to retrieve indices for a glyph.
@@ -101,9 +73,8 @@ internal static class Win32API
     /// <param name="pgi"></param>
     /// <param name="fl"></param>
     /// <returns></returns>
-    [DllImport("gdi32.dll", EntryPoint = "GetGlyphIndicesW")]
-    private static extern uint GetGlyphIndices([In] IntPtr hdc, [In] [MarshalAs(UnmanagedType.LPTStr)] string lpsz, int c, [Out] ushort[] pgi, uint fl);
-    // ReSharper restore InconsistentNaming
+    [LibraryImport("gdi32.dll", EntryPoint = "GetGlyphIndicesW")]
+    private static partial uint GetGlyphIndices(IntPtr hdc, [MarshalAs(UnmanagedType.LPTStr)] string lpsz, int c, [Out] ushort[] pgi, uint fl);
 
     /// <summary>
     /// Function to build a list of unicode ranges.
@@ -116,7 +87,7 @@ internal static class Win32API
         // Break out the lines.
         foreach (string line in rangeLines)
         {
-            IList<string> items = line.Split(new[] { ';' });
+            IList<string> items = line.Split([';']);
 
             // Get range.
             if ((string.IsNullOrEmpty(items[0])) || (string.IsNullOrEmpty(items[1])))
@@ -124,7 +95,7 @@ internal static class Win32API
                 continue;
             }
 
-            var range = new GorgonRange(int.Parse(items[0][..items[0].IndexOf('.')], NumberStyles.HexNumber), 
+            var range = new GorgonRange(int.Parse(items[0][..items[0].IndexOf('.')], NumberStyles.HexNumber),
                                         int.Parse(items[0][(items[0].LastIndexOf('.') + 1)..], NumberStyles.HexNumber));
 
             // Combine the first 2 latin categories into the one category.
@@ -154,28 +125,7 @@ internal static class Win32API
 
         GetGlyphIndices(hDc, c.ToString(), 1, indices, 0x01);
 
-        return indices[0] != 0xffff;	
-    }
-
-    /// <summary>
-    /// Function to retrieve a character for a key stroke.
-    /// </summary>
-    /// <param name="key">Key to look up.</param>
-    /// <returns>The character for the key.</returns>
-    public static char GetKeyCharacter(Keys key)
-    {
-        char result = ' ';
-
-        byte[] keys = new byte[255];
-        GetKeyboardState(keys);
-        char[] characters = new char[1];
-
-        if (ToUnicode((int)key, 0, keys, characters, characters.Length, 1) != 0)
-        {
-            result = characters[0];
-        }
-
-        return result;
+        return indices[0] != 0xffff;
     }
 
     /// <summary>
@@ -191,7 +141,7 @@ internal static class Win32API
 
             _codePointNames = new Dictionary<int, string>();
 
-            foreach (string[] fields in lines.Select(line => line.Split(new[] { ';' })))
+            foreach (string[] fields in lines.Select(line => line.Split([';'])))
             {
                 _codePointNames.Add(int.Parse(fields[0], NumberStyles.HexNumber),
                                     string.IsNullOrEmpty(fields[10]) ? fields[1] : fields[10]);
@@ -222,7 +172,7 @@ internal static class Win32API
         using GorgonNativeBuffer<byte> buffer = new((int)size);
         GetFontUnicodeRanges(hDc, buffer.Pointer);
 
-        ref int bufferPtr = ref buffer.AsRef<int>(12);           
+        ref int bufferPtr = ref buffer.AsRef<int>(12);
         int itemCount = bufferPtr;
 
         result = new Dictionary<string, GorgonRange>(itemCount);
@@ -243,8 +193,8 @@ internal static class Win32API
             var value = new GorgonRange(min, max + min - 1);
 
             KeyValuePair<string, GorgonRange> rangeName = (from unicodeRange in _ranges
-                            where unicodeRange.Value.Contains(value.Minimum) && unicodeRange.Value.Contains(value.Maximum)
-                            select unicodeRange).SingleOrDefault();
+                                                           where unicodeRange.Value.Contains(value.Minimum) && unicodeRange.Value.Contains(value.Maximum)
+                                                           select unicodeRange).SingleOrDefault();
 
             if ((!string.IsNullOrEmpty(rangeName.Key)) && (!result.ContainsKey(rangeName.Key)))
             {
@@ -257,5 +207,5 @@ internal static class Win32API
 
     /// <summary>Initializes static members of the <see cref="Win32API" /> class.</summary>
     static Win32API() => Marshal.PrelinkAll(typeof(Win32API));
-    #endregion
+
 }

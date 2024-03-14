@@ -64,9 +64,9 @@ public abstract class GorgonBufferCommon
 {
     #region Variables.
     // A cache of shader views for the buffer.
-    private Dictionary<BufferShaderViewKey, GorgonShaderResourceView> _shaderViews = new();
+    private Dictionary<BufferShaderViewKey, GorgonShaderResourceView> _shaderViews = [];
     // A cache of unordered access views for the buffer.
-    private Dictionary<BufferShaderViewKey, GorgonReadWriteView> _uavs = new();
+    private Dictionary<BufferShaderViewKey, GorgonReadWriteView> _uavs = [];
     #endregion
 
     #region Properties.

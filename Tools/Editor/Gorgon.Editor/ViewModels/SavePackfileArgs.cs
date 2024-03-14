@@ -31,8 +31,12 @@ namespace Gorgon.Editor.ViewModels;
 /// <summary>
 /// Arguments to pass to the <see cref="IMain.SavePackFileCommand"/>.
 /// </summary>
-internal class SavePackFileArgs
-    : CancelEventArgs
+/// <remarks>
+/// Initializes a new instance of the <see cref="SavePackFileArgs"/> class.
+/// </remarks>
+/// <param name="currentProject">The currently active project.</param>
+internal class SavePackFileArgs(IProjectEditor currentProject)
+        : CancelEventArgs
 {
     /// <summary>
     /// Property to return the currently active project.
@@ -40,11 +44,5 @@ internal class SavePackFileArgs
     public IProjectEditor CurrentProject
     {
         get;
-    }
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="SavePackFileArgs"/> class.
-    /// </summary>
-    /// <param name="currentProject">The currently active project.</param>
-    public SavePackFileArgs(IProjectEditor currentProject) => CurrentProject = currentProject;
+    } = currentProject;
 }

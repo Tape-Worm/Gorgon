@@ -1163,11 +1163,10 @@ public class GorgonFileSystem
             }
 
             // Find all directories and files that are related to the provider.
-            IEnumerable<VirtualDirectory> directories = FindVirtualDirectories(mountPoint.MountLocation, "*", true)
+            IEnumerable<VirtualDirectory> directories = [.. FindVirtualDirectories(mountPoint.MountLocation, "*", true)
                 .Where(item => item.MountPoint.Equals(mountPoint))
                 .OrderByDescending(item => item.FullPath)
-                .ThenByDescending(item => item.FullPath.Length)
-                .ToArray();
+                .ThenByDescending(item => item.FullPath.Length)];
 
             GorgonFileSystemMountPoint newMountPoint;
 
@@ -1456,7 +1455,7 @@ public class GorgonFileSystem
         _log = log ?? GorgonLog.NullLog;
 
         _providers = new Dictionary<string, IGorgonFileSystemProvider>(StringComparer.OrdinalIgnoreCase);
-        _mountProviders = new HashSet<GorgonFileSystemMountPoint>();
+        _mountProviders = [];
 
         DefaultProvider = new FolderFileSystemProvider();
 

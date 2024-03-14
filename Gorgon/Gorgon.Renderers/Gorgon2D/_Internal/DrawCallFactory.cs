@@ -32,23 +32,29 @@ namespace Gorgon.Renderers;
 /// <summary>
 /// A factory used to produce draw calls.
 /// </summary>
-internal sealed class DrawCallFactory
+/// <remarks>
+/// Initializes a new instance of the <see cref="DrawCallFactory"/> class.
+/// </remarks>
+/// <param name="graphics">The graphics interface to use when creating states.</param>
+/// <param name="defaultTexture">The default texture to use as a fallback when no texture is passed by renderable.</param>
+/// <param name="inputLayout">The input layout defining a vertex type.</param>
+internal sealed class DrawCallFactory(GorgonGraphics graphics, GorgonTexture2DView defaultTexture, GorgonInputLayout inputLayout)
 {
     #region Variables.
     // The allocater used to create draw calls.
-    private readonly GorgonDrawCallPoolAllocator<GorgonDrawIndexCall> _drawIndexAllocator;
+    private readonly GorgonDrawCallPoolAllocator<GorgonDrawIndexCall> _drawIndexAllocator = new(128);
     // The allocater used to create draw calls.
-    private readonly GorgonDrawCallPoolAllocator<GorgonDrawCall> _drawAllocator;
+    private readonly GorgonDrawCallPoolAllocator<GorgonDrawCall> _drawAllocator = new(128);
     // The builder used to build a draw call.
-    private readonly GorgonDrawIndexCallBuilder _drawIndexBuilder;
+    private readonly GorgonDrawIndexCallBuilder _drawIndexBuilder = new();
     // The builder used to build a draw call.
-    private readonly GorgonDrawCallBuilder _drawBuilder;
+    private readonly GorgonDrawCallBuilder _drawBuilder = new();
     // The builder used to build states.
-    private readonly GorgonPipelineStateBuilder _stateBuilder;
+    private readonly GorgonPipelineStateBuilder _stateBuilder = new(graphics);
     // The default texture to use if the renderable does not have one.
-    private readonly GorgonTexture2DView _defaultTexture;
+    private readonly GorgonTexture2DView _defaultTexture = defaultTexture;
     // The current input layout.
-    private readonly GorgonInputLayout _inputLayout;
+    private readonly GorgonInputLayout _inputLayout = inputLayout;
     #endregion
 
     #region Properties.
@@ -149,24 +155,6 @@ internal sealed class DrawCallFactory
                                 .IndexBuffer(indexBuffer)
                                 .Build(_drawIndexAllocator);
     }
-    #endregion
 
-    #region Constructor/Finalizer.
-    /// <summary>
-    /// Initializes a new instance of the <see cref="DrawCallFactory"/> class.
-    /// </summary>
-    /// <param name="graphics">The graphics interface to use when creating states.</param>
-    /// <param name="defaultTexture">The default texture to use as a fallback when no texture is passed by renderable.</param>
-    /// <param name="inputLayout">The input layout defining a vertex type.</param>
-    public DrawCallFactory(GorgonGraphics graphics, GorgonTexture2DView defaultTexture, GorgonInputLayout inputLayout)
-    {
-        _inputLayout = inputLayout;
-        _drawIndexAllocator = new GorgonDrawCallPoolAllocator<GorgonDrawIndexCall>(128);
-        _drawAllocator = new GorgonDrawCallPoolAllocator<GorgonDrawCall>(128);
-        _drawIndexBuilder = new GorgonDrawIndexCallBuilder();
-        _drawBuilder = new GorgonDrawCallBuilder();
-        _stateBuilder = new GorgonPipelineStateBuilder(graphics);
-        _defaultTexture = defaultTexture;
-    }
     #endregion
 }

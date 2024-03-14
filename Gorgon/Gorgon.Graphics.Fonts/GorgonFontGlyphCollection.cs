@@ -168,7 +168,7 @@ public sealed class GorgonGlyphCollection
                                                                              where glyph.TextureView is not null
                                                                              group glyph by glyph.TextureView.Texture;
 
-        return groupedGlyphs.ToDictionary(k => k.Key, v => (IReadOnlyList<GorgonGlyph>)v.ToArray());
+        return groupedGlyphs.ToDictionary(k => k.Key, v => (IReadOnlyList<GorgonGlyph>)[.. v]);
     }
     #endregion
 

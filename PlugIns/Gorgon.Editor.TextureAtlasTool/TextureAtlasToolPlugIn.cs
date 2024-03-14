@@ -110,7 +110,7 @@ internal class TextureAtlasToolPlugIn
                 continue;
             }
 
-            fileEntries = new List<ContentFileExplorerFileEntry>();
+            fileEntries = [];
             dirEntry = new ContentFileExplorerDirectoryEntry(subDir, fileEntries);
 
             fileSystemEntries.Add(dirEntry);

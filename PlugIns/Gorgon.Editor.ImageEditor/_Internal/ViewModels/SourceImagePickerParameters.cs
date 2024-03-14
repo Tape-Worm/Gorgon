@@ -32,16 +32,14 @@ namespace Gorgon.Editor.ImageEditor;
 /// <summary>
 /// The parameters for the <see cref="ISourceImagePicker"/> view model.
 /// </summary>
-internal class SourceImagePickerParameters
-    : IViewModelInjection<IHostContentServices>
+/// <remarks>Initializes a new instance of the <see cref="SourceImagePickerParameters"/> class.</remarks>
+/// <param name="hostServices">The host services.</param>
+internal class SourceImagePickerParameters(IHostContentServices hostServices)
+        : IViewModelInjection<IHostContentServices>
 {
     /// <summary>Property to return the common services passed from host application.</summary>
     public IHostContentServices HostServices
     {
         get;
-    }
-
-    /// <summary>Initializes a new instance of the <see cref="SourceImagePickerParameters"/> class.</summary>
-    /// <param name="hostServices">The host services.</param>
-    public SourceImagePickerParameters(IHostContentServices hostServices) => HostServices = hostServices;
+    } = hostServices;
 }

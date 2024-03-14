@@ -69,31 +69,24 @@ public enum KeyboardDataFlags
 /// This type is not intended for use by applications.
 /// </para>
 /// </remarks>
-public readonly struct GorgonRawKeyboardData
+/// <remarks>Initializes a new instance of the <see cref="GorgonRawKeyboardData" /> struct.</remarks>
+/// <param name="scanCode">The scan code for the key.</param>
+/// <param name="flags">The flags for the scan code.</param>
+/// <param name="key">The virtual key.</param>
+public readonly struct GorgonRawKeyboardData(int scanCode, KeyboardDataFlags flags, Keys key)
 {
     /// <summary>
     /// Property to return the scan code for the key.
     /// </summary>
-    public readonly int ScanCode;
+    public readonly int ScanCode = scanCode;
 
     /// <summary>
     /// Property to return flags for the scan code information.
     /// </summary>
-    public readonly KeyboardDataFlags Flags;
+    public readonly KeyboardDataFlags Flags = flags;
 
     /// <summary>
     /// Property to return the key being used.
     /// </summary>
-    public readonly Keys Key;
-
-    /// <summary>Initializes a new instance of the <see cref="GorgonRawKeyboardData" /> struct.</summary>
-    /// <param name="scanCode">The scan code for the key.</param>
-    /// <param name="flags">The flags for the scan code.</param>
-    /// <param name="key">The virtual key.</param>
-    public GorgonRawKeyboardData(int scanCode, KeyboardDataFlags flags, Keys key)
-    {
-        ScanCode = scanCode;
-        Flags = flags;
-        Key = key;
-    }
+    public readonly Keys Key = key;
 }

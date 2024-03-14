@@ -33,8 +33,10 @@ namespace Gorgon.Editor.ViewModels;
 /// <summary>
 /// The parameters for the <see cref="ISettingsPlugInsList"/> view model.
 /// </summary>
-internal class SettingsPlugInsListParameters
-    : ViewModelInjection<IHostServices>
+/// <remarks>Initializes a new instance of the <see cref="SettingsPlugInsListParameters"/> class.</remarks>
+/// <param name="hostServices">The host application services.</param>
+internal class SettingsPlugInsListParameters(IHostServices hostServices)
+        : ViewModelInjection<IHostServices>(hostServices)
 {
     /// <summary>
     /// Property to set or return the list of plugins.
@@ -43,12 +45,5 @@ internal class SettingsPlugInsListParameters
     {
         get;
         set;
-    }
-
-    /// <summary>Initializes a new instance of the <see cref="SettingsPlugInsListParameters"/> class.</summary>
-    /// <param name="hostServices">The host application services.</param>
-    public SettingsPlugInsListParameters(IHostServices hostServices)
-        : base(hostServices)
-    {        
     }
 }

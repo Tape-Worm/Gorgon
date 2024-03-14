@@ -30,7 +30,10 @@ namespace Gorgon.Editor.AnimationEditor;
 /// <summary>
 /// Arguments for the <see cref="IAnimationContent.GetTrackKeyCommand"/>.
 /// </summary>
-internal class GetTrackKeyArgs
+/// <remarks>Initializes a new instance of the <see cref="GetTrackKeyArgs"/> class.</remarks>
+/// <param name="keyIndex">The index of the key.</param>
+/// <param name="trackIndex">The index of the track.</param>
+internal class GetTrackKeyArgs(int keyIndex, int trackIndex)
 {
     #region Properties.
     /// <summary>
@@ -48,7 +51,7 @@ internal class GetTrackKeyArgs
     public int KeyIndex
     {
         get;
-    }
+    } = keyIndex;
 
     /// <summary>
     /// Property to return the index of the track to look into.
@@ -56,17 +59,7 @@ internal class GetTrackKeyArgs
     public int TrackIndex
     {
         get;
-    }
-    #endregion
+    } = trackIndex;
 
-    #region Constructor/Finalizer.
-    /// <summary>Initializes a new instance of the <see cref="GetTrackKeyArgs"/> class.</summary>
-    /// <param name="keyIndex">The index of the key.</param>
-    /// <param name="trackIndex">The index of the track.</param>
-    public GetTrackKeyArgs(int keyIndex, int trackIndex)
-    {
-        KeyIndex = keyIndex;
-        TrackIndex = trackIndex;
-    }
     #endregion
 }

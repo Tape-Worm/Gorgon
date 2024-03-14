@@ -33,7 +33,7 @@ namespace Gorgon.Native;
 /// Native functions from the windows multimedia API.
 /// </summary>
 [SuppressUnmanagedCodeSecurity]
-internal static class WinMultimediaApi
+internal static partial class WinMultimediaApi
 {
     #region Methods.
     /// <summary>
@@ -47,24 +47,24 @@ internal static class WinMultimediaApi
     /// </para>
     /// </remarks>
     /// <returns>Time in milliseconds.</returns>
-    [DllImport("winmm.dll", CharSet = CharSet.Auto)]
-    public static extern int timeGetTime();
+    [LibraryImport("winmm.dll")]
+    public static partial int timeGetTime();
 
     /// <summary>
     /// Function to start a timing session.
     /// </summary>
     /// <param name="uPeriod">Minimum resolution in milliseconds.</param>
     /// <returns>0 if successful, non 0 if not.</returns>
-    [DllImport("winmm.dll", CharSet = CharSet.Auto)]
-    public static extern uint timeBeginPeriod(uint uPeriod);
+    [LibraryImport("winmm.dll")]
+    public static partial uint timeBeginPeriod(uint uPeriod);
 
     /// <summary>
     /// Function to end a timing session.
     /// </summary>
     /// <param name="uPeriod">Minimum resolution in milliseconds.</param>
     /// <returns>0 if successful, non 0 if not.</returns>
-    [DllImport("winmm.dll", CharSet = CharSet.Auto)]
-    public static extern uint timeEndPeriod(uint uPeriod);
+    [LibraryImport("winmm.dll")]
+    public static partial uint timeEndPeriod(uint uPeriod);
 
     /// <summary>
     /// Function to get time capabilities.
@@ -72,8 +72,8 @@ internal static class WinMultimediaApi
     /// <param name="timeCaps">Timer capabilities value.</param>
     /// <param name="size">Size of the value, in bytes.</param>
     /// <returns>0 if successful, non-0 if not.</returns>
-    [DllImport("winmm.dll", CharSet = CharSet.Auto)]
-    public static extern int timeGetDevCaps(ref TIMECAPS timeCaps, int size);
+    [LibraryImport("winmm.dll")]
+    public static partial int timeGetDevCaps(ref TIMECAPS timeCaps, int size);
     #endregion
 
     #region Constructor.

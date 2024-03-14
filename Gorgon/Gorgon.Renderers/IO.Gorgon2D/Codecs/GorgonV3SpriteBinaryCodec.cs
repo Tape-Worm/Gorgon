@@ -39,8 +39,13 @@ namespace Gorgon.IO;
 /// <summary>
 /// A codec that can read and write a binary formatted version of Gorgon v3 sprite data.
 /// </summary>
-public class GorgonV3SpriteBinaryCodec
-    : GorgonSpriteCodecCommon
+/// <remarks>
+/// Initializes a new instance of the <see cref="GorgonV3SpriteBinaryCodec"/> class.
+/// </remarks>
+/// <param name="renderer">The renderer used for resource handling.</param>
+/// <exception cref="ArgumentNullException">Thrown when the <paramref name="renderer"/> parameter is <b>null</b>.</exception>
+public class GorgonV3SpriteBinaryCodec(Gorgon2D renderer)
+        : GorgonSpriteCodecCommon(renderer, Resources.GOR2DIO_V3_BIN_CODEC, Resources.GOR2DIO_V3_BIN_CODEC_DESCRIPTION)
 {
     #region Properties.
     /// <summary>
@@ -137,10 +142,9 @@ public class GorgonV3SpriteBinaryCodec
     protected override GorgonSprite OnReadFromStream(Stream stream, int byteCount, GorgonTexture2DView overrideTexture)
     {
         var reader = new GorgonChunkFileReader(stream,
-                                               new[]
-                                               {
+                                               [
                                                    CurrentFileHeader
-                                               });
+                                               ]);
         GorgonBinaryReader binReader = null;
         var sprite = new GorgonSprite();
 
@@ -341,7 +345,7 @@ public class GorgonV3SpriteBinaryCodec
                 return false;
             }
 
-            reader = new GorgonChunkFileReader(stream, new[] { CurrentFileHeader });
+            reader = new GorgonChunkFileReader(stream, [CurrentFileHeader]);
             reader.Open();
             return IsReadableChunkFile(reader);
         }
@@ -367,7 +371,7 @@ public class GorgonV3SpriteBinaryCodec
 
         try
         {
-            reader = new GorgonChunkFileReader(stream, new[] { CurrentFileHeader });
+            reader = new GorgonChunkFileReader(stream, [CurrentFileHeader]);
             reader.Open();
             if (!IsReadableChunkFile(reader))
             {
@@ -392,18 +396,6 @@ public class GorgonV3SpriteBinaryCodec
             reader?.Close();
         }
     }
-    #endregion
 
-    #region Constructor/Finalizer.
-    /// <summary>
-    /// Initializes a new instance of the <see cref="GorgonV3SpriteBinaryCodec"/> class.
-    /// </summary>
-    /// <param name="renderer">The renderer used for resource handling.</param>
-    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="renderer"/> parameter is <b>null</b>.</exception>
-    public GorgonV3SpriteBinaryCodec(Gorgon2D renderer)
-        : base(renderer, Resources.GOR2DIO_V3_BIN_CODEC, Resources.GOR2DIO_V3_BIN_CODEC_DESCRIPTION)
-    {
-
-    }
     #endregion
 }

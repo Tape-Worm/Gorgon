@@ -91,7 +91,7 @@ internal static class Program
     // The camera.
     private static GorgonPerspectiveCamera _camera;
     // The draw calls for the model.
-    private static readonly Dictionary<Material, GorgonDrawIndexCall> _drawCall = new();
+    private static readonly Dictionary<Material, GorgonDrawIndexCall> _drawCall = [];
     // The depth buffer.
     private static GorgonDepthStencil2DView _depthBuffer;
     // The list of textures for the model.

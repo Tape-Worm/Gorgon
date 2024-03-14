@@ -32,7 +32,17 @@ namespace Gorgon.Graphics.Core;
 /// <summary>
 /// Defines the support given to a specific <see cref="BufferFormat"/>.
 /// </summary>
-internal class FormatSupportInfo : IGorgonFormatSupportInfo
+/// <remarks>
+/// Initializes a new instance of the <see cref="FormatSupportInfo"/> class.
+/// </remarks>
+/// <param name="format">The format being queried.</param>
+/// <param name="formatSupport">The format support.</param>
+/// <param name="computeSupport">The compute support.</param>
+/// <param name="multisampleMax">The multisample maximum.</param>
+internal class FormatSupportInfo(BufferFormat format,
+                                 D3D11.FormatSupport formatSupport,
+                                 D3D11.ComputeShaderFormatSupport computeSupport,
+                                 GorgonMultisampleInfo multisampleMax) : IGorgonFormatSupportInfo
 {
     #region Properties.
     /// <summary>
@@ -41,7 +51,7 @@ internal class FormatSupportInfo : IGorgonFormatSupportInfo
     public BufferFormat Format
     {
         get;
-    }
+    } = format;
 
     /// <summary>
     /// Property to return the resource support for a format.
@@ -49,7 +59,7 @@ internal class FormatSupportInfo : IGorgonFormatSupportInfo
     public BufferFormatSupport FormatSupport
     {
         get;
-    }
+    } = (BufferFormatSupport)formatSupport;
 
     /// <summary>
     /// Property to return whether this format is suitable for use for presentation to the output device.
@@ -82,7 +92,7 @@ internal class FormatSupportInfo : IGorgonFormatSupportInfo
     public ComputeShaderFormatSupport ComputeSupport
     {
         get;
-    }
+    } = (ComputeShaderFormatSupport)computeSupport;
 
     /// <summary>
     /// Property to return the maximum multisample count and quality level support for the format.
@@ -90,7 +100,7 @@ internal class FormatSupportInfo : IGorgonFormatSupportInfo
     public GorgonMultisampleInfo MaxMultisampleCountQuality
     {
         get;
-    }
+    } = multisampleMax;
     #endregion
 
     #region Methods.
@@ -108,25 +118,6 @@ internal class FormatSupportInfo : IGorgonFormatSupportInfo
         ImageType.ImageCube => (FormatSupport & BufferFormatSupport.TextureCube) == BufferFormatSupport.TextureCube,
         _ => false,
     };
-    #endregion
 
-    #region Constructor/Finalizer.
-    /// <summary>
-    /// Initializes a new instance of the <see cref="FormatSupportInfo"/> class.
-    /// </summary>
-    /// <param name="format">The format being queried.</param>
-    /// <param name="formatSupport">The format support.</param>
-    /// <param name="computeSupport">The compute support.</param>
-    /// <param name="multisampleMax">The multisample maximum.</param>
-    public FormatSupportInfo(BufferFormat format,
-                                     D3D11.FormatSupport formatSupport,
-                                     D3D11.ComputeShaderFormatSupport computeSupport,
-                                     GorgonMultisampleInfo multisampleMax)
-    {
-        Format = format;
-        FormatSupport = (BufferFormatSupport)formatSupport;
-        ComputeSupport = (ComputeShaderFormatSupport)computeSupport;
-        MaxMultisampleCountQuality = multisampleMax;
-    }
     #endregion
 }

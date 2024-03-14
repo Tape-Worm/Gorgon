@@ -247,7 +247,7 @@ class ImageBufferList
     internal ImageBufferList(IGorgonImageInfo imageInfo)
     {
         _imageInfo = imageInfo;
-        _buffers = Array.Empty<IGorgonImageBuffer>();
+        _buffers = [];
     }
     #endregion
 }

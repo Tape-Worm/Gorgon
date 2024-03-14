@@ -41,8 +41,17 @@ namespace Gorgon.Renderers.Cameras;
 /// 320x240 render target.  The user may define their own coordinate system to apply to the projection.
 /// </para>
 /// </remarks>
-public class GorgonOrthoCamera
-    : GorgonCameraCommon
+/// <remarks>
+/// Initializes a new instance of the <see cref="GorgonOrthoCamera"/> class.
+/// </remarks>
+/// <param name="graphics">The graphics interface to use with this object.</param>
+/// <param name="viewDimensions">The view dimensions.</param>
+/// <param name="minDepth">[Optional] The minimum depth value.</param>
+/// <param name="maximumDepth">[Optional] The maximum depth value.</param>
+/// <param name="name">[Optional] The name of the camera.</param>
+/// <exception cref="ArgumentNullException">Thrown when the <paramref name="graphics"/> parameter is <b>null</b>.</exception>
+public class GorgonOrthoCamera(GorgonGraphics graphics, DX.Size2F viewDimensions, float minDepth = 0.0f, float maximumDepth = 1.0f, string name = null)
+        : GorgonCameraCommon(graphics, viewDimensions, minDepth, maximumDepth, name)
 {
     #region Variables.
     // The rotation matrix.
@@ -194,21 +203,8 @@ public class GorgonOrthoCamera
         var temp = Matrix4x4.Multiply(_rotation, _scale);
         viewMatrix = Matrix4x4.Multiply(_translate, temp);
     }
-    #endregion
 
+    #endregion
     #region Constructor/Destructor.
-    /// <summary>
-    /// Initializes a new instance of the <see cref="GorgonOrthoCamera"/> class.
-    /// </summary>
-    /// <param name="graphics">The graphics interface to use with this object.</param>
-    /// <param name="viewDimensions">The view dimensions.</param>
-    /// <param name="minDepth">[Optional] The minimum depth value.</param>
-    /// <param name="maximumDepth">[Optional] The maximum depth value.</param>
-    /// <param name="name">[Optional] The name of the camera.</param>
-    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="graphics"/> parameter is <b>null</b>.</exception>
-    public GorgonOrthoCamera(GorgonGraphics graphics, DX.Size2F viewDimensions, float minDepth = 0.0f, float maximumDepth = 1.0f, string name = null)
-        : base(graphics, viewDimensions, minDepth, maximumDepth, name)
-    {
-    }
     #endregion
 }

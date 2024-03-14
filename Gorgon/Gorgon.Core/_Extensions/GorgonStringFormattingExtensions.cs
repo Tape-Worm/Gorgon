@@ -48,7 +48,7 @@ public static class GorgonStringFormattingExtension
 
         if (text.Length == 0)
         {
-            buffer = Array.Empty<string>();
+            buffer = [];
             return;
         }
 
@@ -114,7 +114,7 @@ public static class GorgonStringFormattingExtension
     /// </summary>
     /// <param name="renderText">The text to evaluate.</param>
     /// <returns>The array of strings representing a single line per newline control character.</returns>
-    public static string[] GetLines(this string renderText) => string.IsNullOrEmpty(renderText) ? Array.Empty<string>() : renderText.Split('\n');
+    public static string[] GetLines(this string renderText) => string.IsNullOrEmpty(renderText) ? [] : renderText.Split('\n');
 
     /// <summary>
     /// Function to find the index of a character in a <see cref="StringBuilder"/>.

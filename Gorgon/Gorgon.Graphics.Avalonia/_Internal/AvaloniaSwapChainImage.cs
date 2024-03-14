@@ -38,7 +38,7 @@ internal class AvaloniaSwapChainImage
     // The surface that will receive the texture data.
     private readonly CompositionDrawingSurface _surface;
     // The size of the surface.
-    private PixelSize _pixelSize;
+    private readonly PixelSize _pixelSize;
     // The render target texture that will receive rendering data.
     private GorgonTexture2D _texture;
     // The shared texture interface.

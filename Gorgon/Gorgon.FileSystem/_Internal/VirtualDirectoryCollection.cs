@@ -37,14 +37,18 @@ namespace Gorgon.IO;
 /// <summary>
 /// A collection of file system virtual directories.
 /// </summary>
-internal class VirtualDirectoryCollection
-    : IGorgonNamedObjectReadOnlyDictionary<IGorgonVirtualDirectory>
+/// <remarks>
+/// Initializes a new instance of the <see cref="VirtualDirectoryCollection" /> class.
+/// </remarks>
+/// <param name="parent">The parent directory that owns this collection.</param>
+internal class VirtualDirectoryCollection(VirtualDirectory parent)
+        : IGorgonNamedObjectReadOnlyDictionary<IGorgonVirtualDirectory>
 {
     #region Variables.
     // The backing store for the directories.
     private readonly Dictionary<string, VirtualDirectory> _directories = new(StringComparer.OrdinalIgnoreCase);
     // The parent directory that owns this collection.
-    private readonly VirtualDirectory _parent;
+    private readonly VirtualDirectory _parent = parent;
     #endregion
 
     #region Properties.
@@ -277,13 +281,8 @@ internal class VirtualDirectoryCollection
         value = directory;
         return true;
     }
-    #endregion
 
+    #endregion
     #region Constructor.
-    /// <summary>
-    /// Initializes a new instance of the <see cref="VirtualDirectoryCollection" /> class.
-    /// </summary>
-    /// <param name="parent">The parent directory that owns this collection.</param>
-    public VirtualDirectoryCollection(VirtualDirectory parent) => _parent = parent;
     #endregion
 }

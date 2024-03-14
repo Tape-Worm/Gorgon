@@ -52,21 +52,28 @@ public class Gorgon2D1BitEffect
     /// <summary>
     /// Settings for the effect shader.
     /// </summary>
+    /// <remarks>
+    /// Initializes a new instance of the <see cref="Settings"/> struct.
+    /// </remarks>
+    /// <param name="range">The range.</param>
+    /// <param name="average">if set to <b>true</b> [average].</param>
+    /// <param name="invert">if set to <b>true</b> [invert].</param>
+    /// <param name="useAlpha">if set to <b>true</b> [use alpha].</param>
     [StructLayout(LayoutKind.Explicit, Size = 32)]
-    private readonly struct Settings
+    private readonly struct Settings(GorgonRangeF range, bool average, bool invert, bool useAlpha)
     {
         [FieldOffset(0)]
-        private readonly int _useAverage;           // Flag to indicate that the average of the texel colors should be used.
+        private readonly int _useAverage = Convert.ToInt32(average);           // Flag to indicate that the average of the texel colors should be used.
         [FieldOffset(4)]
-        private readonly int _invert;               // Flag to invert the texel colors.
+        private readonly int _invert = Convert.ToInt32(invert);               // Flag to invert the texel colors.
         [FieldOffset(8)]
-        private readonly int _useAlpha;             // Flag to indicate that the alpha channel should be included.
+        private readonly int _useAlpha = Convert.ToInt32(useAlpha);             // Flag to indicate that the alpha channel should be included.
 
         /// <summary>
         /// Range of values that are considered "on".
         /// </summary>
         [FieldOffset(16)]
-        public readonly GorgonRangeF WhiteRange;
+        public readonly GorgonRangeF WhiteRange = range;
 
         /// <summary>
         /// Flag to indicate that the average of the texel colors should be used.
@@ -82,21 +89,6 @@ public class Gorgon2D1BitEffect
         /// Flag to indicate that the alpha channel should be included.
         /// </summary>
         public bool UseAlpha => _useAlpha != 0;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="Settings"/> struct.
-        /// </summary>
-        /// <param name="range">The range.</param>
-        /// <param name="average">if set to <b>true</b> [average].</param>
-        /// <param name="invert">if set to <b>true</b> [invert].</param>
-        /// <param name="useAlpha">if set to <b>true</b> [use alpha].</param>
-        public Settings(GorgonRangeF range, bool average, bool invert, bool useAlpha)
-        {
-            WhiteRange = range;
-            _useAverage = Convert.ToInt32(average);
-            _invert = Convert.ToInt32(invert);
-            _useAlpha = Convert.ToInt32(useAlpha);
-        }
     }
     #endregion
 

@@ -32,8 +32,19 @@ namespace Gorgon.Input;
 /// <summary>
 /// Mouse event arguments.
 /// </summary>
-public class GorgonMouseEventArgs
-    : EventArgs
+/// <remarks>
+/// Initializes a new instance of the <see cref="GorgonMouseEventArgs" /> class.
+/// </remarks>
+/// <param name="buttons">Buttons that are pressed during mouse event.</param>
+/// <param name="shiftButtons">Buttons that are held down during the mouse event.</param>
+/// <param name="position">Position of the mouse.</param>
+/// <param name="wheelPosition">Position of the wheel.</param>
+/// <param name="relativePosition">Relative position of the mouse.</param>
+/// <param name="wheelDelta">Relative position of the wheel.</param>
+/// <param name="clickCount">Number of clicks in a timed period.</param>
+/// <param name="isAbsolute"><b>true</b> to use absolute positioning, <b>false</b> to use relative.</param>
+public class GorgonMouseEventArgs(MouseButtons buttons, MouseButtons shiftButtons, DX.Point position, int wheelPosition, DX.Point relativePosition, int wheelDelta, int clickCount, bool isAbsolute)
+        : EventArgs
 {
     #region Properties.
     /// <summary>
@@ -42,7 +53,7 @@ public class GorgonMouseEventArgs
     public MouseButtons Buttons
     {
         get;
-    }
+    } = buttons;
 
     /// <summary>
     /// Property to return the buttons that were being held down in conjunction with the <see cref="Buttons"/> during a <see cref="GorgonRawMouse"/> event.
@@ -50,7 +61,7 @@ public class GorgonMouseEventArgs
     public MouseButtons ShiftButtons
     {
         get;
-    }
+    } = shiftButtons;
 
     /// <summary>
     /// Property to return the position of the mouse.
@@ -58,7 +69,7 @@ public class GorgonMouseEventArgs
     public DX.Point Position
     {
         get;
-    }
+    } = position;
 
     /// <summary>
     /// Property to return the wheel position.
@@ -69,7 +80,7 @@ public class GorgonMouseEventArgs
     public int WheelPosition
     {
         get;
-    }
+    } = wheelPosition;
 
     /// <summary>
     /// Property to return the amount that the mouse has moved since the last <see cref="GorgonRawMouse"/> event.
@@ -77,7 +88,7 @@ public class GorgonMouseEventArgs
     public DX.Point RelativePosition
     {
         get;
-    }
+    } = relativePosition;
 
     /// <summary>
     /// Property to return the amount that the wheel has moved since the last <see cref="GorgonRawMouse"/> event.
@@ -88,7 +99,7 @@ public class GorgonMouseEventArgs
     public int WheelDelta
     {
         get;
-    }
+    } = wheelDelta;
 
     /// <summary>
     /// Property to return if a double click caused the event to trigger.
@@ -101,7 +112,7 @@ public class GorgonMouseEventArgs
     public int ClickCount
     {
         get;
-    }
+    } = clickCount;
 
     /// <summary>
     /// Property to return whether the mouse is using absolute coordinates, or relative.
@@ -109,31 +120,9 @@ public class GorgonMouseEventArgs
     public bool IsAbsolute
     {
         get;
-    }
-    #endregion
+    } = isAbsolute;
 
+    #endregion
     #region Constructor/Destructor.
-    /// <summary>
-    /// Initializes a new instance of the <see cref="GorgonMouseEventArgs" /> class.
-    /// </summary>
-    /// <param name="buttons">Buttons that are pressed during mouse event.</param>
-    /// <param name="shiftButtons">Buttons that are held down during the mouse event.</param>
-    /// <param name="position">Position of the mouse.</param>
-    /// <param name="wheelPosition">Position of the wheel.</param>
-    /// <param name="relativePosition">Relative position of the mouse.</param>
-    /// <param name="wheelDelta">Relative position of the wheel.</param>
-    /// <param name="clickCount">Number of clicks in a timed period.</param>
-    /// <param name="isAbsolute"><b>true</b> to use absolute positioning, <b>false</b> to use relative.</param>
-    public GorgonMouseEventArgs(MouseButtons buttons, MouseButtons shiftButtons, DX.Point position, int wheelPosition, DX.Point relativePosition, int wheelDelta, int clickCount, bool isAbsolute)
-    {
-        Buttons = buttons;
-        ShiftButtons = shiftButtons;
-        Position = position;
-        WheelPosition = wheelPosition;
-        RelativePosition = relativePosition;
-        WheelDelta = wheelDelta;
-        ClickCount = clickCount;
-        IsAbsolute = isAbsolute;
-    }
     #endregion
 }

@@ -111,5 +111,5 @@ internal class TextRenderable
     /// <summary>
     /// A list of blocks of text to colorize using embedded codes.
     /// </summary>
-    public List<ColorBlock> ColorBlocks = new();
+    public List<ColorBlock> ColorBlocks = [];
 }

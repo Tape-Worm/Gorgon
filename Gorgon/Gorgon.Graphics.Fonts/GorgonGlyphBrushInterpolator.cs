@@ -34,19 +34,24 @@ namespace Gorgon.Graphics.Fonts;
 /// <summary>
 /// An interpolation value used to weight the color blending in a gradient brush.
 /// </summary>
-public readonly struct GorgonGlyphBrushInterpolator
-    : IEquatable<GorgonGlyphBrushInterpolator>, IComparable<GorgonGlyphBrushInterpolator>
+/// <remarks>
+/// Initializes a new instance of the <see cref="GorgonGlyphBrushInterpolator"/> struct.
+/// </remarks>
+/// <param name="weight">The weight in the interpolation.</param>
+/// <param name="color">The color at the interpolation weight.</param>
+public readonly struct GorgonGlyphBrushInterpolator(float weight, GorgonColor color)
+        : IEquatable<GorgonGlyphBrushInterpolator>, IComparable<GorgonGlyphBrushInterpolator>
 {
     #region Properties.
     /// <summary>
     /// Property to return the interpolation weight.
     /// </summary>
-    public readonly float Weight;
+    public readonly float Weight = weight.Min(1.0f).Max(0);
 
     /// <summary>
     /// Property to return the interpolation color.
     /// </summary>
-    public readonly GorgonColor Color;
+    public readonly GorgonColor Color = color;
     #endregion
 
     #region Methods.
@@ -145,18 +150,8 @@ public readonly struct GorgonGlyphBrushInterpolator
     /// <param name="right">The right instance to compare.</param>
     /// <returns><b>true</b> if <paramref name="left"/> is greater than or equal to <paramref name="right"/>, <b>false</b> if not.</returns>
     public static bool operator >=(GorgonGlyphBrushInterpolator left, GorgonGlyphBrushInterpolator right) => left.CompareTo(right) >= 0;
-    #endregion
 
+    #endregion
     #region Constructor/Destructor.
-    /// <summary>
-    /// Initializes a new instance of the <see cref="GorgonGlyphBrushInterpolator"/> struct.
-    /// </summary>
-    /// <param name="weight">The weight in the interpolation.</param>
-    /// <param name="color">The color at the interpolation weight.</param>
-    public GorgonGlyphBrushInterpolator(float weight, GorgonColor color)
-    {
-        Weight = weight.Min(1.0f).Max(0);
-        Color = color;
-    }
     #endregion
 }

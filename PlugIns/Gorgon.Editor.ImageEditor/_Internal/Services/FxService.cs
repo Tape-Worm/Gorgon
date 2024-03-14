@@ -40,12 +40,14 @@ namespace Gorgon.Editor.ImageEditor;
 /// <summary>
 /// The service used to generate the effects to apply to the image currently being edited.
 /// </summary>
-internal class FxService
-    : IFxService, IFxPreviewer
+/// <remarks>Initializes a new instance of the <see cref="FxService"/> class.</remarks>
+/// <param name="graphics">The graphics context for the application.</param>
+internal class FxService(IGraphicsContext graphics)
+        : IFxService, IFxPreviewer
 {
     #region Variables.
     // The graphics context for the application.
-    private readonly IGraphicsContext _graphics;
+    private readonly IGraphicsContext _graphics = graphics;
     // The blur effect shader.
     private Gorgon2DGaussBlurEffect _blur;
     // The gray scale effect.
@@ -473,11 +475,6 @@ internal class FxService
         invert?.Dispose();
         blur?.Dispose();
     }
-    #endregion
 
-    #region Constructor/Finalizer.
-    /// <summary>Initializes a new instance of the <see cref="FxService"/> class.</summary>
-    /// <param name="graphics">The graphics context for the application.</param>
-    public FxService(IGraphicsContext graphics) => _graphics = graphics;
     #endregion
 }

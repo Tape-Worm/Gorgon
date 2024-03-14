@@ -94,11 +94,11 @@ public class GorgonRawInput
     // The handle to the window that is receiving raw input events.
     private readonly nint _applicationWindow;
     // The list of human interface devices registered on the system.
-    private readonly Dictionary<DeviceKey, IGorgonRawInputDeviceData<GorgonRawHIDData>> _hids = new();
+    private readonly Dictionary<DeviceKey, IGorgonRawInputDeviceData<GorgonRawHIDData>> _hids = [];
     // The list of keyboard devices registered on the system.
-    private readonly Dictionary<DeviceKey, IGorgonRawInputDeviceData<GorgonRawKeyboardData>> _keyboardDevices = new();
+    private readonly Dictionary<DeviceKey, IGorgonRawInputDeviceData<GorgonRawKeyboardData>> _keyboardDevices = [];
     // The list of pointing devices registered on the system.
-    private readonly Dictionary<DeviceKey, IGorgonRawInputDeviceData<GorgonRawMouseData>> _mouseDevices = new();
+    private readonly Dictionary<DeviceKey, IGorgonRawInputDeviceData<GorgonRawMouseData>> _mouseDevices = [];
     #endregion
 
     #region Methods.
@@ -603,7 +603,7 @@ public class GorgonRawInput
 
         _log = log ?? GorgonLog.NullLog;
         _applicationWindow = applicationWindow?.Handle ?? throw new ArgumentNullException(nameof(applicationWindow));
-        _devices = new Dictionary<DeviceKey, IGorgonRawInputDevice>();
+        _devices = [];
         _filter = new Lazy<RawInputMessageFilter>(CreateFilter, true);
     }
 

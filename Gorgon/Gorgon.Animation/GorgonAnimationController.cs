@@ -119,9 +119,9 @@ public enum AnimationState
     // The current animation state.
     private AnimationState _state = AnimationState.Stopped;
     // The list of registered track names.
-    private readonly List<GorgonTrackRegistration> _trackNames = new();
+    private readonly List<GorgonTrackRegistration> _trackNames = [];
     // The list of registered track names that can be played with a given animation.
-    private readonly List<GorgonTrackRegistration> _playableTracks = new();
+    private readonly List<GorgonTrackRegistration> _playableTracks = [];
     #endregion
 
     #region Properties.

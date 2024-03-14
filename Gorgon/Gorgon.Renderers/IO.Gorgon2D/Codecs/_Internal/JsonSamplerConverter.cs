@@ -36,11 +36,15 @@ namespace Gorgon.IO;
 /// <summary>
 /// A converter used to convert a texture sampler to and from a string.
 /// </summary>
-internal class JsonSamplerConverter
-    : JsonConverter<GorgonSamplerState>
+/// <remarks>
+/// Initializes a new instance of the <see cref="JsonSamplerConverter"/> class.
+/// </remarks>
+/// <param name="graphics">The graphics interface used for resource look up.</param>
+internal class JsonSamplerConverter(GorgonGraphics graphics)
+        : JsonConverter<GorgonSamplerState>
 {
     // The graphics object to use for resource look up.
-    private readonly GorgonGraphics _graphics;
+    private readonly GorgonGraphics _graphics = graphics;
     // The property names for the object.
     private readonly HashSet<string> _propNames = new(StringComparer.Ordinal)
                                                   {
@@ -190,10 +194,4 @@ internal class JsonSamplerConverter
                       .MipLevelOfDetail(minLod ?? float.MinValue, maxLod ?? float.MaxValue, mipLodBias ?? 0)
                       .Build();
     }
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="JsonSamplerConverter"/> class.
-    /// </summary>
-    /// <param name="graphics">The graphics interface used for resource look up.</param>
-    public JsonSamplerConverter(GorgonGraphics graphics) => _graphics = graphics;
 }

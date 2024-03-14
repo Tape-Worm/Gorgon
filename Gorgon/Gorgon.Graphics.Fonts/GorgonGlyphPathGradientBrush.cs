@@ -352,11 +352,11 @@ public class GorgonGlyphPathGradientBrush
     /// </summary>
     public GorgonGlyphPathGradientBrush()
     {
-        Points = new List<Vector2>();
-        BlendFactors = new List<float>();
-        BlendPositions = new List<float>();
-        Interpolation = new List<GorgonGlyphBrushInterpolator>();
-        SurroundColors = new List<GorgonColor>();
+        Points = [];
+        BlendFactors = [];
+        BlendPositions = [];
+        Interpolation = [];
+        SurroundColors = [];
     }
     #endregion
 }

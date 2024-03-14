@@ -42,12 +42,17 @@ namespace Gorgon.IO;
 /// <summary>
 /// A codec that can read version 1 sprite data.
 /// </summary>
-public class GorgonV1SpriteBinaryCodec
-    : GorgonSpriteCodecCommon
+/// <remarks>
+/// Initializes a new instance of the <see cref="GorgonV1SpriteBinaryCodec"/> class.
+/// </remarks>
+/// <param name="renderer">The renderer used for resource handling.</param>
+/// <exception cref="ArgumentNullException">Thrown when the <paramref name="renderer"/> parameter is <b>null</b>.</exception>
+public class GorgonV1SpriteBinaryCodec(Gorgon2D renderer)
+        : GorgonSpriteCodecCommon(renderer, Resources.GOR2DIO_V1_CODEC, Resources.GOR2DIO_V1_CODEC_DESCRIPTION)
 {
     #region Variables.
     // The animation codec for the sprite.
-    private readonly GorgonV1AnimationCodec _animationCodec;
+    private readonly GorgonV1AnimationCodec _animationCodec = new(renderer);
     #endregion
 
     #region Properties.
@@ -514,16 +519,7 @@ public class GorgonV1SpriteBinaryCodec
     /// <exception cref="GorgonException">Thrown if the <paramref name="stream"/> is write only.</exception>
     /// <exception cref="EndOfStreamException">Thrown if the current <paramref name="stream"/> position, plus the size of the data exceeds the length of the stream.</exception>
     public int GetAnimationCount(Stream stream) => _animationCodec.GetAnimationCount(stream);
-    #endregion
 
-    #region Constructor/Finalizer.
-    /// <summary>
-    /// Initializes a new instance of the <see cref="GorgonV1SpriteBinaryCodec"/> class.
-    /// </summary>
-    /// <param name="renderer">The renderer used for resource handling.</param>
-    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="renderer"/> parameter is <b>null</b>.</exception>
-    public GorgonV1SpriteBinaryCodec(Gorgon2D renderer)
-        : base(renderer, Resources.GOR2DIO_V1_CODEC, Resources.GOR2DIO_V1_CODEC_DESCRIPTION) => _animationCodec = new GorgonV1AnimationCodec(renderer);
     #endregion
 
 }

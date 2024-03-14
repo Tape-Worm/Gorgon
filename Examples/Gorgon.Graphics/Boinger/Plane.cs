@@ -61,24 +61,24 @@ internal class Plane
         Size = size;
 
         // Create our vertices.
-        Vertices = new[]
-                   {
+        Vertices =
+                   [
                        new GorgonVertexPosUv(new Vector3(-size.X, size.Y, 0.0f), new Vector2(textureCoordinates.Left, textureCoordinates.Top)),
                        new GorgonVertexPosUv(new Vector3(size.X, size.Y, 0.0f), new Vector2(textureCoordinates.Right, textureCoordinates.Top)),
                        new GorgonVertexPosUv(new Vector3(-size.X, -size.Y, 0.0f), new Vector2(textureCoordinates.Left, textureCoordinates.Bottom)),
                        new GorgonVertexPosUv(new Vector3(size.X, -size.Y, 0.0f), new Vector2(textureCoordinates.Right, textureCoordinates.Bottom))
-                   };
+                   ];
 
         // Create our indices.
-        Indices = new ushort[]
-                  {
+        Indices =
+                  [
                       0,
                       1,
                       2,
                       2,
                       1,
                       3
-                  };
+                  ];
 
         // Copy the above vertex/index data into a vertex and index buffer so we can render our plane.
         VertexBufferBindings[0] = GorgonVertexBufferBinding.CreateVertexBuffer<GorgonVertexPosUv>(graphics,

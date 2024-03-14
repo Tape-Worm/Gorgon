@@ -55,7 +55,7 @@ internal partial class FormNewSprite
 {
     #region Variables.
     // The list of textures.
-    private IReadOnlyList<IContentFile> _textures = Array.Empty<IContentFile>();
+    private IReadOnlyList<IContentFile> _textures = [];
     // The preview image for the selected texture.
     private Image _previewImage;
     // The cancellation token source for the preview thread.
@@ -311,7 +311,7 @@ internal partial class FormNewSprite
 
             if (!dirs.TryGetValue(dirName, out ContentFileExplorerDirectoryEntry dirEntry))
             {
-                fileEntries = new List<ContentFileExplorerFileEntry>();
+                fileEntries = [];
                 dirEntry = new ContentFileExplorerDirectoryEntry(dirName, fileEntries);
                 dirs[dirName] = dirEntry;
             }
@@ -331,7 +331,7 @@ internal partial class FormNewSprite
             fileEntries.Add(file);
         }
 
-        FileTextures.Entries = dirs.Values.ToArray();
+        FileTextures.Entries = [.. dirs.Values];
 
         if (selectedTexture is null)
         {

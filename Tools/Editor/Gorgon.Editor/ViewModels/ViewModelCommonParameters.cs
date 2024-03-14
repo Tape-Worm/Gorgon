@@ -34,8 +34,14 @@ namespace Gorgon.Editor.ViewModels;
 /// <summary>
 /// Common injection parameters for all view models.
 /// </summary>
-internal class ViewModelCommonParameters
-    : IViewModelInjection<IHostContentServices>
+/// <remarks>
+/// Initializes a new instance of the <see cref="ViewModelCommonParameters"/> class.
+/// </remarks>
+/// <param name="hostServices">The services from the host application.</param>
+/// <param name="viewModelFactory">The view model factory for creating view models.</param>
+/// <exception cref="ArgumentNullException">Thrown when <paramref name="hostServices"/>, or the <paramref name="viewModelFactory"/> parameter is <b>null</b>.</exception>
+internal class ViewModelCommonParameters(IHostContentServices hostServices, ViewModelFactory viewModelFactory)
+        : IViewModelInjection<IHostContentServices>
 {
     /// <summary>
     /// Property to set or return the current project.
@@ -70,23 +76,11 @@ internal class ViewModelCommonParameters
     public ViewModelFactory ViewModelFactory
     {
         get;
-    }
+    } = viewModelFactory ?? throw new ArgumentNullException(nameof(viewModelFactory));
 
     /// <summary>Property to return the services passed from host application.</summary>
     public IHostContentServices HostServices
     {
         get;
-    }
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="ViewModelCommonParameters"/> class.
-    /// </summary>
-    /// <param name="hostServices">The services from the host application.</param>
-    /// <param name="viewModelFactory">The view model factory for creating view models.</param>
-    /// <exception cref="ArgumentNullException">Thrown when <paramref name="hostServices"/>, or the <paramref name="viewModelFactory"/> parameter is <b>null</b>.</exception>
-    public ViewModelCommonParameters(IHostContentServices hostServices, ViewModelFactory viewModelFactory)
-    {
-        HostServices = hostServices ?? throw new ArgumentNullException(nameof(hostServices));
-        ViewModelFactory = viewModelFactory ?? throw new ArgumentNullException(nameof(viewModelFactory));
-    }
+    } = hostServices ?? throw new ArgumentNullException(nameof(hostServices));
 }

@@ -15,12 +15,15 @@ namespace Gorgon.Editor.Services;
 /// <summary>
 /// A service used to present a save as dialog for the project file system.
 /// </summary>
-public class SaveAsService
-    : ISaveAsService
+/// <remarks>Initializes a new instance of the <see cref="SaveAsService" /> class.</remarks>
+/// <param name="fileManager">The file manager for the project.</param>
+/// <exception cref="ArgumentNullException">Thrown when the <paramref name="fileManager"/> parameter is <b>null</b>.</exception>
+public class SaveAsService(IContentFileManager fileManager)
+        : ISaveAsService
 {
     #region Variables.
     // The file manager for the project.
-    private readonly IContentFileManager _fileManager;
+    private readonly IContentFileManager _fileManager = fileManager ?? throw new ArgumentNullException(nameof(fileManager));
     #endregion
 
     #region Methods.
@@ -57,13 +60,6 @@ public class SaveAsService
             saveDialog.Dispose();
         }
     }
-    #endregion
 
-    #region Constructor/Finalizer.
-    /// <summary>Initializes a new instance of the <see cref="SaveAsService" /> class.</summary>
-    /// <param name="fileManager">The file manager for the project.</param>
-    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="fileManager"/> parameter is <b>null</b>.</exception>
-    public SaveAsService(IContentFileManager fileManager)
-        => _fileManager = fileManager ?? throw new ArgumentNullException(nameof(fileManager));
     #endregion
 }

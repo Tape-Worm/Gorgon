@@ -82,7 +82,7 @@ internal class ImageSplitToolPlugIn
 
                 if (!imagesAndSprites.TryGetValue(imageFile, out IReadOnlyList<IContentFile> dependencyFiles))
                 {
-                    spriteContentFiles = new List<IContentFile>();
+                    spriteContentFiles = [];
                     imagesAndSprites[imageFile] = spriteContentFiles;
                 }
                 else
@@ -141,7 +141,7 @@ internal class ImageSplitToolPlugIn
 
             GatherSpriteDependencies();
 
-            fileEntries = new List<ContentFileExplorerFileEntry>();
+            fileEntries = [];
             dirEntry = new ContentFileExplorerDirectoryEntry(subDir, fileEntries);
 
             foreach (IContentFile file in imageFiles)

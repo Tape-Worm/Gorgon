@@ -69,7 +69,7 @@ internal class VideoAdapterEnumerator
             return null;
         }
 
-        var result = new VideoAdapterInfo(index, warpAdapter4, featureSet.Value, new Dictionary<string, VideoOutputInfo>(), VideoDeviceType.Software);
+        var result = new VideoAdapterInfo(index, warpAdapter4, featureSet.Value, [], VideoDeviceType.Software);
 
         PrintLog(result, log);
 
@@ -134,7 +134,7 @@ internal class VideoAdapterEnumerator
             .Where(item => (d3dDevice.CheckFormatSupport(item) & D3D11.FormatSupport.Display) == D3D11.FormatSupport.Display)
             .ToArray();
 
-        IEnumerable<ModeDescription1> result = Enumerable.Empty<ModeDescription1>();
+        IEnumerable<ModeDescription1> result = [];
 
         // Test each format for display compatibility.
         return formats.Aggregate(result,

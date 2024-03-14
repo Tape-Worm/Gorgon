@@ -75,7 +75,7 @@ public class GorgonPolySprite
     {
         get;
         set;
-    } = Array.Empty<int>();
+    } = [];
 
     /// <summary>
     /// Property to return the list of vertices used by the poly sprite.
@@ -95,7 +95,7 @@ public class GorgonPolySprite
     /// Property to return whether this sprite contains any index data.
     /// </summary>
     [JsonIgnore]
-    public IReadOnlyList<int> Indices => RwIndices ?? Array.Empty<int>();
+    public IReadOnlyList<int> Indices => RwIndices ?? [];
 
     /// <summary>
     /// Property to set or return the color of the sprite.

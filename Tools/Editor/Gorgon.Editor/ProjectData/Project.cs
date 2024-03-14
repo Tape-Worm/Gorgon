@@ -148,7 +148,7 @@ internal class Project
             {
                 if (!newItem.DependsOn.TryGetValue(dependency.Key, out List<string> items))
                 {
-                    newItem.DependsOn[dependency.Key] = items = new List<string>();
+                    newItem.DependsOn[dependency.Key] = items = [];
                 }
 
                 if (!items.Contains(dependency.Value))

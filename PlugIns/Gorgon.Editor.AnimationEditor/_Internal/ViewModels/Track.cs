@@ -66,7 +66,7 @@ internal class Track
     // Flag to indicate that interpolation is supported by the track.
     private TrackInterpolationMode _supportsInterpolation;
     // The list of key frames for the track.
-    private IKeyFrame[] _keyFrames = Array.Empty<IKeyFrame>();
+    private IKeyFrame[] _keyFrames = [];
     // The service for undo/redo functionality.
     private IUndoService _undoService;
     #endregion
@@ -143,7 +143,7 @@ internal class Track
         get => _keyFrames;
         set
         {
-            value ??= Array.Empty<IKeyFrame>();
+            value ??= [];
 
             if ((_keyFrames == value) || (value.SequenceEqual(_keyFrames)))
             {

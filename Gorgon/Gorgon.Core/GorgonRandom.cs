@@ -103,7 +103,7 @@ public static class GorgonRandom
                 return;
             }
 
-            Noise.Perm = value.ToArray();
+            Noise.Perm = [.. value];
         }
     }
     #endregion

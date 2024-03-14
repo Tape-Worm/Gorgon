@@ -60,18 +60,23 @@ namespace Gorgon.IO;
 /// </note>
 /// </para>
 /// </remarks>
-internal class ContentLoader2D
-    : IGorgonContentLoader
+/// <remarks>Initializes a new instance of the <see cref="ContentLoader2D"/> class.</remarks>
+/// <param name="fileSystem">The file system containing the content.</param>
+/// <param name="metadata">The metadata from the editor, containing dependencies.</param>
+/// <param name="renderer">The renderer.</param>
+/// <param name="textureCache">The texture cache.</param>
+internal class ContentLoader2D(IGorgonFileSystem fileSystem, IProjectMetadata metadata, Gorgon2D renderer, GorgonTextureCache<GorgonTexture2D> textureCache)
+        : IGorgonContentLoader
 {
     #region Variables.
     // The renderer used to handle loading.
-    private readonly Gorgon2D _renderer;
+    private readonly Gorgon2D _renderer = renderer;
     // The graphics interface used to handle loading textures.
-    private readonly GorgonGraphics _graphics;
+    private readonly GorgonGraphics _graphics = renderer.Graphics;
     // The file system containing the content data.
-    private readonly IGorgonFileSystem _fileSystem;
+    private readonly IGorgonFileSystem _fileSystem = fileSystem;
     // The metadata from the editor.
-    private readonly IProjectMetadata _metadata;
+    private readonly IProjectMetadata _metadata = metadata;
     #endregion
 
     #region Properties.
@@ -80,27 +85,27 @@ internal class ContentLoader2D
     public IList<IGorgonAnimationCodec> ExternalAnimationCodecs
     {
         get;
-    } = new List<IGorgonAnimationCodec>();
+    } = [];
 
     /// <summary>Property to return a list of codecs that can be used to load image content data.</summary>
     /// <remarks>Codecs added here are for external codecs. All built-in codecs for Gorgon will not appear in this list and are always used when loading files.</remarks>
     public IList<IGorgonImageCodec> ExternalImageCodecs
     {
         get;
-    } = new List<IGorgonImageCodec>();
+    } = [];
 
     /// <summary>Property to return a list of codecs that can be used to load sprite content data.</summary>
     /// <remarks>Codecs added here are for external codecs. All built-in codecs for Gorgon will not appear in this list and are always used when loading files.</remarks>
     public IList<IGorgonSpriteCodec> ExternalSpriteCodecs
     {
         get;
-    } = new List<IGorgonSpriteCodec>();
+    } = [];
 
     /// <summary>Property to return the texture cache for the loader.</summary>
     public GorgonTextureCache<GorgonTexture2D> TextureCache
     {
         get;
-    }
+    } = textureCache;
     #endregion
 
     #region Methods.
@@ -260,7 +265,7 @@ internal class ContentLoader2D
         {
             if (!dependencies.TryGetValue(item.Key, out List<IGorgonVirtualFile> files))
             {
-                files = new List<IGorgonVirtualFile>();
+                files = [];
                 dependencies[item.Key] = files;
             }
 
@@ -712,7 +717,7 @@ internal class ContentLoader2D
             throw new ArgumentEmptyException(nameof(path));
         }
 
-        IGorgonVirtualDirectory directory = _fileSystem.GetDirectory(path) ?? throw new DirectoryNotFoundException(string.Format(Resources.GOREDIT_ERR_DIR_NOT_FOUND, path));
+        IGorgonVirtualDirectory _ = _fileSystem.GetDirectory(path) ?? throw new DirectoryNotFoundException(string.Format(Resources.GOREDIT_ERR_DIR_NOT_FOUND, path));
 
         if (!_metadata.ProjectItems.TryGetValue(path, out ProjectItemMetadata metadata))
         {
@@ -726,21 +731,6 @@ internal class ContentLoader2D
 
         return Convert.ToBoolean(excluded, CultureInfo.InvariantCulture);
     }
-    #endregion
 
-    #region Constructor/Finalizer.
-    /// <summary>Initializes a new instance of the <see cref="ContentLoader2D"/> class.</summary>
-    /// <param name="fileSystem">The file system containing the content.</param>
-    /// <param name="metadata">The metadata from the editor, containing dependencies.</param>
-    /// <param name="renderer">The renderer.</param>
-    /// <param name="textureCache">The texture cache.</param>
-    public ContentLoader2D(IGorgonFileSystem fileSystem, IProjectMetadata metadata, Gorgon2D renderer, GorgonTextureCache<GorgonTexture2D> textureCache)
-    {
-        _fileSystem = fileSystem;
-        _metadata = metadata;            
-        _renderer = renderer;
-        _graphics = renderer.Graphics;
-        TextureCache = textureCache;
-    }        
     #endregion
 }

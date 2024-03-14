@@ -32,8 +32,11 @@ namespace Gorgon.Editor.UI.Controls;
 /// <summary>
 /// Event arguments for the <see cref="ColorPicker.ColorChanged"/> event.
 /// </summary>
-public class ColorChangedEventArgs
-    : EventArgs
+/// <remarks>Initializes a new instance of the <see cref="ColorChangedEventArgs"/> class.</remarks>
+/// <param name="newColor">The new color.</param>
+/// <param name="originalColor">The original color.</param>
+public class ColorChangedEventArgs(GorgonColor newColor, GorgonColor originalColor)
+        : EventArgs
 {
     #region Properties.
     /// <summary>
@@ -42,7 +45,7 @@ public class ColorChangedEventArgs
     public GorgonColor Color
     {
         get;
-    }
+    } = newColor;
 
     /// <summary>
     /// Property to return the original color.
@@ -50,17 +53,7 @@ public class ColorChangedEventArgs
     public GorgonColor OriginalColor
     {
         get;
-    }
-    #endregion
+    } = originalColor;
 
-    #region Constructor/Finalizer.
-    /// <summary>Initializes a new instance of the <see cref="ColorChangedEventArgs"/> class.</summary>
-    /// <param name="newColor">The new color.</param>
-    /// <param name="originalColor">The original color.</param>
-    public ColorChangedEventArgs(GorgonColor newColor, GorgonColor originalColor)
-    {
-        Color = newColor;
-        OriginalColor = originalColor;
-    }
     #endregion
 }

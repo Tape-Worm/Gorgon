@@ -33,8 +33,10 @@ namespace Gorgon.Graphics.Core;
 /// <summary>
 /// A cache for holding previously defined pipeline state objects.
 /// </summary>
-internal class PipelineStateCache
-    : IDisposable
+/// <remarks>Initializes a new instance of the <see cref="PipelineStateCache" /> class.</remarks>
+/// <param name="device">The Direct3D device.</param>
+internal class PipelineStateCache(D3D11.Device5 device)
+        : IDisposable
 {
     #region Constants.
     // The initial size for the cache.
@@ -47,7 +49,7 @@ internal class PipelineStateCache
     // A list of cached pipeline states.
     private GorgonPipelineState[] _cachedPipelineStates = new GorgonPipelineState[InitialCacheSize];
     // The Direct 3D device.
-    private readonly D3D11.Device5 _device;
+    private readonly D3D11.Device5 _device = device;
     #endregion
 
     #region Methods.
@@ -241,11 +243,6 @@ internal class PipelineStateCache
 
     /// <summary>Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.</summary>
     public void Dispose() => InvalidateCache();
-    #endregion
 
-    #region Constructor/Finalizer.
-    /// <summary>Initializes a new instance of the <see cref="PipelineStateCache" /> class.</summary>
-    /// <param name="device">The Direct3D device.</param>
-    public PipelineStateCache(D3D11.Device5 device) => _device = device;
     #endregion
 }

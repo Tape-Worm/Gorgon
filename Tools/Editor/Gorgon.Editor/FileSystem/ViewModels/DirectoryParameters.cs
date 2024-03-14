@@ -33,8 +33,12 @@ namespace Gorgon.Editor.ViewModels;
 /// <summary>
 /// Parameters for the <see cref="Directory"/> view model.
 /// </summary>
-internal class DirectoryParameters
-    : ViewModelCommonParameters
+/// <remarks>Initializes a new instance of the <see cref="DirectoryParameters"/> class.</remarks>
+/// <param name="hostServices">The services from the host application.</param>
+/// <param name="factory">The factory used to create view models.</param>
+/// <exception cref="ArgumentNullException">Thrown when any of the required parameters are <b>null</b>.</exception>
+internal class DirectoryParameters(IHostContentServices hostServices, ViewModelFactory factory)
+        : ViewModelCommonParameters(hostServices, factory)
 {
     #region Properties.
     /// <summary>
@@ -63,16 +67,8 @@ internal class DirectoryParameters
         get;
         set;
     }
-    #endregion
 
+    #endregion
     #region Constructor.
-    /// <summary>Initializes a new instance of the <see cref="DirectoryParameters"/> class.</summary>
-    /// <param name="hostServices">The services from the host application.</param>
-    /// <param name="factory">The factory used to create view models.</param>
-    /// <exception cref="ArgumentNullException">Thrown when any of the required parameters are <b>null</b>.</exception>
-    public DirectoryParameters(IHostContentServices hostServices, ViewModelFactory factory)
-        : base(hostServices, factory)
-    {
-    }
     #endregion
 }

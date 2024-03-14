@@ -91,8 +91,13 @@ namespace Gorgon.Renderers;
 /// </para>
 /// </remarks>
 /// <seealso cref="Gorgon2DGBuffer"/>
-public class Gorgon2DLightingEffect
-    : Gorgon2DEffect
+/// <remarks>
+/// Initializes a new instance of the <see cref="Gorgon2DLightingEffect"/> class.
+/// </remarks>
+/// <param name="renderer">The renderer used to draw with the effect.</param>
+/// <exception cref="ArgumentNullException">Thrown when the <paramref name="renderer"/> parameter is <b>null</b>.</exception>
+public class Gorgon2DLightingEffect(Gorgon2D renderer)
+        : Gorgon2DEffect(renderer, Resources.GOR2D_EFFECT_LIGHTING, Resources.GOR2D_EFFECT_LIGHTING_DESC, 1)
 {
     #region Value Types.
     // Constant buffer data for global data.
@@ -378,17 +383,6 @@ public class Gorgon2DLightingEffect
 
         OnRender(gbuffer.GBufferTexture, output, camera);
     }
-    #endregion
 
-    #region Constructor/Finalizer.
-    /// <summary>
-    /// Initializes a new instance of the <see cref="Gorgon2DLightingEffect"/> class.
-    /// </summary>
-    /// <param name="renderer">The renderer used to draw with the effect.</param>
-    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="renderer"/> parameter is <b>null</b>.</exception>
-    public Gorgon2DLightingEffect(Gorgon2D renderer)
-        : base(renderer, Resources.GOR2D_EFFECT_LIGHTING, Resources.GOR2D_EFFECT_LIGHTING_DESC, 1)
-    {
-    }
     #endregion
 }

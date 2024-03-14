@@ -34,8 +34,12 @@ namespace Gorgon.Editor.AnimationEditor;
 /// <summary>
 /// Parameters for the <see cref="IProperties"/> view model.
 /// </summary>
-internal class PropertiesParameters
-    : HostedPanelViewModelParameters
+/// <remarks>Initializes a new instance of the <see cref="PropertiesParameters"/> class.</remarks>
+/// <param name="animation">The animation being edited.</param>
+/// <param name="hostServices">Common application services.</param>
+/// <exception cref="ArgumentNullException">Thrown when any of the parameters are <b>null</b>.</exception>
+internal class PropertiesParameters(IGorgonAnimation animation, IHostContentServices hostServices)
+        : HostedPanelViewModelParameters(hostServices)
 {
     #region Properties.
     /// <summary>
@@ -44,15 +48,7 @@ internal class PropertiesParameters
     public IGorgonAnimation Animation
     {
         get;
-    }
-    #endregion
+    } = animation;
 
-    #region Constructor/Finalizer.
-    /// <summary>Initializes a new instance of the <see cref="PropertiesParameters"/> class.</summary>
-    /// <param name="animation">The animation being edited.</param>
-    /// <param name="hostServices">Common application services.</param>
-    /// <exception cref="ArgumentNullException">Thrown when any of the parameters are <b>null</b>.</exception>
-    public PropertiesParameters(IGorgonAnimation animation, IHostContentServices hostServices)
-        : base(hostServices) => Animation = animation;
     #endregion
 }

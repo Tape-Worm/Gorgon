@@ -57,57 +57,52 @@ public enum WaveType
 /// <summary>
 /// An effect that renders a wavy image.
 /// </summary>
-public class Gorgon2DWaveEffect
-    : Gorgon2DEffect, IGorgon2DCompositorEffect
+/// <remarks>
+/// Initializes a new instance of the <see cref="Gorgon2DWaveEffect"/> class.
+/// </remarks>
+/// <param name="renderer">The renderer used to render the effect.</param>
+public class Gorgon2DWaveEffect(Gorgon2D renderer)
+        : Gorgon2DEffect(renderer, Resources.GOR2D_EFFECT_WAVE, Resources.GOR2D_EFFECT_WAVE_DESC, 1), IGorgon2DCompositorEffect
 {
     #region Value Types.
     /// <summary>
     /// Settings for the effect shader.
     /// </summary>
+    /// <remarks>
+    /// Initializes a new instance of the <see cref="Settings"/> struct.
+    /// </remarks>
+    /// <param name="amplitude">The amplitude.</param>
+    /// <param name="length">The length.</param>
+    /// <param name="period">The period.</param>
+    /// <param name="scale">Scale for the length.</param>
+    /// <param name="waveType">Type of the wave.</param>
     [StructLayout(LayoutKind.Sequential, Size = 32)]
-    private readonly struct Settings
+    private readonly struct Settings(float amplitude, float length, float period, float scale, WaveType waveType)
     {
         /// <summary>
         /// Amplitude for the wave.
         /// </summary>
-        public readonly float Amplitude;
+        public readonly float Amplitude = amplitude;
         /// <summary>
         /// Length of the wave.
         /// </summary>
-        public readonly float Length;
+        public readonly float Length = length;
         /// <summary>
         /// Period for the wave.
         /// </summary>
-        public readonly float Period;
+        public readonly float Period = period;
         /// <summary>
         /// Scale for the wave length.
         /// </summary>
-        public readonly float LengthScale;
+        public readonly float LengthScale = scale.Max(1.0f);
 
         // Wave type.
-        private readonly int _waveType;
+        private readonly int _waveType = (int)waveType;
 
         /// <summary>
         /// Property to return the type of wave.
         /// </summary>
         public WaveType WaveType => (WaveType)_waveType;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="Settings"/> struct.
-        /// </summary>
-        /// <param name="amplitude">The amplitude.</param>
-        /// <param name="length">The length.</param>
-        /// <param name="period">The period.</param>
-        /// <param name="scale">Scale for the length.</param>
-        /// <param name="waveType">Type of the wave.</param>
-        public Settings(float amplitude, float length, float period, float scale, WaveType waveType)
-        {
-            Amplitude = amplitude;
-            Length = length;
-            Period = period;
-            LengthScale = scale.Max(1.0f);
-            _waveType = (int)waveType;
-        }
     }
     #endregion
 
@@ -357,16 +352,8 @@ public class Gorgon2DWaveEffect
                                         new DX.RectangleF(0, 0, 1, 1));
         End();
     }
-    #endregion
 
+    #endregion
     #region Constructor/Destructor.
-    /// <summary>
-    /// Initializes a new instance of the <see cref="Gorgon2DWaveEffect"/> class.
-    /// </summary>
-    /// <param name="renderer">The renderer used to render the effect.</param>
-    public Gorgon2DWaveEffect(Gorgon2D renderer)
-        : base(renderer, Resources.GOR2D_EFFECT_WAVE, Resources.GOR2D_EFFECT_WAVE_DESC, 1)
-    {
-    }
     #endregion
 }

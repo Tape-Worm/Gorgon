@@ -44,7 +44,7 @@ internal class ZipProvider
     /// <summary>
     /// Header bytes for a zip file.
     /// </summary>
-    public static IEnumerable<byte> ZipHeader = new byte[] { 0x50, 0x4B, 0x3, 0x4 };
+    public static IEnumerable<byte> ZipHeader = [0x50, 0x4B, 0x3, 0x4];
     #endregion
 
     #region Properties.

@@ -37,29 +37,34 @@ namespace Gorgon.Editor.AnimationEditor;
 /// <summary>
 /// A value for a texture key frame.
 /// </summary>
-internal readonly struct TextureValue
-    : IGorgonEquatableByRef<TextureValue>
+/// <remarks>Initializes a new instance of the <see cref="TextureValue"/> struct.</remarks>
+/// <param name="texture">The texture used when rendering the key.</param>
+/// <param name="textureFile">The file for the texture.</param>
+/// <param name="arrayIndex">The array index to use on the texture.</param>
+/// <param name="textureCoordinates">The texture coordinates to use.</param>
+internal readonly struct TextureValue(GorgonTexture2DView texture, IContentFile textureFile, int arrayIndex, DX.RectangleF textureCoordinates)
+        : IGorgonEquatableByRef<TextureValue>
 {
     #region Variables.
     /// <summary>
     /// The texture to use when rendering the key.
     /// </summary>
-    public readonly GorgonTexture2DView Texture;
+    public readonly GorgonTexture2DView Texture = texture;
 
     /// <summary>
     /// The array index to use on the texture.
     /// </summary>
-    public readonly int ArrayIndex;
+    public readonly int ArrayIndex = arrayIndex;
 
     /// <summary>
     /// The texture coordinates to use.
     /// </summary>
-    public readonly DX.RectangleF TextureCoordinates;
+    public readonly DX.RectangleF TextureCoordinates = textureCoordinates;
 
     /// <summary>
     /// The file for the texture.
     /// </summary>
-    public readonly IContentFile TextureFile;
+    public readonly IContentFile TextureFile = textureFile;
     #endregion
 
     #region Methods.
@@ -120,20 +125,8 @@ internal readonly struct TextureValue
     ///     <span class="keyword">true</span> (<span class="keyword">True</span> in Visual Basic)</span> if the current object is equal to the <paramref name="other" /> parameter; otherwise, <span class="keyword"><span class="languageSpecificText"><span class="cs">false</span><span class="vb">False</span><span class="cpp">false</span></span></span><span class="nu"><span class="keyword">false</span> (<span class="keyword">False</span> in Visual Basic)</span>.
     /// </returns>
     public bool Equals(in TextureValue other) => Equals(in other, in this);
-    #endregion
 
+    #endregion
     #region Constructor.
-    /// <summary>Initializes a new instance of the <see cref="TextureValue"/> struct.</summary>
-    /// <param name="texture">The texture used when rendering the key.</param>
-    /// <param name="textureFile">The file for the texture.</param>
-    /// <param name="arrayIndex">The array index to use on the texture.</param>
-    /// <param name="textureCoordinates">The texture coordinates to use.</param>
-    public TextureValue(GorgonTexture2DView texture, IContentFile textureFile, int arrayIndex, DX.RectangleF textureCoordinates)
-    {
-        Texture = texture;
-        TextureFile = textureFile;
-        ArrayIndex = arrayIndex;
-        TextureCoordinates = textureCoordinates;
-    }
     #endregion
 }

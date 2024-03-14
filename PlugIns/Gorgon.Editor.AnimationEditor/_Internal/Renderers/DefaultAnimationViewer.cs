@@ -40,8 +40,13 @@ namespace Gorgon.Editor.AnimationEditor;
 /// <summary>
 /// The default viewer for an aniamtion.
 /// </summary>
-internal class DefaultAnimationViewer
-    : AnimationViewer
+/// <remarks>Initializes a new instance of the <see cref="DefaultAnimationViewer"/> class.</remarks>
+/// <param name="renderer">The main renderer for the content view.</param>
+/// <param name="swapChain">The swap chain for the content view.</param>
+/// <param name="dataContext">The view model to assign to the renderer.</param>        
+/// <param name="clipper">The service used to clip rectangular areas of an image.</param>
+internal class DefaultAnimationViewer(Gorgon2D renderer, GorgonSwapChain swapChain, IAnimationContent dataContext, IRectClipperService clipper)
+        : AnimationViewer(ViewerName, renderer, swapChain, dataContext, clipper, false)
 {
     #region Constants.
     /// <summary>
@@ -287,17 +292,6 @@ internal class DefaultAnimationViewer
 
         ZoomToSprite(Sprite);
     }
-    #endregion
 
-    #region Constructor/Finalizer.
-    /// <summary>Initializes a new instance of the <see cref="DefaultAnimationViewer"/> class.</summary>
-    /// <param name="renderer">The main renderer for the content view.</param>
-    /// <param name="swapChain">The swap chain for the content view.</param>
-    /// <param name="dataContext">The view model to assign to the renderer.</param>        
-    /// <param name="clipper">The service used to clip rectangular areas of an image.</param>
-    public DefaultAnimationViewer(Gorgon2D renderer, GorgonSwapChain swapChain, IAnimationContent dataContext, IRectClipperService clipper)
-        : base(ViewerName, renderer, swapChain, dataContext, clipper, false)
-    {            
-    }        
     #endregion
 }

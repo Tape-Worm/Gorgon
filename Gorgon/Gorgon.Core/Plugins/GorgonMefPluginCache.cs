@@ -296,7 +296,7 @@ public sealed class GorgonMefPlugInCache
         lock (_syncLock)
         {
             return _container is null
-                ? (Array.Empty<Lazy<GorgonPlugIn, IDictionary<string, object>>>())
+                ? ([])
                 : _container.GetExports<GorgonPlugIn, IDictionary<string, object>>(_contractName);
         }
     }
@@ -416,7 +416,7 @@ public sealed class GorgonMefPlugInCache
                 UpdateAssemblyList(catalog, assemblyList);
             }
 
-            PlugInAssemblies = assemblyList.ToArray();
+            PlugInAssemblies = [.. assemblyList];
 
             Log.Print($"{PlugInAssemblies.Count} cached with valid plug in types.", LoggingLevel.Verbose);
         }

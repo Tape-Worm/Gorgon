@@ -252,33 +252,26 @@ internal enum DdsCaps2
 /// <summary>
 /// DDS legacy conversion type.
 /// </summary>
-internal readonly struct DdsLegacyConversion
+/// <remarks>
+/// Initializes a new instance of the <see cref="DdsLegacyConversion" /> struct.
+/// </remarks>
+/// <param name="format">The format.</param>
+/// <param name="flags">The flags.</param>
+/// <param name="pixelFormat">The pixel format.</param>
+internal readonly struct DdsLegacyConversion(BufferFormat format, DdsConversionFlags flags, DdsPixelFormat pixelFormat)
 {
     /// <summary>
     /// Buffer format.
     /// </summary>
-    public readonly BufferFormat Format;
+    public readonly BufferFormat Format = format;
     /// <summary>
     /// Conversion flags.
     /// </summary>
-    public readonly DdsConversionFlags Flags;
+    public readonly DdsConversionFlags Flags = flags;
     /// <summary>
     /// Pixel format.
     /// </summary>
-    public readonly DdsPixelFormat PixelFormat;
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="DdsLegacyConversion" /> struct.
-    /// </summary>
-    /// <param name="format">The format.</param>
-    /// <param name="flags">The flags.</param>
-    /// <param name="pixelFormat">The pixel format.</param>
-    public DdsLegacyConversion(BufferFormat format, DdsConversionFlags flags, DdsPixelFormat pixelFormat)
-    {
-        Format = format;
-        Flags = flags;
-        PixelFormat = pixelFormat;
-    }
+    public readonly DdsPixelFormat PixelFormat = pixelFormat;
 }
 
 /// <summary>
@@ -386,61 +379,49 @@ internal struct Dx10Header
 /// <summary>
 /// Pixel format descriptor.
 /// </summary>
+/// <remarks>
+/// Initializes a new instance of the <see cref="DdsPixelFormat" /> struct.
+/// </remarks>
+/// <param name="flags">The flags.</param>
+/// <param name="fourCC">The four CC.</param>
+/// <param name="bitCount">The bit count.</param>
+/// <param name="rMask">The r mask.</param>
+/// <param name="gMask">The g mask.</param>
+/// <param name="bMask">The b mask.</param>
+/// <param name="aMask">A mask.</param>
 [StructLayout(LayoutKind.Sequential, Pack = 1)]
-internal readonly struct DdsPixelFormat
+internal readonly struct DdsPixelFormat(DdsPixelFormatFlags flags, uint fourCC, uint bitCount, uint rMask, uint gMask, uint bMask, uint aMask)
 {
     /// <summary>
     /// Size of the format, in bytes.
     /// </summary>
-    public readonly uint SizeInBytes;
+    public readonly uint SizeInBytes = (uint)Unsafe.SizeOf<DdsPixelFormat>();
     /// <summary>
     /// Flags for the format.
     /// </summary>
-    public readonly DdsPixelFormatFlags Flags;
+    public readonly DdsPixelFormatFlags Flags = flags;
     /// <summary>
     /// FOURCC value.
     /// </summary>
-    public readonly uint FourCC;
+    public readonly uint FourCC = fourCC;
     /// <summary>
     /// Number of bits per pixel.
     /// </summary>
-    public readonly uint BitCount;
+    public readonly uint BitCount = bitCount;
     /// <summary>
     /// Bit mask for the R component.
     /// </summary>
-    public readonly uint RBitMask;
+    public readonly uint RBitMask = rMask;
     /// <summary>
     /// Bit mask for the G component.
     /// </summary>
-    public readonly uint GBitMask;
+    public readonly uint GBitMask = gMask;
     /// <summary>
     /// Bit mask for the B component.
     /// </summary>
-    public readonly uint BBitMask;
+    public readonly uint BBitMask = bMask;
     /// <summary>
     /// Bit mask for the A component.
     /// </summary>
-    public readonly uint ABitMask;
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="DdsPixelFormat" /> struct.
-    /// </summary>
-    /// <param name="flags">The flags.</param>
-    /// <param name="fourCC">The four CC.</param>
-    /// <param name="bitCount">The bit count.</param>
-    /// <param name="rMask">The r mask.</param>
-    /// <param name="gMask">The g mask.</param>
-    /// <param name="bMask">The b mask.</param>
-    /// <param name="aMask">A mask.</param>
-    public DdsPixelFormat(DdsPixelFormatFlags flags, uint fourCC, uint bitCount, uint rMask, uint gMask, uint bMask, uint aMask)
-    {
-        SizeInBytes = (uint)Unsafe.SizeOf<DdsPixelFormat>();
-        Flags = flags;
-        FourCC = fourCC;
-        BitCount = bitCount;
-        RBitMask = rMask;
-        GBitMask = gMask;
-        BBitMask = bMask;
-        ABitMask = aMask;
-    }
+    public readonly uint ABitMask = aMask;
 }

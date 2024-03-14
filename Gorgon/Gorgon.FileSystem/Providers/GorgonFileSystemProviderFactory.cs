@@ -73,14 +73,20 @@ namespace Gorgon.IO.Providers;
 /// ]]>
 /// </code>
 /// </example>
-public sealed class GorgonFileSystemProviderFactory
-    : IGorgonFileSystemProviderFactory
+/// <remarks>
+/// Initializes a new instance of the <see cref="GorgonFileSystemProviderFactory"/> class.
+/// </remarks>
+/// <param name="plugInCache">The cache used to load and store plugin assemblies.</param>
+/// <param name="log">[Optional] The application log file.</param>
+/// <exception cref="ArgumentNullException">Thrown when the <paramref name="plugInCache"/> parameter is <b>null</b>.</exception>
+public sealed class GorgonFileSystemProviderFactory(GorgonMefPlugInCache plugInCache, IGorgonLog log = null)
+        : IGorgonFileSystemProviderFactory
 {
     #region Variables.
     // The service for locating plug ins.
-    private readonly GorgonMefPlugInCache _plugInCache;
+    private readonly GorgonMefPlugInCache _plugInCache = plugInCache ?? throw new ArgumentNullException(nameof(plugInCache));
     // The application log file.
-    private readonly IGorgonLog _log;
+    private readonly IGorgonLog _log = log ?? GorgonLog.NullLog;
     #endregion
 
     #region Methods.
@@ -177,21 +183,8 @@ public sealed class GorgonFileSystemProviderFactory
 
         _plugInCache.LoadPlugInAssemblies(dirName, fileName);
 
-        return plugInService.GetPlugIns<GorgonFileSystemProvider>().ToArray();
+        return [.. plugInService.GetPlugIns<GorgonFileSystemProvider>()];
     }
-    #endregion
 
-    #region Constructor/Finalizer.
-    /// <summary>
-    /// Initializes a new instance of the <see cref="GorgonFileSystemProviderFactory"/> class.
-    /// </summary>
-    /// <param name="plugInCache">The cache used to load and store plugin assemblies.</param>
-    /// <param name="log">[Optional] The application log file.</param>
-    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="plugInCache"/> parameter is <b>null</b>.</exception>
-    public GorgonFileSystemProviderFactory(GorgonMefPlugInCache plugInCache, IGorgonLog log = null)
-    {
-        _log = log ?? GorgonLog.NullLog;
-        _plugInCache = plugInCache ?? throw new ArgumentNullException(nameof(plugInCache));            
-    }
     #endregion
 }

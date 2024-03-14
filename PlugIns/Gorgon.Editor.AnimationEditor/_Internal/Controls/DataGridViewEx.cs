@@ -47,7 +47,7 @@ internal class DataGridViewEx
     // Pass through event arguments.
     private MouseEventArgs _passThruEventArgs;
     // The list of rows for dragging.
-    private readonly List<DataGridViewCell> _dragCells = new();
+    private readonly List<DataGridViewCell> _dragCells = [];
     // Flag to indicate that the selection changed event should be fired or not.
     private int _noFireSelectEvent;
     #endregion

@@ -34,11 +34,14 @@ namespace Gorgon.Editor.Services;
 /// <summary>
 /// A service used to display messages in message box dialogs.
 /// </summary>
-public class MessageBoxService
-    : IMessageDisplayService
+/// <remarks>Initializes a new instance of the <see cref="MessageBoxService"/> class.</remarks>
+/// <param name="log">The log.</param>
+/// <exception cref="ArgumentNullException">Thrown when the <paramref name="log"/> parameter is <b>null</b>.</exception>
+public class MessageBoxService(IGorgonLog log)
+        : IMessageDisplayService
 {
     // The log for the application.
-    private readonly IGorgonLog _log;
+    private readonly IGorgonLog _log = log ?? throw new ArgumentNullException(nameof(log));
 
     /// <summary>
     /// Function to retrieve the parent form for the message box.
@@ -144,10 +147,4 @@ public class MessageBoxService
 
         GorgonDialogs.WarningBox(GetParentForm(), message, caption, details);
     }
-
-
-    /// <summary>Initializes a new instance of the <see cref="MessageBoxService"/> class.</summary>
-    /// <param name="log">The log.</param>
-    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="log"/> parameter is <b>null</b>.</exception>
-    public MessageBoxService(IGorgonLog log) => _log = log ?? throw new ArgumentNullException(nameof(log));
 }

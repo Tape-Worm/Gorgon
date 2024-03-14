@@ -41,8 +41,13 @@ namespace Gorgon.Editor.SpriteEditor;
 /// <summary>
 /// A renderer used to render the current sprite along with its texture.
 /// </summary>
-internal class DefaultSpriteViewer
-    : SpriteViewer
+/// <remarks>Initializes a new instance of the <see cref="DefaultSpriteViewer"/> class.</remarks>
+/// <param name="renderer">The main renderer for the content view.</param>
+/// <param name="swapChain">The swap chain for the content view.</param>
+/// <param name="dataContext">The view model to assign to the renderer.</param>
+/// <param name="marchingAnts">The marching ants selection rectangle renderer.</param>
+internal class DefaultSpriteViewer(Gorgon2D renderer, GorgonSwapChain swapChain, ISpriteContent dataContext, IMarchingAnts marchingAnts)
+        : SpriteViewer(ViewerName, renderer, swapChain, dataContext)
 {
     #region Constants.
     /// <summary>
@@ -53,13 +58,13 @@ internal class DefaultSpriteViewer
 
     #region Variables.
     // Marching ants rectangle.
-    private readonly IMarchingAnts _marchAnts;
+    private readonly IMarchingAnts _marchAnts = marchingAnts;
     // The render target for the sprite texture.
     private GorgonRenderTarget2DView _spriteTarget;
     // The sprite texture to display in the background.
     private GorgonTexture2DView _spriteTexture;
     // The sprite to render.
-    private readonly GorgonSprite _sprite;
+    private readonly GorgonSprite _sprite = new();
     // The region where the sprite is located on the texture.
     private DX.RectangleF _spriteRegion;
     #endregion
@@ -287,19 +292,6 @@ internal class DefaultSpriteViewer
 
         MoveTo(new Vector2(spritePosition.X, spritePosition.Y), spriteZoomLevel.GetScale());
     }
-    #endregion
 
-    #region Constructor/Finalizer.
-    /// <summary>Initializes a new instance of the <see cref="DefaultSpriteViewer"/> class.</summary>
-    /// <param name="renderer">The main renderer for the content view.</param>
-    /// <param name="swapChain">The swap chain for the content view.</param>
-    /// <param name="dataContext">The view model to assign to the renderer.</param>
-    /// <param name="marchingAnts">The marching ants selection rectangle renderer.</param>
-    public DefaultSpriteViewer(Gorgon2D renderer, GorgonSwapChain swapChain, ISpriteContent dataContext, IMarchingAnts marchingAnts)
-        : base(ViewerName, renderer, swapChain, dataContext)
-    {
-        _sprite = new GorgonSprite();
-        _marchAnts = marchingAnts;
-    }
     #endregion
 }

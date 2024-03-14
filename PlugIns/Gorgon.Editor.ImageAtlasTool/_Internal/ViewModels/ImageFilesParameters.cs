@@ -38,8 +38,14 @@ namespace Gorgon.Editor.ImageAtlasTool;
 /// <summary>
 /// The parameters for the <see cref="IImageFiles"/> view model.
 /// </summary>
-internal class ImageFilesParameters
-    : ViewModelInjection<IHostContentServices>
+/// <remarks>Initializes a new instance of the <see cref="ImageFilesParameters"/> class.</remarks>
+/// <param name="entries">The file system image entries.</param>
+/// <param name="tempFileSystem">The temporary file system used to write temporary data.</param>
+/// <param name="searchService">The search service used to search through the image entries.</param>        
+/// <param name="hostServices">The services from the host application.</param>
+/// <exception cref="ArgumentNullException">Thrown when any of the parameters are <b>null</b>.</exception>
+internal class ImageFilesParameters(IReadOnlyList<ContentFileExplorerDirectoryEntry> entries, IGorgonFileSystemWriter<Stream> tempFileSystem, ISearchService<IContentFileExplorerSearchEntry> searchService, IHostContentServices hostServices)
+        : ViewModelInjection<IHostContentServices>(hostServices)
 {
     /// <summary>
     /// Property to reeturn the service to search through the content files.
@@ -47,7 +53,7 @@ internal class ImageFilesParameters
     public ISearchService<IContentFileExplorerSearchEntry> SearchService
     {
         get;
-    }
+    } = searchService ?? throw new ArgumentNullException(nameof(searchService));
 
     /// <summary>
     /// Property to return the entries for the file system.
@@ -55,7 +61,7 @@ internal class ImageFilesParameters
     public IReadOnlyList<ContentFileExplorerDirectoryEntry> Entries
     {
         get;
-    }
+    } = entries ?? throw new ArgumentNullException(nameof(entries));
 
     /// <summary>
     /// Property to return the temporary file system used to write data.
@@ -63,19 +69,5 @@ internal class ImageFilesParameters
     public IGorgonFileSystemWriter<Stream> TempFileSystem
     {
         get;
-    }
-
-    /// <summary>Initializes a new instance of the <see cref="ImageFilesParameters"/> class.</summary>
-    /// <param name="entries">The file system image entries.</param>
-    /// <param name="tempFileSystem">The temporary file system used to write temporary data.</param>
-    /// <param name="searchService">The search service used to search through the image entries.</param>        
-    /// <param name="hostServices">The services from the host application.</param>
-    /// <exception cref="ArgumentNullException">Thrown when any of the parameters are <b>null</b>.</exception>
-    public ImageFilesParameters(IReadOnlyList<ContentFileExplorerDirectoryEntry> entries, IGorgonFileSystemWriter<Stream> tempFileSystem, ISearchService<IContentFileExplorerSearchEntry> searchService, IHostContentServices hostServices)
-        : base(hostServices)
-    {
-        Entries = entries ?? throw new ArgumentNullException(nameof(entries));
-        SearchService = searchService ?? throw new ArgumentNullException(nameof(searchService));
-        TempFileSystem = tempFileSystem ?? throw new ArgumentNullException(nameof(tempFileSystem));
-    }
+    } = tempFileSystem ?? throw new ArgumentNullException(nameof(tempFileSystem));
 }

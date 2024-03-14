@@ -81,8 +81,17 @@ public enum PassContinuationState
 /// <seealso cref="Gorgon2D"/>
 /// <seealso cref="GorgonTexture2DView"/>
 /// <seealso cref="GorgonRenderTargetView"/>
-public abstract class Gorgon2DEffect
-    : GorgonNamedObject, IDisposable, IGorgonGraphicsObject
+/// <remarks>
+/// Initializes a new instance of the <see cref="Gorgon2DEffect"/> class.
+/// </remarks>
+/// <param name="renderer">The 2D renderer used to render the effect.</param>
+/// <param name="effectName">Name of the effect.</param>
+/// <param name="effectDescription">The effect description.</param>
+/// <param name="passCount">The number of passes required to render the effect.</param>
+/// <exception cref="ArgumentNullException">Thrown when the <paramref name="renderer"/>, or the <paramref name="effectName"/> parameter is <b>null</b>.</exception>
+/// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="effectName"/> parameter is empty.</exception>
+public abstract class Gorgon2DEffect(Gorgon2D renderer, string effectName, string effectDescription, int passCount)
+        : GorgonNamedObject(effectName), IDisposable, IGorgonGraphicsObject
 {
     #region Variables.
     // Flag to indicate that the effect is initialized.
@@ -153,7 +162,7 @@ public abstract class Gorgon2DEffect
     protected List<GorgonShaderMacro> Macros
     {
         get;
-    } = new List<GorgonShaderMacro>();
+    } = [];
 
     /// <summary>
     /// Property to return the renderer used to render the effect.
@@ -161,7 +170,7 @@ public abstract class Gorgon2DEffect
     public Gorgon2D Renderer
     {
         get;
-    }
+    } = renderer ?? throw new ArgumentNullException(nameof(renderer));
 
     /// <summary>
     /// Property to return the graphics object used for rendering.
@@ -177,7 +186,7 @@ public abstract class Gorgon2DEffect
     public virtual int PassCount
     {
         get;
-    }
+    } = passCount.Max(1);
 
     /// <summary>
     /// Property to return a friendly description of the effect.
@@ -185,7 +194,7 @@ public abstract class Gorgon2DEffect
     public string Description
     {
         get;
-    }
+    } = effectDescription ?? string.Empty;
     #endregion
 
     #region Methods.
@@ -636,26 +645,6 @@ public abstract class Gorgon2DEffect
         Dispose(true);
         GC.SuppressFinalize(this);
     }
-    #endregion
 
-    #region Constructor/Finalizer.
-    /// <summary>
-    /// Initializes a new instance of the <see cref="Gorgon2DEffect"/> class.
-    /// </summary>
-    /// <param name="renderer">The 2D renderer used to render the effect.</param>
-    /// <param name="effectName">Name of the effect.</param>
-    /// <param name="effectDescription">The effect description.</param>
-    /// <param name="passCount">The number of passes required to render the effect.</param>
-    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="renderer"/>, or the <paramref name="effectName"/> parameter is <b>null</b>.</exception>
-    /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="effectName"/> parameter is empty.</exception>
-    protected Gorgon2DEffect(Gorgon2D renderer, string effectName, string effectDescription, int passCount)
-        : base(effectName)
-    {
-        Renderer = renderer ?? throw new ArgumentNullException(nameof(renderer));
-
-        // Ensure no less than 1 pass.
-        PassCount = passCount.Max(1);
-        Description = effectDescription ?? string.Empty;
-    }
     #endregion
 }

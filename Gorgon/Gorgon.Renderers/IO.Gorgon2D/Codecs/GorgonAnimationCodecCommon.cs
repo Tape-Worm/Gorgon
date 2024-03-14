@@ -198,7 +198,7 @@ public abstract class GorgonAnimationCodecCommon
         {
             IReadOnlyList<string> result = OnGetAssociatedTextureNames(stream);
 
-            return result ?? Array.Empty<string>();
+            return result ?? [];
         }
         finally
         {
@@ -445,10 +445,9 @@ public abstract class GorgonAnimationCodecCommon
             throw new ArgumentEmptyException(nameof(name));
         }
 
-        FileExtensions = new[]
-                         {
+        FileExtensions = [
                              new GorgonFileExtension(".gorAnim", Resources.GOR2DIO_ANIMTION_FILE_EXTENSION_DESC)
-                         };
+                         ];
         Codec = name;
         CodecDescription = string.IsNullOrWhiteSpace(description) ? name : description;
     }

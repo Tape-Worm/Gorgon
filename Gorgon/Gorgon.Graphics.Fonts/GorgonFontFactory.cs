@@ -226,7 +226,7 @@ public sealed class GorgonFontFactory
 
         lock (_syncLock)
         {
-            fonts = _fontCache.Values.ToArray();
+            fonts = [.. _fontCache.Values];
             _fontCache.Clear();
         }
 

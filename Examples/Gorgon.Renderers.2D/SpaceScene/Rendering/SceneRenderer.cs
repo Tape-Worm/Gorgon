@@ -54,9 +54,9 @@ internal class SceneRenderer
     // The screen buffer.
     private GorgonRenderTarget2DView _screen;
     // The list of layers to render.
-    private readonly List<Layer> _layers = new();
+    private readonly List<Layer> _layers = [];
     // Post processing groups.  Use to render specific layers with post processing effects.
-    private readonly List<(string name, Gorgon2DCompositor compositor)> _postProcessGroups = new();
+    private readonly List<(string name, Gorgon2DCompositor compositor)> _postProcessGroups = [];
     private readonly Dictionary<string, List<Layer>> _postProcessLayers = new(StringComparer.OrdinalIgnoreCase);
     #endregion
 
@@ -229,7 +229,7 @@ internal class SceneRenderer
     /// </summary>
     public void LoadResources()
     {
-        _postProcessLayers["__NULL__"] = new List<Layer>();
+        _postProcessLayers["__NULL__"] = [];
         _postProcessGroups.Add(("Final Pass", _resources.PostProcessCompositors["Final Pass"]));
         _postProcessGroups.Add(("Space Ships", null));
 
@@ -244,7 +244,7 @@ internal class SceneRenderer
 
             if (!_postProcessLayers.TryGetValue(layer.PostProcessGroup, out List<Layer> layers))
             {
-                _postProcessLayers[layer.PostProcessGroup] = layers = new List<Layer>();
+                _postProcessLayers[layer.PostProcessGroup] = layers = [];
             }
 
             layers.Add(layer);

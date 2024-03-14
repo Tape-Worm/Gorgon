@@ -41,8 +41,12 @@ namespace Gorgon.Collections.Specialized;
 /// This collection is <b><i>not</i></b> thread safe.
 /// </para>
 /// </remarks>
-public class GorgonNamedObjectDictionary<T>
-    : GorgonBaseNamedObjectDictionary<T>
+/// <remarks>
+/// Initializes a new instance of the <see cref="GorgonNamedObjectDictionary{T}"/> class.
+/// </remarks>
+/// <param name="caseSensitive">[Optional] <b>true</b> to use case sensitive keys, <b>false</b> to ignore casing.</param>
+public class GorgonNamedObjectDictionary<T>(bool caseSensitive = true)
+    : GorgonBaseNamedObjectDictionary<T>(caseSensitive)
     where T : IGorgonNamedObject
 {
     #region Properties.
@@ -105,17 +109,7 @@ public class GorgonNamedObjectDictionary<T>
     /// <param name="name">Name of the item to remove.</param>
     /// <exception cref="KeyNotFoundException">Thrown when no item with the specified <paramref name="name"/> can be found.</exception>
     public void Remove(string name) => Items.Remove(name);
-    #endregion
 
-    #region Constructor/Finalizer.
-    /// <summary>
-    /// Initializes a new instance of the <see cref="GorgonNamedObjectDictionary{T}"/> class.
-    /// </summary>
-    /// <param name="caseSensitive">[Optional] <b>true</b> to use case sensitive keys, <b>false</b> to ignore casing.</param>
-    public GorgonNamedObjectDictionary(bool caseSensitive = true)
-        : base(caseSensitive)
-    {
-    }
     #endregion
 
 }

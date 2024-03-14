@@ -1,7 +1,6 @@
-﻿#region MIT
-// 
+﻿// 
 // Gorgon
-// Copyright (C) 2015 Michael Winsor
+// Copyright (C) 2024 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -22,9 +21,9 @@
 // 
 // Created: Tuesday, September 07, 2015 2:27:10 PM
 // 
-#endregion
 
 using System;
+using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using Gorgon.Input.Properties;
 using Gorgon.Native;
@@ -276,14 +275,26 @@ public class GorgonRawKeyboard
             _charStates[menuKey] = 0;
         }
 
-        int result = UserApi.ToUnicode((uint)key, 0, _charStates, _characterBuffer, _characterBuffer.Length, 0);
-
-        return result switch
+        unsafe
         {
-            -1 or 0 => string.Empty,
-            1 => new string(_characterBuffer, 0, 1),
-            _ => string.Empty,
-        };
+            nint ptr = Marshal.AllocHGlobal(sizeof(char) * _characterBuffer.Length);
+
+            try
+            {
+                int result = UserApi.ToUnicode((uint)key, 0, _charStates, ptr, _characterBuffer.Length, 0);
+
+                return result switch
+                {
+                    -1 or 0 => string.Empty,
+                    1 => new string((char*)ptr, 0, 1),
+                    _ => string.Empty,
+                };
+            }
+            finally
+            {
+                Marshal.FreeHGlobal(ptr);
+            }
+        }
     }
 
     /// <summary>
@@ -328,7 +339,7 @@ public class GorgonRawKeyboard
     }
     #endregion
 
-    #region Constructor/Finalizer.
+    #region Constructor.
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonRawKeyboard"/> class.
     /// </summary>

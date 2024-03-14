@@ -50,18 +50,23 @@ public partial class ContentFileExplorer
     /// <summary>
     /// A comparer used to sort the files and directories.
     /// </summary>
-    private class FileComparer
-        : IComparer<DataGridViewRow>, IComparer
+    /// <remarks>Initializes a new instance of the <see cref="FileComparer"/> class.</remarks>
+    /// <param name="gridView">The grid view.</param>
+    /// <param name="directory">The directory.</param>
+    /// <param name="directoryName">Name of the directory.</param>
+    /// <param name="file">The file.</param>
+    private class FileComparer(DataGridView gridView, DataGridViewColumn directory, DataGridViewColumn directoryName, DataGridViewColumn file)
+                : IComparer<DataGridViewRow>, IComparer
     {
         #region Variables.
         // The grid containing the data to sort.
-        private readonly DataGridView _grid;
+        private readonly DataGridView _grid = gridView;
         // The column containing the directory flag.
-        private readonly DataGridViewColumn _columnDirectory;
+        private readonly DataGridViewColumn _columnDirectory = directory;
         // The column containing the directory path.
-        private readonly DataGridViewColumn _columnDirectoryName;
+        private readonly DataGridViewColumn _columnDirectoryName = directoryName;
         // The column containing the file path.
-        private readonly DataGridViewColumn _columnFile;
+        private readonly DataGridViewColumn _columnFile = file;
         #endregion
 
         #region Methods.
@@ -110,21 +115,9 @@ public partial class ContentFileExplorer
         /// <paramref name="x" /> is greater than <paramref name="y" />.
         /// </returns>
         int IComparer.Compare(object x, object y) => Compare((DataGridViewRow)x, (DataGridViewRow)y);
-        #endregion
 
+        #endregion
         #region Constructor.
-        /// <summary>Initializes a new instance of the <see cref="FileComparer"/> class.</summary>
-        /// <param name="gridView">The grid view.</param>
-        /// <param name="directory">The directory.</param>
-        /// <param name="directoryName">Name of the directory.</param>
-        /// <param name="file">The file.</param>
-        public FileComparer(DataGridView gridView, DataGridViewColumn directory, DataGridViewColumn directoryName, DataGridViewColumn file)
-        {
-            _grid = gridView;
-            _columnDirectory = directory;
-            _columnDirectoryName = directoryName;
-            _columnFile = file;
-        }
         #endregion
     }
     #endregion
@@ -161,12 +154,12 @@ public partial class ContentFileExplorer
     // The comparer used to sort the grid.
     private readonly FileComparer _fileComparer;
     // The list of file explorer entries.
-    private IReadOnlyList<ContentFileExplorerDirectoryEntry> _entries = new List<ContentFileExplorerDirectoryEntry>();
+    private IReadOnlyList<ContentFileExplorerDirectoryEntry> _entries = [];
     // Cross reference for rows and entries.
-    private readonly Dictionary<DataGridViewRow, ContentFileExplorerFileEntry> _rowFilesXref = new();
-    private readonly Dictionary<DataGridViewRow, ContentFileExplorerDirectoryEntry> _rowDirsXref = new();
-    private readonly Dictionary<ContentFileExplorerFileEntry, DataGridViewRow> _fileRowsXref = new();
-    private readonly Dictionary<ContentFileExplorerDirectoryEntry, DataGridViewRow> _dirRowsXref = new();
+    private readonly Dictionary<DataGridViewRow, ContentFileExplorerFileEntry> _rowFilesXref = [];
+    private readonly Dictionary<DataGridViewRow, ContentFileExplorerDirectoryEntry> _rowDirsXref = [];
+    private readonly Dictionary<ContentFileExplorerFileEntry, DataGridViewRow> _fileRowsXref = [];
+    private readonly Dictionary<ContentFileExplorerDirectoryEntry, DataGridViewRow> _dirRowsXref = [];
     // Icon associations with the files.
     private readonly Dictionary<string, Image> _icons = new(StringComparer.OrdinalIgnoreCase);
     // The checkbox in the grid header.
@@ -363,7 +356,7 @@ public partial class ContentFileExplorer
             dirEntry.PropertyChanged += DirEntry_PropertyChanged;
         }
 
-        GridFiles.Rows.AddRange(rows.ToArray());
+        GridFiles.Rows.AddRange([.. rows]);
         GridFiles.ClearSelection();
         foreach (DataGridViewRow row in selected)
         {
@@ -978,13 +971,13 @@ public partial class ContentFileExplorer
     private DataGridViewRow CreateRow(ContentFileExplorerDirectoryEntry entry)
     {
         var newRow = new DataGridViewRow();
-        newRow.CreateCells(GridFiles, new object[] {
+        newRow.CreateCells(GridFiles, [
             entry.IsExpanded,
             entry.FullPath,
             entry.Name,
             entry.FullPath,
             true
-            });
+            ]);
         newRow.Visible = entry.IsVisible;
         return newRow;
     }
@@ -997,13 +990,13 @@ public partial class ContentFileExplorer
     private DataGridViewRow CreateRow(ContentFileExplorerFileEntry entry)
     {
         var newRow = new DataGridViewRow();
-        newRow.CreateCells(GridFiles, new object[] {
+        newRow.CreateCells(GridFiles, [
             entry.IsSelected,
             entry.Parent.FullPath,
             entry.Name,
             entry.FullPath,
             false
-            });
+            ]);
         newRow.Visible = entry.IsVisible;
         return newRow;
     }

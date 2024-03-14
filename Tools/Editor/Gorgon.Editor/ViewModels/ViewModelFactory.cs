@@ -46,23 +46,28 @@ namespace Gorgon.Editor.ViewModels;
 /// <summary>
 /// A factory for generating view models and their dependencies.
 /// </summary>
-internal class ViewModelFactory
+/// <remarks>Initializes a new instance of the <see cref="ViewModelFactory"/> class.</remarks>
+/// <param name="settings">The settings for the editor.</param>
+/// <param name="projectManager">The project manager for managing the project file.</param>
+/// <param name="fileSystemProviders">The file system providers used to read/write file systems.</param>
+/// <param name="contentServices">Common host services to pass into plug ins.</param>        
+internal class ViewModelFactory(Editor.EditorSettings settings, ProjectManager projectManager, FileSystemProviders fileSystemProviders, HostContentServices contentServices)
 {
     #region Variables.        
     // The buffer to hold directory paths.
     private readonly Dictionary<string, IDirectory> _directoryBuffer = new(StringComparer.OrdinalIgnoreCase);
     // The host content services.
-    private readonly HostContentServices _hostContentServices;
+    private readonly HostContentServices _hostContentServices = contentServices;
     // The file system providers for reading/writing file systems.
-    private readonly FileSystemProviders _fileSystemProviders;
+    private readonly FileSystemProviders _fileSystemProviders = fileSystemProviders;
     // The settings for the editor.
-    private readonly Editor.EditorSettings _settings;
+    private readonly Editor.EditorSettings _settings = settings;
     // The project manager.
-    private readonly ProjectManager _projectManager;
+    private readonly ProjectManager _projectManager = projectManager;
     // The synchronization context.
     private SynchronizationContext _syncContext;
     // The list of content creator plug ins.
-    private IReadOnlyList<IContentPlugInMetadata> _contentCreators = Array.Empty<IContentPlugInMetadata>();
+    private IReadOnlyList<IContentPlugInMetadata> _contentCreators = [];
     #endregion
 
     #region Methods.
@@ -603,20 +608,8 @@ internal class ViewModelFactory
 
         return result;
     }
-    #endregion
 
+    #endregion
     #region Constructor.
-    /// <summary>Initializes a new instance of the <see cref="ViewModelFactory"/> class.</summary>
-    /// <param name="settings">The settings for the editor.</param>
-    /// <param name="projectManager">The project manager for managing the project file.</param>
-    /// <param name="fileSystemProviders">The file system providers used to read/write file systems.</param>
-    /// <param name="contentServices">Common host services to pass into plug ins.</param>        
-    public ViewModelFactory(Editor.EditorSettings settings, ProjectManager projectManager, FileSystemProviders fileSystemProviders, HostContentServices contentServices)
-    {
-        _settings = settings;
-        _projectManager = projectManager;
-        _fileSystemProviders = fileSystemProviders;
-        _hostContentServices = contentServices;
-    }
     #endregion
 }

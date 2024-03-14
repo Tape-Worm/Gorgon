@@ -40,8 +40,13 @@ namespace Gorgon.IO;
 /// <summary>
 /// A codec used to read/write animations as a JSON formatted string value.
 /// </summary>
-public class GorgonV31AnimationJsonCodec
-    : GorgonAnimationCodecCommon
+/// <remarks>
+/// Initializes a new instance of the <see cref="GorgonV3AnimationJsonCodec"/> class.
+/// </remarks>
+/// <param name="renderer">The renderer used for resource handling.</param>
+/// <exception cref="ArgumentNullException">Thrown when the <paramref name="renderer"/> is <b>null</b>.</exception>
+public class GorgonV31AnimationJsonCodec(Gorgon2D renderer)
+        : GorgonAnimationCodecCommon(renderer, Resources.GOR2DIO_V3_1_ANIM_JSON_CODEC, Resources.GOR2DIO_V3_1_ANIM_JSON_CODEC_DESCRIPTION)
 {
     #region Constants.
 
@@ -306,7 +311,7 @@ public class GorgonV31AnimationJsonCodec
                     case "TEXTURES":
                         if ((!reader.Read()) || (reader.TokenType != JsonToken.StartObject))
                         {
-                            return Array.Empty<string>();
+                            return [];
                         }
 
                         while ((reader.Read()) && (reader.TokenType != JsonToken.EndObject))
@@ -604,17 +609,6 @@ public class GorgonV31AnimationJsonCodec
             reader?.Close();
         }
     }
-    #endregion
 
-    #region Constructor/Finalizer.
-    /// <summary>
-    /// Initializes a new instance of the <see cref="GorgonV3AnimationJsonCodec"/> class.
-    /// </summary>
-    /// <param name="renderer">The renderer used for resource handling.</param>
-    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="renderer"/> is <b>null</b>.</exception>
-    public GorgonV31AnimationJsonCodec(Gorgon2D renderer)
-        : base(renderer, Resources.GOR2DIO_V3_1_ANIM_JSON_CODEC, Resources.GOR2DIO_V3_1_ANIM_JSON_CODEC_DESCRIPTION)
-    {
-    }
     #endregion
 }

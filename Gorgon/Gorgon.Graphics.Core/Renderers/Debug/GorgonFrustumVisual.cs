@@ -89,10 +89,10 @@ public class GorgonFrustumVisual
         _vertexShader = GorgonShaderFactory.Compile<GorgonVertexShader>(Graphics, Resources.GraphicsShaders, "GorgonDebugVertexShader", GorgonGraphics.IsDebugEnabled);
         _pixelShader = GorgonShaderFactory.Compile<GorgonPixelShader>(Graphics, Resources.GraphicsShaders, "GorgonDebugPixelShader", GorgonGraphics.IsDebugEnabled);
 
-        _inputLayout = new GorgonInputLayout(Graphics, "Frustum Line Vertex Input Layout", _vertexShader, new[]
-        {
+        _inputLayout = new GorgonInputLayout(Graphics, "Frustum Line Vertex Input Layout", _vertexShader,
+        [
             new GorgonInputElement("SV_POSITION", Gorgon.Graphics.BufferFormat.R32G32B32_Float, 0)
-        });
+        ]);
 
         var psoBuilder = new GorgonPipelineStateBuilder(Graphics);
 

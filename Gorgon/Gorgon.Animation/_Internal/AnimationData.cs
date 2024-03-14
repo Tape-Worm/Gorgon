@@ -36,8 +36,16 @@ namespace Gorgon.Animation;
 /// <summary>
 /// A base class for a <see cref="IGorgonAnimation"/> implementation.
 /// </summary>
-public class AnimationData
-    : GorgonNamedObject, IGorgonAnimation
+/// <remarks>
+/// Initializes a new instance of the <see cref="AnimationData" /> class.
+/// </remarks>
+/// <param name="name">The name of the track.</param>
+/// <param name="fps">The frames per second for the animation.</param>
+/// <param name="length">The length of the animation, in seconds.</param>
+/// <exception cref="ArgumentNullException">Thrown when the <paramref name="name"/> parameter is <b>null</b>.</exception>
+/// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="name"/> parameter is empty.</exception>
+public class AnimationData(string name, float fps, float length)
+        : GorgonNamedObject(name), IGorgonAnimation
 {
     #region Variables.
     // Number of loops for the animation.
@@ -65,12 +73,12 @@ public class AnimationData
     } = 1.0f;
 
     /// <summary>
-        /// Property to return the length of the animation (in seconds).
-        /// </summary>
-        public float Length
+    /// Property to return the length of the animation (in seconds).
+    /// </summary>
+    public float Length
     {
         get;
-    }
+    } = length.Max(0);
 
     /// <summary>
     /// Property to set or return whether this animation should be looping or not.
@@ -143,7 +151,7 @@ public class AnimationData
     public float Fps
     {
         get;
-    } = 60.0f;
+    } = fps.Max(1);
     #endregion
 
     #region Methods.
@@ -162,22 +170,8 @@ public class AnimationData
         result = result.Max(RectangleTracks.Select(item => item.Value).DefaultIfEmpty().Max(key => key?.KeyFrames.Count ?? 0));
         return result.Max(Texture2DTracks.Select(item => item.Value).DefaultIfEmpty().Max(key => key?.KeyFrames.Count ?? 0));
     }
-    #endregion
 
+    #endregion
     #region Constructor/Destructor.
-    /// <summary>
-    /// Initializes a new instance of the <see cref="AnimationData" /> class.
-    /// </summary>
-    /// <param name="name">The name of the track.</param>
-    /// <param name="fps">The frames per second for the animation.</param>
-    /// <param name="length">The length of the animation, in seconds.</param>
-    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="name"/> parameter is <b>null</b>.</exception>
-    /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="name"/> parameter is empty.</exception>
-    public AnimationData(string name, float fps, float length)
-        : base(name)
-    {
-        Length = length.Max(0);
-        Fps = fps.Max(1);
-    }
     #endregion
 }

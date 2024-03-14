@@ -233,6 +233,6 @@ internal class ShaderProcessor
     /// <summary>
     /// Initializes a new instance of the <see cref="ShaderProcessor"/> class.
     /// </summary>
-    public ShaderProcessor() => CachedIncludes = new Dictionary<string, GorgonShaderInclude>();
+    public ShaderProcessor() => CachedIncludes = [];
     #endregion
 }

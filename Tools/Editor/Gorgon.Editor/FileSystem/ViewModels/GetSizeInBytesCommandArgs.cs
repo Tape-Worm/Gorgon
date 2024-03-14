@@ -30,7 +30,9 @@ namespace Gorgon.Editor.ViewModels;
 /// <summary>
 /// The arguments to pass to the <see cref="IDirectory.GetSizeInBytesCommand"/>
 /// </summary>
-internal class GetSizeInBytesCommandArgs
+/// <remarks>Initializes a new instance of the <see cref="GetSizeInBytesCommandArgs"/> class.</remarks>
+/// <param name="recursive"><b>true</b> to retrieve the size for all files plus all files within any subdirectories, <b>false</b> to only get the size of the files within the directory.</param>
+internal class GetSizeInBytesCommandArgs(bool recursive)
 {
     /// <summary>
     /// Property to return the flag that indicates the directory should recursively get the size.
@@ -38,7 +40,7 @@ internal class GetSizeInBytesCommandArgs
     public bool Recursive
     {
         get;
-    }
+    } = recursive;
 
     /// <summary>
     /// Property to set or return the total size, in bytes, of the files (and, optionally, files in any subdirectories) contained within this directory.
@@ -48,8 +50,4 @@ internal class GetSizeInBytesCommandArgs
         get;
         set;
     }
-
-    /// <summary>Initializes a new instance of the <see cref="GetSizeInBytesCommandArgs"/> class.</summary>
-    /// <param name="recursive"><b>true</b> to retrieve the size for all files plus all files within any subdirectories, <b>false</b> to only get the size of the files within the directory.</param>
-    public GetSizeInBytesCommandArgs(bool recursive) => Recursive = recursive;
 }

@@ -29,7 +29,9 @@ namespace Gorgon.Editor.ViewModels;
 /// <summary>
 /// Arguments for the <see cref="IFileExplorer.GetDirectoryCommand"/>.
 /// </summary>
-internal class GetDirectoryArgs
+/// <remarks>Initializes a new instance of the <see cref="GetDirectoryArgs"/> class.</remarks>
+/// <param name="path">The path to the directory to retrieve.</param>
+internal class GetDirectoryArgs(string path)
 {
     /// <summary>
     /// Property to return the path for the directory to retrieve.
@@ -37,7 +39,7 @@ internal class GetDirectoryArgs
     public string Path
     {
         get;
-    }
+    } = path;
 
     /// <summary>
     /// Property to set or return the <see cref="IDirectory"/> for the supplied <see cref="Path"/>.
@@ -47,8 +49,4 @@ internal class GetDirectoryArgs
         get;
         set;
     }
-
-    /// <summary>Initializes a new instance of the <see cref="GetDirectoryArgs"/> class.</summary>
-    /// <param name="path">The path to the directory to retrieve.</param>
-    public GetDirectoryArgs(string path) => Path = path;
 }

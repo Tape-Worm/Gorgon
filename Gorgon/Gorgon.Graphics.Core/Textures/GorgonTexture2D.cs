@@ -64,13 +64,13 @@ public sealed class GorgonTexture2D
     // The ID number of the texture.
     private static int _textureID;
     // The list of cached texture unordered access views.
-    private Dictionary<TextureViewKey, GorgonTexture2DReadWriteView> _cachedReadWriteViews = new();
+    private Dictionary<TextureViewKey, GorgonTexture2DReadWriteView> _cachedReadWriteViews = [];
     // The list of cached texture shader resource views.
-    private Dictionary<TextureViewKey, GorgonTexture2DView> _cachedSrvs = new();
+    private Dictionary<TextureViewKey, GorgonTexture2DView> _cachedSrvs = [];
     // The list of cached render target resource views.
-    private Dictionary<TextureViewKey, GorgonRenderTarget2DView> _cachedRtvs = new();
+    private Dictionary<TextureViewKey, GorgonRenderTarget2DView> _cachedRtvs = [];
     // The list of cached depth/stencil resource views.
-    private Dictionary<TextureViewKey, GorgonDepthStencil2DView> _cachedDsvs = new();
+    private Dictionary<TextureViewKey, GorgonDepthStencil2DView> _cachedDsvs = [];
 #if NET48_OR_GREATER
 #pragma warning disable IDE0044 // Add readonly modifier
 #endif
@@ -80,13 +80,13 @@ public sealed class GorgonTexture2D
 #pragma warning restore IDE0044 // Add readonly modifier
 #endif
     // List of typeless formats that are compatible with a depth view format.
-    private static readonly HashSet<BufferFormat> _typelessDepthFormats = new()
-    {
+    private static readonly HashSet<BufferFormat> _typelessDepthFormats =
+    [
         BufferFormat.R16_Typeless,
         BufferFormat.R32_Typeless,
         BufferFormat.R24G8_Typeless,
         BufferFormat.R32G8X24_Typeless
-    };
+    ];
     // The shared resource for this texture.
     private DXGI.Resource _sharedResource;
     // The keyed mutex for the shared resource.

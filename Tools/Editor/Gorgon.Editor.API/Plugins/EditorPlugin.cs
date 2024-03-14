@@ -71,12 +71,16 @@ public enum PlugInType
 /// <summary>
 /// The base class for an editor plug in.
 /// </summary>
-public abstract class EditorPlugIn
-    : GorgonPlugIn
+/// <remarks>
+/// Initializes a new instance of the <see cref="EditorPlugIn"/> class.
+/// </remarks>
+/// <param name="description">Optional description of the plugin.</param>
+public abstract class EditorPlugIn(string description)
+        : GorgonPlugIn(description)
 {
     #region Variables.
     // Empty string array for IsPlugInAvailable.
-    private readonly IReadOnlyList<string> _defaultPlugInAvailablity = Array.Empty<string>();
+    private readonly IReadOnlyList<string> _defaultPlugInAvailablity = [];
     #endregion
 
     #region Properties.
@@ -170,16 +174,6 @@ public abstract class EditorPlugIn
     /// </para>
     /// </remarks>
     public IReadOnlyList<string> IsPlugInAvailable() => OnGetPlugInAvailability();
-    #endregion
 
-    #region Constructor/Finalizer.
-    /// <summary>
-    /// Initializes a new instance of the <see cref="EditorPlugIn"/> class.
-    /// </summary>
-    /// <param name="description">Optional description of the plugin.</param>
-    protected EditorPlugIn(string description)
-        : base(description)
-    {
-    }
     #endregion
 }

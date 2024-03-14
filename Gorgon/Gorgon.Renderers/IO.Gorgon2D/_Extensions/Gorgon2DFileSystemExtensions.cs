@@ -313,15 +313,15 @@ public static class Gorgon2DFileSystemExtensions
         if ((imageCodecs is null) || (!imageCodecs.Any()))
         {
             // If we don't specify any codecs, then use the built in ones.
-            imageCodecs = new IGorgonImageCodec[]
-                     {
+            imageCodecs =
+                     [
                          new GorgonCodecPng(),
                          new GorgonCodecBmp(),
                          new GorgonCodecDds(),
                          new GorgonCodecGif(),
                          new GorgonCodecJpeg(),
                          new GorgonCodecTga(),
-                     };
+                     ];
         }
         else
         {
@@ -332,13 +332,13 @@ public static class Gorgon2DFileSystemExtensions
         if ((spriteCodecs is null) || (!spriteCodecs.Any()))
         {
             // Use all built-in codecs if we haven't asked for any.
-            spriteCodecs = new IGorgonSpriteCodec[]
-                           {
+            spriteCodecs =
+                           [
                                new GorgonV3SpriteBinaryCodec(renderer),
                                new GorgonV3SpriteJsonCodec(renderer),
                                new GorgonV2SpriteCodec(renderer),
                                new GorgonV1SpriteBinaryCodec(renderer),
-                           };
+                           ];
         }
         else
         {
@@ -464,15 +464,15 @@ public static class Gorgon2DFileSystemExtensions
         if ((imageCodecs is null) || (!imageCodecs.Any()))
         {
             // If we don't specify any codecs, then use the built in ones.
-            imageCodecs = new IGorgonImageCodec[]
-                     {
+            imageCodecs =
+                     [
                          new GorgonCodecPng(),
                          new GorgonCodecBmp(),
                          new GorgonCodecDds(),
                          new GorgonCodecGif(),
                          new GorgonCodecJpeg(),
                          new GorgonCodecTga(),
-                     };
+                     ];
         }
         else
         {
@@ -483,11 +483,11 @@ public static class Gorgon2DFileSystemExtensions
         if ((spriteCodecs is null) || (!spriteCodecs.Any()))
         {
             // Use all built-in codecs if we haven't asked for any.
-            spriteCodecs = new IGorgonPolySpriteCodec[]
-                           {
+            spriteCodecs =
+                           [
                                new GorgonV3PolySpriteBinaryCodec(renderer),
                                new GorgonV3PolySpriteJsonCodec(renderer)
-                           };
+                           ];
         }
         else
         {
@@ -612,15 +612,15 @@ public static class Gorgon2DFileSystemExtensions
         if ((imageCodecs is null) || (!imageCodecs.Any()))
         {
             // If we don't specify any codecs, then use the built in ones.
-            imageCodecs = new IGorgonImageCodec[]
-                     {
+            imageCodecs =
+                     [
                          new GorgonCodecPng(),
                          new GorgonCodecBmp(),
                          new GorgonCodecDds(),
                          new GorgonCodecGif(),
                          new GorgonCodecJpeg(),
                          new GorgonCodecTga(),
-                     };
+                     ];
         }
         else
         {
@@ -631,14 +631,14 @@ public static class Gorgon2DFileSystemExtensions
         if ((animationCodecs is null) || (!animationCodecs.Any()))
         {
             // Use all built-in codecs if we haven't asked for any.
-            animationCodecs = new IGorgonAnimationCodec[]
-                           {
+            animationCodecs =
+                           [
                                new GorgonV31AnimationBinaryCodec(renderer),
                                new GorgonV31AnimationJsonCodec(renderer),
                                new GorgonV3AnimationBinaryCodec(renderer),
                                new GorgonV3AnimationJsonCodec(renderer),
                                new GorgonV1AnimationCodec(renderer)
-                           };
+                           ];
         }
         else
         {

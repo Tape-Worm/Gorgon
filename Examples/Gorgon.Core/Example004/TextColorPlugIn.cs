@@ -39,8 +39,12 @@ namespace Gorgon.Examples;
 /// In this example, we use the TextColorPlugIn to create our plug in interfaces which are implemented in our 
 /// plug in assemblies.
 /// </summary>	
-public abstract class TextColorPlugIn
-    : GorgonPlugIn
+/// <remarks>
+/// Initializes a new instance of the <see cref="TextColorPlugIn" /> class.
+/// </remarks>
+/// <param name="description">This is a friendly description for the plug in.</param>
+public abstract class TextColorPlugIn(string description)
+        : GorgonPlugIn(description)
 {
     #region Methods.
     /// <summary>
@@ -48,16 +52,8 @@ public abstract class TextColorPlugIn
     /// </summary>
     /// <returns>The text color writer specific to the plug in.</returns>
     public abstract TextColorWriter CreateWriter();
-    #endregion
 
+    #endregion
     #region Constructor/Destructor.
-    /// <summary>
-    /// Initializes a new instance of the <see cref="TextColorPlugIn" /> class.
-    /// </summary>
-    /// <param name="description">This is a friendly description for the plug in.</param>
-    protected TextColorPlugIn(string description)
-        : base(description)
-    {
-    }
     #endregion
 }

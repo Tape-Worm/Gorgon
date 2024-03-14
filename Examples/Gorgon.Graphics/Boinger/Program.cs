@@ -317,12 +317,12 @@ namespace Gorgon.Examples;
     {
         GorgonGraphics graphics = null;
         BufferFormat[] depthFormats =
-        {
+        [
             BufferFormat.D32_Float,
             BufferFormat.D32_Float_S8X24_UInt,
             BufferFormat.D24_UNorm_S8_UInt,
             BufferFormat.D16_UNorm
-        };
+        ];
 
         // Find out which devices we have installed in the system.
         IReadOnlyList<IGorgonVideoAdapterInfo> deviceList = GorgonGraphics.EnumerateAdapters();
@@ -551,8 +551,8 @@ namespace Gorgon.Examples;
             DX.Size2F textureSize = _texture.ToTexel(new DX.Size2(511, 511));
 
             // And here we set up the planes with a material, and initial positioning.
-            _planes = new[]
-                      {
+            _planes =
+                      [
                           new Plane(_graphics, _inputLayout, new Vector2(3.5f), new DX.RectangleF(0, 0, textureSize.Width, textureSize.Height))
                           {
                               Material = new Material
@@ -570,7 +570,7 @@ namespace Gorgon.Examples;
                               Position = new Vector3(0, -3.5f, 3.5f),
                               Rotation = new Vector3(90.0f, 0, 0)
                           }
-                      };
+                      ];
 
             // Create our sphere.
             // Again, here we're using texels to align the texture coordinates to the other image packed into the texture (atlasing).  

@@ -49,8 +49,10 @@ namespace Gorgon.Editor.PlugIns;
 /// Because these plug ins are independent, there is no interaction with the editor UI beyond providing information to display a button on the ribbon.
 /// </para>
 /// </remarks>
-public abstract class ToolPlugIn
-    : EditorPlugIn
+/// <remarks>Initializes a new instance of the <see cref="ToolPlugIn"/> class.</remarks>
+/// <param name="description">Optional description of the plugin.</param>
+public abstract class ToolPlugIn(string description)
+        : EditorPlugIn(description)
 {
     #region Variables.
     // Flag to indicate that the plugin is initialized.
@@ -229,16 +231,7 @@ public abstract class ToolPlugIn
 
         OnInitialize();
     }
-    #endregion
 
-    #region Constructor/Finalizer.
-    /// <summary>Initializes a new instance of the <see cref="ToolPlugIn"/> class.</summary>
-    /// <param name="description">Optional description of the plugin.</param>
-    protected ToolPlugIn(string description)
-        : base(description)
-    {
-
-    }
     #endregion
 
 }

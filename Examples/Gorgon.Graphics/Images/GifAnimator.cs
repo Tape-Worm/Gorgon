@@ -34,13 +34,18 @@ namespace Gorgon.Examples;
 /// <summary>
 /// Updates the animation frame index for a GIF.
 /// </summary>
-class GifAnimator
+/// <remarks>
+/// Initializes a new instance of the <see cref="GifAnimator"/> class.
+/// </remarks>
+/// <param name="syncContext">The synchronize context.</param>
+/// <exception cref="ArgumentNullException">Thrown when the <paramref name="syncContext"/> parameter is <b>null</b>.</exception>
+class GifAnimator(SynchronizationContext syncContext)
 {
     #region Variables.
     // The task that updates the frame index.
     private Task _animationTask;
     // The current sychronization context.
-    private readonly SynchronizationContext _syncContext;
+    private readonly SynchronizationContext _syncContext = syncContext ?? throw new ArgumentNullException(nameof(syncContext));
     // Cancellation support.
     private CancellationTokenSource _cancel;
     private int _currentFrame;
@@ -129,17 +134,7 @@ class GifAnimator
         _animationTask = null;
         _cancel = null;
     }
-    #endregion
 
-    #region Constructor/Finalizer.
-    /// <summary>
-    /// Initializes a new instance of the <see cref="GifAnimator"/> class.
-    /// </summary>
-    /// <param name="syncContext">The synchronize context.</param>
-    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="syncContext"/> parameter is <b>null</b>.</exception>
-    public GifAnimator(SynchronizationContext syncContext) =>
-        // We use this synchronization context to ensure that we fire the event on the main thread.
-        _syncContext = syncContext ?? throw new ArgumentNullException(nameof(syncContext));
     #endregion
 
 }

@@ -67,8 +67,12 @@ namespace Gorgon.Renderers;
 /// </remarks>
 /// <seealso cref="GorgonPolySpriteVertex"/>
 /// <seealso cref="GorgonPolySprite"/>
-public class GorgonPolySpriteBuilder
-    : IGorgonFluentBuilder<GorgonPolySpriteBuilder, GorgonPolySprite>, IEnumerable<GorgonPolySpriteVertex>, IGorgonGraphicsObject
+/// <remarks>
+/// Initializes a new instance of the <see cref="GorgonPolySpriteBuilder" /> class.
+/// </remarks>
+/// <param name="renderer">The renderer interface to use for building the polygon sprite.</param>
+public class GorgonPolySpriteBuilder(Gorgon2D renderer)
+        : IGorgonFluentBuilder<GorgonPolySpriteBuilder, GorgonPolySprite>, IEnumerable<GorgonPolySpriteVertex>, IGorgonGraphicsObject
 {
     #region Variables.
     // The working sprite.
@@ -89,7 +93,7 @@ public class GorgonPolySpriteBuilder
     public GorgonGraphics Graphics
     {
         get;
-    }
+    } = renderer?.Graphics ?? throw new ArgumentNullException(nameof(renderer));
     #endregion
 
     #region Methods.
@@ -101,7 +105,7 @@ public class GorgonPolySpriteBuilder
     private static void CopySprite(GorgonPolySprite dest, GorgonPolySprite src)
     {
         dest.RwVertices.Clear();
-        dest.RwIndices = Array.Empty<int>();
+        dest.RwIndices = [];
 
         for (int i = 0; i < src.RwVertices.Count; ++i)
         {
@@ -578,13 +582,8 @@ public class GorgonPolySpriteBuilder
     /// </summary>
     /// <returns>An <see cref="IEnumerator" /> object that can be used to iterate through the collection.</returns>
     IEnumerator IEnumerable.GetEnumerator() => ((IEnumerable)_workingSprite.RwVertices).GetEnumerator();
-    #endregion
 
+    #endregion
     #region Constructor.
-    /// <summary>
-    /// Initializes a new instance of the <see cref="GorgonPolySpriteBuilder" /> class.
-    /// </summary>
-    /// <param name="renderer">The renderer interface to use for building the polygon sprite.</param>
-    public GorgonPolySpriteBuilder(Gorgon2D renderer) => Graphics = renderer?.Graphics ?? throw new ArgumentNullException(nameof(renderer));
     #endregion
 }

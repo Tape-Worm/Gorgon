@@ -48,8 +48,13 @@ namespace Gorgon.Renderers;
 /// until all effects are processed. The final image is then output to a render target specified by the user.
 /// </para>
 /// </remarks>
-public class Gorgon2DCompositor
-    : IDisposable, IGorgonGraphicsObject, IReadOnlyList<IGorgon2DCompositorPass>
+/// <remarks>
+/// Initializes a new instance of the <see cref="Gorgon2DCompositor"/> class.
+/// </remarks>
+/// <param name="renderer">The renderer to use when rendering the effects.</param>
+/// <exception cref="ArgumentNullException">Thrown when the <paramref name="renderer"/> parameter is <b>null</b>.</exception>
+public class Gorgon2DCompositor(Gorgon2D renderer)
+        : IDisposable, IGorgonGraphicsObject, IReadOnlyList<IGorgon2DCompositorPass>
 {
     #region Variables.
     // The ping render target in the ping-pong target scheme.
@@ -61,7 +66,7 @@ public class Gorgon2DCompositor
     // The texture view for the pong target.
     private GorgonTexture2DView _pongTexture;
     // The ordered list where the actual passes are stored.
-    private readonly GorgonNamedObjectList<CompositionPass> _passes = new();
+    private readonly GorgonNamedObjectList<CompositionPass> _passes = [];
     // The unique list of effects
     private readonly Dictionary<string, int> _passLookup = new(StringComparer.OrdinalIgnoreCase);
     // The color used to clear the initial render target.
@@ -77,7 +82,7 @@ public class Gorgon2DCompositor
     public GorgonGraphics Graphics
     {
         get;
-    }
+    } = renderer.Graphics;
 
     /// <summary>
     /// Property to return the renderer to use when rendering the scene.
@@ -85,7 +90,7 @@ public class Gorgon2DCompositor
     public Gorgon2D Renderer
     {
         get;
-    }
+    } = renderer ?? throw new ArgumentNullException(nameof(renderer));
 
     /// <summary>
     /// Property to return the number of passes.
@@ -610,18 +615,6 @@ public class Gorgon2DCompositor
     /// <summary>Returns an enumerator that iterates through a collection.</summary>
     /// <returns>An <see cref="IEnumerator"/> object that can be used to iterate through the collection.</returns>
     IEnumerator IEnumerable.GetEnumerator() => ((IEnumerable)_passes).GetEnumerator();
-    #endregion
 
-    #region Constructor/Finalizer.
-    /// <summary>
-    /// Initializes a new instance of the <see cref="Gorgon2DCompositor"/> class.
-    /// </summary>
-    /// <param name="renderer">The renderer to use when rendering the effects.</param>
-    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="renderer"/> parameter is <b>null</b>.</exception>
-    public Gorgon2DCompositor(Gorgon2D renderer)
-    {
-        Renderer = renderer ?? throw new ArgumentNullException(nameof(renderer));
-        Graphics = renderer.Graphics;
-    }
     #endregion
 }

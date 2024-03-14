@@ -105,9 +105,9 @@ internal class GdiFontData
     {
         var result = new GdiFontData();
 
-        CharacterRange[] range = {
-                        new CharacterRange(0, 1)
-                    };
+        CharacterRange[] range = [
+                        new(0, 1)
+                    ];
 
         System.Drawing.FontStyle style = System.Drawing.FontStyle.Regular;
 

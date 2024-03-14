@@ -39,8 +39,12 @@ namespace Gorgon.Editor.SpriteEditor;
 /// <summary>
 /// The renderer used when updating a sprites colors.
 /// </summary>
-internal class ColorEditViewer
-    : SingleSpriteViewer
+/// <remarks>Initializes a new instance of the <see cref="ColorEditViewer"/> class.</remarks>
+/// <param name="renderer">The 2D renderer for the application.</param>
+/// <param name="swapChain">The swap chain for the render area.</param>
+/// <param name="dataContext">The sprite view model.</param>
+internal class ColorEditViewer(Gorgon2D renderer, GorgonSwapChain swapChain, ISpriteContent dataContext)
+        : SingleSpriteViewer(typeof(SpriteColorEdit).FullName, renderer, swapChain, dataContext)
 {
     #region Variables.
     // The handles for corner selection.
@@ -389,16 +393,6 @@ internal class ColorEditViewer
 
         DataContext.ColorEditor.PropertyChanged += ColorEditor_PropertyChanged;
     }
-    #endregion
 
-    #region Constructor/Finalizer.
-    /// <summary>Initializes a new instance of the <see cref="ColorEditViewer"/> class.</summary>
-    /// <param name="renderer">The 2D renderer for the application.</param>
-    /// <param name="swapChain">The swap chain for the render area.</param>
-    /// <param name="dataContext">The sprite view model.</param>
-    public ColorEditViewer(Gorgon2D renderer, GorgonSwapChain swapChain, ISpriteContent dataContext)
-        : base(typeof(SpriteColorEdit).FullName, renderer, swapChain, dataContext)
-    {
-    }
     #endregion
 }

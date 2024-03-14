@@ -251,7 +251,7 @@ public sealed class GorgonInputLayout
     private void UpdateVertexSize()
     {
         int size = 0;
-        _slotSizes = new Dictionary<int, int>();
+        _slotSizes = [];
 
         // ReSharper disable once ForCanBeConvertedToForeach
         for (int i = 0; i < _elements.Length; ++i)
@@ -836,7 +836,7 @@ public sealed class GorgonInputLayout
     /// <returns>A list of input elements that belong to the specified context and index (if supplied).</returns>
     public IReadOnlyList<GorgonInputElement> GetElementsByContext(string context, int? index = null)
     {
-        List<GorgonInputElement> elements = new();
+        List<GorgonInputElement> elements = [];
 
         for (int i = 0; i < Elements.Count; ++i)
         {
@@ -955,7 +955,7 @@ public sealed class GorgonInputLayout
             throw new ArgumentEmptyException(nameof(elements));
         }
 
-        _slotSizes = new Dictionary<int, int>();
+        _slotSizes = [];
 
         // Check for duplicated elements.
         for (int i = 0; i < _elements.Length; ++i)

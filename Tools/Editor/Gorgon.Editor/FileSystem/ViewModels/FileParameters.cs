@@ -34,8 +34,12 @@ namespace Gorgon.Editor.ViewModels;
 /// <summary>
 /// Parameters for the <see cref="IFile"/> view model.
 /// </summary>
-internal class FileParameters
-    : ViewModelCommonParameters
+/// <remarks>Initializes a new instance of the <see cref="FileParameters"/> class.</remarks>
+/// <param name="hostServices">The services from the host application.</param>
+/// <param name="factory">The view model factory used to create this view model.</param>
+/// <exception cref="ArgumentNullException">Thrown when any of the parameters are <b>null</b>.</exception>
+internal class FileParameters(IHostContentServices hostServices, ViewModelFactory factory)
+        : ViewModelCommonParameters(hostServices, factory)
 {
     #region Properties.
     /// <summary>
@@ -64,16 +68,6 @@ internal class FileParameters
         get;
         set;
     }
-    #endregion
 
-    #region Constructor/Finalizer.
-    /// <summary>Initializes a new instance of the <see cref="FileParameters"/> class.</summary>
-    /// <param name="hostServices">The services from the host application.</param>
-    /// <param name="factory">The view model factory used to create this view model.</param>
-    /// <exception cref="ArgumentNullException">Thrown when any of the parameters are <b>null</b>.</exception>
-    public FileParameters(IHostContentServices hostServices, ViewModelFactory factory)
-        : base(hostServices, factory)
-    {
-    }
     #endregion
 }

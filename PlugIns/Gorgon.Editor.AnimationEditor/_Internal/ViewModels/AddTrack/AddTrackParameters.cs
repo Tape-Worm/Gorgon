@@ -35,8 +35,12 @@ namespace Gorgon.Editor.AnimationEditor;
 /// <summary>
 /// The parameters for the <see cref="IAddTrack"/> view model.
 /// </summary>
-internal class AddTrackParameters
-    : HostedPanelViewModelParameters
+/// <remarks>Initializes a new instance of the <see cref="AddTrackParameters"/> class.</remarks>
+/// <param name="availableTracks">The list of available tracks.</param>
+/// <param name="hostServices">The application host services.</param>
+/// <exception cref="ArgumentNullException">Thrown when any of the parameters are <b>null</b>.</exception>
+internal class AddTrackParameters(ObservableCollection<GorgonTrackRegistration> availableTracks, IHostContentServices hostServices)
+        : HostedPanelViewModelParameters(hostServices)
 {
     /// <summary>
     /// Property to return the list of available tracks for an animation.
@@ -44,12 +48,5 @@ internal class AddTrackParameters
     public ObservableCollection<GorgonTrackRegistration> AvailableTracks
     {
         get;
-    }
-
-    /// <summary>Initializes a new instance of the <see cref="AddTrackParameters"/> class.</summary>
-    /// <param name="availableTracks">The list of available tracks.</param>
-    /// <param name="hostServices">The application host services.</param>
-    /// <exception cref="ArgumentNullException">Thrown when any of the parameters are <b>null</b>.</exception>
-    public AddTrackParameters(ObservableCollection<GorgonTrackRegistration> availableTracks, IHostContentServices hostServices)
-        : base(hostServices) => AvailableTracks = availableTracks ?? throw new ArgumentNullException(nameof(availableTracks));
+    } = availableTracks ?? throw new ArgumentNullException(nameof(availableTracks));
 }

@@ -49,5 +49,5 @@ internal class FileCopyJob
     public List<IGorgonVirtualFile> Files
     {
         get;
-    } = new List<IGorgonVirtualFile>();
+    } = [];
 }

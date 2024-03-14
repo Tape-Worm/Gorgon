@@ -42,8 +42,12 @@ namespace Gorgon.Editor.ImageSplitTool;
 /// <summary>
 /// The renderer used to draw the preview for the selected image.
 /// </summary>
-internal class Renderer
-        : DefaultToolRenderer<ISplit>
+/// <remarks>Initializes a new instance of the <see cref="Renderer"/> class.</remarks>
+/// <param name="renderer">The 2D renderer for the application.</param>
+/// <param name="swapChain">The swap chain bound to the window.</param>
+/// <param name="dataContext">The data context for the renderer.</param>
+internal class Renderer(Gorgon2D renderer, GorgonSwapChain swapChain, ISplit dataContext)
+                : DefaultToolRenderer<ISplit>("Preview Renderer", renderer, swapChain, dataContext)
     {
         #region Variables.
         // The image used for the preview.
@@ -222,17 +226,6 @@ internal class Renderer
                 UpdateRenderImage(DataContext.PreviewImage);
             }
         }
-        #endregion
 
-        #region Constructor/Finalizer.
-        /// <summary>Initializes a new instance of the <see cref="Renderer"/> class.</summary>
-        /// <param name="renderer">The 2D renderer for the application.</param>
-        /// <param name="swapChain">The swap chain bound to the window.</param>
-        /// <param name="dataContext">The data context for the renderer.</param>
-        public Renderer(Gorgon2D renderer, GorgonSwapChain swapChain, ISplit dataContext)
-            : base("Preview Renderer", renderer, swapChain, dataContext)
-        {
-
-        }
-        #endregion
-    }
+    #endregion
+}

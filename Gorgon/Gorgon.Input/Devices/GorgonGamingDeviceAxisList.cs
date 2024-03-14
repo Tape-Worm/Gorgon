@@ -42,9 +42,9 @@ public sealed class GorgonGamingDeviceAxisList<T>
 {
     #region Variables.
     // The list of available axes.
-    private readonly List<GamingDeviceAxis> _axisList = new();
+    private readonly List<GamingDeviceAxis> _axisList = [];
     // The list of information about each axis.
-    private readonly Dictionary<GamingDeviceAxis, T> _infoList = new();
+    private readonly Dictionary<GamingDeviceAxis, T> _infoList = [];
     #endregion
 
     #region Properties.

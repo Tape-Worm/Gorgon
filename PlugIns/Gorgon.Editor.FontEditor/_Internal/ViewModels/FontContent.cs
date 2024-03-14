@@ -395,7 +395,7 @@ internal class FontContent
     /// Panels the wait panel deactivated.
     /// </summary>
     /// <param name="sender">The sender.</param>
-    /// <param name="e">The <see cref="System.EventArgs"/> instance containing the event data.</param>
+    /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
     private void Panel_WaitPanelDeactivated(object sender, EventArgs e) => HideWaitPanel();
 
     /// <summary>

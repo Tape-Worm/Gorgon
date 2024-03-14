@@ -52,11 +52,11 @@ internal partial class FormRibbon
 {
     #region Variables.
     // The list of menu items associated with the zoom level.
-    private readonly Dictionary<ZoomLevels, ToolStripMenuItem> _menuItems = new();
+    private readonly Dictionary<ZoomLevels, ToolStripMenuItem> _menuItems = [];
     // The buttons on the ribbon.
-    private readonly List<WeakReference<KryptonRibbonGroupButton>> _ribbonButtons = new();
+    private readonly List<WeakReference<KryptonRibbonGroupButton>> _ribbonButtons = [];
     // The numeric controls on the ribbon.
-    private readonly List<WeakReference<KryptonRibbonGroupNumericUpDown>> _ribbonNumerics = new();
+    private readonly List<WeakReference<KryptonRibbonGroupNumericUpDown>> _ribbonNumerics = [];
     // A list of buttons mapped to the tool structure.
     private readonly Dictionary<string, WeakReference<KryptonRibbonGroupButton>> _toolButtons = new(StringComparer.OrdinalIgnoreCase);
     // The currently selected zoom level

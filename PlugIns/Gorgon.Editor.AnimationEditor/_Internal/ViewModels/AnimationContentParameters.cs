@@ -39,8 +39,34 @@ namespace Gorgon.Editor.AnimationEditor;
 /// <summary>
 /// Parameters for the <see cref="IAnimationContent"/> view model.
 /// </summary>
-internal class AnimationContentParameters
-    : ContentViewModelInjection
+/// <remarks>Initializes a new instance of the <see cref="AnimationContentParameters"/> class.</remarks>
+/// <param name="animationFile">The file containing the animation data.</param>
+/// <param name="animation">The animation to edit.</param>
+/// <param name="codec">The codec for saving the animation.</param>
+/// <param name="tracks">The track view models.</param>
+/// <param name="excludedTracks">The tracks that are not supported.</param>
+/// <param name="addTrackViewModel">The view model for the new track interface.</param>        
+/// <param name="animProperties">The view model for the animation properties.</param>
+/// <param name="keyEditor">The view model for the key editor context.</param>
+/// <param name="controller">The controller for the animation.</param>
+/// <param name="settings">The settings for the animation plug in.</param>
+/// <param name="fileManager">The file manager for content files.</param>
+/// <param name="contentServices">The services for the content plug in.</param>
+/// <param name="commonServices">The common services for the application.</param>
+/// <exception cref="ArgumentNullException">Thrown when any of the required parameters are <b>null</b>.</exception>
+internal class AnimationContentParameters(IContentFile animationFile,
+                                IGorgonAnimation animation,
+                                ObservableCollection<ITrack> tracks,
+                                IReadOnlyList<ITrack> excludedTracks,
+                                IAddTrack addTrackViewModel,
+                                IProperties animProperties,
+                                IKeyEditorContext keyEditor,
+                                GorgonSpriteAnimationController controller,
+                                ISettings settings,
+                                IContentFileManager fileManager,
+                                ContentServices contentServices,
+                                IHostContentServices commonServices)
+        : ContentViewModelInjection(fileManager, animationFile, commonServices)
 {
     /// <summary>
     /// Property to return the settings for the plug in.
@@ -48,7 +74,7 @@ internal class AnimationContentParameters
     public ISettings Settings
     {
         get;
-    }
+    } = settings ?? throw new ArgumentNullException(nameof(settings));
 
     /// <summary>
     /// Property to return the file containing the animation data.
@@ -56,7 +82,7 @@ internal class AnimationContentParameters
     public IContentFile AnimationFile
     {
         get;
-    }
+    } = animationFile ?? throw new ArgumentNullException(nameof(animationFile));
 
     /// <summary>
     /// Property to return the animation.
@@ -64,7 +90,7 @@ internal class AnimationContentParameters
     public IGorgonAnimation Animation
     {
         get;
-    }
+    } = animation ?? throw new ArgumentNullException(nameof(animation));
 
     /// <summary>
     /// Property to return the animation controller.
@@ -72,7 +98,7 @@ internal class AnimationContentParameters
     public GorgonSpriteAnimationController Controller
     {
         get;
-    }
+    } = controller ?? throw new ArgumentNullException(nameof(controller));
 
     /// <summary>
     /// Property to set or return the primary sprite animated by the animation.
@@ -89,7 +115,7 @@ internal class AnimationContentParameters
     public ContentServices ContentServices
     {
         get;
-    }
+    } = contentServices ?? throw new ArgumentNullException(nameof(contentServices));
 
     /// <summary>
     /// Property to return the track view models.
@@ -97,7 +123,7 @@ internal class AnimationContentParameters
     public ObservableCollection<ITrack> Tracks
     {
         get;
-    }
+    } = tracks ?? throw new ArgumentNullException(nameof(tracks));
 
     /// <summary>
     /// Property to return the list of tracks not supported by the editor.
@@ -105,7 +131,7 @@ internal class AnimationContentParameters
     public IReadOnlyList<ITrack> ExcludedTracks
     {
         get;
-    }
+    } = excludedTracks ?? throw new ArgumentNullException(nameof(excludedTracks));
 
     /// <summary>
     /// Property to return the add track view model.
@@ -113,7 +139,7 @@ internal class AnimationContentParameters
     public IAddTrack AddTrack
     {
         get;
-    }
+    } = addTrackViewModel ?? throw new ArgumentNullException(nameof(addTrackViewModel));
 
     /// <summary>
     /// Property to return the animation properties view model.
@@ -121,7 +147,7 @@ internal class AnimationContentParameters
     public IProperties Properties
     {
         get;
-    }
+    } = animProperties ?? throw new ArgumentNullException(nameof(animProperties));
 
     /// <summary>
     /// Property to return the key editor context view model.
@@ -129,7 +155,7 @@ internal class AnimationContentParameters
     public IKeyEditorContext KeyEditorContext
     {
         get;
-    }
+    } = keyEditor ?? throw new ArgumentNullException(nameof(keyEditor));
 
     /// <summary>
     /// Property to set or return the texture used for the background guide.
@@ -147,46 +173,5 @@ internal class AnimationContentParameters
     {
         get;
         set;
-    }
-
-    /// <summary>Initializes a new instance of the <see cref="AnimationContentParameters"/> class.</summary>
-    /// <param name="animationFile">The file containing the animation data.</param>
-    /// <param name="animation">The animation to edit.</param>
-    /// <param name="codec">The codec for saving the animation.</param>
-    /// <param name="tracks">The track view models.</param>
-    /// <param name="excludedTracks">The tracks that are not supported.</param>
-    /// <param name="addTrackViewModel">The view model for the new track interface.</param>        
-    /// <param name="animProperties">The view model for the animation properties.</param>
-    /// <param name="keyEditor">The view model for the key editor context.</param>
-    /// <param name="controller">The controller for the animation.</param>
-    /// <param name="settings">The settings for the animation plug in.</param>
-    /// <param name="fileManager">The file manager for content files.</param>
-    /// <param name="contentServices">The services for the content plug in.</param>
-    /// <param name="commonServices">The common services for the application.</param>
-    /// <exception cref="ArgumentNullException">Thrown when any of the required parameters are <b>null</b>.</exception>
-    public AnimationContentParameters(IContentFile animationFile,                                    
-                                    IGorgonAnimation animation,
-                                    ObservableCollection<ITrack> tracks,
-                                    IReadOnlyList<ITrack> excludedTracks,
-                                    IAddTrack addTrackViewModel,
-                                    IProperties animProperties,
-                                    IKeyEditorContext keyEditor,
-                                    GorgonSpriteAnimationController controller,
-                                    ISettings settings,
-                                    IContentFileManager fileManager, 
-                                    ContentServices contentServices,
-                                    IHostContentServices commonServices)
-        : base(fileManager, animationFile, commonServices)
-    {
-        AnimationFile = animationFile ?? throw new ArgumentNullException(nameof(animationFile));
-        Animation = animation ?? throw new ArgumentNullException(nameof(animation));
-        Settings = settings ?? throw new ArgumentNullException(nameof(settings));
-        Tracks = tracks ?? throw new ArgumentNullException(nameof(tracks));
-        ExcludedTracks = excludedTracks ?? throw new ArgumentNullException(nameof(excludedTracks));
-        Controller = controller ?? throw new ArgumentNullException(nameof(controller));
-        ContentServices = contentServices ?? throw new ArgumentNullException(nameof(contentServices));
-        AddTrack = addTrackViewModel ?? throw new ArgumentNullException(nameof(addTrackViewModel));
-        Properties = animProperties ?? throw new ArgumentNullException(nameof(animProperties));
-        KeyEditorContext = keyEditor ?? throw new ArgumentNullException(nameof(keyEditor));
     }
 }

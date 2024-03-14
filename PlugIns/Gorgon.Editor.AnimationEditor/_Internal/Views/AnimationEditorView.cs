@@ -53,7 +53,7 @@ internal partial class AnimationEditorView
     // The form for the ribbon.
     private readonly FormRibbon _ribbonForm;
     // The list of tracks in the animation.
-    private readonly List<ITrack> _tracks = new();
+    private readonly List<ITrack> _tracks = [];
     // The loader used to load sprites into the animation.
     private ISpriteLoader _spriteLoader;
     // The marching ants interface.

@@ -61,8 +61,10 @@ namespace Gorgon.Renderers;
 /// <seealso cref="GorgonTexture1DView"/>
 /// <seealso cref="LookupTexture"/>
 /// <seealso cref="FullScreen"/>
-public class Gorgon2DChromaticAberrationEffect
-    : Gorgon2DEffect, IGorgon2DCompositorEffect
+/// <remarks>Initializes a new instance of the <see cref="Gorgon2DChromaticAberrationEffect"/> class.</remarks>
+/// <param name="renderer">The 2D renderer used to render the effect.</param>
+public class Gorgon2DChromaticAberrationEffect(Gorgon2D renderer)
+        : Gorgon2DEffect(renderer, Resources.GOR2D_EFFECT_CHROMATIC_ABBERATION, Resources.GOR2D_EFFECT_CHROMATIC_ABBERATION_DESC, 1), IGorgon2DCompositorEffect
 {
     #region Variables.
     // The default texture to use for look up.
@@ -274,14 +276,6 @@ public class Gorgon2DChromaticAberrationEffect
         EndPass(0, output);
         EndRender(output);
     }
-    #endregion
 
-    #region Constructor/Finalizer.
-    /// <summary>Initializes a new instance of the <see cref="Gorgon2DChromaticAberrationEffect"/> class.</summary>
-    /// <param name="renderer">The 2D renderer used to render the effect.</param>
-    public Gorgon2DChromaticAberrationEffect(Gorgon2D renderer)
-        : base(renderer, Resources.GOR2D_EFFECT_CHROMATIC_ABBERATION, Resources.GOR2D_EFFECT_CHROMATIC_ABBERATION_DESC, 1)
-    {
-    }
     #endregion
 }

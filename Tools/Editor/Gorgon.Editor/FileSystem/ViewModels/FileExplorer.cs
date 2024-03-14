@@ -156,7 +156,7 @@ internal class FileExplorer
     // The application settings.
     private Editor.EditorSettings _settings;
     // The list of selected files.
-    private ObservableCollection<IFile> _selectedFiles = new();
+    private ObservableCollection<IFile> _selectedFiles = [];
     // The clipboard handler.
     private IClipboardHandler _clipboardHandler;
     // Timer used to determine how long it takes to update UI.
@@ -2226,7 +2226,7 @@ internal class FileExplorer
         string currentFile = string.Empty;
 
         var cancelSource = new CancellationTokenSource();
-        IReadOnlyList<(IGorgonVirtualFile src, IGorgonVirtualFile dest)> copiedFiles = Array.Empty<(IGorgonVirtualFile src, IGorgonVirtualFile dest)>();
+        IReadOnlyList<(IGorgonVirtualFile src, IGorgonVirtualFile dest)> copiedFiles = [];
 
         // Progress reporting.
         void ProgressCallback(string path, double percent)
@@ -2351,8 +2351,8 @@ internal class FileExplorer
     private async Task DoCopyDirectoryAsync(IDirectoryCopyMoveData copyData)
     {
         var cancelSource = new CancellationTokenSource();
-        IReadOnlyList<(IGorgonVirtualDirectory src, IGorgonVirtualDirectory dest)> copiedDirs = Array.Empty<(IGorgonVirtualDirectory src, IGorgonVirtualDirectory dest)>();
-        IReadOnlyList<(IGorgonVirtualFile src, IGorgonVirtualFile dest)> copiedFiles = Array.Empty<(IGorgonVirtualFile src, IGorgonVirtualFile dest)>();
+        IReadOnlyList<(IGorgonVirtualDirectory src, IGorgonVirtualDirectory dest)> copiedDirs = [];
+        IReadOnlyList<(IGorgonVirtualFile src, IGorgonVirtualFile dest)> copiedFiles = [];
 
         // Progress reporting.
         void ProgressCallback(string path, double percent)
@@ -2681,8 +2681,8 @@ internal class FileExplorer
     private async Task DoImportAsync(IImportData args)
     {
         var cancelSource = new CancellationTokenSource();
-        IReadOnlyList<IGorgonVirtualDirectory> copiedDirs = Array.Empty<IGorgonVirtualDirectory>();
-        IReadOnlyList<IGorgonVirtualFile> copiedFiles = Array.Empty<IGorgonVirtualFile>();
+        IReadOnlyList<IGorgonVirtualDirectory> copiedDirs = [];
+        IReadOnlyList<IGorgonVirtualFile> copiedFiles = [];
         var importers = new HashSet<IEditorContentImporter>();
         var importedFilePaths = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 
@@ -3490,7 +3490,7 @@ internal class FileExplorer
     /// Function to retrieve a list of the file paths that are selected on the file system.
     /// </summary>
     /// <returns>The list of selected file paths.</returns>
-    IReadOnlyList<string> IContentFileManager.GetSelectedFiles() => SelectedFiles?.Select(item => item.FullPath).ToArray() ?? Array.Empty<string>();
+    IReadOnlyList<string> IContentFileManager.GetSelectedFiles() => SelectedFiles?.Select(item => item.FullPath).ToArray() ?? [];
 
     /// <summary>
     /// Function to notify the application that the metadata for the file system should be flushed back to the disk.

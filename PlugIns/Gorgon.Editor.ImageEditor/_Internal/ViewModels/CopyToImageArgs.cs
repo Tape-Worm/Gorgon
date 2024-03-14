@@ -32,8 +32,11 @@ namespace Gorgon.Editor.ImageEditor.ViewModels;
 /// <summary>
 /// Arguments for the <see cref="IImageContent.CopyToImage"/> command.
 /// </summary>
-internal class CopyToImageArgs
-    : CancelEventArgs
+/// <remarks>Initializes a new instance of the <see cref="CopyToImageArgs"/> class.</remarks>
+/// <param name="filePaths">The file paths.</param>
+/// <param name="thumbnailDpi">The thumbnail dpi.</param>
+internal class CopyToImageArgs(IReadOnlyList<string> filePaths, float thumbnailDpi)
+        : CancelEventArgs
 {
     /// <summary>
     /// Property to return the paths to the files being copied into the image.
@@ -41,7 +44,7 @@ internal class CopyToImageArgs
     public IReadOnlyList<string> ContentFilePaths
     {
         get;
-    }
+    } = filePaths;
 
     /// <summary>
     /// Property to return the DPI for the thumbnails to use when displaying in the image picker.
@@ -49,14 +52,5 @@ internal class CopyToImageArgs
     public float ThumbnailDpi
     {
         get;
-    }
-
-    /// <summary>Initializes a new instance of the <see cref="CopyToImageArgs"/> class.</summary>
-    /// <param name="filePaths">The file paths.</param>
-    /// <param name="thumbnailDpi">The thumbnail dpi.</param>
-    public CopyToImageArgs(IReadOnlyList<string> filePaths, float thumbnailDpi)
-    {
-        ContentFilePaths = filePaths;
-        ThumbnailDpi = thumbnailDpi;
-    }
+    } = thumbnailDpi;
 }

@@ -42,14 +42,19 @@ namespace Gorgon.Editor.SpriteEditor;
 /// <summary>
 /// A renderer used to render the current sprite for editing the anchor point.
 /// </summary>
-internal class AnchorEditViewer
-    : SingleSpriteViewer
+/// <remarks>Initializes a new instance of the <see cref="AnchorEditViewer"/> class.</remarks>
+/// <param name="dataContext">The sprite view model.</param>        
+/// <param name="swapChain">The swap chain for the render area.</param>
+/// <param name="renderer">The 2D renderer for the application.</param>
+/// <param name="anchorService">The service used to modify the anchor.</param>
+internal class AnchorEditViewer(Gorgon2D renderer, GorgonSwapChain swapChain, ISpriteContent dataContext, IAnchorEditService anchorService)
+        : SingleSpriteViewer(typeof(SpriteAnchorEdit).FullName, renderer, swapChain, dataContext)
 {
     #region Variables.
     // The service used for modifying the anchor.
-    private readonly IAnchorEditService _anchorService;
+    private readonly IAnchorEditService _anchorService = anchorService;
     // The controller for our animations.
-    private readonly GorgonSpriteAnimationController _controller;
+    private readonly GorgonSpriteAnimationController _controller = new();
     // The scaling/rotation animation.
     private IGorgonAnimation _scaleRotateAnim;
     #endregion
@@ -261,19 +266,6 @@ internal class AnchorEditViewer
         DataContext.AnchorEditor.PropertyChanged -= AnchorEditor_PropertyChanged;
         base.OnUnload();
     }
-    #endregion
 
-    #region Constructor/Finalizer.
-    /// <summary>Initializes a new instance of the <see cref="AnchorEditViewer"/> class.</summary>
-    /// <param name="dataContext">The sprite view model.</param>        
-    /// <param name="swapChain">The swap chain for the render area.</param>
-    /// <param name="renderer">The 2D renderer for the application.</param>
-    /// <param name="anchorService">The service used to modify the anchor.</param>
-    public AnchorEditViewer(Gorgon2D renderer, GorgonSwapChain swapChain, ISpriteContent dataContext, IAnchorEditService anchorService)
-        : base(typeof(SpriteAnchorEdit).FullName, renderer, swapChain, dataContext)
-    {            
-        _anchorService = anchorService;
-        _controller = new GorgonSpriteAnimationController();          
-    }
     #endregion
 }

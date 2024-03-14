@@ -44,8 +44,15 @@ namespace Gorgon.Graphics.Core;
 /// <seealso cref="GorgonSwapChain"/>
 /// <seealso cref="GorgonTexture2D"/>
 /// <seealso cref="GorgonTexture3D"/>
-public abstract class GorgonRenderTargetView
-        : GorgonResourceView
+/// <remarks>
+/// Initializes a new instance of the <see cref="GorgonRenderTarget2DView"/> class.
+/// </remarks>
+/// <param name="resource">The resource to bind.</param>
+/// <param name="format">The format of the render target view.</param>
+/// <param name="formatInfo">Information about the format.</param>
+/// <exception cref="ArgumentNullException">Thrown when the <paramref name="resource"/>, or the <paramref name="formatInfo"/> parameter is <b>null</b>.</exception>
+public abstract class GorgonRenderTargetView(GorgonGraphicsResource resource, BufferFormat format, GorgonFormatInfo formatInfo)
+                : GorgonResourceView(resource)
     {
         #region Properties.
         /// <summary>
@@ -65,26 +72,26 @@ public abstract class GorgonRenderTargetView
             get;
         }
 
-        /// <summary>
-        /// Property to return the format used to interpret this view.
-        /// </summary>
-        public BufferFormat Format
-        {
-            get;
-        }
+    /// <summary>
+    /// Property to return the format used to interpret this view.
+    /// </summary>
+    public BufferFormat Format
+    {
+        get;
+    } = format;
 
-        /// <summary>
-        /// Property to return information about the <see cref="Format"/> used by this view.
-        /// </summary>
-        public GorgonFormatInfo FormatInformation
-        {
-            get;
-        }
+    /// <summary>
+    /// Property to return information about the <see cref="Format"/> used by this view.
+    /// </summary>
+    public GorgonFormatInfo FormatInformation
+    {
+        get;
+    } = formatInfo ?? throw new ArgumentNullException(nameof(formatInfo));
 
-        /// <summary>
-        /// Property to return the width of the render target view.
-        /// </summary>
-        public abstract int Width
+    /// <summary>
+    /// Property to return the width of the render target view.
+    /// </summary>
+    public abstract int Width
         {
             get;
         }
@@ -118,21 +125,8 @@ public abstract class GorgonRenderTargetView
                 ++stats._clearCount;
             }
         }
-        #endregion
 
-        #region Constructor/Destructor.
-        /// <summary>
-        /// Initializes a new instance of the <see cref="GorgonRenderTarget2DView"/> class.
-        /// </summary>
-        /// <param name="resource">The resource to bind.</param>
-        /// <param name="format">The format of the render target view.</param>
-        /// <param name="formatInfo">Information about the format.</param>
-        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="resource"/>, or the <paramref name="formatInfo"/> parameter is <b>null</b>.</exception>
-        protected GorgonRenderTargetView(GorgonGraphicsResource resource, BufferFormat format, GorgonFormatInfo formatInfo)
-            : base(resource)
-        {
-            FormatInformation = formatInfo ?? throw new ArgumentNullException(nameof(formatInfo));
-            Format = format;
-        }
-        #endregion
-    }
+    #endregion
+    #region Constructor/Destructor.
+    #endregion
+}

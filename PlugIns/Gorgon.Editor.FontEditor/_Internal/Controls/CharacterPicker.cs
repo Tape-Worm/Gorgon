@@ -201,15 +201,15 @@ public partial class CharacterPicker
                 }
             }
         }
-        #endregion
+    #endregion
 
-        #region Methods.
-        /// <summary>
-        /// Handles the Click event of the buttonSelectAll control.
-        /// </summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="System.EventArgs"/> instance containing the event data.</param>
-        private void ButtonSelectAll_Click(object sender, EventArgs e)
+    #region Methods.
+    /// <summary>
+    /// Handles the Click event of the buttonSelectAll control.
+    /// </summary>
+    /// <param name="sender">The source of the event.</param>
+    /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+    private void ButtonSelectAll_Click(object sender, EventArgs e)
         {
             try
             {
@@ -243,12 +243,12 @@ public partial class CharacterPicker
             }
         }
 
-        /// <summary>
-        /// Handles the SelectedIndexChanged event of the listRanges control.
-        /// </summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="System.EventArgs"/> instance containing the event data.</param>
-        private void ListCharacterRanges_SelectedIndexChanged(object sender, EventArgs e)
+    /// <summary>
+    /// Handles the SelectedIndexChanged event of the listRanges control.
+    /// </summary>
+    /// <param name="sender">The source of the event.</param>
+    /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+    private void ListCharacterRanges_SelectedIndexChanged(object sender, EventArgs e)
         {
             try
             {
@@ -280,23 +280,23 @@ public partial class CharacterPicker
             ButtonSelectAll.Enabled = ListCharacterRanges.SelectedItems.Count > 0;
         }
 
-        /// <summary>
-        /// Handles the Scroll event of the scrollVertical control.
-        /// </summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="System.Windows.Forms.ScrollEventArgs"/> instance containing the event data.</param>
-        private void ScrollVertical_Scroll(object sender, ScrollEventArgs e)
+    /// <summary>
+    /// Handles the Scroll event of the scrollVertical control.
+    /// </summary>
+    /// <param name="sender">The source of the event.</param>
+    /// <param name="e">The <see cref="ScrollEventArgs"/> instance containing the event data.</param>
+    private void ScrollVertical_Scroll(object sender, ScrollEventArgs e)
         {
             _page = ScrollVertical.Value * 8;
             GetCharacterSets();
         }
 
-        /// <summary>
-        /// Handles the MouseEnter event of the fontControl control.
-        /// </summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="System.EventArgs"/> instance containing the event data.</param>
-        private void FontControl_MouseEnter(object sender, EventArgs e)
+    /// <summary>
+    /// Handles the MouseEnter event of the fontControl control.
+    /// </summary>
+    /// <param name="sender">The source of the event.</param>
+    /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+    private void FontControl_MouseEnter(object sender, EventArgs e)
         {
             var check = (CheckBox)sender;
 
@@ -310,12 +310,12 @@ public partial class CharacterPicker
             TipChar.SetToolTip(check, $"U+0x{Convert.ToUInt16(check.Text[0]).FormatHex()} ({Convert.ToUInt16(check.Text[0])}, {name})");
         }
 
-        /// <summary>
-        /// Handles the CheckedChanged event of the fontControl control.
-        /// </summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="System.EventArgs"/> instance containing the event data.</param>
-        private void FontControl_CheckedChanged(object sender, EventArgs e)
+    /// <summary>
+    /// Handles the CheckedChanged event of the fontControl control.
+    /// </summary>
+    /// <param name="sender">The source of the event.</param>
+    /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+    private void FontControl_CheckedChanged(object sender, EventArgs e)
         {
             string chars = TextSelectedCharacters.Text;     // Characters.
 
@@ -373,12 +373,12 @@ public partial class CharacterPicker
             }
         }
 
-        /// <summary>
-        /// Handles the KeyDown event of the textCharacters control.
-        /// </summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="System.Windows.Forms.KeyEventArgs"/> instance containing the event data.</param>
-        private void TextCharacters_KeyDown(object sender, KeyEventArgs e)
+    /// <summary>
+    /// Handles the KeyDown event of the textCharacters control.
+    /// </summary>
+    /// <param name="sender">The source of the event.</param>
+    /// <param name="e">The <see cref="KeyEventArgs"/> instance containing the event data.</param>
+    private void TextCharacters_KeyDown(object sender, KeyEventArgs e)
         {
             if ((TextSelectedCharacters.Text != string.Empty) && (e.KeyCode == Keys.Enter))
             {
@@ -388,12 +388,12 @@ public partial class CharacterPicker
             ValidateButtons();
         }
 
-        /// <summary>
-        /// Handles the Leave event of the textCharacters control.
-        /// </summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="System.EventArgs"/> instance containing the event data.</param>
-        private void TextCharacters_Leave(object sender, EventArgs e)
+    /// <summary>
+    /// Handles the Leave event of the textCharacters control.
+    /// </summary>
+    /// <param name="sender">The source of the event.</param>
+    /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+    private void TextCharacters_Leave(object sender, EventArgs e)
         {
             if (TextSelectedCharacters.Text == string.Empty)
             {
@@ -424,12 +424,12 @@ public partial class CharacterPicker
         /// <param name="e">The <see cref="EventArgs" /> instance containing the event data.</param>
         private void ButtonCancel_Click(object sender, EventArgs e) => _cancelClickedEvent?.Invoke(this, EventArgs.Empty);
 
-        /// <summary>
-        /// Handles the Click event of the buttonOK control.
-        /// </summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="System.EventArgs"/> instance containing the event data.</param>
-        private void ButtonOK_Click(object sender, EventArgs e)
+    /// <summary>
+    /// Handles the Click event of the buttonOK control.
+    /// </summary>
+    /// <param name="sender">The source of the event.</param>
+    /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+    private void ButtonOK_Click(object sender, EventArgs e)
         {
             UpdateCharacters();
             _okClickedEvent?.Invoke(this, EventArgs.Empty);

@@ -36,8 +36,10 @@ namespace Gorgon.Examples;
 /// <summary>
 /// An entity for a sprite layer.
 /// </summary>
-public class SpriteEntity
-    : GorgonNamedObject
+/// <remarks>Initializes a new instance of the <see cref="SpriteEntity"/> class.</remarks>
+/// <param name="name">The name of this object.</param>
+public class SpriteEntity(string name)
+        : GorgonNamedObject(name)
 {
     #region Properties.
     /// <summary>
@@ -144,14 +146,8 @@ public class SpriteEntity
         get;
         set;
     } = true;
-    #endregion
 
+    #endregion
     #region Constructor
-    /// <summary>Initializes a new instance of the <see cref="SpriteEntity"/> class.</summary>
-    /// <param name="name">The name of this object.</param>
-    public SpriteEntity(string name)
-        : base(name)
-    {
-    }
     #endregion
 }

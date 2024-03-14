@@ -38,8 +38,14 @@ namespace Gorgon.Editor.TextureAtlasTool;
 /// <summary>
 /// The parameters for the <see cref="ISpriteFiles"/> view model.
 /// </summary>
-internal class SpriteFilesParameters
-    : ViewModelInjection<IHostContentServices>
+/// <remarks>Initializes a new instance of the <see cref="SpriteFilesParameters"/> class.</remarks>
+/// <param name="entries">The file system sprite entries.</param>
+/// <param name="tempFileSystem">The temporary file system used to write temporary data.</param>
+/// <param name="searchService">The search service used to search through the sprite entries.</param>        
+/// <param name="hostServices">The services from the host application.</param>
+/// <exception cref="ArgumentNullException">Thrown when any of the parameters are <b>null</b>.</exception>
+internal class SpriteFilesParameters(IReadOnlyList<ContentFileExplorerDirectoryEntry> entries, IGorgonFileSystemWriter<Stream> tempFileSystem, ISearchService<IContentFileExplorerSearchEntry> searchService, IHostContentServices hostServices)
+        : ViewModelInjection<IHostContentServices>(hostServices)
 {
     /// <summary>
     /// Property to reeturn the service to search through the content files.
@@ -47,7 +53,7 @@ internal class SpriteFilesParameters
     public ISearchService<IContentFileExplorerSearchEntry> SearchService
     {
         get;
-    }
+    } = searchService ?? throw new ArgumentNullException(nameof(searchService));
 
     /// <summary>
     /// Property to return the entries for the file system.
@@ -55,7 +61,7 @@ internal class SpriteFilesParameters
     public IReadOnlyList<ContentFileExplorerDirectoryEntry> Entries
     {
         get;
-    }
+    } = entries ?? throw new ArgumentNullException(nameof(entries));
 
     /// <summary>
     /// Property to return the temporary file system used to write data.
@@ -63,19 +69,5 @@ internal class SpriteFilesParameters
     public IGorgonFileSystemWriter<Stream> TempFileSystem
     {
         get;
-    }
-
-    /// <summary>Initializes a new instance of the <see cref="SpriteFilesParameters"/> class.</summary>
-    /// <param name="entries">The file system sprite entries.</param>
-    /// <param name="tempFileSystem">The temporary file system used to write temporary data.</param>
-    /// <param name="searchService">The search service used to search through the sprite entries.</param>        
-    /// <param name="hostServices">The services from the host application.</param>
-    /// <exception cref="ArgumentNullException">Thrown when any of the parameters are <b>null</b>.</exception>
-    public SpriteFilesParameters(IReadOnlyList<ContentFileExplorerDirectoryEntry> entries, IGorgonFileSystemWriter<Stream> tempFileSystem, ISearchService<IContentFileExplorerSearchEntry> searchService, IHostContentServices hostServices)
-        : base(hostServices)
-    {
-        Entries = entries ?? throw new ArgumentNullException(nameof(entries));
-        SearchService = searchService ?? throw new ArgumentNullException(nameof(searchService));
-        TempFileSystem = tempFileSystem ?? throw new ArgumentNullException(nameof(tempFileSystem));
-    }
+    } = tempFileSystem ?? throw new ArgumentNullException(nameof(tempFileSystem));
 }

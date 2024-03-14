@@ -154,7 +154,7 @@ public class ContentFileExplorerDirectoryEntry
             throw new ArgumentEmptyException(nameof(fullPath));
         }
 
-        Files = files ?? Array.Empty<ContentFileExplorerFileEntry>();
+        Files = files ?? [];
         FullPath = fullPath.FormatDirectory('/');
         Name = FullPath;
     }

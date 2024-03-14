@@ -25,42 +25,21 @@
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
     <AssemblyVersion>3.2.0.0</AssemblyVersion>
     <FileVersion>3.2.0.0</FileVersion>
-    <LangVersion>10</LangVersion>
     <SignAssembly>false</SignAssembly>
     <AssemblyOriginatorKeyFile>
     </AssemblyOriginatorKeyFile>
     <DelaySign>false</DelaySign>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <PlatformTarget>AnyCPU</PlatformTarget>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <DebugType>full</DebugType>
     <DebugSymbols>true</DebugSymbols>
     <PlatformTarget>AnyCPU</PlatformTarget>
   </PropertyGroup>
-  <ItemGroup>
-    <Compile Remove="2. Views\**" />
-    <Compile Remove="2.1. Ribbon\**" />
-    <Compile Remove="2.2 Renderers\**" />
-    <Compile Remove="3.1. Services\**" />
-    <Compile Remove="4. Settings\**" />
-    <Compile Remove="_Internal\2.2 Renderers\**" />
-    <EmbeddedResource Remove="2. Views\**" />
-    <EmbeddedResource Remove="2.1. Ribbon\**" />
-    <EmbeddedResource Remove="2.2 Renderers\**" />
-    <EmbeddedResource Remove="3.1. Services\**" />
-    <EmbeddedResource Remove="4. Settings\**" />
-    <EmbeddedResource Remove="_Internal\2.2 Renderers\**" />
-    <None Remove="2. Views\**" />
-    <None Remove="2.1. Ribbon\**" />
-    <None Remove="2.2 Renderers\**" />
-    <None Remove="3.1. Services\**" />
-    <None Remove="4. Settings\**" />
-    <None Remove="_Internal\2.2 Renderers\**" />
-  </ItemGroup>
   <ItemGroup>
     <Compile Remove="_Internal\ViewModels\TextContent.cs" />
   </ItemGroup>

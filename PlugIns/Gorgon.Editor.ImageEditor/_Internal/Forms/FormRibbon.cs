@@ -54,7 +54,7 @@ internal partial class FormRibbon
 {
     #region Variables.
     // The list of menu items associated with the zoom level.
-    private readonly Dictionary<ZoomLevels, ToolStripMenuItem> _menuItems = new();
+    private readonly Dictionary<ZoomLevels, ToolStripMenuItem> _menuItems = [];
     // The current zoom level.
     private ZoomLevels _zoomLevel = ZoomLevels.ToWindow;
     // The renderer for the content.

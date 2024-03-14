@@ -88,7 +88,7 @@ internal class EditorSettings
     {
         get;
         private set;
-    } = new List<RecentItem>();
+    } = [];
 
     /// <summary>
     /// Property to set or return the flag to indicate that the file explorer is visible.

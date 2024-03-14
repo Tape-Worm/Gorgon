@@ -37,8 +37,12 @@ namespace Gorgon.Editor.ImageEditor;
 /// <summary>
 /// A renderer used to display 2D texture content.
 /// </summary>
-internal class Texture2DViewer
-    : TextureViewer
+/// <remarks>Initializes a new instance of the <see cref="Texture2DViewer"/> class.</remarks>
+/// <param name="renderer">The main renderer for the content view.</param>
+/// <param name="swapChain">The swap chain for the content view.</param>
+/// <param name="dataContext">The view model to assign to the renderer.</param>
+internal class Texture2DViewer(Gorgon2D renderer, GorgonSwapChain swapChain, IImageContent dataContext)
+        : TextureViewer(ImageType.Image2D.ToString(), "Gorgon2DTextureArrayView", 0, renderer, swapChain, dataContext)
 {
     #region Variables.
     // The texture view.
@@ -104,17 +108,6 @@ internal class Texture2DViewer
                                     textureSampler: GorgonSamplerState.PointFiltering);
         Renderer.End();
     }
-    #endregion
 
-    #region Constructor/Finalizer.
-    /// <summary>Initializes a new instance of the <see cref="Texture2DViewer"/> class.</summary>
-    /// <param name="renderer">The main renderer for the content view.</param>
-    /// <param name="swapChain">The swap chain for the content view.</param>
-    /// <param name="dataContext">The view model to assign to the renderer.</param>
-    public Texture2DViewer(Gorgon2D renderer, GorgonSwapChain swapChain, IImageContent dataContext)
-        : base(ImageType.Image2D.ToString(), "Gorgon2DTextureArrayView", 0, renderer, swapChain, dataContext)
-    {
-
-    }
     #endregion
 }

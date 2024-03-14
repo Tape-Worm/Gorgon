@@ -33,8 +33,12 @@ namespace Gorgon.Editor.SpriteEditor;
 /// <summary>
 /// The parameters to pass to the <see cref="IEditorPlugInSettings"/> view model.
 /// </summary>
-internal class SettingsParameters
-    : ViewModelInjection<IHostContentServices>
+/// <remarks>Initializes a new instance of the <see cref="SettingsParameters"/> class.</remarks>
+/// <param name="settings">The plug in settings.</param>
+/// <param name="hostServices">Common application services.</param>
+/// <exception cref="ArgumentNullException">Thrown when the <paramref name="settings" /> parameter is <strong>null</strong>.</exception>
+internal class SettingsParameters(SpriteEditorSettings settings, IHostContentServices hostServices)
+        : ViewModelInjection<IHostContentServices>(hostServices)
 {
     #region Properties.
     /// <summary>
@@ -43,15 +47,7 @@ internal class SettingsParameters
     public SpriteEditorSettings Settings
     {
         get;
-    }
-    #endregion
+    } = settings ?? throw new ArgumentNullException(nameof(settings));
 
-    #region Constructor/Finalizer.
-    /// <summary>Initializes a new instance of the <see cref="SettingsParameters"/> class.</summary>
-    /// <param name="settings">The plug in settings.</param>
-    /// <param name="hostServices">Common application services.</param>
-    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="settings" /> parameter is <strong>null</strong>.</exception>
-    public SettingsParameters(SpriteEditorSettings settings, IHostContentServices hostServices)
-        : base(hostServices) => Settings = settings ?? throw new ArgumentNullException(nameof(settings));
     #endregion
 }

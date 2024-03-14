@@ -46,7 +46,7 @@ internal class DataGridViewEx
     // Pass through event arguments.
     private MouseEventArgs _passThruEventArgs;
     // The list of rows for dragging.
-    private readonly List<DataGridViewRow> _dragRows = new();
+    private readonly List<DataGridViewRow> _dragRows = [];
     #endregion
 
     #region Events.

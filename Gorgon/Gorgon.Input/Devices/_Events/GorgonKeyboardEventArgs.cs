@@ -32,8 +32,14 @@ namespace Gorgon.Input;
 /// <summary>
 /// Event arguments for the various events triggered on the <see cref="GorgonRawKeyboard"/> interface.
 /// </summary>
-public class GorgonKeyboardEventArgs
-    : EventArgs
+/// <remarks>
+/// Initializes a new instance of the <see cref="GorgonKeyboardEventArgs"/> class.
+/// </remarks>
+/// <param name="key">Key that is pressed.</param>
+/// <param name="modifierKey">Keys that are held down during the event.</param>
+/// <param name="scanData">Scan code data.</param>
+public class GorgonKeyboardEventArgs(Keys key, Keys modifierKey, int scanData)
+        : EventArgs
 {
     #region Properties.
     /// <summary>
@@ -42,7 +48,7 @@ public class GorgonKeyboardEventArgs
     public Keys Key
     {
         get;
-    }
+    } = key;
 
     /// <summary>
     /// Property to return the keys that are being held down during the event.
@@ -50,7 +56,7 @@ public class GorgonKeyboardEventArgs
     public Keys ModifierKeys
     {
         get;
-    }
+    } = modifierKey;
 
     /// <summary>
     /// Property to return if ALT is pressed or not.
@@ -73,22 +79,8 @@ public class GorgonKeyboardEventArgs
     public int ScanCodeData
     {
         get;
-    }
-    #endregion
+    } = scanData;
 
-    #region Constructor/Finalizer.
-    /// <summary>
-    /// Initializes a new instance of the <see cref="GorgonKeyboardEventArgs"/> class.
-    /// </summary>
-    /// <param name="key">Key that is pressed.</param>
-    /// <param name="modifierKey">Keys that are held down during the event.</param>
-    /// <param name="scanData">Scan code data.</param>
-    public GorgonKeyboardEventArgs(Keys key, Keys modifierKey, int scanData)
-    {
-        Key = key;
-        ModifierKeys = modifierKey;
-        ScanCodeData = scanData;
-    }
     #endregion
 
 }

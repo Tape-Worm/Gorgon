@@ -40,13 +40,17 @@ namespace Gorgon.Collections;
 /// <remarks>
 /// This is a base class used to help in the creation of custom lists that store objects that implement the <see cref="IGorgonNamedObject"/> interface.
 /// </remarks>
-public abstract class GorgonBaseNamedObjectList<T>
+/// <remarks>
+/// Initializes a new instance of the <see cref="GorgonBaseNamedObjectList&lt;T&gt;"/> class.
+/// </remarks>
+/// <param name="caseSensitive"><b>true</b> to use case sensitive keys, <b>false</b> to ignore casing.</param>
+public abstract class GorgonBaseNamedObjectList<T>(bool caseSensitive)
     : IGorgonNamedObjectList<T>, IGorgonNamedObjectReadOnlyList<T>
     where T : IGorgonNamedObject
 {
     #region Variables.
-    private readonly List<T> _list;
-    private readonly StringComparison _caseSensitivity;
+    private readonly List<T> _list = [];
+    private readonly StringComparison _caseSensitivity = caseSensitive ? StringComparison.Ordinal : StringComparison.OrdinalIgnoreCase;
     #endregion
 
     #region Properties.
@@ -61,7 +65,7 @@ public abstract class GorgonBaseNamedObjectList<T>
     public bool KeysAreCaseSensitive
     {
         get;
-    }
+    } = caseSensitive;
     #endregion
 
     #region Methods.
@@ -158,21 +162,9 @@ public abstract class GorgonBaseNamedObjectList<T>
 
         return -1;
     }
+
     #endregion
-
     #region Constructor
-    /// <summary>
-    /// Initializes a new instance of the <see cref="GorgonBaseNamedObjectList&lt;T&gt;"/> class.
-    /// </summary>
-    /// <param name="caseSensitive"><b>true</b> to use case sensitive keys, <b>false</b> to ignore casing.</param>
-    protected GorgonBaseNamedObjectList(bool caseSensitive)
-    {
-        KeysAreCaseSensitive = caseSensitive;
-
-        _caseSensitivity = caseSensitive ? StringComparison.Ordinal : StringComparison.OrdinalIgnoreCase;
-
-        _list = new List<T>();
-    }
     #endregion
 
     #region IList<T> Members

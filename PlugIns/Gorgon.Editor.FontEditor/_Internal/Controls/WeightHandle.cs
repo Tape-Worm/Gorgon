@@ -32,7 +32,13 @@ namespace Gorgon.Editor.FontEditor;
 /// <summary>
 /// Represents the handle for a node on the gradient fill control.
 /// </summary>
-internal class WeightHandle
+/// <remarks>
+/// Initializes a new instance of the <see cref="WeightHandle"/> class.
+/// </remarks>
+/// <param name="weight">The weight of the node.</param>
+/// <param name="color">Color for the node.</param>
+/// <param name="index">The index of the corresponding interpolation value.</param>
+internal class WeightHandle(float weight, GorgonColor color, int index)
 {
     #region Properties.
     /// <summary>
@@ -42,7 +48,7 @@ internal class WeightHandle
     {
         get;
         set;
-    }
+    } = index;
 
     /// <summary>
     /// Property to set or return the color for the weight node.
@@ -51,7 +57,7 @@ internal class WeightHandle
     {
         get;
         set;
-    }
+    } = color;
 
     /// <summary>
     /// Property to set or return the weight for the node.
@@ -60,21 +66,9 @@ internal class WeightHandle
     {
         get;
         set;
-    }
-    #endregion
+    } = weight;
 
+    #endregion
     #region Constructor/Destructor.
-    /// <summary>
-    /// Initializes a new instance of the <see cref="WeightHandle"/> class.
-    /// </summary>
-    /// <param name="weight">The weight of the node.</param>
-    /// <param name="color">Color for the node.</param>
-    /// <param name="index">The index of the corresponding interpolation value.</param>
-    public WeightHandle(float weight, GorgonColor color, int index)
-    {
-        Weight = weight;
-        Color = color;
-        Index = index;
-    }
     #endregion
 }

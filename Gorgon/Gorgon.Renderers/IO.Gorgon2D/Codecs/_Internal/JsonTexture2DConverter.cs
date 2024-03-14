@@ -37,13 +37,18 @@ namespace Gorgon.IO;
 /// <summary>
 /// A converter used to convert a texture to and from a string.
 /// </summary>
-internal class JsonTexture2DConverter
-    : JsonConverter<GorgonTexture2DView>
+/// <remarks>
+/// Initializes a new instance of the <see cref="JsonTexture2DConverter"/> class.
+/// </remarks>
+/// <param name="graphics">The graphics interface used for resource lookup.</param>
+/// <param name="overrideTexture">The texture to assign to the sprite instead of the texture associated with the name stored in the file.</param>
+internal class JsonTexture2DConverter(GorgonGraphics graphics, GorgonTexture2DView overrideTexture)
+        : JsonConverter<GorgonTexture2DView>
 {
     // The graphics object to use for resource look up.
-    private readonly GorgonGraphics _graphics;
+    private readonly GorgonGraphics _graphics = graphics;
     // The override texture.
-    private readonly GorgonTexture2DView _override;
+    private readonly GorgonTexture2DView _override = overrideTexture;
     // The list of properties for the type.
     private readonly HashSet<string> _propNames = new(StringComparer.Ordinal)
                                                   {
@@ -238,15 +243,4 @@ internal class JsonTexture2DConverter
     /// <param name="serializer">The calling serializer.</param>
     /// <returns>The object value.</returns>
     public override GorgonTexture2DView ReadJson(JsonReader reader, Type objectType, GorgonTexture2DView existingValue, bool hasExistingValue, JsonSerializer serializer) => ReadTexture(reader).Texture;
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="JsonTexture2DConverter"/> class.
-    /// </summary>
-    /// <param name="graphics">The graphics interface used for resource lookup.</param>
-    /// <param name="overrideTexture">The texture to assign to the sprite instead of the texture associated with the name stored in the file.</param>
-    public JsonTexture2DConverter(GorgonGraphics graphics, GorgonTexture2DView overrideTexture)
-    {
-        _graphics = graphics;
-        _override = overrideTexture;
-    }
 }

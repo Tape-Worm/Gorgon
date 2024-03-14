@@ -33,8 +33,11 @@ namespace Gorgon.Editor.ViewModels;
 /// <summary>
 /// Parameters used for injection on the <see cref="Main"/> view model.
 /// </summary>
-internal class MainParameters
-    : ViewModelCommonParameters
+/// <remarks>Initializes a new instance of the MainParameters class.</remarks>
+/// <param name="hostServices">The services from the host application.</param>
+/// <param name="viewModelFactory">The view model factory for creating view models.</param>
+internal class MainParameters(IHostContentServices hostServices, ViewModelFactory viewModelFactory)
+        : ViewModelCommonParameters(hostServices, viewModelFactory)
 {
     /// <summary>
     /// Property to set or return the new project view model.
@@ -97,13 +100,5 @@ internal class MainParameters
     {
         get;
         set;
-    }
-
-    /// <summary>Initializes a new instance of the MainParameters class.</summary>
-    /// <param name="hostServices">The services from the host application.</param>
-    /// <param name="viewModelFactory">The view model factory for creating view models.</param>
-    public MainParameters(IHostContentServices hostServices, ViewModelFactory viewModelFactory)
-        : base(hostServices, viewModelFactory)
-    {            
     }
 }

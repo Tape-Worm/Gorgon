@@ -47,21 +47,27 @@ namespace Gorgon.Editor.SpriteEditor;
 /// <summary>
 /// Functionality for handling an associated sprite texture.
 /// </summary>
-internal class SpriteTextureService
+/// <remarks>Initializes a new instance of the <see cref="SpriteTextureService"/> class.</remarks>
+/// <param name="graphicsContext">The graphics context for the application.</param>
+/// <param name="fileManager">The content file manager.</param>
+/// <param name="spriteCodec">The codec used to read sprite data.</param>
+/// <param name="imageCodec">The codec used to read image data.</param>
+/// <param name="log">The logging interface for debug logging.</param>
+internal class SpriteTextureService(IGraphicsContext graphicsContext, IContentFileManager fileManager, IGorgonSpriteCodec spriteCodec, IGorgonImageCodec imageCodec, IGorgonLog log)
 {
     #region Variables.
     // The graphics interface for the application.
-    private readonly GorgonGraphics _graphics;
+    private readonly GorgonGraphics _graphics = graphicsContext.Graphics;
     // The 2D renderer for the application.
-    private readonly Gorgon2D _renderer;
+    private readonly Gorgon2D _renderer = graphicsContext.Renderer2D;
     // The content file manager.
-    private readonly IContentFileManager _fileManager;
+    private readonly IContentFileManager _fileManager = fileManager;
     // The image codec used to read image file data.
-    private readonly IGorgonImageCodec _imageCodec;
+    private readonly IGorgonImageCodec _imageCodec = imageCodec;
     // The codec used to read sprite data.
-    private readonly IGorgonSpriteCodec _spriteCodec;
+    private readonly IGorgonSpriteCodec _spriteCodec = spriteCodec;
     // The logging interface for debug logging.
-    private readonly IGorgonLog _log;
+    private readonly IGorgonLog _log = log;
     #endregion
 
     #region Methods.
@@ -187,7 +193,7 @@ internal class SpriteTextureService
                     return (null, null);
                 }
 
-                dependency = new List<string> { textureName };
+                dependency = [textureName];
             }
 
             _log.Print($"Found sprite texture '{dependency[0]}'...", LoggingLevel.Verbose);
@@ -284,23 +290,6 @@ internal class SpriteTextureService
             ? null
             : _imageCodec.GetMetaData(stream);
     }
-    #endregion
 
-    #region Constructor/Finalizer.
-    /// <summary>Initializes a new instance of the <see cref="SpriteTextureService"/> class.</summary>
-    /// <param name="graphicsContext">The graphics context for the application.</param>
-    /// <param name="fileManager">The content file manager.</param>
-    /// <param name="spriteCodec">The codec used to read sprite data.</param>
-    /// <param name="imageCodec">The codec used to read image data.</param>
-    /// <param name="log">The logging interface for debug logging.</param>
-    public SpriteTextureService(IGraphicsContext graphicsContext, IContentFileManager fileManager, IGorgonSpriteCodec spriteCodec, IGorgonImageCodec imageCodec, IGorgonLog log)
-    {
-        _graphics = graphicsContext.Graphics;
-        _renderer = graphicsContext.Renderer2D;
-        _fileManager = fileManager;
-        _imageCodec = imageCodec;
-        _spriteCodec = spriteCodec;
-        _log = log;
-    }
     #endregion
 }

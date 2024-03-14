@@ -40,13 +40,16 @@ namespace Gorgon.Editor.FontEditor;
 /// <summary>
 /// A service for loading images.
 /// </summary>
-internal class ImageLoadService
+/// <remarks>Initializes a new instance of the <see cref="ImageLoadService" /> class.</remarks>
+/// <param name="codec">The codec.</param>
+/// <param name="fileManager">The file manager.</param>
+internal class ImageLoadService(IGorgonImageCodec codec, IContentFileManager fileManager)
 {
     #region Variables.
     // The file manager for the application.
-    private readonly IContentFileManager _fileManager;
+    private readonly IContentFileManager _fileManager = fileManager;
     // The codec for the images.
-    private readonly IGorgonImageCodec _codec;
+    private readonly IGorgonImageCodec _codec = codec;
     #endregion
 
     #region Methods.
@@ -124,16 +127,6 @@ internal class ImageLoadService
 
         return Task.Run(LoadImage);
     }
-    #endregion
 
-    #region Constructor/Finalizer.
-    /// <summary>Initializes a new instance of the <see cref="ImageLoadService" /> class.</summary>
-    /// <param name="codec">The codec.</param>
-    /// <param name="fileManager">The file manager.</param>
-    public ImageLoadService(IGorgonImageCodec codec, IContentFileManager fileManager)
-    {
-        _codec = codec;
-        _fileManager = fileManager;
-    }
     #endregion
 }

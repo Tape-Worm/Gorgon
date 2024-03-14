@@ -505,7 +505,7 @@ public sealed class GorgonFont
 #endif
                 arrayIndex = 0;
 
-                glyphs = new List<GlyphInfo>();
+                glyphs = [];
                 image = new GorgonImage(imageSettings);
                 result.Add((image, glyphs));
             }
@@ -876,7 +876,7 @@ public sealed class GorgonFont
             Brush = info.Brush?.Clone()
         };
 
-        Glyphs = new GorgonGlyphCollection();
+        Glyphs = [];
         KerningPairs = new Dictionary<GorgonKerningPair, int>();
     }
     #endregion

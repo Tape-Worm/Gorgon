@@ -40,7 +40,11 @@ namespace Gorgon.Editor.ImageEditor;
 /// <summary>
 /// The texture conversion functionality for the external texconv process.
 /// </summary>
-internal class TexConvCompressor
+/// <remarks>Initializes a new instance of the TexConvCompressor class.</remarks>
+/// <param name="texConvFile">The tex conv file.</param>
+/// <param name="scratchWriter">The scratch writer.</param>
+/// <param name="codec">The codec used to read/write the file.</param>
+internal class TexConvCompressor(FileInfo texConvFile, IGorgonFileSystemWriter<Stream> scratchWriter, IGorgonImageCodec codec)
 {
     #region Conversion Formats.
     // Formats used to convert from a compressed format to an expanded format.
@@ -107,11 +111,11 @@ internal class TexConvCompressor
 
     #region Variables.
     // The path to the texture converter process.
-    private readonly FileInfo _texConv;
+    private readonly FileInfo _texConv = texConvFile;
     // The file system writer to use.
-    private readonly IGorgonFileSystemWriter<Stream> _writer;
+    private readonly IGorgonFileSystemWriter<Stream> _writer = scratchWriter;
     // PlugIn image file codec.
-    private readonly IGorgonImageCodec _codec;
+    private readonly IGorgonImageCodec _codec = codec;
     #endregion
 
     #region Methods.
@@ -242,18 +246,6 @@ internal class TexConvCompressor
             }
         }
     }
-    #endregion
 
-    #region Constructor/Finalizer.
-    /// <summary>Initializes a new instance of the TexConvCompressor class.</summary>
-    /// <param name="texConvFile">The tex conv file.</param>
-    /// <param name="scratchWriter">The scratch writer.</param>
-    /// <param name="codec">The codec used to read/write the file.</param>
-    public TexConvCompressor(FileInfo texConvFile, IGorgonFileSystemWriter<Stream> scratchWriter, IGorgonImageCodec codec)
-    {
-        _codec = codec;
-        _writer = scratchWriter;
-        _texConv = texConvFile;
-    }
     #endregion
 }

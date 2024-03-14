@@ -54,9 +54,9 @@ internal partial class FormNewAnimation
 {
     #region Variables.
     // The list of textures.
-    private IReadOnlyList<IContentFile> _textures = Array.Empty<IContentFile>();
+    private IReadOnlyList<IContentFile> _textures = [];
     // The list of textures.
-    private IReadOnlyList<IContentFile> _sprites = Array.Empty<IContentFile>();
+    private IReadOnlyList<IContentFile> _sprites = [];
     // The preview images for the selected files.
     private Image _previewImage;
     private Image _previewSprite;
@@ -454,7 +454,7 @@ internal partial class FormNewAnimation
 
             if (!dirs.TryGetValue(dirName, out ContentFileExplorerDirectoryEntry dirEntry))
             {
-                fileEntries = new List<ContentFileExplorerFileEntry>();
+                fileEntries = [];
                 dirEntry = new ContentFileExplorerDirectoryEntry(dirName, fileEntries);
                 dirs[dirName] = dirEntry;
             }
@@ -474,7 +474,7 @@ internal partial class FormNewAnimation
             fileEntries.Add(contentFile);
         }
 
-        target.Entries = dirs.Values.ToArray();
+        target.Entries = [.. dirs.Values];
 
         if (selectedTexture is null)
         {

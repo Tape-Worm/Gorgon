@@ -33,8 +33,16 @@ namespace Gorgon.IO;
 /// <summary>
 /// A file stream writer that will update the virtual file information when it closes.
 /// </summary>
-internal class FileSystemWriteStream
-    : FileStream
+/// <remarks>
+/// Initializes a new instance of the <see cref="FileSystemWriteStream"/> class.
+/// </remarks>
+/// <param name="writePath">The path to the writable file.</param>
+/// <param name="fileMode">The file mode to use to open the file.</param>
+internal class FileSystemWriteStream(string writePath, FileMode fileMode)
+        : FileStream(writePath,
+           fileMode,
+           fileMode == FileMode.Open ? FileAccess.Read : fileMode == FileMode.OpenOrCreate ? FileAccess.ReadWrite : FileAccess.Write,
+           fileMode == FileMode.Open ? FileShare.Read : FileShare.None)
 {
     #region Variables.
     // The length of the stream, in bytes.
@@ -90,20 +98,6 @@ internal class FileSystemWriteStream
             OnCloseCallback = null;
         }
     }
-    #endregion
 
-    #region Constructor/Finalizer.
-    /// <summary>
-    /// Initializes a new instance of the <see cref="FileSystemWriteStream"/> class.
-    /// </summary>
-    /// <param name="writePath">The path to the writable file.</param>
-    /// <param name="fileMode">The file mode to use to open the file.</param>
-    public FileSystemWriteStream(string writePath, FileMode fileMode)
-        : base(writePath,
-               fileMode,
-               fileMode == FileMode.Open ? FileAccess.Read : fileMode == FileMode.OpenOrCreate ? FileAccess.ReadWrite : FileAccess.Write,
-               fileMode == FileMode.Open ? FileShare.Read : FileShare.None)
-    {
-    }
     #endregion
 }

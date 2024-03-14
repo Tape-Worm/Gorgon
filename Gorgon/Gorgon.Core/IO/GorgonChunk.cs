@@ -33,8 +33,14 @@ namespace Gorgon.IO;
 /// <summary>
 /// A chunk for the chunked file format.
 /// </summary>
-public readonly struct GorgonChunk
-    : IGorgonEquatableByRef<GorgonChunk>
+/// <remarks>
+/// Initializes a new instance of the <see cref="GorgonChunk"/> struct.
+/// </remarks>
+/// <param name="id">The identifier for the chunk.</param>
+/// <param name="size">The size of the chunk, in bytes.</param>
+/// <param name="offset">The offset within the file, in bytes.</param>
+public readonly struct GorgonChunk(ulong id, int size, ulong offset)
+        : IGorgonEquatableByRef<GorgonChunk>
 {
     #region Variables.		
     /// <summary>
@@ -45,18 +51,18 @@ public readonly struct GorgonChunk
     /// <summary>
     /// The ID for the chunk.
     /// </summary>
-    public readonly ulong ID;
+    public readonly ulong ID = id;
 
     /// <summary>
     /// The size of the chunk, in bytes.
     /// </summary>
-    public readonly int Size;
+    public readonly int Size = size;
 
     /// <summary>
     /// The offset, in bytes, of the chunk within the chunked file.
     /// </summary>
     /// <remarks>This is relative to the header of the file.</remarks>
-    public readonly ulong FileOffset;
+    public readonly ulong FileOffset = offset;
     #endregion
 
     #region Methods.
@@ -118,20 +124,6 @@ public readonly struct GorgonChunk
     /// <param name="right">The right instance to compare.</param>
     /// <returns><b>true</b> if not equal, <b>false</b> otherwise.</returns>
     public static bool operator !=(in GorgonChunk left, in GorgonChunk right) => !Equals(in left, in right);
-    #endregion
 
-    #region Constructor/Finalizer.
-    /// <summary>
-    /// Initializes a new instance of the <see cref="GorgonChunk"/> struct.
-    /// </summary>
-    /// <param name="id">The identifier for the chunk.</param>
-    /// <param name="size">The size of the chunk, in bytes.</param>
-    /// <param name="offset">The offset within the file, in bytes.</param>
-    public GorgonChunk(ulong id, int size, ulong offset)
-    {
-        ID = id;
-        Size = size;
-        FileOffset = offset;
-    }
     #endregion
 }

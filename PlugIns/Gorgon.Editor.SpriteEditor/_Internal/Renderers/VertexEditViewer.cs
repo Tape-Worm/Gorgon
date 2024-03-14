@@ -40,8 +40,13 @@ namespace Gorgon.Editor.SpriteEditor;
 /// <summary>
 /// A renderer to use with the vertex offset editing tool.
 /// </summary>
-internal class VertexEditViewer
-    : SingleSpriteViewer
+/// <remarks>Initializes a new instance of the <see cref="VertexEditViewer"/> class.</remarks>
+/// <param name="dataContext">The sprite view model.</param>        
+/// <param name="swapChain">The swap chain for the render area.</param>
+/// <param name="renderer">The 2D renderer for the application.</param>
+/// <param name="vertexEditor">The editor used to modify the sprite vertices.</param>        
+internal class VertexEditViewer(Gorgon2D renderer, GorgonSwapChain swapChain, ISpriteContent dataContext, SpriteVertexEditService vertexEditor)
+        : SingleSpriteViewer(SpriteVertexEditContext.ViewerName, renderer, swapChain, dataContext)
 {
     #region Events.
     // Event triggered when toggling the manual input UI.
@@ -76,7 +81,7 @@ internal class VertexEditViewer
 
     #region Variables.
     // The editor used to update the sprite vertices.
-    private readonly SpriteVertexEditService _vertexEditor;
+    private readonly SpriteVertexEditService _vertexEditor = vertexEditor;
     #endregion
 
     #region Methods.
@@ -307,15 +312,6 @@ internal class VertexEditViewer
 
         base.Dispose(disposing);
     }
-    #endregion
 
-    #region Constructor/Finalizer.
-    /// <summary>Initializes a new instance of the <see cref="VertexEditViewer"/> class.</summary>
-    /// <param name="dataContext">The sprite view model.</param>        
-    /// <param name="swapChain">The swap chain for the render area.</param>
-    /// <param name="renderer">The 2D renderer for the application.</param>
-    /// <param name="vertexEditor">The editor used to modify the sprite vertices.</param>        
-    public VertexEditViewer(Gorgon2D renderer, GorgonSwapChain swapChain, ISpriteContent dataContext, SpriteVertexEditService vertexEditor)
-        : base(SpriteVertexEditContext.ViewerName, renderer, swapChain, dataContext) => _vertexEditor = vertexEditor;
     #endregion
 }

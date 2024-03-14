@@ -126,11 +126,11 @@ internal static class Program
     {
         // Define the points that make up our triangle.
         // We'll push it back half a unit along the Z-Axis so that we can see it.
-        MiniTriVertex[] vertices = {
+        MiniTriVertex[] vertices = [
                            new MiniTriVertex(new Vector3(0, 0.5f, 1.0f), new GorgonColor(1, 0, 0)),
                            new MiniTriVertex(new Vector3(0.5f, -0.5f, 1.0f), new GorgonColor(0, 1, 0)),
                            new MiniTriVertex(new Vector3(-0.5f, -0.5f, 1.0f), new GorgonColor(0, 0, 1))
-                       };
+                       ];
 
         // Create the vertex buffer.
         //

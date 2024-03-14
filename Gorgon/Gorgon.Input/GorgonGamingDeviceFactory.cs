@@ -37,16 +37,22 @@ namespace Gorgon.Input;
 /// <summary>
 /// A factory used to load gaming device drivers.
 /// </summary>
-public sealed class GorgonGamingDeviceDriverFactory
-    : IGorgonGamingDeviceDriverFactory
+/// <remarks>
+/// Initializes a new instance of the <see cref="GorgonGamingDeviceDriverFactory"/> class.
+/// </remarks>
+/// <param name="pluginCache">The plug in cache that will hold the plug in assemblies.</param>
+/// <param name="log">[Optional] The logger used for debugging.</param>
+/// <exception cref="ArgumentNullException">Thrown when the <paramref name="pluginCache"/> is <b>null</b>.</exception>
+public sealed class GorgonGamingDeviceDriverFactory(GorgonMefPlugInCache pluginCache, IGorgonLog log = null)
+        : IGorgonGamingDeviceDriverFactory
 {
     #region Variables.
     // The logger used for debugging.
-    private readonly IGorgonLog _log;
+    private readonly IGorgonLog _log = log ?? GorgonLog.NullLog;
     // The plug in service to use when loading drivers.
-    private readonly IGorgonPlugInService _plugInService;
+    private readonly IGorgonPlugInService _plugInService = new GorgonMefPlugInService(pluginCache);
     // The cache holding the plug in assemblies.
-    private readonly GorgonMefPlugInCache _plugInCache;
+    private readonly GorgonMefPlugInCache _plugInCache = pluginCache ?? throw new ArgumentNullException(nameof(pluginCache));
     #endregion
 
     #region Methods.
@@ -139,20 +145,6 @@ public sealed class GorgonGamingDeviceDriverFactory
 
         return result;
     }
-    #endregion
 
-    #region Constructor/Finalizer.
-    /// <summary>
-    /// Initializes a new instance of the <see cref="GorgonGamingDeviceDriverFactory"/> class.
-    /// </summary>
-    /// <param name="pluginCache">The plug in cache that will hold the plug in assemblies.</param>
-    /// <param name="log">[Optional] The logger used for debugging.</param>
-    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="pluginCache"/> is <b>null</b>.</exception>
-    public GorgonGamingDeviceDriverFactory(GorgonMefPlugInCache pluginCache, IGorgonLog log = null)
-    {
-        _plugInCache = pluginCache ?? throw new ArgumentNullException(nameof(pluginCache));
-        _plugInService = new GorgonMefPlugInService(pluginCache);
-        _log = log ?? GorgonLog.NullLog;
-    }
     #endregion
 }

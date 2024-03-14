@@ -84,8 +84,12 @@ namespace Gorgon.Input;
 /// ]]>
 /// </code>
 /// </example>
-public abstract class GorgonGamingDeviceDriver
-    : GorgonPlugIn, IGorgonGamingDeviceDriver
+/// <remarks>
+/// Initializes a new instance of the <see cref="GorgonGamingDeviceDriver"/> class.
+/// </remarks>
+/// <param name="description">The human readable description of the driver.</param>
+public abstract class GorgonGamingDeviceDriver(string description)
+        : GorgonPlugIn(description), IGorgonGamingDeviceDriver
 {
     #region Properties.
     /// <summary>
@@ -95,7 +99,7 @@ public abstract class GorgonGamingDeviceDriver
     {
         get;
         internal set;
-    }
+    } = GorgonLog.NullLog;
     #endregion
 
     #region Methods.
@@ -178,15 +182,7 @@ public abstract class GorgonGamingDeviceDriver
         Dispose(true);
         GC.SuppressFinalize(this);
     }
-    #endregion
 
-    #region Constructor/Finalizer.
-    /// <summary>
-    /// Initializes a new instance of the <see cref="GorgonGamingDeviceDriver"/> class.
-    /// </summary>
-    /// <param name="description">The human readable description of the driver.</param>
-    protected GorgonGamingDeviceDriver(string description)
-        : base(description) => Log = GorgonLog.NullLog;
     #endregion
 
 }

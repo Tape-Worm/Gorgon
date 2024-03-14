@@ -65,7 +65,7 @@ public partial class GorgonFolderBrowser
     // Flag to indicate that we're currently filling the list.
     private int _fillLock;
     // A list of directories to remember.
-    private readonly List<DirectoryInfo> _undoDirectories = new();
+    private readonly List<DirectoryInfo> _undoDirectories = [];
     // The undo index.
     private int _undoIndex = -1;
     // The column that is currently being sorted.

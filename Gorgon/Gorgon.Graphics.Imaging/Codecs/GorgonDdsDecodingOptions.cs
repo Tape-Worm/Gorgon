@@ -149,10 +149,10 @@ public class GorgonDdsDecodingOptions
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonDdsDecodingOptions"/> class.
     /// </summary>
-    public GorgonDdsDecodingOptions() => Options = new GorgonOptionBag(new[]
-                                      {
+    public GorgonDdsDecodingOptions() => Options = new GorgonOptionBag(
+                                      [
                                             GorgonOption.CreateOption(nameof(LegacyFormatConversionFlags), DdsLegacyFlags.None),
                                             GorgonOption.CreateOption(nameof(Palette), new List<GorgonColor>())
-                                      });
+                                      ]);
     #endregion
 }

@@ -34,8 +34,13 @@ namespace Gorgon.Editor.UI;
 /// <summary>
 /// Parameters for a <see cref="ISettingsCategory"/> specific to loading plug ins for an editor plug in.
 /// </summary>
-public class PlugInsCategoryViewModelParameters
-    : SettingsCategoryViewModelParameters
+/// <remarks>Initializes a new instance of the <see cref="PlugInsCategoryViewModelParameters"/> class.</remarks>
+/// <param name="openCodecDialog">The service used to locate plug in assemblies for loading.</param>
+/// <param name="plugInCache">The cache for plug in assemblies.</param>
+/// <param name="hostServices">Services passed down from the host application.</param>
+/// <exception cref="ArgumentNullException">Thrown when any of the parameters are <b>null</b>.</exception>
+public class PlugInsCategoryViewModelParameters(IFileDialogService openCodecDialog, GorgonMefPlugInCache plugInCache, IHostContentServices hostServices)
+        : SettingsCategoryViewModelParameters(hostServices)
 {
     #region Properties.
     /// <summary>
@@ -44,7 +49,7 @@ public class PlugInsCategoryViewModelParameters
     public GorgonMefPlugInCache PlugInCache
     {
         get;
-    }
+    } = plugInCache ?? throw new ArgumentNullException(nameof(plugInCache));
 
     /// <summary>
     /// Property to return the service used to locate plug in assemblies for loading.
@@ -52,18 +57,7 @@ public class PlugInsCategoryViewModelParameters
     public IFileDialogService OpenCodecDialog
     {
         get;
-    }
-    #endregion
+    } = openCodecDialog ?? throw new ArgumentNullException(nameof(openCodecDialog));
 
-    /// <summary>Initializes a new instance of the <see cref="PlugInsCategoryViewModelParameters"/> class.</summary>
-    /// <param name="openCodecDialog">The service used to locate plug in assemblies for loading.</param>
-    /// <param name="plugInCache">The cache for plug in assemblies.</param>
-    /// <param name="hostServices">Services passed down from the host application.</param>
-    /// <exception cref="ArgumentNullException">Thrown when any of the parameters are <b>null</b>.</exception>
-    public PlugInsCategoryViewModelParameters(IFileDialogService openCodecDialog, GorgonMefPlugInCache plugInCache, IHostContentServices hostServices)
-        : base(hostServices)
-    {
-        OpenCodecDialog = openCodecDialog ?? throw new ArgumentNullException(nameof(openCodecDialog));
-        PlugInCache = plugInCache ?? throw new ArgumentNullException(nameof(plugInCache));
-    }
+    #endregion
 }

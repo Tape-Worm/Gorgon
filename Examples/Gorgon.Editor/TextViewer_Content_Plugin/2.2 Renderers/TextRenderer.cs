@@ -44,14 +44,19 @@ namespace Gorgon.Examples;
 /// The renderer works differently than our content control in that it does not wait for events to update itself, it is constantly running using an idle loop 
 /// to reflect content changes in real time.
 /// </remarks>
-internal class TextRenderer
-    : DefaultContentRenderer<ITextContent>
+/// <remarks>Initializes a new instance of the <see cref="TextRenderer"/> class.</remarks>
+/// <param name="renderer">The 2D renderer used to render our text.</param>
+/// <param name="mainRenderTarget">The main render target for the view.</param>
+/// <param name="fonts">The factory used to create fonts.</param>
+/// <param name="dataContext">The view model for our text data.</param>
+internal class TextRenderer(Gorgon2D renderer, GorgonSwapChain mainRenderTarget, GorgonFontFactory fonts, ITextContent dataContext)
+        : DefaultContentRenderer<ITextContent>("TextRenderer", renderer, mainRenderTarget, dataContext)
 {
     #region Variables.
     // The sprite used to render our text data.
     private GorgonTextSprite _textSprite;
     // The factory used to create fonts.
-    private readonly GorgonFontFactory _fontFactory;
+    private readonly GorgonFontFactory _fontFactory = fonts;
     // The fonts used for text rendering.
     private GorgonFont _arial;
     private GorgonFont _timesNewRoman;
@@ -291,15 +296,6 @@ internal class TextRenderer
     /// Function to set the view to a default zoom level.
     /// </summary>
     public void DefaultZoom() => MoveTo(Vector2.Zero, 1);
-    #endregion
 
-    #region Constructor/Finalizer.
-    /// <summary>Initializes a new instance of the <see cref="TextRenderer"/> class.</summary>
-    /// <param name="renderer">The 2D renderer used to render our text.</param>
-    /// <param name="mainRenderTarget">The main render target for the view.</param>
-    /// <param name="fonts">The factory used to create fonts.</param>
-    /// <param name="dataContext">The view model for our text data.</param>
-    public TextRenderer(Gorgon2D renderer, GorgonSwapChain mainRenderTarget, GorgonFontFactory fonts, ITextContent dataContext)
-        : base("TextRenderer", renderer, mainRenderTarget, dataContext) => _fontFactory = fonts;
     #endregion
 }

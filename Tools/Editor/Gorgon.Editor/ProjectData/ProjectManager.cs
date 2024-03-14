@@ -50,7 +50,14 @@ namespace Gorgon.Editor.ProjectData;
 /// <summary>
 /// A project manager used to create, destroy, load and save a project.
 /// </summary>
-internal class ProjectManager
+/// <remarks>
+/// Initializes a new instance of the <see cref="ProjectManager"/> class.
+/// </remarks>
+/// <param name="providers">The file system providers used to read and write project files.</param>
+/// <param name="contentPlugIns">The plug in service used to manage content.</param>
+/// <param name="log">The log interface for debug messages.</param>
+/// <exception cref="ArgumentNullException">Thrown when the <paramref name="providers"/> parameter is <b>null</b>.</exception>
+internal class ProjectManager(FileSystemProviders providers, IGorgonLog log)
 {
     #region Constants
     // The temporary directory name.
@@ -65,9 +72,9 @@ internal class ProjectManager
     // The stream used for the lock file.
     private Stream _lockStream;
     // The log interface for debug messages.
-    private readonly IGorgonLog _log;
+    private readonly IGorgonLog _log = log ?? GorgonLog.NullLog;
     // The provider service for handling reading and writing project files.
-    private readonly FileSystemProviders _providers;
+    private readonly FileSystemProviders _providers = providers ?? throw new ArgumentNullException(nameof(providers));
     #endregion
 
     #region Methods.
@@ -953,20 +960,6 @@ internal class ProjectManager
         Shell32.SendToRecycleBin(projectPath, Shell32.FileOperationFlags.FOF_SILENT | Shell32.FileOperationFlags.FOF_NOCONFIRMATION | Shell32.FileOperationFlags.FOF_WANTNUKEWARNING);
         return true;
     }
-    #endregion
 
-    #region Constructor/Finalizer.
-    /// <summary>
-    /// Initializes a new instance of the <see cref="ProjectManager"/> class.
-    /// </summary>
-    /// <param name="providers">The file system providers used to read and write project files.</param>
-    /// <param name="contentPlugIns">The plug in service used to manage content.</param>
-    /// <param name="log">The log interface for debug messages.</param>
-    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="providers"/> parameter is <b>null</b>.</exception>
-    public ProjectManager(FileSystemProviders providers, IGorgonLog log)
-    {
-        _log = log ?? GorgonLog.NullLog;            
-        _providers = providers ?? throw new ArgumentNullException(nameof(providers));
-    }
     #endregion
 }

@@ -35,8 +35,13 @@ namespace Gorgon.Input.XInput;
 /// <summary>
 /// XInput controller information.
 /// </summary>
-internal class XInputDeviceInfo
-    : IGorgonGamingDeviceInfo
+/// <remarks>
+/// Initializes a new instance of the <see cref="XInputDeviceInfo"/> class.
+/// </remarks>
+/// <param name="deviceDescription">The description for the game pad controller.</param>
+/// <param name="id">The index ID of the device.</param>
+internal class XInputDeviceInfo(string deviceDescription, XI.UserIndex id)
+        : IGorgonGamingDeviceInfo
 {
     #region Properties.
     /// <summary>
@@ -45,7 +50,7 @@ internal class XInputDeviceInfo
     public Dictionary<XI.GamepadButtonFlags, int> SupportedButtons
     {
         get;
-    }
+    } = new Dictionary<XI.GamepadButtonFlags, int>(new ButtonFlagsEqualityComparer());
 
     /// <summary>
     /// Property to return the number of buttons available on the gaming device.
@@ -58,7 +63,7 @@ internal class XInputDeviceInfo
     public int ManufacturerID
     {
         get;
-    }
+    } = 0;
 
     /// <summary>
     /// Property to return the ID of the product.
@@ -66,7 +71,7 @@ internal class XInputDeviceInfo
     public int ProductID
     {
         get;
-    }
+    } = 0;
 
     /// <summary>
     /// Property to return the tolerances for each of the vibration motors in the gaming device.
@@ -112,7 +117,7 @@ internal class XInputDeviceInfo
     public string Description
     {
         get;
-    }
+    } = deviceDescription;
 
     /// <summary>
     /// Property to return the number of point of view controls on the gaming device.
@@ -123,7 +128,7 @@ internal class XInputDeviceInfo
     public Guid DeviceID
     {
         get;
-    }
+    } = id.ToGuid();
     #endregion
 
     #region Methods.
@@ -273,21 +278,6 @@ internal class XInputDeviceInfo
 
         AxisInfo = axes.Select(item => new GorgonGamingDeviceAxisInfo(item.Key, item.Value, 0)).ToDictionary(k => k.Axis, v => v);
     }
-    #endregion
 
-    #region Constructor/Finalizer.
-    /// <summary>
-    /// Initializes a new instance of the <see cref="XInputDeviceInfo"/> class.
-    /// </summary>
-    /// <param name="deviceDescription">The description for the game pad controller.</param>
-    /// <param name="id">The index ID of the device.</param>
-    public XInputDeviceInfo(string deviceDescription, XI.UserIndex id)
-    {
-        SupportedButtons = new Dictionary<XI.GamepadButtonFlags, int>(new ButtonFlagsEqualityComparer());
-        Description = deviceDescription;
-        DeviceID = id.ToGuid();
-        ManufacturerID = 0;
-        ProductID = 0;
-    }
     #endregion
 }

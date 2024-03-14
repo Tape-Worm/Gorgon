@@ -32,8 +32,26 @@ namespace Gorgon.IO.GorPack;
 /// <summary>
 /// Gorgon packed file physical file information.
 /// </summary>
-internal class GorPackPhysicalFileInfo
-    : IGorgonPhysicalFileInfo
+/// <remarks>
+/// Initializes a new instance of the <see cref="GorPackPhysicalFileInfo" /> class.
+/// </remarks>
+/// <param name="physicalPath">The physical path.</param>
+/// <param name="fileName">Name of the file.</param>
+/// <param name="createDate">The create date.</param>
+/// <param name="lastModDate">The last mod date.</param>
+/// <param name="offset">The offset.</param>
+/// <param name="size">The size.</param>
+/// <param name="virtualPath">The virtual path.</param>
+/// <param name="compressedSize">The size of the compressed file.</param>
+internal class GorPackPhysicalFileInfo(string physicalPath,
+                               string fileName,
+                               DateTime createDate,
+                               DateTime lastModDate,
+                               long offset,
+                               long size,
+                               string virtualPath,
+                               long? compressedSize)
+        : IGorgonPhysicalFileInfo
 {
     #region Properties.
     /// <summary>
@@ -42,7 +60,7 @@ internal class GorPackPhysicalFileInfo
     public DateTime CreateDate
     {
         get;
-    }
+    } = createDate;
 
     /// <summary>
     /// Property to return the full path to the physical file.
@@ -50,7 +68,7 @@ internal class GorPackPhysicalFileInfo
     public string FullPath
     {
         get;
-    }
+    } = physicalPath;
 
     /// <summary>
     /// Property to return the date of when the file was last modified.
@@ -61,7 +79,7 @@ internal class GorPackPhysicalFileInfo
     public DateTime LastModifiedDate
     {
         get;
-    }
+    } = lastModDate;
 
     /// <summary>
     /// Property to return the length of the file, in bytes.
@@ -69,7 +87,7 @@ internal class GorPackPhysicalFileInfo
     public long Length
     {
         get;
-    }
+    } = size;
 
     /// <summary>
     /// Property to return the name of the file.
@@ -80,7 +98,7 @@ internal class GorPackPhysicalFileInfo
     public string Name
     {
         get;
-    }
+    } = fileName;
 
     /// <summary>
     /// Property to return the offset, in bytes, of the file within a packed file.
@@ -91,7 +109,7 @@ internal class GorPackPhysicalFileInfo
     public long Offset
     {
         get;
-    }
+    } = offset;
 
     /// <summary>
     /// Property to return the virtual path for the file.
@@ -102,7 +120,7 @@ internal class GorPackPhysicalFileInfo
     public string VirtualPath
     {
         get;
-    }
+    } = virtualPath;
 
     /// <summary>
     /// Property to return the compressed size of the file, in bytes.
@@ -118,7 +136,7 @@ internal class GorPackPhysicalFileInfo
     public long? CompressedLength
     {
         get;
-    }
+    } = compressedSize;
 
     /// <summary>
     /// Property to return whether the file is encrypted or not.
@@ -140,37 +158,8 @@ internal class GorPackPhysicalFileInfo
     {
         // We don't need to refresh a packed file.
     }
-    #endregion
 
+    #endregion
     #region Constructor.
-    /// <summary>
-    /// Initializes a new instance of the <see cref="GorPackPhysicalFileInfo" /> class.
-    /// </summary>
-    /// <param name="physicalPath">The physical path.</param>
-    /// <param name="fileName">Name of the file.</param>
-    /// <param name="createDate">The create date.</param>
-    /// <param name="lastModDate">The last mod date.</param>
-    /// <param name="offset">The offset.</param>
-    /// <param name="size">The size.</param>
-    /// <param name="virtualPath">The virtual path.</param>
-    /// <param name="compressedSize">The size of the compressed file.</param>
-    public GorPackPhysicalFileInfo(string physicalPath,
-                                   string fileName,
-                                   DateTime createDate,
-                                   DateTime lastModDate,
-                                   long offset,
-                                   long size,
-                                   string virtualPath,
-                                   long? compressedSize)
-    {
-        FullPath = physicalPath;
-        Name = fileName;
-        CreateDate = createDate;
-        LastModifiedDate = lastModDate;
-        Offset = offset;
-        Length = size;
-        VirtualPath = virtualPath;
-        CompressedLength = compressedSize;
-    }        
     #endregion
 }

@@ -95,12 +95,12 @@ public class TvImageCodecPlugIn
     /// Initializes a new instance of the <see cref="TvImageCodecPlugIn"/> class.
     /// </summary>
     public TvImageCodecPlugIn()
-        : base("A TV image codec, used for example only.") => Codecs = new[]
-                 {
+        : base("A TV image codec, used for example only.") => Codecs =
+                 [
                      new GorgonImageCodecDescription(typeof(TvImageCodec))
                      {
                          Description = Description
                      }
-                 };
+                 ];
     #endregion
 }

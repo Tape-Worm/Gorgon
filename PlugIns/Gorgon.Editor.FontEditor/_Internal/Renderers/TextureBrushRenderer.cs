@@ -50,8 +50,13 @@ namespace Gorgon.Editor.FontEditor;
 /// <summary>
 /// This is a renderer that will render the texture used in a texture brush.
 /// </summary>
-internal class TextureBrushRenderer
-    : DefaultContentRenderer<IFontContent>
+/// <remarks>Initializes a new instance of the <see cref="FontRenderer"/> class.</remarks>
+/// <param name="renderer">The 2D renderer used to render our font.</param>
+/// <param name="mainRenderTarget">The main render target for the view.</param>
+/// <param name="clipper">The clipper used to cut out a region of the texture.</param>
+/// <param name="dataContext">The view model for our text data.</param>
+internal class TextureBrushRenderer(Gorgon2D renderer, GorgonSwapChain mainRenderTarget, IRectClipperService clipper, IFontContent dataContext)
+        : DefaultContentRenderer<IFontContent>(typeof(FontTextureBrush).FullName, renderer, mainRenderTarget, dataContext)
 {
     #region Variables.
     // The editor context.
@@ -64,7 +69,7 @@ internal class TextureBrushRenderer
     private GorgonRenderTarget2DView _target;
     private GorgonTexture2DView _targetTexture;
     // The clipper used to cut out a part of the texture.
-    private readonly IRectClipperService _clipper;
+    private readonly IRectClipperService _clipper = clipper;
     #endregion
 
     #region Methods.
@@ -377,15 +382,6 @@ internal class TextureBrushRenderer
     /// Function to set the view to a default zoom level.
     /// </summary>
     public void DefaultZoom() => MoveTo(Vector2.Zero, 1);
-    #endregion
 
-    #region Constructor/Finalizer.
-    /// <summary>Initializes a new instance of the <see cref="FontRenderer"/> class.</summary>
-    /// <param name="renderer">The 2D renderer used to render our font.</param>
-    /// <param name="mainRenderTarget">The main render target for the view.</param>
-    /// <param name="clipper">The clipper used to cut out a region of the texture.</param>
-    /// <param name="dataContext">The view model for our text data.</param>
-    public TextureBrushRenderer(Gorgon2D renderer, GorgonSwapChain mainRenderTarget, IRectClipperService clipper, IFontContent dataContext)
-        : base(typeof(FontTextureBrush).FullName, renderer, mainRenderTarget, dataContext) => _clipper = clipper;
     #endregion
 }

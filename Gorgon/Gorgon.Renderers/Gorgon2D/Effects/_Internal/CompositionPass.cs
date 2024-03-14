@@ -35,8 +35,14 @@ namespace Gorgon.Renderers;
 /// <summary>
 /// Defines the a composition pass for the <see cref="Gorgon2DCompositor"/>.
 /// </summary>
-internal class CompositionPass
-    : GorgonNamedObject, IGorgon2DCompositorPass
+/// <remarks>
+/// Initializes a new instance of the <see cref="CompositionPass"/> class.
+/// </remarks>
+/// <param name="name">The name of this object.</param>
+/// <exception cref="ArgumentNullException">Thrown when the <paramref name="name"/> is <b>null</b>.</exception>
+/// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="name"/> parameter is empty.</exception>
+internal class CompositionPass(string name)
+        : GorgonNamedObject(name), IGorgon2DCompositorPass
 {
     #region Properties.
     /// <summary>
@@ -100,18 +106,6 @@ internal class CompositionPass
         get;
         set;
     } = true;
-    #endregion
 
-    #region Constructor/Finalizer.
-    /// <summary>
-    /// Initializes a new instance of the <see cref="CompositionPass"/> class.
-    /// </summary>
-    /// <param name="name">The name of this object.</param>
-    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="name"/> is <b>null</b>.</exception>
-    /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="name"/> parameter is empty.</exception>
-    public CompositionPass(string name)
-        : base(name)
-    {        
-    }
     #endregion
 }

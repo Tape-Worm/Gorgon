@@ -41,15 +41,20 @@ namespace Gorgon.Editor.AnimationEditor;
 /// <summary>
 /// The service used to query for new animation information.
 /// </summary>
-internal class NewAnimationService 
+/// <remarks>Initializes a new instance of the <see cref="NewAnimationService"/> class.</remarks>
+/// <param name="fileManager">The project file manager.</param>
+/// <param name="spriteCodec">The sprite codec for loading sprite data.</param>
+/// <param name="imageCodec">The image codec for loading texture data.</param>
+/// <exception cref="ArgumentNullException">Thrown when the <paramref name="fileManager"/>, <paramref name="spriteCodec"/> or the <paramref name="imageCodec"/> parameter is <b>null</b>.</exception>
+internal class NewAnimationService(IContentFileManager fileManager, IGorgonSpriteCodec spriteCodec, IGorgonImageCodec imageCodec)
 {
     #region Variables.
     // The file manager for the project file system.
-    private readonly IContentFileManager _fileManager;
+    private readonly IContentFileManager _fileManager = fileManager ?? throw new ArgumentNullException(nameof(fileManager));
     // The image codec for loading texture data.
-    private readonly IGorgonImageCodec _imageCodec;
+    private readonly IGorgonImageCodec _imageCodec = imageCodec ?? throw new ArgumentNullException(nameof(imageCodec));
     // THe sprite codec for loading sprite data.
-    private readonly IGorgonSpriteCodec _spriteCodec;
+    private readonly IGorgonSpriteCodec _spriteCodec = spriteCodec ?? throw new ArgumentNullException(nameof(spriteCodec));
     #endregion
 
     #region Methods.
@@ -129,19 +134,8 @@ internal class NewAnimationService
             ? (newAnimationForm.ObjectName, newAnimationForm.Length, newAnimationForm.Fps, newAnimationForm.PrimarySpriteFile, newAnimationForm.BackgroundTextureFile)
             : (null, 0, 0, null, null);
     }
-    #endregion
 
+    #endregion
     #region Constructor.
-    /// <summary>Initializes a new instance of the <see cref="NewAnimationService"/> class.</summary>
-    /// <param name="fileManager">The project file manager.</param>
-    /// <param name="spriteCodec">The sprite codec for loading sprite data.</param>
-    /// <param name="imageCodec">The image codec for loading texture data.</param>
-    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="fileManager"/>, <paramref name="spriteCodec"/> or the <paramref name="imageCodec"/> parameter is <b>null</b>.</exception>
-    public NewAnimationService(IContentFileManager fileManager, IGorgonSpriteCodec spriteCodec, IGorgonImageCodec imageCodec)
-    {
-        _fileManager = fileManager ?? throw new ArgumentNullException(nameof(fileManager));
-        _spriteCodec = spriteCodec ?? throw new ArgumentNullException(nameof(spriteCodec));
-        _imageCodec = imageCodec ?? throw new ArgumentNullException(nameof(imageCodec));
-    }
     #endregion
 }

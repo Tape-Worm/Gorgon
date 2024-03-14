@@ -231,7 +231,7 @@ internal partial class FormSaveDialog
 
         foreach (string directoryName in directories.OrderBy(item => item))
         {
-            dirs[directoryName.FormatDirectory('/')] = new ContentFileExplorerDirectoryEntry(directoryName.FormatDirectory('/'), new List<ContentFileExplorerFileEntry>());
+            dirs[directoryName.FormatDirectory('/')] = new ContentFileExplorerDirectoryEntry(directoryName.FormatDirectory('/'), []);
         }
 
         foreach (IContentFile file in _fileManager.EnumerateContentFiles("/", "*", true).OrderBy(item => item.Path))
@@ -262,7 +262,7 @@ internal partial class FormSaveDialog
             fileEntries.Add(contentFile);
         }
 
-        FileExplorer.Entries = dirs.Values.ToArray();
+        FileExplorer.Entries = [.. dirs.Values];
         ValidateControls();
     }
     #endregion

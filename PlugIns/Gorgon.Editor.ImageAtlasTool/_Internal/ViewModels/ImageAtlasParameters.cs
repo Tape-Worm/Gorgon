@@ -35,8 +35,21 @@ namespace Gorgon.Editor.ImageAtlasTool;
 /// <summary>
 /// The parameters for the <see cref="IImageAtlas"/> view model.
 /// </summary>
-internal class ImageAtlasParameters
-    : EditorToolViewModelInjection
+/// <remarks>Initializes a new instance of the <see cref="ImageAtlasParameters"/> class.</remarks>
+/// <param name="imageFiles">The view model for the image loader UI.</param>
+/// <param name="settings">The settings for the texture atlas plug in.</param>
+/// <param name="atlasGenerator">The service used to generate texture atlases.</param>
+/// <param name="fileIO">The service used to manage the atlas files.</param>
+/// <param name="fileManager">The file manager for the project file system.</param>
+/// <param name="toolServices">The common tool services from the host application.</param>
+/// <exception cref="ArgumentNullException">Thrown when any of the parameters are <b>null</b>.</exception>
+internal class ImageAtlasParameters(IImageFiles imageFiles,
+                              TextureAtlasSettings settings,
+                              IGorgonTextureAtlasService atlasGenerator,
+                              FileIOService fileIO,
+                              IContentFileManager fileManager,
+                              IHostContentServices toolServices)
+        : EditorToolViewModelInjection(fileManager, toolServices)
 {
     /// <summary>
     /// Property to return the view model for the image loader UI.
@@ -44,7 +57,7 @@ internal class ImageAtlasParameters
     public IImageFiles ImageFiles
     {
         get;
-    }
+    } = imageFiles ?? throw new ArgumentNullException(nameof(imageFiles));
 
     /// <summary>
     /// Property to return the settings for the plug in.
@@ -52,7 +65,7 @@ internal class ImageAtlasParameters
     public TextureAtlasSettings Settings
     {
         get;
-    }
+    } = settings ?? throw new ArgumentNullException(nameof(settings));
 
     /// <summary>
     /// Property to return the atlas generation service.
@@ -60,7 +73,7 @@ internal class ImageAtlasParameters
     public IGorgonTextureAtlasService AtlasGenerator
     {
         get;
-    }
+    } = atlasGenerator ?? throw new ArgumentNullException(nameof(atlasGenerator));
 
     /// <summary>
     /// Property to return the service used to manage atlas files.
@@ -68,27 +81,5 @@ internal class ImageAtlasParameters
     public FileIOService FileIO
     {
         get;
-    }
-
-    /// <summary>Initializes a new instance of the <see cref="ImageAtlasParameters"/> class.</summary>
-    /// <param name="imageFiles">The view model for the image loader UI.</param>
-    /// <param name="settings">The settings for the texture atlas plug in.</param>
-    /// <param name="atlasGenerator">The service used to generate texture atlases.</param>
-    /// <param name="fileIO">The service used to manage the atlas files.</param>
-    /// <param name="fileManager">The file manager for the project file system.</param>
-    /// <param name="toolServices">The common tool services from the host application.</param>
-    /// <exception cref="ArgumentNullException">Thrown when any of the parameters are <b>null</b>.</exception>
-    public ImageAtlasParameters(IImageFiles imageFiles, 
-                                  TextureAtlasSettings settings, 
-                                  IGorgonTextureAtlasService atlasGenerator, 
-                                  FileIOService fileIO,
-                                  IContentFileManager fileManager, 
-                                  IHostContentServices toolServices)
-        : base(fileManager, toolServices)
-    {
-        ImageFiles = imageFiles ?? throw new ArgumentNullException(nameof(imageFiles));
-        Settings = settings ?? throw new ArgumentNullException(nameof(settings));
-        AtlasGenerator = atlasGenerator ?? throw new ArgumentNullException(nameof(atlasGenerator));
-        FileIO = fileIO ?? throw new ArgumentNullException(nameof(fileIO));
-    }
+    } = fileIO ?? throw new ArgumentNullException(nameof(fileIO));
 }

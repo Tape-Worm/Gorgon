@@ -40,8 +40,12 @@ namespace Gorgon.Editor.FontEditor;
 /// <summary>
 /// Parameters for the <see cref="FontTextureBrush"/> view model.
 /// </summary>
-internal class FontTextureBrushParameters
-    : HostedPanelViewModelParameters
+/// <remarks>Initializes a new instance of the <see cref="FontTextureBrushParameters" /> class.</remarks>
+/// <param name="imageLoader">The service used to load images.</param>
+/// <param name="hostServices">The services from the host application.</param>
+/// <exception cref="ArgumentNullException">Thrown when any of the parameters are <b>null</b>.</exception>
+internal class FontTextureBrushParameters(ImageLoadService imageLoader, IHostContentServices hostServices)
+        : HostedPanelViewModelParameters(hostServices)
 {
     #region Properties.
     /// <summary>
@@ -50,17 +54,8 @@ internal class FontTextureBrushParameters
     public ImageLoadService ImageLoader
     {
         get;
-    }
-    #endregion
+    } = imageLoader ?? throw new ArgumentNullException(nameof(imageLoader));
 
-    #region Constructor/Finalizer.
-    /// <summary>Initializes a new instance of the <see cref="FontTextureBrushParameters" /> class.</summary>
-    /// <param name="imageLoader">The service used to load images.</param>
-    /// <param name="hostServices">The services from the host application.</param>
-    /// <exception cref="ArgumentNullException">Thrown when any of the parameters are <b>null</b>.</exception>
-    public FontTextureBrushParameters(ImageLoadService imageLoader, IHostContentServices hostServices)
-        : base(hostServices)
-            => ImageLoader = imageLoader ?? throw new ArgumentNullException(nameof(imageLoader));
     #endregion
 
 }

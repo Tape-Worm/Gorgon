@@ -152,14 +152,19 @@ namespace Gorgon.PlugIns;
 /// ]]>
 /// </code>
 /// </example>
-public sealed class GorgonMefPlugInService
-    : IGorgonPlugInService
+/// <remarks>
+/// Initializes a new instance of the <see cref="GorgonMefPlugInService"/> class.
+/// </remarks>
+/// <param name="mefCache">The cache of MEF plugin assemblies.</param>
+/// <exception cref="ArgumentNullException">Thrown when the <paramref name="mefCache"/> parameter is <b>null</b>.</exception>
+public sealed class GorgonMefPlugInService(GorgonMefPlugInCache mefCache)
+        : IGorgonPlugInService
 {
     #region Variables.
     // The MEF plugin assembly cache.
-    private readonly GorgonMefPlugInCache _cache;
+    private readonly GorgonMefPlugInCache _cache = mefCache ?? throw new ArgumentNullException(nameof(mefCache));
     // The application log file.
-    private readonly IGorgonLog _log;
+    private readonly IGorgonLog _log = mefCache.Log ?? GorgonLog.NullLog;
     // List of previously loaded plugins.
     private readonly ConcurrentDictionary<string, Lazy<GorgonPlugIn, IDictionary<string, object>>> _loadedPlugIns = new(StringComparer.OrdinalIgnoreCase);
     // Flag to indicate whether or not the plugins have been scanned.
@@ -240,7 +245,7 @@ public sealed class GorgonMefPlugInService
         }
 
         return assemblyName is null
-            ? _loadedPlugIns.Keys.ToArray()
+            ? [.. _loadedPlugIns.Keys]
             : _loadedPlugIns.Where(item =>
                                     {
                                         Debug.Assert(item.Value.Metadata.ContainsKey("Assembly"), "Assembly info not found.");
@@ -411,18 +416,6 @@ public sealed class GorgonMefPlugInService
             DisposePlugIn(plugin);
         }
     }
-    #endregion
 
-    #region Constructor/Finalizer.
-    /// <summary>
-    /// Initializes a new instance of the <see cref="GorgonMefPlugInService"/> class.
-    /// </summary>
-    /// <param name="mefCache">The cache of MEF plugin assemblies.</param>
-    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="mefCache"/> parameter is <b>null</b>.</exception>
-    public GorgonMefPlugInService(GorgonMefPlugInCache mefCache)
-    {
-        _cache = mefCache ?? throw new ArgumentNullException(nameof(mefCache));
-        _log = mefCache.Log ?? GorgonLog.NullLog;
-    }
     #endregion
 }

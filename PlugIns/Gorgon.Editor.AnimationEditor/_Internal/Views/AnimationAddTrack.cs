@@ -46,7 +46,9 @@ internal partial class AnimationAddTrack
     /// <summary>
     /// A list box item for the track.
     /// </summary>
-    private class TrackListItem
+    /// <remarks>Initializes a new instance of the <see cref="TrackListItem"/> class.</remarks>
+    /// <param name="track">The track.</param>
+    private class TrackListItem(GorgonTrackRegistration track)
     {
         /// <summary>
         /// Property to return the track.
@@ -54,15 +56,11 @@ internal partial class AnimationAddTrack
         public GorgonTrackRegistration TrackRegistration
         {
             get;
-        }
+        } = track;
 
         /// <summary>Returns a <see cref="string"/> that represents this instance.</summary>
         /// <returns>A <see cref="string"/> that represents this instance.</returns>
         public override string ToString() => TrackRegistration.Description;
-
-        /// <summary>Initializes a new instance of the <see cref="TrackListItem"/> class.</summary>
-        /// <param name="track">The track.</param>
-        public TrackListItem(GorgonTrackRegistration track) => TrackRegistration = track;
     }
     #endregion
 

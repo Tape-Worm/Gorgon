@@ -190,7 +190,7 @@ internal class LogConsoleProvider
     /// <param name="message">The message to parse.</param>
     /// <returns>The array containing each line.</returns>
     private static string[] GetLines(string message) => string.IsNullOrWhiteSpace(message)
-            ? Array.Empty<string>()
+            ? []
             : message.Split(new[]
                              {
                                  '\r',
@@ -288,10 +288,9 @@ internal class LogConsoleProvider
         }
         else
         {
-            lines = new[]
-                    {
+            lines = [
                         message
-                    };
+                    ];
         }
 
         MessageType messageType = MessageType.Normal;

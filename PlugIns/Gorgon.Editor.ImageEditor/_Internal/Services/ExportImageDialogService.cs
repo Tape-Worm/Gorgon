@@ -39,12 +39,15 @@ namespace Gorgon.Editor.ImageEditor;
 /// <summary>
 /// Dialog serivce used for retrieving paths for exporting image data.
 /// </summary>
-internal class ExportImageDialogService
-    : FileSaveDialogService, IExportImageDialogService
+/// <remarks>Initializes a new instance of the <see cref="ExportImageDialogService"/> class.</remarks>
+/// <param name="settings">The settings.</param>
+/// <exception cref="ArgumentNullException">Thrown when the <paramref name="settings" /> parameter is <strong>null</strong>.</exception>
+internal class ExportImageDialogService(ISettings settings)
+        : FileSaveDialogService, IExportImageDialogService
 {
     #region Variables.
     // The settings for the image editor.
-    private readonly ISettings _settings;
+    private readonly ISettings _settings = settings ?? throw new ArgumentNullException(nameof(settings));
     #endregion
 
     #region Properties.
@@ -133,12 +136,8 @@ internal class ExportImageDialogService
         ConfigureDialog();
         return base.GetFilename();
     }
-    #endregion
 
+    #endregion
     #region Constructor.
-    /// <summary>Initializes a new instance of the <see cref="ExportImageDialogService"/> class.</summary>
-    /// <param name="settings">The settings.</param>
-    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="settings" /> parameter is <strong>null</strong>.</exception>
-    public ExportImageDialogService(ISettings settings) => _settings = settings ?? throw new ArgumentNullException(nameof(settings));
     #endregion
 }

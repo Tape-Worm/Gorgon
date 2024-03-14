@@ -34,8 +34,11 @@ namespace Gorgon.Editor.ImageEditor.ViewModels;
 /// <summary>
 /// Parameters for the <see cref="IDimensionSettings"/> view model.
 /// </summary>
-internal class DimensionSettingsParameters
-    : HostedPanelViewModelParameters
+/// <remarks>Initializes a new instance of the <see cref="DimensionSettingsParameters"/> class.</remarks>
+/// <param name="hostServices">Services from the host application.</param>
+/// <exception cref="ArgumentNullException">Thrown when any parameter is <b>null</b>.</exception>
+internal class DimensionSettingsParameters(IHostContentServices hostServices)
+        : HostedPanelViewModelParameters(hostServices)
 {
     #region Properties.
     /// <summary>
@@ -44,15 +47,8 @@ internal class DimensionSettingsParameters
     public IGorgonVideoAdapterInfo VideoAdapter
     {
         get;
-    }
-    #endregion
+    } = hostServices.GraphicsContext.Graphics.VideoAdapter;
 
-    #region Constructor/Finalizer.
-    /// <summary>Initializes a new instance of the <see cref="DimensionSettingsParameters"/> class.</summary>
-    /// <param name="hostServices">Services from the host application.</param>
-    /// <exception cref="ArgumentNullException">Thrown when any parameter is <b>null</b>.</exception>
-    public DimensionSettingsParameters(IHostContentServices hostServices)
-        : base(hostServices) => VideoAdapter = hostServices.GraphicsContext.Graphics.VideoAdapter;
     #endregion
 
 }

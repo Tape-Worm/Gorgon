@@ -800,7 +800,7 @@ public class GorgonV1AnimationCodec
     /// <param name="stream">The stream containing the texture data.</param>
     /// <returns>The names of the texture associated with the animations, or an empty list if no textures were found.</returns>
     /// <remarks>This implementation does not do anything.</remarks>
-    protected override IReadOnlyList<string> OnGetAssociatedTextureNames(Stream stream) => Array.Empty<string>();
+    protected override IReadOnlyList<string> OnGetAssociatedTextureNames(Stream stream) => [];
 
     /// <summary>
     /// Function to determine the number of animations in the sprite.
@@ -999,9 +999,9 @@ public class GorgonV1AnimationCodec
     /// <param name="renderer">The renderer used for resource handling.</param>
     /// <exception cref="ArgumentNullException">Thrown when the <paramref name="renderer"/> is <b>null</b>.</exception>
     public GorgonV1AnimationCodec(Gorgon2D renderer)
-        : base(renderer, Resources.GOR2DIO_V1_ANIM_CODEC, Resources.GOR2DIO_V1_ANIM_CODEC_DESCRIPTION) => FileExtensions = new[]
-                         {
+        : base(renderer, Resources.GOR2DIO_V1_ANIM_CODEC, Resources.GOR2DIO_V1_ANIM_CODEC_DESCRIPTION) => FileExtensions =
+                         [
                              new GorgonFileExtension(".gorSprite", Resources.GOR2DIO_SPRITE_FILE_EXTENSION_DESC),
-                         };
+                         ];
     #endregion
 }

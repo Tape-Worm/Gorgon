@@ -83,7 +83,7 @@ static class Program
     // Our 2D renderer.
     private static Gorgon2D _renderer;
     // The list of textures for the sprite.
-    private static readonly List<GorgonTexture2D> _textures = new();
+    private static readonly List<GorgonTexture2D> _textures = [];
     // The size of the tiled screen.
     private static DX.Size2 _tileSize;
     // The tile used for the snow layer.
@@ -95,7 +95,7 @@ static class Program
     // The position of the guy.
     private static Vector2 _guyPosition;
     // Up animation.
-    private static readonly Dictionary<AnimationName, IGorgonAnimation> _animations = new();
+    private static readonly Dictionary<AnimationName, IGorgonAnimation> _animations = [];
     // The animation controller.
     private static GorgonSpriteAnimationController _controller;
     // The current animation.

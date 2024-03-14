@@ -39,8 +39,12 @@ namespace Gorgon.Editor.ImageAtlasTool;
 /// <summary>
 /// The renderer used to draw the texture and sprites.
 /// </summary>
-internal class Renderer
-        : DefaultToolRenderer<IImageAtlas>
+/// <remarks>Initializes a new instance of the <see cref="Renderer"/> class.</remarks>
+/// <param name="renderer">The 2D renderer for the application.</param>
+/// <param name="swapChain">The swap chain bound to the window.</param>
+/// <param name="dataContext">The data context for the renderer.</param>
+internal class Renderer(Gorgon2D renderer, GorgonSwapChain swapChain, IImageAtlas dataContext)
+                : DefaultToolRenderer<IImageAtlas>("Atlas Renderer", renderer, swapChain, dataContext)
     {
         #region Variables.
         // The camera used to render.
@@ -211,16 +215,6 @@ internal class Renderer
                 TextureSampler = GorgonSamplerState.PointFiltering
             };
         }
-        #endregion
 
-        #region Constructor/Finalizer.
-        /// <summary>Initializes a new instance of the <see cref="Renderer"/> class.</summary>
-        /// <param name="renderer">The 2D renderer for the application.</param>
-        /// <param name="swapChain">The swap chain bound to the window.</param>
-        /// <param name="dataContext">The data context for the renderer.</param>
-        public Renderer(Gorgon2D renderer, GorgonSwapChain swapChain, IImageAtlas dataContext)
-            : base("Atlas Renderer", renderer, swapChain, dataContext)
-        {
-        }
-        #endregion
-    }
+    #endregion
+}

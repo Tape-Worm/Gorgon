@@ -32,8 +32,16 @@ namespace Gorgon.Editor.ViewModels;
 /// <summary>
 /// Parameters for the <see cref="INewProject"/> view model.
 /// </summary>
-internal class NewProjectParameters
-    : ViewModelCommonParameters
+/// <remarks>
+/// Initializes a new instance of the <see cref="NewProjectParameters"/> class.
+/// </remarks>
+/// <param name="hostServices">The services from the host application.</param>
+/// <param name="viewModelFactory">The view model factory for creating view models.</param>
+/// <param name="settings">The settings for the editor.</param>
+/// <param name="messageDisplay">The message display service to use.</param>
+/// <param name="busyService">The busy state service to use.</param>
+internal class NewProjectParameters(IHostContentServices hostServices, ViewModelFactory viewModelFactory)
+        : ViewModelCommonParameters(hostServices, viewModelFactory)
 {
     /// <summary>
     /// Property to set or return the directory locator service.
@@ -42,18 +50,5 @@ internal class NewProjectParameters
     {
         get;
         set;
-    }
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="NewProjectParameters"/> class.
-    /// </summary>
-    /// <param name="hostServices">The services from the host application.</param>
-    /// <param name="viewModelFactory">The view model factory for creating view models.</param>
-    /// <param name="settings">The settings for the editor.</param>
-    /// <param name="messageDisplay">The message display service to use.</param>
-    /// <param name="busyService">The busy state service to use.</param>
-    public NewProjectParameters(IHostContentServices hostServices, ViewModelFactory viewModelFactory)
-        : base(hostServices, viewModelFactory)
-    {            
     }
 }

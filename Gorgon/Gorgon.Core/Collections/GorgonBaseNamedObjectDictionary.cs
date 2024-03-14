@@ -40,13 +40,17 @@ namespace Gorgon.Collections;
 /// <remarks>
 /// This is a base class used to help in the creation of custom dictionaries that store objects that implement the <see cref="IGorgonNamedObject"/> interface.
 /// </remarks>
-public abstract class GorgonBaseNamedObjectDictionary<T>
+/// <remarks>
+/// Initializes a new instance of the <see cref="GorgonBaseNamedObjectDictionary{T}"/> class.
+/// </remarks>
+/// <param name="caseSensitive"><b>true</b> if the key names are case sensitive, <b>false</b> if not.</param>
+public abstract class GorgonBaseNamedObjectDictionary<T>(bool caseSensitive)
     : IGorgonNamedObjectDictionary<T>, IGorgonNamedObjectReadOnlyDictionary<T>
     where T : IGorgonNamedObject
 {
     #region Variables.
     // Internal collection to hold our objects.
-    private readonly Dictionary<string, T> _list;
+    private readonly Dictionary<string, T> _list = new(caseSensitive ? StringComparer.Ordinal : StringComparer.OrdinalIgnoreCase);
     #endregion
 
     #region Properties.
@@ -61,7 +65,7 @@ public abstract class GorgonBaseNamedObjectDictionary<T>
     public bool KeysAreCaseSensitive
     {
         get;
-    }
+    } = caseSensitive;
     #endregion
 
     #region Methods.
@@ -123,18 +127,9 @@ public abstract class GorgonBaseNamedObjectDictionary<T>
     /// <param name="value">The item, if found, or the default value for the type if not.</param>
     /// <returns><b>true</b> if the item was found, <b>false</b> if not.</returns>
     public bool TryGetValue(string name, out T value) => _list.TryGetValue(name, out value);
-    #endregion
 
+    #endregion
     #region Constructor
-    /// <summary>
-    /// Initializes a new instance of the <see cref="GorgonBaseNamedObjectDictionary{T}"/> class.
-    /// </summary>
-    /// <param name="caseSensitive"><b>true</b> if the key names are case sensitive, <b>false</b> if not.</param>
-    protected GorgonBaseNamedObjectDictionary(bool caseSensitive)
-    {
-        _list = new Dictionary<string, T>(caseSensitive ? StringComparer.Ordinal : StringComparer.OrdinalIgnoreCase);
-        KeysAreCaseSensitive = caseSensitive;
-    }
     #endregion
 
     #region IEnumerable<T> Members

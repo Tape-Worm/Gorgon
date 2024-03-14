@@ -34,22 +34,18 @@ namespace Gorgon.Graphics.Core;
 /// An allocator used to retrieve states from a pool.
 /// </summary>
 /// <typeparam name="T">The type of state</typeparam>
-public class GorgonStateBuilderPoolAllocator<T>
-    : GorgonRingPool<T>
+/// <remarks>Initializes a new instance of the <see cref="GorgonStateBuilderPoolAllocator{T}"/> class.</remarks>
+/// <param name="size">[Optional] The number of items that can be stored in this pool.</param>
+public class GorgonStateBuilderPoolAllocator<T>(int size = 4096)
+    : GorgonRingPool<T>(size, () => _creator.Value())
     where T : class, IEquatable<T>
 {
     #region Variables.
     // The object creator.
     private static readonly Lazy<ObjectActivator<T>> _creator;
-    #endregion
 
+    #endregion
     #region Constructor/Finalizer.
-    /// <summary>Initializes a new instance of the <see cref="GorgonStateBuilderPoolAllocator{T}"/> class.</summary>
-    /// <param name="size">[Optional] The number of items that can be stored in this pool.</param>
-    public GorgonStateBuilderPoolAllocator(int size = 4096)
-        : base(size, () => _creator.Value())
-    {
-    }
 
     /// <summary>
     /// Initializes static members of the <see cref="GorgonDrawCallPoolAllocator{T}"/> class.

@@ -235,7 +235,7 @@ internal class ImagePicker
     public ObservableCollection<(int arrayDepth, int mipLevel)> ChangedSubResources
     {
         get;
-    } = new ObservableCollection<(int arrayDepth, int mipLevel)>();
+    } = [];
 
     /// <summary>Property to return the command used to activate the image picker.</summary>
     public IEditorCommand<ActivateImagePickerArgs> ActivateCommand

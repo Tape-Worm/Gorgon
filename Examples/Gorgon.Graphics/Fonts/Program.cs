@@ -60,8 +60,8 @@ static class Program
     // Our 2D renderer, used to draw text.
     private static Gorgon2D _renderer;
     // The list of built-in Windows font family names to use.
-    private static readonly List<string> _fontFamilies = new()
-    {
+    private static readonly List<string> _fontFamilies =
+    [
         "Usuzi",
         "Algerian",
         "Bauhaus 93",
@@ -74,9 +74,9 @@ static class Program
         "Times New Roman",
         "Ravie",
         "Playbill"
-    };
+    ];
     // The fonts for the application. 
-    private static readonly List<GorgonFont> _font = new();
+    private static readonly List<GorgonFont> _font = [];
     // The starting time.
     private static float _startTime = float.MinValue;
     // The current font index.

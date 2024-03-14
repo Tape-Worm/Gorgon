@@ -45,24 +45,23 @@ namespace GorgonTriangulator;
 /// used as part of your content pipeline or at load-time. It is not something you want to be
 /// using each and every frame unless you really don't care about garbage.
 /// </summary>
-internal class Triangulator
+/// <remarks>
+/// Initializes a new instance of the <see cref="Triangulator"/> class.
+/// </remarks>
+/// <param name="log">The log used for debug messages..</param>
+internal class Triangulator(IGorgonLog log)
 {
     #region Fields
     private readonly IndexableCyclicalLinkedList<Vertex> _polygonVertices = new();
     private readonly IndexableCyclicalLinkedList<Vertex> _earVertices = new();
-    private readonly CyclicalList<Vertex> _convexVertices = new();
-    private readonly CyclicalList<Vertex> _reflexVertices = new();
-    private readonly List<Triangle> _triangles = new();
+    private readonly CyclicalList<Vertex> _convexVertices = [];
+    private readonly CyclicalList<Vertex> _reflexVertices = [];
+    private readonly List<Triangle> _triangles = [];
     // The log used for debug messages.
-    private readonly IGorgonLog _log;
-    #endregion
+    private readonly IGorgonLog _log = log ?? GorgonLog.NullLog;
 
+    #endregion
     #region Constructor
-    /// <summary>
-    /// Initializes a new instance of the <see cref="Triangulator"/> class.
-    /// </summary>
-    /// <param name="log">The log used for debug messages..</param>
-    public Triangulator(IGorgonLog log) => _log = log ?? GorgonLog.NullLog;
     #endregion
 
 

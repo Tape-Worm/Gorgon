@@ -156,11 +156,11 @@ public class GorgonGifDecodingOptions
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonGifDecodingOptions"/> class.
     /// </summary>
-    public GorgonGifDecodingOptions() => Options = new GorgonOptionBag(new[]
-                                      {
+    public GorgonGifDecodingOptions() => Options = new GorgonOptionBag(
+                                      [
                                           GorgonOption.CreateOption(nameof(ReadAllFrames), false, Resources.GORIMG_OPT_READ_ALL_FRAMES),
                                           GorgonOption.CreateOption(nameof(Palette), new List<GorgonColor>()),
                                           GorgonOption.CreateSingleOption(nameof(AlphaThreshold), 0.0f, Resources.GORIMG_OPT_GIF_ALPHA_THRESHOLD, 0.0f, 1.0f)
-                                      });
+                                      ]);
     #endregion
 }

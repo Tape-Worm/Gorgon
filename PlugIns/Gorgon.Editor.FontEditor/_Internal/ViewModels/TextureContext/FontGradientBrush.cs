@@ -23,7 +23,7 @@ internal class FontGradientBrush
     // The brush to edit.
     private GorgonGlyphLinearGradientBrush _brush = DefaultBrush;
     // The list of nodes for weighting the gradient.
-    private readonly List<WeightHandle> _weightNodes = new();
+    private readonly List<WeightHandle> _weightNodes = [];
     private readonly IComparer<WeightHandle> _weightNodeSorter = new WeightHandleComparer();
     // The currently selected node.
     private WeightHandle _selected;

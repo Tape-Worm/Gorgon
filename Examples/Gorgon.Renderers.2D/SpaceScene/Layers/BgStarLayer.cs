@@ -33,8 +33,10 @@ namespace Gorgon.Examples;
 /// <summary>
 /// This will represent a 2D layer that renders our background stars.
 /// </summary>
-internal class BgStarLayer
-    : Layer2D
+/// <remarks>Initializes a new instance of the <see cref="BgStarLayer"/> class.</remarks>
+/// <param name="renderer">The 2D renderer for the application.</param>
+internal class BgStarLayer(Gorgon2D renderer)
+        : Layer2D(renderer)
 {
     #region Properties.
     /// <summary>
@@ -63,15 +65,6 @@ internal class BgStarLayer
             GorgonSamplerState.Wrapping);
         Renderer.End();
     }
-    #endregion
 
-    #region Constructor/Finalizer.
-    /// <summary>Initializes a new instance of the <see cref="BgStarLayer"/> class.</summary>
-    /// <param name="renderer">The 2D renderer for the application.</param>
-    public BgStarLayer(Gorgon2D renderer)
-        : base(renderer)
-    {
-
-    }
     #endregion
 }

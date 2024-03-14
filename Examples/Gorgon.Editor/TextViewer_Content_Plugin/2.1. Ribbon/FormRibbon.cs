@@ -61,12 +61,12 @@ internal partial class FormRibbon
     // with the menu item assigned to the zoom level.
 
     // The list of menu items associated with the zoom level.
-    private readonly Dictionary<ZoomLevels, ToolStripMenuItem> _menuZoomItems = new();
+    private readonly Dictionary<ZoomLevels, ToolStripMenuItem> _menuZoomItems = [];
 
     // This is similar to the zoom items in that it's a lookup for the font values and the menu items for the fonts.
 
     // The list of menu items associated with font selection.
-    private readonly Dictionary<FontFace, ToolStripMenuItem> _menuFontItems = new();
+    private readonly Dictionary<FontFace, ToolStripMenuItem> _menuFontItems = [];
 
     // The current zoom level.
     private ZoomLevels _zoomLevel = ZoomLevels.ToWindow;

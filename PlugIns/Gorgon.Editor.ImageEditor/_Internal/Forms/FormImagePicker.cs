@@ -57,7 +57,7 @@ internal partial class FormImagePicker
 {
     #region Variables.
     // A list of images held until the form is loaded for the first time.
-    private readonly List<(string, Image)> _deferredImages = new();
+    private readonly List<(string, Image)> _deferredImages = [];
     // The background texture.
     private GorgonTexture2DView _bgTextureView;
     private GorgonTexture2D _bgTexture;

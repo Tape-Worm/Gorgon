@@ -605,7 +605,7 @@ public class GorgonTextSprite
     {
         if (_formattedText.Length == 0)
         {
-            Renderable.Lines = Array.Empty<string>();
+            Renderable.Lines = [];
             return;
         }
 

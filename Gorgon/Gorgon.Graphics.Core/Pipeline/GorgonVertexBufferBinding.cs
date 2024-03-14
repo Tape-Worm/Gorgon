@@ -40,8 +40,14 @@ namespace Gorgon.Graphics.Core;
 /// </para>
 /// </remarks>
 /// <seealso cref="GorgonVertexBuffer"/>
-public readonly struct GorgonVertexBufferBinding
-    : IGorgonEquatableByRef<GorgonVertexBufferBinding>
+/// <remarks>
+/// Initializes a new instance of the <see cref="GorgonVertexBufferBinding"/> struct.
+/// </remarks>
+/// <param name="buffer">The buffer to bind.</param>
+/// <param name="stride">The stride of the data in the buffer, in bytes.</param>
+/// <param name="offset">[Optional] The offset within the buffer to start at, in bytes.</param>
+public readonly struct GorgonVertexBufferBinding(GorgonVertexBuffer buffer, int stride, int offset = 0)
+        : IGorgonEquatableByRef<GorgonVertexBufferBinding>
 {
     #region Variables.
     /// <summary>
@@ -52,15 +58,15 @@ public readonly struct GorgonVertexBufferBinding
     /// <summary>
     /// The vertex buffer to bind.
     /// </summary>
-    public readonly GorgonVertexBuffer VertexBuffer;
+    public readonly GorgonVertexBuffer VertexBuffer = buffer;
     /// <summary>
     /// Stride of the items within the vertex buffer, in bytes.
     /// </summary>
-    public readonly int Stride;
+    public readonly int Stride = stride;
     /// <summary>
     /// Offset within the buffer to start at, in bytes.
     /// </summary>
-    public readonly int Offset;
+    public readonly int Offset = offset;
     #endregion
 
     #region Methods.
@@ -185,20 +191,8 @@ public readonly struct GorgonVertexBufferBinding
     /// <param name="right">The right.</param>
     /// <returns>The result of the operator.</returns>
     public static bool operator !=(in GorgonVertexBufferBinding left, in GorgonVertexBufferBinding right) => !Equals(in left, in right);
-    #endregion
 
+    #endregion
     #region Constructor/Destructor.
-    /// <summary>
-    /// Initializes a new instance of the <see cref="GorgonVertexBufferBinding"/> struct.
-    /// </summary>
-    /// <param name="buffer">The buffer to bind.</param>
-    /// <param name="stride">The stride of the data in the buffer, in bytes.</param>
-    /// <param name="offset">[Optional] The offset within the buffer to start at, in bytes.</param>
-    public GorgonVertexBufferBinding(GorgonVertexBuffer buffer, int stride, int offset = 0)
-    {
-        VertexBuffer = buffer;
-        Stride = stride;
-        Offset = offset;
-    }
     #endregion
 }

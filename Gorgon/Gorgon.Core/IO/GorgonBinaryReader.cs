@@ -42,8 +42,14 @@ namespace Gorgon.IO;
 /// This object extends the functionality of the <see cref="BinaryReader"/> type by adding extra functions to read from a pointer (or <c>nint</c>), and from generic value types.
 /// </para>
 /// </remarks>
-public class GorgonBinaryReader
-    : BinaryReader
+/// <remarks>
+/// Initializes a new instance of the <see cref="GorgonBinaryReader"/> class.
+/// </remarks>
+/// <param name="input">Input stream.</param>
+/// <param name="encoder">Encoding for the binary reader.</param>
+/// <param name="keepStreamOpen">[Optional] <b>true</b> to keep the underlying stream open when the writer is closed, <b>false</b> to close when done.</param>
+public class GorgonBinaryReader(Stream input, Encoding encoder, bool keepStreamOpen = false)
+        : BinaryReader(input, encoder, keepStreamOpen)
 {
     #region Variables.
     // The size of the temporary buffer used to stream data in.
@@ -83,7 +89,7 @@ public class GorgonBinaryReader
     public bool KeepStreamOpen
     {
         get;
-    }
+    } = keepStreamOpen;
     #endregion
 
     #region Methods.
@@ -437,17 +443,9 @@ public class GorgonBinaryReader
 
         return array;
     }
-    #endregion
 
+    #endregion
     #region Constructor/Destructor.
-    /// <summary>
-    /// Initializes a new instance of the <see cref="GorgonBinaryReader"/> class.
-    /// </summary>
-    /// <param name="input">Input stream.</param>
-    /// <param name="encoder">Encoding for the binary reader.</param>
-    /// <param name="keepStreamOpen">[Optional] <b>true</b> to keep the underlying stream open when the writer is closed, <b>false</b> to close when done.</param>
-    public GorgonBinaryReader(Stream input, Encoding encoder, bool keepStreamOpen = false)
-        : base(input, encoder, keepStreamOpen) => KeepStreamOpen = keepStreamOpen;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonBinaryReader"/> class.

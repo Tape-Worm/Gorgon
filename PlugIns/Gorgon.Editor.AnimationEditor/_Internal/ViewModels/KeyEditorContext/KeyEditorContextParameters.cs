@@ -35,8 +35,16 @@ namespace Gorgon.Editor.AnimationEditor;
 /// <summary>
 /// The parameters for the <see cref="IKeyEditorContext"/> context view model.
 /// </summary>
-internal class KeyEditorContextParameters
-    : ViewModelInjection<IHostContentServices>
+/// <remarks>Initializes a new instance of the <see cref="KeyEditorContextParameters"/> class.</remarks>
+/// <param name="content">The animation content that owns the view model.</param>
+/// <param name="fileManager">The file manager for the project.</param>
+/// <param name="floatValueKeyEditor">The key editor for floating point values</param>
+/// <param name="controller">The sprite animation controller.</param>
+/// <param name="contentServices">The services hosted by the plug in.</param>
+/// <param name="hostServices">The services from the host application.</param>
+/// <exception cref="ArgumentNullException">Thrown when any of the parameters are <b>null</b>.</exception>
+internal class KeyEditorContextParameters(IAnimationContent content, IContentFileManager fileManager, IKeyValueEditor floatValueKeyEditor, IColorValueEditor colorValueKeyEditor, GorgonSpriteAnimationController controller, ContentServices contentServices, IHostContentServices hostServices)
+        : ViewModelInjection<IHostContentServices>(hostServices)
 {
     /// <summary>
     /// Property to return the content view model that owns the view model.
@@ -44,7 +52,7 @@ internal class KeyEditorContextParameters
     public IAnimationContent Content
     {
         get;
-    }
+    } = content ?? throw new ArgumentNullException(nameof(content));
 
     /// <summary>
     /// Property to return the file manager.
@@ -52,7 +60,7 @@ internal class KeyEditorContextParameters
     public IContentFileManager FileManager
     {
         get;
-    }
+    } = fileManager ?? throw new ArgumentNullException(nameof(fileManager));
 
     /// <summary>
     /// Property to return the services hosted by the plug in.
@@ -60,7 +68,7 @@ internal class KeyEditorContextParameters
     public ContentServices ContentServices
     {
         get;
-    }
+    } = contentServices ?? throw new ArgumentNullException(nameof(contentServices));
 
     /// <summary>
     /// Property to return the key editor for floating point values.
@@ -68,7 +76,7 @@ internal class KeyEditorContextParameters
     public IKeyValueEditor FloatValueKeyEditor
     {
         get;
-    }
+    } = floatValueKeyEditor ?? throw new ArgumentNullException(nameof(floatValueKeyEditor));
 
     /// <summary>
     /// Property to return the key value editor for color values.
@@ -76,7 +84,7 @@ internal class KeyEditorContextParameters
     public IColorValueEditor ColorValueKeyEditor
     {
         get;
-    }
+    } = colorValueKeyEditor ?? throw new ArgumentNullException(nameof(colorValueKeyEditor));
 
     /// <summary>
     /// Property to return the controller for sprite animations.
@@ -84,24 +92,5 @@ internal class KeyEditorContextParameters
     public GorgonSpriteAnimationController AnimationController
     {
         get;
-    }
-
-    /// <summary>Initializes a new instance of the <see cref="KeyEditorContextParameters"/> class.</summary>
-    /// <param name="content">The animation content that owns the view model.</param>
-    /// <param name="fileManager">The file manager for the project.</param>
-    /// <param name="floatValueKeyEditor">The key editor for floating point values</param>
-    /// <param name="controller">The sprite animation controller.</param>
-    /// <param name="contentServices">The services hosted by the plug in.</param>
-    /// <param name="hostServices">The services from the host application.</param>
-    /// <exception cref="ArgumentNullException">Thrown when any of the parameters are <b>null</b>.</exception>
-    public KeyEditorContextParameters(IAnimationContent content, IContentFileManager fileManager, IKeyValueEditor floatValueKeyEditor, IColorValueEditor colorValueKeyEditor, GorgonSpriteAnimationController controller, ContentServices contentServices, IHostContentServices hostServices)
-        : base(hostServices)
-    {
-        Content = content ?? throw new ArgumentNullException(nameof(content));
-        FileManager = fileManager ?? throw new ArgumentNullException(nameof(fileManager));
-        ContentServices = contentServices ?? throw new ArgumentNullException(nameof(contentServices));
-        FloatValueKeyEditor = floatValueKeyEditor ?? throw new ArgumentNullException(nameof(floatValueKeyEditor));
-        ColorValueKeyEditor = colorValueKeyEditor ?? throw new ArgumentNullException(nameof(colorValueKeyEditor));
-        AnimationController = controller ?? throw new ArgumentNullException(nameof(controller));
-    }
+    } = controller ?? throw new ArgumentNullException(nameof(controller));
 }

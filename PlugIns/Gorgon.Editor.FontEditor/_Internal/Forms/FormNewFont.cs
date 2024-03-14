@@ -270,10 +270,10 @@ internal partial class FormNewFont
     /// </remarks>
     bool IGorgonFontInfo.UsePremultipliedTextures => true;
 
-    /// <summary>Property to return a <see cref="Graphics.Fonts.GorgonGlyphBrush" /> to use for special effects on the glyphs for the font.</summary>
+    /// <summary>Property to return a <see cref="GorgonGlyphBrush" /> to use for special effects on the glyphs for the font.</summary>
     /// <remarks>
     ///   <para>
-    /// This value can be used to define how a glyph is rendered when the <see cref="Graphics.Fonts.GorgonFont" /> is generated. Applications can use brushes for gradients, textures, etc... to render the glyphs to give
+    /// This value can be used to define how a glyph is rendered when the <see cref="GorgonFont" /> is generated. Applications can use brushes for gradients, textures, etc... to render the glyphs to give
     /// them a unique look.
     /// </para>
     ///   <para>
@@ -310,7 +310,7 @@ internal partial class FormNewFont
     /// <summary>Property to return whether to include kerning pair information in the font.</summary>
     /// <remarks>
     ///   <para>
-    /// Kerning pairs are used to define spacing between 2 characters in a font.  When this value is set to <b>true</b> the kerning information of the font is retrieved and added to the <see cref="Graphics.Fonts.GorgonFont" />
+    /// Kerning pairs are used to define spacing between 2 characters in a font.  When this value is set to <b>true</b> the kerning information of the font is retrieved and added to the <see cref="GorgonFont" />
     /// for use when rendering. This can be used to resolve rendering issues regarding horizontal font spacing.
     /// </para>
     ///   <para>

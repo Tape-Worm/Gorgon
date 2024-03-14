@@ -50,12 +50,12 @@ internal class VertexEditService
     private readonly Vector2[] _vertices = new Vector2[4];
     // The handles for grabbing.
     private readonly RectHandle[] _handles =
-    {
-        new RectHandle(),
-        new RectHandle(),
-        new RectHandle(),
-        new RectHandle()
-    };
+    [
+        new(),
+        new(),
+        new(),
+        new()
+    ];
     // The vertex positions, in screen space.
     private readonly Vector2[] _screenVertices = new Vector2[4];
     // The currently selected corner.

@@ -86,9 +86,9 @@ internal class TvImageCodec
     // Formats supported by the image.
     // We need to tell Gorgon which pixel formats this image codec stores its data as.  Otherwise, the image will not look right when it's loaded.
     private readonly BufferFormat[] _supportedFormats =
-    {
+    [
         BufferFormat.R8G8B8A8_UNorm
-    };
+    ];
     #endregion
 
     #region Properties.
@@ -456,9 +456,6 @@ internal class TvImageCodec
         // Tell the codec which image file name extensions are commonly used to 
         // identify the image data type.  This is use by applications to determine 
         // which codec to use when loading an image.
-        CodecCommonExtensions = new[]
-                                {
-                                    "tv"
-                                };
+        CodecCommonExtensions = ["tv"];
     #endregion
 }

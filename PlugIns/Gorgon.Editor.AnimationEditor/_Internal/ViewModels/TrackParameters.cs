@@ -35,8 +35,21 @@ namespace Gorgon.Editor.AnimationEditor;
 /// <summary>
 /// Parameters for a the <see cref="ITrack"/> view model.
 /// </summary>
-internal class TrackParameters
-    : ViewModelInjection<IHostContentServices>
+/// <remarks>Initializes a new instance of the <see cref="TrackParameters{T}"/> class.</remarks>
+/// <param name="registration">The registration data for the track.</param>
+/// <param name="interpolationMode">The type of interpolation for the track.</param>
+/// <param name="supportedInterpolationMode">The type of interpolation modes supported by the track.</param>
+/// <param name="keyCount">The number of keys in this track.</param>
+/// <param name="undoService">The service that handles undo/redo functionality.</param>        
+/// <param name="hostServices">The services from the host application.</param>
+/// <exception cref="ArgumentNullException">Thrown when any of the parameters are <b>null</b>.</exception>
+internal class TrackParameters(GorgonTrackRegistration registration,
+                    TrackInterpolationMode interpolationMode,
+                    TrackInterpolationMode supportedInterpolationMode,
+                    int keyCount,
+                    IUndoService undoService,
+                    IHostContentServices hostServices)
+        : ViewModelInjection<IHostContentServices>(hostServices)
 {
     #region Properties.
     /// <summary>
@@ -45,7 +58,7 @@ internal class TrackParameters
     public GorgonTrackRegistration Registration
     {
         get;
-    }
+    } = registration ?? throw new ArgumentNullException(nameof(registration));
 
     /// <summary>
     /// Property to return the interpolation mode for the track.
@@ -53,7 +66,7 @@ internal class TrackParameters
     public TrackInterpolationMode InterpolationMode
     {
         get;
-    }
+    } = interpolationMode;
 
     /// <summary>
     /// Property to return the types of interpolation supported by the track.
@@ -61,7 +74,7 @@ internal class TrackParameters
     public TrackInterpolationMode SupportedInterpolationMode
     {
         get;
-    }
+    } = supportedInterpolationMode;
 
     /// <summary>
     /// Property to return the number of keys in this track.
@@ -69,7 +82,7 @@ internal class TrackParameters
     public int KeyCount
     {
         get;
-    }
+    } = keyCount;
 
     /// <summary>
     /// Property to return the service that handles undo/redo functionality.
@@ -77,7 +90,7 @@ internal class TrackParameters
     public IUndoService UndoService
     {
         get;
-    }
+    } = undoService ?? throw new ArgumentNullException(nameof(undoService));
 
     /// <summary>
     /// Property to set or return the metadata for the key type in the track.
@@ -87,30 +100,6 @@ internal class TrackParameters
         get;
         set;
     }
-    #endregion
 
-    #region Constructor/Finalizer.
-    /// <summary>Initializes a new instance of the <see cref="TrackParameters{T}"/> class.</summary>
-    /// <param name="registration">The registration data for the track.</param>
-    /// <param name="interpolationMode">The type of interpolation for the track.</param>
-    /// <param name="supportedInterpolationMode">The type of interpolation modes supported by the track.</param>
-    /// <param name="keyCount">The number of keys in this track.</param>
-    /// <param name="undoService">The service that handles undo/redo functionality.</param>        
-    /// <param name="hostServices">The services from the host application.</param>
-    /// <exception cref="ArgumentNullException">Thrown when any of the parameters are <b>null</b>.</exception>
-    public TrackParameters(GorgonTrackRegistration registration, 
-                        TrackInterpolationMode interpolationMode, 
-                        TrackInterpolationMode supportedInterpolationMode,
-                        int keyCount,
-                        IUndoService undoService,                            
-                        IHostContentServices hostServices)
-        : base(hostServices)
-    {
-        Registration = registration ?? throw new ArgumentNullException(nameof(registration));
-        UndoService = undoService ?? throw new ArgumentNullException(nameof(undoService));
-        SupportedInterpolationMode = supportedInterpolationMode;
-        InterpolationMode = interpolationMode;
-        KeyCount = keyCount;
-    }
     #endregion
 }

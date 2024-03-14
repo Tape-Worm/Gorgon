@@ -34,8 +34,12 @@ namespace Gorgon.Editor.SpriteEditor;
 /// <summary>
 /// Parameters for the <see cref="ISpriteAnchorEdit"/> view model.
 /// </summary>
-internal class SpriteAnchorEditParameters
-    : HostedPanelViewModelParameters
+/// <remarks>Initializes a new instance of the <see cref="SpriteAnchorEditParameters"/> class.</remarks>
+/// <param name="bounds">The boundaries for the anchor point.</param>
+/// <param name="hostServices">The common services from the host application.</param>
+/// <exception cref="ArgumentNullException">Thrown when any of the parameters are <b>null</b>.</exception>
+internal class SpriteAnchorEditParameters(DX.Rectangle bounds, IHostContentServices hostServices)
+        : HostedPanelViewModelParameters(hostServices)
 {
     /// <summary>
     /// Property to return the boundaries for the anchor point.
@@ -43,12 +47,5 @@ internal class SpriteAnchorEditParameters
     public DX.Rectangle Bounds
     {
         get;
-    }
-
-    /// <summary>Initializes a new instance of the <see cref="SpriteAnchorEditParameters"/> class.</summary>
-    /// <param name="bounds">The boundaries for the anchor point.</param>
-    /// <param name="hostServices">The common services from the host application.</param>
-    /// <exception cref="ArgumentNullException">Thrown when any of the parameters are <b>null</b>.</exception>
-    public SpriteAnchorEditParameters(DX.Rectangle bounds, IHostContentServices hostServices)
-        : base(hostServices) => Bounds = bounds;
+    } = bounds;
 }

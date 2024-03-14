@@ -57,8 +57,10 @@ namespace Gorgon.Editor.PlugIns;
 /// </para>
 /// </remarks>
 /// <seealso cref="IEditorContent"/>
-public abstract class ContentPlugIn
-    : EditorPlugIn
+/// <remarks>Initializes a new instance of the <see cref="ContentPlugIn"/> class.</remarks>
+/// <param name="description">Optional description of the plugin.</param>
+public abstract class ContentPlugIn(string description)
+        : EditorPlugIn(description)
 {
     #region Variables.
     // Flag to indicate that the plugin is initialized.
@@ -481,14 +483,6 @@ public abstract class ContentPlugIn
 
         OnInitialize();
     }
-    #endregion
 
-    #region Constructor/Finalizer.
-    /// <summary>Initializes a new instance of the <see cref="ContentPlugIn"/> class.</summary>
-    /// <param name="description">Optional description of the plugin.</param>
-    protected ContentPlugIn(string description)
-        : base(description)
-    {
-    }
     #endregion
 }

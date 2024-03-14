@@ -32,8 +32,10 @@ namespace Gorgon.Graphics.Core;
 /// <summary>
 /// A cache for holding sampler state objects.
 /// </summary>
-internal class SamplerCache
-    : IDisposable
+/// <remarks>Initializes a new instance of the <see cref="SamplerCache" /> class.</remarks>
+/// <param name="device">The D3D11 device object for creating samplers.</param>
+internal class SamplerCache(D3D11.Device5 device)
+        : IDisposable
 {
     #region Constants.
     // The size of the initial cache.
@@ -42,7 +44,7 @@ internal class SamplerCache
 
     #region Variables.
     // The D3D11 device object for creating samplers.
-    private readonly D3D11.Device5 _device;
+    private readonly D3D11.Device5 _device = device;
     // A list of cached pipeline states.
     private GorgonSamplerState[] _cachedSamplers = new GorgonSamplerState[InitialCacheSize];
     // A syncrhonization lock for multiple thread when dealing with the sampler cache.
@@ -164,11 +166,6 @@ internal class SamplerCache
             _cachedSamplers[4] = GorgonSamplerState.PointFilteringWrapping;
         }
     }
-    #endregion
 
-    #region Constructor/Finalizer.
-    /// <summary>Initializes a new instance of the <see cref="SamplerCache" /> class.</summary>
-    /// <param name="device">The D3D11 device object for creating samplers.</param>
-    public SamplerCache(D3D11.Device5 device) => _device = device;        
     #endregion
 }

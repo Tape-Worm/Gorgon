@@ -132,20 +132,20 @@ internal class Cube
     public Cube(GorgonGraphics graphics, GorgonInputLayout inputLayout)
     {
         CubeVertex[] vertices =
-        {
-            new CubeVertex(new Vector3(-0.5f, 0.5f, -0.5f), new Vector3(0, 0, 0)),
-            new CubeVertex(new Vector3(0.5f, 0.5f, -0.5f), new Vector3(1.0f, 1.0f, 0)),
-            new CubeVertex(new Vector3(0.5f, -0.5f, -0.5f), new Vector3(0.0f, 1.0f, 0)),
-            new CubeVertex(new Vector3(-0.5f, -0.5f, -0.5f), new Vector3(1.0f, 0.0f, 0)),
+        [
+            new(new Vector3(-0.5f, 0.5f, -0.5f), new Vector3(0, 0, 0)),
+            new(new Vector3(0.5f, 0.5f, -0.5f), new Vector3(1.0f, 1.0f, 0)),
+            new(new Vector3(0.5f, -0.5f, -0.5f), new Vector3(0.0f, 1.0f, 0)),
+            new(new Vector3(-0.5f, -0.5f, -0.5f), new Vector3(1.0f, 0.0f, 0)),
 
-            new CubeVertex(new Vector3(-0.5f, 0.5f, 0.5f), new Vector3(0, 0, 0)),
-            new CubeVertex(new Vector3(0.5f, 0.5f, 0.5f), new Vector3(1.0f, 1.0f, 0)),
-            new CubeVertex(new Vector3(0.5f, -0.5f, 0.5f), new Vector3(0.0f, 1.0f, 0)),
-            new CubeVertex(new Vector3(-0.5f, -0.5f, 0.5f), new Vector3(1.0f, 0.0f, 0)),
-        };
+            new(new Vector3(-0.5f, 0.5f, 0.5f), new Vector3(0, 0, 0)),
+            new(new Vector3(0.5f, 0.5f, 0.5f), new Vector3(1.0f, 1.0f, 0)),
+            new(new Vector3(0.5f, -0.5f, 0.5f), new Vector3(0.0f, 1.0f, 0)),
+            new(new Vector3(-0.5f, -0.5f, 0.5f), new Vector3(1.0f, 0.0f, 0)),
+        ];
 
         ushort[] indices =
-        {
+        [
             // Front face.
             0, 1, 2,
             2, 3, 0,
@@ -164,7 +164,7 @@ internal class Cube
             // Bottom face
             2, 6, 7,
             7, 3, 2
-        };
+        ];
 
         // Create our index buffer and vertex buffer and populate with our cube data.
         IndexBuffer = new GorgonIndexBuffer(graphics,

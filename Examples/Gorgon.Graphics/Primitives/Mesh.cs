@@ -36,8 +36,12 @@ namespace Gorgon.Examples;
 /// <summary>
 /// Base class for a mesh object.
 /// </summary>
-internal abstract class Mesh
-    : IDisposable
+/// <remarks>
+/// Initializes a new instance of the <see cref="Mesh"/> class.
+/// </remarks>
+/// <param name="graphics">The graphics interface that owns this object.</param>
+internal abstract class Mesh(GorgonGraphics graphics)
+        : IDisposable
 {
     #region Variables.
     // The axis aligned bounding box for the mesh.
@@ -51,7 +55,7 @@ internal abstract class Mesh
     public MeshMaterial Material
     {
         get;
-    }
+    } = new MeshMaterial();
 
     /// <summary>
     /// Property to return the graphics interface that owns this object.
@@ -59,7 +63,7 @@ internal abstract class Mesh
     public GorgonGraphics Graphics
     {
         get;
-    }
+    } = graphics;
 
     /// <summary>
     /// Property to return the type of primitive used to draw the object.
@@ -127,7 +131,7 @@ internal abstract class Mesh
     {
         get;
         set;
-    }
+    } = true;
     #endregion
 
     #region Methods.
@@ -246,18 +250,8 @@ internal abstract class Mesh
         VertexBuffer?.Dispose();
         IndexBuffer?.Dispose();
     }
-    #endregion
 
+    #endregion
     #region Constructor.
-    /// <summary>
-    /// Initializes a new instance of the <see cref="Mesh"/> class.
-    /// </summary>
-    /// <param name="graphics">The graphics interface that owns this object.</param>
-    protected Mesh(GorgonGraphics graphics)
-    {
-        Material = new MeshMaterial();
-        IsDepthWriteEnabled = true;
-        Graphics = graphics;
-    }
     #endregion
 }

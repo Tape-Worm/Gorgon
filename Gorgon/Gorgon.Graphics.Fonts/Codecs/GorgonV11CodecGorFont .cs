@@ -210,10 +210,9 @@ public sealed class GorgonCodecGorFont
         try
         {
             fontFile = new GorgonChunkFileReader(stream,
-                                                 new[]
-                                                 {
+                                                 [
                                                      FileHeader.ChunkID()
-                                                 });
+                                                 ]);
             fontFile.Open();
 
             return GetFontInfo(fontFile, null);
@@ -233,10 +232,9 @@ public sealed class GorgonCodecGorFont
     protected override async Task<GorgonFont> OnLoadFromStreamAsync(string name, Stream stream)
     {
         var fontFile = new GorgonChunkFileReader(stream,
-                                                 new[]
-                                                 {
+                                                 [
                                                      FileHeader.ChunkID()
-                                                 });
+                                                 ]);
         GorgonFontInfo fontInfo = null;
 
         try
@@ -301,10 +299,9 @@ public sealed class GorgonCodecGorFont
     protected override GorgonFont OnLoadFromStream(string name, Stream stream)
     {
         var fontFile = new GorgonChunkFileReader(stream,
-                                                 new[]
-                                                 {
+                                                 [
                                                      FileHeader.ChunkID()
-                                                 });
+                                                 ]);
         GorgonFontInfo fontInfo = null;
 
 
@@ -429,9 +426,9 @@ public sealed class GorgonCodecGorFont
     /// <param name="factory">The font factory that holds cached font information.</param>
     /// <exception cref="ArgumentNullException">Thrown when the <paramref name="factory"/> parameter is <b>null</b>.</exception>
     public GorgonCodecGorFont(GorgonFontFactory factory)
-        : base(factory) => CodecCommonExtensions = new[]
-                                {
+        : base(factory) => CodecCommonExtensions =
+                                [
                                     ".gorFont"
-                                };
+                                ];
     #endregion
 }

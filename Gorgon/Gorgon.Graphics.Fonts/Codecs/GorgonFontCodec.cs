@@ -43,8 +43,13 @@ namespace Gorgon.Graphics.Fonts.Codecs;
 /// with a <seealso cref="GorgonFontFactory"/>.
 /// </para>
 /// </remarks>
-public abstract class GorgonFontCodec
-    : IGorgonFontCodec
+/// <remarks>
+/// Initializes a new instance of the <see cref="GorgonFontCodec"/> class.
+/// </remarks>
+/// <param name="factory">The font factory that holds cached font information.</param>
+/// <exception cref="ArgumentNullException">Thrown when the <paramref name="factory"/> parameter is <b>null</b>.</exception>
+public abstract class GorgonFontCodec(GorgonFontFactory factory)
+        : IGorgonFontCodec
 {
     #region Properties.
     /// <summary>
@@ -53,7 +58,7 @@ public abstract class GorgonFontCodec
     protected GorgonFontFactory Factory
     {
         get;
-    }
+    } = factory ?? throw new ArgumentNullException(nameof(factory));
 
     /// <summary>
     /// Property to return the default filename extension for font files.
@@ -100,7 +105,7 @@ public abstract class GorgonFontCodec
     {
         get;
         protected set;
-    }
+    } = [];
 
     /// <summary>
     /// Property to return the friendly description of the codec.
@@ -463,18 +468,6 @@ public abstract class GorgonFontCodec
     /// A <see cref="string" /> that represents this instance.
     /// </returns>
     public override string ToString() => string.Format(Resources.GORGFX_TOSTR_FONT_CODEC, Codec);
-    #endregion
 
-    #region Constructor/Finalizer.
-    /// <summary>
-    /// Initializes a new instance of the <see cref="GorgonFontCodec"/> class.
-    /// </summary>
-    /// <param name="factory">The font factory that holds cached font information.</param>
-    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="factory"/> parameter is <b>null</b>.</exception>
-    protected GorgonFontCodec(GorgonFontFactory factory)
-    {
-        Factory = factory ?? throw new ArgumentNullException(nameof(factory));
-        CodecCommonExtensions = Array.Empty<string>();
-    }
     #endregion
 }

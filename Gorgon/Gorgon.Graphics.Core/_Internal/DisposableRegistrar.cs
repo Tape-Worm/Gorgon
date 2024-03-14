@@ -36,7 +36,7 @@ internal static class DisposableRegistrar
 {
     #region Variables.
     // The list of disposable objects.
-    private static readonly Dictionary<GorgonGraphics, List<WeakReference<IDisposable>>> _disposables = new();
+    private static readonly Dictionary<GorgonGraphics, List<WeakReference<IDisposable>>> _disposables = [];
     // Synchronization object for multiple threads.
     private static readonly object _syncLock = new();
     #endregion
@@ -72,7 +72,7 @@ internal static class DisposableRegistrar
         {
             if (!_disposables.TryGetValue(graphics, out List<WeakReference<IDisposable>> disposables))
             {
-                _disposables[graphics] = disposables = new List<WeakReference<IDisposable>>();
+                _disposables[graphics] = disposables = [];
             }
 
             disposables.Add(new WeakReference<IDisposable>(disposable));

@@ -166,7 +166,7 @@ internal partial class FileExploder
     private readonly GetClipboardDataTypeArgs _clipboardValidationArgs = new();
     private readonly DeleteArgs _deleteValidationArgs = new(null);
     private readonly CreateDirectoryArgs _createDirectoryValidationArgs = new();
-    private readonly string[] _validationFiles = { "Dummy " };
+    private readonly string[] _validationFiles = ["Dummy "];
     // The styles for file states.
     private readonly DataGridViewCellStyle _cutCellStyle;
     private readonly DataGridViewCellStyle _openFileStyle;

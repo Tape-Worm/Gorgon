@@ -53,13 +53,13 @@ internal class SpriteVertexEditService
     private readonly Vector2[] _vertices = new Vector2[4];
     // The handles for grabbing.
     private readonly RectHandle[] _handles =
-    {
-        new RectHandle(),
-        new RectHandle(),
-        new RectHandle(),
-        new RectHandle(),
-        new RectHandle()
-    };
+    [
+        new(),
+        new(),
+        new(),
+        new(),
+        new()
+    ];
     // The sprite boundaries, in texture space (but in pixels).
     private DX.RectangleF _spriteBounds;
     // The state used to draw inverted items.

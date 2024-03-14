@@ -39,8 +39,12 @@ namespace GorgonLibrary.IO;
 /// it allows Gorgon's file formats to be future proof.  That is, if a later version of Gorgon has support for a feature
 /// that does not exist in a previous version, then the older version will be able to read the file and skip the 
 /// unnecessary parts.</remarks>
-internal class GorgonChunkReader
-    : GorgonChunkedFormat
+/// <remarks>
+/// Initializes a new instance of the <see cref="GorgonChunkReader" /> class.
+/// </remarks>
+/// <param name="stream">The stream.</param>
+internal class GorgonChunkReader(Stream stream)
+        : GorgonChunkedFormat(stream, ChunkAccessMode.Read)
 {
     #region Methods.
     /// <summary>
@@ -430,16 +434,8 @@ internal class GorgonChunkReader
 
         return new SharpDX.RectangleF(Reader.ReadSingle(), Reader.ReadSingle(), Reader.ReadSingle(), Reader.ReadSingle());
     }
-    #endregion
 
+    #endregion
     #region Constructor/Destructor.
-    /// <summary>
-    /// Initializes a new instance of the <see cref="GorgonChunkReader" /> class.
-    /// </summary>
-    /// <param name="stream">The stream.</param>
-    public GorgonChunkReader(Stream stream)
-        : base(stream, ChunkAccessMode.Read)
-    {
-    }
     #endregion
 }

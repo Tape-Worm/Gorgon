@@ -41,8 +41,13 @@ namespace Gorgon.IO;
 /// <summary>
 /// A codec that can read and write a JSON formatted version of Gorgon v3 sprite data.
 /// </summary>
-public class GorgonV3SpriteJsonCodec
-    : GorgonSpriteCodecCommon
+/// <remarks>
+/// Initializes a new instance of the <see cref="GorgonV3SpriteJsonCodec"/> class.
+/// </remarks>
+/// <param name="renderer">The renderer used for resource handling.</param>
+/// <exception cref="ArgumentNullException">Thrown when the <paramref name="renderer"/> parameter is <b>null</b>.</exception>
+public class GorgonV3SpriteJsonCodec(Gorgon2D renderer)
+        : GorgonSpriteCodecCommon(renderer, Resources.GOR2DIO_V3_JSON_CODEC, Resources.GOR2DIO_V3_JSON_CODEC_DESCRIPTION)
 {
     #region Properties.
     /// <summary>
@@ -288,18 +293,6 @@ public class GorgonV3SpriteJsonCodec
             : jobj.ToObject<GorgonSprite>(serializer);
 #pragma warning restore IDE0046 // Convert to conditional expression
     }
-    #endregion
 
-    #region Constructor/Finalizer.
-    /// <summary>
-    /// Initializes a new instance of the <see cref="GorgonV3SpriteJsonCodec"/> class.
-    /// </summary>
-    /// <param name="renderer">The renderer used for resource handling.</param>
-    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="renderer"/> parameter is <b>null</b>.</exception>
-    public GorgonV3SpriteJsonCodec(Gorgon2D renderer)
-        : base(renderer, Resources.GOR2DIO_V3_JSON_CODEC, Resources.GOR2DIO_V3_JSON_CODEC_DESCRIPTION)
-    {
-
-    }
     #endregion
 }

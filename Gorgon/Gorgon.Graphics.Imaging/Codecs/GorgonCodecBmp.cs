@@ -68,12 +68,12 @@ public sealed class GorgonCodecBmp
     #region Variables.
     // Supported formats.
     private readonly BufferFormat[] _supportedFormats =
-    {
+    [
         BufferFormat.R8G8B8A8_UNorm,
         BufferFormat.B8G8R8A8_UNorm,
         BufferFormat.B8G8R8X8_UNorm,
         BufferFormat.B5G6R5_UNorm
-    };
+    ];
     #endregion
 
     #region Properties.
@@ -88,7 +88,7 @@ public sealed class GorgonCodecBmp
     /// Initializes a new instance of the <see cref="GorgonCodecBmp"/> class.
     /// </summary>
     public GorgonCodecBmp()
-        : base("BMP", Resources.GORIMG_DESC_BMP_CODEC, new[] { "bmp", "dib" }, ContainerFormatGuids.Bmp, null, null)
+        : base("BMP", Resources.GORIMG_DESC_BMP_CODEC, ["bmp", "dib"], ContainerFormatGuids.Bmp, null, null)
     {
     }
     #endregion

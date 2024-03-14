@@ -49,8 +49,12 @@ namespace Gorgon.Graphics.Core;
 /// <seealso cref="GorgonGraphics"/>
 /// <seealso cref="GorgonPipelineState"/>
 /// <seealso cref="GorgonSamplerState"/>
-public class GorgonSamplerStateBuilder
-    : GorgonStateBuilderCommon<GorgonSamplerStateBuilder, GorgonSamplerState>, IGorgonGraphicsObject
+/// <remarks>
+/// Initializes a new instance of the <see cref="GorgonSamplerStateBuilder" /> class.
+/// </remarks>
+/// <param name="graphics">The graphics interface used to build sampler states.</param>
+public class GorgonSamplerStateBuilder(GorgonGraphics graphics)
+        : GorgonStateBuilderCommon<GorgonSamplerStateBuilder, GorgonSamplerState>(new GorgonSamplerState()), IGorgonGraphicsObject
 {
     #region Properties.
     /// <summary>
@@ -59,7 +63,7 @@ public class GorgonSamplerStateBuilder
     public GorgonGraphics Graphics
     {
         get;
-    }
+    } = graphics ?? throw new ArgumentNullException(nameof(graphics));
     #endregion
 
     #region Methods.
@@ -68,7 +72,7 @@ public class GorgonSamplerStateBuilder
     /// </summary>
     /// <param name="dest">The destination state.</param>
     /// <param name="src">The state to copy.</param>
-        private static void CopyState(GorgonSamplerState dest, GorgonSamplerState src)
+    private static void CopyState(GorgonSamplerState dest, GorgonSamplerState src)
     {
         dest.Filter = src.Filter;
         dest.WrapU = src.WrapU;
@@ -244,14 +248,8 @@ public class GorgonSamplerStateBuilder
 
         return this;
     }
-    #endregion
 
+    #endregion
     #region Constructor.
-    /// <summary>
-    /// Initializes a new instance of the <see cref="GorgonSamplerStateBuilder" /> class.
-    /// </summary>
-    /// <param name="graphics">The graphics interface used to build sampler states.</param>
-    public GorgonSamplerStateBuilder(GorgonGraphics graphics)
-        : base(new GorgonSamplerState()) => Graphics = graphics ?? throw new ArgumentNullException(nameof(graphics));
     #endregion
 }

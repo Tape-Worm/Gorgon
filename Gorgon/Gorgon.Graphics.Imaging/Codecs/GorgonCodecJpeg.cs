@@ -46,9 +46,9 @@ namespace Gorgon.Graphics.Imaging.Codecs;
 ///		<item>
 ///			<description><see cref="BufferFormat.B8G8R8A8_UNorm"/> (Alpha channel is ignored)</description>
 ///		</item>
-    ///        <item>
-    ///            <description><see cref="BufferFormat.R8G8B8A8_UNorm"/> (Alpha channel is ignored)</description>
-    ///        </item>
+///        <item>
+///            <description><see cref="BufferFormat.R8G8B8A8_UNorm"/> (Alpha channel is ignored)</description>
+///        </item>
 /// </list>
 /// </para>
 /// <para>
@@ -59,17 +59,21 @@ namespace Gorgon.Graphics.Imaging.Codecs;
 /// </note>
 /// </para>
 /// </remarks>
-public sealed class GorgonCodecJpeg
-    : GorgonCodecWic<GorgonJpegEncodingOptions, IGorgonWicDecodingOptions>
+/// <remarks>
+/// Initializes a new instance of the <see cref="GorgonCodecJpeg" /> class.
+/// </remarks>
+/// <param name="encodingOptions">[Optional] Options to use when encoding a JPEG image.</param>
+public sealed class GorgonCodecJpeg(GorgonJpegEncodingOptions encodingOptions = null)
+        : GorgonCodecWic<GorgonJpegEncodingOptions, IGorgonWicDecodingOptions>("JPEG", Resources.GORIMG_DESC_JPG_CODEC, ["jpg", "jpeg", "jpe", "jif", "jfif", "jfi"], ContainerFormatGuids.Jpeg, encodingOptions, null)
 {
     #region Variables.
     // Supported formats.
     private readonly BufferFormat[] _supportedFormats =
-    {
+    [
         BufferFormat.R8G8B8A8_UNorm,
         BufferFormat.B8G8R8A8_UNorm,
         BufferFormat.B8G8R8X8_UNorm
-    };
+    ];
 
     // Image quality for lossy compressed images.
     private float _imageQuality = 1.0f;
@@ -105,16 +109,8 @@ public sealed class GorgonCodecJpeg
             _imageQuality = value;
         }
     }
-    #endregion
 
+    #endregion
     #region Constructor/Destructor.
-    /// <summary>
-    /// Initializes a new instance of the <see cref="GorgonCodecJpeg" /> class.
-    /// </summary>
-    /// <param name="encodingOptions">[Optional] Options to use when encoding a JPEG image.</param>
-    public GorgonCodecJpeg(GorgonJpegEncodingOptions encodingOptions = null)
-        : base("JPEG", Resources.GORIMG_DESC_JPG_CODEC, new[] { "jpg", "jpeg", "jpe", "jif", "jfif", "jfi" }, ContainerFormatGuids.Jpeg, encodingOptions, null)
-    {
-    }
     #endregion
 }

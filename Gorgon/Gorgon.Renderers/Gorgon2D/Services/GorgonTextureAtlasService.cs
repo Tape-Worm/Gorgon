@@ -212,7 +212,7 @@ public class GorgonTextureAtlasService
         }
 
         // Get all texture regions.
-        List<(GorgonSprite sprite, DX.Rectangle spriteRegion)> spriteRegions = sprites.Select(item =>
+        List<(GorgonSprite sprite, DX.Rectangle spriteRegion)> spriteRegions = [.. sprites.Select(item =>
         {
             DX.Rectangle region = item.Texture.Texture.ToPixel(item.TextureRegion);
 
@@ -223,8 +223,7 @@ public class GorgonTextureAtlasService
 
             return (item, region);
         })
-        .OrderByDescending(item => item.region.Height)
-        .ToList();
+        .OrderByDescending(item => item.region.Height)];
 
         int array = 0;
         result.Add(rects);
@@ -232,7 +231,7 @@ public class GorgonTextureAtlasService
         while (spriteRegions.Count > 0)
         {
             SpritePacker.CreateRoot(textureBounds.Width, textureBounds.Height);
-            (GorgonSprite sprite, DX.Rectangle region)[] activeRegions = spriteRegions.ToArray();
+            (GorgonSprite sprite, DX.Rectangle region)[] activeRegions = [.. spriteRegions];
 
             // Pack as many as possible into the current array/texture rect list.
             foreach ((GorgonSprite sprite, DX.Rectangle region) sprite in activeRegions)
@@ -280,7 +279,7 @@ public class GorgonTextureAtlasService
             if (array >= maxArrayCount)
             {
                 array = 0;
-                rects = new Dictionary<int, TextureRects>();
+                rects = [];
                 result.Add(rects);
             }
         }
@@ -457,7 +456,7 @@ public class GorgonTextureAtlasService
 
         if (regions.Count == 0)
         {
-            return new GorgonTextureAtlas(Array.Empty<GorgonTexture2DView>(), Array.Empty<(GorgonSprite, GorgonSprite)>());
+            return new GorgonTextureAtlas([], Array.Empty<(GorgonSprite, GorgonSprite)>());
         }
 
         // Get the total number of textures.

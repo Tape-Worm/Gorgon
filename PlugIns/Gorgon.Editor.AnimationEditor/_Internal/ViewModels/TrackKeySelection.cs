@@ -32,7 +32,11 @@ namespace Gorgon.Editor.AnimationEditor;
 /// <summary>
 /// A type that contains the track and keyframes that are selected for work.
 /// </summary>
-internal class TrackKeySelection
+/// <remarks>Initializes a new instance of the <see cref="TrackKeySelection"/> class.</remarks>
+/// <param name="trackIndex">Index of the track.</param>
+/// <param name="track">The selected track.</param>
+/// <param name="selectedKeys">The keys that were selected within the track.</param>
+internal class TrackKeySelection(int trackIndex, ITrack track, IReadOnlyList<TrackKeySelection.KeySelection> selectedKeys)
 {
     /// <summary>
     /// A keyframe selection.
@@ -114,7 +118,7 @@ internal class TrackKeySelection
     public int TrackIndex
     {
         get;
-    }
+    } = trackIndex;
 
     /// <summary>
     /// Property to return the track that has selected keyframes.
@@ -122,7 +126,7 @@ internal class TrackKeySelection
     public ITrack Track
     {
         get;
-    }
+    } = track;
 
     /// <summary>
     /// Property to return the list of keys that were selected within the track.
@@ -130,16 +134,5 @@ internal class TrackKeySelection
     public IReadOnlyList<KeySelection> SelectedKeys
     {
         get;
-    }
-
-    /// <summary>Initializes a new instance of the <see cref="TrackKeySelection"/> class.</summary>
-    /// <param name="trackIndex">Index of the track.</param>
-    /// <param name="track">The selected track.</param>
-    /// <param name="selectedKeys">The keys that were selected within the track.</param>
-    public TrackKeySelection(int trackIndex, ITrack track, IReadOnlyList<KeySelection> selectedKeys)
-    {
-        TrackIndex = trackIndex;
-        Track = track;
-        SelectedKeys = selectedKeys ?? Array.Empty<KeySelection>();
-    }
+    } = selectedKeys ?? [];
 }

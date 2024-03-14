@@ -44,8 +44,13 @@ namespace Gorgon.Editor.UI;
 /// </para>
 /// </remarks>
 /// <seealso cref="ContentEditorViewModelBase{T}"/>
-public class ContentViewModelInjection
-    : ViewModelInjection<IHostContentServices>, IContentViewModelInjection
+/// <remarks>Initializes a new instance of the ContentViewModelInjectionCommon class.</remarks>
+/// <param name="fileManager">The file manager for content files.</param>
+/// <param name="file">The file that contains the content.</param>        
+/// <param name="commonServices">The common services for the application.</param>
+/// <exception cref="ArgumentNullException">Thrown any of the parameters are <b>null</b></exception>
+public class ContentViewModelInjection(IContentFileManager fileManager, IContentFile file, IHostContentServices commonServices)
+        : ViewModelInjection<IHostContentServices>(commonServices), IContentViewModelInjection
 {
     /// <summary>
     /// Property to return the content file.
@@ -53,23 +58,11 @@ public class ContentViewModelInjection
     public IContentFile File
     {
         get;
-    }
+    } = file ?? throw new ArgumentNullException(nameof(file));
 
     /// <summary>Property to return the file manager for content files.</summary>
     public IContentFileManager ContentFileManager
     {
         get;
-    }
-
-    /// <summary>Initializes a new instance of the ContentViewModelInjectionCommon class.</summary>
-    /// <param name="fileManager">The file manager for content files.</param>
-    /// <param name="file">The file that contains the content.</param>        
-    /// <param name="commonServices">The common services for the application.</param>
-    /// <exception cref="ArgumentNullException">Thrown any of the parameters are <b>null</b></exception>
-    public ContentViewModelInjection(IContentFileManager fileManager, IContentFile file, IHostContentServices commonServices)
-        : base(commonServices)
-    {
-        ContentFileManager = fileManager ?? throw new ArgumentNullException(nameof(fileManager));
-        File = file ?? throw new ArgumentNullException(nameof(file));
-    }
+    } = fileManager ?? throw new ArgumentNullException(nameof(fileManager));
 }

@@ -42,7 +42,7 @@ internal class CompressJob
     public List<(XElement node, FileInfo file)> Files
     {
         get;
-    } = new List<(XElement node, FileInfo file)>();
+    } = [];
 
     /// <summary>
     /// Property to return the list of processed files.
@@ -50,6 +50,6 @@ internal class CompressJob
     public List<(XElement node, FileInfo file)> CompressedFiles
     {
         get;
-    } = new List<(XElement node, FileInfo file)>();
+    } = [];
     #endregion
 }

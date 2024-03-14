@@ -32,8 +32,12 @@ namespace Gorgon.UI;
 /// Arguments for the <see cref="GorgonFolderBrowser.FolderEntered"/> and <see cref="GorgonFolderBrowser.FolderSelected"/> events.
 /// </summary>
 /// <seealso cref="GorgonFolderBrowser"/>
-public class FolderSelectedArgs
-    : EventArgs
+/// <remarks>
+/// Initializes a new instance of the <see cref="FolderSelectedArgs"/> class.
+/// </remarks>
+/// <param name="folder">The folder that was selected.</param>
+public class FolderSelectedArgs(string folder)
+        : EventArgs
 {
     #region Properties.
     /// <summary>
@@ -45,15 +49,8 @@ public class FolderSelectedArgs
     public string FolderPath
     {
         get;
-    }
-    #endregion
+    } = folder ?? string.Empty;
 
-    #region Constructor/Finalizer.
-    /// <summary>
-    /// Initializes a new instance of the <see cref="FolderSelectedArgs"/> class.
-    /// </summary>
-    /// <param name="folder">The folder that was selected.</param>
-    public FolderSelectedArgs(string folder) => FolderPath = folder ?? string.Empty;
     #endregion
 
 }

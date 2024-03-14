@@ -113,8 +113,8 @@ internal static class LayerBuilder
             ParallaxLevel = 50,		// Kinda far away.
             Planets =
             {
-                new Planet(new PlanetaryLayer[]
-                {
+                new Planet(
+                [
                     new PlanetaryLayer(resources.Meshes["earthSphere"])
                     {
                         Animation = resources.Animations["PlanetRotation"]
@@ -123,7 +123,7 @@ internal static class LayerBuilder
                     {
                         Animation = resources.Animations["CloudRotation"]
                     },
-                })
+                ])
                 {
                     Position = new Vector3(-30, -15, 4.0f)
                 }

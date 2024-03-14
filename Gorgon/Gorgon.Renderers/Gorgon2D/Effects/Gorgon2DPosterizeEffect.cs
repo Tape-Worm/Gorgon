@@ -51,38 +51,31 @@ public class Gorgon2DPosterizedEffect
     /// <summary>
     /// Settings for the effect shader.
     /// </summary>
+    /// <remarks>
+    /// Initializes a new instance of the <see cref="Settings"/> struct.
+    /// </remarks>
+    /// <param name="useAlpha">if set to <b>true</b> [use alpha].</param>
+    /// <param name="power">The power.</param>
+    /// <param name="count">The number of colors.</param>
     [StructLayout(LayoutKind.Sequential, Pack = 16)]
-    private readonly struct Settings
+    private readonly struct Settings(bool useAlpha, float power, int count)
     {
         // Flag to posterize the alpha channel.
-        private readonly int _posterizeAlpha;                               
+        private readonly int _posterizeAlpha = Convert.ToInt32(useAlpha);                               
 
         /// <summary>
         /// Gamma for the posterization.
         /// </summary>
-        public readonly float PosterizeGamma;
+        public readonly float PosterizeGamma = power;
         /// <summary>
         /// Number of colors to reduce down to.
         /// </summary>
-        public readonly int PosterizeColorCount;
+        public readonly int PosterizeColorCount = count;
 
         /// <summary>
         /// Property to return whether to posterize the alpha channel.
         /// </summary>
         public bool PosterizeAlpha => _posterizeAlpha != 0;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="Settings"/> struct.
-        /// </summary>
-        /// <param name="useAlpha">if set to <b>true</b> [use alpha].</param>
-        /// <param name="power">The power.</param>
-        /// <param name="count">The number of colors.</param>
-        public Settings(bool useAlpha, float power, int count)
-        {
-            _posterizeAlpha = Convert.ToInt32(useAlpha);
-            PosterizeGamma = power;
-            PosterizeColorCount = count;
-        }
     }
     #endregion
 

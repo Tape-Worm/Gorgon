@@ -37,15 +37,20 @@ namespace Gorgon.IO;
 /// <summary>
 /// A JSON converter for a <see cref="GorgonKeyTexture2D"/>
 /// </summary>
-class JsonTextureKeyConverter
-    : JsonConverter<GorgonKeyTexture2D>
+/// <remarks>
+/// Initializes a new instance of the <see cref="JsonTextureKeyConverter"/> class.
+/// </remarks>
+/// <param name="graphics">The graphics interface to use for texture lookup.</param>
+/// <param name="overrides">The textures to use as overrides.</param>
+class JsonTextureKeyConverter(GorgonGraphics graphics, IEnumerable<GorgonTexture2DView> overrides = null)
+        : JsonConverter<GorgonKeyTexture2D>
 {
     // The texture converter to serialize the texture.
-    private readonly JsonTexture2DConverter _textureConverter;
+    private readonly JsonTexture2DConverter _textureConverter = new(graphics, null);
     // The texture converter to serialize a rectangle.
     private readonly JsonRectangleFConverter _rectConverter = new();
     // The texture overrides.
-    private readonly IEnumerable<GorgonTexture2DView> _overrides;
+    private readonly IEnumerable<GorgonTexture2DView> _overrides = overrides;
 
     /// <summary>Writes the JSON representation of the object.</summary>
     /// <param name="writer">The <see cref="JsonWriter" /> to write to.</param>
@@ -122,16 +127,5 @@ class JsonTextureKeyConverter
         }
 
         return texture is not null ? new GorgonKeyTexture2D(time, texture, uv, arrayIndex) : new GorgonKeyTexture2D(time, textureName, uv, arrayIndex);
-    }
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="JsonTextureKeyConverter"/> class.
-    /// </summary>
-    /// <param name="graphics">The graphics interface to use for texture lookup.</param>
-    /// <param name="overrides">The textures to use as overrides.</param>
-    public JsonTextureKeyConverter(GorgonGraphics graphics, IEnumerable<GorgonTexture2DView> overrides = null)
-    {
-        _overrides = overrides;
-        _textureConverter = new JsonTexture2DConverter(graphics, null);
     }
 }

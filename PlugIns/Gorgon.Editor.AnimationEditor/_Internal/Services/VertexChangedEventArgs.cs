@@ -32,8 +32,12 @@ namespace Gorgon.Editor.AnimationEditor;
 /// <summary>
 /// Arguments for the <see cref="VertexEditService.VerticesChanged"/> event.
 /// </summary>
-internal class VertexChangedEventArgs
-    : EventArgs
+/// <remarks>Initializes a new instance of the <see cref="VertexChangedEventArgs"/> class.</remarks>
+/// <param name="vertexIndex">Index of the vertex being modified</param>
+/// <param name="oldPos">The old position for the vertex.</param>
+/// <param name="newPos">The new position for the vertex.</param>
+internal class VertexChangedEventArgs(int vertexIndex, Vector2 oldPos, Vector2 newPos)
+        : EventArgs
 {
     /// <summary>
     /// Property to return the previous position of the vertex.
@@ -41,7 +45,7 @@ internal class VertexChangedEventArgs
     public Vector2 PreviousPosition
     {
         get;
-    }
+    } = oldPos;
 
     /// <summary>
     /// Property to return the new position of the vertex.
@@ -49,7 +53,7 @@ internal class VertexChangedEventArgs
     public Vector2 NewPosition
     {
         get;
-    }
+    } = newPos;
 
     /// <summary>
     /// Property to return the index of the vertex being changed.
@@ -57,16 +61,5 @@ internal class VertexChangedEventArgs
     public int VertexIndex
     {
         get;
-    }
-
-    /// <summary>Initializes a new instance of the <see cref="VertexChangedEventArgs"/> class.</summary>
-    /// <param name="vertexIndex">Index of the vertex being modified</param>
-    /// <param name="oldPos">The old position for the vertex.</param>
-    /// <param name="newPos">The new position for the vertex.</param>
-    public VertexChangedEventArgs(int vertexIndex, Vector2 oldPos, Vector2 newPos)
-    {
-        VertexIndex = vertexIndex;
-        PreviousPosition = oldPos;
-        NewPosition = newPos;
-    }
+    } = vertexIndex;
 }

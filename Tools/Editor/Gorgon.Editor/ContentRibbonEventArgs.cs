@@ -32,8 +32,10 @@ namespace Gorgon.Editor;
 /// <summary>
 /// Event parameters used to indicate when a content ribbon is added to or removed from the project view.
 /// </summary>
-internal class ContentRibbonEventArgs
-    : EventArgs
+/// <remarks>Initializes a new instance of the ContentRibbonAddedEventArgs class.</remarks>
+/// <param name="ribbon">The ribbon.</param>
+internal class ContentRibbonEventArgs(KryptonRibbon ribbon)
+        : EventArgs
 {
     /// <summary>
     /// Property to return the ribbon that was added.
@@ -41,9 +43,5 @@ internal class ContentRibbonEventArgs
     public KryptonRibbon Ribbon
     {
         get;
-    }
-
-    /// <summary>Initializes a new instance of the ContentRibbonAddedEventArgs class.</summary>
-    /// <param name="ribbon">The ribbon.</param>
-    public ContentRibbonEventArgs(KryptonRibbon ribbon) => Ribbon = ribbon;
+    } = ribbon;
 }

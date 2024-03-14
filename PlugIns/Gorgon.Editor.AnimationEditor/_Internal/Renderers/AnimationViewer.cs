@@ -43,8 +43,15 @@ namespace Gorgon.Editor.AnimationEditor;
 /// <summary>
 /// Provides rendering functionality for the animation editor.
 /// </summary>
-internal abstract class AnimationViewer
-    : DefaultContentRenderer<IAnimationContent>
+/// <remarks>Initializes a new instance of the <see cref="AnimationViewer"/> class.</remarks>
+/// <param name="name">The name of the renderer.</param>
+/// <param name="renderer">The main renderer for the content view.</param>
+/// <param name="swapChain">The swap chain for the content view.</param>
+/// <param name="dataContext">The view model to assign to the renderer.</param>        
+/// <param name="clipper">The service used to clip rectangular areas of an image.</param>
+/// <param name="supportOnionSkin"><b>true</b> if the view supports onion skinning, or <b>false</b> if not.</param>
+internal abstract class AnimationViewer(string name, Gorgon2D renderer, GorgonSwapChain swapChain, IAnimationContent dataContext, IRectClipperService clipper, bool supportOnionSkin)
+        : DefaultContentRenderer<IAnimationContent>(name, renderer, swapChain, dataContext)
 {
     #region Variables.
     // The main render target view.
@@ -71,7 +78,7 @@ internal abstract class AnimationViewer
     {
         get;
         private set;
-    }
+    } = clipper;
 
     /// <summary>
     /// Property to return the silhouette effect for the onion skin.
@@ -90,7 +97,7 @@ internal abstract class AnimationViewer
     {
         get;
         set;
-    }
+    } = supportOnionSkin;
 
     /// <summary>
     /// Property to return the sprite to update with the animation data.
@@ -663,21 +670,6 @@ internal abstract class AnimationViewer
 
     /// <summary>Function to set the default zoom/offset for the viewer.</summary>
     public abstract void DefaultZoom();
-    #endregion
 
-    #region Constructor/Finalizer.
-    /// <summary>Initializes a new instance of the <see cref="AnimationViewer"/> class.</summary>
-    /// <param name="name">The name of the renderer.</param>
-    /// <param name="renderer">The main renderer for the content view.</param>
-    /// <param name="swapChain">The swap chain for the content view.</param>
-    /// <param name="dataContext">The view model to assign to the renderer.</param>        
-    /// <param name="clipper">The service used to clip rectangular areas of an image.</param>
-    /// <param name="supportOnionSkin"><b>true</b> if the view supports onion skinning, or <b>false</b> if not.</param>
-    protected AnimationViewer(string name, Gorgon2D renderer, GorgonSwapChain swapChain, IAnimationContent dataContext, IRectClipperService clipper, bool supportOnionSkin)
-        : base(name, renderer, swapChain, dataContext)
-    {
-        Clipper = clipper;
-        SupportsOnionSkinning = supportOnionSkin;
-    }
     #endregion
 }

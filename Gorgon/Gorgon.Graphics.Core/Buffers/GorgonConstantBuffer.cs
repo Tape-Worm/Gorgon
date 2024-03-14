@@ -113,7 +113,7 @@ public sealed class GorgonConstantBuffer
 #pragma warning restore IDE0044 // Add readonly modifier
 #endif
     // A list of constant buffer views.
-    private List<GorgonConstantBufferView> _cbvs = new();
+    private List<GorgonConstantBufferView> _cbvs = [];
     #endregion
 
     #region Properties.

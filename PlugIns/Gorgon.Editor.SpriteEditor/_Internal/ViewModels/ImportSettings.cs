@@ -61,7 +61,7 @@ internal class ImportSettings
     public ObservableCollection<CodecSetting> SelectedCodecs
     {
         get;
-    } = new ObservableCollection<CodecSetting>();
+    } = [];
 
     /// <summary>
     /// Propery to return the paths to the codec plug ins.
@@ -69,7 +69,7 @@ internal class ImportSettings
     public ObservableCollection<CodecSetting> CodecPlugInPaths
     {
         get;
-    } = new ObservableCollection<CodecSetting>();
+    } = [];
 
     /// <summary>Property to return the name of this object.</summary>
     public override string Name => Resources.GORSPR_IMPORT_DESC;
@@ -108,7 +108,7 @@ internal class ImportSettings
     /// </summary>
     protected override bool OnUnloadPlugIns()
     {
-        IReadOnlyList<CodecSetting> selected = SelectedCodecs.ToArray();
+        IReadOnlyList<CodecSetting> selected = [.. SelectedCodecs];
         IReadOnlyList<GorgonSpriteCodecPlugIn> plugIns = selected.Select(item => item.PlugIn).ToArray();
         MessageResponse response = MessageResponse.None;
 

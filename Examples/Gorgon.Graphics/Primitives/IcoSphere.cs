@@ -43,8 +43,8 @@ internal class IcoSphere
     // Initial orientation.
     private Matrix4x4 _orientation;
     // A list of previously performed splits.
-    private readonly Dictionary<long, int> _cachedSplits = new();
-    private readonly List<Vector3> _vertices = new();
+    private readonly Dictionary<long, int> _cachedSplits = [];
+    private readonly List<Vector3> _vertices = [];
     private int _index;
     #endregion
 
@@ -96,89 +96,69 @@ internal class IcoSphere
     /// Function to return the base indices for the icosphere.
     /// </summary>
     /// <returns>A list of triangle indices.</returns>
-    private static List<int[]> GetBaseIndices() => new()
-    {
-                   new[]
-                   {
+    private static List<int[]> GetBaseIndices() =>
+    [
+                   [
                        0, 11, 5
-                   },
-                   new[]
-                   {
+                   ],
+                   [
                        0, 5, 1
-                   },
-                   new[]
-                   {
+                   ],
+                   [
                        0, 1, 7
-                   },
-                   new[]
-                   {
+                   ],
+                   [
                        0, 7, 10
-                   },
-                   new[]
-                   {
+                   ],
+                   [
                        0, 10, 11
-                   },
-                   new[]
-                   {
+                   ],
+                   [
                        1, 5, 9
-                   },
-                   new[]
-                   {
+                   ],
+                   [
                        5, 11, 4
-                   },
-                   new[]
-                   {
+                   ],
+                   [
                        11, 10, 2
-                   },
-                   new[]
-                   {
+                   ],
+                   [
                        10, 7, 6
-                   },
-                   new[]
-                   {
+                   ],
+                   [
                        7, 1, 8
-                   },
-                   new[]
-                   {
+                   ],
+                   [
                        3, 9, 4
-                   },
-                   new[]
-                   {
+                   ],
+                   [
                        3, 4, 2
-                   },
-                   new []
-                   {
+                   ],
+                   [
                        3, 2, 6
-                   },
-                   new []
-                   {
+                   ],
+                   [
                        3, 6, 8
-                   },
-                   new []
-                   {
+                   ],
+                   [
                        3, 8, 9
-                   },
-                   new []
-                   {
+                   ],
+                   [
                        4, 9, 5
-                   },
-                   new []
-                   {
+                   ],
+                   [
                        2, 4, 11
-                   },
-                   new []
-                   {
+                   ],
+                   [
                        6, 2, 10
-                   },
-                   new []
-                   {
+                   ],
+                   [
                        8, 6, 7
-                   },
-                   new []
-                   {
+                   ],
+                   [
                        9, 8, 1
-                   }
-               };
+                   ]
+               ];
 
     /// <summary>
     /// Function to retrieve the middle point between the two indices.
@@ -293,34 +273,34 @@ internal class IcoSphere
                 int index1 = GetMiddlePoint(index[1], index[2]);
                 int index2 = GetMiddlePoint(index[2], index[0]);
 
-                subIndices.Add(new[]
-                               {
+                subIndices.Add(
+                               [
                                    index[0],
                                    index0,
                                    index2
-                               });
+                               ]);
 
-                subIndices.Add(new[]
-                               {
+                subIndices.Add(
+                               [
                                    index[1],
                                    index1,
                                    index0
-                               });
+                               ]);
 
 
-                subIndices.Add(new[]
-                               {
+                subIndices.Add(
+                               [
                                    index[2],
                                    index2,
                                    index1
-                               });
+                               ]);
 
-                subIndices.Add(new[]
-                               {
+                subIndices.Add(
+                               [
                                    index0,
                                    index1,
                                    index2
-                               });
+                               ]);
             }
 
             indices = subIndices;
@@ -366,8 +346,8 @@ internal class IcoSphere
 
         FixSeam(vertexList, indexList);
 
-        GorgonVertexPosNormUvTangent[] vertexData = vertexList.ToArray();
-        int[] indexData = indexList.ToArray();
+        GorgonVertexPosNormUvTangent[] vertexData = [.. vertexList];
+        int[] indexData = [.. indexList];
 
         VertexCount = vertexList.Count;
         IndexCount = indexList.Count;

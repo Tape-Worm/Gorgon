@@ -42,15 +42,19 @@ namespace Gorgon.Editor.TextureAtlasTool;
 /// <summary>
 /// The service used for file operations.
 /// </summary>
-internal class FileIOService
+/// <remarks>Initializes a new instance of the <see cref="FileIOService"/> class.</remarks>
+/// <param name="fileSystem">The file system.</param>
+/// <param name="imageCodec">The default image codec to use.</param>
+/// <param name="spriteCodec">The default sprite codec to use.</param>
+internal class FileIOService(IContentFileManager fileSystem, IGorgonImageCodec imageCodec, IGorgonSpriteCodec spriteCodec)
 {
     #region Variables.
     // The file system for content files.
-    private readonly IContentFileManager _fileSystem;
+    private readonly IContentFileManager _fileSystem = fileSystem;
     // The default image codec.
-    private readonly IGorgonImageCodec _defaultImageCodec;
+    private readonly IGorgonImageCodec _defaultImageCodec = imageCodec;
     // The default sprite codec.
-    private readonly IGorgonSpriteCodec _defaultSpriteCodec;
+    private readonly IGorgonSpriteCodec _defaultSpriteCodec = spriteCodec;
     #endregion
 
     #region Methods.
@@ -244,18 +248,6 @@ internal class FileIOService
             image?.Dispose();                
         }
     }
-    #endregion
 
-    #region Constructor/Finalizer.
-    /// <summary>Initializes a new instance of the <see cref="FileIOService"/> class.</summary>
-    /// <param name="fileSystem">The file system.</param>
-    /// <param name="imageCodec">The default image codec to use.</param>
-    /// <param name="spriteCodec">The default sprite codec to use.</param>
-    public FileIOService(IContentFileManager fileSystem, IGorgonImageCodec imageCodec, IGorgonSpriteCodec spriteCodec)
-    {
-        _fileSystem = fileSystem;
-        _defaultImageCodec = imageCodec;
-        _defaultSpriteCodec = spriteCodec;
-    }
     #endregion
 }

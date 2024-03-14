@@ -45,8 +45,17 @@ namespace Gorgon.Renderers.Cameras;
 /// http://www.sjbaker.org/steve/omniv/love_your_z_buffer.html.
 /// </para>
 /// </remarks>
-public class GorgonPerspectiveCamera
-    : GorgonCameraCommon
+/// <remarks>
+/// Initializes a new instance of the <see cref="GorgonPerspectiveCamera"/> class.
+/// </remarks>
+/// <param name="graphics">The graphics interface to use with this object.</param>
+/// <param name="viewDimensions">The view dimensions.</param>
+/// <param name="minDepth">[Optional] The minimum depth value.</param>
+/// <param name="maximumDepth">[Optional] The maximum depth value.</param>
+/// <param name="name">[Optional] The name of the camera.</param>
+/// <exception cref="ArgumentNullException">Thrown when the <paramref name="graphics"/> parameter is <b>null</b>.</exception>
+public class GorgonPerspectiveCamera(GorgonGraphics graphics, DX.Size2F viewDimensions, float minDepth = 0.1f, float maximumDepth = 1000.0f, string name = null)
+        : GorgonCameraCommon(graphics, viewDimensions, minDepth, maximumDepth, name)
 {
     #region Variables.
     // The rotation matrix.
@@ -221,21 +230,8 @@ public class GorgonPerspectiveCamera
         _rotationQuat = Quaternion.Conjugate(Quaternion.CreateFromRotationMatrix(lookMatrix));            
         Changes |= CameraChange.View | CameraChange.Rotation;
     }
-    #endregion
 
+    #endregion
     #region Constructor/Destructor.
-    /// <summary>
-    /// Initializes a new instance of the <see cref="GorgonPerspectiveCamera"/> class.
-    /// </summary>
-    /// <param name="graphics">The graphics interface to use with this object.</param>
-    /// <param name="viewDimensions">The view dimensions.</param>
-    /// <param name="minDepth">[Optional] The minimum depth value.</param>
-    /// <param name="maximumDepth">[Optional] The maximum depth value.</param>
-    /// <param name="name">[Optional] The name of the camera.</param>
-    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="graphics"/> parameter is <b>null</b>.</exception>
-    public GorgonPerspectiveCamera(GorgonGraphics graphics, DX.Size2F viewDimensions, float minDepth = 0.1f, float maximumDepth = 1000.0f, string name = null)
-        : base(graphics, viewDimensions, minDepth, maximumDepth, name)
-    {
-    }
     #endregion
 }

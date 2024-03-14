@@ -61,9 +61,9 @@ internal class FontService
     // The lock used to ensure that the font generation remains non-reentrant.
     private int _lock;
     // The textures for the font.
-    private readonly List<GorgonTexture2DView> _textures = new();
+    private readonly List<GorgonTexture2DView> _textures = [];
     // The list of glyphs, grouped by texture.
-    private readonly Dictionary<GorgonTexture2DView, IReadOnlyList<GorgonGlyph>> _textureGlyphs = new();
+    private readonly Dictionary<GorgonTexture2DView, IReadOnlyList<GorgonGlyph>> _textureGlyphs = [];
 
     /// <summary>
     /// Default character list.
@@ -183,7 +183,7 @@ internal class FontService
                                                                    where glyphs.TextureView is not null
                                                                    group glyphs by glyphs.TextureView))
         {
-            _textureGlyphs[g.Key] = g.ToArray();
+            _textureGlyphs[g.Key] = [.. g];
         }
 
         TotalTextureArrayCount = _textures.Sum(item => item.ArrayCount);

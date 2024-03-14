@@ -15,16 +15,19 @@ namespace Gorgon.Editor.ImageEditor;
 /// <summary>
 /// A registry for the image codecs used by the plug ins in this assembly.
 /// </summary>
-internal class CodecRegistry
-    : ICodecRegistry
+/// <remarks>Initializes a new instance of the <see cref="CodecRegistry"/> class.</remarks>
+/// <param name="pluginCache">The cache of plug in assemblies.</param>
+/// <param name="log">The log for debug output.</param>
+internal class CodecRegistry(GorgonMefPlugInCache pluginCache, IGorgonLog log)
+        : ICodecRegistry
 {
     #region Variables.
     // The cache containing the plug in assemblies.
-    private readonly GorgonMefPlugInCache _pluginCache;
+    private readonly GorgonMefPlugInCache _pluginCache = pluginCache;
     // The service used to manage the plug ins.
-    private readonly IGorgonPlugInService _pluginService;
+    private readonly IGorgonPlugInService _pluginService = new GorgonMefPlugInService(pluginCache);
     // The log.
-    private readonly IGorgonLog _log;
+    private readonly IGorgonLog _log = log;
     #endregion
 
     #region Properties.
@@ -34,7 +37,7 @@ internal class CodecRegistry
     public IList<IGorgonImageCodec> Codecs
     {
         get;
-    } = new List<IGorgonImageCodec>();
+    } = [];
 
     /// <summary>
     /// Property to return the codecs cross referenced with known file extension types.
@@ -42,7 +45,7 @@ internal class CodecRegistry
     public IList<(GorgonFileExtension extension, IGorgonImageCodec codec)> CodecFileTypes
     {
         get;
-    } = new List<(GorgonFileExtension extension, IGorgonImageCodec codec)>();
+    } = [];
 
     /// <summary>
     /// Property to return the list of image codec plug ins.
@@ -50,7 +53,7 @@ internal class CodecRegistry
     public IList<GorgonImageCodecPlugIn> CodecPlugIns
     {
         get;
-    } = new List<GorgonImageCodecPlugIn>();
+    } = [];
     #endregion
 
     #region Methods.
@@ -152,7 +155,7 @@ internal class CodecRegistry
         var result = new List<GorgonImageCodecPlugIn>();
         _log.Print("Loading image codecs...", LoggingLevel.Intermediate);
 
-        IReadOnlyList<PlugInAssemblyState> assemblies = _pluginCache.ValidateAndLoadAssemblies(new[] { path }, _log);
+        IReadOnlyList<PlugInAssemblyState> assemblies = _pluginCache.ValidateAndLoadAssemblies([path], _log);
 
         if (assemblies.Count == 0)
         {
@@ -274,17 +277,6 @@ internal class CodecRegistry
             }
         }
     }
-    #endregion
 
-    #region Constructor/Finalizer.
-    /// <summary>Initializes a new instance of the <see cref="CodecRegistry"/> class.</summary>
-    /// <param name="pluginCache">The cache of plug in assemblies.</param>
-    /// <param name="log">The log for debug output.</param>
-    public CodecRegistry(GorgonMefPlugInCache pluginCache, IGorgonLog log)
-    {
-        _pluginCache = pluginCache;
-        _pluginService = new GorgonMefPlugInService(pluginCache);
-        _log = log;
-    }
     #endregion
 }

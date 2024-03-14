@@ -170,7 +170,7 @@ internal class SpriteEditorPlugIn
 
         if (textureNames is null)
         {
-            dependencyList[CommonEditorContentTypes.ImageType] = textureNames = new List<string>();                
+            dependencyList[CommonEditorContentTypes.ImageType] = textureNames = [];                
         }
 
         // Remove any duplicate names.
@@ -696,7 +696,7 @@ internal class SpriteEditorPlugIn
                 }
 
                 sprite.TextureRegion = sprite.Texture.ToTexel(new DX.Rectangle(0, 0, (int)size.Width, (int)size.Height));
-                metadata.DependsOn.Add(CommonEditorContentTypes.ImageType, new List<string> { textureFile.Path });
+                metadata.DependsOn.Add(CommonEditorContentTypes.ImageType, [textureFile.Path]);
             }
 
             metadata.Attributes[CodecAttr] = _defaultCodec.GetType().FullName;

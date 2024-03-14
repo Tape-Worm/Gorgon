@@ -42,21 +42,39 @@ namespace Gorgon.Editor.ImageEditor;
 /// <summary>
 /// Provides I/O functionality for reading/writing image data.
 /// </summary>
-internal class ImageIOService : IImageIOService
+/// <remarks>Initializes a new instance of the <see cref="ImageEditor.ImageIO"/> class.</remarks>
+/// <param name="defaultCodec">The default codec used by the plug in.</param>
+/// <param name="installedCodecs">The list of installed codecs.</param>
+/// <param name="importDialog">The dialog service used to export an image.</param>
+/// <param name="exportDialog">The dialog used to export an image.</param>
+/// <param name="noThumbnailImage">The image to use as a placeholder if a thumbnail cannot be generated.</param>
+/// <param name="busyService">The busy state service.</param>
+/// <param name="scratchArea">The file system writer used to write to the temporary area.</param>
+/// <param name="bcCompressor">The block compressor used to block (de)compress image data.</param>
+/// <param name="log">The logging interface to use.</param>
+internal class ImageIOService(IGorgonImageCodec defaultCodec,
+    ICodecRegistry installedCodecs,
+    IExportImageDialogService exportDialog,
+    IImportImageDialogService importDialog,
+    IGorgonImage noThumbnailImage,
+    IBusyStateService busyService,
+    IGorgonFileSystemWriter<Stream> scratchArea,
+    TexConvCompressor bcCompressor,
+    IGorgonLog log) : IImageIOService
 {
     #region Variables.
     // The block compressor.
-    private readonly TexConvCompressor _compressor;
+    private readonly TexConvCompressor _compressor = bcCompressor;
     // The export image dialog service.
-    private readonly IExportImageDialogService _exportDialog;
+    private readonly IExportImageDialogService _exportDialog = exportDialog;
     // The export image dialog service.
-    private readonly IImportImageDialogService _importDialog;
+    private readonly IImportImageDialogService _importDialog = importDialog;
     // The logging interface to use.
-    private readonly IGorgonLog _log;
+    private readonly IGorgonLog _log = log ?? GorgonLog.NullLog;
     // The busy state service.
-    private readonly IBusyStateService _busyState;
+    private readonly IBusyStateService _busyState = busyService;
     // The image to use as a placeholder for thumbnail generation.
-    private readonly IGorgonImage _noThumbImage;
+    private readonly IGorgonImage _noThumbImage = noThumbnailImage;
     #endregion
 
     #region Properties.
@@ -66,7 +84,7 @@ internal class ImageIOService : IImageIOService
     public IGorgonImageCodec DefaultCodec
     {
         get;
-    }
+    } = defaultCodec;
 
     /// <summary>
     /// Property to return the list of installed image codecs.
@@ -74,7 +92,7 @@ internal class ImageIOService : IImageIOService
     public ICodecRegistry InstalledCodecs
     {
         get;
-    }
+    } = installedCodecs;
 
     /// <summary>
     /// Property to return the file system writer used to write to the temporary area.
@@ -82,7 +100,7 @@ internal class ImageIOService : IImageIOService
     public IGorgonFileSystemWriter<Stream> ScratchArea
     {
         get;
-    }
+    } = scratchArea;
 
     /// <summary>
     /// Property to return whether or not block compression is supported.
@@ -519,38 +537,6 @@ internal class ImageIOService : IImageIOService
         using Stream stream = ScratchArea.OpenStream(filePath, FileMode.Open);
         return DefaultCodec.GetMetaData(stream);
     }
-    #endregion
 
-    #region Constructor/Finalizer.
-    /// <summary>Initializes a new instance of the <see cref="ImageEditor.ImageIO"/> class.</summary>
-    /// <param name="defaultCodec">The default codec used by the plug in.</param>
-    /// <param name="installedCodecs">The list of installed codecs.</param>
-    /// <param name="importDialog">The dialog service used to export an image.</param>
-    /// <param name="exportDialog">The dialog used to export an image.</param>
-    /// <param name="noThumbnailImage">The image to use as a placeholder if a thumbnail cannot be generated.</param>
-    /// <param name="busyService">The busy state service.</param>
-    /// <param name="scratchArea">The file system writer used to write to the temporary area.</param>
-    /// <param name="bcCompressor">The block compressor used to block (de)compress image data.</param>
-    /// <param name="log">The logging interface to use.</param>
-    public ImageIOService(IGorgonImageCodec defaultCodec,
-        ICodecRegistry installedCodecs,
-        IExportImageDialogService exportDialog,
-        IImportImageDialogService importDialog,
-        IGorgonImage noThumbnailImage,
-        IBusyStateService busyService,
-        IGorgonFileSystemWriter<Stream> scratchArea,
-        TexConvCompressor bcCompressor,
-        IGorgonLog log)
-    {
-        _exportDialog = exportDialog;
-        _importDialog = importDialog;
-        _noThumbImage = noThumbnailImage;
-        DefaultCodec = defaultCodec;
-        InstalledCodecs = installedCodecs;
-        ScratchArea = scratchArea;
-        _compressor = bcCompressor;
-        _busyState = busyService;
-        _log = log ?? GorgonLog.NullLog;
-    }
     #endregion
 }

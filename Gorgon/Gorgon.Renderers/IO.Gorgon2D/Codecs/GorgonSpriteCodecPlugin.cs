@@ -37,8 +37,17 @@ namespace Gorgon.IO;
 /// <summary>
 /// A plug in for allowing users to supply their own 3rd party sprite codecs.
 /// </summary>
-public abstract class GorgonSpriteCodecPlugIn
-    : GorgonPlugIn
+/// <remarks>
+/// Initializes a new instance of the <see cref="GorgonSpriteCodecPlugIn"/> class.
+/// </remarks>
+/// <param name="description">Optional description of the plugin.</param>
+/// <remarks>
+/// <para>
+/// Objects that implement this base class should pass in a hard coded description on the base constructor.
+/// </para>
+/// </remarks>
+public abstract class GorgonSpriteCodecPlugIn(string description)
+        : GorgonPlugIn(description)
 {
     #region Properties.
     /// <summary>
@@ -108,22 +117,6 @@ public abstract class GorgonSpriteCodecPlugIn
 
         return result ?? throw new KeyNotFoundException(string.Format(Resources.GOR2DIO_ERR_CODEC_NOT_IN_PLUGIN, codec));
     }
-    #endregion
 
-    #region Constructor/Finalizer.
-    /// <summary>
-    /// Initializes a new instance of the <see cref="GorgonSpriteCodecPlugIn"/> class.
-    /// </summary>
-    /// <param name="description">Optional description of the plugin.</param>
-    /// <remarks>
-    /// <para>
-    /// Objects that implement this base class should pass in a hard coded description on the base constructor.
-    /// </para>
-    /// </remarks>
-    protected GorgonSpriteCodecPlugIn(string description)
-        : base(description)
-    {
-
-    }
     #endregion
 }

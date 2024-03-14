@@ -947,7 +947,7 @@ internal class ProjectEditor
         // There should be no chance of this happening.
         Debug.Assert(virtualFile is not null, $"File not {file.Path} found in file system.");
 
-        IReadOnlyList<string> selectedFile = new[] { virtualFile.ID };
+        IReadOnlyList<string> selectedFile = [virtualFile.ID];
         if ((FileExplorer.SelectFileCommand is not null) && (FileExplorer.SelectFileCommand.CanExecute(selectedFile)))
         {
             FileExplorer.SelectFileCommand.Execute(selectedFile);

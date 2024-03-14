@@ -40,8 +40,13 @@ namespace Gorgon.Editor.Services;
 /// <summary>
 /// A service used to show a dialog for saving an editor file.
 /// </summary>
-internal class EditorFileSaveDialogService
-    : IFileDialogService
+/// <remarks>
+/// Initializes a new instance of the <see cref="EditorFileSaveDialogService"/> class.
+/// </remarks>
+/// <param name="settings">The application settings.</param>
+/// <param name="providers">The providers used for opening/saving files.</param>
+internal class EditorFileSaveDialogService(EditorSettings settings, FileSystemProviders providers)
+        : IFileDialogService
 {
     #region Variables.
     // The previously selected file extension filter index.
@@ -92,7 +97,7 @@ internal class EditorFileSaveDialogService
     public FileSystemProviders Providers
     {
         get;
-    }
+    } = providers;
 
     /// <summary>
     /// Property to return the settings for the application.
@@ -101,7 +106,7 @@ internal class EditorFileSaveDialogService
     public EditorSettings Settings
     {
         get;
-    }
+    } = settings;
 
     /// <summary>
     /// Property to set or return the currently active file writer plugin.
@@ -292,18 +297,6 @@ internal class EditorFileSaveDialogService
             dialog?.Dispose();
         }
     }
-    #endregion
 
-    #region Constructor/Finalizer.
-    /// <summary>
-    /// Initializes a new instance of the <see cref="EditorFileSaveDialogService"/> class.
-    /// </summary>
-    /// <param name="settings">The application settings.</param>
-    /// <param name="providers">The providers used for opening/saving files.</param>
-    public EditorFileSaveDialogService(EditorSettings settings, FileSystemProviders providers)
-    {
-        Settings = settings;
-        Providers = providers;
-    }
     #endregion
 }

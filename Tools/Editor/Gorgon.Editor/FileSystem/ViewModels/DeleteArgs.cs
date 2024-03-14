@@ -31,8 +31,10 @@ namespace Gorgon.Editor.ViewModels;
 /// <summary>
 /// The arguments to pass to the <see cref="IFileExplorer.DeleteDirectoryCommand"/>, or the <see cref="IFileExplorer.DeleteFileCommand"/>.
 /// </summary>
-internal class DeleteArgs
-    : EventArgs
+/// <remarks>Initializes a new instance of the <see cref="DeleteArgs"/> class.</remarks>
+/// <param name="id">The ID of the directory or file to delete.</param>
+internal class DeleteArgs(string id)
+        : EventArgs
 {
     /// <summary>
     /// Property to return the ID of the directory or file to delete.
@@ -40,7 +42,7 @@ internal class DeleteArgs
     public string DeleteID
     {
         get;
-    }
+    } = id;
 
     /// <summary>
     /// Property to set or return whether any items were deleted or not.
@@ -50,8 +52,4 @@ internal class DeleteArgs
         get;
         set;
     }
-
-    /// <summary>Initializes a new instance of the <see cref="DeleteArgs"/> class.</summary>
-    /// <param name="id">The ID of the directory or file to delete.</param>
-    public DeleteArgs(string id) => DeleteID = id;
 }

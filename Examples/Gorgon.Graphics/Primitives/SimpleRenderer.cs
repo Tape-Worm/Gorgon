@@ -112,9 +112,9 @@ internal class SimpleRenderer
     // The light data to send to the constant buffer.
     private readonly GorgonGpuLightData[] _lightData = new GorgonGpuLightData[MaxLights];
     // The list of meshes to render.
-    private readonly ObservableCollection<Mesh> _meshes = new();
+    private readonly ObservableCollection<Mesh> _meshes = [];
     // The draw calls for the available meshes.
-    private readonly List<GorgonDrawIndexCall> _drawCalls = new();
+    private readonly List<GorgonDrawIndexCall> _drawCalls = [];
     // The layout of a vertex.
     private GorgonInputLayout _vertexLayout;
     // The default sampler state.

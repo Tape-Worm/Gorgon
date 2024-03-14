@@ -39,7 +39,7 @@ internal class ImportData
     public List<string> PhysicalPaths
     {
         get;
-    } = new List<string>();
+    } = [];
 
     /// <summary>
     /// Property to set or return the directory to import into.

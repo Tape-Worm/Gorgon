@@ -61,7 +61,7 @@ internal enum ConsoleCloseSignal
 /// Native windows kernal API functionality.
 /// </summary>
 [SuppressUnmanagedCodeSecurity]
-internal static class KernelApi
+internal static partial class KernelApi
 {
     #region Constants.
     /// <summary>
@@ -119,8 +119,8 @@ internal static class KernelApi
     /// </summary>
     /// <param name="nStdHandle">The standard handle.</param>
     /// <returns></returns>
-    [DllImport("kernel32.dll")]
-    public static extern nint GetStdHandle(int nStdHandle);
+    [LibraryImport("kernel32.dll")]
+    public static partial nint GetStdHandle(int nStdHandle);
 
     /// <summary>
     /// 
@@ -133,12 +133,9 @@ internal static class KernelApi
     /// <param name="dwFlagsAndAttributes"></param>
     /// <param name="hTemplateFile"></param>
     /// <returns></returns>
-    [DllImport("kernel32.dll",
-        EntryPoint = "CreateFileW",
-        SetLastError = true,
-        CharSet = CharSet.Unicode,
-        CallingConvention = CallingConvention.StdCall)]
-    public static extern nint CreateFileW(
+    [LibraryImport("kernel32.dll", EntryPoint = "CreateFileW", SetLastError = true, StringMarshalling = StringMarshalling.Utf16)]
+    [UnmanagedCallConv(CallConvs = new System.Type[] { typeof(System.Runtime.CompilerServices.CallConvStdcall) })]
+    public static partial nint CreateFileW(
         string lpFileName,
         uint dwDesiredAccess,
         uint dwShareMode,
@@ -153,9 +150,9 @@ internal static class KernelApi
     /// <param name="handle"></param>
     /// <param name="mode"></param>
     /// <returns></returns>
-    [DllImport("kernel32.dll", SetLastError = true)]
+    [LibraryImport("kernel32.dll", SetLastError = true)]
     [return: MarshalAs(UnmanagedType.Bool)]
-    public static extern bool SetConsoleMode(nint handle, uint mode);
+    public static partial bool SetConsoleMode(nint handle, uint mode);
 
     /// <summary>
     /// 
@@ -163,18 +160,18 @@ internal static class KernelApi
     /// <param name="hConsoleHandle"></param>
     /// <param name="mode"></param>
     /// <returns></returns>
-    [DllImport("kernel32.dll", SetLastError = true)]
+    [LibraryImport("kernel32.dll", SetLastError = true)]
     [return: MarshalAs(UnmanagedType.Bool)]
-    public static extern bool GetConsoleMode(nint hConsoleHandle, out uint mode);
+    public static partial bool GetConsoleMode(nint hConsoleHandle, out uint mode);
 
     /// <summary>
     /// 
     /// </summary>
     /// <param name="nStdHandle"></param>
     /// <param name="handle"></param>
-    [DllImport("kernel32.dll")]
+    [LibraryImport("kernel32.dll")]
     [return: MarshalAs(UnmanagedType.Bool)]
-    public static extern bool SetStdHandle(int nStdHandle, nint handle);
+    public static partial bool SetStdHandle(int nStdHandle, nint handle);
 
     /// <summary>
         /// Function to set up a console control handler to intercept console close events.
@@ -183,32 +180,32 @@ internal static class KernelApi
     /// <param name="add"><b>true</b> to add the handler, <b>false</b> to remove it.</param>
     /// <returns><b>true</b> if the function succeeds, <b>false</b> if not.</returns>
         [return: MarshalAs(UnmanagedType.Bool)]
-    [DllImport("kernel32.dll")]
-    public static extern bool SetConsoleCtrlHandler(ConsoleCloseHandler handler, [MarshalAs(UnmanagedType.Bool)] bool add);
+    [LibraryImport("kernel32.dll")]
+    public static partial bool SetConsoleCtrlHandler(ConsoleCloseHandler handler, [MarshalAs(UnmanagedType.Bool)] bool add);
 
     /// <summary>
     /// Function to allocate a console window.
     /// </summary>
     /// <returns><b>true</b> if successful, <b>false</b> if not.</returns>
     [return: MarshalAs(UnmanagedType.Bool)]
-    [DllImport("kernel32.dll")]
-    public static extern bool AllocConsole();
+    [LibraryImport("kernel32.dll")]
+    public static partial bool AllocConsole();
 
     /// <summary>
     /// Function to free an allocated console window.
     /// </summary>
     /// <returns>Non zero if successful, zero if failed.</returns>
-        [DllImport("kernel32.dll")]
-    public static extern int FreeConsole();
+        [LibraryImport("kernel32.dll")]
+    public static partial int FreeConsole();
 
     /// <summary>
     /// Function to return the amount of memory available on the machine.
     /// </summary>
     /// <param name="stat">Memory status data.</param>
     /// <returns><b>true</b> if successful, <b>false</b> if not.</returns>
-    [DllImport("kernel32.dll")]
+    [LibraryImport("kernel32.dll")]
     [return: MarshalAs(UnmanagedType.Bool)]
-    private static extern bool GlobalMemoryStatusEx(ref MEMORYSTATUSEX stat);
+    private static partial bool GlobalMemoryStatusEx(ref MEMORYSTATUSEX stat);
 
     /// <summary>
     /// Function to return the frequency of the high precision timer.
@@ -216,9 +213,9 @@ internal static class KernelApi
     /// <remarks>See the MSDN documentation for a detailed description.</remarks>
     /// <param name="performanceFrequency">Frequency of timer.</param>
     /// <returns><b>true</b> if system supports high precision timing, <b>false</b> if not.</returns>
-    [DllImport("kernel32", CharSet = CharSet.Auto)]
+    [LibraryImport("kernel32")]
     [return: MarshalAs(UnmanagedType.Bool)]
-    public static extern bool QueryPerformanceFrequency(out long performanceFrequency);
+    public static partial bool QueryPerformanceFrequency(out long performanceFrequency);
 
     /// <summary>
     /// Function to return the time from a high resolution timer.
@@ -226,9 +223,9 @@ internal static class KernelApi
     /// <remarks>See the MSDN documentation for a detailed description.</remarks>
     /// <param name="performanceCount">Time from the timer.</param>
     /// <returns><b>true</b> if system supports high precision timing, <b>false</b> if not.</returns>
-    [DllImport("kernel32", CharSet = CharSet.Auto)]
+    [LibraryImport("kernel32")]
     [return: MarshalAs(UnmanagedType.Bool)]
-    public static extern bool QueryPerformanceCounter(out long performanceCount);
+    public static partial bool QueryPerformanceCounter(out long performanceCount);
     #endregion
 
     #region Constructor.

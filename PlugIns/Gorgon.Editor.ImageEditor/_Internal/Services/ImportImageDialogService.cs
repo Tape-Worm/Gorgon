@@ -39,14 +39,17 @@ namespace Gorgon.Editor.ImageEditor;
 /// <summary>
 /// Dialog serivce used for retrieving paths for importing image data.
 /// </summary>
-internal class ImportImageDialogService
-    : FileOpenDialogService, IImportImageDialogService
+/// <remarks>Initializes a new instance of the <see cref="ImportImageDialogService"/> class.</remarks>
+/// <param name="settings">The settings.</param>
+/// <exception cref="ArgumentNullException">Thrown when the <paramref name="settings" />, or the <paramref name="codecs"/> parameter is <strong>null</strong>.</exception>
+internal class ImportImageDialogService(ISettings settings, ICodecRegistry codecs)
+        : FileOpenDialogService, IImportImageDialogService
 {
     #region Variables.
     // The settings for the image editor.
-    private readonly ISettings _settings;
+    private readonly ISettings _settings = settings ?? throw new ArgumentNullException(nameof(settings));
     // The codecs available to the importer.
-    private readonly ICodecRegistry _codecs;
+    private readonly ICodecRegistry _codecs = codecs ?? throw new ArgumentNullException(nameof(codecs));
     #endregion
 
     #region Properties.
@@ -149,16 +152,8 @@ internal class ImportImageDialogService
 
         return filePath;
     }
-    #endregion
 
+    #endregion
     #region Constructor.
-    /// <summary>Initializes a new instance of the <see cref="ImportImageDialogService"/> class.</summary>
-    /// <param name="settings">The settings.</param>
-    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="settings" />, or the <paramref name="codecs"/> parameter is <strong>null</strong>.</exception>
-    public ImportImageDialogService(ISettings settings, ICodecRegistry codecs)
-    {
-        _settings = settings ?? throw new ArgumentNullException(nameof(settings));
-        _codecs = codecs ?? throw new ArgumentNullException(nameof(codecs));
-    }
     #endregion
 }

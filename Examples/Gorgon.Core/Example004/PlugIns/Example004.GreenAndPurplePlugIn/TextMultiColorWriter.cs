@@ -34,8 +34,12 @@ namespace Gorgon.Examples;
 /// So now we can implement our green/purple text color writer by passing in the color 
 /// on the constructor from the plug in interface.
 /// </summary>
-internal class TextMultiColorWriter
-    : TextColorWriter
+/// <remarks>
+/// Initializes a new instance of the <see cref="TextMultiColorWriter"/> class.
+/// </remarks>
+/// <param name="color">The color to use when printing the text.</param>
+internal class TextMultiColorWriter(ConsoleColor color)
+        : TextColorWriter
 {
     /// <summary>
     /// We'll use this property to advertise the text color.
@@ -43,11 +47,5 @@ internal class TextMultiColorWriter
     public override ConsoleColor TextColor
     {
         get;
-    }
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="TextMultiColorWriter"/> class.
-    /// </summary>
-    /// <param name="color">The color to use when printing the text.</param>
-    public TextMultiColorWriter(ConsoleColor color) => TextColor = color;
+    } = color;
 }

@@ -128,13 +128,13 @@ internal static class Program
     {
         // Define the points that make up our triangle.
         // We'll push it back half a unit along the Z-Axis so that we can see it.
-        MiniTriVertex[] vertices = {
+        MiniTriVertex[] vertices = [
                                // Note that we're assigning the texture coordinates in pixel space. The ToTexel function on the texture will convert these into 
                                // texel space for us.
                                new MiniTriVertex(new Vector3(0, 0.5f, 1.0f), _texture.ToTexel(new DX.Point(128, 3))),
                            new MiniTriVertex(new Vector3(0.5f, -0.5f, 1.0f), _texture.ToTexel(new DX.Point(230, 252))),
                            new MiniTriVertex(new Vector3(-0.5f, -0.5f, 1.0f), _texture.ToTexel(new DX.Point(23, 252)))
-                       };
+                       ];
 
         // Create the vertex buffer.
         //

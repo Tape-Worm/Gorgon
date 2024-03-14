@@ -41,17 +41,21 @@ namespace Gorgon.Editor.AnimationEditor;
 /// <summary>
 /// A registry for the animation codecs used by the plug ins in this assembly.
 /// </summary>
-internal class CodecRegistry
+/// <remarks>Initializes a new instance of the <see cref="CodecRegistry"/> class.</remarks>
+/// <param name="pluginCache">The cache of plug in assemblies.</param>
+/// <param name="renderer">The 2D renderer for the application.</param>
+/// <param name="log">The log for debug output.</param>
+internal class CodecRegistry(GorgonMefPlugInCache pluginCache, Gorgon2D renderer, IGorgonLog log)
 {
     #region Variables.
     // The cache containing the plug in assemblies.
-    private readonly GorgonMefPlugInCache _pluginCache;
+    private readonly GorgonMefPlugInCache _pluginCache = pluginCache;
     // The service used to manage the plug ins.
-    private readonly IGorgonPlugInService _pluginService;
+    private readonly IGorgonPlugInService _pluginService = new GorgonMefPlugInService(pluginCache);
     // The log.
-    private readonly IGorgonLog _log;
+    private readonly IGorgonLog _log = log;
     // The 2D renderer for the application.
-    private readonly Gorgon2D _renderer;
+    private readonly Gorgon2D _renderer = renderer;
     #endregion
 
     #region Properties.
@@ -61,7 +65,7 @@ internal class CodecRegistry
     public IList<IGorgonAnimationCodec> Codecs
     {
         get;
-    } = new List<IGorgonAnimationCodec>();
+    } = [];
 
     /// <summary>
     /// Property to return the codecs cross referenced with known file extension types.
@@ -69,7 +73,7 @@ internal class CodecRegistry
     public IList<(GorgonFileExtension extension, IGorgonAnimationCodec codec)> CodecFileTypes
     {
         get;
-    } = new List<(GorgonFileExtension extension, IGorgonAnimationCodec codec)>();
+    } = [];
 
     /// <summary>
     /// Property to return the list of animation codec plug ins.
@@ -77,7 +81,7 @@ internal class CodecRegistry
     public IList<GorgonAnimationCodecPlugIn> CodecPlugIns
     {
         get;
-    } = new List<GorgonAnimationCodecPlugIn>();
+    } = [];
     #endregion
 
     #region Methods.
@@ -179,7 +183,7 @@ internal class CodecRegistry
         var result = new List<GorgonAnimationCodecPlugIn>();
         _log.Print("Loading animation codecs...", LoggingLevel.Intermediate);
 
-        IReadOnlyList<PlugInAssemblyState> assemblies = _pluginCache.ValidateAndLoadAssemblies(new[] { path }, _log);
+        IReadOnlyList<PlugInAssemblyState> assemblies = _pluginCache.ValidateAndLoadAssemblies([path], _log);
 
         if (assemblies.Count == 0)
         {
@@ -286,19 +290,6 @@ internal class CodecRegistry
             CodecFileTypes.Add(codecFile);
         }
     }
-    #endregion
 
-    #region Constructor/Finalizer.
-    /// <summary>Initializes a new instance of the <see cref="CodecRegistry"/> class.</summary>
-    /// <param name="pluginCache">The cache of plug in assemblies.</param>
-    /// <param name="renderer">The 2D renderer for the application.</param>
-    /// <param name="log">The log for debug output.</param>
-    public CodecRegistry(GorgonMefPlugInCache pluginCache, Gorgon2D renderer, IGorgonLog log)
-    {
-        _pluginCache = pluginCache;
-        _renderer = renderer;
-        _pluginService = new GorgonMefPlugInService(pluginCache);
-        _log = log;
-    }
     #endregion
 }

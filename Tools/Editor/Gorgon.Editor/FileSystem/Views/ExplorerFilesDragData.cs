@@ -33,15 +33,21 @@ namespace Gorgon.Editor.Views;
 /// <summary>
 /// Import data for importing files and directories from Windows Explorer.
 /// </summary>
-internal class ExplorerImportData
-    : IImportData
+/// <remarks>
+/// Initializes a new instance of the <see cref="ExplorerImportData"/> class.
+/// </remarks>
+/// <param name="explorerPaths">The paths to the explorer files.</param>
+/// <param name="dragOperation">The desired drag operation.</param>
+/// <exception cref="ArgumentNullException">Thrown when the <paramref name="explorerPaths"/> parameter is <b>null</b>.</exception>
+internal class ExplorerImportData(IReadOnlyList<string> explorerPaths)
+        : IImportData
 {
     #region Properties.
     /// <summary>Property to return the list of files/directories from Windows Explorer.</summary>
     public List<string> PhysicalPaths
     {
         get;
-    }
+    } = new List<string>(explorerPaths ?? throw new ArgumentNullException(nameof(explorerPaths)));
 
     /// <summary>
     /// Property to set or return the node that is the target for the drop operation.
@@ -63,15 +69,6 @@ internal class ExplorerImportData
         get;
         set;
     }
-    #endregion
 
-    #region Constructor/Finalizer.
-    /// <summary>
-    /// Initializes a new instance of the <see cref="ExplorerImportData"/> class.
-    /// </summary>
-    /// <param name="explorerPaths">The paths to the explorer files.</param>
-    /// <param name="dragOperation">The desired drag operation.</param>
-    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="explorerPaths"/> parameter is <b>null</b>.</exception>
-    public ExplorerImportData(IReadOnlyList<string> explorerPaths) => PhysicalPaths = new List<string>(explorerPaths ?? throw new ArgumentNullException(nameof(explorerPaths)));
     #endregion
 }

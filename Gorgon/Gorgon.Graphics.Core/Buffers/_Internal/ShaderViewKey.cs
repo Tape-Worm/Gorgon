@@ -32,21 +32,27 @@ namespace Gorgon.Graphics.Core;
 /// <summary>
 /// A key used to uniquely identify a shader view.
 /// </summary>
-internal readonly struct BufferShaderViewKey
-    : IEquatable<BufferShaderViewKey>
+/// <remarks>
+/// Initializes a new instance of the <see cref="BufferShaderViewKey"/> struct.
+/// </remarks>
+/// <param name="start">The start.</param>
+/// <param name="count">The count.</param>
+/// <param name="dataType">Type of the data.</param>
+internal readonly struct BufferShaderViewKey(int start, int count, int dataType)
+        : IEquatable<BufferShaderViewKey>
 {
     /// <summary>
     /// The starting element.
     /// </summary>
-    public readonly int Start;
+    public readonly int Start = start;
     /// <summary>
     /// The number of elements.
     /// </summary>
-    public readonly int Count;
+    public readonly int Count = count;
     /// <summary>
     /// The type of data or size of data.
     /// </summary>
-    public readonly int DataType;
+    public readonly int DataType = dataType;
 
     /// <summary>
     /// Determines whether the specified <see cref="object" /> is equal to this instance.
@@ -81,19 +87,6 @@ internal readonly struct BufferShaderViewKey
     public BufferShaderViewKey(int start, int count, RawBufferElementType elementType)
         : this(start, count, (int)elementType)
     {
-    }
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="BufferShaderViewKey"/> struct.
-    /// </summary>
-    /// <param name="start">The start.</param>
-    /// <param name="count">The count.</param>
-    /// <param name="dataType">Type of the data.</param>
-    public BufferShaderViewKey(int start, int count, int dataType)
-    {
-        Start = start;
-        Count = count;
-        DataType = dataType;
     }
 
     /// <summary>

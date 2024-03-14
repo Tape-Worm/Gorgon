@@ -35,18 +35,23 @@ namespace Gorgon.Graphics.Fonts;
 /// A kerning pair value.
 /// </summary>
 /// <remarks>Kerning pairs are used to offset a pair of characters when they are next to each other.</remarks>
-public readonly struct GorgonKerningPair
-    : IGorgonEquatableByRef<GorgonKerningPair>
+/// <remarks>
+/// Initializes a new instance of the <see cref="GorgonKerningPair"/> struct.
+/// </remarks>
+/// <param name="leftChar">The left char.</param>
+/// <param name="rightChar">The right char.</param>
+public readonly struct GorgonKerningPair(char leftChar, char rightChar)
+        : IGorgonEquatableByRef<GorgonKerningPair>
 {
     #region Variables.
     /// <summary>
     /// Left character.
     /// </summary>
-    public readonly char LeftCharacter;
+    public readonly char LeftCharacter = leftChar;
     /// <summary>
     /// Right character.
     /// </summary>
-    public readonly char RightCharacter;
+    public readonly char RightCharacter = rightChar;
     #endregion
 
     #region Methods.
@@ -119,18 +124,8 @@ public readonly struct GorgonKerningPair
     /// <returns>
     ///   <b>true</b> if equal, <b>false</b> if not.</returns>
     public bool Equals(in GorgonKerningPair other) => Equals(in this, in other);
-    #endregion
 
+    #endregion
     #region Constructor/Destructor.
-    /// <summary>
-    /// Initializes a new instance of the <see cref="GorgonKerningPair"/> struct.
-    /// </summary>
-    /// <param name="leftChar">The left char.</param>
-    /// <param name="rightChar">The right char.</param>
-    public GorgonKerningPair(char leftChar, char rightChar)
-    {
-        LeftCharacter = leftChar;
-        RightCharacter = rightChar;
-    }
     #endregion
 }

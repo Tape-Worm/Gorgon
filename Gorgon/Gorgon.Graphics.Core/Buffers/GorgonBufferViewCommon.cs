@@ -31,8 +31,16 @@ namespace Gorgon.Graphics.Core;
 /// <summary>
 /// The base class for buffer shader views.
 /// </summary>
-public abstract class GorgonBufferViewCommon
-    : GorgonShaderResourceView
+/// <remarks>
+/// Initializes a new instance of the <see cref="GorgonBufferViewCommon"/> class.
+/// </remarks>
+/// <param name="buffer">The buffer to bind to the view.</param>
+/// <param name="startingElement">The starting element in the buffer to view.</param>
+/// <param name="elementCount">The number of elements in the buffer to view.</param>
+/// <param name="totalElementCount">The total number of elements in the buffer.</param>
+/// <exception cref="ArgumentNullException">Thrown when the <paramref name="buffer"/> parameter is <b>null</b>.</exception>
+public abstract class GorgonBufferViewCommon(GorgonBuffer buffer, int startingElement, int elementCount, int totalElementCount)
+        : GorgonShaderResourceView(buffer)
 {
     #region Properties.
     /// <summary>
@@ -42,7 +50,7 @@ public abstract class GorgonBufferViewCommon
     {
         get;
         protected set;
-    }
+    } = buffer;
 
     /// <summary>
     /// Property to return the starting element.
@@ -50,7 +58,7 @@ public abstract class GorgonBufferViewCommon
     public int StartElement
     {
         get;
-    }
+    } = startingElement;
 
     /// <summary>
     /// Property to return the number of elements.
@@ -58,7 +66,7 @@ public abstract class GorgonBufferViewCommon
     public int ElementCount
     {
         get;
-    }
+    } = elementCount;
 
     /// <summary>
     /// Property to return the total number of elements in the <see cref="Buffer"/>.
@@ -66,7 +74,7 @@ public abstract class GorgonBufferViewCommon
     public int TotalElementCount
     {
         get;
-    }
+    } = totalElementCount;
 
     /// <summary>
     /// Property to return the size of an element, in bytes.
@@ -86,24 +94,6 @@ public abstract class GorgonBufferViewCommon
         Buffer = null;
         base.Dispose();
     }
-    #endregion
 
-    #region Constructor/Finalizer.
-    /// <summary>
-    /// Initializes a new instance of the <see cref="GorgonBufferViewCommon"/> class.
-    /// </summary>
-    /// <param name="buffer">The buffer to bind to the view.</param>
-    /// <param name="startingElement">The starting element in the buffer to view.</param>
-    /// <param name="elementCount">The number of elements in the buffer to view.</param>
-    /// <param name="totalElementCount">The total number of elements in the buffer.</param>
-    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="buffer"/> parameter is <b>null</b>.</exception>
-    protected GorgonBufferViewCommon(GorgonBuffer buffer, int startingElement, int elementCount, int totalElementCount)
-        : base(buffer)
-    {
-        TotalElementCount = totalElementCount;
-        StartElement = startingElement;
-        ElementCount = elementCount;
-        Buffer = buffer;
-    }
     #endregion
 }

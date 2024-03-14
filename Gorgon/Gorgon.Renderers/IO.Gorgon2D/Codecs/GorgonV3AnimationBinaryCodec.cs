@@ -42,8 +42,13 @@ namespace Gorgon.IO;
 /// <summary>
 /// A codec used to read/write animations as binary formatted data.
 /// </summary>
-public class GorgonV3AnimationBinaryCodec
-    : GorgonAnimationCodecCommon
+/// <remarks>
+/// Initializes a new instance of the <see cref="GorgonV3AnimationBinaryCodec"/> class.
+/// </remarks>
+/// <param name="renderer">The renderer used for resource handling.</param>
+/// <exception cref="ArgumentNullException">Thrown when the <paramref name="renderer"/> is <b>null</b>.</exception>
+public class GorgonV3AnimationBinaryCodec(Gorgon2D renderer)
+        : GorgonAnimationCodecCommon(renderer, Resources.GOR2DIO_V3_ANIM_BIN_CODEC, Resources.GOR2DIO_V3_ANIM_BIN_CODEC_DESCRIPTION)
 {
     #region Properties.
     /// <summary>
@@ -169,17 +174,17 @@ public class GorgonV3AnimationBinaryCodec
 
         try
         {
-            reader = new GorgonChunkFileReader(stream, new[] { CurrentFileHeader });
+            reader = new GorgonChunkFileReader(stream, [CurrentFileHeader]);
             reader.Open();
             if (!IsReadableChunkFile(reader))
             {
-                return Array.Empty<string>();
+                return [];
             }
 
             // No texture data in this file.
             if (!reader.Chunks.Contains(TextureData))
             {
-                return Array.Empty<string>();
+                return [];
             }
 
             binReader = reader.OpenChunk(TextureData);
@@ -242,10 +247,9 @@ public class GorgonV3AnimationBinaryCodec
         var builder = new GorgonAnimationBuilder();
 
         var reader = new GorgonChunkFileReader(stream,
-                                               new[]
-                                               {
+                                               [
                                                    CurrentFileHeader
-                                               });
+                                               ]);
         GorgonBinaryReader binReader = null;
 
         try
@@ -426,7 +430,7 @@ public class GorgonV3AnimationBinaryCodec
 
         try
         {
-            reader = new GorgonChunkFileReader(stream, new[] { GorgonV3AnimationJsonCodec.FileHeader30 });
+            reader = new GorgonChunkFileReader(stream, [GorgonV3AnimationJsonCodec.FileHeader30]);
             reader.Open();
             return IsReadableChunkFile(reader);
         }
@@ -439,17 +443,6 @@ public class GorgonV3AnimationBinaryCodec
             reader?.Close();
         }
     }
-    #endregion
 
-    #region Constructor/Finalizer.
-    /// <summary>
-    /// Initializes a new instance of the <see cref="GorgonV3AnimationBinaryCodec"/> class.
-    /// </summary>
-    /// <param name="renderer">The renderer used for resource handling.</param>
-    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="renderer"/> is <b>null</b>.</exception>
-    public GorgonV3AnimationBinaryCodec(Gorgon2D renderer)
-        : base(renderer, Resources.GOR2DIO_V3_ANIM_BIN_CODEC, Resources.GOR2DIO_V3_ANIM_BIN_CODEC_DESCRIPTION)
-    {
-    }
     #endregion
 }

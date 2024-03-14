@@ -63,18 +63,22 @@ namespace Gorgon.Graphics.Imaging.Codecs;
 /// </note>
 /// </para>
 /// </remarks>
-public sealed class GorgonCodecPng
-    : GorgonCodecWic<GorgonPngEncodingOptions, IGorgonWicDecodingOptions>
+/// <remarks>
+/// Initializes a new instance of the <see cref="GorgonCodecPng"/> class.
+/// </remarks>
+/// <param name="encodingOptions">[Optional] Options used when encoding the image data.</param>
+public sealed class GorgonCodecPng(GorgonPngEncodingOptions encodingOptions = null)
+        : GorgonCodecWic<GorgonPngEncodingOptions, IGorgonWicDecodingOptions>("PNG", Resources.GORIMG_DESC_PNG_CODEC, ["png"], ContainerFormatGuids.Png, encodingOptions, null)
 {
     #region Variables.
     // Supported formats.
     private readonly BufferFormat[] _supportedPixelFormats =
-    {
+    [
         BufferFormat.R8G8B8A8_UNorm,
         BufferFormat.B8G8R8A8_UNorm,
         BufferFormat.B8G8R8X8_UNorm,
         BufferFormat.R16G16B16A16_UNorm
-    };
+    ];
     #endregion
 
     #region Properties.
@@ -82,16 +86,8 @@ public sealed class GorgonCodecPng
     /// Property to return the supported pixel formats for this codec.
     /// </summary>
     public override IReadOnlyList<BufferFormat> SupportedPixelFormats => _supportedPixelFormats;
-    #endregion
 
+    #endregion
     #region Constructor/Destructor.
-    /// <summary>
-    /// Initializes a new instance of the <see cref="GorgonCodecPng"/> class.
-    /// </summary>
-    /// <param name="encodingOptions">[Optional] Options used when encoding the image data.</param>
-    public GorgonCodecPng(GorgonPngEncodingOptions encodingOptions = null)
-        : base("PNG", Resources.GORIMG_DESC_PNG_CODEC, new[] { "png" }, ContainerFormatGuids.Png, encodingOptions, null)
-    {
-    }
     #endregion
 }

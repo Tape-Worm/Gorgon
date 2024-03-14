@@ -111,6 +111,8 @@ internal static class Shell32
     }
 
     [DllImport("shell32.dll", CharSet = CharSet.Auto)]
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Interoperability", "SYSLIB1054:Use 'LibraryImportAttribute' instead of 'DllImportAttribute' to generate P/Invoke marshalling code at compile time",
+        Justification = "The new system is super shitty and barely handles marshalling.")]
     private static extern int SHFileOperation(ref SHFILEOPSTRUCT fileOp);
 
     /// <summary>

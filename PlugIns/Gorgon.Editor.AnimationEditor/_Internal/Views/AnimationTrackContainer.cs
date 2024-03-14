@@ -470,7 +470,7 @@ internal partial class AnimationTrackContainer
                 GridTrackKeys.Rows[lastSelRowIndex].Cells[0].Selected = true;
             }
             return new[] { 
-                (lastSelRowIndex, (IReadOnlyList<int>)Array.Empty<int>())
+                (lastSelRowIndex, (IReadOnlyList<int>)[])
             };
         }
 
@@ -481,7 +481,7 @@ internal partial class AnimationTrackContainer
         {
             if (rowID != cell.RowIndex)
             {
-                keyIndices = new List<int>();
+                keyIndices = [];
                 result.Add((cell.RowIndex, keyIndices));
                 rowID = cell.RowIndex;                    
             }

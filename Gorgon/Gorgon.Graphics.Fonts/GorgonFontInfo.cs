@@ -188,10 +188,10 @@ public record GorgonFontInfo(string FontFamilyName, float Size, FontHeightMode F
         {
             if (value is null)
             {
-                _characters = new[]
-                              {
+                _characters =
+                              [
                                   ' '
-                              };
+                              ];
                 return;
             }
 
@@ -199,10 +199,10 @@ public record GorgonFontInfo(string FontFamilyName, float Size, FontHeightMode F
 
             if (_characters.Length == 0)
             {
-                _characters = new[]
-                              {
+                _characters =
+                              [
                                   ' '
-                              };
+                              ];
             }
         }
     }

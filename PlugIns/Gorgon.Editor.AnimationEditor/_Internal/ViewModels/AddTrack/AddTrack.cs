@@ -41,7 +41,7 @@ internal class AddTrack
 {
     #region Variables.
     // The list of selected tracks.
-    private readonly List<GorgonTrackRegistration> _selectedTracks = new();
+    private readonly List<GorgonTrackRegistration> _selectedTracks = [];
     #endregion
 
     #region Properties.

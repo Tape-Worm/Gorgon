@@ -31,8 +31,11 @@ namespace Gorgon.IO;
 /// <summary>
 /// Event arguments for the <see cref="IGorgonFileSystemWriter{T}.FileImported"/>.
 /// </summary>
-public class FileImportedArgs
-    : EventArgs
+/// <remarks>Initializes a new instance of the <see cref="FileImportedArgs"/> class.</remarks>
+/// <param name="physicalFilePath">The physical file path to the file being imported.</param>
+/// <param name="virtualFile">The virtual file representing the physical file that was imported into the file system.</param>
+public class FileImportedArgs(string physicalFilePath, IGorgonVirtualFile virtualFile)
+        : EventArgs
 {
     #region Properties.
     /// <summary>
@@ -41,7 +44,7 @@ public class FileImportedArgs
     public string PhysicalFilePath
     {
         get;
-    }
+    } = physicalFilePath;
 
     /// <summary>
     /// Property to return the virtual file representing the imported physical file.
@@ -49,17 +52,9 @@ public class FileImportedArgs
     public IGorgonVirtualFile VirtualFile
     {
         get;
-    }
-    #endregion
+    } = virtualFile;
 
+    #endregion
     #region Constructor.
-    /// <summary>Initializes a new instance of the <see cref="FileImportedArgs"/> class.</summary>
-    /// <param name="physicalFilePath">The physical file path to the file being imported.</param>
-    /// <param name="virtualFile">The virtual file representing the physical file that was imported into the file system.</param>
-    public FileImportedArgs(string physicalFilePath, IGorgonVirtualFile virtualFile)
-    {
-        PhysicalFilePath = physicalFilePath;
-        VirtualFile = virtualFile;
-    }
     #endregion
 }

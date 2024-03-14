@@ -38,12 +38,15 @@ namespace Gorgon.Editor.Services;
 /// <summary>
 /// A system used to search through the file system for files.
 /// </summary>
-internal class FileSystemSearchSystem
-    : ISearchService<IFile>
+/// <remarks>Initializes a new instance of the <see cref="FileSystemSearchSystem"/> class.</remarks>
+/// <param name="rootDirectory">The root directory for the file system.</param>
+/// <exception cref="ArgumentNullException">Thrown when the <paramref name="rootDirectory" /> parameter is <strong>null</strong>.</exception>
+internal class FileSystemSearchSystem(IDirectory rootDirectory)
+        : ISearchService<IFile>
 {
     #region Variables.
     // The root of the file system.
-    private readonly IDirectory _rootDirectory;
+    private readonly IDirectory _rootDirectory = rootDirectory ?? throw new ArgumentNullException(nameof(rootDirectory));
     // The type of search keywords that can be used.
     private readonly Dictionary<string, string> _searchKeywords = new(StringComparer.CurrentCultureIgnoreCase)
     {
@@ -299,7 +302,7 @@ internal class FileSystemSearchSystem
     {
         if (string.IsNullOrWhiteSpace(searchText))
         {
-            return Array.Empty<IFile>();
+            return [];
         }
 
         // Extract any keyword that might be embedded in the start of the search text.
@@ -341,12 +344,6 @@ internal class FileSystemSearchSystem
 
         return searchResults;
     }
-    #endregion
 
-    #region Constructor/Finalizer.
-    /// <summary>Initializes a new instance of the <see cref="FileSystemSearchSystem"/> class.</summary>
-    /// <param name="rootDirectory">The root directory for the file system.</param>
-    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="rootDirectory" /> parameter is <strong>null</strong>.</exception>
-    public FileSystemSearchSystem(IDirectory rootDirectory) => _rootDirectory = rootDirectory ?? throw new ArgumentNullException(nameof(rootDirectory));
     #endregion
 }

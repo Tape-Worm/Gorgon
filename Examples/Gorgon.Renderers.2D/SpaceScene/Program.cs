@@ -246,7 +246,7 @@ static class Program
         sunLayer.Lights[0].Layers.Add(planetLayer);
 
         // Here we'll set up the layer camera controller. This is what will give the illusion of movement across space by shifting the planet, sun, and other sprites.
-        var controller = new LayerCamera(new Layer[] { bgLayer, sunLayer, planetLayer, shipLayerDeux, shipLayer });
+        var controller = new LayerCamera([bgLayer, sunLayer, planetLayer, shipLayerDeux, shipLayer]);
 
         // This is our renderer which is responsible the drawing the layers and applying any post processing effects.
         _sceneRenderer = new SceneRenderer(_renderer, _resources, _mainRtv, controller, camera);

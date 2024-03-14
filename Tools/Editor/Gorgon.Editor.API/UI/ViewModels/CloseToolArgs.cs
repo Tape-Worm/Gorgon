@@ -31,8 +31,10 @@ namespace Gorgon.Editor.Tools;
 /// <summary>
 /// Arguments for the <see cref="IEditorTool.CloseToolCommand"/>.
 /// </summary>
-public class CloseToolArgs
-    : CancelEventArgs
+/// <remarks>Initializes a new instance of the <see cref="CloseToolArgs"/> class.</remarks>
+/// <param name="checkForChanges"><b>true</b> to check for changes prior to closing, <b>false</b> to skip the check and force a close.</param>
+public class CloseToolArgs(bool checkForChanges)
+        : CancelEventArgs
 {
     #region Properties.
     /// <summary>
@@ -41,12 +43,9 @@ public class CloseToolArgs
     public bool CheckChanges
     {
         get;
-    }
-    #endregion
+    } = checkForChanges;
 
+    #endregion
     #region Constructor.
-    /// <summary>Initializes a new instance of the <see cref="CloseToolArgs"/> class.</summary>
-    /// <param name="checkForChanges"><b>true</b> to check for changes prior to closing, <b>false</b> to skip the check and force a close.</param>
-    public CloseToolArgs(bool checkForChanges) => CheckChanges = checkForChanges;
     #endregion
 }

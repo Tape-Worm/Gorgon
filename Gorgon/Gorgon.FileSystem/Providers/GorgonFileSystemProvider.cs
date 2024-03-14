@@ -62,8 +62,12 @@ namespace Gorgon.IO.Providers;
 /// This type allows the mounting of a directory so that data can be read from the native operating system file system. This is the default provider for any <see cref="IGorgonFileSystem"/>.
 /// </para>
 /// </remarks>
-public abstract class GorgonFileSystemProvider
-    : GorgonPlugIn, IGorgonFileSystemProvider
+/// <remarks>
+/// Initializes a new instance of the <see cref="GorgonFileSystemProvider"/> class.
+/// </remarks>
+/// <param name="providerDescription">The human readable description for the file system provider.</param>
+public abstract class GorgonFileSystemProvider(string providerDescription)
+        : GorgonPlugIn(providerDescription), IGorgonFileSystemProvider
 {
     #region Properties.
     /// <summary>
@@ -101,7 +105,7 @@ public abstract class GorgonFileSystemProvider
     {
         get;
         protected set;
-    }
+    } = new GorgonFileExtensionCollection();
 
     /// <summary>Property to return the path to the provider assembly (if applicable).</summary>
     public string ProviderPath => PlugInPath ?? string.Empty;
@@ -382,14 +386,8 @@ public abstract class GorgonFileSystemProvider
             : OnCanReadFile(physicalPath);
 #pragma warning restore IDE0046 // Convert to conditional expression
     }
-    #endregion
 
+    #endregion
     #region Constructor.
-    /// <summary>
-    /// Initializes a new instance of the <see cref="GorgonFileSystemProvider"/> class.
-    /// </summary>
-    /// <param name="providerDescription">The human readable description for the file system provider.</param>
-    protected GorgonFileSystemProvider(string providerDescription)
-        : base(providerDescription) => PreferredExtensions = new GorgonFileExtensionCollection();
     #endregion
 }

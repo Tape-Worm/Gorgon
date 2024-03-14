@@ -37,7 +37,7 @@ internal class GorgonChunkCollection
 {
     #region Variables.
     // The backing store for the chunks.
-    private readonly List<GorgonChunk> _list = new();
+    private readonly List<GorgonChunk> _list = [];
     #endregion
 
     #region IList<GorgonChunk> Members

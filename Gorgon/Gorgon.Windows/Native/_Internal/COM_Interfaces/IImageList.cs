@@ -1,7 +1,6 @@
-﻿#region MIT
-// 
+﻿// 
 // Gorgon.
-// Copyright (C) 2018 Michael Winsor
+// Copyright (C) 2024 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -22,21 +21,20 @@
 // 
 // Created: August 29, 2018 2:02:42 PM
 // 
-#endregion
 
 using System;
 using System.Runtime.InteropServices;
-// ReSharper disable All
+using System.Runtime.InteropServices.Marshalling;
 
 namespace Gorgon.Native;
 
 /// <summary>
 /// IIimageList COM object interface.
 /// </summary>
-[ComImport(),
+[GeneratedComInterface,
  Guid("46EB5926-582E-4017-9FDF-E8998DAA0950"),
  InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
-internal interface IImageList
+internal partial interface IImageList
 {
     [PreserveSig]
     int Add(
@@ -79,7 +77,7 @@ internal interface IImageList
     int GetIcon(
         int i,
         int flags,
-        ref nint picon);
+        out nint picon);
 
     [PreserveSig]
     int GetImageInfo(

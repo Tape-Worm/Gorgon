@@ -44,8 +44,15 @@ namespace Gorgon.Editor.AnimationEditor;
 /// <summary>
 /// The viewer for editing a vector 2 key value for an aniamtion.
 /// </summary>
-internal class Vector2AnimationViewer
-    : AnimationViewer
+/// <remarks>Initializes a new instance of the <see cref="DefaultAnimationViewer"/> class.</remarks>
+/// <param name="renderer">The main renderer for the content view.</param>
+/// <param name="swapChain">The swap chain for the content view.</param>
+/// <param name="dataContext">The view model to assign to the renderer.</param>        
+/// <param name="clipper">The rectangle clipper interface.</param>
+/// <param name="anchorEditor">The anchor editor interface.</param>
+/// <param name="vertexEditor">The editor for sprite vertices.</param>
+internal class Vector2AnimationViewer(Gorgon2D renderer, GorgonSwapChain swapChain, IAnimationContent dataContext, IRectClipperService clipper, IAnchorEditService anchorEditor, VertexEditService vertexEditor)
+        : AnimationViewer(ViewerName, renderer, swapChain, dataContext, clipper, true)
 {
     #region Constants.
     /// <summary>
@@ -56,9 +63,9 @@ internal class Vector2AnimationViewer
 
     #region Variables.
     // The anchor editor service.
-    private readonly IAnchorEditService _anchorEdit;
+    private readonly IAnchorEditService _anchorEdit = anchorEditor;
     // The editor used to modify sprite vertices.
-    private readonly VertexEditService _vertexEditor;
+    private readonly VertexEditService _vertexEditor = vertexEditor;
     // Flag to indicate whether the clipper/anchor events are assigned.
     private int _clipAnchorEvent;
     // Previous angle when modifying vertices for a sprite.
@@ -610,21 +617,6 @@ internal class Vector2AnimationViewer
 
         ZoomToSprite(Sprite);
     }
-    #endregion
 
-    #region Constructor/Finalizer.
-    /// <summary>Initializes a new instance of the <see cref="DefaultAnimationViewer"/> class.</summary>
-    /// <param name="renderer">The main renderer for the content view.</param>
-    /// <param name="swapChain">The swap chain for the content view.</param>
-    /// <param name="dataContext">The view model to assign to the renderer.</param>        
-    /// <param name="clipper">The rectangle clipper interface.</param>
-    /// <param name="anchorEditor">The anchor editor interface.</param>
-    /// <param name="vertexEditor">The editor for sprite vertices.</param>
-    public Vector2AnimationViewer(Gorgon2D renderer, GorgonSwapChain swapChain, IAnimationContent dataContext, IRectClipperService clipper, IAnchorEditService anchorEditor, VertexEditService vertexEditor)
-        : base(ViewerName, renderer, swapChain, dataContext, clipper, true)
-    {   
-        _anchorEdit = anchorEditor;
-        _vertexEditor = vertexEditor;
-    }
     #endregion
 }

@@ -37,8 +37,17 @@ namespace Gorgon.IO;
 /// <summary>
 /// A plug in for allowing users to supply their own 3rd party animation codecs.
 /// </summary>
-public abstract class GorgonAnimationCodecPlugIn
-    : GorgonPlugIn
+/// <remarks>
+/// Initializes a new instance of the <see cref="GorgonAnimationCodecPlugIn"/> class.
+/// </remarks>
+/// <param name="description">Optional description of the plugin.</param>
+/// <remarks>
+/// <para>
+/// Objects that implement this base class should pass in a hard coded description on the base constructor.
+/// </para>
+/// </remarks>
+public abstract class GorgonAnimationCodecPlugIn(string description)
+        : GorgonPlugIn(description)
 {
     #region Properties.
     /// <summary>
@@ -103,22 +112,6 @@ public abstract class GorgonAnimationCodecPlugIn
 
         return result ?? throw new KeyNotFoundException(string.Format(Resources.GOR2DIO_ERR_CODEC_NOT_IN_PLUGIN, codec));
     }
-    #endregion
 
-    #region Constructor/Finalizer.
-    /// <summary>
-    /// Initializes a new instance of the <see cref="GorgonAnimationCodecPlugIn"/> class.
-    /// </summary>
-    /// <param name="description">Optional description of the plugin.</param>
-    /// <remarks>
-    /// <para>
-    /// Objects that implement this base class should pass in a hard coded description on the base constructor.
-    /// </para>
-    /// </remarks>
-    protected GorgonAnimationCodecPlugIn(string description)
-        : base(description)
-    {
-
-    }
     #endregion
 }

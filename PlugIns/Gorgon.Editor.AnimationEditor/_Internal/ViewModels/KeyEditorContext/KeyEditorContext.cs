@@ -114,7 +114,7 @@ internal class KeyEditorContext
     // The project file manager.
     private IContentFileManager _fileManager;
     // The list of sprites selected for loading texture keys.
-    private readonly List<IContentFile> _selectedSprites = new();
+    private readonly List<IContentFile> _selectedSprites = [];
     // Services from the plug in.
     private ContentServices _contentServices;
     // The current editor for floating point values.
@@ -852,7 +852,7 @@ internal class KeyEditorContext
         };
         undoArgs = new CopyMoveUndoArgs
         {
-            Keys = new List<(ITrack, Stack<TrackKeySelection.KeySelection>)>()
+            Keys = []
         };
 
         Task RedoTask(CopyMoveRedoArgs args, CancellationToken _) => CopyMoveAsync(args, null);

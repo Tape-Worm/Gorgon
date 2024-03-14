@@ -41,8 +41,10 @@ namespace Gorgon.Editor.ImageEditor;
 /// <summary>
 /// A renderer used to render volumetric (3D) textures.
 /// </summary>
-internal class VolumeRenderer
-    : IDisposable
+/// <remarks>Initializes a new instance of the <see cref="VolumeRenderer"/> class.</remarks>
+/// <param name="graphics">The graphics interface to use.</param>
+internal class VolumeRenderer(GorgonGraphics graphics)
+        : IDisposable
 {
     #region Value Types.
     /// <summary>
@@ -64,7 +66,7 @@ internal class VolumeRenderer
 
     #region Variables.
     // The graphics interface to use.
-    private readonly GorgonGraphics _graphics;
+    private readonly GorgonGraphics _graphics = graphics;
     // The constant buffer holding the world/projection/view matrix transform.
     private GorgonConstantBuffer _cubeTransform;
     // Sections for the volumetric rendering.
@@ -326,11 +328,6 @@ internal class VolumeRenderer
         _cubeDirShader = null;
         _cubeVs = null;
     }
-    #endregion
 
-    #region Constructor/Finalizer.
-    /// <summary>Initializes a new instance of the <see cref="VolumeRenderer"/> class.</summary>
-    /// <param name="graphics">The graphics interface to use.</param>
-    public VolumeRenderer(GorgonGraphics graphics) => _graphics = graphics;
     #endregion
 }

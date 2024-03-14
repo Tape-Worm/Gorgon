@@ -41,8 +41,18 @@ namespace Gorgon.Examples;
 /// 
 /// Basically this provides us with Dependency Injection for the view model.
 /// </remarks>
-internal class TextContentParameters
-    : ContentViewModelInjection
+/// <remarks>Initializes a new instance of the <see cref="TextContentParameters"/> class.</remarks>
+/// <param name="text">The initial text for the view model.</param>
+/// <param name="textColor">The text color panel view model.</param>
+/// <param name="settings">The settings panel view model.</param>
+/// <param name="editor">The text editor.</param>
+/// <param name="undoService">The service used to apply undo/redo operations.</param>
+/// <param name="fileManager">The file manager for content files.</param>
+/// <param name="file">The file that contains the content.</param>
+/// <param name="commonServices">The common services for the application.</param>
+/// <exception cref="ArgumentNullException">Thrown when any of the parameters are <b>null</b>.</exception>
+internal class TextContentParameters(string text, ITextColor textColor, ISettings settings, TextEditorService editor, IUndoService undoService, IContentFileManager fileManager, IContentFile file, IHostContentServices commonServices)
+        : ContentViewModelInjection(fileManager, file, commonServices)
 {
     /// <summary>
     /// Property to return the text color interface.
@@ -52,7 +62,7 @@ internal class TextContentParameters
         // This is the view model for the text color sub panel. We make it available on the main view model 
         // so that we can set it up to activate its associated sub panel on the UI.
         get;
-    }
+    } = textColor ?? throw new ArgumentNullException(nameof(textColor));
 
     /// <summary>
     /// Property to return the editor for text.
@@ -62,7 +72,7 @@ internal class TextContentParameters
         // This is the service used to modify the text for the text content. We send this to the view model 
         // so that we can activate the service when we request a text change on the content.
         get;
-    }
+    } = editor ?? throw new ArgumentNullException(nameof(editor));
 
     /// <summary>
     /// Property to return the undo/redo service.
@@ -73,7 +83,7 @@ internal class TextContentParameters
         // pass this in to the view model so we can track text content changes (specifically the text 
         // itself).
         get;
-    }
+    } = undoService ?? throw new ArgumentNullException(nameof(undoService));
 
     /// <summary>
     /// Property to return the settings view model.
@@ -83,7 +93,7 @@ internal class TextContentParameters
         // The view model for the settings for the settings panel. We pass this to our view model so 
         // that we can detect changes to the plug in settings.
         get;
-    }
+    } = settings ?? throw new ArgumentNullException(nameof(settings));
 
     /// <summary>
     /// Property to return the initial text for the view model.
@@ -91,25 +101,5 @@ internal class TextContentParameters
     public string Text
     {
         get;
-    }
-
-    /// <summary>Initializes a new instance of the <see cref="TextContentParameters"/> class.</summary>
-    /// <param name="text">The initial text for the view model.</param>
-    /// <param name="textColor">The text color panel view model.</param>
-    /// <param name="settings">The settings panel view model.</param>
-    /// <param name="editor">The text editor.</param>
-    /// <param name="undoService">The service used to apply undo/redo operations.</param>
-    /// <param name="fileManager">The file manager for content files.</param>
-    /// <param name="file">The file that contains the content.</param>
-    /// <param name="commonServices">The common services for the application.</param>
-    /// <exception cref="ArgumentNullException">Thrown when any of the parameters are <b>null</b>.</exception>
-    public TextContentParameters(string text, ITextColor textColor, ISettings settings, TextEditorService editor, IUndoService undoService, IContentFileManager fileManager, IContentFile file, IHostContentServices commonServices)
-        : base(fileManager, file, commonServices)
-    {
-        Text = text ?? throw new ArgumentNullException(nameof(text));
-        TextColor = textColor ?? throw new ArgumentNullException(nameof(textColor));
-        TextEditor = editor ?? throw new ArgumentNullException(nameof(editor));
-        UndoService = undoService ?? throw new ArgumentNullException(nameof(undoService));
-        Settings = settings ?? throw new ArgumentNullException(nameof(settings));
-    }
+    } = text ?? throw new ArgumentNullException(nameof(text));
 }

@@ -411,10 +411,10 @@ public abstract class GorgonSpriteCodecCommon
             throw new ArgumentEmptyException(nameof(name));
         }
 
-        FileExtensions = new[]
-                         {
+        FileExtensions =
+                         [
                              new GorgonFileExtension(".gorSprite", Resources.GOR2DIO_SPRITE_FILE_EXTENSION_DESC)
-                         };
+                         ];
         Codec = name;
         CodecDescription = string.IsNullOrWhiteSpace(description) ? name : description;
     }

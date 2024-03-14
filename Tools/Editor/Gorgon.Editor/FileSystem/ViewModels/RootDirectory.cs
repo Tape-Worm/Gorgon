@@ -62,13 +62,13 @@ internal class RootDirectory
     public ObservableCollection<IDirectory> Directories
     {
         get;
-    } = new ObservableCollection<IDirectory>();
+    } = [];
 
     /// <summary>Property to return the files that exist under the root directory.</summary>
     public ObservableCollection<IFile> Files
     {
         get;
-    } = new ObservableCollection<IFile>();
+    } = [];
 
     /// <summary>Property to return the actions that can be performed on this directory.</summary>
     public DirectoryActions AvailableActions => DirectoryActions.Delete | DirectoryActions.Copy;

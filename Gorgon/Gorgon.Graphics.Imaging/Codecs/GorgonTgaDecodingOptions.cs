@@ -86,9 +86,9 @@ public class GorgonTgaDecodingOptions
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonTgaDecodingOptions"/> class.
     /// </summary>
-    public GorgonTgaDecodingOptions() => Options = new GorgonOptionBag(new[]
-                                      {
+    public GorgonTgaDecodingOptions() => Options = new GorgonOptionBag(
+                                      [
                                           GorgonOption.CreateOption(nameof(SetZeroAlphaAsOpaque), true, Resources.GORIMG_OPT_TGA_SETZEROALPHA_OPAQUE)
-                                      });
+                                      ]);
     #endregion
 }

@@ -122,11 +122,11 @@ internal class AnimationContent
     // Flag to indicate that the animation is looped.
     private bool _looping;
     // A list of tracks for synchronization with the observable collection.
-    private readonly List<ITrack> _trackList = new();
+    private readonly List<ITrack> _trackList = [];
     // The list of tracks unsupported by the editor.
     private IReadOnlyList<ITrack> _unsupportedTracks;
     // The list of selected tracks and keys.
-    private IReadOnlyList<TrackKeySelection> _selected = Array.Empty<TrackKeySelection>();
+    private IReadOnlyList<TrackKeySelection> _selected = [];
     // The starting position of the primary sprite.
     private Vector2 _primaryStart;
     #endregion
@@ -336,7 +336,7 @@ internal class AnimationContent
         get => _selected;
         private set
         {
-            value ??= Array.Empty<TrackKeySelection>();
+            value ??= [];
 
             if ((value == _selected) || (_selected.SequenceEqual(value)))
             {
@@ -555,12 +555,12 @@ internal class AnimationContent
     /// </summary>
     private void SelectDefault() => Selected = ((Tracks.Count > 0) && (Tracks[0].KeyFrames.Count > 0)) ? new[]
                                                                                                          {
-                                                                                                            new TrackKeySelection(0, Tracks[0], new[]
-                                                                                                                                                {
+                                                                                                            new TrackKeySelection(0, Tracks[0],
+                                                                                                                                                [
                                                                                                                                                     new TrackKeySelection.KeySelection(Tracks[0], 0, _fps)
-                                                                                                                                                })
+                                                                                                                                                ])
                                                                                                          }
-                                                                                                       : Array.Empty<TrackKeySelection>();
+                                                                                                       : [];
 
     /// <summary>
     /// Function to update the primary sprite position.
@@ -1009,7 +1009,7 @@ internal class AnimationContent
 
         try
         {
-            AddTrack.SelectedTracks = Array.Empty<GorgonTrackRegistration>();
+            AddTrack.SelectedTracks = [];
             CurrentPanel = AddTrack;
         }
         catch (Exception ex)
@@ -1073,7 +1073,7 @@ internal class AnimationContent
         {
             HostServices.BusyService.SetBusy();                
 
-            args.RemovedTracks ??= new List<ITrack>();
+            args.RemovedTracks ??= [];
 
             try
             {
@@ -1425,7 +1425,7 @@ internal class AnimationContent
         {
             if ((args is null) || (args.Count == 0))
             {
-                Selected = Array.Empty<TrackKeySelection>();
+                Selected = [];
                 return;
             }
 
@@ -1615,13 +1615,13 @@ internal class AnimationContent
                 }
             }
 
-            Selected = new[]
-            {
-                new TrackKeySelection(_selected[0].TrackIndex, track, new []
-                {
+            Selected =
+            [
+                new TrackKeySelection(_selected[0].TrackIndex, track,
+                [
                     new TrackKeySelection.KeySelection(track, keyIndex, _fps)
-                })
-            };                
+                ])
+            ];                
             _controller.Time = keyTime;
             NotifyPropertyChanged(nameof(PreviewKeyTime));
         }
@@ -1678,13 +1678,13 @@ internal class AnimationContent
                 }
             }
 
-            Selected = new[]
-            {
-                new TrackKeySelection(_selected[0].TrackIndex, track, new []
-                {
+            Selected =
+            [
+                new TrackKeySelection(_selected[0].TrackIndex, track,
+                [
                     new TrackKeySelection.KeySelection(track, keyIndex, _fps)
-                })
-            };
+                ])
+            ];
             _controller.Time = keyTime;
             NotifyPropertyChanged(nameof(PreviewKeyTime));
         }
@@ -1729,13 +1729,13 @@ internal class AnimationContent
                 }
             }
 
-            Selected = new[]
-            {
-                new TrackKeySelection(_selected[0].TrackIndex, selectedTrack, new []
-                {
+            Selected =
+            [
+                new TrackKeySelection(_selected[0].TrackIndex, selectedTrack,
+                [
                     new TrackKeySelection.KeySelection(selectedTrack, 0, _fps)
-                })
-            };
+                ])
+            ];
             _controller.Time = animTime;
             NotifyPropertyChanged(nameof(PreviewKeyTime));
         }
@@ -1790,13 +1790,13 @@ internal class AnimationContent
                 }
             }
 
-            Selected = new[]
-            {
-                new TrackKeySelection(_selected[0].TrackIndex, selectedTrack, new []
-                {
+            Selected =
+            [
+                new TrackKeySelection(_selected[0].TrackIndex, selectedTrack,
+                [
                     new TrackKeySelection.KeySelection(selectedTrack, selectedTrack.KeyFrames.Count - 1, _fps)
-                })
-            };
+                ])
+            ];
             _controller.Time = animTime;
             NotifyPropertyChanged(nameof(PreviewKeyTime));
         }
@@ -2084,7 +2084,7 @@ internal class AnimationContent
             _contentServices.KeyProcessor.UnloadTextureKeyframes(Tracks);
 
             // Remove all tracks and keyframes.
-            Selected = Array.Empty<TrackKeySelection>();
+            Selected = [];
             Tracks.Clear();
 
             _contentServices.IOService.UnloadSprite(_primarySprite);
@@ -2136,7 +2136,7 @@ internal class AnimationContent
     {
         base.OnInitialize(injectionParameters);
 
-        _unsupportedTracks = injectionParameters.ExcludedTracks ?? Array.Empty<ITrack>();
+        _unsupportedTracks = injectionParameters.ExcludedTracks ?? [];
         _animation = injectionParameters.Animation;
         Settings = injectionParameters.Settings;
         _primarySprite = (injectionParameters.PrimarySprite?.PrimarySprite, injectionParameters.PrimarySprite?.File, injectionParameters.PrimarySprite?.TextureFile);

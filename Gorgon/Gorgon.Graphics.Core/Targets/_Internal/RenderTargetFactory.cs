@@ -56,24 +56,26 @@ namespace Gorgon.Graphics.Core;
 /// Targets retrieved by this factory must be returned when they are no longer needed, otherwise the purpose of the factory is defeated. 
 /// </para>
 /// </remarks>
-internal class RenderTargetFactory
-    : IDisposable, IGorgonRenderTargetFactory
+/// <remarks>Initializes a new instance of the <see cref="RenderTargetFactory"/> class.</remarks>
+/// <param name="graphics">The graphics interface that owns this factory.</param>
+internal class RenderTargetFactory(GorgonGraphics graphics)
+        : IDisposable, IGorgonRenderTargetFactory
 {
     #region Variables.
     // The list of render targets handled by this factory.
-    private readonly List<GorgonRenderTarget2DView> _renderTargets = new();
+    private readonly List<GorgonRenderTarget2DView> _renderTargets = [];
     // The list of preallocated default shader resource views.
-    private readonly List<GorgonShaderResourceView> _srvs = new();
+    private readonly List<GorgonShaderResourceView> _srvs = [];
     // The list of indexes for previously rented targets.
-    private readonly HashSet<GorgonRenderTarget2DView> _rented = new();
+    private readonly HashSet<GorgonRenderTarget2DView> _rented = [];
     // The graphics interface that owns this factory.
-    private readonly GorgonGraphics _graphics;
+    private readonly GorgonGraphics _graphics = graphics;
     // The time at which a render target was last returned from rental.
-    private readonly Dictionary<GorgonRenderTarget2DView, double> _expiryTime = new();
+    private readonly Dictionary<GorgonRenderTarget2DView, double> _expiryTime = [];
     // The list used to clean up expired targets.
-    private readonly List<GorgonRenderTarget2DView> _cleanupList = new();
+    private readonly List<GorgonRenderTarget2DView> _cleanupList = [];
     // The timer used to expire the render targets.
-    private readonly IGorgonTimer _expiryTimer;
+    private readonly IGorgonTimer _expiryTimer = GorgonTimerQpc.SupportsQpc() ? new GorgonTimerQpc() : new GorgonTimerMultimedia();
     // An allocator for creating texture info objects.
     private readonly GorgonRingPool<TempTargetTextureInfo> _textureInfoAllocator = new(100, () => new TempTargetTextureInfo());
     #endregion
@@ -286,15 +288,8 @@ internal class RenderTargetFactory
         _srvs.Clear();
         _renderTargets.Clear();
     }
-    #endregion
 
+    #endregion
     #region Constructor/Finalizer.		
-    /// <summary>Initializes a new instance of the <see cref="RenderTargetFactory"/> class.</summary>
-    /// <param name="graphics">The graphics interface that owns this factory.</param>
-    public RenderTargetFactory(GorgonGraphics graphics)
-    {
-        _graphics = graphics;
-        _expiryTimer = GorgonTimerQpc.SupportsQpc() ? new GorgonTimerQpc() : new GorgonTimerMultimedia();
-    }
     #endregion
 }

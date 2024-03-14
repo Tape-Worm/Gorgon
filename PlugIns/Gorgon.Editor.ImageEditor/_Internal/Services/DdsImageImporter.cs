@@ -39,16 +39,20 @@ namespace Gorgon.Editor.ImageEditor.Services;
 /// <summary>
 /// An image importer that reads in an image file, and converts it into a DDS format image prior to import into the application.
 /// </summary>
-internal class DdsImageImporter
-    : IEditorContentImporter
+/// <remarks>Initializes a new instance of the <see cref="DdsImageImporter"/> class.</remarks>
+/// <param name="tempFileSystemWriter">The file system writer used to write to the temporary area of the project.</param>
+/// <param name="codecs">The available codecs for image import.</param>
+/// <param name="log">The log used for logging debug messages.</param>
+internal class DdsImageImporter(IGorgonFileSystemWriter<Stream> tempFileSystemWriter, ICodecRegistry codecs, IGorgonLog log)
+        : IEditorContentImporter
 {
     #region Variables.
     // The log used for debug message logging.
-    private readonly IGorgonLog _log;
+    private readonly IGorgonLog _log = log ?? GorgonLog.NullLog;
     // The file system writer used to write to the temporary area.
-    private readonly IGorgonFileSystemWriter<Stream> _tempWriter;
+    private readonly IGorgonFileSystemWriter<Stream> _tempWriter = tempFileSystemWriter;
     // The available image codecs.
-    private readonly ICodecRegistry _codecs;
+    private readonly ICodecRegistry _codecs = codecs;
     // The path to the temporary directory.
     private string _tempDirPath;
     #endregion
@@ -136,18 +140,6 @@ internal class DdsImageImporter
 
         return _tempWriter.FileSystem.GetFile(outputFilePath);
     }
-    #endregion
 
-    #region Constructor/Finalizer.
-    /// <summary>Initializes a new instance of the <see cref="DdsImageImporter"/> class.</summary>
-    /// <param name="tempFileSystemWriter">The file system writer used to write to the temporary area of the project.</param>
-    /// <param name="codecs">The available codecs for image import.</param>
-    /// <param name="log">The log used for logging debug messages.</param>
-    public DdsImageImporter(IGorgonFileSystemWriter<Stream> tempFileSystemWriter, ICodecRegistry codecs, IGorgonLog log)
-    {
-        _codecs = codecs;
-        _tempWriter = tempFileSystemWriter;
-        _log = log ?? GorgonLog.NullLog;            
-    }
     #endregion
 }

@@ -62,8 +62,13 @@ namespace Gorgon.Graphics.Core;
 /// <seealso cref="GorgonComputeShader"/>
 /// <seealso cref="GorgonPixelShader"/>
 /// <seealso cref="GorgonDrawCallCommon"/>
-public abstract class GorgonReadWriteView
-    : GorgonResourceView
+/// <remarks>
+/// Initializes a new instance of the <see cref="GorgonShaderResourceView"/> class.
+/// </remarks>
+/// <param name="resource">The resource to bind to the view.</param>
+/// <exception cref="ArgumentNullException">Thrown when the <paramref name="resource"/> parameter is <b>null</b>.</exception>
+public abstract class GorgonReadWriteView(GorgonGraphicsResource resource)
+        : GorgonResourceView(resource)
 {
     #region Variables.
     // The D3D11 UAV descriptor.
@@ -198,17 +203,6 @@ public abstract class GorgonReadWriteView
         Native = null;
         base.Dispose();
     }
-    #endregion
 
-    #region Constructor/Finalizer.
-    /// <summary>
-    /// Initializes a new instance of the <see cref="GorgonShaderResourceView"/> class.
-    /// </summary>
-    /// <param name="resource">The resource to bind to the view.</param>
-    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="resource"/> parameter is <b>null</b>.</exception>
-    protected GorgonReadWriteView(GorgonGraphicsResource resource)
-        : base(resource)
-    {
-    }
     #endregion
 }

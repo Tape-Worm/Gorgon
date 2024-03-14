@@ -44,7 +44,7 @@ internal class Light
     public HashSet<Layer> Layers
     {
         get;
-    } = new HashSet<Layer>();
+    } = [];
 
     /// <summary>
     /// Property to return the point light wrapped by this object.

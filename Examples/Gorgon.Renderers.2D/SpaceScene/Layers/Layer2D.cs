@@ -34,8 +34,10 @@ namespace Gorgon.Examples;
 /// <summary>
 /// Represents a layer used for 2D drawing.
 /// </summary>
-internal abstract class Layer2D
-    : Layer
+/// <remarks>Initializes a new instance of the <see cref="Layer2D"/> class.</remarks>
+/// <param name="renderer">The 2D renderer for the application.</param>
+internal abstract class Layer2D(Gorgon2D renderer)
+        : Layer
 {
     #region Properties.
     /// <summary>
@@ -49,7 +51,7 @@ internal abstract class Layer2D
     protected Gorgon2D Renderer
     {
         get;
-    }
+    } = renderer;
     #endregion
 
     #region Methods.
@@ -66,12 +68,7 @@ internal abstract class Layer2D
             textureCoordinates ?? new DX.RectangleF(0, 0, 1, 1),
             textureSampler: samplerState ?? GorgonSamplerState.Default,
             depth: 0.1f);
-    #endregion
 
-    #region Constructor/Finalizer.
-    /// <summary>Initializes a new instance of the <see cref="Layer2D"/> class.</summary>
-    /// <param name="renderer">The 2D renderer for the application.</param>
-    protected Layer2D(Gorgon2D renderer) => Renderer = renderer;
     #endregion
 
 }

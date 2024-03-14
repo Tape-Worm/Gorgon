@@ -31,41 +31,30 @@ namespace Gorgon.Renderers;
 /// <summary>
 /// A key used to look up a color block.
 /// </summary>
-internal readonly struct ColorBlock
+/// <remarks>
+/// Initializes a new instance of the <see cref="ColorBlock"/> struct.
+/// </remarks>
+/// <param name="start">The start character index.</param>
+/// <param name="end">The end character index.</param>
+/// <param name="color">The color for the block.</param>
+internal readonly struct ColorBlock(int start, int end, GorgonColor color)
 {
     #region Variables.
     /// <summary>
     /// The starting character index.
     /// </summary>
-    public readonly int Start;
+    public readonly int Start = start;
 
     /// <summary>
     /// The ending character index.
     /// </summary>
-    public readonly int End;
+    public readonly int End = end;
 
     /// <summary>
     /// The color for the block.
     /// </summary>
-    public readonly GorgonColor Color;
-    #endregion
+    public readonly GorgonColor Color = color;
 
-    #region Methods.
-    #endregion
-
-    #region Constructor/Finalizer.
-    /// <summary>
-    /// Initializes a new instance of the <see cref="ColorBlock"/> struct.
-    /// </summary>
-    /// <param name="start">The start character index.</param>
-    /// <param name="end">The end character index.</param>
-    /// <param name="color">The color for the block.</param>
-    public ColorBlock(int start, int end, GorgonColor color)
-    {
-        Color = color;
-        Start = start;
-        End = end;
-    }
     #endregion
 
 }

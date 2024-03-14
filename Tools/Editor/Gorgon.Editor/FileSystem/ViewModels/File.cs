@@ -392,7 +392,7 @@ internal class File
 
         if (!Metadata.DependsOn.TryGetValue(file.Metadata.ContentMetadata.ContentTypeID, out List<string> paths))
         {
-            Metadata.DependsOn[file.Metadata.ContentMetadata.ContentTypeID] = paths = new List<string>();
+            Metadata.DependsOn[file.Metadata.ContentMetadata.ContentTypeID] = paths = [];
         }
 
         if (!paths.Any(item => string.Equals(file.Path, item, StringComparison.OrdinalIgnoreCase)))

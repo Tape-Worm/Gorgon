@@ -36,12 +36,17 @@ namespace Gorgon.Examples;
 /// <summary>
 /// This is used to render our image data for the application.
 /// </summary>
-internal class GraphicsRenderer
-    : IDisposable
+/// <remarks>
+/// Initializes a new instance of the <see cref="GraphicsRenderer" /> class.
+/// </remarks>
+/// <param name="graphics">The graphics interface to use.</param>
+/// <exception cref="ArgumentNullException">Thrown when the <paramref name="graphics"/> parameter is <b>null</b>.</exception>
+internal class GraphicsRenderer(GorgonGraphics graphics)
+        : IDisposable
 {
     #region Variables.
     // The graphics interface to use.
-    private readonly GorgonGraphics _graphics;
+    private readonly GorgonGraphics _graphics = graphics ?? throw new ArgumentNullException(nameof(graphics));
     // The swap chain used to render our data.
     private GorgonSwapChain _swapChain;
     #endregion
@@ -126,14 +131,6 @@ internal class GraphicsRenderer
     /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
     /// </summary>
     public void Dispose() => _swapChain?.Dispose();
-    #endregion
 
-    #region Constructor/Finalizer.
-    /// <summary>
-    /// Initializes a new instance of the <see cref="GraphicsRenderer" /> class.
-    /// </summary>
-    /// <param name="graphics">The graphics interface to use.</param>
-    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="graphics"/> parameter is <b>null</b>.</exception>
-    public GraphicsRenderer(GorgonGraphics graphics) => _graphics = graphics ?? throw new ArgumentNullException(nameof(graphics));
     #endregion
 }

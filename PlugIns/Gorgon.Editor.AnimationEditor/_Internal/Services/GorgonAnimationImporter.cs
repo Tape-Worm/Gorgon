@@ -42,22 +42,28 @@ namespace Gorgon.Editor.AnimationEditor.Services;
 /// <summary>
 /// A animation importer that reads in a animation file, and converts it into a Gorgon animation (v3) format image prior to import into the application.
 /// </summary>
-internal class GorgonAnimationImporter
-    : IEditorContentImporter
+/// <remarks>Initializes a new instance of the <see cref="GorgonAnimationImporter"/> class.</remarks>
+/// <param name="projectFileSystem">The read only file system used by the project.</param>
+/// <param name="tempFileSystem">The temporary file system to use for writing working data.</param>
+/// <param name="codecs">The animation codecs available to the system.</param>
+/// <param name="renderer">The renderer used to locate the image linked to the animation.</param>
+/// <param name="log">The log used for logging debug messages.</param>
+internal class GorgonAnimationImporter(IGorgonFileSystem projectFileSystem, IGorgonFileSystemWriter<Stream> tempFileSystem, CodecRegistry codecs, Gorgon2D renderer, IGorgonLog log)
+        : IEditorContentImporter
 {
     #region Variables.
     // The log used for debug message logging.
-    private readonly IGorgonLog _log;
+    private readonly IGorgonLog _log = log ?? GorgonLog.NullLog;
     // The DDS codec used to import files.
     private readonly IGorgonImageCodec _ddsCodec = new GorgonCodecDds();
     // The renderer used to locate the image for the animation.
-    private readonly Gorgon2D _renderer;
+    private readonly Gorgon2D _renderer = renderer;
     // The animation codecs available to the system.
-    private readonly CodecRegistry _codecs;
+    private readonly CodecRegistry _codecs = codecs;
     // The read only project file system.
-    private readonly IGorgonFileSystem _projectFileSystem;
+    private readonly IGorgonFileSystem _projectFileSystem = projectFileSystem;
     // The temporary file system for writing working data.
-    private readonly IGorgonFileSystemWriter<Stream> _tempFileSystem;
+    private readonly IGorgonFileSystemWriter<Stream> _tempFileSystem = tempFileSystem;
     // The path to the temporary directory.
     private string _tempDirPath;
     #endregion
@@ -111,7 +117,7 @@ internal class GorgonAnimationImporter
         // Let's try and load the texture into memory.
         if (textureNames.Count == 0)
         {
-            return Array.Empty<GorgonTexture2DView>();
+            return [];
         }
 
         var textureForAnimation = new List<GorgonTexture2DView>();
@@ -239,22 +245,6 @@ internal class GorgonAnimationImporter
             _log.LogException(ex);
         }
     }
-    #endregion
 
-    #region Constructor/Finalizer.
-    /// <summary>Initializes a new instance of the <see cref="GorgonAnimationImporter"/> class.</summary>
-    /// <param name="projectFileSystem">The read only file system used by the project.</param>
-    /// <param name="tempFileSystem">The temporary file system to use for writing working data.</param>
-    /// <param name="codecs">The animation codecs available to the system.</param>
-    /// <param name="renderer">The renderer used to locate the image linked to the animation.</param>
-    /// <param name="log">The log used for logging debug messages.</param>
-    public GorgonAnimationImporter(IGorgonFileSystem projectFileSystem, IGorgonFileSystemWriter<Stream> tempFileSystem, CodecRegistry codecs, Gorgon2D renderer, IGorgonLog log)
-    {
-        _projectFileSystem = projectFileSystem;
-        _tempFileSystem = tempFileSystem;
-        _codecs = codecs;
-        _log = log ?? GorgonLog.NullLog;
-        _renderer = renderer;
-    }
     #endregion
 }

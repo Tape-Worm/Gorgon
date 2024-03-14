@@ -45,7 +45,13 @@ namespace Gorgon.Editor.AnimationEditor.Services;
 /// <summary>
 /// A service used to manage IO for animations.
 /// </summary>
-internal class AnimationIOService
+/// <remarks>Initializes a new instance of the <see cref="AnimationIOService"/> class.</remarks>
+/// <param name="fileManager">The content file manager.</param>
+/// <param name="textureCache">The texture caching system.</param>
+/// <param name="animCodec">The codec used to read animation data.</param>        
+/// <param name="spriteCodec">The codec used to read sprite data.</param>
+/// <param name="log">The logging interface for debug logging.</param>
+internal class AnimationIOService(IContentFileManager fileManager, ITextureCache textureCache, IGorgonAnimationCodec animCodec, IGorgonSpriteCodec spriteCodec, IGorgonLog log)
 {
     #region Constants.
     /// <summary>
@@ -59,7 +65,11 @@ internal class AnimationIOService
     /// <summary>
     /// The primary sprite dependency data.
     /// </summary>
-    internal class PrimarySpriteDependency
+    /// <remarks>Initializes a new instance of the <see cref="TextureDependencies"/> class.</remarks>
+    /// <param name="sprite">The primary sprite.</param>
+    /// <param name="spriteFile">The sprite file.</param>
+    /// <param name="textureFile">The sprite texture file.</param>
+    internal class PrimarySpriteDependency(GorgonSprite sprite, IContentFile spriteFile, IContentFile textureFile)
     {
         /// <summary>
         /// Property to return the primary sprite for the animation.
@@ -67,7 +77,7 @@ internal class AnimationIOService
         public GorgonSprite PrimarySprite
         {
             get;
-        }
+        } = sprite;
 
         /// <summary>
         /// Property to return the texture initially associated with the sprite.
@@ -75,7 +85,7 @@ internal class AnimationIOService
         public GorgonTexture2DView SpriteTexture
         {
             get;
-        }
+        } = sprite.Texture;
 
         /// <summary>
         /// Property to return the file containing the primary sprite.
@@ -83,7 +93,7 @@ internal class AnimationIOService
         public IContentFile File
         {
             get;
-        }
+        } = spriteFile;
 
         /// <summary>
         /// Property to return the file containing the texture for the primary sprite.
@@ -91,25 +101,16 @@ internal class AnimationIOService
         public IContentFile TextureFile
         {
             get;
-        }
-
-        /// <summary>Initializes a new instance of the <see cref="TextureDependencies"/> class.</summary>
-        /// <param name="sprite">The primary sprite.</param>
-        /// <param name="spriteFile">The sprite file.</param>
-        /// <param name="textureFile">The sprite texture file.</param>
-        public PrimarySpriteDependency(GorgonSprite sprite, IContentFile spriteFile, IContentFile textureFile)
-        {
-            File = spriteFile;
-            TextureFile = textureFile;
-            PrimarySprite = sprite;
-            SpriteTexture = sprite.Texture;
-        }
+        } = textureFile;
     }
 
     /// <summary>
     /// The texture dependency data.
     /// </summary>
-    internal class TextureDependencies
+    /// <remarks>Initializes a new instance of the <see cref="TextureDependencies"/> class.</remarks>
+    /// <param name="textures">The textures.</param>
+    /// <param name="textureFiles">The texture files.</param>
+    internal class TextureDependencies(IReadOnlyList<GorgonTexture2DView> textures, IReadOnlyList<IContentFile> textureFiles)
     {
         /// <summary>
         /// Property to return the textures associated with the animation.
@@ -117,7 +118,7 @@ internal class AnimationIOService
         public IReadOnlyList<GorgonTexture2DView> Textures
         {
             get;
-        }
+        } = textures;
 
         /// <summary>
         /// Property to return the files containing the textures.
@@ -125,30 +126,21 @@ internal class AnimationIOService
         public IReadOnlyList<IContentFile> Files
         {
             get;
-        }
-
-        /// <summary>Initializes a new instance of the <see cref="TextureDependencies"/> class.</summary>
-        /// <param name="textures">The textures.</param>
-        /// <param name="textureFiles">The texture files.</param>
-        public TextureDependencies(IReadOnlyList<GorgonTexture2DView> textures, IReadOnlyList<IContentFile> textureFiles)
-        {
-            Textures = textures;
-            Files = textureFiles;
-        }
+        } = textureFiles;
     }
     #endregion
 
     #region Variables.
     // The content file manager.
-    private readonly IContentFileManager _fileManager;
+    private readonly IContentFileManager _fileManager = fileManager;
     // The image codec used to read image file data.
-    private readonly ITextureCache _textureCache;
+    private readonly ITextureCache _textureCache = textureCache;
     // The codec used to read sprite data.
-    private readonly IGorgonSpriteCodec _spriteCodec;
+    private readonly IGorgonSpriteCodec _spriteCodec = spriteCodec;
     // The codec used to read animation data.
-    private readonly IGorgonAnimationCodec _animationCodec;
+    private readonly IGorgonAnimationCodec _animationCodec = animCodec;
     // The logging interface for debug logging.
-    private readonly IGorgonLog _log;
+    private readonly IGorgonLog _log = log;
     #endregion
 
     #region Methods.
@@ -173,7 +165,7 @@ internal class AnimationIOService
                 return (null, null);
             }
 
-            dependency = new List<string> { textureName };
+            dependency = [textureName];
         }
 
         IContentFile imageFile = _fileManager.GetFile(dependency[0]);
@@ -295,7 +287,7 @@ internal class AnimationIOService
             if (dependencies.Count == 0)
             {
                 _log.Print($"WARNING: No textures for the animation for were found on the file system.", LoggingLevel.Intermediate);
-                return new TextureDependencies(Array.Empty<GorgonTexture2DView>(), Array.Empty<IContentFile>());
+                return new TextureDependencies([], []);
             }
         }
 
@@ -311,7 +303,7 @@ internal class AnimationIOService
         if (files.Count == 0)
         {
             _log.Print($"WARNING: No textures for the animation for were found on the file system.", LoggingLevel.Intermediate);
-            return new TextureDependencies(Array.Empty<GorgonTexture2DView>(), Array.Empty<IContentFile>());
+            return new TextureDependencies([], []);
         }
 
         var textures = new List<(GorgonTexture2DView texture, IContentFile file)>();
@@ -485,7 +477,7 @@ internal class AnimationIOService
             animFile.IsOpen = true;
             if (backgroundImage is not null)
             {
-                animFile.Metadata.DependsOn[AnimationEditorPlugIn.BgImageDependencyName] = new List<string> { backgroundImage.Path };
+                animFile.Metadata.DependsOn[AnimationEditorPlugIn.BgImageDependencyName] = [backgroundImage.Path];
             }
 
             animFile.LinkContent(primarySpriteFile);                
@@ -559,22 +551,6 @@ internal class AnimationIOService
             backgroundTexture.file.IsOpen = false;
         }
     }
-    #endregion
 
-    #region Constructor/Finalizer.
-    /// <summary>Initializes a new instance of the <see cref="AnimationIOService"/> class.</summary>
-    /// <param name="fileManager">The content file manager.</param>
-    /// <param name="textureCache">The texture caching system.</param>
-    /// <param name="animCodec">The codec used to read animation data.</param>        
-    /// <param name="spriteCodec">The codec used to read sprite data.</param>
-    /// <param name="log">The logging interface for debug logging.</param>
-    public AnimationIOService(IContentFileManager fileManager, ITextureCache textureCache, IGorgonAnimationCodec animCodec, IGorgonSpriteCodec spriteCodec, IGorgonLog log)
-    {
-        _fileManager = fileManager;
-        _animationCodec = animCodec;
-        _textureCache = textureCache;
-        _spriteCodec = spriteCodec;
-        _log = log;
-    }
     #endregion
 }

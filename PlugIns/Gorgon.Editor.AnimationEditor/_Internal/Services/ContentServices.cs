@@ -34,7 +34,16 @@ namespace Gorgon.Editor.AnimationEditor;
 /// <summary>
 /// A list of services for for the content.
 /// </summary>
-internal class ContentServices
+/// <remarks>Initializes a new instance of the <see cref="ContentServices"/> class.</remarks>
+/// <param name="clipboard">The service used to access the clipboard.</param>
+/// <param name="ioService">The io service.</param>
+/// <param name="textureCache">The texture cache for the plug in.</param>
+/// <param name="undoService">The service used for undo/redo functionality.</param>
+/// <param name="keyProcessor">The key frame processor service.</param>
+/// <param name="newAnimation">The service used to set up a new animation.</param>
+/// <param name="factory">The factory.</param>
+/// <exception cref="ArgumentNullException">Thrown when any of the parameters are <b>null</b>.</exception>
+internal class ContentServices(AnimationIOService ioService, ITextureCache textureCache, IUndoService undoService, KeyProcessorService keyProcessor, NewAnimationService newAnimation, IViewModelFactory factory)
 {
     /// <summary>
     /// Property to return the IO service for the content.
@@ -42,7 +51,7 @@ internal class ContentServices
     public AnimationIOService IOService
     {
         get;
-    }
+    } = ioService ?? throw new ArgumentNullException(nameof(ioService));
 
     /// <summary>
     /// Property to return the factory used to create view models.
@@ -50,7 +59,7 @@ internal class ContentServices
     public IViewModelFactory ViewModelFactory
     {
         get;
-    }
+    } = factory ?? throw new ArgumentNullException(nameof(factory));
 
     /// <summary>
     /// Property to return the service used for undo/redo functionality.
@@ -58,7 +67,7 @@ internal class ContentServices
     public IUndoService UndoService
     {
         get;
-    }
+    } = undoService ?? throw new ArgumentNullException(nameof(undoService));
 
     /// <summary>
     /// Property to return the texture cache.
@@ -66,7 +75,7 @@ internal class ContentServices
     public ITextureCache TextureCache
     {
         get;
-    }
+    } = textureCache ?? throw new ArgumentNullException(nameof(textureCache));
 
     /// <summary>
     /// Property to return the key frame processor service.
@@ -74,7 +83,7 @@ internal class ContentServices
     public KeyProcessorService KeyProcessor
     {
         get;
-    }
+    } = keyProcessor ?? throw new ArgumentNullException(nameof(keyProcessor));
 
     /// <summary>
     /// Property to return the service used set up a new animation.
@@ -82,24 +91,5 @@ internal class ContentServices
     public NewAnimationService NewAnimation
     {
         get;
-    }
-
-    /// <summary>Initializes a new instance of the <see cref="ContentServices"/> class.</summary>
-    /// <param name="clipboard">The service used to access the clipboard.</param>
-    /// <param name="ioService">The io service.</param>
-    /// <param name="textureCache">The texture cache for the plug in.</param>
-    /// <param name="undoService">The service used for undo/redo functionality.</param>
-    /// <param name="keyProcessor">The key frame processor service.</param>
-    /// <param name="newAnimation">The service used to set up a new animation.</param>
-    /// <param name="factory">The factory.</param>
-    /// <exception cref="ArgumentNullException">Thrown when any of the parameters are <b>null</b>.</exception>
-    public ContentServices(AnimationIOService ioService, ITextureCache textureCache, IUndoService undoService, KeyProcessorService keyProcessor, NewAnimationService newAnimation, IViewModelFactory factory)
-    {
-        IOService = ioService ?? throw new ArgumentNullException(nameof(ioService));
-        ViewModelFactory = factory ?? throw new ArgumentNullException(nameof(factory));
-        UndoService = undoService ?? throw new ArgumentNullException(nameof(undoService));
-        TextureCache = textureCache ?? throw new ArgumentNullException(nameof(textureCache));
-        KeyProcessor = keyProcessor ?? throw new ArgumentNullException(nameof(keyProcessor));
-        NewAnimation = newAnimation ?? throw new ArgumentNullException(nameof(newAnimation));
-    }
+    } = newAnimation ?? throw new ArgumentNullException(nameof(newAnimation));
 }

@@ -43,8 +43,13 @@ namespace Gorgon.IO;
 /// <summary>
 /// A codec used to read/write animations as a JSON formatted string value.
 /// </summary>
-public class GorgonV3AnimationJsonCodec
-    : GorgonAnimationCodecCommon
+/// <remarks>
+/// Initializes a new instance of the <see cref="GorgonV3AnimationJsonCodec"/> class.
+/// </remarks>
+/// <param name="renderer">The renderer used for resource handling.</param>
+/// <exception cref="ArgumentNullException">Thrown when the <paramref name="renderer"/> is <b>null</b>.</exception>
+public class GorgonV3AnimationJsonCodec(Gorgon2D renderer)
+        : GorgonAnimationCodecCommon(renderer, Resources.GOR2DIO_V3_ANIM_JSON_CODEC, Resources.GOR2DIO_V3_ANIM_JSON_CODEC_DESCRIPTION)
 {
     #region Constants.
     /// <summary>
@@ -459,7 +464,7 @@ public class GorgonV3AnimationJsonCodec
         {
             if (!IsReadableJObject(reader))
             {
-                return Array.Empty<string>();
+                return [];
             }
 
             while (reader.Read())
@@ -493,7 +498,7 @@ public class GorgonV3AnimationJsonCodec
             }
         }
 
-        return Array.Empty<string>();
+        return [];
     }
 
     /// <summary>
@@ -729,17 +734,6 @@ public class GorgonV3AnimationJsonCodec
             reader?.Close();
         }
     }
-    #endregion
 
-    #region Constructor/Finalizer.
-    /// <summary>
-    /// Initializes a new instance of the <see cref="GorgonV3AnimationJsonCodec"/> class.
-    /// </summary>
-    /// <param name="renderer">The renderer used for resource handling.</param>
-    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="renderer"/> is <b>null</b>.</exception>
-    public GorgonV3AnimationJsonCodec(Gorgon2D renderer)
-        : base(renderer, Resources.GOR2DIO_V3_ANIM_JSON_CODEC, Resources.GOR2DIO_V3_ANIM_JSON_CODEC_DESCRIPTION)
-    {
-    }
     #endregion
 }

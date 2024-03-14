@@ -33,8 +33,15 @@ namespace Gorgon.Editor.ImageEditor;
 /// <summary>
 /// Parameters to pass to the <see cref="ISettings"/> view model.
 /// </summary>
-internal class SettingsParameters
-    : SettingsCategoryViewModelParameters
+/// <remarks>Initializes a new instance of the ImageContentVmParameters class.</remarks>
+/// <param name="settings">The settings for the image editor.</param>
+/// <param name="codecs">The codecs loaded into the system.</param>
+/// <param name="openCodecDialog">The file dialog used to locate codec assemblies.</param>
+/// <param name="plugInCache">The cache for plug in assemblies.</param>
+/// <param name="hostServices">Common application services.</param>
+/// <exception cref="ArgumentNullException">Thrown when any of the parameters are <b>null</b>.</exception>
+internal class SettingsParameters(ImageEditorSettings settings, IHostContentServices hostServices)
+        : SettingsCategoryViewModelParameters(hostServices)
 {
     #region Properties.
     /// <summary>
@@ -43,19 +50,7 @@ internal class SettingsParameters
     public ImageEditorSettings Settings
     {
         get;
-    }
-    #endregion
+    } = settings ?? throw new ArgumentNullException(nameof(settings));
 
-    #region Constructor/Finalizer.
-    /// <summary>Initializes a new instance of the ImageContentVmParameters class.</summary>
-    /// <param name="settings">The settings for the image editor.</param>
-    /// <param name="codecs">The codecs loaded into the system.</param>
-    /// <param name="openCodecDialog">The file dialog used to locate codec assemblies.</param>
-    /// <param name="plugInCache">The cache for plug in assemblies.</param>
-    /// <param name="hostServices">Common application services.</param>
-    /// <exception cref="ArgumentNullException">Thrown when any of the parameters are <b>null</b>.</exception>
-    public SettingsParameters(ImageEditorSettings settings, IHostContentServices hostServices)            
-        : base(hostServices)
-        => Settings = settings ?? throw new ArgumentNullException(nameof(settings));
     #endregion
 }

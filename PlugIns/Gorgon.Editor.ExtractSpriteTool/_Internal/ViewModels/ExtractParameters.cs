@@ -35,8 +35,16 @@ namespace Gorgon.Editor.ExtractSpriteTool;
 /// <summary>
 /// Parameters for the <see cref="IExtract"/> view model.
 /// </summary>
-internal class ExtractParameters
-    : EditorToolViewModelInjection
+/// <remarks>Initializes a new instance of the <see cref="ExtractParameters"/> class.</remarks>
+/// <param name="settings">The plug in settings.</param>
+/// <param name="extractData">The data used for extraction.</param>
+/// <param name="extractor">The sprite extractor service used to create the sprites.</param>
+/// <param name="textureFile">The file that contains the texture to extract from.</param>
+/// <param name="fileManager">The file manager for the project file system.</param>
+/// <param name="toolServices">The common tool services from the host application.</param>
+/// <exception cref="ArgumentNullException">Thrown when any of the parameters are <b>null</b>.</exception>
+internal class ExtractParameters(ExtractSpriteToolSettings settings, SpriteExtractionData extractData, ISpriteExtractorService extractor, IContentFile textureFile, IContentFileManager fileManager, IHostContentServices toolServices)
+        : EditorToolViewModelInjection(fileManager, toolServices)
 {
     /// <summary>
     /// Property to return the data used for extraction.
@@ -44,7 +52,7 @@ internal class ExtractParameters
     public SpriteExtractionData ExtractionData
     {
         get;
-    }
+    } = extractData ?? throw new ArgumentNullException(nameof(extractData));
 
     /// <summary>
     /// Property to return the settings for the plug in.
@@ -52,7 +60,7 @@ internal class ExtractParameters
     public ExtractSpriteToolSettings Settings
     {
         get;
-    }
+    } = settings ?? throw new ArgumentNullException(nameof(settings));
 
     /// <summary>
     /// Property to return the sprite extractor service used to create the sprites.
@@ -60,7 +68,7 @@ internal class ExtractParameters
     public ISpriteExtractorService Extractor
     {
         get;
-    }
+    } = extractor ?? throw new ArgumentNullException(nameof(extractor));
 
     /// <summary>
     /// Property to return the file that contains the texture to extract from.
@@ -68,22 +76,5 @@ internal class ExtractParameters
     public IContentFile TextureFile
     {
         get;
-    }
-
-    /// <summary>Initializes a new instance of the <see cref="ExtractParameters"/> class.</summary>
-    /// <param name="settings">The plug in settings.</param>
-    /// <param name="extractData">The data used for extraction.</param>
-    /// <param name="extractor">The sprite extractor service used to create the sprites.</param>
-    /// <param name="textureFile">The file that contains the texture to extract from.</param>
-    /// <param name="fileManager">The file manager for the project file system.</param>
-    /// <param name="toolServices">The common tool services from the host application.</param>
-    /// <exception cref="ArgumentNullException">Thrown when any of the parameters are <b>null</b>.</exception>
-    public ExtractParameters(ExtractSpriteToolSettings settings, SpriteExtractionData extractData, ISpriteExtractorService extractor, IContentFile textureFile, IContentFileManager fileManager, IHostContentServices toolServices)
-        : base(fileManager, toolServices)
-    {
-        Settings = settings ?? throw new ArgumentNullException(nameof(settings));
-        ExtractionData = extractData ?? throw new ArgumentNullException(nameof(extractData));
-        Extractor = extractor ?? throw new ArgumentNullException(nameof(extractor));
-        TextureFile = textureFile ?? throw new ArgumentNullException(nameof(textureFile));
-    }
+    } = textureFile ?? throw new ArgumentNullException(nameof(textureFile));
 }

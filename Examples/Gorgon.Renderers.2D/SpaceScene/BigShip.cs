@@ -34,7 +34,9 @@ namespace Gorgon.Examples;
 /// <remarks>
 /// This is a prop space ship that we'll use to add more variety to the scene.
 /// </remarks>
-internal class BigShip
+/// <remarks>Initializes a new instance of the <see cref="BigShip"/> class.</remarks>
+/// <param name="layer">The layer.</param>
+internal class BigShip(SpritesLayer layer)
 {
     #region Variables.
     // The ship sprite.
@@ -42,7 +44,7 @@ internal class BigShip
     // The ship sprite illumination map.
     private SpriteEntity _shipIllum;
     // The layer containing the sprite(s) for this ship.
-    private readonly SpritesLayer _layer;
+    private readonly SpritesLayer _layer = layer;
     // The angle of rotation.
     private float _angle;
     // Position of the ship.
@@ -107,11 +109,6 @@ internal class BigShip
         _shipIllum.Scale = 4;
         UpdateEntityPositions();
     }
-    #endregion
 
-    #region Constructor/Finalizer.
-    /// <summary>Initializes a new instance of the <see cref="BigShip"/> class.</summary>
-    /// <param name="layer">The layer.</param>
-    public BigShip(SpritesLayer layer) => _layer = layer;
     #endregion
 }

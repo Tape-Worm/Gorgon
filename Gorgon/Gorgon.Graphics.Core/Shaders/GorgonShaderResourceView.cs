@@ -41,8 +41,13 @@ namespace Gorgon.Graphics.Core;
 /// This base class is used to define shader resource views for strongly typed resources like textures and buffers.
 /// </para>
 /// </remarks>
-public abstract class GorgonShaderResourceView
-    : GorgonResourceView, IEquatable<GorgonShaderResourceView>
+/// <remarks>
+/// Initializes a new instance of the <see cref="GorgonShaderResourceView"/> class.
+/// </remarks>
+/// <param name="resource">The resource to bind to the view.</param>
+/// <exception cref="ArgumentNullException">Thrown when the <paramref name="resource"/> parameter is <b>null</b>.</exception>
+public abstract class GorgonShaderResourceView(GorgonGraphicsResource resource)
+        : GorgonResourceView(resource), IEquatable<GorgonShaderResourceView>
 {
     #region Variables.
     // The shader resource view descriptor.
@@ -134,17 +139,6 @@ public abstract class GorgonShaderResourceView
     /// A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table. 
     /// </returns>
     public override int GetHashCode() => base.GetHashCode();
-    #endregion
 
-    #region Constructor/Finalizer.
-    /// <summary>
-    /// Initializes a new instance of the <see cref="GorgonShaderResourceView"/> class.
-    /// </summary>
-    /// <param name="resource">The resource to bind to the view.</param>
-    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="resource"/> parameter is <b>null</b>.</exception>
-    protected GorgonShaderResourceView(GorgonGraphicsResource resource)
-        : base(resource)
-    {
-    }
     #endregion
 }

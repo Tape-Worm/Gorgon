@@ -312,7 +312,7 @@ public class Gorgon2DGaussBlurEffect
             pointerOffset++;
         }
 
-        _blurBufferKernel.Buffer.SetData<float>(_blurKernelData.ToSpan());
+        _blurBufferKernel.Buffer.SetData([.. _blurKernelData]);
         _needOffsetUpdate = false;
     }
 

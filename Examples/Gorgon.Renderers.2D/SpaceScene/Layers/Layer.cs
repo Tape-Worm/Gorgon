@@ -38,7 +38,7 @@ internal abstract class Layer
 {
     #region Variables.
     // The list of active lights for the layer.
-    private readonly List<Light> _activeLights = new();
+    private readonly List<Light> _activeLights = [];
     #endregion
 
     #region Properties.
@@ -65,7 +65,7 @@ internal abstract class Layer
     public IList<Light> Lights
     {
         get;
-    } = new List<Light>();
+    } = [];
 
     /// <summary>
     /// Property to set or return the post processing group that the layer belongs to.

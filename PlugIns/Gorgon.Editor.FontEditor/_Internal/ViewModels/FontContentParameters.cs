@@ -37,16 +37,28 @@ namespace Gorgon.Editor.FontEditor;
 /// <summary>
 /// Parameters to pass in to the <see cref="IFontContent"/> view model.
 /// </summary>
-internal class FontContentParameters
-    : ContentViewModelInjection
-{       
+/// <remarks>Initializes a new instance of the <see cref="FontContentParameters"/> class.</remarks>
+/// <param name="fontService">The service used to generate fonts.</param>
+/// <param name="settings">The settings panel view model.</param>
+/// <param name="fontOutline">The font outline view model.</param>
+/// <param name="textureEditor">The texture editor context view model.</param>
+/// <param name="undoService">The service used to apply undo/redo operations.</param>
+/// <param name="fileManager">The file manager for content files.</param>
+/// <param name="file">The file that contains the content.</param>
+/// <param name="commonServices">The common services for the application.</param>
+/// <exception cref="ArgumentNullException">Thrown when any of the parameters are <b>null</b>.</exception>
+internal class FontContentParameters(FontService fontService,
+                             ISettings settings, IFontOutline fontOutline, ITextureEditorContext textureEditor, IFontCharacterSelection fontCharSelection,
+                             IUndoService undoService, IContentFileManager fileManager, IContentFile file, IHostContentServices commonServices)
+        : ContentViewModelInjection(fileManager, file, commonServices)
+{
     /// <summary>
     /// Property to return the undo/redo service.
     /// </summary>
     public IUndoService UndoService
     {
         get;
-    }
+    } = undoService ?? throw new ArgumentNullException(nameof(undoService));
 
     /// <summary>
     /// Property to return the settings view model.
@@ -54,7 +66,7 @@ internal class FontContentParameters
     public ISettings Settings
     {
         get;
-    }
+    } = settings ?? throw new ArgumentNullException(nameof(settings));
 
     /// <summary>
     /// Property to return the font service used to build fonts.
@@ -62,7 +74,7 @@ internal class FontContentParameters
     public FontService FontService
     {
         get;
-    }
+    } = fontService ?? throw new ArgumentNullException(nameof(fontService));
 
     /// <summary>
     /// Property to return the font outline view model.
@@ -70,7 +82,7 @@ internal class FontContentParameters
     public IFontOutline FontOutline
     {
         get;
-    }
+    } = fontOutline ?? throw new ArgumentNullException(nameof(fontOutline));
 
     /// <summary>
     /// Property to return the texture editor context view model.
@@ -78,33 +90,10 @@ internal class FontContentParameters
     public ITextureEditorContext TextureEditorContext
     {
         get;
-    }
+    } = textureEditor ?? throw new ArgumentNullException(nameof(textureEditor));
 
     public IFontCharacterSelection FontCharacterSelection
     {
         get;
-    }
-
-    /// <summary>Initializes a new instance of the <see cref="FontContentParameters"/> class.</summary>
-    /// <param name="fontService">The service used to generate fonts.</param>
-    /// <param name="settings">The settings panel view model.</param>
-    /// <param name="fontOutline">The font outline view model.</param>
-    /// <param name="textureEditor">The texture editor context view model.</param>
-    /// <param name="undoService">The service used to apply undo/redo operations.</param>
-    /// <param name="fileManager">The file manager for content files.</param>
-    /// <param name="file">The file that contains the content.</param>
-    /// <param name="commonServices">The common services for the application.</param>
-    /// <exception cref="ArgumentNullException">Thrown when any of the parameters are <b>null</b>.</exception>
-    public FontContentParameters(FontService fontService, 
-                                 ISettings settings, IFontOutline fontOutline, ITextureEditorContext textureEditor, IFontCharacterSelection fontCharSelection,
-                                 IUndoService undoService, IContentFileManager fileManager, IContentFile file, IHostContentServices commonServices)
-        : base(fileManager, file, commonServices)
-    {
-        FontService = fontService ?? throw new ArgumentNullException(nameof(fontService));
-        UndoService = undoService ?? throw new ArgumentNullException(nameof(undoService));
-        Settings = settings ?? throw new ArgumentNullException(nameof(settings));            
-        FontOutline = fontOutline ?? throw new ArgumentNullException(nameof(fontOutline));
-        TextureEditorContext = textureEditor ?? throw new ArgumentNullException(nameof(textureEditor));
-        FontCharacterSelection = fontCharSelection ?? throw new ArgumentNullException(nameof(fontCharSelection));
-    }
+    } = fontCharSelection ?? throw new ArgumentNullException(nameof(fontCharSelection));
 }

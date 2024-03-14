@@ -51,8 +51,11 @@ namespace Gorgon.Examples;
 /// taken. Please do not use this in your own code.
 /// </para>
 /// </remarks>
-internal class PlanetLayer
-    : Layer, IDisposable
+/// <remarks>Initializes a new instance of the <see cref="PlanetLayer"/> class.</remarks>
+/// <param name="graphics">The graphics interface for the application.</param>
+/// <param name="resources">The resources for the application.</param>
+internal class PlanetLayer(GorgonGraphics graphics, ResourceManagement resources)
+        : Layer, IDisposable
 {
     #region Constants.
     // The maximum number of available lights.
@@ -85,15 +88,15 @@ internal class PlanetLayer
 
     #region Variables.
     // The application graphics interface.
-    private readonly GorgonGraphics _graphics;
+    private readonly GorgonGraphics _graphics = graphics;
     // The application resources.
-    private readonly ResourceManagement _resources;
+    private readonly ResourceManagement _resources = resources;
     // The layout for a 3D vertex.
     private GorgonInputLayout _vertexLayout;
     // The pipeline state for rendering the planet.
-    private readonly GorgonPipelineStateBuilder _stateBuilder;
+    private readonly GorgonPipelineStateBuilder _stateBuilder = new(graphics);
     // The builder for create a draw call.
-    private readonly GorgonDrawIndexCallBuilder _drawCallBuilder;
+    private readonly GorgonDrawIndexCallBuilder _drawCallBuilder = new();
     // A constant buffer for holding the projection*view matrix.
     private GorgonConstantBufferView _viewProjectionBuffer;
     // A constant buffer for holding the world transformation matrix.
@@ -114,7 +117,7 @@ internal class PlanetLayer
     // A combination of both matrices. This is calculated on every frame update when the view/projection is updated.
     private Matrix4x4 _viewProjection;
     // Flag to indicate that we can draw the planet or not.
-    private readonly List<Planet> _drawPlanets = new();
+    private readonly List<Planet> _drawPlanets = [];
     #endregion
 
     #region Properties.
@@ -124,7 +127,7 @@ internal class PlanetLayer
     public IList<Planet> Planets
     {
         get;
-    } = new List<Planet>();
+    } = [];
     #endregion
 
     #region Methods.
@@ -292,7 +295,7 @@ internal class PlanetLayer
     /// </summary>
     public override void LoadResources()
     {
-        _drawCalls = new List<GorgonDrawIndexCall>();
+        _drawCalls = [];
         BuildConstantBuffers();
 
         for (int i = 0; i < Planets.Count; ++i)
@@ -395,19 +398,6 @@ internal class PlanetLayer
         _lightBuffer?.Dispose();
         _vertexLayout?.Dispose();
     }
-    #endregion
 
-    #region Constructor/Finalizer.
-    /// <summary>Initializes a new instance of the <see cref="PlanetLayer"/> class.</summary>
-    /// <param name="graphics">The graphics interface for the application.</param>
-    /// <param name="resources">The resources for the application.</param>
-    public PlanetLayer(GorgonGraphics graphics, ResourceManagement resources)
-    {
-        _graphics = graphics;
-        _resources = resources;
-
-        _stateBuilder = new GorgonPipelineStateBuilder(graphics);
-        _drawCallBuilder = new GorgonDrawIndexCallBuilder();
-    }
     #endregion
 }

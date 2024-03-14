@@ -113,13 +113,13 @@ internal class Directory
     public ObservableCollection<IDirectory> Directories
     {
         get;
-    } = new ObservableCollection<IDirectory>();
+    } = [];
 
     /// <summary>Property to return the files that exist under the this directory.</summary>
     public ObservableCollection<IFile> Files
     {
         get;
-    } = new ObservableCollection<IFile>();
+    } = [];
 
     /// <summary>Property to return the parent of this directory.</summary>
     public IDirectory Parent

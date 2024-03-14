@@ -128,10 +128,10 @@ public class ProjectItemMetadata
 
         foreach (KeyValuePair<string, string> dependency in oldVersion.DependsOn)
         {
-            DependsOn[dependency.Key] = new List<string>
-            {
+            DependsOn[dependency.Key] =
+            [
                 dependency.Value
-            };
+            ];
         }
     }
 

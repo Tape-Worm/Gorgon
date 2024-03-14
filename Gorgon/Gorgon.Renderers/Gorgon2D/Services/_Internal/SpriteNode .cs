@@ -31,7 +31,11 @@ namespace Gorgon.Renderers.Services;
 /// <summary>
 /// A node for the sprite packing.
 /// </summary>
-internal class SpriteNode
+/// <remarks>
+/// Initializes a new instance of the <see cref="SpriteNode"/> class.
+/// </remarks>
+/// <param name="parentNode">The parent node.</param>
+internal class SpriteNode(SpriteNode parentNode)
 {
     #region Variables.
     // Flag to indicate that we have no more space.
@@ -46,7 +50,7 @@ internal class SpriteNode
     {
         get;
         set;
-    }
+    } = DX.Rectangle.Empty;
 
     /// <summary>
     /// Property to return the parent node for this node.
@@ -54,7 +58,7 @@ internal class SpriteNode
     public SpriteNode Parent
     {
         get;
-    }
+    } = parentNode;
 
     /// <summary>
     /// Property to set or return the node to the left of this one.
@@ -132,17 +136,8 @@ internal class SpriteNode
 
         return Left.AddNode(dimensions) ?? Right.AddNode(dimensions);
     }
-    #endregion
 
+    #endregion
     #region Constructor/Destructor.
-    /// <summary>
-    /// Initializes a new instance of the <see cref="SpriteNode"/> class.
-    /// </summary>
-    /// <param name="parentNode">The parent node.</param>
-    public SpriteNode(SpriteNode parentNode)
-    {
-        Region = DX.Rectangle.Empty;
-        Parent = parentNode;
-    }
     #endregion
 }

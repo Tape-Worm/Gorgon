@@ -77,7 +77,7 @@ internal class PickClipperService
 
     #region Variables.
     // A list of pixels that have been checked by the clipper.
-    private bool[] _pixels = Array.Empty<bool>();
+    private bool[] _pixels = [];
     // The image data.
     private IGorgonImageBuffer _imageData;
     // The padding for the rectangle.
@@ -111,7 +111,7 @@ internal class PickClipperService
 
             if (value is null)
             {
-                _pixels = Array.Empty<bool>();
+                _pixels = [];
                 return;
             }
 

@@ -39,8 +39,12 @@ namespace Gorgon.Editor.AnimationEditor;
 /// <summary>
 /// The viewer for editing a single floating point key value for an aniamtion.
 /// </summary>
-internal class SingleAnimationViewer
-    : AnimationViewer
+/// <remarks>Initializes a new instance of the <see cref="DefaultAnimationViewer"/> class.</remarks>
+/// <param name="renderer">The main renderer for the content view.</param>
+/// <param name="swapChain">The swap chain for the content view.</param>
+/// <param name="dataContext">The view model to assign to the renderer.</param>        
+internal class SingleAnimationViewer(Gorgon2D renderer, GorgonSwapChain swapChain, IAnimationContent dataContext)
+        : AnimationViewer(ViewerName, renderer, swapChain, dataContext, null, true)
 {
     #region Constants.
     /// <summary>
@@ -260,16 +264,6 @@ internal class SingleAnimationViewer
 
         ZoomToSprite(Sprite);
     }
-    #endregion
 
-    #region Constructor/Finalizer.
-    /// <summary>Initializes a new instance of the <see cref="DefaultAnimationViewer"/> class.</summary>
-    /// <param name="renderer">The main renderer for the content view.</param>
-    /// <param name="swapChain">The swap chain for the content view.</param>
-    /// <param name="dataContext">The view model to assign to the renderer.</param>        
-    public SingleAnimationViewer(Gorgon2D renderer, GorgonSwapChain swapChain, IAnimationContent dataContext)
-        : base(ViewerName, renderer, swapChain, dataContext, null, true)
-    {
-    }        
     #endregion
 }

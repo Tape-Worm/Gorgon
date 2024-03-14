@@ -50,14 +50,14 @@ class ImageGallery
     // Our image list.
     private readonly IGorgonImage[] _images = new IGorgonImage[6];
     // Descriptions for each image.
-    private readonly string[] _descriptions = {
+    private readonly string[] _descriptions = [
                                                   "User Drawn Image",
                                                   "Direct Draw Surface (DDS) Image",
                                                   "16bpp TGA Image",
                                                   "Animated GIF",
                                                   "PNG Image (w/alpha)",
                                                   "BMP Image"
-                                              };
+                                              ];
     // The size of the image.
     private Size _imageSize;
     // The destination bitmap to draw on the screen.

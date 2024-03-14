@@ -41,15 +41,18 @@ namespace Gorgon.Editor.AnimationEditor;
 /// <summary>
 /// A processor for handling setting up key frames with relevant data.
 /// </summary>
-internal class KeyProcessorService
+/// <remarks>Initializes a new instance of the <see cref="KeyProcessorService"/> class.</remarks>
+/// <param name="textureCache">The texture cache.</param>
+/// <param name="log">The log.</param>
+internal class KeyProcessorService(ITextureCache textureCache, IGorgonLog log)
 {
     #region Variables.
     // The texture cache used to retrieve textures for sprites.
-    private readonly ITextureCache _textureCache;
+    private readonly ITextureCache _textureCache = textureCache;
     // The log used for debug messages.
-    private readonly IGorgonLog _log;
+    private readonly IGorgonLog _log = log;
     // The list of files for a texture track.
-    private readonly List<IContentFile> _textureFiles = new();
+    private readonly List<IContentFile> _textureFiles = [];
     // The arguments for the set keyframe command.
     private readonly SetKeyFramesArgs _setKeysArgs = new();
     // The synchronization lock for multiple threads.
@@ -337,16 +340,6 @@ internal class KeyProcessorService
                 return null;
         }
     }
-    #endregion
 
-    #region Constructor/Finalizer.
-    /// <summary>Initializes a new instance of the <see cref="KeyProcessorService"/> class.</summary>
-    /// <param name="textureCache">The texture cache.</param>
-    /// <param name="log">The log.</param>
-    public KeyProcessorService(ITextureCache textureCache, IGorgonLog log)
-    {
-        _textureCache = textureCache;
-        _log = log;
-    }
     #endregion
 }

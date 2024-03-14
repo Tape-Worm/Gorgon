@@ -97,7 +97,12 @@ public enum MouseButtonState
 /// This type is not intended for use by applications.
 /// </para>
 /// </remarks>
-public readonly struct GorgonRawMouseData
+/// <remarks>Initializes a new instance of the <see cref="GorgonRawMouseData" /> struct.</remarks>
+/// <param name="position">The position of the mouse.</param>
+/// <param name="mouseWheel">The mouse wheel delta value.</param>
+/// <param name="mouseButton">The mouse buttons that are held down.</param>
+/// <param name="relative"><b>true</b> if the positioning is relative, <b>false</b> if absolute.</param>
+public readonly struct GorgonRawMouseData(DX.Point position, short mouseWheel, MouseButtonState mouseButton, bool relative)
 {
     /// <summary>
     /// The current position of the mouse.
@@ -106,33 +111,20 @@ public readonly struct GorgonRawMouseData
     /// If the <see cref="IsRelative"/> value is set to <b>true</b>, then this value will be a relative value based on the last known position of the mouse. Otherwise, this will return the absolute 
     /// position of the mouse.
     /// </remarks>
-    public readonly DX.Point Position;
+    public readonly DX.Point Position = position;
 
     /// <summary>
     /// The change in the mouse wheel since the last event.
     /// </summary>
-    public readonly short MouseWheelDelta;
+    public readonly short MouseWheelDelta = mouseWheel;
 
     /// <summary>
     /// The state of the mouse button
     /// </summary>
-    public readonly MouseButtonState ButtonState;
+    public readonly MouseButtonState ButtonState = mouseButton;
 
     /// <summary>
     /// Flag to indicate whether the <see cref="Position"/> value is relative or not.
     /// </summary>
-    public readonly bool IsRelative;
-
-    /// <summary>Initializes a new instance of the <see cref="GorgonRawMouseData" /> struct.</summary>
-    /// <param name="position">The position of the mouse.</param>
-    /// <param name="mouseWheel">The mouse wheel delta value.</param>
-    /// <param name="mouseButton">The mouse buttons that are held down.</param>
-    /// <param name="relative"><b>true</b> if the positioning is relative, <b>false</b> if absolute.</param>
-    public GorgonRawMouseData(DX.Point position, short mouseWheel, MouseButtonState mouseButton, bool relative)
-    {
-        Position = position;
-        MouseWheelDelta = mouseWheel;
-        ButtonState = mouseButton;
-        IsRelative = relative;
-    }
+    public readonly bool IsRelative = relative;
 }

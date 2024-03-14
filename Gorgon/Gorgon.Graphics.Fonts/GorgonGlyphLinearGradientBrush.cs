@@ -282,10 +282,10 @@ public class GorgonGlyphLinearGradientBrush
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonGlyphPathGradientBrush"/> class.
     /// </summary>
-    public GorgonGlyphLinearGradientBrush() => Interpolation = new List<GorgonGlyphBrushInterpolator>
-                        {
-                            new GorgonGlyphBrushInterpolator(0, GorgonColor.Black),
-                            new GorgonGlyphBrushInterpolator(1, GorgonColor.White)
-                        };
+    public GorgonGlyphLinearGradientBrush() => Interpolation =
+                        [
+                            new(0, GorgonColor.Black),
+                            new(1, GorgonColor.White)
+                        ];
     #endregion
 }

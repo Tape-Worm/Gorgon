@@ -36,8 +36,12 @@ namespace Gorgon.Input.DirectInput;
 /// <summary>
 /// Device information for a DirectInput gaming device.
 /// </summary>
-internal class DirectInputDeviceInfo
-    : IGorgonGamingDeviceInfo
+/// <remarks>
+/// Initializes a new instance of the <see cref="DirectInputDeviceInfo"/> class.
+/// </remarks>
+/// <param name="devInstance">The DirectInput device instance.</param>
+internal class DirectInputDeviceInfo(DI.DeviceInstance devInstance)
+        : IGorgonGamingDeviceInfo
 {
     #region Properties.
     /// <summary>
@@ -76,7 +80,7 @@ internal class DirectInputDeviceInfo
     public string Description
     {
         get;
-    }
+    } = devInstance.ProductName;
 
     /// <summary>
     /// Property to return the ID for the manufacturer of the gaming device.
@@ -110,7 +114,7 @@ internal class DirectInputDeviceInfo
     public IReadOnlyList<GorgonRange> VibrationMotorRanges
     {
         get;
-    }
+    } = [];
 
     /// <summary>
     /// Property to return the number of point of view controls on the gaming device.
@@ -125,7 +129,7 @@ internal class DirectInputDeviceInfo
     public Guid DeviceID
     {
         get;
-    }
+    } = devInstance.InstanceGuid;
     #endregion
 
     #region Methods.
@@ -211,18 +215,8 @@ internal class DirectInputDeviceInfo
 
         return axisMappings;
     }
-    #endregion
 
+    #endregion
     #region Constructor.
-    /// <summary>
-    /// Initializes a new instance of the <see cref="DirectInputDeviceInfo"/> class.
-    /// </summary>
-    /// <param name="devInstance">The DirectInput device instance.</param>
-    public DirectInputDeviceInfo(DI.DeviceInstance devInstance)
-    {
-        VibrationMotorRanges = Array.Empty<GorgonRange>();
-        DeviceID = devInstance.InstanceGuid;
-        Description = devInstance.ProductName;
-    }
     #endregion
 }

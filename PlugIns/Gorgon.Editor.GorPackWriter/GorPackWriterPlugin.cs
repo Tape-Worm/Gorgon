@@ -654,7 +654,7 @@ internal class GorPackWriterPlugIn
     /// Initializes a new instance of the <see cref="GorPackWriterPlugIn"/> class.
     /// </summary>
     public GorPackWriterPlugIn()
-        : base(Resources.GORPKW_DESC, new[] { new GorgonFileExtension("gorPack", Resources.GORPKW_GORPACK_FILE_EXT_DESC) })
+        : base(Resources.GORPKW_DESC, [new GorgonFileExtension("gorPack", Resources.GORPKW_GORPACK_FILE_EXT_DESC)])
     {
     }
     #endregion

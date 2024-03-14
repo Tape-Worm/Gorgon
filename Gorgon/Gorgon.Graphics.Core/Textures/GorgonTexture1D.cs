@@ -61,9 +61,9 @@ public sealed class GorgonTexture1D
     // The ID number of the texture.
     private static int _textureID;
     // The list of cached texture unordered access views.
-    private Dictionary<TextureViewKey, GorgonTexture1DReadWriteView> _cachedReadWriteViews = new();
+    private Dictionary<TextureViewKey, GorgonTexture1DReadWriteView> _cachedReadWriteViews = [];
     // The list of cached texture shader resource views.
-    private Dictionary<TextureViewKey, GorgonTexture1DView> _cachedSrvs = new();
+    private Dictionary<TextureViewKey, GorgonTexture1DView> _cachedSrvs = [];
 #if NET48_OR_GREATER
 #pragma warning disable IDE0044 // Add readonly modifier
 #endif

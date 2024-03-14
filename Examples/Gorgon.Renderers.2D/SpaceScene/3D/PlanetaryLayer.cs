@@ -34,7 +34,9 @@ namespace Gorgon.Examples;
 /// <remarks>
 /// Each layer is composited on top of the previous layer. By doing this we can give the appearance of clouds moving over planetary body, layers of gas, etc...
 /// </remarks>
-internal class PlanetaryLayer
+/// <remarks>Initializes a new instance of the <see cref="PlanetaryLayer"/> class.</remarks>
+/// <param name="mesh">The mesh.</param>
+internal class PlanetaryLayer(MoveableMesh mesh)
 {
     /// <summary>
     /// Property to return the mesh representing the layer.
@@ -42,7 +44,7 @@ internal class PlanetaryLayer
     public MoveableMesh Mesh
     {
         get;
-    }
+    } = mesh;
 
     /// <summary>
     /// Property to set or return an animation to play for this layer.
@@ -52,8 +54,4 @@ internal class PlanetaryLayer
         get;
         set;
     }
-
-    /// <summary>Initializes a new instance of the <see cref="PlanetaryLayer"/> class.</summary>
-    /// <param name="mesh">The mesh.</param>
-    public PlanetaryLayer(MoveableMesh mesh) => Mesh = mesh;
 }

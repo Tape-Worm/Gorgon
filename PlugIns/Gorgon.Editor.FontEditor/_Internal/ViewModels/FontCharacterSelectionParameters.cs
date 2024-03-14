@@ -39,8 +39,11 @@ namespace Gorgon.Editor.FontEditor;
 /// <summary>
 /// The parameters for the font character selection viewmodel.
 /// </summary>
-internal class FontCharacterSelectionParameters
-    : HostedPanelViewModelParameters
+/// <remarks>Initializes a new instance of the <see cref="FontCharacterSelectionParameters" /> class.</remarks>
+/// <param name="fontService">The service used to generate fonts.</param>
+/// <param name="hostServices">The services from the host application.</param>
+internal class FontCharacterSelectionParameters(FontService fontService, IHostContentServices hostServices)
+        : HostedPanelViewModelParameters(hostServices)
 {
     #region Properties.
     /// <summary>
@@ -49,15 +52,7 @@ internal class FontCharacterSelectionParameters
     public FontService FontService
     {
         get;
-    }
-    #endregion
+    } = fontService ?? throw new ArgumentNullException(nameof(fontService));
 
-    #region Constructor/Finalizer.
-    /// <summary>Initializes a new instance of the <see cref="FontCharacterSelectionParameters" /> class.</summary>
-    /// <param name="fontService">The service used to generate fonts.</param>
-    /// <param name="hostServices">The services from the host application.</param>
-    public FontCharacterSelectionParameters(FontService fontService, IHostContentServices hostServices)
-        : base(hostServices)
-        => FontService = fontService ?? throw new ArgumentNullException(nameof(fontService));
     #endregion
 }

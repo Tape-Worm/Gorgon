@@ -29,7 +29,9 @@ namespace Gorgon.Editor.ViewModels;
 /// <summary>
 /// Arguments for the <see cref="INewProject.SetProjectWorkspaceCommand"/>.
 /// </summary>
-internal class SetProjectWorkspaceArgs
+/// <remarks>Initializes a new instance of the <see cref="SetProjectWorkspaceArgs"/> class.</remarks>
+/// <param name="projectWorkspace">The path to the project workspace.</param>
+internal class SetProjectWorkspaceArgs(string projectWorkspace)
 {
     /// <summary>
     /// Property to return the path to the project workspace.
@@ -37,9 +39,5 @@ internal class SetProjectWorkspaceArgs
     public string WorkspacePath
     {
         get;
-    }
-
-    /// <summary>Initializes a new instance of the <see cref="SetProjectWorkspaceArgs"/> class.</summary>
-    /// <param name="projectWorkspace">The path to the project workspace.</param>
-    public SetProjectWorkspaceArgs(string projectWorkspace) => WorkspacePath = projectWorkspace;
+    } = projectWorkspace;
 }

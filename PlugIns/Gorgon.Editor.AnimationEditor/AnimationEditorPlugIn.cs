@@ -182,8 +182,8 @@ internal class AnimationEditorPlugIn
     // The service for handling animation I/O functionality.
     private AnimationIOService _ioService;
     // The list of excluded track types.
-    private static readonly List<GorgonTrackRegistration> _excludedTracks = new()
-    {
+    private static readonly List<GorgonTrackRegistration> _excludedTracks =
+    [
         GorgonSpriteAnimationController.BoundsTrack,
         GorgonSpriteAnimationController.TextureArrayIndexTrack,
         GorgonSpriteAnimationController.TextureCoordinatesTrack,
@@ -193,7 +193,7 @@ internal class AnimationEditorPlugIn
         GorgonSpriteAnimationController.LowerRightPosition3DTrack,
         GorgonSpriteAnimationController.Position3DTrack,
         GorgonSpriteAnimationController.DepthTrack
-    };
+    ];
     // The list of metadata items for each track.
     private IReadOnlyDictionary<int, KeyValueMetadata> _keyMetadata;
 
@@ -337,7 +337,7 @@ internal class AnimationEditorPlugIn
         {
             if (spriteNames is null)
             {
-                dependencyList[CommonEditorContentTypes.SpriteType] = spriteNames = new List<string>();
+                dependencyList[CommonEditorContentTypes.SpriteType] = spriteNames = [];
             }
 
             if (spriteNames.Count == 0)
@@ -356,7 +356,7 @@ internal class AnimationEditorPlugIn
 
         if (textureNames is null)
         {
-            dependencyList[CommonEditorContentTypes.ImageType] = textureNames = new List<string>();
+            dependencyList[CommonEditorContentTypes.ImageType] = textureNames = [];
         }
 
         // We couldn't find the texture in the dependency list (either did not exist, or there were no dependencies).
@@ -498,7 +498,7 @@ internal class AnimationEditorPlugIn
 
             if (track.Value.KeyFrames.Count == 0)
             {
-                trackViewModel.KeyFrames = Array.Empty<IKeyFrame>();
+                trackViewModel.KeyFrames = [];
                 continue;
             }
 
@@ -527,7 +527,7 @@ internal class AnimationEditorPlugIn
 
             if (track.Value.KeyFrames.Count == 0)
             {
-                trackViewModel.KeyFrames = Array.Empty<IKeyFrame>();
+                trackViewModel.KeyFrames = [];
                 continue;
             }
 
@@ -556,7 +556,7 @@ internal class AnimationEditorPlugIn
 
             if (track.Value.KeyFrames.Count == 0)
             {
-                trackViewModel.KeyFrames = Array.Empty<IKeyFrame>();
+                trackViewModel.KeyFrames = [];
                 continue;
             }
 
@@ -585,7 +585,7 @@ internal class AnimationEditorPlugIn
 
             if (track.Value.KeyFrames.Count == 0)
             {
-                trackViewModel.KeyFrames = Array.Empty<IKeyFrame>();
+                trackViewModel.KeyFrames = [];
                 continue;
             }
 
@@ -614,7 +614,7 @@ internal class AnimationEditorPlugIn
 
             if (track.Value.KeyFrames.Count == 0)
             {
-                trackViewModel.KeyFrames = Array.Empty<IKeyFrame>();
+                trackViewModel.KeyFrames = [];
                 continue;
             }
 
@@ -643,7 +643,7 @@ internal class AnimationEditorPlugIn
 
             if (track.Value.KeyFrames.Count == 0)
             {
-                trackViewModel.KeyFrames = Array.Empty<IKeyFrame>();
+                trackViewModel.KeyFrames = [];
                 continue;
             }
 
@@ -672,7 +672,7 @@ internal class AnimationEditorPlugIn
 
             if (track.Value.KeyFrames.Count == 0)
             {
-                trackViewModel.KeyFrames = Array.Empty<IKeyFrame>();
+                trackViewModel.KeyFrames = [];
                 continue;
             }
 
@@ -883,10 +883,10 @@ internal class AnimationEditorPlugIn
             if ((bgTextureFile is not null) && (ContentFileManager.FileExists(bgTextureFile.Path)))
             {
                 HostContentServices.Log.Print($"Assigning '{bgTextureFile.Path}' as background image for animation.", LoggingLevel.Verbose);                    
-                metadata.DependsOn[BgImageDependencyName] = new List<string>
-                {
+                metadata.DependsOn[BgImageDependencyName] =
+                [
                     bgTextureFile.Path
-                };
+                ];
             }
 
             if ((primarySpriteFile is not null) && (ContentFileManager.FileExists(primarySpriteFile.Path)))
@@ -903,10 +903,10 @@ internal class AnimationEditorPlugIn
                         builder.Edit2DTexture(GorgonSpriteAnimationController.TextureTrack.TrackName)
                                .SetKey(new GorgonKeyTexture2D(0, texturePath, sprite.TextureRegion, sprite.TextureArrayIndex))
                                .EndEdit();
-                        metadata.DependsOn[CommonEditorContentTypes.ImageType] = new List<string> { texturePath };
+                        metadata.DependsOn[CommonEditorContentTypes.ImageType] = [texturePath];
                     }
 
-                    metadata.DependsOn[CommonEditorContentTypes.SpriteType] = new List<string> { primarySpriteFile.Path };
+                    metadata.DependsOn[CommonEditorContentTypes.SpriteType] = [primarySpriteFile.Path];
                 }
                 else
                 {

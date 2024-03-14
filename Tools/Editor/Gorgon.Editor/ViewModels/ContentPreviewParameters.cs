@@ -35,8 +35,12 @@ namespace Gorgon.Editor.ViewModels;
 /// <summary>
 /// Parameters for the <see cref="IContentPreview"/> view model.
 /// </summary>
-internal class ContentPreviewParameters
-    : ViewModelCommonParameters
+/// <remarks>Initializes a new instance of the <see cref="ContentPreviewParameters"/> class.</remarks>
+/// <param name="hostServices">The services from the host application.</param>
+/// <param name="viewModelFactory">The view model factory for creating view models.</param>
+/// <exception cref="ArgumentNullException">Thrown when any of the parameters are <b>null</b>.</exception>
+internal class ContentPreviewParameters(IHostContentServices hostServices, ViewModelFactory viewModelFactory)
+        : ViewModelCommonParameters(hostServices, viewModelFactory)
 {
     #region Properties.
     /// <summary>
@@ -65,16 +69,6 @@ internal class ContentPreviewParameters
         get;
         set;
     }
-    #endregion
 
-    #region Constructor/Finalizer.
-    /// <summary>Initializes a new instance of the <see cref="ContentPreviewParameters"/> class.</summary>
-    /// <param name="hostServices">The services from the host application.</param>
-    /// <param name="viewModelFactory">The view model factory for creating view models.</param>
-    /// <exception cref="ArgumentNullException">Thrown when any of the parameters are <b>null</b>.</exception>
-    public ContentPreviewParameters(IHostContentServices hostServices, ViewModelFactory viewModelFactory)
-        : base(hostServices, viewModelFactory)
-    {
-    }
     #endregion
 }

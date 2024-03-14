@@ -114,7 +114,7 @@ internal class Planet
     public Planet(IEnumerable<PlanetaryLayer> layers)
     {
         Layers = layers.ToArray();
-        _animController = new List<MeshAnimationController>();
+        _animController = [];
 
         for (int i = 0; i < Layers.Count; ++i)
         {

@@ -102,7 +102,7 @@ public sealed class GorgonGeometryShader
             throw new ArgumentNullException(nameof(streamOutLayout));
         }
 
-        int[] strideList = strides?.Take(4).ToArray() ?? Array.Empty<int>();
+        int[] strideList = strides?.Take(4).ToArray() ?? [];
         // Clone the byte code just in case we decide to destroy the original.
         var byteCode = new ShaderBytecode(D3DByteCode.Data);
 

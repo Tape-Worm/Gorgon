@@ -31,8 +31,11 @@ namespace Gorgon.Editor.Content;
 /// <summary>
 /// Event parameters for the <see cref="IContentFile.Renamed"/> event.
 /// </summary>
-public class ContentFileRenamedEventArgs
-    : EventArgs
+/// <remarks>Initializes a new instance of the <see cref="ContentFileRenamedEventArgs"/> class.</remarks>
+/// <param name="oldName">The old name.</param>
+/// <param name="newName">The new name.</param>
+public class ContentFileRenamedEventArgs(string oldName, string newName)
+        : EventArgs
 {
     /// <summary>
     /// Property to return the new name of the node.
@@ -40,7 +43,7 @@ public class ContentFileRenamedEventArgs
     public string NewName
     {
         get;
-    }
+    } = newName ?? string.Empty;
 
     /// <summary>
     /// Property to return the old name of the node.
@@ -48,14 +51,5 @@ public class ContentFileRenamedEventArgs
     public string OldName
     {
         get;
-    }
-
-    /// <summary>Initializes a new instance of the <see cref="ContentFileRenamedEventArgs"/> class.</summary>
-    /// <param name="oldName">The old name.</param>
-    /// <param name="newName">The new name.</param>
-    public ContentFileRenamedEventArgs(string oldName, string newName)
-    {
-        OldName = oldName ?? string.Empty;
-        NewName = newName ?? string.Empty;
-    }
+    } = oldName ?? string.Empty;
 }

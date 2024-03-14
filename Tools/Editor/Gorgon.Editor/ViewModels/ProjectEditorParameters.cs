@@ -34,8 +34,13 @@ namespace Gorgon.Editor.ViewModels;
 /// <summary>
 /// Parameters for the <see cref="IProjectEditor"/> view model.
 /// </summary>
-internal class ProjectEditorParameters
-    : ViewModelCommonParameters
+/// <remarks>
+/// Initializes a new instance of the <see cref="ProjectEditorParameters" /> class.
+/// </remarks>
+/// <param name="hostServices">The services from the host application.</param>
+/// <param name="viewModelFactory">The view model factory.</param>
+internal class ProjectEditorParameters(IHostContentServices hostServices, ViewModelFactory viewModelFactory)
+        : ViewModelCommonParameters(hostServices, viewModelFactory)
 {
     /// <summary>
     /// Property to set or return the file explorer view model.
@@ -80,15 +85,5 @@ internal class ProjectEditorParameters
     {
         get;
         set;
-    }
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="ProjectEditorParameters" /> class.
-    /// </summary>
-    /// <param name="hostServices">The services from the host application.</param>
-    /// <param name="viewModelFactory">The view model factory.</param>
-    public ProjectEditorParameters(IHostContentServices hostServices, ViewModelFactory viewModelFactory)
-        : base(hostServices, viewModelFactory)
-    {        
     }
 }

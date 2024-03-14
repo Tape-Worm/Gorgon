@@ -42,8 +42,15 @@ namespace Gorgon.Graphics.Core;
 /// </para>
 /// </remarks>
 /// <seealso cref="GorgonGraphics"/>
-public sealed class GorgonComputeEngine
-    : IGorgonGraphicsObject
+/// <remarks>
+/// Initializes a new instance of the <see cref="GorgonComputeEngine"/> class.
+/// </remarks>
+/// <param name="graphics">The graphics interface that allows access to the GPU.</param>
+/// <exception cref="ArgumentNullException">Thrown when the <paramref name="graphics"/> parameter is <b>null</b>.</exception>
+/// <exception cref="ArgumentException">Thrown if the device is not a feature level 11 or better device.</exception>
+/// <seealso cref="GorgonGraphics"/>
+public sealed class GorgonComputeEngine(GorgonGraphics graphics)
+        : IGorgonGraphicsObject
 {
     #region Constants.
     /// <summary>
@@ -59,7 +66,7 @@ public sealed class GorgonComputeEngine
     public GorgonGraphics Graphics
     {
         get;
-    }
+    } = graphics ?? throw new ArgumentNullException(nameof(graphics));
     #endregion
 
     #region Methods.
@@ -122,16 +129,6 @@ public sealed class GorgonComputeEngine
     /// </para>
     /// </remarks>
     public void Execute(GorgonDispatchCall dispatchCall, GorgonBufferCommon indirectArgs, int threadGroupOffset = 0) => Graphics.Dispatch(dispatchCall, indirectArgs, threadGroupOffset);
-    #endregion
 
-    #region Constructor/Finalizer.
-    /// <summary>
-    /// Initializes a new instance of the <see cref="GorgonComputeEngine"/> class.
-    /// </summary>
-    /// <param name="graphics">The graphics interface that allows access to the GPU.</param>
-    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="graphics"/> parameter is <b>null</b>.</exception>
-    /// <exception cref="ArgumentException">Thrown if the device is not a feature level 11 or better device.</exception>
-    /// <seealso cref="GorgonGraphics"/>
-    public GorgonComputeEngine(GorgonGraphics graphics) => Graphics = graphics ?? throw new ArgumentNullException(nameof(graphics));
     #endregion
 }

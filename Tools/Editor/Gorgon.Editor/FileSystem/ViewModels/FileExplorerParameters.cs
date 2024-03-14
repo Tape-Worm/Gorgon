@@ -37,8 +37,12 @@ namespace Gorgon.Editor.ViewModels;
 /// <summary>
 /// Parameters for the <see cref="IFileExplorer"/> view model.
 /// </summary>
-internal class FileExplorerParameters
-    : ViewModelCommonParameters
+/// <remarks>Initializes a new instance of the <see cref="FileExplorerParameters"/> class.</remarks>
+/// <param name="hostServices">The services from the host application.</param>
+/// <param name="viewModelFactory">The view model factory.</param>
+/// <exception cref="ArgumentNullException">Thrown when any of the parameters are <b>null</b>.</exception>
+internal class FileExplorerParameters(IHostContentServices hostServices, ViewModelFactory viewModelFactory)
+        : ViewModelCommonParameters(hostServices, viewModelFactory)
 {
     /// <summary>
     /// Property to set or return the root directory for the file system.
@@ -92,14 +96,5 @@ internal class FileExplorerParameters
     {
         get;
         set;
-    }
-
-    /// <summary>Initializes a new instance of the <see cref="FileExplorerParameters"/> class.</summary>
-    /// <param name="hostServices">The services from the host application.</param>
-    /// <param name="viewModelFactory">The view model factory.</param>
-    /// <exception cref="ArgumentNullException">Thrown when any of the parameters are <b>null</b>.</exception>
-    public FileExplorerParameters(IHostContentServices hostServices, ViewModelFactory viewModelFactory)
-        : base(hostServices, viewModelFactory)
-    {            
     }
 }

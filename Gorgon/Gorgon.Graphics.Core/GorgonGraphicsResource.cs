@@ -153,12 +153,22 @@ public enum EvictionPriority
 /// Objects that inherit from this class will be considered a resource object that may (depending on usage) be bound to the pipeline.
 /// </para>
 /// </remarks>
-public abstract class GorgonGraphicsResource
-    : IGorgonNamedObject, IGorgonGraphicsObject, IGorgonNativeResource, IDisposable
+/// <remarks>
+/// Initializes a new instance of the <see cref="GorgonGraphicsResource" /> class.
+/// </remarks>
+/// <param name="graphics">The graphics interface used to create this resource.</param>
+/// <remarks>
+/// <para>
+/// Names for the resource are required, but do not need to be unique. These are used to help with debugging and can be used for managing resources in an application.
+/// </para>
+/// </remarks>
+/// <exception cref="ArgumentNullException">Thrown when the <paramref name="graphics"/> parameter is <b>null</b>.</exception> 
+public abstract class GorgonGraphicsResource(GorgonGraphics graphics)
+        : IGorgonNamedObject, IGorgonGraphicsObject, IGorgonNativeResource, IDisposable
 {
     #region Variables.
     // Custom application data.
-    private readonly Dictionary<Guid, object> _appData = new();
+    private readonly Dictionary<Guid, object> _appData = [];
     // The Direct 3D 11 resource.
     private D3D11.Resource _resource;
     #endregion
@@ -208,7 +218,7 @@ public abstract class GorgonGraphicsResource
     public GorgonGraphics Graphics
     {
         get;
-    }
+    } = graphics ?? throw new ArgumentNullException(nameof(graphics));
 
     /// <summary>
     /// Property to return the type of data in the resource.
@@ -317,19 +327,8 @@ public abstract class GorgonGraphicsResource
 
         return result;
     }
-    #endregion
 
+    #endregion
     #region Constructor/Destructor.
-    /// <summary>
-    /// Initializes a new instance of the <see cref="GorgonGraphicsResource" /> class.
-    /// </summary>
-    /// <param name="graphics">The graphics interface used to create this resource.</param>
-    /// <remarks>
-    /// <para>
-    /// Names for the resource are required, but do not need to be unique. These are used to help with debugging and can be used for managing resources in an application.
-    /// </para>
-    /// </remarks>
-    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="graphics"/> parameter is <b>null</b>.</exception> 
-    protected GorgonGraphicsResource(GorgonGraphics graphics) => Graphics = graphics ?? throw new ArgumentNullException(nameof(graphics));
     #endregion
 }

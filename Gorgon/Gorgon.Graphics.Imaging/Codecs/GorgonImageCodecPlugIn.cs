@@ -36,8 +36,17 @@ namespace Gorgon.Graphics.Imaging.Codecs;
 /// <summary>
 /// A plug in to allow for loading of custom image codecs.
 /// </summary>
-public abstract class GorgonImageCodecPlugIn
-    : GorgonPlugIn
+/// <remarks>
+/// Initializes a new instance of the <see cref="GorgonImageCodecPlugIn"/> class.
+/// </remarks>
+/// <param name="description">Optional description of the plug in.</param>
+/// <remarks>
+/// <para>
+/// Objects that implement this base class should pass in a hard coded description on the base constructor.
+/// </para>
+/// </remarks>
+public abstract class GorgonImageCodecPlugIn(string description)
+        : GorgonPlugIn(description)
 {
     #region Properties.
     /// <summary>
@@ -190,21 +199,8 @@ public abstract class GorgonImageCodecPlugIn
 
         return result ?? throw new KeyNotFoundException(string.Format(Resources.GORIMG_ERR_CODEC_NOT_IN_PLUGIN, codec));
     }
-    #endregion
 
+    #endregion
     #region Constructor/Destructor.
-    /// <summary>
-    /// Initializes a new instance of the <see cref="GorgonImageCodecPlugIn"/> class.
-    /// </summary>
-    /// <param name="description">Optional description of the plug in.</param>
-    /// <remarks>
-    /// <para>
-    /// Objects that implement this base class should pass in a hard coded description on the base constructor.
-    /// </para>
-    /// </remarks>
-    protected GorgonImageCodecPlugIn(string description)
-        : base(description)
-    {
-    }
     #endregion
 }

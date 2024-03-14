@@ -36,8 +36,13 @@ namespace Gorgon.Editor.SpriteEditor;
 /// <summary>
 /// Provides rendering functionality for the sprite editor.
 /// </summary>
-internal abstract class SpriteViewer
-    : DefaultContentRenderer<ISpriteContent>, ISpriteViewer
+/// <remarks>Initializes a new instance of the <see cref="SpriteViewer"/> class.</remarks>
+/// <param name="name">The name of the renderer.</param>
+/// <param name="renderer">The main renderer for the content view.</param>
+/// <param name="swapChain">The swap chain for the content view.</param>
+/// <param name="dataContext">The view model to assign to the renderer.</param>        
+internal abstract class SpriteViewer(string name, Gorgon2D renderer, GorgonSwapChain swapChain, ISpriteContent dataContext)
+        : DefaultContentRenderer<ISpriteContent>(name, renderer, swapChain, dataContext), ISpriteViewer
 {
     #region Variables.
     // The controller for animating the content.
@@ -137,17 +142,6 @@ internal abstract class SpriteViewer
 
     /// <summary>Function to set the default zoom/offset for the viewer.</summary>
     public abstract void DefaultZoom();
-    #endregion
 
-    #region Constructor/Finalizer.
-    /// <summary>Initializes a new instance of the <see cref="SpriteViewer"/> class.</summary>
-    /// <param name="name">The name of the renderer.</param>
-    /// <param name="renderer">The main renderer for the content view.</param>
-    /// <param name="swapChain">The swap chain for the content view.</param>
-    /// <param name="dataContext">The view model to assign to the renderer.</param>        
-    protected SpriteViewer(string name, Gorgon2D renderer, GorgonSwapChain swapChain, ISpriteContent dataContext)
-        : base(name, renderer, swapChain, dataContext)
-    {
-    }        
     #endregion
 }

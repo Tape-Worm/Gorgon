@@ -36,12 +36,15 @@ namespace Gorgon.Editor.Services;
 /// <summary>
 /// A system used to search through the file system for files.
 /// </summary>
-public class EditorContentSearchService
-    : ISearchService<IContentFileExplorerSearchEntry>
+/// <remarks>Initializes a new instance of the <see cref="EditorContentSearchService"/> class.</remarks>
+/// <param name="rows">The list of rows from the data grid containing the editor files.</param>
+/// <exception cref="ArgumentNullException">Thrown when the <paramref name="rows" /> parameter is <strong>null</strong>.</exception>
+public class EditorContentSearchService(IReadOnlyList<IContentFileExplorerSearchEntry> rows)
+        : ISearchService<IContentFileExplorerSearchEntry>
 {
     #region Variables.
     // The rows containing the editor files.
-    private readonly IReadOnlyList<IContentFileExplorerSearchEntry> _rows;
+    private readonly IReadOnlyList<IContentFileExplorerSearchEntry> _rows = rows ?? throw new ArgumentNullException(nameof(rows));
     // The type of search keywords that can be used.
     private readonly Dictionary<string, string> _searchKeywords = new(StringComparer.CurrentCultureIgnoreCase)
     {
@@ -162,7 +165,7 @@ public class EditorContentSearchService
     {
         if (string.IsNullOrWhiteSpace(searchText))
         {
-            return Array.Empty<IContentFileExplorerSearchEntry>();
+            return [];
         }
 
         // Extract any keyword that might be embedded in the start of the search text.
@@ -250,12 +253,6 @@ public class EditorContentSearchService
 
         return searchResults;
     }
-    #endregion
 
-    #region Constructor/Finalizer.
-    /// <summary>Initializes a new instance of the <see cref="EditorContentSearchService"/> class.</summary>
-    /// <param name="rows">The list of rows from the data grid containing the editor files.</param>
-    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="rows" /> parameter is <strong>null</strong>.</exception>
-    public EditorContentSearchService(IReadOnlyList<IContentFileExplorerSearchEntry> rows) => _rows = rows ?? throw new ArgumentNullException(nameof(rows));
     #endregion
 }

@@ -35,7 +35,12 @@ namespace Gorgon.IO.Providers;
 /// Implementors of the <see cref="GorgonFileSystemProvider"/> plug in will return this type when enumerating directories and files from the physical file system. Gorgon will use this information to 
 /// populate the <see cref="IGorgonFileSystem"/> object with <see cref="IGorgonVirtualDirectory"/> and <see cref="IGorgonVirtualFile"/> entries.
 /// </remarks>
-public sealed class GorgonPhysicalFileSystemData
+/// <remarks>
+/// Initializes a new instance of the <see cref="GorgonPhysicalFileSystemData"/> class.
+/// </remarks>
+/// <param name="directories">The directories.</param>
+/// <param name="files">The files.</param>
+public sealed class GorgonPhysicalFileSystemData(IReadOnlyList<string> directories, IReadOnlyList<IGorgonPhysicalFileInfo> files)
 {
     #region Properties.
     /// <summary>
@@ -44,7 +49,7 @@ public sealed class GorgonPhysicalFileSystemData
     public IReadOnlyList<string> Directories
     {
         get;
-    }
+    } = directories;
 
     /// <summary>
     /// Property to return the available files from the physical file system.
@@ -52,19 +57,9 @@ public sealed class GorgonPhysicalFileSystemData
     public IReadOnlyList<IGorgonPhysicalFileInfo> Files
     {
         get;
-    }
-    #endregion
+    } = files;
 
+    #endregion
     #region Constructor.
-    /// <summary>
-    /// Initializes a new instance of the <see cref="GorgonPhysicalFileSystemData"/> class.
-    /// </summary>
-    /// <param name="directories">The directories.</param>
-    /// <param name="files">The files.</param>
-    public GorgonPhysicalFileSystemData(IReadOnlyList<string> directories, IReadOnlyList<IGorgonPhysicalFileInfo> files)
-    {
-        Directories = directories;
-        Files = files;
-    }
     #endregion
 }

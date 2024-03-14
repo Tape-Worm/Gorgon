@@ -73,18 +73,18 @@ public static class GorgonShaderFactory
 
     // A list of available shader types.
     private static readonly (Type, ShaderType, string)[] _shaderTypes =
-    {
+    [
         (typeof(GorgonVertexShader), ShaderType.Vertex, "vs_5_0"),
         (typeof(GorgonPixelShader), ShaderType.Pixel, "ps_5_0"),
         (typeof(GorgonGeometryShader), ShaderType.Geometry, "gs_5_0"),
         (typeof(GorgonHullShader), ShaderType.Hull, "hs_5_0"),
         (typeof(GorgonDomainShader), ShaderType.Domain, "ds_5_0"),
         (typeof(GorgonComputeShader), ShaderType.Compute, "cs_5_0")
-    };
+    ];
 
     // A list of factory objects used to create the actual shader objects.
     private static readonly Dictionary<ShaderType, ObjectActivator<GorgonShader>> _shaderFactory =
-        new();
+        [];
     #endregion
 
     #region Properties.
@@ -175,10 +175,9 @@ public static class GorgonShaderFactory
         // We will store the shader as a Gorgon chunked binary format. 
         // This will break the shader into parts within the file to allow us the ability to read portions of the file.
         var chunkReader = new GorgonChunkFileReader(stream,
-                                                                      new[]
-                                                                      {
+                                                                      [
                                                                           BinaryShaderFileHeader.ChunkID()
-                                                                      });
+                                                                      ]);
 
         ShaderBytecode byteCode = null;
 

@@ -32,7 +32,10 @@ namespace Gorgon.Renderers.Services;
 /// <summary>
 /// A list of rectangles for a sprite texture.
 /// </summary>
-internal class TextureRects
+/// <remarks>Initializes a new instance of the <see cref="TextureRects"/> class.</remarks>
+/// <param name="textureBounds">The texture bounds.</param>
+/// <param name="arrayIndex">Index of the texture array to use.</param>
+internal class TextureRects(DX.Rectangle textureBounds, int arrayIndex)
 {
     /// <summary>
     /// Property to return the boundaries of the texture.
@@ -40,7 +43,7 @@ internal class TextureRects
     public DX.Rectangle Bounds
     {
         get;
-    }
+    } = textureBounds;
 
     /// <summary>
     /// Property to return the list of occupied sprite regions on this texture.
@@ -48,7 +51,7 @@ internal class TextureRects
     public Dictionary<GorgonSprite, DX.Rectangle> SpriteRegion
     {
         get;
-    } = new Dictionary<GorgonSprite, DX.Rectangle>();
+    } = [];
 
     /// <summary>
     /// Property to set or return the array index for the texture.
@@ -57,14 +60,5 @@ internal class TextureRects
     {
         get;
         set;
-    }
-
-    /// <summary>Initializes a new instance of the <see cref="TextureRects"/> class.</summary>
-    /// <param name="textureBounds">The texture bounds.</param>
-    /// <param name="arrayIndex">Index of the texture array to use.</param>
-    public TextureRects(DX.Rectangle textureBounds, int arrayIndex)
-    {
-        Bounds = textureBounds;
-        ArrayIndex = arrayIndex;
-    }
+    } = arrayIndex;
 }

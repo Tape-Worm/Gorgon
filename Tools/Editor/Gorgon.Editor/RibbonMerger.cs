@@ -44,11 +44,16 @@ namespace Gorgon.Editor;
 /// To affect the order of the merged groups and tabs, set the Tag property to a value from 0 to n, where n is the count of the target group minus 1.
 /// </para>
 /// </remarks>
-internal class RibbonMerger
+/// <remarks>
+/// Initializes a new instance of the <see cref="RibbonMerger"/> class.
+/// </remarks>
+/// <param name="targetRibbon">The target ribbon that will receive the items from the merged ribbon.</param>
+/// <exception cref="ArgumentNullException">Thrown when the <paramref name="targetRibbon"/> is <b>null</b>.</exception>
+internal class RibbonMerger(KryptonRibbon targetRibbon)
 {
     #region Variables.
     // The list of merged items.
-    private readonly HashSet<Component> _mergedItems = new();
+    private readonly HashSet<Component> _mergedItems = [];
     #endregion
 
     #region Properties.
@@ -58,7 +63,7 @@ internal class RibbonMerger
     public KryptonRibbon TargetRibbon
     {
         get;
-    }
+    } = targetRibbon ?? throw new ArgumentNullException(nameof(targetRibbon));
     #endregion
 
     #region Methods.
@@ -98,7 +103,7 @@ internal class RibbonMerger
     /// <param name="targetItems">The destination items to unmerge.</param>
     private void UnmergeGroupItems(KryptonRibbonGroupContainerCollection sourceItems, KryptonRibbonGroupContainerCollection targetItems)
     {
-        IEnumerable<KryptonRibbonGroupContainer> items = targetItems.ToArray();
+        IEnumerable<KryptonRibbonGroupContainer> items = [.. targetItems];
 
         foreach (KryptonRibbonGroupContainer item in items)
         {
@@ -120,7 +125,7 @@ internal class RibbonMerger
     /// <param name="targetItems">The destination items to merge.</param>
     private void MergeGroupItems(KryptonRibbonGroupContainerCollection sourceItems, KryptonRibbonGroupContainerCollection targetItems)
     {
-        IEnumerable<KryptonRibbonGroupContainer> items = sourceItems.ToArray();
+        IEnumerable<KryptonRibbonGroupContainer> items = [.. sourceItems];
 
         foreach (KryptonRibbonGroupContainer sourceItem in items)
         {
@@ -147,7 +152,7 @@ internal class RibbonMerger
     /// <param name="targetGroups">The destination groups to unmerge.</param>
     private void UnmergeGroups(KryptonRibbonGroupCollection sourceGroups, KryptonRibbonGroupCollection targetGroups)
     {
-        IEnumerable<KryptonRibbonGroup> groups = targetGroups.ToArray();
+        IEnumerable<KryptonRibbonGroup> groups = [.. targetGroups];
 
         foreach (KryptonRibbonGroup grp in groups)
         {
@@ -177,7 +182,7 @@ internal class RibbonMerger
     /// <param name="targetGroups">The destination groups to merge.</param>
     private void MergeGroups(KryptonRibbonGroupCollection sourceGroups, KryptonRibbonGroupCollection targetGroups)
     {
-        IEnumerable<KryptonRibbonGroup> groups = sourceGroups.ToArray();
+        IEnumerable<KryptonRibbonGroup> groups = [.. sourceGroups];
 
         foreach (KryptonRibbonGroup sourceGroup in groups)
         {
@@ -209,7 +214,7 @@ internal class RibbonMerger
     /// <param name="targetRibbon">The ribbon to be merged into.</param>
     private void MergeTabs(KryptonRibbon sourceRibbon, KryptonRibbon targetRibbon)
     {
-        IEnumerable<KryptonRibbonTab> sourceTabs = sourceRibbon.RibbonTabs.ToArray();
+        IEnumerable<KryptonRibbonTab> sourceTabs = [.. sourceRibbon.RibbonTabs];
 
         foreach (KryptonRibbonTab tab in sourceTabs)
         {
@@ -242,7 +247,7 @@ internal class RibbonMerger
     /// <param name="targetRibbon">The ribbon to be unmerged from.</param>
     private void UnmergeContexts(KryptonRibbon sourceRibbon, KryptonRibbon targetRibbon)
     {
-        IEnumerable<KryptonRibbonContext> contexts = targetRibbon.RibbonContexts.ToArray();
+        IEnumerable<KryptonRibbonContext> contexts = [.. targetRibbon.RibbonContexts];
 
         foreach (KryptonRibbonContext context in contexts)
         {
@@ -272,7 +277,7 @@ internal class RibbonMerger
     /// <param name="targetRibbon">The ribbon to be merged into.</param>
     private void MergeContexts(KryptonRibbon sourceRibbon, KryptonRibbon targetRibbon)
     {
-        IEnumerable<KryptonRibbonContext> contexts = sourceRibbon.RibbonContexts.ToArray();
+        IEnumerable<KryptonRibbonContext> contexts = [.. sourceRibbon.RibbonContexts];
 
         foreach (KryptonRibbonContext context in contexts)
         {
@@ -303,7 +308,7 @@ internal class RibbonMerger
     /// <param name="targetRibbon">The ribbon to be unmerged from.</param>
     private void UnmergeTabs(KryptonRibbon sourceRibbon, KryptonRibbon targetRibbon)
     {
-        IEnumerable<KryptonRibbonTab> tabs = targetRibbon.RibbonTabs.ToArray();
+        IEnumerable<KryptonRibbonTab> tabs = [.. targetRibbon.RibbonTabs];
 
         foreach (KryptonRibbonTab tab in tabs)
         {
@@ -400,14 +405,6 @@ internal class RibbonMerger
             }
         }
     }
-    #endregion
 
-    #region Constructor/Finalizer.
-    /// <summary>
-    /// Initializes a new instance of the <see cref="RibbonMerger"/> class.
-    /// </summary>
-    /// <param name="targetRibbon">The target ribbon that will receive the items from the merged ribbon.</param>
-    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="targetRibbon"/> is <b>null</b>.</exception>
-    public RibbonMerger(KryptonRibbon targetRibbon) => TargetRibbon = targetRibbon ?? throw new ArgumentNullException(nameof(targetRibbon));
     #endregion
 }

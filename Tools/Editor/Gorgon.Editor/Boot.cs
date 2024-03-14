@@ -96,10 +96,10 @@ internal class Boot
         }
 
         string[] paths =
-        {
+        [
             args.RequestingAssembly.Location,
             GorgonApplication.StartupPath.FullName
-        };
+        ];
 
         // Step 2. - We did not locate the assembly in the loaded assembly list.  Check the local directory for the assembly requesting the reference.
         var name = new AssemblyName(args.Name);

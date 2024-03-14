@@ -42,8 +42,13 @@ namespace Gorgon.IO;
 /// <summary>
 /// A codec that can read and write a JSON formatted version of Gorgon v3 polygonal sprite data.
 /// </summary>
-public class GorgonV3PolySpriteJsonCodec
-    : GorgonPolySpriteCodecCommon
+/// <remarks>
+/// Initializes a new instance of the <see cref="GorgonV3PolySpriteJsonCodec"/> class.
+/// </remarks>
+/// <param name="renderer">The renderer used for resource handling.</param>
+/// <exception cref="ArgumentNullException">Thrown when the <paramref name="renderer"/> parameter is <b>null</b>.</exception>
+public class GorgonV3PolySpriteJsonCodec(Gorgon2D renderer)
+        : GorgonPolySpriteCodecCommon(renderer, Resources.GOR2DIO_V3_POLYSPRITE_JSON_CODEC, Resources.GOR2DIO_V3_POLYSPRITE_JSON_CODEC_DESCRIPTION)
 {
     #region Properties.
     /// <summary>
@@ -282,17 +287,6 @@ public class GorgonV3PolySpriteJsonCodec
 
         return result;
     }
-    #endregion
 
-    #region Constructor/Finalizer.
-    /// <summary>
-    /// Initializes a new instance of the <see cref="GorgonV3PolySpriteJsonCodec"/> class.
-    /// </summary>
-    /// <param name="renderer">The renderer used for resource handling.</param>
-    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="renderer"/> parameter is <b>null</b>.</exception>
-    public GorgonV3PolySpriteJsonCodec(Gorgon2D renderer)
-        : base(renderer, Resources.GOR2DIO_V3_POLYSPRITE_JSON_CODEC, Resources.GOR2DIO_V3_POLYSPRITE_JSON_CODEC_DESCRIPTION)
-    {
-    }
     #endregion
 }

@@ -60,8 +60,15 @@ namespace Gorgon.Editor.Rendering;
 /// </para>
 /// </remarks>
 /// <seealso cref="IContentFile"/>
-public class TextureCache
-    : ITextureCache
+/// <remarks>Initializes a new instance of the <see cref="TextureCache"/> class.</remarks>
+/// <param name="graphics">The graphics interface used to create textures.</param>
+/// <param name="fileManager">The file manager for the project file system.</param>
+/// <param name="tempWriter">The temporary writer used to write temporary data.</param>
+/// <param name="codec">The image codec.</param>
+/// <param name="log">The logging interface for capturing debug messages.</param>
+/// <exception cref="ArgumentNullException">Thrown when any of the parameters are <b>null</b>.</exception>
+public class TextureCache(GorgonGraphics graphics, IContentFileManager fileManager, IGorgonFileSystemWriter<Stream> tempWriter, IGorgonImageCodec codec, IGorgonLog log)
+        : ITextureCache
 {
     #region Classes.
     /// <summary>
@@ -109,19 +116,19 @@ public class TextureCache
 
     #region Variables.
     // The graphics interface used to create the textures.
-    private readonly GorgonGraphics _graphics;
+    private readonly GorgonGraphics _graphics = graphics ?? throw new ArgumentNullException(nameof(graphics));
     // The project file system manager.
-    private readonly IContentFileManager _fileManager;
+    private readonly IContentFileManager _fileManager = fileManager ?? throw new ArgumentNullException(nameof(fileManager));
     // The writer used to write files to the temporary area.
-    private readonly IGorgonFileSystemWriter<Stream> _tempWriter;
+    private readonly IGorgonFileSystemWriter<Stream> _tempWriter = tempWriter ?? throw new ArgumentNullException(nameof(tempWriter));
     // The cache that holds the textures and redirected file name.
-    private readonly Dictionary<IContentFile, TextureEntry> _cache = new();
+    private readonly Dictionary<IContentFile, TextureEntry> _cache = [];
     // The codec used to load the image.
-    private readonly IGorgonImageCodec _codec;
+    private readonly IGorgonImageCodec _codec = codec ?? throw new ArgumentNullException(nameof(codec));
     // The directory for the cached files.
     private IGorgonVirtualDirectory _cacheDirectory;
     // The log interface for capturing debug messages.
-    private readonly IGorgonLog _log;
+    private readonly IGorgonLog _log = log ?? throw new ArgumentNullException(nameof(log));
     #endregion
 
     #region Methods.
@@ -555,23 +562,6 @@ public class TextureCache
 
         return entry.Users;
     }
-    #endregion
 
-    #region Constructor/Finalizer.
-    /// <summary>Initializes a new instance of the <see cref="TextureCache"/> class.</summary>
-    /// <param name="graphics">The graphics interface used to create textures.</param>
-    /// <param name="fileManager">The file manager for the project file system.</param>
-    /// <param name="tempWriter">The temporary writer used to write temporary data.</param>
-    /// <param name="codec">The image codec.</param>
-    /// <param name="log">The logging interface for capturing debug messages.</param>
-    /// <exception cref="ArgumentNullException">Thrown when any of the parameters are <b>null</b>.</exception>
-    public TextureCache(GorgonGraphics graphics, IContentFileManager fileManager, IGorgonFileSystemWriter<Stream> tempWriter, IGorgonImageCodec codec, IGorgonLog log)
-    {
-        _graphics = graphics ?? throw new ArgumentNullException(nameof(graphics));
-        _fileManager = fileManager ?? throw new ArgumentNullException(nameof(fileManager));
-        _tempWriter = tempWriter ?? throw new ArgumentNullException(nameof(tempWriter));
-        _codec = codec ?? throw new ArgumentNullException(nameof(codec));
-        _log = log ?? throw new ArgumentNullException(nameof(log));
-    }
     #endregion
 }

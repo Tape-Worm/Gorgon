@@ -36,16 +36,18 @@ namespace Gorgon.Examples;
 /// <summary>
 /// A layer used to display sprites.
 /// </summary>
-internal class SpritesLayer
-    : Layer2D
+/// <remarks>Initializes a new instance of the <see cref="SpritesLayer"/> class.</remarks>
+/// <param name="renderer">The 2D renderer for the application.</param>
+internal class SpritesLayer(Gorgon2D renderer, IReadOnlyDictionary<string, Gorgon2DEffect> effects)
+        : Layer2D(renderer)
 {
     #region Variables.
     // The list of sprites that are lit.
-    private readonly List<Gorgon2DBatchState> _states = new();
+    private readonly List<Gorgon2DBatchState> _states = [];
     // The list of sprites organized by name.
-    private readonly Dictionary<string, SpriteEntity> _spriteByName = new();
+    private readonly Dictionary<string, SpriteEntity> _spriteByName = [];
     // A list of sprite entities to draw.
-    private readonly List<(int index, SpriteEntity entity)> _drawList = new();
+    private readonly List<(int index, SpriteEntity entity)> _drawList = [];
     #endregion
 
     #region Properties.
@@ -55,7 +57,7 @@ internal class SpritesLayer
     public IReadOnlyDictionary<string, Gorgon2DEffect> Effects
     {
         get;
-    }
+    } = effects;
 
     /// <summary>
     /// Property to return the sprites for this layer.
@@ -63,7 +65,7 @@ internal class SpritesLayer
     public List<SpriteEntity> Sprites
     {
         get;
-    } = new List<SpriteEntity>();
+    } = [];
 
     /// <summary>
     /// Property to set or return the gbuffer for lighting.
@@ -270,13 +272,6 @@ internal class SpritesLayer
     /// <param name="name">The name of the sprite.</param>
     /// <returns>The sprite entity with the specified name.</returns>
     public SpriteEntity GetSpriteByName(string name) => _spriteByName[name];
-    #endregion
 
-    #region Constructor/Finalizer.
-    /// <summary>Initializes a new instance of the <see cref="SpritesLayer"/> class.</summary>
-    /// <param name="renderer">The 2D renderer for the application.</param>
-    public SpritesLayer(Gorgon2D renderer, IReadOnlyDictionary<string, Gorgon2DEffect> effects)
-        : base(renderer)
-        => Effects = effects;
     #endregion
 }

@@ -56,7 +56,7 @@ internal class ImageAtlas
         // The settings for the texture atlas.
         private TextureAtlasSettings _settings;
         // The selected images.
-        private IContentFile[] _imageFiles = Array.Empty<IContentFile>();
+        private IContentFile[] _imageFiles = [];
         // The texture atlas service.
         private IGorgonTextureAtlasService _atlasService;
         // The file I/O service used to manage the atlas files.
@@ -897,7 +897,7 @@ internal class ImageAtlas
             }
 
             _images = new Dictionary<IContentFile, IGorgonImage>();
-            _imageFiles = Array.Empty<IContentFile>();
+            _imageFiles = [];
             Atlas = null;
 
             base.OnUnload();

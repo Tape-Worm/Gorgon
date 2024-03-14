@@ -31,8 +31,11 @@ namespace Gorgon.Graphics.Core;
 /// <summary>
 /// A query for performing occlusion testing.
 /// </summary>
-public class GorgonTimestampDisjointQuery
-    : GorgonQuery<GorgonTimestampDisjointResult>
+/// <remarks>Initializes a new instance of the <see cref="GorgonTimestampDisjointQuery" /> class.</remarks>
+/// <param name="graphics">The graphics interface used to build the query.</param>
+/// <param name="name">[Optional] The name for the query.</param>
+public class GorgonTimestampDisjointQuery(GorgonGraphics graphics, string name = null)
+        : GorgonQuery<GorgonTimestampDisjointResult>(graphics, name)
 {
     #region Properties.
     /// <summary>Property to return the type of query to execute.</summary>
@@ -56,15 +59,6 @@ public class GorgonTimestampDisjointQuery
         result = new GorgonTimestampDisjointResult(data);
         return true;
     }
-    #endregion
 
-    #region Constructor/Finalizer.
-    /// <summary>Initializes a new instance of the <see cref="GorgonTimestampDisjointQuery" /> class.</summary>
-    /// <param name="graphics">The graphics interface used to build the query.</param>
-    /// <param name="name">[Optional] The name for the query.</param>
-    public GorgonTimestampDisjointQuery(GorgonGraphics graphics, string name = null)
-        : base(graphics, name)
-    {
-    }
     #endregion
 }

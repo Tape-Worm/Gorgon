@@ -36,7 +36,13 @@ namespace Gorgon.Input;
 /// This will provide information about the range of movement for the axis, as well as a default value for when the axis is centered or whatever the resting position may be. This default is set by 
 /// the <see cref="IGorgonGamingDeviceDriver"/> upon enumeration of the devices.
 /// </remarks>
-public class GorgonGamingDeviceAxisInfo
+/// <remarks>
+/// Initializes a new instance of the <see cref="GorgonGamingDeviceAxisInfo"/> struct.
+/// </remarks>
+/// <param name="axis">The identifier for the axis.</param>
+/// <param name="range">The range of the axis.</param>
+/// <param name="defaultValue">The default value for the axis when in resting position.</param>
+public class GorgonGamingDeviceAxisInfo(GamingDeviceAxis axis, GorgonRange range, int defaultValue)
 {
     #region Variables.
     /// <summary>
@@ -45,7 +51,7 @@ public class GorgonGamingDeviceAxisInfo
     public GamingDeviceAxis Axis
     {
         get;
-    }
+    } = axis;
 
     /// <summary>
     /// Property to return the range of the axis.
@@ -56,7 +62,7 @@ public class GorgonGamingDeviceAxisInfo
     public GorgonRange Range
     {
         get;
-    }
+    } = range;
 
     /// <summary>
     /// Property to return the default value for the resting position of the axis.
@@ -68,7 +74,7 @@ public class GorgonGamingDeviceAxisInfo
     public int DefaultValue
     {
         get;
-    }
+    } = defaultValue;
     #endregion
 
     #region Methods.
@@ -77,21 +83,9 @@ public class GorgonGamingDeviceAxisInfo
     /// </summary>
     /// <returns>A <see cref="string" /> that represents this instance.</returns>
     public override string ToString() => string.Format(Resources.GORINP_TOSTR_JOYSTICKAXIS, Axis, Range.Minimum, Range.Maximum);
-    #endregion
 
+    #endregion
     #region Constructor.
-    /// <summary>
-    /// Initializes a new instance of the <see cref="GorgonGamingDeviceAxisInfo"/> struct.
-    /// </summary>
-    /// <param name="axis">The identifier for the axis.</param>
-    /// <param name="range">The range of the axis.</param>
-    /// <param name="defaultValue">The default value for the axis when in resting position.</param>
-    public GorgonGamingDeviceAxisInfo(GamingDeviceAxis axis, GorgonRange range, int defaultValue)
-    {
-        Axis = axis;
-        Range = range;
-        DefaultValue = defaultValue;
-    }
     #endregion
 
 }

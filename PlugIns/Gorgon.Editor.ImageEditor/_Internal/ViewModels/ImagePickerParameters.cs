@@ -34,8 +34,13 @@ namespace Gorgon.Editor.ImageEditor;
 /// <summary>
 /// Parameters for the <see cref="IImagePicker"/> view model.
 /// </summary>
-internal class ImagePickerParameters
-    : ContentViewModelInjection
+/// <remarks>Initializes a new instance of the ContentViewModelInjectionCommon class.</remarks>
+/// <param name="fileManager">The file manager for content files.</param>
+/// <param name="file">The file that contains the content.</param>
+/// <param name="commonServices">The common services for the application.</param>
+/// <exception cref="ArgumentNullException">Thrown when any of the required parameters are <b>null</b>.</exception>
+internal class ImagePickerParameters(IContentFileManager fileManager, IContentFile file, IHostContentServices commonServices)
+        : ContentViewModelInjection(fileManager, file, commonServices)
 {
     #region Properties.
     /// <summary>
@@ -73,17 +78,6 @@ internal class ImagePickerParameters
         get;
         set;
     }
-    #endregion
 
-    #region Constructor/Finalizer.
-    /// <summary>Initializes a new instance of the ContentViewModelInjectionCommon class.</summary>
-    /// <param name="fileManager">The file manager for content files.</param>
-    /// <param name="file">The file that contains the content.</param>
-    /// <param name="commonServices">The common services for the application.</param>
-    /// <exception cref="ArgumentNullException">Thrown when any of the required parameters are <b>null</b>.</exception>
-    public ImagePickerParameters(IContentFileManager fileManager, IContentFile file, IHostContentServices commonServices)
-        : base(fileManager, file, commonServices)
-    {
-    }
     #endregion
 }

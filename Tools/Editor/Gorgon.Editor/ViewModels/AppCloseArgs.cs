@@ -32,8 +32,11 @@ namespace Gorgon.Editor.ViewModels;
 /// <summary>
 /// Arguments for the <see cref="IMain.AppClosingAsyncCommand"/>.
 /// </summary>
-internal class AppCloseArgs
-    : CancelEventArgs
+/// <remarks>Initializes a new instance of the AppCloseArgs class.</remarks>
+/// <param name="windowDimensions">  The size of the window at shutdown.</param>
+/// <param name="windowState">  The current state of the window (e.g. maximized, normal, etc...)</param>
+internal class AppCloseArgs(DX.Rectangle windowDimensions, int windowState)
+        : CancelEventArgs
 {
     /// <summary>
     /// Property to return the dimensions for the window when closing.
@@ -41,7 +44,7 @@ internal class AppCloseArgs
     public DX.Rectangle WindowDimensions
     {
         get;
-    }
+    } = windowDimensions;
 
     /// <summary>
     /// Property to return the state for the window when closing.
@@ -49,14 +52,5 @@ internal class AppCloseArgs
     public int WindowState
     {
         get;
-    }
-
-    /// <summary>Initializes a new instance of the AppCloseArgs class.</summary>
-    /// <param name="windowDimensions">  The size of the window at shutdown.</param>
-    /// <param name="windowState">  The current state of the window (e.g. maximized, normal, etc...)</param>
-    public AppCloseArgs(DX.Rectangle windowDimensions, int windowState)
-    {
-        WindowDimensions = windowDimensions;
-        WindowState = windowState;
-    }
+    } = windowState;
 }

@@ -43,8 +43,11 @@ namespace Gorgon.Editor.Services;
 /// <summary>
 /// The service used for managing the tool plugins.
 /// </summary>
-internal class ToolPlugInService
-    : IToolPlugInService, IDisposable
+/// <remarks>Initializes a new instance of the ToolPlugInService class.</remarks>
+/// <param name="settingsDirectory">The directory that will contain settings for the content plug ins.</param>
+/// <param name="hostServices">The host appplication services to pass to the plug ins.</param>
+internal class ToolPlugInService(string settingsDirectory, IHostContentServices hostServices)
+        : IToolPlugInService, IDisposable
 {
     #region Variables.
     // The plugin list.
@@ -54,9 +57,9 @@ internal class ToolPlugInService
     // The list of ribbon buttons for all tools.
     private readonly Dictionary<string, IReadOnlyList<IToolPlugInRibbonButton>> _ribbonButtons = new(StringComparer.CurrentCultureIgnoreCase);
     // The directory that contains the settings for the plug ins.
-    private readonly string _settingsDir;
+    private readonly string _settingsDir = settingsDirectory;
     // The host application services to pass to the plug ins.
-    private readonly IHostContentServices _hostServices;
+    private readonly IHostContentServices _hostServices = hostServices;
     #endregion
 
     #region Properties.
@@ -121,7 +124,7 @@ internal class ToolPlugInService
             }
             else
             {
-                _ribbonButtons[button.GroupName] = buttons = new List<IToolPlugInRibbonButton>();
+                _ribbonButtons[button.GroupName] = buttons = [];
             }
 
             buttons.Add(button);
@@ -345,16 +348,8 @@ internal class ToolPlugInService
 
         ClearToolButtons();
     }
-    #endregion
 
+    #endregion
     #region Constructor.
-    /// <summary>Initializes a new instance of the ToolPlugInService class.</summary>
-    /// <param name="settingsDirectory">The directory that will contain settings for the content plug ins.</param>
-    /// <param name="hostServices">The host appplication services to pass to the plug ins.</param>
-    public ToolPlugInService(string settingsDirectory, IHostContentServices hostServices)
-    {
-        _settingsDir = settingsDirectory;
-        _hostServices = hostServices;
-    }
     #endregion
 }

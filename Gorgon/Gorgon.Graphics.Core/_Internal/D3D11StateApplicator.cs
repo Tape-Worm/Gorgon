@@ -42,7 +42,10 @@ namespace Gorgon.Graphics.Core;
 /// <summary>
 /// Functionality to apply Direct3D 11 states and resources.
 /// </summary>
-internal class D3D11StateApplicator
+/// <remarks>Initializes a new instance of the <see cref="D3D11StateApplicator" /> class.</remarks>
+/// <param name="graphics">The graphics interface that owns this applicator.</param>
+/// <param name="targets">The list of active render targets.</param>
+internal class D3D11StateApplicator(GorgonGraphics graphics, GorgonRenderTargetView[] targets)
 {
         #region Variables.
         // An empty UAV count to get around an idiotic design decision (no count exposed on the method) for UAVs on compute shaders
@@ -61,7 +64,7 @@ internal class D3D11StateApplicator
         private static readonly D3D11.VertexBufferBinding[] _emptyVertexBuffers = new D3D11.VertexBufferBinding[D3D11.InputAssemblerStage.VertexInputResourceSlotCount];
 
         // The list of active render targets.
-        private readonly GorgonRenderTargetView[] _renderTargets;
+        private readonly GorgonRenderTargetView[] _renderTargets = targets;
 
         // The updated set stream out method.
         private static Action<D3D11.StreamOutputStage, int, nint, nint> _setStreamOutTargets;
@@ -75,7 +78,7 @@ internal class D3D11StateApplicator
         private static Action<D3D11.RasterizerStage, int, nint> _setScissorRects;
 
         // The device context used for applying state and resource information.
-        private readonly GorgonGraphics _graphics;
+        private readonly GorgonGraphics _graphics = graphics;
         #endregion
 
         #region Methods.
@@ -84,7 +87,7 @@ internal class D3D11StateApplicator
         /// </summary>
         private static void FixSetScissorRects()
         {
-            MethodInfo methodInfo = typeof(D3D11.RasterizerStage).GetMethod("SetScissorRects", BindingFlags.NonPublic | BindingFlags.Instance, null, new[] { typeof(int), typeof(nint) }, null);
+            MethodInfo methodInfo = typeof(D3D11.RasterizerStage).GetMethod("SetScissorRects", BindingFlags.NonPublic | BindingFlags.Instance, null, [typeof(int), typeof(nint)], null);
 
             if (methodInfo is null)
             {
@@ -108,12 +111,12 @@ internal class D3D11StateApplicator
         /// </summary>
         private static void FixSetRenderTargets()
         {
-            MethodInfo methodInfo = typeof(D3D11.OutputMergerStage).GetMethod("SetRenderTargets", BindingFlags.NonPublic | BindingFlags.Instance, null, new[]
-            {
+            MethodInfo methodInfo = typeof(D3D11.OutputMergerStage).GetMethod("SetRenderTargets", BindingFlags.NonPublic | BindingFlags.Instance, null,
+            [
                 typeof(int),                    // numViews
                 typeof(nint),                    // renderTargetViewsOut
                 typeof(D3D11.DepthStencilView)  // depthStencilViewRef
-            }, null);
+            ], null);
 
 
             if (methodInfo is null)
@@ -141,13 +144,13 @@ internal class D3D11StateApplicator
         private static void FixCsSetUavs()
         {
             //internal abstract void SetUnorderedAccessViews(int startSlot, int numBuffers, nint unorderedAccessBuffer, nint uavCount);
-            MethodInfo methodInfo = typeof(D3D11.CommonShaderStage).GetMethod("SetUnorderedAccessViews", BindingFlags.NonPublic | BindingFlags.Instance, null, new[]
-            {
+            MethodInfo methodInfo = typeof(D3D11.CommonShaderStage).GetMethod("SetUnorderedAccessViews", BindingFlags.NonPublic | BindingFlags.Instance, null,
+            [
                 typeof(int),                    // startSlot
                 typeof(int),                    // numBuffers
                 typeof(nint),                    // unorderedAccessBuffer
                 typeof(nint)                    // uavCount
-            }, null);
+            ], null);
 
 
             if (methodInfo is null)
@@ -174,8 +177,8 @@ internal class D3D11StateApplicator
         /// </summary>
         private static void FixSetUavs()
         {            
-            MethodInfo methodInfo = typeof(D3D11.OutputMergerStage).GetMethod("SetRenderTargetsAndUnorderedAccessViews", BindingFlags.NonPublic | BindingFlags.Instance, null, new[]
-            { 
+            MethodInfo methodInfo = typeof(D3D11.OutputMergerStage).GetMethod("SetRenderTargetsAndUnorderedAccessViews", BindingFlags.NonPublic | BindingFlags.Instance, null,
+            [
                 typeof(int),                    // numRTVs
                 typeof(nint),                    // renderTargetViewsOut
                 typeof(D3D11.DepthStencilView), // depthStencilViewRef
@@ -183,7 +186,7 @@ internal class D3D11StateApplicator
                 typeof(int),                    // numUAVs
                 typeof(nint),                    // unorderedAccessViewsOut
                 typeof(nint)                    // uAVInitialCountsRef
-            }, null);
+            ], null);
 
 
             if (methodInfo is null)
@@ -213,7 +216,7 @@ internal class D3D11StateApplicator
         /// </summary>
         private static void FixSetStreamOut()
         {
-            MethodInfo methodInfo = typeof(D3D11.StreamOutputStage).GetMethod("SetTargets", BindingFlags.NonPublic | BindingFlags.Instance, null, new[] { typeof(int), typeof(nint), typeof(nint) }, null);
+            MethodInfo methodInfo = typeof(D3D11.StreamOutputStage).GetMethod("SetTargets", BindingFlags.NonPublic | BindingFlags.Instance, null, [typeof(int), typeof(nint), typeof(nint)], null);
 
             if (methodInfo is null)
             {
@@ -281,7 +284,7 @@ internal class D3D11StateApplicator
         {
             if ((uavs is null) || (indices.Count == 0))
             {
-                _graphics.D3DDeviceContext.ComputeShader.SetUnorderedAccessViews(0, Array.Empty<D3D11.UnorderedAccessView>(), Array.Empty<int>());
+                _graphics.D3DDeviceContext.ComputeShader.SetUnorderedAccessViews(0, [], []);
                 return;
             }
 
@@ -313,7 +316,7 @@ internal class D3D11StateApplicator
         {
             if ((uavs is null) || (indices.Count == 0) || (_setUavs is null))
             {
-                _graphics.D3DDeviceContext.OutputMerger.SetUnorderedAccessViews(0, Array.Empty<D3D11.UnorderedAccessView>(), Array.Empty<int>());
+                _graphics.D3DDeviceContext.OutputMerger.SetUnorderedAccessViews(0, [], []);
                 return;
             }
 
@@ -812,22 +815,14 @@ internal class D3D11StateApplicator
                 _setScissorRects?.Invoke(_graphics.D3DDeviceContext.Rasterizer, length, (nint)scissor);
             }
         }
-        #endregion
 
-        #region Constructor/Finalizer.
-        /// <summary>Initializes a new instance of the <see cref="D3D11StateApplicator" /> class.</summary>
-        /// <param name="graphics">The graphics interface that owns this applicator.</param>
-        /// <param name="targets">The list of active render targets.</param>
-        public D3D11StateApplicator(GorgonGraphics graphics, GorgonRenderTargetView[] targets)
-        {
-            _graphics = graphics;
-            _renderTargets = targets;
-        }
+    #endregion
+    #region Constructor/Finalizer.
 
-        /// <summary>
-        /// Static constructor.
-        /// </summary>
-        static D3D11StateApplicator() 
+    /// <summary>
+    /// Static constructor.
+    /// </summary>
+    static D3D11StateApplicator() 
         {
             FixSetStreamOut();
             FixSetUavs();

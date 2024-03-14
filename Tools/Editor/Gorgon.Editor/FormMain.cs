@@ -83,14 +83,14 @@ internal partial class FormMain
     // The list of groups on the tools tab.
     private readonly Dictionary<string, KryptonRibbonGroup> _toolGroups = new(StringComparer.OrdinalIgnoreCase);
     // The list of line groups for the tools tab.
-    private readonly List<KryptonRibbonGroupLines> _toolLines = new();
+    private readonly List<KryptonRibbonGroupLines> _toolLines = [];
     // The list of triple groups for the tools tab.
-    private readonly List<KryptonRibbonGroupTriple> _toolTriples = new();
+    private readonly List<KryptonRibbonGroupTriple> _toolTriples = [];
     // The list of buttons for the tools tab.
-    private readonly Dictionary<KryptonRibbonGroupButton, KryptonRibbonGroup> _toolGroupButtons = new();
+    private readonly Dictionary<KryptonRibbonGroupButton, KryptonRibbonGroup> _toolGroupButtons = [];
     private readonly Dictionary<string, KryptonRibbonGroupButton> _toolButtons = new(StringComparer.OrdinalIgnoreCase);
     // The list of separators for the tools tab.
-    private readonly List<KryptonRibbonGroupSeparator> _toolSeparators = new();
+    private readonly List<KryptonRibbonGroupSeparator> _toolSeparators = [];
     // Default event arguments for button validation.
     private readonly CreateDirectoryArgs _createDirArgs = new();
     private readonly DeleteArgs _deleteValidationArgs = new(null);

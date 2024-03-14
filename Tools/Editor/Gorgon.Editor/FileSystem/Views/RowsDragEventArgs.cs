@@ -33,8 +33,11 @@ namespace Gorgon.Editor.Views;
 /// <summary>
 /// Event parameters for the <see cref="DataGridViewEx.RowsDrag"/> event.
 /// </summary>
-internal class RowsDragEventArgs
-    : EventArgs
+/// <remarks>Initializes a new instance of the <see cref="RowsDragEventArgs"/> class.</remarks>
+/// <param name="dragRows">The rows being dragged.</param>
+/// <param name="mouseButtons">The mouse buttons that were pressed while dragging.</param>
+internal class RowsDragEventArgs(IReadOnlyList<DataGridViewRow> dragRows, MouseButtons mouseButtons)
+        : EventArgs
 {
     /// <summary>
     /// Property to return the rows that are being dragged.
@@ -42,7 +45,7 @@ internal class RowsDragEventArgs
     public IReadOnlyList<DataGridViewRow> DraggedRows
     {
         get;
-    }
+    } = dragRows;
 
     /// <summary>
     /// Property to return the mouse buttons that were pressed while dragging.
@@ -50,14 +53,5 @@ internal class RowsDragEventArgs
     public MouseButtons MouseButtons
     {
         get;
-    }
-
-    /// <summary>Initializes a new instance of the <see cref="RowsDragEventArgs"/> class.</summary>
-    /// <param name="dragRows">The rows being dragged.</param>
-    /// <param name="mouseButtons">The mouse buttons that were pressed while dragging.</param>
-    public RowsDragEventArgs(IReadOnlyList<DataGridViewRow> dragRows, MouseButtons mouseButtons)
-    {
-        DraggedRows = dragRows;
-        MouseButtons = mouseButtons;
-    }
+    } = mouseButtons;
 }

@@ -53,7 +53,7 @@ internal class TextureAtlas
         // The settings for the texture atlas.
         private TextureAtlasSettings _settings;
         // The selected sprites.
-        private IContentFile[] _spriteFiles = Array.Empty<IContentFile>();
+        private IContentFile[] _spriteFiles = [];
         // The texture atlas service.
         private IGorgonTextureAtlasService _atlasService;
         // The file I/O service used to manage the atlas files.
@@ -707,7 +707,7 @@ internal class TextureAtlas
             }
 
             _sprites = new Dictionary<IContentFile, GorgonSprite>();
-            _spriteFiles = Array.Empty<IContentFile>();
+            _spriteFiles = [];
             Atlas = null;
 
             base.OnUnload();

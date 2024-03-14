@@ -11,15 +11,19 @@ namespace Gorgon.Animation;
 /// </summary>
 /// <typeparam name="T">The type of key frame.</typeparam>
 /// <seealso cref="GorgonAnimationBuilder"/>.
-internal class TrackKeyBuilder<T>
+/// <remarks>
+/// Initializes a new instance of the <see cref="TrackKeyBuilder{T}"/> class.
+/// </remarks>
+/// <param name="parent">The parent animation builder.</param>
+internal class TrackKeyBuilder<T>(GorgonAnimationBuilder parent)
     : IGorgonTrackKeyBuilder<T>
     where T : class, IGorgonKeyFrame
 {
     #region Variables.
     // The comparer used to sort the key frames by time.
-    private readonly IComparer<T> _comparer;
+    private readonly IComparer<T> _comparer = new KeyframeIndexComparer<T>();
     // The animation builder for the animation that contains the track being edited.
-    private readonly GorgonAnimationBuilder _parent;
+    private readonly GorgonAnimationBuilder _parent = parent;
     #endregion
 
     #region Properties.
@@ -47,7 +51,7 @@ internal class TrackKeyBuilder<T>
     public List<T> Keys
     {
         get;
-    } = new List<T>();
+    } = [];
     #endregion
 
     #region Methods.
@@ -249,17 +253,6 @@ internal class TrackKeyBuilder<T>
         Enabled(false);
         return this;
     }
-    #endregion
 
-    #region Constructor/Finalizer.
-    /// <summary>
-    /// Initializes a new instance of the <see cref="TrackKeyBuilder{T}"/> class.
-    /// </summary>
-    /// <param name="parent">The parent animation builder.</param>
-    public TrackKeyBuilder(GorgonAnimationBuilder parent)
-    {
-        _parent = parent;
-        _comparer = new KeyframeIndexComparer<T>();            
-    }
     #endregion
 }

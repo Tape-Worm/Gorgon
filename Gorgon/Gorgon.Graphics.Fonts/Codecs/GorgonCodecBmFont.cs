@@ -541,9 +541,9 @@ public class GorgonCodecBmFont
     /// <param name="factory">The font factory that holds cached font information.</param>
     /// <exception cref="ArgumentNullException">Thrown when the <paramref name="factory"/> parameter is <b>null</b>.</exception>
     public GorgonCodecBmFont(GorgonFontFactory factory)
-        : base(factory) => CodecCommonExtensions = new[]
-                                {
+        : base(factory) => CodecCommonExtensions =
+                                [
                                     ".fnt"
-                                };
+                                ];
     #endregion
 }

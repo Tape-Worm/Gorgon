@@ -33,8 +33,11 @@ namespace Gorgon.Editor.SpriteEditor;
 /// <summary>
 /// Parameters for the <see cref="ISpritePickMaskEditor"/> view model.
 /// </summary>
-internal class SpritePickMaskEditorParameters
-    : HostedPanelViewModelParameters
+/// <remarks>Initializes a new instance of the <see cref="SpritePickMaskEditorParameters"/> class.</remarks>
+/// <param name="pluginSettings">The plugin settings.</param>
+/// <param name="hostServices">The host application services.</param>
+internal class SpritePickMaskEditorParameters(ISettings pluginSettings, IHostContentServices hostServices)
+        : HostedPanelViewModelParameters(hostServices)
 {
     #region Properties.
     /// <summary>
@@ -43,14 +46,7 @@ internal class SpritePickMaskEditorParameters
     public ISettings PluginSettings
     {
         get;
-    }
-    #endregion
+    } = pluginSettings ?? throw new ArgumentNullException(nameof(pluginSettings));
 
-    #region Constructor/Finalizer.
-    /// <summary>Initializes a new instance of the <see cref="SpritePickMaskEditorParameters"/> class.</summary>
-    /// <param name="pluginSettings">The plugin settings.</param>
-    /// <param name="hostServices">The host application services.</param>
-    public SpritePickMaskEditorParameters(ISettings pluginSettings, IHostContentServices hostServices) 
-        : base(hostServices) => PluginSettings = pluginSettings ?? throw new ArgumentNullException(nameof(pluginSettings));
     #endregion
 }

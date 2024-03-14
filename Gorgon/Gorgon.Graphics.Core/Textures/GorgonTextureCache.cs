@@ -58,7 +58,10 @@ namespace Gorgon.Graphics.Core;
 /// </para>
 /// </remarks>
 /// <seealso cref="IGorgonTextureResource"/>
-public class GorgonTextureCache<T>
+/// <remarks>Initializes a new instance of the <see cref="GorgonTextureCache{T}"/> class.</remarks>
+/// <param name="graphics">The graphics interface used to create textures.</param>
+/// <exception cref="ArgumentNullException">Thrown when the <paramref name="graphics"/> parameter is <b>null</b>.</exception>
+public class GorgonTextureCache<T>(GorgonGraphics graphics)
     : IEnumerable<T>
     where T : class, IGorgonTextureResource
 {
@@ -100,13 +103,13 @@ public class GorgonTextureCache<T>
 
     #region Variables.
     // The graphics interface used to create the textures.
-    private readonly GorgonGraphics _graphics;
+    private readonly GorgonGraphics _graphics = graphics ?? throw new ArgumentNullException(nameof(graphics));
     // The cache that holds the textures and redirected file name.
     private readonly ConcurrentDictionary<string, Lazy<TextureEntry>> _cache = new(StringComparer.OrdinalIgnoreCase);
     // The lock for updating the cache concurrently.
     private SemaphoreSlim _cacheLock = new(1, 1);
     // The list of textures to that are currently being loaded.
-    private readonly List<string> _scheduledTextures = new();
+    private readonly List<string> _scheduledTextures = [];
     #endregion
 
     #region Properties.
@@ -597,12 +600,6 @@ public class GorgonTextureCache<T>
     /// <summary>Returns an enumerator that iterates through a collection.</summary>
     /// <returns>An <see cref="IEnumerator"/> object that can be used to iterate through the collection.</returns>
     IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
-    #endregion
 
-    #region Constructor/Finalizer.
-    /// <summary>Initializes a new instance of the <see cref="GorgonTextureCache{T}"/> class.</summary>
-    /// <param name="graphics">The graphics interface used to create textures.</param>
-    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="graphics"/> parameter is <b>null</b>.</exception>
-    public GorgonTextureCache(GorgonGraphics graphics) => _graphics = graphics ?? throw new ArgumentNullException(nameof(graphics));
     #endregion
 }

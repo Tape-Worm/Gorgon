@@ -74,7 +74,7 @@ public class Aes256Encryption
 
         if ((data is null) || (data.Length == 0))
         {
-            return Array.Empty<byte>();
+            return [];
         }
 
         using var aes = Aes.Create();
@@ -106,7 +106,7 @@ public class Aes256Encryption
 
         if ((data is null) || (data.Length == 0))
         {
-            return Array.Empty<byte>();
+            return [];
         }
 
         using var aes = Aes.Create();
@@ -133,7 +133,7 @@ public class Aes256Encryption
     {
         if (string.IsNullOrEmpty(value))
         {
-            return Array.Empty<byte>();
+            return [];
         }
 
         textEncoding ??= Encoding.UTF8;

@@ -262,7 +262,7 @@ internal enum RawInputDeviceFlags
 /// <summary>
 /// Native raw Input API functionality
 /// </summary>
-internal static class RawInputApi
+internal static partial class RawInputApi
 {
     #region Variables.
     // The size of the raw input data header.
@@ -286,8 +286,8 @@ internal static class RawInputApi
     /// <param name="pcbSize">Number of bytes in the array.</param>
     /// <param name="cbSizeHeader">Size of the header.</param>
     /// <returns>0 if successful if pData is null, otherwise number of bytes if pData is not null.</returns>
-    [DllImport("user32.dll")]
-    private static extern unsafe int GetRawInputData(nint hRawInput, RawInputCommand uiCommand, void* pData, ref int pcbSize, int cbSizeHeader);
+    [LibraryImport("user32.dll")]
+    private static unsafe partial int GetRawInputData(nint hRawInput, RawInputCommand uiCommand, void* pData, ref int pcbSize, int cbSizeHeader);
 
     /// <summary>
     /// Function to enumerate raw input devices.
@@ -296,8 +296,8 @@ internal static class RawInputApi
     /// <param name="puiNumDevices">Number of devices returned.</param>
     /// <param name="cbSize">Size of the raw input device struct.</param>
     /// <returns>0 if successful, otherwise an error code.</returns>
-    [DllImport("user32.dll")]
-    private static extern unsafe int GetRawInputDeviceList(RAWINPUTDEVICELIST* pRawInputDeviceList, ref int puiNumDevices, int cbSize);
+    [LibraryImport("user32.dll")]
+    private static unsafe partial int GetRawInputDeviceList(RAWINPUTDEVICELIST* pRawInputDeviceList, ref int puiNumDevices, int cbSize);
 
     /// <summary>
     /// Function to retrieve information about a raw input device.
@@ -307,8 +307,8 @@ internal static class RawInputApi
     /// <param name="pData">Data returned.</param>
     /// <param name="pcbSize">Size of the data to return.</param>
     /// <returns>0 if successful, otherwise an error code.</returns>
-    [DllImport("user32.dll", CharSet = CharSet.Unicode)]
-    private static extern unsafe int GetRawInputDeviceInfo(nint hDevice, RawInputCommand uiCommand, void* pData, ref int pcbSize);
+    [LibraryImport("user32.dll")]
+    private static unsafe partial int GetRawInputDeviceInfo(nint hDevice, RawInputCommand uiCommand, void* pData, ref int pcbSize);
 
     /// <summary>
     /// Function to register a raw input device.
@@ -317,9 +317,9 @@ internal static class RawInputApi
     /// <param name="uiNumDevices">Number of devices.</param>
     /// <param name="cbSize">Size of the RAWINPUTDEVICE structure.</param>
     /// <returns><b>true</b> if successful, <b>false</b> if not.</returns>
-    [DllImport("user32.dll")]
+    [LibraryImport("user32.dll")]
     [return: MarshalAs(UnmanagedType.Bool)]
-    private unsafe static extern bool RegisterRawInputDevices(RAWINPUTDEVICE* pRawInputDevices, int uiNumDevices, int cbSize);
+    private static unsafe partial bool RegisterRawInputDevices(RAWINPUTDEVICE* pRawInputDevices, int uiNumDevices, int cbSize);
 
     /// <summary>
     /// Function to retrieve the raw input devices registered to this application.
@@ -328,8 +328,8 @@ internal static class RawInputApi
     /// <param name="puiNumDevices">The number of devices.</param>
     /// <param name="cbSize">The size of the raw input device struct, in bytes.</param>
     /// <returns>0 if successful, -1 if not.</returns>
-    [DllImport("user32.dll")]
-    private unsafe static extern int GetRegisteredRawInputDevices(RAWINPUTDEVICE* pRawInputDevices, ref uint puiNumDevices, uint cbSize);
+    [LibraryImport("user32.dll")]
+    private static unsafe partial int GetRegisteredRawInputDevices(RAWINPUTDEVICE* pRawInputDevices, ref uint puiNumDevices, uint cbSize);
 
     /// <summary>
     /// Function to retrieve the preparsed HID data for a given device.
@@ -470,7 +470,7 @@ internal static class RawInputApi
 
             if (deviceCount == 0)
             {
-                return Array.Empty<RAWINPUTDEVICELIST>();
+                return [];
             }
 
             ArrayPool<RAWINPUTDEVICELIST> pool = GorgonArrayPool<RAWINPUTDEVICELIST>.GetBestPool(deviceCount);

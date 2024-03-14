@@ -31,8 +31,13 @@ namespace Gorgon.Editor.UI;
 /// <summary>
 /// Event arguments for the <see cref="IViewModel.WaitPanelActivated"/> event.
 /// </summary>
-public class WaitPanelActivateArgs
-    : EventArgs
+/// <remarks>
+/// Initializes a new instance of the <see cref="WaitPanelActivateArgs"/> class.
+/// </remarks>
+/// <param name="message">The message to display on the wait panel overlay.</param>
+/// <param name="title">The title for the for wait panel overlay.</param>
+public class WaitPanelActivateArgs(string message, string title)
+        : EventArgs
 {
     #region Properties.
     /// <summary>
@@ -41,7 +46,7 @@ public class WaitPanelActivateArgs
     public string Message
     {
         get;
-    }
+    } = message ?? string.Empty;
 
     /// <summary>
     /// Property to return the title for the wait panel overlay.
@@ -49,19 +54,7 @@ public class WaitPanelActivateArgs
     public string Title
     {
         get;
-    }
-    #endregion
+    } = title ?? string.Empty;
 
-    #region Constructor/Finalizer.
-    /// <summary>
-    /// Initializes a new instance of the <see cref="WaitPanelActivateArgs"/> class.
-    /// </summary>
-    /// <param name="message">The message to display on the wait panel overlay.</param>
-    /// <param name="title">The title for the for wait panel overlay.</param>
-    public WaitPanelActivateArgs(string message, string title)
-    {
-        Message = message ?? string.Empty;
-        Title = title ?? string.Empty;
-    }
     #endregion
 }

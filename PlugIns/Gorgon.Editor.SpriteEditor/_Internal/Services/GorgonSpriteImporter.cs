@@ -40,22 +40,28 @@ namespace Gorgon.Editor.SpriteEditor.Services;
 /// <summary>
 /// A sprite importer that reads in a sprite file, and converts it into a Gorgon sprite (v3) format image prior to import into the application.
 /// </summary>
-internal class GorgonSpriteImporter
-    : IEditorContentImporter
+/// <remarks>Initializes a new instance of the <see cref="GorgonSpriteImporter"/> class.</remarks>
+/// <param name="projectFileSystem">The read only file system used by the project.</param>
+/// <param name="tempFileSystem">The temporary file system to use for writing working data.</param>
+/// <param name="codecs">The sprite codecs available to the system.</param>
+/// <param name="renderer">The renderer used to locate the image linked to the sprite.</param>
+/// <param name="log">The log used for logging debug messages.</param>
+internal class GorgonSpriteImporter(IGorgonFileSystem projectFileSystem, IGorgonFileSystemWriter<Stream> tempFileSystem, CodecRegistry codecs, Gorgon2D renderer, IGorgonLog log)
+        : IEditorContentImporter
 {
     #region Variables.
     // The log used for debug message logging.
-    private readonly IGorgonLog _log;
+    private readonly IGorgonLog _log = log ?? GorgonLog.NullLog;
     // The DDS codec used to import files.
     private readonly IGorgonImageCodec _ddsCodec = new GorgonCodecDds();
     // The renderer used to locate the image for the sprite.
-    private readonly Gorgon2D _renderer;
+    private readonly Gorgon2D _renderer = renderer;
     // The sprite codecs available to the system.
-    private readonly CodecRegistry _codecs;
+    private readonly CodecRegistry _codecs = codecs;
     // The read only project file system.
-    private readonly IGorgonFileSystem _projectFileSystem;
+    private readonly IGorgonFileSystem _projectFileSystem = projectFileSystem;
     // The temporary file system for writing working data.
-    private readonly IGorgonFileSystemWriter<Stream> _tempFileSystem;
+    private readonly IGorgonFileSystemWriter<Stream> _tempFileSystem = tempFileSystem;
     // The path to the temporary directory.
     private string _tempDirPath;
     #endregion
@@ -227,22 +233,6 @@ internal class GorgonSpriteImporter
             _log.LogException(ex);
         }
     }
-    #endregion
 
-    #region Constructor/Finalizer.
-    /// <summary>Initializes a new instance of the <see cref="GorgonSpriteImporter"/> class.</summary>
-    /// <param name="projectFileSystem">The read only file system used by the project.</param>
-    /// <param name="tempFileSystem">The temporary file system to use for writing working data.</param>
-    /// <param name="codecs">The sprite codecs available to the system.</param>
-    /// <param name="renderer">The renderer used to locate the image linked to the sprite.</param>
-    /// <param name="log">The log used for logging debug messages.</param>
-    public GorgonSpriteImporter(IGorgonFileSystem projectFileSystem, IGorgonFileSystemWriter<Stream> tempFileSystem, CodecRegistry codecs, Gorgon2D renderer, IGorgonLog log)
-    {
-        _projectFileSystem = projectFileSystem;
-        _tempFileSystem = tempFileSystem;
-        _codecs = codecs;
-        _log = log ?? GorgonLog.NullLog;
-        _renderer = renderer;
-    }
     #endregion
 }

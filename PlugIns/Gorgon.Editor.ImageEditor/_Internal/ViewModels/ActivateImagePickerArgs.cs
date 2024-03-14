@@ -32,7 +32,10 @@ namespace Gorgon.Editor.ImageEditor;
 /// <summary>
 /// Arguments for the <see cref="IImagePicker.ActivateCommand"/>.
 /// </summary>
-internal class ActivateImagePickerArgs
+/// <remarks>Initializes a new instance of the <see cref="ActivateImagePickerArgs"/> class.</remarks>
+/// <param name="files">The files to import.</param>
+/// <param name="imageData">The image data to update.</param>
+internal class ActivateImagePickerArgs(IReadOnlyList<ImagePickerImportData> files, IGorgonImage imageData)
 {
     /// <summary>
     /// Property to set or return whether the picker cancelled or not.
@@ -49,7 +52,7 @@ internal class ActivateImagePickerArgs
     public IReadOnlyList<ImagePickerImportData> FilesToImport
     {
         get;
-    }
+    } = files;
 
     /// <summary>
     /// Property to set or return the current image data to update.
@@ -57,7 +60,7 @@ internal class ActivateImagePickerArgs
     public IGorgonImage ImageData
     {
         get;
-    }
+    } = imageData;
 
     /// <summary>
     /// Property to set or return the current array index or depth slice.
@@ -75,14 +78,5 @@ internal class ActivateImagePickerArgs
     {
         get;
         set;
-    }
-
-    /// <summary>Initializes a new instance of the <see cref="ActivateImagePickerArgs"/> class.</summary>
-    /// <param name="files">The files to import.</param>
-    /// <param name="imageData">The image data to update.</param>
-    public ActivateImagePickerArgs(IReadOnlyList<ImagePickerImportData> files, IGorgonImage imageData)
-    {
-        FilesToImport = files;
-        ImageData = imageData;
     }
 }

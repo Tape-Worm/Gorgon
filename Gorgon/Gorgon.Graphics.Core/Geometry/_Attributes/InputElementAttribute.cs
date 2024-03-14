@@ -83,9 +83,15 @@ namespace Gorgon.Graphics.Core;
 /// If the type of the member is not on this list, then an exception will be thrown when the input layout is generated.
 /// </para>
 /// </remarks>
+/// <remarks>
+/// Initializes a new instance of the <see cref="InputElementAttribute"/> class.
+/// </remarks>
+/// <param name="context">The context of the element.</param>
+/// <param name="format">The format/type of the element.</param>
+/// <param name="offset">Offset of the element in the structure.</param>
 [AttributeUsage(AttributeTargets.Field)]
-public class InputElementAttribute
-    : Attribute
+public class InputElementAttribute(string context, BufferFormat format, int offset)
+        : Attribute
 {
     #region Properties.
     /// <summary>
@@ -94,7 +100,7 @@ public class InputElementAttribute
     internal int ExplicitOrder
     {
         get;
-    }
+    } = int.MaxValue;
 
     /// <summary>
     /// Property to return whether to use automatic calculation for the offset.
@@ -102,7 +108,7 @@ public class InputElementAttribute
     internal bool AutoOffset
     {
         get;
-    }
+    } = false;
 
     /// <summary>
     /// Property to return the context of the element.
@@ -114,7 +120,7 @@ public class InputElementAttribute
     public string Context
     {
         get;
-    }
+    } = context;
 
     /// <summary>
     /// Property to set or return the index of the context.
@@ -127,7 +133,7 @@ public class InputElementAttribute
     {
         get;
         set;
-    }
+    } = 0;
 
     /// <summary>
     /// Property to set or return the format of the data.
@@ -139,7 +145,7 @@ public class InputElementAttribute
     {
         get;
         set;
-    }
+    } = format;
 
     /// <summary>
     /// Property to set or return the vertex buffer slot this element will use.
@@ -156,7 +162,7 @@ public class InputElementAttribute
     {
         get;
         set;
-    }
+    } = 0;
 
     /// <summary>
     /// Property to set or return whether this data is instanced or per vertex.
@@ -168,7 +174,7 @@ public class InputElementAttribute
     {
         get;
         set;
-    }
+    } = false;
 
     /// <summary>
     /// Property to return the offset of the element within the structure.
@@ -180,7 +186,7 @@ public class InputElementAttribute
     public int Offset
     {
         get;
-    }
+    } = offset;
 
     /// <summary>
     /// Property to set or return the number of instances to draw.
@@ -197,29 +203,10 @@ public class InputElementAttribute
     {
         get;
         set;
-    }
+    } = 0;
+
     #endregion
-
     #region Constructor/Destructor.
-    /// <summary>
-    /// Initializes a new instance of the <see cref="InputElementAttribute"/> class.
-    /// </summary>
-    /// <param name="context">The context of the element.</param>
-    /// <param name="format">The format/type of the element.</param>
-    /// <param name="offset">Offset of the element in the structure.</param>
-    public InputElementAttribute(string context, BufferFormat format, int offset)
-    {
-
-        Context = context;
-        Format = format;
-        Index = 0;
-        Slot = 0;
-        Instanced = false;
-        InstanceCount = 0;
-        Offset = offset;
-        AutoOffset = false;
-        ExplicitOrder = int.MaxValue;
-    }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="InputElementAttribute"/> class.

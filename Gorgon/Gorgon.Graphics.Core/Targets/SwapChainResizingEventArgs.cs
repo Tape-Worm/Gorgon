@@ -32,8 +32,13 @@ namespace Gorgon.Graphics.Core;
 /// <summary>
 /// Event arguments for the <see cref="GorgonSwapChain.SwapChainResizing"/> event.
 /// </summary>
-public class SwapChainResizingEventArgs
-    : EventArgs
+/// <remarks>
+/// Initializes a new instance of the <see cref="SwapChainResizingEventArgs"/> class.
+/// </remarks>
+/// <param name="oldSize">The old size.</param>
+/// <param name="newSize">The new size.</param>
+public class SwapChainResizingEventArgs(DX.Size2 oldSize, DX.Size2 newSize)
+        : EventArgs
 {
     #region Properties.
     /// <summary>
@@ -42,7 +47,7 @@ public class SwapChainResizingEventArgs
     public DX.Size2 OldSize
     {
         get;
-    }
+    } = oldSize;
 
     /// <summary>
     /// Property to return the new size of the swap chain backbuffers.
@@ -50,19 +55,7 @@ public class SwapChainResizingEventArgs
     public DX.Size2 NewSize
     {
         get;
-    }
-    #endregion
+    } = newSize;
 
-    #region Constructor/Finalizer.
-    /// <summary>
-    /// Initializes a new instance of the <see cref="SwapChainResizingEventArgs"/> class.
-    /// </summary>
-    /// <param name="oldSize">The old size.</param>
-    /// <param name="newSize">The new size.</param>
-    public SwapChainResizingEventArgs(DX.Size2 oldSize, DX.Size2 newSize)
-    {
-        OldSize = oldSize;
-        NewSize = newSize;
-    }
     #endregion
 }

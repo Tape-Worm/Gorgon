@@ -85,20 +85,25 @@ namespace Gorgon.Renderers.Data;
 /// <summary>
 /// Represents a three dimensional line based on a point in space and a direction.
 /// </summary>
+/// <remarks>
+/// Initializes a new instance of the <see cref="GorgonRay"/> struct.
+/// </remarks>
+/// <param name="position">The position in three dimensional space of the origin of the ray.</param>
+/// <param name="direction">The normalized direction of the ray.</param>
 [StructLayout(LayoutKind.Sequential, Pack = 4)]
-public struct GorgonRay 
-    : IGorgonEquatableByRef<GorgonRay>
+public struct GorgonRay(Vector3 position, Vector3 direction)
+        : IGorgonEquatableByRef<GorgonRay>
 {
     #region Variables.
     /// <summary>
     /// The position in three dimensional space where the ray starts.
     /// </summary>
-    public Vector3 Position;
+    public Vector3 Position = position;
 
     /// <summary>
     /// The normalized direction in which the ray points.
     /// </summary>
-    public Vector3 Direction;
+    public Vector3 Direction = direction;
     #endregion
 
     #region Methods.
@@ -188,18 +193,8 @@ public struct GorgonRay
     ///   <b>true</b> if equal, <b>false</b> if not.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public readonly bool Equals(in GorgonRay other) => Position.Equals(other.Position) && Direction.Equals(other.Direction);
-    #endregion
 
+    #endregion
     #region Constructor.
-    /// <summary>
-    /// Initializes a new instance of the <see cref="GorgonRay"/> struct.
-    /// </summary>
-    /// <param name="position">The position in three dimensional space of the origin of the ray.</param>
-    /// <param name="direction">The normalized direction of the ray.</param>
-    public GorgonRay(Vector3 position, Vector3 direction)
-    {
-        Position = position;
-        Direction = direction;
-    }
     #endregion
 }

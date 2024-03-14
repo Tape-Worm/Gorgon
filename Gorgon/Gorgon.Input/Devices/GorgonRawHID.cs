@@ -42,8 +42,13 @@ namespace Gorgon.Input;
 /// when finished with this object.
 /// </para>
 /// </remarks>
-public class GorgonRawHID
-    : IGorgonRawHID
+/// <remarks>
+/// Initializes a new instance of the <see cref="GorgonRawHID"/> class.
+/// </remarks>
+/// <param name="hidInfo">The human interface device information used to determine which keyboard to use.</param>
+/// <exception cref="ArgumentNullException">Thrown when the <paramref name="hidInfo"/> is <b>null</b>.</exception>
+public class GorgonRawHID(GorgonRawHIDInfo hidInfo)
+        : IGorgonRawHID
 {
     #region Variables.
     // Pre parsed data for this device.
@@ -81,7 +86,7 @@ public class GorgonRawHID
     public IGorgonRawHIDInfo Info
     {
         get;
-    }
+    } = hidInfo ?? throw new ArgumentNullException(nameof(hidInfo));
 
     /// <summary>
     /// Property to return a pointer to the block of memory that stores the HID data.
@@ -152,14 +157,6 @@ public class GorgonRawHID
 
         GC.SuppressFinalize(this);
     }
-    #endregion
 
-    #region Constructor/Finalizer.
-    /// <summary>
-    /// Initializes a new instance of the <see cref="GorgonRawHID"/> class.
-    /// </summary>
-    /// <param name="hidInfo">The human interface device information used to determine which keyboard to use.</param>
-    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="hidInfo"/> is <b>null</b>.</exception>
-    public GorgonRawHID(GorgonRawHIDInfo hidInfo) => Info = hidInfo ?? throw new ArgumentNullException(nameof(hidInfo));
     #endregion
 }

@@ -32,8 +32,12 @@ namespace Gorgon.Editor.ImageEditor;
 /// <summary>
 /// A setting used to display a loaded codec.
 /// </summary>
-internal class CodecSetting
-    : IGorgonNamedObject
+/// <remarks>Initializes a new instance of the <see cref="CodecSetting"/> class.</remarks>
+/// <param name="description">The friendly description of the codec.</param>
+/// <param name="plugin">The plugin for the codec.</param>
+/// <param name="desc">The description of the codec.</param>
+internal class CodecSetting(string description, GorgonImageCodecPlugIn plugin, GorgonImageCodecDescription desc)
+        : IGorgonNamedObject
 {
     /// <summary>
     /// Property to return the description for the codec.
@@ -41,7 +45,7 @@ internal class CodecSetting
     public string Description
     {
         get;
-    }
+    } = description;
 
     /// <summary>
     /// Property to return the plug in that contains the codec.
@@ -49,7 +53,7 @@ internal class CodecSetting
     public GorgonImageCodecPlugIn PlugIn
     {
         get;
-    }
+    } = plugin;
 
     /// <summary>
     /// Property to return the formal name of the codec.
@@ -57,16 +61,5 @@ internal class CodecSetting
     public string Name
     {
         get;
-    }
-
-    /// <summary>Initializes a new instance of the <see cref="CodecSetting"/> class.</summary>
-    /// <param name="description">The friendly description of the codec.</param>
-    /// <param name="plugin">The plugin for the codec.</param>
-    /// <param name="desc">The description of the codec.</param>
-    public CodecSetting(string description, GorgonImageCodecPlugIn plugin, GorgonImageCodecDescription desc)
-    {
-        Description = description;
-        PlugIn = plugin;
-        Name = desc.Name;
-    }
+    } = desc.Name;
 }

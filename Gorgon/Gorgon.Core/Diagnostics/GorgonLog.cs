@@ -351,7 +351,7 @@ public abstract class GorgonLog
         if (ThreadID != Environment.CurrentManagedThreadId)
         {
             lines = _threadBuffers.GetOrAdd(Environment.CurrentManagedThreadId,
-                                            id => new List<string>());
+                                            id => []);
         }
 
         if ((string.IsNullOrEmpty(formatSpecifier)) || (formatSpecifier == "\n") || (formatSpecifier == "\r"))

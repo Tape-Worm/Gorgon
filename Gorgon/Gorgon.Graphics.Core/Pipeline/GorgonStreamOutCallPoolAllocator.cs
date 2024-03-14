@@ -32,18 +32,13 @@ namespace Gorgon.Graphics.Core;
 /// <summary>
 /// An allocator used to retrieve draw calls from a pool.
 /// </summary>
-public class GorgonStreamOutCallPoolAllocator
-    : GorgonRingPool<GorgonStreamOutCall>
+/// <remarks>
+/// Initializes a new instance of the <see cref="GorgonLinearPool{T}"/> class.
+/// </remarks>
+/// <param name="objectCount">The number of total objects available to the allocator.</param>
+/// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="objectCount"/> parameter is less than 1.</exception>
+public class GorgonStreamOutCallPoolAllocator(int objectCount)
+        : GorgonRingPool<GorgonStreamOutCall>(objectCount, () => new GorgonStreamOutCall())
 {
-    #region Constructor/Finalizer.
-    /// <summary>
-    /// Initializes a new instance of the <see cref="GorgonLinearPool{T}"/> class.
-    /// </summary>
-    /// <param name="objectCount">The number of total objects available to the allocator.</param>
-    /// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="objectCount"/> parameter is less than 1.</exception>
-    public GorgonStreamOutCallPoolAllocator(int objectCount)
-        : base(objectCount, () => new GorgonStreamOutCall())
-    {
-    }
-    #endregion
+
 }

@@ -33,14 +33,10 @@ namespace Gorgon.Editor.UI;
 /// <summary>
 /// Parameters for a <see cref="ISettingsCategory"/>
 /// </summary>
-public class SettingsCategoryViewModelParameters
-    : ViewModelInjection<IHostContentServices>
+/// <remarks>Initializes a new instance of the <see cref="SettingsCategoryViewModelParameters"/> class.</remarks>
+/// <param name="hostServices">Services passed down from the host application.</param>
+/// <exception cref="ArgumentNullException">Thrown when any of the parameters are <b>null</b>.</exception>
+public class SettingsCategoryViewModelParameters(IHostContentServices hostServices)
+        : ViewModelInjection<IHostContentServices>(hostServices)
 {
-    /// <summary>Initializes a new instance of the <see cref="SettingsCategoryViewModelParameters"/> class.</summary>
-    /// <param name="hostServices">Services passed down from the host application.</param>
-    /// <exception cref="ArgumentNullException">Thrown when any of the parameters are <b>null</b>.</exception>
-    public SettingsCategoryViewModelParameters(IHostContentServices hostServices)
-        : base(hostServices)
-    {
-    }
 }

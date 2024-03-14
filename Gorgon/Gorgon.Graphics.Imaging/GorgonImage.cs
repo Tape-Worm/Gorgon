@@ -428,10 +428,9 @@ public partial class GorgonImage
 
         using var wic = new WicUtilities();
         return wic.CanConvertFormats(sourceFormat,
-                                     new[]
-                                     {
+                                     [
                                              format
-                                     }).Count > 0;
+                                     ]).Count > 0;
     }
 
     /// <summary>
@@ -444,7 +443,7 @@ public partial class GorgonImage
         if ((destFormats is null)
             || (destFormats.Count == 0))
         {
-            return Array.Empty<BufferFormat>();
+            return [];
         }
 
         // If we're converting from B4G4R4A4, then we need to use another path.

@@ -35,32 +35,39 @@ namespace Gorgon.Renderers;
 /// <summary>
 /// A value that defines a vertex for a triangle draw using the <see cref="Gorgon2D.DrawTriangle"/> method.
 /// </summary>
-public readonly struct GorgonTriangleVertex
-    : IGorgonEquatableByRef<GorgonTriangleVertex>
+/// <remarks>
+/// Initializes a new instance of the <see cref="GorgonTriangleVertex" /> struct.
+/// </remarks>
+/// <param name="position">The position of the triangle point.</param>
+/// <param name="color">The color of the triangle pint.</param>
+/// <param name="textureCoordinate">[Optional] The texture coordinate to map to the point.</param>
+/// <param name="textureArrayIndex">[Optional] The index in a texture array to map to the point.</param>
+public readonly struct GorgonTriangleVertex(Vector2 position, GorgonColor color, Vector2? textureCoordinate = null, int textureArrayIndex = 0)
+        : IGorgonEquatableByRef<GorgonTriangleVertex>
 {
     #region Variables.
     /// <summary>
     /// The horizontal and vertical position of the point.
     /// </summary>
-    public readonly Vector2 Position;
+    public readonly Vector2 Position = position;
     /// <summary>
     /// The texture coordinate, in texels, to map to the point. 
     /// </summary>
     /// <remarks>
     /// If no texture is assigned to the triangle, this member is ignored.
     /// </remarks>
-    public readonly Vector2 TextureCoordinate;
+    public readonly Vector2 TextureCoordinate = textureCoordinate ?? Vector2.Zero;
     /// <summary>
     /// The texture array index to map to the point.
     /// </summary>
     /// <remarks>
     /// If no texture is assigned to the triangle, or the texture is not a texture array, then this member is ignored.
     /// </remarks>
-    public readonly int TextureArrayIndex;
+    public readonly int TextureArrayIndex = textureArrayIndex;
     /// <summary>
     /// The color of the point.
     /// </summary>
-    public readonly GorgonColor Color;
+    public readonly GorgonColor Color = color;
     #endregion
 
     #region Methods.
@@ -115,23 +122,7 @@ public readonly struct GorgonTriangleVertex
     /// <param name="right">The right instance to compare.</param>
     /// <returns><b>true</b> if both instances are not equal, <b>false</b> if equal.</returns>
     public static bool operator !=(in GorgonTriangleVertex left, in GorgonTriangleVertex right) => !Equals(in left, in right);
-    #endregion
 
-    #region Constructor/Finalizer.
-    /// <summary>
-    /// Initializes a new instance of the <see cref="GorgonTriangleVertex" /> struct.
-    /// </summary>
-    /// <param name="position">The position of the triangle point.</param>
-    /// <param name="color">The color of the triangle pint.</param>
-    /// <param name="textureCoordinate">[Optional] The texture coordinate to map to the point.</param>
-    /// <param name="textureArrayIndex">[Optional] The index in a texture array to map to the point.</param>
-    public GorgonTriangleVertex(Vector2 position, GorgonColor color, Vector2? textureCoordinate = null, int textureArrayIndex = 0)
-    {
-        Position = position;
-        Color = color;
-        TextureCoordinate = textureCoordinate ?? Vector2.Zero;
-        TextureArrayIndex = textureArrayIndex;
-    }
     #endregion
 
 }

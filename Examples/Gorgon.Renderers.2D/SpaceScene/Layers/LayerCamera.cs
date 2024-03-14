@@ -36,7 +36,9 @@ namespace Gorgon.Examples;
 /// <remarks>
 /// This updates the view point of the user by offsetting all the layers by a specified amount.
 /// </remarks>
-internal class LayerCamera
+/// <remarks>Initializes a new instance of the <see cref="LayerCamera"/> class.</remarks>
+/// <param name="layers">The layers used by the application.</param>
+internal class LayerCamera(IEnumerable<Layer> layers)
 {
     #region Variables.
     // The layer to track.
@@ -50,7 +52,7 @@ internal class LayerCamera
     public IReadOnlyList<Layer> Layers
     {
         get;
-    }
+    } = layers.ToArray();
 
     /// <summary>
     /// Property to set or return the layer that will be tracked by the controller.
@@ -94,11 +96,6 @@ internal class LayerCamera
             layer.Update();
         }
     }
-    #endregion
 
-    #region Constructor/Finalizer.
-    /// <summary>Initializes a new instance of the <see cref="LayerCamera"/> class.</summary>
-    /// <param name="layers">The layers used by the application.</param>
-    public LayerCamera(IEnumerable<Layer> layers) => Layers = layers.ToArray();
     #endregion
 }

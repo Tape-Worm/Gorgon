@@ -42,8 +42,12 @@ namespace Gorgon.Editor.FontEditor;
 /// <summary>
 /// This is a renderer that will print our text into the view.
 /// </summary>
-internal class FontRenderer
-    : DefaultContentRenderer<IFontContent>
+/// <remarks>Initializes a new instance of the <see cref="FontRenderer"/> class.</remarks>
+/// <param name="renderer">The 2D renderer used to render our font.</param>
+/// <param name="mainRenderTarget">The main render target for the view.</param>
+/// <param name="dataContext">The view model for our text data.</param>
+internal class FontRenderer(Gorgon2D renderer, GorgonSwapChain mainRenderTarget, IFontContent dataContext)
+        : DefaultContentRenderer<IFontContent>("FontRenderer", renderer, mainRenderTarget, dataContext)
 {
     #region Variables.
     // The sprite used to render our text data.
@@ -165,16 +169,6 @@ internal class FontRenderer
     /// Function to set the view to a default zoom level.
     /// </summary>
     public void DefaultZoom() => MoveTo(Vector2.Zero, -1);
-    #endregion
 
-    #region Constructor/Finalizer.
-    /// <summary>Initializes a new instance of the <see cref="FontRenderer"/> class.</summary>
-    /// <param name="renderer">The 2D renderer used to render our font.</param>
-    /// <param name="mainRenderTarget">The main render target for the view.</param>
-    /// <param name="dataContext">The view model for our text data.</param>
-    public FontRenderer(Gorgon2D renderer, GorgonSwapChain mainRenderTarget, IFontContent dataContext)
-        : base("FontRenderer", renderer, mainRenderTarget, dataContext)
-    {
-    }
     #endregion
 }

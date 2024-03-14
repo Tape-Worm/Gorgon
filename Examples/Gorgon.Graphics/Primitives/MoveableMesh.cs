@@ -34,8 +34,12 @@ namespace Gorgon.Examples;
 /// <summary>
 /// Defines a mesh that can be transformed.
 /// </summary>
-internal abstract class MoveableMesh
-    : Mesh
+/// <remarks>
+/// Initializes a new instance of the <see cref="MoveableMesh" /> class.
+/// </remarks>
+/// <param name="graphics">The graphics interface that owns this object.</param>
+internal abstract class MoveableMesh(GorgonGraphics graphics)
+        : Mesh(graphics)
 {
     #region Variables.
     // Position of the triangle.
@@ -154,16 +158,8 @@ internal abstract class MoveableMesh
     /// </summary>
     /// <returns>The rectangle that represents a 2D axis aligned bounding box.</returns>
     public virtual DX.RectangleF GetAABB() => DX.RectangleF.Empty;
-    #endregion
 
+    #endregion
     #region Constructor.
-    /// <summary>
-    /// Initializes a new instance of the <see cref="MoveableMesh" /> class.
-    /// </summary>
-    /// <param name="graphics">The graphics interface that owns this object.</param>
-    protected MoveableMesh(GorgonGraphics graphics)
-        : base(graphics)
-    {
-    }
     #endregion
 }

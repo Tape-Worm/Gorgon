@@ -31,8 +31,11 @@ namespace Gorgon.Graphics.Core;
 /// <summary>
 /// A query for retrieving statistics from the rendering pipeline.
 /// </summary>
-public class GorgonPipelineStatisticsQuery
-    : GorgonQuery<GorgonPipelineStatsResult>
+/// <remarks>Initializes a new instance of the <see cref="GorgonPipelineStatisticsQuery" /> class.</remarks>
+/// <param name="graphics">The graphics interface used to build the query.</param>
+/// <param name="name">[Optional] The name for the query.</param>
+public class GorgonPipelineStatisticsQuery(GorgonGraphics graphics, string name = null)
+        : GorgonQuery<GorgonPipelineStatsResult>(graphics, name)
 {
     #region Properties.
     /// <summary>Property to return the type of query to execute.</summary>
@@ -56,15 +59,6 @@ public class GorgonPipelineStatisticsQuery
         result = new GorgonPipelineStatsResult(ref data);
         return true;
     }
-    #endregion
 
-    #region Constructor/Finalizer.
-    /// <summary>Initializes a new instance of the <see cref="GorgonPipelineStatisticsQuery" /> class.</summary>
-    /// <param name="graphics">The graphics interface used to build the query.</param>
-    /// <param name="name">[Optional] The name for the query.</param>
-    public GorgonPipelineStatisticsQuery(GorgonGraphics graphics, string name = null)
-        : base(graphics, name)
-    {
-    }
     #endregion
 }

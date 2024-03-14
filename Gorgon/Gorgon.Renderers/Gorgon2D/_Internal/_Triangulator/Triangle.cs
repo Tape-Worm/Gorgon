@@ -11,19 +11,12 @@ namespace GorgonTriangulator;
 /// <summary>
 /// A basic triangle structure that holds the three vertices that make up a given triangle.
 /// </summary>
-internal readonly struct Triangle
-    : IEquatable<Triangle>
+internal readonly struct Triangle(Vertex a, Vertex b, Vertex c)
+        : IEquatable<Triangle>
 {
-    public readonly Vertex A;
-    public readonly Vertex B;
-    public readonly Vertex C;
-
-    public Triangle(Vertex a, Vertex b, Vertex c)
-    {
-        A = a;
-        B = b;
-        C = c;
-    }
+    public readonly Vertex A = a;
+    public readonly Vertex B = b;
+    public readonly Vertex C = c;
 
     public bool ContainsPoint(Vertex point)
     {

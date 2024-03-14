@@ -31,8 +31,10 @@ namespace Gorgon.Editor.FontEditor;
 /// <summary>
 /// The arguments for the SetTextureCommand.
 /// </summary>
-internal class SetTextureArgs
-    : CancelEventArgs
+/// <remarks>Initializes a new instance of the <see cref="SetTextureArgs"/> class.</remarks>
+/// <param name="textureFilePath">The path to the file containing the texture data.</param>
+internal class SetTextureArgs(string textureFilePath)
+        : CancelEventArgs
 {
     /// <summary>
     /// Property to return the file containing the texture data.
@@ -40,9 +42,5 @@ internal class SetTextureArgs
     public string TextureFilePath
     {
         get;
-    }
-
-    /// <summary>Initializes a new instance of the <see cref="SetTextureArgs"/> class.</summary>
-    /// <param name="textureFilePath">The path to the file containing the texture data.</param>
-    public SetTextureArgs(string textureFilePath) => TextureFilePath = textureFilePath;
+    } = textureFilePath;
 }

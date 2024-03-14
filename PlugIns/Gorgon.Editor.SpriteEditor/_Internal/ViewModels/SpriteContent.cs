@@ -91,13 +91,13 @@ internal class SpriteContent
 
     #region Variables.
     // The default color for a sprite.
-    private static readonly GorgonColor[] _defaultColor = new GorgonColor[]
-    {
+    private static readonly GorgonColor[] _defaultColor =
+    [
         GorgonColor.White,
         GorgonColor.White,
         GorgonColor.White,
         GorgonColor.White
-    };
+    ];
 
     // The sprite content services.
     private SpriteContentServices _contentServices;
@@ -922,12 +922,12 @@ internal class SpriteContent
 
         var colorUndoArgs = new SpriteUndoArgs
         {
-            VertexColor = _sprite.CornerColors.ToArray()
+            VertexColor = [.. _sprite.CornerColors]
         };
 
         var colorRedoArgs = new SpriteUndoArgs
         {
-            VertexColor = ColorEditor.SpriteColor.ToArray()
+            VertexColor = [.. ColorEditor.SpriteColor]
         };
 
         if (!SetColor(colorRedoArgs.VertexColor))
@@ -984,7 +984,7 @@ internal class SpriteContent
 
         var vtxUndoArgs = new SpriteUndoArgs
         {
-            VertexOffset = _sprite.CornerOffsets.ToArray()
+            VertexOffset = [.. _sprite.CornerOffsets]
         };
 
         Vector3[] verts = SpriteVertexEditContext.Vertices.Select(item => new Vector3(item.X, item.Y, 0)).ToArray();
@@ -1117,7 +1117,7 @@ internal class SpriteContent
         {
             TextureCoordinates = Texture.ToPixel(TextureCoordinates).ToRectangleF(),
             ArrayIndex = ArrayIndex,
-            VertexOffset = _sprite.CornerOffsets.ToArray()
+            VertexOffset = [.. _sprite.CornerOffsets]
         };
         var texCoordRedoArgs = new SpriteUndoArgs
         {
@@ -1193,7 +1193,7 @@ internal class SpriteContent
         {
             TextureCoordinates = Texture.ToPixel(TextureCoordinates).ToRectangleF(),
             ArrayIndex = ArrayIndex,
-            VertexOffset = _sprite.CornerOffsets.ToArray()
+            VertexOffset = [.. _sprite.CornerOffsets]
         };
         var texCoordRedoArgs = new SpriteUndoArgs
         {

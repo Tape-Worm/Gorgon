@@ -31,8 +31,13 @@ namespace Gorgon.Editor.ViewModels;
 /// <summary>
 /// Arguments for the <see cref="IDirectory.RenameCommand"/>.
 /// </summary>
-internal class RenameArgs
-    : CancelEventArgs
+/// <remarks>
+/// Initializes a new instance of the <see cref="RenameArgs"/> class.
+/// </remarks>
+/// <param name="oldName">The old name.</param>
+/// <param name="newName">The new name.</param>
+internal class RenameArgs(string oldName, string newName)
+        : CancelEventArgs(false)
 {
     #region Properties.
     /// <summary>
@@ -41,7 +46,7 @@ internal class RenameArgs
     public string OldName
     {
         get;
-    }
+    } = oldName;
 
     /// <summary>
     /// Property to set or return the ID of the file or directory being renamed.
@@ -59,20 +64,7 @@ internal class RenameArgs
     {
         get;
         set;
-    }
-    #endregion
+    } = newName;
 
-    #region Constructor/Finalizer.
-    /// <summary>
-    /// Initializes a new instance of the <see cref="RenameArgs"/> class.
-    /// </summary>
-    /// <param name="oldName">The old name.</param>
-    /// <param name="newName">The new name.</param>
-    public RenameArgs(string oldName, string newName)
-        : base(false)
-    {
-        OldName = oldName;
-        NewName = newName;
-    }
     #endregion
 }

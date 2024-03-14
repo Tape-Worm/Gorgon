@@ -186,13 +186,13 @@ internal class ImageContent
 
     #region Variables.
     // The list of available codecs matched by extension.
-    private readonly List<(GorgonFileExtension extension, IGorgonImageCodec codec)> _codecs = new();
+    private readonly List<(GorgonFileExtension extension, IGorgonImageCodec codec)> _codecs = [];
     // The directory to store the undo cache data.
     private IGorgonVirtualDirectory _undoCacheDir;
     // The format support information for the current video card.
     private IReadOnlyDictionary<BufferFormat, IGorgonFormatSupportInfo> _formatSupport;
     // The available pixel formats, based on codec.
-    private ObservableCollection<BufferFormat> _pixelFormats = new();
+    private ObservableCollection<BufferFormat> _pixelFormats = [];
     // The settings for the image editor plugin.
     private ISettingsPlugins _pluginSettings;
     // The file used for working changes.
@@ -297,7 +297,7 @@ internal class ImageContent
     public ObservableCollection<IGorgonImageCodec> Codecs
     {
         get;
-    } = new ObservableCollection<IGorgonImageCodec>();
+    } = [];
 
     /// <summary>
     /// Property to return the list of available image pixel formats (based on codec).
@@ -1143,9 +1143,8 @@ internal class ImageContent
             // Do not provide block compressed formats if we can't convert them.
             if (_imageIO.CanHandleBlockCompression)
             {
-                supportedFormats = supportedFormats
-                    .Concat(supportedFormats.Where(item => (new GorgonFormatInfo(item)).IsCompressed))
-                    .ToArray();
+                supportedFormats = [.. supportedFormats
+, .. supportedFormats.Where(item => (new GorgonFormatInfo(item)).IsCompressed)];
             }
         }
 
@@ -2417,7 +2416,7 @@ internal class ImageContent
         IGorgonVirtualFile tempFile = null;
         Stream imageStream = null;
         var cancelSource = new CancellationTokenSource();            
-        IReadOnlyList<ImagePickerImportData> imports = Array.Empty<ImagePickerImportData>();
+        IReadOnlyList<ImagePickerImportData> imports = [];
 
         void CancelAction() => cancelSource?.Cancel();
 

@@ -132,7 +132,7 @@ public static class GorgonResourceLocator
 #pragma warning disable IDE0046 // Convert to conditional expression
         if (string.IsNullOrWhiteSpace(name))
         {
-            return Enumerable.Empty<T>();
+            return [];
         }
 
         return graphics.GetDisposables()

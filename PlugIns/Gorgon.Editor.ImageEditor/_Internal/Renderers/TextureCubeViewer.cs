@@ -41,8 +41,13 @@ namespace Gorgon.Editor.ImageEditor;
 /// <summary>
 /// A viewer for a 2D cube texture.
 /// </summary>
-internal class TextureCubeViewer
-    : TextureViewer
+/// <remarks>Initializes a new instance of the <see cref="TextureCubeViewer"/> class.</remarks>
+/// <param name="renderer">The main renderer for the content view.</param>
+/// <param name="swapChain">The swap chain for the content view.</param>
+/// <param name="fontFactory">The font factory used to generate the font for the glyphs.</param>
+/// <param name="dataContext">The view model to assign to the renderer.</param>
+internal class TextureCubeViewer(Gorgon2D renderer, GorgonSwapChain swapChain, GorgonFontFactory fontFactory, IImageContent dataContext)
+        : TextureViewer(ImageType.ImageCube.ToString(), "Gorgon2DTextureArrayView", 0, renderer, swapChain, dataContext)
 {
     #region Variables.
     // The texture to display.
@@ -57,7 +62,7 @@ internal class TextureCubeViewer
     // The selection rectangle.
     private IMarchingAnts _selectionRect;
     // The font factory used to generate the font for the glyphs.
-    private readonly GorgonFontFactory _fontFactory;
+    private readonly GorgonFontFactory _fontFactory = fontFactory;
     #endregion
 
     #region Methods.
@@ -216,15 +221,6 @@ internal class TextureCubeViewer
 
         _selectionRect = new MarchingAnts(Renderer);
     }
-    #endregion
 
-    #region Constructor/Finalizer.
-    /// <summary>Initializes a new instance of the <see cref="TextureCubeViewer"/> class.</summary>
-    /// <param name="renderer">The main renderer for the content view.</param>
-    /// <param name="swapChain">The swap chain for the content view.</param>
-    /// <param name="fontFactory">The font factory used to generate the font for the glyphs.</param>
-    /// <param name="dataContext">The view model to assign to the renderer.</param>
-    public TextureCubeViewer(Gorgon2D renderer, GorgonSwapChain swapChain, GorgonFontFactory fontFactory, IImageContent dataContext)
-        : base(ImageType.ImageCube.ToString(), "Gorgon2DTextureArrayView", 0, renderer, swapChain, dataContext) => _fontFactory = fontFactory;
     #endregion
 }

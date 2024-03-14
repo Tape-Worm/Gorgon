@@ -31,8 +31,10 @@ namespace Gorgon.Editor.UI;
 /// <summary>
 /// Event arguments for the a zoom event.
 /// </summary>
-public class ZoomEventArgs
-    : EventArgs
+/// <remarks>Initializes a new instance of the <see cref="ZoomEventArgs"/> class.</remarks>
+/// <param name="currentZoomLevel">The current zoom level.</param>
+public class ZoomEventArgs(ZoomLevels currentZoomLevel)
+        : EventArgs
 {
     /// <summary>
     /// Property to return the current zoom level.
@@ -40,9 +42,5 @@ public class ZoomEventArgs
     public ZoomLevels ZoomLevel
     {
         get;
-    }
-
-    /// <summary>Initializes a new instance of the <see cref="ZoomEventArgs"/> class.</summary>
-    /// <param name="currentZoomLevel">The current zoom level.</param>
-    public ZoomEventArgs(ZoomLevels currentZoomLevel) => ZoomLevel = currentZoomLevel;
+    } = currentZoomLevel;
 }

@@ -55,7 +55,7 @@ internal class FontCharacterSelection
         get => _characters;
         set
         {
-            value ??= Array.Empty<char>();
+            value ??= [];
 
             if ((_characters == value) || (_characters.SequenceEqual(value)))
             {

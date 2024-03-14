@@ -35,16 +35,23 @@ namespace Gorgon.Examples;
 /// <summary>
 /// Builds the shadows for our application.
 /// </summary>
-public class ShadowBuilder
+/// <remarks>
+/// Initializes a new instance of the <see cref="ShadowBuilder"/> class.
+/// </remarks>
+/// <param name="renderer">The renderer.</param>
+/// <param name="effect">The gaussian blur effect to use in order to soften the shadows.</param>
+/// <param name="sprite1">The first sprite to draw.</param>
+/// <param name="sprite2">The second sprite to draw.</param>
+public class ShadowBuilder(Gorgon2D renderer, Gorgon2DGaussBlurEffect effect, GorgonSprite sprite1, GorgonSprite sprite2)
 {
     #region Variables.
     // The renderer.
-    private readonly Gorgon2D _renderer;
+    private readonly Gorgon2D _renderer = renderer;
     // Our gaussian blur effect.
-    private readonly Gorgon2DGaussBlurEffect _gaussBlur;
+    private readonly Gorgon2DGaussBlurEffect _gaussBlur = effect;
     // Our sprites to draw.
-    private readonly GorgonSprite _sprite1;
-    private readonly GorgonSprite _sprite2;
+    private readonly GorgonSprite _sprite1 = sprite1;
+    private readonly GorgonSprite _sprite2 = sprite2;
     #endregion
 
     #region Methods.
@@ -97,7 +104,7 @@ public class ShadowBuilder
         }
 
         GorgonSprite[] resultSprites =
-        {
+        [
             new GorgonSprite
             {
                 Texture = resultTexture,
@@ -122,27 +129,11 @@ public class ShadowBuilder
                                                                        (int)_sprite2.Size.Height + 20)),
 
             }
-        };
+        ];
 
 
         return (resultSprites, resultTexture);
     }
-    #endregion
 
-    #region Constructor/Finalizer.
-    /// <summary>
-    /// Initializes a new instance of the <see cref="ShadowBuilder"/> class.
-    /// </summary>
-    /// <param name="renderer">The renderer.</param>
-    /// <param name="effect">The gaussian blur effect to use in order to soften the shadows.</param>
-    /// <param name="sprite1">The first sprite to draw.</param>
-    /// <param name="sprite2">The second sprite to draw.</param>
-    public ShadowBuilder(Gorgon2D renderer, Gorgon2DGaussBlurEffect effect, GorgonSprite sprite1, GorgonSprite sprite2)
-    {
-        _renderer = renderer;
-        _gaussBlur = effect;
-        _sprite1 = sprite1;
-        _sprite2 = sprite2;
-    }
     #endregion
 }

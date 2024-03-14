@@ -142,7 +142,7 @@ internal class TextureEditorContext
     /// <summary>
     /// Property to return the textures for the font.
     /// </summary>
-    public IReadOnlyList<GorgonTexture2DView> Textures => _fontService?.Textures ?? Array.Empty<GorgonTexture2DView>();
+    public IReadOnlyList<GorgonTexture2DView> Textures => _fontService?.Textures ?? [];
 
     /// <summary>
     /// Property to return the total number of textures, and array indices in the font.

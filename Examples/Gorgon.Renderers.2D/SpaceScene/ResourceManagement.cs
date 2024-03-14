@@ -52,20 +52,23 @@ namespace Gorgon.Examples;
 /// This is responsible for caching all of our data for the scene. We load sprites, textures, 3D meshes, post processing effects and individual effects into the manager 
 /// and then access them via dictionaries so we can get at our data by name.
 /// </remarks>
-internal class ResourceManagement
-    : IDisposable
+/// <remarks>Initializes a new instance of the <see cref="ResourceManagement"/> class.</remarks>
+/// <param name="renderer">The renderer for the application.</param>
+/// <param name="plugIns>The plugin service used to load file system providers.</param>
+internal class ResourceManagement(Gorgon2D renderer, GorgonMefPlugInCache plugIns)
+        : IDisposable
 {
     #region Variables.
     // The cache used to hold texture data.
-    private readonly GorgonTextureCache<GorgonTexture2D> _textureCache;
+    private readonly GorgonTextureCache<GorgonTexture2D> _textureCache = new(renderer.Graphics);
     // The loader used to read content data from the file system.
     private IGorgonContentLoader _contentLoader;
     // The graphics interface for the application.
-    private readonly GorgonGraphics _graphics;
+    private readonly GorgonGraphics _graphics = renderer.Graphics;
     // The 2D renderer interface for the application.
-    private readonly Gorgon2D _renderer;
+    private readonly Gorgon2D _renderer = renderer;
     // The plug in service for the application.
-    private readonly GorgonMefPlugInCache _plugIns;
+    private readonly GorgonMefPlugInCache _plugIns = plugIns;
     // The file system where resources are kept.
     private IGorgonFileSystem _fileSystem;
     // The list of shaders.
@@ -429,18 +432,6 @@ internal class ResourceManagement
             compositor.Value.Dispose();
         }
     }
-    #endregion
 
-    #region Constructor/Finalizer.
-    /// <summary>Initializes a new instance of the <see cref="ResourceManagement"/> class.</summary>
-    /// <param name="renderer">The renderer for the application.</param>
-    /// <param name="plugIns>The plugin service used to load file system providers.</param>
-    public ResourceManagement(Gorgon2D renderer, GorgonMefPlugInCache plugIns)
-    {
-        _renderer = renderer;
-        _graphics = renderer.Graphics;
-        _plugIns = plugIns;
-        _textureCache = new GorgonTextureCache<GorgonTexture2D>(renderer.Graphics);
-    }
     #endregion
 }

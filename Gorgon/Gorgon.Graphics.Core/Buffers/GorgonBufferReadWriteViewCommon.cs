@@ -49,8 +49,16 @@ namespace Gorgon.Graphics.Core;
 /// <seealso cref="GorgonComputeShader"/>
 /// <seealso cref="GorgonPixelShader"/>
 /// <seealso cref="GorgonDrawCallCommon"/>
-public abstract class GorgonBufferReadWriteViewCommon<T>
-    : GorgonReadWriteView
+/// <remarks>
+/// Initializes a new instance of the <see cref="GorgonBufferReadWriteViewCommon{T}"/> class.
+/// </remarks>
+/// <param name="buffer">The buffer to assign to the view.</param>
+/// <param name="elementStart">The first element in the buffer to view.</param>
+/// <param name="elementCount">The number of elements in the view.</param>
+/// <param name="totalElementCount">The total number of elements in the buffer.</param>
+/// <exception cref="ArgumentNullException">Thrown when the <paramref name="buffer"/> parameter is <b>null</b>.</exception>
+public abstract class GorgonBufferReadWriteViewCommon<T>(T buffer, int elementStart, int elementCount, int totalElementCount)
+    : GorgonReadWriteView(buffer)
     where T : GorgonBufferCommon
 {
     #region Properties.
@@ -61,7 +69,7 @@ public abstract class GorgonBufferReadWriteViewCommon<T>
     {
         get;
         protected set;
-    }
+    } = buffer;
 
     /// <summary>
     /// Property to return the offset of the view from first element in the buffer.
@@ -69,7 +77,7 @@ public abstract class GorgonBufferReadWriteViewCommon<T>
     public int StartElement
     {
         get;
-    }
+    } = elementStart;
 
     /// <summary>
     /// Property to return the number of elements in the view.
@@ -77,7 +85,7 @@ public abstract class GorgonBufferReadWriteViewCommon<T>
     public int ElementCount
     {
         get;
-    }
+    } = elementCount;
 
     /// <summary>
     /// Property to return the total number of elements in the <see cref="Buffer"/>.
@@ -85,7 +93,7 @@ public abstract class GorgonBufferReadWriteViewCommon<T>
     public int TotalElementCount
     {
         get;
-    }
+    } = totalElementCount;
 
     /// <summary>
     /// Property to return the size of an element.
@@ -94,24 +102,6 @@ public abstract class GorgonBufferReadWriteViewCommon<T>
     {
         get;
     }
-    #endregion
 
-    #region Constructor/Finalizer.
-    /// <summary>
-    /// Initializes a new instance of the <see cref="GorgonBufferReadWriteViewCommon{T}"/> class.
-    /// </summary>
-    /// <param name="buffer">The buffer to assign to the view.</param>
-    /// <param name="elementStart">The first element in the buffer to view.</param>
-    /// <param name="elementCount">The number of elements in the view.</param>
-    /// <param name="totalElementCount">The total number of elements in the buffer.</param>
-    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="buffer"/> parameter is <b>null</b>.</exception>
-    protected GorgonBufferReadWriteViewCommon(T buffer, int elementStart, int elementCount, int totalElementCount)
-        : base(buffer)
-    {
-        StartElement = elementStart;
-        ElementCount = elementCount;
-        TotalElementCount = totalElementCount;
-        Buffer = buffer;
-    }
     #endregion
 }

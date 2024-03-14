@@ -33,8 +33,11 @@ namespace Gorgon.Editor.AnimationEditor;
 /// <summary>
 /// Event parameters for the <see cref="DataGridViewEx.CellsDrag"/> event.
 /// </summary>
-internal class CellsDragEventArgs
-    : EventArgs
+/// <remarks>Initializes a new instance of the <see cref="CellsDragEventArgs"/> class.</remarks>
+/// <param name="dragCells">The cells being dragged.</param>
+/// <param name="mouseButtons">The mouse buttons that were pressed while dragging.</param>
+internal class CellsDragEventArgs(IReadOnlyList<DataGridViewCell> dragCells, MouseButtons mouseButtons)
+        : EventArgs
 {
     /// <summary>
     /// Property to return the rows that are being dragged.
@@ -42,7 +45,7 @@ internal class CellsDragEventArgs
     public IReadOnlyList<DataGridViewCell> DraggedCells
     {
         get;
-    }
+    } = dragCells;
 
     /// <summary>
     /// Property to return the mouse buttons that were pressed while dragging.
@@ -50,14 +53,5 @@ internal class CellsDragEventArgs
     public MouseButtons MouseButtons
     {
         get;
-    }
-
-    /// <summary>Initializes a new instance of the <see cref="CellsDragEventArgs"/> class.</summary>
-    /// <param name="dragCells">The cells being dragged.</param>
-    /// <param name="mouseButtons">The mouse buttons that were pressed while dragging.</param>
-    public CellsDragEventArgs(IReadOnlyList<DataGridViewCell> dragCells, MouseButtons mouseButtons)
-    {
-        DraggedCells = dragCells;
-        MouseButtons = mouseButtons;
-    }
+    } = mouseButtons;
 }

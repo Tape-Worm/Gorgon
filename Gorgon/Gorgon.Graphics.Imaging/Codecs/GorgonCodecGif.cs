@@ -46,16 +46,21 @@ namespace Gorgon.Graphics.Imaging.Codecs;
 /// 32 bit <see cref="BufferFormat.R8G8B8A8_UNorm"/> pixel format. Data encoded with this codec will be downsampled to 8 bit indexed data.
 /// </para>
 /// </remarks>
-public sealed class GorgonCodecGif
-    : GorgonCodecWic<GorgonGifEncodingOptions, GorgonGifDecodingOptions>
+/// <remarks>
+/// Initializes a new instance of the <see cref="GorgonCodecGif" /> class.
+/// </remarks>
+/// <param name="encodingOptions">[Optional] Options to use when encoding a GIF file.</param>
+/// <param name="decodingOptions">[Optional] Options to use when decoding a GIF file.</param>
+public sealed class GorgonCodecGif(GorgonGifEncodingOptions encodingOptions = null, GorgonGifDecodingOptions decodingOptions = null)
+        : GorgonCodecWic<GorgonGifEncodingOptions, GorgonGifDecodingOptions>("GIF", Resources.GORIMG_DESC_GIF_CODEC, ["gif"], ContainerFormatGuids.Gif, encodingOptions, decodingOptions)
 {
     #region Variables.
     // Meta data names for the frame offsets.
     private static readonly string[] _frameOffsetItems =
-    {
+    [
         "/imgdesc/Left",
         "/imgdesc/Top"
-    };
+    ];
     #endregion
 
     #region Properties.
@@ -203,17 +208,8 @@ public sealed class GorgonCodecGif
             stream.Position = position;
         }
     }
-    #endregion
 
+    #endregion
     #region Constructor/Destructor.
-    /// <summary>
-    /// Initializes a new instance of the <see cref="GorgonCodecGif" /> class.
-    /// </summary>
-    /// <param name="encodingOptions">[Optional] Options to use when encoding a GIF file.</param>
-    /// <param name="decodingOptions">[Optional] Options to use when decoding a GIF file.</param>
-    public GorgonCodecGif(GorgonGifEncodingOptions encodingOptions = null, GorgonGifDecodingOptions decodingOptions = null)
-        : base("GIF", Resources.GORIMG_DESC_GIF_CODEC, new[] { "gif" }, ContainerFormatGuids.Gif, encodingOptions, decodingOptions)
-    {
-    }
     #endregion
 }

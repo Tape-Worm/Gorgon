@@ -37,13 +37,18 @@ namespace Gorgon.Graphics.Fonts;
 /// <summary>
 /// Provides functionality to draw and measure glyph data.
 /// </summary>
-internal class GlyphDraw
+/// <remarks>
+/// Initializes a new instance of the <see cref="GlyphDraw"/> class.
+/// </remarks>
+/// <param name="fontInfo">The font information used to create the font.</param>
+/// <param name="fontData">The font data for the glyphs.</param>
+internal class GlyphDraw(IGorgonFontInfo fontInfo, GdiFontData fontData)
 {
     #region Variables.
     // Data used to generate the font glyphs.
-    private readonly GdiFontData _fontData;
+    private readonly GdiFontData _fontData = fontData;
     // Information about the font to create.
-    private readonly IGorgonFontInfo _fontInfo;
+    private readonly IGorgonFontInfo _fontInfo = fontInfo;
     #endregion
 
     #region Methods.
@@ -658,18 +663,6 @@ internal class GlyphDraw
 
         return result;
     }
-    #endregion
 
-    #region Constructor/Finalizer.
-    /// <summary>
-    /// Initializes a new instance of the <see cref="GlyphDraw"/> class.
-    /// </summary>
-    /// <param name="fontInfo">The font information used to create the font.</param>
-    /// <param name="fontData">The font data for the glyphs.</param>
-    public GlyphDraw(IGorgonFontInfo fontInfo, GdiFontData fontData)
-    {
-        _fontInfo = fontInfo;
-        _fontData = fontData;
-    }
     #endregion
 }

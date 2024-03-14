@@ -740,7 +740,7 @@ public class GorgonFileSystemWriter
                 return;
             }
 
-            IGorgonVirtualFile[] files = dir.Files.ToArray();
+            IGorgonVirtualFile[] files = [.. dir.Files];
             foreach (IGorgonVirtualFile file in files)
             {
                 if (cancelToken.Value.IsCancellationRequested)
@@ -844,7 +844,7 @@ public class GorgonFileSystemWriter
         }
 
         EventHandler<VirtualFileDeletedEventArgs> handler = VirtualFileDeleted;
-        handler?.Invoke(this, new VirtualFileDeletedEventArgs(new[] { file }));
+        handler?.Invoke(this, new VirtualFileDeletedEventArgs([file]));
     }
 
     /// <summary>

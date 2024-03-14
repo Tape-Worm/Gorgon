@@ -65,7 +65,7 @@ internal class MessageFilterHook
     // The new window procedure method.
     private WndProc _newWndProc;
     // The list of message filters.
-    private List<RawInputMessageFilter> _messageFilters = new();
+    private List<RawInputMessageFilter> _messageFilters = [];
     // Flag to indicate whether the hook is installed.
     private bool _hooked;
     #endregion

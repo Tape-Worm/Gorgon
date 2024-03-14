@@ -89,7 +89,7 @@ public class GorgonGlyphTextureBrush
 {
     #region Variables.
     // The data for the image.
-    private byte[] _imageData = Array.Empty<byte>();
+    private byte[] _imageData = [];
     // The width and height of the texture.
     private int _width;
     private int _height;
@@ -307,7 +307,7 @@ public class GorgonGlyphTextureBrush
     {
         if (textureImage is null)
         {
-            _imageData = Array.Empty<byte>();
+            _imageData = [];
             TextureRegion = new DX.RectangleF(0, 0, 1, 1);
             WrapMode = GlyphBrushWrapMode.Clamp;
             return;

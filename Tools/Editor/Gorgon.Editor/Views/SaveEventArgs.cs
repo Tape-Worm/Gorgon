@@ -31,8 +31,12 @@ namespace Gorgon.Editor.Views;
 /// <summary>
 /// Event arguments for the <see cref="StageLive.Save"/> event.
 /// </summary>
-internal class SaveEventArgs
-    : EventArgs
+/// <remarks>
+/// Initializes a new instance of the <see cref="SaveEventArgs"/> class.
+/// </remarks>
+/// <param name="saveAs"><b>true</b> to prompt for file type and file name, <b>false</b> to save with current file information (if possible).</param>
+internal class SaveEventArgs(bool saveAs)
+        : EventArgs
 {
     /// <summary>
     /// Property to return whether the application should prompt the user for a file type and file name.
@@ -40,11 +44,5 @@ internal class SaveEventArgs
     public bool SaveAs
     {
         get;
-    }
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="SaveEventArgs"/> class.
-    /// </summary>
-    /// <param name="saveAs"><b>true</b> to prompt for file type and file name, <b>false</b> to save with current file information (if possible).</param>
-    public SaveEventArgs(bool saveAs) => SaveAs = saveAs;
+    } = saveAs;
 }

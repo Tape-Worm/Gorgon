@@ -33,8 +33,12 @@ namespace Gorgon.Editor.SpriteEditor;
 /// <summary>
 /// Parameters for the <see cref="ISpriteVertexEditContext"/> view model.
 /// </summary>
-internal class SpriteVertexEditContextParameters
-    : ViewModelInjection<IHostContentServices>
+/// <remarks>Initializes a new instance of the <see cref="SpriteVertexEditContextParameters"/> class.</remarks>
+/// <param name="spriteContent">The image content being edited.</param>
+/// <param name="hostServices">The services from the host application.</param>
+/// <exception cref="ArgumentNullException">Thrown when the parameters are <b>null</b>.</exception>
+internal class SpriteVertexEditContextParameters(ISpriteContent spriteContent, IHostContentServices hostServices)
+        : ViewModelInjection<IHostContentServices>(hostServices)
 {
     /// <summary>
     /// Property to return the sprite content for the currently being edited.
@@ -42,12 +46,5 @@ internal class SpriteVertexEditContextParameters
     public ISpriteContent SpriteContent
     {
         get;
-    }
-
-    /// <summary>Initializes a new instance of the <see cref="SpriteVertexEditContextParameters"/> class.</summary>
-    /// <param name="spriteContent">The image content being edited.</param>
-    /// <param name="hostServices">The services from the host application.</param>
-    /// <exception cref="ArgumentNullException">Thrown when the parameters are <b>null</b>.</exception>
-    public SpriteVertexEditContextParameters(ISpriteContent spriteContent, IHostContentServices hostServices)
-        : base(hostServices) => SpriteContent = spriteContent ?? throw new ArgumentNullException(nameof(spriteContent));
+    } = spriteContent ?? throw new ArgumentNullException(nameof(spriteContent));
 }

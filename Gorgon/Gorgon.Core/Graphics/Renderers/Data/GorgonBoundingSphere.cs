@@ -86,9 +86,14 @@ namespace Gorgon.Renderers.Data;
 /// <summary>
 /// Represents a bounding sphere in three dimensional space.
 /// </summary>
+/// <remarks>
+/// Initializes a new instance of the <see cref="GorgonBoundingSphere"/> struct.
+/// </remarks>
+/// <param name="center">The center of the sphere in three dimensional space.</param>
+/// <param name="radius">The radius of the sphere.</param>
 [StructLayout(LayoutKind.Sequential, Pack = 4)]
-public readonly struct GorgonBoundingSphere 
-    : IGorgonEquatableByRef<GorgonBoundingSphere>
+public readonly struct GorgonBoundingSphere(in Vector3 center, float radius)
+        : IGorgonEquatableByRef<GorgonBoundingSphere>
 {
     #region Variables.
     /// <summary>
@@ -99,12 +104,12 @@ public readonly struct GorgonBoundingSphere
     /// <summary>
     /// The center of the sphere in three dimensional space.
     /// </summary>
-    public readonly Vector3 Center;
+    public readonly Vector3 Center = center;
 
     /// <summary>
     /// The radius of the sphere.
     /// </summary>
-    public readonly float Radius;
+    public readonly float Radius = radius;
     #endregion
 
     #region Properties.
@@ -283,18 +288,8 @@ public readonly struct GorgonBoundingSphere
         center = Center;
         radius = Radius;
     }
-    #endregion
 
+    #endregion
     #region Constructor.
-    /// <summary>
-    /// Initializes a new instance of the <see cref="GorgonBoundingSphere"/> struct.
-    /// </summary>
-    /// <param name="center">The center of the sphere in three dimensional space.</param>
-    /// <param name="radius">The radius of the sphere.</param>
-    public GorgonBoundingSphere(in Vector3 center, float radius)
-    {
-        Center = center;
-        Radius = radius;
-    }
     #endregion
 }

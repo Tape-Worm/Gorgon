@@ -109,7 +109,7 @@ internal static class Program
             }
 
             // Our text writer plugin interfaces.
-            IList<TextColorWriter> writers = new List<TextColorWriter>();
+            IList<TextColorWriter> writers = [];
 
             // Create our plugin instances, we'll limit to 9 entries just for giggles.
             TextColorPlugIn[] plugins = (from pluginName in pluginService.GetPlugInNames()

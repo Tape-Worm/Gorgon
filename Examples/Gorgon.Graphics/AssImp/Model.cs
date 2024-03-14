@@ -22,7 +22,7 @@ internal class Model
 {
     #region Variables.
     // The list of meshes to render.
-    private readonly Dictionary<Material, List<(int BaseStart, int Start, int Count)>> _meshes = new();
+    private readonly Dictionary<Material, List<(int BaseStart, int Start, int Count)>> _meshes = [];
     // The world matrix for this model.
     private System.Numerics.Matrix4x4 _worldMatrix;
     #endregion
@@ -133,7 +133,7 @@ internal class Model
     /// <returns>A list of model materials associated with their textures.</returns>
     private static IReadOnlyList<Material> GetMaterials(List<Assimp.Material> sceneMaterials, IReadOnlyDictionary<string, GorgonTexture2DView> textures)
     {
-        List<Material> materials = new();
+        List<Material> materials = [];
 
         for (int m = 0; m < sceneMaterials.Count; ++m)
         {
@@ -210,7 +210,7 @@ internal class Model
 
             if (!_meshes.TryGetValue(material, out List<(int BaseStart, int start, int count)> indexList))
             {
-                _meshes[material] = indexList = new List<(int BaseStart, int start, int count)>();
+                _meshes[material] = indexList = [];
             }                
 
             indexList.Add((vertexIndex, indexStart, meshIndices.Length));

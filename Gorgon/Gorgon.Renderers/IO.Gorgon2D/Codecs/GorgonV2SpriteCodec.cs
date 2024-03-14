@@ -42,8 +42,13 @@ namespace Gorgon.IO;
 /// <summary>
 /// A codec that can read version 2 sprite data.
 /// </summary>
-public class GorgonV2SpriteCodec
-    : GorgonSpriteCodecCommon
+/// <remarks>
+/// Initializes a new instance of the <see cref="GorgonV2SpriteCodec"/> class.
+/// </remarks>
+/// <param name="renderer">The renderer used for resource handling.</param>
+/// <exception cref="ArgumentNullException">Thrown when the <paramref name="renderer"/> parameter is <b>null</b>.</exception>
+public class GorgonV2SpriteCodec(Gorgon2D renderer)
+        : GorgonSpriteCodecCommon(renderer, Resources.GOR2DIO_V2_CODEC, Resources.GOR2DIO_V2_CODEC_DESCRIPTION)
 {
     #region Enums.
     /// <summary>
@@ -497,17 +502,6 @@ public class GorgonV2SpriteCodec
     /// <param name="sprite">The sprite to serialize into the stream.</param>
     /// <param name="stream">The stream that will contain the sprite.</param>
     protected override void OnSaveToStream(GorgonSprite sprite, Stream stream) => throw new NotSupportedException();
-    #endregion
 
-    #region Constructor/Finalizer.
-    /// <summary>
-    /// Initializes a new instance of the <see cref="GorgonV2SpriteCodec"/> class.
-    /// </summary>
-    /// <param name="renderer">The renderer used for resource handling.</param>
-    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="renderer"/> parameter is <b>null</b>.</exception>
-    public GorgonV2SpriteCodec(Gorgon2D renderer)
-        : base(renderer, Resources.GOR2DIO_V2_CODEC, Resources.GOR2DIO_V2_CODEC_DESCRIPTION)
-    {
-    }
     #endregion
 }

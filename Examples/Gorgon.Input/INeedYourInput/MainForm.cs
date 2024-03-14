@@ -624,7 +624,7 @@ public partial class MainForm
             // Get available gaming device driver plug ins.
             _drivers = factory.LoadAllDrivers(Path.Combine(GorgonExample.GetPlugInPath().FullName, "Gorgon.Input.*.dll"));
 
-            _joystickList = new List<IGorgonGamingDevice>();
+            _joystickList = [];
 
             // Get all gaming devices from the drivers.
             foreach (IGorgonGamingDeviceDriver driver in _drivers)

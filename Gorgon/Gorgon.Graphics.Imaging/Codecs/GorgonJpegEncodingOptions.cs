@@ -144,11 +144,11 @@ public sealed class GorgonJpegEncodingOptions
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonJpegEncodingOptions"/> class.
     /// </summary>
-    public GorgonJpegEncodingOptions() => Options = new GorgonOptionBag(new[]
-                                      {
+    public GorgonJpegEncodingOptions() => Options = new GorgonOptionBag(
+                                      [
                                           GorgonOption.CreateSingleOption(nameof(ImageQuality), 1.0f, Resources.GORIMG_OPT_JPG_QUALITY, 0, 1.0f),
                                           GorgonOption.CreateDoubleOption(nameof(DpiX), 72.0, Resources.GORIMG_OPT_WIC_DPIX),
                                           GorgonOption.CreateDoubleOption(nameof(DpiY), 72.0, Resources.GORIMG_OPT_WIC_DPIY)
-                                      });
+                                      ]);
     #endregion
 }

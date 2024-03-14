@@ -263,7 +263,7 @@ public abstract class GorgonChunkFile<T>
             throw new ArgumentException(Resources.GOR_ERR_STREAM_NOT_SEEKABLE, nameof(stream));
         }
 
-        ChunkList = new GorgonChunkCollection();
+        ChunkList = [];
         Stream = new GorgonStreamWrapper(stream);
     }
     #endregion

@@ -49,7 +49,12 @@ public enum ButtonState
 /// <summary>
 /// A button used to provide a GUI for the example.
 /// </summary>
-public class Button
+/// <remarks>
+/// Initializes a new instance of the <see cref="Button"/> class.
+/// </remarks>
+/// <param name="pass">The composition pass.</param>
+/// <exception cref="ArgumentNullException">Thrown when the <paramref name="pass"/> parameter is <b>null</b></exception>
+public class Button(IGorgon2DCompositorPass pass)
 {
     #region Events.
     /// <summary>
@@ -89,7 +94,7 @@ public class Button
     public IGorgon2DCompositorPass Pass
     {
         get;
-    }
+    } = pass ?? throw new ArgumentNullException(nameof(pass));
 
     /// <summary>
     /// Property to return the foreground color.
@@ -142,14 +147,8 @@ public class Button
         EventHandler handler = Click;
         handler?.Invoke(this, EventArgs.Empty);
     }
-    #endregion
 
+    #endregion
     #region Constructor
-    /// <summary>
-    /// Initializes a new instance of the <see cref="Button"/> class.
-    /// </summary>
-    /// <param name="pass">The composition pass.</param>
-    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="pass"/> parameter is <b>null</b></exception>
-    public Button(IGorgon2DCompositorPass pass) => Pass = pass ?? throw new ArgumentNullException(nameof(pass));
     #endregion
 }

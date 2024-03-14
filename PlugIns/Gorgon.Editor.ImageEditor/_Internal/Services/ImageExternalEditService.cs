@@ -37,8 +37,10 @@ namespace Gorgon.Editor.ImageEditor;
 /// <summary>
 /// Functionality to edit image data using an external program.
 /// </summary>
-internal class ImageExternalEditService
-    : IImageExternalEditService
+/// <remarks>Initializes a new instance of the <see cref="ImageExternalEditService"/> class.</remarks>
+/// <param name="log">The log used for debug messages.</param>
+internal class ImageExternalEditService(IGorgonLog log)
+        : IImageExternalEditService
 {
     #region Classes.
     /// <summary>
@@ -59,7 +61,7 @@ internal class ImageExternalEditService
 
     #region Variables.
     // The log used for debug logging messages.
-    private readonly IGorgonLog _log;
+    private readonly IGorgonLog _log = log ?? GorgonLog.NullLog;
     #endregion
 
     #region Methods.
@@ -157,11 +159,8 @@ internal class ImageExternalEditService
 
         return true;
     }
-    #endregion
 
+    #endregion
     #region Constructor.
-    /// <summary>Initializes a new instance of the <see cref="ImageExternalEditService"/> class.</summary>
-    /// <param name="log">The log used for debug messages.</param>
-    public ImageExternalEditService(IGorgonLog log) => _log = log ?? GorgonLog.NullLog;
     #endregion
 }

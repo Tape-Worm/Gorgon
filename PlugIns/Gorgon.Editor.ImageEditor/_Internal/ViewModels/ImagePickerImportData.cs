@@ -32,7 +32,12 @@ namespace Gorgon.Editor.ImageEditor;
 /// <summary>
 /// Data for the image picker import files.
 /// </summary>
-internal class ImagePickerImportData
+/// <remarks>Initializes a new instance of the <see cref="ImagePickerImportData"/> class.</remarks>
+/// <param name="originalFilePath">The original file path.</param>
+/// <param name="fromFile">From file.</param>
+/// <param name="thumbnail">The thumbnail.</param>
+/// <param name="originalMetadata">The original size of the image.</param>
+internal class ImagePickerImportData(string originalFilePath, IGorgonVirtualFile fromFile, IGorgonImage thumbnail, IGorgonImageInfo originalMetadata)
 {
     #region Properties.
     /// <summary>
@@ -42,7 +47,7 @@ internal class ImagePickerImportData
     {
         get;
         private set;
-    }
+    } = thumbnail;
 
     /// <summary>
     /// Property to return the file to work with.
@@ -50,7 +55,7 @@ internal class ImagePickerImportData
     public IGorgonVirtualFile FromFile
     {
         get;
-    }
+    } = fromFile;
 
     /// <summary>
     /// Property to return the source file that was imported.
@@ -58,7 +63,7 @@ internal class ImagePickerImportData
     public string OriginalFilePath
     {
         get;
-    }
+    } = originalFilePath;
 
     /// <summary>
     /// Property to return the original metadata of the image that is used to generate the thumbnail.
@@ -66,21 +71,9 @@ internal class ImagePickerImportData
     public IGorgonImageInfo OriginalMetadata
     {
         get;
-    }
-    #endregion
+    } = originalMetadata;
 
+    #endregion
     #region Constructor.
-    /// <summary>Initializes a new instance of the <see cref="ImagePickerImportData"/> class.</summary>
-    /// <param name="originalFilePath">The original file path.</param>
-    /// <param name="fromFile">From file.</param>
-    /// <param name="thumbnail">The thumbnail.</param>
-    /// <param name="originalMetadata">The original size of the image.</param>
-    public ImagePickerImportData(string originalFilePath, IGorgonVirtualFile fromFile, IGorgonImage thumbnail, IGorgonImageInfo originalMetadata)
-    {
-        OriginalFilePath = originalFilePath;
-        FromFile = fromFile;
-        Thumbnail = thumbnail;
-        OriginalMetadata = originalMetadata;
-    }        
     #endregion
 }

@@ -37,16 +37,22 @@ namespace Gorgon.Graphics.Avalonia;
 /// <summary>
 /// A helper class for composition-backed swapchains.
 /// </summary>
-internal class AvaloniaSwapChain 
-    : IAsyncDisposable, IGorgonGraphicsObject
+/// <remarks>
+/// Initializes an instance of the <see cref="AvaloniaSwapChain"/> class.
+/// </remarks>
+/// <param name="graphics">The graphics interface bound to the swap chain.</param>
+/// <param name="gpuInterop">The interop layer for the GPU.</param>
+/// <param name="surface">The surface to render into.</param>
+internal class AvaloniaSwapChain(GorgonGraphics graphics, ICompositionGpuInterop gpuInterop, CompositionDrawingSurface surface)
+        : IAsyncDisposable, IGorgonGraphicsObject
 {
     #region Variables.
     // The GPU interop for composition.
-    private readonly ICompositionGpuInterop _gpuInterop;
+    private readonly ICompositionGpuInterop _gpuInterop = gpuInterop;
     // The surface that will receive the drawing information.
-    private readonly CompositionDrawingSurface _surface;
+    private readonly CompositionDrawingSurface _surface = surface;
     // The swap chain render target images.
-    private readonly List<AvaloniaSwapChainImage> _pendingImages = new();
+    private readonly List<AvaloniaSwapChainImage> _pendingImages = [];
     // The currently active render target image.
     private AvaloniaSwapChainImage _currentImage;
     #endregion
@@ -59,7 +65,7 @@ internal class AvaloniaSwapChain
     {
         get;
         private set;
-    }
+    } = graphics;
     #endregion
 
     #region Methods.
@@ -145,20 +151,8 @@ internal class AvaloniaSwapChain
             await img.DisposeAsync();
         }
     }
-    #endregion
 
+    #endregion
     #region Constructor.
-    /// <summary>
-    /// Initializes an instance of the <see cref="AvaloniaSwapChain"/> class.
-    /// </summary>
-    /// <param name="graphics">The graphics interface bound to the swap chain.</param>
-    /// <param name="gpuInterop">The interop layer for the GPU.</param>
-    /// <param name="surface">The surface to render into.</param>
-    public AvaloniaSwapChain(GorgonGraphics graphics, ICompositionGpuInterop gpuInterop, CompositionDrawingSurface surface)
-    {
-        Graphics = graphics;
-        _gpuInterop = gpuInterop;
-        _surface = surface;
-    }    
     #endregion
 }

@@ -133,7 +133,7 @@ public class Cube
     public Cube(GorgonGraphics graphics, GorgonInputLayout inputLayout)
     {
         GorgonVertexPosUv[] vertices =
-        {
+        [
                 // Front face.
                 new GorgonVertexPosUv(new Vector3(-0.5f, 0.5f, -0.5f), new Vector2(0, 0)),
             new GorgonVertexPosUv(new Vector3(0.5f, -0.5f, -0.5f), new Vector2(1.0f, 1.0f)),
@@ -169,17 +169,17 @@ public class Cube
             new GorgonVertexPosUv(new Vector3(0.5f, -0.5f, 0.5f), new Vector2(1.0f, 1.0f)),
             new GorgonVertexPosUv(new Vector3(-0.5f, -0.5f, 0.5f), new Vector2(0.0f, 1.0f)),
             new GorgonVertexPosUv(new Vector3(0.5f, -0.5f, -0.5f), new Vector2(1.0f, 0.0f))
-        };
+        ];
 
         ushort[] indices =
-        {
+        [
             8, 9, 10, 8, 11, 9,
             12, 13, 14, 12, 15, 13,
             4, 5, 6, 4, 7, 5,
             16, 17, 18, 16, 19, 17,
             20, 21, 22, 20, 23, 21,
             0, 1, 2, 0, 3, 1
-        };
+        ];
 
         // Create our index buffer and vertex buffer and populate with our cube data.
         IndexBuffer = new GorgonIndexBuffer(graphics,

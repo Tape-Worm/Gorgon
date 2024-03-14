@@ -31,8 +31,11 @@ namespace Gorgon.Graphics.Core;
 /// <summary>
 /// A query for performing for testing whether the GPU is finished processing commands.
 /// </summary>
-public class GorgonEventQuery
-    : GorgonQuery<bool>
+/// <remarks>Initializes a new instance of the <see cref="GorgonEventQuery" /> class.</remarks>
+/// <param name="graphics">The graphics interface used to build the query.</param>
+/// <param name="name">[Optional] The name for the query.</param>
+public class GorgonEventQuery(GorgonGraphics graphics, string name = null)
+        : GorgonQuery<bool>(graphics, name)
 {
     #region Properties.
     /// <summary>Property to return the type of query to execute.</summary>
@@ -56,15 +59,6 @@ public class GorgonEventQuery
         result = value;
         return true;
     }
-    #endregion
 
-    #region Constructor/Finalizer.
-    /// <summary>Initializes a new instance of the <see cref="GorgonEventQuery" /> class.</summary>
-    /// <param name="graphics">The graphics interface used to build the query.</param>
-    /// <param name="name">[Optional] The name for the query.</param>
-    public GorgonEventQuery(GorgonGraphics graphics, string name = null)
-        : base(graphics, name)
-    {
-    }
     #endregion
 }

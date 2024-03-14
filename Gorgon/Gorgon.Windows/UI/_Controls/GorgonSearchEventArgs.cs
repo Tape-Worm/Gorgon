@@ -31,8 +31,10 @@ namespace Gorgon.UI;
 /// <summary>
 /// Event arguments for the <see cref="GorgonSearchBox.Search"/> event.
 /// </summary>
-public class GorgonSearchEventArgs
-    : EventArgs
+/// <remarks>Initializes a new instance of the <see cref="GorgonSearchEventArgs"/> class.</remarks>
+/// <param name="searchText">  The text to search for.</param>
+public class GorgonSearchEventArgs(string searchText)
+        : EventArgs
 {
     #region Properties.
     /// <summary>
@@ -41,12 +43,7 @@ public class GorgonSearchEventArgs
     public string SearchText
     {
         get;
-    }
-    #endregion
+    } = searchText ?? string.Empty;
 
-    #region Constructor/Finalizer.
-    /// <summary>Initializes a new instance of the <see cref="GorgonSearchEventArgs"/> class.</summary>
-    /// <param name="searchText">  The text to search for.</param>
-    public GorgonSearchEventArgs(string searchText) => SearchText = searchText ?? string.Empty;
     #endregion
 }

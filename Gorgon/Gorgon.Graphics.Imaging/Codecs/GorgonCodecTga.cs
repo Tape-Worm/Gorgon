@@ -181,7 +181,7 @@ public sealed class GorgonCodecTga
     #region Variables.
     // List of supported image formats.
     private readonly BufferFormat[] _supportedFormats =
-    {
+    [
             // 8 bit grayscale.
             BufferFormat.R8_UNorm,
         BufferFormat.A8_UNorm,
@@ -191,7 +191,7 @@ public sealed class GorgonCodecTga
             BufferFormat.R8G8B8A8_UNorm,
         BufferFormat.B8G8R8A8_UNorm,
         BufferFormat.B8G8R8X8_UNorm
-    };
+    ];
     #endregion
 
     #region Properties.
@@ -1067,6 +1067,6 @@ public sealed class GorgonCodecTga
     /// </summary>
     /// <param name="decodingOptions">[Optional] Codec specific options to use when decoding image data.</param>
     public GorgonCodecTga(GorgonTgaDecodingOptions decodingOptions = null)
-        : base(null, decodingOptions) => CodecCommonExtensions = new[] { "tga", "tpic" };
+        : base(null, decodingOptions) => CodecCommonExtensions = ["tga", "tpic"];
     #endregion
 }

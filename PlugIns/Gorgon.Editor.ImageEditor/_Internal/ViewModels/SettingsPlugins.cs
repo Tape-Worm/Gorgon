@@ -64,7 +64,7 @@ internal class SettingsPlugins
     public ObservableCollection<CodecSetting> SelectedCodecs
     {
         get;
-    } = new ObservableCollection<CodecSetting>();
+    } = [];
 
     /// <summary>
     /// Propery to return the paths to the codec plug ins.
@@ -72,7 +72,7 @@ internal class SettingsPlugins
     public ObservableCollection<CodecSetting> CodecPlugInPaths
     {
         get;
-    } = new ObservableCollection<CodecSetting>();
+    } = [];
     #endregion
 
     #region Methods.
@@ -118,7 +118,7 @@ internal class SettingsPlugins
     ///   <b>true</b> to indicate that the operation succeeded, or <b>false</b> if it was cancelled.</returns>
     protected override bool OnUnloadPlugIns()
     {
-        IReadOnlyList<CodecSetting> selected = SelectedCodecs.ToArray();
+        IReadOnlyList<CodecSetting> selected = [.. SelectedCodecs];
         IReadOnlyList<GorgonImageCodecPlugIn> plugIns = selected.Select(item => item.PlugIn).ToArray();
         MessageResponse response = MessageResponse.None;
 
