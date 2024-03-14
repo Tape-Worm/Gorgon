@@ -75,7 +75,11 @@ public abstract class GorgonFileSystemProvider
     protected RecyclableMemoryStreamManager MemoryStreamManager
     {
         get;
-    } = new RecyclableMemoryStreamManager(int.MaxValue / 2, int.MaxValue);
+    } = new RecyclableMemoryStreamManager(new RecyclableMemoryStreamManager.Options()
+    {
+        MaximumSmallPoolFreeBytes = int.MaxValue / 2,
+        MaximumLargePoolFreeBytes = int.MaxValue
+    });
 
     /// <summary>
     /// Property to return whether this provider only gives read only access to the physical file system.

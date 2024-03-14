@@ -17,7 +17,12 @@ public class Aes256Encryption
 {
     #region Variables.
     // The stream pool used to retrieve memory streams.
-    private static readonly RecyclableMemoryStreamManager _streamManager = new(int.MaxValue / 2, int.MaxValue);
+    private static readonly RecyclableMemoryStreamManager _streamManager = new(new RecyclableMemoryStreamManager.Options
+    {
+        MaximumSmallPoolFreeBytes = int.MaxValue / 2,
+        MaximumLargePoolFreeBytes = int.MaxValue
+    });
+
     // The initialization vector and key.
     private readonly (byte[] IV, byte[] Key) _ivKey;
     #endregion

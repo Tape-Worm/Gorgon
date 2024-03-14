@@ -30,6 +30,7 @@ using System.Linq;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
 using Gorgon.IO;
+using Gorgon.IO.Providers;
 using Gorgon.Math;
 
 namespace Gorgon.Examples;
@@ -70,7 +71,7 @@ internal static class Program
     /// </summary>
     private static void Main()
     {
-        GorgonExample.ResourceBaseDirectory = new DirectoryInfo(ExampleConfig.Default.ResourceLocation);
+        DirectoryInfo resourceBaseDirectory = new(Path.Combine(ExampleConfig.Default.ResourceLocation, "FileSystems", "FolderSystem"));
 
         _log = new GorgonTextFileLog("FolderFileSystem", "Tape_Worm");
         _log.LogStart();
@@ -95,7 +96,7 @@ internal static class Program
             // would load files from the system into memory when mounting a 
             // directory.  While this version only loads directory and file 
             // information when mounting.  This is considerably more efficient.
-            string physicalPath = GorgonExample.GetResourcePath(@"FileSystems\FolderSystem\").FullName;
+            string physicalPath = resourceBaseDirectory.FullName.FormatDirectory(Path.DirectorySeparatorChar);
             _fileSystem.Mount(physicalPath);
 
             Console.ForegroundColor = ConsoleColor.White;

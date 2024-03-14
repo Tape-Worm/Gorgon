@@ -31,56 +31,54 @@ partial class FormSplash
     /// </summary>
     private void InitializeComponent()
     {
-        System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormSplash));
-        this.panel1 = new System.Windows.Forms.Panel();
-        this.labelText = new System.Windows.Forms.Label();
-        this.panel1.SuspendLayout();
-        this.SuspendLayout();
+        var resources = new ComponentResourceManager(typeof(FormSplash));
+        panel1 = new Panel();
+        labelText = new Label();
+        SuspendLayout();
         // 
         // panel1
         // 
-        this.panel1.BackgroundImage = global::Gorgon.Examples.Properties.Resources.Gorgon_2_x_Logo_Full;
-        this.panel1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-        this.panel1.Controls.Add(this.labelText);
-        this.panel1.Dock = System.Windows.Forms.DockStyle.Fill;
-        this.panel1.Location = new System.Drawing.Point(0, 0);
-        this.panel1.Name = "panel1";
-        this.panel1.Size = new System.Drawing.Size(622, 150);
-        this.panel1.TabIndex = 2;
+        panel1.BackgroundImage = Properties.Resources.Gorgon_2_x_Logo_Full;
+        panel1.BackgroundImageLayout = ImageLayout.Stretch;
+        panel1.BorderStyle = BorderStyle.FixedSingle;
+        panel1.Dock = DockStyle.Fill;
+        panel1.Location = new System.Drawing.Point(0, 0);
+        panel1.Name = "panel1";
+        panel1.Size = new System.Drawing.Size(622, 123);
+        panel1.TabIndex = 2;
         // 
         // labelText
         // 
-        this.labelText.BackColor = System.Drawing.Color.White;
-        this.labelText.Dock = System.Windows.Forms.DockStyle.Bottom;
-        this.labelText.Location = new System.Drawing.Point(0, 121);
-        this.labelText.Name = "labelText";
-        this.labelText.Size = new System.Drawing.Size(620, 27);
-        this.labelText.TabIndex = 2;
-        this.labelText.Text = "Here\'s some splash screen text!";
-        this.labelText.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+        labelText.BackColor = System.Drawing.Color.White;
+        labelText.Dock = DockStyle.Bottom;
+        labelText.Location = new System.Drawing.Point(0, 123);
+        labelText.Name = "labelText";
+        labelText.Size = new System.Drawing.Size(622, 27);
+        labelText.TabIndex = 2;
+        labelText.Text = "Here's some splash screen text!";
+        labelText.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
         // 
-        // formSplash
+        // FormSplash
         // 
-        this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
-        this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-        this.BackColor = System.Drawing.Color.White;
-        this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
-        this.ClientSize = new System.Drawing.Size(622, 150);
-        this.ControlBox = false;
-        this.Controls.Add(this.panel1);
-        this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
-        this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-        this.MaximizeBox = false;
-        this.MinimizeBox = false;
-        this.Name = "formSplash";
-        this.Opacity = 0.02D;
-        this.ShowIcon = false;
-        this.ShowInTaskbar = false;
-        this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-        this.Text = "Gorgon Editor";
-        this.panel1.ResumeLayout(false);
-        this.ResumeLayout(false);
-
+        AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
+        AutoScaleMode = AutoScaleMode.Dpi;
+        BackColor = System.Drawing.Color.White;
+        BackgroundImageLayout = ImageLayout.Center;
+        ClientSize = new System.Drawing.Size(622, 150);
+        ControlBox = false;
+        Controls.Add(panel1);
+        Controls.Add(labelText);
+        FormBorderStyle = FormBorderStyle.None;
+        Icon = (System.Drawing.Icon)resources.GetObject("$this.Icon");
+        MaximizeBox = false;
+        MinimizeBox = false;
+        Name = "FormSplash";
+        Opacity = 0.02D;
+        ShowIcon = false;
+        ShowInTaskbar = false;
+        StartPosition = FormStartPosition.CenterScreen;
+        Text = "Gorgon Editor";
+        ResumeLayout(false);
     }
 
     #endregion

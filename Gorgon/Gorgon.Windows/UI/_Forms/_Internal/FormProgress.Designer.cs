@@ -28,57 +28,55 @@ partial class FormProgress
     /// </summary>
     private void InitializeComponent()
     {
-        System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormProgress));
-        this.Progress = new Gorgon.UI.GorgonProgressPanel();
-        this.SuspendLayout();
+        var resources = new System.ComponentModel.ComponentResourceManager(typeof(FormProgress));
+        Progress = new GorgonProgressPanel();
+        SuspendLayout();
         // 
         // Progress
         // 
-        this.Progress.AllowCancellation = true;
-        this.Progress.AutoSize = true;
-        this.Progress.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-        this.Progress.BackColor = System.Drawing.Color.White;
-        this.Progress.CurrentValue = 0F;
-        this.Progress.Dock = System.Windows.Forms.DockStyle.Fill;
-        this.Progress.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-        this.Progress.ForeColor = System.Drawing.Color.Black;
-        this.Progress.Location = new System.Drawing.Point(1, 1);
-        this.Progress.Margin = new System.Windows.Forms.Padding(0);
-        this.Progress.MaximumSize = new System.Drawing.Size(512, 128);
-        this.Progress.Name = "Progress";
-        this.Progress.ProgressMessage = "Progress";
-        this.Progress.ProgressMessageFont = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-        this.Progress.ProgressTitle = "Title";
-        this.Progress.Size = new System.Drawing.Size(507, 126);
-        this.Progress.TabIndex = 0;
-        this.Progress.Resize += new System.EventHandler(this.Progress_Resize);
+        Progress.AllowCancellation = true;
+        Progress.AutoSize = true;
+        Progress.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+        Progress.BackColor = System.Drawing.Color.White;
+        Progress.CurrentValue = 0F;
+        Progress.Dock = System.Windows.Forms.DockStyle.Fill;
+        Progress.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, 0);
+        Progress.ForeColor = System.Drawing.Color.Black;
+        Progress.Location = new System.Drawing.Point(1, 1);
+        Progress.Margin = new System.Windows.Forms.Padding(0);
+        Progress.MaximumSize = new System.Drawing.Size(512, 128);
+        Progress.Name = "Progress";
+        Progress.ProgressMessage = "Progress";
+        Progress.ProgressMessageFont = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, 0);
+        Progress.ProgressTitle = "Title";
+        Progress.Size = new System.Drawing.Size(507, 126);
+        Progress.TabIndex = 0;
+        Progress.Resize += Progress_Resize;
         // 
         // FormProgress
         // 
-        this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
-        this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-        this.AutoSize = true;
-        this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-        this.BackColor = System.Drawing.Color.Black;
-        this.ClientSize = new System.Drawing.Size(509, 128);
-        this.ControlBox = false;
-        this.Controls.Add(this.Progress);
-        
-        this.ForeColor = System.Drawing.Color.White;
-        this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
-        this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-        this.KeyPreview = true;
-        this.MaximizeBox = false;
-        this.MinimizeBox = false;
-        this.Name = "FormProgress";
-        this.Padding = new System.Windows.Forms.Padding(1);
-        this.ShowIcon = false;
-        this.ShowInTaskbar = false;
-        this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
-        this.Text = "FormProgress";
-        this.ResumeLayout(false);
-        this.PerformLayout();
-
+        AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
+        AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
+        AutoSize = true;
+        AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+        BackColor = System.Drawing.Color.Black;
+        ClientSize = new System.Drawing.Size(509, 128);
+        ControlBox = false;
+        Controls.Add(Progress);
+        ForeColor = System.Drawing.Color.White;
+        FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
+        Icon = (System.Drawing.Icon)resources.GetObject("$this.Icon");
+        KeyPreview = true;
+        MaximizeBox = false;
+        MinimizeBox = false;
+        Name = "FormProgress";
+        Padding = new System.Windows.Forms.Padding(1);
+        ShowIcon = false;
+        ShowInTaskbar = false;
+        StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
+        Text = "FormProgress";
+        ResumeLayout(false);
+        PerformLayout();
     }
 
     #endregion

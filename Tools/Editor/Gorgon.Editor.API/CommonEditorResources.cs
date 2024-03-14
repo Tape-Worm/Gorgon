@@ -41,7 +41,11 @@ public static class CommonEditorResources
     /// <summary>
     /// A small memory stream manager pool for loading resource data using <see cref="MemoryStream"/>.
     /// </summary>
-    public static readonly RecyclableMemoryStreamManager MemoryStreamManager = new(1_048_576, 67_108_864);
+    public static readonly RecyclableMemoryStreamManager MemoryStreamManager = new(new RecyclableMemoryStreamManager.Options
+    {
+        MaximumSmallPoolFreeBytes = 1_048_576,
+        MaximumLargePoolFreeBytes = 16_777_216
+    });
 
     /// <summary>
     /// Property to return a checkerboard pattern image (encoded as DDS/DXT1 data) for background images

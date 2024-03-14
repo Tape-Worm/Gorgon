@@ -73,12 +73,44 @@ internal static class Program
 
     #region Methods.
     /// <summary>
+    /// Function to retrieve the directory that contains the plugins for an application.
+    /// </summary>
+    /// <param name="pluginDirectory">The directory containing the plug ins.</param>
+    /// <returns>A directory information object for the plugin path.</returns>
+    private static DirectoryInfo GetPlugInPath(DirectoryInfo pluginDirectory)
+    {
+        string path = pluginDirectory.FullName;
+
+        if (string.IsNullOrWhiteSpace(path))
+        {
+            throw new IOException("No plug in path has been assigned.");
+        }
+
+        if (path.Contains("{0}"))
+        {
+#if DEBUG
+            path = string.Format(path, "Debug");
+#else
+            path = string.Format(path, "Release");					
+#endif
+        }
+
+        if (!path.EndsWith(Path.DirectorySeparatorChar.ToString()))
+        {
+            path += Path.DirectorySeparatorChar.ToString();
+        }
+
+        return new DirectoryInfo(Path.GetFullPath(path));
+    }
+
+    /// <summary>
     /// Function to load the zip file provider plugin.
     /// </summary>
+    /// <param name="pluginDirectory">The directory containing the plug ins.</param>
     /// <returns><b>true</b> if successfully loaded, <b>false</b> if not.</returns>
-    private static bool LoadZipProviderPlugIn()
+    private static bool LoadZipProviderPlugIn(DirectoryInfo pluginDirectory)
     {
-        var zipProviderFile = new FileInfo(Path.Combine(GorgonExample.GetPlugInPath().FullName.FormatDirectory(Path.DirectorySeparatorChar), "Gorgon.FileSystem.Zip.dll"));
+        var zipProviderFile = new FileInfo(Path.Combine(GetPlugInPath(pluginDirectory).FullName.FormatDirectory(Path.DirectorySeparatorChar), "Gorgon.FileSystem.Zip.dll"));
 
         // Check to see if the file exists.
         if (!zipProviderFile.Exists)
@@ -124,8 +156,8 @@ internal static class Program
     /// </summary>
     private static void Main()
     {
-        GorgonExample.ResourceBaseDirectory = new DirectoryInfo(ExampleConfig.Default.ResourceLocation);
-        GorgonExample.PlugInLocationDirectory = new DirectoryInfo(ExampleConfig.Default.PlugInLocation);
+        DirectoryInfo resourceBaseDirectory = new(Path.Combine(ExampleConfig.Default.ResourceLocation, "FileSystems", "FileSystem.zip"));
+        DirectoryInfo plugInLocationDirectory = new(ExampleConfig.Default.PlugInLocation);
 
         _log = new GorgonTextFileLog("ZipFileSystem", "Tape_Worm");
         _log.LogStart();
@@ -149,7 +181,7 @@ internal static class Program
             // Unlike the folder file system example, we need to load
             // a provider to handle zip files before trying to mount
             // one.
-            if (!LoadZipProviderPlugIn())
+            if (!LoadZipProviderPlugIn(plugInLocationDirectory))
             {
                 return;
             }
@@ -165,12 +197,11 @@ internal static class Program
             // would load files from the system into memory when mounting a 
             // directory.  While this version only loads directory and file 
             // information when mounting.  This is considerably more efficient.
-            string physicalPath = Path.Combine(GorgonExample.GetResourcePath(@"FileSystems").FullName, "FileSystem.zip");
-            _fileSystem.Mount(physicalPath);
+            _fileSystem.Mount(resourceBaseDirectory.FullName);
 
             Console.Write("\nMounted: ");
             Console.ForegroundColor = ConsoleColor.Cyan;
-            Console.Write("'{0}'", physicalPath.Ellipses(Console.WindowWidth - 20, true));
+            Console.Write("'{0}'", resourceBaseDirectory.FullName.Ellipses(Console.WindowWidth - 20, true));
             Console.ForegroundColor = ConsoleColor.White;
             Console.Write(" as ");
             Console.ForegroundColor = ConsoleColor.Cyan;

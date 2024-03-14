@@ -73,9 +73,9 @@ internal static class Program
 
     #region Properties.
     /// <summary>
-        /// Property to return the path to the plug ins.
-        /// </summary>
-        public static string PlugInPath
+    /// Property to return the path to the plug ins.
+    /// </summary>
+    public static string PlugInPath
     {
         get
         {
@@ -86,7 +86,7 @@ internal static class Program
 #if DEBUG
                 path = string.Format(path, "Debug");
 #else
-                    path = string.Format(path, "Release");                    
+                path = string.Format(path, "Release");                    
 #endif
             }
 
@@ -102,10 +102,42 @@ internal static class Program
 
     #region Methods.
     /// <summary>
+    /// Function to retrieve the directory that contains the plugins for an application.
+    /// </summary>
+    /// <param name="pluginDirectory">The directory containing the plug ins.</param>
+    /// <returns>A directory information object for the plugin path.</returns>
+    private static DirectoryInfo GetPlugInPath(DirectoryInfo pluginDirectory)
+    {
+        string path = pluginDirectory.FullName;
+
+        if (string.IsNullOrWhiteSpace(path))
+        {
+            throw new IOException("No plug in path has been assigned.");
+        }
+
+        if (path.Contains("{0}"))
+        {
+#if DEBUG
+            path = string.Format(path, "Debug");
+#else
+            path = string.Format(path, "Release");					
+#endif
+        }
+
+        if (!path.EndsWith(Path.DirectorySeparatorChar.ToString()))
+        {
+            path += Path.DirectorySeparatorChar.ToString();
+        }
+
+        return new DirectoryInfo(Path.GetFullPath(path));
+    }
+
+    /// <summary>
     /// Function to load the file system providers.
     /// </summary>
+    /// <param name="pluginDirectory">The directory containing the plug ins.</param>
     /// <returns>The number of file system provider plug ins.</returns>
-    private static int LoadFileSystemProviders()
+    private static int LoadFileSystemProviders(DirectoryInfo pluginDirectory)
     {
         // Get the file system provider factory so we can retrieve our newly loaded providers.
         IGorgonFileSystemProviderFactory providerFactory = new GorgonFileSystemProviderFactory(_pluginAssemblies, _log);
@@ -113,7 +145,7 @@ internal static class Program
         // Get all the providers.
         // We could limit this to a single provider, or to a single plugin assembly if we choose.  But for 
         // this example, we'll get everything we've got.
-        _providers = providerFactory.CreateProviders(Path.Combine(GorgonExample.GetPlugInPath().FullName, "Gorgon.FileSystem.*.dll"));
+        _providers = providerFactory.CreateProviders(Path.Combine(GetPlugInPath(pluginDirectory).FullName, "Gorgon.FileSystem.*.dll"));
 
         return _providers.Count;
     }
@@ -123,7 +155,7 @@ internal static class Program
     /// </summary>
     private static void Main()
     {
-        GorgonExample.PlugInLocationDirectory = new DirectoryInfo(ExampleConfig.Default.PlugInLocation);
+        DirectoryInfo plugInLocationDirectory = new(ExampleConfig.Default.PlugInLocation);
 
         _log = new GorgonTextFileLog("FileSystemProviders", "Tape_Worm");
         _log.LogStart();
@@ -144,7 +176,7 @@ internal static class Program
             Console.ForegroundColor = ConsoleColor.White;
 
             // Get our file system providers.                
-            Console.WriteLine("Found {0} external file system plug ins.\n", LoadFileSystemProviders());
+            Console.WriteLine("Found {0} external file system plug ins.\n", LoadFileSystemProviders(plugInLocationDirectory));
 
             // Loop through each provider and print some info.
             for (int i = 0; i < _providers.Count; ++i)
