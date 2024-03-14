@@ -100,18 +100,10 @@ public sealed class GorgonConstantBuffer
     internal const string NamePrefix = nameof(GorgonConstantBuffer);
 
 
-
     // The information used to create the buffer.
-#if NET48_OR_GREATER
-#pragma warning disable IDE0044 // Add readonly modifier
-#endif
     private GorgonConstantBufferInfo _info;
-#if NET48_OR_GREATER
-#pragma warning restore IDE0044 // Add readonly modifier
-#endif
     // A list of constant buffer views.
     private List<GorgonConstantBufferView> _cbvs = [];
-
 
 
     /// <summary>

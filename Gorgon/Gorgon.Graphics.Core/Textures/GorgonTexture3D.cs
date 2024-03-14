@@ -62,16 +62,8 @@ public sealed class GorgonTexture3D
     private Dictionary<TextureViewKey, GorgonTexture3DView> _cachedSrvs = [];
     // The list of cached render target resource views.
     private Dictionary<TextureViewKey, GorgonRenderTarget3DView> _cachedRtvs = [];
-#if NET48_OR_GREATER
-#pragma warning disable IDE0044 // Add readonly modifier
-#endif
     // The information used to create the texture.
     private GorgonTexture3DInfo _info;
-#if NET48_OR_GREATER
-#pragma warning restore IDE0044 // Add readonly modifier
-#endif
-
-
 
     /// <summary>
     /// Property to return the bind flags used for the D3D 11 resource.

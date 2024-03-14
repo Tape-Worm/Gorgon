@@ -171,7 +171,6 @@ public sealed class GorgonMefPlugInCache
     /// <returns>A tuple containing <b>true</b> if the file is a .NET managed assembly, <b>false</b> if not, and the type of expected platform that the assembly code is supposed to work under.</returns>
     public static (bool isManaged, AssemblyPlatformType platform) IsManagedAssembly(string assemblyPath)
     {
-#if NET8_0_OR_GREATER
         if (!File.Exists(assemblyPath))
         {
             return (false, AssemblyPlatformType.Unknown);
@@ -211,9 +210,6 @@ public sealed class GorgonMefPlugInCache
         }
 
         return (true, platformType);
-#else
-        return (false, AssemblyPlatformType.Unknown);
-#endif
     }
 
     /// <summary>

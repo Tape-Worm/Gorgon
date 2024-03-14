@@ -64,14 +64,8 @@ public sealed class GorgonTexture2D
     private Dictionary<TextureViewKey, GorgonRenderTarget2DView> _cachedRtvs = [];
     // The list of cached depth/stencil resource views.
     private Dictionary<TextureViewKey, GorgonDepthStencil2DView> _cachedDsvs = [];
-#if NET48_OR_GREATER
-#pragma warning disable IDE0044 // Add readonly modifier
-#endif
     // The information used to create the texture.
     private GorgonTexture2DInfo _info;
-#if NET48_OR_GREATER
-#pragma warning restore IDE0044 // Add readonly modifier
-#endif
     // List of typeless formats that are compatible with a depth view format.
     private static readonly HashSet<BufferFormat> _typelessDepthFormats =
     [
