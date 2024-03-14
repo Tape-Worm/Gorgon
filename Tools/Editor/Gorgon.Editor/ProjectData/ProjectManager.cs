@@ -192,7 +192,7 @@ internal class ProjectManager(FileSystemProviders providers, IGorgonLog log)
                 if (recycle)
                 {
                     _log.Print($"Moving '{prevDirectory}' to the recycle bin...", LoggingLevel.Intermediate);
-                    Shell32.SendToRecycleBin(prevDirectory, Shell32.FileOperationFlags.FOF_SILENT | Shell32.FileOperationFlags.FOF_NOCONFIRMATION | Shell32.FileOperationFlags.FOF_WANTNUKEWARNING);
+                    Shell32.SendToRecycleBin(prevDirectory, FileOperationFlags.FOF_SILENT | FileOperationFlags.FOF_NOCONFIRMATION | FileOperationFlags.FOF_WANTNUKEWARNING);
                 }
                 else
                 {
@@ -957,7 +957,7 @@ internal class ProjectManager(FileSystemProviders providers, IGorgonLog log)
         }
 
         // Send the project to the recycle bin so we can recover it if need be.
-        Shell32.SendToRecycleBin(projectPath, Shell32.FileOperationFlags.FOF_SILENT | Shell32.FileOperationFlags.FOF_NOCONFIRMATION | Shell32.FileOperationFlags.FOF_WANTNUKEWARNING);
+        Shell32.SendToRecycleBin(projectPath, FileOperationFlags.FOF_SILENT | FileOperationFlags.FOF_NOCONFIRMATION | FileOperationFlags.FOF_WANTNUKEWARNING);
         return true;
     }
 

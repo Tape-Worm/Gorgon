@@ -33,6 +33,7 @@ namespace Gorgon.Native;
 /// <summary>
 /// Header item structure.
 /// </summary>
+[NativeMarshalling(typeof(HdItemMarshaller))]
 [StructLayout(LayoutKind.Sequential)]
 internal struct HDITEM
 {

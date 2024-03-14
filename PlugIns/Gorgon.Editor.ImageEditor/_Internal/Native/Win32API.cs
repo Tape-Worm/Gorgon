@@ -205,18 +205,8 @@ enum AssociationStringType
 /// Contains native Win32 functions.
 /// </summary>
 [SuppressUnmanagedCodeSecurity]
-internal static class Win32API
+internal static partial class Win32API
 {
-    /// <summary>
-    /// Function to find the associated executable for a specific file.
-    /// </summary>
-    /// <param name="lpFile">The file name of the file to look up.</param>
-    /// <param name="lpDirectory">The default directory for the file.</param>
-    /// <param name="lpResult">The path to the executable file.</param>
-    /// <returns>An integer value greater than 32 if successful, less than or equal to 32 if not.</returns>
-    [DllImport("shell32.dll", CharSet = CharSet.Unicode)]
-    private static extern nint FindExecutable(string lpFile, string lpDirectory, [Out] StringBuilder lpResult);
-
     /// <summary>
     /// Function to retrieve a string for a file.
     /// </summary>
@@ -227,26 +217,13 @@ internal static class Win32API
     /// <param name="result">The value for the string being queried.</param>
     /// <param name="size">The size of the result string buffer.</param>
     /// <returns>A value to indicate success or failure.</returns>
-    [DllImport("Shlwapi.dll", CharSet = CharSet.Unicode)]
-    private static extern int AssocQueryString(AssociationFlags flags,
-                                               AssociationStringType stringType,
-                                               string filePath,
-                                               string extra,
-                                               [Out] StringBuilder result,
-                                               [In][Out] ref int size);
-
-    /// <summary>
-    /// Function to determine if this file has an associated application or not.
-    /// </summary>
-    /// <param name="filePath">Path to the file to look up.</param>
-    /// <returns>TRUE if an association exists, FALSE if not.</returns>
-    public static bool HasAssociation(string filePath)
-    {
-        var exePath = new StringBuilder(1024);
-        nint result = FindExecutable(filePath, null, exePath);
-
-        return result > 32 && exePath.Length > 0;
-    }
+    [LibraryImport("Shlwapi.dll", EntryPoint = "AssocQueryStringW")]
+    private static partial int AssocQueryString(AssociationFlags flags,
+                                                AssociationStringType stringType,
+                                                [MarshalAs(UnmanagedType.LPWStr)] string filePath,
+                                                [MarshalAs(UnmanagedType.LPWStr)] string extra,
+                                                nint result,
+                                                ref int size);
 
     /// <summary>
     /// Function to retrieve the friendly name for the executable.
@@ -260,7 +237,7 @@ internal static class Win32API
                          AssociationStringType.FriendlyApplicationName,
                          filePath,
                          null,
-                         null,
+                         nint.Zero,
                          ref size);
 
         if (size <= 0)
@@ -268,14 +245,28 @@ internal static class Win32API
             return string.Empty;
         }
 
-        var result = new StringBuilder(size);
+        nint ptr = Marshal.AllocCoTaskMem(size);
 
-        return AssocQueryString(AssociationFlags.Verify | AssociationFlags.OpenByExeName,
-                                AssociationStringType.FriendlyApplicationName,
-                                filePath,
-                                null,
-                                result,
-                                ref size) != 0 ? string.Empty : result.ToString();
+        try
+        {
+            if (AssocQueryString(AssociationFlags.Verify | AssociationFlags.OpenByExeName,
+                                    AssociationStringType.FriendlyApplicationName,
+                                    filePath,
+                                    null,
+                                    ptr,
+                                    ref size) != 0)
+            {
+                return string.Empty;
+            }
+
+            string result = Marshal.PtrToStringUni(ptr);
+
+            return result;
+        }
+        finally
+        {
+            Marshal.FreeCoTaskMem(ptr);
+        }
     }
 
     /// <summary>
@@ -286,7 +277,7 @@ internal static class Win32API
     public static string GetAssociatedExecutable(string filePath)
     {
         int size = 0;
-        int hresult = AssocQueryString(AssociationFlags.DontRemapCLSID | AssociationFlags.RemapRunDLL, AssociationStringType.Executable, filePath, null, null, ref size);
+        int hresult = AssocQueryString(AssociationFlags.DontRemapCLSID | AssociationFlags.RemapRunDLL, AssociationStringType.Executable, filePath, null, nint.Zero, ref size);
 
         // WARNING: That shitty fucking photo UWP app steals the registration of some image files.  When this happens, we can't get the path info.  UWP is ABSOLUTE GARBAGE.
         if ((size <= 0) || (hresult != 1))
@@ -294,13 +285,28 @@ internal static class Win32API
             return string.Empty;
         }
 
-        var result = new StringBuilder(size);
+        nint ptr = Marshal.AllocCoTaskMem(size);
 
-        return AssocQueryString(AssociationFlags.DontRemapCLSID | AssociationFlags.RemapRunDLL,
-                                AssociationStringType.Executable,
-                                filePath,
-                                null,
-                                result,
-                                ref size) != 0 ? string.Empty : result.ToString();
+        try
+        {
+            
+            if (AssocQueryString(AssociationFlags.DontRemapCLSID | AssociationFlags.RemapRunDLL,
+                            AssociationStringType.Executable,
+                            filePath,
+                            null,
+                            ptr,
+                            ref size) != 0)
+            {
+                return string.Empty;
+            }
+
+            string result = Marshal.PtrToStringUni(ptr);
+
+            return result;
+        }
+        finally
+        {
+            Marshal.FreeCoTaskMem(ptr);
+        }
     }
 }

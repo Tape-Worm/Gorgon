@@ -76,7 +76,7 @@ internal static partial class UserApi
     /// <param name="lParam"></param>
     /// <returns></returns>
     [LibraryImport("user32.dll", EntryPoint = "SendMessageW", SetLastError = true)]
-    public static partial nint SendMessage(nint hWnd, uint msg, nint wParam, [MarshalUsing(typeof(HdItemMarshaller))] ref HDITEM lParam);
+    public static partial nint SendMessage(nint hWnd, uint msg, nint wParam, ref HDITEM lParam);
 
     /// <summary>
     /// Function to retrieve the device context for a window.

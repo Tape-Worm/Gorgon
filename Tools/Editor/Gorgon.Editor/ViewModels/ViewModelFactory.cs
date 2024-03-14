@@ -81,7 +81,7 @@ internal class ViewModelFactory(Editor.EditorSettings settings, ProjectManager p
     {
         bool isDirectory = (System.IO.File.GetAttributes(path) & FileAttributes.Directory) == FileAttributes.Directory;
 
-        if (!Shell32.SendToRecycleBin(path, Shell32.FileOperationFlags.FOF_SILENT | Shell32.FileOperationFlags.FOF_NOCONFIRMATION | Shell32.FileOperationFlags.FOF_WANTNUKEWARNING))
+        if (!Shell32.SendToRecycleBin(path, FileOperationFlags.FOF_SILENT | FileOperationFlags.FOF_NOCONFIRMATION | FileOperationFlags.FOF_WANTNUKEWARNING))
         {
             return false;
         }
