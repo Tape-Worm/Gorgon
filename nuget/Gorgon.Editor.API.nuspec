@@ -12,11 +12,11 @@
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>The API for accessing content file systems created by the Gorgon Editor from an application. It can also be used to create plug ins for the Editor application.</description>
     <releaseNotes></releaseNotes>
-    <copyright>Copyright 2023 Tape_Worm</copyright>
+    <copyright>Copyright 2024 Tape_Worm</copyright>
 
     <tags>Gorgon C# .NET Direct3D SharpDX Graphics 2D Windows Input GorgonEditor Animation</tags>
     <dependencies>
-      <group targetFramework="net6.0" >
+      <group targetFramework="net8.0" >
         <dependency id="Krypton.Ribbon.Lite.Signed" version="5.550.2103"/>        
         <dependency id="Gorgon.Renderers.Gorgon2D" version="$version$"/>
         <dependency id="Gorgon.Input" version="$version$"/>        

@@ -12,11 +12,11 @@
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>Contains a renderer used to draw two dimensional graphics using Direct 3D 11.2 for hardware accelation.</description>
     <releaseNotes></releaseNotes>
-    <copyright>Copyright 2023 Tape_Worm</copyright>
+    <copyright>Copyright 2024 Tape_Worm</copyright>
 
     <tags>Gorgon C# .NET Direct3D SharpDX Graphics 2D Windows Animation Fonts</tags>
     <dependencies>
-      <group targetFramework="net6.0" >
+      <group targetFramework="net8.0" >
         <dependency id="Gorgon.Graphics.Fonts.Debug" version="$version$-beta"/>
         <dependency id="Gorgon.Animation.Debug" version="$version$-beta"/>
         <dependency id="Gorgon.FileSystem.Debug" version="$version$-beta"/>
