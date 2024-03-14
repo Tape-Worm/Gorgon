@@ -160,7 +160,7 @@ internal class GorgonSpriteImporter
 
             IGorgonSpriteCodec sourceCodec = SpriteImporterPlugIn.GetCodec(physicalFilePath, _codecs);
             Debug.Assert(sourceCodec is not null, "We shouldn't be able to get this far without a codec.");
-                            
+
             texture = GetTexture(physicalFilePath, sourceCodec);
 
             if (string.IsNullOrWhiteSpace(_tempDirPath))
@@ -190,7 +190,7 @@ internal class GorgonSpriteImporter
             spriteCodec.Save(sprite, outStream);
             fileStream.Dispose();
             outStream.Dispose();
-            
+
             return _tempFileSystem.FileSystem.GetFile(outputFilePath);
         }
         catch

@@ -150,7 +150,7 @@ internal class AnimProperties
     /// <summary>Initializes a new instance of the <see cref="AnimProperties"/> class.</summary>
     public AnimProperties()
     {
-    
+
     }
     #endregion
 }

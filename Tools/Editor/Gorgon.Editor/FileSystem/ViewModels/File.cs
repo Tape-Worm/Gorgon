@@ -414,7 +414,7 @@ internal class File
         {
             return;
         }
-        
+
         string path = paths.FirstOrDefault(item => string.Equals(item, file.Path, StringComparison.OrdinalIgnoreCase));
         paths.Remove(path);
     }

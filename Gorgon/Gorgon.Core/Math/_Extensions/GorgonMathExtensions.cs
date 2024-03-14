@@ -506,10 +506,10 @@ public static class GorgonMathExtensions
     public static bool EqualsEpsilon(this double left, double right, double epsilon = 1e-12) => Abs(right - left) <= epsilon;
 
     /// <summary>
-		/// Function to return the inverse of the square root for a <see cref="double"/> value.
-		/// </summary>
-		/// <param name="value">The value to get the inverse square root of.</param>
-		/// <returns>The inverted square root of the value.</returns>
+        /// Function to return the inverse of the square root for a <see cref="double"/> value.
+        /// </summary>
+        /// <param name="value">The value to get the inverse square root of.</param>
+        /// <returns>The inverted square root of the value.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static double InverseSqrt(this double value) => 1.0 / System.Math.Sqrt(value);
 

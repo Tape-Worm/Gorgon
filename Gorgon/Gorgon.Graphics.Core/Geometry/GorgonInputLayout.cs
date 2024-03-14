@@ -745,7 +745,7 @@ public sealed class GorgonInputLayout
     /// </para>
     /// </remarks>
     /// <seealso cref="GorgonStreamOutLayout"/>
-	    public GorgonStreamOutLayout ToStreamOutLayout(int stream = 0, byte slot = 0)
+        public GorgonStreamOutLayout ToStreamOutLayout(int stream = 0, byte slot = 0)
     {
         var elements = new GorgonStreamOutElement[_elements.Length];
 

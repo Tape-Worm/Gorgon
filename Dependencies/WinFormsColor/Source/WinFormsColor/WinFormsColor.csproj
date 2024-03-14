@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>net48;net6.0-windows</TargetFrameworks>
+    <TargetFramework>net8.0-windows</TargetFramework>
     <UseWindowsForms>True</UseWindowsForms>
     <RootNamespace>WinFormsColor</RootNamespace>
     <AssemblyName>WinFormsColor</AssemblyName>
@@ -18,6 +18,7 @@
     </AssemblyOriginatorKeyFile>
     <DelaySign>false</DelaySign>
     <LangVersion>10</LangVersion>
+    <ForceDesignerDpiUnaware>true</ForceDesignerDpiUnaware>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -37,17 +38,4 @@
     <DocumentationFile>
     </DocumentationFile>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net48|AnyCPU'">
-    <NoWarn>1701;1702;1591;1006</NoWarn>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net48|AnyCPU'">
-    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
-    <NoWarn>1701;1702;1591;1006</NoWarn>
-  </PropertyGroup>
-  <ItemGroup>
-    <EditorConfigFiles Remove="D:\Code\GitHubRepos\Gorgon\develop\Dependencies\WinFormsColor\Source\WinFormsColor\.editorconfig" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="D:\Code\GitHubRepos\Gorgon\develop\Dependencies\WinFormsColor\Source\WinFormsColor\.editorconfig" />
-  </ItemGroup>
 </Project>

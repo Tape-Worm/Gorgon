@@ -23,15 +23,15 @@ using System;
 [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
 [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
 internal class Resources {
-    
+
     private static global::System.Resources.ResourceManager resourceMan;
-    
+
     private static global::System.Globalization.CultureInfo resourceCulture;
-    
+
     [global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
     internal Resources() {
     }
-    
+
     /// <summary>
     ///   Returns the cached ResourceManager instance used by this class.
     /// </summary>
@@ -45,7 +45,7 @@ internal class Resources {
             return resourceMan;
         }
     }
-    
+
     /// <summary>
     ///   Overrides the current thread's CurrentUICulture property for all
     ///   resource lookups using this strongly typed resource class.
@@ -59,7 +59,7 @@ internal class Resources {
             resourceCulture = value;
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized resource of type System.Drawing.Bitmap.
     /// </summary>
@@ -69,7 +69,7 @@ internal class Resources {
             return ((System.Drawing.Bitmap)(obj));
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized resource of type System.Drawing.Bitmap.
     /// </summary>
@@ -79,7 +79,7 @@ internal class Resources {
             return ((System.Drawing.Bitmap)(obj));
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized resource of type System.Drawing.Bitmap.
     /// </summary>
@@ -89,7 +89,7 @@ internal class Resources {
             return ((System.Drawing.Bitmap)(obj));
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized resource of type System.Drawing.Bitmap.
     /// </summary>
@@ -99,7 +99,7 @@ internal class Resources {
             return ((System.Drawing.Bitmap)(obj));
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized resource of type System.Drawing.Bitmap.
     /// </summary>
@@ -109,7 +109,7 @@ internal class Resources {
             return ((System.Drawing.Bitmap)(obj));
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized resource of type System.Drawing.Bitmap.
     /// </summary>
@@ -119,7 +119,7 @@ internal class Resources {
             return ((System.Drawing.Bitmap)(obj));
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized resource of type System.Drawing.Bitmap.
     /// </summary>
@@ -129,7 +129,7 @@ internal class Resources {
             return ((System.Drawing.Bitmap)(obj));
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized resource of type System.Drawing.Bitmap.
     /// </summary>
@@ -139,7 +139,7 @@ internal class Resources {
             return ((System.Drawing.Bitmap)(obj));
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized resource of type System.Drawing.Bitmap.
     /// </summary>
@@ -149,7 +149,7 @@ internal class Resources {
             return ((System.Drawing.Bitmap)(obj));
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized resource of type System.Drawing.Bitmap.
     /// </summary>
@@ -159,7 +159,7 @@ internal class Resources {
             return ((System.Drawing.Bitmap)(obj));
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized resource of type System.Drawing.Bitmap.
     /// </summary>
@@ -169,7 +169,7 @@ internal class Resources {
             return ((System.Drawing.Bitmap)(obj));
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized resource of type System.Drawing.Bitmap.
     /// </summary>
@@ -179,7 +179,7 @@ internal class Resources {
             return ((System.Drawing.Bitmap)(obj));
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized resource of type System.Drawing.Bitmap.
     /// </summary>
@@ -189,7 +189,7 @@ internal class Resources {
             return ((System.Drawing.Bitmap)(obj));
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized resource of type System.Drawing.Bitmap.
     /// </summary>
@@ -199,7 +199,7 @@ internal class Resources {
             return ((System.Drawing.Bitmap)(obj));
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized resource of type System.Drawing.Bitmap.
     /// </summary>
@@ -209,7 +209,7 @@ internal class Resources {
             return ((System.Drawing.Bitmap)(obj));
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized resource of type System.Drawing.Bitmap.
     /// </summary>
@@ -219,7 +219,7 @@ internal class Resources {
             return ((System.Drawing.Bitmap)(obj));
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized resource of type System.Drawing.Bitmap.
     /// </summary>
@@ -229,7 +229,7 @@ internal class Resources {
             return ((System.Drawing.Bitmap)(obj));
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized resource of type System.Drawing.Bitmap.
     /// </summary>
@@ -239,7 +239,7 @@ internal class Resources {
             return ((System.Drawing.Bitmap)(obj));
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized resource of type System.Drawing.Bitmap.
     /// </summary>
@@ -249,7 +249,7 @@ internal class Resources {
             return ((System.Drawing.Bitmap)(obj));
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to This is an example plug in for the Gorgon Editor.
     ///
@@ -266,7 +266,7 @@ internal class Resources {
             return ResourceManager.GetString("DEFAULT_TEXT", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized resource of type System.Drawing.Bitmap.
     /// </summary>
@@ -276,7 +276,7 @@ internal class Resources {
             return ((System.Drawing.Bitmap)(obj));
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized resource of type System.Drawing.Bitmap.
     /// </summary>
@@ -286,7 +286,7 @@ internal class Resources {
             return ((System.Drawing.Bitmap)(obj));
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized resource of type System.Drawing.Bitmap.
     /// </summary>
@@ -296,7 +296,7 @@ internal class Resources {
             return ((System.Drawing.Bitmap)(obj));
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized resource of type System.Drawing.Bitmap.
     /// </summary>
@@ -306,7 +306,7 @@ internal class Resources {
             return ((System.Drawing.Bitmap)(obj));
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized resource of type System.Drawing.Bitmap.
     /// </summary>
@@ -316,7 +316,7 @@ internal class Resources {
             return ((System.Drawing.Bitmap)(obj));
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized resource of type System.Drawing.Bitmap.
     /// </summary>
@@ -326,7 +326,7 @@ internal class Resources {
             return ((System.Drawing.Bitmap)(obj));
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized resource of type System.Drawing.Bitmap.
     /// </summary>
@@ -336,7 +336,7 @@ internal class Resources {
             return ((System.Drawing.Bitmap)(obj));
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized resource of type System.Drawing.Bitmap.
     /// </summary>
@@ -346,7 +346,7 @@ internal class Resources {
             return ((System.Drawing.Bitmap)(obj));
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized resource of type System.Drawing.Bitmap.
     /// </summary>
@@ -356,7 +356,7 @@ internal class Resources {
             return ((System.Drawing.Bitmap)(obj));
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized resource of type System.Drawing.Bitmap.
     /// </summary>
@@ -366,7 +366,7 @@ internal class Resources {
             return ((System.Drawing.Bitmap)(obj));
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized resource of type System.Drawing.Bitmap.
     /// </summary>
@@ -376,7 +376,7 @@ internal class Resources {
             return ((System.Drawing.Bitmap)(obj));
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to Are you sure you wish to delete this gradient node?.
     /// </summary>
@@ -385,7 +385,7 @@ internal class Resources {
             return ResourceManager.GetString("GORFNT_CONFIRM_BRUSH_GRAD_DELETE_NODE", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to Are you sure you wish to clear all of the gradient nodes?.
     /// </summary>
@@ -394,7 +394,7 @@ internal class Resources {
             return ResourceManager.GetString("GORFNT_CONFIRM_BRUSH_NODES_CLEAR", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to The file &apos;{0}&apos; already exists.  Would you like to overwrite it?.
     /// </summary>
@@ -403,7 +403,7 @@ internal class Resources {
             return ResourceManager.GetString("GORFNT_CONFIRM_FILE_EXISTS", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to The file &apos;{0}&apos; has unsaved changes.
     ///
@@ -414,7 +414,7 @@ internal class Resources {
             return ResourceManager.GetString("GORFNT_CONFIRM_UNSAVED_CHANGES", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to There was an error adding the node to the gradient.
     ///
@@ -425,7 +425,7 @@ internal class Resources {
             return ResourceManager.GetString("GORFNT_ERR_ADD_NODE", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to There was an error applying the brush to the glyphs on the texture.
     ///
@@ -436,7 +436,7 @@ internal class Resources {
             return ResourceManager.GetString("GORFNT_ERR_APPLY_BRUSH", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to There was an error assembling the brush.
     ///
@@ -447,7 +447,7 @@ internal class Resources {
             return ResourceManager.GetString("GORFNT_ERR_BUILD_BRUSH", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to There was an error while updating the character glyph list.
     ///
@@ -458,7 +458,7 @@ internal class Resources {
             return ResourceManager.GetString("GORFNT_ERR_CHAR_SELECTION", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to There was an error while creating the new font.
     ///
@@ -469,7 +469,7 @@ internal class Resources {
             return ResourceManager.GetString("GORFNT_ERR_CREATE", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to There was an error while duplicating the node.
     ///
@@ -480,7 +480,7 @@ internal class Resources {
             return ResourceManager.GetString("GORFNT_ERR_DUPE_NODE", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to The file &apos;{0}&apos; is open for editing and cannot be overwritten.
     ///
@@ -491,7 +491,7 @@ internal class Resources {
             return ResourceManager.GetString("GORFNT_ERR_FILE_OPEN_CANNOT_OVERWRITE", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to The font family &apos;{0}&apos; has no font style for a regular, bold or italic font.
     ///
@@ -502,7 +502,7 @@ internal class Resources {
             return ResourceManager.GetString("GORFNT_ERR_FONT_FAMILY_NO_STYLE", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to There was an error activating the font outline.
     ///
@@ -513,7 +513,7 @@ internal class Resources {
             return ResourceManager.GetString("GORFNT_ERR_FONT_OUTLINE", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to There was an error loading the brush texture.
     ///
@@ -524,7 +524,7 @@ internal class Resources {
             return ResourceManager.GetString("GORFNT_ERR_LOAD_TEXTURE", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to There was an error applying glyph padding to the texture.
     ///
@@ -535,7 +535,7 @@ internal class Resources {
             return ResourceManager.GetString("GORFNT_ERR_PADDING", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to There was an error while redoing the operation.
     ///
@@ -546,7 +546,7 @@ internal class Resources {
             return ResourceManager.GetString("GORFNT_ERR_REDO", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to There was an error removing the node.
     ///
@@ -557,7 +557,7 @@ internal class Resources {
             return ResourceManager.GetString("GORFNT_ERR_REMOVE_NODE", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to There was an error saving the font.
     ///
@@ -568,7 +568,7 @@ internal class Resources {
             return ResourceManager.GetString("GORFNT_ERR_SAVING", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to There was an error setting the font family.
     ///
@@ -579,7 +579,7 @@ internal class Resources {
             return ResourceManager.GetString("GORFNT_ERR_SET_FONT_FAMILY", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to There was an error setting the color for the node.
     ///
@@ -590,7 +590,7 @@ internal class Resources {
             return ResourceManager.GetString("GORFNT_ERR_SET_NODE_COLOR", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to There was an error setting the selected node weight.
     ///
@@ -601,7 +601,7 @@ internal class Resources {
             return ResourceManager.GetString("GORFNT_ERR_SET_NODE_WEIGHT", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to There was an error setting the region for the texture.
     ///
@@ -612,7 +612,7 @@ internal class Resources {
             return ResourceManager.GetString("GORFNT_ERR_SET_REGION", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to There was an error whlie setting the size of the font.
     ///
@@ -623,7 +623,7 @@ internal class Resources {
             return ResourceManager.GetString("GORFNT_ERR_SET_SIZE", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to There was an error setting the style on the font.
     ///
@@ -634,7 +634,7 @@ internal class Resources {
             return ResourceManager.GetString("GORFNT_ERR_SET_STYLE", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to There was an error while setting the font measurement units.
     ///
@@ -645,7 +645,7 @@ internal class Resources {
             return ResourceManager.GetString("GORFNT_ERR_SET_UNITS", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to There was an error while undoing the previous operation.
     ///
@@ -656,7 +656,7 @@ internal class Resources {
             return ResourceManager.GetString("GORFNT_ERR_UNDO", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to Clamp.
     /// </summary>
@@ -665,7 +665,7 @@ internal class Resources {
             return ResourceManager.GetString("GORFNT_TEXT_CLAMP", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to Font.
     /// </summary>
@@ -674,7 +674,7 @@ internal class Resources {
             return ResourceManager.GetString("GORFNT_TEXT_CONTEXT_TYPE", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to the quick brown fox jumped over the lazy dog.
     ///The quick brown fox jumped over the lazy dog.
@@ -688,7 +688,7 @@ internal class Resources {
             return ResourceManager.GetString("GORFNT_TEXT_DEFAULT_MAIN_PREVIEW", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to Font files (*.gorFont).
     /// </summary>
@@ -697,7 +697,7 @@ internal class Resources {
             return ResourceManager.GetString("GORFNT_TEXT_FILE_OPEN_DESC", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to Loading....
     /// </summary>
@@ -706,7 +706,7 @@ internal class Resources {
             return ResourceManager.GetString("GORFNT_TEXT_LOADING", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to Generating font....
     /// </summary>
@@ -715,7 +715,7 @@ internal class Resources {
             return ResourceManager.GetString("GORFNT_TEXT_PLEASE_WAIT_GEN_FONT", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to An editor used to create/edit Gorgon fonts..
     /// </summary>
@@ -724,7 +724,7 @@ internal class Resources {
             return ResourceManager.GetString("GORFNT_TEXT_PLUGIN_DESC", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to Font: {0}
     ///
@@ -740,7 +740,7 @@ internal class Resources {
             return ResourceManager.GetString("GORFNT_TEXT_PREVIEW", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to Saving font....
     /// </summary>
@@ -749,7 +749,7 @@ internal class Resources {
             return ResourceManager.GetString("GORFNT_TEXT_SAVING", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to Select all of.
     /// </summary>
@@ -758,7 +758,7 @@ internal class Resources {
             return ResourceManager.GetString("GORFNT_TEXT_SELECT_ALL_OF", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to Pixels.
     /// </summary>
@@ -767,7 +767,7 @@ internal class Resources {
             return ResourceManager.GetString("GORFNT_TEXT_SIZE_PIXELS", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to Points.
     /// </summary>
@@ -776,7 +776,7 @@ internal class Resources {
             return ResourceManager.GetString("GORFNT_TEXT_SIZE_POINTS", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to Tile.
     /// </summary>
@@ -785,7 +785,7 @@ internal class Resources {
             return ResourceManager.GetString("GORFNT_TEXT_TILE", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to Tile and flip horizontally.
     /// </summary>
@@ -794,7 +794,7 @@ internal class Resources {
             return ResourceManager.GetString("GORFNT_TEXT_TILE_FILP_HORZ", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to Tile and flip.
     /// </summary>
@@ -803,7 +803,7 @@ internal class Resources {
             return ResourceManager.GetString("GORFNT_TEXT_TILE_FLIP", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to Tile and flip vertically.
     /// </summary>
@@ -812,7 +812,7 @@ internal class Resources {
             return ResourceManager.GetString("GORFNT_TEXT_TILE_FLIP_VERT", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to Set Antialiasing.
     /// </summary>
@@ -821,7 +821,7 @@ internal class Resources {
             return ResourceManager.GetString("GORFNT_UNDO_ANTIALIAS", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to Set Bold.
     /// </summary>
@@ -830,7 +830,7 @@ internal class Resources {
             return ResourceManager.GetString("GORFNT_UNDO_BOLD", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to Font Family.
     /// </summary>
@@ -839,7 +839,7 @@ internal class Resources {
             return ResourceManager.GetString("GORFNT_UNDO_FONT_FAMILY", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to Font Size.
     /// </summary>
@@ -848,7 +848,7 @@ internal class Resources {
             return ResourceManager.GetString("GORFNT_UNDO_FONT_SIZE", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to Set Italic.
     /// </summary>
@@ -857,7 +857,7 @@ internal class Resources {
             return ResourceManager.GetString("GORFNT_UNDO_ITALIC", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to Set Font Outline.
     /// </summary>
@@ -866,7 +866,7 @@ internal class Resources {
             return ResourceManager.GetString("GORFNT_UNDO_OUTLINE", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to Set Padding.
     /// </summary>
@@ -875,7 +875,7 @@ internal class Resources {
             return ResourceManager.GetString("GORFNT_UNDO_PADDING", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to Set Font Unit Pixels.
     /// </summary>
@@ -884,7 +884,7 @@ internal class Resources {
             return ResourceManager.GetString("GORFNT_UNDO_PIXEL", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to Set Font Unit Points.
     /// </summary>
@@ -893,7 +893,7 @@ internal class Resources {
             return ResourceManager.GetString("GORFNT_UNDO_POINTS", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to Select Characters.
     /// </summary>
@@ -902,7 +902,7 @@ internal class Resources {
             return ResourceManager.GetString("GORFNT_UNDO_SELECT_CHARS", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to Set Texture State: Premultiplied.
     /// </summary>
@@ -911,7 +911,7 @@ internal class Resources {
             return ResourceManager.GetString("GORFNT_UNDO_SET_PREMULTIPLIED", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to Applying Solid Brush.
     /// </summary>
@@ -920,7 +920,7 @@ internal class Resources {
             return ResourceManager.GetString("GORFNT_UNDO_SOLID_BRUSH", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to Set Texture Size.
     /// </summary>
@@ -929,7 +929,7 @@ internal class Resources {
             return ResourceManager.GetString("GORFNT_UNDO_TEXTURE_RESIZE", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized resource of type System.Drawing.Bitmap.
     /// </summary>
@@ -939,7 +939,7 @@ internal class Resources {
             return ((System.Drawing.Bitmap)(obj));
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized resource of type System.Drawing.Bitmap.
     /// </summary>
@@ -949,7 +949,7 @@ internal class Resources {
             return ((System.Drawing.Bitmap)(obj));
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized resource of type System.Drawing.Bitmap.
     /// </summary>
@@ -959,7 +959,7 @@ internal class Resources {
             return ((System.Drawing.Bitmap)(obj));
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized resource of type System.Drawing.Bitmap.
     /// </summary>
@@ -969,7 +969,7 @@ internal class Resources {
             return ((System.Drawing.Bitmap)(obj));
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized resource of type System.Drawing.Bitmap.
     /// </summary>
@@ -979,7 +979,7 @@ internal class Resources {
             return ((System.Drawing.Bitmap)(obj));
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized resource of type System.Drawing.Bitmap.
     /// </summary>
@@ -989,7 +989,7 @@ internal class Resources {
             return ((System.Drawing.Bitmap)(obj));
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized resource of type System.Drawing.Bitmap.
     /// </summary>
@@ -999,7 +999,7 @@ internal class Resources {
             return ((System.Drawing.Bitmap)(obj));
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized resource of type System.Drawing.Bitmap.
     /// </summary>
@@ -1009,7 +1009,7 @@ internal class Resources {
             return ((System.Drawing.Bitmap)(obj));
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized resource of type System.Drawing.Bitmap.
     /// </summary>
@@ -1019,7 +1019,7 @@ internal class Resources {
             return ((System.Drawing.Bitmap)(obj));
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized resource of type System.Drawing.Bitmap.
     /// </summary>
@@ -1029,7 +1029,7 @@ internal class Resources {
             return ((System.Drawing.Bitmap)(obj));
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized resource of type System.Drawing.Bitmap.
     /// </summary>
@@ -1039,7 +1039,7 @@ internal class Resources {
             return ((System.Drawing.Bitmap)(obj));
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized resource of type System.Drawing.Bitmap.
     /// </summary>
@@ -1049,7 +1049,7 @@ internal class Resources {
             return ((System.Drawing.Bitmap)(obj));
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized resource of type System.Drawing.Bitmap.
     /// </summary>
@@ -1059,7 +1059,7 @@ internal class Resources {
             return ((System.Drawing.Bitmap)(obj));
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized resource of type System.Drawing.Bitmap.
     /// </summary>
@@ -1069,7 +1069,7 @@ internal class Resources {
             return ((System.Drawing.Bitmap)(obj));
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized resource of type System.Drawing.Bitmap.
     /// </summary>
@@ -1079,7 +1079,7 @@ internal class Resources {
             return ((System.Drawing.Bitmap)(obj));
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized resource of type System.Drawing.Bitmap.
     /// </summary>
@@ -1089,7 +1089,7 @@ internal class Resources {
             return ((System.Drawing.Bitmap)(obj));
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized resource of type System.Byte[].
     /// </summary>
@@ -1099,7 +1099,7 @@ internal class Resources {
             return ((byte[])(obj));
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized resource of type System.Drawing.Bitmap.
     /// </summary>
@@ -1109,7 +1109,7 @@ internal class Resources {
             return ((System.Drawing.Bitmap)(obj));
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized resource of type System.Drawing.Bitmap.
     /// </summary>
@@ -1119,7 +1119,7 @@ internal class Resources {
             return ((System.Drawing.Bitmap)(obj));
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized resource of type System.Drawing.Bitmap.
     /// </summary>
@@ -1129,7 +1129,7 @@ internal class Resources {
             return ((System.Drawing.Bitmap)(obj));
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to 0000..007F; Basic Latin
     ///0080..00FF; Latin-1 Supplement
@@ -1157,7 +1157,7 @@ internal class Resources {
             return ResourceManager.GetString("UnicodeBlocks", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to 0000;&lt;control&gt;;Cc;0;BN;;;;;N;NULL;;;;
     ///0001;&lt;control&gt;;Cc;0;BN;;;;;N;START OF HEADING;;;;
@@ -1177,7 +1177,7 @@ internal class Resources {
             return ResourceManager.GetString("UnicodeData", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized resource of type System.Drawing.Bitmap.
     /// </summary>
@@ -1187,7 +1187,7 @@ internal class Resources {
             return ((System.Drawing.Bitmap)(obj));
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized resource of type System.Drawing.Bitmap.
     /// </summary>
@@ -1197,7 +1197,7 @@ internal class Resources {
             return ((System.Drawing.Bitmap)(obj));
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to Zoom: {0}.
     /// </summary>

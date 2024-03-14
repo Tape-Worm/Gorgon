@@ -234,7 +234,7 @@ internal partial class FormNewSprite
             FillTextureList(_textures);
             return;
         }
-        
+
         FillTextureList(_textures.Where(item => item.Name.IndexOf(e.SearchText, StringComparison.CurrentCultureIgnoreCase) > -1).ToArray());
     }
 

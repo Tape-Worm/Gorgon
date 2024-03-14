@@ -91,7 +91,7 @@ static class Program
         // When building animations, you can create your own animation tracks to handle which properties on the 
         // sprite get updated. These often correspond to property names, so passing "Position" as the name will 
         // update the Position property on the sprite.
-        
+
         // Set up some scaling...            
         animBuilder.EditVector2("Scale")
                    .SetInterpolationMode(TrackInterpolationMode.Spline)

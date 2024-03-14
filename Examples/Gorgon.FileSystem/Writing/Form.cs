@@ -175,9 +175,9 @@ public partial class Form
     }
 
     /// <summary>
-		/// Function to update the information label.
-		/// </summary>
-		private void UpdateInfo() => labelInfo.Text = string.Equals(_originalText, textDisplay.Text, StringComparison.CurrentCulture)
+        /// Function to update the information label.
+        /// </summary>
+        private void UpdateInfo() => labelInfo.Text = string.Equals(_originalText, textDisplay.Text, StringComparison.CurrentCulture)
                              ? $"Using original text from {GorgonExample.GetResourcePath(@"FileSystems\FolderSystem\").FullName.Ellipses(100, true)}"
                              : $"Using modified text from {Program.WriteDirectory.FullName.Ellipses(100, true)}";
 

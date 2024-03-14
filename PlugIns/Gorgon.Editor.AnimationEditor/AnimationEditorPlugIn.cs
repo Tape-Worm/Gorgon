@@ -689,7 +689,7 @@ internal class AnimationEditorPlugIn
                     keyFrames[index] = null;
                     continue;
                 }
-                
+
                 IContentFile textureFile = fileManager.GetFile(key.TextureName);
 
                 if (textureFile is null)
@@ -922,7 +922,7 @@ internal class AnimationEditorPlugIn
             _defaultCodec.Save(animation, stream);
             return stream;
         }
-                    
+
         (string newName, float animLength, float animFps, IContentFile primarySprite, IContentFile bgTexture) = _newAnimation.GetNewAnimationName(currentDirectory, generatedName, null, null);
 
         return !string.IsNullOrWhiteSpace(newName)
@@ -1207,7 +1207,7 @@ internal class AnimationEditorPlugIn
             BuildAnimationTrackViewModels(tracks, excluded, controller, maxKeyCount, animation.Texture2DTracks);
 
             GetKeys(animation, tracks, fileManager, maxKeyCount);
-                            
+
             IEnumerable<ITrack> textureTracks = tracks.Where(item => (item.ID == GorgonSpriteAnimationController.TextureTrack.ID) 
                                                           && (item.KeyFrames.Any(item2 => item2 is not null)));
             foreach (ITrack track in textureTracks)
@@ -1310,7 +1310,7 @@ internal class AnimationEditorPlugIn
         _defaultCodec = new GorgonV31AnimationBinaryCodec(HostContentServices.GraphicsContext.Renderer2D);
         _defaultImageCodec = new GorgonCodecDds();
         _defaultSpriteCodec = new GorgonV3SpriteBinaryCodec(HostContentServices.GraphicsContext.Renderer2D);
-        
+
         AnimationEditorSettings settings = HostContentServices.ContentPlugInService.ReadContentSettings<AnimationEditorSettings>(SettingsFilename);
         if (settings is not null)
         {

@@ -211,7 +211,7 @@ public class GorgonBlendStateBuilder
     public GorgonBlendStateBuilder()
         : base(new GorgonBlendState())
     {
-        
+
     }
     #endregion
 }

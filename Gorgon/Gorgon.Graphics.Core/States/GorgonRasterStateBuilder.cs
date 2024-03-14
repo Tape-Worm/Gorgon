@@ -75,7 +75,7 @@ public class GorgonRasterStateBuilder
     /// </summary>
     /// <returns>The fluent builder interface.</returns>
     protected override GorgonRasterState OnCreateState() => new(WorkingState);
-    
+
     /// <summary>Function to update the properties of the state, allocated from an allocator, from the working copy.</summary>
     /// <param name="state">The state to update.</param>
     protected override void OnUpdate(GorgonRasterState state) => CopyState(WorkingState, state);

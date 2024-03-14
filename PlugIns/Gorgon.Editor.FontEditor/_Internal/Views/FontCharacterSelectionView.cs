@@ -44,7 +44,7 @@ internal partial class FontCharacterSelectionView
     /// Property to return the data context for the view.
     /// </summary>
     [Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-    public IFontCharacterSelection DataContext
+    public IFontCharacterSelection ViewModel
     {
         get;
         private set;
@@ -57,12 +57,12 @@ internal partial class FontCharacterSelectionView
     /// <param name="e">The <see cref="EventArgs" /> instance containing the event data.</param>
     private void CharPicker_CharactersChanged(object sender, EventArgs e)
     {
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             return;
         }
 
-        DataContext.Characters = CharPicker.Characters;
+        ViewModel.Characters = CharPicker.Characters;
         ValidateOk();
     }
 
@@ -71,12 +71,12 @@ internal partial class FontCharacterSelectionView
     /// </summary>
     private void UnassignEvents()
     {
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             return;
         }
 
-        DataContext.PropertyChanged -= DataContext_PropertyChanged;
+        ViewModel.PropertyChanged -= DataContext_PropertyChanged;
     }
 
     /// <summary>Handles the PropertyChanged event of the DataContext control.</summary>
@@ -87,10 +87,10 @@ internal partial class FontCharacterSelectionView
         switch (e.PropertyName)
         {
             case nameof(IFontCharacterSelection.Characters):
-                CharPicker.Characters = DataContext.Characters;
+                CharPicker.Characters = ViewModel.Characters;
                 break;
             case nameof(IFontCharacterSelection.CurrentFont):
-                CharPicker.CurrentFont = DataContext.CurrentFont;
+                CharPicker.CurrentFont = ViewModel.CurrentFont;
                 break;
         }
 
@@ -122,14 +122,14 @@ internal partial class FontCharacterSelectionView
     /// Function to validate the state of the OK button.
     /// </summary>
     /// <returns><b>true</b> if the OK button is valid, <b>false</b> if not.</returns>
-    protected override bool OnValidateOk() => (DataContext?.OkCommand is not null) && (DataContext.OkCommand.CanExecute(null));
+    protected override bool OnValidateOk() => (ViewModel?.OkCommand is not null) && (ViewModel.OkCommand.CanExecute(null));
 
     /// <summary>Function to cancel the change.</summary>
     protected override void OnCancel()
     {
-        if (DataContext is not null)
+        if (ViewModel is not null)
         {
-            DataContext.IsActive = false;
+            ViewModel.IsActive = false;
         }
     }
 
@@ -138,12 +138,12 @@ internal partial class FontCharacterSelectionView
     {
         base.OnSubmit();
 
-        if ((DataContext?.OkCommand is null) || (!DataContext.OkCommand.CanExecute(null)))
+        if ((ViewModel?.OkCommand is null) || (!ViewModel.OkCommand.CanExecute(null)))
         {
             return;
         }
 
-        DataContext.OkCommand.Execute(null);
+        ViewModel.OkCommand.Execute(null);
     }
 
     /// <summary>Raises the <see cref="System.Windows.Forms.UserControl.Load"/> event.</summary>
@@ -157,11 +157,11 @@ internal partial class FontCharacterSelectionView
             return;
         }
 
-        DataContext?.Load();
+        ViewModel?.Load();
 
         ValidateOk();
     }
-    
+
     /// <summary>Function to assign a data context to the view as a view model.</summary>
     /// <param name="dataContext">The data context to assign.</param>
     /// <remarks>Data contexts should be nullable, in that, they should reset the view back to its original state when the context is null.</remarks>
@@ -171,15 +171,15 @@ internal partial class FontCharacterSelectionView
 
         InitializeFromDataContext(dataContext);
 
-        DataContext = dataContext;
+        ViewModel = dataContext;
 
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             ValidateOk();
             return;
         }
 
-        DataContext.PropertyChanged += DataContext_PropertyChanged;
+        ViewModel.PropertyChanged += DataContext_PropertyChanged;
         ValidateOk();
     }
     #endregion

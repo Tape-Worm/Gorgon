@@ -50,7 +50,7 @@ internal partial class SpritePickMaskColor
     /// Property to return the data context for the view.
     /// </summary>
     [Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-    public ISpritePickMaskEditor DataContext
+    public ISpritePickMaskEditor ViewModel
     {
         get;
         private set;
@@ -63,20 +63,20 @@ internal partial class SpritePickMaskColor
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
     private void RadioAlpha_Click(object sender, EventArgs e)
     {
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             TableAlphaOnly.Visible = RadioAlpha.Checked;
             Picker.Visible = !RadioAlpha.Checked;
             return;
         }
 
-        if (((DataContext.ClipMaskType == ClipMask.Alpha) && (RadioAlpha.Checked))
-            || ((DataContext.ClipMaskType == ClipMask.Color) && (RadioColorAlpha.Checked)))
+        if (((ViewModel.ClipMaskType == ClipMask.Alpha) && (RadioAlpha.Checked))
+            || ((ViewModel.ClipMaskType == ClipMask.Color) && (RadioColorAlpha.Checked)))
         {
             return;
         }
 
-        DataContext.ClipMaskType = RadioAlpha.Checked ? ClipMask.Alpha : ClipMask.Color;
+        ViewModel.ClipMaskType = RadioAlpha.Checked ? ClipMask.Alpha : ClipMask.Color;
     }
 
     /// <summary>Handles the ValueChanged event of the NumericAlpha control.</summary>
@@ -108,9 +108,9 @@ internal partial class SpritePickMaskColor
             NumericAlpha.Value = alpha;
         }
 
-        if ((DataContext is not null) && (!DataContext.ClipMaskValue.Alpha.EqualsEpsilon(SliderAlpha.ValuePercentual)))
+        if ((ViewModel is not null) && (!ViewModel.ClipMaskValue.Alpha.EqualsEpsilon(SliderAlpha.ValuePercentual)))
         {
-            DataContext.ClipMaskValue = new GorgonColor(Picker.SelectedColor, SliderAlpha.ValuePercentual);
+            ViewModel.ClipMaskValue = new GorgonColor(Picker.SelectedColor, SliderAlpha.ValuePercentual);
         }
 
         ValidateOk();
@@ -121,12 +121,12 @@ internal partial class SpritePickMaskColor
     /// <param name="e">The <see cref="ColorChangedEventArgs"/> instance containing the event data.</param>
     private void Picker_ColorChanged(object sender, ColorChangedEventArgs e)
     {
-        if ((DataContext is null) || (DataContext.ClipMaskValue.Equals(e.Color)))
+        if ((ViewModel is null) || (ViewModel.ClipMaskValue.Equals(e.Color)))
         {
             return;
         }
 
-        DataContext.ClipMaskValue = e.Color;
+        ViewModel.ClipMaskValue = e.Color;
         ValidateOk();
     }
 
@@ -135,12 +135,12 @@ internal partial class SpritePickMaskColor
     /// </summary>
     private void UnassignEvents()
     {
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             return;
         }
 
-        DataContext.PropertyChanged -= DataContext_PropertyChanged;
+        ViewModel.PropertyChanged -= DataContext_PropertyChanged;
     }
 
     /// <summary>Handles the PropertyChanged event of the DataContext control.</summary>
@@ -152,28 +152,28 @@ internal partial class SpritePickMaskColor
         {
             case nameof(ISpritePickMaskEditor.IsActive):
                 // If we activate the control, then reset its values.
-                if (DataContext.IsActive)
+                if (ViewModel.IsActive)
                 {
-                    Picker.OriginalColor = Picker.SelectedColor = DataContext.ClipMaskValue;
-                    ColorShow.UpperColor = Color.FromArgb((int)(255 * DataContext.ClipMaskValue.Alpha), Color.White);
-                    SliderAlpha.ValuePercentual = DataContext.ClipMaskValue.Alpha;
+                    Picker.OriginalColor = Picker.SelectedColor = ViewModel.ClipMaskValue;
+                    ColorShow.UpperColor = Color.FromArgb((int)(255 * ViewModel.ClipMaskValue.Alpha), Color.White);
+                    SliderAlpha.ValuePercentual = ViewModel.ClipMaskValue.Alpha;
                 }
                 break;
             case nameof(ISpritePickMaskEditor.ClipMaskType):
-                RadioAlpha.Checked = DataContext.ClipMaskType == ClipMask.Alpha;
+                RadioAlpha.Checked = ViewModel.ClipMaskType == ClipMask.Alpha;
                 TableAlphaOnly.Visible = RadioAlpha.Checked;
                 Picker.Visible = !RadioAlpha.Checked;
-                SliderAlpha.ValuePercentual = DataContext.ClipMaskValue.Alpha;
-                Picker.SelectedColor = DataContext.ClipMaskValue;
+                SliderAlpha.ValuePercentual = ViewModel.ClipMaskValue.Alpha;
+                Picker.SelectedColor = ViewModel.ClipMaskValue;
                 break;
             case nameof(ISpritePickMaskEditor.ClipMaskValue):
-                if (DataContext.ClipMaskType == ClipMask.Alpha)
+                if (ViewModel.ClipMaskType == ClipMask.Alpha)
                 {
-                    SliderAlpha.ValuePercentual = DataContext.ClipMaskValue.Alpha;
+                    SliderAlpha.ValuePercentual = ViewModel.ClipMaskValue.Alpha;
                 }
                 else
                 {
-                    Picker.SelectedColor = DataContext.ClipMaskValue;
+                    Picker.SelectedColor = ViewModel.ClipMaskValue;
                 }
                 break;
         }
@@ -189,7 +189,7 @@ internal partial class SpritePickMaskColor
         SliderAlpha.ValuePercentual = 0.0f;
         Picker.OriginalColor = Picker.SelectedColor = GorgonColor.BlackTransparent;
     }
-    
+
     /// <summary>
     /// Function to initialize the control with the data context.
     /// </summary>
@@ -217,12 +217,12 @@ internal partial class SpritePickMaskColor
     {
         base.OnSubmit();
 
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             return;
         }
 
-        DataContext.IsActive = false;
+        ViewModel.IsActive = false;
     }
 
     /// <summary>Function to cancel the change.</summary>
@@ -230,14 +230,14 @@ internal partial class SpritePickMaskColor
     {
         base.OnCancel();
 
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             return;
         }
 
-        DataContext.ClipMaskType = _originalMask;
-        DataContext.ClipMaskValue = Picker.OriginalColor;
-        DataContext.IsActive = false;
+        ViewModel.ClipMaskType = _originalMask;
+        ViewModel.ClipMaskValue = Picker.OriginalColor;
+        ViewModel.IsActive = false;
     }
 
     /// <summary>
@@ -257,7 +257,7 @@ internal partial class SpritePickMaskColor
             color = Picker.OriginalColor;
         }
 
-        return (DataContext is not null) && ((_originalMask != DataContext.ClipMaskType) || (!DataContext.ClipMaskValue.Equals(in color)));
+        return (ViewModel is not null) && ((_originalMask != ViewModel.ClipMaskType) || (!ViewModel.ClipMaskValue.Equals(in color)));
     }
 
     /// <summary>Raises the <see cref="E:System.Windows.Forms.UserControl.Load"/> event.</summary>
@@ -271,9 +271,9 @@ internal partial class SpritePickMaskColor
             return;
         }
 
-        DataContext?.Load();
+        ViewModel?.Load();
     }
-    
+
     /// <summary>Function to assign a data context to the view as a view model.</summary>
     /// <param name="dataContext">The data context to assign.</param>
     /// <remarks>Data contexts should be nullable, in that, they should reset the view back to its original state when the context is null.</remarks>
@@ -281,14 +281,14 @@ internal partial class SpritePickMaskColor
     {
         InitializeFromDataContext(dataContext);
 
-        DataContext = dataContext;
+        ViewModel = dataContext;
 
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             return;
         }
 
-        DataContext.PropertyChanged += DataContext_PropertyChanged;
+        ViewModel.PropertyChanged += DataContext_PropertyChanged;
     }
     #endregion
 

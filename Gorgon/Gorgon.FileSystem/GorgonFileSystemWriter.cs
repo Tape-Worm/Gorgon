@@ -485,7 +485,7 @@ public class GorgonFileSystemWriter
     /// <param name="fileName">Formatted file name.</param>
     /// <returns>The location to write.</returns>
     private string GetWriteFilePath(string directoryName, string fileName) => GetWriteDirectoryPath(directoryName) + fileName;
-    
+
     /// <summary>
     /// Function to delete a virtual file from the physical and virtual file systems.
     /// </summary>
@@ -632,7 +632,7 @@ public class GorgonFileSystemWriter
 
         EventHandler<VirtualDirectoryAddedEventArgs> handler = VirtualDirectoryAdded;
         handler?.Invoke(this, new VirtualDirectoryAddedEventArgs(result));
-        
+
         return result;
     }
 
@@ -748,7 +748,7 @@ public class GorgonFileSystemWriter
                     OnDeleteComplete();
                     return;
                 }
-                
+
 
                 onDelete?.Invoke(file.FullPath);
                 if (DeleteVirtualFile(file))
@@ -756,7 +756,7 @@ public class GorgonFileSystemWriter
                     deletedFiles.Add(file);
                 }
             }
-            
+
             onDelete?.Invoke(dir.FullPath);
             physicalPath = GetWriteDirectoryPath(dir.FullPath);
 
@@ -1439,7 +1439,7 @@ public class GorgonFileSystemWriter
                     destDir = CreateDirectory(destDirPath);
                     dirsCopied.Add((srcDir, destDir));
                 }
-                                    
+
                 if (!filesToCopy.TryGetValue(srcDir, out IEnumerable<IGorgonVirtualFile> files))
                 {
                     continue;
@@ -1543,7 +1543,7 @@ public class GorgonFileSystemWriter
         {
             throw new ArgumentEmptyException(nameof(destDirectoryPath));
         }
-        
+
         IGorgonVirtualDirectory destDirectory = FileSystem.GetDirectory(destDirectoryPath) ?? throw new DirectoryNotFoundException(string.Format(Resources.GORFS_ERR_DIRECTORY_NOT_FOUND, destDirectoryPath));
 
         var files = new List<IGorgonVirtualFile>();
@@ -1597,7 +1597,7 @@ public class GorgonFileSystemWriter
                 OnMoveComplete();
                 return;
             }
-            
+
             // Copy files for the current directory.
             foreach (IGorgonVirtualFile srcFile in files)
             {

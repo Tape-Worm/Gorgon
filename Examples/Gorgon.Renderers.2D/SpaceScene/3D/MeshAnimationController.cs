@@ -76,7 +76,7 @@ internal class MeshAnimationController
         {
             return;
         }
-        
+
         animObject.Rotation = value;
     }
 

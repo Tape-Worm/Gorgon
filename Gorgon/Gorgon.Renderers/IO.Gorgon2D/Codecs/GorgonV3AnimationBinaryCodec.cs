@@ -185,7 +185,7 @@ public class GorgonV3AnimationBinaryCodec
             binReader = reader.OpenChunk(TextureData);
             int keyCount = binReader.ReadInt32();
             var result = new List<string>();
-            
+
             for (int i = 0; i < keyCount; ++i)
             {
                 binReader.ReadSingle();

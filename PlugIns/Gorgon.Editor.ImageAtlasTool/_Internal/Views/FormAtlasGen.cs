@@ -55,7 +55,7 @@ internal partial class FormAtlasGen
     #region Properties.
     /// <summary>Property to return the data context assigned to this view.</summary>
     [Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-    public IImageAtlas DataContext
+    public IImageAtlas ViewModel
     {
         get;
         private set;
@@ -78,13 +78,13 @@ internal partial class FormAtlasGen
     /// </summary>
     private void ValidateControls()
     {
-        ButtonGenerate.Enabled = DataContext?.GenerateCommand?.CanExecute(null) ?? false;
-        ButtonCalculateSize.Enabled = DataContext?.CalculateSizesCommand?.CanExecute(null) ?? false;
-        ButtonPrevArray.Visible = (DataContext.Atlas is not null) || ((DataContext.Images is not null) && (DataContext.Images.Count != 0));
-        ButtonNextArray.Visible = (DataContext.Atlas is not null) || ((DataContext.Images is not null) && (DataContext.Images.Count != 0));
-        ButtonPrevArray.Enabled = DataContext?.PrevPreviewCommand?.CanExecute(null) ?? false;
-        ButtonNextArray.Enabled = DataContext?.NextPreviewCommand?.CanExecute(null) ?? false;
-        ButtonOk.Enabled = DataContext?.CommitAtlasCommand?.CanExecute(null) ?? false;
+        ButtonGenerate.Enabled = ViewModel?.GenerateCommand?.CanExecute(null) ?? false;
+        ButtonCalculateSize.Enabled = ViewModel?.CalculateSizesCommand?.CanExecute(null) ?? false;
+        ButtonPrevArray.Visible = (ViewModel.Atlas is not null) || ((ViewModel.Images is not null) && (ViewModel.Images.Count != 0));
+        ButtonNextArray.Visible = (ViewModel.Atlas is not null) || ((ViewModel.Images is not null) && (ViewModel.Images.Count != 0));
+        ButtonPrevArray.Enabled = ViewModel?.PrevPreviewCommand?.CanExecute(null) ?? false;
+        ButtonNextArray.Enabled = ViewModel?.NextPreviewCommand?.CanExecute(null) ?? false;
+        ButtonOk.Enabled = ViewModel?.CommitAtlasCommand?.CanExecute(null) ?? false;
     }
 
     /// <summary>
@@ -113,7 +113,7 @@ internal partial class FormAtlasGen
     /// </summary>
     private void ShowFileSelector()
     {
-        if ((DataContext?.ImageFiles is null) || (_imageSelector is not null))
+        if ((ViewModel?.ImageFiles is null) || (_imageSelector is not null))
         {
             return;
         }
@@ -122,7 +122,7 @@ internal partial class FormAtlasGen
         {
             _imageSelector = new FormImageSelector();
 
-            _imageSelector.SetDataContext(DataContext.ImageFiles);
+            _imageSelector.SetDataContext(ViewModel.ImageFiles);
             _imageSelector.SetGraphicsContext(GraphicsContext);
             if (_imageSelector.ShowDialog(this) == DialogResult.Cancel)
             {
@@ -146,12 +146,12 @@ internal partial class FormAtlasGen
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
     private void ButtonNextArray_Click(object sender, EventArgs e)
     {
-        if ((DataContext?.NextPreviewCommand is null) || (!DataContext.NextPreviewCommand.CanExecute(null)))
+        if ((ViewModel?.NextPreviewCommand is null) || (!ViewModel.NextPreviewCommand.CanExecute(null)))
         {
             return;
         }
 
-        DataContext.NextPreviewCommand.Execute(null);
+        ViewModel.NextPreviewCommand.Execute(null);
     }
 
     /// <summary>Handles the Click event of the ButtonPrevArray control.</summary>
@@ -159,12 +159,12 @@ internal partial class FormAtlasGen
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
     private void ButtonPrevArray_Click(object sender, EventArgs e)
     {
-        if ((DataContext?.PrevPreviewCommand is null) || (!DataContext.PrevPreviewCommand.CanExecute(null)))
+        if ((ViewModel?.PrevPreviewCommand is null) || (!ViewModel.PrevPreviewCommand.CanExecute(null)))
         {
             return;
         }
 
-        DataContext.PrevPreviewCommand.Execute(null);
+        ViewModel.PrevPreviewCommand.Execute(null);
     }
 
     /// <summary>Handles the Click event of the ButtonGenerate control.</summary>
@@ -172,12 +172,12 @@ internal partial class FormAtlasGen
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
     private void ButtonGenerate_Click(object sender, EventArgs e)
     {
-        if ((DataContext?.GenerateCommand is null) || (!DataContext.GenerateCommand.CanExecute(null)))
+        if ((ViewModel?.GenerateCommand is null) || (!ViewModel.GenerateCommand.CanExecute(null)))
         {
             return;
         }
 
-        DataContext.GenerateCommand.Execute(null);
+        ViewModel.GenerateCommand.Execute(null);
     }
 
     /// <summary>Handles the Click event of the ButtonLoadImages control.</summary>
@@ -190,12 +190,12 @@ internal partial class FormAtlasGen
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
     private void CheckCreateSprites_Click(object sender, EventArgs e)
     {
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             return;
         }
 
-        DataContext.GenerateSprites = CheckCreateSprites.Checked;
+        ViewModel.GenerateSprites = CheckCreateSprites.Checked;
     }
 
     /// <summary>Handles the ValueChanged event of the NumericTextureWidth control.</summary>
@@ -203,12 +203,12 @@ internal partial class FormAtlasGen
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
     private void NumericTextureWidth_ValueChanged(object sender, EventArgs e)
     {
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             return;
         }
 
-        DataContext.MaxTextureSize = new DX.Size2((int)NumericTextureWidth.Value, DataContext.MaxTextureSize.Height);
+        ViewModel.MaxTextureSize = new DX.Size2((int)NumericTextureWidth.Value, ViewModel.MaxTextureSize.Height);
     }
 
     /// <summary>Handles the ValueChanged event of the NumericTextureHeight control.</summary>
@@ -216,12 +216,12 @@ internal partial class FormAtlasGen
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
     private void NumericTextureHeight_ValueChanged(object sender, EventArgs e)
     {
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             return;
         }
 
-        DataContext.MaxTextureSize = new DX.Size2(DataContext.MaxTextureSize.Width, (int)NumericTextureHeight.Value);
+        ViewModel.MaxTextureSize = new DX.Size2(ViewModel.MaxTextureSize.Width, (int)NumericTextureHeight.Value);
     }
 
     /// <summary>Handles the ValueChanged event of the NumericArrayIndex control.</summary>
@@ -229,12 +229,12 @@ internal partial class FormAtlasGen
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
     private void NumericArrayIndex_ValueChanged(object sender, EventArgs e)
     {
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             return;
         }
 
-        DataContext.MaxArrayCount = (int)NumericArrayIndex.Value;            
+        ViewModel.MaxArrayCount = (int)NumericArrayIndex.Value;            
     }
 
     /// <summary>Handles the ValueChanged event of the NumericPadding control.</summary>
@@ -242,12 +242,12 @@ internal partial class FormAtlasGen
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
     private void NumericPadding_ValueChanged(object sender, EventArgs e)
     {
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             return;
         }
 
-        DataContext.Padding = (int)NumericPadding.Value;
+        ViewModel.Padding = (int)NumericPadding.Value;
     }
 
     /// <summary>Handles the Click event of the ButtonOk control.</summary>
@@ -257,12 +257,12 @@ internal partial class FormAtlasGen
     {
         var args = new CancelEventArgs(false);
 
-        if ((DataContext?.CommitAtlasCommand is null) || (!DataContext.CommitAtlasCommand.CanExecute(args)))
+        if ((ViewModel?.CommitAtlasCommand is null) || (!ViewModel.CommitAtlasCommand.CanExecute(args)))
         {
             return;
         }
 
-        DataContext.CommitAtlasCommand.Execute(args);
+        ViewModel.CommitAtlasCommand.Execute(args);
 
         if (!args.Cancel)
         {
@@ -280,12 +280,12 @@ internal partial class FormAtlasGen
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
     private void ButtonCalculateSize_Click(object sender, EventArgs e)
     {
-        if ((DataContext?.CalculateSizesCommand is null) || (!DataContext.CalculateSizesCommand.CanExecute(null)))
+        if ((ViewModel?.CalculateSizesCommand is null) || (!ViewModel.CalculateSizesCommand.CanExecute(null)))
         {
             return;
         }
 
-        DataContext.CalculateSizesCommand.Execute(null);
+        ViewModel.CalculateSizesCommand.Execute(null);
     }
 
     /// <summary>Handles the Click event of the ButtonFolderBrowse control.</summary>
@@ -293,12 +293,12 @@ internal partial class FormAtlasGen
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
     private void ButtonFolderBrowse_Click(object sender, EventArgs e)
     {
-        if ((DataContext?.SelectFolderCommand is null) || (!DataContext.SelectFolderCommand.CanExecute(null)))
+        if ((ViewModel?.SelectFolderCommand is null) || (!ViewModel.SelectFolderCommand.CanExecute(null)))
         {
             return;
         }
 
-        DataContext.SelectFolderCommand.Execute(null);
+        ViewModel.SelectFolderCommand.Execute(null);
     }
 
     /// <summary>Handles the TextChanged event of the TextBaseTextureName control.</summary>
@@ -306,12 +306,12 @@ internal partial class FormAtlasGen
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
     private void TextBaseTextureName_TextChanged(object sender, EventArgs e)
     {
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             return;
         }
 
-        DataContext.BaseTextureName = TextBaseTextureName.Text;
+        ViewModel.BaseTextureName = TextBaseTextureName.Text;
     }
 
     /// <summary>Function called when a property was changed on the data context.</summary>
@@ -324,13 +324,13 @@ internal partial class FormAtlasGen
             case nameof(IImageAtlas.PreviewTextureIndex):
             case nameof(IImageAtlas.PreviewArrayIndex):
             case nameof(IImageAtlas.Atlas):
-                UpdateLabelArrayText(DataContext);
+                UpdateLabelArrayText(ViewModel);
                 break;
             case nameof(IImageAtlas.LoadedImageCount):
-                LabelSpriteCount.Text = string.Format(DataContext.LoadedImageCount == 0 ? Resources.GORIAG_TEXT_NO_IMAGES : Resources.GORIAG_TEXT_IMAGE_COUNT, DataContext.LoadedImageCount);
+                LabelSpriteCount.Text = string.Format(ViewModel.LoadedImageCount == 0 ? Resources.GORIAG_TEXT_NO_IMAGES : Resources.GORIAG_TEXT_IMAGE_COUNT, ViewModel.LoadedImageCount);
                 break;
             case nameof(IImageAtlas.Padding):
-                decimal padding = DataContext.Padding.Min((int)NumericPadding.Maximum).Max((int)NumericPadding.Minimum);
+                decimal padding = ViewModel.Padding.Min((int)NumericPadding.Maximum).Max((int)NumericPadding.Minimum);
 
                 if (padding != NumericPadding.Value)
                 {
@@ -338,8 +338,8 @@ internal partial class FormAtlasGen
                 }
                 break;
             case nameof(IImageAtlas.MaxTextureSize):
-                decimal w = DataContext.MaxTextureSize.Width.Min((int)NumericTextureWidth.Maximum).Max((int)NumericTextureWidth.Minimum);
-                decimal h = DataContext.MaxTextureSize.Height.Min((int)NumericTextureHeight.Maximum).Max((int)NumericTextureHeight.Minimum);
+                decimal w = ViewModel.MaxTextureSize.Width.Min((int)NumericTextureWidth.Maximum).Max((int)NumericTextureWidth.Minimum);
+                decimal h = ViewModel.MaxTextureSize.Height.Min((int)NumericTextureHeight.Maximum).Max((int)NumericTextureHeight.Minimum);
 
                 if (NumericTextureWidth.Value != w)
                 {
@@ -352,7 +352,7 @@ internal partial class FormAtlasGen
                 }
                 break;
             case nameof(IImageAtlas.MaxArrayCount):
-                decimal arrayCount = DataContext.MaxArrayCount.Min((int)NumericArrayIndex.Maximum).Max((int)NumericArrayIndex.Minimum);
+                decimal arrayCount = ViewModel.MaxArrayCount.Min((int)NumericArrayIndex.Maximum).Max((int)NumericArrayIndex.Minimum);
 
                 if (NumericArrayIndex.Value != arrayCount)
                 {
@@ -360,15 +360,15 @@ internal partial class FormAtlasGen
                 }
                 break;
             case nameof(IImageAtlas.BaseTextureName):
-                if (!string.Equals(TextBaseTextureName.Text, DataContext.BaseTextureName, StringComparison.CurrentCulture))
+                if (!string.Equals(TextBaseTextureName.Text, ViewModel.BaseTextureName, StringComparison.CurrentCulture))
                 {
-                    TextBaseTextureName.Text = DataContext.BaseTextureName;
+                    TextBaseTextureName.Text = ViewModel.BaseTextureName;
                 }
                 break;
             case nameof(IImageAtlas.OutputPath):
-                if (!string.Equals(TextOutputFolder.Text, DataContext.OutputPath, StringComparison.CurrentCulture))
+                if (!string.Equals(TextOutputFolder.Text, ViewModel.OutputPath, StringComparison.CurrentCulture))
                 {
-                    TextOutputFolder.Text = DataContext.OutputPath;
+                    TextOutputFolder.Text = ViewModel.OutputPath;
                 }
                 break;
         }
@@ -453,7 +453,7 @@ internal partial class FormAtlasGen
             return;
         }
 
-        DataContext?.Load();
+        ViewModel?.Load();
 
         ValidateControls();
     }
@@ -467,7 +467,7 @@ internal partial class FormAtlasGen
 
         InitializeFromDataContext(dataContext);
 
-        DataContext = dataContext;
+        ViewModel = dataContext;
     }
 
     /// <summary>Function to perform custom graphics set up.</summary>
@@ -486,13 +486,13 @@ internal partial class FormAtlasGen
     {
         base.OnSetupGraphics(graphicsContext, swapChain);
 
-        Debug.Assert(DataContext is not null, "No datacontext");
+        Debug.Assert(ViewModel is not null, "No datacontext");
 
         NumericTextureWidth.Maximum = graphicsContext.VideoAdapter.MaxTextureWidth;
         NumericTextureHeight.Maximum = graphicsContext.VideoAdapter.MaxTextureHeight;
         NumericArrayIndex.Maximum = graphicsContext.VideoAdapter.MaxTextureArrayCount;
 
-        var atlasRenderer = new Renderer(graphicsContext.Renderer2D, swapChain, DataContext);
+        var atlasRenderer = new Renderer(graphicsContext.Renderer2D, swapChain, ViewModel);
         AddRenderer(atlasRenderer.Name, atlasRenderer);
         SwitchRenderer(atlasRenderer.Name);
     }

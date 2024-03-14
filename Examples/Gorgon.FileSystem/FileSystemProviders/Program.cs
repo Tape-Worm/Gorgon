@@ -73,9 +73,9 @@ internal static class Program
 
     #region Properties.
     /// <summary>
-		/// Property to return the path to the plug ins.
-		/// </summary>
-		public static string PlugInPath
+        /// Property to return the path to the plug ins.
+        /// </summary>
+        public static string PlugInPath
     {
         get
         {
@@ -86,7 +86,7 @@ internal static class Program
 #if DEBUG
                 path = string.Format(path, "Debug");
 #else
-					path = string.Format(path, "Release");					
+                    path = string.Format(path, "Release");                    
 #endif
             }
 

@@ -1,4 +1,4 @@
-#region MIT
+﻿#region MIT
 // 
 // Gorgon.
 // Copyright (C) 2018 Michael Winsor
@@ -115,7 +115,7 @@ public partial class Form
                                                     radius),
                                   Color.Black);
         }
-        
+
         // Draw some black bars.
         _renderer.DrawFilledRectangle(new DX.RectangleF(0, 0, _screen.Width, _screen.Height / 6.0f), Color.Black);
         _renderer.DrawFilledRectangle(new DX.RectangleF(0, _screen.Height - (_screen.Height / 6.0f), _screen.Width, _screen.Height / 6.0f), Color.Black);
@@ -124,7 +124,7 @@ public partial class Form
         _renderer.End();
 
         GorgonExample.DrawStatsAndLogo(_renderer);
-        
+
         // Always call this when done or you won't see anything.
         _screen.Present(1);
     }

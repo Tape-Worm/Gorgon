@@ -23,15 +23,15 @@ using System;
 [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
 [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
 internal class Resources {
-    
+
     private static global::System.Resources.ResourceManager resourceMan;
-    
+
     private static global::System.Globalization.CultureInfo resourceCulture;
-    
+
     [global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
     internal Resources() {
     }
-    
+
     /// <summary>
     ///   Returns the cached ResourceManager instance used by this class.
     /// </summary>
@@ -45,7 +45,7 @@ internal class Resources {
             return resourceMan;
         }
     }
-    
+
     /// <summary>
     ///   Overrides the current thread's CurrentUICulture property for all
     ///   resource lookups using this strongly typed resource class.
@@ -59,7 +59,7 @@ internal class Resources {
             resourceCulture = value;
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized resource of type System.Drawing.Bitmap.
     /// </summary>
@@ -69,7 +69,7 @@ internal class Resources {
             return ((System.Drawing.Bitmap)(obj));
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized resource of type System.Drawing.Bitmap.
     /// </summary>
@@ -79,7 +79,7 @@ internal class Resources {
             return ((System.Drawing.Bitmap)(obj));
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized resource of type System.Drawing.Bitmap.
     /// </summary>
@@ -89,7 +89,7 @@ internal class Resources {
             return ((System.Drawing.Bitmap)(obj));
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized resource of type System.Drawing.Bitmap.
     /// </summary>
@@ -99,7 +99,7 @@ internal class Resources {
             return ((System.Drawing.Bitmap)(obj));
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to This is an example plug in for the Gorgon Editor.
     ///
@@ -116,7 +116,7 @@ internal class Resources {
             return ResourceManager.GetString("DEFAULT_TEXT", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized resource of type System.Drawing.Bitmap.
     /// </summary>
@@ -126,7 +126,7 @@ internal class Resources {
             return ((System.Drawing.Bitmap)(obj));
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized resource of type System.Drawing.Bitmap.
     /// </summary>
@@ -136,7 +136,7 @@ internal class Resources {
             return ((System.Drawing.Bitmap)(obj));
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized resource of type System.Drawing.Bitmap.
     /// </summary>
@@ -146,7 +146,7 @@ internal class Resources {
             return ((System.Drawing.Bitmap)(obj));
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized resource of type System.Drawing.Bitmap.
     /// </summary>
@@ -156,7 +156,7 @@ internal class Resources {
             return ((System.Drawing.Bitmap)(obj));
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized resource of type System.Drawing.Bitmap.
     /// </summary>
@@ -166,7 +166,7 @@ internal class Resources {
             return ((System.Drawing.Bitmap)(obj));
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized resource of type System.Drawing.Bitmap.
     /// </summary>
@@ -176,7 +176,7 @@ internal class Resources {
             return ((System.Drawing.Bitmap)(obj));
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized resource of type System.Drawing.Bitmap.
     /// </summary>
@@ -186,7 +186,7 @@ internal class Resources {
             return ((System.Drawing.Bitmap)(obj));
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized resource of type System.Drawing.Bitmap.
     /// </summary>
@@ -196,7 +196,7 @@ internal class Resources {
             return ((System.Drawing.Bitmap)(obj));
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized resource of type System.Drawing.Bitmap.
     /// </summary>
@@ -206,7 +206,7 @@ internal class Resources {
             return ((System.Drawing.Bitmap)(obj));
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized resource of type System.Drawing.Bitmap.
     /// </summary>
@@ -216,7 +216,7 @@ internal class Resources {
             return ((System.Drawing.Bitmap)(obj));
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized resource of type System.Drawing.Bitmap.
     /// </summary>
@@ -226,7 +226,7 @@ internal class Resources {
             return ((System.Drawing.Bitmap)(obj));
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized resource of type System.Drawing.Bitmap.
     /// </summary>
@@ -236,7 +236,7 @@ internal class Resources {
             return ((System.Drawing.Bitmap)(obj));
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized resource of type System.Drawing.Bitmap.
     /// </summary>
@@ -246,7 +246,7 @@ internal class Resources {
             return ((System.Drawing.Bitmap)(obj));
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to Zoom: {0}.
     /// </summary>

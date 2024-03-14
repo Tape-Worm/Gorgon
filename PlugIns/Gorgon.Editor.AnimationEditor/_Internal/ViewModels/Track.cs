@@ -224,7 +224,7 @@ internal class Track
     {
         TrackInterpolationUndoRedoArgs trackInterpUndoArgs;
         TrackInterpolationUndoRedoArgs trackInterpRedoArgs;
-                    
+
         bool SetInterpolation(TrackInterpolationMode interpolationMode)
         {
             try
@@ -315,7 +315,7 @@ internal class Track
         _interpolation = injectionParameters.InterpolationMode;
         _undoService = injectionParameters.UndoService;
         KeyMetadata = injectionParameters.KeyMetadata;
-        
+
         _keyFrames = new IKeyFrame[injectionParameters.KeyCount.Max(1)];
 
         SetTrackID();

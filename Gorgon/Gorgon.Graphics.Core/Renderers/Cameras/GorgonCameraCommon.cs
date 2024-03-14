@@ -329,7 +329,7 @@ public abstract class GorgonCameraCommon
             UpdateViewMatrix(ref _viewMatrix);
             Changes &= ~CameraChange.View;
         }
-        
+
         return ref _viewMatrix;
     }
 
@@ -344,7 +344,7 @@ public abstract class GorgonCameraCommon
             UpdateProjectionMatrix(ref _projectionMatrix);
             Changes &= ~CameraChange.Projection;
         }
-        
+
         return ref _projectionMatrix;
     }
 

@@ -194,7 +194,7 @@ internal partial class FileExploder
     /// Property to return the data context assigned to this view.
     /// </summary>
     [Browsable(false)]
-    public IFileExplorer DataContext
+    public IFileExplorer ViewModel
     {
         get;
         private set;
@@ -262,7 +262,7 @@ internal partial class FileExploder
     /// <param name="e">The <see cref="SplitterEventArgs"/> instance containing the event data.</param>
     private void SplitFileSystem_SplitterMoved(object sender, SplitterEventArgs e)
     {
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             return;
         }
@@ -374,7 +374,7 @@ internal partial class FileExploder
             if ((dataContext.SelectedDirectory is not null)
                 && ((dataContext.SelectedDirectory.AvailableActions & DirectoryActions.ExcludeFromPackedFile) == DirectoryActions.ExcludeFromPackedFile))
             {
-                var excludable = (IExcludable)DataContext.SelectedDirectory;
+                var excludable = (IExcludable)ViewModel.SelectedDirectory;
                 MenuSepExclude.Available = 
                 MenuItemExcludeFromPackfile.Available = true;
                 MenuItemExcludeFromPackfile.Checked = excludable.IsExcluded;
@@ -438,17 +438,17 @@ internal partial class FileExploder
         try
         {
             var args = new DeleteArgs(null);
-            if ((DataContext?.DeleteFileCommand is null) || (!DataContext.DeleteFileCommand.CanExecute(args)))
+            if ((ViewModel?.DeleteFileCommand is null) || (!ViewModel.DeleteFileCommand.CanExecute(args)))
             {
                 return;
             }
 
-            await DataContext.DeleteFileCommand.ExecuteAsync(args);
+            await ViewModel.DeleteFileCommand.ExecuteAsync(args);
         }
         finally
         {
             EnableGridEvents();
-            ValidateMenuItems(DataContext);
+            ValidateMenuItems(ViewModel);
         }
     }
 
@@ -460,12 +460,12 @@ internal partial class FileExploder
         try
         {
             var args = new CreateDirectoryArgs();
-            if ((DataContext?.CreateDirectoryCommand is null) || (!DataContext.CreateDirectoryCommand.CanExecute(args)))
+            if ((ViewModel?.CreateDirectoryCommand is null) || (!ViewModel.CreateDirectoryCommand.CanExecute(args)))
             {
                 return;
             }
 
-            DataContext.CreateDirectoryCommand.Execute(args);                
+            ViewModel.CreateDirectoryCommand.Execute(args);                
 
             // Since we created a new directory, we need to ensure it's visible on the tree so we can give it a new name.
             IDirectory directory = args.Directory;
@@ -501,7 +501,7 @@ internal partial class FileExploder
         }
         finally
         {
-            ValidateMenuItems(DataContext);
+            ValidateMenuItems(ViewModel);
         }
     }
 
@@ -520,7 +520,7 @@ internal partial class FileExploder
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
     private void MenuItemRenameDirectory_Click(object sender, EventArgs e)
     {
-        if ((DataContext?.RenameDirectoryCommand is null) || (!DataContext.RenameDirectoryCommand.CanExecute(null)))
+        if ((ViewModel?.RenameDirectoryCommand is null) || (!ViewModel.RenameDirectoryCommand.CanExecute(null)))
         {
             return;
         }
@@ -534,7 +534,7 @@ internal partial class FileExploder
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
     private void MenuItemRenameFile_Click(object sender, EventArgs e)
     {
-        if ((DataContext?.RenameFileCommand is null) || (!DataContext.RenameFileCommand.CanExecute(null)))
+        if ((ViewModel?.RenameFileCommand is null) || (!ViewModel.RenameFileCommand.CanExecute(null)))
         {
             return;
         }
@@ -553,12 +553,12 @@ internal partial class FileExploder
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
     private async void MenuItemExportDirectoryTo_Click(object sender, EventArgs e)
     {
-        if ((DataContext?.ExportDirectoryCommand is null) || (!DataContext.ExportDirectoryCommand.CanExecute(null)))
+        if ((ViewModel?.ExportDirectoryCommand is null) || (!ViewModel.ExportDirectoryCommand.CanExecute(null)))
         {
             return;
         }
 
-        await DataContext.ExportDirectoryCommand.ExecuteAsync(null);
+        await ViewModel.ExportDirectoryCommand.ExecuteAsync(null);
     }
 
     /// <summary>Handles the Click event of the MenuItemExportFiles control.</summary>
@@ -566,12 +566,12 @@ internal partial class FileExploder
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
     private async void MenuItemExportFiles_Click(object sender, EventArgs e)
     {
-        if ((DataContext?.ExportFilesCommand is null) || (!DataContext.ExportFilesCommand.CanExecute(null)))
+        if ((ViewModel?.ExportFilesCommand is null) || (!ViewModel.ExportFilesCommand.CanExecute(null)))
         {
             return;
         }
 
-        await DataContext.ExportFilesCommand.ExecuteAsync(null);
+        await ViewModel.ExportFilesCommand.ExecuteAsync(null);
     }
 
     /// <summary>Handles the Click event of the MenuItemCopyFiles control.</summary>
@@ -599,14 +599,14 @@ internal partial class FileExploder
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
     private async void MenuItemPasteDirectory_Click(object sender, EventArgs e)
     {
-        if (DataContext?.Clipboard is null)
+        if (ViewModel?.Clipboard is null)
         {
             return;
         }
 
         try
         {
-            IClipboardHandler handler = DataContext.Clipboard;
+            IClipboardHandler handler = ViewModel.Clipboard;
             if ((handler.PasteDataCommand is null) || (!handler.PasteDataCommand.CanExecute(null)))
             {
                 return;
@@ -616,7 +616,7 @@ internal partial class FileExploder
         }
         finally
         {
-            ValidateMenuItems(DataContext);
+            ValidateMenuItems(ViewModel);
         }
     }
 
@@ -625,16 +625,16 @@ internal partial class FileExploder
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
     private async void MenuItemCopyTo_Click(object sender, EventArgs e)
     {
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             return;
         }
 
         try
         {
-            if ((MenuCopyMove.Tag is GridRowsDragData rowData) && (DataContext.CopyFileCommand is not null) && (DataContext.CopyFileCommand.CanExecute(rowData)))
+            if ((MenuCopyMove.Tag is GridRowsDragData rowData) && (ViewModel.CopyFileCommand is not null) && (ViewModel.CopyFileCommand.CanExecute(rowData)))
             {
-                await DataContext.CopyFileCommand.ExecuteAsync(rowData);
+                await ViewModel.CopyFileCommand.ExecuteAsync(rowData);
             }
 
             if (MenuCopyMove.Tag is not TreeNodeDragData nodeData)
@@ -643,16 +643,16 @@ internal partial class FileExploder
                 return;
             }
 
-            if ((DataContext.CopyDirectoryCommand is not null) && (DataContext.CopyDirectoryCommand.CanExecute(nodeData)))
+            if ((ViewModel.CopyDirectoryCommand is not null) && (ViewModel.CopyDirectoryCommand.CanExecute(nodeData)))
             {
-                await DataContext.CopyDirectoryCommand.ExecuteAsync(nodeData);
+                await ViewModel.CopyDirectoryCommand.ExecuteAsync(nodeData);
             }
 
             MenuCopyMove.Tag = null;
         }
         finally
         {
-            ValidateMenuItems(DataContext);
+            ValidateMenuItems(ViewModel);
         }
     }
 
@@ -661,16 +661,16 @@ internal partial class FileExploder
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
     private async void MenuItemMoveTo_Click(object sender, EventArgs e)
     {
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             return;
         }
 
         try
         {
-            if ((MenuCopyMove.Tag is GridRowsDragData rowData) && (DataContext.MoveFileCommand is not null) && (DataContext.MoveFileCommand.CanExecute(rowData)))
+            if ((MenuCopyMove.Tag is GridRowsDragData rowData) && (ViewModel.MoveFileCommand is not null) && (ViewModel.MoveFileCommand.CanExecute(rowData)))
             {
-                await DataContext.MoveFileCommand.ExecuteAsync(rowData);
+                await ViewModel.MoveFileCommand.ExecuteAsync(rowData);
             }
 
             if (MenuCopyMove.Tag is not TreeNodeDragData data)
@@ -679,41 +679,41 @@ internal partial class FileExploder
                 return;
             }
 
-            if ((DataContext.MoveDirectoryCommand is not null) && (DataContext.MoveDirectoryCommand.CanExecute(data)))
+            if ((ViewModel.MoveDirectoryCommand is not null) && (ViewModel.MoveDirectoryCommand.CanExecute(data)))
             {
-                await DataContext.MoveDirectoryCommand.ExecuteAsync(data);
+                await ViewModel.MoveDirectoryCommand.ExecuteAsync(data);
             }
 
             MenuCopyMove.Tag = null;
         }
         finally
         {
-            ValidateMenuItems(DataContext);
+            ValidateMenuItems(ViewModel);
         }
     }
 
     /// <summary>Handles the Opening event of the MenuFiles control.</summary>
     /// <param name="sender">The source of the event.</param>
     /// <param name="e">The <see cref="CancelEventArgs"/> instance containing the event data.</param>
-    private void MenuFiles_Opening(object sender, CancelEventArgs e) => ValidateMenuItems(DataContext);
+    private void MenuFiles_Opening(object sender, CancelEventArgs e) => ValidateMenuItems(ViewModel);
 
     /// <summary>Handles the Opening event of the MenuDirectory control.</summary>
     /// <param name="sender">The source of the event.</param>
     /// <param name="e">The <see cref="CancelEventArgs"/> instance containing the event data.</param>
-    private void MenuDirectory_Opening(object sender, CancelEventArgs e) => ValidateMenuItems(DataContext);
+    private void MenuDirectory_Opening(object sender, CancelEventArgs e) => ValidateMenuItems(ViewModel);
 
     /// <summary>Handles the Click event of the MenuItemOpen control.</summary>
     /// <param name="sender">The source of the event.</param>
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
     private void MenuItemOpen_Click(object sender, EventArgs e)
     {
-        if ((DataContext?.OpenContentFileCommand is null) || (!DataContext.OpenContentFileCommand.CanExecute(null)))
+        if ((ViewModel?.OpenContentFileCommand is null) || (!ViewModel.OpenContentFileCommand.CanExecute(null)))
         {
             return;
         }
 
-        DataContext.OpenContentFileCommand.ExecuteAsync(null);
-        ValidateMenuItems(DataContext);
+        ViewModel.OpenContentFileCommand.ExecuteAsync(null);
+        ValidateMenuItems(ViewModel);
     }
 
     /// <summary>Handles the Click event of the MenuItemExcludeFromPackfile control.</summary>
@@ -721,14 +721,14 @@ internal partial class FileExploder
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
     private void MenuItemExcludeFromPackfile_Click(object sender, EventArgs e)
     {
-        if (DataContext?.SelectedDirectory is null)
+        if (ViewModel?.SelectedDirectory is null)
         {
             return;
         }
 
-        var exclude = (IExcludable)DataContext.SelectedDirectory;
+        var exclude = (IExcludable)ViewModel.SelectedDirectory;
         exclude.IsExcluded = MenuItemExcludeFromPackfile.Checked;
-        ValidateMenuItems(DataContext);
+        ValidateMenuItems(ViewModel);
     }
 
     /// <summary>Handles the CollectionChanged event of the SelectedFiles control.</summary>
@@ -782,7 +782,7 @@ internal partial class FileExploder
         finally
         {
             EnableGridEvents();
-            ValidateMenuItems(DataContext);
+            ValidateMenuItems(ViewModel);
         }
     }
 
@@ -802,7 +802,7 @@ internal partial class FileExploder
                 case NotifyCollectionChangedAction.Add:
                     file = e.NewItems.OfType<IFile>().FirstOrDefault();
 
-                    if ((file is null) || (file.Parent != DataContext.SelectedDirectory))
+                    if ((file is null) || (file.Parent != ViewModel.SelectedDirectory))
                     {
                         break;
                     }
@@ -823,7 +823,7 @@ internal partial class FileExploder
                 case NotifyCollectionChangedAction.Remove:
                     file = e.OldItems.OfType<IFile>().FirstOrDefault();
 
-                    if ((file is null) || (file.Parent != DataContext.SelectedDirectory))
+                    if ((file is null) || (file.Parent != ViewModel.SelectedDirectory))
                     {
                         break;
                     }
@@ -836,7 +836,7 @@ internal partial class FileExploder
                     file.PropertyChanged -= File_PropertyChanged;
                     break;
                 case NotifyCollectionChangedAction.Reset:
-                    if (DataContext.SelectedDirectory.Files != sender)
+                    if (ViewModel.SelectedDirectory.Files != sender)
                     {
                         break;
                     }
@@ -854,7 +854,7 @@ internal partial class FileExploder
         finally
         {
             EnableGridEvents();
-            ValidateMenuItems(DataContext);
+            ValidateMenuItems(ViewModel);
         }
     }
 
@@ -903,16 +903,16 @@ internal partial class FileExploder
                 directoryNode.Nodes.Add(newNode);
                 _directoryNodes[directory.ID] = newNode;
                 newNode.SetDataContext(directory);
-                newNode.DataContext.Load();
+                newNode.ViewModel.Load();
 
                 directory.Directories.CollectionChanged += Directories_CollectionChanged;
                 directory.PropertyChanged += Directory_PropertyChanged;
-                
+
                 break;
             case NotifyCollectionChangedAction.Remove:
                 directory = (IDirectory)e.OldItems[0];
 
-                if ((directory == DataContext.Root) || (!_directoryNodes.TryGetValue(directory.ID, out directoryNode)))
+                if ((directory == ViewModel.Root) || (!_directoryNodes.TryGetValue(directory.ID, out directoryNode)))
                 {
                     break;
                 }
@@ -921,38 +921,38 @@ internal partial class FileExploder
                 directory.Directories.CollectionChanged -= Directories_CollectionChanged;
                 directory.Files.CollectionChanged -= Files_CollectionChanged;                    
 
-                childNodes = _directoryNodes.Where(item => (item.Key.StartsWith(directoryNode.Name, StringComparison.OrdinalIgnoreCase)) && (item.Value.DataContext is not null))
+                childNodes = _directoryNodes.Where(item => (item.Key.StartsWith(directoryNode.Name, StringComparison.OrdinalIgnoreCase)) && (item.Value.ViewModel is not null))
                                             .Select(item => item.Value)
                                             .ToArray();
 
                 foreach (DirectoryTreeNode node in childNodes)
                 {
-                    node.DataContext.PropertyChanged -= Directory_PropertyChanged;
-                    node.DataContext.Files.CollectionChanged -= Files_CollectionChanged;
-                    node.DataContext.Directories.CollectionChanged -= Directories_CollectionChanged;
+                    node.ViewModel.PropertyChanged -= Directory_PropertyChanged;
+                    node.ViewModel.Files.CollectionChanged -= Files_CollectionChanged;
+                    node.ViewModel.Directories.CollectionChanged -= Directories_CollectionChanged;
                     _directoryNodes.Remove(node.Name);
                 }
 
                 directoryNode.Remove();
                 break;
             case NotifyCollectionChangedAction.Reset:
-                directoryNode = _directoryNodes.Values.FirstOrDefault(d => d.DataContext.Directories == sender);
+                directoryNode = _directoryNodes.Values.FirstOrDefault(d => d.ViewModel.Directories == sender);
 
                 if (directoryNode is null)
                 {
                     break;
                 }
 
-                childNodes = _directoryNodes.Where(item => (item.Value != directoryNode)  && (item.Value.DataContext is not null)
+                childNodes = _directoryNodes.Where(item => (item.Value != directoryNode)  && (item.Value.ViewModel is not null)
                                                         && (item.Key.StartsWith(directoryNode.Name, StringComparison.OrdinalIgnoreCase)))
                                             .Select(item => item.Value)
                                             .ToArray();
 
                 foreach (DirectoryTreeNode node in childNodes)
                 {
-                    node.DataContext.PropertyChanged -= Directory_PropertyChanged;
-                    node.DataContext.Directories.CollectionChanged -= Directories_CollectionChanged;
-                    node.DataContext.Files.CollectionChanged -= Files_CollectionChanged;
+                    node.ViewModel.PropertyChanged -= Directory_PropertyChanged;
+                    node.ViewModel.Directories.CollectionChanged -= Directories_CollectionChanged;
+                    node.ViewModel.Files.CollectionChanged -= Files_CollectionChanged;
 
                     _directoryNodes.Remove(node.Name);
                 }
@@ -961,7 +961,7 @@ internal partial class FileExploder
                 break;
         }
 
-        ValidateMenuItems(DataContext);
+        ValidateMenuItems(ViewModel);
     }
 
     /// <summary>Handles the PropertyChanged event of the Clipboard control.</summary>
@@ -969,12 +969,12 @@ internal partial class FileExploder
     /// <param name="e">The <see cref="PropertyChangedEventArgs"/> instance containing the event data.</param>
     private void Clipboard_PropertyChanged(object sender, PropertyChangedEventArgs e) 
     {
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             return;
         }
 
-        ValidateMenuItems(DataContext);
+        ValidateMenuItems(ViewModel);
     }
 
     /// <summary>
@@ -987,28 +987,28 @@ internal partial class FileExploder
         switch (e.PropertyName)
         {
             case nameof(IFileExplorer.SelectedFiles):
-                DataContext.SelectedFiles.CollectionChanged -= SelectedFiles_CollectionChanged;
+                ViewModel.SelectedFiles.CollectionChanged -= SelectedFiles_CollectionChanged;
                 break;
             case nameof(IFileExplorer.Clipboard):
-                if (DataContext.Clipboard is not null)
+                if (ViewModel.Clipboard is not null)
                 {
-                    DataContext.Clipboard.PropertyChanged -= Clipboard_PropertyChanged;
+                    ViewModel.Clipboard.PropertyChanged -= Clipboard_PropertyChanged;
                 }
                 break;
             case nameof(IFileExplorer.SearchResults):
-                if (DataContext.SearchResults is not null)
+                if (ViewModel.SearchResults is not null)
                 {
-                    RemoveFileEvents(DataContext.SearchResults);
+                    RemoveFileEvents(ViewModel.SearchResults);
                 }
                 break;
             case nameof(IFileExplorer.SelectedDirectory):
-                if (DataContext.SelectedDirectory is null)
+                if (ViewModel.SelectedDirectory is null)
                 {
                     return;
                 }
 
-                RemoveFileEvents(DataContext.SelectedDirectory.Files);
-                DataContext.SelectedDirectory.Files.CollectionChanged -= Files_CollectionChanged;
+                RemoveFileEvents(ViewModel.SelectedDirectory.Files);
+                ViewModel.SelectedDirectory.Files.CollectionChanged -= Files_CollectionChanged;
                 break;
         }
     }
@@ -1020,7 +1020,7 @@ internal partial class FileExploder
     private void SelectRows(IFileExplorer dataContext)
     {
         DisableGridEvents();
-        
+
         try
         {
             GridFiles.ClearSelection();
@@ -1066,34 +1066,34 @@ internal partial class FileExploder
         switch (e.PropertyName)
         {
             case nameof(IFileExplorer.Clipboard):
-                if (DataContext.Clipboard is not null)
+                if (ViewModel.Clipboard is not null)
                 {
-                    DataContext.Clipboard.PropertyChanged += Clipboard_PropertyChanged;
+                    ViewModel.Clipboard.PropertyChanged += Clipboard_PropertyChanged;
                 }
                 break;
             case nameof(IFileExplorer.SearchResults):
-                if (DataContext.SearchResults is not null)
+                if (ViewModel.SearchResults is not null)
                 {
                     SplitFileSystem.Panel1Collapsed = true;
                     TreeDirectories.Visible = false;
-                    FillFiles(DataContext, DataContext.SelectedDirectory, DataContext.SearchResults);
+                    FillFiles(ViewModel, ViewModel.SelectedDirectory, ViewModel.SearchResults);
                 }
                 else
                 {
                     SplitFileSystem.Panel1Collapsed = false;
                     TreeDirectories.Visible = true;
-                    FillFiles(DataContext, DataContext.SelectedDirectory, DataContext.SelectedDirectory?.Files);
+                    FillFiles(ViewModel, ViewModel.SelectedDirectory, ViewModel.SelectedDirectory?.Files);
                 }                    
                 break;
             case nameof(IFileExplorer.SelectedFiles):
-                SelectRows(DataContext);
-                DataContext.SelectedFiles.CollectionChanged += SelectedFiles_CollectionChanged;
+                SelectRows(ViewModel);
+                ViewModel.SelectedFiles.CollectionChanged += SelectedFiles_CollectionChanged;
                 break;
             case nameof(IFileExplorer.SelectedDirectory):
 
-                if (DataContext.SelectedDirectory is not null)                             
+                if (ViewModel.SelectedDirectory is not null)                             
                 {
-                    if (_directoryNodes.TryGetValue(DataContext.SelectedDirectory.ID, out DirectoryTreeNode node))
+                    if (_directoryNodes.TryGetValue(ViewModel.SelectedDirectory.ID, out DirectoryTreeNode node))
                     {
                         if (TreeDirectories.SelectedNode != node)
                         {
@@ -1101,13 +1101,13 @@ internal partial class FileExploder
                         }
                     }
 
-                    DataContext.SelectedDirectory.Files.CollectionChanged += Files_CollectionChanged;
+                    ViewModel.SelectedDirectory.Files.CollectionChanged += Files_CollectionChanged;
                 }
 
-                FillFiles(DataContext, DataContext.SelectedDirectory, DataContext.SelectedDirectory?.Files);
+                FillFiles(ViewModel, ViewModel.SelectedDirectory, ViewModel.SelectedDirectory?.Files);
                 break;
         }
-        ValidateMenuItems(DataContext);
+        ValidateMenuItems(ViewModel);
     }
 
     /// <summary>Handles the PropertyChanged event of the Directory control.</summary>
@@ -1134,7 +1134,7 @@ internal partial class FileExploder
                 break;
         }
 
-        ValidateMenuItems(DataContext);
+        ValidateMenuItems(ViewModel);
     }
 
     /// <summary>Handles the PropertyChanged event of the File control.</summary>
@@ -1145,7 +1145,7 @@ internal partial class FileExploder
         var file = (IFile)sender;
 
         // If we've no directory selected, or the currently selected directory is not the same as the directory for the file, then we have nothing to look up and refresh.
-        if ((TreeDirectories.SelectedNode is not DirectoryTreeNode selectedDir) || (file.Parent != selectedDir.DataContext))
+        if ((TreeDirectories.SelectedNode is not DirectoryTreeNode selectedDir) || (file.Parent != selectedDir.ViewModel))
         {
             return;
         }
@@ -1205,7 +1205,7 @@ internal partial class FileExploder
                 GridFiles.InvalidateRow(row.Index);
                 break;
         }
-        ValidateMenuItems(DataContext);
+        ValidateMenuItems(ViewModel);
     }
 
     /// <summary>
@@ -1240,7 +1240,7 @@ internal partial class FileExploder
     /// <param name="node">The node to select.</param>
     private void SelectNode(DirectoryTreeNode node)
     {
-        if ((DataContext?.SelectDirectoryCommand is null) || (!DataContext.SelectDirectoryCommand.CanExecute(node?.Name ?? string.Empty)))
+        if ((ViewModel?.SelectDirectoryCommand is null) || (!ViewModel.SelectDirectoryCommand.CanExecute(node?.Name ?? string.Empty)))
         {
             return;
         }
@@ -1248,7 +1248,7 @@ internal partial class FileExploder
         if ((TreeDirectories.SelectedNode is not null) && (TreeDirectories.SelectedNode != node))
         {
             var currentNode = (DirectoryTreeNode)TreeDirectories.SelectedNode;
-            RemoveFileEvents(currentNode.DataContext.Files);
+            RemoveFileEvents(currentNode.ViewModel.Files);
         }
 
         if (node is null)
@@ -1260,11 +1260,11 @@ internal partial class FileExploder
             TreeDirectories.SelectedNode = node;
         }
 
-        DataContext.SelectDirectoryCommand.Execute(node?.Name ?? string.Empty);
+        ViewModel.SelectDirectoryCommand.Execute(node?.Name ?? string.Empty);
 
-        FillFiles(DataContext, node?.DataContext, node?.DataContext.Files);
+        FillFiles(ViewModel, node?.ViewModel, node?.ViewModel.Files);
 
-        ValidateMenuItems(DataContext);
+        ValidateMenuItems(ViewModel);
     }
 
     /// <summary>
@@ -1289,12 +1289,12 @@ internal partial class FileExploder
     /// </summary>
     private void ResetDataContext()
     {
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             return;
         }
 
-        SelectRows(DataContext);
+        SelectRows(ViewModel);
 
         if (TreeNodeIcons.Images.Count > 2)
         {
@@ -1305,15 +1305,15 @@ internal partial class FileExploder
         }
 
         _directoryNodes.Clear();
-        DataContext.Unload();
+        ViewModel.Unload();
 
         foreach (DirectoryTreeNode node in TreeDirectories.Nodes.OfType<DirectoryTreeNode>().Traverse(n => n.Nodes.OfType<DirectoryTreeNode>()))
         {
-            node.DataContext.PropertyChanged += Directory_PropertyChanged;
-            node.DataContext.Directories.CollectionChanged -= Directories_CollectionChanged;
-            node.DataContext.Files.CollectionChanged -= Files_CollectionChanged;
+            node.ViewModel.PropertyChanged += Directory_PropertyChanged;
+            node.ViewModel.Directories.CollectionChanged -= Directories_CollectionChanged;
+            node.ViewModel.Files.CollectionChanged -= Files_CollectionChanged;
 
-            RemoveFileEvents(node.DataContext.Files);
+            RemoveFileEvents(node.ViewModel.Files);
 
             node.SetDataContext(null);
         }
@@ -1327,30 +1327,30 @@ internal partial class FileExploder
     /// </summary>
     private void UnassignEvents()
     {
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             return;
         }
 
-        if (DataContext.Clipboard is not null)
+        if (ViewModel.Clipboard is not null)
         {
-            DataContext.Clipboard.PropertyChanged -= Clipboard_PropertyChanged;
+            ViewModel.Clipboard.PropertyChanged -= Clipboard_PropertyChanged;
         }
 
-        DataContext.SelectedFiles.CollectionChanged -= SelectedFiles_CollectionChanged;
+        ViewModel.SelectedFiles.CollectionChanged -= SelectedFiles_CollectionChanged;
 
-        if (DataContext.SelectedDirectory is not null)
+        if (ViewModel.SelectedDirectory is not null)
         {
-            DataContext.SelectedDirectory.PropertyChanged -= Directory_PropertyChanged;
-            DataContext.SelectedDirectory.Directories.CollectionChanged -= Directories_CollectionChanged;
-            DataContext.SelectedDirectory.Files.CollectionChanged -= Files_CollectionChanged;
-            RemoveFileEvents(DataContext.SelectedDirectory.Files);
+            ViewModel.SelectedDirectory.PropertyChanged -= Directory_PropertyChanged;
+            ViewModel.SelectedDirectory.Directories.CollectionChanged -= Directories_CollectionChanged;
+            ViewModel.SelectedDirectory.Files.CollectionChanged -= Files_CollectionChanged;
+            RemoveFileEvents(ViewModel.SelectedDirectory.Files);
         }
-                    
-        DataContext.PropertyChanging -= DataContext_PropertyChanging;
-        DataContext.PropertyChanged -= DataContext_PropertyChanged;
+
+        ViewModel.PropertyChanging -= DataContext_PropertyChanging;
+        ViewModel.PropertyChanged -= DataContext_PropertyChanged;
     }
-    
+
 
     /// <summary>
     /// Function to remove a node, and it's child nodes from the node cache.
@@ -1370,13 +1370,13 @@ internal partial class FileExploder
 
         foreach (DirectoryTreeNode treeNode in childNodes)
         {
-            if (treeNode.DataContext is not null)
+            if (treeNode.ViewModel is not null)
             {
-                treeNode.DataContext.PropertyChanged -= Directory_PropertyChanged;
-                treeNode.DataContext.Directories.CollectionChanged -= Directories_CollectionChanged;
+                treeNode.ViewModel.PropertyChanged -= Directory_PropertyChanged;
+                treeNode.ViewModel.Directories.CollectionChanged -= Directories_CollectionChanged;
                 if (TreeDirectories.SelectedNode == treeNode)
                 {
-                    treeNode.DataContext.Files.CollectionChanged -= Files_CollectionChanged;
+                    treeNode.ViewModel.Files.CollectionChanged -= Files_CollectionChanged;
                 }
             }
 
@@ -1388,13 +1388,13 @@ internal partial class FileExploder
             return;
         }
 
-        if (dirNode.DataContext is not null)
+        if (dirNode.ViewModel is not null)
         {
-            dirNode.DataContext.PropertyChanged -= Directory_PropertyChanged;
-            dirNode.DataContext.Directories.CollectionChanged -= Directories_CollectionChanged;
+            dirNode.ViewModel.PropertyChanged -= Directory_PropertyChanged;
+            dirNode.ViewModel.Directories.CollectionChanged -= Directories_CollectionChanged;
             if (TreeDirectories.SelectedNode == dirNode)
             {
-                dirNode.DataContext.Files.CollectionChanged -= Files_CollectionChanged;
+                dirNode.ViewModel.Files.CollectionChanged -= Files_CollectionChanged;
             }
         }
 
@@ -1470,7 +1470,7 @@ internal partial class FileExploder
     /// <param name="e">The <see cref="MouseEventArgs"/> instance containing the event data.</param>
     private void GridFiles_MouseDown(object sender, MouseEventArgs e)
     {
-        if ((DataContext is null) || (GridFiles.IsCurrentCellInEditMode))
+        if ((ViewModel is null) || (GridFiles.IsCurrentCellInEditMode))
         {
             return;
         }
@@ -1509,7 +1509,7 @@ internal partial class FileExploder
         }
         finally
         {
-            ValidateMenuItems(DataContext);
+            ValidateMenuItems(ViewModel);
         }
     }
 
@@ -1545,7 +1545,7 @@ internal partial class FileExploder
                     e.SuppressKeyPress = true;
                     break;
                 case Keys.F2:
-                    if ((DataContext?.RenameFileCommand is null) || (!DataContext.RenameFileCommand.CanExecute(null)))
+                    if ((ViewModel?.RenameFileCommand is null) || (!ViewModel.RenameFileCommand.CanExecute(null)))
                     {
                         return;
                     }
@@ -1575,7 +1575,7 @@ internal partial class FileExploder
         finally
         {
             EnableGridEvents();
-            ValidateMenuItems(DataContext);
+            ValidateMenuItems(ViewModel);
         }
     }
 
@@ -1591,7 +1591,7 @@ internal partial class FileExploder
     {
         try
         {
-            if ((DataContext?.RenameFileCommand is null) || (e.ColumnIndex != ColumnFilename.Index))
+            if ((ViewModel?.RenameFileCommand is null) || (e.ColumnIndex != ColumnFilename.Index))
             {
                 return;
             }
@@ -1600,13 +1600,13 @@ internal partial class FileExploder
             var file = (IFile)GridFiles.Rows[e.RowIndex].Cells[ColumnFile.Index].Value;
             var args = new RenameArgs(file.Name, newName);
 
-            if (!DataContext.RenameFileCommand.CanExecute(args))
+            if (!ViewModel.RenameFileCommand.CanExecute(args))
             {
                 GridFiles.CancelEdit();
                 return;
             }
 
-            DataContext.RenameFileCommand.Execute(args);
+            ViewModel.RenameFileCommand.Execute(args);
 
             if (args.Cancel)
             {
@@ -1634,16 +1634,16 @@ internal partial class FileExploder
                                                  .Select(item => item.Cells[ColumnID.Index].Value.ToString())                                                     
                                                  .ToArray();
 
-            if ((DataContext?.SelectFileCommand is null) || (!DataContext.SelectFileCommand.CanExecute(ids)))
+            if ((ViewModel?.SelectFileCommand is null) || (!ViewModel.SelectFileCommand.CanExecute(ids)))
             {
                 return;
             }
 
-            DataContext.SelectFileCommand.Execute(ids);
+            ViewModel.SelectFileCommand.Execute(ids);
         }
         finally
         {
-            ValidateMenuItems(DataContext);
+            ValidateMenuItems(ViewModel);
         }
     }
 
@@ -1725,7 +1725,7 @@ internal partial class FileExploder
 
         row.Cells[0].ToolTipText = row.Cells[1].ToolTipText = file.FullPath;                    
         e.CellStyle = GridFiles.DefaultCellStyle;
-       
+
         if (!file.IsOpen)
         {
             if (file.Metadata?.ContentMetadata is null)
@@ -1744,7 +1744,7 @@ internal partial class FileExploder
     /// <param name="e">The <see cref="RowsDragEventArgs"/> instance containing the event data.</param>
     private void GridFiles_RowsDrag(object sender, RowsDragEventArgs e)
     {
-        if (DataContext?.SearchResults is not null)
+        if (ViewModel?.SearchResults is not null)
         {
             return;
         }
@@ -1768,12 +1768,12 @@ internal partial class FileExploder
     /// <param name="e">The <see cref="DragEventArgs"/> instance containing the event data.</param>
     private void GridFiles_DragEnter(object sender, DragEventArgs e)
     {
-        if ((DataContext?.SelectedDirectory is null) || (!e.Data.GetDataPresent(DataFormats.FileDrop, false)))
+        if ((ViewModel?.SelectedDirectory is null) || (!e.Data.GetDataPresent(DataFormats.FileDrop, false)))
         {
             return;
         }
 
-        if (!_directoryNodes.TryGetValue(DataContext.SelectedDirectory.ID, out DirectoryTreeNode node))
+        if (!_directoryNodes.TryGetValue(ViewModel.SelectedDirectory.ID, out DirectoryTreeNode node))
         {
             return;
         }
@@ -1791,7 +1791,7 @@ internal partial class FileExploder
     /// <param name="e">The <see cref="DragEventArgs"/> instance containing the event data.</param>
     private void GridFiles_DragDrop(object sender, DragEventArgs e)
     {
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             return;
         }
@@ -1818,7 +1818,7 @@ internal partial class FileExploder
     /// <param name="e">The <see cref="DragEventArgs"/> instance containing the event data.</param>
     private void GridFiles_DragOver(object sender, DragEventArgs e)
     {
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             return;
         }
@@ -1826,7 +1826,7 @@ internal partial class FileExploder
         if (e.Data.GetDataPresent(typeof(GridRowsDragData)))
         {
             e.Effect = DragDropEffects.Copy;
-            ValidateMenuItems(DataContext);
+            ValidateMenuItems(ViewModel);
             return;
         }
 
@@ -1845,13 +1845,13 @@ internal partial class FileExploder
     private void GridFiles_Enter(object sender, EventArgs e)
     {
         ControlContext = FileExplorerContext.FileList;
-        ValidateMenuItems(DataContext);
+        ValidateMenuItems(ViewModel);
     }
 
     /// <summary>Handles the Leave event of the GridFiles control.</summary>
     /// <param name="sender">The source of the event.</param>
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
-    private void GridFiles_Leave(object sender, EventArgs e) => ValidateMenuItems(DataContext);
+    private void GridFiles_Leave(object sender, EventArgs e) => ValidateMenuItems(ViewModel);
 
     /// <summary>Handles the CellDoubleClick event of the GridFiles control.</summary>
     /// <param name="sender">The source of the event.</param>
@@ -1876,7 +1876,7 @@ internal partial class FileExploder
 
             string nodeID = node.Name;
             var args = new RenameArgs(node.Text, e.Label);
-            DataContext?.RenameDirectoryCommand.Execute(args);
+            ViewModel?.RenameDirectoryCommand.Execute(args);
 
             if (args.Cancel)
             {
@@ -1887,7 +1887,7 @@ internal partial class FileExploder
         {
             IsRenaming = false;
             EnableTreeEvents();
-            ValidateMenuItems(DataContext);
+            ValidateMenuItems(ViewModel);
         }
     }
 
@@ -1903,7 +1903,7 @@ internal partial class FileExploder
             var node = e.Node as DirectoryTreeNode;
 
             var args = new RenameArgs(e.Label, node.Text);
-            if ((DataContext?.RenameDirectoryCommand is null) || (!DataContext.RenameDirectoryCommand.CanExecute(args)))
+            if ((ViewModel?.RenameDirectoryCommand is null) || (!ViewModel.RenameDirectoryCommand.CanExecute(args)))
             {
                 e.CancelEdit = true;
                 IsRenaming = false;
@@ -1928,16 +1928,16 @@ internal partial class FileExploder
 
         try
         {
-            if ((DataContext?.SelectDirectoryCommand is null) || (!DataContext.SelectDirectoryCommand.CanExecute(id)))
+            if ((ViewModel?.SelectDirectoryCommand is null) || (!ViewModel.SelectDirectoryCommand.CanExecute(id)))
             {
                 return;
             }
 
-            DataContext.SelectDirectoryCommand.Execute(id);
+            ViewModel.SelectDirectoryCommand.Execute(id);
         }
         finally
         {
-            ValidateMenuItems(DataContext);
+            ValidateMenuItems(ViewModel);
         }
     }
 
@@ -1955,7 +1955,7 @@ internal partial class FileExploder
 
         try
         {
-            IDirectory directory = node.DataContext;
+            IDirectory directory = node.ViewModel;
 
             if (directory is null)
             {
@@ -1973,7 +1973,7 @@ internal partial class FileExploder
         finally
         {
             EnableTreeEvents();
-            ValidateMenuItems(DataContext);
+            ValidateMenuItems(ViewModel);
         }
     }
 
@@ -2005,18 +2005,18 @@ internal partial class FileExploder
 
         try
         {
-            IDirectory directory = node.DataContext;
+            IDirectory directory = node.ViewModel;
 
             if (directory is null)
             {
                 return;
             }                
-            
+
             RefreshNodes(directory);
         }
         finally
         {
-            ValidateMenuItems(DataContext);
+            ValidateMenuItems(ViewModel);
             EnableTreeEvents();
         }
     }
@@ -2026,7 +2026,7 @@ internal partial class FileExploder
     /// <param name="e">The <see cref="KeyEventArgs"/> instance containing the event data.</param>
     private async void TreeDirectories_KeyUp(object sender, KeyEventArgs e)
     {
-        if ((DataContext is null) || (TreeDirectories.SelectedNode is null))
+        if ((ViewModel is null) || (TreeDirectories.SelectedNode is null))
         {
             return;
         }
@@ -2045,7 +2045,7 @@ internal partial class FileExploder
         finally
         {
             EnableTreeEvents();
-            ValidateMenuItems(DataContext);
+            ValidateMenuItems(ViewModel);
         }
     }
 
@@ -2096,7 +2096,7 @@ internal partial class FileExploder
     {
         if ((data is null) 
             || (e.Effect == DragDropEffects.None)
-            || (DataContext is null))
+            || (ViewModel is null))
         {
             return;
         }
@@ -2113,15 +2113,15 @@ internal partial class FileExploder
             switch (data.Operation)
             {
                 case CopyMoveOperation.Copy:
-                    if ((DataContext.CopyDirectoryCommand is not null) && (DataContext.CopyDirectoryCommand.CanExecute(data)))
+                    if ((ViewModel.CopyDirectoryCommand is not null) && (ViewModel.CopyDirectoryCommand.CanExecute(data)))
                     {
-                        await DataContext.CopyDirectoryCommand.ExecuteAsync(data);
+                        await ViewModel.CopyDirectoryCommand.ExecuteAsync(data);
                     }
                     break;
                 case CopyMoveOperation.Move:
-                    if ((DataContext.MoveDirectoryCommand is not null) && (DataContext.MoveDirectoryCommand.CanExecute(data)))
+                    if ((ViewModel.MoveDirectoryCommand is not null) && (ViewModel.MoveDirectoryCommand.CanExecute(data)))
                     {
-                        await DataContext.MoveDirectoryCommand.ExecuteAsync(data);
+                        await ViewModel.MoveDirectoryCommand.ExecuteAsync(data);
                     }
                     break;
                 default:
@@ -2137,7 +2137,7 @@ internal partial class FileExploder
         }
         finally
         {
-            ValidateMenuItems(DataContext);
+            ValidateMenuItems(ViewModel);
         }
     }
 
@@ -2148,7 +2148,7 @@ internal partial class FileExploder
     /// <param name="e">The event arguments.</param>
     private void DirectoryNodes_DragOver(TreeNodeDragData data, DragEventArgs e)
     {
-        if ((data is null) || (DataContext?.CopyDirectoryCommand is null) || (DataContext?.MoveDirectoryCommand is null))
+        if ((data is null) || (ViewModel?.CopyDirectoryCommand is null) || (ViewModel?.MoveDirectoryCommand is null))
         {
             e.Effect = DragDropEffects.None;
             return;
@@ -2186,7 +2186,7 @@ internal partial class FileExploder
 
         if ((data.Operation & CopyMoveOperation.Copy) == CopyMoveOperation.Copy)
         {
-            if (!DataContext.CopyDirectoryCommand.CanExecute(data))
+            if (!ViewModel.CopyDirectoryCommand.CanExecute(data))
             {
                 e.Effect = DragDropEffects.None;
                 MenuItemCopyTo.Available = false;
@@ -2200,7 +2200,7 @@ internal partial class FileExploder
 
         if ((data.Operation & CopyMoveOperation.Move) == CopyMoveOperation.Move)
         {
-            if (!DataContext.MoveDirectoryCommand.CanExecute(data))
+            if (!ViewModel.MoveDirectoryCommand.CanExecute(data))
             {
                 e.Effect = DragDropEffects.None;
                 MenuItemMoveTo.Available = false;
@@ -2221,7 +2221,7 @@ internal partial class FileExploder
     {
         try
         {
-            if ((_explorerImportData is null) || (DataContext?.ImportCommand is null))
+            if ((_explorerImportData is null) || (ViewModel?.ImportCommand is null))
             {
                 e.Effect = DragDropEffects.None;
                 return;
@@ -2232,11 +2232,11 @@ internal partial class FileExploder
 
             SelectNode(_explorerImportData.TargetNode);
 
-            await DataContext.ImportCommand.ExecuteAsync(_explorerImportData);
+            await ViewModel.ImportCommand.ExecuteAsync(_explorerImportData);
         }
         finally
         {
-            ValidateMenuItems(DataContext);
+            ValidateMenuItems(ViewModel);
         }
     }
 
@@ -2246,7 +2246,7 @@ internal partial class FileExploder
     /// <param name="e">The event parameters.</param>
     private void Explorer_DragOverDirectory(DragEventArgs e)
     {
-        if ((_explorerImportData is null) || (DataContext?.ImportCommand is null))
+        if ((_explorerImportData is null) || (ViewModel?.ImportCommand is null))
         {
             e.Effect = DragDropEffects.None;
             return;
@@ -2269,7 +2269,7 @@ internal partial class FileExploder
             _explorerImportData.TargetNode.BackColor = DarkFormsRenderer.FocusedBackground;
         }
 
-        if (!DataContext.ImportCommand.CanExecute(_explorerImportData))
+        if (!ViewModel.ImportCommand.CanExecute(_explorerImportData))
         {
             e.Effect = DragDropEffects.None;
             return;
@@ -2284,13 +2284,13 @@ internal partial class FileExploder
     private void TreeDirectories_Enter(object sender, EventArgs e)
     {
         ControlContext = FileExplorerContext.DirectoryTree;
-        ValidateMenuItems(DataContext);
+        ValidateMenuItems(ViewModel);
     }
 
     /// <summary>Handles the Leave event of the TreeDirectories control.</summary>
     /// <param name="sender">The source of the event.</param>
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
-    private void TreeDirectories_Leave(object sender, EventArgs e) => ValidateMenuItems(DataContext);
+    private void TreeDirectories_Leave(object sender, EventArgs e) => ValidateMenuItems(ViewModel);
 
     /// <summary>
     /// Function to handle dropping dragged file rows on the file grid.
@@ -2301,7 +2301,7 @@ internal partial class FileExploder
     {
         if ((data is null)
             || (e.Effect == DragDropEffects.None)
-            || (DataContext is null))
+            || (ViewModel is null))
         {
             return;
         }
@@ -2311,15 +2311,15 @@ internal partial class FileExploder
             switch (data.Operation)
             {
                 case CopyMoveOperation.Copy:
-                    if ((DataContext.CopyFileCommand is not null) && (DataContext.CopyFileCommand.CanExecute(data)))
+                    if ((ViewModel.CopyFileCommand is not null) && (ViewModel.CopyFileCommand.CanExecute(data)))
                     {
-                        await DataContext.CopyFileCommand.ExecuteAsync(data);
+                        await ViewModel.CopyFileCommand.ExecuteAsync(data);
                     }
                     break;
                 case CopyMoveOperation.Move:
-                    if ((DataContext.MoveFileCommand is not null) && (DataContext.MoveFileCommand.CanExecute(data)))
+                    if ((ViewModel.MoveFileCommand is not null) && (ViewModel.MoveFileCommand.CanExecute(data)))
                     {
-                        await DataContext.MoveFileCommand.ExecuteAsync(data);
+                        await ViewModel.MoveFileCommand.ExecuteAsync(data);
                     }
                     break;
                 default:
@@ -2335,7 +2335,7 @@ internal partial class FileExploder
         }
         finally
         {
-            ValidateMenuItems(DataContext);
+            ValidateMenuItems(ViewModel);
         }
     }
 
@@ -2348,7 +2348,7 @@ internal partial class FileExploder
     {
         if ((data is null)
             || (e.Effect == DragDropEffects.None)
-            || (DataContext is null))
+            || (ViewModel is null))
         {
             return;
         }
@@ -2365,15 +2365,15 @@ internal partial class FileExploder
             switch (data.Operation)
             {
                 case CopyMoveOperation.Copy:
-                    if ((DataContext.CopyFileCommand is not null) && (DataContext.CopyFileCommand.CanExecute(data)))
+                    if ((ViewModel.CopyFileCommand is not null) && (ViewModel.CopyFileCommand.CanExecute(data)))
                     {
-                        await DataContext.CopyFileCommand.ExecuteAsync(data);
+                        await ViewModel.CopyFileCommand.ExecuteAsync(data);
                     }
                     break;
                 case CopyMoveOperation.Move:
-                    if ((DataContext.MoveFileCommand is not null) && (DataContext.MoveFileCommand.CanExecute(data)))
+                    if ((ViewModel.MoveFileCommand is not null) && (ViewModel.MoveFileCommand.CanExecute(data)))
                     {
-                        await DataContext.MoveFileCommand.ExecuteAsync(data);
+                        await ViewModel.MoveFileCommand.ExecuteAsync(data);
                     }
                     break;
                 default:
@@ -2389,7 +2389,7 @@ internal partial class FileExploder
         }
         finally
         {
-            ValidateMenuItems(DataContext);
+            ValidateMenuItems(ViewModel);
         }
     }
 
@@ -2400,7 +2400,7 @@ internal partial class FileExploder
     /// <param name="e">The event arguments.</param>
     private void FileRows_ToTree_DragOver(GridRowsDragData rowData, DragEventArgs e)
     {
-        if ((rowData is null) || (DataContext?.CopyFileCommand is null) || (DataContext?.MoveFileCommand is null))
+        if ((rowData is null) || (ViewModel?.CopyFileCommand is null) || (ViewModel?.MoveFileCommand is null))
         {
             e.Effect = DragDropEffects.None;
             return;
@@ -2439,8 +2439,8 @@ internal partial class FileExploder
         if ((rowData.Operation & CopyMoveOperation.Copy) == CopyMoveOperation.Copy)
         {
             e.Effect = DragDropEffects.Copy;
-            
-            if (!DataContext.CopyFileCommand.CanExecute(rowData))
+
+            if (!ViewModel.CopyFileCommand.CanExecute(rowData))
             {
                 e.Effect = DragDropEffects.None;
                 MenuItemCopyTo.Available = false;
@@ -2456,7 +2456,7 @@ internal partial class FileExploder
         {
             e.Effect = DragDropEffects.Move;
 
-            if (!DataContext.MoveFileCommand.CanExecute(rowData))
+            if (!ViewModel.MoveFileCommand.CanExecute(rowData))
             {
                 e.Effect = DragDropEffects.None;
                 MenuItemMoveTo.Available = false;
@@ -2474,7 +2474,7 @@ internal partial class FileExploder
     /// <param name="e">The <see cref="DragEventArgs"/> instance containing the event data.</param>
     private void TreeDirectories_DragOver(object sender, DragEventArgs e)
     {
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             return;
         }
@@ -2505,7 +2505,7 @@ internal partial class FileExploder
     /// <param name="e">The <see cref="DragEventArgs"/> instance containing the event data.</param>
     private void TreeDirectories_DragEnter(object sender, DragEventArgs e)
     {
-        if ((DataContext is null) || (!e.Data.GetDataPresent(DataFormats.FileDrop, false)))
+        if ((ViewModel is null) || (!e.Data.GetDataPresent(DataFormats.FileDrop, false)))
         {
             return;
         }
@@ -2531,7 +2531,7 @@ internal partial class FileExploder
     /// <param name="e">The <see cref="DragEventArgs"/> instance containing the event data.</param>
     private void TreeDirectories_DragDrop(object sender, DragEventArgs e)
     {
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             return;
         }
@@ -2562,14 +2562,14 @@ internal partial class FileExploder
     /// <param name="searchText">The text to search for.</param>
     private void SendSearchCommand(string searchText)
     {
-        if ((DataContext?.SearchCommand is null) || (!DataContext.SearchCommand.CanExecute(searchText)))
+        if ((ViewModel?.SearchCommand is null) || (!ViewModel.SearchCommand.CanExecute(searchText)))
         {
-            ValidateMenuItems(DataContext);
+            ValidateMenuItems(ViewModel);
             return;
         }
 
-        DataContext.SearchCommand.Execute(searchText);
-        ValidateMenuItems(DataContext);
+        ViewModel.SearchCommand.Execute(searchText);
+        ValidateMenuItems(ViewModel);
     }
 
     /// <summary>Handles the Enter event of the TextSearch control.</summary>
@@ -2578,7 +2578,7 @@ internal partial class FileExploder
     private void TextSearch_Enter(object sender, EventArgs e)
     {
         ControlContext = FileExplorerContext.None;
-        ValidateMenuItems(DataContext);
+        ValidateMenuItems(ViewModel);
     }
 
     /// <summary>Handles the KeyUp event of the TextSearch control.</summary>
@@ -2601,13 +2601,13 @@ internal partial class FileExploder
     /// <param name="sender">The source of the event.</param>
     /// <param name="e">The <see cref="GorgonSearchEventArgs"/> instance containing the event data.</param>
     private void TextSearch_Search(object sender, GorgonSearchEventArgs e) => SendSearchCommand(e.SearchText);
-    
+
     /// <summary>
     /// Function to delete the directory specified by the path.
     /// </summary>
     private async Task DeleteDirectoryAsync()
     {
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             return;
         }
@@ -2615,14 +2615,14 @@ internal partial class FileExploder
         try
         {
             var args = new DeleteArgs(null);
-            if (DataContext?.DeleteDirectoryCommand is not null)
+            if (ViewModel?.DeleteDirectoryCommand is not null)
             {
-                if (!DataContext.DeleteDirectoryCommand.CanExecute(args))
+                if (!ViewModel.DeleteDirectoryCommand.CanExecute(args))
                 {
                     return;
                 }
 
-                await DataContext.DeleteDirectoryCommand.ExecuteAsync(args);
+                await ViewModel.DeleteDirectoryCommand.ExecuteAsync(args);
             }
 
             if (!args.ItemsDeleted)
@@ -2632,12 +2632,12 @@ internal partial class FileExploder
 
             if (TreeDirectories.SelectedNode is DirectoryTreeNode selectedNode)
             {
-                FillFiles(DataContext, selectedNode.DataContext, selectedNode.DataContext.Files);
+                FillFiles(ViewModel, selectedNode.ViewModel, selectedNode.ViewModel.Files);
             }
         }
         finally
         {
-            ValidateMenuItems(DataContext);
+            ValidateMenuItems(ViewModel);
         }
     }
 
@@ -2679,7 +2679,7 @@ internal partial class FileExploder
             var rows = new DataGridViewRow[files.Count];
 
             RemoveFileEvents(files);
-                            
+
             for (int i = 0; i < files.Count; ++i)
             {
                 IFile file = files[i];
@@ -2690,11 +2690,11 @@ internal partial class FileExploder
                 {
                     fileIcon = TreeNodeIcons.Images[file.ImageName];
                 }                    
-                
+
                 var row = new DataGridViewRow();
                 row.CreateCells(GridFiles, file.ID, file, fileIcon, file.Name, file.Type, file.SizeInBytes, file.Parent.FullPath);
                 rows[i] = row;
-                
+
                 if (dataContext.SelectedFiles.Any(item => string.Equals(item.FullPath, file.FullPath, StringComparison.OrdinalIgnoreCase)))
                 {
                     selectedRows.Add(row);
@@ -2758,10 +2758,10 @@ internal partial class FileExploder
             // Second, remove the view models from the existing nodes.
             foreach (DirectoryTreeNode subDirNode in parentNode.Nodes.OfType<DirectoryTreeNode>().Traverse(n => n.Nodes.OfType<DirectoryTreeNode>()))
             {
-                RemoveFileEvents(subDirNode.DataContext.Files);
+                RemoveFileEvents(subDirNode.ViewModel.Files);
 
-                subDirNode.DataContext.Directories.CollectionChanged -= Directories_CollectionChanged;
-                subDirNode.DataContext.PropertyChanged -= Directory_PropertyChanged;
+                subDirNode.ViewModel.Directories.CollectionChanged -= Directories_CollectionChanged;
+                subDirNode.ViewModel.PropertyChanged -= Directory_PropertyChanged;
                 subDirNode.SetDataContext(null);                    
             }                
 
@@ -2778,7 +2778,7 @@ internal partial class FileExploder
                     ImageKey = subDir.ImageName,
                     Tag = subDir
                 };
-                
+
                 if (subDir.Directories.Count > 0)
                 {
                     AddDummyNode(node.Nodes);
@@ -2787,7 +2787,7 @@ internal partial class FileExploder
                 parentNode.Nodes.Add(node);
                 _directoryNodes[subDir.ID] = node;
                 node.SetDataContext(subDir);
-                node.DataContext.Load();
+                node.ViewModel.Load();
 
                 subDir.Directories.CollectionChanged += Directories_CollectionChanged;
                 subDir.PropertyChanged += Directory_PropertyChanged;
@@ -2856,7 +2856,7 @@ internal partial class FileExploder
                 Tag = dataContext.Root
             };
             _rootNode.SetDataContext(dataContext.Root);
-            _rootNode.DataContext.Load();
+            _rootNode.ViewModel.Load();
             _directoryNodes[dataContext.Root.ID] = _rootNode;
 
             SetSplitterDistance(Settings.SplitDirFileDistance);
@@ -2891,7 +2891,7 @@ internal partial class FileExploder
             return;
         }
 
-        DataContext?.Load();
+        ViewModel?.Load();
 
         ControlContext = FileExplorerContext.FileList;
         if (GridFiles.Rows.Count > 0)
@@ -2908,7 +2908,7 @@ internal partial class FileExploder
     /// <param name="e">An <see cref="EventArgs"/> that contains the event data.</param>
     protected override void OnEnter(EventArgs e) 
     {
-        ValidateMenuItems(DataContext);
+        ValidateMenuItems(ViewModel);
         base.OnEnter(e);
     }
 
@@ -2916,7 +2916,7 @@ internal partial class FileExploder
     /// <param name="e">An <see cref="EventArgs"/> object that contains the event data.</param>
     protected override void OnVisibleChanged(EventArgs e) 
     {
-        ValidateMenuItems(DataContext);
+        ValidateMenuItems(ViewModel);
         base.OnVisibleChanged(e);
     }
 
@@ -2934,19 +2934,19 @@ internal partial class FileExploder
         UnassignEvents();
 
         InitializeFromDataContext(dataContext);
-        DataContext = dataContext;
+        ViewModel = dataContext;
 
-        if ((IsDesignTime) || (DataContext is null))
+        if ((IsDesignTime) || (ViewModel is null))
         {
             return;
         }
 
-        DataContext.PropertyChanging += DataContext_PropertyChanging;
-        DataContext.PropertyChanged += DataContext_PropertyChanged;
-        DataContext.SelectedFiles.CollectionChanged += SelectedFiles_CollectionChanged;
-        if (DataContext.Clipboard is not null)
+        ViewModel.PropertyChanging += DataContext_PropertyChanging;
+        ViewModel.PropertyChanged += DataContext_PropertyChanged;
+        ViewModel.SelectedFiles.CollectionChanged += SelectedFiles_CollectionChanged;
+        if (ViewModel.Clipboard is not null)
         {
-            DataContext.Clipboard.PropertyChanged += Clipboard_PropertyChanged;
+            ViewModel.Clipboard.PropertyChanged += Clipboard_PropertyChanged;
         }
     }
 
@@ -2981,13 +2981,13 @@ internal partial class FileExploder
     /// <returns>A task for asynchronous operation.</returns>
     public async Task ExportDirectoryAsync()
     {
-        if ((DataContext?.ExportDirectoryCommand is null)
-            || (!DataContext.ExportDirectoryCommand.CanExecute(null)))
+        if ((ViewModel?.ExportDirectoryCommand is null)
+            || (!ViewModel.ExportDirectoryCommand.CanExecute(null)))
         {
             return;
         }
 
-        await DataContext.ExportDirectoryCommand.ExecuteAsync(null);
+        await ViewModel.ExportDirectoryCommand.ExecuteAsync(null);
     }
 
     /// <summary>
@@ -2996,13 +2996,13 @@ internal partial class FileExploder
     /// <returns>A task for asynchronous operation.</returns>
     public async Task ExportFilesAsync()
     {
-        if ((DataContext?.ExportFilesCommand is null)
-            || (!DataContext.ExportFilesCommand.CanExecute(null)))
+        if ((ViewModel?.ExportFilesCommand is null)
+            || (!ViewModel.ExportFilesCommand.CanExecute(null)))
         {
             return;
         }
 
-        await DataContext.ExportFilesCommand.ExecuteAsync(null);
+        await ViewModel.ExportFilesCommand.ExecuteAsync(null);
     }
 
     /// <summary>
@@ -3011,16 +3011,16 @@ internal partial class FileExploder
     /// <param name="operation">The clipboard copy operation type.</param>
     public void CopyDirectoryToClipboard(CopyMoveOperation operation)
     {
-        IDirectory selectedDirectory = DataContext.SelectedDirectory;
+        IDirectory selectedDirectory = ViewModel.SelectedDirectory;
 
-        if ((DataContext?.Clipboard is null) || (selectedDirectory is null))
+        if ((ViewModel?.Clipboard is null) || (selectedDirectory is null))
         {
             return;
         }
 
         try
         {
-            IClipboardHandler handler = DataContext.Clipboard;
+            IClipboardHandler handler = ViewModel.Clipboard;
 
             var directoryCopyData = new DirectoryCopyMoveData
             {
@@ -3038,7 +3038,7 @@ internal partial class FileExploder
         }
         finally
         {
-            ValidateMenuItems(DataContext);
+            ValidateMenuItems(ViewModel);
         }
     }
 
@@ -3048,16 +3048,16 @@ internal partial class FileExploder
     /// <param name="operation">The clipboard copy operation type.</param>
     public void CopyFileToClipboard(CopyMoveOperation operation)
     {
-        IReadOnlyList<IFile> selectedFiles = DataContext.SelectedFiles;
+        IReadOnlyList<IFile> selectedFiles = ViewModel.SelectedFiles;
 
-        if ((DataContext?.Clipboard is null) || (selectedFiles.Count == 0))
+        if ((ViewModel?.Clipboard is null) || (selectedFiles.Count == 0))
         {
             return;
         }
 
         try
         {
-            IClipboardHandler handler = DataContext.Clipboard;
+            IClipboardHandler handler = ViewModel.Clipboard;
 
             var fileCopyData = new FileCopyMoveData
             {
@@ -3084,7 +3084,7 @@ internal partial class FileExploder
         }
         finally
         {
-            ValidateMenuItems(DataContext);
+            ValidateMenuItems(ViewModel);
         }
     }
 
@@ -3094,36 +3094,36 @@ internal partial class FileExploder
     /// <returns>A task for asynchronous operation.</returns>
     public async Task ImportAsync()
     {
-        if (DataContext?.ImportCommand is null)
+        if (ViewModel?.ImportCommand is null)
         {
             return;
         }
 
         IImportData importData = new ImportData
         {
-            Destination = DataContext.SelectedDirectory
+            Destination = ViewModel.SelectedDirectory
         };
 
-        if ((DataContext?.ImportCommand is null) || (!DataContext.ImportCommand.CanExecute(importData)))
+        if ((ViewModel?.ImportCommand is null) || (!ViewModel.ImportCommand.CanExecute(importData)))
         {
             return;
         }
 
-        await DataContext.ImportCommand.ExecuteAsync(importData);
+        await ViewModel.ImportCommand.ExecuteAsync(importData);
 
         if ((!importData.ItemsImported)
-            || (!_directoryNodes.TryGetValue(DataContext.SelectedDirectory.ID, out DirectoryTreeNode node))
-            || ((DataContext?.SelectDirectoryCommand is not null) && (DataContext.SelectDirectoryCommand.CanExecute(node.Name))))
+            || (!_directoryNodes.TryGetValue(ViewModel.SelectedDirectory.ID, out DirectoryTreeNode node))
+            || ((ViewModel?.SelectDirectoryCommand is not null) && (ViewModel.SelectDirectoryCommand.CanExecute(node.Name))))
         {                
             return;
         }
 
-        if ((DataContext.SelectedDirectory.Directories.Count > 0) && (!node.IsExpanded))
+        if ((ViewModel.SelectedDirectory.Directories.Count > 0) && (!node.IsExpanded))
         {
             node.Expand();
         }
 
-        DataContext.SelectDirectoryCommand.Execute(node.Name);            
+        ViewModel.SelectDirectoryCommand.Execute(node.Name);            
     }
     #endregion
 
@@ -3139,6 +3139,10 @@ internal partial class FileExploder
         {
             return;
         }
+
+        TreeNodeIcons.ImageSize = new Size(20, 20);
+        TreeNodeIcons.Images.Add((Bitmap)Properties.Resources.folder_20x20.Clone());
+        TreeNodeIcons.Images.Add((Bitmap)Properties.Resources.generic_file_20x20.Clone());
 
         _openFileFont = new Font(Font, FontStyle.Bold);
         TreeDirectories.TreeViewNodeSorter = new FileSystemNodeComparer();

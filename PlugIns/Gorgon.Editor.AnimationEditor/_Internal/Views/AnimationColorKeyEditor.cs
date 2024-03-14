@@ -50,7 +50,7 @@ internal partial class AnimationColorKeyEditor
     /// Property to return the data context for the view.
     /// </summary>
     [Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-    public IColorValueEditor DataContext
+    public IColorValueEditor ViewModel
     {
         get;
         private set;
@@ -91,7 +91,7 @@ internal partial class AnimationColorKeyEditor
     /// <param name="e">The <see cref="ColorChangedEventArgs"/> instance containing the event data.</param>
     private void Picker_ColorChanged(object sender, ColorChangedEventArgs e)
     {
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             return;
         }
@@ -99,7 +99,7 @@ internal partial class AnimationColorKeyEditor
         DisableEvents();
         try
         {
-            DataContext.NewColor = e.Color;
+            ViewModel.NewColor = e.Color;
         }
         finally
         {
@@ -112,12 +112,12 @@ internal partial class AnimationColorKeyEditor
     /// </summary>
     private void UnassignEvents()
     {
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             return;
         }
 
-        DataContext.PropertyChanged -= DataContext_PropertyChanged;
+        ViewModel.PropertyChanged -= DataContext_PropertyChanged;
     }
 
     /// <summary>Handles the AlphaValueChanged event of the PickerAlpha control.</summary>
@@ -125,7 +125,7 @@ internal partial class AnimationColorKeyEditor
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
     private void PickerAlpha_AlphaValueChanged(object sender, EventArgs e)
     {
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             return;
         }
@@ -133,7 +133,7 @@ internal partial class AnimationColorKeyEditor
         DisableEvents();
         try
         {
-            DataContext.NewColor = Color.FromArgb(PickerAlpha.AlphaValue, DataContext.OriginalColor);
+            ViewModel.NewColor = Color.FromArgb(PickerAlpha.AlphaValue, ViewModel.OriginalColor);
         }
         finally
         {
@@ -149,10 +149,10 @@ internal partial class AnimationColorKeyEditor
         switch (e.PropertyName)
         {
             case nameof(IColorValueEditor.Title):
-                Text = DataContext.Title;
+                Text = ViewModel.Title;
                 break;
             case nameof(IColorValueEditor.AlphaOnly):
-                if (DataContext.AlphaOnly)
+                if (ViewModel.AlphaOnly)
                 {
                     PickerAlpha.Show();
                     PickerColor.Hide();
@@ -167,9 +167,9 @@ internal partial class AnimationColorKeyEditor
                 DisableEvents();
                 try
                 {
-                    PickerColor.OriginalColor = DataContext.OriginalColor;
-                    PickerColor.SelectedColor = DataContext.NewColor;
-                    PickerAlpha.AlphaValue = (int)(DataContext.NewColor.Alpha * 255);
+                    PickerColor.OriginalColor = ViewModel.OriginalColor;
+                    PickerColor.SelectedColor = ViewModel.NewColor;
+                    PickerAlpha.AlphaValue = (int)(ViewModel.NewColor.Alpha * 255);
                 }
                 finally
                 {
@@ -177,14 +177,14 @@ internal partial class AnimationColorKeyEditor
                 }
                 break;
             case nameof(IColorValueEditor.OriginalColor):
-                PickerColor.OriginalColor = DataContext.OriginalColor;
+                PickerColor.OriginalColor = ViewModel.OriginalColor;
                 break;
             case nameof(IColorValueEditor.NewColor):
                 DisableEvents();
                 try
                 {
-                    PickerColor.SelectedColor = DataContext.NewColor;
-                    PickerAlpha.AlphaValue = (int)(DataContext.NewColor.Alpha * 255);
+                    PickerColor.SelectedColor = ViewModel.NewColor;
+                    PickerAlpha.AlphaValue = (int)(ViewModel.NewColor.Alpha * 255);
                 }
                 finally
                 {
@@ -202,7 +202,7 @@ internal partial class AnimationColorKeyEditor
         UnassignEvents();
         PickerColor.OriginalColor = PickerColor.SelectedColor = GorgonColor.BlackTransparent;
     }
-    
+
     /// <summary>
     /// Function to initialize the control with the data context.
     /// </summary>
@@ -247,12 +247,12 @@ internal partial class AnimationColorKeyEditor
     {
         base.OnSubmit();
 
-        if ((DataContext?.OkCommand is null) || (!DataContext.OkCommand.CanExecute(null)))
+        if ((ViewModel?.OkCommand is null) || (!ViewModel.OkCommand.CanExecute(null)))
         {
             return;
         }
 
-        DataContext.OkCommand.Execute(null);
+        ViewModel.OkCommand.Execute(null);
     }
 
     /// <summary>Function to cancel the change.</summary>
@@ -260,19 +260,19 @@ internal partial class AnimationColorKeyEditor
     {
         base.OnCancel();
 
-        if ((DataContext?.CancelCommand is null) || (!DataContext.CancelCommand.CanExecute(null)))
+        if ((ViewModel?.CancelCommand is null) || (!ViewModel.CancelCommand.CanExecute(null)))
         {
             return;
         }
 
-        DataContext.CancelCommand.Execute(null);
+        ViewModel.CancelCommand.Execute(null);
     }
 
     /// <summary>
     /// Function to validate the state of the OK button.
     /// </summary>
     /// <returns><b>true</b> if the OK button is valid, <b>false</b> if not.</returns>
-    protected override bool OnValidateOk() => (DataContext?.OkCommand is not null) && (DataContext.OkCommand.CanExecute(null));
+    protected override bool OnValidateOk() => (ViewModel?.OkCommand is not null) && (ViewModel.OkCommand.CanExecute(null));
 
     /// <summary>Raises the <see cref="E:System.Windows.Forms.UserControl.Load"/> event.</summary>
     /// <param name="e">An <see cref="EventArgs"/> that contains the event data.</param>
@@ -285,7 +285,7 @@ internal partial class AnimationColorKeyEditor
             return;
         }
 
-        DataContext?.Load();
+        ViewModel?.Load();
     }
 
     /// <summary>Function to assign a data context to the view as a view model.</summary>
@@ -295,14 +295,14 @@ internal partial class AnimationColorKeyEditor
     {
         InitializeFromDataContext(dataContext);
 
-        DataContext = dataContext;
+        ViewModel = dataContext;
 
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             return;
         }
 
-        DataContext.PropertyChanged += DataContext_PropertyChanged;
+        ViewModel.PropertyChanged += DataContext_PropertyChanged;
     }
     #endregion
 

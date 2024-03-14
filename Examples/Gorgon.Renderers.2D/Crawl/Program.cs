@@ -229,7 +229,7 @@ static class Program
                 LayoutArea = new DX.Size2F(_screen.Width, _screen.Height),
                 AllowColorCodes = true
             };
-                            
+
             _crawlText.Text = Resources.CrawlText.WordWrap(_crawlText.Font, _crawlRtv.Width - 50);
             _crawlPosition = new Vector2(0, _crawlRtv.Height);
 

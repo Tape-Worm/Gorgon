@@ -588,7 +588,7 @@ internal class ProjectEditor
         try
         {
             bool result = await UpdateChangedContentAsync(SaveReason.AppProjectShutdown);
-            
+
             SaveProjectMetadata();
 
             args.Cancel = !result;
@@ -835,11 +835,11 @@ internal class ProjectEditor
             Debug.Assert(metadata is not null, $"Could not locate the content plugin metadata for {id}.");
 
             ShowWaitPanel(string.Format(Resources.GOREDIT_TEXT_CREATING_CONTENT, metadata.ContentType));                                
-            
+
             ContentPlugIn plugin = HostServices.ContentPlugInService.PlugIns.FirstOrDefault(item => item.Value == metadata).Value;
 
             Debug.Assert(plugin is not null, $"Could not locate the content plug in for {id}.");
-            
+
             directory = _fileExplorer.SelectedDirectory ?? _fileExplorer.Root;
 
 
@@ -899,7 +899,7 @@ internal class ProjectEditor
             {
                 file.Metadata.DependsOn[dependency.Key] = new List<string>(dependency.Value);
             }                
-            
+
             // Indicate that this file is new.
             file.Metadata.Attributes[CommonEditorConstants.IsNewAttr] = bool.TrueString;
             file.RefreshMetadata();
@@ -982,7 +982,7 @@ internal class ProjectEditor
         _contentPreviewer = injectionParameters.ContentPreviewer;
         _saveDialog = injectionParameters.SaveDialog;
         _contentCreators = injectionParameters.ContentCreators;
-        
+
         AssignEvents();
 
         ProjectTitle = _projectData.ProjectWorkSpace.Name;
@@ -1009,13 +1009,13 @@ internal class ProjectEditor
 
                 FileExplorer.FileSystemUpdated += FileExplorer_FileSystemUpdated;
             }
-            
+
             if (ContentPreviewer is not null)
             {
                 ContentPreviewer.Load();
                 ContentPreviewer.IsEnabled = _settings.ShowContentPreview;
             }
-            
+
             AssignEvents();                
         }
         catch (Exception ex)

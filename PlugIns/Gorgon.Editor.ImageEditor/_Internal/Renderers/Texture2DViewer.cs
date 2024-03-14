@@ -89,7 +89,7 @@ internal class Texture2DViewer
     protected override void DrawTexture()
     {
         var color = new GorgonColor(GorgonColor.White, Opacity);
-        
+
         Debug.Assert(_textureView is not null, "The texture is null.  Why?");
 
         Renderer.Begin(BatchState, Camera);
@@ -114,7 +114,7 @@ internal class Texture2DViewer
     public Texture2DViewer(Gorgon2D renderer, GorgonSwapChain swapChain, IImageContent dataContext)
         : base(ImageType.Image2D.ToString(), "Gorgon2DTextureArrayView", 0, renderer, swapChain, dataContext)
     {
-        
+
     }
     #endregion
 }

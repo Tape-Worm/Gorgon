@@ -37,7 +37,7 @@ public class Material
     /// <summary>
     /// Property to set or return the diffuse color for the model.
     /// </summary>
-	    public GorgonColor Diffuse
+        public GorgonColor Diffuse
     {
         get;
         set;

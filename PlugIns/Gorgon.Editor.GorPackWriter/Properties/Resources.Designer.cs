@@ -23,15 +23,15 @@ using System;
 [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
 [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
 internal class Resources {
-    
+
     private static global::System.Resources.ResourceManager resourceMan;
-    
+
     private static global::System.Globalization.CultureInfo resourceCulture;
-    
+
     [global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
     internal Resources() {
     }
-    
+
     /// <summary>
     ///   Returns the cached ResourceManager instance used by this class.
     /// </summary>
@@ -45,7 +45,7 @@ internal class Resources {
             return resourceMan;
         }
     }
-    
+
     /// <summary>
     ///   Overrides the current thread's CurrentUICulture property for all
     ///   resource lookups using this strongly typed resource class.
@@ -59,7 +59,7 @@ internal class Resources {
             resourceCulture = value;
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to Gorgon BZip packed file writer.
     /// </summary>
@@ -68,7 +68,7 @@ internal class Resources {
             return ResourceManager.GetString("GORPKW_DESC", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to Gorgon BZip Packed File.
     /// </summary>

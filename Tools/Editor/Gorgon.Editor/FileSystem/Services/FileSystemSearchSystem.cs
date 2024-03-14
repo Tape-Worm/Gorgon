@@ -141,7 +141,7 @@ internal class FileSystemSearchSystem
 
         _searchKeywords[keyword] = attribute;
     }
-    
+
 
     /// <summary>
     /// Function to check if the requested keyword value is within the attribute metadata for the file node content.
@@ -258,7 +258,7 @@ internal class FileSystemSearchSystem
                     searchResults.Add(dependencyFile);
                 }
             }
-            
+
             return true;
         }
 
@@ -310,7 +310,7 @@ internal class FileSystemSearchSystem
         {
             searchText = updatedSearchText;
         }
-                    
+
         (SearchMode mode, string modeSearchText) = ExtractSearchMode(string.IsNullOrWhiteSpace(searchText) ? keywordValue : searchText);
 
         // Test code for search:

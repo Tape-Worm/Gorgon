@@ -132,7 +132,7 @@ public class GorgonPipelineState
     /// <summary>
     /// Property to return the readable/writable list of blending states for each render target.
     /// </summary>
-	    internal BlendStateArray RwBlendStates
+        internal BlendStateArray RwBlendStates
     {
         get;
     } = new BlendStateArray();
@@ -152,7 +152,7 @@ public class GorgonPipelineState
     /// <summary>
     /// Property to return the pixel shader.
     /// </summary>
-	    public GorgonPixelShader PixelShader
+        public GorgonPixelShader PixelShader
     {
         get => _pixelShader;
         internal set
@@ -179,7 +179,7 @@ public class GorgonPipelineState
             {
                 return;
             }
-                            
+
             _vertexShader = value;
             UpdatedStates |= PipelineStateChanges.VertexShader;
         }
@@ -321,7 +321,7 @@ public class GorgonPipelineState
     /// <summary>
     /// Function to clear the pipeline state.
     /// </summary>
-	    internal void Clear()
+        internal void Clear()
     {
         D3DBlendState = null;
         D3DDepthStencilState = null;

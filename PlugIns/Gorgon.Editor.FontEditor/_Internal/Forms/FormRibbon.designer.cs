@@ -27,7 +27,7 @@ partial class FormRibbon
                 _contentRenderer.ZoomScaleChanged -= ContentRenderer_ZoomScale;
             }
 
-            DataContext = null;
+            ViewModel = null;
         }
 
         base.Dispose(disposing);
@@ -753,7 +753,7 @@ partial class FormRibbon
         this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
         this.ClientSize = new System.Drawing.Size(1437, 399);
         this.Controls.Add(this.RibbonTextContent);
-        this.Font = new System.Drawing.Font("Segoe UI", 9F);
+        
         this.Name = "FormRibbon";
         this.Text = "FormRibbon";
         ((System.ComponentModel.ISupportInitialize)(this.RibbonTextContent)).EndInit();

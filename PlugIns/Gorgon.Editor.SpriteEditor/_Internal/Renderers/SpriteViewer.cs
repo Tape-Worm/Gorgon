@@ -96,7 +96,7 @@ internal abstract class SpriteViewer
     /// </summary>
     protected virtual void DrawSprite()
     {
-    
+
     }
 
     /// <summary>Function to render the content.</summary>

@@ -48,7 +48,7 @@ internal partial class FormManualRectangleEdit
     /// <summary>Property to return the data context assigned to this view.</summary>
     /// <value>The data context.</value>
     [Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-    public ISpriteClipContext DataContext
+    public ISpriteClipContext ViewModel
     {
         get;
         private set;
@@ -61,7 +61,7 @@ internal partial class FormManualRectangleEdit
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
     private void NumericLeft_ValueChanged(object sender, EventArgs e)
     {
-        if ((DataContext is null) || (_noValueEvent))
+        if ((ViewModel is null) || (_noValueEvent))
         {
             return;
         }
@@ -74,12 +74,12 @@ internal partial class FormManualRectangleEdit
             Bottom = (float)NumericBottom.Value
         };
 
-        if (newRect.Equals(DataContext.SpriteRectangle))
+        if (newRect.Equals(ViewModel.SpriteRectangle))
         {
             return;
         }
 
-        DataContext.SpriteRectangle = newRect;
+        ViewModel.SpriteRectangle = newRect;
     }
 
     /// <summary>
@@ -112,10 +112,10 @@ internal partial class FormManualRectangleEdit
         {
             case nameof(ISpriteClipContext.FixedSize):
                 LabelRight.Enabled = LabelBottom.Enabled =
-                NumericRight.Enabled = NumericBottom.Enabled = DataContext.FixedSize is null;
+                NumericRight.Enabled = NumericBottom.Enabled = ViewModel.FixedSize is null;
                 break;
             case nameof(ISpriteClipContext.SpriteRectangle):
-                SetRectangleInputs(DataContext);
+                SetRectangleInputs(ViewModel);
                 break;
         }
     }
@@ -125,12 +125,12 @@ internal partial class FormManualRectangleEdit
     /// </summary>
     private void UnassignEvents()
     {
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             return;
         }
 
-        DataContext.PropertyChanged -= DataContext_PropertyChanged;
+        ViewModel.PropertyChanged -= DataContext_PropertyChanged;
     }
 
     /// <summary>
@@ -167,7 +167,7 @@ internal partial class FormManualRectangleEdit
     {
         base.OnResizeBegin(e);
 
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             return;
         }
@@ -181,7 +181,7 @@ internal partial class FormManualRectangleEdit
     {
         base.OnResizeEnd(e);
 
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             return;
         }
@@ -200,7 +200,7 @@ internal partial class FormManualRectangleEdit
             return;
         }
 
-        DataContext?.Load();
+        ViewModel?.Load();
     }
 
     /// <summary>Function to assign a data context to the view as a view model.</summary>
@@ -211,14 +211,14 @@ internal partial class FormManualRectangleEdit
         UnassignEvents();
 
         InitializeFromDataContext(dataContext);
-        DataContext = dataContext;
+        ViewModel = dataContext;
 
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             return;
         }
 
-        DataContext.PropertyChanged += DataContext_PropertyChanged;
+        ViewModel.PropertyChanged += DataContext_PropertyChanged;
     }
     #endregion
 

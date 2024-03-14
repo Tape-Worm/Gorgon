@@ -1,4 +1,4 @@
-#region MIT
+﻿#region MIT
 // 
 // Gorgon.
 // Copyright (C) 2023 Michael Winsor
@@ -211,7 +211,7 @@ public partial class MainWindow : Window
 
         // And, as always, send the cube to the GPU for rendering.
         _graphics.Submit(_drawCall);
-                
+
         GorgonExample.BlitLogo(_graphics);
 
         // Flush the command queue before giving control back to Avalonia.
@@ -292,7 +292,7 @@ public partial class MainWindow : Window
         _graphics = new GorgonGraphics(adapters[0]);
 
         Initialize();
-                
+
         // Begin running the application.
         await GorgonControl.RunAsync(_graphics, Idle);
     }

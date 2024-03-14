@@ -62,7 +62,7 @@ public readonly struct GorgonStreamOutElement
     /// <summary>
     /// Property to return the stream number to use.
     /// </summary>
-	    public int StreamIndex => NativeElement.Stream;
+        public int StreamIndex => NativeElement.Stream;
 
     /// <summary>
     /// Property to return the context of the element.

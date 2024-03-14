@@ -69,7 +69,7 @@ internal partial class FormImageSelector
     #region Properties.
     /// <summary>Property to return the data context assigned to this view.</summary>
     [Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-    public IImageFiles DataContext
+    public IImageFiles ViewModel
     {
         get;
         private set;
@@ -82,8 +82,8 @@ internal partial class FormImageSelector
     /// </summary>
     private void ValidateControls()
     {
-        ButtonLabelMultiImage.Visible = DataContext?.SelectedFiles.Count < 2;
-        ButtonLoad.Enabled = DataContext?.ConfirmLoadCommand?.CanExecute(null) ?? false;
+        ButtonLabelMultiImage.Visible = ViewModel?.SelectedFiles.Count < 2;
+        ButtonLoad.Enabled = ViewModel?.ConfirmLoadCommand?.CanExecute(null) ?? false;
     }
 
     /// <summary>Handles the Search event of the ContentFileExplorer control.</summary>
@@ -91,12 +91,12 @@ internal partial class FormImageSelector
     /// <param name="e">The <see cref="GorgonSearchEventArgs"/> instance containing the event data.</param>
     private void ContentFileExplorer_Search(object sender, GorgonSearchEventArgs e)
     {
-        if ((DataContext?.SearchCommand is null) || (!DataContext.SearchCommand.CanExecute(e.SearchText)))
+        if ((ViewModel?.SearchCommand is null) || (!ViewModel.SearchCommand.CanExecute(e.SearchText)))
         {
             return;
         }
 
-        DataContext.SearchCommand.Execute(e.SearchText);
+        ViewModel.SearchCommand.Execute(e.SearchText);
         ValidateControls();
     }
 
@@ -106,12 +106,12 @@ internal partial class FormImageSelector
     /// <param name="e">The e.</param>
     private async void ContentFileExplorer_FileEntriesFocused(object sender, ContentFileEntriesFocusedArgs e)
     {
-        if ((DataContext?.RefreshImagePreviewCommand is null) || (!DataContext.RefreshImagePreviewCommand.CanExecute(e.FocusedFiles)))
+        if ((ViewModel?.RefreshImagePreviewCommand is null) || (!ViewModel.RefreshImagePreviewCommand.CanExecute(e.FocusedFiles)))
         {
             return;
         }
 
-        await DataContext.RefreshImagePreviewCommand.ExecuteAsync(e.FocusedFiles);
+        await ViewModel.RefreshImagePreviewCommand.ExecuteAsync(e.FocusedFiles);
         ValidateControls();
     }
 
@@ -125,7 +125,7 @@ internal partial class FormImageSelector
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
     private async void ButtonLoad_Click(object sender, EventArgs e)
     {
-        if ((DataContext?.ConfirmLoadCommand is null) || (!DataContext.ConfirmLoadCommand.CanExecute(null)))
+        if ((ViewModel?.ConfirmLoadCommand is null) || (!ViewModel.ConfirmLoadCommand.CanExecute(null)))
         {
             return;
         }
@@ -134,7 +134,7 @@ internal partial class FormImageSelector
         LabelLoading.Visible = true;
         SplitFileSelector.Visible = false;
 
-        await DataContext.ConfirmLoadCommand.ExecuteAsync(null);
+        await ViewModel.ConfirmLoadCommand.ExecuteAsync(null);
 
         LabelLoading.Visible = false;
         SplitFileSelector.Visible = true;
@@ -150,10 +150,10 @@ internal partial class FormImageSelector
         switch (e.PropertyName)
         {
             case nameof(IImageFiles.PreviewImage):
-                UpdateRenderImage(DataContext.PreviewImage);
+                UpdateRenderImage(ViewModel.PreviewImage);
                 break;
             case nameof(IImageFiles.LoadingImage):
-                _syncContext.Send(_ => LabelLoading.Text = string.Format(Resources.GORIAG_TEXT_LOADING_IMAGE, DataContext.LoadingImage), null);
+                _syncContext.Send(_ => LabelLoading.Text = string.Format(Resources.GORIAG_TEXT_LOADING_IMAGE, ViewModel.LoadingImage), null);
                 return;
         }
 
@@ -282,12 +282,12 @@ internal partial class FormImageSelector
     /// </summary>
     private void UnassignEvents()
     {
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             return;
         }
 
-        DataContext.PropertyChanged -= DataContext_PropertyChanged;
+        ViewModel.PropertyChanged -= DataContext_PropertyChanged;
     }
 
     /// <summary>
@@ -321,19 +321,19 @@ internal partial class FormImageSelector
             return;
         }
 
-        if ((_closeState == 1) || (DataContext?.CancelCommand is null) || (!DataContext.CancelCommand.CanExecute(null)))
+        if ((_closeState == 1) || (ViewModel?.CancelCommand is null) || (!ViewModel.CancelCommand.CanExecute(null)))
         {
             _closeState = 0;
-            DataContext?.Unload();
+            ViewModel?.Unload();
             return;
         }
 
         e.Cancel = true;
-        await DataContext.CancelCommand.ExecuteAsync(null);
+        await ViewModel.CancelCommand.ExecuteAsync(null);
 
         e.Cancel = false;
         _closeState = 1;
-        DataContext?.Unload();
+        ViewModel?.Unload();
     }
 
     /// <summary>Raises the Load event.</summary>
@@ -347,7 +347,7 @@ internal partial class FormImageSelector
             return;
         }
 
-        DataContext?.Load();
+        ViewModel?.Load();
 
         ValidateControls();
     }
@@ -380,14 +380,14 @@ internal partial class FormImageSelector
         UnassignEvents();
 
         InitializeFromDataContext(dataContext);
-        DataContext = dataContext;
+        ViewModel = dataContext;
 
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             return;
         }
-        
-        DataContext.PropertyChanged += DataContext_PropertyChanged;
+
+        ViewModel.PropertyChanged += DataContext_PropertyChanged;
     }
     #endregion
 

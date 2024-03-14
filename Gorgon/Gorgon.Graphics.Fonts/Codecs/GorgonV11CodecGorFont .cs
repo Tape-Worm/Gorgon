@@ -159,7 +159,7 @@ public sealed class GorgonCodecGorFont
         try
         {
             fontFile.Open();
-            
+
             GorgonBinaryWriter writer = fontFile.OpenChunk(FontInfoChunk);
 
             writer.Write(fontInfo.FontFamilyName);

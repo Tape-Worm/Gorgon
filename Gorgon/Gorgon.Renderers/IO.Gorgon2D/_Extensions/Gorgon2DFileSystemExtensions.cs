@@ -236,7 +236,7 @@ public static class Gorgon2DFileSystemExtensions
 
         options.Name = name;
         options.Binding &= ~TextureBinding.DepthStencil;
-        
+
         if ((options.Binding & TextureBinding.ShaderResource) != TextureBinding.ShaderResource)
         {
             options.Binding |= TextureBinding.ShaderResource;

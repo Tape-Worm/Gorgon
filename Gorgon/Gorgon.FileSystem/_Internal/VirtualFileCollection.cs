@@ -82,7 +82,7 @@ internal class VirtualFileCollection
                 _files.Remove(fileName);
                 return;
             }
-            
+
             _files[fileName] = value;
         }
     }

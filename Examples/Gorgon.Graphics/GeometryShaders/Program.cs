@@ -290,7 +290,7 @@ static class Program
             {
                 Fov = 65.0f
             };
-            
+
             _vsConstants = GorgonConstantBufferView.CreateConstantBuffer(_graphics,
                                                                          new GorgonConstantBufferInfo((Unsafe.SizeOf<Matrix4x4>() * 2) + Unsafe.SizeOf<Vector4>())
                                                                          {

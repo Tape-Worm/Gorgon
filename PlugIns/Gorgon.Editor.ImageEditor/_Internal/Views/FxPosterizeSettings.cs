@@ -39,7 +39,7 @@ internal partial class FxPosterizeSettings
 {
     #region Properties.
     /// <summary>Property to return the data context assigned to this view.</summary>
-    public IFxPosterize DataContext
+    public IFxPosterize ViewModel
     {
         get;
         private set;
@@ -57,12 +57,12 @@ internal partial class FxPosterizeSettings
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
     private void NumericAmount_ValueChanged(object sender, EventArgs e)
     {
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             return;
         }
 
-        TrackAmount.Value = DataContext.Amount = (int)NumericAmount.Value;
+        TrackAmount.Value = ViewModel.Amount = (int)NumericAmount.Value;
     }
 
     /// <summary>Function to submit the change.</summary>
@@ -70,12 +70,12 @@ internal partial class FxPosterizeSettings
     {
         base.OnSubmit();
 
-        if ((DataContext?.OkCommand is null) || (!DataContext.OkCommand.CanExecute(null)))
+        if ((ViewModel?.OkCommand is null) || (!ViewModel.OkCommand.CanExecute(null)))
         {
             return;
         }
 
-        DataContext.OkCommand.Execute(null);
+        ViewModel.OkCommand.Execute(null);
     }
 
     /// <summary>Function to cancel the change.</summary>
@@ -83,12 +83,12 @@ internal partial class FxPosterizeSettings
     {
         base.OnCancel();
 
-        if ((DataContext?.CancelCommand is null) || (!DataContext.CancelCommand.CanExecute(null)))
+        if ((ViewModel?.CancelCommand is null) || (!ViewModel.CancelCommand.CanExecute(null)))
         {
             return;
         }
 
-        DataContext.CancelCommand.Execute(null);
+        ViewModel.CancelCommand.Execute(null);
     }
 
     /// <summary>Handles the PropertyChanged event of the DataContext control.</summary>
@@ -99,7 +99,7 @@ internal partial class FxPosterizeSettings
         switch (e.PropertyName)
         {
             case nameof(IFxSharpen.Amount):
-                NumericAmount.Value = DataContext.Amount;
+                NumericAmount.Value = ViewModel.Amount;
                 break;
         }
     }
@@ -109,12 +109,12 @@ internal partial class FxPosterizeSettings
     /// </summary>
     private void UnassignEvents()
     {
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             return;
         }
 
-        DataContext.PropertyChanged -= DataContext_PropertyChanged;
+        ViewModel.PropertyChanged -= DataContext_PropertyChanged;
     }
 
     /// <summary>
@@ -143,14 +143,14 @@ internal partial class FxPosterizeSettings
 
         InitializeFromDataContext(dataContext);
 
-        DataContext = dataContext;
+        ViewModel = dataContext;
 
         if (dataContext is null)
         {
             return;
         }
 
-        DataContext.PropertyChanged += DataContext_PropertyChanged;
+        ViewModel.PropertyChanged += DataContext_PropertyChanged;
     }
     #endregion
 

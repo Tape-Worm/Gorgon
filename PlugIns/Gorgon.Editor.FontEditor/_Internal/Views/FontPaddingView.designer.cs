@@ -23,7 +23,7 @@ partial class FontPaddingView
         if (disposing)
         {
             UnassignEvents();
-            DataContext?.Unload();
+            ViewModel?.Unload();
         }
 
         base.Dispose(disposing);

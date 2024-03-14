@@ -114,7 +114,7 @@ public struct GorgonRay
     {
         var nearPoint = new Vector3(x, y, 0);
         var farPoint = new Vector3(x, y, 1);
-                    
+
         nearPoint = nearPoint.Unproject(viewport.X, viewport.Y, viewport.Width, viewport.Height, viewport.MinDepth, viewport.MaxDepth, in worldViewProjection);
         farPoint = farPoint.Unproject(viewport.X, viewport.Y, viewport.Width, viewport.Height, viewport.MinDepth, viewport.MaxDepth, in worldViewProjection);
 

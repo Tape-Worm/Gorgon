@@ -91,7 +91,7 @@ internal class SamplerCache
                 {
                     return state;
                 }
-                                    
+
                 newState.ID = int.MinValue;
             }
 

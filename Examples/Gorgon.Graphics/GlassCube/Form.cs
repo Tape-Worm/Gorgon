@@ -99,7 +99,7 @@ public partial class Form : System.Windows.Forms.Form
 
         _camera.ViewDimensions = e.Size.ToSize2F();
     }
-            
+
     /// <summary>
     /// Function to update the world/view/projection matrix.
     /// </summary>
@@ -129,10 +129,10 @@ public partial class Form : System.Windows.Forms.Form
     }
 
     /// <summary>
-		/// Function to handle idle time for the application.
-		/// </summary>
-		/// <returns><b>true</b> to continue processing, <b>false</b> to stop.</returns>
-		private bool Idle()
+        /// Function to handle idle time for the application.
+        /// </summary>
+        /// <returns><b>true</b> to continue processing, <b>false</b> to stop.</returns>
+        private bool Idle()
     {
         int jitter1 = GorgonRandom.RandomInt32(1, 3);
         int jitter2 = GorgonRandom.RandomInt32(1, 3);
@@ -182,7 +182,7 @@ public partial class Form : System.Windows.Forms.Form
             {
                 _cube.RotateXYZ(_rotation.X, _rotation.Y, _rotation.Z);
             }
-            
+
             _accumulator -= TargetDelta;
         }
 

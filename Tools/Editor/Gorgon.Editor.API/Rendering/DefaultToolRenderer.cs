@@ -249,7 +249,7 @@ public class DefaultToolRenderer<T>
     /// </remarks>
     protected virtual void OnPropertyChanged(string propertyName)
     {
-    
+
     }
 
     /// <summary>
@@ -287,7 +287,7 @@ public class DefaultToolRenderer<T>
     /// </remarks>
     protected virtual void OnLoad()
     {
-        
+
     }
 
     /// <summary>

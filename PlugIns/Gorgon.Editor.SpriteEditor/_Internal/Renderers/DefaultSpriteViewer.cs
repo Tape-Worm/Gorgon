@@ -175,7 +175,7 @@ internal class DefaultSpriteViewer
                                      new DX.RectangleF(0, 0, 1, 1),
                                      DataContext.ArrayIndex,
                                      GorgonSamplerState.PointFiltering);
-        
+
         // Remove the area where the sprite is located.
         Renderer.DrawFilledRectangle(clearRegion, GorgonColor.BlackTransparent);            
 
@@ -258,7 +258,7 @@ internal class DefaultSpriteViewer
                                     _spriteTexture,
                                     new DX.RectangleF(0, 0, 1, 1),
                                     textureSampler: GorgonSamplerState.PointFiltering);
-        
+
         Renderer.DrawSprite(_sprite);
         Renderer.End();            
 
@@ -280,7 +280,7 @@ internal class DefaultSpriteViewer
         {
             return;
         }
-                    
+
         ZoomLevels spriteZoomLevel = GetNearestZoomFromRectangle(_spriteRegion);
 
         Vector3 spritePosition = Camera.Unproject(new Vector3(_spriteRegion.X + _spriteRegion.Width * 0.5f, _spriteRegion.Y + _spriteRegion.Height * 0.5f, 0));

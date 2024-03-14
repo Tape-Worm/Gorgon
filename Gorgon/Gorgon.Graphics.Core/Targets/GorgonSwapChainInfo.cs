@@ -76,7 +76,7 @@ public record GorgonSwapChainInfo(int Width, int Height, BufferFormat Format)
     /// <summary>
     /// Property to return the name of the swap chain.
     /// </summary>
-	    public string Name
+        public string Name
     {
         get;
         init;
@@ -139,7 +139,7 @@ public class GorgonSwapChainInfo
     /// <summary>
     /// Property to return the name of the swap chain.
     /// </summary>
-	    public string Name
+        public string Name
     {
         get;
         set;

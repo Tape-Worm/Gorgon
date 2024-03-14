@@ -76,7 +76,7 @@ internal abstract class GorgonChunkedFormat
     /// <summary>
     /// Property to set or return the temporary buffer for large reads/writes.
     /// </summary>
-		protected byte[] TempBuffer
+        protected byte[] TempBuffer
     {
         get;
         set;

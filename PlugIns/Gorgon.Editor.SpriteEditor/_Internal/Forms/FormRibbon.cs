@@ -78,7 +78,7 @@ internal partial class FormRibbon
     /// <summary>
     /// Property to set or return the data context for the ribbon on the form.
     /// </summary>
-    public ISpriteContent DataContext
+    public ISpriteContent ViewModel
     {
         get;
         private set;
@@ -200,9 +200,9 @@ internal partial class FormRibbon
         switch (e.PropertyName)
         {
             case nameof(ISpriteClipContext.FixedSize):
-                if (DataContext.SpriteClipContext.FixedSize is not null)
+                if (ViewModel.SpriteClipContext.FixedSize is not null)
                 {
-                    DX.Size2F size = DataContext.SpriteClipContext.FixedSize.Value;
+                    DX.Size2F size = ViewModel.SpriteClipContext.FixedSize.Value;
                     NumericFixedWidth.Value = ((decimal)size.Width).Min(NumericFixedWidth.Maximum).Max(NumericFixedWidth.Minimum);
                     NumericFixedHeight.Value = ((decimal)size.Height).Min(NumericFixedHeight.Maximum).Max(NumericFixedHeight.Minimum);
                 }
@@ -220,13 +220,13 @@ internal partial class FormRibbon
         switch (e.PropertyName)
         {
             case nameof(ISpriteContent.SpriteClipContext):
-                DataContext.SpriteClipContext.PropertyChanged -= SpriteClipContext_PropertyChanged;
+                ViewModel.SpriteClipContext.PropertyChanged -= SpriteClipContext_PropertyChanged;
                 break;
             case nameof(ISpriteContent.SpritePickContext):
-                DataContext.SpriteClipContext.PropertyChanged -= SpritePickContext_PropertyChanged;
+                ViewModel.SpriteClipContext.PropertyChanged -= SpritePickContext_PropertyChanged;
                 break;
             case nameof(ISpriteContent.SpriteVertexEditContext):
-                DataContext.SpriteVertexEditContext.PropertyChanged -= SpriteVertexEditorContext_PropertyChanged;
+                ViewModel.SpriteVertexEditContext.PropertyChanged -= SpriteVertexEditorContext_PropertyChanged;
                 break;
         }
     }
@@ -239,24 +239,24 @@ internal partial class FormRibbon
         switch (e.PropertyName)
         {
             case nameof(ISpriteContent.IsPixellated):
-                MenuItemSmooth.Checked = !DataContext.IsPixellated;
+                MenuItemSmooth.Checked = !ViewModel.IsPixellated;
                 MenuItemPixelated.Checked = !MenuItemSmooth.Checked;
                 break;
             case nameof(ISpriteContent.CommandContext):
-                SetToolStates(DataContext);
+                SetToolStates(ViewModel);
                 break;
             case nameof(ISpriteContent.Texture):
-                NumericFixedWidth.Maximum = DataContext?.Texture?.Width ?? 16384;
-                NumericFixedHeight.Maximum = DataContext?.Texture?.Height ?? 16384;
+                NumericFixedWidth.Maximum = ViewModel?.Texture?.Width ?? 16384;
+                NumericFixedHeight.Maximum = ViewModel?.Texture?.Height ?? 16384;
                 break;
             case nameof(ISpriteContent.SpriteClipContext):
-                DataContext.SpriteClipContext.PropertyChanged += SpriteClipContext_PropertyChanged;
+                ViewModel.SpriteClipContext.PropertyChanged += SpriteClipContext_PropertyChanged;
                 break;
             case nameof(ISpriteContent.SpritePickContext):
-                DataContext.SpritePickContext.PropertyChanged += SpritePickContext_PropertyChanged;
+                ViewModel.SpritePickContext.PropertyChanged += SpritePickContext_PropertyChanged;
                 break;
             case nameof(ISpriteContent.SpriteVertexEditContext):
-                DataContext.SpriteVertexEditContext.PropertyChanged += SpriteVertexEditorContext_PropertyChanged;
+                ViewModel.SpriteVertexEditContext.PropertyChanged += SpriteVertexEditorContext_PropertyChanged;
                 break;
         }
 
@@ -268,12 +268,12 @@ internal partial class FormRibbon
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
     private void NumericPadding_ValueChanged(object sender, EventArgs e)
     {
-        if (DataContext?.SpritePickContext is null)
+        if (ViewModel?.SpritePickContext is null)
         {
             return;
         }
 
-        DataContext.SpritePickContext.Padding = (int)NumericPadding.Value;
+        ViewModel.SpritePickContext.Padding = (int)NumericPadding.Value;
 
         ValidateButtons();
     }
@@ -286,13 +286,13 @@ internal partial class FormRibbon
         var size = new DX.Size2F((float)NumericFixedWidth.Value, (float)NumericFixedHeight.Value);
 
         if ((!ButtonFixedSize.Checked)
-            || (DataContext?.SpriteClipContext?.FixedSizeCommand is null)
-            || (!DataContext.SpriteClipContext.FixedSizeCommand.CanExecute(size)))
+            || (ViewModel?.SpriteClipContext?.FixedSizeCommand is null)
+            || (!ViewModel.SpriteClipContext.FixedSizeCommand.CanExecute(size)))
         {
             return;
         }
 
-        DataContext.SpriteClipContext.FixedSizeCommand.Execute(size);
+        ViewModel.SpriteClipContext.FixedSizeCommand.Execute(size);
         ValidateButtons();
     }
 
@@ -303,12 +303,12 @@ internal partial class FormRibbon
     {
         DX.Size2F? size = ButtonFixedSize.Checked ?  new DX.Size2F((float)NumericFixedWidth.Value, (float)NumericFixedHeight.Value) : null;
 
-        if ((DataContext?.SpriteClipContext?.FixedSizeCommand is null) || (!DataContext.SpriteClipContext.FixedSizeCommand.CanExecute(size)))
+        if ((ViewModel?.SpriteClipContext?.FixedSizeCommand is null) || (!ViewModel.SpriteClipContext.FixedSizeCommand.CanExecute(size)))
         {
             return;
         }
 
-        DataContext.SpriteClipContext.FixedSizeCommand.Execute(size);
+        ViewModel.SpriteClipContext.FixedSizeCommand.Execute(size);
         ValidateButtons();
     }
 
@@ -324,12 +324,12 @@ internal partial class FormRibbon
             ButtonFixedSize.PerformClick();
         }
 
-        if ((DataContext?.SpriteClipContext?.FullSizeCommand is null) || (!DataContext.SpriteClipContext.FullSizeCommand.CanExecute(null)))
+        if ((ViewModel?.SpriteClipContext?.FullSizeCommand is null) || (!ViewModel.SpriteClipContext.FullSizeCommand.CanExecute(null)))
         {
             return;
         }
 
-        DataContext.SpriteClipContext.FullSizeCommand.Execute(null);
+        ViewModel.SpriteClipContext.FullSizeCommand.Execute(null);
         ValidateButtons();
     }
 
@@ -338,12 +338,12 @@ internal partial class FormRibbon
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
     private void ButtonPickMaskColor_Click(object sender, EventArgs e)
     {
-        if ((DataContext?.SpritePickContext?.ShowSpritePickMaskEditorCommand is null) || (!DataContext.SpritePickContext.ShowSpritePickMaskEditorCommand.CanExecute(null)))
+        if ((ViewModel?.SpritePickContext?.ShowSpritePickMaskEditorCommand is null) || (!ViewModel.SpritePickContext.ShowSpritePickMaskEditorCommand.CanExecute(null)))
         {
             return;
         }
 
-        DataContext.SpritePickContext.ShowSpritePickMaskEditorCommand.Execute(null);
+        ViewModel.SpritePickContext.ShowSpritePickMaskEditorCommand.Execute(null);
         ValidateButtons();
     }
 
@@ -352,12 +352,12 @@ internal partial class FormRibbon
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
     private void ButtonSpriteColor_Click(object sender, EventArgs e)
     {
-        if ((DataContext?.ShowColorEditorCommand is null) || (!DataContext.ShowColorEditorCommand.CanExecute(null)))
+        if ((ViewModel?.ShowColorEditorCommand is null) || (!ViewModel.ShowColorEditorCommand.CanExecute(null)))
         {
             return;
         }
 
-        DataContext.ShowColorEditorCommand.Execute(null);
+        ViewModel.ShowColorEditorCommand.Execute(null);
         ValidateButtons();
     }
 
@@ -366,12 +366,12 @@ internal partial class FormRibbon
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
     private void ButtonSpriteTextureWrap_Click(object sender, EventArgs e)
     {
-        if ((DataContext?.ShowWrappingEditorCommand is null) || (!DataContext.ShowWrappingEditorCommand.CanExecute(null)))
+        if ((ViewModel?.ShowWrappingEditorCommand is null) || (!ViewModel.ShowWrappingEditorCommand.CanExecute(null)))
         {
             return;
         }
 
-        DataContext.ShowWrappingEditorCommand.Execute(null);
+        ViewModel.ShowWrappingEditorCommand.Execute(null);
         ValidateButtons();
     }
 
@@ -380,12 +380,12 @@ internal partial class FormRibbon
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
     private void ButtonSpriteAnchor_Click(object sender, EventArgs e)
     {
-        if ((DataContext?.ShowAnchorEditorCommand is null) || (!DataContext.ShowAnchorEditorCommand.CanExecute(null)))
+        if ((ViewModel?.ShowAnchorEditorCommand is null) || (!ViewModel.ShowAnchorEditorCommand.CanExecute(null)))
         {
             return;
         }
 
-        DataContext.ShowAnchorEditorCommand.Execute(null);
+        ViewModel.ShowAnchorEditorCommand.Execute(null);
         ValidateButtons();
     }
 
@@ -394,12 +394,12 @@ internal partial class FormRibbon
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
     private async void ButtonSaveSprite_Click(object sender, EventArgs e)
     {
-        if ((DataContext?.SaveContentCommand is null) || (!DataContext.SaveContentCommand.CanExecute(SaveReason.UserSave)))
+        if ((ViewModel?.SaveContentCommand is null) || (!ViewModel.SaveContentCommand.CanExecute(SaveReason.UserSave)))
         {
             return;
         }
 
-        await DataContext.SaveContentCommand.ExecuteAsync(SaveReason.UserSave);
+        await ViewModel.SaveContentCommand.ExecuteAsync(SaveReason.UserSave);
         ValidateButtons();
     }
 
@@ -408,12 +408,12 @@ internal partial class FormRibbon
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
     private void ButtonSpriteRedo_Click(object sender, EventArgs e)
     {
-        if ((DataContext?.RedoCommand is null) || (!DataContext.RedoCommand.CanExecute(null)))
+        if ((ViewModel?.RedoCommand is null) || (!ViewModel.RedoCommand.CanExecute(null)))
         {
             return;
         }
 
-        DataContext.RedoCommand.Execute(null);
+        ViewModel.RedoCommand.Execute(null);
         ValidateButtons();
     }
 
@@ -422,12 +422,12 @@ internal partial class FormRibbon
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
     private void ButtonSpriteUndo_Click(object sender, EventArgs e)
     {
-        if ((DataContext?.UndoCommand is null) || (!DataContext.UndoCommand.CanExecute(null)))
+        if ((ViewModel?.UndoCommand is null) || (!ViewModel.UndoCommand.CanExecute(null)))
         {
             return;
         }
 
-        DataContext.UndoCommand.Execute(null);
+        ViewModel.UndoCommand.Execute(null);
         ValidateButtons();
     }
 
@@ -436,12 +436,12 @@ internal partial class FormRibbon
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
     private void ButtonPickSprite_Click(object sender, EventArgs e)
     {
-        if ((DataContext?.SpritePickCommand is null) || (!DataContext.SpritePickCommand.CanExecute(null)))
+        if ((ViewModel?.SpritePickCommand is null) || (!ViewModel.SpritePickCommand.CanExecute(null)))
         {
             return;
         }
 
-        DataContext.SpritePickCommand.Execute(null);
+        ViewModel.SpritePickCommand.Execute(null);
         ValidateButtons();
     }
 
@@ -450,12 +450,12 @@ internal partial class FormRibbon
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
     private void ButtonClipSprite_Click(object sender, EventArgs e)
     {
-        if ((DataContext?.SpriteClipCommand is null) || (!DataContext.SpriteClipCommand.CanExecute(null)))
+        if ((ViewModel?.SpriteClipCommand is null) || (!ViewModel.SpriteClipCommand.CanExecute(null)))
         {
             return;
         }
 
-        DataContext.SpriteClipCommand.Execute(null);
+        ViewModel.SpriteClipCommand.Execute(null);
         ValidateButtons();
     }
 
@@ -465,12 +465,12 @@ internal partial class FormRibbon
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
     private void ButtonSpriteVertexOffsets_Click(object sender, EventArgs e)
     {
-        if ((DataContext?.SpriteVertexOffsetCommand is null) || (!DataContext.SpriteVertexOffsetCommand.CanExecute(null)))
+        if ((ViewModel?.SpriteVertexOffsetCommand is null) || (!ViewModel.SpriteVertexOffsetCommand.CanExecute(null)))
         {
             return;
         }
 
-        DataContext.SpriteVertexOffsetCommand.Execute(null);
+        ViewModel.SpriteVertexOffsetCommand.Execute(null);
         ValidateButtons();
     }
 
@@ -479,12 +479,12 @@ internal partial class FormRibbon
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
     private void ButtonNewSprite_Click(object sender, EventArgs e)
     {
-        if ((DataContext?.NewSpriteCommand is null) || (!DataContext.NewSpriteCommand.CanExecute(null)))
+        if ((ViewModel?.NewSpriteCommand is null) || (!ViewModel.NewSpriteCommand.CanExecute(null)))
         {
             return;
         }
 
-        DataContext.NewSpriteCommand.Execute(null);
+        ViewModel.NewSpriteCommand.Execute(null);
         ValidateButtons();
     }
 
@@ -493,12 +493,12 @@ internal partial class FormRibbon
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
     private void ButtonSpriteCornerReset_Click(object sender, EventArgs e)
     {
-        if ((DataContext?.SpriteVertexEditContext?.ResetOffsetCommand is null) || (!DataContext.SpriteVertexEditContext.ResetOffsetCommand.CanExecute(null)))
+        if ((ViewModel?.SpriteVertexEditContext?.ResetOffsetCommand is null) || (!ViewModel.SpriteVertexEditContext.ResetOffsetCommand.CanExecute(null)))
         {
             return;
         }
 
-        DataContext.SpriteVertexEditContext.ResetOffsetCommand.Execute(null);
+        ViewModel.SpriteVertexEditContext.ResetOffsetCommand.Execute(null);
         ValidateButtons();
     }
 
@@ -507,12 +507,12 @@ internal partial class FormRibbon
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
     private void ButtonSpritePickApply_Click(object sender, EventArgs e)
     {
-        if ((DataContext?.SpritePickContext?.ApplyCommand is null) || (!DataContext.SpritePickContext.ApplyCommand.CanExecute(null)))
+        if ((ViewModel?.SpritePickContext?.ApplyCommand is null) || (!ViewModel.SpritePickContext.ApplyCommand.CanExecute(null)))
         {
             return;
         }
 
-        DataContext.SpritePickContext.ApplyCommand.Execute(null);
+        ViewModel.SpritePickContext.ApplyCommand.Execute(null);
         ValidateButtons();
     }
 
@@ -521,12 +521,12 @@ internal partial class FormRibbon
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
     private void ButtonSpritePickCancel_Click(object sender, EventArgs e)
     {
-        if ((DataContext?.SpritePickContext?.CancelCommand is null) || (!DataContext.SpritePickContext.CancelCommand.CanExecute(null)))
+        if ((ViewModel?.SpritePickContext?.CancelCommand is null) || (!ViewModel.SpritePickContext.CancelCommand.CanExecute(null)))
         {
             return;
         }
 
-        DataContext.SpritePickContext.CancelCommand.Execute(null);
+        ViewModel.SpritePickContext.CancelCommand.Execute(null);
         ValidateButtons();
     }
 
@@ -541,12 +541,12 @@ internal partial class FormRibbon
             ButtonClipManualInput.PerformClick();
         }
 
-        if ((DataContext?.SpriteClipContext?.ApplyCommand is null) || (!DataContext.SpriteClipContext.ApplyCommand.CanExecute(null)))
+        if ((ViewModel?.SpriteClipContext?.ApplyCommand is null) || (!ViewModel.SpriteClipContext.ApplyCommand.CanExecute(null)))
         {
             return;
         }
 
-        DataContext.SpriteClipContext.ApplyCommand.Execute(null);
+        ViewModel.SpriteClipContext.ApplyCommand.Execute(null);
         ValidateButtons();
     }
 
@@ -561,12 +561,12 @@ internal partial class FormRibbon
             ButtonClipManualInput.PerformClick();
         }
 
-        if ((DataContext?.SpriteClipContext?.CancelCommand is null) || (!DataContext.SpriteClipContext.CancelCommand.CanExecute(null)))
+        if ((ViewModel?.SpriteClipContext?.CancelCommand is null) || (!ViewModel.SpriteClipContext.CancelCommand.CanExecute(null)))
         {
             return;
         }
 
-        DataContext.SpriteClipContext.CancelCommand.Execute(null);
+        ViewModel.SpriteClipContext.CancelCommand.Execute(null);
         ValidateButtons();
     }
 
@@ -580,13 +580,13 @@ internal partial class FormRibbon
         {
             ButtonSpriteCornerManualInput.PerformClick();
         }
-        
-        if ((DataContext?.SpriteVertexEditContext?.ApplyCommand is null) || (!DataContext.SpriteVertexEditContext.ApplyCommand.CanExecute(null)))
+
+        if ((ViewModel?.SpriteVertexEditContext?.ApplyCommand is null) || (!ViewModel.SpriteVertexEditContext.ApplyCommand.CanExecute(null)))
         {
             return;
         }
 
-        DataContext.SpriteVertexEditContext.ApplyCommand.Execute(null);
+        ViewModel.SpriteVertexEditContext.ApplyCommand.Execute(null);
         ValidateButtons();
     }
 
@@ -601,12 +601,12 @@ internal partial class FormRibbon
             ButtonSpriteCornerManualInput.PerformClick();
         }
 
-        if ((DataContext?.SpriteVertexEditContext?.CancelCommand is null) || (!DataContext.SpriteVertexEditContext.CancelCommand.CanExecute(null)))
+        if ((ViewModel?.SpriteVertexEditContext?.CancelCommand is null) || (!ViewModel.SpriteVertexEditContext.CancelCommand.CanExecute(null)))
         {
             return;
         }
 
-        DataContext.SpriteVertexEditContext.CancelCommand.Execute(null);
+        ViewModel.SpriteVertexEditContext.CancelCommand.Execute(null);
         ValidateButtons();
     }
 
@@ -686,28 +686,28 @@ internal partial class FormRibbon
     /// </summary>
     private void UnassignEvents()
     {
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             return;
         }
 
-        if (DataContext.SpriteClipContext is not null)
+        if (ViewModel.SpriteClipContext is not null)
         {
-            DataContext.SpriteClipContext.PropertyChanged -= SpriteClipContext_PropertyChanged;
+            ViewModel.SpriteClipContext.PropertyChanged -= SpriteClipContext_PropertyChanged;
         }
 
-        if (DataContext.SpritePickContext is not null)
+        if (ViewModel.SpritePickContext is not null)
         {
-            DataContext.SpritePickContext.PropertyChanged -= SpritePickContext_PropertyChanged;
+            ViewModel.SpritePickContext.PropertyChanged -= SpritePickContext_PropertyChanged;
         }
 
-        if (DataContext.SpriteVertexEditContext is not null)
+        if (ViewModel.SpriteVertexEditContext is not null)
         {
-            DataContext.SpriteVertexEditContext.PropertyChanged -= SpriteVertexEditorContext_PropertyChanged;
+            ViewModel.SpriteVertexEditContext.PropertyChanged -= SpriteVertexEditorContext_PropertyChanged;
         }
 
-        DataContext.PropertyChanging -= DataContext_PropertyChanging;
-        DataContext.PropertyChanged -= DataContext_PropertyChanged;
+        ViewModel.PropertyChanging -= DataContext_PropertyChanging;
+        ViewModel.PropertyChanged -= DataContext_PropertyChanged;
     }
 
     /// <summary>
@@ -767,12 +767,12 @@ internal partial class FormRibbon
 
         MenuItemPixelated.Checked = false;
 
-        if ((DataContext?.SetTextureFilteringCommand is null) || (!DataContext.SetTextureFilteringCommand.CanExecute(SampleFilter.MinMagMipLinear)))
+        if ((ViewModel?.SetTextureFilteringCommand is null) || (!ViewModel.SetTextureFilteringCommand.CanExecute(SampleFilter.MinMagMipLinear)))
         {
             return;
         }
 
-        DataContext.SetTextureFilteringCommand.Execute(SampleFilter.MinMagMipLinear);
+        ViewModel.SetTextureFilteringCommand.Execute(SampleFilter.MinMagMipLinear);
         ValidateButtons();
     }
 
@@ -789,12 +789,12 @@ internal partial class FormRibbon
 
         MenuItemSmooth.Checked = false;
 
-        if ((DataContext?.SetTextureFilteringCommand is null) || (!DataContext.SetTextureFilteringCommand.CanExecute(SampleFilter.MinMagMipPoint)))
+        if ((ViewModel?.SetTextureFilteringCommand is null) || (!ViewModel.SetTextureFilteringCommand.CanExecute(SampleFilter.MinMagMipPoint)))
         {
             return;
         }
 
-        DataContext.SetTextureFilteringCommand.Execute(SampleFilter.MinMagMipPoint);
+        ViewModel.SetTextureFilteringCommand.Execute(SampleFilter.MinMagMipPoint);
         ValidateButtons();
     }
 
@@ -850,31 +850,31 @@ internal partial class FormRibbon
 
         InitializeFromDataContext(dataContext);
 
-        DataContext = dataContext;
+        ViewModel = dataContext;
         ValidateButtons();
 
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             return;
         }
 
-        if (DataContext.SpriteClipContext is not null)
+        if (ViewModel.SpriteClipContext is not null)
         {
-            DataContext.SpriteClipContext.PropertyChanged += SpriteClipContext_PropertyChanged;
+            ViewModel.SpriteClipContext.PropertyChanged += SpriteClipContext_PropertyChanged;
         }
 
         if (dataContext.SpritePickContext is not null)
         {
-            DataContext.SpritePickContext.PropertyChanged += SpritePickContext_PropertyChanged;
+            ViewModel.SpritePickContext.PropertyChanged += SpritePickContext_PropertyChanged;
         }
 
-        if (DataContext.SpriteVertexEditContext is not null)
+        if (ViewModel.SpriteVertexEditContext is not null)
         {
-            DataContext.SpriteVertexEditContext.PropertyChanged += SpriteVertexEditorContext_PropertyChanged;
+            ViewModel.SpriteVertexEditContext.PropertyChanged += SpriteVertexEditorContext_PropertyChanged;
         }
 
-        DataContext.PropertyChanged += DataContext_PropertyChanged;
-        DataContext.PropertyChanging += DataContext_PropertyChanging;
+        ViewModel.PropertyChanged += DataContext_PropertyChanged;
+        ViewModel.PropertyChanging += DataContext_PropertyChanging;
     }
 
     /// <summary>
@@ -882,63 +882,63 @@ internal partial class FormRibbon
     /// </summary>
     public void ValidateButtons()
     {
-        if (DataContext?.Texture is null)
+        if (ViewModel?.Texture is null)
         {
             EnableRibbon(false);
             return;
         }            
 
-        ButtonNewSprite.Enabled = DataContext.NewSpriteCommand?.CanExecute(null) ?? false;
-        ButtonClipSprite.Enabled = DataContext.SpriteClipCommand?.CanExecute(null) ?? false;
-        ButtonPickSprite.Enabled = DataContext.SpritePickCommand?.CanExecute(null) ?? false;
-        ButtonSpriteAnchor.Enabled = DataContext.ShowAnchorEditorCommand?.CanExecute(null) ?? false;
-        ButtonSpriteVertexOffsets.Enabled = DataContext.SpriteVertexOffsetCommand?.CanExecute(null) ?? false;
-        ButtonSpriteColor.Enabled = DataContext.ShowColorEditorCommand?.CanExecute(null) ?? false;
+        ButtonNewSprite.Enabled = ViewModel.NewSpriteCommand?.CanExecute(null) ?? false;
+        ButtonClipSprite.Enabled = ViewModel.SpriteClipCommand?.CanExecute(null) ?? false;
+        ButtonPickSprite.Enabled = ViewModel.SpritePickCommand?.CanExecute(null) ?? false;
+        ButtonSpriteAnchor.Enabled = ViewModel.ShowAnchorEditorCommand?.CanExecute(null) ?? false;
+        ButtonSpriteVertexOffsets.Enabled = ViewModel.SpriteVertexOffsetCommand?.CanExecute(null) ?? false;
+        ButtonSpriteColor.Enabled = ViewModel.ShowColorEditorCommand?.CanExecute(null) ?? false;
 
-        ButtonSpriteUndo.Enabled = DataContext.UndoCommand?.CanExecute(null) ?? false;
-        ButtonSpriteRedo.Enabled = DataContext.RedoCommand?.CanExecute(null) ?? false;
+        ButtonSpriteUndo.Enabled = ViewModel.UndoCommand?.CanExecute(null) ?? false;
+        ButtonSpriteRedo.Enabled = ViewModel.RedoCommand?.CanExecute(null) ?? false;
 
-        ButtonSaveSprite.Enabled = DataContext.SaveContentCommand?.CanExecute(SaveReason.UserSave) ?? false;
+        ButtonSaveSprite.Enabled = ViewModel.SaveContentCommand?.CanExecute(SaveReason.UserSave) ?? false;
 
-        ButtonSpriteTextureFilter.Enabled = DataContext.SetTextureFilteringCommand?.CanExecute(MenuItemPixelated.Checked
+        ButtonSpriteTextureFilter.Enabled = ViewModel.SetTextureFilteringCommand?.CanExecute(MenuItemPixelated.Checked
             ? SampleFilter.MinMagMipPoint
             : SampleFilter.MinPointMagMipLinear) ?? false;
-        ButtonSpriteTextureWrap.Enabled = DataContext.ShowWrappingEditorCommand?.CanExecute(null) ?? false;
+        ButtonSpriteTextureWrap.Enabled = ViewModel.ShowWrappingEditorCommand?.CanExecute(null) ?? false;
 
-        if (DataContext.SpritePickContext is not null)
+        if (ViewModel.SpritePickContext is not null)
         {
-            ButtonSpritePickApply.Enabled = DataContext.SpritePickContext.ApplyCommand?.CanExecute(null) ?? false;
-            ButtonSpritePickCancel.Enabled = DataContext.SpritePickContext.CancelCommand?.CanExecute(null) ?? false;
-            ButtonPickMaskColor.Enabled = DataContext.SpritePickContext.ShowSpritePickMaskEditorCommand?.CanExecute(null) ?? false;
+            ButtonSpritePickApply.Enabled = ViewModel.SpritePickContext.ApplyCommand?.CanExecute(null) ?? false;
+            ButtonSpritePickCancel.Enabled = ViewModel.SpritePickContext.CancelCommand?.CanExecute(null) ?? false;
+            ButtonPickMaskColor.Enabled = ViewModel.SpritePickContext.ShowSpritePickMaskEditorCommand?.CanExecute(null) ?? false;
         }
 
-        if (DataContext.SpriteClipContext is not null)
+        if (ViewModel.SpriteClipContext is not null)
         {
             DX.Size2F? fixedSize = ButtonFixedSize.Enabled ? new DX.Size2F((float)NumericFixedWidth.Value, (float)NumericFixedHeight.Value)
                                                            : null;
 
-            ButtonSpriteClipApply.Enabled = DataContext.SpriteClipContext.ApplyCommand?.CanExecute(null) ?? false;
-            ButtonSpriteClipCancel.Enabled = DataContext.SpriteClipContext.CancelCommand?.CanExecute(null) ?? false;
-            ButtonSpriteClipFullSize.Enabled = DataContext.SpriteClipContext.FullSizeCommand?.CanExecute(null) ?? false;
-            ButtonFixedSize.Enabled = DataContext.SpriteClipContext.FixedSizeCommand?.CanExecute(fixedSize) ?? false;
+            ButtonSpriteClipApply.Enabled = ViewModel.SpriteClipContext.ApplyCommand?.CanExecute(null) ?? false;
+            ButtonSpriteClipCancel.Enabled = ViewModel.SpriteClipContext.CancelCommand?.CanExecute(null) ?? false;
+            ButtonSpriteClipFullSize.Enabled = ViewModel.SpriteClipContext.FullSizeCommand?.CanExecute(null) ?? false;
+            ButtonFixedSize.Enabled = ViewModel.SpriteClipContext.FixedSizeCommand?.CanExecute(fixedSize) ?? false;
 
             LabelFixedHeight.Enabled =
                 LabelFixedWidth.Enabled =
                 NumericFixedWidth.Enabled = 
                 NumericFixedWidth.NumericUpDown.Enabled =
                 NumericFixedHeight.Enabled = 
-                NumericFixedHeight.NumericUpDown.Enabled = DataContext.SpriteClipContext.FixedSize is not null;
+                NumericFixedHeight.NumericUpDown.Enabled = ViewModel.SpriteClipContext.FixedSize is not null;
 
-            ButtonClipManualInput.Enabled = DataContext.SpriteClipContext == DataContext.CommandContext;
+            ButtonClipManualInput.Enabled = ViewModel.SpriteClipContext == ViewModel.CommandContext;
         }
 
-        if (DataContext.SpriteVertexEditContext is not null)
+        if (ViewModel.SpriteVertexEditContext is not null)
         {
-            ButtonSpriteCornerOffsetApply.Enabled = DataContext.SpriteVertexEditContext.ApplyCommand?.CanExecute(null) ?? false;
-            ButtonSpriteCornerOffsetCancel.Enabled = DataContext.SpriteVertexEditContext.CancelCommand?.CanExecute(null) ?? false;
-            ButtonSpriteCornerReset.Enabled = DataContext.SpriteVertexEditContext.ResetOffsetCommand?.CanExecute(null) ?? false;
+            ButtonSpriteCornerOffsetApply.Enabled = ViewModel.SpriteVertexEditContext.ApplyCommand?.CanExecute(null) ?? false;
+            ButtonSpriteCornerOffsetCancel.Enabled = ViewModel.SpriteVertexEditContext.CancelCommand?.CanExecute(null) ?? false;
+            ButtonSpriteCornerReset.Enabled = ViewModel.SpriteVertexEditContext.ResetOffsetCommand?.CanExecute(null) ?? false;
 
-            ButtonSpriteCornerManualInput.Enabled = (DataContext.SpriteVertexEditContext == DataContext.CommandContext) && (DataContext.SpriteVertexEditContext.SelectedVertexIndex != -1);
+            ButtonSpriteCornerManualInput.Enabled = (ViewModel.SpriteVertexEditContext == ViewModel.CommandContext) && (ViewModel.SpriteVertexEditContext.SelectedVertexIndex != -1);
         }
     }
 

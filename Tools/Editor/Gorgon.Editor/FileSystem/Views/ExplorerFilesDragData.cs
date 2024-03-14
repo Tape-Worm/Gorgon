@@ -54,7 +54,7 @@ internal class ExplorerImportData
 
     /// <summary>Property to return the ID to the virtual directory that will receive the imported files.</summary>
     public string DestinationDirectory => TargetNode?.Name ?? string.Empty;
-    
+
     /// <summary>
     /// Property to set or return whether any files or directories were successfully imported.
     /// </summary>

@@ -359,7 +359,7 @@ public class GorgonV31AnimationJsonCodec
         {
             name = $"GorgonAnimation_{Guid.NewGuid():N}";
         }
-                    
+
         float animLength = 0;
         float animFps = 0;
         int loopCount = 0;

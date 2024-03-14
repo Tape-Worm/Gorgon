@@ -402,7 +402,7 @@ public record GorgonFontInfo(string FontFamilyName, float Size, FontHeightMode F
     /// <summary>
     /// Property to return the name of the font object.
     /// </summary>
-	    public string Name
+        public string Name
     {
         get;
         init;
@@ -564,7 +564,7 @@ public class GorgonFontInfo
     /// <summary>
     /// Property to return the name of the font object.
     /// </summary>
-	    public string Name
+        public string Name
     {
         get;
         set;

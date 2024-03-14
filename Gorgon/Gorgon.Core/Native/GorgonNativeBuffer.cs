@@ -304,7 +304,7 @@ public sealed class GorgonNativeBuffer<T>
     public static GorgonNativeBuffer<T> Pin(T[] array, int index = 0, int? count = null)
     {
         count ??= array.Length - index;
-        
+
         ValidateArrayParams(array, index, count.Value);
 
         int typeSize = Unsafe.SizeOf<T>();

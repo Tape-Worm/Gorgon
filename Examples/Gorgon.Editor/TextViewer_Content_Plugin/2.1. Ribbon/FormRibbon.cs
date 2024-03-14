@@ -78,7 +78,7 @@ internal partial class FormRibbon
     /// <summary>
     /// Property to set or return the data context for the ribbon on the form.
     /// </summary>
-    public ITextContent DataContext
+    public ITextContent ViewModel
     {
         get;
         private set;
@@ -169,7 +169,7 @@ internal partial class FormRibbon
     private void UpdateFontMenu()
     {
         // For this example, we follow the same pattern as the zoom menu items.
-        if (!_menuFontItems.TryGetValue(DataContext.FontFace, out ToolStripMenuItem currentItem))
+        if (!_menuFontItems.TryGetValue(ViewModel.FontFace, out ToolStripMenuItem currentItem))
         {
             return;
         }
@@ -212,13 +212,13 @@ internal partial class FormRibbon
     {
         // Here's how we execute a command on the view model. We first check to see if the command is assigned, 
         // and can actually execute given the current state of the view model.
-        if ((DataContext?.SaveContentCommand is null) || (!DataContext.SaveContentCommand.CanExecute(SaveReason.UserSave)))
+        if ((ViewModel?.SaveContentCommand is null) || (!ViewModel.SaveContentCommand.CanExecute(SaveReason.UserSave)))
         {
             return;
         }
 
         // Notice that this command executes asynchronously, so we need to await it prior to continuing on.
-        await DataContext.SaveContentCommand.ExecuteAsync(SaveReason.UserSave);
+        await ViewModel.SaveContentCommand.ExecuteAsync(SaveReason.UserSave);
         ValidateButtons();
     }
 
@@ -227,7 +227,7 @@ internal partial class FormRibbon
     /// </summary>
     private void ValidateButtons()
     {
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             return;
         }
@@ -239,13 +239,13 @@ internal partial class FormRibbon
         // view model to handle any complicated state evaluation logic and makes it such that the view stays unaware of 
         // the logic.
 
-        ButtonFont.Enabled = DataContext.CurrentPanel is null;
-        ButtonChangeText.Enabled = DataContext.ChangeTextCommand?.CanExecute(null) ?? false;
-        ButtonTextColor.Enabled = DataContext.ActivateTextColorCommand?.CanExecute(null) ?? false;
-        ButtonSaveText.Enabled = DataContext.SaveContentCommand?.CanExecute(SaveReason.UserSave) ?? false;
-        ButtonTextUndo.Enabled = DataContext.UndoCommand?.CanExecute(null) ?? false;
-        ButtonTextRedo.Enabled = DataContext.RedoCommand?.CanExecute(null) ?? false;
-        
+        ButtonFont.Enabled = ViewModel.CurrentPanel is null;
+        ButtonChangeText.Enabled = ViewModel.ChangeTextCommand?.CanExecute(null) ?? false;
+        ButtonTextColor.Enabled = ViewModel.ActivateTextColorCommand?.CanExecute(null) ?? false;
+        ButtonSaveText.Enabled = ViewModel.SaveContentCommand?.CanExecute(SaveReason.UserSave) ?? false;
+        ButtonTextUndo.Enabled = ViewModel.UndoCommand?.CanExecute(null) ?? false;
+        ButtonTextRedo.Enabled = ViewModel.RedoCommand?.CanExecute(null) ?? false;
+
         ItemArial.Enabled = true;
         ItemPapyrus.Enabled = true;
         ItemTimesNewRoman.Enabled = true;
@@ -259,12 +259,12 @@ internal partial class FormRibbon
         // Always unassign your view model events. Failure to do so can result in an event leak, causing the view to stay 
         // in memory for the lifetime of the application.
 
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             return;
         }
 
-        DataContext.PropertyChanged -= DataContext_PropertyChanged;
+        ViewModel.PropertyChanged -= DataContext_PropertyChanged;
     }
 
     /// <summary>
@@ -284,7 +284,7 @@ internal partial class FormRibbon
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
     private void Font_Click(object sender, EventArgs e)
     {
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             return;
         }
@@ -305,13 +305,13 @@ internal partial class FormRibbon
 
         // Do not let us uncheck.
         // Yes, this is annoying. Blame Microsoft for a lousy implementation.
-        if (DataContext.FontFace == fontFace)
+        if (ViewModel.FontFace == fontFace)
         {
             menuitem.Checked = true;
             return;
         }
 
-        DataContext.FontFace = fontFace;
+        ViewModel.FontFace = fontFace;
         UpdateFontMenu();
     }
 
@@ -362,12 +362,12 @@ internal partial class FormRibbon
     {
         // Here's how we execute a command on the view model. We first check to see if the command is assigned, 
         // and can actually execute given the current state of the view model.
-        if ((DataContext?.ChangeTextCommand is null) || (!DataContext.ChangeTextCommand.CanExecute(null)))
+        if ((ViewModel?.ChangeTextCommand is null) || (!ViewModel.ChangeTextCommand.CanExecute(null)))
         {
             return;
         }
 
-        DataContext.ChangeTextCommand.Execute(null);
+        ViewModel.ChangeTextCommand.Execute(null);
         ValidateButtons();
     }
 
@@ -378,12 +378,12 @@ internal partial class FormRibbon
     {
         // Here's how we execute a command on the view model. We first check to see if the command is assigned, 
         // and can actually execute given the current state of the view model.
-        if ((DataContext?.ActivateTextColorCommand is null) || (!DataContext.ActivateTextColorCommand.CanExecute(null)))
+        if ((ViewModel?.ActivateTextColorCommand is null) || (!ViewModel.ActivateTextColorCommand.CanExecute(null)))
         {
             return;
         }
 
-        DataContext.ActivateTextColorCommand.Execute(null);
+        ViewModel.ActivateTextColorCommand.Execute(null);
         ValidateButtons();
     }
 
@@ -394,12 +394,12 @@ internal partial class FormRibbon
     {
         // Here's how we execute a command on the view model. We first check to see if the command is assigned, 
         // and can actually execute given the current state of the view model.
-        if ((DataContext?.UndoCommand is null) || (!DataContext.UndoCommand.CanExecute(null)))
+        if ((ViewModel?.UndoCommand is null) || (!ViewModel.UndoCommand.CanExecute(null)))
         {
             return;
         }
 
-        DataContext.UndoCommand.Execute(null);
+        ViewModel.UndoCommand.Execute(null);
         ValidateButtons();
     }
 
@@ -410,12 +410,12 @@ internal partial class FormRibbon
     {
         // Here's how we execute a command on the view model. We first check to see if the command is assigned, 
         // and can actually execute given the current state of the view model.
-        if ((DataContext?.RedoCommand is null) || (!DataContext.RedoCommand.CanExecute(null)))
+        if ((ViewModel?.RedoCommand is null) || (!ViewModel.RedoCommand.CanExecute(null)))
         {
             return;
         }
 
-        DataContext.RedoCommand.Execute(null);
+        ViewModel.RedoCommand.Execute(null);
         ValidateButtons();
     }
 
@@ -443,15 +443,15 @@ internal partial class FormRibbon
 
         InitializeFromDataContext(dataContext);
 
-        DataContext = dataContext;
+        ViewModel = dataContext;
         ValidateButtons();
 
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             return;
         }
 
-        DataContext.PropertyChanged += DataContext_PropertyChanged;
+        ViewModel.PropertyChanged += DataContext_PropertyChanged;
     }        
 
     /// <summary>

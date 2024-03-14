@@ -331,7 +331,7 @@ public sealed class GorgonTexture2DView
         {
             GetDesc2D();
         }
-        
+
         return ref SrvDesc;
     }
 

@@ -1,4 +1,4 @@
-#region MIT.
+﻿#region MIT.
 // 
 // Gorgon.
 // Copyright (C) 2013 Michael Winsor

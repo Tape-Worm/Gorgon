@@ -101,7 +101,7 @@ internal class GorPackWriterPlugIn
     /// <param name="file">File to retrieve information from.</param>
     /// <param name="position">Position of the file in the packed data.</param>
     /// <param name="size">Size of the compressed file in the packed data.</param>
-		/// <param name="compressedSize">Compressed size of the file.</param>
+        /// <param name="compressedSize">Compressed size of the file.</param>
     /// <returns>A new node element with the file information.</returns>
     private static XElement CreateFileNode(FileInfo file, long position, long size, long compressedSize) =>
                             new("File",

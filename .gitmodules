@@ -5,4 +5,4 @@
 [submodule "Dependencies/Microsoft.Wpf.Interop.DirectX"]
 	path = Dependencies/Microsoft.Wpf.Interop.DirectX
 	url = https://github.com/Tape-Worm/WPFDXInterop.git
-	branch = master
+	ignore = dirty

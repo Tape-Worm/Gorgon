@@ -35,7 +35,7 @@ namespace Gorgon.Renderers.Lights;
 /// <summary>
 /// Directional light properties for passing to a GPU lighting shader.
 /// </summary>
-	public sealed class GorgonDirectionalLight
+    public sealed class GorgonDirectionalLight
     : GorgonLightCommon, IGorgonNamedObject, IEquatable<GorgonDirectionalLight>
 {
     #region Variables.

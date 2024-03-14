@@ -176,7 +176,7 @@ static class Program
                                           {
                                               Name = "Gorgon2D Gorgon.Editor Example Swap Chain"
                                           });
-            
+
             // Tell the graphics API that we want to render to the "screen" swap chain.
             _graphics.SetRenderTarget(_screen.RenderTargetView);
 

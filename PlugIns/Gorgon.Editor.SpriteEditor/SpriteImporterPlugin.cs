@@ -74,7 +74,7 @@ internal class SpriteImporterPlugIn
         {
             return null;
         }
-                
+
         var extension = new GorgonFileExtension(fileExtension);
 
         // Since all Gorgon's sprite files use the same extension, we'll have to be a little more aggressive when determining type.
@@ -116,7 +116,7 @@ internal class SpriteImporterPlugIn
         SpriteImportSettings settings = HostContentServices.ContentPlugInService.ReadContentSettings<SpriteImportSettings>(SettingsFilename);
 
         settings ??= new SpriteImportSettings();
-        
+
         _codecs = new CodecRegistry(_pluginCache, HostContentServices.GraphicsContext.Renderer2D, HostContentServices.Log);
         _codecs.LoadFromSettings(settings);
 

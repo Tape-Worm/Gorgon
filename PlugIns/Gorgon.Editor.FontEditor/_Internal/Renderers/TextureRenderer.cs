@@ -116,7 +116,7 @@ internal class TextureRenderer
         GorgonTexture2DView texture;
         DX.Size2F textureSize;
         DX.RectangleF textureRegion;
-        
+
         Renderer.Begin(GetBatch(), Camera);
 
         float xPos = 0;

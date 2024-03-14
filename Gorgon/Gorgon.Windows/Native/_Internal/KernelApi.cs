@@ -177,12 +177,12 @@ internal static class KernelApi
     public static extern bool SetStdHandle(int nStdHandle, nint handle);
 
     /// <summary>
-	    /// Function to set up a console control handler to intercept console close events.
+        /// Function to set up a console control handler to intercept console close events.
     /// </summary>
     /// <param name="handler">The handler to assign.</param>
     /// <param name="add"><b>true</b> to add the handler, <b>false</b> to remove it.</param>
     /// <returns><b>true</b> if the function succeeds, <b>false</b> if not.</returns>
-	    [return: MarshalAs(UnmanagedType.Bool)]
+        [return: MarshalAs(UnmanagedType.Bool)]
     [DllImport("kernel32.dll")]
     public static extern bool SetConsoleCtrlHandler(ConsoleCloseHandler handler, [MarshalAs(UnmanagedType.Bool)] bool add);
 
@@ -198,7 +198,7 @@ internal static class KernelApi
     /// Function to free an allocated console window.
     /// </summary>
     /// <returns>Non zero if successful, zero if failed.</returns>
-	    [DllImport("kernel32.dll")]
+        [DllImport("kernel32.dll")]
     public static extern int FreeConsole();
 
     /// <summary>

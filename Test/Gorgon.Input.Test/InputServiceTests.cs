@@ -6,67 +6,67 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Gorgon.Input.Test
 {
-	[TestClass]
-	public class InputServiceTests
-	{
-		[TestMethod]
-		public void KeyboardCreateTest()
-		{
-			IGorgonInputServiceFactory serviceFactory = new MockInputServiceFactory();
-			IGorgonInputService service = serviceFactory.CreateService("My.Input.Service");
-			IReadOnlyList<IGorgonKeyboardInfo2> keyboards = service.EnumerateKeyboards();
-			IGorgonKeyboard keyboard;
+    [TestClass]
+    public class InputServiceTests
+    {
+        [TestMethod]
+        public void KeyboardCreateTest()
+        {
+            IGorgonInputServiceFactory serviceFactory = new MockInputServiceFactory();
+            IGorgonInputService service = serviceFactory.CreateService("My.Input.Service");
+            IReadOnlyList<IGorgonKeyboardInfo2> keyboards = service.EnumerateKeyboards();
+            IGorgonKeyboard keyboard;
 
-			Application.EnableVisualStyles();
-			Application.SetCompatibleTextRenderingDefault(false);
+            Application.EnableVisualStyles();
+            Application.SetCompatibleTextRenderingDefault(false);
 
-			using (MockControl control = new MockControl())
-			{
-				keyboard = new MockKeyboard(service, keyboards[0]);
-				keyboard.BindWindow(control);
-				
-				control.Show();
-				control.FormClosing += (sender, args) =>
-				                       {
-					                       keyboard.UnbindWindow();
-				                       };
+            using (MockControl control = new MockControl())
+            {
+                keyboard = new MockKeyboard(service, keyboards[0]);
+                keyboard.BindWindow(control);
 
-				keyboard.IsAcquired = true;
+                control.Show();
+                control.FormClosing += (sender, args) =>
+                                       {
+                                           keyboard.UnbindWindow();
+                                       };
 
-				Application.Run(control);
-			}
-		}
+                keyboard.IsAcquired = true;
 
-		[TestMethod]
-		public void ServiceEnumDevicesTest()
-		{
-			IGorgonInputServiceFactory serviceFactory = new MockInputServiceFactory();
-			IGorgonInputService service = serviceFactory.CreateService("My.Input.Service");
-			IReadOnlyList<IGorgonKeyboardInfo2> keyboards = service.EnumerateKeyboards();
-			IReadOnlyList<IGorgonMouseInfo2> mice = service.EnumerateMice();
-			IReadOnlyList<IGorgonJoystickInfo2> joysticks = service.EnumerateJoysticks();
+                Application.Run(control);
+            }
+        }
 
-			Assert.IsNotNull(keyboards);
-			Assert.IsNotNull(mice);
-			Assert.IsNotNull(joysticks);
+        [TestMethod]
+        public void ServiceEnumDevicesTest()
+        {
+            IGorgonInputServiceFactory serviceFactory = new MockInputServiceFactory();
+            IGorgonInputService service = serviceFactory.CreateService("My.Input.Service");
+            IReadOnlyList<IGorgonKeyboardInfo2> keyboards = service.EnumerateKeyboards();
+            IReadOnlyList<IGorgonMouseInfo2> mice = service.EnumerateMice();
+            IReadOnlyList<IGorgonJoystickInfo2> joysticks = service.EnumerateJoysticks();
 
-			Assert.IsTrue(keyboards.Any());
-			Assert.IsTrue(mice.Any());
-			Assert.IsTrue(joysticks.Any());
-		}
+            Assert.IsNotNull(keyboards);
+            Assert.IsNotNull(mice);
+            Assert.IsNotNull(joysticks);
 
-		[TestMethod]
-		public void InputServiceFactoryTest()
-		{
-			IGorgonInputServiceFactory serviceFactory = new MockInputServiceFactory();
-			IGorgonInputService service = serviceFactory.CreateService("My.Input.Service");
-			
-			Assert.IsNotNull(service);
+            Assert.IsTrue(keyboards.Any());
+            Assert.IsTrue(mice.Any());
+            Assert.IsTrue(joysticks.Any());
+        }
 
-			IEnumerable<IGorgonInputService> services = serviceFactory.CreateServices();
+        [TestMethod]
+        public void InputServiceFactoryTest()
+        {
+            IGorgonInputServiceFactory serviceFactory = new MockInputServiceFactory();
+            IGorgonInputService service = serviceFactory.CreateService("My.Input.Service");
 
-			Assert.IsNotNull(services);
-			Assert.IsTrue(services.Any());
-		}
-	}
+            Assert.IsNotNull(service);
+
+            IEnumerable<IGorgonInputService> services = serviceFactory.CreateServices();
+
+            Assert.IsNotNull(services);
+            Assert.IsTrue(services.Any());
+        }
+    }
 }

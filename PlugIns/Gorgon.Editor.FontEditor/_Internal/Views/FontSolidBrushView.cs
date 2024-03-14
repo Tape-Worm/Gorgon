@@ -50,7 +50,7 @@ internal partial class FontSolidBrushView
     /// Property to return the data context for the view.
     /// </summary>
     [Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-    public IFontSolidBrush DataContext
+    public IFontSolidBrush ViewModel
     {
         get;
         private set;
@@ -91,12 +91,12 @@ internal partial class FontSolidBrushView
     /// <param name="e">The <see cref="ColorChangedEventArgs"/> instance containing the event data.</param>
     private void PickerSolidBrush_ColorChanged(object sender, ColorChangedEventArgs e)
     {
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             return;
         }
 
-        DataContext.Brush = new GorgonGlyphSolidBrush
+        ViewModel.Brush = new GorgonGlyphSolidBrush
         {
             Color = PickerSolidBrush.SelectedColor
         };
@@ -107,7 +107,7 @@ internal partial class FontSolidBrushView
     /// </summary>
     private void ValidateControls()
     {
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             LabelBrushColor.Enabled = 
             PickerSolidBrush.Enabled = false;
@@ -127,7 +127,7 @@ internal partial class FontSolidBrushView
     {
         UnhookEvents();
 
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             return;
         }
@@ -135,7 +135,7 @@ internal partial class FontSolidBrushView
         // Always unassign your view model events. Failure to do so can result in an event leak, causing the view to stay 
         // in memory for the lifetime of the application.
 
-        DataContext.PropertyChanged -= DataContext_PropertyChanged;
+        ViewModel.PropertyChanged -= DataContext_PropertyChanged;
     }
 
     /// <summary>Handles the PropertyChanged event of the DataContext control.</summary>
@@ -147,10 +147,10 @@ internal partial class FontSolidBrushView
         switch (e.PropertyName)
         {
             case nameof(IFontSolidBrush.Brush):
-                PickerSolidBrush.SelectedColor = DataContext.Brush.Color;
+                PickerSolidBrush.SelectedColor = ViewModel.Brush.Color;
                 break;
             case nameof(IFontSolidBrush.OriginalColor):
-                PickerSolidBrush.OriginalColor = DataContext.OriginalColor;
+                PickerSolidBrush.OriginalColor = ViewModel.OriginalColor;
                 break;
         }
         HookEvents();
@@ -190,9 +190,9 @@ internal partial class FontSolidBrushView
     ///   <b>true</b> if the OK button is valid, <b>false</b> if not.</returns>
     protected override bool OnValidateOk()
     {
-        if (DataContext?.OkCommand is not null)
+        if (ViewModel?.OkCommand is not null)
         {
-            return DataContext.OkCommand.CanExecute(null);
+            return ViewModel.OkCommand.CanExecute(null);
         }
 
         return base.OnValidateOk();
@@ -201,9 +201,9 @@ internal partial class FontSolidBrushView
     /// <summary>Function to cancel the change.</summary>
     protected override void OnCancel() 
     {
-        if (DataContext is not null)
+        if (ViewModel is not null)
         {
-            DataContext.IsActive = false;
+            ViewModel.IsActive = false;
         }
     }
 
@@ -212,12 +212,12 @@ internal partial class FontSolidBrushView
     {
         base.OnSubmit();
 
-        if ((DataContext?.OkCommand is null) || (!DataContext.OkCommand.CanExecute(null)))
+        if ((ViewModel?.OkCommand is null) || (!ViewModel.OkCommand.CanExecute(null)))
         {
             return;
         }
 
-        DataContext.OkCommand.Execute(null);
+        ViewModel.OkCommand.Execute(null);
     }
 
     /// <summary>Raises the <see cref="E:System.Windows.Forms.UserControl.Load"/> event.</summary>
@@ -231,13 +231,13 @@ internal partial class FontSolidBrushView
             return;
         }
 
-        DataContext?.Load();
+        ViewModel?.Load();
 
         PickerSolidBrush.Select();
 
         ValidateControls();
     }
-    
+
     /// <summary>Function to assign a data context to the view as a view model.</summary>
     /// <param name="dataContext">The data context to assign.</param>
     /// <remarks>Data contexts should be nullable, in that, they should reset the view back to its original state when the context is null.</remarks>
@@ -247,9 +247,9 @@ internal partial class FontSolidBrushView
 
         InitializeFromDataContext(dataContext);
 
-        DataContext = dataContext;
+        ViewModel = dataContext;
 
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             ValidateControls();
             return;
@@ -257,7 +257,7 @@ internal partial class FontSolidBrushView
 
         HookEvents();
 
-        DataContext.PropertyChanged += DataContext_PropertyChanged;
+        ViewModel.PropertyChanged += DataContext_PropertyChanged;
         ValidateControls();
     }        
     #endregion

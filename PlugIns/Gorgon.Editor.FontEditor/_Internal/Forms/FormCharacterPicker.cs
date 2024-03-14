@@ -36,30 +36,30 @@ using Gorgon.UI;
 
 namespace Gorgon.Editor.FontEditor;
 
-	/// <summary>
-	/// Dialog to pick characters for conversion into bitmap glyphs.
-	/// </summary>
-	internal partial class FormCharacterPicker 
-		: Form
-	{
-		#region Properties.
-		/// <summary>
-		/// Property to set or return the current font.
-		/// </summary>
-		public Font CurrentFont
-		{
-			get => CharPicker.CurrentFont;
-			set => CharPicker.CurrentFont = value;
-		}
+    /// <summary>
+    /// Dialog to pick characters for conversion into bitmap glyphs.
+    /// </summary>
+    internal partial class FormCharacterPicker 
+        : Form
+    {
+        #region Properties.
+        /// <summary>
+        /// Property to set or return the current font.
+        /// </summary>
+        public Font CurrentFont
+        {
+            get => CharPicker.CurrentFont;
+            set => CharPicker.CurrentFont = value;
+        }
 
-		/// <summary>
-		/// Property to set or return the list of characters.
-		/// </summary>
-		public IEnumerable<char> Characters
-		{
-			get => CharPicker.Characters;
-			set => CharPicker.Characters = value;
-		}
+        /// <summary>
+        /// Property to set or return the list of characters.
+        /// </summary>
+        public IEnumerable<char> Characters
+        {
+            get => CharPicker.Characters;
+            set => CharPicker.Characters = value;
+        }
     #endregion
 
     #region Methods.
@@ -72,12 +72,12 @@ namespace Gorgon.Editor.FontEditor;
     /// <param name="sender">The source of the event.</param>
     /// <param name="e">The <see cref="EventArgs" /> instance containing the event data.</param>
     private void CharPicker_CancelClicked(object sender, EventArgs e) => DialogResult = DialogResult.Cancel;
-		#endregion
+        #endregion
 
-		#region Constructor/Destructor.
-		/// <summary>
-		/// Initializes a new instance of the <see cref="FormCharacterPicker"/> class.
-		/// </summary>
-		public FormCharacterPicker() =>  InitializeComponent();
-		#endregion		
+        #region Constructor/Destructor.
+        /// <summary>
+        /// Initializes a new instance of the <see cref="FormCharacterPicker"/> class.
+        /// </summary>
+        public FormCharacterPicker() =>  InitializeComponent();
+        #endregion        
 }

@@ -433,7 +433,7 @@ public partial class ContentFileExplorer
                 if (row.Cells[ColumnSelected.Index].Value.IfNull(false) != entry.IsSelected)
                 {
                     row.Cells[ColumnSelected.Index].Value = entry.IsSelected;
-                    
+
                     if (entry.IsSelected)
                     {
                         EventHandler<ContentFileEntrySelectedEventArgs> selectHandler = FileEntrySelected;

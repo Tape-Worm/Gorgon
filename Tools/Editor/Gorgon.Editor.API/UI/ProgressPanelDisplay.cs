@@ -95,7 +95,7 @@ public class ProgressPanelDisplay
             _appForm.Enabled = false;
             _progressForm.Show(_appForm, e.Title, e.Message, e.CancelAction, e.IsMarquee ? ProgressBarStyle.Marquee : ProgressBarStyle.Continuous);
         }
-                    
+
         _progressForm.UpdateProgress(e.PercentageComplete, e.Message);
     }
 

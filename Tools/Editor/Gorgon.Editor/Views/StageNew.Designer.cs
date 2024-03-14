@@ -18,7 +18,7 @@ partial class StageNew
     {
         if (disposing)
         {
-            DataContext?.Unload();
+            ViewModel?.Unload();
 
             UnassignEvents();
         }

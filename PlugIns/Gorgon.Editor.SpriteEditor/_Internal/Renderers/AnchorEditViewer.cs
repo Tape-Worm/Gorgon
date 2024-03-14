@@ -159,7 +159,7 @@ internal class AnchorEditViewer
                 args.IsInputKey = _anchorService.KeyDown(args);
                 break;
         }
-        
+
         base.OnPreviewKeyDown(args);
     }
 

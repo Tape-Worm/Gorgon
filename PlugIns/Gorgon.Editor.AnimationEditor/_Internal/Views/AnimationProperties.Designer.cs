@@ -21,7 +21,7 @@ partial class AnimationProperties
         if (disposing)
         {
             UnassignEvents();
-            DataContext?.Unload();
+            ViewModel?.Unload();
         }
 
         base.Dispose(disposing);

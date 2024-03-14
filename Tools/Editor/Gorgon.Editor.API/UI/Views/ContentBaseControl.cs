@@ -606,7 +606,7 @@ public partial class ContentBaseControl
         {
             handler = BubbleDragEnterEvent;
         }
-        
+
         handler?.Invoke(this, e);
     }
 
@@ -646,7 +646,7 @@ public partial class ContentBaseControl
         {
             handler = BubbleDragDropEvent;
         }
-        
+
         handler?.Invoke(this, e);
     }
 

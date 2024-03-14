@@ -94,7 +94,7 @@ public abstract class GorgonReadWriteView
     private protected sealed override D3D11.ResourceView OnCreateNativeView()
     {
         ref readonly D3D11.UnorderedAccessViewDescription1 desc = ref OnGetUavParams();
-        
+
         Graphics.Log.Print($"Creating D3D11 {Resource.D3DResource.Dimension} unordered access view for {Resource.Name}.", LoggingLevel.Simple);
 
         Native = new D3D11.UnorderedAccessView1(Graphics.D3DDevice, Resource.D3DResource, desc)

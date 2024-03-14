@@ -208,7 +208,7 @@ public class GorgonWpfTarget
     {
         RenderTargetView?.Dispose();
         Texture?.Dispose();
-                    
+
         RenderTargetView = GorgonRenderTarget2DView.CreateInteropRenderTarget(Graphics, surfacePtr, Name);
         Texture = RenderTargetView.Texture;            
     }
@@ -354,7 +354,7 @@ public class GorgonWpfTarget
         {
             GorgonTiming.StartTiming<GorgonTimerQpc>();
         }
-        
+
         _d3dImage.RequestRender();
         CompositionTarget.Rendering += CompositionTarget_Rendering;
     }

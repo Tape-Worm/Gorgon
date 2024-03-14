@@ -42,16 +42,16 @@ namespace Gorgon.Editor.UI;
 /// </para>
 /// </remarks>
 public class DarkFormsRenderer
-		: ToolStripRenderer
-	{
-		/// <summary>
+        : ToolStripRenderer
+    {
+        /// <summary>
     /// Focused/mouse over foreground color.
     /// </summary>
-		public static readonly Color FocusedForeground = Color.Black;
-		/// <summary>
+        public static readonly Color FocusedForeground = Color.Black;
+        /// <summary>
     /// Focused/mouse over background color.
     /// </summary>
-		public static readonly Color FocusedBackground = Color.DarkOrange;
+        public static readonly Color FocusedBackground = Color.DarkOrange;
     /// <summary>
     /// Normal window background.
     /// </summary>
@@ -63,102 +63,102 @@ public class DarkFormsRenderer
     /// <summary>
     /// Hilighted menu item background color.
     /// </summary>
-		public static readonly Color MenuHilightBackground = Color.SteelBlue;
+        public static readonly Color MenuHilightBackground = Color.SteelBlue;
     /// <summary>
     /// Hilighted menu item foreground color.
     /// </summary>
-		public static readonly Color MenuHilightForeground = Color.White;
+        public static readonly Color MenuHilightForeground = Color.White;
     /// <summary>
     /// Border color.
     /// </summary>
-		public static readonly Color BorderColor = Color.FromArgb(47, 47, 48);
+        public static readonly Color BorderColor = Color.FromArgb(47, 47, 48);
     /// <summary>
     /// Disabled color.
     /// </summary>
-		public static readonly Color DisabledColor = Color.FromArgb(64, 64, 64);
-		/// <summary>
+        public static readonly Color DisabledColor = Color.FromArgb(64, 64, 64);
+        /// <summary>
     /// Excluded directory color.
     /// </summary>
-		public static readonly Color ExcludedColor = Color.FromArgb(128, 128, 128);
+        public static readonly Color ExcludedColor = Color.FromArgb(128, 128, 128);
     /// <summary>
     /// Foreground color.
     /// </summary>
-		public static readonly Color ForeColor = Color.White;
-		/// <summary>
+        public static readonly Color ForeColor = Color.White;
+        /// <summary>
     /// Foreground color for a cut item.
     /// </summary>
-		public static readonly Color CutForeground = Color.FromArgb(128, 128, 100);
-		/// <summary>
+        public static readonly Color CutForeground = Color.FromArgb(128, 128, 100);
+        /// <summary>
     /// Foreground color for an open item.
     /// </summary>
-		public static readonly Color OpenFileForeground = Color.LimeGreen;
-    
-		/// <summary>
-		/// Raises the <see cref="ToolStripRenderer.RenderToolStripBorder"/> event.
-		/// </summary>
-		/// <param name="e">A <see cref="ToolStripRenderEventArgs"/> that contains the event data.</param>
-		protected override void OnRenderToolStripBorder(ToolStripRenderEventArgs e)
-		{
-		}        
+        public static readonly Color OpenFileForeground = Color.LimeGreen;
 
-		/// <summary>
-		/// Raises the <see cref="ToolStripRenderer.RenderArrow"/> event.
-		/// </summary>
-		/// <param name="e">A <see cref="ToolStripArrowRenderEventArgs"/> that contains the event data.</param>
-		protected override void OnRenderArrow(ToolStripArrowRenderEventArgs e)
-		{
-			if (e.Item.Enabled)
-			{
-				e.ArrowColor = !e.Item.Selected ? ForeColor : MenuHilightForeground;
-			}
-			else
-			{
-				e.ArrowColor = DisabledColor;
-			}
+        /// <summary>
+        /// Raises the <see cref="ToolStripRenderer.RenderToolStripBorder"/> event.
+        /// </summary>
+        /// <param name="e">A <see cref="ToolStripRenderEventArgs"/> that contains the event data.</param>
+        protected override void OnRenderToolStripBorder(ToolStripRenderEventArgs e)
+        {
+        }        
 
-			base.OnRenderArrow(e);
-		}
+        /// <summary>
+        /// Raises the <see cref="ToolStripRenderer.RenderArrow"/> event.
+        /// </summary>
+        /// <param name="e">A <see cref="ToolStripArrowRenderEventArgs"/> that contains the event data.</param>
+        protected override void OnRenderArrow(ToolStripArrowRenderEventArgs e)
+        {
+            if (e.Item.Enabled)
+            {
+                e.ArrowColor = !e.Item.Selected ? ForeColor : MenuHilightForeground;
+            }
+            else
+            {
+                e.ArrowColor = DisabledColor;
+            }
 
-		/// <summary>
-		/// Raises the <see cref="ToolStripRenderer.RenderGrip"/> event.
-		/// </summary>
-		/// <param name="e">A <see cref="ToolStripGripRenderEventArgs"/> that contains the event data.</param>
-		protected override void OnRenderGrip(ToolStripGripRenderEventArgs e)
-		{
-			base.OnRenderGrip(e);
+            base.OnRenderArrow(e);
+        }
 
-			if (e.GripStyle == ToolStripGripStyle.Hidden)
-			{
-				return;
-			}
+        /// <summary>
+        /// Raises the <see cref="ToolStripRenderer.RenderGrip"/> event.
+        /// </summary>
+        /// <param name="e">A <see cref="ToolStripGripRenderEventArgs"/> that contains the event data.</param>
+        protected override void OnRenderGrip(ToolStripGripRenderEventArgs e)
+        {
+            base.OnRenderGrip(e);
 
-			if (e.GripDisplayStyle == ToolStripGripDisplayStyle.Horizontal)
-			{
-				e.Graphics.DrawLine(Pens.White, new Point(e.AffectedBounds.Left, e.AffectedBounds.Top), new Point(e.AffectedBounds.Right, e.AffectedBounds.Top));
-				e.Graphics.DrawLine(Pens.White, new Point(e.AffectedBounds.Left, e.AffectedBounds.Top + 2), new Point(e.AffectedBounds.Right, e.AffectedBounds.Top + 2));
-			}
-			else
-			{
-				e.Graphics.DrawLine(Pens.White, new Point(e.AffectedBounds.Left, e.AffectedBounds.Top), new Point(e.AffectedBounds.Left, e.AffectedBounds.Bottom));
-				e.Graphics.DrawLine(Pens.White, new Point(e.AffectedBounds.Left + 2, e.AffectedBounds.Top), new Point(e.AffectedBounds.Left + 2, e.AffectedBounds.Bottom));
-			}
-		}
+            if (e.GripStyle == ToolStripGripStyle.Hidden)
+            {
+                return;
+            }
 
-		/// <summary>
-		/// Draws the item background.
-		/// </summary>
-		/// <param name="e">A <see cref="ToolStripRenderEventArgs"/> that contains the event data.</param>
-		protected override void OnRenderImageMargin(ToolStripRenderEventArgs e)
-		{
-		}
+            if (e.GripDisplayStyle == ToolStripGripDisplayStyle.Horizontal)
+            {
+                e.Graphics.DrawLine(Pens.White, new Point(e.AffectedBounds.Left, e.AffectedBounds.Top), new Point(e.AffectedBounds.Right, e.AffectedBounds.Top));
+                e.Graphics.DrawLine(Pens.White, new Point(e.AffectedBounds.Left, e.AffectedBounds.Top + 2), new Point(e.AffectedBounds.Right, e.AffectedBounds.Top + 2));
+            }
+            else
+            {
+                e.Graphics.DrawLine(Pens.White, new Point(e.AffectedBounds.Left, e.AffectedBounds.Top), new Point(e.AffectedBounds.Left, e.AffectedBounds.Bottom));
+                e.Graphics.DrawLine(Pens.White, new Point(e.AffectedBounds.Left + 2, e.AffectedBounds.Top), new Point(e.AffectedBounds.Left + 2, e.AffectedBounds.Bottom));
+            }
+        }
 
-		/// <summary>
-		/// Raises the <see cref="ToolStripRenderer.RenderItemText"/> event.
-		/// </summary>
-		/// <param name="e">A <see cref="ToolStripItemTextRenderEventArgs"/> that contains the event data.</param>
-		protected override void OnRenderItemText(ToolStripItemTextRenderEventArgs e)
-		{
-			Color textColor = ForeColor;
+        /// <summary>
+        /// Draws the item background.
+        /// </summary>
+        /// <param name="e">A <see cref="ToolStripRenderEventArgs"/> that contains the event data.</param>
+        protected override void OnRenderImageMargin(ToolStripRenderEventArgs e)
+        {
+        }
+
+        /// <summary>
+        /// Raises the <see cref="ToolStripRenderer.RenderItemText"/> event.
+        /// </summary>
+        /// <param name="e">A <see cref="ToolStripItemTextRenderEventArgs"/> that contains the event data.</param>
+        protected override void OnRenderItemText(ToolStripItemTextRenderEventArgs e)
+        {
+            Color textColor = ForeColor;
 
         if (!e.Item.Enabled)
         {
@@ -172,27 +172,27 @@ public class DarkFormsRenderer
             }
         }
 
-			var item = e.Item as ToolStripMenuItem;
-			if ((item is not null) && (item.IsOnDropDown))
-			{
-				e.TextRectangle = new Rectangle(e.TextRectangle.X - 12,
-				                                e.TextRectangle.Y,
-				                                e.TextRectangle.Width,
-				                                e.TextRectangle.Height);
-			}
+            var item = e.Item as ToolStripMenuItem;
+            if ((item is not null) && (item.IsOnDropDown))
+            {
+                e.TextRectangle = new Rectangle(e.TextRectangle.X - 12,
+                                                e.TextRectangle.Y,
+                                                e.TextRectangle.Width,
+                                                e.TextRectangle.Height);
+            }
 
-			ToolStrip strip = e.Item.GetCurrentParent();
+            ToolStrip strip = e.Item.GetCurrentParent();
 
-			if (strip is not ToolStripDropDown)
-			{
-				if (e.Item.AutoSize)
-				{
-					e.TextRectangle = new Rectangle(e.TextRectangle.Location,
-					                                TextRenderer.MeasureText(e.Text, e.TextFont, e.TextRectangle.Size, e.TextFormat));
-				}
-			}
-                    
-			TextRenderer.DrawText(e.Graphics, e.Text, e.TextFont, e.TextRectangle, textColor, e.TextFormat);
+            if (strip is not ToolStripDropDown)
+            {
+                if (e.Item.AutoSize)
+                {
+                    e.TextRectangle = new Rectangle(e.TextRectangle.Location,
+                                                    TextRenderer.MeasureText(e.Text, e.TextFont, e.TextRectangle.Size, e.TextFormat));
+                }
+            }
+
+            TextRenderer.DrawText(e.Graphics, e.Text, e.TextFont, e.TextRectangle, textColor, e.TextFormat);
 
         if ((item is null) || (!item.CheckOnClick) || (item.Checked))
         {
@@ -217,30 +217,30 @@ public class DarkFormsRenderer
     /// </summary>
     /// <param name="e">A <see cref="ToolStripItemRenderEventArgs"/> that contains the event data.</param>
     protected override void OnRenderMenuItemBackground(ToolStripItemRenderEventArgs e)
-		{
-			if (e.Item is not ToolStripMenuItem)
-			{
-				base.OnRenderItemBackground(e);
-				return;
-			}
+        {
+            if (e.Item is not ToolStripMenuItem)
+            {
+                base.OnRenderItemBackground(e);
+                return;
+            }
 
-			var item = e.Item as ToolStripMenuItem;
+            var item = e.Item as ToolStripMenuItem;
 
-			if (item.Selected)
-			{
+            if (item.Selected)
+            {
             using Brush backBrush = new SolidBrush(MenuHilightBackground);
             e.Graphics.FillRectangle(backBrush, new Rectangle(1, 1, e.Item.Width - 2, e.Item.Height - 2));
         }
 
-			if (item.IsOnDropDown)
-			{
-				return;
-			}
+            if (item.IsOnDropDown)
+            {
+                return;
+            }
 
-			if (!item.DropDown.Visible)
-			{
-				return;
-			}
+            if (!item.DropDown.Visible)
+            {
+                return;
+            }
 
         using var pen = new Pen(BorderColor, 1.0f);
         e.Graphics.DrawLine(pen, new Point(0, 0), new Point(e.Item.Width - 1, 0));
@@ -248,12 +248,12 @@ public class DarkFormsRenderer
         e.Graphics.DrawLine(pen, new Point(e.Item.Width - 1, 0), new Point(e.Item.Width - 1, e.Item.Height));
     }
 
-		/// <summary>
-		/// Raises the <see cref="ToolStripRenderer.RenderButtonBackground"/> event.
-		/// </summary>
-		/// <param name="e">A <see cref="ToolStripRenderEventArgs"/> that contains the event data.</param>
-		protected override void OnRenderButtonBackground(ToolStripItemRenderEventArgs e)
-		{
+        /// <summary>
+        /// Raises the <see cref="ToolStripRenderer.RenderButtonBackground"/> event.
+        /// </summary>
+        /// <param name="e">A <see cref="ToolStripRenderEventArgs"/> that contains the event data.</param>
+        protected override void OnRenderButtonBackground(ToolStripItemRenderEventArgs e)
+        {
         if (e.Item.Selected)
         {
             using Brush backBrush = new SolidBrush(MenuHilightBackground);
@@ -278,12 +278,12 @@ public class DarkFormsRenderer
         }
     }
 
-		/// <summary>
-		/// Raises the <see cref="ToolStripRenderer.RenderItemCheck"/> event.
-		/// </summary>
-		/// <param name="e">A <see cref="ToolStripItemImageRenderEventArgs"/> that contains the event data.</param>
-		protected override void OnRenderItemCheck(ToolStripItemImageRenderEventArgs e)
-		{
+        /// <summary>
+        /// Raises the <see cref="ToolStripRenderer.RenderItemCheck"/> event.
+        /// </summary>
+        /// <param name="e">A <see cref="ToolStripItemImageRenderEventArgs"/> that contains the event data.</param>
+        protected override void OnRenderItemCheck(ToolStripItemImageRenderEventArgs e)
+        {
         var item = (ToolStripMenuItem)e.Item;
 
         if (!item.CheckOnClick)
@@ -314,7 +314,7 @@ public class DarkFormsRenderer
     /// </summary>
     /// <param name="e">A <see cref="ToolStripRenderEventArgs"/> that contains the event data.</param>
     protected override void OnRenderToolStripBackground(ToolStripRenderEventArgs e)
-		{
+        {
         using Brush backBrush = new SolidBrush(DarkBackground);
         e.Graphics.FillRectangle(backBrush, e.AffectedBounds);
 
@@ -335,12 +335,12 @@ public class DarkFormsRenderer
         e.Graphics.FillRectangle(backBrush, e.ConnectedArea);
     }
 
-		/// <summary>
-		/// Raises the <see cref="ToolStripRenderer.RenderSeparator"/> event.
-		/// </summary>
-		/// <param name="e">A <see cref="ToolStripSeparatorRenderEventArgs"/> that contains the event data.</param>
-		protected override void OnRenderSeparator(ToolStripSeparatorRenderEventArgs e)
-		{
+        /// <summary>
+        /// Raises the <see cref="ToolStripRenderer.RenderSeparator"/> event.
+        /// </summary>
+        /// <param name="e">A <see cref="ToolStripSeparatorRenderEventArgs"/> that contains the event data.</param>
+        protected override void OnRenderSeparator(ToolStripSeparatorRenderEventArgs e)
+        {
         using var pen = new Pen(BorderColor, 1.0f);
         if (!e.Vertical)
         {
@@ -356,18 +356,18 @@ public class DarkFormsRenderer
         }
     }
 
-		/// <summary>
-		/// Raises the <see cref="ToolStripRenderer.OnRenderSplitButtonBackground(ToolStripItemRenderEventArgs)" /> event.
-		/// </summary>
-		/// <param name="e">A <see cref="ToolStripItemRenderEventArgs" /> that contains the event data.</param>
-		protected override void OnRenderSplitButtonBackground(ToolStripItemRenderEventArgs e)
-		{
-			var item = e.Item as ToolStripSplitButton;
+        /// <summary>
+        /// Raises the <see cref="ToolStripRenderer.OnRenderSplitButtonBackground(ToolStripItemRenderEventArgs)" /> event.
+        /// </summary>
+        /// <param name="e">A <see cref="ToolStripItemRenderEventArgs" /> that contains the event data.</param>
+        protected override void OnRenderSplitButtonBackground(ToolStripItemRenderEventArgs e)
+        {
+            var item = e.Item as ToolStripSplitButton;
 
-			Debug.Assert(item is not null, "Drop down button is NULL!");
+            Debug.Assert(item is not null, "Drop down button is NULL!");
 
-			if (item.Selected)
-			{
+            if (item.Selected)
+            {
             using Brush backBrush = new SolidBrush(MenuHilightBackground);
             if (item.ButtonSelected)
             {
@@ -414,30 +414,30 @@ public class DarkFormsRenderer
         e.Graphics.DrawLine(pen, new Point(e.Item.Width - 1, 0), new Point(e.Item.Width - 1, e.Item.Height));
     }
 
-		/// <summary>
-		/// Raises the <see cref="ToolStripRenderer.RenderDropDownButtonBackground"/> event.
-		/// </summary>
-		/// <param name="e">A <see cref="ToolStripItemRenderEventArgs"/> that contains the event data.</param>
-		protected override void OnRenderDropDownButtonBackground(ToolStripItemRenderEventArgs e)
-		{
-			var item = e.Item as ToolStripDropDownButton;
+        /// <summary>
+        /// Raises the <see cref="ToolStripRenderer.RenderDropDownButtonBackground"/> event.
+        /// </summary>
+        /// <param name="e">A <see cref="ToolStripItemRenderEventArgs"/> that contains the event data.</param>
+        protected override void OnRenderDropDownButtonBackground(ToolStripItemRenderEventArgs e)
+        {
+            var item = e.Item as ToolStripDropDownButton;
 
-			Debug.Assert(item is not null, "Drop down button is NULL!");
+            Debug.Assert(item is not null, "Drop down button is NULL!");
 
-			if (item.Selected)
-			{
+            if (item.Selected)
+            {
             using Brush backBrush = new SolidBrush(MenuHilightBackground);
             e.Graphics.FillRectangle(backBrush, new Rectangle(1, 1, e.Item.Width - 2, e.Item.Height - 2));
         }
 
-			if (!item.DropDown.Visible)
-			{
-				return;
-			}
+            if (!item.DropDown.Visible)
+            {
+                return;
+            }
 
         using var pen = new Pen(BorderColor, 1.0f);
         e.Graphics.DrawLine(pen, new Point(0, 0), new Point(e.Item.Width - 1, 0));
         e.Graphics.DrawLine(pen, new Point(0, 0), new Point(0, e.Item.Height));
         e.Graphics.DrawLine(pen, new Point(e.Item.Width - 1, 0), new Point(e.Item.Width - 1, e.Item.Height));
     }        
-	}
+    }

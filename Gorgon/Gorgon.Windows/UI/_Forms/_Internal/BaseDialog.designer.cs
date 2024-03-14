@@ -1,4 +1,4 @@
-#region MIT.
+﻿#region MIT.
 // 
 // Gorgon.
 // Copyright (C) 2011 Michael Winsor
@@ -57,48 +57,62 @@ partial class BaseDialog
     /// </summary>
     private void InitializeComponent()
     {
-        System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(BaseDialog));
-        this.buttonOK = new System.Windows.Forms.Button();
-        this.pictureDialog = new System.Windows.Forms.PictureBox();
-        ((System.ComponentModel.ISupportInitialize)(this.pictureDialog)).BeginInit();
-        this.SuspendLayout();
+        var resources = new ComponentResourceManager(typeof(BaseDialog));
+        buttonOK = new Button();
+        pictureDialog = new PictureBox();
+        ((ISupportInitialize)pictureDialog).BeginInit();
+        SuspendLayout();
         // 
         // buttonOK
         // 
-        this.buttonOK.FlatAppearance.BorderColor = System.Drawing.Color.Black;
-        this.buttonOK.FlatAppearance.MouseDownBackColor = System.Drawing.Color.Silver;
-        this.buttonOK.FlatAppearance.MouseOverBackColor = System.Drawing.Color.Silver;
-        resources.ApplyResources(this.buttonOK, "buttonOK");
-        this.buttonOK.Name = "buttonOK";
+        buttonOK.FlatAppearance.BorderColor = System.Drawing.Color.Black;
+        buttonOK.FlatAppearance.MouseDownBackColor = System.Drawing.Color.Silver;
+        buttonOK.FlatAppearance.MouseOverBackColor = System.Drawing.Color.Silver;
+        buttonOK.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+        buttonOK.Location = new System.Drawing.Point(141, 92);
+        buttonOK.Margin = new Padding(4);
+        buttonOK.Name = "buttonOK";
+        buttonOK.Size = new System.Drawing.Size(69, 25);
+        buttonOK.TabIndex = 10;
+        buttonOK.Text = "&OK";
         // 
         // pictureDialog
         // 
-        resources.ApplyResources(this.pictureDialog, "pictureDialog");
-        this.pictureDialog.Name = "pictureDialog";
-        this.pictureDialog.TabStop = false;
+        pictureDialog.Location = new System.Drawing.Point(0, 0);
+        pictureDialog.Name = "pictureDialog";
+        pictureDialog.Padding = new Padding(2);
+        pictureDialog.Size = new System.Drawing.Size(48, 48);
+        pictureDialog.SizeMode = PictureBoxSizeMode.StretchImage;
+        pictureDialog.TabIndex = 11;
+        pictureDialog.TabStop = false;
         // 
         // BaseDialog
         // 
-        this.AcceptButton = this.buttonOK;
-        resources.ApplyResources(this, "$this");
-        this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-        this.Controls.Add(this.pictureDialog);
-        this.Controls.Add(this.buttonOK);
-        this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
-        this.KeyPreview = true;
-        this.MaximizeBox = false;
-        this.MinimizeBox = false;
-        this.Name = "BaseDialog";
-        ((System.ComponentModel.ISupportInitialize)(this.pictureDialog)).EndInit();
-        this.ResumeLayout(false);
-
+        AcceptButton = buttonOK;
+        AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
+        AutoScaleMode = AutoScaleMode.Dpi;
+        ClientSize = new System.Drawing.Size(304, 134);
+        Controls.Add(pictureDialog);
+        Controls.Add(buttonOK);
+        Font = new System.Drawing.Font("Segoe UI", 9F);
+        FormBorderStyle = FormBorderStyle.FixedDialog;
+        Icon = (System.Drawing.Icon)resources.GetObject("$this.Icon");
+        KeyPreview = true;
+        Margin = new Padding(4);
+        MaximizeBox = false;
+        MinimizeBox = false;
+        MinimumSize = new System.Drawing.Size(319, 158);
+        Name = "BaseDialog";
+        StartPosition = FormStartPosition.CenterScreen;
+        ((ISupportInitialize)pictureDialog).EndInit();
+        ResumeLayout(false);
     }
 
     #endregion
 
-		/// <summary>
+    /// <summary>
     /// OK button.
     /// </summary>
     protected Button buttonOK;
-		protected PictureBox pictureDialog;
+        protected PictureBox pictureDialog;
 }

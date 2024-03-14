@@ -40,21 +40,21 @@ namespace Gorgon.IO;
 /// Sometimes it's necessary take a <see cref="Stream"/> and divide it into sections to ensure there are no overruns. This object will take an existing stream object and allows the user to 
 /// set a start position within that stream, and give a range of readable bytes to break the parent stream into a smaller stream. This gives the protection that a stream provides against 
 /// buffer overruns all while working within the confines of a smaller part of the parent stream.
-	/// </para>
-	/// <para>
-	/// When reading or writing, the parent stream will have its position manipulated by this stream to locate the start of this stream plus the current position of this stream. Once these operations 
-	/// are complete, the parent stream <see cref="Stream.Position"/> will be set back to the original position it was in prior to the read/write operation. This ensures that when this 
-	/// object is finished its work, the original parent position will remain unaffected by this stream.
-	/// </para>
-	/// <note>
-	/// It is not necessary to call the <see cref="Stream.Dispose(bool)"/> method or the <see cref="Stream.Close"/> method on this object since there is nothing to close 
-	/// and ownership of the parent stream resides with the creator of that stream (i.e. this type does <i>not</i> take ownership of a parent stream). In fact, closing or disposing of this object 
-	/// does nothing.
-	/// </note>
-	/// <note type="caution">
-	/// This object is <i>not</i> thread safe. If multiple wrappers are pointing to the same parent stream, and multiple threads use these wrappers, the read/write cursor will be desynchronized. 
-	/// Because of this limitation, all the asynchronous I/O operations will throw an exception.
-	/// </note> 
+    /// </para>
+    /// <para>
+    /// When reading or writing, the parent stream will have its position manipulated by this stream to locate the start of this stream plus the current position of this stream. Once these operations 
+    /// are complete, the parent stream <see cref="Stream.Position"/> will be set back to the original position it was in prior to the read/write operation. This ensures that when this 
+    /// object is finished its work, the original parent position will remain unaffected by this stream.
+    /// </para>
+    /// <note>
+    /// It is not necessary to call the <see cref="Stream.Dispose(bool)"/> method or the <see cref="Stream.Close"/> method on this object since there is nothing to close 
+    /// and ownership of the parent stream resides with the creator of that stream (i.e. this type does <i>not</i> take ownership of a parent stream). In fact, closing or disposing of this object 
+    /// does nothing.
+    /// </note>
+    /// <note type="caution">
+    /// This object is <i>not</i> thread safe. If multiple wrappers are pointing to the same parent stream, and multiple threads use these wrappers, the read/write cursor will be desynchronized. 
+    /// Because of this limitation, all the asynchronous I/O operations will throw an exception.
+    /// </note> 
 /// </remarks>
 public class GorgonStreamWrapper
     : Stream

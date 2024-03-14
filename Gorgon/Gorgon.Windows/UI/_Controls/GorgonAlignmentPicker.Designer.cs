@@ -22,7 +22,7 @@ partial class GorgonAlignmentPicker
         {
             AlignmentChanged = null;
         }
-        
+
         base.Dispose(disposing);
     }
 

@@ -2,46 +2,46 @@
 
 namespace Gorgon.Editor.FontEditor;
 
-	partial class FontPatternBrushView
-	{
-		/// <summary> 
-		/// Required designer variable.
-		/// </summary>
-		private System.ComponentModel.IContainer components = null;
+    partial class FontPatternBrushView
+    {
+        /// <summary> 
+        /// Required designer variable.
+        /// </summary>
+        private System.ComponentModel.IContainer components = null;
 
-		/// <summary> 
-		/// Clean up any resources being used.
-		/// </summary>
-		/// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
-		protected override void Dispose(bool disposing)
-		{
-			if (disposing && (components != null))
-			{
-				components.Dispose();
-			}
+        /// <summary> 
+        /// Clean up any resources being used.
+        /// </summary>
+        /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing && (components != null))
+            {
+                components.Dispose();
+            }
 
-		    if (disposing)
-		    {
-			    if (ComboHatch != null)
-			    {
-				    ComboHatch.SelectedIndexChanged -= ComboHatch_SelectedIndexChanged;
-			    }
+            if (disposing)
+            {
+                if (ComboHatch != null)
+                {
+                    ComboHatch.SelectedIndexChanged -= ComboHatch_SelectedIndexChanged;
+                }
 
             _previewBitmap?.Dispose();
             _previewBitmap = null;
-		    }
+            }
 
-			base.Dispose(disposing);
-		}
+            base.Dispose(disposing);
+        }
 
-		#region Component Designer generated code
+        #region Component Designer generated code
 
-		/// <summary> 
-		/// Required method for Designer support - do not modify 
-		/// the contents of this method with the code editor.
-		/// </summary>
-		private void InitializeComponent()
-		{
+        /// <summary> 
+        /// Required method for Designer support - do not modify 
+        /// the contents of this method with the code editor.
+        /// </summary>
+        private void InitializeComponent()
+        {
         this.PanelPreview = new System.Windows.Forms.Panel();
         this.LabelPatternType = new System.Windows.Forms.Label();
         this.LabelForegroundColor = new System.Windows.Forms.Label();
@@ -216,16 +216,16 @@ namespace Gorgon.Editor.FontEditor;
         this.ResumeLayout(false);
         this.PerformLayout();
 
-		}
+        }
 
-		#endregion
+        #endregion
 
-		private System.Windows.Forms.Panel PanelPreview;
-		private System.Windows.Forms.Label LabelPatternType;
-		private ComboPatterns ComboHatch;
-		private System.Windows.Forms.Label LabelForegroundColor;
-		private System.Windows.Forms.Label LabelBackgroundColor;
-		private System.Windows.Forms.Label LabelPreview;
+        private System.Windows.Forms.Panel PanelPreview;
+        private System.Windows.Forms.Label LabelPatternType;
+        private ComboPatterns ComboHatch;
+        private System.Windows.Forms.Label LabelForegroundColor;
+        private System.Windows.Forms.Label LabelBackgroundColor;
+        private System.Windows.Forms.Label LabelPreview;
     private System.Windows.Forms.TableLayoutPanel TableControls;
     private System.Windows.Forms.TableLayoutPanel TableOptions;
     private UI.Controls.ColorPicker PickerBackground;

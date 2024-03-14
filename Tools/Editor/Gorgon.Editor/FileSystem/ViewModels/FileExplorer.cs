@@ -877,7 +877,7 @@ internal class FileExplorer
         {
             dirIDList.Add(directory);
         }
-        
+
         fileIDList.AddRange(directory.Files);
         IEnumerable<IDirectory> directories = _directories.Values.Traverse(d => d.Directories);
 
@@ -1286,7 +1286,7 @@ internal class FileExplorer
                 _userInteractionTimeMilliseconds = MaxUserInteractionTimeMilliseconds / 5;
             }
         }
-        
+
         Thread.Sleep(_userInteractionTimeMilliseconds);
     }
 
@@ -1844,7 +1844,7 @@ internal class FileExplorer
                                                                                                           .Select(item => (item.FullPath, item))
                                                                               .ToArray();
             _fileSystemWriter.RenameDirectory(selected.FullPath, args.NewName);
-            
+
             selected.RenameCommand.Execute(args);
 
             foreach ((string originalPath, IFile file) in originalPaths)
@@ -2005,7 +2005,7 @@ internal class FileExplorer
 
             UpdateDirectoryViewModels(movedDirs.Where(item => item.dest is not null).Select(item => item.dest), destDirectory);
             UpdateFileViewModels(movedFiles, destDirectory, false);
-            
+
             // Remove the source files/directories from the view if it's subscribed.
             foreach ((IGorgonVirtualFile movedFile, IGorgonVirtualFile newFile) in movedFiles)
             {
@@ -2016,7 +2016,7 @@ internal class FileExplorer
                 {
                     continue;
                 }
-                                    
+
                 file.Parent.Files.Remove(file);
                 RepairFileLinkage(file.FullPath, newFile.FullPath);
             }
@@ -2102,7 +2102,7 @@ internal class FileExplorer
             {
                 return;
             }
-            
+
             IFile file = _files.Values.FirstOrDefault(item => string.Equals(item.FullPath, path, StringComparison.OrdinalIgnoreCase));                
             string virtualPath = currentFile = file?.FullPath ?? string.Empty;
 
@@ -2168,7 +2168,7 @@ internal class FileExplorer
             HideProgress();
 
             args.FilesCopied = (movedFiles is not null) && (movedFiles.Count > 0);
-            
+
             if (!args.FilesCopied)
             {
                 return;
@@ -2300,7 +2300,7 @@ internal class FileExplorer
             {                    
                 return;
             }
-            
+
             UpdateFileViewModels(copiedFiles, destDirectory, false);
         }
         catch (OperationCanceledException)
@@ -2718,7 +2718,7 @@ internal class FileExplorer
             copiedDirs = e.VirtualDirectories;
             copiedFiles = e.VirtualFiles;
         }
-                    
+
         // Event handler to perform a file conversion on import (if applicable).
         void BeforeFileImport(object sender, FileImportingArgs e)
         {
@@ -2784,7 +2784,7 @@ internal class FileExplorer
                 {                        
                     return;
                 }
-                
+
                 args.PhysicalPaths.AddRange(sourceDir.EnumerateFileSystemInfos().Select(item => item.FullName));
 
                 if (args.PhysicalPaths.Count == 0)
@@ -2792,7 +2792,7 @@ internal class FileExplorer
                     return;
                 }
             }
-            
+
             destDirectory = _directories[args.DestinationDirectory];
 
             UpdateProgress(args.PhysicalPaths[0], 0, Resources.GOREDIT_TEXT_IMPORTING, cancelSource.Cancel);
@@ -2981,7 +2981,7 @@ internal class FileExplorer
 
         // We should be on the main thread here.
         _syncContext = injectionParameters.SyncContext;
-        
+
         EnumerateChildren(Root);
 
         _selectedDir = Root;
@@ -3029,7 +3029,7 @@ internal class FileExplorer
 
         Root.Directories.CollectionChanged -= Directories_CollectionChanged;
         Root.Files.CollectionChanged -= Files_CollectionChanged;
-                    
+
         base.OnUnload();
     }
 
@@ -3076,7 +3076,7 @@ internal class FileExplorer
         {
             return true;
         }
-            
+
         virtDirectory = _fileSystemWriter.CreateDirectory(directory);
 
         // Function to update the UI.
@@ -3098,7 +3098,7 @@ internal class FileExplorer
         {
             UpdateUI(directory);
         }
-        
+
         return true;
     }
 
@@ -3133,7 +3133,7 @@ internal class FileExplorer
         {
             return false;
         }
-        
+
         _fileSystemWriter.DeleteDirectory(dir.FullPath);
 
         // Update the UI.

@@ -44,7 +44,7 @@ internal partial class GenMipMapSettings
     /// <summary>Property to return the data context assigned to this view.</summary>
     /// <value>The data context.</value>
     [Browsable(false)]
-    public IMipMapSettings DataContext
+    public IMipMapSettings ViewModel
     {
         get;
         private set;
@@ -73,12 +73,12 @@ internal partial class GenMipMapSettings
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
     private void ComboImageFilter_SelectedValueChanged(object sender, EventArgs e)
     {
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             return;
         }
 
-        DataContext.MipFilter = (ImageFilter)ComboMipFilter.SelectedItem;
+        ViewModel.MipFilter = (ImageFilter)ComboMipFilter.SelectedItem;
     }
 
     /// <summary>Handles the PropertyChanged event of the DataContext control.</summary>
@@ -90,7 +90,7 @@ internal partial class GenMipMapSettings
         {
             case nameof(IMipMapSettings.MipLevels):
             case nameof(IMipMapSettings.MaxMipLevels):
-                UpdateNumericUpDown(NumericMipLevels, DataContext.MaxMipLevels, DataContext.MipLevels);
+                UpdateNumericUpDown(NumericMipLevels, ViewModel.MaxMipLevels, ViewModel.MipLevels);
                 break;
         }
 
@@ -116,12 +116,12 @@ internal partial class GenMipMapSettings
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
     private void NumericMipLevels_ValueChanged(object sender, EventArgs e)
     {
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             return;
         }
 
-        DataContext.MipLevels = (int)NumericMipLevels.Value;
+        ViewModel.MipLevels = (int)NumericMipLevels.Value;
     }
 
     /// <summary>
@@ -129,12 +129,12 @@ internal partial class GenMipMapSettings
     /// </summary>
     private void UnassignEvents()
     {
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             return;
         }
 
-        DataContext.PropertyChanged -= DataContext_PropertyChanged;
+        ViewModel.PropertyChanged -= DataContext_PropertyChanged;
     }
 
 
@@ -170,12 +170,12 @@ internal partial class GenMipMapSettings
     {
         base.OnCancel();
 
-        if ((DataContext?.CancelCommand is null) || (!DataContext.CancelCommand.CanExecute(null)))
+        if ((ViewModel?.CancelCommand is null) || (!ViewModel.CancelCommand.CanExecute(null)))
         {
             return;
         }
 
-        DataContext.CancelCommand.Execute(null);
+        ViewModel.CancelCommand.Execute(null);
     }
 
     /// <summary>Function to submit the change.</summary>
@@ -183,18 +183,18 @@ internal partial class GenMipMapSettings
     {
         base.OnSubmit();
 
-        if ((DataContext?.OkCommand is null) || (!DataContext.OkCommand.CanExecute(null)))
+        if ((ViewModel?.OkCommand is null) || (!ViewModel.OkCommand.CanExecute(null)))
         {
             return;
         }
 
-        DataContext.OkCommand.Execute(null);
+        ViewModel.OkCommand.Execute(null);
     }
 
     /// <summary>Function called to validate the OK button.</summary>
     /// <returns>
     ///   <b>true</b> if the OK button is valid, <b>false</b> if not.</returns>
-    protected override bool OnValidateOk() => (DataContext?.OkCommand is not null) && (DataContext.OkCommand.CanExecute(null));
+    protected override bool OnValidateOk() => (ViewModel?.OkCommand is not null) && (ViewModel.OkCommand.CanExecute(null));
 
     /// <summary>Raises the <see cref="E:System.Windows.Forms.UserControl.Load"/> event.</summary>
     /// <param name="e">An <see cref="EventArgs"/> that contains the event data.</param>
@@ -218,14 +218,14 @@ internal partial class GenMipMapSettings
         UnassignEvents();
 
         InitializeFromDataContext(dataContext);
-        DataContext = dataContext;
+        ViewModel = dataContext;
 
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             return;
         }
 
-        DataContext.PropertyChanged += DataContext_PropertyChanged;
+        ViewModel.PropertyChanged += DataContext_PropertyChanged;
     }
     #endregion
 

@@ -472,7 +472,7 @@ internal class Extract
             {
                 return;
             }
-            
+
             _currentTask = spriteGenTask = Task.Run(() => _extractor.ExtractSprites(_extractData, imageData, UpdateProgress, _cancelSource.Token), _cancelSource.Token);
             IReadOnlyList<GorgonSprite> sprites = await spriteGenTask;
 
@@ -597,7 +597,7 @@ internal class Extract
             return true;
         }
 
-        
+
         if (HostServices.MessageDisplay.ShowConfirmation(Resources.GOREST_CONFIRM_EXTRACT_IN_PROGRESS) == MessageResponse.No)
         {
             return false;

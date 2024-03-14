@@ -66,7 +66,7 @@ internal partial class FontContentView
 
     /// <summary>Property to return the data context assigned to this view.</summary>
     [Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)] // <-- So we don't show up in the IDE.
-    public IFontContent DataContext
+    public IFontContent ViewModel
     {
         get;
         private set;
@@ -102,18 +102,18 @@ internal partial class FontContentView
         switch (propertyName)
         {
             case nameof(FontContent.CommandContext):
-                SwitchRenderer(DataContext.CommandContext?.Name ?? _renderer.Name, true);
+                SwitchRenderer(ViewModel.CommandContext?.Name ?? _renderer.Name, true);
                 break;
             case nameof(FontContent.CurrentPanel):
                 string rendererName = _renderer.Name;
 
-                if ((DataContext.CurrentPanel is not null) && (HasRenderer(DataContext.CurrentPanel.GetType().FullName)))
+                if ((ViewModel.CurrentPanel is not null) && (HasRenderer(ViewModel.CurrentPanel.GetType().FullName)))
                 {
-                    rendererName = DataContext.CurrentPanel.GetType().FullName;
+                    rendererName = ViewModel.CurrentPanel.GetType().FullName;
                 }
-                else if (DataContext.CommandContext is not null)
+                else if (ViewModel.CommandContext is not null)
                 {
-                    rendererName = DataContext.CommandContext.Name;
+                    rendererName = ViewModel.CommandContext.Name;
                 }
 
                 if ((Renderer is null) || (!string.Equals(Renderer.Name, rendererName, StringComparison.OrdinalIgnoreCase)))
@@ -139,7 +139,7 @@ internal partial class FontContentView
 
         var args = new SetTextureArgs(contentData.FilePaths[0]);
 
-        if ((DataContext?.TextureEditor?.TextureBrush?.LoadTextureCommand is null) || (!DataContext.TextureEditor.TextureBrush.LoadTextureCommand.CanExecute(args)))
+        if ((ViewModel?.TextureEditor?.TextureBrush?.LoadTextureCommand is null) || (!ViewModel.TextureEditor.TextureBrush.LoadTextureCommand.CanExecute(args)))
         {
             if (!args.Cancel)
             {
@@ -164,9 +164,9 @@ internal partial class FontContentView
 
         var args = new SetTextureArgs(contentData.FilePaths[0]);
 
-        if ((DataContext?.TextureEditor?.TextureBrush?.LoadTextureCommand is not null) && (DataContext.TextureEditor.TextureBrush.LoadTextureCommand.CanExecute(args)))
+        if ((ViewModel?.TextureEditor?.TextureBrush?.LoadTextureCommand is not null) && (ViewModel.TextureEditor.TextureBrush.LoadTextureCommand.CanExecute(args)))
         {
-            await DataContext.TextureEditor.TextureBrush.LoadTextureCommand.ExecuteAsync(args);
+            await ViewModel.TextureEditor.TextureBrush.LoadTextureCommand.ExecuteAsync(args);
         }
     }
 
@@ -208,7 +208,7 @@ internal partial class FontContentView
             _ribbonForm.CreateControl();
         }
 
-        DataContext?.Load();            
+        ViewModel?.Load();            
         RenderControl?.Select();
 
         ValidateButtons();
@@ -220,7 +220,7 @@ internal partial class FontContentView
         _ants?.Dispose();
         _clipper?.Dispose();
 
-        DataContext?.Unload();
+        ViewModel?.Unload();
         base.OnShutdown();
     }
 
@@ -231,9 +231,9 @@ internal partial class FontContentView
     {
         _ants = new MarchingAnts(context.Renderer2D);
         _clipper = new RectClipperService(context.Renderer2D, _ants);
-        _renderer = new FontRenderer(context.Renderer2D, swapChain, DataContext);
-        TextureRenderer textureRenderer = new(context.Renderer2D, swapChain, DataContext);
-        TextureBrushRenderer brushRenderer = new(context.Renderer2D, swapChain, _clipper, DataContext);
+        _renderer = new FontRenderer(context.Renderer2D, swapChain, ViewModel);
+        TextureRenderer textureRenderer = new(context.Renderer2D, swapChain, ViewModel);
+        TextureBrushRenderer brushRenderer = new(context.Renderer2D, swapChain, _clipper, ViewModel);
 
         // Create any necessary resources for the renderer here.
         _renderer.CreateResources();
@@ -265,7 +265,7 @@ internal partial class FontContentView
 
         InitializeFromDataContext(dataContext);
 
-        DataContext = dataContext;
+        ViewModel = dataContext;
 
         _ribbonForm.SetDataContext(dataContext);
         FontOutline.SetDataContext(dataContext?.FontOutline);

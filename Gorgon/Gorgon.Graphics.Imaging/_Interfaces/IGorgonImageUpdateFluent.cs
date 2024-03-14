@@ -88,7 +88,7 @@ public interface IGorgonImageUpdateFluent
     /// If a user wishes to resize the image, then call the <see cref="Resize"/> method, of if they wish to crop an image, use the <see cref="Crop"/> method.
     /// </para>
     /// </remarks>
-	    IGorgonImageUpdateFluent Expand(int newWidth, int newHeight, int? newDepth = null, ImageExpandAnchor anchor = ImageExpandAnchor.UpperLeft);
+        IGorgonImageUpdateFluent Expand(int newWidth, int newHeight, int? newDepth = null, ImageExpandAnchor anchor = ImageExpandAnchor.UpperLeft);
 
     /// <summary>
     /// Function to resize the image to a new width, height and/or depth.

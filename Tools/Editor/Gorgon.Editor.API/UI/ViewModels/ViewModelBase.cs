@@ -330,7 +330,7 @@ public abstract class ViewModelBase<T, THs>
         {
             throw new ArgumentNullException(nameof(injectionParameters));
         }
-        
+
         HostServices = injectionParameters.HostServices;
 
         OnInitialize(injectionParameters);

@@ -351,7 +351,7 @@ public class Gorgon2DOldFilmEffect
     /// <remarks>
     /// If this value is <b>null</b>, then the entire output render target region is used to draw the dirt/hair.
     /// </remarks>
-	    public DX.RectangleF? DirtRegion
+        public DX.RectangleF? DirtRegion
     {
         get;
         set;

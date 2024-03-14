@@ -178,7 +178,7 @@ internal class DataGridViewEx
             _dragRegion = new Rectangle(dragLocation, dragSize);
             return;
         }
-        
+
         base.OnMouseDown(e);
     }
 
@@ -237,7 +237,7 @@ internal class DataGridViewEx
             pen.DashStyle = System.Drawing.Drawing2D.DashStyle.Dot;
             e.Graphics.DrawRectangle(pen, r);
         }
-        
+
         e.PaintContent(e.ClipBounds);
 
         e.Handled = true;

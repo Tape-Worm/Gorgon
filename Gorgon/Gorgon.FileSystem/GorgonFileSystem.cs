@@ -573,7 +573,7 @@ public class GorgonFileSystem
 
         return directory;
     }
-    
+
     /// <summary>
     /// Function to flatten a directory hierarchy.
     /// </summary>
@@ -751,7 +751,7 @@ public class GorgonFileSystem
         {
             string directoryPath = Path.GetDirectoryName(fileInfo.VirtualPath);
             VirtualDirectory directory = GetVirtualDirectory(directoryPath);
-            
+
             return directory.Files.Add(mountPoint, fileInfo);
         }
 

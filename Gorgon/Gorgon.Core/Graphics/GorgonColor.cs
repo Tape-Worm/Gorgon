@@ -377,7 +377,7 @@ public readonly struct GorgonColor
     /// </summary>
     /// <param name="color">The color to clamp.</param>
     /// <returns>The clamped color.</returns>
-	    public static GorgonColor Clamp(GorgonColor color) => new(color.Red.Max(0).Min(1),
+        public static GorgonColor Clamp(GorgonColor color) => new(color.Red.Max(0).Min(1),
                                color.Green.Max(0).Min(1),
                                color.Blue.Max(0).Min(1),
                                color.Alpha.Max(0).Min(1));
@@ -394,12 +394,12 @@ public readonly struct GorgonColor
                                  color.Alpha.Max(0).Min(1));
 
     /// <summary>
-		/// Function to apply an alpha value to the specified <see cref="GorgonColor"/>.
+        /// Function to apply an alpha value to the specified <see cref="GorgonColor"/>.
     /// </summary>
-		/// <param name="color">The <see cref="GorgonColor"/> to update.</param>
+        /// <param name="color">The <see cref="GorgonColor"/> to update.</param>
     /// <param name="alpha">The alpha value to set.</param>
-		/// <param name="result">The resulting updated <see cref="GorgonColor"/>.</param>
-		/// <returns>A new <see cref="GorgonColor"/> instance with the same <see cref="Red"/>, <see cref="Green"/>, and <see cref="Blue"/> values but with a modified <see cref="Alpha"/> component.</returns>
+        /// <param name="result">The resulting updated <see cref="GorgonColor"/>.</param>
+        /// <returns>A new <see cref="GorgonColor"/> instance with the same <see cref="Red"/>, <see cref="Green"/>, and <see cref="Blue"/> values but with a modified <see cref="Alpha"/> component.</returns>
     public static void SetAlpha(in GorgonColor color, float alpha, out GorgonColor result) => result = new GorgonColor(color, alpha);
 
     /// <summary>
@@ -1084,7 +1084,7 @@ public readonly struct GorgonColor
     /// <param name="color">The base <see cref="GorgonColor"/>.</param>
     /// <param name="alpha">The alpha value to assign to the color.</param>
     /// <remarks>
-		/// This will retrieve the <see cref="Red"/>, <see cref="Green"/>, and <see cref="Blue"/> values from the <paramin name="color"/> parameter.
+        /// This will retrieve the <see cref="Red"/>, <see cref="Green"/>, and <see cref="Blue"/> values from the <paramin name="color"/> parameter.
     /// </remarks>
     public GorgonColor(GorgonColor color, float alpha)
     {

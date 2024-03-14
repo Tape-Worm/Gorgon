@@ -72,7 +72,7 @@ internal partial class TextContentView
     #region Properties.
     /// <summary>Property to return the data context assigned to this view.</summary>
     [Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)] // <-- So we don't show up in the IDE.
-    public ITextContent DataContext
+    public ITextContent ViewModel
     {
         get;
         private set;
@@ -143,7 +143,7 @@ internal partial class TextContentView
 
         // Always call the OnLoad for the data context here so the view model can perform any required initialization
         // after the control is created and loaded.
-        DataContext?.Load();            
+        ViewModel?.Load();            
 
         // The control that we render our content into is selectable, so we should default selection into it.
         RenderControl?.Select();            
@@ -154,7 +154,7 @@ internal partial class TextContentView
     {
         // Always call unload when the control is shutting down. This will enable us to perform any necessary clean up 
         // on the view model.
-        DataContext?.Unload();
+        ViewModel?.Unload();
         base.OnShutdown();
     }
 
@@ -169,7 +169,7 @@ internal partial class TextContentView
         // It provides us with the graphics context from the editor application that contains instances 
         // of our graphics and 2D renderer interfaces. A default swap chain is also provided so that 
         // we can render into our view.
-        _renderer = new TextRenderer(context.Renderer2D, swapChain, context.FontFactory, DataContext);
+        _renderer = new TextRenderer(context.Renderer2D, swapChain, context.FontFactory, ViewModel);
         // Create any necessary resources for the renderer here.
         _renderer.CreateResources();
 
@@ -204,7 +204,7 @@ internal partial class TextContentView
 
         InitializeFromDataContext(dataContext);
 
-        DataContext = dataContext;
+        ViewModel = dataContext;
 
         // If we have any controls embedded on the control (or associated with the control in the case of the ribbon) that have 
         // view model support, we need to assign their view models as well. These can be child view models, or the current view 

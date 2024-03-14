@@ -68,7 +68,7 @@ public class GorgonSamplerStateBuilder
     /// </summary>
     /// <param name="dest">The destination state.</param>
     /// <param name="src">The state to copy.</param>
-	    private static void CopyState(GorgonSamplerState dest, GorgonSamplerState src)
+        private static void CopyState(GorgonSamplerState dest, GorgonSamplerState src)
     {
         dest.Filter = src.Filter;
         dest.WrapU = src.WrapU;
@@ -217,7 +217,7 @@ public class GorgonSamplerStateBuilder
     /// If all parameters are set to <b>null</b> (i.e. omitted), then the corresponding values will be reset to their defaults.
     /// </para>
     /// </remarks>
-	    public GorgonSamplerStateBuilder MipLevelOfDetail(float? min = null, float? max = null, float? mipLodBias = null)
+        public GorgonSamplerStateBuilder MipLevelOfDetail(float? min = null, float? max = null, float? mipLodBias = null)
     {
         if ((min is null) && (max is null) && (mipLodBias is null))
         {

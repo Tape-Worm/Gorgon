@@ -219,7 +219,7 @@ internal class ExtractSpriteToolPlugIn
     protected override IToolPlugInRibbonButton OnGetToolButton()
     {
         _button.ClickCallback ??= ShowForm;
-        
+
         _button.CanExecute ??= CanShowForm;
 
         return _button;
@@ -230,7 +230,7 @@ internal class ExtractSpriteToolPlugIn
     protected override void OnInitialize()
     {
         _defaultImageCodec = new GorgonCodecDds();
-        
+
         _button = new ToolPlugInRibbonButton(Resources.GOREST_TEXT_BUTTON, Resources.extract_grid_48x48, Resources.extract_grid_16x16, Resources.GOREST_GROUP_BUTTON)
         {
             Description = Resources.GOREST_DESC_BUTTON

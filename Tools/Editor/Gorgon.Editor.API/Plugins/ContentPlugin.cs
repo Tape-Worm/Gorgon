@@ -213,7 +213,7 @@ public abstract class ContentPlugIn
     /// </summary>
     protected virtual void OnProjectOpened()
     {
-    
+
     }
 
     /// <summary>
@@ -221,7 +221,7 @@ public abstract class ContentPlugIn
     /// </summary>
     protected virtual void OnProjectClosed()
     {
-    
+
     }
 
     /// <summary>Function to retrieve the default content name, and data.</summary>
@@ -292,7 +292,7 @@ public abstract class ContentPlugIn
             };
 
             (string name, RecyclableMemoryStream data) = await OnGetDefaultContentAsync(generatedName, metadata);
-                            
+
             if ((string.IsNullOrEmpty(name)) && (!string.IsNullOrWhiteSpace(generatedName)))
             {
                 name = generatedName;

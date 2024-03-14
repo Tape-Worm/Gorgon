@@ -191,7 +191,7 @@ internal class PipelineStateCache
                 }
 
                 PipelineStateChanges inheritedState = CompareState(cachedState, newState);
-                
+
                 if ((inheritedState & PipelineStateChanges.RasterState) == PipelineStateChanges.RasterState)
                 {
                     rasterState = cachedState.D3DRasterState;

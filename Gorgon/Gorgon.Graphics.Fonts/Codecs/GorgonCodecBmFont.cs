@@ -168,7 +168,7 @@ public class GorgonCodecBmFont
 
             string key = lineItems[..valueSep].Trim();
             string value = string.Empty;
-            
+
             lineItems = lineItems[(valueSep + 1)..].Trim();
 
             if (lineItems.Length == 0)

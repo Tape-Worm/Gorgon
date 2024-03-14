@@ -96,7 +96,7 @@ static class Program
         _emitter.RadialAccelerationRange = (-1, 1);
         _emitter.Reset();
     }
-    
+
     /// <summary>
     /// Function to build the render target for blooming.
     /// </summary>
@@ -231,7 +231,7 @@ static class Program
                 ColorIntensity = 2.0f,
                 Threshold = 1.02f,
             };
-              
+
             _bloom.Precache();
 
             GorgonExample.LoadResources(_graphics);

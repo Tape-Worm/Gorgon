@@ -143,7 +143,7 @@ partial class FormFileSystemFolderBrowser
         this.CancelButton = this.ButtonCancel;
         this.ClientSize = new System.Drawing.Size(688, 468);
         this.Controls.Add(this.tableLayoutPanel1);
-        this.Font = new System.Drawing.Font("Segoe UI", 9F);
+        
         this.ForeColor = System.Drawing.Color.White;
         this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
         this.MaximizeBox = false;

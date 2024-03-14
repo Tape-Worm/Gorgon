@@ -41,7 +41,7 @@ internal class DirectoryTreeNode
 {
     #region Properties.
     /// <summary>Property to return the data context assigned to this view.</summary>
-    public IDirectory DataContext
+    public IDirectory ViewModel
     {
         get;
         private set;
@@ -50,8 +50,8 @@ internal class DirectoryTreeNode
     /// <summary>Gets or sets the foreground color of the tree node.</summary>
     public new Color ForeColor
     {
-        get => (DataContext is IExcludable excluded)
-                && (!DataContext.IsCut)
+        get => (ViewModel is IExcludable excluded)
+                && (!ViewModel.IsCut)
                 && (excluded.IsExcluded)
                 ? DarkFormsRenderer.ExcludedColor
                 : base.ForeColor;
@@ -68,21 +68,21 @@ internal class DirectoryTreeNode
         switch (e.PropertyName)
         {
             case nameof(IDirectory.Name):
-                if (!string.Equals(Text, DataContext.Name, StringComparison.CurrentCultureIgnoreCase))
+                if (!string.Equals(Text, ViewModel.Name, StringComparison.CurrentCultureIgnoreCase))
                 {
-                    Text = DataContext.Name;
+                    Text = ViewModel.Name;
                 }
                 break;
             case nameof(IDirectory.ID):
-                if (!string.Equals(Name, DataContext.ID, StringComparison.CurrentCultureIgnoreCase))
+                if (!string.Equals(Name, ViewModel.ID, StringComparison.CurrentCultureIgnoreCase))
                 {
-                    Name = DataContext.ID;
+                    Name = ViewModel.ID;
                 }
                 break;
             case nameof(IDirectory.ImageName):
-                if (!string.Equals(ImageKey, DataContext.ImageName, StringComparison.CurrentCultureIgnoreCase))
+                if (!string.Equals(ImageKey, ViewModel.ImageName, StringComparison.CurrentCultureIgnoreCase))
                 {
-                    ImageKey = DataContext.ImageName;
+                    ImageKey = ViewModel.ImageName;
                 }
                 break;
             case nameof(IExcludable.IsExcluded):
@@ -96,12 +96,12 @@ internal class DirectoryTreeNode
     /// </summary>
     private void UnassignEvents()
     {
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             return;
         }
 
-        DataContext.PropertyChanged -= DataContext_PropertyChanged;
+        ViewModel.PropertyChanged -= DataContext_PropertyChanged;
     }
 
     /// <summary>
@@ -114,23 +114,23 @@ internal class DirectoryTreeNode
         {
             return;
         }
-        
+
         dataContext.PropertyChanged += DataContext_PropertyChanged;
     }
-    
+
     /// <summary>
     /// Function to revert the control back to the default state when the data context is not assigned.
     /// </summary>
     private void ResetDataContext()
     {
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             return;
         }
 
         UnassignEvents();
-        DataContext.Unload();
-        DataContext = null;
+        ViewModel.Unload();
+        ViewModel = null;
 
         ImageKey = string.Empty;
         Name = string.Empty;
@@ -162,8 +162,8 @@ internal class DirectoryTreeNode
         InitializeFromDataContext(dataContext);
 
         AssignEvents(dataContext);
-        
-        DataContext = dataContext;
+
+        ViewModel = dataContext;
     }
     #endregion
 }

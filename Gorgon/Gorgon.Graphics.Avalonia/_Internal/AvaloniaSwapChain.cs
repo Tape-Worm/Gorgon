@@ -108,11 +108,11 @@ internal class AvaloniaSwapChain
     public GorgonRenderTarget2DView BeginRendering(PixelSize pixelSize)
     {       
         AvaloniaSwapChainImage image = GetImage(pixelSize);
-        
+
         image.Begin();
         _pendingImages.Remove(image);
         _currentImage = image;
-                
+
         return _currentImage.RenderTargetView;
     }
 

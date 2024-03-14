@@ -43,11 +43,11 @@ internal partial class ImageSettingsPanel
     #region Properties.
     /// <summary>Property to return the ID of the panel.</summary>
     [Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-    public override string PanelID => DataContext?.ID.ToString() ?? Guid.Empty.ToString();
+    public override string PanelID => ViewModel?.ID.ToString() ?? Guid.Empty.ToString();
 
     /// <summary>Property to return the data context assigned to this view.</summary>
     [Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-    public ISettings DataContext
+    public ISettings ViewModel
     {
         get;
         private set;
@@ -97,12 +97,12 @@ internal partial class ImageSettingsPanel
     /// <param name="e">The <see cref="T:System.EventArgs">EventArgs</see> instance containing the event data.</param>
     private void TextPath_TextChanged(object sender, EventArgs e)
     {
-        if ((DataContext?.UpdatePathCommand is null) || (!DataContext.UpdatePathCommand.CanExecute(TextPath.Text)))
+        if ((ViewModel?.UpdatePathCommand is null) || (!ViewModel.UpdatePathCommand.CanExecute(TextPath.Text)))
         {
             return;
         }
 
-        DataContext.UpdatePathCommand.Execute(TextPath.Text);
+        ViewModel.UpdatePathCommand.Execute(TextPath.Text);
         ValidateCommands();
     }
 
@@ -127,7 +127,7 @@ internal partial class ImageSettingsPanel
     public void SetDataContext(ISettings dataContext)
     {
         InitializeFromDataContext(dataContext);
-        DataContext = dataContext;
+        ViewModel = dataContext;
 
         ValidateCommands();
     }

@@ -45,94 +45,94 @@ namespace Gorgon.Graphics.Core;
 /// <seealso cref="GorgonTexture2D"/>
 /// <seealso cref="GorgonTexture3D"/>
 public abstract class GorgonRenderTargetView
-		: GorgonResourceView
-	{
-		#region Properties.
-		/// <summary>
-		/// Property to return the native D3D depth/stencil view.
-		/// </summary>
-		internal D3D11.RenderTargetView1 Native
-		{
-			get;
-			set;
-		}
+        : GorgonResourceView
+    {
+        #region Properties.
+        /// <summary>
+        /// Property to return the native D3D depth/stencil view.
+        /// </summary>
+        internal D3D11.RenderTargetView1 Native
+        {
+            get;
+            set;
+        }
 
-		/// <summary>
-		/// Property to return the flags to determine how the texture will be bound with the pipeline when rendering.
-		/// </summary>
-		public abstract TextureBinding Binding
-		{
-			get;
-		}
+        /// <summary>
+        /// Property to return the flags to determine how the texture will be bound with the pipeline when rendering.
+        /// </summary>
+        public abstract TextureBinding Binding
+        {
+            get;
+        }
 
-		/// <summary>
-		/// Property to return the format used to interpret this view.
-		/// </summary>
-		public BufferFormat Format
-		{
-			get;
-		}
+        /// <summary>
+        /// Property to return the format used to interpret this view.
+        /// </summary>
+        public BufferFormat Format
+        {
+            get;
+        }
 
-		/// <summary>
-		/// Property to return information about the <see cref="Format"/> used by this view.
-		/// </summary>
-		public GorgonFormatInfo FormatInformation
-		{
-			get;
-		}
+        /// <summary>
+        /// Property to return information about the <see cref="Format"/> used by this view.
+        /// </summary>
+        public GorgonFormatInfo FormatInformation
+        {
+            get;
+        }
 
-		/// <summary>
-		/// Property to return the width of the render target view.
-		/// </summary>
-		public abstract int Width
-		{
-			get;
-		}
+        /// <summary>
+        /// Property to return the width of the render target view.
+        /// </summary>
+        public abstract int Width
+        {
+            get;
+        }
 
-		/// <summary>
-		/// Property to return the height of the render target view.
-		/// </summary>
-		public abstract int Height
-		{
-			get;
-		}
-		#endregion
+        /// <summary>
+        /// Property to return the height of the render target view.
+        /// </summary>
+        public abstract int Height
+        {
+            get;
+        }
+        #endregion
 
-		#region Methods.
-		/// <summary>
-		/// Function to clear the contents of the render target for this view.
-		/// </summary>
-		/// <param name="color">Color to use when clearing the render target view.</param>
-		/// <remarks>
-		/// <para>
-		/// This will clear the render target view to the specified <paramref name="color"/>.  
-		/// </para>
-		/// </remarks>
-		public void Clear(in GorgonColor color)
-		{
-			Graphics.D3DDeviceContext.ClearRenderTargetView(Native, color.ToRawColor4());
+        #region Methods.
+        /// <summary>
+        /// Function to clear the contents of the render target for this view.
+        /// </summary>
+        /// <param name="color">Color to use when clearing the render target view.</param>
+        /// <remarks>
+        /// <para>
+        /// This will clear the render target view to the specified <paramref name="color"/>.  
+        /// </para>
+        /// </remarks>
+        public void Clear(in GorgonColor color)
+        {
+            Graphics.D3DDeviceContext.ClearRenderTargetView(Native, color.ToRawColor4());
 
-			ref GorgonGraphicsStatistics stats = ref Graphics.RwStatistics;
-			unchecked
-			{
-				++stats._clearCount;
-			}
-		}
-		#endregion
+            ref GorgonGraphicsStatistics stats = ref Graphics.RwStatistics;
+            unchecked
+            {
+                ++stats._clearCount;
+            }
+        }
+        #endregion
 
-		#region Constructor/Destructor.
-		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonRenderTarget2DView"/> class.
-		/// </summary>
-		/// <param name="resource">The resource to bind.</param>
-		/// <param name="format">The format of the render target view.</param>
-		/// <param name="formatInfo">Information about the format.</param>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="resource"/>, or the <paramref name="formatInfo"/> parameter is <b>null</b>.</exception>
-		protected GorgonRenderTargetView(GorgonGraphicsResource resource, BufferFormat format, GorgonFormatInfo formatInfo)
-			: base(resource)
-		{
-			FormatInformation = formatInfo ?? throw new ArgumentNullException(nameof(formatInfo));
-			Format = format;
-		}
-		#endregion
-	}
+        #region Constructor/Destructor.
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GorgonRenderTarget2DView"/> class.
+        /// </summary>
+        /// <param name="resource">The resource to bind.</param>
+        /// <param name="format">The format of the render target view.</param>
+        /// <param name="formatInfo">Information about the format.</param>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="resource"/>, or the <paramref name="formatInfo"/> parameter is <b>null</b>.</exception>
+        protected GorgonRenderTargetView(GorgonGraphicsResource resource, BufferFormat format, GorgonFormatInfo formatInfo)
+            : base(resource)
+        {
+            FormatInformation = formatInfo ?? throw new ArgumentNullException(nameof(formatInfo));
+            Format = format;
+        }
+        #endregion
+    }

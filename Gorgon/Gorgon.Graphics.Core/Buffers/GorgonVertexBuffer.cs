@@ -121,7 +121,7 @@ public sealed class GorgonVertexBuffer
     /// <summary>
     /// The prefix to assign to a default name.
     /// </summary>
-	    internal const string NamePrefix = nameof(GorgonVertexBuffer);
+        internal const string NamePrefix = nameof(GorgonVertexBuffer);
     #endregion
 
     #region Variables.

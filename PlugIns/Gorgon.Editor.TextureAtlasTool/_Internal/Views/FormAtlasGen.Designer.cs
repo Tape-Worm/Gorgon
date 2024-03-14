@@ -22,7 +22,7 @@ partial class FormAtlasGen
 
         if (disposing)
         {
-				_spriteSelector?.Dispose();
+                _spriteSelector?.Dispose();
         }
 
         base.Dispose(disposing);

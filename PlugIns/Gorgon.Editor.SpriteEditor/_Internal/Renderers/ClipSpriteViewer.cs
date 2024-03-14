@@ -140,7 +140,7 @@ internal class ClipSpriteViewer
                                      new DX.RectangleF(0, 0, 1, 1),
                                      DataContext.SpriteClipContext.ArrayIndex,
                                      GorgonSamplerState.PointFiltering);
-        
+
         // Remove the area where the sprite is located.
         Renderer.DrawFilledRectangle(clearRegion, GorgonColor.BlackTransparent);            
 
@@ -344,7 +344,7 @@ internal class ClipSpriteViewer
         DataContext.SpriteClipContext.PropertyChanged -= SpriteClipContext_PropertyChanged;
         _clipper.RectChanged -= Clipper_RectChanged;            
         _clipper.KeyboardIconClicked -= Clipper_KeyboardIconClicked;                        
-        
+
         DestroySpriteTexture();
         base.OnUnload();
     }
@@ -365,7 +365,7 @@ internal class ClipSpriteViewer
                                     _spriteTexture,
                                     new DX.RectangleF(0, 0, 1, 1),                                        
                                     textureSampler: GorgonSamplerState.PointFiltering);
-        
+
         Renderer.DrawSprite(_sprite);
         Renderer.End();            
 

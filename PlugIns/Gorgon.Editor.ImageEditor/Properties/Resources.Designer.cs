@@ -23,15 +23,15 @@ using System;
 [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
 [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
 internal class Resources {
-    
+
     private static global::System.Resources.ResourceManager resourceMan;
-    
+
     private static global::System.Globalization.CultureInfo resourceCulture;
-    
+
     [global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
     internal Resources() {
     }
-    
+
     /// <summary>
     ///   Returns the cached ResourceManager instance used by this class.
     /// </summary>
@@ -45,7 +45,7 @@ internal class Resources {
             return resourceMan;
         }
     }
-    
+
     /// <summary>
     ///   Overrides the current thread's CurrentUICulture property for all
     ///   resource lookups using this strongly typed resource class.
@@ -59,7 +59,7 @@ internal class Resources {
             resourceCulture = value;
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized resource of type System.Drawing.Bitmap.
     /// </summary>
@@ -69,7 +69,7 @@ internal class Resources {
             return ((System.Drawing.Bitmap)(obj));
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized resource of type System.Drawing.Bitmap.
     /// </summary>
@@ -79,7 +79,7 @@ internal class Resources {
             return ((System.Drawing.Bitmap)(obj));
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized resource of type System.Drawing.Bitmap.
     /// </summary>
@@ -89,7 +89,7 @@ internal class Resources {
             return ((System.Drawing.Bitmap)(obj));
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized resource of type System.Drawing.Bitmap.
     /// </summary>
@@ -99,7 +99,7 @@ internal class Resources {
             return ((System.Drawing.Bitmap)(obj));
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized resource of type System.Drawing.Bitmap.
     /// </summary>
@@ -109,7 +109,7 @@ internal class Resources {
             return ((System.Drawing.Bitmap)(obj));
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized resource of type System.Drawing.Bitmap.
     /// </summary>
@@ -119,7 +119,7 @@ internal class Resources {
             return ((System.Drawing.Bitmap)(obj));
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized resource of type System.Drawing.Bitmap.
     /// </summary>
@@ -129,7 +129,7 @@ internal class Resources {
             return ((System.Drawing.Bitmap)(obj));
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized resource of type System.Drawing.Bitmap.
     /// </summary>
@@ -139,7 +139,7 @@ internal class Resources {
             return ((System.Drawing.Bitmap)(obj));
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized resource of type System.Drawing.Bitmap.
     /// </summary>
@@ -149,7 +149,7 @@ internal class Resources {
             return ((System.Drawing.Bitmap)(obj));
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized resource of type System.Drawing.Bitmap.
     /// </summary>
@@ -159,7 +159,7 @@ internal class Resources {
             return ((System.Drawing.Bitmap)(obj));
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized resource of type System.Drawing.Bitmap.
     /// </summary>
@@ -169,7 +169,7 @@ internal class Resources {
             return ((System.Drawing.Bitmap)(obj));
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized resource of type System.Drawing.Bitmap.
     /// </summary>
@@ -179,7 +179,7 @@ internal class Resources {
             return ((System.Drawing.Bitmap)(obj));
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized resource of type System.Drawing.Bitmap.
     /// </summary>
@@ -189,7 +189,7 @@ internal class Resources {
             return ((System.Drawing.Bitmap)(obj));
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized resource of type System.Drawing.Bitmap.
     /// </summary>
@@ -199,7 +199,7 @@ internal class Resources {
             return ((System.Drawing.Bitmap)(obj));
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized resource of type System.Drawing.Bitmap.
     /// </summary>
@@ -209,7 +209,7 @@ internal class Resources {
             return ((System.Drawing.Bitmap)(obj));
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized resource of type System.Drawing.Bitmap.
     /// </summary>
@@ -219,7 +219,7 @@ internal class Resources {
             return ((System.Drawing.Bitmap)(obj));
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized resource of type System.Drawing.Bitmap.
     /// </summary>
@@ -229,7 +229,7 @@ internal class Resources {
             return ((System.Drawing.Bitmap)(obj));
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized resource of type System.Drawing.Bitmap.
     /// </summary>
@@ -239,7 +239,7 @@ internal class Resources {
             return ((System.Drawing.Bitmap)(obj));
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized resource of type System.Drawing.Bitmap.
     /// </summary>
@@ -249,7 +249,7 @@ internal class Resources {
             return ((System.Drawing.Bitmap)(obj));
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized resource of type System.Drawing.Bitmap.
     /// </summary>
@@ -259,7 +259,7 @@ internal class Resources {
             return ((System.Drawing.Bitmap)(obj));
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized resource of type System.Drawing.Bitmap.
     /// </summary>
@@ -269,7 +269,7 @@ internal class Resources {
             return ((System.Drawing.Bitmap)(obj));
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized resource of type System.Drawing.Bitmap.
     /// </summary>
@@ -279,7 +279,7 @@ internal class Resources {
             return ((System.Drawing.Bitmap)(obj));
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized resource of type System.Drawing.Bitmap.
     /// </summary>
@@ -289,7 +289,7 @@ internal class Resources {
             return ((System.Drawing.Bitmap)(obj));
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized resource of type System.Drawing.Bitmap.
     /// </summary>
@@ -299,7 +299,7 @@ internal class Resources {
             return ((System.Drawing.Bitmap)(obj));
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to Export image as {0}....
     /// </summary>
@@ -308,7 +308,7 @@ internal class Resources {
             return ResourceManager.GetString("GORIMG_CAPTION_EXPORT_IMAGE", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to Select images for import into {0}....
     /// </summary>
@@ -317,7 +317,7 @@ internal class Resources {
             return ResourceManager.GetString("GORIMG_CAPTION_IMG_PICKER", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to Import image....
     /// </summary>
@@ -326,7 +326,7 @@ internal class Resources {
             return ResourceManager.GetString("GORIMG_CAPTION_IMPORT_IMAGE", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to Select a codec plug in DLL.
     /// </summary>
@@ -335,7 +335,7 @@ internal class Resources {
             return ResourceManager.GetString("GORIMG_CAPTION_SELECT_CODEC_DLL", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to This image has more than 1 depth slice. Converting this image to a 2D/Cube image will discard all depth slices after the 1st one.  
     ///
@@ -346,7 +346,7 @@ internal class Resources {
             return ResourceManager.GetString("GORIMG_CONFIRM_3D_TO_2D", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to This image has an array. Converting to a volume (3D) image will discard these array indices after the 1st one.
     ///
@@ -357,7 +357,7 @@ internal class Resources {
             return ResourceManager.GetString("GORIMG_CONFIRM_ARRAY_TO_VOLUME", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to The image &apos;{0}&apos; has unsaved changes. 
     ///
@@ -368,7 +368,7 @@ internal class Resources {
             return ResourceManager.GetString("GORIMG_CONFIRM_CLOSE", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to The codec &apos;{0}&apos; does not support the following:
     ///{1}
@@ -382,7 +382,7 @@ internal class Resources {
             return ResourceManager.GetString("GORIMG_CONFIRM_EXPORT_LIMITS", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to There are mip map levels in this image. Generating new mip levels will overwrite these mip maps.
     ///
@@ -393,7 +393,7 @@ internal class Resources {
             return ResourceManager.GetString("GORIMG_CONFIRM_GEN_MIPMAP", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to This will overwrite the image data at array index {0}, mip level {1}.
     ///
@@ -404,7 +404,7 @@ internal class Resources {
             return ResourceManager.GetString("GORIMG_CONFIRM_OVERWRITE_ARRAY_INDEX", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to This will overwrite the image data at depth slice {0}, mip level {1}.
     ///
@@ -415,7 +415,7 @@ internal class Resources {
             return ResourceManager.GetString("GORIMG_CONFIRM_OVERWRITE_DEPTH_SLICE", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to This will remove all codecs associated with the &apos;{0}&apos; plug in.
     ///
@@ -426,7 +426,7 @@ internal class Resources {
             return ResourceManager.GetString("GORIMG_CONFIRM_REMOVE_CODECS", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to Image.
     /// </summary>
@@ -435,7 +435,7 @@ internal class Resources {
             return ResourceManager.GetString("GORIMG_CONTENT_TYPE", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to At least one image dimension is smaller than the current image dimensions.  This will result in a loss of data in the image.
     ///
@@ -446,7 +446,7 @@ internal class Resources {
             return ResourceManager.GetString("GORIMG_CROP_LOSE_DATA", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to Gorgon Image Editor.
     /// </summary>
@@ -455,7 +455,7 @@ internal class Resources {
             return ResourceManager.GetString("GORIMG_DESC", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to Premultiplied alpha.
     /// </summary>
@@ -464,7 +464,7 @@ internal class Resources {
             return ResourceManager.GetString("GORIMG_DESC_UNDO_PREMULTIPLY", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to There was an error applying effects to the image..
     /// </summary>
@@ -473,7 +473,7 @@ internal class Resources {
             return ResourceManager.GetString("GORIMG_ERR_APPLYING_EFFECTS", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to There was an error while compressing the image data.
     ///
@@ -484,7 +484,7 @@ internal class Resources {
             return ResourceManager.GetString("GORIMG_ERR_CANNOT_COMPRESS", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to The pixel format [{0}] cannot be converted to [{1}]..
     /// </summary>
@@ -493,7 +493,7 @@ internal class Resources {
             return ResourceManager.GetString("GORIMG_ERR_CANNOT_CONVERT", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to There was an error opening the image picker.
     ///
@@ -504,7 +504,7 @@ internal class Resources {
             return ResourceManager.GetString("GORIMG_ERR_CANNOT_OPEN_IMG_PICKER", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to The executable &apos;{0}&apos; could not be found. 
     ///
@@ -515,7 +515,7 @@ internal class Resources {
             return ResourceManager.GetString("GORIMG_ERR_CANT_FIND_EDITOR", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to There was an error while converting the image type..
     /// </summary>
@@ -524,7 +524,7 @@ internal class Resources {
             return ResourceManager.GetString("GORIMG_ERR_CHANGE_TYPE", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to The codec &apos;{0}&apos; was already loaded..
     /// </summary>
@@ -533,7 +533,7 @@ internal class Resources {
             return ResourceManager.GetString("GORIMG_ERR_CODEC_ALREADY_LOADED", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to There was an error changing the codec.
     ///Please try again..
@@ -543,7 +543,7 @@ internal class Resources {
             return ResourceManager.GetString("GORIMG_ERR_CODEC_ASSIGN", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to There were errors while trying to load the codec plug in.
     ///
@@ -554,7 +554,7 @@ internal class Resources {
             return ResourceManager.GetString("GORIMG_ERR_CODEC_LOAD_ERRORS_PRESENT", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to There was an error loading the &apos;{0}&apos; codec..
     /// </summary>
@@ -563,7 +563,7 @@ internal class Resources {
             return ResourceManager.GetString("GORIMG_ERR_CODEC_LOAD_FAIL", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to The codec plug in &apos;{0}&apos; was already loaded..
     /// </summary>
@@ -572,7 +572,7 @@ internal class Resources {
             return ResourceManager.GetString("GORIMG_ERR_CODEC_PLUGIN_ALREADY_LOADED", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to The file is compressed using [{0}], and currently there is no support for decompressing it..
     /// </summary>
@@ -581,7 +581,7 @@ internal class Resources {
             return ResourceManager.GetString("GORIMG_ERR_COMPRESSED_FILE", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to This image is using a compressed format [{0}]. Compressed formats require that the image width and height be a multiple of 4.  
     ///
@@ -592,7 +592,7 @@ internal class Resources {
             return ResourceManager.GetString("GORIMG_ERR_COMPRESSED_RESIZE_MULTIPLE_4", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to There was an error converting the format to [{0}].
     ///
@@ -603,7 +603,7 @@ internal class Resources {
             return ResourceManager.GetString("GORIMG_ERR_CONVERT_FORMAT", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to Cannot convert [{0}] to a format supported by the codec..
     /// </summary>
@@ -612,7 +612,7 @@ internal class Resources {
             return ResourceManager.GetString("GORIMG_ERR_EXPORT_CONVERT", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to There is no support for the [{0}] format..
     /// </summary>
@@ -621,7 +621,7 @@ internal class Resources {
             return ResourceManager.GetString("GORIMG_ERR_FORMAT_NOT_SUPPORTED", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to There was an error while trying to retrieve the current image information.
     ///
@@ -632,7 +632,7 @@ internal class Resources {
             return ResourceManager.GetString("GORIMG_ERR_IMAGE_INFO", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to There was an error importing the file &apos;{0}&apos;..
     /// </summary>
@@ -641,7 +641,7 @@ internal class Resources {
             return ResourceManager.GetString("GORIMG_ERR_IMPORT_FAIL", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to There is no codec loaded that can read the file &apos;{0}&apos;..
     /// </summary>
@@ -650,7 +650,7 @@ internal class Resources {
             return ResourceManager.GetString("GORIMG_ERR_NO_CODEC", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to The DLL &apos;{0}&apos; does not contain any image codecs.
     ///
@@ -661,7 +661,7 @@ internal class Resources {
             return ResourceManager.GetString("GORIMG_ERR_NO_CODECS", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to Could not find an external editor that can open &apos;{0}&apos;..
     /// </summary>
@@ -670,7 +670,7 @@ internal class Resources {
             return ResourceManager.GetString("GORIMG_ERR_NO_EXTERNAL_EDITOR", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to There was an error performing the redo action.
     ///
@@ -681,7 +681,7 @@ internal class Resources {
             return ResourceManager.GetString("GORIMG_ERR_REDO", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to There was an error saving the content.
     ///
@@ -692,7 +692,7 @@ internal class Resources {
             return ResourceManager.GetString("GORIMG_ERR_SAVE_CONTENT", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to There was an error while setting the application path.
     ///
@@ -703,7 +703,7 @@ internal class Resources {
             return ResourceManager.GetString("GORIMG_ERR_SETTING_EXE_PATH", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to There was an error performing the undo action.
     ///
@@ -714,7 +714,7 @@ internal class Resources {
             return ResourceManager.GetString("GORIMG_ERR_UNDO", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to There was an error updating the image.
     ///
@@ -725,7 +725,7 @@ internal class Resources {
             return ResourceManager.GetString("GORIMG_ERR_UPDATING_IMAGE", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to All files (*.*)|*.*.
     /// </summary>
@@ -734,7 +734,7 @@ internal class Resources {
             return ResourceManager.GetString("GORIMG_FILEMASK_ALL_FILES", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to Codec plug in file (*.dll)|*.dll.
     /// </summary>
@@ -743,7 +743,7 @@ internal class Resources {
             return ResourceManager.GetString("GORIMG_FILTER_SELECT_CODEC", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to Gorgon Image Importer.
     /// </summary>
@@ -752,7 +752,7 @@ internal class Resources {
             return ResourceManager.GetString("GORIMG_IMPORT_DESC", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to The dimensions of the image &apos;{0}&apos; do not match the dimensions of the target image. 
     ///
@@ -763,7 +763,7 @@ internal class Resources {
             return ResourceManager.GetString("GORIMG_RESIZE_CROP_DESC", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to codec.
     /// </summary>
@@ -772,7 +772,7 @@ internal class Resources {
             return ResourceManager.GetString("GORIMG_SEARCH_KEYWORD_CODEC", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to Gorgon Image Editor.
     /// </summary>
@@ -781,7 +781,7 @@ internal class Resources {
             return ResourceManager.GetString("GORIMG_SETTINGS_DESC", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to 3D View.
     /// </summary>
@@ -790,7 +790,7 @@ internal class Resources {
             return ResourceManager.GetString("GORIMG_TEXT_3DVIEW", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to Align.
     /// </summary>
@@ -799,7 +799,7 @@ internal class Resources {
             return ResourceManager.GetString("GORIMG_TEXT_ALIGN_TO", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to Array Index:.
     /// </summary>
@@ -808,7 +808,7 @@ internal class Resources {
             return ResourceManager.GetString("GORIMG_TEXT_ARRAY_INDEX", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to Array index count:.
     /// </summary>
@@ -817,7 +817,7 @@ internal class Resources {
             return ResourceManager.GetString("GORIMG_TEXT_ARRAY_INDEX_COUNT", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to Array Indices.
     /// </summary>
@@ -826,7 +826,7 @@ internal class Resources {
             return ResourceManager.GetString("GORIMG_TEXT_ARRAY_INDICES", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to Red: {0} Green: {1} Blue: {2}
     ///Alpha: {3}.
@@ -836,7 +836,7 @@ internal class Resources {
             return ResourceManager.GetString("GORIMG_TEXT_COLOR_VALUES", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to Crop to {0}x{1}.
     /// </summary>
@@ -845,7 +845,7 @@ internal class Resources {
             return ResourceManager.GetString("GORIMG_TEXT_CROP_TO", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to Depth Slice:.
     /// </summary>
@@ -854,7 +854,7 @@ internal class Resources {
             return ResourceManager.GetString("GORIMG_TEXT_DEPTH_SLICE", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to Depth slice count:.
     /// </summary>
@@ -863,7 +863,7 @@ internal class Resources {
             return ResourceManager.GetString("GORIMG_TEXT_DEPTH_SLICE_COUNT", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to Depth Slices.
     /// </summary>
@@ -872,7 +872,7 @@ internal class Resources {
             return ResourceManager.GetString("GORIMG_TEXT_DEPTH_SLICES", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to Pixel Format.
     /// </summary>
@@ -881,7 +881,7 @@ internal class Resources {
             return ResourceManager.GetString("GORIMG_TEXT_IMAGE_FORMAT", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to Image width and height: {0}x{1}.
     /// </summary>
@@ -890,7 +890,7 @@ internal class Resources {
             return ResourceManager.GetString("GORIMG_TEXT_IMAGE_SIZE_DETAILS", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to Drag an image into the panel below to import into {0}..
     /// </summary>
@@ -899,7 +899,7 @@ internal class Resources {
             return ResourceManager.GetString("GORIMG_TEXT_IMG_PICKER_INSTRUCTION", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to Importing....
     /// </summary>
@@ -908,7 +908,7 @@ internal class Resources {
             return ResourceManager.GetString("GORIMG_TEXT_IMPORTING", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to Loading Image(s)....
     /// </summary>
@@ -917,7 +917,7 @@ internal class Resources {
             return ResourceManager.GetString("GORIMG_TEXT_LOADING_IMAGES", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to {0}/{1} ({2}x{3}).
     /// </summary>
@@ -926,7 +926,7 @@ internal class Resources {
             return ResourceManager.GetString("GORIMG_TEXT_MIP_DETAILS", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to Mip Maps.
     /// </summary>
@@ -935,7 +935,7 @@ internal class Resources {
             return ResourceManager.GetString("GORIMG_TEXT_MIP_MAPS", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to Please wait....
     /// </summary>
@@ -944,7 +944,7 @@ internal class Resources {
             return ResourceManager.GetString("GORIMG_TEXT_PLEASE_WAIT", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to Target image dimensions: {0}x{1}.
     /// </summary>
@@ -953,7 +953,7 @@ internal class Resources {
             return ResourceManager.GetString("GORIMG_TEXT_RESIZE_CROP_IMAGE_SIZE", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to Import image name: {0}.
     /// </summary>
@@ -962,7 +962,7 @@ internal class Resources {
             return ResourceManager.GetString("GORIMG_TEXT_RESIZE_CROP_IMPORT_NAME", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to Import image dimensions: {0}x{1}.
     /// </summary>
@@ -971,7 +971,7 @@ internal class Resources {
             return ResourceManager.GetString("GORIMG_TEXT_RESIZE_CROP_IMPORT_SIZE", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to Resize to {0}x{1}.
     /// </summary>
@@ -980,7 +980,7 @@ internal class Resources {
             return ResourceManager.GetString("GORIMG_TEXT_RESIZE_TO", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to Saving &apos;{0}&apos;....
     /// </summary>
@@ -989,7 +989,7 @@ internal class Resources {
             return ResourceManager.GetString("GORIMG_TEXT_SAVING", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to The source image &apos;{0}&apos; has multiple array indices and/or multiple mip map levels.
     ///
@@ -1000,7 +1000,7 @@ internal class Resources {
             return ResourceManager.GetString("GORIMG_TEXT_SRC_IMG_PICKER_DESC_ARRAY", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to The source image &apos;{0}&apos; has multiple depth slices and/or multiple mip map levels.
     ///
@@ -1011,7 +1011,7 @@ internal class Resources {
             return ResourceManager.GetString("GORIMG_TEXT_SRC_IMG_PICKER_DESC_DEPTH", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to Zoom: {0}.
     /// </summary>
@@ -1020,7 +1020,7 @@ internal class Resources {
             return ResourceManager.GetString("GORIMG_TEXT_ZOOM_BUTTON", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to [{0}] is disabled because the image width or height is not a multiple of 4..
     /// </summary>
@@ -1029,7 +1029,7 @@ internal class Resources {
             return ResourceManager.GetString("GORIMG_TIP_DISABLED_FORMAT", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to Image Type: {0}
     ///Size: {1}x{2}
@@ -1042,7 +1042,7 @@ internal class Resources {
             return ResourceManager.GetString("GORIMG_TIP_IMAGE2D", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to Image Type: {0}
     ///Size: {1}x{2}x{3}
@@ -1054,7 +1054,7 @@ internal class Resources {
             return ResourceManager.GetString("GORIMG_TIP_IMAGE3D", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to Image dimensions.
     /// </summary>
@@ -1063,7 +1063,7 @@ internal class Resources {
             return ResourceManager.GetString("GORIMG_UNDO_DESC_DIMENSIONS", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to Apply effects to image.
     /// </summary>
@@ -1072,7 +1072,7 @@ internal class Resources {
             return ResourceManager.GetString("GORIMG_UNDO_DESC_EFFECTS", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to Conversion to pixel format [{0}].
     /// </summary>
@@ -1081,7 +1081,7 @@ internal class Resources {
             return ResourceManager.GetString("GORIMG_UNDO_DESC_FORMAT_CONVERT", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to Image Type &apos;{0}&apos;.
     /// </summary>
@@ -1090,7 +1090,7 @@ internal class Resources {
             return ResourceManager.GetString("GORIMG_UNDO_DESC_IMAGE_TYPE", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to Import file &apos;{0}&apos;.
     /// </summary>
@@ -1099,7 +1099,7 @@ internal class Resources {
             return ResourceManager.GetString("GORIMG_UNDO_DESC_IMPORT", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to Import files..
     /// </summary>
@@ -1108,7 +1108,7 @@ internal class Resources {
             return ResourceManager.GetString("GORIMG_UNDO_DESC_IMPORT_SOURCE", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to Mipmap generation.
     /// </summary>
@@ -1117,7 +1117,7 @@ internal class Resources {
             return ResourceManager.GetString("GORIMG_UNDO_DESC_MIP_GEN", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to Set alpha value.
     /// </summary>
@@ -1126,7 +1126,7 @@ internal class Resources {
             return ResourceManager.GetString("GORIMG_UNDO_DESC_SET_ALPHA", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized resource of type System.Drawing.Bitmap.
     /// </summary>
@@ -1136,7 +1136,7 @@ internal class Resources {
             return ((System.Drawing.Bitmap)(obj));
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized resource of type System.Drawing.Bitmap.
     /// </summary>
@@ -1146,7 +1146,7 @@ internal class Resources {
             return ((System.Drawing.Bitmap)(obj));
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized resource of type System.Drawing.Bitmap.
     /// </summary>
@@ -1156,7 +1156,7 @@ internal class Resources {
             return ((System.Drawing.Bitmap)(obj));
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized resource of type System.Drawing.Bitmap.
     /// </summary>
@@ -1166,7 +1166,7 @@ internal class Resources {
             return ((System.Drawing.Bitmap)(obj));
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized resource of type System.Drawing.Bitmap.
     /// </summary>
@@ -1176,7 +1176,7 @@ internal class Resources {
             return ((System.Drawing.Bitmap)(obj));
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized resource of type System.Drawing.Bitmap.
     /// </summary>
@@ -1186,7 +1186,7 @@ internal class Resources {
             return ((System.Drawing.Bitmap)(obj));
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized resource of type System.Drawing.Bitmap.
     /// </summary>
@@ -1196,7 +1196,7 @@ internal class Resources {
             return ((System.Drawing.Bitmap)(obj));
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized resource of type System.Drawing.Bitmap.
     /// </summary>
@@ -1206,7 +1206,7 @@ internal class Resources {
             return ((System.Drawing.Bitmap)(obj));
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized resource of type System.Drawing.Bitmap.
     /// </summary>
@@ -1216,7 +1216,7 @@ internal class Resources {
             return ((System.Drawing.Bitmap)(obj));
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to // Shaders for image viewing.
     ///#GorgonInclude &quot;Gorgon2DShaders&quot;
@@ -1238,7 +1238,7 @@ internal class Resources {
             return ResourceManager.GetString("ImageViewShaders", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized resource of type System.Drawing.Bitmap.
     /// </summary>
@@ -1248,7 +1248,7 @@ internal class Resources {
             return ((System.Drawing.Bitmap)(obj));
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized resource of type System.Drawing.Bitmap.
     /// </summary>
@@ -1258,7 +1258,7 @@ internal class Resources {
             return ((System.Drawing.Bitmap)(obj));
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized resource of type System.Drawing.Bitmap.
     /// </summary>
@@ -1268,7 +1268,7 @@ internal class Resources {
             return ((System.Drawing.Bitmap)(obj));
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized resource of type System.Drawing.Bitmap.
     /// </summary>
@@ -1278,7 +1278,7 @@ internal class Resources {
             return ((System.Drawing.Bitmap)(obj));
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized resource of type System.Drawing.Bitmap.
     /// </summary>
@@ -1288,7 +1288,7 @@ internal class Resources {
             return ((System.Drawing.Bitmap)(obj));
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized resource of type System.Drawing.Bitmap.
     /// </summary>
@@ -1298,7 +1298,7 @@ internal class Resources {
             return ((System.Drawing.Bitmap)(obj));
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized resource of type System.Drawing.Bitmap.
     /// </summary>
@@ -1308,7 +1308,7 @@ internal class Resources {
             return ((System.Drawing.Bitmap)(obj));
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized resource of type System.Drawing.Bitmap.
     /// </summary>
@@ -1318,7 +1318,7 @@ internal class Resources {
             return ((System.Drawing.Bitmap)(obj));
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized resource of type System.Drawing.Bitmap.
     /// </summary>
@@ -1328,7 +1328,7 @@ internal class Resources {
             return ((System.Drawing.Bitmap)(obj));
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized resource of type System.Drawing.Bitmap.
     /// </summary>
@@ -1338,7 +1338,7 @@ internal class Resources {
             return ((System.Drawing.Bitmap)(obj));
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized resource of type System.Drawing.Bitmap.
     /// </summary>
@@ -1348,7 +1348,7 @@ internal class Resources {
             return ((System.Drawing.Bitmap)(obj));
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized resource of type System.Drawing.Bitmap.
     /// </summary>
@@ -1358,7 +1358,7 @@ internal class Resources {
             return ((System.Drawing.Bitmap)(obj));
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized resource of type System.Drawing.Bitmap.
     /// </summary>
@@ -1368,7 +1368,7 @@ internal class Resources {
             return ((System.Drawing.Bitmap)(obj));
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized resource of type System.Drawing.Bitmap.
     /// </summary>
@@ -1378,7 +1378,7 @@ internal class Resources {
             return ((System.Drawing.Bitmap)(obj));
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized resource of type System.Drawing.Bitmap.
     /// </summary>
@@ -1388,7 +1388,7 @@ internal class Resources {
             return ((System.Drawing.Bitmap)(obj));
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized resource of type System.Drawing.Bitmap.
     /// </summary>
@@ -1398,7 +1398,7 @@ internal class Resources {
             return ((System.Drawing.Bitmap)(obj));
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized resource of type System.Drawing.Bitmap.
     /// </summary>
@@ -1408,7 +1408,7 @@ internal class Resources {
             return ((System.Drawing.Bitmap)(obj));
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized resource of type System.Drawing.Bitmap.
     /// </summary>
@@ -1418,7 +1418,7 @@ internal class Resources {
             return ((System.Drawing.Bitmap)(obj));
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized resource of type System.Drawing.Bitmap.
     /// </summary>
@@ -1428,7 +1428,7 @@ internal class Resources {
             return ((System.Drawing.Bitmap)(obj));
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized resource of type System.Drawing.Bitmap.
     /// </summary>
@@ -1438,7 +1438,7 @@ internal class Resources {
             return ((System.Drawing.Bitmap)(obj));
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized resource of type System.Drawing.Bitmap.
     /// </summary>
@@ -1448,7 +1448,7 @@ internal class Resources {
             return ((System.Drawing.Bitmap)(obj));
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized resource of type System.Drawing.Bitmap.
     /// </summary>
@@ -1458,7 +1458,7 @@ internal class Resources {
             return ((System.Drawing.Bitmap)(obj));
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized resource of type System.Drawing.Bitmap.
     /// </summary>
@@ -1468,7 +1468,7 @@ internal class Resources {
             return ((System.Drawing.Bitmap)(obj));
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized resource of type System.Drawing.Bitmap.
     /// </summary>
@@ -1478,7 +1478,7 @@ internal class Resources {
             return ((System.Drawing.Bitmap)(obj));
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized resource of type System.Drawing.Bitmap.
     /// </summary>
@@ -1488,7 +1488,7 @@ internal class Resources {
             return ((System.Drawing.Bitmap)(obj));
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized resource of type System.Drawing.Bitmap.
     /// </summary>
@@ -1498,7 +1498,7 @@ internal class Resources {
             return ((System.Drawing.Bitmap)(obj));
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to // Our default texture and sampler.
     ///Texture3D _volumeTexture : register(t0);
@@ -1526,7 +1526,7 @@ internal class Resources {
             return ResourceManager.GetString("VolumeRenderShaders", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized resource of type System.Drawing.Bitmap.
     /// </summary>
@@ -1536,7 +1536,7 @@ internal class Resources {
             return ((System.Drawing.Bitmap)(obj));
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized resource of type System.Drawing.Bitmap.
     /// </summary>

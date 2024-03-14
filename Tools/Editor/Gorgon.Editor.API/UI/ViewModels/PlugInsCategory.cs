@@ -95,7 +95,7 @@ public abstract class PlugInsCategory<T>
             {
                 return;
             }
-            
+
             HostServices.ContentPlugInService.WriteContentSettings(SettingsFileName, settingsData);
         }
         catch (Exception ex)

@@ -23,15 +23,15 @@ using System;
 [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
 [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
 internal class Resources {
-    
+
     private static global::System.Resources.ResourceManager resourceMan;
-    
+
     private static global::System.Globalization.CultureInfo resourceCulture;
-    
+
     [global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
     internal Resources() {
     }
-    
+
     /// <summary>
     ///   Returns the cached ResourceManager instance used by this class.
     /// </summary>
@@ -45,7 +45,7 @@ internal class Resources {
             return resourceMan;
         }
     }
-    
+
     /// <summary>
     ///   Overrides the current thread's CurrentUICulture property for all
     ///   resource lookups using this strongly typed resource class.
@@ -59,7 +59,7 @@ internal class Resources {
             resourceCulture = value;
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to Windows Bitmap.
     /// </summary>
@@ -68,7 +68,7 @@ internal class Resources {
             return ResourceManager.GetString("GORIMG_DESC_BMP_CODEC", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to Direct Draw Surface.
     /// </summary>
@@ -77,7 +77,7 @@ internal class Resources {
             return ResourceManager.GetString("GORIMG_DESC_DDS_CODEC", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to Graphics Interchange Format.
     /// </summary>
@@ -86,7 +86,7 @@ internal class Resources {
             return ResourceManager.GetString("GORIMG_DESC_GIF_CODEC", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to Joint photographics experts group.
     /// </summary>
@@ -95,7 +95,7 @@ internal class Resources {
             return ResourceManager.GetString("GORIMG_DESC_JPG_CODEC", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to Portable Network Graphics.
     /// </summary>
@@ -104,7 +104,7 @@ internal class Resources {
             return ResourceManager.GetString("GORIMG_DESC_PNG_CODEC", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to Truevision Targa.
     /// </summary>
@@ -113,7 +113,7 @@ internal class Resources {
             return ResourceManager.GetString("GORIMG_DESC_TGA_CODEC", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to The image is already being edited. Call EndUpdate before calling BeginUpdate to edit the image..
     /// </summary>
@@ -122,7 +122,7 @@ internal class Resources {
             return ResourceManager.GetString("GORIMG_ERR_ALREADY_EDITING", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to The size of the bitmap ({0}x{1}) is not the same as the buffer ({2}x{3})..
     /// </summary>
@@ -131,7 +131,7 @@ internal class Resources {
             return ResourceManager.GetString("GORIMG_ERR_BITMAP_SIZE_NOT_CORRECT", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to The buffer formats must be same: [{0}]..
     /// </summary>
@@ -140,7 +140,7 @@ internal class Resources {
             return ResourceManager.GetString("GORIMG_ERR_BUFFER_FORMAT_MISMATCH", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to The codec &apos;{0}&apos; was not found in the plug in..
     /// </summary>
@@ -149,7 +149,7 @@ internal class Resources {
             return ResourceManager.GetString("GORIMG_ERR_CODEC_NOT_IN_PLUGIN", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to The compressed image with and height must be a multiple of 4.
     ///Current width and height: {0}x{1}.
@@ -159,7 +159,7 @@ internal class Resources {
             return ResourceManager.GetString("GORIMG_ERR_COMPRESSED_SIZE_INCORRECT", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to The file data stored in the stream is not a &apos;{0}&apos; file..
     /// </summary>
@@ -168,7 +168,7 @@ internal class Resources {
             return ResourceManager.GetString("GORIMG_ERR_FILE_FORMAT_NOT_CORRECT", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to The format supplied, [{0}], is not a 16 bits per pixel format..
     /// </summary>
@@ -177,7 +177,7 @@ internal class Resources {
             return ResourceManager.GetString("GORIMG_ERR_FORMAT_IS_NOT_16BPP", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to The image format [{0}] is not supported..
     /// </summary>
@@ -186,7 +186,7 @@ internal class Resources {
             return ResourceManager.GetString("GORIMG_ERR_FORMAT_NOT_SUPPORTED", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to The size of the image data in the stream must be at least 1 byte..
     /// </summary>
@@ -195,7 +195,7 @@ internal class Resources {
             return ResourceManager.GetString("GORIMG_ERR_IMAGE_BYTE_LENGTH_TOO_SHORT", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to The image depth must be at least 1 pixel..
     /// </summary>
@@ -204,7 +204,7 @@ internal class Resources {
             return ResourceManager.GetString("GORIMG_ERR_IMAGE_DEPTH_TOO_SMALL", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to The image height must be at least 1 pixel..
     /// </summary>
@@ -213,7 +213,7 @@ internal class Resources {
             return ResourceManager.GetString("GORIMG_ERR_IMAGE_HEIGHT_TOO_SMALL", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to The calculated size if the image ({0} bytes) is larger than the amount of data available ({1} bytes).
     ///This could lead to a buffer overrun..
@@ -223,7 +223,7 @@ internal class Resources {
             return ResourceManager.GetString("GORIMG_ERR_IMAGE_SIZE_MISMATCH", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to The image width must be at least 1 pixel..
     /// </summary>
@@ -232,7 +232,7 @@ internal class Resources {
             return ResourceManager.GetString("GORIMG_ERR_IMAGE_WIDTH_TOO_SMALL", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to The value must be between {0} and {1}..
     /// </summary>
@@ -241,7 +241,7 @@ internal class Resources {
             return ResourceManager.GetString("GORIMG_ERR_INDEX_OUT_OF_RANGE", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to The block count must be larger than 0..
     /// </summary>
@@ -250,7 +250,7 @@ internal class Resources {
             return ResourceManager.GetString("GORIMG_ERR_MISSING_BLOCK_COUNT", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to The steam is not seekable..
     /// </summary>
@@ -259,7 +259,7 @@ internal class Resources {
             return ResourceManager.GetString("GORIMG_ERR_STREAM_CANNOT_SEEK", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to The stream is read only..
     /// </summary>
@@ -268,7 +268,7 @@ internal class Resources {
             return ResourceManager.GetString("GORIMG_ERR_STREAM_IS_READONLY", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to The stream is write only..
     /// </summary>
@@ -277,7 +277,7 @@ internal class Resources {
             return ResourceManager.GetString("GORIMG_ERR_STREAM_IS_WRITEONLY", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to This codec does not support TGA files encoded using 2 or 4 way interleaving, or color mapped data..
     /// </summary>
@@ -286,7 +286,7 @@ internal class Resources {
             return ResourceManager.GetString("GORIMG_ERR_TGA_TYPE_NOT_SUPPORTED", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to Alpha value threshold for transparency.
     ///
@@ -299,7 +299,7 @@ internal class Resources {
             return ResourceManager.GetString("GORIMG_OPT_GIF_ALPHA_THRESHOLD", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to Image quality.
     ///
@@ -312,7 +312,7 @@ internal class Resources {
             return ResourceManager.GetString("GORIMG_OPT_JPG_QUALITY", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to Scanline fitering type.
     ///
@@ -323,7 +323,7 @@ internal class Resources {
             return ResourceManager.GetString("GORIMG_OPT_PNG_FILTERING", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to Use interlacing
     ///
@@ -334,7 +334,7 @@ internal class Resources {
             return ResourceManager.GetString("GORIMG_OPT_PNG_INTERLACED", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to Read all frames as image array.
     ///
@@ -345,7 +345,7 @@ internal class Resources {
             return ResourceManager.GetString("GORIMG_OPT_READ_ALL_FRAMES", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to Save all frames as image array.
     ///
@@ -356,7 +356,7 @@ internal class Resources {
             return ResourceManager.GetString("GORIMG_OPT_SAVE_ALL_FRAMES", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to Force opaque when image is transparent.
     ///
@@ -369,7 +369,7 @@ internal class Resources {
             return ResourceManager.GetString("GORIMG_OPT_TGA_SETZEROALPHA_OPAQUE", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to Dithering type.
     ///
@@ -380,7 +380,7 @@ internal class Resources {
             return ResourceManager.GetString("GORIMG_OPT_WIC_DITHERING", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to Horizontal DPI.
     /// </summary>
@@ -389,7 +389,7 @@ internal class Resources {
             return ResourceManager.GetString("GORIMG_OPT_WIC_DPIX", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to Vertical DPI.
     /// </summary>
@@ -398,7 +398,7 @@ internal class Resources {
             return ResourceManager.GetString("GORIMG_OPT_WIC_DPIY", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to Image pitch information.  Width={0} bytes, Size={1} bytes..
     /// </summary>
@@ -407,7 +407,7 @@ internal class Resources {
             return ResourceManager.GetString("GORIMG_TOSTR_FMTPITCH", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to Image pitch information.  Width={0} bytes, Size={1} bytes.  Format is compressed. Block count width: {2}, Block count height: {3}.
     /// </summary>
@@ -416,7 +416,7 @@ internal class Resources {
             return ResourceManager.GetString("GORIMG_TOSTR_FMTPITCH_COMPRESSED", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to Gorgon {0} Image Codec.
     /// </summary>
@@ -425,7 +425,7 @@ internal class Resources {
             return ResourceManager.GetString("GORIMG_TOSTR_IMAGE_CODEC", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to Gorgon Image Codec {0} ({1}).
     /// </summary>

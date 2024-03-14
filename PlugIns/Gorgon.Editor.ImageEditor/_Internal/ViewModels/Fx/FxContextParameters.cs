@@ -45,7 +45,7 @@ internal class FxContextParameters
     {
         get;
     }
-    
+
     /// <summary>
     /// Property to return the settings for the blur effect.
     /// </summary>
@@ -93,7 +93,7 @@ internal class FxContextParameters
     {
         get;
     }
-    
+
     /// <summary>
     /// Property to return the service used to apply effects and generate previews for effects.
     /// </summary>

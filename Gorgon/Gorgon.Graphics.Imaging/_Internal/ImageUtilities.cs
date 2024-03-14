@@ -1059,7 +1059,7 @@ static class ImageUtilities
                 {
                     var srcPtr = (DX.Half*)src;
                     var destPtr = (DX.Half*)dest;
-                    
+
                     for (int i = 0; i < size; i += 8)
                     {
                         DX.Half srcAlpha = (*(srcPtr + 3));

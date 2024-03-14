@@ -40,88 +40,88 @@ namespace Gorgon.Editor.TextureAtlasTool;
 /// The renderer used to draw the texture and sprites.
 /// </summary>
 internal class Renderer
-		: DefaultToolRenderer<ITextureAtlas>
-	{
-		#region Variables.
-		// The camera used to render.
-		private GorgonOrthoCamera _camera;
-		// The sprite used to display the texture.
-		private GorgonSprite _textureSprite;
-		#endregion
+        : DefaultToolRenderer<ITextureAtlas>
+    {
+        #region Variables.
+        // The camera used to render.
+        private GorgonOrthoCamera _camera;
+        // The sprite used to display the texture.
+        private GorgonSprite _textureSprite;
+        #endregion
 
-		#region Methods.
-		/// <summary>
-		/// Function to draw a message on the screen when no atlas is loaded.
-		/// </summary>
-		private void DrawMessage()
-		{
-			DX.Size2F textSize = Resources.GORTAG_TEXT_NO_ATLAS.MeasureText(Renderer.DefaultFont, false);
+        #region Methods.
+        /// <summary>
+        /// Function to draw a message on the screen when no atlas is loaded.
+        /// </summary>
+        private void DrawMessage()
+        {
+            DX.Size2F textSize = Resources.GORTAG_TEXT_NO_ATLAS.MeasureText(Renderer.DefaultFont, false);
 
-			Renderer.Begin(camera: _camera);
-			Renderer.DrawFilledRectangle(new DX.RectangleF(-MainRenderTarget.Width * 0.5f, -MainRenderTarget.Height * 0.5f, MainRenderTarget.Width, MainRenderTarget.Height), new GorgonColor(GorgonColor.White, 0.75f));
-			Renderer.DrawString(Resources.GORTAG_TEXT_NO_ATLAS, new Vector2((int)(-textSize.Width * 0.5f), (int)(-textSize.Height * 0.5f)), color: GorgonColor.Black);
-			Renderer.End();
-		}
+            Renderer.Begin(camera: _camera);
+            Renderer.DrawFilledRectangle(new DX.RectangleF(-MainRenderTarget.Width * 0.5f, -MainRenderTarget.Height * 0.5f, MainRenderTarget.Width, MainRenderTarget.Height), new GorgonColor(GorgonColor.White, 0.75f));
+            Renderer.DrawString(Resources.GORTAG_TEXT_NO_ATLAS, new Vector2((int)(-textSize.Width * 0.5f), (int)(-textSize.Height * 0.5f)), color: GorgonColor.Black);
+            Renderer.End();
+        }
 
-		/// <summary>Function to render the content.</summary>
-		/// <remarks>This is the method that developers should override in order to draw their content to the view.</remarks>
-		protected override void OnRenderContent()
-		{            
-			OnRenderBackground();
+        /// <summary>Function to render the content.</summary>
+        /// <remarks>This is the method that developers should override in order to draw their content to the view.</remarks>
+        protected override void OnRenderContent()
+        {            
+            OnRenderBackground();
 
-			if ((DataContext.Atlas is null) || (DataContext.Atlas.Textures.Count == 0))
-			{
-				DrawMessage();
-				return;
-			}
+            if ((DataContext.Atlas is null) || (DataContext.Atlas.Textures.Count == 0))
+            {
+                DrawMessage();
+                return;
+            }
 
-			GorgonTexture2DView texture = _textureSprite.Texture = DataContext.Atlas.Textures[DataContext.PreviewTextureIndex];
+            GorgonTexture2DView texture = _textureSprite.Texture = DataContext.Atlas.Textures[DataContext.PreviewTextureIndex];
 
-			float scale = CalculateScaling(new DX.Size2F(texture.Width + 8, texture.Height + 8), new DX.Size2F(MainRenderTarget.Width, MainRenderTarget.Height));
-			_textureSprite.Size = new DX.Size2F(scale * texture.Width, scale * texture.Height).Truncate();
-			_textureSprite.Position = new Vector2(-_textureSprite.Size.Width * 0.5f, -_textureSprite.Size.Height * 0.5f).Truncate();
+            float scale = CalculateScaling(new DX.Size2F(texture.Width + 8, texture.Height + 8), new DX.Size2F(MainRenderTarget.Width, MainRenderTarget.Height));
+            _textureSprite.Size = new DX.Size2F(scale * texture.Width, scale * texture.Height).Truncate();
+            _textureSprite.Position = new Vector2(-_textureSprite.Size.Width * 0.5f, -_textureSprite.Size.Height * 0.5f).Truncate();
 
-			Renderer.Begin(camera: _camera);
-			_textureSprite.TextureArrayIndex = DataContext.PreviewArrayIndex;
-			Renderer.DrawSprite(_textureSprite);
+            Renderer.Begin(camera: _camera);
+            _textureSprite.TextureArrayIndex = DataContext.PreviewArrayIndex;
+            Renderer.DrawSprite(_textureSprite);
 
-			Renderer.End();
-		}
+            Renderer.End();
+        }
 
-		/// <summary>Function called when the renderer needs to load any resource data.</summary>
-		/// <remarks>
-		/// Developers can override this method to set up their own resources specific to their renderer. Any resources set up in this method should be cleaned up in the associated
-		/// <see cref="DefaultToolRenderer{T}.OnUnload"/> method.
-		/// </remarks>
-		protected override void OnLoad() 
-		{
-			base.OnLoad();
+        /// <summary>Function called when the renderer needs to load any resource data.</summary>
+        /// <remarks>
+        /// Developers can override this method to set up their own resources specific to their renderer. Any resources set up in this method should be cleaned up in the associated
+        /// <see cref="DefaultToolRenderer{T}.OnUnload"/> method.
+        /// </remarks>
+        protected override void OnLoad() 
+        {
+            base.OnLoad();
 
-			_camera = new GorgonOrthoCamera(Graphics, new DX.Size2F(MainRenderTarget.Width, MainRenderTarget.Height))
-			{
-				Anchor = new Vector2(0.5f, 0.5f)
-			};
+            _camera = new GorgonOrthoCamera(Graphics, new DX.Size2F(MainRenderTarget.Width, MainRenderTarget.Height))
+            {
+                Anchor = new Vector2(0.5f, 0.5f)
+            };
 
-			GorgonTexture2DView texture = (DataContext.Atlas is not null) && (DataContext.Atlas.Textures.Count > 0) ? DataContext.Atlas.Textures[0] : null;
+            GorgonTexture2DView texture = (DataContext.Atlas is not null) && (DataContext.Atlas.Textures.Count > 0) ? DataContext.Atlas.Textures[0] : null;
 
-			_textureSprite = new GorgonSprite
-			{
-				Texture = texture,
-				TextureRegion = new DX.RectangleF(0, 0, 1, 1),
-				Size = new DX.Size2F(texture is not null ? texture.Width : 1, texture is not null ? texture.Height : 1),
-				TextureSampler = GorgonSamplerState.PointFiltering
-			};
-		}
-		#endregion
+            _textureSprite = new GorgonSprite
+            {
+                Texture = texture,
+                TextureRegion = new DX.RectangleF(0, 0, 1, 1),
+                Size = new DX.Size2F(texture is not null ? texture.Width : 1, texture is not null ? texture.Height : 1),
+                TextureSampler = GorgonSamplerState.PointFiltering
+            };
+        }
+        #endregion
 
-		#region Constructor/Finalizer.
-		/// <summary>Initializes a new instance of the <see cref="Renderer"/> class.</summary>
-		/// <param name="renderer">The 2D renderer for the application.</param>
-		/// <param name="swapChain">The swap chain bound to the window.</param>
-		/// <param name="dataContext">The data context for the renderer.</param>
-		public Renderer(Gorgon2D renderer, GorgonSwapChain swapChain, ITextureAtlas dataContext)
-			: base("Atlas Renderer", renderer, swapChain, dataContext)
-		{
-		}
-		#endregion
-	}
+        #region Constructor/Finalizer.
+        /// <summary>Initializes a new instance of the <see cref="Renderer"/> class.</summary>
+        /// <param name="renderer">The 2D renderer for the application.</param>
+        /// <param name="swapChain">The swap chain bound to the window.</param>
+        /// <param name="dataContext">The data context for the renderer.</param>
+        public Renderer(Gorgon2D renderer, GorgonSwapChain swapChain, ITextureAtlas dataContext)
+            : base("Atlas Renderer", renderer, swapChain, dataContext)
+        {
+        }
+        #endregion
+    }

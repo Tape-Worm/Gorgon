@@ -110,7 +110,7 @@ internal static class Win32API
     /// Indicates if the current OS version matches, or is greater than, Windows 10 with the specified build number.
     /// </summary>
     /// <returns><b>true</b> if the current OS version matches, or is greater than Windows 10 with the specified build number; otherwise <b>false</b>.</returns>
-	    public static bool IsWindows10OrGreater(int build) => IsWindowsVersionOrGreater(10, 0, (uint)build, null);
+        public static bool IsWindows10OrGreater(int build) => IsWindowsVersionOrGreater(10, 0, (uint)build, null);
 
     /// <summary>
     /// Function to retrieve the nearest monitor to the window.

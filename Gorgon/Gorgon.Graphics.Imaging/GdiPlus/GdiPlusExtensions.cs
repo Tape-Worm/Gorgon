@@ -44,7 +44,7 @@ public static class GdiPlusExtensions
     /// </summary>
     /// <param name="bitmapLock">The lock on the bitmap to transfer from.</param>
     /// <param name="buffer">The buffer to transfer into.</param>
-	    private static void Transfer32Argb(BitmapData bitmapLock, IGorgonImageBuffer buffer)
+        private static void Transfer32Argb(BitmapData bitmapLock, IGorgonImageBuffer buffer)
     {
         unsafe
         {
@@ -178,7 +178,7 @@ public static class GdiPlusExtensions
     /// If the source <paramref name="buffer"/> does not support any of the formats on the lists, then an exception will be thrown.
     /// </para>
     /// </remarks>
-	    public static Bitmap ToBitmap(this IGorgonImageBuffer buffer)
+        public static Bitmap ToBitmap(this IGorgonImageBuffer buffer)
     {
         if (buffer is null)
         {
@@ -315,7 +315,7 @@ public static class GdiPlusExtensions
     /// If the source <paramref name="buffer"/> does not support any of the formats on the lists, then an exception will be thrown.
     /// </para>
     /// </remarks>
-	    public static void CopyTo(this IGorgonImageBuffer buffer, Bitmap bitmap)
+        public static void CopyTo(this IGorgonImageBuffer buffer, Bitmap bitmap)
     {
         if (buffer is null)
         {
@@ -430,7 +430,7 @@ public static class GdiPlusExtensions
     /// If the source <paramref name="buffer"/> does not support any of the formats on the lists, then an exception will be thrown.
     /// </para>
     /// </remarks>
-	    public static void CopyTo(this Bitmap bitmap, IGorgonImageBuffer buffer)
+        public static void CopyTo(this Bitmap bitmap, IGorgonImageBuffer buffer)
     {
         if (bitmap is null)
         {

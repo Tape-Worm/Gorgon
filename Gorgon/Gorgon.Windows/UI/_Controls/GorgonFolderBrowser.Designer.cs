@@ -28,244 +28,328 @@ partial class GorgonFolderBrowser
     /// </summary>
     private void InitializeComponent()
     {
-        this.components = new System.ComponentModel.Container();
-        System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(GorgonFolderBrowser));
-        this.LabelHeader = new System.Windows.Forms.Label();
-        this.ListDirectories = new System.Windows.Forms.ListView();
-        this.ColumnDirectoryName = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-        this.ColumnDirectoryDate = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-        this.ColumnSize = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-        this.Images = new System.Windows.Forms.ImageList(this.components);
-        this.PanelCaption = new System.Windows.Forms.Panel();
-        this.ButtonAddDir = new System.Windows.Forms.Button();
-        this.ButtonDeleteDir = new System.Windows.Forms.Button();
-        this.PanelDirectories = new System.Windows.Forms.Panel();
-        this.PanelError = new System.Windows.Forms.Panel();
-        this.LabelError = new System.Windows.Forms.Label();
-        this.panel5 = new System.Windows.Forms.Panel();
-        this.ButtonClose = new System.Windows.Forms.Button();
-        this.LabelErrorIcon = new System.Windows.Forms.Label();
-        this.PanelDirectoryName = new System.Windows.Forms.Panel();
-        this.PanelBackground = new System.Windows.Forms.Panel();
-        this.ButtonDirUp = new System.Windows.Forms.Button();
-        this.TextDirectory = new System.Windows.Forms.TextBox();
-        this.Tip = new System.Windows.Forms.ToolTip(this.components);
-        this.DefaultImages = new System.Windows.Forms.ImageList(this.components);
-        this.PanelCaption.SuspendLayout();
-        this.PanelDirectories.SuspendLayout();
-        this.PanelError.SuspendLayout();
-        this.panel5.SuspendLayout();
-        this.PanelDirectoryName.SuspendLayout();
-        this.PanelBackground.SuspendLayout();
-        this.SuspendLayout();
+        components = new System.ComponentModel.Container();
+        var listViewItem1 = new System.Windows.Forms.ListViewItem(new string[] { "a" }, "folder_documents_48x48.png", System.Drawing.Color.FromArgb(64, 64, 64), System.Drawing.Color.White, new System.Drawing.Font("Segoe UI", 9F));
+        var listViewItem2 = new System.Windows.Forms.ListViewItem(new string[] { "b" }, "folder_documents_48x48.png", System.Drawing.Color.FromArgb(64, 64, 64), System.Drawing.Color.White, new System.Drawing.Font("Segoe UI", 9F));
+        var listViewItem3 = new System.Windows.Forms.ListViewItem(new string[] { "c" }, "folder_documents_48x48.png", System.Drawing.Color.FromArgb(64, 64, 64), System.Drawing.Color.White, new System.Drawing.Font("Segoe UI", 9F));
+        var listViewItem4 = new System.Windows.Forms.ListViewItem(new string[] { "d" }, "folder_documents_48x48.png", System.Drawing.Color.FromArgb(64, 64, 64), System.Drawing.Color.White, new System.Drawing.Font("Segoe UI", 9F));
+        LabelHeader = new System.Windows.Forms.Label();
+        ListDirectories = new System.Windows.Forms.ListView();
+        ColumnDirectoryName = new System.Windows.Forms.ColumnHeader();
+        ColumnDirectoryDate = new System.Windows.Forms.ColumnHeader();
+        ColumnSize = new System.Windows.Forms.ColumnHeader();
+        Images = new System.Windows.Forms.ImageList(components);
+        PanelCaption = new System.Windows.Forms.Panel();
+        ButtonAddDir = new System.Windows.Forms.Button();
+        ButtonDeleteDir = new System.Windows.Forms.Button();
+        PanelDirectories = new System.Windows.Forms.Panel();
+        PanelError = new System.Windows.Forms.Panel();
+        LabelError = new System.Windows.Forms.Label();
+        panel5 = new System.Windows.Forms.Panel();
+        ButtonClose = new System.Windows.Forms.Button();
+        LabelErrorIcon = new System.Windows.Forms.Label();
+        PanelDirectoryName = new System.Windows.Forms.Panel();
+        PanelBackground = new System.Windows.Forms.Panel();
+        ButtonDirUp = new System.Windows.Forms.Button();
+        TextDirectory = new System.Windows.Forms.TextBox();
+        Tip = new System.Windows.Forms.ToolTip(components);
+        DefaultImages = new System.Windows.Forms.ImageList(components);
+        PanelCaption.SuspendLayout();
+        PanelDirectories.SuspendLayout();
+        PanelError.SuspendLayout();
+        panel5.SuspendLayout();
+        PanelDirectoryName.SuspendLayout();
+        PanelBackground.SuspendLayout();
+        SuspendLayout();
         // 
         // LabelHeader
         // 
-        resources.ApplyResources(this.LabelHeader, "LabelHeader");
-        this.LabelHeader.Name = "LabelHeader";
+        LabelHeader.AutoSize = true;
+        LabelHeader.Dock = System.Windows.Forms.DockStyle.Top;
+        LabelHeader.Location = new System.Drawing.Point(0, 0);
+        LabelHeader.Name = "LabelHeader";
+        LabelHeader.Padding = new System.Windows.Forms.Padding(0, 5, 0, 5);
+        LabelHeader.Size = new System.Drawing.Size(84, 25);
+        LabelHeader.TabIndex = 0;
+        LabelHeader.Text = "Select a folder.";
         // 
         // ListDirectories
         // 
-        this.ListDirectories.BackColor = System.Drawing.Color.White;
-        this.ListDirectories.BorderStyle = System.Windows.Forms.BorderStyle.None;
-        this.ListDirectories.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
-        this.ColumnDirectoryName,
-        this.ColumnDirectoryDate,
-        this.ColumnSize});
-        resources.ApplyResources(this.ListDirectories, "ListDirectories");
-        this.ListDirectories.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
-        this.ListDirectories.FullRowSelect = true;
-        this.ListDirectories.HideSelection = false;
-        this.ListDirectories.Items.AddRange(new System.Windows.Forms.ListViewItem[] {
-        ((System.Windows.Forms.ListViewItem)(resources.GetObject("ListDirectories.Items"))),
-        ((System.Windows.Forms.ListViewItem)(resources.GetObject("ListDirectories.Items1"))),
-        ((System.Windows.Forms.ListViewItem)(resources.GetObject("ListDirectories.Items2"))),
-        ((System.Windows.Forms.ListViewItem)(resources.GetObject("ListDirectories.Items3")))});
-        this.ListDirectories.LabelEdit = true;
-        this.ListDirectories.LargeImageList = this.Images;
-        this.ListDirectories.MultiSelect = false;
-        this.ListDirectories.Name = "ListDirectories";
-        this.ListDirectories.SmallImageList = this.Images;
-        this.ListDirectories.UseCompatibleStateImageBehavior = false;
-        this.ListDirectories.View = System.Windows.Forms.View.Details;
-        this.ListDirectories.AfterLabelEdit += new System.Windows.Forms.LabelEditEventHandler(this.ListDirectories_AfterLabelEdit);
-        this.ListDirectories.BeforeLabelEdit += new System.Windows.Forms.LabelEditEventHandler(this.ListDirectories_BeforeLabelEdit);
-        this.ListDirectories.ColumnClick += new System.Windows.Forms.ColumnClickEventHandler(this.ListDirectories_ColumnClick);
-        this.ListDirectories.ItemSelectionChanged += new System.Windows.Forms.ListViewItemSelectionChangedEventHandler(this.ListDirectories_ItemSelectionChanged);
-        this.ListDirectories.DoubleClick += new System.EventHandler(this.ListDirectories_DoubleClick);
-        this.ListDirectories.KeyDown += new System.Windows.Forms.KeyEventHandler(this.ListDirectories_KeyDown);
-        this.ListDirectories.KeyUp += new System.Windows.Forms.KeyEventHandler(this.ListDirectories_KeyUp);
-        this.ListDirectories.MouseUp += new System.Windows.Forms.MouseEventHandler(this.ListDirectories_MouseUp);
+        ListDirectories.BackColor = System.Drawing.Color.White;
+        ListDirectories.BorderStyle = System.Windows.Forms.BorderStyle.None;
+        ListDirectories.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] { ColumnDirectoryName, ColumnDirectoryDate, ColumnSize });
+        ListDirectories.Dock = System.Windows.Forms.DockStyle.Fill;
+        ListDirectories.Font = new System.Drawing.Font("Segoe UI", 9F);
+        ListDirectories.ForeColor = System.Drawing.Color.FromArgb(64, 64, 64);
+        ListDirectories.FullRowSelect = true;
+        ListDirectories.Items.AddRange(new System.Windows.Forms.ListViewItem[] { listViewItem1, listViewItem2, listViewItem3, listViewItem4 });
+        ListDirectories.LabelEdit = true;
+        ListDirectories.LabelWrap = false;
+        ListDirectories.LargeImageList = Images;
+        ListDirectories.Location = new System.Drawing.Point(0, 0);
+        ListDirectories.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+        ListDirectories.MultiSelect = false;
+        ListDirectories.Name = "ListDirectories";
+        ListDirectories.Size = new System.Drawing.Size(640, 371);
+        ListDirectories.SmallImageList = Images;
+        ListDirectories.TabIndex = 1;
+        ListDirectories.UseCompatibleStateImageBehavior = false;
+        ListDirectories.View = System.Windows.Forms.View.Details;
+        ListDirectories.AfterLabelEdit += ListDirectories_AfterLabelEdit;
+        ListDirectories.BeforeLabelEdit += ListDirectories_BeforeLabelEdit;
+        ListDirectories.ColumnClick += ListDirectories_ColumnClick;
+        ListDirectories.ItemSelectionChanged += ListDirectories_ItemSelectionChanged;
+        ListDirectories.DoubleClick += ListDirectories_DoubleClick;
+        ListDirectories.KeyDown += ListDirectories_KeyDown;
+        ListDirectories.KeyUp += ListDirectories_KeyUp;
+        ListDirectories.MouseUp += ListDirectories_MouseUp;
         // 
         // ColumnDirectoryName
         // 
-        resources.ApplyResources(this.ColumnDirectoryName, "ColumnDirectoryName");
+        ColumnDirectoryName.Text = "Name";
+        ColumnDirectoryName.Width = 180;
         // 
         // ColumnDirectoryDate
         // 
-        resources.ApplyResources(this.ColumnDirectoryDate, "ColumnDirectoryDate");
+        ColumnDirectoryDate.Text = "Date";
         // 
         // ColumnSize
         // 
-        resources.ApplyResources(this.ColumnSize, "ColumnSize");
+        ColumnSize.Text = "Size";
         // 
         // Images
         // 
-        this.Images.ColorDepth = System.Windows.Forms.ColorDepth.Depth32Bit;
-        resources.ApplyResources(this.Images, "Images");
-        this.Images.TransparentColor = System.Drawing.Color.Transparent;
+        Images.ColorDepth = System.Windows.Forms.ColorDepth.Depth32Bit;
+        Images.ImageSize = new System.Drawing.Size(48, 48);
+        Images.TransparentColor = System.Drawing.Color.Transparent;
         // 
         // PanelCaption
         // 
-        resources.ApplyResources(this.PanelCaption, "PanelCaption");
-        this.PanelCaption.Controls.Add(this.ButtonAddDir);
-        this.PanelCaption.Controls.Add(this.ButtonDeleteDir);
-        this.PanelCaption.Controls.Add(this.LabelHeader);
-        this.PanelCaption.Name = "PanelCaption";
+        PanelCaption.AutoSize = true;
+        PanelCaption.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+        PanelCaption.Controls.Add(ButtonAddDir);
+        PanelCaption.Controls.Add(ButtonDeleteDir);
+        PanelCaption.Controls.Add(LabelHeader);
+        PanelCaption.Dock = System.Windows.Forms.DockStyle.Top;
+        PanelCaption.Font = new System.Drawing.Font("Segoe UI", 9F);
+        PanelCaption.Location = new System.Drawing.Point(0, 0);
+        PanelCaption.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+        PanelCaption.Name = "PanelCaption";
+        PanelCaption.Padding = new System.Windows.Forms.Padding(0, 0, 0, 1);
+        PanelCaption.Size = new System.Drawing.Size(640, 30);
+        PanelCaption.TabIndex = 2;
         // 
         // ButtonAddDir
         // 
-        resources.ApplyResources(this.ButtonAddDir, "ButtonAddDir");
-        this.ButtonAddDir.BackColor = System.Drawing.Color.Transparent;
-        this.ButtonAddDir.FlatAppearance.BorderSize = 0;
-        this.ButtonAddDir.FlatAppearance.MouseDownBackColor = System.Drawing.Color.DodgerBlue;
-        this.ButtonAddDir.FlatAppearance.MouseOverBackColor = System.Drawing.Color.SteelBlue;
-        this.ButtonAddDir.Image = global::Gorgon.Windows.Properties.Resources.add_24x24;
-        this.ButtonAddDir.Name = "ButtonAddDir";
-        this.Tip.SetToolTip(this.ButtonAddDir, resources.GetString("ButtonAddDir.ToolTip"));
-        this.ButtonAddDir.UseVisualStyleBackColor = false;
-        this.ButtonAddDir.Click += new System.EventHandler(this.ButtonAddDir_Click);
+        ButtonAddDir.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right;
+        ButtonAddDir.BackColor = System.Drawing.Color.Transparent;
+        ButtonAddDir.FlatAppearance.BorderSize = 0;
+        ButtonAddDir.FlatAppearance.MouseDownBackColor = System.Drawing.Color.DodgerBlue;
+        ButtonAddDir.FlatAppearance.MouseOverBackColor = System.Drawing.Color.SteelBlue;
+        ButtonAddDir.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+        ButtonAddDir.Image = Windows.Properties.Resources.add_24x24;
+        ButtonAddDir.ImeMode = System.Windows.Forms.ImeMode.NoControl;
+        ButtonAddDir.Location = new System.Drawing.Point(588, 0);
+        ButtonAddDir.Name = "ButtonAddDir";
+        ButtonAddDir.Size = new System.Drawing.Size(26, 26);
+        ButtonAddDir.TabIndex = 5;
+        Tip.SetToolTip(ButtonAddDir, "Add a new directory");
+        ButtonAddDir.UseVisualStyleBackColor = false;
+        ButtonAddDir.Click += ButtonAddDir_Click;
         // 
         // ButtonDeleteDir
         // 
-        resources.ApplyResources(this.ButtonDeleteDir, "ButtonDeleteDir");
-        this.ButtonDeleteDir.BackColor = System.Drawing.Color.Transparent;
-        this.ButtonDeleteDir.FlatAppearance.BorderSize = 0;
-        this.ButtonDeleteDir.FlatAppearance.MouseDownBackColor = System.Drawing.Color.DodgerBlue;
-        this.ButtonDeleteDir.FlatAppearance.MouseOverBackColor = System.Drawing.Color.SteelBlue;
-        this.ButtonDeleteDir.Image = global::Gorgon.Windows.Properties.Resources.remove_24x24;
-        this.ButtonDeleteDir.Name = "ButtonDeleteDir";
-        this.Tip.SetToolTip(this.ButtonDeleteDir, resources.GetString("ButtonDeleteDir.ToolTip"));
-        this.ButtonDeleteDir.UseVisualStyleBackColor = false;
-        this.ButtonDeleteDir.Click += new System.EventHandler(this.ButtonDeleteDir_Click);
+        ButtonDeleteDir.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right;
+        ButtonDeleteDir.BackColor = System.Drawing.Color.Transparent;
+        ButtonDeleteDir.FlatAppearance.BorderSize = 0;
+        ButtonDeleteDir.FlatAppearance.MouseDownBackColor = System.Drawing.Color.DodgerBlue;
+        ButtonDeleteDir.FlatAppearance.MouseOverBackColor = System.Drawing.Color.SteelBlue;
+        ButtonDeleteDir.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+        ButtonDeleteDir.Image = Windows.Properties.Resources.remove_24x24;
+        ButtonDeleteDir.ImeMode = System.Windows.Forms.ImeMode.NoControl;
+        ButtonDeleteDir.Location = new System.Drawing.Point(614, 0);
+        ButtonDeleteDir.Name = "ButtonDeleteDir";
+        ButtonDeleteDir.Size = new System.Drawing.Size(26, 26);
+        ButtonDeleteDir.TabIndex = 4;
+        Tip.SetToolTip(ButtonDeleteDir, "Delete the selected directory.");
+        ButtonDeleteDir.UseVisualStyleBackColor = false;
+        ButtonDeleteDir.Click += ButtonDeleteDir_Click;
         // 
         // PanelDirectories
         // 
-        this.PanelDirectories.Controls.Add(this.PanelError);
-        this.PanelDirectories.Controls.Add(this.ListDirectories);
-        resources.ApplyResources(this.PanelDirectories, "PanelDirectories");
-        this.PanelDirectories.Name = "PanelDirectories";
+        PanelDirectories.Controls.Add(PanelError);
+        PanelDirectories.Controls.Add(ListDirectories);
+        PanelDirectories.Dock = System.Windows.Forms.DockStyle.Fill;
+        PanelDirectories.Location = new System.Drawing.Point(0, 54);
+        PanelDirectories.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+        PanelDirectories.Name = "PanelDirectories";
+        PanelDirectories.Size = new System.Drawing.Size(640, 371);
+        PanelDirectories.TabIndex = 3;
         // 
         // PanelError
         // 
-        resources.ApplyResources(this.PanelError, "PanelError");
-        this.PanelError.BackColor = System.Drawing.SystemColors.Info;
-        this.PanelError.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-        this.PanelError.Controls.Add(this.LabelError);
-        this.PanelError.Controls.Add(this.panel5);
-        this.PanelError.Controls.Add(this.LabelErrorIcon);
-        this.PanelError.ForeColor = System.Drawing.SystemColors.InfoText;
-        this.PanelError.Name = "PanelError";
+        PanelError.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right;
+        PanelError.AutoSize = true;
+        PanelError.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+        PanelError.BackColor = System.Drawing.SystemColors.Info;
+        PanelError.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+        PanelError.Controls.Add(LabelError);
+        PanelError.Controls.Add(panel5);
+        PanelError.Controls.Add(LabelErrorIcon);
+        PanelError.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
+        PanelError.ForeColor = System.Drawing.SystemColors.InfoText;
+        PanelError.Location = new System.Drawing.Point(334, 4);
+        PanelError.Margin = new System.Windows.Forms.Padding(2);
+        PanelError.MaximumSize = new System.Drawing.Size(281, 80);
+        PanelError.MinimumSize = new System.Drawing.Size(281, 40);
+        PanelError.Name = "PanelError";
+        PanelError.Size = new System.Drawing.Size(281, 40);
+        PanelError.TabIndex = 3;
+        PanelError.Visible = false;
         // 
         // LabelError
         // 
-        this.LabelError.AutoEllipsis = true;
-        resources.ApplyResources(this.LabelError, "LabelError");
-        this.LabelError.BackColor = System.Drawing.SystemColors.Info;
-        this.LabelError.ForeColor = System.Drawing.SystemColors.InfoText;
-        this.LabelError.Name = "LabelError";
+        LabelError.AutoEllipsis = true;
+        LabelError.AutoSize = true;
+        LabelError.BackColor = System.Drawing.SystemColors.Info;
+        LabelError.Dock = System.Windows.Forms.DockStyle.Fill;
+        LabelError.ForeColor = System.Drawing.SystemColors.InfoText;
+        LabelError.Location = new System.Drawing.Point(19, 0);
+        LabelError.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+        LabelError.MaximumSize = new System.Drawing.Size(245, 79);
+        LabelError.Name = "LabelError";
+        LabelError.Size = new System.Drawing.Size(0, 15);
+        LabelError.TabIndex = 2;
+        LabelError.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
         // 
         // panel5
         // 
-        this.panel5.Controls.Add(this.ButtonClose);
-        resources.ApplyResources(this.panel5, "panel5");
-        this.panel5.Name = "panel5";
+        panel5.Controls.Add(ButtonClose);
+        panel5.Dock = System.Windows.Forms.DockStyle.Right;
+        panel5.Location = new System.Drawing.Point(260, 0);
+        panel5.Margin = new System.Windows.Forms.Padding(2);
+        panel5.Name = "panel5";
+        panel5.Size = new System.Drawing.Size(19, 38);
+        panel5.TabIndex = 6;
         // 
         // ButtonClose
         // 
-        this.ButtonClose.BackColor = System.Drawing.SystemColors.Info;
-        resources.ApplyResources(this.ButtonClose, "ButtonClose");
-        this.ButtonClose.FlatAppearance.BorderSize = 0;
-        this.ButtonClose.FlatAppearance.MouseDownBackColor = System.Drawing.Color.Maroon;
-        this.ButtonClose.FlatAppearance.MouseOverBackColor = System.Drawing.Color.Red;
-        this.ButtonClose.ForeColor = System.Drawing.Color.Black;
-        this.ButtonClose.Name = "ButtonClose";
-        this.Tip.SetToolTip(this.ButtonClose, resources.GetString("ButtonClose.ToolTip"));
-        this.ButtonClose.UseVisualStyleBackColor = false;
-        this.ButtonClose.Click += new System.EventHandler(this.ButtonClose_Click);
+        ButtonClose.BackColor = System.Drawing.SystemColors.Info;
+        ButtonClose.Dock = System.Windows.Forms.DockStyle.Top;
+        ButtonClose.FlatAppearance.BorderSize = 0;
+        ButtonClose.FlatAppearance.MouseDownBackColor = System.Drawing.Color.Maroon;
+        ButtonClose.FlatAppearance.MouseOverBackColor = System.Drawing.Color.Red;
+        ButtonClose.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+        ButtonClose.Font = new System.Drawing.Font("Marlett", 9F);
+        ButtonClose.ForeColor = System.Drawing.Color.Black;
+        ButtonClose.ImeMode = System.Windows.Forms.ImeMode.NoControl;
+        ButtonClose.Location = new System.Drawing.Point(0, 0);
+        ButtonClose.Margin = new System.Windows.Forms.Padding(0);
+        ButtonClose.Name = "ButtonClose";
+        ButtonClose.Size = new System.Drawing.Size(19, 19);
+        ButtonClose.TabIndex = 4;
+        ButtonClose.Text = "r";
+        Tip.SetToolTip(ButtonClose, "Close the error message.");
+        ButtonClose.UseVisualStyleBackColor = false;
+        ButtonClose.Click += ButtonClose_Click;
         // 
         // LabelErrorIcon
         // 
-        this.LabelErrorIcon.BackColor = System.Drawing.SystemColors.Info;
-        resources.ApplyResources(this.LabelErrorIcon, "LabelErrorIcon");
-        this.LabelErrorIcon.Image = global::Gorgon.Windows.Properties.Resources.error_16x16;
-        this.LabelErrorIcon.Name = "LabelErrorIcon";
+        LabelErrorIcon.BackColor = System.Drawing.SystemColors.Info;
+        LabelErrorIcon.Dock = System.Windows.Forms.DockStyle.Left;
+        LabelErrorIcon.Image = Windows.Properties.Resources.error_16x16;
+        LabelErrorIcon.ImageAlign = System.Drawing.ContentAlignment.TopLeft;
+        LabelErrorIcon.Location = new System.Drawing.Point(0, 0);
+        LabelErrorIcon.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+        LabelErrorIcon.Name = "LabelErrorIcon";
+        LabelErrorIcon.Size = new System.Drawing.Size(19, 38);
+        LabelErrorIcon.TabIndex = 5;
         // 
         // PanelDirectoryName
         // 
-        resources.ApplyResources(this.PanelDirectoryName, "PanelDirectoryName");
-        this.PanelDirectoryName.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
-        this.PanelDirectoryName.Controls.Add(this.PanelBackground);
-        this.PanelDirectoryName.Name = "PanelDirectoryName";
+        PanelDirectoryName.AutoSize = true;
+        PanelDirectoryName.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+        PanelDirectoryName.BackColor = System.Drawing.Color.FromArgb(64, 64, 64);
+        PanelDirectoryName.Controls.Add(PanelBackground);
+        PanelDirectoryName.Dock = System.Windows.Forms.DockStyle.Top;
+        PanelDirectoryName.Location = new System.Drawing.Point(0, 30);
+        PanelDirectoryName.Name = "PanelDirectoryName";
+        PanelDirectoryName.Padding = new System.Windows.Forms.Padding(0, 1, 0, 1);
+        PanelDirectoryName.Size = new System.Drawing.Size(640, 24);
+        PanelDirectoryName.TabIndex = 4;
         // 
         // PanelBackground
         // 
-        resources.ApplyResources(this.PanelBackground, "PanelBackground");
-        this.PanelBackground.BackColor = System.Drawing.Color.White;
-        this.PanelBackground.Controls.Add(this.ButtonDirUp);
-        this.PanelBackground.Controls.Add(this.TextDirectory);
-        this.PanelBackground.Name = "PanelBackground";
+        PanelBackground.AutoSize = true;
+        PanelBackground.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+        PanelBackground.BackColor = System.Drawing.Color.White;
+        PanelBackground.Controls.Add(ButtonDirUp);
+        PanelBackground.Controls.Add(TextDirectory);
+        PanelBackground.Dock = System.Windows.Forms.DockStyle.Top;
+        PanelBackground.Location = new System.Drawing.Point(0, 1);
+        PanelBackground.Name = "PanelBackground";
+        PanelBackground.Size = new System.Drawing.Size(640, 22);
+        PanelBackground.TabIndex = 4;
         // 
         // ButtonDirUp
         // 
-        this.ButtonDirUp.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(204)))), ((int)(((byte)(204)))), ((int)(((byte)(204)))));
-        resources.ApplyResources(this.ButtonDirUp, "ButtonDirUp");
-        this.ButtonDirUp.FlatAppearance.BorderSize = 0;
-        this.ButtonDirUp.FlatAppearance.MouseDownBackColor = System.Drawing.Color.DodgerBlue;
-        this.ButtonDirUp.FlatAppearance.MouseOverBackColor = System.Drawing.Color.SteelBlue;
-        this.ButtonDirUp.Image = global::Gorgon.Windows.Properties.Resources.up_directory_16x16;
-        this.ButtonDirUp.Name = "ButtonDirUp";
-        this.Tip.SetToolTip(this.ButtonDirUp, resources.GetString("ButtonDirUp.ToolTip"));
-        this.ButtonDirUp.UseVisualStyleBackColor = false;
-        this.ButtonDirUp.Click += new System.EventHandler(this.ButtonDirUp_Click);
+        ButtonDirUp.BackColor = System.Drawing.Color.FromArgb(204, 204, 204);
+        ButtonDirUp.Dock = System.Windows.Forms.DockStyle.Right;
+        ButtonDirUp.FlatAppearance.BorderSize = 0;
+        ButtonDirUp.FlatAppearance.MouseDownBackColor = System.Drawing.Color.DodgerBlue;
+        ButtonDirUp.FlatAppearance.MouseOverBackColor = System.Drawing.Color.SteelBlue;
+        ButtonDirUp.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+        ButtonDirUp.Image = Windows.Properties.Resources.up_directory_16x16;
+        ButtonDirUp.Location = new System.Drawing.Point(614, 0);
+        ButtonDirUp.Name = "ButtonDirUp";
+        ButtonDirUp.Size = new System.Drawing.Size(26, 22);
+        ButtonDirUp.TabIndex = 3;
+        Tip.SetToolTip(ButtonDirUp, "Go up one directory level.");
+        ButtonDirUp.UseVisualStyleBackColor = false;
+        ButtonDirUp.Click += ButtonDirUp_Click;
         // 
         // TextDirectory
         // 
-        resources.ApplyResources(this.TextDirectory, "TextDirectory");
-        this.TextDirectory.BorderStyle = System.Windows.Forms.BorderStyle.None;
-        this.TextDirectory.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
-        this.TextDirectory.Name = "TextDirectory";
-        this.TextDirectory.KeyUp += new System.Windows.Forms.KeyEventHandler(this.TextDirectory_KeyUp);
+        TextDirectory.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
+        TextDirectory.BorderStyle = System.Windows.Forms.BorderStyle.None;
+        TextDirectory.ForeColor = System.Drawing.Color.FromArgb(64, 64, 64);
+        TextDirectory.Location = new System.Drawing.Point(0, 0);
+        TextDirectory.Margin = new System.Windows.Forms.Padding(3, 3, 0, 6);
+        TextDirectory.Name = "TextDirectory";
+        TextDirectory.Size = new System.Drawing.Size(615, 16);
+        TextDirectory.TabIndex = 2;
+        TextDirectory.KeyUp += TextDirectory_KeyUp;
         // 
         // DefaultImages
         // 
-        this.DefaultImages.ColorDepth = System.Windows.Forms.ColorDepth.Depth32Bit;
-        resources.ApplyResources(this.DefaultImages, "DefaultImages");
-        this.DefaultImages.TransparentColor = System.Drawing.Color.Transparent;
+        DefaultImages.ColorDepth = System.Windows.Forms.ColorDepth.Depth32Bit;
+        DefaultImages.ImageSize = new System.Drawing.Size(48, 48);
+        DefaultImages.TransparentColor = System.Drawing.Color.Transparent;
         // 
         // GorgonFolderBrowser
         // 
-        resources.ApplyResources(this, "$this");
-        this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
-        this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(204)))), ((int)(((byte)(204)))), ((int)(((byte)(204)))));
-        this.Controls.Add(this.PanelDirectories);
-        this.Controls.Add(this.PanelDirectoryName);
-        this.Controls.Add(this.PanelCaption);
-        this.Name = "GorgonFolderBrowser";
-        this.PanelCaption.ResumeLayout(false);
-        this.PanelCaption.PerformLayout();
-        this.PanelDirectories.ResumeLayout(false);
-        this.PanelDirectories.PerformLayout();
-        this.PanelError.ResumeLayout(false);
-        this.PanelError.PerformLayout();
-        this.panel5.ResumeLayout(false);
-        this.PanelDirectoryName.ResumeLayout(false);
-        this.PanelDirectoryName.PerformLayout();
-        this.PanelBackground.ResumeLayout(false);
-        this.PanelBackground.PerformLayout();
-        this.ResumeLayout(false);
-        this.PerformLayout();
-
+        AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
+        AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
+        BackColor = System.Drawing.Color.FromArgb(204, 204, 204);
+        Controls.Add(PanelDirectories);
+        Controls.Add(PanelDirectoryName);
+        Controls.Add(PanelCaption);
+        Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+        Name = "GorgonFolderBrowser";
+        Size = new System.Drawing.Size(640, 425);
+        PanelCaption.ResumeLayout(false);
+        PanelCaption.PerformLayout();
+        PanelDirectories.ResumeLayout(false);
+        PanelDirectories.PerformLayout();
+        PanelError.ResumeLayout(false);
+        PanelError.PerformLayout();
+        panel5.ResumeLayout(false);
+        PanelDirectoryName.ResumeLayout(false);
+        PanelDirectoryName.PerformLayout();
+        PanelBackground.ResumeLayout(false);
+        PanelBackground.PerformLayout();
+        ResumeLayout(false);
+        PerformLayout();
     }
 
     #endregion

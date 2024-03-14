@@ -155,7 +155,7 @@ internal class ComboFonts
             IEnumerable<string> items = Items.Cast<string>()
                                              .Where(item => !families.Any(subItem => string.Equals(subItem, item, StringComparison.CurrentCultureIgnoreCase)))
                                              .ToArray();
-            
+
             foreach (string item in items)
             {
                 Items.Remove(item);

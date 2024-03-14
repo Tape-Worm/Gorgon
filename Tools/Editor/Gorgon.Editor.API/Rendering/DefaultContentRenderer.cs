@@ -243,7 +243,7 @@ public class DefaultContentRenderer<T>
     /// </para>
     /// </remarks>
     protected virtual GorgonOrthoCamera Camera => _camera;
-    
+
     /// <summary>
     /// Property to return the primary render target.
     /// </summary>
@@ -486,7 +486,7 @@ public class DefaultContentRenderer<T>
         {
             return;
         }
-        
+
         _panDragStart = new Vector2(_mouseArgs.ClientPosition.X, _mouseArgs.ClientPosition.Y) / _camera.Zoom.X;
         _camDragStart = _camera.Position;
     }
@@ -846,7 +846,7 @@ public class DefaultContentRenderer<T>
     /// </remarks>
     protected virtual void OnPropertyChanged(string propertyName)
     {
-    
+
     }
 
     /// <summary>
@@ -872,7 +872,7 @@ public class DefaultContentRenderer<T>
     /// </remarks>
     protected virtual void OnMouseDown(MouseArgs args)
     {
-    
+
     }
 
     /// <summary>
@@ -978,7 +978,7 @@ public class DefaultContentRenderer<T>
     /// </remarks>
     protected virtual void OnLoad()
     {
-        
+
     }
 
     /// <summary>
@@ -1241,7 +1241,7 @@ public class DefaultContentRenderer<T>
 
         _swapChain.SwapChainResizing += SwapChain_BeforeSwapChainResized;
         _swapChain.SwapChainResized += SwapChain_AfterSwapChainResized;
-        
+
         _swapChain.Window.MouseMove += Window_MouseMove;
         _swapChain.Window.MouseWheel += Window_MouseWheel;
         _swapChain.Window.MouseDown += Window_MouseDown;

@@ -1161,11 +1161,11 @@ public sealed class GorgonTexture1D
     }
 
     /// <summary>
-		/// Function to convert this texture to a <see cref="IGorgonImage"/>.
-		/// </summary>
-		/// <returns>A new <see cref="IGorgonImage"/> containing the texture data.</returns>
-		/// <exception cref="GorgonException">Thrown when this texture has a <see cref="GorgonGraphicsResource.Usage"/> set to <see cref="ResourceUsage.Immutable"/>.</exception>
-		public IGorgonImage ToImage()
+        /// Function to convert this texture to a <see cref="IGorgonImage"/>.
+        /// </summary>
+        /// <returns>A new <see cref="IGorgonImage"/> containing the texture data.</returns>
+        /// <exception cref="GorgonException">Thrown when this texture has a <see cref="GorgonGraphicsResource.Usage"/> set to <see cref="ResourceUsage.Immutable"/>.</exception>
+        public IGorgonImage ToImage()
     {
         GorgonTexture1D stagingTexture = this;
         GorgonImage image = null;
@@ -1276,7 +1276,7 @@ public sealed class GorgonTexture1D
     /// are left at 0, then all array indices will be accessible. 
     /// </para>
     /// </remarks>
-	    public GorgonTexture1DView GetShaderResourceView(BufferFormat format = BufferFormat.Unknown, int firstMipLevel = 0, int mipCount = 0, int arrayIndex = 0, int arrayCount = 0)
+        public GorgonTexture1DView GetShaderResourceView(BufferFormat format = BufferFormat.Unknown, int firstMipLevel = 0, int mipCount = 0, int arrayIndex = 0, int arrayCount = 0)
     {
         if (format == BufferFormat.Unknown)
         {

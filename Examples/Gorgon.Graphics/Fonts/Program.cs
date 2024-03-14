@@ -125,7 +125,7 @@ static class Program
                 // Can't locate this one, move on...
                 continue;
             }
-            
+
             bool isExternal = Drawing.FontFamily.Families.All(item => !string.Equals(item.Name, fontFamily, StringComparison.InvariantCultureIgnoreCase));
             string fontName;
             int outlineSize = 0;

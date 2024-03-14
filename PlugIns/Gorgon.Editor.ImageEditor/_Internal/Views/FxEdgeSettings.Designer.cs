@@ -20,7 +20,7 @@ partial class FxEdgeSettings
 
         if (disposing)
         {
-            
+
         }
 
         base.Dispose(disposing);

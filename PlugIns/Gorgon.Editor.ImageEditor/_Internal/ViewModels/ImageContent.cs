@@ -873,7 +873,7 @@ internal class ImageContent
         {
             return false;
         }
-        
+
         IReadOnlyList<string> selectedFiles = ContentFileManager.GetSelectedFiles();
 
         return selectedFiles.Select(file => ContentFileManager.GetFile(file))
@@ -2153,7 +2153,7 @@ internal class ImageContent
             // Finally, write out the image data so the external image editor can have at it.
             string fileName = $"{File.Name}_extern_edit.png";
             workImageFile = _imageIO.SaveImageFile(fileName, workImage, workImage.Format, codec);
-                            
+
             workImage.Dispose();
 
             // Launch the editor.                
@@ -2264,7 +2264,7 @@ internal class ImageContent
                        .ConvertToFormat(ImageData.Format)
                        .EndUpdate();
         });
-        
+
         ImportImageData(Path.GetFileName(importItem.OriginalFilePath), importImage, CropResizeMode.None, Alignment.UpperLeft, ImageFilter.Point, false);
         HideWaitPanel();
 
@@ -3138,7 +3138,7 @@ internal class ImageContent
         _videoAdapter = injectionParameters.VideoAdapterInfo;
         _externalEditor = injectionParameters.ExternalEditorService;
         _format = injectionParameters.OriginalFormat;
-        
+
         _cropResizeSettings.OkCommand = new EditorCommand<object>(DoCropResize, CanCropResize);
         _dimensionSettings.OkCommand = new EditorCommand<object>(DoUpdateImageDimensions, CanUpdateDimensions);
         _mipMapSettings.OkCommand = new EditorCommand<object>(DoGenMips, CanGenMips);

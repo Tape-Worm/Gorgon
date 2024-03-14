@@ -227,7 +227,7 @@ internal class FileIOService
                     IContentFile oldTextureFile = _fileSystem.GetFile(oldTexturePaths[0]);
                     spriteFile.UnlinkContent(oldTextureFile);
                 }                                       
-                
+
                 outStream = _fileSystem.OpenStream(spriteFile.Path, FileMode.Create);
                 _defaultSpriteCodec.Save(sprite, outStream);
                 outStream.Dispose();

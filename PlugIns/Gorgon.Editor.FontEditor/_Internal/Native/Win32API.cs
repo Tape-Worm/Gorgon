@@ -104,7 +104,7 @@ internal static class Win32API
     [DllImport("gdi32.dll", EntryPoint = "GetGlyphIndicesW")]
     private static extern uint GetGlyphIndices([In] IntPtr hdc, [In] [MarshalAs(UnmanagedType.LPTStr)] string lpsz, int c, [Out] ushort[] pgi, uint fl);
     // ReSharper restore InconsistentNaming
-    
+
     /// <summary>
     /// Function to build a list of unicode ranges.
     /// </summary>
@@ -239,7 +239,7 @@ internal static class Win32API
             ushort max = shortPtr2;
 
 
-                
+
             var value = new GorgonRange(min, max + min - 1);
 
             KeyValuePair<string, GorgonRange> rangeName = (from unicodeRange in _ranges

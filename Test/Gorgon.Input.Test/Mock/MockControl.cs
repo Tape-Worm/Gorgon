@@ -2,11 +2,11 @@
 
 namespace Gorgon.Input.Test.Mock
 {
-	public partial class MockControl : Form
-	{
-		public MockControl()
-		{
-			InitializeComponent();
-		}
-	}
+    public partial class MockControl : Form
+    {
+        public MockControl()
+        {
+            InitializeComponent();
+        }
+    }
 }

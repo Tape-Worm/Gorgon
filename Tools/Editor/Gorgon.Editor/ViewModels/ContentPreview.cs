@@ -254,7 +254,7 @@ internal class ContentPreview
         }
         finally
         {
-            
+
             IsLoading = false;
         }
     }
@@ -283,7 +283,7 @@ internal class ContentPreview
         {
             case nameof(IFileExplorer.SelectedFiles):
                 IContentFile file = null;
-                
+
                 if (_fileExplorer.SelectedFiles.Count > 0)
                 {
                     file = _contentFileManager.GetFile(_fileExplorer.SelectedFiles[^1].FullPath);                        
@@ -475,7 +475,7 @@ internal class ContentPreview
         {
             return;
         }
-        
+
         string path = _fileExplorer.SelectedFiles[0].FullPath;
 
         await LoadImagePreviewAsync(_contentFileManager.GetFile(path));

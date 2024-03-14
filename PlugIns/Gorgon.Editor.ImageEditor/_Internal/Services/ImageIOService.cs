@@ -394,7 +394,7 @@ internal class ImageIOService : IImageIOService
 
             return (image, workFile, originalInfo);
         }
-                    
+
         // We only need a single array index/depth slice/mip level, so strip those out.
         if ((image.ArrayCount > 1) || (image.Depth > 1) || (image.MipCount > 1))
         {

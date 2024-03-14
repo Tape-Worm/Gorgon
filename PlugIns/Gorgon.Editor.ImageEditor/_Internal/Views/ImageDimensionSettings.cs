@@ -45,7 +45,7 @@ internal partial class ImageDimensionSettings
     /// <summary>Property to return the data context assigned to this view.</summary>
     /// <value>The data context.</value>
     [Browsable(false)]
-    public IDimensionSettings DataContext
+    public IDimensionSettings ViewModel
     {
         get;
         private set;
@@ -60,7 +60,7 @@ internal partial class ImageDimensionSettings
     {
         ValidateOk();
 
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             RadioCrop.Enabled = RadioResize.Enabled = LabelImageFilter.Enabled =
                 ComboImageFilter.Enabled = LabelAnchor.Enabled = false;
@@ -109,12 +109,12 @@ internal partial class ImageDimensionSettings
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
     private void ComboImageFilter_SelectedValueChanged(object sender, EventArgs e)
     {
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             return;
         }
 
-        DataContext.ImageFilter = (ImageFilter)ComboImageFilter.SelectedItem;
+        ViewModel.ImageFilter = (ImageFilter)ComboImageFilter.SelectedItem;
     }
 
     /// <summary>Handles the Click event of the RadioCrop control.</summary>
@@ -122,12 +122,12 @@ internal partial class ImageDimensionSettings
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
     private void RadioCrop_Click(object sender, EventArgs e)
     {
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             return;
         }
 
-        DataContext.CurrentMode = CropResizeMode.Crop;
+        ViewModel.CurrentMode = CropResizeMode.Crop;
 
         ValidateControls();
     }
@@ -137,12 +137,12 @@ internal partial class ImageDimensionSettings
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
     private void RadioResize_Click(object sender, EventArgs e)
     {
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             return;
         }
 
-        DataContext.CurrentMode = CropResizeMode.Resize;
+        ViewModel.CurrentMode = CropResizeMode.Resize;
 
         ValidateControls();
     }
@@ -155,30 +155,30 @@ internal partial class ImageDimensionSettings
         switch (e.PropertyName)
         {
             case nameof(IDimensionSettings.CurrentMode):
-                RadioCrop.Checked = DataContext.CurrentMode is CropResizeMode.Crop or CropResizeMode.None;
+                RadioCrop.Checked = ViewModel.CurrentMode is CropResizeMode.Crop or CropResizeMode.None;
                 RadioResize.Checked = !RadioCrop.Checked;
                 break;
             case nameof(IDimensionSettings.HasDepth):
-                UpdateLabels(DataContext);
+                UpdateLabels(ViewModel);
                 break;
             case nameof(IDimensionSettings.MipSupport):
-                UpdateMipSupport(DataContext);
+                UpdateMipSupport(ViewModel);
                 break;
             case nameof(IDimensionSettings.Width):
             case nameof(IDimensionSettings.MaxWidth):
-                UpdateNumericUpDown(NumericWidth, DataContext.MaxWidth, DataContext.Width);
+                UpdateNumericUpDown(NumericWidth, ViewModel.MaxWidth, ViewModel.Width);
                 break;
             case nameof(IDimensionSettings.Height):
             case nameof(IDimensionSettings.MaxHeight):
-                UpdateNumericUpDown(NumericHeight, DataContext.MaxHeight, DataContext.Height);
+                UpdateNumericUpDown(NumericHeight, ViewModel.MaxHeight, ViewModel.Height);
                 break;
             case nameof(IDimensionSettings.MipLevels):
             case nameof(IDimensionSettings.MaxMipLevels):
-                UpdateNumericUpDown(NumericMipLevels, DataContext.MaxMipLevels, DataContext.MipLevels);
+                UpdateNumericUpDown(NumericMipLevels, ViewModel.MaxMipLevels, ViewModel.MipLevels);
                 break;
             case nameof(IDimensionSettings.DepthSlicesOrArrayIndices):
             case nameof(IDimensionSettings.MaxDepthOrArrayIndices):
-                UpdateNumericUpDown(NumericDepthOrArray, DataContext.MaxDepthOrArrayIndices, DataContext.DepthSlicesOrArrayIndices);
+                UpdateNumericUpDown(NumericDepthOrArray, ViewModel.MaxDepthOrArrayIndices, ViewModel.DepthSlicesOrArrayIndices);
                 break;
         }
 
@@ -190,12 +190,12 @@ internal partial class ImageDimensionSettings
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
     private void AlignmentPicker_AlignmentChanged(object sender, EventArgs e)
     {
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             return;
         }
 
-        DataContext.CropAlignment = AlignmentPicker.Alignment;
+        ViewModel.CropAlignment = AlignmentPicker.Alignment;
     }
 
     /// <summary>
@@ -218,12 +218,12 @@ internal partial class ImageDimensionSettings
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
     private void NumericWidth_ValueChanged(object sender, EventArgs e)
     {
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             return;
         }
 
-        DataContext.Width = (int)NumericWidth.Value;
+        ViewModel.Width = (int)NumericWidth.Value;
     }
 
     /// <summary>Handles the ValueChanged event of the NumericHeight control.</summary>
@@ -231,12 +231,12 @@ internal partial class ImageDimensionSettings
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
     private void NumericHeight_ValueChanged(object sender, EventArgs e)
     {
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             return;
         }
 
-        DataContext.Height = (int)NumericHeight.Value;
+        ViewModel.Height = (int)NumericHeight.Value;
     }
 
     /// <summary>Handles the ValueChanged event of the NumericDepthOrArray control.</summary>
@@ -244,12 +244,12 @@ internal partial class ImageDimensionSettings
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
     private void NumericDepthOrArray_ValueChanged(object sender, EventArgs e)
     {
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             return;
         }
 
-        DataContext.DepthSlicesOrArrayIndices = (int)NumericDepthOrArray.Value;
+        ViewModel.DepthSlicesOrArrayIndices = (int)NumericDepthOrArray.Value;
     }
 
     /// <summary>Handles the ValueChanged event of the NumericMipLevels control.</summary>
@@ -257,12 +257,12 @@ internal partial class ImageDimensionSettings
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
     private void NumericMipLevels_ValueChanged(object sender, EventArgs e)
     {
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             return;
         }
 
-        DataContext.MipLevels = (int)NumericMipLevels.Value;
+        ViewModel.MipLevels = (int)NumericMipLevels.Value;
     }
 
     /// <summary>
@@ -270,12 +270,12 @@ internal partial class ImageDimensionSettings
     /// </summary>
     private void UnassignEvents()
     {
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             return;
         }
 
-        DataContext.PropertyChanged -= DataContext_PropertyChanged;
+        ViewModel.PropertyChanged -= DataContext_PropertyChanged;
     }
 
 
@@ -332,12 +332,12 @@ internal partial class ImageDimensionSettings
     {
         base.OnCancel();
 
-        if ((DataContext?.CancelCommand is null) || (!DataContext.CancelCommand.CanExecute(null)))
+        if ((ViewModel?.CancelCommand is null) || (!ViewModel.CancelCommand.CanExecute(null)))
         {
             return;
         }
 
-        DataContext.CancelCommand.Execute(null);
+        ViewModel.CancelCommand.Execute(null);
     }
 
     /// <summary>Function to submit the change.</summary>
@@ -345,19 +345,19 @@ internal partial class ImageDimensionSettings
     {
         base.OnSubmit();
 
-        if ((DataContext?.OkCommand is null) || (!DataContext.OkCommand.CanExecute(null)))
+        if ((ViewModel?.OkCommand is null) || (!ViewModel.OkCommand.CanExecute(null)))
         {
             return;
         }
 
-        DataContext.OkCommand.Execute(null);
+        ViewModel.OkCommand.Execute(null);
     }
 
     /// <summary>
     /// Function called to validate the OK button.
     /// </summary>
     /// <returns><b>true</b> if the OK button is valid, <b>false</b> if not.</returns>
-    protected override bool OnValidateOk() => (DataContext?.OkCommand is not null) && (DataContext.OkCommand.CanExecute(null));
+    protected override bool OnValidateOk() => (ViewModel?.OkCommand is not null) && (ViewModel.OkCommand.CanExecute(null));
 
     /// <summary>Raises the <see cref="E:System.Windows.Forms.UserControl.Load"/> event.</summary>
     /// <param name="e">An <see cref="EventArgs"/> that contains the event data.</param>
@@ -381,14 +381,14 @@ internal partial class ImageDimensionSettings
         UnassignEvents();
 
         InitializeFromDataContext(dataContext);
-        DataContext = dataContext;
+        ViewModel = dataContext;
 
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             return;
         }
 
-        DataContext.PropertyChanged += DataContext_PropertyChanged;
+        ViewModel.PropertyChanged += DataContext_PropertyChanged;
     }
     #endregion
 

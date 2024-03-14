@@ -481,7 +481,7 @@ internal class ImagePicker
             Alignment alignment = ((mode == CropResizeMode.Resize) && (!CropResizeSettings.PreserveAspect)) ? Alignment.UpperLeft : CropResizeSettings.CurrentAlignment;
             bool keepRatio = CropResizeSettings.PreserveAspect;
             ImageFilter filter = CropResizeSettings.ImageFilter;
-            
+
             CropResizeSettings.ImportImage = null;
             NeedsTransformation = false;                
 
@@ -603,7 +603,7 @@ internal class ImagePicker
         try
         {
             ShowWaitPanel(Resources.GORIMG_TEXT_IMPORTING);
-            
+
             imageToImport = await Task.Run(() =>
             {
                 Stream stream = null;
@@ -669,7 +669,7 @@ internal class ImagePicker
                 {
                     CropResizeSettings.CurrentMode = CropResizeMode.Crop;
                 }
-                                    
+
                 CropResizeSettings.ImportFile = string.IsNullOrWhiteSpace(_selectedFile?.OriginalFilePath) ? string.Empty : Path.GetFileName(_selectedFile.OriginalFilePath);
                 CropResizeSettings.TargetImageSize = new DX.Size2(_targetImage.Width, _targetImage.Height);
                 CropResizeSettings.ImportImage = imageToImport;                    

@@ -93,7 +93,7 @@ internal class Settings
             OnPropertyChanged();
         }
     }
-        
+
 
     /// <summary>
     /// Property to return the last used alpha value when setting the alpha channel on an image.

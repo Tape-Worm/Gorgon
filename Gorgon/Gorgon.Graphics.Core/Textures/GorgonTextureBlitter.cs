@@ -159,7 +159,7 @@ public class GorgonTextureBlitter
                       .VertexRange(0, 3)
                       .SamplerState(ShaderType.Pixel, GorgonSamplerState.PointFiltering);
 
-            
+
             _blitPso = _blitPsoBuilder.VertexShader(_blitVertexShader)
                                       .BlendState(GorgonBlendState.NoBlending)
                                       .DepthStencilState(GorgonDepthStencilState.Default)
@@ -258,7 +258,7 @@ public class GorgonTextureBlitter
     /// <param name="samplerState">The sampler state for the texture.</param>
     /// <param name="shader">The pixel shader to use.</param>
     /// <param name="constantBuffers">Constant buffers for the pixel shader, if required.</param>
-	    private void GetDrawCall(GorgonTexture2DView texture, GorgonBlendState blendState, GorgonSamplerState samplerState, GorgonPixelShader shader, GorgonConstantBuffers constantBuffers)
+        private void GetDrawCall(GorgonTexture2DView texture, GorgonBlendState blendState, GorgonSamplerState samplerState, GorgonPixelShader shader, GorgonConstantBuffers constantBuffers)
     {
         if ((_blitDraw is not null)
             && (shader == _blitPixelShader)
@@ -415,7 +415,7 @@ public class GorgonTextureBlitter
         samplerState ??= GorgonSamplerState.Default;
 
         pixelShaderConstants ??= _emptyPsConstants;
-        
+
         GetDrawCall(texture, blendState, samplerState, pixelShader, pixelShaderConstants);
 
         // Calculate position on the texture.

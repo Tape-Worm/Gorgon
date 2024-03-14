@@ -55,7 +55,7 @@ internal partial class FontPatternBrushView
 
     #region Properties.
     /// <summary>Property to return the data context assigned to this view.</summary>
-    public IFontPatternBrush DataContext
+    public IFontPatternBrush ViewModel
     {
         get;
         private set;
@@ -90,12 +90,12 @@ internal partial class FontPatternBrushView
     /// <param name="e">The <see cref="EventArgs" /> instance containing the event data.</param>
     private void ComboHatch_SelectedIndexChanged(object sender, EventArgs e)
     {
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             return;
         }
 
-        DataContext.Brush = GetHatchBrush();            
+        ViewModel.Brush = GetHatchBrush();            
     }
 
     /// <summary>Handles the ColorChanged event of the PickerBackground control.</summary>
@@ -103,12 +103,12 @@ internal partial class FontPatternBrushView
     /// <param name="e">The <see cref="ColorChangedEventArgs" /> instance containing the event data.</param>
     private void PickerBackground_ColorChanged(object sender, ColorChangedEventArgs e)
     {
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             return;
         }
 
-        DataContext.Brush = GetHatchBrush();            
+        ViewModel.Brush = GetHatchBrush();            
     }
 
     /// <summary>Handles the ColorChanged event of the PickerForeground control.</summary>
@@ -116,12 +116,12 @@ internal partial class FontPatternBrushView
     /// <param name="e">The <see cref="ColorChangedEventArgs" /> instance containing the event data.</param>
     private void PickerForeground_ColorChanged(object sender, ColorChangedEventArgs e)
     {
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             return;
         }
 
-        DataContext.Brush = GetHatchBrush();            
+        ViewModel.Brush = GetHatchBrush();            
     }
 
     /// <summary>Handles the PropertyChanged event of the DataContext control.</summary>
@@ -134,16 +134,16 @@ internal partial class FontPatternBrushView
         switch (e.PropertyName)
         {
             case nameof(IFontPatternBrush.Brush):
-                ComboHatch.Style = (HatchStyle)DataContext.Brush.HatchStyle;
-                PickerForeground.SelectedColor = DataContext.Brush.ForegroundColor;
-                PickerBackground.SelectedColor = DataContext.Brush.BackgroundColor;
+                ComboHatch.Style = (HatchStyle)ViewModel.Brush.HatchStyle;
+                PickerForeground.SelectedColor = ViewModel.Brush.ForegroundColor;
+                PickerBackground.SelectedColor = ViewModel.Brush.BackgroundColor;
                 break;
             case nameof(IFontPatternBrush.OriginalColor):
-                PickerForeground.OriginalColor = DataContext.OriginalColor.Foreground;
-                PickerBackground.OriginalColor = DataContext.OriginalColor.Background;
+                PickerForeground.OriginalColor = ViewModel.OriginalColor.Foreground;
+                PickerBackground.OriginalColor = ViewModel.OriginalColor.Background;
                 break;
         }
-        
+
         HookEvents();
         ValidateOk();
     }
@@ -226,12 +226,12 @@ internal partial class FontPatternBrushView
     {
         UnhookEvents();
 
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             return;
         }
 
-        DataContext.PropertyChanged -= DataContext_PropertyChanged;
+        ViewModel.PropertyChanged -= DataContext_PropertyChanged;
     }
 
     /// <summary>
@@ -268,9 +268,9 @@ internal partial class FontPatternBrushView
     ///   <b>true</b> if the OK button is valid, <b>false</b> if not.</returns>
     protected override bool OnValidateOk()
     {            
-        if (DataContext?.OkCommand is not null)
+        if (ViewModel?.OkCommand is not null)
         {
-            return DataContext.OkCommand.CanExecute(null);
+            return ViewModel.OkCommand.CanExecute(null);
         }
 
         return base.OnValidateOk();
@@ -279,9 +279,9 @@ internal partial class FontPatternBrushView
     /// <summary>Function to cancel the change.</summary>
     protected override void OnCancel()
     {
-        if (DataContext is not null)
+        if (ViewModel is not null)
         {
-            DataContext.IsActive = false;
+            ViewModel.IsActive = false;
         }
     }
 
@@ -290,12 +290,12 @@ internal partial class FontPatternBrushView
     {
         base.OnSubmit();
 
-        if ((DataContext?.OkCommand is null) || (!DataContext.OkCommand.CanExecute(null)))
+        if ((ViewModel?.OkCommand is null) || (!ViewModel.OkCommand.CanExecute(null)))
         {
             return;
         }
 
-        DataContext.OkCommand.Execute(null);
+        ViewModel.OkCommand.Execute(null);
     }
 
     /// <summary>
@@ -327,13 +327,13 @@ internal partial class FontPatternBrushView
 
         InitializeDataContext(dataContext);
 
-        DataContext = dataContext;
-        if (DataContext is null)
+        ViewModel = dataContext;
+        if (ViewModel is null)
         {
             return;
         }
-                    
-        DataContext.PropertyChanged += DataContext_PropertyChanged;
+
+        ViewModel.PropertyChanged += DataContext_PropertyChanged;
         HookEvents();
         ValidateOk();
     }

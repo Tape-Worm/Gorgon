@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>net48;net6.0</TargetFrameworks>
+    <TargetFramework>net8.0</TargetFramework>
     <ApplicationIcon>Gorgon2.ico</ApplicationIcon>
     <Version>3.2.0</Version>
     <Authors>Michael Winsor</Authors>

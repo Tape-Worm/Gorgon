@@ -48,7 +48,7 @@ namespace Gorgon.Animation;
 /// </para>
 /// </remarks>
 /// <seealso cref="IGorgonAnimationTrack{T}"/>
-	public class GorgonKeyTexture2D
+    public class GorgonKeyTexture2D
     : IGorgonKeyFrame
 {
     #region Variables.
@@ -86,7 +86,7 @@ namespace Gorgon.Animation;
     /// <summary>
     /// Property to set or return the texture array index to use on a texture array.
     /// </summary>
-	    public ref int TextureArrayIndex => ref _textureArrayIndex;
+        public ref int TextureArrayIndex => ref _textureArrayIndex;
 
     /// <summary>
     /// Property to set or return the texture coordinates.

@@ -63,7 +63,7 @@ internal class TextContentParameters
         // so that we can activate the service when we request a text change on the content.
         get;
     }
-    
+
     /// <summary>
     /// Property to return the undo/redo service.
     /// </summary>

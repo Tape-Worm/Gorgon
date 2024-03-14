@@ -249,14 +249,14 @@ internal partial class FormSaveDialog
             {
                 continue;
             }
-                            
+
             string dirName = Path.GetDirectoryName(file.Path).FormatDirectory('/');
 
             if (!dirs.TryGetValue(dirName, out ContentFileExplorerDirectoryEntry dirEntry))
             {
                 continue;
             }               
-            
+
             var fileEntries = (List<ContentFileExplorerFileEntry>)dirEntry.Files;
             ContentFileExplorerFileEntry contentFile = new(file, dirEntry);
             fileEntries.Add(contentFile);

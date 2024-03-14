@@ -399,7 +399,7 @@ internal class Vector2AnimationViewer
             base.OnMouseMove(args);
             return;
         }
-                    
+
         switch (SelectedTrackID)
         {
             case TrackSpriteProperty.Position:
@@ -515,7 +515,7 @@ internal class Vector2AnimationViewer
             case TrackSpriteProperty.Size:
             case TrackSpriteProperty.Position:
                 Renderer.Begin();
-                
+
                 Clipper.Render();
                 DrawAnchorPoint();
 

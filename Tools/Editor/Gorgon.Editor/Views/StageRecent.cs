@@ -46,7 +46,7 @@ internal partial class StageRecent
     #region Properties.
     /// <summary>Property to return the data context assigned to this view.</summary>        
     [Browsable(false)]
-    public IRecent DataContext
+    public IRecent ViewModel
     {
         get;
         private set;
@@ -56,7 +56,7 @@ internal partial class StageRecent
     /// Property to return whether or not the recent items list has any items in it.
     /// </summary>
     [Browsable(false)]
-    public bool HasItems => DataContext?.Files.Count > 0;
+    public bool HasItems => ViewModel?.Files.Count > 0;
     #endregion
 
     #region Methods.
@@ -101,7 +101,7 @@ internal partial class StageRecent
             PanelRecentItems.Controls[i].Dock = DockStyle.Top;
         }
     }
-    
+
     /// <summary>Handles the DeleteItem event of the Button control.</summary>
     /// <param name="sender">The source of the event.</param>
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
@@ -109,12 +109,12 @@ internal partial class StageRecent
     {
         var button = (RecentItemButton)sender;
 
-        if ((DataContext?.DeleteItemCommand is null) || (!DataContext.DeleteItemCommand.CanExecute(button.RecentItem)))
+        if ((ViewModel?.DeleteItemCommand is null) || (!ViewModel.DeleteItemCommand.CanExecute(button.RecentItem)))
         {
             return;
         }
 
-        DataContext.DeleteItemCommand.Execute(button.RecentItem);
+        ViewModel.DeleteItemCommand.Execute(button.RecentItem);
     }
 
     /// <summary>Handles the Click event of the Button control.</summary>
@@ -124,17 +124,17 @@ internal partial class StageRecent
     {
         var button = (RecentItemButton)sender;
 
-        if ((DataContext?.OpenProjectCommand is null) || (button.RecentItem is null))
+        if ((ViewModel?.OpenProjectCommand is null) || (button.RecentItem is null))
         {
             return;
         }
 
-        if (!DataContext.OpenProjectCommand.CanExecute(button.RecentItem))
+        if (!ViewModel.OpenProjectCommand.CanExecute(button.RecentItem))
         {
             return;
         }
 
-        DataContext.OpenProjectCommand.Execute(button.RecentItem);
+        ViewModel.OpenProjectCommand.Execute(button.RecentItem);
     }
 
     /// <summary>
@@ -165,7 +165,7 @@ internal partial class StageRecent
         {
             return;
         }
-        
+
         IEnumerable<RecentItemButton> buttons = PanelRecentItems.Controls.OfType<RecentItemButton>();
         RecentItemButton button = buttons.FirstOrDefault(btn => string.Equals(btn.Name, item.FilePath, StringComparison.OrdinalIgnoreCase));
 
@@ -238,7 +238,7 @@ internal partial class StageRecent
 
             ClearItems();
 
-            foreach (RecentItem item in DataContext.Files.OrderBy(item => item.LastUsedDate))
+            foreach (RecentItem item in ViewModel.Files.OrderBy(item => item.LastUsedDate))
             {
                 AddRecentItem(item);
             }
@@ -254,15 +254,15 @@ internal partial class StageRecent
     /// </summary>
     private void UnassignEvents()
     {
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             return;
         }
 
-        DataContext.Files.CollectionChanged -= Files_CollectionChanged;
+        ViewModel.Files.CollectionChanged -= Files_CollectionChanged;
 
-        DataContext.Unload();
-        DataContext = null;
+        ViewModel.Unload();
+        ViewModel = null;
     }
 
     /// <summary>Raises the <a href="http://msdn.microsoft.com/en-us/library/system.windows.forms.usercontrol.load.aspx" target="_blank">Load</a> event.</summary>
@@ -271,7 +271,7 @@ internal partial class StageRecent
     {
         base.OnLoad(e);
 
-        DataContext?.Load();
+        ViewModel?.Load();
 
         FillList();
     }
@@ -283,14 +283,14 @@ internal partial class StageRecent
     {
         UnassignEvents();
 
-        DataContext = dataContext;
+        ViewModel = dataContext;
 
-        if ((IsDesignTime) || (DataContext is null))
+        if ((IsDesignTime) || (ViewModel is null))
         {
             return;
         }
 
-        DataContext.Files.CollectionChanged += Files_CollectionChanged;
+        ViewModel.Files.CollectionChanged += Files_CollectionChanged;
     }        
     #endregion
 

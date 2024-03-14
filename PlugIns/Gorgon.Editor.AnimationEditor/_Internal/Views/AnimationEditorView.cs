@@ -71,7 +71,7 @@ internal partial class AnimationEditorView
     #region Properties.
     /// <summary>Property to return the data context assigned to this view.</summary>
     [Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-    public IAnimationContent DataContext
+    public IAnimationContent ViewModel
     {
         get;
         private set;
@@ -124,12 +124,12 @@ internal partial class AnimationEditorView
     /// <param name="e">The <see cref="SplitterEventArgs"/> instance containing the event data.</param>
     private void SplitTrack_SplitterMoved(object sender, SplitterEventArgs e)
     {
-        if (DataContext?.Settings is null)
+        if (ViewModel?.Settings is null)
         {
             return;
         }
 
-        DataContext.Settings.SplitterOffset = SplitTrack.SplitPosition;
+        ViewModel.Settings.SplitterOffset = SplitTrack.SplitPosition;
     }
 
     /// <summary>
@@ -189,12 +189,12 @@ internal partial class AnimationEditorView
         SplitTrack.MinExtra = ClientSize.Height / 2;
         SplitTrack.MinSize = ClientSize.Height / 4;
 
-        if (DataContext?.Settings is null)
+        if (ViewModel?.Settings is null)
         {
             return;
         }
 
-        SplitTrack.SplitPosition = DataContext.Settings.SplitterOffset;
+        SplitTrack.SplitPosition = ViewModel.Settings.SplitterOffset;
     }
 
     /// <summary>Function to handle a drag enter event on the render control.</summary>
@@ -240,7 +240,7 @@ internal partial class AnimationEditorView
         switch (propertyName)
         {
             case nameof(IAnimationContent.CommandContext):
-                DataContext.CommandContext?.Unload();
+                ViewModel.CommandContext?.Unload();
                 RenderControl.Cursor = Cursor.Current = Cursors.Default;
                 ValidateButtons();
                 break;
@@ -261,12 +261,12 @@ internal partial class AnimationEditorView
             case nameof(IAnimationContent.PrimarySprite):
             case nameof(IAnimationContent.CurrentPanel):
             case nameof(IAnimationContent.Selected):
-                if ((DataContext.PrimarySprite is null)
-                    || (DataContext.CommandContext != DataContext.KeyEditor) 
-                    || (DataContext.Selected.Count == 0) 
-                    || (!HasRenderer(DataContext.Selected[0].Track.KeyType.ToString())))
+                if ((ViewModel.PrimarySprite is null)
+                    || (ViewModel.CommandContext != ViewModel.KeyEditor) 
+                    || (ViewModel.Selected.Count == 0) 
+                    || (!HasRenderer(ViewModel.Selected[0].Track.KeyType.ToString())))
                 {
-                    rendererName = DataContext.PrimarySprite is not null ? DefaultAnimationViewer.ViewerName : NoPrimarySpriteViewer.ViewerName;
+                    rendererName = ViewModel.PrimarySprite is not null ? DefaultAnimationViewer.ViewerName : NoPrimarySpriteViewer.ViewerName;
 
                     if ((!HasRenderer(rendererName)) || (string.Equals(Renderer?.Name, rendererName, StringComparison.OrdinalIgnoreCase)))
                     {
@@ -275,7 +275,7 @@ internal partial class AnimationEditorView
                 }
                 else
                 {
-                    rendererName = DataContext.Selected[0].Track.KeyType.ToString();
+                    rendererName = ViewModel.Selected[0].Track.KeyType.ToString();
                 }
 
                 // Only switch if we're not on the same renderer.
@@ -285,15 +285,15 @@ internal partial class AnimationEditorView
                 }
                 break;
             case nameof(IAnimationContent.CommandContext):
-                if (DataContext.CommandContext is null)
+                if (ViewModel.CommandContext is null)
                 {
-                    SwitchRenderer(DataContext.PrimarySprite is not null ? DefaultAnimationViewer.ViewerName : NoPrimarySpriteViewer.ViewerName, false);
-                    _spriteLoader = DataContext;
+                    SwitchRenderer(ViewModel.PrimarySprite is not null ? DefaultAnimationViewer.ViewerName : NoPrimarySpriteViewer.ViewerName, false);
+                    _spriteLoader = ViewModel;
                 }
                 else
                 {
-                    DataContext.CommandContext.Load();
-                    _spriteLoader = DataContext.CommandContext as ISpriteLoader;
+                    ViewModel.CommandContext.Load();
+                    _spriteLoader = ViewModel.CommandContext as ISpriteLoader;
                 }
                 break;
         }
@@ -303,7 +303,7 @@ internal partial class AnimationEditorView
     /// <summary>Function called to shut down the view and perform any clean up required (including user defined graphics objects).</summary>
     protected override void OnShutdown()
     {
-        DataContext?.Unload();
+        ViewModel?.Unload();
 
         _vertexEditorService?.Dispose();
         _anchorTexture?.Dispose();
@@ -368,10 +368,10 @@ internal partial class AnimationEditorView
         });
         _vertexEditorService = new VertexEditService(context.Renderer2D);
 
-        var noSprite = new NoPrimarySpriteViewer(context.Renderer2D, swapChain, context.FontFactory, DataContext);
-        var defaultView = new DefaultAnimationViewer(context.Renderer2D, swapChain, DataContext, _clipper);
-        var singleEditorView = new SingleAnimationViewer(context.Renderer2D, swapChain, DataContext);
-        var vec2EditorView = new Vector2AnimationViewer(context.Renderer2D, swapChain, DataContext, _clipper, _anchorService, _vertexEditorService);
+        var noSprite = new NoPrimarySpriteViewer(context.Renderer2D, swapChain, context.FontFactory, ViewModel);
+        var defaultView = new DefaultAnimationViewer(context.Renderer2D, swapChain, ViewModel, _clipper);
+        var singleEditorView = new SingleAnimationViewer(context.Renderer2D, swapChain, ViewModel);
+        var vec2EditorView = new Vector2AnimationViewer(context.Renderer2D, swapChain, ViewModel, _clipper, _anchorService, _vertexEditorService);
 
         noSprite.CreateResources();
         defaultView.CreateResources();
@@ -383,7 +383,7 @@ internal partial class AnimationEditorView
         AddRenderer(singleEditorView.Name, singleEditorView);
         AddRenderer(vec2EditorView.Name, vec2EditorView);
 
-        SwitchRenderer(DataContext.PrimarySprite is null ? noSprite.Name : defaultView.Name, true);
+        SwitchRenderer(ViewModel.PrimarySprite is null ? noSprite.Name : defaultView.Name, true);
 
         ValidateButtons();
     }        
@@ -404,7 +404,7 @@ internal partial class AnimationEditorView
             _ribbonForm.CreateControl();
         }
 
-        DataContext?.Load();
+        ViewModel?.Load();
         ShowFocusState(true);
         RenderControl?.Select();
 
@@ -416,18 +416,18 @@ internal partial class AnimationEditorView
     {            
         base.UnassignEvents();
 
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             return;
         }
 
-        foreach (ITrack track in DataContext.Tracks)
+        foreach (ITrack track in ViewModel.Tracks)
         {
             track.PropertyChanged -= Track_PropertyChanged;
         }
-        
-        DataContext.Tracks.CollectionChanged -= Tracks_CollectionChanged;
-        DataContext.KeyEditor.PropertyChanged -= KeyEditor_PropertyChanged;
+
+        ViewModel.Tracks.CollectionChanged -= Tracks_CollectionChanged;
+        ViewModel.KeyEditor.PropertyChanged -= KeyEditor_PropertyChanged;
     }
 
     /// <summary>Function to assign a data context to the view as a view model.</summary>
@@ -445,20 +445,20 @@ internal partial class AnimationEditorView
         FloatValuesEditor.SetDataContext(dataContext?.KeyEditor?.FloatKeysEditor);
         ColorValuesEditor.SetDataContext(dataContext?.KeyEditor?.ColorKeysEditor);
 
-        DataContext = dataContext;
+        ViewModel = dataContext;
 
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             return;
         }
 
-        foreach (ITrack track in DataContext.Tracks)
+        foreach (ITrack track in ViewModel.Tracks)
         {
             track.PropertyChanged += Track_PropertyChanged;
         }
-                               
-        DataContext.Tracks.CollectionChanged += Tracks_CollectionChanged;
-        DataContext.KeyEditor.PropertyChanged += KeyEditor_PropertyChanged;
+
+        ViewModel.Tracks.CollectionChanged += Tracks_CollectionChanged;
+        ViewModel.KeyEditor.PropertyChanged += KeyEditor_PropertyChanged;
     }
     #endregion
 

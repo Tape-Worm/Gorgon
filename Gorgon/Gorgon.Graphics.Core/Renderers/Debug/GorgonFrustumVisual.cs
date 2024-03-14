@@ -154,7 +154,7 @@ public class GorgonFrustumVisual
 
         var viewProj = Matrix4x4.Multiply(projectionMatrix, viewMatrix);
         viewProj = Matrix4x4.Transpose(viewProj);
-        
+
         _constantBuffer.Buffer.SetData(in viewProj);
 
         Graphics.Submit(_drawCall);

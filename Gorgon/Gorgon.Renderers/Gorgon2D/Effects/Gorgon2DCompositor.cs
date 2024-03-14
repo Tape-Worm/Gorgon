@@ -145,7 +145,7 @@ public class Gorgon2DCompositor
     private void CreateResources(GorgonRenderTargetView outputTarget)
     {
         FreeResources();
-        
+
         _pingTarget = Graphics.TemporaryTargets.Rent(new GorgonTexture2DInfo(outputTarget.Width, outputTarget.Height, outputTarget.Format) 
         {
             Name = "Gorgon 2D Post Process Ping Render Target",
@@ -389,7 +389,7 @@ public class Gorgon2DCompositor
         {
             throw new ArgumentNullException(nameof(renderMethod));
         }
-        
+
         if (_passLookup.TryGetValue(name, out int prevIndex))
         {
             _passes[prevIndex] = new CompositionPass(name)
@@ -409,7 +409,7 @@ public class Gorgon2DCompositor
                 Camera = camera
             });
         }
-        
+
         return this;
     }
 

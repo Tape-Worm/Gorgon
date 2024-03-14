@@ -1,6 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>net6.0-windows</TargetFramework>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <ForceDesignerDpiUnaware>true</ForceDesignerDpiUnaware>
     <ApplicationIcon>Gorgon2.ico</ApplicationIcon>
     <UseWindowsForms>true</UseWindowsForms>
     <Version>3.2.0</Version>

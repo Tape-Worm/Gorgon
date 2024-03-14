@@ -7,207 +7,207 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Gorgon.Core.Test
 {
-	[TestClass]
-	[SuppressMessage("ReSharper", "InconsistentNaming")]
-	public class ReflectionExtensionTests
-	{
-		[TestMethod]
-		public void PropertyObjectTypeConversion()
-		{
-			var inst = new PropertyTests();
-			Type instType = inst.GetType();
-			PropertyInfo propRO = instType.GetProperty("MyReadOnlyProperty");
-			PropertyInfo propRW = instType.GetProperty("MyProperty");
+    [TestClass]
+    [SuppressMessage("ReSharper", "InconsistentNaming")]
+    public class ReflectionExtensionTests
+    {
+        [TestMethod]
+        public void PropertyObjectTypeConversion()
+        {
+            var inst = new PropertyTests();
+            Type instType = inst.GetType();
+            PropertyInfo propRO = instType.GetProperty("MyReadOnlyProperty");
+            PropertyInfo propRW = instType.GetProperty("MyProperty");
 
-			Assert.IsNotNull(propRO);
+            Assert.IsNotNull(propRO);
 
-			inst.MyWriteOnlyProperty = 999;
+            inst.MyWriteOnlyProperty = 999;
 
-			PropertyGetter<PropertyTests, object> getter = propRO.CreatePropertyGetter<PropertyTests, object>();
+            PropertyGetter<PropertyTests, object> getter = propRO.CreatePropertyGetter<PropertyTests, object>();
 
-			Assert.IsNotNull(getter);
+            Assert.IsNotNull(getter);
 
-			object actual = getter(inst);
+            object actual = getter(inst);
 
-			Assert.IsNotNull(actual);
+            Assert.IsNotNull(actual);
 
-			Assert.AreEqual("999", actual);
+            Assert.AreEqual("999", actual);
 
-			PropertySetter<PropertyTests, object> setter = propRW.CreatePropertySetter<PropertyTests, object>();
+            PropertySetter<PropertyTests, object> setter = propRW.CreatePropertySetter<PropertyTests, object>();
 
-			Assert.IsNotNull(setter);
+            Assert.IsNotNull(setter);
 
-			setter(inst, 123);
+            setter(inst, 123);
 
-			Assert.AreEqual(123, inst.MyProperty);
-		}
+            Assert.AreEqual(123, inst.MyProperty);
+        }
 
-		[TestMethod]
-		public void ReadOnlyProperty()
-		{
-			var inst = new PropertyTests();
-			Type instType = inst.GetType();
-			PropertyInfo propRO = instType.GetProperty("MyReadOnlyProperty");
-			
-			Assert.IsNotNull(propRO);
+        [TestMethod]
+        public void ReadOnlyProperty()
+        {
+            var inst = new PropertyTests();
+            Type instType = inst.GetType();
+            PropertyInfo propRO = instType.GetProperty("MyReadOnlyProperty");
 
-			inst.MyWriteOnlyProperty = 999;
+            Assert.IsNotNull(propRO);
 
-			PropertyGetter<PropertyTests, string> getter = propRO.CreatePropertyGetter<PropertyTests, string>();
+            inst.MyWriteOnlyProperty = 999;
 
-			Assert.IsNotNull(getter);
+            PropertyGetter<PropertyTests, string> getter = propRO.CreatePropertyGetter<PropertyTests, string>();
 
-			string actual = getter(inst);
+            Assert.IsNotNull(getter);
 
-			Assert.AreEqual("999", actual);
+            string actual = getter(inst);
 
-			try
-			{
-				propRO.CreatePropertySetter<PropertyTests, string>();
-				Assert.Fail("Setter should not exist.");
-			}
-			catch (ArgumentException)
-			{
+            Assert.AreEqual("999", actual);
 
-			}
+            try
+            {
+                propRO.CreatePropertySetter<PropertyTests, string>();
+                Assert.Fail("Setter should not exist.");
+            }
+            catch (ArgumentException)
+            {
 
-			propRO = instType.GetProperty("MyReadOnlyAutoProperty");
+            }
 
-			Assert.IsNotNull(propRO);
+            propRO = instType.GetProperty("MyReadOnlyAutoProperty");
 
-			getter = propRO.CreatePropertyGetter<PropertyTests, string>();
+            Assert.IsNotNull(propRO);
 
-			Assert.IsNotNull(getter);
+            getter = propRO.CreatePropertyGetter<PropertyTests, string>();
 
-			Assert.AreEqual("MyAuto", getter(inst));
+            Assert.IsNotNull(getter);
 
-			PropertySetter<PropertyTests, string> setter = propRO.CreatePropertySetter<PropertyTests, string>();
+            Assert.AreEqual("MyAuto", getter(inst));
 
-			Assert.IsNotNull(setter);
+            PropertySetter<PropertyTests, string> setter = propRO.CreatePropertySetter<PropertyTests, string>();
 
-			setter(inst, "NoAuto");
+            Assert.IsNotNull(setter);
 
-			Assert.AreEqual("NoAuto", inst.MyReadOnlyAutoProperty);
-		}
+            setter(inst, "NoAuto");
 
-		[TestMethod]
-		public void WriteOnlyProperty()
-		{
-			var inst = new PropertyTests();
-			Type instType = inst.GetType();
-			PropertyInfo propWO = instType.GetProperty("MyWriteOnlyProperty");
+            Assert.AreEqual("NoAuto", inst.MyReadOnlyAutoProperty);
+        }
 
-			Assert.IsNotNull(propWO);
+        [TestMethod]
+        public void WriteOnlyProperty()
+        {
+            var inst = new PropertyTests();
+            Type instType = inst.GetType();
+            PropertyInfo propWO = instType.GetProperty("MyWriteOnlyProperty");
 
-			PropertySetter<PropertyTests, int> setter = propWO.CreatePropertySetter<PropertyTests, int>();
+            Assert.IsNotNull(propWO);
 
-			Assert.IsNotNull(setter);
+            PropertySetter<PropertyTests, int> setter = propWO.CreatePropertySetter<PropertyTests, int>();
 
-			setter(inst, 789);
+            Assert.IsNotNull(setter);
 
-			Assert.AreEqual("789", inst.MyReadOnlyProperty);
-			
-			PropertyGetter<PropertyTests, int> getter = propWO.CreatePropertyGetter<PropertyTests, int>();
+            setter(inst, 789);
 
-			Assert.IsNotNull(getter);
+            Assert.AreEqual("789", inst.MyReadOnlyProperty);
 
-			int actual = Convert.ToInt32(getter(inst));
+            PropertyGetter<PropertyTests, int> getter = propWO.CreatePropertyGetter<PropertyTests, int>();
 
-			Assert.AreEqual(789, actual);
-		}
+            Assert.IsNotNull(getter);
 
-		[TestMethod]
-		public void ReadWriteProperty()
-		{
-			var inst = new PropertyTests();
-			Type instType = inst.GetType();
-			PropertyInfo propRW = instType.GetProperty("MyProperty");
+            int actual = Convert.ToInt32(getter(inst));
 
-			Assert.IsNotNull(propRW);
+            Assert.AreEqual(789, actual);
+        }
 
-			PropertyGetter<PropertyTests, int> getter = propRW.CreatePropertyGetter<PropertyTests, int>();
-			PropertySetter<PropertyTests, int> setter = propRW.CreatePropertySetter<PropertyTests, int>();
+        [TestMethod]
+        public void ReadWriteProperty()
+        {
+            var inst = new PropertyTests();
+            Type instType = inst.GetType();
+            PropertyInfo propRW = instType.GetProperty("MyProperty");
 
-			Assert.IsNotNull(getter);
-			Assert.IsNotNull(setter);
+            Assert.IsNotNull(propRW);
 
-			setter(inst, 456);
+            PropertyGetter<PropertyTests, int> getter = propRW.CreatePropertyGetter<PropertyTests, int>();
+            PropertySetter<PropertyTests, int> setter = propRW.CreatePropertySetter<PropertyTests, int>();
 
-			Assert.AreEqual(456, inst.MyProperty);
+            Assert.IsNotNull(getter);
+            Assert.IsNotNull(setter);
 
-			int actual = Convert.ToInt32(getter(inst));
+            setter(inst, 456);
 
-			Assert.AreEqual(456, actual);
-		}
+            Assert.AreEqual(456, inst.MyProperty);
 
-		[TestMethod]
-		public void CreatePublicObject()
-		{
-			ActivatorTestClass obj;
-			Type type = typeof(ActivatorTestClass);
-			ObjectActivator<ActivatorTestClass> activator = type.CreateActivator<ActivatorTestClass>();
+            int actual = Convert.ToInt32(getter(inst));
 
-			obj = activator();
+            Assert.AreEqual(456, actual);
+        }
 
-			Assert.IsNotNull(obj);
+        [TestMethod]
+        public void CreatePublicObject()
+        {
+            ActivatorTestClass obj;
+            Type type = typeof(ActivatorTestClass);
+            ObjectActivator<ActivatorTestClass> activator = type.CreateActivator<ActivatorTestClass>();
 
-			Assert.AreEqual(111, obj.TestThis());
-		}
+            obj = activator();
 
-		[TestMethod]
-		public void CreateInternalObject()
-		{
-			InternalActivatorTestClass obj;
-			Type type = typeof(InternalActivatorTestClass);
-			ObjectActivator<InternalActivatorTestClass> activator = type.CreateActivator<InternalActivatorTestClass>();
+            Assert.IsNotNull(obj);
 
-			obj = activator();
+            Assert.AreEqual(111, obj.TestThis());
+        }
 
-			Assert.IsNotNull(obj);
+        [TestMethod]
+        public void CreateInternalObject()
+        {
+            InternalActivatorTestClass obj;
+            Type type = typeof(InternalActivatorTestClass);
+            ObjectActivator<InternalActivatorTestClass> activator = type.CreateActivator<InternalActivatorTestClass>();
 
-			Assert.AreEqual(123, obj.TestThis());
-		}
+            obj = activator();
 
-		[TestMethod]
-		public void CreateMultipleParamsObject()
-		{
-			ActivatorTestClassMultipleParams obj;
-			Type type = typeof(ActivatorTestClassMultipleParams);
-			ObjectActivator<ActivatorTestClassMultipleParams> activator = type.CreateActivator<ActivatorTestClassMultipleParams>(typeof(int), typeof(int));
+            Assert.IsNotNull(obj);
 
-			obj = activator(123, 123);
+            Assert.AreEqual(123, obj.TestThis());
+        }
 
-			Assert.IsNotNull(obj);
+        [TestMethod]
+        public void CreateMultipleParamsObject()
+        {
+            ActivatorTestClassMultipleParams obj;
+            Type type = typeof(ActivatorTestClassMultipleParams);
+            ObjectActivator<ActivatorTestClassMultipleParams> activator = type.CreateActivator<ActivatorTestClassMultipleParams>(typeof(int), typeof(int));
 
-			Assert.AreEqual(246, obj.TestThis());
-		}
+            obj = activator(123, 123);
 
-		[TestMethod]
-		public void CreateMultipleCtor()
-		{
-			ActivatorTestClassMultipleCtors obj;
-			Type type = typeof(ActivatorTestClassMultipleCtors);
-			ObjectActivator<ActivatorTestClassMultipleCtors> activator1 = type.CreateActivator<ActivatorTestClassMultipleCtors>(typeof(int), typeof(int));
-			ObjectActivator<ActivatorTestClassMultipleCtors> activator2 = type.CreateActivator<ActivatorTestClassMultipleCtors>(typeof(int));
-			ObjectActivator<ActivatorTestClassMultipleCtors> activator3 = type.CreateActivator<ActivatorTestClassMultipleCtors>();
+            Assert.IsNotNull(obj);
 
-			obj = activator1(123, 123);
+            Assert.AreEqual(246, obj.TestThis());
+        }
 
-			Assert.IsNotNull(obj);
+        [TestMethod]
+        public void CreateMultipleCtor()
+        {
+            ActivatorTestClassMultipleCtors obj;
+            Type type = typeof(ActivatorTestClassMultipleCtors);
+            ObjectActivator<ActivatorTestClassMultipleCtors> activator1 = type.CreateActivator<ActivatorTestClassMultipleCtors>(typeof(int), typeof(int));
+            ObjectActivator<ActivatorTestClassMultipleCtors> activator2 = type.CreateActivator<ActivatorTestClassMultipleCtors>(typeof(int));
+            ObjectActivator<ActivatorTestClassMultipleCtors> activator3 = type.CreateActivator<ActivatorTestClassMultipleCtors>();
 
-			Assert.AreEqual(246, obj.TestThis());
+            obj = activator1(123, 123);
 
-			obj = activator2(123);
+            Assert.IsNotNull(obj);
 
-			Assert.IsNotNull(obj);
+            Assert.AreEqual(246, obj.TestThis());
 
-			Assert.AreEqual(246, obj.TestThis());
+            obj = activator2(123);
 
-			obj = activator3();
+            Assert.IsNotNull(obj);
 
-			Assert.IsNotNull(obj);
+            Assert.AreEqual(246, obj.TestThis());
 
-			Assert.AreEqual(2, obj.TestThis());
-		}
-	}
+            obj = activator3();
+
+            Assert.IsNotNull(obj);
+
+            Assert.AreEqual(2, obj.TestThis());
+        }
+    }
 }

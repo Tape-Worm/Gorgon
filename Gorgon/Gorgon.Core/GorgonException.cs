@@ -1,4 +1,4 @@
-#region MIT.
+﻿#region MIT.
 // 
 // Gorgon.
 // Copyright (C) 2011 Michael Winsor
@@ -46,21 +46,6 @@ public class GorgonException
     }
     #endregion
 
-    #region Methods.
-    /// <summary>
-    /// When overridden in a derived class, sets the <see cref="SerializationInfo"/> with information about the exception.
-    /// </summary>
-    /// <param name="info">The <see cref="SerializationInfo"/> that holds the serialized object data about the exception being thrown.</param>
-    /// <param name="context">The <see cref="StreamingContext"/> that contains contextual information about the source or destination.</param>
-    /// <exception cref="ArgumentNullException">The <paramref name="info"/> parameter is a null reference (<i>Nothing</i> in Visual Basic). </exception>
-    public override void GetObjectData(SerializationInfo info, StreamingContext context)
-    {
-        base.GetObjectData(info, context);
-
-        info.AddValue("ResultCode", ResultCode, typeof(GorgonResult));
-    }
-    #endregion
-
     #region Constructor/Destructor.
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonException"/> class.
@@ -76,24 +61,6 @@ public class GorgonException
     /// <param name="errorMessage">Error message to display.</param>
     public GorgonException(string errorMessage)
         : base(errorMessage) => ResultCode = new GorgonResult("GorgonException", HResult, errorMessage);
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="GorgonException" /> class with serialized data.
-    /// </summary>
-    /// <param name="info">Serialization info.</param>
-    /// <param name="context">Serialization context.</param>
-    protected GorgonException(SerializationInfo info, StreamingContext context)
-        : base(info, context)
-    {
-        if (info.FullTypeName == typeof(GorgonResult).FullName)
-        {
-            ResultCode = (GorgonResult)info.GetValue("ResultCode", typeof(GorgonResult));
-        }
-        else
-        {
-            ResultCode = new GorgonResult("Exception", info.GetInt32("HResult"), info.GetString("Message"));
-        }
-    }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonException"/> class.

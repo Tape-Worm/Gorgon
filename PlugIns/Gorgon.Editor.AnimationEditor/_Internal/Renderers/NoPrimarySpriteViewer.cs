@@ -162,7 +162,7 @@ internal class NoPrimarySpriteViewer
         }
 
         Graphics.SetRenderTarget(_rtv);
-                    
+
         Renderer.Begin();
         Renderer.DrawFilledRectangle(_rtv.Bounds.ToRectangleF(), GorgonColor.White, _noSprite, new DX.RectangleF(_stripX, 0, 1, 1));
         Renderer.DrawTextSprite(_displayText);

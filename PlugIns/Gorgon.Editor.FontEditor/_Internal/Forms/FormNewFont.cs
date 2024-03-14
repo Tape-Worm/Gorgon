@@ -478,7 +478,7 @@ internal partial class FormNewFont
         RadioPoints.Checked = true;
         NumericTextureWidth.Value = 512;
         NumericTextureHeight.Value = 512;
-        
+
         ValidateControls();
 
         ComboFontFamilies.Select();

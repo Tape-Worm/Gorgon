@@ -136,7 +136,7 @@ public partial class FormMain
             _overlay.Hide();
             return;
         }
-                               
+
         IWin32Window overlay = _overlay.Show(PanelPlexi);
 
         // We pass back the overlay window to the dialog to ensure it gets placed on top.

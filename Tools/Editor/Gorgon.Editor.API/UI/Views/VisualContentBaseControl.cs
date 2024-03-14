@@ -468,7 +468,7 @@ public partial class VisualContentBaseControl
     /// <param name="resetZoom"><b>true</b> if the zoom should be reset, <b>false</b> if not.</param>
     protected virtual void OnSwitchRenderer(IContentRenderer renderer, bool resetZoom)
     {
-    
+
     }
 
     /// <summary>

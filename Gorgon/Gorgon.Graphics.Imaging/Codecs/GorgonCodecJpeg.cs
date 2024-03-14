@@ -46,9 +46,9 @@ namespace Gorgon.Graphics.Imaging.Codecs;
 ///		<item>
 ///			<description><see cref="BufferFormat.B8G8R8A8_UNorm"/> (Alpha channel is ignored)</description>
 ///		</item>
-	///		<item>
-	///			<description><see cref="BufferFormat.R8G8B8A8_UNorm"/> (Alpha channel is ignored)</description>
-	///		</item>
+    ///        <item>
+    ///            <description><see cref="BufferFormat.R8G8B8A8_UNorm"/> (Alpha channel is ignored)</description>
+    ///        </item>
 /// </list>
 /// </para>
 /// <para>

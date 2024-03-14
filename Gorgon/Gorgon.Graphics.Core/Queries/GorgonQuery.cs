@@ -168,7 +168,7 @@ public abstract class GorgonQuery<T>
 
         this.RegisterDisposable(Graphics);
     }
-   
+
     /// <summary>
     /// Function to retrieve the result data for the query.
     /// </summary>

@@ -51,7 +51,7 @@ internal partial class EditorSettingsPanel
     #region Properties.
     /// <summary>Property to return the data context assigned to this view.</summary>
     [Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-    public IEditorSettings DataContext
+    public IEditorSettings ViewModel
     {
         get;
         private set;
@@ -75,12 +75,12 @@ internal partial class EditorSettingsPanel
             return;
         }
 
-        if ((DataContext?.SetCategoryCommand is null) || (!DataContext.SetCategoryCommand.CanExecute(id)))
+        if ((ViewModel?.SetCategoryCommand is null) || (!ViewModel.SetCategoryCommand.CanExecute(id)))
         {
             return;
         }
 
-        DataContext.SetCategoryCommand.Execute(id);
+        ViewModel.SetCategoryCommand.Execute(id);
     }
 
     /// <summary>Handles the PropertyChanged event of the DataContext control.</summary>
@@ -91,7 +91,7 @@ internal partial class EditorSettingsPanel
         switch (e.PropertyName)
         {
             case nameof(IEditorSettings.CurrentCategory):
-                if (!_panelLookup.TryGetValue(DataContext.CurrentCategory.ID.ToString(), out SettingsBaseControl value))
+                if (!_panelLookup.TryGetValue(ViewModel.CurrentCategory.ID.ToString(), out SettingsBaseControl value))
                 {
                     break;
                 }
@@ -198,12 +198,12 @@ internal partial class EditorSettingsPanel
     /// </summary>
     private void UnassignEvents()
     {
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             return;
         }
 
-        DataContext.PropertyChanged -= DataContext_PropertyChanged;
+        ViewModel.PropertyChanged -= DataContext_PropertyChanged;
     }
 
     /// <summary>
@@ -267,14 +267,14 @@ internal partial class EditorSettingsPanel
         PlugInList.SetDataContext(dataContext?.PlugInsList);
 
         InitializeFromDataContext(dataContext);
-        DataContext = dataContext;
+        ViewModel = dataContext;
 
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             return;
         }
 
-        DataContext.PropertyChanged += DataContext_PropertyChanged;
+        ViewModel.PropertyChanged += DataContext_PropertyChanged;
     }
     #endregion
 

@@ -72,7 +72,7 @@ internal class SpriteTransformer
             BuildPerspectiveModifier(vertices, ref leftTop, ref rightBottom, renderable.TextureArrayIndex);
             return;
         }
-        
+
         vertices[0].UV = leftTop;
         vertices[1].UV = new Vector4(rightBottom.X, leftTop.Y, renderable.TextureArrayIndex, 1.0f);
         vertices[2].UV = new Vector4(leftTop.X, rightBottom.Y, renderable.TextureArrayIndex, 1.0f);

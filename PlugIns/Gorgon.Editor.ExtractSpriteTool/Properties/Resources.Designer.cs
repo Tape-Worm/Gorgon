@@ -23,15 +23,15 @@ using System;
 [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
 [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
 internal class Resources {
-    
+
     private static global::System.Resources.ResourceManager resourceMan;
-    
+
     private static global::System.Globalization.CultureInfo resourceCulture;
-    
+
     [global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
     internal Resources() {
     }
-    
+
     /// <summary>
     ///   Returns the cached ResourceManager instance used by this class.
     /// </summary>
@@ -45,7 +45,7 @@ internal class Resources {
             return resourceMan;
         }
     }
-    
+
     /// <summary>
     ///   Overrides the current thread's CurrentUICulture property for all
     ///   resource lookups using this strongly typed resource class.
@@ -59,7 +59,7 @@ internal class Resources {
             resourceCulture = value;
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized resource of type System.Drawing.Bitmap.
     /// </summary>
@@ -69,7 +69,7 @@ internal class Resources {
             return ((System.Drawing.Bitmap)(obj));
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized resource of type System.Drawing.Bitmap.
     /// </summary>
@@ -79,7 +79,7 @@ internal class Resources {
             return ((System.Drawing.Bitmap)(obj));
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to Output folder.
     /// </summary>
@@ -88,7 +88,7 @@ internal class Resources {
             return ResourceManager.GetString("GOREST_CAPTION_FOLDER_SELECT", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to Sprites are currently being extracted. If the extractor is closed, then all progress will be lost.
     ///
@@ -99,7 +99,7 @@ internal class Resources {
             return ResourceManager.GetString("GOREST_CONFIRM_EXTRACT_IN_PROGRESS", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to A tool for extracting sprites from a texture atlas by using a customizable grid.
     ///
@@ -110,7 +110,7 @@ internal class Resources {
             return ResourceManager.GetString("GOREST_DESC_BUTTON", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to Select a folder to save the sprites into..
     /// </summary>
@@ -119,7 +119,7 @@ internal class Resources {
             return ResourceManager.GetString("GOREST_DESC_FOLDER_SELECT", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to The file system is locked and cannot be accessed at this time.
     ///
@@ -130,7 +130,7 @@ internal class Resources {
             return ResourceManager.GetString("GOREST_ERR_CANNOT_ACCESS_FILESYSTEM_LOCK", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to There was an error while generating the sprite data.
     ///
@@ -141,7 +141,7 @@ internal class Resources {
             return ResourceManager.GetString("GOREST_ERR_GEN_SPRITES", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to There was an error launching the extract tool.
     ///
@@ -152,7 +152,7 @@ internal class Resources {
             return ResourceManager.GetString("GOREST_ERR_LAUNCH", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to There was an error while picking the color.
     ///
@@ -163,7 +163,7 @@ internal class Resources {
             return ResourceManager.GetString("GOREST_ERR_PICKING_COLOR", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to There was an error while changing the array index.
     ///
@@ -174,7 +174,7 @@ internal class Resources {
             return ResourceManager.GetString("GOREST_ERR_PREVIEW_ARRAY", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to There was an error previewing the sprite.
     ///
@@ -185,7 +185,7 @@ internal class Resources {
             return ResourceManager.GetString("GOREST_ERR_PREVIEW_SPRITE", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to There was an error saving the sprites.
     ///
@@ -196,7 +196,7 @@ internal class Resources {
             return ResourceManager.GetString("GOREST_ERR_SAVE", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to Sprites.
     /// </summary>
@@ -205,7 +205,7 @@ internal class Resources {
             return ResourceManager.GetString("GOREST_GROUP_BUTTON", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to Gorgon Sprite Extractor.
     /// </summary>
@@ -214,7 +214,7 @@ internal class Resources {
             return ResourceManager.GetString("GOREST_PLUGIN_DESC", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to Extracting sprite {0}/{1}.
     /// </summary>
@@ -223,7 +223,7 @@ internal class Resources {
             return ResourceManager.GetString("GOREST_PROGRESS_SPR_GEN", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to {0}/{1}.
     /// </summary>
@@ -232,7 +232,7 @@ internal class Resources {
             return ResourceManager.GetString("GOREST_TEXT_ARRAY", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to Extract Grid.
     /// </summary>
@@ -241,7 +241,7 @@ internal class Resources {
             return ResourceManager.GetString("GOREST_TEXT_BUTTON", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to Press Escape to cancel..
     /// </summary>
@@ -250,7 +250,7 @@ internal class Resources {
             return ResourceManager.GetString("GOREST_TEXT_GEN_CANCEL_MSG", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to Sprite {0}/{1}.
     /// </summary>
@@ -259,7 +259,7 @@ internal class Resources {
             return ResourceManager.GetString("GOREST_TEXT_SPRITE_PREVIEW", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized resource of type System.Drawing.Bitmap.
     /// </summary>
@@ -269,7 +269,7 @@ internal class Resources {
             return ((System.Drawing.Bitmap)(obj));
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized resource of type System.Drawing.Bitmap.
     /// </summary>
@@ -279,7 +279,7 @@ internal class Resources {
             return ((System.Drawing.Bitmap)(obj));
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized resource of type System.Drawing.Bitmap.
     /// </summary>

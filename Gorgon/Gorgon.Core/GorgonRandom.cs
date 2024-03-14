@@ -146,7 +146,7 @@ public static class GorgonRandom
     /// <param name="x">The horizontal value to use to generate the simplex noise value.</param>
     /// <param name="y">The vertical value to use to generate the simplex noise value.</param>
     /// <param name="z">The depth value to use to generate the simplex noise value.</param>
-		/// <returns>A <see cref="float"/> representing the simplex noise value.</returns>
+        /// <returns>A <see cref="float"/> representing the simplex noise value.</returns>
     /// <remarks>
     /// <para>
     /// Simplex noise values similar to Perlin noise but with fewer artifacts and better performance. 

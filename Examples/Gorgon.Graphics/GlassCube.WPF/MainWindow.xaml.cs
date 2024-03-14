@@ -166,10 +166,10 @@ public partial class MainWindow
     }
 
     /// <summary>
-		/// Function to handle idle time for the application.
-		/// </summary>
-		/// <returns><b>true</b> to continue processing, <b>false</b> to stop.</returns>
-		private bool Idle()
+        /// Function to handle idle time for the application.
+        /// </summary>
+        /// <returns><b>true</b> to continue processing, <b>false</b> to stop.</returns>
+        private bool Idle()
     {
         int jitter1 = GorgonRandom.RandomInt32(1, 3);
         int jitter2 = GorgonRandom.RandomInt32(1, 3);
@@ -332,7 +332,7 @@ public partial class MainWindow
             // The D3DImage object we're passing in is a standard WPF Image control with a D3D11Image object assigned to 
             // its ImageSource property.
             _target = new GorgonWpfTarget(_graphics, new GorgonWpfTargetInfo(D3DImage, "WPF Render Target"));
-                            
+
             Initialize();
 
             // This is where we kick off our rendering. And again, unlike the Windows Forms version of the example, we 

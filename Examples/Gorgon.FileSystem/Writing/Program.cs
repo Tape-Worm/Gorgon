@@ -50,7 +50,7 @@ internal static class Program
     /// <summary>
     /// Property to return the directory where we'll be writing into.
     /// </summary>
-	    public static DirectoryInfo WriteDirectory
+        public static DirectoryInfo WriteDirectory
     {
         get;
         private set;

@@ -101,7 +101,7 @@ partial class GorgonSearchBox
         this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
         this.BackColor = System.Drawing.Color.White;
         this.Controls.Add(this.tableLayoutPanel1);
-        this.Font = new System.Drawing.Font("Segoe UI", 9F);
+        
         this.Name = "GorgonSearchBox";
         this.Size = new System.Drawing.Size(289, 24);
         this.tableLayoutPanel1.ResumeLayout(false);

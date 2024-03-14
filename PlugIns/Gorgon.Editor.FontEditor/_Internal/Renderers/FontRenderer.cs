@@ -99,7 +99,7 @@ internal class FontRenderer
     protected override void OnRenderBackground()
     {
         base.OnRenderBackground();
-                    
+
         Renderer.Begin(camera: Camera);
         Renderer.DrawFilledRectangle(new DX.RectangleF(RenderRegion.Width * -0.5f, RenderRegion.Height * -0.5f, RenderRegion.Width, RenderRegion.Height), new GorgonColor(GorgonColor.Black, 0.35f));
         Renderer.End();

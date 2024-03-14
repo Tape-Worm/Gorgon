@@ -110,14 +110,14 @@ public class GorgonAvaloniaSwapChainControl
     {
         AvaloniaSwapChain swapChain = Interlocked.Exchange(ref _swapChain, null);
         CompositionDrawingSurface surface = Interlocked.Exchange(ref _surface, null);
-        
+
         Interlocked.Exchange(ref _visual, null);
-        
+
         if (swapChain is not null)
         {
             await swapChain.DisposeAsync();
         }
-        
+
         surface?.Dispose();             
     }
 
@@ -134,12 +134,12 @@ public class GorgonAvaloniaSwapChainControl
     protected async override void OnDetachedFromLogicalTree(LogicalTreeAttachmentEventArgs e)
     {
         _idle = null;
-        
+
         await CleanupAsync();
 
         base.OnDetachedFromLogicalTree(e);
     }
-    
+
     /// <summary>
     /// Function to perform an update during the idle loop.
     /// </summary>
@@ -158,7 +158,7 @@ public class GorgonAvaloniaSwapChainControl
         {
             return;
         }
-        
+
         Vector2 oldSize = new((float)_visual.Size.X, (float)_visual.Size.Y);
         Vector2 newSize = new((float)Bounds.Width, (float)Bounds.Height);
 
@@ -168,7 +168,7 @@ public class GorgonAvaloniaSwapChainControl
         {
             OnResize(new RoutedEventArgs(ResizedEvent));
         }
-        
+
         GorgonRenderTarget2DView target = _swapChain.BeginRendering(PixelSize.FromSize(Bounds.Size, root.RenderScaling));
 
         // Reset the swap chain to nothing on next present (otherwise avalonia might set it for us and we'll lose track of it).

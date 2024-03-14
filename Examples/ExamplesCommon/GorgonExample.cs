@@ -348,7 +348,7 @@ public static class GorgonExample
             Usage = ResourceUsage.Immutable
         });
     }
-    
+
     /// <summary>
     /// Function to initialize the application.
     /// </summary>

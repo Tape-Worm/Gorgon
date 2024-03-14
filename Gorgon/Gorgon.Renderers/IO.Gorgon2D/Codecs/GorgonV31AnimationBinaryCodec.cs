@@ -382,7 +382,7 @@ public class GorgonV31AnimationBinaryCodec
         {
             return;
         }
-        
+
         for (int i = 0; i < trackCount; ++i)
         {                
             string trackName = binReader.ReadString();
@@ -500,7 +500,7 @@ public class GorgonV31AnimationBinaryCodec
                     binReader.BaseStream.Position += Unsafe.SizeOf<DX.RectangleF>() + sizeof(int);
                 }
             }
-            
+
 
             return result;
         }

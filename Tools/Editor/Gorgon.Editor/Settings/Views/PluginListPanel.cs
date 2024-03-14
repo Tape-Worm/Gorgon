@@ -45,11 +45,11 @@ internal partial class PlugInListPanel
     #region Properties.
     /// <summary>Property to return the ID of the panel.</summary>
     [Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-    public override string PanelID => DataContext?.ID.ToString() ?? Guid.Empty.ToString();
+    public override string PanelID => ViewModel?.ID.ToString() ?? Guid.Empty.ToString();
 
     /// <summary>Property to return the data context assigned to this view.</summary>
     [Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-    public ISettingsPlugInsList DataContext
+    public ISettingsPlugInsList ViewModel
     {
         get;
         private set;
@@ -65,7 +65,7 @@ internal partial class PlugInListPanel
         switch (e.PropertyName)
         {
             case nameof(ISettingsPlugInsList.Current):
-                TextStatus.Text = DataContext.Current?.DisabledReason ?? string.Empty;
+                TextStatus.Text = ViewModel.Current?.DisabledReason ?? string.Empty;
                 break;
         }
     }
@@ -76,12 +76,12 @@ internal partial class PlugInListPanel
     private void ListPlugIns_SelectedIndexChanged(object sender, EventArgs e)
     {
         int selectedIndex = ListPlugIns.SelectedIndices.Count > 0 ? ListPlugIns.SelectedIndices[0] : -1;
-        if ((DataContext?.SelectPlugInCommand is null) || (!DataContext.SelectPlugInCommand.CanExecute(selectedIndex)))
+        if ((ViewModel?.SelectPlugInCommand is null) || (!ViewModel.SelectPlugInCommand.CanExecute(selectedIndex)))
         {
             return;
         }
 
-        DataContext.SelectPlugInCommand.Execute(selectedIndex);
+        ViewModel.SelectPlugInCommand.Execute(selectedIndex);
     }
 
     /// <summary>
@@ -153,12 +153,12 @@ internal partial class PlugInListPanel
     /// </summary>
     private void UnassignEvents()
     {
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             return;
         }
 
-        DataContext.PropertyChanged -= DataContext_PropertyChanged;
+        ViewModel.PropertyChanged -= DataContext_PropertyChanged;
     }
 
     /// <summary>
@@ -194,14 +194,14 @@ internal partial class PlugInListPanel
         UnassignEvents();
 
         InitializeFromDataContext(dataContext);
-        DataContext = dataContext;
+        ViewModel = dataContext;
 
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             return;
         }
 
-        DataContext.PropertyChanged += DataContext_PropertyChanged;
+        ViewModel.PropertyChanged += DataContext_PropertyChanged;
     }
     #endregion
 

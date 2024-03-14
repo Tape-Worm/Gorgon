@@ -132,7 +132,7 @@ internal class TextureEditorContext
             {
                 return;
             }
-                            
+
             _currentPanel.PropertyChanged += CurrentPanel_PropertyChanged;
             _currentPanel.WaitPanelActivated += CurrentPanel_WaitPanelActivated;
             _currentPanel.WaitPanelDeactivated += CurrentPanel_WaitPanelDeactivated;
@@ -713,7 +713,7 @@ internal class TextureEditorContext
                 SolidBrush.Brush = FontSolidBrush.DefaultBrush;
                 SolidBrush.OriginalColor = FontSolidBrush.DefaultBrush.Color;
             }
-            
+
             CurrentPanel = SolidBrush;
         }
         catch (Exception ex)

@@ -383,7 +383,7 @@ public class ParticleEmitter
                 particle.Position = Vector2.Add(_previousPosition, posVar);
                 particle.Position.X += GorgonRandom.RandomSingle(-2, 2);
                 particle.Position.Y += GorgonRandom.RandomSingle(-2, 2);
-                
+
                 float spreadRad = Spread.ToRadians();
                 float angle = Direction.ToRadians() - pi2 + GorgonRandom.RandomSingle(0, spreadRad) - spreadRad * 0.5f;
                 if (Relative)

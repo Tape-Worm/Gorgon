@@ -65,9 +65,9 @@ public class AnimationData
     } = 1.0f;
 
     /// <summary>
-		/// Property to return the length of the animation (in seconds).
-		/// </summary>
-		public float Length
+        /// Property to return the length of the animation (in seconds).
+        /// </summary>
+        public float Length
     {
         get;
     }

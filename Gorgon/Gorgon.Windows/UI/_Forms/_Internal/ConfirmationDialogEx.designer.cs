@@ -1,4 +1,4 @@
-#region MIT.
+﻿#region MIT.
 // 
 // Gorgon.
 // Copyright (C) 2011 Michael Winsor
@@ -29,81 +29,88 @@ using System.Windows.Forms;
 
 namespace Gorgon.UI;
 
-	partial class ConfirmationDialogEx
-	{
-		/// <summary>
-		/// Required designer variable.
-		/// </summary>
-		private IContainer components = null;
+    partial class ConfirmationDialogEx
+    {
+        /// <summary>
+        /// Required designer variable.
+        /// </summary>
+        private IContainer components = null;
 
-		/// <summary>
-		/// Clean up any resources being used.
-		/// </summary>
-		/// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
-		protected override void Dispose(bool disposing)
-		{
-			if (disposing && (components != null))
-			{
-				components.Dispose();
-			}
-			base.Dispose(disposing);
-		}
+        /// <summary>
+        /// Clean up any resources being used.
+        /// </summary>
+        /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing && (components != null))
+            {
+                components.Dispose();
+            }
+            base.Dispose(disposing);
+        }
 
-		#region Windows Form Designer generated code
+    #region Windows Form Designer generated code
 
-		/// <summary>
-		/// Required method for Designer support - do not modify
-		/// the contents of this method with the code editor.
-		/// </summary>
-		private void InitializeComponent()
-		{
-			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ConfirmationDialogEx));
-			this.checkToAll = new System.Windows.Forms.CheckBox();
-			((System.ComponentModel.ISupportInitialize)(this.pictureDialog)).BeginInit();
-			this.SuspendLayout();
-			// 
-			// buttonNo
-			// 
-			this.buttonNo.FlatAppearance.BorderColor = System.Drawing.Color.Black;
-			this.buttonNo.FlatAppearance.MouseDownBackColor = System.Drawing.SystemColors.ControlDark;
-			this.buttonNo.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
-			// 
-			// buttonCancel
-			// 
-			this.buttonCancel.FlatAppearance.BorderColor = System.Drawing.Color.Black;
-			this.buttonCancel.FlatAppearance.MouseDownBackColor = System.Drawing.SystemColors.ControlDark;
-			this.buttonCancel.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
-			// 
-			// buttonOK
-			// 
-			this.buttonOK.FlatAppearance.BorderColor = System.Drawing.Color.Black;
-			this.buttonOK.FlatAppearance.MouseDownBackColor = System.Drawing.SystemColors.ControlDark;
-			this.buttonOK.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
-			resources.ApplyResources(this.buttonOK, "buttonOK");
-			// 
-			// checkToAll
-			// 
-			resources.ApplyResources(this.checkToAll, "checkToAll");
-			this.checkToAll.BackColor = System.Drawing.Color.White;
-			this.checkToAll.Name = "checkToAll";
-			this.checkToAll.UseVisualStyleBackColor = false;
-			// 
-			// ConfirmationDialogEx
-			// 
-			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Inherit;
-			resources.ApplyResources(this, "$this");
-			this.Controls.Add(this.checkToAll);
-			this.Name = "ConfirmationDialogEx";
-			this.Controls.SetChildIndex(this.pictureDialog, 0);
-			this.Controls.SetChildIndex(this.buttonOK, 0);
-			this.Controls.SetChildIndex(this.buttonCancel, 0);
-			this.Controls.SetChildIndex(this.buttonNo, 0);
-			this.Controls.SetChildIndex(this.checkToAll, 0);
-			((System.ComponentModel.ISupportInitialize)(this.pictureDialog)).EndInit();
-			this.ResumeLayout(false);
-			this.PerformLayout();
-
-		}
+    /// <summary>
+    /// Required method for Designer support - do not modify
+    /// the contents of this method with the code editor.
+    /// </summary>
+    private void InitializeComponent()
+    {
+        checkToAll = new CheckBox();
+        ((ISupportInitialize)pictureDialog).BeginInit();
+        SuspendLayout();
+        // 
+        // buttonNo
+        // 
+        buttonNo.FlatAppearance.BorderColor = System.Drawing.Color.Black;
+        buttonNo.FlatAppearance.MouseDownBackColor = System.Drawing.SystemColors.ControlDark;
+        buttonNo.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(224, 224, 224);
+        // 
+        // buttonCancel
+        // 
+        buttonCancel.FlatAppearance.BorderColor = System.Drawing.Color.Black;
+        buttonCancel.FlatAppearance.MouseDownBackColor = System.Drawing.SystemColors.ControlDark;
+        buttonCancel.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(224, 224, 224);
+        // 
+        // buttonOK
+        // 
+        buttonOK.FlatAppearance.BorderColor = System.Drawing.Color.Black;
+        buttonOK.FlatAppearance.MouseDownBackColor = System.Drawing.SystemColors.ControlDark;
+        buttonOK.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(224, 224, 224);
+        buttonOK.Location = new System.Drawing.Point(11, 78);
+        // 
+        // checkToAll
+        // 
+        checkToAll.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
+        checkToAll.AutoSize = true;
+        checkToAll.BackColor = System.Drawing.Color.White;
+        checkToAll.Font = new System.Drawing.Font("Segoe UI", 9F);
+        checkToAll.ImeMode = ImeMode.NoControl;
+        checkToAll.Location = new System.Drawing.Point(3, 131);
+        checkToAll.Name = "checkToAll";
+        checkToAll.Padding = new Padding(3, 0, 0, 0);
+        checkToAll.Size = new System.Drawing.Size(61, 19);
+        checkToAll.TabIndex = 13;
+        checkToAll.Text = "&To all?";
+        checkToAll.UseVisualStyleBackColor = false;
+        // 
+        // ConfirmationDialogEx
+        // 
+        AutoScaleMode = AutoScaleMode.Inherit;
+        ClientSize = new System.Drawing.Size(303, 150);
+        Controls.Add(checkToAll);
+        Location = new System.Drawing.Point(0, 0);
+        Name = "ConfirmationDialogEx";
+        Controls.SetChildIndex(pictureDialog, 0);
+        Controls.SetChildIndex(buttonOK, 0);
+        Controls.SetChildIndex(buttonCancel, 0);
+        Controls.SetChildIndex(buttonNo, 0);
+        Controls.SetChildIndex(checkToAll, 0);
+        ((ISupportInitialize)pictureDialog).EndInit();
+        ResumeLayout(false);
+        PerformLayout();
+    }
 
     #endregion
 

@@ -23,7 +23,7 @@ partial class FontSolidBrushView
         if (disposing)
         {
             UnassignEvents();
-            DataContext?.Unload();
+            ViewModel?.Unload();
         }
 
         base.Dispose(disposing);

@@ -181,7 +181,7 @@ public class GorgonImageBuffer
         uint alpha = (uint)(alphaValue * 255.0f);
         uint min = (uint)(updateAlphaRange.Value.Minimum * 255.0f);
         uint max = (uint)(updateAlphaRange.Value.Maximum * 255.0f);
-        
+
         for (int y = region.Value.Top; y <= region.Value.Bottom; ++y)
         {
             if (y < 0)

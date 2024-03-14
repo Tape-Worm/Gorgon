@@ -58,7 +58,7 @@ public class GorgonRingPool<T>
     /// When this value is 0, then the pool is full and should be reset using the <see cref="Reset"/> method.
     /// </remarks>
     /// <seealso cref="Reset"/>
-	    public int AvailableSlots => TotalSize - (_currentItem + 1);
+        public int AvailableSlots => TotalSize - (_currentItem + 1);
     #endregion
 
     #region Methods.

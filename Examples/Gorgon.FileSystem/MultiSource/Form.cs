@@ -415,6 +415,14 @@ public partial class Form
     /// <summary>
     /// Initializes a new instance of the <see cref="Form" /> class.
     /// </summary>
-    public Form() => InitializeComponent();
+    public Form()
+    {
+        InitializeComponent();
+
+        imageTree.ImageSize = new Size(16, 16);
+        imageTree.Images.Add(Properties.Resources.folder_16x16);
+        imageTree.Images.Add(Properties.Resources.document_text_16x16);
+        imageTree.Images.Add(Properties.Resources.packed_file_16x16);
+    }
     #endregion
 }

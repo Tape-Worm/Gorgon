@@ -23,15 +23,15 @@ using System;
 [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
 [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
 internal class Resources {
-    
+
     private static global::System.Resources.ResourceManager resourceMan;
-    
+
     private static global::System.Globalization.CultureInfo resourceCulture;
-    
+
     [global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
     internal Resources() {
     }
-    
+
     /// <summary>
     ///   Returns the cached ResourceManager instance used by this class.
     /// </summary>
@@ -45,7 +45,7 @@ internal class Resources {
             return resourceMan;
         }
     }
-    
+
     /// <summary>
     ///   Overrides the current thread's CurrentUICulture property for all
     ///   resource lookups using this strongly typed resource class.
@@ -59,7 +59,7 @@ internal class Resources {
             resourceCulture = value;
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized resource of type System.Drawing.Bitmap.
     /// </summary>
@@ -69,7 +69,7 @@ internal class Resources {
             return ((System.Drawing.Bitmap)(obj));
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized resource of type System.Drawing.Bitmap.
     /// </summary>
@@ -79,7 +79,7 @@ internal class Resources {
             return ((System.Drawing.Bitmap)(obj));
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized resource of type System.Drawing.Bitmap.
     /// </summary>
@@ -89,7 +89,7 @@ internal class Resources {
             return ((System.Drawing.Bitmap)(obj));
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized resource of type System.Drawing.Bitmap.
     /// </summary>
@@ -99,7 +99,7 @@ internal class Resources {
             return ((System.Drawing.Bitmap)(obj));
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized resource of type System.Drawing.Bitmap.
     /// </summary>
@@ -109,7 +109,7 @@ internal class Resources {
             return ((System.Drawing.Bitmap)(obj));
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized resource of type System.Byte[].
     /// </summary>
@@ -119,7 +119,7 @@ internal class Resources {
             return ((byte[])(obj));
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized resource of type System.Drawing.Bitmap.
     /// </summary>
@@ -129,7 +129,7 @@ internal class Resources {
             return ((System.Drawing.Bitmap)(obj));
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized resource of type System.Drawing.Bitmap.
     /// </summary>
@@ -139,7 +139,7 @@ internal class Resources {
             return ((System.Drawing.Bitmap)(obj));
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized resource of type System.Drawing.Bitmap.
     /// </summary>
@@ -149,7 +149,7 @@ internal class Resources {
             return ((System.Drawing.Bitmap)(obj));
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized resource of type System.Drawing.Bitmap.
     /// </summary>
@@ -159,7 +159,7 @@ internal class Resources {
             return ((System.Drawing.Bitmap)(obj));
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized resource of type System.Drawing.Bitmap.
     /// </summary>
@@ -169,7 +169,7 @@ internal class Resources {
             return ((System.Drawing.Bitmap)(obj));
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized resource of type System.Drawing.Bitmap.
     /// </summary>
@@ -179,7 +179,7 @@ internal class Resources {
             return ((System.Drawing.Bitmap)(obj));
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized resource of type System.Drawing.Bitmap.
     /// </summary>
@@ -189,7 +189,7 @@ internal class Resources {
             return ((System.Drawing.Bitmap)(obj));
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized resource of type System.Drawing.Bitmap.
     /// </summary>
@@ -199,7 +199,7 @@ internal class Resources {
             return ((System.Drawing.Bitmap)(obj));
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized resource of type System.Drawing.Bitmap.
     /// </summary>
@@ -209,7 +209,7 @@ internal class Resources {
             return ((System.Drawing.Bitmap)(obj));
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized resource of type System.Drawing.Bitmap.
     /// </summary>
@@ -219,7 +219,7 @@ internal class Resources {
             return ((System.Drawing.Bitmap)(obj));
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized resource of type System.Drawing.Bitmap.
     /// </summary>
@@ -229,7 +229,7 @@ internal class Resources {
             return ((System.Drawing.Bitmap)(obj));
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized resource of type System.Drawing.Bitmap.
     /// </summary>
@@ -239,7 +239,7 @@ internal class Resources {
             return ((System.Drawing.Bitmap)(obj));
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized resource of type System.Drawing.Bitmap.
     /// </summary>
@@ -249,7 +249,7 @@ internal class Resources {
             return ((System.Drawing.Bitmap)(obj));
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized resource of type System.Drawing.Bitmap.
     /// </summary>
@@ -259,7 +259,7 @@ internal class Resources {
             return ((System.Drawing.Bitmap)(obj));
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized resource of type System.Drawing.Bitmap.
     /// </summary>
@@ -269,7 +269,7 @@ internal class Resources {
             return ((System.Drawing.Bitmap)(obj));
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized resource of type System.Drawing.Bitmap.
     /// </summary>
@@ -279,7 +279,7 @@ internal class Resources {
             return ((System.Drawing.Bitmap)(obj));
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized resource of type System.Byte[].
     /// </summary>
@@ -289,7 +289,7 @@ internal class Resources {
             return ((byte[])(obj));
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized resource of type System.Drawing.Bitmap.
     /// </summary>
@@ -299,7 +299,7 @@ internal class Resources {
             return ((System.Drawing.Bitmap)(obj));
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized resource of type System.Drawing.Bitmap.
     /// </summary>
@@ -309,7 +309,7 @@ internal class Resources {
             return ((System.Drawing.Bitmap)(obj));
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized resource of type System.Drawing.Bitmap.
     /// </summary>
@@ -319,7 +319,7 @@ internal class Resources {
             return ((System.Drawing.Bitmap)(obj));
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized resource of type System.Drawing.Bitmap.
     /// </summary>
@@ -329,7 +329,7 @@ internal class Resources {
             return ((System.Drawing.Bitmap)(obj));
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized resource of type System.Drawing.Bitmap.
     /// </summary>
@@ -339,7 +339,7 @@ internal class Resources {
             return ((System.Drawing.Bitmap)(obj));
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized resource of type System.Drawing.Bitmap.
     /// </summary>
@@ -349,7 +349,7 @@ internal class Resources {
             return ((System.Drawing.Bitmap)(obj));
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized resource of type System.Drawing.Bitmap.
     /// </summary>
@@ -359,7 +359,7 @@ internal class Resources {
             return ((System.Drawing.Bitmap)(obj));
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized resource of type System.Drawing.Bitmap.
     /// </summary>
@@ -369,7 +369,7 @@ internal class Resources {
             return ((System.Drawing.Bitmap)(obj));
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized resource of type System.Drawing.Bitmap.
     /// </summary>
@@ -379,7 +379,7 @@ internal class Resources {
             return ((System.Drawing.Bitmap)(obj));
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized resource of type System.Drawing.Bitmap.
     /// </summary>
@@ -389,7 +389,7 @@ internal class Resources {
             return ((System.Drawing.Bitmap)(obj));
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized resource of type System.Drawing.Bitmap.
     /// </summary>
@@ -399,7 +399,7 @@ internal class Resources {
             return ((System.Drawing.Bitmap)(obj));
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized resource of type System.Drawing.Bitmap.
     /// </summary>
@@ -409,7 +409,7 @@ internal class Resources {
             return ((System.Drawing.Bitmap)(obj));
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized resource of type System.Byte[].
     /// </summary>
@@ -419,7 +419,7 @@ internal class Resources {
             return ((byte[])(obj));
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized resource of type System.Drawing.Bitmap.
     /// </summary>
@@ -429,7 +429,7 @@ internal class Resources {
             return ((System.Drawing.Bitmap)(obj));
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized resource of type System.Drawing.Bitmap.
     /// </summary>
@@ -439,7 +439,7 @@ internal class Resources {
             return ((System.Drawing.Bitmap)(obj));
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to New Animation.
     /// </summary>
@@ -448,7 +448,7 @@ internal class Resources {
             return ResourceManager.GetString("GORANM_CAPTION_ANIMATION_NAME", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to Select a codec plug in DLL.
     /// </summary>
@@ -457,7 +457,7 @@ internal class Resources {
             return ResourceManager.GetString("GORANM_CAPTION_SELECT_CODEC_DLL", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to This will clear the animation tracks and key frames.
     ///
@@ -468,7 +468,7 @@ internal class Resources {
             return ResourceManager.GetString("GORANM_CONFIRM_CLEAR_ANIM", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to This will remove all keyframes from the animation.
     ///
@@ -479,7 +479,7 @@ internal class Resources {
             return ResourceManager.GetString("GORANM_CONFIRM_CLEAR_KEYFRAMES", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to The animation &apos;{0}&apos; has unsaved changes. 
     ///
@@ -490,7 +490,7 @@ internal class Resources {
             return ResourceManager.GetString("GORANM_CONFIRM_CLOSE", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to This will remove all the selected tracks and their key frames.
     ///
@@ -501,7 +501,7 @@ internal class Resources {
             return ResourceManager.GetString("GORANM_CONFIRM_DELETE_TRACKS", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to This will remove all codecs associated with the &apos;{0}&apos; plug in.
     ///
@@ -512,7 +512,7 @@ internal class Resources {
             return ResourceManager.GetString("GORANM_CONFIRM_REMOVE_CODECS", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to This will remove all selected keyframes from the animation.
     ///
@@ -523,7 +523,7 @@ internal class Resources {
             return ResourceManager.GetString("GORANM_CONFIRM_REMOVE_KEYFRAMES", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to The animation &apos;{0}&apos; already exists.
     ///
@@ -534,7 +534,7 @@ internal class Resources {
             return ResourceManager.GetString("GORANM_CONFIRM_SPRITE_EXISTS", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to The new animation length is shorter than the original length.  Some key frames may be lost.
     ///
@@ -545,7 +545,7 @@ internal class Resources {
             return ResourceManager.GetString("GORANM_CONFIRM_TRUNCATE", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to Animation.
     /// </summary>
@@ -554,7 +554,7 @@ internal class Resources {
             return ResourceManager.GetString("GORANM_CONTENT_TYPE", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to Editor.
     /// </summary>
@@ -563,7 +563,7 @@ internal class Resources {
             return ResourceManager.GetString("GORANM_DEFAULT_TITLE", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to Gorgon Animation Editor.
     /// </summary>
@@ -572,7 +572,7 @@ internal class Resources {
             return ResourceManager.GetString("GORANM_DESC", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to Add tracks.
     /// </summary>
@@ -581,7 +581,7 @@ internal class Resources {
             return ResourceManager.GetString("GORANM_DESC_UNDO_ADDTRACKS", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to Resize animation..
     /// </summary>
@@ -590,7 +590,7 @@ internal class Resources {
             return ResourceManager.GetString("GORANM_DESC_UNDO_ANIMATION_RESIZE", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to Copy keyframes..
     /// </summary>
@@ -599,7 +599,7 @@ internal class Resources {
             return ResourceManager.GetString("GORANM_DESC_UNDO_COPYKEYS", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to Move keyframes..
     /// </summary>
@@ -608,7 +608,7 @@ internal class Resources {
             return ResourceManager.GetString("GORANM_DESC_UNDO_MOVEKEYS", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to Remove keyframes..
     /// </summary>
@@ -617,7 +617,7 @@ internal class Resources {
             return ResourceManager.GetString("GORANM_DESC_UNDO_REMOVE_KEYFRAMES", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to Remove tracks.
     /// </summary>
@@ -626,7 +626,7 @@ internal class Resources {
             return ResourceManager.GetString("GORANM_DESC_UNDO_REMOVETRACKS", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to Keyframe assignment.
     /// </summary>
@@ -635,7 +635,7 @@ internal class Resources {
             return ResourceManager.GetString("GORANM_DESC_UNDO_SET_KEY", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to Track {0} interpolation..
     /// </summary>
@@ -644,7 +644,7 @@ internal class Resources {
             return ResourceManager.GetString("GORANM_DESC_UNDO_TRACK_INTERPOLATION", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to There was an error activating the key editor.
     ///
@@ -655,7 +655,7 @@ internal class Resources {
             return ResourceManager.GetString("GORANM_ERR_ACTIVATE_KEY_EDITOR", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to There was an error adding the selected track(s).
     ///
@@ -666,7 +666,7 @@ internal class Resources {
             return ResourceManager.GetString("GORANM_ERR_ADD_TRACK", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to The animation &apos;{0}&apos; was not found in the file system..
     /// </summary>
@@ -675,7 +675,7 @@ internal class Resources {
             return ResourceManager.GetString("GORANM_ERR_ANIMATION_NOT_FOUND", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to There was an error while applying the properties to the animation.
     ///
@@ -686,7 +686,7 @@ internal class Resources {
             return ResourceManager.GetString("GORANM_ERR_APPLY_PROPERTIES", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to There was an error assigning the key frames to the track &apos;{0}&apos;.
     ///
@@ -697,7 +697,7 @@ internal class Resources {
             return ResourceManager.GetString("GORANM_ERR_ASSIGN_KEYFRAMES", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to There was an error opening the keyframe value editor.
     ///
@@ -708,7 +708,7 @@ internal class Resources {
             return ResourceManager.GetString("GORANM_ERR_CANNOT_DISPLAY_EDITOR", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to There was an error while playing the animation..
     /// </summary>
@@ -717,7 +717,7 @@ internal class Resources {
             return ResourceManager.GetString("GORANM_ERR_CANNOT_PLAY_ANIMATION", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to There was an error while stopping the animation..
     /// </summary>
@@ -726,7 +726,7 @@ internal class Resources {
             return ResourceManager.GetString("GORANM_ERR_CANNOT_STOP_ANIMATION", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to There was an error clearing the animation tracks/keys.
     ///
@@ -737,7 +737,7 @@ internal class Resources {
             return ResourceManager.GetString("GORANM_ERR_CLEAR_ANIMATION", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to There was an error trying to clear the keyframes.
     ///
@@ -748,7 +748,7 @@ internal class Resources {
             return ResourceManager.GetString("GORANM_ERR_CLEAR_KEYFRAMES", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to The codec &apos;{0}&apos; was already loaded..
     /// </summary>
@@ -757,7 +757,7 @@ internal class Resources {
             return ResourceManager.GetString("GORANM_ERR_CODEC_ALREADY_LOADED", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to There were errors while trying to load the codec plug in.
     ///
@@ -768,7 +768,7 @@ internal class Resources {
             return ResourceManager.GetString("GORANM_ERR_CODEC_LOAD_ERRORS_PRESENT", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to There was an error loading the &apos;{0}&apos; codec..
     /// </summary>
@@ -777,7 +777,7 @@ internal class Resources {
             return ResourceManager.GetString("GORANM_ERR_CODEC_LOAD_FAIL", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to The codec plug in &apos;{0}&apos; was already loaded..
     /// </summary>
@@ -786,7 +786,7 @@ internal class Resources {
             return ResourceManager.GetString("GORANM_ERR_CODEC_PLUGIN_ALREADY_LOADED", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to There was an error copying the keyframes.
     ///
@@ -797,7 +797,7 @@ internal class Resources {
             return ResourceManager.GetString("GORANM_ERR_COPY_KEYFRAMES", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to There was an error copying the keyframes.
     ///
@@ -808,7 +808,7 @@ internal class Resources {
             return ResourceManager.GetString("GORANM_ERR_COPYING_KEYFRAMES", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to There was an error creating the new animation and the editor must now close.
     ///
@@ -819,7 +819,7 @@ internal class Resources {
             return ResourceManager.GetString("GORANM_ERR_CREATE_ANIMATION", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to There was an error cutting the keyframes.
     ///
@@ -830,7 +830,7 @@ internal class Resources {
             return ResourceManager.GetString("GORANM_ERR_CUT_KEYFRAMES", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to There was an error deleting the selected tracks.
     ///
@@ -841,7 +841,7 @@ internal class Resources {
             return ResourceManager.GetString("GORANM_ERR_DELETE_TRACKS", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to There is already file or directory on the file system with the name &apos;{0}&apos;.
     ///
@@ -852,7 +852,7 @@ internal class Resources {
             return ResourceManager.GetString("GORANM_ERR_FILESYSTEM_ITEM_EXISTS", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to There was an error loading the background image.
     ///
@@ -863,7 +863,7 @@ internal class Resources {
             return ResourceManager.GetString("GORANM_ERR_LOAD_BG_IMAGE", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to There was an error moving the keyframes.
     ///
@@ -874,7 +874,7 @@ internal class Resources {
             return ResourceManager.GetString("GORANM_ERR_MOVING_KEYFRAMES", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to The DLL &apos;{0}&apos; does not contain any animation codecs.
     ///
@@ -885,7 +885,7 @@ internal class Resources {
             return ResourceManager.GetString("GORANM_ERR_NO_CODECS", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to The file &apos;{0}&apos; is not a sprite file.
     ///
@@ -896,7 +896,7 @@ internal class Resources {
             return ResourceManager.GetString("GORANM_ERR_NOT_SPRITE", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to There was an error pasting the keyframes.
     ///
@@ -907,7 +907,7 @@ internal class Resources {
             return ResourceManager.GetString("GORANM_ERR_PASTE_KEYFRAMES", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to There was an error using &apos;{0}&apos; as the primary sprite..
     /// </summary>
@@ -916,7 +916,7 @@ internal class Resources {
             return ResourceManager.GetString("GORANM_ERR_PRIMARY_SPRITE_LOAD", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to There was an error performing the redo action.
     ///
@@ -927,7 +927,7 @@ internal class Resources {
             return ResourceManager.GetString("GORANM_ERR_REDO", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to There was an error removing the selected keyframes..
     /// </summary>
@@ -936,7 +936,7 @@ internal class Resources {
             return ResourceManager.GetString("GORANM_ERR_REMOVE_KEYFRAMES", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to There was an error saving the animation.
     ///
@@ -947,7 +947,7 @@ internal class Resources {
             return ResourceManager.GetString("GORANM_ERR_SAVE", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to There was an error selecting a track or tracks.
     ///
@@ -958,7 +958,7 @@ internal class Resources {
             return ResourceManager.GetString("GORANM_ERR_SELECTING_TRACK", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to There was an error assigning value(s) to the selected key(s).
     ///
@@ -969,7 +969,7 @@ internal class Resources {
             return ResourceManager.GetString("GORANM_ERR_SETTING_KEY", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to There was an error displaying the add track panel.
     ///
@@ -980,7 +980,7 @@ internal class Resources {
             return ResourceManager.GetString("GORANM_ERR_SHOW_ADD_TRACK", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to There was an error displaying the animation properties panel.
     ///
@@ -991,7 +991,7 @@ internal class Resources {
             return ResourceManager.GetString("GORANM_ERR_SHOW_PROPERTIES", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to There was an error assigning the track interpolation to the &apos;{0}&apos; track.
     ///
@@ -1002,7 +1002,7 @@ internal class Resources {
             return ResourceManager.GetString("GORANM_ERR_TRACK_INTERPOLATION", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to There was an error performing the undo action.
     ///
@@ -1013,7 +1013,7 @@ internal class Resources {
             return ResourceManager.GetString("GORANM_ERR_UNDO", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to Codec plug in file (*.dll)|*.dll.
     /// </summary>
@@ -1022,7 +1022,7 @@ internal class Resources {
             return ResourceManager.GetString("GORANM_FILTER_SELECT_CODEC", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to Gorgon Animation Importer.
     /// </summary>
@@ -1031,7 +1031,7 @@ internal class Resources {
             return ResourceManager.GetString("GORANM_IMPORT_DESC", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to Enter a name for the animation....
     /// </summary>
@@ -1040,7 +1040,7 @@ internal class Resources {
             return ResourceManager.GetString("GORANM_TEXT_CUE_ANIMATION_NAME", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to Value {0}.
     /// </summary>
@@ -1049,7 +1049,7 @@ internal class Resources {
             return ResourceManager.GetString("GORANM_TEXT_DEFAULT_VALUE_NAME", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to Frame count: {0}.
     /// </summary>
@@ -1058,7 +1058,7 @@ internal class Resources {
             return ResourceManager.GetString("GORANM_TEXT_FRAME_COUNT", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to Height:.
     /// </summary>
@@ -1067,7 +1067,7 @@ internal class Resources {
             return ResourceManager.GetString("GORANM_TEXT_HEIGHT", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to Interpolation.
     /// </summary>
@@ -1076,7 +1076,7 @@ internal class Resources {
             return ResourceManager.GetString("GORANM_TEXT_INTERPOLATION", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to Loading &apos;{0}&apos;....
     /// </summary>
@@ -1085,7 +1085,7 @@ internal class Resources {
             return ResourceManager.GetString("GORANM_TEXT_LOADING", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to Please drag a sprite here to begin..
     /// </summary>
@@ -1094,7 +1094,7 @@ internal class Resources {
             return ResourceManager.GetString("GORANM_TEXT_NO_SPRITE", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to Please wait....
     /// </summary>
@@ -1103,7 +1103,7 @@ internal class Resources {
             return ResourceManager.GetString("GORANM_TEXT_PLEASE_WAIT", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to Saving....
     /// </summary>
@@ -1112,7 +1112,7 @@ internal class Resources {
             return ResourceManager.GetString("GORANM_TEXT_SAVING", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to seconds.
     /// </summary>
@@ -1121,7 +1121,7 @@ internal class Resources {
             return ResourceManager.GetString("GORANM_TEXT_SECONDS", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to Setting key....
     /// </summary>
@@ -1130,7 +1130,7 @@ internal class Resources {
             return ResourceManager.GetString("GORANM_TEXT_SETTING_KEY", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to Select a sprite from the file selector on the right panel, and either drag it here to set the key, or click Set Keyframe on the ribbon..
     /// </summary>
@@ -1139,7 +1139,7 @@ internal class Resources {
             return ResourceManager.GetString("GORANM_TEXT_TEXTURE_KEY_ASSIGN", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to Width:.
     /// </summary>
@@ -1148,7 +1148,7 @@ internal class Resources {
             return ResourceManager.GetString("GORANM_TEXT_WIDTH", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to X:.
     /// </summary>
@@ -1157,7 +1157,7 @@ internal class Resources {
             return ResourceManager.GetString("GORANM_TEXT_X", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to Y:.
     /// </summary>
@@ -1166,7 +1166,7 @@ internal class Resources {
             return ResourceManager.GetString("GORANM_TEXT_Y", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to Zoom: {0}.
     /// </summary>
@@ -1175,7 +1175,7 @@ internal class Resources {
             return ResourceManager.GetString("GORANM_TEXT_ZOOM_BUTTON", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to Texture key frame..
     /// </summary>
@@ -1184,7 +1184,7 @@ internal class Resources {
             return ResourceManager.GetString("GORANM_TOSTR_TEXTURE_KEYFRAME", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to This animation contains tracks that are not supported by the editor at this time. 
     ///
@@ -1197,7 +1197,7 @@ internal class Resources {
             return ResourceManager.GetString("GORANM_WRN_UNSUPPORTED_TRACKS", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized resource of type System.Drawing.Bitmap.
     /// </summary>
@@ -1207,7 +1207,7 @@ internal class Resources {
             return ((System.Drawing.Bitmap)(obj));
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized resource of type System.Drawing.Bitmap.
     /// </summary>
@@ -1217,7 +1217,7 @@ internal class Resources {
             return ((System.Drawing.Bitmap)(obj));
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized resource of type System.Drawing.Bitmap.
     /// </summary>
@@ -1227,7 +1227,7 @@ internal class Resources {
             return ((System.Drawing.Bitmap)(obj));
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized resource of type System.Drawing.Bitmap.
     /// </summary>
@@ -1237,7 +1237,7 @@ internal class Resources {
             return ((System.Drawing.Bitmap)(obj));
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized resource of type System.Drawing.Bitmap.
     /// </summary>
@@ -1247,7 +1247,7 @@ internal class Resources {
             return ((System.Drawing.Bitmap)(obj));
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized resource of type System.Drawing.Bitmap.
     /// </summary>
@@ -1257,7 +1257,7 @@ internal class Resources {
             return ((System.Drawing.Bitmap)(obj));
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized resource of type System.Drawing.Bitmap.
     /// </summary>
@@ -1267,7 +1267,7 @@ internal class Resources {
             return ((System.Drawing.Bitmap)(obj));
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized resource of type System.Drawing.Bitmap.
     /// </summary>
@@ -1277,7 +1277,7 @@ internal class Resources {
             return ((System.Drawing.Bitmap)(obj));
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized resource of type System.Drawing.Bitmap.
     /// </summary>
@@ -1287,7 +1287,7 @@ internal class Resources {
             return ((System.Drawing.Bitmap)(obj));
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized resource of type System.Drawing.Bitmap.
     /// </summary>
@@ -1297,7 +1297,7 @@ internal class Resources {
             return ((System.Drawing.Bitmap)(obj));
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized resource of type System.Drawing.Bitmap.
     /// </summary>
@@ -1307,7 +1307,7 @@ internal class Resources {
             return ((System.Drawing.Bitmap)(obj));
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized resource of type System.Drawing.Bitmap.
     /// </summary>
@@ -1317,7 +1317,7 @@ internal class Resources {
             return ((System.Drawing.Bitmap)(obj));
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized resource of type System.Drawing.Bitmap.
     /// </summary>
@@ -1327,7 +1327,7 @@ internal class Resources {
             return ((System.Drawing.Bitmap)(obj));
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized resource of type System.Drawing.Bitmap.
     /// </summary>
@@ -1337,7 +1337,7 @@ internal class Resources {
             return ((System.Drawing.Bitmap)(obj));
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized resource of type System.Drawing.Bitmap.
     /// </summary>
@@ -1347,7 +1347,7 @@ internal class Resources {
             return ((System.Drawing.Bitmap)(obj));
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized resource of type System.Drawing.Bitmap.
     /// </summary>
@@ -1357,7 +1357,7 @@ internal class Resources {
             return ((System.Drawing.Bitmap)(obj));
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized resource of type System.Drawing.Bitmap.
     /// </summary>
@@ -1367,7 +1367,7 @@ internal class Resources {
             return ((System.Drawing.Bitmap)(obj));
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized resource of type System.Drawing.Bitmap.
     /// </summary>
@@ -1377,7 +1377,7 @@ internal class Resources {
             return ((System.Drawing.Bitmap)(obj));
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized resource of type System.Drawing.Bitmap.
     /// </summary>
@@ -1387,7 +1387,7 @@ internal class Resources {
             return ((System.Drawing.Bitmap)(obj));
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized resource of type System.Drawing.Bitmap.
     /// </summary>
@@ -1397,7 +1397,7 @@ internal class Resources {
             return ((System.Drawing.Bitmap)(obj));
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized resource of type System.Drawing.Bitmap.
     /// </summary>
@@ -1407,7 +1407,7 @@ internal class Resources {
             return ((System.Drawing.Bitmap)(obj));
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized resource of type System.Drawing.Bitmap.
     /// </summary>
@@ -1417,7 +1417,7 @@ internal class Resources {
             return ((System.Drawing.Bitmap)(obj));
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized resource of type System.Drawing.Bitmap.
     /// </summary>
@@ -1427,7 +1427,7 @@ internal class Resources {
             return ((System.Drawing.Bitmap)(obj));
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized resource of type System.Drawing.Bitmap.
     /// </summary>

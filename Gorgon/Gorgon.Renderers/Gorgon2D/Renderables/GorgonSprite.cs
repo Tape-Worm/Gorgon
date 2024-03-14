@@ -242,7 +242,7 @@ public class GorgonSprite
 
             ref Vector2 anchor = ref Renderable.Anchor;
             ref DX.RectangleF bounds = ref Renderable.Bounds;
-            
+
             absAnchor = value;
 
             anchor.X = value.X / bounds.Width;
@@ -470,7 +470,7 @@ public class GorgonSprite
         {
             throw new ArgumentNullException(nameof(sprite));
         }
-        
+
         sprite.Bounds = Bounds;
         sprite.Anchor = Anchor;
         sprite._absoluteAnchor = _absoluteAnchor;
@@ -526,7 +526,7 @@ public class GorgonSprite
     {
         _cornerColors = new GorgonSpriteColors(GorgonColor.White, Renderable);
         _cornerOffsets = new GorgonRectangleOffsets(Renderable);
-        
+
         for (int i = 0; i < Renderable.Vertices.Length; ++i)
         {
             Renderable.Vertices[i].Position.W = 1.0f;

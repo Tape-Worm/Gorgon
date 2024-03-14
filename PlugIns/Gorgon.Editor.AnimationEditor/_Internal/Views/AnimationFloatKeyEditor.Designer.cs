@@ -20,7 +20,7 @@ partial class AnimationFloatKeyEditor
 
         if (disposing)
         {
-            DataContext?.Unload();
+            ViewModel?.Unload();
             UnassignEvents();
         }
 

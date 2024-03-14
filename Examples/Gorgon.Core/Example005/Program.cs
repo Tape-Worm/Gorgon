@@ -117,7 +117,7 @@ internal static class Program
     /// Function to write the contents of a value type to a stream using the GorgonBinaryWriter and reading it back again using the GorgonBinaryReader.
     /// </summary>
     /// <param name="stream">The stream that will receive the data.</param>
-	    private static void WriteByRefValueType(MemoryStream stream)
+        private static void WriteByRefValueType(MemoryStream stream)
     {
         stream.Position = 0;
         var writer = new GorgonBinaryWriter(stream, true);

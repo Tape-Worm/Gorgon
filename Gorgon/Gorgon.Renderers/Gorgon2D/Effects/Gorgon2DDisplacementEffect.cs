@@ -193,7 +193,7 @@ public class Gorgon2DDisplacementEffect
     /// <remarks>
     /// Use this method to set up the effect upon its creation.  For example, this method could be used to create the required shaders for the effect.
     /// </remarks>
-	    protected override void OnInitialize()
+        protected override void OnInitialize()
     {
         _displacementSettingsBuffer = GorgonConstantBufferView.CreateConstantBuffer(Graphics,
                                                                                     new
@@ -347,7 +347,7 @@ public class Gorgon2DDisplacementEffect
             EndRender(_currentRtv);                
             return false;
         }
-        
+
         return true;
     }
 

@@ -49,7 +49,7 @@ internal partial class FontTextureSizeView
     /// Property to return the data context for the view.
     /// </summary>
     [Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-    public IFontTextureSize DataContext
+    public IFontTextureSize ViewModel
     {
         get;
         private set;
@@ -62,12 +62,12 @@ internal partial class FontTextureSizeView
     /// <param name="e">The <see cref="EventArgs" /> instance containing the event data.</param>
     private void NumericTextureHeight_ValueChanged(object sender, EventArgs e)
     {
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             return;
         }
 
-        DataContext.TextureHeight = (int)NumericTextureHeight.Value;
+        ViewModel.TextureHeight = (int)NumericTextureHeight.Value;
         ValidateOk();
     }
 
@@ -76,12 +76,12 @@ internal partial class FontTextureSizeView
     /// <param name="e">The <see cref="EventArgs" /> instance containing the event data.</param>
     private void NumericTextureWidth_ValueChanged(object sender, EventArgs e)
     {
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             return;
         }
 
-        DataContext.TextureWidth = (int)NumericTextureWidth.Value;
+        ViewModel.TextureWidth = (int)NumericTextureWidth.Value;
         ValidateOk();
     }
 
@@ -120,7 +120,7 @@ internal partial class FontTextureSizeView
     {
         UnhookEvents();
 
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             return;
         }
@@ -128,7 +128,7 @@ internal partial class FontTextureSizeView
         // Always unassign your view model events. Failure to do so can result in an event leak, causing the view to stay 
         // in memory for the lifetime of the application.
 
-        DataContext.PropertyChanged -= DataContext_PropertyChanged;
+        ViewModel.PropertyChanged -= DataContext_PropertyChanged;
     }
 
     /// <summary>Handles the PropertyChanged event of the DataContext control.</summary>
@@ -141,10 +141,10 @@ internal partial class FontTextureSizeView
         switch (e.PropertyName)
         {
             case nameof(IFontTextureSize.TextureWidth):
-                NumericTextureWidth.Value = DataContext.TextureWidth;
+                NumericTextureWidth.Value = ViewModel.TextureWidth;
                 break;
             case nameof(IFontTextureSize.TextureHeight):
-                NumericTextureHeight.Value = DataContext.TextureHeight;
+                NumericTextureHeight.Value = ViewModel.TextureHeight;
                 break;
         }
 
@@ -175,14 +175,14 @@ internal partial class FontTextureSizeView
     /// Function to validate the state of the OK button.
     /// </summary>
     /// <returns><b>true</b> if the OK button is valid, <b>false</b> if not.</returns>
-    protected override bool OnValidateOk() => (DataContext?.OkCommand is not null) && (DataContext.OkCommand.CanExecute(null));
+    protected override bool OnValidateOk() => (ViewModel?.OkCommand is not null) && (ViewModel.OkCommand.CanExecute(null));
 
     /// <summary>Function to cancel the change.</summary>
     protected override void OnCancel()
     {
-        if (DataContext is not null)
+        if (ViewModel is not null)
         {
-            DataContext.IsActive = false;
+            ViewModel.IsActive = false;
         }
     }
 
@@ -191,12 +191,12 @@ internal partial class FontTextureSizeView
     {
         base.OnSubmit();
 
-        if ((DataContext?.OkCommand is null) || (!DataContext.OkCommand.CanExecute(null)))
+        if ((ViewModel?.OkCommand is null) || (!ViewModel.OkCommand.CanExecute(null)))
         {
             return;
         }
 
-        DataContext.OkCommand.Execute(null);
+        ViewModel.OkCommand.Execute(null);
     }
 
     /// <summary>Raises the <see cref="E:System.Windows.Forms.UserControl.Load"/> event.</summary>
@@ -210,13 +210,13 @@ internal partial class FontTextureSizeView
             return;
         }
 
-        DataContext?.Load();
+        ViewModel?.Load();
 
         NumericTextureWidth.Select();
 
         ValidateOk();
     }
-    
+
     /// <summary>Function to assign a data context to the view as a view model.</summary>
     /// <param name="dataContext">The data context to assign.</param>
     /// <remarks>Data contexts should be nullable, in that, they should reset the view back to its original state when the context is null.</remarks>
@@ -226,9 +226,9 @@ internal partial class FontTextureSizeView
 
         InitializeFromDataContext(dataContext);
 
-        DataContext = dataContext;
+        ViewModel = dataContext;
 
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             ValidateOk();
             return;
@@ -236,7 +236,7 @@ internal partial class FontTextureSizeView
 
         HookEvents();
 
-        DataContext.PropertyChanged += DataContext_PropertyChanged;
+        ViewModel.PropertyChanged += DataContext_PropertyChanged;
         ValidateOk();
     }        
     #endregion

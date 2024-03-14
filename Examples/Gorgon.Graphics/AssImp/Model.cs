@@ -205,7 +205,7 @@ internal class Model
         {
             Mesh mesh = scene.Meshes[i1];
             short[] meshIndices = mesh.GetShortIndices();
-            
+
             Material material = materials[mesh.MaterialIndex];                
 
             if (!_meshes.TryGetValue(material, out List<(int BaseStart, int start, int count)> indexList))
@@ -321,9 +321,9 @@ internal class Model
     {
         using AssimpContext context = new();
         Scene scene = context.ImportFile(filePath, PostProcessSteps.MakeLeftHanded | PostProcessSteps.FlipWindingOrder | PostProcessSteps.GenerateSmoothNormals);
-        
+
         Model result = new();
-        
+
         PopulateTextureList(graphics, filePath, scene.Materials, textures);
         IReadOnlyList<Material> materials = GetMaterials(scene.Materials, textures);
 

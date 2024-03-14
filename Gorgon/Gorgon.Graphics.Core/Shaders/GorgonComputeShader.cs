@@ -44,7 +44,7 @@ namespace Gorgon.Graphics.Core;
 /// In Gorgon, shaders can be compiled from a string containing source code via the <see cref="GorgonShaderFactory"/>, or loaded from a <see cref="Stream"/> or file for quicker access. The 
 /// <see cref="GorgonShaderFactory"/> is required to compile or read shaders, they cannot be created via the <c>new</c> keyword.
 /// </para>
-	/// </remarks>
+    /// </remarks>
 public sealed class GorgonComputeShader
     : GorgonShader
 {

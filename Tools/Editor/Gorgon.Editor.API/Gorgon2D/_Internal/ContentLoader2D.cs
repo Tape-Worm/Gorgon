@@ -138,7 +138,7 @@ internal class ContentLoader2D
             { typeof(GorgonV2SpriteCodec).FullName, new GorgonV2SpriteCodec(_renderer) },
             { typeof(GorgonV1SpriteBinaryCodec).FullName, new GorgonV1SpriteBinaryCodec(_renderer) }
         };
-        
+
         foreach (IGorgonSpriteCodec codec in ExternalSpriteCodecs)
         {
             string typeName = codec.GetType().FullName;

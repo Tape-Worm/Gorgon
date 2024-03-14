@@ -54,7 +54,7 @@ public enum LightType
 /// <summary>
 /// Base common properties for a light.
 /// </summary>
-	public abstract class GorgonLightCommon
+    public abstract class GorgonLightCommon
     : IGorgonNamedObject
 {
     #region Variables.

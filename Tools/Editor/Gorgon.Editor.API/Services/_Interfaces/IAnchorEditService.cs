@@ -87,7 +87,7 @@ public interface IAnchorEditService
         get;
     }
 
-    
+
     #endregion
 
     #region Methods.

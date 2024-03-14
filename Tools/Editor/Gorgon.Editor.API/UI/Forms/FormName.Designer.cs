@@ -163,7 +163,7 @@ partial class FormName
         this.CancelButton = this.ButtonCancel;
         this.ClientSize = new System.Drawing.Size(464, 62);
         this.Controls.Add(this.TableName);
-        this.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+        
         this.ForeColor = System.Drawing.Color.White;
         this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
         this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));

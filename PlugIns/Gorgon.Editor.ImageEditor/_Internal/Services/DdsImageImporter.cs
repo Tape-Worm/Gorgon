@@ -109,7 +109,7 @@ internal class DdsImageImporter
         {
             _tempDirPath = $"/Importer_{Guid.NewGuid():N}/";
         }
-        
+
         IGorgonVirtualDirectory directory = _tempWriter.CreateDirectory(_tempDirPath);
         _log.Print($"Importing file '{physicalFilePath}' (Codec: {sourceCodec.Name})...", LoggingLevel.Verbose);
 

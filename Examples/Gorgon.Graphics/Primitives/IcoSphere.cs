@@ -368,7 +368,7 @@ internal class IcoSphere
 
         GorgonVertexPosNormUvTangent[] vertexData = vertexList.ToArray();
         int[] indexData = indexList.ToArray();
-        
+
         VertexCount = vertexList.Count;
         IndexCount = indexList.Count;
         TriangleCount = IndexCount / 3;

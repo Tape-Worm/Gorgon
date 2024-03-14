@@ -107,7 +107,7 @@ public class GorgonV1SpriteBinaryCodec
     /// <param name="hWrap">Horizontal wrapping mode.</param>
     /// <param name="vWrap">Vertical wrapping mode.</param>
     /// <returns>The sampler state.</returns>
-	    private static GorgonSamplerState CreateSamplerState(GorgonGraphics graphics, SampleFilter filter, GorgonColor borderColor, TextureWrap hWrap, TextureWrap vWrap)
+        private static GorgonSamplerState CreateSamplerState(GorgonGraphics graphics, SampleFilter filter, GorgonColor borderColor, TextureWrap hWrap, TextureWrap vWrap)
     {
         var builder = new GorgonSamplerStateBuilder(graphics);
 

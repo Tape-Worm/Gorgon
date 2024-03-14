@@ -285,8 +285,8 @@ internal class ResourceManagement
             {
                 SpecularPower = 0.0f,
                 PixelShader = "PlanetPS",				// The 3D model materials are quite simple.  They just reference their resources by name. We do live in the age of super duper 
-					VertexShader = "PlanetVS",				// fast computers, so doing a few lookups is not going to kill our performance. This allows us to weakly reference the resources 
-					Textures =								// which in turn keeps things nicely decoupled.
+                    VertexShader = "PlanetVS",                // fast computers, so doing a few lookups is not going to kill our performance. This allows us to weakly reference the resources 
+                    Textures =                                // which in turn keeps things nicely decoupled.
                 {
                     [0] = "/images/earthmap1k",
                     [1] = "/images/earthbump1k_NRM.dds",

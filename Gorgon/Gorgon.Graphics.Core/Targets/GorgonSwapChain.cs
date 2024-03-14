@@ -168,7 +168,7 @@ public sealed class GorgonSwapChain
     /// </summary>
     internal const string NamePrefix = nameof(GorgonSwapChain);
     #endregion
-    
+
     #region Variables.
     // The DXGI swap chain that this object will wrap.
     private DXGI.SwapChain4 _swapChain;
@@ -203,7 +203,7 @@ public sealed class GorgonSwapChain
     #region Events.
     // Event called before the swap chain has been resized.
     private event EventHandler<SwapChainResizingEventArgs> SwapChainResizingEvent;
-    
+
     // Event called after the swap chain has been resized.        
     private event EventHandler<SwapChainResizedEventArgs> SwapChainResizedEvent;
 
@@ -1422,7 +1422,7 @@ public sealed class GorgonSwapChain
                 Graphics.DXGIFactory.CheckFeatureSupport(DXGI.Feature.PresentAllowTearing, (nint)supportsTearing, sizeof(int));
             }
         }
-        
+
         if (_supportsTearing != 0)
         {
             desc.Flags |= DXGI.SwapChainFlags.AllowTearing;

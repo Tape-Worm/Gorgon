@@ -275,11 +275,11 @@ public class GorgonV2SpriteCodec
     }
 
     /// <summary>
-		/// Function to convert Gorgon 1.x image addressing values to 2.x texture addressing values.
-		/// </summary>
-		/// <param name="imageAddress">Image addressing values.</param>
-		/// <returns>Texture addressing values.</returns>
-		private static TextureWrap ConvertV2TextureWrapToTextureAddress(int imageAddress) => imageAddress switch
+        /// Function to convert Gorgon 1.x image addressing values to 2.x texture addressing values.
+        /// </summary>
+        /// <param name="imageAddress">Image addressing values.</param>
+        /// <returns>Texture addressing values.</returns>
+        private static TextureWrap ConvertV2TextureWrapToTextureAddress(int imageAddress) => imageAddress switch
     {
         1 => TextureWrap.Wrap,
         2 => TextureWrap.Mirror,
@@ -297,7 +297,7 @@ public class GorgonV2SpriteCodec
     /// <param name="hWrap">Horizontal wrapping mode.</param>
     /// <param name="vWrap">Vertical wrapping mode.</param>
     /// <returns>The sampler state.</returns>
-	    private static GorgonSamplerState CreateSamplerState(GorgonGraphics graphics, SampleFilter filter, GorgonColor borderColor, TextureWrap hWrap, TextureWrap vWrap)
+        private static GorgonSamplerState CreateSamplerState(GorgonGraphics graphics, SampleFilter filter, GorgonColor borderColor, TextureWrap hWrap, TextureWrap vWrap)
     {
         var builder = new GorgonSamplerStateBuilder(graphics);
 

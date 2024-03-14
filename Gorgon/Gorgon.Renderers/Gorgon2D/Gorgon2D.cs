@@ -415,7 +415,7 @@ public sealed class Gorgon2D
                 return;
             }
         }
-        
+
         // Flush any pending draw calls.
         Flush();
 
@@ -872,7 +872,7 @@ public sealed class Gorgon2D
         {
             Initialize();
         }
-        
+
         _cameraController.UpdateCamera(camera ?? _defaultCamera);
         CurrentCamera = camera;
 

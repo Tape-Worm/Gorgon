@@ -332,7 +332,7 @@ internal class ImageSelection
     private void DoSearch(string text)
     {
         HostServices.BusyService.SetBusy();
-        
+
         try
         {
             IEnumerable<IContentFileExplorerSearchEntry> results = _searchService.Search(text);
@@ -386,7 +386,7 @@ internal class ImageSelection
         try
         {
             string outputDir = OutputDirectory;
-            
+
             if (!_fileManager.DirectoryExists(outputDir))
             {
                 outputDir = "/";
@@ -484,7 +484,7 @@ internal class ImageSelection
         _fileManager = injectionParameters.FileManager;
         _searchService = injectionParameters.SearchService;
         _splitService = injectionParameters.TextureSplitService;
-        
+
         SpriteFileEntries = injectionParameters.Entries;
 
         _selected.Clear();

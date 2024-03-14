@@ -1,33 +1,33 @@
 ﻿namespace Gorgon.Editor.FontEditor;
 
-	partial class FormNewFont
-	{
-		/// <summary>
-		/// Required designer variable.
-		/// </summary>
-		private System.ComponentModel.IContainer components = null;
+    partial class FormNewFont
+    {
+        /// <summary>
+        /// Required designer variable.
+        /// </summary>
+        private System.ComponentModel.IContainer components = null;
 
-		/// <summary>
-		/// Clean up any resources being used.
-		/// </summary>
-		/// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
-		protected override void Dispose(bool disposing)
-		{
-			if (disposing && (components != null))
-			{
-				components.Dispose();
-			}
-			base.Dispose(disposing);
-		}
+        /// <summary>
+        /// Clean up any resources being used.
+        /// </summary>
+        /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing && (components != null))
+            {
+                components.Dispose();
+            }
+            base.Dispose(disposing);
+        }
 
-		#region Windows Form Designer generated code
+        #region Windows Form Designer generated code
 
-		/// <summary>
-		/// Required method for Designer support - do not modify
-		/// the contents of this method with the code editor.
-		/// </summary>
-		private void InitializeComponent()
-		{
+        /// <summary>
+        /// Required method for Designer support - do not modify
+        /// the contents of this method with the code editor.
+        /// </summary>
+        private void InitializeComponent()
+        {
         System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormNewFont));
         this.LabelFontFamily = new System.Windows.Forms.Label();
         this.CheckBold = new System.Windows.Forms.CheckBox();
@@ -519,7 +519,7 @@
         this.ClientSize = new System.Drawing.Size(516, 346);
         this.Controls.Add(this.TableControls);
         this.Controls.Add(this.PanelButtons);
-        this.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+        
         this.ForeColor = System.Drawing.Color.White;
         this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
         this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
@@ -545,26 +545,26 @@
         this.ResumeLayout(false);
         this.PerformLayout();
 
-		}
+        }
 
-		#endregion
+        #endregion
 
-		private System.Windows.Forms.Label LabelFontFamily;
-		private ComboFonts ComboFontFamilies;
-		private System.Windows.Forms.CheckBox CheckBold;
-		private System.Windows.Forms.CheckBox CheckItalics;
-		private System.Windows.Forms.Label LabelFontName;
-		private System.Windows.Forms.TextBox TextFontName;
-		private System.Windows.Forms.Panel PanelSampleText;
-		private System.Windows.Forms.Label labelPreview;
-		private System.Windows.Forms.Button ButtonOK;
-		private System.Windows.Forms.Button ButtonCancel;
-		private System.Windows.Forms.NumericUpDown NumericTextureWidth;
-		private System.Windows.Forms.Label LabelTextureSize;
-		private System.Windows.Forms.NumericUpDown NumericTextureHeight;
-		private System.Windows.Forms.Label label6;
-		private System.Windows.Forms.Label LabelPreviewHeader;
-		private System.Windows.Forms.Button ButtonCharacters;
+        private System.Windows.Forms.Label LabelFontFamily;
+        private ComboFonts ComboFontFamilies;
+        private System.Windows.Forms.CheckBox CheckBold;
+        private System.Windows.Forms.CheckBox CheckItalics;
+        private System.Windows.Forms.Label LabelFontName;
+        private System.Windows.Forms.TextBox TextFontName;
+        private System.Windows.Forms.Panel PanelSampleText;
+        private System.Windows.Forms.Label labelPreview;
+        private System.Windows.Forms.Button ButtonOK;
+        private System.Windows.Forms.Button ButtonCancel;
+        private System.Windows.Forms.NumericUpDown NumericTextureWidth;
+        private System.Windows.Forms.Label LabelTextureSize;
+        private System.Windows.Forms.NumericUpDown NumericTextureHeight;
+        private System.Windows.Forms.Label label6;
+        private System.Windows.Forms.Label LabelPreviewHeader;
+        private System.Windows.Forms.Button ButtonCharacters;
     private System.Windows.Forms.TableLayoutPanel TableControls;
     private System.Windows.Forms.TableLayoutPanel TableTextureOptions;
     private System.Windows.Forms.Panel PanelButtons;

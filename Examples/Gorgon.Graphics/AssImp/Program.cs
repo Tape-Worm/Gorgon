@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Numerics;
 using System.Collections.Generic;
 using System.Windows.Forms;
@@ -118,7 +118,7 @@ internal static class Program
     /// </summary>
     /// <param name="width">The width of the depth buffer.</param>
     /// <param name="height">The height of the depth buffer.</param>
-	    private static void BuildDepthBuffer(int width, int height)
+        private static void BuildDepthBuffer(int width, int height)
     {
         _graphics.SetDepthStencil(null);
         _depthBuffer?.Dispose();
@@ -164,10 +164,10 @@ internal static class Program
     }
 
     /// <summary>
-		/// Function to handle idle time for the application.
-		/// </summary>
-		/// <returns><b>true</b> to continue processing, <b>false</b> to stop.</returns>
-		private static bool Idle()
+        /// Function to handle idle time for the application.
+        /// </summary>
+        /// <returns><b>true</b> to continue processing, <b>false</b> to stop.</returns>
+        private static bool Idle()
     {
         // Send our matrices to the GPU.
         UpdateWVP(in _model.GetWorldMatrix());
@@ -180,10 +180,10 @@ internal static class Program
         {
             _model.RotateY -= 360.0f;
         }
-                    
+
         _screen.RenderTargetView.Clear(GorgonColor.CornFlowerBlue);
         _depthBuffer.Clear(1.0f, 0);
-        
+
         _graphics.SetRenderTarget(_screen.RenderTargetView, _depthBuffer);
 
         // Get a reference to the GPU data.
@@ -235,7 +235,7 @@ internal static class Program
     /// <summary>
     /// Function to initialize the states for the objects to draw.
     /// </summary>
-	    private static void InitializeStates()
+        private static void InitializeStates()
     {
         var drawBuilder = new GorgonDrawIndexCallBuilder();
         var stateBuilder = new GorgonPipelineStateBuilder(_graphics);
@@ -259,7 +259,7 @@ internal static class Program
                                                                         .VertexShader(_vertexShader))
                                              .Build();
         }
-        
+
         // Set up our camera.
         _camera = new GorgonPerspectiveCamera(_graphics, new DX.Size2F(_screen.Width, _screen.Height), 0.125f, 500.0f)
         {

@@ -2,31 +2,31 @@
 
 namespace Gorgon.Input.Test.Mock
 {
-	class MockInputService
-		: IGorgonInputService
-	{
-		#region IGorgonInputService Members
+    class MockInputService
+        : IGorgonInputService
+    {
+        #region IGorgonInputService Members
 
-		public IReadOnlyList<IGorgonKeyboardInfo2> EnumerateKeyboards()
-		{
-			var devices = new List<IGorgonKeyboardInfo2>();
+        public IReadOnlyList<IGorgonKeyboardInfo2> EnumerateKeyboards()
+        {
+            var devices = new List<IGorgonKeyboardInfo2>();
 
-			IGorgonKeyboardInfo2 info = new MockKeyboardInfo();
+            IGorgonKeyboardInfo2 info = new MockKeyboardInfo();
 
-			devices.Add(info);
+            devices.Add(info);
 
-			return devices;
-		}
+            return devices;
+        }
 
-		public IReadOnlyList<IGorgonMouseInfo2> EnumerateMice()
-		{
-			return new List<IGorgonMouseInfo2>();
-		}
+        public IReadOnlyList<IGorgonMouseInfo2> EnumerateMice()
+        {
+            return new List<IGorgonMouseInfo2>();
+        }
 
-		public IReadOnlyList<IGorgonJoystickInfo2> EnumerateJoysticks()
-		{
-			return new List<IGorgonJoystickInfo2>();
-		}
-		#endregion
-	}
+        public IReadOnlyList<IGorgonJoystickInfo2> EnumerateJoysticks()
+        {
+            return new List<IGorgonJoystickInfo2>();
+        }
+        #endregion
+    }
 }

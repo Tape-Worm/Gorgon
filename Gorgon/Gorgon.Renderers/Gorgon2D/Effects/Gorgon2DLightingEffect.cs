@@ -223,7 +223,7 @@ public class Gorgon2DLightingEffect
         {
             return;
         }
-        
+
         GorgonConstantBufferView lightData = Interlocked.Exchange(ref _lightBuffer, null);
         GorgonConstantBufferView globalData = Interlocked.Exchange(ref _globalBuffer, null);
 

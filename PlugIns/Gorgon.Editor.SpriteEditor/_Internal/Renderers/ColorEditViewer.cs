@@ -220,7 +220,7 @@ internal class ColorEditViewer
         {
             return;
         }
-                    
+
         for (int i = 0; i < _selected.Length; ++i)
         {
             if (_selected[i])

@@ -80,7 +80,7 @@ internal class AudioPlayback
             await _currentPlayback;
             return;
         }
-                    
+
         _tokenSource = new CancellationTokenSource();
         _currentPlayback = Task.Run(() =>
                            {

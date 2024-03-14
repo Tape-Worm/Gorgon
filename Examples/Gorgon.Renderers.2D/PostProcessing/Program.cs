@@ -348,7 +348,7 @@ static class Program
                                                   GorgonColor.White,
                                                   texture,
                                                   new DX.RectangleF(0, 0, 1, 1));
-                       
+
                        var midPoint = new Vector2(target.Width * 0.5f, target.Height * 0.5f);
 
                        for (int i = 160; i >= 100; --i)

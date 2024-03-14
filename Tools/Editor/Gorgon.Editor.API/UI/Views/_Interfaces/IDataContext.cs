@@ -61,7 +61,7 @@ public interface IDataContext<T>
     /// <summary>
     /// Property to return the data context assigned to this view.
     /// </summary>
-    T DataContext
+    T ViewModel
     {
         get;
     }

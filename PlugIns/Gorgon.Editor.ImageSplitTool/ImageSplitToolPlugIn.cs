@@ -269,7 +269,7 @@ internal class ImageSplitToolPlugIn
     protected override IToolPlugInRibbonButton OnGetToolButton()
     {
         _button.ClickCallback ??= ShowForm;
-        
+
         _button.CanExecute ??= CanShowForm;
 
         return _button;

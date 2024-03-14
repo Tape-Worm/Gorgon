@@ -97,7 +97,7 @@ public class GorgonCueTextBox
         {
             return;
         }
-        
+
         CreateCueFont();
     }
 

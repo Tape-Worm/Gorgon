@@ -64,7 +64,7 @@ internal class KeyProcessorService
     /// <returns>The list of files.</returns>
     public IReadOnlyList<IContentFile> GetKeyframeTextureFiles(IReadOnlyList<ITrack> tracks)
     {
-        
+
         ITrack track = tracks.FirstOrDefault(item => item.ID == GorgonSpriteAnimationController.TextureTrack.ID);
 
         lock (_syncLock)

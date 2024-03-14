@@ -203,7 +203,7 @@ public class Aes256Encryption
         }
 
         using var aes = Aes.Create();
-        using var hashGen = new Rfc2898DeriveBytes(password, salt, 100);
+        using var hashGen = new Rfc2898DeriveBytes(password, salt, 100, HashAlgorithmName.SHA3_256);
         return (hashGen.GetBytes(aes.BlockSize / 8), hashGen.GetBytes(aes.KeySize / 8));
     }
     #endregion

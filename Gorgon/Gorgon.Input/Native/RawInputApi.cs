@@ -442,7 +442,7 @@ internal static class RawInputApi
             UsagePage = HIDUsagePage.Generic,
             WindowHandle = IntPtr.Zero
         };
-          
+
         if (!RegisterRawInputDevices(devices, 1, sizeof(RAWINPUTDEVICE)))
         {
             throw new GorgonException(GorgonResult.DriverError, Resources.GORINP_RAW_ERR_CANNOT_REGISTER);

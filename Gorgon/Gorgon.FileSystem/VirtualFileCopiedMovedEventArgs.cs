@@ -42,7 +42,7 @@ public class VirtualFileCopiedMovedEventArgs
     {
         get;
     }
-           
+
 
     /// <summary>
     /// Property to return the destination directory for the copy operation.

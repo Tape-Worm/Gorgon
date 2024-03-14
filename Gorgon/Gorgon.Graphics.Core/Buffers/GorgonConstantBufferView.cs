@@ -175,7 +175,7 @@ public sealed class GorgonConstantBufferView
         {
             return;
         }
-        
+
         buffer.Dispose();
         _ownsBuffer = false;
     }

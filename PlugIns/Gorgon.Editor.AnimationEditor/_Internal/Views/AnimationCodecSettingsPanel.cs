@@ -43,11 +43,11 @@ internal partial class AnimationCodecSettingsPanel
     #region Properties.
     /// <summary>Property to return the ID of the panel.</summary>
     [Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-    public override string PanelID => DataContext?.ID.ToString() ?? Guid.Empty.ToString();
+    public override string PanelID => ViewModel?.ID.ToString() ?? Guid.Empty.ToString();
 
     /// <summary>Property to return the data context assigned to this view.</summary>
     [Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-    public IImportSettings DataContext
+    public IImportSettings ViewModel
     {
         get;
         private set;
@@ -60,14 +60,14 @@ internal partial class AnimationCodecSettingsPanel
     /// </summary>
     private void ValidateButtons()
     {
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             ButtonAddCodec.Enabled = ButtonRemoveCodecs.Enabled = false;
             return;
         }
 
         ButtonAddCodec.Enabled = true;
-        ButtonRemoveCodecs.Enabled = DataContext.UnloadPlugInAssembliesCommand?.CanExecute(null) ?? false;
+        ButtonRemoveCodecs.Enabled = ViewModel.UnloadPlugInAssembliesCommand?.CanExecute(null) ?? false;
     }
 
     /// <summary>
@@ -81,7 +81,7 @@ internal partial class AnimationCodecSettingsPanel
         try
         {
             ListCodecs.Items.Clear();
-            DataContext?.SelectedCodecs.Clear();
+            ViewModel?.SelectedCodecs.Clear();
 
             if (dataContext is null)
             {
@@ -114,7 +114,7 @@ internal partial class AnimationCodecSettingsPanel
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
     private void CheckAnimatePrimaryBg_Click(object sender, EventArgs e)
     {
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             return;
         }
@@ -127,7 +127,7 @@ internal partial class AnimationCodecSettingsPanel
     /// <param name="e">The <see cref="ListViewItemSelectionChangedEventArgs"/> instance containing the event data.</param>
     private void ListCodecs_ItemSelectionChanged(object sender, ListViewItemSelectionChangedEventArgs e)
     {
-        if ((e.Item is null) || (DataContext is null))
+        if ((e.Item is null) || (ViewModel is null))
         {
             return;
         }
@@ -139,11 +139,11 @@ internal partial class AnimationCodecSettingsPanel
 
         if (e.IsSelected)
         {
-            DataContext.SelectedCodecs.Add(setting);
+            ViewModel.SelectedCodecs.Add(setting);
         }
         else
         {
-            DataContext.SelectedCodecs.Remove(setting);
+            ViewModel.SelectedCodecs.Remove(setting);
         }
     }
 
@@ -152,12 +152,12 @@ internal partial class AnimationCodecSettingsPanel
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
     private void ButtonAddCodec_Click(object sender, EventArgs e)
     {
-        if ((DataContext?.LoadPlugInAssemblyCommand is null) || (!DataContext.LoadPlugInAssemblyCommand.CanExecute(null)))
+        if ((ViewModel?.LoadPlugInAssemblyCommand is null) || (!ViewModel.LoadPlugInAssemblyCommand.CanExecute(null)))
         {
             return;
         }
 
-        DataContext.LoadPlugInAssemblyCommand.Execute(null);
+        ViewModel.LoadPlugInAssemblyCommand.Execute(null);
     }
 
     /// <summary>Handles the Click event of the ButtonRemoveCodecs control.</summary>
@@ -165,12 +165,12 @@ internal partial class AnimationCodecSettingsPanel
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
     private void ButtonRemoveCodecs_Click(object sender, EventArgs e)
     {
-        if ((DataContext?.UnloadPlugInAssembliesCommand is null) || (!DataContext.UnloadPlugInAssembliesCommand.CanExecute(null)))
+        if ((ViewModel?.UnloadPlugInAssembliesCommand is null) || (!ViewModel.UnloadPlugInAssembliesCommand.CanExecute(null)))
         {
             return;
         }
 
-        DataContext.UnloadPlugInAssembliesCommand.Execute(null);
+        ViewModel.UnloadPlugInAssembliesCommand.Execute(null);
     }
 
     /// <summary>Handles the CollectionChanged event of the CodecPlugInPaths control.</summary>
@@ -268,13 +268,13 @@ internal partial class AnimationCodecSettingsPanel
     /// </summary>
     private void UnassignEvents()
     {
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             return;
         }
 
-        DataContext.SelectedCodecs.CollectionChanged -= SelectedCodecs_CollectionChanged;
-        DataContext.CodecPlugInPaths.CollectionChanged -= CodecPlugInPaths_CollectionChanged;
+        ViewModel.SelectedCodecs.CollectionChanged -= SelectedCodecs_CollectionChanged;
+        ViewModel.CodecPlugInPaths.CollectionChanged -= CodecPlugInPaths_CollectionChanged;
     }
 
     /// <summary>
@@ -314,15 +314,15 @@ internal partial class AnimationCodecSettingsPanel
         UnassignEvents();
 
         InitializeFromDataContext(dataContext);
-        DataContext = dataContext;
+        ViewModel = dataContext;
 
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             return;
         }
 
-        DataContext.CodecPlugInPaths.CollectionChanged += CodecPlugInPaths_CollectionChanged;
-        DataContext.SelectedCodecs.CollectionChanged += SelectedCodecs_CollectionChanged;
+        ViewModel.CodecPlugInPaths.CollectionChanged += CodecPlugInPaths_CollectionChanged;
+        ViewModel.SelectedCodecs.CollectionChanged += SelectedCodecs_CollectionChanged;
     }
     #endregion
 

@@ -20,7 +20,7 @@ partial class ImageSettingsPanel
 
         if (disposing)
         {
-            DataContext?.Unload();
+            ViewModel?.Unload();
         }
 
         base.Dispose(disposing);

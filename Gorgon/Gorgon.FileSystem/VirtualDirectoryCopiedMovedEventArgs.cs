@@ -50,7 +50,7 @@ public class VirtualDirectoryCopiedMovedEventArgs
     {
         get;
     }
-           
+
 
     /// <summary>
     /// Property to return the destination directory for the copy operation.

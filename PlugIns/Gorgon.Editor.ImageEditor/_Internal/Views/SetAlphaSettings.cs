@@ -46,7 +46,7 @@ internal partial class SetAlphaSettings
     /// <summary>Property to return the data context assigned to this view.</summary>
     /// <value>The data context.</value>
     [Browsable(false)]
-    public IAlphaSettings DataContext
+    public IAlphaSettings ViewModel
     {
         get;
         private set;
@@ -62,12 +62,12 @@ internal partial class SetAlphaSettings
         switch (e.PropertyName)
         {
             case nameof(IAlphaSettings.AlphaValue):
-                NumericAlphaValue.Value = DataContext.AlphaValue;
+                NumericAlphaValue.Value = ViewModel.AlphaValue;
                 ImageAlpha.Refresh();
                 break;
             case nameof(IAlphaSettings.UpdateRange):
-                NumericMinAlpha.Value = DataContext.UpdateRange.Minimum;
-                NumericMaxAlpha.Value = DataContext.UpdateRange.Maximum;
+                NumericMinAlpha.Value = ViewModel.UpdateRange.Minimum;
+                NumericMaxAlpha.Value = ViewModel.UpdateRange.Maximum;
                 break;
         }
 
@@ -79,12 +79,12 @@ internal partial class SetAlphaSettings
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
     private void NumericMinAlpha_ValueChanged(object sender, EventArgs e)
     {
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             return;
         }
 
-        DataContext.UpdateRange = new GorgonRange((int)NumericMinAlpha.Value, DataContext.UpdateRange.Maximum);
+        ViewModel.UpdateRange = new GorgonRange((int)NumericMinAlpha.Value, ViewModel.UpdateRange.Maximum);
     }
 
     /// <summary>Handles the ValueChanged event of the NumericMaxAlpha control.</summary>
@@ -92,12 +92,12 @@ internal partial class SetAlphaSettings
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
     private void NumericMaxAlpha_ValueChanged(object sender, EventArgs e)
     {
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             return;
         }
 
-        DataContext.UpdateRange = new GorgonRange(DataContext.UpdateRange.Minimum, (int)NumericMaxAlpha.Value);
+        ViewModel.UpdateRange = new GorgonRange(ViewModel.UpdateRange.Minimum, (int)NumericMaxAlpha.Value);
     }
 
     /// <summary>Handles the ValueChanged event of the NumericMipLevels control.</summary>
@@ -105,12 +105,12 @@ internal partial class SetAlphaSettings
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
     private void NumericAlphaValue_ValueChanged(object sender, EventArgs e)
     {
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             return;
         }
 
-        DataContext.AlphaValue = (int)NumericAlphaValue.Value;
+        ViewModel.AlphaValue = (int)NumericAlphaValue.Value;
         ImageAlpha.Refresh();
     }
 
@@ -129,12 +129,12 @@ internal partial class SetAlphaSettings
     /// </summary>
     private void UnassignEvents()
     {
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             return;
         }
 
-        DataContext.PropertyChanged -= DataContext_PropertyChanged;
+        ViewModel.PropertyChanged -= DataContext_PropertyChanged;
     }
 
 
@@ -170,12 +170,12 @@ internal partial class SetAlphaSettings
     {
         base.OnCancel();
 
-        if ((DataContext?.CancelCommand is null) || (!DataContext.CancelCommand.CanExecute(null)))
+        if ((ViewModel?.CancelCommand is null) || (!ViewModel.CancelCommand.CanExecute(null)))
         {
             return;
         }
 
-        DataContext.CancelCommand.Execute(null);
+        ViewModel.CancelCommand.Execute(null);
     }
 
     /// <summary>Function to submit the change.</summary>
@@ -183,18 +183,18 @@ internal partial class SetAlphaSettings
     {
         base.OnSubmit();
 
-        if ((DataContext?.OkCommand is null) || (!DataContext.OkCommand.CanExecute(null)))
+        if ((ViewModel?.OkCommand is null) || (!ViewModel.OkCommand.CanExecute(null)))
         {
             return;
         }
 
-        DataContext.OkCommand.Execute(null);
+        ViewModel.OkCommand.Execute(null);
     }
 
     /// <summary>Function called to validate the OK button.</summary>
     /// <returns>
     ///   <b>true</b> if the OK button is valid, <b>false</b> if not.</returns>
-    protected override bool OnValidateOk() => (DataContext?.OkCommand is not null) && (DataContext.OkCommand.CanExecute(null));
+    protected override bool OnValidateOk() => (ViewModel?.OkCommand is not null) && (ViewModel.OkCommand.CanExecute(null));
 
     /// <summary>Raises the <see cref="E:System.Windows.Forms.UserControl.Load"/> event.</summary>
     /// <param name="e">An <see cref="EventArgs"/> that contains the event data.</param>
@@ -218,14 +218,14 @@ internal partial class SetAlphaSettings
         UnassignEvents();
 
         InitializeFromDataContext(dataContext);
-        DataContext = dataContext;
+        ViewModel = dataContext;
 
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             return;
         }
 
-        DataContext.PropertyChanged += DataContext_PropertyChanged;
+        ViewModel.PropertyChanged += DataContext_PropertyChanged;
     }
     #endregion
 

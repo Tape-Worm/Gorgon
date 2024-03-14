@@ -65,7 +65,7 @@ internal partial class FormRibbon
     /// <summary>
     /// Property to set or return the data context for the ribbon on the form.
     /// </summary>
-    public IImageContent DataContext
+    public IImageContent ViewModel
     {
         get;
         private set;
@@ -184,22 +184,22 @@ internal partial class FormRibbon
         switch (e.PropertyName)
         {
             case nameof(IImageContent.ImageType):
-                UpdateImageTypeMenu(DataContext);
+                UpdateImageTypeMenu(ViewModel);
                 break;
             case nameof(IImageContent.Width):
             case nameof(IImageContent.Height):
             case nameof(IImageContent.PixelFormats):
-                RefreshPixelFormats(DataContext);
+                RefreshPixelFormats(ViewModel);
                 break;
             case nameof(IImageContent.IsPremultiplied):
-                CheckPremultipliedAlpha.Checked = DataContext.IsPremultiplied;
+                CheckPremultipliedAlpha.Checked = ViewModel.IsPremultiplied;
                 break;
             case nameof(IImageContent.CurrentPixelFormat):
-                ButtonImageFormat.TextLine1 = $"{Resources.GORIMG_TEXT_IMAGE_FORMAT}: {DataContext.CurrentPixelFormat}";
-                UpdatePixelFormatMenuSelection(DataContext);
+                ButtonImageFormat.TextLine1 = $"{Resources.GORIMG_TEXT_IMAGE_FORMAT}: {ViewModel.CurrentPixelFormat}";
+                UpdatePixelFormatMenuSelection(ViewModel);
                 break;
             case nameof(IImageContent.Settings):
-                RefreshExternalEditButton(DataContext);
+                RefreshExternalEditButton(ViewModel);
                 break;
         }
 
@@ -218,12 +218,12 @@ internal partial class FormRibbon
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
     private void ButtonGrayScale_Click(object sender, EventArgs e)
     {
-        if ((DataContext?.FxContext?.GrayScaleCommand is null) || (!DataContext.FxContext.GrayScaleCommand.CanExecute(null)))
+        if ((ViewModel?.FxContext?.GrayScaleCommand is null) || (!ViewModel.FxContext.GrayScaleCommand.CanExecute(null)))
         {
             return;
         }
 
-        DataContext.FxContext.GrayScaleCommand.Execute(null);
+        ViewModel.FxContext.GrayScaleCommand.Execute(null);
         ValidateButtons();
     }
 
@@ -232,12 +232,12 @@ internal partial class FormRibbon
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
     private void ButtonFxGaussBlur_Click(object sender, EventArgs e)
     {
-        if ((DataContext?.FxContext?.ShowBlurCommand is null) || (!DataContext.FxContext.ShowBlurCommand.CanExecute(null)))
+        if ((ViewModel?.FxContext?.ShowBlurCommand is null) || (!ViewModel.FxContext.ShowBlurCommand.CanExecute(null)))
         {
             return;
         }
 
-        DataContext.FxContext.ShowBlurCommand.Execute(null);
+        ViewModel.FxContext.ShowBlurCommand.Execute(null);
         ValidateButtons();
     }
 
@@ -246,12 +246,12 @@ internal partial class FormRibbon
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
     private void ButtonFxSharpen_Click(object sender, EventArgs e)
     {
-        if ((DataContext?.FxContext?.ShowSharpenCommand is null) || (!DataContext.FxContext.ShowSharpenCommand.CanExecute(null)))
+        if ((ViewModel?.FxContext?.ShowSharpenCommand is null) || (!ViewModel.FxContext.ShowSharpenCommand.CanExecute(null)))
         {
             return;
         }
 
-        DataContext.FxContext.ShowSharpenCommand.Execute(null);
+        ViewModel.FxContext.ShowSharpenCommand.Execute(null);
         ValidateButtons();
     }
 
@@ -260,12 +260,12 @@ internal partial class FormRibbon
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
     private void ButtonFxEmboss_Click(object sender, EventArgs e)
     {
-        if ((DataContext?.FxContext?.ShowEmbossCommand is null) || (!DataContext.FxContext.ShowEmbossCommand.CanExecute(null)))
+        if ((ViewModel?.FxContext?.ShowEmbossCommand is null) || (!ViewModel.FxContext.ShowEmbossCommand.CanExecute(null)))
         {
             return;
         }
 
-        DataContext.FxContext.ShowEmbossCommand.Execute(null);
+        ViewModel.FxContext.ShowEmbossCommand.Execute(null);
         ValidateButtons();
     }
 
@@ -274,12 +274,12 @@ internal partial class FormRibbon
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
     private void ButtonFxEdgeDetect_Click(object sender, EventArgs e)
     {
-        if ((DataContext?.FxContext?.ShowEdgeDetectCommand is null) || (!DataContext.FxContext.ShowEdgeDetectCommand.CanExecute(null)))
+        if ((ViewModel?.FxContext?.ShowEdgeDetectCommand is null) || (!ViewModel.FxContext.ShowEdgeDetectCommand.CanExecute(null)))
         {
             return;
         }
 
-        DataContext.FxContext.ShowEdgeDetectCommand.Execute(null);
+        ViewModel.FxContext.ShowEdgeDetectCommand.Execute(null);
         ValidateButtons();
     }
 
@@ -288,12 +288,12 @@ internal partial class FormRibbon
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
     private void ButtonFxInvert_Click(object sender, EventArgs e)
     {
-        if ((DataContext?.FxContext?.InvertCommand is null) || (!DataContext.FxContext.InvertCommand.CanExecute(null)))
+        if ((ViewModel?.FxContext?.InvertCommand is null) || (!ViewModel.FxContext.InvertCommand.CanExecute(null)))
         {
             return;
         }
 
-        DataContext.FxContext.InvertCommand.Execute(null);
+        ViewModel.FxContext.InvertCommand.Execute(null);
         ValidateButtons();
     }
 
@@ -302,12 +302,12 @@ internal partial class FormRibbon
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
     private void ButtonFxBurn_Click(object sender, EventArgs e)
     {
-        if ((DataContext?.FxContext?.BurnCommand is null) || (!DataContext.FxContext.BurnCommand.CanExecute(null)))
+        if ((ViewModel?.FxContext?.BurnCommand is null) || (!ViewModel.FxContext.BurnCommand.CanExecute(null)))
         {
             return;
         }
 
-        DataContext.FxContext.BurnCommand.Execute(null);
+        ViewModel.FxContext.BurnCommand.Execute(null);
         ValidateButtons();
     }
 
@@ -316,12 +316,12 @@ internal partial class FormRibbon
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
     private void ButtonFxOneBit_Click(object sender, EventArgs e)
     {
-        if ((DataContext?.FxContext?.ShowOneBitCommand is null) || (!DataContext.FxContext.ShowOneBitCommand.CanExecute(null)))
+        if ((ViewModel?.FxContext?.ShowOneBitCommand is null) || (!ViewModel.FxContext.ShowOneBitCommand.CanExecute(null)))
         {
             return;
         }
 
-        DataContext.FxContext.ShowOneBitCommand.Execute(null);
+        ViewModel.FxContext.ShowOneBitCommand.Execute(null);
         ValidateButtons();
     }
 
@@ -330,12 +330,12 @@ internal partial class FormRibbon
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
     private void ButtonFxDodge_Click(object sender, EventArgs e)
     {
-        if ((DataContext?.FxContext?.DodgeCommand is null) || (!DataContext.FxContext.DodgeCommand.CanExecute(null)))
+        if ((ViewModel?.FxContext?.DodgeCommand is null) || (!ViewModel.FxContext.DodgeCommand.CanExecute(null)))
         {
             return;
         }
 
-        DataContext.FxContext.DodgeCommand.Execute(null);
+        ViewModel.FxContext.DodgeCommand.Execute(null);
         ValidateButtons();
     }
 
@@ -344,12 +344,12 @@ internal partial class FormRibbon
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
     private void ButtonFxPosterize_Click(object sender, EventArgs e)
     {
-        if ((DataContext?.FxContext?.ShowPosterizeCommand is null) || (!DataContext.FxContext.ShowPosterizeCommand.CanExecute(null)))
+        if ((ViewModel?.FxContext?.ShowPosterizeCommand is null) || (!ViewModel.FxContext.ShowPosterizeCommand.CanExecute(null)))
         {
             return;
         }
 
-        DataContext.FxContext.ShowPosterizeCommand.Execute(null);
+        ViewModel.FxContext.ShowPosterizeCommand.Execute(null);
         ValidateButtons();
     }
 
@@ -358,13 +358,13 @@ internal partial class FormRibbon
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
     private void ButtonGenerateMipMaps_Click(object sender, EventArgs e)
     {
-        if ((DataContext?.ShowMipGenerationCommand is null)
-            || (!DataContext.ShowMipGenerationCommand.CanExecute(null)))
+        if ((ViewModel?.ShowMipGenerationCommand is null)
+            || (!ViewModel.ShowMipGenerationCommand.CanExecute(null)))
         {
             return;
         }
 
-        DataContext.ShowMipGenerationCommand.Execute(null);
+        ViewModel.ShowMipGenerationCommand.Execute(null);
     }
 
     /// <summary>Handles the Click event of the ButtonSetAlpha control.</summary>
@@ -372,13 +372,13 @@ internal partial class FormRibbon
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
     private void ButtonSetAlpha_Click(object sender, EventArgs e)
     {
-        if ((DataContext?.ShowSetAlphaCommand is null)
-            || (!DataContext.ShowSetAlphaCommand.CanExecute(null)))
+        if ((ViewModel?.ShowSetAlphaCommand is null)
+            || (!ViewModel.ShowSetAlphaCommand.CanExecute(null)))
         {
             return;
         }
 
-        DataContext.ShowSetAlphaCommand.Execute(null);
+        ViewModel.ShowSetAlphaCommand.Execute(null);
     }
 
     /// <summary>Handles the Click event of the ButtonDimensions control.</summary>
@@ -386,13 +386,13 @@ internal partial class FormRibbon
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
     private void ButtonDimensions_Click(object sender, EventArgs e)
     {
-        if ((DataContext?.ShowImageDimensionsCommand is null)
-            || (!DataContext.ShowImageDimensionsCommand.CanExecute(null)))
+        if ((ViewModel?.ShowImageDimensionsCommand is null)
+            || (!ViewModel.ShowImageDimensionsCommand.CanExecute(null)))
         {
             return;
         }
 
-        DataContext.ShowImageDimensionsCommand.Execute(null);
+        ViewModel.ShowImageDimensionsCommand.Execute(null);
     }
 
     /// <summary>Handles the Click event of the ButtonFx control.</summary>
@@ -400,12 +400,12 @@ internal partial class FormRibbon
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
     private void ButtonFx_Click(object sender, EventArgs e)
     {
-        if ((DataContext?.ShowFxCommand is null) || (!DataContext.ShowFxCommand.CanExecute(null)))
+        if ((ViewModel?.ShowFxCommand is null) || (!ViewModel.ShowFxCommand.CanExecute(null)))
         {
             return;
         }
 
-        DataContext.ShowFxCommand.Execute(null);
+        ViewModel.ShowFxCommand.Execute(null);
         ValidateButtons();
     }
 
@@ -446,7 +446,7 @@ internal partial class FormRibbon
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
     private async void ButtonImport_Click(object sender, EventArgs e)
     {
-        if ((DataContext?.ImportFileCommand is null) || (!DataContext.ImportFileCommand.CanExecute(0)))
+        if ((ViewModel?.ImportFileCommand is null) || (!ViewModel.ImportFileCommand.CanExecute(0)))
         {
             return;
         }
@@ -457,7 +457,7 @@ internal partial class FormRibbon
             dpi = g.DpiX / 96.0f;
         }
 
-        await DataContext.ImportFileCommand.ExecuteAsync(dpi);
+        await ViewModel.ImportFileCommand.ExecuteAsync(dpi);
         ValidateButtons();
     }
 
@@ -466,7 +466,7 @@ internal partial class FormRibbon
     /// <param name="e">The [EventArgs] instance containing the event data.</param>
     private void PixelFormatItem_Click(object sender, EventArgs e)
     {
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             return;
         }
@@ -474,13 +474,13 @@ internal partial class FormRibbon
         var item = (ToolStripMenuItem)sender;
         var format = (BufferFormat)item.Tag;
 
-        if ((DataContext.ConvertFormatCommand is not null) && (DataContext.ConvertFormatCommand.CanExecute(format)))
+        if ((ViewModel.ConvertFormatCommand is not null) && (ViewModel.ConvertFormatCommand.CanExecute(format)))
         {
-            DataContext.ConvertFormatCommand.Execute(format);
+            ViewModel.ConvertFormatCommand.Execute(format);
         }
 
         // Ensure only this item is checked.
-        UpdatePixelFormatMenuSelection(DataContext);
+        UpdatePixelFormatMenuSelection(ViewModel);
         ValidateButtons();
     }
 
@@ -492,9 +492,9 @@ internal partial class FormRibbon
         var item = (ToolStripMenuItem)sender;
         var codec = item.Tag as IGorgonImageCodec;
 
-        if ((DataContext?.ExportImageCommand is not null) && (DataContext.ExportImageCommand.CanExecute(codec)))
+        if ((ViewModel?.ExportImageCommand is not null) && (ViewModel.ExportImageCommand.CanExecute(codec)))
         {
-            DataContext.ExportImageCommand.Execute(codec);
+            ViewModel.ExportImageCommand.Execute(codec);
         }
     }
 
@@ -505,12 +505,12 @@ internal partial class FormRibbon
     {
         string exePath = GetExePath((ToolStripMenuItem)sender);
 
-        if ((DataContext?.EditInAppCommand is null) || (!DataContext.EditInAppCommand.CanExecute(exePath)))
+        if ((ViewModel?.EditInAppCommand is null) || (!ViewModel.EditInAppCommand.CanExecute(exePath)))
         {
             return;
         }
 
-        DataContext.EditInAppCommand.Execute(exePath);
+        ViewModel.EditInAppCommand.Execute(exePath);
         ValidateButtons();
     }
 
@@ -521,12 +521,12 @@ internal partial class FormRibbon
     {
         string exePath = GetExePath(null);
 
-        if ((DataContext?.EditInAppCommand is null) || (!DataContext.EditInAppCommand.CanExecute(exePath)))
+        if ((ViewModel?.EditInAppCommand is null) || (!ViewModel.EditInAppCommand.CanExecute(exePath)))
         {
             return;
         }
 
-        DataContext.EditInAppCommand.Execute(exePath);
+        ViewModel.EditInAppCommand.Execute(exePath);
         ValidateButtons();
     }
 
@@ -535,12 +535,12 @@ internal partial class FormRibbon
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
     private async void ButtonSaveImage_Click(object sender, EventArgs e)
     {
-        if ((DataContext?.SaveContentCommand is null) || (!DataContext.SaveContentCommand.CanExecute(SaveReason.UserSave)))
+        if ((ViewModel?.SaveContentCommand is null) || (!ViewModel.SaveContentCommand.CanExecute(SaveReason.UserSave)))
         {
             return;
         }
 
-        await DataContext.SaveContentCommand.ExecuteAsync(SaveReason.UserSave);
+        await ViewModel.SaveContentCommand.ExecuteAsync(SaveReason.UserSave);
         ValidateButtons();
     }
 
@@ -549,12 +549,12 @@ internal partial class FormRibbon
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
     private void ButtonImageRedo_Click(object sender, EventArgs e)
     {
-        if ((DataContext?.RedoCommand is null) || (!DataContext.RedoCommand.CanExecute(null)))
+        if ((ViewModel?.RedoCommand is null) || (!ViewModel.RedoCommand.CanExecute(null)))
         {
             return;
         }
 
-        DataContext.RedoCommand.Execute(null);
+        ViewModel.RedoCommand.Execute(null);
         ValidateButtons();
     }
 
@@ -563,12 +563,12 @@ internal partial class FormRibbon
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
     private void ButtonImageUndo_Click(object sender, EventArgs e)
     {
-        if ((DataContext?.UndoCommand is null) || (!DataContext.UndoCommand.CanExecute(null)))
+        if ((ViewModel?.UndoCommand is null) || (!ViewModel.UndoCommand.CanExecute(null)))
         {
             return;
         }
 
-        DataContext.UndoCommand.Execute(null);
+        ViewModel.UndoCommand.Execute(null);
         ValidateButtons();
     }
 
@@ -578,12 +578,12 @@ internal partial class FormRibbon
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
     private async void CheckPremultipliedAlpha_Click(object sender, EventArgs e)
     {
-        if ((DataContext?.PremultipliedAlphaCommand is null) || (!DataContext.PremultipliedAlphaCommand.CanExecute(true)))
+        if ((ViewModel?.PremultipliedAlphaCommand is null) || (!ViewModel.PremultipliedAlphaCommand.CanExecute(true)))
         {
             return;
         }
 
-        await DataContext.PremultipliedAlphaCommand.ExecuteAsync(CheckPremultipliedAlpha.Checked);
+        await ViewModel.PremultipliedAlphaCommand.ExecuteAsync(CheckPremultipliedAlpha.Checked);
         ValidateButtons();
     }
 
@@ -594,17 +594,17 @@ internal partial class FormRibbon
     /// <returns>The path to the exe.</returns>
     private string GetExePath(ToolStripMenuItem item)
     {
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             return string.Empty;
         }
 
         if (item is null)
         {
-            return string.IsNullOrWhiteSpace(DataContext.UserEditorInfo.ExePath) ? DataContext.ExternalEditorInfo.ExePath : DataContext.UserEditorInfo.ExePath;
+            return string.IsNullOrWhiteSpace(ViewModel.UserEditorInfo.ExePath) ? ViewModel.ExternalEditorInfo.ExePath : ViewModel.UserEditorInfo.ExePath;
         }
 
-        return DataContext.ExternalEditorInfo.ExePath;
+        return ViewModel.ExternalEditorInfo.ExePath;
     }
 
     /// <summary>
@@ -612,45 +612,45 @@ internal partial class FormRibbon
     /// </summary>
     private void ValidateButtons()
     {
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             return;
         }
 
-        ButtonImport.Enabled = DataContext.ImportFileCommand?.CanExecute(0) ?? false;
-        ButtonEditInApp.Enabled = DataContext.EditInAppCommand?.CanExecute(GetExePath(null)) ?? false;
-        ButtonDimensions.Enabled = DataContext.ShowImageDimensionsCommand?.CanExecute(null) ?? false;
-        ButtonGenerateMipMaps.Enabled = DataContext.ShowMipGenerationCommand?.CanExecute(null) ?? false;
-        ButtonImageFormat.Enabled = DataContext.ConvertFormatCommand?.CanExecute(BufferFormat.Unknown) ?? false;
-        ButtonImageType.Enabled = DataContext.ChangeImageTypeCommand?.CanExecute(ImageType.Unknown) ?? false;
-        ButtonImageUndo.Enabled = DataContext.UndoCommand?.CanExecute(null) ?? false;
-        ButtonImageRedo.Enabled = DataContext.RedoCommand?.CanExecute(null) ?? false;
-        ButtonExport.Enabled = DataContext.ExportImageCommand?.CanExecute(null) ?? false;
-        ButtonSaveImage.Enabled = DataContext.SaveContentCommand?.CanExecute(SaveReason.UserSave) ?? false;
-        CheckPremultipliedAlpha.Enabled = DataContext.PremultipliedAlphaCommand?.CanExecute(true) ?? false;
-        ButtonSetAlpha.Enabled = DataContext.ShowSetAlphaCommand?.CanExecute(null) ?? false;
-        ButtonFx.Enabled = DataContext.ShowFxCommand?.CanExecute(null) ?? false;
-        ButtonGaussBlur.Enabled = (!ButtonFx.Enabled) && (DataContext.FxContext?.ShowBlurCommand?.CanExecute(null) ?? false);
-        ButtonGrayScale.Enabled = (!ButtonFx.Enabled) && (DataContext.FxContext?.GrayScaleCommand?.CanExecute(null) ?? false);
-        ButtonFxInvert.Enabled = (!ButtonFx.Enabled) && (DataContext.FxContext?.InvertCommand?.CanExecute(null) ?? false);
-        ButtonFxSharpen.Enabled = (!ButtonFx.Enabled) && (DataContext.FxContext?.ShowSharpenCommand?.CanExecute(null) ?? false);
-        ButtonFxEmboss.Enabled = (!ButtonFx.Enabled) && (DataContext.FxContext?.ShowEmbossCommand?.CanExecute(null) ?? false);
-        ButtonFxEdgeDetect.Enabled = (!ButtonFx.Enabled) && (DataContext.FxContext?.ShowEdgeDetectCommand?.CanExecute(null) ?? false);
-        ButtonFxBurn.Enabled = (!ButtonFx.Enabled) && (DataContext.FxContext?.BurnCommand?.CanExecute(null) ?? false);
-        ButtonFxDodge.Enabled = (!ButtonFx.Enabled) && (DataContext.FxContext?.DodgeCommand?.CanExecute(null) ?? false);
-        ButtonFxPosterize.Enabled = (!ButtonFx.Enabled) && (DataContext.FxContext?.ShowPosterizeCommand?.CanExecute(null) ?? false);
-        ButtonFxOneBit.Enabled = (!ButtonFx.Enabled) && (DataContext.FxContext?.ShowOneBitCommand?.CanExecute(null) ?? false);
-        ButtonFxApply.Enabled = (!ButtonFx.Enabled) && (DataContext.FxContext?.ApplyCommand?.CanExecute(null) ?? false);            
+        ButtonImport.Enabled = ViewModel.ImportFileCommand?.CanExecute(0) ?? false;
+        ButtonEditInApp.Enabled = ViewModel.EditInAppCommand?.CanExecute(GetExePath(null)) ?? false;
+        ButtonDimensions.Enabled = ViewModel.ShowImageDimensionsCommand?.CanExecute(null) ?? false;
+        ButtonGenerateMipMaps.Enabled = ViewModel.ShowMipGenerationCommand?.CanExecute(null) ?? false;
+        ButtonImageFormat.Enabled = ViewModel.ConvertFormatCommand?.CanExecute(BufferFormat.Unknown) ?? false;
+        ButtonImageType.Enabled = ViewModel.ChangeImageTypeCommand?.CanExecute(ImageType.Unknown) ?? false;
+        ButtonImageUndo.Enabled = ViewModel.UndoCommand?.CanExecute(null) ?? false;
+        ButtonImageRedo.Enabled = ViewModel.RedoCommand?.CanExecute(null) ?? false;
+        ButtonExport.Enabled = ViewModel.ExportImageCommand?.CanExecute(null) ?? false;
+        ButtonSaveImage.Enabled = ViewModel.SaveContentCommand?.CanExecute(SaveReason.UserSave) ?? false;
+        CheckPremultipliedAlpha.Enabled = ViewModel.PremultipliedAlphaCommand?.CanExecute(true) ?? false;
+        ButtonSetAlpha.Enabled = ViewModel.ShowSetAlphaCommand?.CanExecute(null) ?? false;
+        ButtonFx.Enabled = ViewModel.ShowFxCommand?.CanExecute(null) ?? false;
+        ButtonGaussBlur.Enabled = (!ButtonFx.Enabled) && (ViewModel.FxContext?.ShowBlurCommand?.CanExecute(null) ?? false);
+        ButtonGrayScale.Enabled = (!ButtonFx.Enabled) && (ViewModel.FxContext?.GrayScaleCommand?.CanExecute(null) ?? false);
+        ButtonFxInvert.Enabled = (!ButtonFx.Enabled) && (ViewModel.FxContext?.InvertCommand?.CanExecute(null) ?? false);
+        ButtonFxSharpen.Enabled = (!ButtonFx.Enabled) && (ViewModel.FxContext?.ShowSharpenCommand?.CanExecute(null) ?? false);
+        ButtonFxEmboss.Enabled = (!ButtonFx.Enabled) && (ViewModel.FxContext?.ShowEmbossCommand?.CanExecute(null) ?? false);
+        ButtonFxEdgeDetect.Enabled = (!ButtonFx.Enabled) && (ViewModel.FxContext?.ShowEdgeDetectCommand?.CanExecute(null) ?? false);
+        ButtonFxBurn.Enabled = (!ButtonFx.Enabled) && (ViewModel.FxContext?.BurnCommand?.CanExecute(null) ?? false);
+        ButtonFxDodge.Enabled = (!ButtonFx.Enabled) && (ViewModel.FxContext?.DodgeCommand?.CanExecute(null) ?? false);
+        ButtonFxPosterize.Enabled = (!ButtonFx.Enabled) && (ViewModel.FxContext?.ShowPosterizeCommand?.CanExecute(null) ?? false);
+        ButtonFxOneBit.Enabled = (!ButtonFx.Enabled) && (ViewModel.FxContext?.ShowOneBitCommand?.CanExecute(null) ?? false);
+        ButtonFxApply.Enabled = (!ButtonFx.Enabled) && (ViewModel.FxContext?.ApplyCommand?.CanExecute(null) ?? false);            
 
-        if (DataContext.ChangeImageTypeCommand is null)
+        if (ViewModel.ChangeImageTypeCommand is null)
         {
             ButtonImageType.Enabled = false;
             return;
         }
 
-        Item2DImage.Enabled = DataContext.ChangeImageTypeCommand.CanExecute(ImageType.Image2D);
-        Item3DImage.Enabled = DataContext.ChangeImageTypeCommand.CanExecute(ImageType.Image3D);
-        ItemCubeMap.Enabled = DataContext.ChangeImageTypeCommand.CanExecute(ImageType.ImageCube);
+        Item2DImage.Enabled = ViewModel.ChangeImageTypeCommand.CanExecute(ImageType.Image2D);
+        Item3DImage.Enabled = ViewModel.ChangeImageTypeCommand.CanExecute(ImageType.Image3D);
+        ItemCubeMap.Enabled = ViewModel.ChangeImageTypeCommand.CanExecute(ImageType.ImageCube);
     }
 
     /// <summary>
@@ -691,7 +691,7 @@ internal partial class FormRibbon
         foreach (BufferFormat format in dataContext.PixelFormats)
         {
             var info = new GorgonFormatInfo(format);
-            
+
             var item = new ToolStripMenuItem(format.ToString())
             {
                 Name = format.ToString(),
@@ -775,22 +775,22 @@ internal partial class FormRibbon
     /// </summary>
     private void UnassignEvents()
     {
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             return;
         }
 
-        if (DataContext.Codecs is not null)
+        if (ViewModel.Codecs is not null)
         {
-            DataContext.Codecs.CollectionChanged -= Codecs_CollectionChanged;
+            ViewModel.Codecs.CollectionChanged -= Codecs_CollectionChanged;
         }
 
-        DataContext.FxContext.PropertyChanged -= FxContext_PropertyChanged;
-        DataContext.PropertyChanging -= DataContext_PropertyChanging;
-        DataContext.PropertyChanged -= DataContext_PropertyChanged;
+        ViewModel.FxContext.PropertyChanged -= FxContext_PropertyChanged;
+        ViewModel.PropertyChanging -= DataContext_PropertyChanging;
+        ViewModel.PropertyChanged -= DataContext_PropertyChanged;
     }
 
-    
+
 
     /// <summary>
     /// Function to reset the view when no data context is assigned.
@@ -811,12 +811,12 @@ internal partial class FormRibbon
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
     private void ButtonFxApply_Click(object sender, EventArgs e)
     {
-        if ((DataContext?.FxContext?.ApplyCommand is null) || (!DataContext.FxContext.ApplyCommand.CanExecute(null)))
+        if ((ViewModel?.FxContext?.ApplyCommand is null) || (!ViewModel.FxContext.ApplyCommand.CanExecute(null)))
         {
             return;
         }
 
-        DataContext.FxContext.ApplyCommand.Execute(null);
+        ViewModel.FxContext.ApplyCommand.Execute(null);
     }
 
     /// <summary>Handles the Click event of the ButtonFxCancel control.</summary>
@@ -824,12 +824,12 @@ internal partial class FormRibbon
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
     private void ButtonFxCancel_Click(object sender, EventArgs e)
     {
-        if ((DataContext?.FxContext?.CancelCommand is null) || (!DataContext.FxContext.CancelCommand.CanExecute(null)))
+        if ((ViewModel?.FxContext?.CancelCommand is null) || (!ViewModel.FxContext.CancelCommand.CanExecute(null)))
         {
             return;
         }
 
-        DataContext.FxContext.CancelCommand.Execute(null);
+        ViewModel.FxContext.CancelCommand.Execute(null);
     }
 
     /// <summary>Handles the Click event of the ItemZoomToWindow control.</summary>
@@ -875,15 +875,15 @@ internal partial class FormRibbon
 
         var imageType = (ImageType)item.Tag;
 
-        if ((DataContext?.ChangeImageTypeCommand is null)
-            || (!DataContext.ChangeImageTypeCommand.CanExecute(imageType))
-            || (DataContext.ImageType == imageType))
+        if ((ViewModel?.ChangeImageTypeCommand is null)
+            || (!ViewModel.ChangeImageTypeCommand.CanExecute(imageType))
+            || (ViewModel.ImageType == imageType))
         {
             item.Checked = true;
             return;
         }
 
-        DataContext.ChangeImageTypeCommand.Execute(imageType);
+        ViewModel.ChangeImageTypeCommand.Execute(imageType);
         ValidateButtons();
     }
 
@@ -973,21 +973,21 @@ internal partial class FormRibbon
 
         InitializeFromDataContext(dataContext);
 
-        DataContext = dataContext;
+        ViewModel = dataContext;
         ValidateButtons();
 
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             return;
         }
 
-        DataContext.PropertyChanged += DataContext_PropertyChanged;
-        DataContext.PropertyChanging += DataContext_PropertyChanging;
-        DataContext.FxContext.PropertyChanged += FxContext_PropertyChanged;
+        ViewModel.PropertyChanged += DataContext_PropertyChanged;
+        ViewModel.PropertyChanging += DataContext_PropertyChanging;
+        ViewModel.FxContext.PropertyChanged += FxContext_PropertyChanged;
 
-        if (DataContext.Codecs is not null)
+        if (ViewModel.Codecs is not null)
         {
-            DataContext.Codecs.CollectionChanged += Codecs_CollectionChanged;
+            ViewModel.Codecs.CollectionChanged += Codecs_CollectionChanged;
         }
     }        
 

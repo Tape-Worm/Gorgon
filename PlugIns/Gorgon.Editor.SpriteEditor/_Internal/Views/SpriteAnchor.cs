@@ -52,7 +52,7 @@ internal partial class SpriteAnchor
 
     #region Properties.
     /// <summary>Property to return the data context assigned to this view.</summary>
-    public ISpriteAnchorEdit DataContext
+    public ISpriteAnchorEdit ViewModel
     {
         get;
         private set;
@@ -77,12 +77,12 @@ internal partial class SpriteAnchor
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
     private void NumericHorizontal_ValueChanged(object sender, EventArgs e)
     {
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             return;
         }
 
-        DataContext.Anchor = new Vector2((float)NumericHorizontal.Value, DataContext.Anchor.Y);
+        ViewModel.Anchor = new Vector2((float)NumericHorizontal.Value, ViewModel.Anchor.Y);
         ValidateOk();
     }
 
@@ -91,12 +91,12 @@ internal partial class SpriteAnchor
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
     private void NumericVertical_ValueChanged(object sender, EventArgs e)
     {
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             return;
         }
 
-        DataContext.Anchor = new Vector2(DataContext.Anchor.X, (float)NumericVertical.Value);
+        ViewModel.Anchor = new Vector2(ViewModel.Anchor.X, (float)NumericVertical.Value);
         ValidateOk();
     }
 
@@ -105,12 +105,12 @@ internal partial class SpriteAnchor
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
     private void CheckRotate_Click(object sender, EventArgs e)
     {
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             return;
         }
 
-        DataContext.PreviewRotation = CheckRotate.Checked;
+        ViewModel.PreviewRotation = CheckRotate.Checked;
         ValidateOk();
     }
 
@@ -119,12 +119,12 @@ internal partial class SpriteAnchor
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
     private void CheckScale_Click(object sender, EventArgs e)
     {
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             return;
         }
 
-        DataContext.PreviewScale = CheckScale.Checked;
+        ViewModel.PreviewScale = CheckScale.Checked;
         ValidateOk();
     }
 
@@ -133,7 +133,7 @@ internal partial class SpriteAnchor
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
     private void Alignment_AlignmentChanged(object sender, EventArgs e)
     {
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             return;
         }
@@ -141,40 +141,40 @@ internal partial class SpriteAnchor
         switch (Alignment.Alignment)
         {
             case Gorgon.UI.Alignment.UpperLeft:
-                NumericHorizontal.Value = (decimal)DataContext.SpriteBounds[0].X;
-                NumericVertical.Value = (decimal)DataContext.SpriteBounds[0].Y;
+                NumericHorizontal.Value = (decimal)ViewModel.SpriteBounds[0].X;
+                NumericVertical.Value = (decimal)ViewModel.SpriteBounds[0].Y;
                 break;
             case Gorgon.UI.Alignment.UpperCenter:
-                NumericHorizontal.Value = (decimal)DataContext.MidPoint.X;
+                NumericHorizontal.Value = (decimal)ViewModel.MidPoint.X;
                 NumericVertical.Value = (decimal)_midTop;
                 break;
             case Gorgon.UI.Alignment.UpperRight:
-                NumericHorizontal.Value = (decimal)DataContext.SpriteBounds[1].X;
-                NumericVertical.Value = (decimal)DataContext.SpriteBounds[1].Y;
+                NumericHorizontal.Value = (decimal)ViewModel.SpriteBounds[1].X;
+                NumericVertical.Value = (decimal)ViewModel.SpriteBounds[1].Y;
                 break;
             case Gorgon.UI.Alignment.CenterLeft:
                 NumericHorizontal.Value = (decimal)_midLeft;
-                NumericVertical.Value = (decimal)DataContext.MidPoint.Y;
+                NumericVertical.Value = (decimal)ViewModel.MidPoint.Y;
                 break;
             case Gorgon.UI.Alignment.Center:
-                NumericHorizontal.Value = (decimal)DataContext.MidPoint.X;
-                NumericVertical.Value = (decimal)DataContext.MidPoint.Y;
+                NumericHorizontal.Value = (decimal)ViewModel.MidPoint.X;
+                NumericVertical.Value = (decimal)ViewModel.MidPoint.Y;
                 break;
             case Gorgon.UI.Alignment.CenterRight:
                 NumericHorizontal.Value = (decimal)_midRight;
-                NumericVertical.Value = (decimal)DataContext.MidPoint.Y;
+                NumericVertical.Value = (decimal)ViewModel.MidPoint.Y;
                 break;
             case Gorgon.UI.Alignment.LowerLeft:
-                NumericHorizontal.Value = (decimal)DataContext.SpriteBounds[3].X;
-                NumericVertical.Value = (decimal)DataContext.SpriteBounds[3].Y;
+                NumericHorizontal.Value = (decimal)ViewModel.SpriteBounds[3].X;
+                NumericVertical.Value = (decimal)ViewModel.SpriteBounds[3].Y;
                 break;
             case Gorgon.UI.Alignment.LowerCenter:
-                NumericHorizontal.Value = (decimal)DataContext.MidPoint.X;
+                NumericHorizontal.Value = (decimal)ViewModel.MidPoint.X;
                 NumericVertical.Value = (decimal)_midBottom;
                 break;
             case Gorgon.UI.Alignment.LowerRight:
-                NumericHorizontal.Value = (decimal)DataContext.SpriteBounds[2].X;
-                NumericVertical.Value = (decimal)DataContext.SpriteBounds[2].Y;
+                NumericHorizontal.Value = (decimal)ViewModel.SpriteBounds[2].X;
+                NumericVertical.Value = (decimal)ViewModel.SpriteBounds[2].Y;
                 break;
         }
     }
@@ -187,29 +187,29 @@ internal partial class SpriteAnchor
         switch (e.PropertyName)
         {
             case nameof(ISpriteAnchorEdit.PreviewScale):
-                CheckScale.Checked = DataContext.PreviewScale;
+                CheckScale.Checked = ViewModel.PreviewScale;
                 break;
             case nameof(ISpriteAnchorEdit.PreviewRotation):
-                CheckRotate.Checked = DataContext.PreviewRotation;
+                CheckRotate.Checked = ViewModel.PreviewRotation;
                 break;
             case nameof(ISpriteAnchorEdit.SpriteBounds):
-                SetMidPoints(DataContext);
-                SetAlignment(DataContext);
+                SetMidPoints(ViewModel);
+                SetAlignment(ViewModel);
                 break;
             case nameof(ISpriteAnchorEdit.Bounds):
-                NumericHorizontal.Minimum = DataContext.Bounds.Left;
-                NumericHorizontal.Maximum = DataContext.Bounds.Right;
+                NumericHorizontal.Minimum = ViewModel.Bounds.Left;
+                NumericHorizontal.Maximum = ViewModel.Bounds.Right;
 
-                NumericVertical.Minimum = DataContext.Bounds.Top;
-                NumericVertical.Maximum = DataContext.Bounds.Bottom;
+                NumericVertical.Minimum = ViewModel.Bounds.Top;
+                NumericVertical.Maximum = ViewModel.Bounds.Bottom;
 
-                SetAlignment(DataContext);
+                SetAlignment(ViewModel);
                 break;
             case nameof(ISpriteAnchorEdit.Anchor):
-                NumericHorizontal.Value = (decimal)DataContext.Anchor.X;
-                NumericVertical.Value = (decimal)DataContext.Anchor.Y;
+                NumericHorizontal.Value = (decimal)ViewModel.Anchor.X;
+                NumericVertical.Value = (decimal)ViewModel.Anchor.Y;
 
-                SetAlignment(DataContext);
+                SetAlignment(ViewModel);
                 break;
         }
 
@@ -285,18 +285,18 @@ internal partial class SpriteAnchor
             Alignment.AlignmentChanged += Alignment_AlignmentChanged;
         }
     }
-    
+
     /// <summary>
     /// Function to unassign any events.
     /// </summary>
     private void UnassignEvents()
     {
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             return;
         }
 
-        DataContext.PropertyChanged -= DataContext_PropertyChanged;
+        ViewModel.PropertyChanged -= DataContext_PropertyChanged;
     }
 
     /// <summary>
@@ -304,7 +304,7 @@ internal partial class SpriteAnchor
     /// </summary>
     private void ResetDataContext()
     {
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             return;
         }
@@ -316,12 +316,12 @@ internal partial class SpriteAnchor
         NumericVertical.Maximum = NumericHorizontal.Maximum = 16384;
         CheckRotate.Checked = CheckScale.Checked = false;
     }
-    
+
     /// <summary>Function called to validate the OK button.</summary>
     /// <returns>
     ///   <b>true</b> if the OK button is valid, <b>false</b> if not.</returns>
-    protected override bool OnValidateOk() => (DataContext?.OkCommand is not null) && (DataContext.OkCommand.CanExecute(null));
-     
+    protected override bool OnValidateOk() => (ViewModel?.OkCommand is not null) && (ViewModel.OkCommand.CanExecute(null));
+
     /// <summary>
     /// Function to initialize the control from the data context.
     /// </summary>
@@ -359,12 +359,12 @@ internal partial class SpriteAnchor
     {
         base.OnSubmit();
 
-        if ((DataContext?.OkCommand is null) || (!DataContext.OkCommand.CanExecute(null)))
+        if ((ViewModel?.OkCommand is null) || (!ViewModel.OkCommand.CanExecute(null)))
         {
             return;
         }
 
-        DataContext.OkCommand.Execute(null);
+        ViewModel.OkCommand.Execute(null);
     }
 
     /// <summary>
@@ -374,12 +374,12 @@ internal partial class SpriteAnchor
     {
         base.OnCancel();
 
-        if ((DataContext?.CancelCommand is null) || (!DataContext.CancelCommand.CanExecute(null)))
+        if ((ViewModel?.CancelCommand is null) || (!ViewModel.CancelCommand.CanExecute(null)))
         {
             return;
         }
 
-        DataContext.CancelCommand.Execute(null);
+        ViewModel.CancelCommand.Execute(null);
     }
 
     /// <summary>Raises the <see cref="E:System.Windows.Forms.UserControl.Load"/> event.</summary>
@@ -393,7 +393,7 @@ internal partial class SpriteAnchor
             return;
         }
 
-        DataContext?.Load();
+        ViewModel?.Load();
     }
 
     /// <summary>Function to assign a data context to the view as a view model.</summary>
@@ -403,14 +403,14 @@ internal partial class SpriteAnchor
     {
         InitializeDataContext(dataContext);
 
-        DataContext = dataContext;
+        ViewModel = dataContext;
 
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             return;
         }
 
-        DataContext.PropertyChanged += DataContext_PropertyChanged;
+        ViewModel.PropertyChanged += DataContext_PropertyChanged;
     }
     #endregion
 

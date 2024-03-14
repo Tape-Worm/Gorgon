@@ -83,7 +83,7 @@ internal class SpriteEditorPlugIn
 
     // No thumbnail image.
     private IGorgonImage _noThumbnail;
-    
+
     // No bound texture image.
     private IGorgonImage _noImage;
 
@@ -172,7 +172,7 @@ internal class SpriteEditorPlugIn
         {
             dependencyList[CommonEditorContentTypes.ImageType] = textureNames = new List<string>();                
         }
-                    
+
         // Remove any duplicate names.
         textureNames.RemoveAll(s => string.Equals(s, textureName, StringComparison.OrdinalIgnoreCase));
 
@@ -544,7 +544,7 @@ internal class SpriteEditorPlugIn
 
             var colorEditor = new SpriteColorEdit();
             colorEditor.Initialize(new HostedPanelViewModelParameters(HostContentServices));
-            
+
             var anchorEditor = new SpriteAnchorEdit();
             anchorEditor.Initialize(new SpriteAnchorEditParameters(new DX.Rectangle
             {

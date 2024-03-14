@@ -121,7 +121,7 @@ public class GorgonCatmullRomSpline
     /// </para>
     /// </remarks>
     /// <exception cref="ArgumentOutOfRangeException"><c>[Debug only]</c> Thrown when the <paramref name="startPointIndex"/> is less than 0, or greater than/equal to the number of points - 1 in the <see cref="IGorgonSpline.Points"/> parameter.</exception>        
-		public Vector4 GetInterpolatedValue(int startPointIndex, float delta)
+        public Vector4 GetInterpolatedValue(int startPointIndex, float delta)
     {
         Matrix4x4 calculations = Matrix4x4.Identity;
 
@@ -138,7 +138,7 @@ public class GorgonCatmullRomSpline
         }
 
         var deltaCubeSquare = new Vector4(delta * delta * delta, delta * delta, delta, 1.0f);
-                    
+
         calculations.SetRow(0, Points[startPointIndex]);
         calculations.SetRow(1, Points[startPointIndex + 1]);
         calculations.SetRow(2, _tangents[startPointIndex]);

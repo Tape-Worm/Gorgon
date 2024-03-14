@@ -135,7 +135,7 @@ internal class Boot
     protected override void Dispose(bool disposing)
     {
         AppDomain.CurrentDomain.AssemblyResolve -= CurrentDomain_AssemblyResolve;
-                    
+
         ToolPlugInService toolPlugIns = Interlocked.Exchange(ref _toolPlugIns, null);
         ContentPlugInService contentPlugIns = Interlocked.Exchange(ref _contentPlugIns, null);
         GraphicsContext context = Interlocked.Exchange(ref _graphicsContext, null);
@@ -310,7 +310,7 @@ internal class Boot
         string toolPlugInsDir = Path.Combine(plugInDir.FullName, "Tools");
         string toolPlugInSettingsDir = Path.Combine(Program.ApplicationUserDirectory.FullName, "ToolPlugIns");
         _toolPlugIns = new ToolPlugInService(toolPlugInSettingsDir, hostServices);
-        
+
         hostServices.ToolPlugInService = _toolPlugIns;
 
         if (!System.IO.Directory.Exists(toolPlugInsDir))
@@ -424,7 +424,7 @@ internal class Boot
             {
                 Log = Program.Log
             };
-            
+
             _pluginCache = new GorgonMefPlugInCache(Program.Log);
             _graphicsContext = GraphicsContext.Create(Program.Log);
 
@@ -448,7 +448,7 @@ internal class Boot
 
             // Load our file system import/export plugins.
             FileSystemProviders fileSystemProviders = LoadFileSystemPlugIns(plugInLocation, hostServices);
-            
+
             // Load our tool plug ins.
             LoadToolPlugIns(plugInLocation, hostServices);
 

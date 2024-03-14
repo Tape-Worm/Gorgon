@@ -65,7 +65,7 @@ internal partial class FormSpriteSelector
     #region Properties.
     /// <summary>Property to return the data context assigned to this view.</summary>
     [Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-    public ISpriteFiles DataContext
+    public ISpriteFiles ViewModel
     {
         get;
         private set;
@@ -78,8 +78,8 @@ internal partial class FormSpriteSelector
     /// </summary>
     private void ValidateControls()
     {
-        ButtonLabelMultiSprite.Visible = DataContext?.SelectedFiles.Count < 2;
-        ButtonLoad.Enabled = DataContext?.ConfirmLoadCommand?.CanExecute(null) ?? false;
+        ButtonLabelMultiSprite.Visible = ViewModel?.SelectedFiles.Count < 2;
+        ButtonLoad.Enabled = ViewModel?.ConfirmLoadCommand?.CanExecute(null) ?? false;
     }
 
     /// <summary>Handles the Search event of the ContentFileExplorer control.</summary>
@@ -87,12 +87,12 @@ internal partial class FormSpriteSelector
     /// <param name="e">The <see cref="GorgonSearchEventArgs"/> instance containing the event data.</param>
     private void ContentFileExplorer_Search(object sender, GorgonSearchEventArgs e)
     {
-        if ((DataContext?.SearchCommand is null) || (!DataContext.SearchCommand.CanExecute(e.SearchText)))
+        if ((ViewModel?.SearchCommand is null) || (!ViewModel.SearchCommand.CanExecute(e.SearchText)))
         {
             return;
         }
 
-        DataContext.SearchCommand.Execute(e.SearchText);
+        ViewModel.SearchCommand.Execute(e.SearchText);
         ValidateControls();
     }
 
@@ -102,12 +102,12 @@ internal partial class FormSpriteSelector
     /// <param name="e">The e.</param>
     private async void ContentFileExplorer_FileEntriesFocused(object sender, ContentFileEntriesFocusedArgs e)
     {
-        if ((DataContext?.RefreshSpritePreviewCommand is null) || (!DataContext.RefreshSpritePreviewCommand.CanExecute(e.FocusedFiles)))
+        if ((ViewModel?.RefreshSpritePreviewCommand is null) || (!ViewModel.RefreshSpritePreviewCommand.CanExecute(e.FocusedFiles)))
         {
             return;
         }
 
-        await DataContext.RefreshSpritePreviewCommand.ExecuteAsync(e.FocusedFiles);
+        await ViewModel.RefreshSpritePreviewCommand.ExecuteAsync(e.FocusedFiles);
         ValidateControls();
     }
 
@@ -121,12 +121,12 @@ internal partial class FormSpriteSelector
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
     private void ButtonLoad_Click(object sender, EventArgs e)
     {
-        if ((DataContext?.ConfirmLoadCommand is null) || (!DataContext.ConfirmLoadCommand.CanExecute(null)))
+        if ((ViewModel?.ConfirmLoadCommand is null) || (!ViewModel.ConfirmLoadCommand.CanExecute(null)))
         {
             return;
         }
 
-        DataContext.ConfirmLoadCommand.Execute(null);
+        ViewModel.ConfirmLoadCommand.Execute(null);
     }
 
     /// <summary>Handles the PropertyChanged event of the DataContext control.</summary>
@@ -137,7 +137,7 @@ internal partial class FormSpriteSelector
         switch (e.PropertyName)
         {
             case nameof(ISpriteFiles.PreviewImage):
-                UpdateRenderImage(DataContext.PreviewImage);
+                UpdateRenderImage(ViewModel.PreviewImage);
                 break;
         }
 
@@ -266,12 +266,12 @@ internal partial class FormSpriteSelector
     /// </summary>
     private void UnassignEvents()
     {
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             return;
         }
 
-        DataContext.PropertyChanged -= DataContext_PropertyChanged;
+        ViewModel.PropertyChanged -= DataContext_PropertyChanged;
     }
 
     /// <summary>
@@ -305,7 +305,7 @@ internal partial class FormSpriteSelector
             return;
         }
 
-        DataContext?.Unload();
+        ViewModel?.Unload();
     }
 
     /// <summary>Raises the Load event.</summary>
@@ -319,7 +319,7 @@ internal partial class FormSpriteSelector
             return;
         }
 
-        DataContext?.Load();
+        ViewModel?.Load();
 
         ValidateControls();
     }
@@ -352,14 +352,14 @@ internal partial class FormSpriteSelector
         UnassignEvents();
 
         InitializeFromDataContext(dataContext);
-        DataContext = dataContext;
+        ViewModel = dataContext;
 
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             return;
         }
-        
-        DataContext.PropertyChanged += DataContext_PropertyChanged;
+
+        ViewModel.PropertyChanged += DataContext_PropertyChanged;
     }
     #endregion
 

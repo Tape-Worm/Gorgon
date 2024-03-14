@@ -166,7 +166,7 @@ internal class GorgonAnimationImporter
 
             IGorgonAnimationCodec sourceCodec = AnimationImporterPlugIn.GetCodec(physicalFilePath, _codecs);
             Debug.Assert(sourceCodec is not null, "We shouldn't be able to get this far without a codec.");
-            
+
             textures = GetTextures(physicalFilePath, sourceCodec);
 
             if (string.IsNullOrWhiteSpace(_tempDirPath))
@@ -196,7 +196,7 @@ internal class GorgonAnimationImporter
             animationCodec.Save(animation, outStream);
             fileStream.Dispose();
             outStream.Dispose();
-            
+
             return _tempFileSystem.FileSystem.GetFile(outputFilePath);
         }
         catch

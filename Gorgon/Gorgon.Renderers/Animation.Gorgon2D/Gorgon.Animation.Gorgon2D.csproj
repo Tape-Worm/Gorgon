@@ -1,10 +1,10 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>net48;net6.0-windows</TargetFrameworks>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <ForceDesignerDpiUnaware>true</ForceDesignerDpiUnaware>
     <UseWindowsForms>true</UseWindowsForms>
     <ApplicationIcon>Gorgon2.ico</ApplicationIcon>
-    <UseWindowsForms>true</UseWindowsForms>
     <Version>3.2.0</Version>
     <Authors>Michael Winsor</Authors>
     <Company>Tape_Worm</Company>

@@ -40,7 +40,7 @@ internal partial class FxBlurSettings
 {
     #region Properties.
     /// <summary>Property to return the data context assigned to this view.</summary>
-    public IFxBlur DataContext
+    public IFxBlur ViewModel
     {
         get;
         private set;
@@ -53,19 +53,19 @@ internal partial class FxBlurSettings
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
     private void NumericBlurAmount_ValueChanged(object sender, EventArgs e)
     {
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             return;
         }
 
         int currentValue = (int)NumericBlurAmount.Value;
 
-        if (currentValue == DataContext.BlurAmount)
+        if (currentValue == ViewModel.BlurAmount)
         {
             return;
         }
 
-        DataContext.BlurAmount = currentValue;
+        ViewModel.BlurAmount = currentValue;
     }
 
     /// <summary>Function to submit the change.</summary>
@@ -73,12 +73,12 @@ internal partial class FxBlurSettings
     {
         base.OnSubmit();
 
-        if ((DataContext?.OkCommand is null) || (!DataContext.OkCommand.CanExecute(null)))
+        if ((ViewModel?.OkCommand is null) || (!ViewModel.OkCommand.CanExecute(null)))
         {
             return;
         }
 
-        DataContext.OkCommand.Execute(null);
+        ViewModel.OkCommand.Execute(null);
     }
 
     /// <summary>Function to cancel the change.</summary>
@@ -86,12 +86,12 @@ internal partial class FxBlurSettings
     {
         base.OnCancel();
 
-        if ((DataContext?.CancelCommand is null) || (!DataContext.CancelCommand.CanExecute(null)))
+        if ((ViewModel?.CancelCommand is null) || (!ViewModel.CancelCommand.CanExecute(null)))
         {
             return;
         }
 
-        DataContext.CancelCommand.Execute(null);
+        ViewModel.CancelCommand.Execute(null);
     }
 
     /// <summary>Handles the PropertyChanged event of the DataContext control.</summary>
@@ -102,7 +102,7 @@ internal partial class FxBlurSettings
         switch (e.PropertyName)
         {
             case nameof(IFxBlur.BlurAmount):
-                NumericBlurAmount.Value = DataContext.BlurAmount;
+                NumericBlurAmount.Value = ViewModel.BlurAmount;
                 break;
         }
     }
@@ -112,12 +112,12 @@ internal partial class FxBlurSettings
     /// </summary>
     private void UnassignEvents()
     {
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             return;
         }
 
-        DataContext.PropertyChanged -= DataContext_PropertyChanged;
+        ViewModel.PropertyChanged -= DataContext_PropertyChanged;
     }
 
     /// <summary>
@@ -146,14 +146,14 @@ internal partial class FxBlurSettings
 
         InitializeFromDataContext(dataContext);
 
-        DataContext = dataContext;
+        ViewModel = dataContext;
 
         if (dataContext is null)
         {
             return;
         }
 
-        DataContext.PropertyChanged += DataContext_PropertyChanged;
+        ViewModel.PropertyChanged += DataContext_PropertyChanged;
     }        
     #endregion
 

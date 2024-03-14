@@ -53,7 +53,7 @@ internal partial class FontTextureBrushView
     /// Property to return the data context for the view.
     /// </summary>
     [Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-    public IFontTextureBrush DataContext
+    public IFontTextureBrush ViewModel
     {
         get;
         private set;
@@ -109,14 +109,14 @@ internal partial class FontTextureBrushView
             Right = (float)NumericRight.Value,
             Bottom = (float)NumericBottom.Value
         };
-        
-        if ((DataContext?.SetRegionCommand is null) || (!DataContext.SetRegionCommand.CanExecute(rect)))
+
+        if ((ViewModel?.SetRegionCommand is null) || (!ViewModel.SetRegionCommand.CanExecute(rect)))
         {
             return;
         }
 
-        DataContext.SetRegionCommand.Execute(rect);
-        SetNumericMaxValues(DataContext.Texture, DataContext.Region);
+        ViewModel.SetRegionCommand.Execute(rect);
+        SetNumericMaxValues(ViewModel.Texture, ViewModel.Region);
 
         ValidateControls();
     }
@@ -128,12 +128,12 @@ internal partial class FontTextureBrushView
     {
         var item = (WrapModeComboItem)ComboWrapMode.SelectedItem;            
 
-        if ((DataContext?.SetWrappingModeCommand is null) || (!DataContext.SetWrappingModeCommand.CanExecute(item.WrapMode)))
+        if ((ViewModel?.SetWrappingModeCommand is null) || (!ViewModel.SetWrappingModeCommand.CanExecute(item.WrapMode)))
         {
             return;
         }
 
-        DataContext.SetWrappingModeCommand.Execute(item.WrapMode);
+        ViewModel.SetWrappingModeCommand.Execute(item.WrapMode);
     }
 
     /// <summary>
@@ -141,13 +141,13 @@ internal partial class FontTextureBrushView
     /// </summary>
     private void ValidateControls()
     {
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             TableControls.Enabled = false;
             return;
         }
 
-        TableControls.Enabled = DataContext.Texture is not null;
+        TableControls.Enabled = ViewModel.Texture is not null;
 
         ValidateOk();
     }
@@ -159,12 +159,12 @@ internal partial class FontTextureBrushView
     {
         UnhookEvents();
 
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             return;
         }
 
-        DataContext.PropertyChanged -= DataContext_PropertyChanged;
+        ViewModel.PropertyChanged -= DataContext_PropertyChanged;
     }
 
     /// <summary>
@@ -211,10 +211,10 @@ internal partial class FontTextureBrushView
         {
             case nameof(IFontTextureBrush.Region):
             case nameof(IFontTextureBrush.Texture):
-                SetNumericMaxValues(DataContext.Texture, DataContext.Region);
+                SetNumericMaxValues(ViewModel.Texture, ViewModel.Region);
                 break;
             case nameof(IFontTextureBrush.WrapMode):
-                ComboWrapMode.SelectedItem = new WrapModeComboItem(DataContext.WrapMode);
+                ComboWrapMode.SelectedItem = new WrapModeComboItem(ViewModel.WrapMode);
                 break;
         }
 
@@ -254,9 +254,9 @@ internal partial class FontTextureBrushView
     ///   <b>true</b> if the OK button is valid, <b>false</b> if not.</returns>
     protected override bool OnValidateOk()
     {
-        if (DataContext?.OkCommand is not null)
+        if (ViewModel?.OkCommand is not null)
         {
-            return DataContext.OkCommand.CanExecute(null);
+            return ViewModel.OkCommand.CanExecute(null);
         }
 
         return base.OnValidateOk();
@@ -265,9 +265,9 @@ internal partial class FontTextureBrushView
     /// <summary>Function to cancel the change.</summary>
     protected override void OnCancel() 
     {
-        if (DataContext is not null)
+        if (ViewModel is not null)
         {
-            DataContext.IsActive = false;
+            ViewModel.IsActive = false;
         }
     }
 
@@ -276,12 +276,12 @@ internal partial class FontTextureBrushView
     {
         base.OnSubmit();
 
-        if ((DataContext?.OkCommand is null) || (!DataContext.OkCommand.CanExecute(null)))
+        if ((ViewModel?.OkCommand is null) || (!ViewModel.OkCommand.CanExecute(null)))
         {
             return;
         }
 
-        DataContext.OkCommand.Execute(null);
+        ViewModel.OkCommand.Execute(null);
     }
 
     /// <summary>Raises the <see cref="System.Windows.Forms.UserControl.Load"/> event.</summary>
@@ -295,13 +295,13 @@ internal partial class FontTextureBrushView
             return;
         }
 
-        DataContext?.Load();
-                    
+        ViewModel?.Load();
+
         NumericTop.Select();
 
         ValidateControls();
     }
-    
+
     /// <summary>Function to assign a data context to the view as a view model.</summary>
     /// <param name="dataContext">The data context to assign.</param>
     /// <remarks>Data contexts should be nullable, in that, they should reset the view back to its original state when the context is null.</remarks>
@@ -311,9 +311,9 @@ internal partial class FontTextureBrushView
 
         InitializeFromDataContext(dataContext);
 
-        DataContext = dataContext;
+        ViewModel = dataContext;
 
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             ValidateControls();
             return;
@@ -321,7 +321,7 @@ internal partial class FontTextureBrushView
 
         HookEvents();
 
-        DataContext.PropertyChanged += DataContext_PropertyChanged;
+        ViewModel.PropertyChanged += DataContext_PropertyChanged;
         ValidateControls();
     }
     #endregion

@@ -284,7 +284,7 @@ internal class ImageFiles
     private void DoSearch(string text)
     {
         HostServices.BusyService.SetBusy();
-        
+
         try
         {
             IEnumerable<IContentFileExplorerSearchEntry> results = _searchService.Search(text);

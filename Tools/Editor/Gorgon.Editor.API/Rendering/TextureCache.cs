@@ -479,7 +479,7 @@ public class TextureCache
                 _log.Print($"Texture '{file.Path}' exists in cache with {entry.Users} users.", LoggingLevel.Verbose);
                 return entry.Users;
             }
-            
+
             Interlocked.Exchange(ref entry.Texture, new WeakReference<GorgonTexture2DView>(texture));
             _log.Print($"Texture '{file.Path}' exists in cache, but has been collected. Refreshing with {entry.Users} users.", LoggingLevel.Verbose);
             return entry.Users;

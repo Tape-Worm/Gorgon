@@ -3,34 +3,34 @@ using System.Windows.Forms;
 
 namespace Gorgon.Examples;
 
-	partial class Form
-	{
-		/// <summary>
-		/// Required designer variable.
-		/// </summary>
-		private IContainer components = null;
+    partial class Form
+    {
+        /// <summary>
+        /// Required designer variable.
+        /// </summary>
+        private IContainer components = null;
 
-		/// <summary>
-		/// Clean up any resources being used.
-		/// </summary>
-		/// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
-		protected override void Dispose(bool disposing)
-		{
-			if (disposing && (components != null))
-			{
-				components.Dispose();
-			}
-			base.Dispose(disposing);
-		}
+        /// <summary>
+        /// Clean up any resources being used.
+        /// </summary>
+        /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing && (components != null))
+            {
+                components.Dispose();
+            }
+            base.Dispose(disposing);
+        }
 
-		#region Windows Form Designer generated code
+        #region Windows Form Designer generated code
 
-		/// <summary>
-		/// Required method for Designer support - do not modify
-		/// the contents of this method with the code editor.
-		/// </summary>
-		private void InitializeComponent()
-		{
+        /// <summary>
+        /// Required method for Designer support - do not modify
+        /// the contents of this method with the code editor.
+        /// </summary>
+        private void InitializeComponent()
+        {
         System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form));
         this.panelDisplay = new System.Windows.Forms.Panel();
         this.panel1 = new System.Windows.Forms.Panel();
@@ -183,7 +183,7 @@ namespace Gorgon.Examples;
         this.ClientSize = new System.Drawing.Size(1262, 673);
         this.Controls.Add(this.panelDisplay);
         this.Controls.Add(this.panel1);
-        this.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+        
         this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
         this.Name = "Form";
         this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
@@ -198,13 +198,13 @@ namespace Gorgon.Examples;
         this.ResumeLayout(false);
         this.PerformLayout();
 
-		}
+        }
 
-		#endregion
+        #endregion
 
     private Panel panelDisplay;
-		private Panel panel1;
-		private Label labelKeyboard;
+        private Panel panel1;
+        private Label labelKeyboard;
     private PictureBox pictureBox1;
     private Panel panelKeyboard;
     private Panel panelJoystick;
@@ -213,5 +213,5 @@ namespace Gorgon.Examples;
     private Panel panelMouse;
     private Label labelMouse;
     private PictureBox pictureBox3;
-	}
+    }
 

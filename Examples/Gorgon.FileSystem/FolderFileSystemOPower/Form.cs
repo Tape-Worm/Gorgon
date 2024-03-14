@@ -1,4 +1,4 @@
-#region MIT.
+﻿#region MIT.
 // 
 // Gorgon.
 // Copyright (C) 2013 Michael Winsor
@@ -325,14 +325,14 @@ public partial class Form
         // This is how you would get the sprites in v2 of Gorgon:
         /*_spriteImage = _graphics.Textures.FromMemory<GorgonTexture2D>("0_HardVacuum", LoadFile("/Images/0_HardVacuum.png"), new GorgonCodecPNG());
 
-		    // Get the sprites.
-		    // The sprites in the file system are from version 1.0 of Gorgon.
-		    // This version is backwards compatible and can load any version
-		    // of the sprites produced by older versions of Gorgon.
-		    _sprites = new GorgonSprite[3];
-		    _sprites[0] = _renderer.Renderables.FromMemory<GorgonSprite>("Base", LoadFile("/Sprites/base.gorSprite"));
-		    _sprites[1] = _renderer.Renderables.FromMemory<GorgonSprite>("Mother", LoadFile("/Sprites/Mother.gorSprite"));
-		    _sprites[2] = _renderer.Renderables.FromMemory<GorgonSprite>("Mother2c", LoadFile("/Sprites/Mother2c.gorSprite"));
+            // Get the sprites.
+            // The sprites in the file system are from version 1.0 of Gorgon.
+            // This version is backwards compatible and can load any version
+            // of the sprites produced by older versions of Gorgon.
+            _sprites = new GorgonSprite[3];
+            _sprites[0] = _renderer.Renderables.FromMemory<GorgonSprite>("Base", LoadFile("/Sprites/base.gorSprite"));
+            _sprites[1] = _renderer.Renderables.FromMemory<GorgonSprite>("Mother", LoadFile("/Sprites/Mother.gorSprite"));
+            _sprites[2] = _renderer.Renderables.FromMemory<GorgonSprite>("Mother2c", LoadFile("/Sprites/Mother2c.gorSprite"));
         */
 
         // Get poetry.            

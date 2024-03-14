@@ -285,7 +285,7 @@ public sealed class GorgonFontFactory
     /// If the <paramref name="size"/> parameter is not specified, then the entire length of the stream will be used.
     /// </para>
     /// </remarks>
-	    public FontFamily LoadTrueTypeFontFamily(Stream stream, int? size = null)
+        public FontFamily LoadTrueTypeFontFamily(Stream stream, int? size = null)
     {
         if (stream is null)
         {
@@ -347,7 +347,7 @@ public sealed class GorgonFontFactory
     /// Use this to load a true type from the disk into the factory. The factory will use this to build a <see cref="GorgonFont"/> based on your font.
     /// </para>
     /// </remarks>
-	    public FontFamily LoadTrueTypeFontFamily(string path)
+        public FontFamily LoadTrueTypeFontFamily(string path)
     {
         if (path is null)
         {

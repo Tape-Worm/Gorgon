@@ -166,7 +166,7 @@ internal class MipMapSettings
     /// </remarks>
     protected override void OnInitialize(HostedPanelViewModelParameters injectionParameters)
     {
-    
+
     }
     #endregion
 

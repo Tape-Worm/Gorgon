@@ -74,7 +74,7 @@ internal partial class AnimationAddTrack
     /// Property to return the data context for the view.
     /// </summary>
     [Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-    public IAddTrack DataContext
+    public IAddTrack ViewModel
     {
         get;
         private set;
@@ -138,12 +138,12 @@ internal partial class AnimationAddTrack
     /// </summary>
     private void UnassignEvents()
     {
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             return;
         }
 
-        DataContext.AvailableTracks.CollectionChanged -= AvailableTracks_CollectionChanged;
+        ViewModel.AvailableTracks.CollectionChanged -= AvailableTracks_CollectionChanged;
     }
 
     /// <summary>Handles the SelectedValueChanged event of the ListTracks control.</summary>
@@ -153,12 +153,12 @@ internal partial class AnimationAddTrack
     {
         IReadOnlyList<GorgonTrackRegistration> selectedTracks = ListTracks.SelectedItems.OfType<TrackListItem>().Select(item => item.TrackRegistration).ToArray();
 
-        if ((DataContext?.SelectTracksCommand is null) || (!DataContext.SelectTracksCommand.CanExecute(selectedTracks)))
+        if ((ViewModel?.SelectTracksCommand is null) || (!ViewModel.SelectTracksCommand.CanExecute(selectedTracks)))
         {
             return;
         }
 
-        DataContext.SelectTracksCommand.Execute(selectedTracks);
+        ViewModel.SelectTracksCommand.Execute(selectedTracks);
         ValidateOk();
     }
 
@@ -167,7 +167,7 @@ internal partial class AnimationAddTrack
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
     private void ListTracks_DoubleClick(object sender, EventArgs e)
     {
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             return;
         }
@@ -206,7 +206,7 @@ internal partial class AnimationAddTrack
     /// Function to reset the values on the control for a null data context.
     /// </summary>
     private void ResetDataContext() => FillList(null);
-    
+
     /// <summary>
     /// Function to initialize the control with the data context.
     /// </summary>
@@ -227,12 +227,12 @@ internal partial class AnimationAddTrack
     {
         base.OnSubmit();
 
-        if ((DataContext?.OkCommand is null) || (!DataContext.OkCommand.CanExecute(null)))
+        if ((ViewModel?.OkCommand is null) || (!ViewModel.OkCommand.CanExecute(null)))
         {
             return;
         }
 
-        DataContext.OkCommand.Execute(null);
+        ViewModel.OkCommand.Execute(null);
     }
 
     /// <summary>Function to cancel the change.</summary>
@@ -240,20 +240,20 @@ internal partial class AnimationAddTrack
     {
         base.OnCancel();
 
-        if ((DataContext?.CancelCommand is null) || (!DataContext.CancelCommand.CanExecute(null)))
+        if ((ViewModel?.CancelCommand is null) || (!ViewModel.CancelCommand.CanExecute(null)))
         {
             return;
         }
 
-        DataContext.CancelCommand.Execute(null);
+        ViewModel.CancelCommand.Execute(null);
     }
 
     /// <summary>
     /// Function to validate the state of the OK button.
     /// </summary>
     /// <returns><b>true</b> if the OK button is valid, <b>false</b> if not.</returns>
-    protected override bool OnValidateOk() => (DataContext?.OkCommand is not null) && (DataContext.OkCommand.CanExecute(null));
-    
+    protected override bool OnValidateOk() => (ViewModel?.OkCommand is not null) && (ViewModel.OkCommand.CanExecute(null));
+
     /// <summary>Raises the <see cref="System.Windows.Forms.UserControl.Load"/> event.</summary>
     /// <param name="e">An <see cref="EventArgs"/> that contains the event data.</param>
     protected override void OnLoad(EventArgs e)
@@ -265,9 +265,9 @@ internal partial class AnimationAddTrack
             return;
         }
 
-        DataContext?.Load();
+        ViewModel?.Load();
     }
-    
+
     /// <summary>Function to assign a data context to the view as a view model.</summary>
     /// <param name="dataContext">The data context to assign.</param>
     /// <remarks>Data contexts should be nullable, in that, they should reset the view back to its original state when the context is null.</remarks>
@@ -277,15 +277,15 @@ internal partial class AnimationAddTrack
 
         InitializeFromDataContext(dataContext);
 
-        DataContext = dataContext;
+        ViewModel = dataContext;
 
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             ValidateOk();
             return;
         }
 
-        DataContext.AvailableTracks.CollectionChanged += AvailableTracks_CollectionChanged;
+        ViewModel.AvailableTracks.CollectionChanged += AvailableTracks_CollectionChanged;
 
         ValidateOk();
     }

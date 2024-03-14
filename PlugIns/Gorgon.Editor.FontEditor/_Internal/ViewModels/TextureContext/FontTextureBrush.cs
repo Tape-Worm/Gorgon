@@ -172,7 +172,7 @@ internal class FontTextureBrush
         {
             Region = new DX.RectangleF(0, 0, 1, 1);
         }
-        
+
         WrapMode = brush.WrapMode;   
     }
 
@@ -185,7 +185,7 @@ internal class FontTextureBrush
         {
             return;
         }
-        
+
         GorgonGlyphTextureBrush brush = new(_texture)
         {
             TextureRegion = new DX.RectangleF(_region.X / _texture.Width, _region.Y / _texture.Height, _region.Width / _texture.Width, _region.Height / _texture.Height),

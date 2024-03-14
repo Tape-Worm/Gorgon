@@ -111,7 +111,7 @@ internal class KeyValueEditor
             OnPropertyChanging();
 
             _floatValues = value;
-            
+
             if ((_editTrack is not null) && (_workingSprite is not null))
             {
                 _workingSprite.SetFloatValues(_editTrack.Track.SpriteProperty, _floatValues);

@@ -145,7 +145,7 @@ public sealed class GorgonConstantBuffer
     /// <summary>
     /// Property to return the number of 4 component floating point values (16 bytes) that can be stored in this buffer.
     /// </summary>
-	    public int TotalConstantCount
+        public int TotalConstantCount
     {
         get;
         private set;

@@ -1494,7 +1494,7 @@ internal class SpriteContent
             SetAnchor(redoArgs.Anchor);
             return Task.CompletedTask;
         }
-                    
+
         var anchorUndoArgs = new SpriteUndoArgs
         {
             Anchor = _sprite.Anchor

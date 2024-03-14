@@ -175,7 +175,7 @@ public class GorgonGlyphTextureBrush
         WrapMode = (GlyphBrushWrapMode)reader.ReadInt32();
         TextureRegion = reader.ReadValue<DX.RectangleF>();
         int imageSize = reader.ReadInt32();
-                    
+
         var codec = new GorgonCodecPng();
         using IGorgonImage image = codec.FromStream(reader.BaseStream, imageSize);
 

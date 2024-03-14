@@ -23,7 +23,7 @@ partial class ContentPreviewPanel
             _previewTexture?.Dispose();
             _previewTexture = null;
             CleanupResources();
-            DataContext?.Unload();
+            ViewModel?.Unload();
             UnassignEvents();
         }
         base.Dispose(disposing);

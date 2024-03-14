@@ -44,7 +44,7 @@ internal partial class FormManualVertexEdit
 
     #region Properties.
     /// <summary>Property to return the data context assigned to this view.</summary>
-    public ISpriteVertexEditContext DataContext
+    public ISpriteVertexEditContext ViewModel
     {
         get;
         private set;
@@ -61,7 +61,7 @@ internal partial class FormManualVertexEdit
         {
             case nameof(ISpriteVertexEditContext.SelectedVertexIndex):
             case nameof(ISpriteVertexEditContext.Offset):
-                GetOffsetFromDataContext(DataContext);
+                GetOffsetFromDataContext(ViewModel);
                 break;
         }
     }
@@ -71,12 +71,12 @@ internal partial class FormManualVertexEdit
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
     private void NumericOffset_ValueChanged(object sender, EventArgs e)
     {
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             return;
         }
 
-        DataContext.Offset = new Vector2((float)NumericX.Value, (float)NumericY.Value);
+        ViewModel.Offset = new Vector2((float)NumericX.Value, (float)NumericY.Value);
     }
 
     /// <summary>
@@ -115,12 +115,12 @@ internal partial class FormManualVertexEdit
     /// </summary>
     private void UnassignEvents()
     {
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             return;
         }
 
-        DataContext.PropertyChanged -= DataContext_PropertyChanged;
+        ViewModel.PropertyChanged -= DataContext_PropertyChanged;
     }
 
     /// <summary>
@@ -156,14 +156,14 @@ internal partial class FormManualVertexEdit
     {
         InitializeFromDataContext(dataContext);
 
-        DataContext = dataContext;
+        ViewModel = dataContext;
 
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             return;
         }
 
-        DataContext.PropertyChanged += DataContext_PropertyChanged;
+        ViewModel.PropertyChanged += DataContext_PropertyChanged;
     }
     #endregion
 

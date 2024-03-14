@@ -404,7 +404,7 @@ internal class SimpleRenderer
             if ((Camera.Changes & CameraChange.View) == CameraChange.View)
             {
                 ref readonly Matrix4x4 view = ref Camera.GetViewMatrix();
-                
+
                 _cameraBuffer.Buffer.SetData(Camera.Position);
             }
 
@@ -432,7 +432,7 @@ internal class SimpleRenderer
             }
 
             UpdateMaterials(_meshes[i].Material);
-            
+
             if (aabb.IsEmpty)
             {
                 _graphics.Submit(_drawCalls[i]);

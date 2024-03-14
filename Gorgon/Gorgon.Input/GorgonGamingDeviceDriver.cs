@@ -103,7 +103,7 @@ public abstract class GorgonGamingDeviceDriver
     /// <param name="disposing">
     ///   <c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
     protected abstract void Dispose(bool disposing);
-    
+
     /// <summary>
     /// Function to enumerate the gaming devices supported by this driver.
     /// </summary>

@@ -72,7 +72,7 @@ partial class SpriteEditorView
             _manualRectEditor.FormClosing -= ManualInput_ClosePanel;
             _manualVertexEditor.ResizeEnd -= ManualVertexInput_ResizeEnd;
             _manualVertexEditor.FormClosing -= ManualVertexInput_ClosePanel;
-            
+
             _manualRectEditor.Dispose();
             _manualVertexEditor.Dispose();
             _anchorTexture?.Dispose();

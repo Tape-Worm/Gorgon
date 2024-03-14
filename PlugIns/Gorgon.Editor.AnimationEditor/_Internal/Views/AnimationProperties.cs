@@ -51,7 +51,7 @@ internal partial class AnimationProperties
     /// Property to return the data context for the view.
     /// </summary>
     [Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-    public IProperties DataContext
+    public IProperties ViewModel
     {
         get;
         private set;
@@ -71,20 +71,20 @@ internal partial class AnimationProperties
             switch (e.PropertyName)
             {
                 case nameof(IProperties.Length):
-                    NumericLength.Value = ((decimal)DataContext.Length).Min(NumericLength.Maximum).Max(NumericLength.Minimum);
+                    NumericLength.Value = ((decimal)ViewModel.Length).Min(NumericLength.Maximum).Max(NumericLength.Minimum);
                     break;
                 case nameof(IProperties.Fps):
-                    NumericFps.Value = ((decimal)DataContext.Fps).Min(NumericFps.Maximum).Max(NumericFps.Minimum);
+                    NumericFps.Value = ((decimal)ViewModel.Fps).Min(NumericFps.Maximum).Max(NumericFps.Minimum);
                     break;
                 case nameof(IProperties.IsLooped):
-                    CheckLoop.Checked = DataContext.IsLooped;
-                    LabelLoopCount.Enabled = NumericLoopCount.Enabled = DataContext.IsLooped;
+                    CheckLoop.Checked = ViewModel.IsLooped;
+                    LabelLoopCount.Enabled = NumericLoopCount.Enabled = ViewModel.IsLooped;
                     break;
                 case nameof(IProperties.LoopCount):
-                    NumericLoopCount.Value = ((decimal)DataContext.LoopCount).Min(NumericLoopCount.Maximum).Max(NumericLoopCount.Minimum);
+                    NumericLoopCount.Value = ((decimal)ViewModel.LoopCount).Min(NumericLoopCount.Maximum).Max(NumericLoopCount.Minimum);
                     break;
                 case nameof(IProperties.KeyCount):
-                    LabelFrameCount.Text = string.Format(Resources.GORANM_TEXT_FRAME_COUNT, DataContext.KeyCount);
+                    LabelFrameCount.Text = string.Format(Resources.GORANM_TEXT_FRAME_COUNT, ViewModel.KeyCount);
                     break;
             }
         }
@@ -101,12 +101,12 @@ internal partial class AnimationProperties
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
     private void NumericLength_ValueChanged(object sender, EventArgs e)
     {
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             return;
         }
 
-        DataContext.Length = (float)NumericLength.Value;
+        ViewModel.Length = (float)NumericLength.Value;
     }
 
     /// <summary>Handles the ValueChanged event of the NumericFps control.</summary>
@@ -114,12 +114,12 @@ internal partial class AnimationProperties
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
     private void NumericFps_ValueChanged(object sender, EventArgs e)
     {
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             return;
         }
 
-        DataContext.Fps = (float)NumericFps.Value;
+        ViewModel.Fps = (float)NumericFps.Value;
     }
 
     /// <summary>Handles the Click event of the CheckLoop control.</summary>
@@ -127,12 +127,12 @@ internal partial class AnimationProperties
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
     private void CheckLoop_Click(object sender, EventArgs e)
     {
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             return;
         }
 
-        LabelLoopCount.Enabled = NumericLoopCount.Enabled = DataContext.IsLooped = CheckLoop.Checked;
+        LabelLoopCount.Enabled = NumericLoopCount.Enabled = ViewModel.IsLooped = CheckLoop.Checked;
     }
 
     /// <summary>Handles the ValueChanged event of the NumericLoopCount control.</summary>
@@ -140,12 +140,12 @@ internal partial class AnimationProperties
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
     private void NumericLoopCount_ValueChanged(object sender, EventArgs e)
     {
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             return;
         }
 
-        DataContext.LoopCount = (int)NumericLoopCount.Value;
+        ViewModel.LoopCount = (int)NumericLoopCount.Value;
     }
 
     /// <summary>
@@ -185,12 +185,12 @@ internal partial class AnimationProperties
     {
         DisableEvents();
 
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             return;
         }
 
-        DataContext.PropertyChanged -= DataContext_PropertyChanged;
+        ViewModel.PropertyChanged -= DataContext_PropertyChanged;
     }
 
     /// <summary>
@@ -204,7 +204,7 @@ internal partial class AnimationProperties
         NumericLoopCount.Value = 0;
         LabelFrameCount.Text = string.Format(Resources.GORANM_TEXT_FRAME_COUNT, 60);
     }
-    
+
     /// <summary>
     /// Function to initialize the control with the data context.
     /// </summary>
@@ -239,12 +239,12 @@ internal partial class AnimationProperties
     {
         base.OnSubmit();
 
-        if ((DataContext?.OkCommand is null) || (!DataContext.OkCommand.CanExecute(null)))
+        if ((ViewModel?.OkCommand is null) || (!ViewModel.OkCommand.CanExecute(null)))
         {
             return;
         }
 
-        DataContext.OkCommand.Execute(null);
+        ViewModel.OkCommand.Execute(null);
     }
 
     /// <summary>Function to cancel the change.</summary>
@@ -252,20 +252,20 @@ internal partial class AnimationProperties
     {
         base.OnCancel();
 
-        if ((DataContext?.CancelCommand is null) || (!DataContext.CancelCommand.CanExecute(null)))
+        if ((ViewModel?.CancelCommand is null) || (!ViewModel.CancelCommand.CanExecute(null)))
         {
             return;
         }
 
-        DataContext.CancelCommand.Execute(null);
+        ViewModel.CancelCommand.Execute(null);
     }
 
     /// <summary>
     /// Function to validate the state of the OK button.
     /// </summary>
     /// <returns><b>true</b> if the OK button is valid, <b>false</b> if not.</returns>
-    protected override bool OnValidateOk() => (DataContext?.OkCommand is not null) && (DataContext.OkCommand.CanExecute(null));
-    
+    protected override bool OnValidateOk() => (ViewModel?.OkCommand is not null) && (ViewModel.OkCommand.CanExecute(null));
+
     /// <summary>Raises the <see cref="System.Windows.Forms.UserControl.Load"/> event.</summary>
     /// <param name="e">An <see cref="EventArgs"/> that contains the event data.</param>
     protected override void OnLoad(EventArgs e)
@@ -277,11 +277,11 @@ internal partial class AnimationProperties
             return;
         }
 
-        DataContext?.Load();
+        ViewModel?.Load();
 
         ValidateOk();
     }
-    
+
     /// <summary>Function to assign a data context to the view as a view model.</summary>
     /// <param name="dataContext">The data context to assign.</param>
     /// <remarks>Data contexts should be nullable, in that, they should reset the view back to its original state when the context is null.</remarks>
@@ -291,14 +291,14 @@ internal partial class AnimationProperties
 
         InitializeFromDataContext(dataContext);
 
-        DataContext = dataContext;
+        ViewModel = dataContext;
 
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             return;
         }
 
-        DataContext.PropertyChanged += DataContext_PropertyChanged;            
+        ViewModel.PropertyChanged += DataContext_PropertyChanged;            
     }
     #endregion
 

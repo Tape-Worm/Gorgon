@@ -154,7 +154,7 @@ public class GorgonBinaryReader
     /// This method is unsafe, therefore a proper <paramref name="size"/> must be passed to the method.  Failure to do so can lead to memory corruption.  Use this method at your own peril.
     /// </note>
     /// </remarks>
-    
+
     public void Read(ref byte buffer, int size)
     {
         if (size < 1)

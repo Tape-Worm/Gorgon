@@ -215,7 +215,7 @@ public class Gorgon2DSobelEdgeDetectEffect
                           .ConstantBuffer(_sobelBuffer, 1)
                           .Shader(_sobelShader)
                           .Build();
-            
+
             _batchState = builders.BatchBuilder
                           .PixelShaderState(_sobelState)
                           .Build(BatchStateAllocator);

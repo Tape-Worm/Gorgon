@@ -240,7 +240,7 @@ public class GorgonProgressOverlay
         {
             _progressForm.Progress.OperationCancelled += CancelEvent;
         }
-        
+
         _progressForm.Show(_overlay.Value.Show(parent));
 
         _parent = new WeakReference<Control>(parent);
@@ -289,7 +289,7 @@ public class GorgonProgressOverlay
             parent.Move -= Parent_Move;
             parent.VisibleChanged -= Parent_VisibleChanged;
         }
-                    
+
         progressForm?.Dispose();
         if (_overlay.IsValueCreated)
         {

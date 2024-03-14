@@ -83,7 +83,7 @@ internal partial class ContentPreviewPanel
 
     /// <summary>Property to return the data context assigned to this view.</summary>
     [Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-    public IContentPreview DataContext
+    public IContentPreview ViewModel
     {
         get;
         private set;
@@ -102,10 +102,10 @@ internal partial class ContentPreviewPanel
                 RenderImage();
                 break;
             case nameof(IContentPreview.PreviewImage):
-                UpdateImageTexture(DataContext.PreviewImage);
+                UpdateImageTexture(ViewModel.PreviewImage);
                 break;
             case nameof(IContentPreview.Title):
-                _titleText.Text = DataContext.Title.WordWrap(_titleFont, _swapChain.Width);
+                _titleText.Text = ViewModel.Title.WordWrap(_titleFont, _swapChain.Width);
                 RenderImage();
                 break;
         }
@@ -197,12 +197,12 @@ internal partial class ContentPreviewPanel
     /// </summary>
     private void UnassignEvents()
     {
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             return;
         }
 
-        DataContext.PropertyChanged -= DataContext_PropertyChanged;
+        ViewModel.PropertyChanged -= DataContext_PropertyChanged;
     }
 
     /// <summary>
@@ -243,7 +243,7 @@ internal partial class ContentPreviewPanel
 
         GorgonTexture2DView image = _previewTexture ?? _defaultTexture;
 
-        if (DataContext?.IsLoading ?? false)
+        if (ViewModel?.IsLoading ?? false)
         {
             image = _loadingTexture;
         }
@@ -317,16 +317,16 @@ internal partial class ContentPreviewPanel
     {
         UnassignEvents();
 
-        DataContext = null;
+        ViewModel = null;
         InitializeFromDataContext(dataContext);
-        DataContext = dataContext;
+        ViewModel = dataContext;
 
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             return;
         }
 
-        DataContext.PropertyChanged += DataContext_PropertyChanged;
+        ViewModel.PropertyChanged += DataContext_PropertyChanged;
     }
     #endregion
 

@@ -107,7 +107,7 @@ partial class FormTextEditor
         this.ClientSize = new System.Drawing.Size(784, 561);
         this.Controls.Add(this.TextContent);
         this.Controls.Add(this.panel1);
-        this.Font = new System.Drawing.Font("Segoe UI", 9F);
+        
         this.ForeColor = System.Drawing.Color.White;
         this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
         this.Name = "FormTextEditor";

@@ -126,7 +126,7 @@ partial class AlphaPicker
         this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
         this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(35)))), ((int)(((byte)(35)))), ((int)(((byte)(37)))));
         this.Controls.Add(this.TableAlpha);
-        this.Font = new System.Drawing.Font("Segoe UI", 9F);
+        
         this.ForeColor = System.Drawing.Color.White;
         this.Name = "AlphaPicker";
         this.Size = new System.Drawing.Size(411, 168);

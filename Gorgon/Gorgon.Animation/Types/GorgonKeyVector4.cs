@@ -42,7 +42,7 @@ namespace Gorgon.Animation;
 /// </para>
 /// </remarks>
 /// <seealso cref="IGorgonAnimationTrack{T}"/>
-	public class GorgonKeyVector4
+    public class GorgonKeyVector4
     : IGorgonKeyFrame
 {
     #region Variables.

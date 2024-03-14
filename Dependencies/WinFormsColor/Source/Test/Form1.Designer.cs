@@ -64,7 +64,7 @@
             this.ClientSize = new System.Drawing.Size(933, 519);
             this.Controls.Add(this.colorPickerPanel1);
             this.Controls.Add(this.label1);
-            this.Font = new System.Drawing.Font("Segoe UI", 9F);
+            
             this.Name = "Form1";
             this.Text = "Form1";
             this.ResumeLayout(false);

@@ -678,7 +678,7 @@ public class RectClipperService
         DX.RectangleF handleRect = _handles[handle].HandleBounds;
         var clientPos = new Vector2(handleRect.X + (handleRect.Width * 0.5f), handleRect.Y + (handleRect.Height * 0.5f));
         _mousePosition = clientPos;
-                    
+
         return true;
     }
 

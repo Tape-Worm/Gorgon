@@ -23,15 +23,15 @@ using System;
 [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
 [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
 internal class Resources {
-    
+
     private static global::System.Resources.ResourceManager resourceMan;
-    
+
     private static global::System.Globalization.CultureInfo resourceCulture;
-    
+
     [global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
     internal Resources() {
     }
-    
+
     /// <summary>
     ///   Returns the cached ResourceManager instance used by this class.
     /// </summary>
@@ -45,7 +45,7 @@ internal class Resources {
             return resourceMan;
         }
     }
-    
+
     /// <summary>
     ///   Overrides the current thread's CurrentUICulture property for all
     ///   resource lookups using this strongly typed resource class.
@@ -59,7 +59,7 @@ internal class Resources {
             resourceCulture = value;
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized resource of type System.Drawing.Bitmap.
     /// </summary>
@@ -69,7 +69,7 @@ internal class Resources {
             return ((System.Drawing.Bitmap)(obj));
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized resource of type System.Drawing.Bitmap.
     /// </summary>
@@ -79,7 +79,7 @@ internal class Resources {
             return ((System.Drawing.Bitmap)(obj));
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to Output folder.
     /// </summary>
@@ -88,7 +88,7 @@ internal class Resources {
             return ResourceManager.GetString("GORIAG_CAPTION_FOLDER_SELECT", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to Generating the texture atlas will overwrite one or more textures.
     ///
@@ -99,7 +99,7 @@ internal class Resources {
             return ResourceManager.GetString("GORIAG_CONFIRM_OVERWRITE", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to A tool for generating a texture atlas from a series of individual images.
     ///
@@ -110,7 +110,7 @@ internal class Resources {
             return ResourceManager.GetString("GORIAG_DESC_BUTTON", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to Select a folder to save the atlas image(s) into..
     /// </summary>
@@ -119,7 +119,7 @@ internal class Resources {
             return ResourceManager.GetString("GORIAG_DESC_FOLDER_SELECT", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to There was an error while calculating the texture dimensions.
     ///
@@ -130,7 +130,7 @@ internal class Resources {
             return ResourceManager.GetString("GORIAG_ERR_CALC", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to The calculated size would be too large for this video adapter to handle..
     /// </summary>
@@ -139,7 +139,7 @@ internal class Resources {
             return ResourceManager.GetString("GORIAG_ERR_CALC_TOO_LARGE", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to There was an error browsing the file system folders.
     ///
@@ -150,7 +150,7 @@ internal class Resources {
             return ResourceManager.GetString("GORIAG_ERR_FOLDER_SELECT", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to There was an error while generating the atlas.
     ///
@@ -161,7 +161,7 @@ internal class Resources {
             return ResourceManager.GetString("GORIAG_ERR_GEN_ATLAS", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to Cannot write the image file &apos;{0}&apos; because it is already open in the editor..
     /// </summary>
@@ -170,7 +170,7 @@ internal class Resources {
             return ResourceManager.GetString("GORIAG_ERR_IMAGE_OPEN", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to There was an error launching the image atlas generation tool.
     ///
@@ -181,7 +181,7 @@ internal class Resources {
             return ResourceManager.GetString("GORIAG_ERR_LAUNCH", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to There was an error loading the selected images.
     ///
@@ -192,7 +192,7 @@ internal class Resources {
             return ResourceManager.GetString("GORIAG_ERR_LOAD_IMAGES", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to There was not enough room for one or more of the image.
     ///
@@ -203,7 +203,7 @@ internal class Resources {
             return ResourceManager.GetString("GORIAG_ERR_NO_ROOM", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to There was an error while changing the array or texture index.
     ///
@@ -214,7 +214,7 @@ internal class Resources {
             return ResourceManager.GetString("GORIAG_ERR_PREVIEW_ARRAY", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to There was an error while attempting to save the image atlas.
     ///
@@ -225,7 +225,7 @@ internal class Resources {
             return ResourceManager.GetString("GORIAG_ERR_SAVE", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to There was an error searching through the images.
     ///
@@ -236,7 +236,7 @@ internal class Resources {
             return ResourceManager.GetString("GORIAG_ERR_SEARCH", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to Cannot update the sprite file &apos;{0}&apos; because it is already open in the editor..
     /// </summary>
@@ -245,7 +245,7 @@ internal class Resources {
             return ResourceManager.GetString("GORIAG_ERR_SPRITE_OPEN", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to Images.
     /// </summary>
@@ -254,7 +254,7 @@ internal class Resources {
             return ResourceManager.GetString("GORIAG_GROUP_BUTTON", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to Gorgon Image Atlas.
     /// </summary>
@@ -263,7 +263,7 @@ internal class Resources {
             return ResourceManager.GetString("GORIAG_PLUGIN_DESC", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to Array index {0}/{1}.
     /// </summary>
@@ -272,7 +272,7 @@ internal class Resources {
             return ResourceManager.GetString("GORIAG_TEXT_ARRAY_COUNT", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to Array index {0}/{1}, Image {2}/{3}.
     /// </summary>
@@ -281,7 +281,7 @@ internal class Resources {
             return ResourceManager.GetString("GORIAG_TEXT_ARRAY_TEXTURE_COUNT", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to Image Atlas.
     /// </summary>
@@ -290,7 +290,7 @@ internal class Resources {
             return ResourceManager.GetString("GORIAG_TEXT_BUTTON", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to {0} images loaded..
     /// </summary>
@@ -299,7 +299,7 @@ internal class Resources {
             return ResourceManager.GetString("GORIAG_TEXT_IMAGE_COUNT", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to Loading....
     /// </summary>
@@ -308,7 +308,7 @@ internal class Resources {
             return ResourceManager.GetString("GORIAG_TEXT_LOADING", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to Loading image &apos;{0}&apos;....
     /// </summary>
@@ -317,7 +317,7 @@ internal class Resources {
             return ResourceManager.GetString("GORIAG_TEXT_LOADING_IMAGE", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to Click the &quot;Generate Atlas&quot; button to create an atlas..
     /// </summary>
@@ -326,7 +326,7 @@ internal class Resources {
             return ResourceManager.GetString("GORIAG_TEXT_NO_ATLAS", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to No images loaded..
     /// </summary>
@@ -335,7 +335,7 @@ internal class Resources {
             return ResourceManager.GetString("GORIAG_TEXT_NO_IMAGES", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to Select an image..
     /// </summary>
@@ -344,7 +344,7 @@ internal class Resources {
             return ResourceManager.GetString("GORIAG_TEXT_SELECT_IMAGE", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to Image {0}/{1}.
     /// </summary>
@@ -353,7 +353,7 @@ internal class Resources {
             return ResourceManager.GetString("GORIAG_TEXT_TEXTURE_COUNT", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized resource of type System.Drawing.Bitmap.
     /// </summary>
@@ -363,7 +363,7 @@ internal class Resources {
             return ((System.Drawing.Bitmap)(obj));
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized resource of type System.Drawing.Bitmap.
     /// </summary>
@@ -373,7 +373,7 @@ internal class Resources {
             return ((System.Drawing.Bitmap)(obj));
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized resource of type System.Drawing.Bitmap.
     /// </summary>
@@ -383,7 +383,7 @@ internal class Resources {
             return ((System.Drawing.Bitmap)(obj));
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized resource of type System.Drawing.Bitmap.
     /// </summary>
@@ -393,7 +393,7 @@ internal class Resources {
             return ((System.Drawing.Bitmap)(obj));
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized resource of type System.Drawing.Bitmap.
     /// </summary>
@@ -403,7 +403,7 @@ internal class Resources {
             return ((System.Drawing.Bitmap)(obj));
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized resource of type System.Drawing.Bitmap.
     /// </summary>
@@ -413,7 +413,7 @@ internal class Resources {
             return ((System.Drawing.Bitmap)(obj));
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized resource of type System.Drawing.Bitmap.
     /// </summary>
@@ -423,7 +423,7 @@ internal class Resources {
             return ((System.Drawing.Bitmap)(obj));
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized resource of type System.Drawing.Bitmap.
     /// </summary>
@@ -433,7 +433,7 @@ internal class Resources {
             return ((System.Drawing.Bitmap)(obj));
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized resource of type System.Drawing.Bitmap.
     /// </summary>

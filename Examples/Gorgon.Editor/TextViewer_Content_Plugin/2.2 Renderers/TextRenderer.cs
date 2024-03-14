@@ -87,7 +87,7 @@ internal class TextRenderer
         }
 
         _textSprite.Text = DataContext.Text.WordWrap(_textSprite.Font, RenderRegion.Width);           
-        
+
     }
 
     /// <summary>Handles the PropertyChanged event of the TextColor control.</summary>
@@ -204,7 +204,7 @@ internal class TextRenderer
         Renderer.Begin(Gorgon2DBatchState.ScissorClipping, Camera);
         Renderer.DrawTextSprite(_textSprite);
         Renderer.End();
-        
+
         // Turn off clipping so we don't affect anything else.
         Graphics.SetScissorRect(DX.Rectangle.Empty);
     }

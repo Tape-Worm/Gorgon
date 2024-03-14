@@ -82,7 +82,7 @@ public abstract class GorgonShaderResourceView
             };
 
             Graphics.Log.Print($"Shader Resource View for '{Resource.Name}': {Resource.ResourceType} -> Start: {desc.Buffer.ElementOffset}, Count: {desc.Buffer.ElementCount}", LoggingLevel.Verbose);
-            
+
             return Native;
         }
         catch (DX.SharpDXException sDXEx)

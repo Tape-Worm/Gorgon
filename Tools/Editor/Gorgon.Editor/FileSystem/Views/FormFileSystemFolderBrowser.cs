@@ -58,7 +58,7 @@ internal partial class FormFileSystemFolderBrowser
 
     /// <summary>Property to return the data context assigned to this view.</summary>
     [Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-    public IFileExplorer DataContext
+    public IFileExplorer ViewModel
     {
         get;
         private set;
@@ -80,12 +80,12 @@ internal partial class FormFileSystemFolderBrowser
     private IDirectory GetDirectory(string path)
     {
         var args = new GetDirectoryArgs(path);
-        if ((DataContext?.GetDirectoryCommand is null) || (!DataContext.GetDirectoryCommand.CanExecute(args)))
+        if ((ViewModel?.GetDirectoryCommand is null) || (!ViewModel.GetDirectoryCommand.CanExecute(args)))
         {
             return null;
         }
 
-        DataContext.GetDirectoryCommand.Execute(args);
+        ViewModel.GetDirectoryCommand.Execute(args);
         return args.Directory;
     }
 
@@ -94,7 +94,7 @@ internal partial class FormFileSystemFolderBrowser
     /// <param name="e">The event parameters.</param>
     private async void FolderBrowser_FolderDeleting(object sender, FolderDeleteArgs e)
     {
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             e.Cancel = true;
             return;
@@ -110,12 +110,12 @@ internal partial class FormFileSystemFolderBrowser
 
         var args = new DeleteArgs(dir.ID);
 
-        if ((DataContext.DeleteDirectoryCommand is null) || (!DataContext.DeleteDirectoryCommand.CanExecute(args)))
+        if ((ViewModel.DeleteDirectoryCommand is null) || (!ViewModel.DeleteDirectoryCommand.CanExecute(args)))
         {
             return;
         }
 
-        e.DeleteTask = DataContext.DeleteDirectoryCommand.ExecuteAsync(args);
+        e.DeleteTask = ViewModel.DeleteDirectoryCommand.ExecuteAsync(args);
         await e.DeleteTask;
 
         e.Cancel = !args.ItemsDeleted;
@@ -129,7 +129,7 @@ internal partial class FormFileSystemFolderBrowser
     /// <param name="e">The event parameters.</param>
     private void FolderBrowser_FolderAdding(object sender, FolderAddArgs e)
     {
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             e.Cancel = true;
             return;
@@ -138,15 +138,15 @@ internal partial class FormFileSystemFolderBrowser
         var args = new CreateDirectoryArgs
         {
             Name = e.DirectoryName,
-            ParentDirectory = _currentDirectory ?? DataContext.Root
+            ParentDirectory = _currentDirectory ?? ViewModel.Root
         };
 
-        if ((DataContext.CreateDirectoryCommand is null) || (!DataContext.CreateDirectoryCommand.CanExecute(args)))
+        if ((ViewModel.CreateDirectoryCommand is null) || (!ViewModel.CreateDirectoryCommand.CanExecute(args)))
         {
             return;
         }
 
-        DataContext.CreateDirectoryCommand.Execute(args);
+        ViewModel.CreateDirectoryCommand.Execute(args);
 
         if (args.Directory is null)
         {
@@ -161,7 +161,7 @@ internal partial class FormFileSystemFolderBrowser
     /// <param name="e">The event parameters.</param>
     private void FolderBrowser_FolderRenaming(object sender, FolderRenameArgs e)
     {
-        if (DataContext?.RenameDirectoryCommand is null)
+        if (ViewModel?.RenameDirectoryCommand is null)
         {
             e.Cancel = true;
             return;
@@ -180,13 +180,13 @@ internal partial class FormFileSystemFolderBrowser
             ID = prevDir.ID
         };
 
-        if (!DataContext.RenameDirectoryCommand.CanExecute(args))
+        if (!ViewModel.RenameDirectoryCommand.CanExecute(args))
         {
             e.Cancel = true;
             return;
         }
-        
-        DataContext.RenameDirectoryCommand.Execute(args);
+
+        ViewModel.RenameDirectoryCommand.Execute(args);
 
         e.Cancel = args.Cancel;
         e.RenameHandled = true;
@@ -202,7 +202,7 @@ internal partial class FormFileSystemFolderBrowser
     /// <param name="e">The e.</param>
     private void FolderBrowser_FolderEntered(object sender, FolderSelectedArgs e)
     {
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             return;
         }
@@ -216,7 +216,7 @@ internal partial class FormFileSystemFolderBrowser
     /// </summary>
     private void UnassignEvents()
     {
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             return;
         }
@@ -283,7 +283,7 @@ internal partial class FormFileSystemFolderBrowser
 
         InitializeFromDataContext(dataContext);
 
-        DataContext = dataContext;
+        ViewModel = dataContext;
     }
     #endregion
 

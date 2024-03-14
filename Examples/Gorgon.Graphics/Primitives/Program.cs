@@ -163,7 +163,7 @@ internal static class Program
     /// <summary>
     /// Function to process the keyboard commands.
     /// </summary>
-		private static void ProcessKeys()
+        private static void ProcessKeys()
     {
         Vector3 cameraDir = Vector3.Zero;
 
@@ -404,7 +404,7 @@ internal static class Program
     /// </summary>
     /// <param name="width">The width of the depth buffer.</param>
     /// <param name="height">The height of the depth buffer.</param>
-	    private static void BuildDepthBuffer(int width, int height)
+        private static void BuildDepthBuffer(int width, int height)
     {
         _depthBuffer?.Dispose();
         _depthBuffer = GorgonDepthStencil2DView.CreateDepthStencil(_graphics,
@@ -419,7 +419,7 @@ internal static class Program
     /// <summary>
     /// Function to build the shaders required for the application.
     /// </summary>
-	    private static void LoadShaders()
+        private static void LoadShaders()
     {
         _renderer.ShaderCache["VertexShader"] = GorgonShaderFactory.Compile<GorgonVertexShader>(_graphics, Resources.Shaders, "PrimVS", true);
         _renderer.ShaderCache["PixelShader"] = GorgonShaderFactory.Compile<GorgonPixelShader>(_graphics, Resources.Shaders, "PrimPS", true);
@@ -430,7 +430,7 @@ internal static class Program
     /// <summary>
     /// Function to load textures from application resources.
     /// </summary>
-	    private static void LoadTextures()
+        private static void LoadTextures()
     {
         // Load standard images from the resource section.
         _renderer.TextureCache["Black"] = Resources.black_2x2.ToTexture2D(_graphics,
@@ -506,7 +506,7 @@ internal static class Program
     /// <summary>
     /// Function to build the meshes.
     /// </summary>
-	    private static void BuildMeshes()
+        private static void BuildMeshes()
     {
         var fnU = new Vector3(0.5f, 1.0f, 0);
         var fnV = new Vector3(1.0f, 1.0f, 0);
@@ -637,7 +637,7 @@ internal static class Program
     /// <summary>
     /// Function to initialize the lights.
     /// </summary>
-	    private static void BuildLights()
+        private static void BuildLights()
     {
         _renderer.Lights[0] = new GorgonPointLight
         {

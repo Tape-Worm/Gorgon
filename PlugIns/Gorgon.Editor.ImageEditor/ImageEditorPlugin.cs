@@ -340,7 +340,7 @@ internal class ImageEditorPlugIn
         var oneBitSettings = new FxOneBit();
 
         var injector = new HostedPanelViewModelParameters(HostContentServices);
-        
+
         cropResizeSettings.Initialize(injector);
         dimensionSettings.Initialize(new DimensionSettingsParameters(HostContentServices));
         mipSettings.Initialize(injector);
@@ -351,7 +351,7 @@ internal class ImageEditorPlugIn
         edgeDetectSettings.Initialize(injector);
         posterizeSettings.Initialize(injector);
 
-        
+
         imagePicker.Initialize(new ImagePickerParameters(fileManager, file, HostContentServices)
         {
             ImageServices = services,

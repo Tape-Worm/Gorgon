@@ -114,7 +114,7 @@ public class GorgonPerspectiveCamera
         bool hasTranslate = (Changes & CameraChange.Position) == CameraChange.Position;
         // There is no scaling for this camera type.
         Changes &= ~CameraChange.Scale;
-        
+
         if ((!hasRotation) && (!hasTranslate))
         {
             return;

@@ -23,15 +23,15 @@ using System;
 [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
 [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
 internal class Resources {
-    
+
     private static global::System.Resources.ResourceManager resourceMan;
-    
+
     private static global::System.Globalization.CultureInfo resourceCulture;
-    
+
     [global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
     internal Resources() {
     }
-    
+
     /// <summary>
     ///   Returns the cached ResourceManager instance used by this class.
     /// </summary>
@@ -45,7 +45,7 @@ internal class Resources {
             return resourceMan;
         }
     }
-    
+
     /// <summary>
     ///   Overrides the current thread's CurrentUICulture property for all
     ///   resource lookups using this strongly typed resource class.
@@ -59,7 +59,7 @@ internal class Resources {
             resourceCulture = value;
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to Linear.
     /// </summary>
@@ -68,7 +68,7 @@ internal class Resources {
             return ResourceManager.GetString("GORANM_DESC_INTERP_LINEAR", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to None.
     /// </summary>
@@ -77,7 +77,7 @@ internal class Resources {
             return ResourceManager.GetString("GORANM_DESC_INTERP_NONE", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to Spline.
     /// </summary>
@@ -86,7 +86,7 @@ internal class Resources {
             return ResourceManager.GetString("GORANM_DESC_INTERP_SPLINE", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to The track &apos;{0}&apos; is registered with interpolation support for [{1}], but the actual track in the animation supports [{2}]..
     /// </summary>
@@ -95,7 +95,7 @@ internal class Resources {
             return ResourceManager.GetString("GORANM_ERR_INTERPOLATION_MISMATCH", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to The key is already in the track at time index {0}..
     /// </summary>
@@ -104,7 +104,7 @@ internal class Resources {
             return ResourceManager.GetString("GORANM_ERR_KEY_ALREADY_IN_TRACK", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to Track &apos;{0}&apos;, Type: {1}.
     /// </summary>
@@ -113,7 +113,7 @@ internal class Resources {
             return ResourceManager.GetString("GORANM_TOSTR_TRACKREG", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to The track &apos;{0}&apos; already exists in this collection..
     /// </summary>
@@ -122,7 +122,7 @@ internal class Resources {
             return ResourceManager.GetString("GORANM_TRACK_ALREADY_EXISTS", resourceCulture);
         }
     }
-    
+
     /// <summary>
     ///   Looks up a localized string similar to The track &apos;{0}&apos; does not exist..
     /// </summary>

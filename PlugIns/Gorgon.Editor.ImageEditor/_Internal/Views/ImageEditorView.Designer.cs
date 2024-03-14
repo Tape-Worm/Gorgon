@@ -20,9 +20,9 @@ partial class ImageEditorView
 
         if (disposing)
         {
-            if (DataContext != null)
+            if (ViewModel != null)
             {
-                DataContext.ImagePicker.PropertyChanged -= ImagePicker_PropertyChanged;
+                ViewModel.ImagePicker.PropertyChanged -= ImagePicker_PropertyChanged;
             }
 
             _imagePickerForm?.Dispose();

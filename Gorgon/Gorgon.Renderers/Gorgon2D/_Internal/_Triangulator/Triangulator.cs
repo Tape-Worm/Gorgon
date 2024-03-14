@@ -1,4 +1,4 @@
-// Triangulator source code by Nick Gravelyn.
+﻿// Triangulator source code by Nick Gravelyn.
 // https://github.com/nickgravelyn/Triangulator
 //
 // Licensed under the MIT license.
@@ -435,9 +435,9 @@ internal enum WindingOrder
     /// <summary>
     /// Clockwise winding for vertices.
     /// </summary>
-		Clockwise,
+        Clockwise,
     /// <summary>
     /// Counterclockwise winding for vertices.
     /// </summary>
-		CounterClockwise
+        CounterClockwise
 }

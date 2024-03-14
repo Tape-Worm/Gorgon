@@ -274,7 +274,7 @@ internal class TextureAtlasSplitter
                 MipLevels = 1,
                 IsCubeMap = false
             }, newImage);
-                                
+
             sprite.TextureArrayIndex = 0;
             sprite.TextureRegion = new DX.RectangleF(0, 0, 1, 1);
         }

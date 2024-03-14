@@ -157,7 +157,7 @@ internal class AnimationContent
             OnPropertyChanging();
             _primaryStart = value;
             OnPropertyChanged();
-                            
+
             UpdatePrimarySprite();
 
             if (WorkingSprite is not null)
@@ -829,14 +829,14 @@ internal class AnimationContent
             spriteFile = ContentFileManager.GetFile(spritePath);
 
             ShowWaitPanel(string.Format(Resources.GORANM_TEXT_LOADING, spritePath.Ellipses(60, true)));
-            
+
             GorgonTexture2DView prevTexture = _primarySprite.sprite?.Texture;
 
             (GorgonSprite sprite, IContentFile textureFile) = await _contentServices.IOService.LoadSpriteAsync(spriteFile);
             // We have to mark this as open because it's the primary sprite, normally we wouldn't mark the sprite as open as 
             // we copy its data into a keyframe, this is not the case here.
             _contentServices.IOService.UnloadSprite(_primarySprite);
-            
+
             _primarySprite = (null, spriteFile, textureFile);
             PrimarySprite = sprite;
             spriteFile.IsOpen = true;
@@ -1440,7 +1440,7 @@ internal class AnimationContent
                 {
                     continue;
                 }
-                
+
                 var keySelection = new TrackKeySelection.KeySelection[keyIndices.Count];
 
                 for (int j = 0; j < keyIndices.Count; ++j)
@@ -2171,7 +2171,7 @@ internal class AnimationContent
         {
             float.TryParse(startY, NumberStyles.Float, CultureInfo.InvariantCulture, out y);
         }
-                   
+
         if (WorkingSprite is not null)
         {
             _controller.Play(WorkingSprite, _animation);

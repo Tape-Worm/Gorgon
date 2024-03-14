@@ -239,7 +239,7 @@ internal class DataGridViewEx
         {
             return;
         }
-                    
+
         SizeF textSize = e.Graphics.MeasureString(NoDataMessage, Font, new SizeF(ClientSize.Width, ClientSize.Height));
         var pos = new PointF(ClientSize.Width * 0.5f - textSize.Width * 0.5f, ClientSize.Height * 0.5f - textSize.Height * 0.5f);
         using Brush brush = new SolidBrush(ForeColor);

@@ -234,7 +234,7 @@ internal partial class ProjectContainer
     /// Property to return the data context assigned to this view.
     /// </summary>
     [Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-    public IProjectEditor DataContext
+    public IProjectEditor ViewModel
     {
         get;
         private set;
@@ -335,12 +335,12 @@ internal partial class ProjectContainer
     {
         string contentID = GetContentFileDragData(e.Data);
 
-        if ((DataContext?.FileExplorer?.OpenContentFileCommand is null) || (!DataContext.FileExplorer.OpenContentFileCommand.CanExecute(contentID)))
+        if ((ViewModel?.FileExplorer?.OpenContentFileCommand is null) || (!ViewModel.FileExplorer.OpenContentFileCommand.CanExecute(contentID)))
         {
             return;
         }
 
-        await DataContext.FileExplorer.OpenContentFileCommand.ExecuteAsync(contentID);
+        await ViewModel.FileExplorer.OpenContentFileCommand.ExecuteAsync(contentID);
     }
 
     /// <summary>Handles the DragEnter event of the PanelContent control.</summary>
@@ -350,7 +350,7 @@ internal partial class ProjectContainer
     {
         string contentID = GetContentFileDragData(e.Data);
 
-        if ((DataContext?.FileExplorer?.OpenContentFileCommand is null) || (!DataContext.FileExplorer.OpenContentFileCommand.CanExecute(contentID)))
+        if ((ViewModel?.FileExplorer?.OpenContentFileCommand is null) || (!ViewModel.FileExplorer.OpenContentFileCommand.CanExecute(contentID)))
         {
             e.Effect = DragDropEffects.None;
             return;
@@ -369,10 +369,10 @@ internal partial class ProjectContainer
         switch (e.PropertyName)
         {
             case nameof(IProjectEditor.FileExplorer):
-                FileExplorer.SetDataContext(DataContext.FileExplorer);
+                FileExplorer.SetDataContext(ViewModel.FileExplorer);
                 break;
             case nameof(IProjectEditor.CurrentContent):
-                SetupContent(DataContext);
+                SetupContent(ViewModel);
                 break;
         }
     }
@@ -500,7 +500,7 @@ internal partial class ProjectContainer
     /// <param name="e">The <see cref="SplitterEventArgs"/> instance containing the event data.</param>
     private void SplitMain_SplitterMoved(object sender, SplitterEventArgs e)
     {
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             return;
         }
@@ -513,7 +513,7 @@ internal partial class ProjectContainer
     /// <param name="e">The <see cref="SplitterEventArgs"/> instance containing the event data.</param>
     private void SplitFileSystem_SplitterMoved(object sender, SplitterEventArgs e)
     {
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             return;
         }
@@ -541,12 +541,12 @@ internal partial class ProjectContainer
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
     private void ContentClosed(object sender, EventArgs e)
     {
-        if ((DataContext?.ContentClosedCommand is null) || (!DataContext.ContentClosedCommand.CanExecute(null)))
+        if ((ViewModel?.ContentClosedCommand is null) || (!ViewModel.ContentClosedCommand.CanExecute(null)))
         {
             return;
         }
 
-        DataContext.ContentClosedCommand.Execute(null);
+        ViewModel.ContentClosedCommand.Execute(null);
     }
 
     /// <summary>
@@ -593,15 +593,15 @@ internal partial class ProjectContainer
             currentContent = null;
         }
 
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             return;
         }
 
-        DataContext.PropertyChanging -= DataContext_PropertyChanging;
-        DataContext.PropertyChanged -= DataContext_PropertyChanged;
+        ViewModel.PropertyChanging -= DataContext_PropertyChanging;
+        ViewModel.PropertyChanged -= DataContext_PropertyChanged;
 
-        DataContext.Unload();
+        ViewModel.Unload();
     }
 
     /// <summary>
@@ -611,9 +611,9 @@ internal partial class ProjectContainer
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
     private void FileExplorer_Enter(object sender, EventArgs e)
     {
-        if (DataContext is not null)
+        if (ViewModel is not null)
         {
-            DataContext.ClipboardContext = DataContext.FileExplorer.Clipboard;
+            ViewModel.ClipboardContext = ViewModel.FileExplorer.Clipboard;
         }
     }
 
@@ -623,9 +623,9 @@ internal partial class ProjectContainer
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
     private void FileExplorer_Leave(object sender, EventArgs e)
     {
-        if ((DataContext is not null) && (DataContext.FileExplorer.Clipboard == DataContext.ClipboardContext))
+        if ((ViewModel is not null) && (ViewModel.FileExplorer.Clipboard == ViewModel.ClipboardContext))
         {
-            DataContext.ClipboardContext = null;
+            ViewModel.ClipboardContext = null;
         }
     }
 
@@ -634,9 +634,9 @@ internal partial class ProjectContainer
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
     private void PanelContent_Enter(object sender, EventArgs e)
     {
-        if (DataContext is not null)
+        if (ViewModel is not null)
         {
-            DataContext.ClipboardContext = DataContext.CurrentContent.Clipboard;
+            ViewModel.ClipboardContext = ViewModel.CurrentContent.Clipboard;
         }
     }
 
@@ -645,9 +645,9 @@ internal partial class ProjectContainer
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
     private void PanelContent_Leave(object sender, EventArgs e)
     {
-        if ((DataContext?.CurrentContent is not null) && (DataContext.CurrentContent.Clipboard == DataContext.ClipboardContext))
+        if ((ViewModel?.CurrentContent is not null) && (ViewModel.CurrentContent.Clipboard == ViewModel.ClipboardContext))
         {
-            DataContext.ClipboardContext = null;
+            ViewModel.ClipboardContext = null;
         }
     }
 
@@ -683,7 +683,7 @@ internal partial class ProjectContainer
             return;
         }
 
-        DataContext?.Load();
+        ViewModel?.Load();
         ActiveControl = null;
         FileExplorer.Select();
         ActiveControl = FileExplorer;
@@ -707,35 +707,35 @@ internal partial class ProjectContainer
     {
         void RefreshContentPreviewer()
         {
-            string filePath = DataContext.FileExplorer.SelectedFiles[0]?.FullPath;
+            string filePath = ViewModel.FileExplorer.SelectedFiles[0]?.FullPath;
 
-            if ((DataContext.ContentPreviewer.RefreshPreviewCommand is not null) && (DataContext.ContentPreviewer.RefreshPreviewCommand.CanExecute(filePath)))
+            if ((ViewModel.ContentPreviewer.RefreshPreviewCommand is not null) && (ViewModel.ContentPreviewer.RefreshPreviewCommand.CanExecute(filePath)))
             {
-                DataContext.ContentPreviewer.RefreshPreviewCommand.Execute(filePath);
+                ViewModel.ContentPreviewer.RefreshPreviewCommand.Execute(filePath);
             }
         }
 
         void ResetContentPreviewer()
         {
-            if ((DataContext.ContentPreviewer.ResetPreviewCommand is not null) && (DataContext.ContentPreviewer.ResetPreviewCommand.CanExecute(null)))
+            if ((ViewModel.ContentPreviewer.ResetPreviewCommand is not null) && (ViewModel.ContentPreviewer.ResetPreviewCommand.CanExecute(null)))
             {
-                DataContext.ContentPreviewer.ResetPreviewCommand.Execute(null);
+                ViewModel.ContentPreviewer.ResetPreviewCommand.Execute(null);
             }
         }
 
         Settings.ShowContentPreview = visible;
         SplitFileSystem.Panel2Collapsed = !visible;
 
-        if ((DataContext?.ContentPreviewer is null) || (DataContext?.FileExplorer is null))
+        if ((ViewModel?.ContentPreviewer is null) || (ViewModel?.FileExplorer is null))
         {
             return;
         }
 
-        DataContext.ContentPreviewer.IsEnabled = visible;
+        ViewModel.ContentPreviewer.IsEnabled = visible;
 
         try
         {
-            if ((FileExplorer is null) || (DataContext.FileExplorer.SelectedFiles.Count == 0) || (!visible))
+            if ((FileExplorer is null) || (ViewModel.FileExplorer.SelectedFiles.Count == 0) || (!visible))
             {
                 ResetContentPreviewer();
                 return;
@@ -762,11 +762,11 @@ internal partial class ProjectContainer
     {
         UnassignEvents();
 
-        DataContext = null;
+        ViewModel = null;
         InitializeFromDataContext(dataContext);
-        DataContext = dataContext;
+        ViewModel = dataContext;
 
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             return;
         }
@@ -774,15 +774,15 @@ internal partial class ProjectContainer
         _deferDataContextLoad = !IsHandleCreated;
         if (!_deferDataContextLoad)
         {
-            DataContext.Load();
+            ViewModel.Load();
         }
 
         ActiveControl = null;
         FileExplorer.Select();
         ActiveControl = FileExplorer;
 
-        DataContext.PropertyChanging += DataContext_PropertyChanging;
-        DataContext.PropertyChanged += DataContext_PropertyChanged;
+        ViewModel.PropertyChanging += DataContext_PropertyChanging;
+        ViewModel.PropertyChanged += DataContext_PropertyChanged;
     }
     #endregion
 

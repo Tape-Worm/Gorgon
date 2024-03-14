@@ -255,7 +255,7 @@ public class GorgonWaitOverlay
             parent.Move -= Parent_Move;
             parent.VisibleChanged -= Parent_VisibleChanged;
         }
-                    
+
         waitForm?.Dispose();
 
         if (_overlay.IsValueCreated)

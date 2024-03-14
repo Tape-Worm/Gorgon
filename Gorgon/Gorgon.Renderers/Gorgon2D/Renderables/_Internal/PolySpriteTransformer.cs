@@ -108,7 +108,7 @@ internal class PolySpriteTransformer
             return;
         }
 
-        
+
 
         TransformVertices(ref renderable.Anchor,
                           ref renderable.Bounds,

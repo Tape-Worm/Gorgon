@@ -42,7 +42,7 @@ partial class EditorToolBaseForm
         this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
         this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(28)))), ((int)(((byte)(28)))), ((int)(((byte)(28)))));
         this.ClientSize = new System.Drawing.Size(784, 561);
-        this.Font = new System.Drawing.Font("Segoe UI", 9F);
+        
         this.ForeColor = System.Drawing.Color.White;
         this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
         this.MinimizeBox = false;

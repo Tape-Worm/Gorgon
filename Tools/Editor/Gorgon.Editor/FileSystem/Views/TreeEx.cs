@@ -243,7 +243,7 @@ internal class TreeEx
             _renameBox.KeyDown += RenameBox_KeyDown;
             _renameBox.LostFocus += RenameBox_LostFocus;
         }
-        
+
         _renameBox.Text = node.Text;            
         _renameBox.Top = node.Bounds.Top + 1;
         _renameBox.Left = 3;
@@ -293,10 +293,10 @@ internal class TreeEx
     }
 
     /// <summary>
-		/// Sends the specified message to the default window procedure.
-		/// </summary>
-		/// <param name="m">The Windows <see cref="Message" /> to process.</param>
-	    protected override void DefWndProc(ref Message m)
+        /// Sends the specified message to the default window procedure.
+        /// </summary>
+        /// <param name="m">The Windows <see cref="Message" /> to process.</param>
+        protected override void DefWndProc(ref Message m)
     {
         const int WM_LBUTTONDBLCLK = 0x203;
 
@@ -464,7 +464,7 @@ internal class TreeEx
 
         position.X += (e.Node.Level * ((nodeIcon?.Width ?? 16) + 3)) + 8;            
         float heightMid = ItemHeight * 0.5f;
-        
+
         if ((e.State & TreeNodeStates.Selected) == TreeNodeStates.Selected)
         {
             float cr = (SelectedNodeBackColor.R / 255.0f);
@@ -611,7 +611,7 @@ internal class TreeEx
     {
         SetStyle(ControlStyles.AllPaintingInWmPaint | ControlStyles.OptimizedDoubleBuffer, true);
         base.DrawMode = TreeViewDrawMode.OwnerDrawAll;
-        
+
         CheckBoxes = false;
         base.HideSelection = false;
         ShowPlusMinus = true;

@@ -57,15 +57,4 @@ public class ArgumentEmptyException
     {
 
     }
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="ArgumentEmptyException"/> class.
-    /// </summary>
-    /// <param name="info">The object that holds the serialized object data.</param>
-    /// <param name="context">The contextual information about the source or destination.</param>
-    protected ArgumentEmptyException(SerializationInfo info, StreamingContext context)
-        : base(info, context)
-    {
-
-    }
 }

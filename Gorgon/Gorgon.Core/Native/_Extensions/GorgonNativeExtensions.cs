@@ -380,7 +380,7 @@ public static class GorgonNativeExtensions
 
         var result = new GorgonNativeBuffer<T>(memory.Length);
         memory.Span.CopyTo(result.Pointer);
-        
+
         return result;
     }
 

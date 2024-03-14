@@ -39,93 +39,93 @@ namespace Gorgon.Security;
 /// </para>
 /// </remarks>
 public static class PasswordHasher
-	{
-		#region Constants.
-		// The number of iterations to use when hashing (for key stretching).
-		private const int PasswordHashIterations = 20000;
-		// The size, in bytes, of the SHA1 hash.
-		private const int HashSize = 20;
+{
+    #region Constants.
+    // The number of iterations to use when hashing (for key stretching).
+    private const int PasswordHashIterations = 20000;
+    // The size, in bytes, of the SHA1 hash.
+    private const int HashSize = 20;
 #if NET6_0_OR_GREATER
-		// The length of the salt.
-		private const int SaltLength = 64;
+    // The length of the salt.
+    private const int SaltLength = 64;
 #endif
 
-		/// <summary>
-		/// The maximum unhashed password length.
-		/// </summary>
-		/// <remarks>
-		/// If the password supplied exceeds this value, then it will be cropped to this length before hashing.
-		/// </remarks>
-		public const int MaxiumumPasswordLength = 256;
-#endregion
+    /// <summary>
+    /// The maximum unhashed password length.
+    /// </summary>
+    /// <remarks>
+    /// If the password supplied exceeds this value, then it will be cropped to this length before hashing.
+    /// </remarks>
+    public const int MaxiumumPasswordLength = 256;
+    #endregion
 
-#region Methods.
+    #region Methods.
 #if NET6_0_OR_GREATER
-		/// <summary>
-		/// Function to generate a salt value.
-		/// </summary>
-		/// <returns>A byte array containing the salt data.</returns>
-		public static byte[] GenerateSalt() => RandomNumberGenerator.GetBytes(SaltLength);
+    /// <summary>
+    /// Function to generate a salt value.
+    /// </summary>
+    /// <returns>A byte array containing the salt data.</returns>
+    public static byte[] GenerateSalt() => RandomNumberGenerator.GetBytes(SaltLength);
 #endif
 
-		/// <summary>
-		/// Function to hash and salt a password and return a base-64 encoded string containing encrypted hash and salt values.
-		/// </summary>
-		/// <param name="password">The password to hash and salt.</param>
+    /// <summary>
+    /// Function to hash and salt a password and return a base-64 encoded string containing encrypted hash and salt values.
+    /// </summary>
+    /// <param name="password">The password to hash and salt.</param>
     /// <param name="salt">The salt to use with the hashed password.</param>
-		/// <returns>The encrypted hashed and salted password as a base-64 encoded string, or <b>null</b> if the hash and salt operation fails.</returns>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="password"/>, or the <paramref name="salt"/> parameter is <b>null</b>.</exception>
-		/// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="password"/> parameter is empty.</exception>
-		/// <remarks>
-		/// <para>
-		/// This will convert the <paramref name="password"/> to a salted hash value using an SHA1 algorithm. The resulting hash data will be encrypted using AES-256 encryption, and returned
-		/// as a base-64 encoded string.
-		/// </para>
-		/// </remarks>
-		public static string HashAndSalt(string password, byte[] salt)
-		{
-			if (password is null)
-			{
-				throw new ArgumentNullException(nameof(password));
-			}
+    /// <returns>The encrypted hashed and salted password as a base-64 encoded string, or <b>null</b> if the hash and salt operation fails.</returns>
+    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="password"/>, or the <paramref name="salt"/> parameter is <b>null</b>.</exception>
+    /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="password"/> parameter is empty.</exception>
+    /// <remarks>
+    /// <para>
+    /// This will convert the <paramref name="password"/> to a salted hash value using an SHA1 algorithm. The resulting hash data will be encrypted using AES-256 encryption, and returned
+    /// as a base-64 encoded string.
+    /// </para>
+    /// </remarks>
+    public static string HashAndSalt(string password, byte[] salt)
+    {
+        if (password is null)
+        {
+            throw new ArgumentNullException(nameof(password));
+        }
 
-			if (salt is null)
-			{
-				throw new ArgumentNullException(nameof(salt));
-			}
+        if (salt is null)
+        {
+            throw new ArgumentNullException(nameof(salt));
+        }
 
-			if (string.IsNullOrWhiteSpace(password))
-			{
-				throw new ArgumentEmptyException(nameof(password));
-			}
+        if (string.IsNullOrWhiteSpace(password))
+        {
+            throw new ArgumentEmptyException(nameof(password));
+        }
 
-			if (salt.Length == 0)
-			{
-				return string.Empty;
-			}
+        if (salt.Length == 0)
+        {
+            return string.Empty;
+        }
 
-			if (password.Length > MaxiumumPasswordLength)
-			{
-				password = password[..MaxiumumPasswordLength];
-			}
+        if (password.Length > MaxiumumPasswordLength)
+        {
+            password = password[..MaxiumumPasswordLength];
+        }
 
-        using var hashProvider = new Rfc2898DeriveBytes(password, salt, PasswordHashIterations);
+        using var hashProvider = new Rfc2898DeriveBytes(password, salt, PasswordHashIterations, HashAlgorithmName.SHA3_256);
         return Convert.ToBase64String(hashProvider.GetBytes(HashSize));
     }
 
-		/// <summary>
-		/// Function to generate a initialization vector and key based on the application password.
-		/// </summary>
-		/// <param name="password">The password to evaluate.</param>
-		/// <param name="salt">The second salt value to base the hash on.</param>
-		/// <returns>A tuple containing the initialization vector and key.</returns>
-		public static (byte[] IV, byte[] key) GenerateIvKey(string password, byte[] salt)
-		{
-        using var hashProvider = new Rfc2898DeriveBytes(password, salt, PasswordHashIterations);
+    /// <summary>
+    /// Function to generate a initialization vector and key based on the application password.
+    /// </summary>
+    /// <param name="password">The password to evaluate.</param>
+    /// <param name="salt">The second salt value to base the hash on.</param>
+    /// <returns>A tuple containing the initialization vector and key.</returns>
+    public static (byte[] IV, byte[] key) GenerateIvKey(string password, byte[] salt)
+    {
+        using var hashProvider = new Rfc2898DeriveBytes(password, salt, PasswordHashIterations, HashAlgorithmName.SHA3_256);
         byte[] key = hashProvider.GetBytes(32);
         byte[] iv = hashProvider.GetBytes(16);
 
         return (iv, key);
     }
-#endregion
-	}
+    #endregion
+}

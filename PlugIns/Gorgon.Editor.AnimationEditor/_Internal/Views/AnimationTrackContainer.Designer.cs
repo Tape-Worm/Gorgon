@@ -132,7 +132,7 @@ partial class AnimationTrackContainer
         this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
         this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(28)))), ((int)(((byte)(28)))), ((int)(((byte)(28)))));
         this.Controls.Add(this.GridTrackKeys);
-        this.Font = new System.Drawing.Font("Segoe UI", 9F);
+        
         this.ForeColor = System.Drawing.Color.White;
         this.Name = "AnimationTrackContainer";
         this.Size = new System.Drawing.Size(648, 358);

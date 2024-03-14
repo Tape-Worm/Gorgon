@@ -68,7 +68,7 @@ internal class TextureWrapViewer
     protected override void OnLoad()
     {
         base.OnLoad();
-                    
+
         DX.RectangleF rect = new DX.RectangleF(-DataContext.Size.Width - (DataContext.Size.Width * 0.5f),
                                                -DataContext.Size.Height - (DataContext.Size.Height * 0.5f),
                                                DataContext.Size.Width * 3,

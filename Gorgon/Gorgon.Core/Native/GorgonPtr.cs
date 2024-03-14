@@ -139,7 +139,7 @@ public unsafe readonly struct GorgonPtr<T>
             {
                 throw new ArgumentOutOfRangeException(nameof(index), string.Format(Resources.GOR_ERR_INDEX_OUT_OF_RANGE, index, 0, Length));
             }
-            
+
             return ref Unsafe.AsRef<T>(_ptr + index);
         }
     }

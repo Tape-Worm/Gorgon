@@ -57,7 +57,7 @@ internal partial class ImageEditorView
     #region Properties.
     /// <summary>Property to return the data context assigned to this view.</summary>
     /// <value>The data context.</value>
-    public IImageContent DataContext
+    public IImageContent ViewModel
     {
         get;
         private set;
@@ -70,7 +70,7 @@ internal partial class ImageEditorView
     /// </summary>
     private void ValidateControls()
     {
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             LabelMipDetails.Visible = LabelMipLevel.Visible = ButtonPrevMip.Visible = ButtonNextMip.Visible = false;
             LabelArrayIndexDetails.Visible = LabelArrayIndex.Visible = ButtonPrevArrayIndex.Visible = ButtonNextArrayIndex.Visible = false;
@@ -79,16 +79,16 @@ internal partial class ImageEditorView
             return;
         }
 
-        LabelMipDetails.Visible = LabelMipLevel.Visible = ButtonPrevMip.Visible = ButtonNextMip.Visible = DataContext.MipCount > 1;
-        LabelArrayIndexDetails.Visible = LabelArrayIndex.Visible = ButtonPrevArrayIndex.Visible = ButtonNextArrayIndex.Visible = DataContext.ArrayCount > 1;
-        LabelDepthSliceDetails.Visible = LabelDepthSlice.Visible = ButtonPrevDepthSlice.Visible = ButtonNextDepthSlice.Visible = DataContext.ImageType == ImageType.Image3D;
+        LabelMipDetails.Visible = LabelMipLevel.Visible = ButtonPrevMip.Visible = ButtonNextMip.Visible = ViewModel.MipCount > 1;
+        LabelArrayIndexDetails.Visible = LabelArrayIndex.Visible = ButtonPrevArrayIndex.Visible = ButtonNextArrayIndex.Visible = ViewModel.ArrayCount > 1;
+        LabelDepthSliceDetails.Visible = LabelDepthSlice.Visible = ButtonPrevDepthSlice.Visible = ButtonNextDepthSlice.Visible = ViewModel.ImageType == ImageType.Image3D;
 
-        ButtonNextMip.Enabled = (DataContext.CurrentPanel is null) && (DataContext.CommandContext is null) && (DataContext.CurrentMipLevel < DataContext.MipCount - 1);
-        ButtonPrevMip.Enabled = (DataContext.CurrentPanel is null) && (DataContext.CommandContext is null) && (DataContext.CurrentMipLevel > 0);
-        ButtonNextArrayIndex.Enabled = (DataContext.CurrentPanel is null) && (DataContext.CommandContext is null) && (DataContext.CurrentArrayIndex < DataContext.ArrayCount - 1);
-        ButtonPrevArrayIndex.Enabled = (DataContext.CurrentPanel is null) && (DataContext.CommandContext is null) && (DataContext.CurrentArrayIndex > 0);
-        ButtonNextDepthSlice.Enabled = (DataContext.CurrentPanel is null) && (DataContext.CommandContext is null) && (DataContext.CurrentDepthSlice < DataContext.DepthCount - 1);
-        ButtonPrevDepthSlice.Enabled = (DataContext.CurrentPanel is null) && (DataContext.CommandContext is null) && (DataContext.CurrentDepthSlice > 0);
+        ButtonNextMip.Enabled = (ViewModel.CurrentPanel is null) && (ViewModel.CommandContext is null) && (ViewModel.CurrentMipLevel < ViewModel.MipCount - 1);
+        ButtonPrevMip.Enabled = (ViewModel.CurrentPanel is null) && (ViewModel.CommandContext is null) && (ViewModel.CurrentMipLevel > 0);
+        ButtonNextArrayIndex.Enabled = (ViewModel.CurrentPanel is null) && (ViewModel.CommandContext is null) && (ViewModel.CurrentArrayIndex < ViewModel.ArrayCount - 1);
+        ButtonPrevArrayIndex.Enabled = (ViewModel.CurrentPanel is null) && (ViewModel.CommandContext is null) && (ViewModel.CurrentArrayIndex > 0);
+        ButtonNextDepthSlice.Enabled = (ViewModel.CurrentPanel is null) && (ViewModel.CommandContext is null) && (ViewModel.CurrentDepthSlice < ViewModel.DepthCount - 1);
+        ButtonPrevDepthSlice.Enabled = (ViewModel.CurrentPanel is null) && (ViewModel.CommandContext is null) && (ViewModel.CurrentDepthSlice > 0);
 
         StatusPanel.Visible = true;
     }
@@ -101,7 +101,7 @@ internal partial class ImageEditorView
         switch (e.PropertyName)
         {
             case nameof(IImagePicker.IsActive):
-                if (DataContext.ImagePicker.IsActive)
+                if (ViewModel.ImagePicker.IsActive)
                 {
                     _imagePickerForm.ShowDialog(ParentForm);
                 }
@@ -217,9 +217,9 @@ internal partial class ImageEditorView
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
     private void ButtonNextMip_Click(object sender, EventArgs e)
     {
-        if (DataContext is not null)
+        if (ViewModel is not null)
         {
-            DataContext.CurrentMipLevel++;
+            ViewModel.CurrentMipLevel++;
         }
         ValidateControls();
     }
@@ -229,9 +229,9 @@ internal partial class ImageEditorView
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
     private void ButtonPrevMip_Click(object sender, EventArgs e)
     {
-        if (DataContext is not null)
+        if (ViewModel is not null)
         {
-            DataContext.CurrentMipLevel--;
+            ViewModel.CurrentMipLevel--;
         }
         ValidateControls();
     }
@@ -241,9 +241,9 @@ internal partial class ImageEditorView
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
     private void ButtonPrevArrayIndex_Click(object sender, EventArgs e)
     {
-        if (DataContext is not null)
+        if (ViewModel is not null)
         {
-            DataContext.CurrentArrayIndex--;
+            ViewModel.CurrentArrayIndex--;
         }
         ValidateControls();
 
@@ -254,9 +254,9 @@ internal partial class ImageEditorView
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
     private void ButtonNextArrayIndex_Click(object sender, EventArgs e)
     {
-        if (DataContext is not null)
+        if (ViewModel is not null)
         {
-            DataContext.CurrentArrayIndex++;
+            ViewModel.CurrentArrayIndex++;
         }
         ValidateControls();
     }
@@ -266,9 +266,9 @@ internal partial class ImageEditorView
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
     private void ButtonPrevDepthSlice_Click(object sender, EventArgs e)
     {
-        if (DataContext is not null)
+        if (ViewModel is not null)
         {
-            DataContext.CurrentDepthSlice--;
+            ViewModel.CurrentDepthSlice--;
         }
         ValidateControls();
     }
@@ -278,9 +278,9 @@ internal partial class ImageEditorView
     /// <param name="e"></param>
     private void ButtonNextDepthSlice_Click(object sender, EventArgs e)
     {
-        if (DataContext is not null)
+        if (ViewModel is not null)
         {
-            DataContext.CurrentDepthSlice++;
+            ViewModel.CurrentDepthSlice++;
         }
         ValidateControls();
     }
@@ -305,7 +305,7 @@ internal partial class ImageEditorView
 
         var args = new CopyToImageArgs(contentData.FilePaths, dpi);
 
-        if ((DataContext?.CopyToImageCommand is null) || (!DataContext.CopyToImageCommand.CanExecute(args)))
+        if ((ViewModel?.CopyToImageCommand is null) || (!ViewModel.CopyToImageCommand.CanExecute(args)))
         {
             if (args.Cancel)
             {
@@ -316,7 +316,7 @@ internal partial class ImageEditorView
             return;
         }
 
-        await DataContext.CopyToImageCommand.ExecuteAsync(args);
+        await ViewModel.CopyToImageCommand.ExecuteAsync(args);
     }
 
     /// <summary>Function to handle a drag over event on the render control.</summary>
@@ -334,7 +334,7 @@ internal partial class ImageEditorView
 
         var args = new CopyToImageArgs(contentData.FilePaths, 1.0f);
 
-        if ((DataContext?.CopyToImageCommand is null) || (!DataContext.CopyToImageCommand.CanExecute(args)))
+        if ((ViewModel?.CopyToImageCommand is null) || (!ViewModel.CopyToImageCommand.CanExecute(args)))
         {
             if (!args.Cancel)
             {
@@ -360,7 +360,7 @@ internal partial class ImageEditorView
         switch (propertyName)
         {
             case nameof(IImageContent.CommandContext):
-                DataContext.CommandContext?.Unload();
+                ViewModel.CommandContext?.Unload();
                 break;
         }
     }
@@ -376,63 +376,63 @@ internal partial class ImageEditorView
         {
             case nameof(IImageContent.Width):
             case nameof(IImageContent.Height):
-                UpdateImageSizeDetails(DataContext);
+                UpdateImageSizeDetails(ViewModel);
                 break;
             case nameof(IImageContent.ArrayCount):
-                UpdateArrayDetails(DataContext);
+                UpdateArrayDetails(ViewModel);
                 break;
             case nameof(IImageContent.DepthCount):
-                UpdateImageSizeDetails(DataContext);
-                UpdateDepthSliceDetails(DataContext);
-                UpdateMipDetails(DataContext);
+                UpdateImageSizeDetails(ViewModel);
+                UpdateDepthSliceDetails(ViewModel);
+                UpdateMipDetails(ViewModel);
                 break;
             case nameof(IImageContent.MipCount):
-                UpdateMipDetails(DataContext);
+                UpdateMipDetails(ViewModel);
                 break;
             case nameof(IImageContent.CurrentArrayIndex):
-                UpdateArrayDetails(DataContext);
+                UpdateArrayDetails(ViewModel);
                 break;
             case nameof(IImageContent.CurrentDepthSlice):
-                UpdateDepthSliceDetails(DataContext);                    
+                UpdateDepthSliceDetails(ViewModel);                    
                 break;
             case nameof(IImageContent.CurrentMipLevel):
-                UpdateMipDetails(DataContext);                    
+                UpdateMipDetails(ViewModel);                    
                 break;
             case nameof(IImageContent.CommandContext):
-                if ((DataContext.CommandContext is null) || (!HasRenderer(DataContext.CommandContext.Name)))
+                if ((ViewModel.CommandContext is null) || (!HasRenderer(ViewModel.CommandContext.Name)))
                 {
-                    if (!HasRenderer(DataContext.ImageType.ToString()))
+                    if (!HasRenderer(ViewModel.ImageType.ToString()))
                     {
                         break;
                     }
 
-                    string rendererName = DataContext.ImageType.ToString();
+                    string rendererName = ViewModel.ImageType.ToString();
 
                     if ((Renderer is null) || (!string.Equals(Renderer.Name, rendererName, StringComparison.OrdinalIgnoreCase)))
                     {
-                        SwitchRenderer(DataContext.ImageType.ToString(), false);
+                        SwitchRenderer(ViewModel.ImageType.ToString(), false);
                     }
                     break;
                 }
 
-                DataContext.CommandContext.Load();
-                SwitchRenderer(DataContext.CommandContext.Name, false);
+                ViewModel.CommandContext.Load();
+                SwitchRenderer(ViewModel.CommandContext.Name, false);
                 break;
-            case nameof(IImageContent.CurrentPanel) when (DataContext.CurrentPanel is null) && (DataContext.CommandContext is null):
-                if (!HasRenderer(DataContext.ImageType.ToString()))
+            case nameof(IImageContent.CurrentPanel) when (ViewModel.CurrentPanel is null) && (ViewModel.CommandContext is null):
+                if (!HasRenderer(ViewModel.ImageType.ToString()))
                 {
                     break;
                 }
 
-                SwitchRenderer(DataContext.ImageType.ToString(), false);
+                SwitchRenderer(ViewModel.ImageType.ToString(), false);
                 break;
             case nameof(IImageContent.ImageType):
-                if (!HasRenderer(DataContext.ImageType.ToString()))
+                if (!HasRenderer(ViewModel.ImageType.ToString()))
                 {
                     break;
                 }
 
-                SwitchRenderer(DataContext.ImageType.ToString(), true);
+                SwitchRenderer(ViewModel.ImageType.ToString(), true);
                 break;
         }
 
@@ -458,7 +458,7 @@ internal partial class ImageEditorView
     {
         base.ResetDataContext();
 
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             return;
         }
@@ -477,7 +477,7 @@ internal partial class ImageEditorView
     /// <summary>Function called to shut down the view.</summary>
     protected override void OnShutdown()
     {
-        DataContext?.Unload();
+        ViewModel?.Unload();
 
         // Reset the view.
         SetDataContext(null);
@@ -495,21 +495,21 @@ internal partial class ImageEditorView
         // Grab the instance of the graphics context for any sub controls that require it.
         _imagePickerForm.GraphicsContext = context;
 
-        ITextureViewer tex2DViewer = new Texture2DViewer(context.Renderer2D, swapChain, DataContext);
-        ITextureViewer tex3DViewer = new Texture3DViewer(context.Renderer2D, swapChain, DataContext);
-        ITextureViewer texCubeViewer = new TextureCubeViewer(context.Renderer2D, swapChain, context.FontFactory, DataContext);
-        ITextureViewer texFxViewer = new TextureFxViewer(context.Renderer2D, swapChain, DataContext);
+        ITextureViewer tex2DViewer = new Texture2DViewer(context.Renderer2D, swapChain, ViewModel);
+        ITextureViewer tex3DViewer = new Texture3DViewer(context.Renderer2D, swapChain, ViewModel);
+        ITextureViewer texCubeViewer = new TextureCubeViewer(context.Renderer2D, swapChain, context.FontFactory, ViewModel);
+        ITextureViewer texFxViewer = new TextureFxViewer(context.Renderer2D, swapChain, ViewModel);
         tex2DViewer.CreateResources();
         tex3DViewer.CreateResources();
         texCubeViewer.CreateResources();
         texFxViewer.CreateResources();
-        
+
         AddRenderer(tex2DViewer.Name, tex2DViewer);
         AddRenderer(tex3DViewer.Name, tex3DViewer);
         AddRenderer(texCubeViewer.Name, texCubeViewer);
         AddRenderer(texFxViewer.Name, texFxViewer);
 
-        SwitchRenderer(DataContext.ImageType.ToString(), true);
+        SwitchRenderer(ViewModel.ImageType.ToString(), true);
     }
 
     /// <summary>Raises the <a href="http://msdn.microsoft.com/en-us/library/system.windows.forms.usercontrol.load.aspx" target="_blank">Load</a> event.</summary>
@@ -528,7 +528,7 @@ internal partial class ImageEditorView
             _ribbonForm.CreateControl();
         }
 
-        DataContext?.Load();
+        ViewModel?.Load();
 
         RenderControl?.Select();
 
@@ -544,7 +544,7 @@ internal partial class ImageEditorView
 
         InitializeFromDataContext(dataContext);
 
-        DataContext = dataContext;
+        ViewModel = dataContext;
     }        
     #endregion
 

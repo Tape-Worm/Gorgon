@@ -48,7 +48,7 @@ internal partial class SpriteColor
     /// Property to return the data context for the view.
     /// </summary>
     [Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-    public ISpriteColorEdit DataContext
+    public ISpriteColorEdit ViewModel
     {
         get;
         private set;
@@ -61,25 +61,25 @@ internal partial class SpriteColor
     /// <param name="e">The <see cref="ColorChangedEventArgs"/> instance containing the event data.</param>
     private void Picker_ColorChanged(object sender, ColorChangedEventArgs e)
     {
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             return;
         }
 
-        for (int i = 0; i < DataContext.SelectedVertices.Count; ++i)
+        for (int i = 0; i < ViewModel.SelectedVertices.Count; ++i)
         {
-            if (DataContext.SelectedVertices[i])
+            if (ViewModel.SelectedVertices[i])
             {
                 _selectedColors[i] = e.Color;
             }
             else
             {
-                _selectedColors[i] = DataContext.SpriteColor[i];
+                _selectedColors[i] = ViewModel.SpriteColor[i];
             }
         }
 
-        DataContext.SpriteColor = _selectedColors;
-        DataContext.SelectedColor = e.Color;
+        ViewModel.SpriteColor = _selectedColors;
+        ViewModel.SelectedColor = e.Color;
         ValidateOk();
     }
 
@@ -88,12 +88,12 @@ internal partial class SpriteColor
     /// </summary>
     private void UnassignEvents()
     {
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             return;
         }
 
-        DataContext.PropertyChanged -= DataContext_PropertyChanged;
+        ViewModel.PropertyChanged -= DataContext_PropertyChanged;
     }
 
     /// <summary>Handles the PropertyChanged event of the DataContext control.</summary>
@@ -106,35 +106,35 @@ internal partial class SpriteColor
         switch (e.PropertyName)
         {
             case nameof(ISpriteColorEdit.SelectedColor):
-                Picker.SelectedColor = DataContext.SelectedColor;
+                Picker.SelectedColor = ViewModel.SelectedColor;
                 break;
             case nameof(ISpriteColorEdit.OriginalSpriteColor):
-                for (int i = 0; i < DataContext.SelectedVertices.Count; ++i)
+                for (int i = 0; i < ViewModel.SelectedVertices.Count; ++i)
                 {
-                    if (DataContext.SelectedVertices[i])
+                    if (ViewModel.SelectedVertices[i])
                     {
                         firstSelected = i;
                         break;
                     }
                 }
 
-                Picker.OriginalColor = DataContext.OriginalSpriteColor[firstSelected];
+                Picker.OriginalColor = ViewModel.OriginalSpriteColor[firstSelected];
                 break;
             case nameof(ISpriteColorEdit.SelectedVertices):
             case nameof(ISpriteColorEdit.SpriteColor):
                 Picker.ColorChanged -= Picker_ColorChanged;
                 try
                 {
-                    for (int i = 0; i < DataContext.SelectedVertices.Count; ++i)
+                    for (int i = 0; i < ViewModel.SelectedVertices.Count; ++i)
                     {
-                        if (DataContext.SelectedVertices[i])
+                        if (ViewModel.SelectedVertices[i])
                         {
                             firstSelected = i;
                             break;
                         }
                     }
-                    Picker.SelectedColor = DataContext.SpriteColor[firstSelected];
-                    Picker.OriginalColor = DataContext.OriginalSpriteColor[firstSelected];
+                    Picker.SelectedColor = ViewModel.SpriteColor[firstSelected];
+                    Picker.OriginalColor = ViewModel.OriginalSpriteColor[firstSelected];
                 }
                 finally
                 {
@@ -152,7 +152,7 @@ internal partial class SpriteColor
         UnassignEvents();
         Picker.OriginalColor = Picker.SelectedColor = GorgonColor.BlackTransparent;
     }
-    
+
     /// <summary>
     /// Function to initialize the control with the data context.
     /// </summary>
@@ -184,12 +184,12 @@ internal partial class SpriteColor
     {
         base.OnSubmit();
 
-        if ((DataContext?.OkCommand is null) || (!DataContext.OkCommand.CanExecute(null)))
+        if ((ViewModel?.OkCommand is null) || (!ViewModel.OkCommand.CanExecute(null)))
         {
             return;
         }
 
-        DataContext.OkCommand.Execute(null);
+        ViewModel.OkCommand.Execute(null);
     }
 
     /// <summary>Function to cancel the change.</summary>
@@ -197,19 +197,19 @@ internal partial class SpriteColor
     {
         base.OnCancel();
 
-        if ((DataContext?.CancelCommand is null) || (!DataContext.CancelCommand.CanExecute(null)))
+        if ((ViewModel?.CancelCommand is null) || (!ViewModel.CancelCommand.CanExecute(null)))
         {
             return;
         }
 
-        DataContext.CancelCommand.Execute(null);
+        ViewModel.CancelCommand.Execute(null);
     }
 
     /// <summary>
     /// Function to validate the state of the OK button.
     /// </summary>
     /// <returns><b>true</b> if the OK button is valid, <b>false</b> if not.</returns>
-    protected override bool OnValidateOk() => (DataContext?.OkCommand is not null) && (DataContext.OkCommand.CanExecute(null));
+    protected override bool OnValidateOk() => (ViewModel?.OkCommand is not null) && (ViewModel.OkCommand.CanExecute(null));
 
     /// <summary>Raises the <see cref="E:System.Windows.Forms.UserControl.Load"/> event.</summary>
     /// <param name="e">An <see cref="EventArgs"/> that contains the event data.</param>
@@ -222,9 +222,9 @@ internal partial class SpriteColor
             return;
         }
 
-        DataContext?.Load();
+        ViewModel?.Load();
     }
-    
+
     /// <summary>Function to assign a data context to the view as a view model.</summary>
     /// <param name="dataContext">The data context to assign.</param>
     /// <remarks>Data contexts should be nullable, in that, they should reset the view back to its original state when the context is null.</remarks>
@@ -232,14 +232,14 @@ internal partial class SpriteColor
     {
         InitializeFromDataContext(dataContext);
 
-        DataContext = dataContext;
+        ViewModel = dataContext;
 
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             return;
         }
 
-        DataContext.PropertyChanged += DataContext_PropertyChanged;
+        ViewModel.PropertyChanged += DataContext_PropertyChanged;
     }
     #endregion
 

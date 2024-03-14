@@ -264,7 +264,7 @@ internal class FxService
         _edgeDetect.Begin();
         _graphics.Renderer2D.DrawFilledRectangle(new DX.RectangleF(0, 0, _texture.Width, _texture.Height), GorgonColor.White, _texture, new DX.RectangleF(0, 0, 1, 1));
         _edgeDetect.End();
-        
+
         PreviewTexture = _effectTexturePing;
 
         _graphics.Graphics.SetRenderTarget(originalRtv);
@@ -370,7 +370,7 @@ internal class FxService
         GorgonRenderTargetView originalRtv = _graphics.Graphics.RenderTargets[0];
 
         _effectTargetPing.Clear(GorgonColor.BlackTransparent);
-                    
+
         _oneBitEffect.Threshold = range;
         _oneBitEffect.Invert = invert;
         _oneBitEffect.Render(_texture, _effectTargetPing);

@@ -215,7 +215,7 @@ public abstract class GorgonImageCodec<TEncOpt, TDecOpt>
     /// <summary>
     /// Property to return the decoding options for the codec.
     /// </summary>
-	    protected TDecOpt DecodingOptions
+        protected TDecOpt DecodingOptions
     {
         get;
     }
@@ -269,7 +269,7 @@ public abstract class GorgonImageCodec<TEncOpt, TDecOpt>
     /// <summary>
     /// Property to return the pixel formats supported by the codec.
     /// </summary>
-	    public abstract IReadOnlyList<BufferFormat> SupportedPixelFormats
+        public abstract IReadOnlyList<BufferFormat> SupportedPixelFormats
     {
         get;
     }
@@ -277,7 +277,7 @@ public abstract class GorgonImageCodec<TEncOpt, TDecOpt>
     /// <summary>
     /// Property to return whether the image codec supports a depth component for volume (3D) images.
     /// </summary>
-	    public abstract bool SupportsDepth
+        public abstract bool SupportsDepth
     {
         get;
     }
@@ -285,7 +285,7 @@ public abstract class GorgonImageCodec<TEncOpt, TDecOpt>
     /// <summary>
     /// Property to return whether the image codec supports mip maps.
     /// </summary>
-	    public abstract bool SupportsMipMaps
+        public abstract bool SupportsMipMaps
     {
         get;
     }

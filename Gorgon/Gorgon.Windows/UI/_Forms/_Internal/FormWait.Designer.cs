@@ -58,7 +58,7 @@ partial class FormWait
         this.ClientSize = new System.Drawing.Size(213, 66);
         this.ControlBox = false;
         this.Controls.Add(this.Wait);
-        this.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+        
         this.ForeColor = System.Drawing.Color.White;
         this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
         this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));

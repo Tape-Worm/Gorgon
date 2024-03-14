@@ -82,7 +82,7 @@ public interface IGorgonVertexBufferInfo
     /// <summary>
     /// Property to return the binding used to bind this buffer to the GPU.
     /// </summary>
-	    VertexIndexBufferBinding Binding
+        VertexIndexBufferBinding Binding
     {
         get;
     }

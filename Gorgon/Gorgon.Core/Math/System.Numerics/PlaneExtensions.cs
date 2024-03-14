@@ -218,7 +218,7 @@ public static class PlaneExtensions
             planes[i].Normal.Z = ((x * (xz - wy)) + (y * (yz + wx))) + (z * ((1.0f - xx) - yy));
         }
     }
-    
+
     /// <summary>
     /// Transforms a normalized plane by a matrix.
     /// </summary>

@@ -1,7 +1,7 @@
-﻿#region MIT.
+﻿
 // 
 // Gorgon.
-// Copyright (C) 2011 Michael Winsor
+// Copyright (C) 2024 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -22,7 +22,7 @@
 // 
 // Created: Thursday, June 23, 2011 11:22:58 AM
 // 
-#endregion
+
 
 using System;
 using System.Collections.Generic;
@@ -32,10 +32,9 @@ using System.ComponentModel.Composition.Registration;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Runtime.InteropServices;
+using System.Reflection.PortableExecutable;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
-using Gorgon.IO;
 using Gorgon.Properties;
 
 namespace Gorgon.PlugIns;
@@ -112,15 +111,6 @@ public enum AssemblyPlatformType
 public sealed class GorgonMefPlugInCache
     : IDisposable
 {
-    #region Constants.
-    // The signature for a portable executable header.
-    private const uint PeHeaderSignature = 0x4550;
-    // 32 bit file.
-    private const ushort Pe32Bit = 0x10b;
-    // 64 bit file.
-    private const ushort Pe64bit = 0x20b;
-    #endregion
-
     #region Variables.
     // The contract name for the plug in.
     private readonly string _contractName = typeof(GorgonPlugIn).FullName;
@@ -185,94 +175,49 @@ public sealed class GorgonMefPlugInCache
     /// <returns>A tuple containing <b>true</b> if the file is a .NET managed assembly, <b>false</b> if not, and the type of expected platform that the assembly code is supposed to work under.</returns>
     public static (bool isManaged, AssemblyPlatformType platform) IsManagedAssembly(string assemblyPath)
     {
+#if NET8_0_OR_GREATER
         if (!File.Exists(assemblyPath))
         {
             return (false, AssemblyPlatformType.Unknown);
         }
 
-        uint cor2HeaderPtr = 0;
         AssemblyPlatformType platformType;
 
-        // For this, we'll go into the guts of the file and read the data required instead of loading the assembly data and using exceptions to determine 
-        // the assembly type.
-        //
-        // This code is adapted from this stack overflow answer: 
-        // https://stackoverflow.com/questions/367761/how-to-determine-whether-a-dll-is-a-managed-assembly-or-native-prevent-loading
+        using FileStream stream = File.Open(assemblyPath, FileMode.Open, FileAccess.Read, FileShare.Read);
 
-        using (FileStream stream = File.Open(assemblyPath, FileMode.Open, FileAccess.Read, FileShare.Read))
-        using (var reader = new GorgonBinaryReader(stream, false))
+        // File is less than 64 bytes, not a portable executable.
+        if (stream.Length < 64)
         {
-            // File is less than 64 bytes, not a portable executable.
-            if (stream.Length < 64)
-            {
-                return (false, AssemblyPlatformType.Unknown);
-            }
-
-            stream.Position = 0x3C;
-            uint headerPointer = reader.ReadUInt32();
-
-            if (headerPointer == 0)
-            {
-                headerPointer = 0x80;
-            }
-
-            if (headerPointer > stream.Length - 256)
-            {
-                return (false, AssemblyPlatformType.Unknown);
-            }
-
-            stream.Position = headerPointer;
-            uint signature = reader.ReadUInt32();
-
-            if (signature != PeHeaderSignature)
-            {
-                return (false, AssemblyPlatformType.Unknown);
-            }
-
-            stream.Position += 20;
-
-            ushort exePlatform = reader.ReadUInt16();
-
-            if (exePlatform is not Pe32Bit and not Pe64bit)
-            {
-                return (false, AssemblyPlatformType.Unknown);
-            }
-
-            uint rvaPointer = 0;
-
-            switch (exePlatform)
-            {
-                case Pe32Bit:
-                    platformType = AssemblyPlatformType.x86;
-                    rvaPointer = headerPointer + 232;
-                    break;
-                case Pe64bit:
-                    platformType = AssemblyPlatformType.x64;
-                    rvaPointer = headerPointer + 248;
-                    break;
-                default:
-                    return (false, AssemblyPlatformType.Unknown);
-            }
-
-            stream.Position = rvaPointer;
-            cor2HeaderPtr = reader.ReadUInt32();
+            return (false, AssemblyPlatformType.Unknown);
         }
 
-        // AnyCPU assemblies are marked as x86.  We need to read the cor20 header, but I'm lazy and it's a lot of work.
-        // So, we'll use the old tried and true method of reading the assembly metadata.  We shouldn't exception here because 
-        // we've already determined that we're not using a native DLL.  GetAssemblyName doesn't care if our executing platform 
-        // environment is x64 or x86 and our DLL doesn't match, it just reads the metadata (tested and confirmed).
-        if ((cor2HeaderPtr != 0) && (platformType == AssemblyPlatformType.x86))
-        {
-            var name = AssemblyName.GetAssemblyName(assemblyPath);
+        using PEReader peReader = new(stream);
+        Machine machine = peReader.PEHeaders.CoffHeader.Machine;
 
-            if (name.ProcessorArchitecture == ProcessorArchitecture.MSIL)
-            {
-                platformType = AssemblyPlatformType.AnyCpu;
-            }
+        // No COR header, then this is not a .NET assembly.
+        if (peReader.PEHeaders.CorHeader is null)
+        {
+            return (false, AssemblyPlatformType.Unknown);
         }
 
-        return (cor2HeaderPtr != 0, platformType);
+        if ((peReader.PEHeaders.CorHeader.Flags & CorFlags.ILOnly) == CorFlags.ILOnly)
+        {
+            platformType = AssemblyPlatformType.AnyCpu;
+        }
+        else
+        {
+            platformType = machine switch
+            {
+                Machine.IA64 or Machine.Amd64 => AssemblyPlatformType.x64,
+                Machine.I386 => AssemblyPlatformType.x86,
+                _ => AssemblyPlatformType.Unknown
+            };
+        }
+
+        return (true, platformType);
+#else
+        return (false, AssemblyPlatformType.Unknown);
+#endif
     }
 
     /// <summary>
@@ -374,7 +319,7 @@ public sealed class GorgonMefPlugInCache
     /// </remarks>
     public void Dispose()
     {
-        Log.Print("Unloading MEF plugin container and catalogs.", LoggingLevel.Intermediate);
+        Log.Print("Unloading MEF plugin container and catalogs.", LoggingLevel.Verbose);
 
         _container?.Dispose();
         _container = null;
@@ -450,8 +395,8 @@ public sealed class GorgonMefPlugInCache
             {
                 catalog = new DirectoryCatalog(directory.FullName, filePattern, _builder);
                 _rootCatalog.Catalogs.Add(catalog);
-                
-                Log.Print($"Added {catalog.LoadedFiles.Count} plug in assemblies to cache.", LoggingLevel.Verbose);
+
+                Log.Print($"Added {catalog.LoadedFiles.Count} plug in assemblies to cache.", LoggingLevel.Intermediate);
             }
         }
 
@@ -473,12 +418,12 @@ public sealed class GorgonMefPlugInCache
 
             PlugInAssemblies = assemblyList.ToArray();
 
-            Log.Print($"{PlugInAssemblies.Count} cached with valid plug in types.", LoggingLevel.Simple);
+            Log.Print($"{PlugInAssemblies.Count} cached with valid plug in types.", LoggingLevel.Verbose);
         }
     }
     #endregion
 
-    #region Constructor/Finalizer.
+    #region Constructor.
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonMefPlugInCache"/> class.
     /// </summary>
@@ -486,11 +431,11 @@ public sealed class GorgonMefPlugInCache
     public GorgonMefPlugInCache(IGorgonLog log = null)
     {
         _builder.ForTypesDerivedFrom<GorgonPlugIn>().Export<GorgonPlugIn>(b =>
-                                                                          {
-                                                                              b.AddMetadata("Name", t => t.FullName);
-                                                                              b.AddMetadata("Assembly", t => t.Assembly.GetName());
-                                                                              b.Inherited();
-                                                                          });
+        {
+            b.AddMetadata("Name", t => t.FullName);
+            b.AddMetadata("Assembly", t => t.Assembly.GetName());
+            b.Inherited();
+        });
         Log = log ?? GorgonLog.NullLog;
         _container = new CompositionContainer(_rootCatalog, CompositionOptions.DisableSilentRejection | CompositionOptions.IsThreadSafe);
     }

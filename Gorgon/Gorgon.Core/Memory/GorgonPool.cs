@@ -51,7 +51,7 @@ namespace Gorgon.Memory;
 /// This allocator will never grow beyond its initial size. So care must be taken ahead of time to ensure the pool is large enough.
 /// </para>
 /// </remarks>
-	public class GorgonPool<T>
+    public class GorgonPool<T>
     : IGorgonAllocator<T>
     where T : class
 {
@@ -143,7 +143,7 @@ namespace Gorgon.Memory;
     /// If the <paramref name="finalizer"/> callback method is supplied, then the object will have a chance to be cleaned up prior to putting it back into the pool. 
     /// </para>
     /// </remarks>
-	    public void Deallocate(ref T item, Action<T> finalizer = null)
+        public void Deallocate(ref T item, Action<T> finalizer = null)
     {
         if (item is null)
         {

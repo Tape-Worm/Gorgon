@@ -41,11 +41,11 @@ internal partial class AnimationSettingsPanel
     #region Properties.
     /// <summary>Property to return the ID of the panel.</summary>
     [Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-    public override string PanelID => DataContext?.ID.ToString() ?? Guid.Empty.ToString();
+    public override string PanelID => ViewModel?.ID.ToString() ?? Guid.Empty.ToString();
 
     /// <summary>Property to return the data context assigned to this view.</summary>
     [Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-    public ISettings DataContext
+    public ISettings ViewModel
     {
         get;
         private set;
@@ -58,12 +58,12 @@ internal partial class AnimationSettingsPanel
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
     private void CheckUnsupported_Click(object sender, EventArgs e)
     {
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             return;
         }
 
-        DataContext.WarnUnsupportedTracks = CheckUnsupported.Checked;
+        ViewModel.WarnUnsupportedTracks = CheckUnsupported.Checked;
     }
 
     /// <summary>Handles the Click event of the CheckAnimatePrimaryBg control.</summary>
@@ -71,12 +71,12 @@ internal partial class AnimationSettingsPanel
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
     private void CheckAnimatePrimaryBg_Click(object sender, EventArgs e)
     {
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             return;
         }
 
-        DataContext.AnimateNoPrimarySpriteBackground = CheckAnimatePrimaryBg.Checked;
+        ViewModel.AnimateNoPrimarySpriteBackground = CheckAnimatePrimaryBg.Checked;
     }
 
     /// <summary>Handles the Click event of the CheckOnionSkin control.</summary>
@@ -84,12 +84,12 @@ internal partial class AnimationSettingsPanel
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
     private void CheckOnionSkin_Click(object sender, EventArgs e)
     {
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             return;
         }
 
-        DataContext.UseOnionSkinning = CheckOnionSkin.Checked;
+        ViewModel.UseOnionSkinning = CheckOnionSkin.Checked;
     }
 
     /// <summary>Handles the Click event of the CheckAddTextureTrack control.</summary>
@@ -97,12 +97,12 @@ internal partial class AnimationSettingsPanel
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
     private void CheckAddTextureTrack_Click(object sender, EventArgs e)
     {
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             return;
         }
 
-        DataContext.AddTextureTrackForPrimarySprite = CheckAddTextureTrack.Checked;
+        ViewModel.AddTextureTrackForPrimarySprite = CheckAddTextureTrack.Checked;
     }
 
     /// <summary>Handles the ValueChanged event of the NumericXRes control.</summary>
@@ -110,12 +110,12 @@ internal partial class AnimationSettingsPanel
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
     private void NumericXRes_ValueChanged(object sender, EventArgs e)
     {
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             return;
         }
 
-        DataContext.DefaultResolution = new DX.Size2((int)NumericXRes.Value, (int)NumericYRes.Value);
+        ViewModel.DefaultResolution = new DX.Size2((int)NumericXRes.Value, (int)NumericYRes.Value);
     }
 
     /// <summary>
@@ -157,7 +157,7 @@ internal partial class AnimationSettingsPanel
     public void SetDataContext(ISettings dataContext)
     {
         InitializeFromDataContext(dataContext);
-        DataContext = dataContext;
+        ViewModel = dataContext;
     }
     #endregion
 

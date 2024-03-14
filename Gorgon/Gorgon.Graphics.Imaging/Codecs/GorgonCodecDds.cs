@@ -1044,7 +1044,7 @@ public sealed class GorgonCodecDds
             }
 
             ImageUtilities.Expand16BPPScanline(in srcData, srcRowPitch, expandFormat, in destData, destRowPitch, imageBitFlags);
-            
+
             return;
         }
 

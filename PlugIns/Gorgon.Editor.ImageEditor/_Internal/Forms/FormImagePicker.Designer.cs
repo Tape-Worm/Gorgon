@@ -985,7 +985,7 @@ partial class FormImagePicker
         this.Controls.Add(this.TableResize);
         this.Controls.Add(this.TablePickSourceImage);
         this.Controls.Add(this.PanelDialogButtons);
-        this.Font = new System.Drawing.Font("Segoe UI", 9F);
+        
         this.ForeColor = System.Drawing.Color.White;
         this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
         this.KeyPreview = true;

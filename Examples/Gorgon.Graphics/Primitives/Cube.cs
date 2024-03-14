@@ -170,7 +170,7 @@ internal class Cube
         GetIndices(indexData, faceIndexCount * 5, faceVertexCount * 5, columnsPerFace, rowsPerFace);
 
         CalculateTangents(vertexData, indexData);
-                    
+
         VertexBuffer = GorgonVertexBuffer.Create<GorgonVertexPosNormUvTangent>(graphics,
                                                  new GorgonVertexBufferInfo(GorgonVertexPosNormUvTangent.SizeInBytes * vertexData.Length)
                                                  {

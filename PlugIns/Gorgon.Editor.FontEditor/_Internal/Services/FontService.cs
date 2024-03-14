@@ -82,7 +82,7 @@ internal class FontService
     /// Event fired after the font is updated.
     /// </summary>
     private event EventHandler FontUpdatedEvent;
-    
+
     /// <summary>
     /// Event fired before the font is updated.
     /// </summary>

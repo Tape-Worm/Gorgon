@@ -182,13 +182,13 @@ public sealed class GorgonCodecTga
     // List of supported image formats.
     private readonly BufferFormat[] _supportedFormats =
     {
-			// 8 bit grayscale.
-			BufferFormat.R8_UNorm,
+            // 8 bit grayscale.
+            BufferFormat.R8_UNorm,
         BufferFormat.A8_UNorm,
-			// 16 bit (only supports 5 bit color and 1 bit alpha).
-			BufferFormat.B5G5R5A1_UNorm,
-			// 24/32 bit.
-			BufferFormat.R8G8B8A8_UNorm,
+            // 16 bit (only supports 5 bit color and 1 bit alpha).
+            BufferFormat.B5G5R5A1_UNorm,
+            // 24/32 bit.
+            BufferFormat.R8G8B8A8_UNorm,
         BufferFormat.B8G8R8A8_UNorm,
         BufferFormat.B8G8R8X8_UNorm
     };

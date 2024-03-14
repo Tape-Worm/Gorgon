@@ -109,7 +109,7 @@ internal partial class FormRibbon
 
     /// <summary>Property to return the data context assigned to this view.</summary>
     [Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-    public IAnimationContent DataContext
+    public IAnimationContent ViewModel
     {
         get;
         private set;
@@ -130,22 +130,22 @@ internal partial class FormRibbon
         switch (e.PropertyName)
         {
             case nameof(IAnimationContent.CommandContext):
-                SetToolStates(DataContext);
+                SetToolStates(ViewModel);
 
-                if (DataContext.CommandContext is null)
+                if (ViewModel.CommandContext is null)
                 {
-                    _currentUndoHandler = DataContext;
+                    _currentUndoHandler = ViewModel;
                 }
                 else
                 {
-                    _currentUndoHandler = DataContext.CommandContext as IUndoHandler;
+                    _currentUndoHandler = ViewModel.CommandContext as IUndoHandler;
                 }
                 break;
             case nameof(IAnimationContent.IsLooping):
-                CheckAnimationLoop.Checked = DataContext.IsLooping;
+                CheckAnimationLoop.Checked = ViewModel.IsLooping;
                 break;
             case nameof(IAnimationContent.State):
-                switch (DataContext.State)
+                switch (ViewModel.State)
                 {
                     case AnimationState.Stopped:
                         ButtonAnimStop.Visible = false;
@@ -174,12 +174,12 @@ internal partial class FormRibbon
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
     private void ButtonAnimStop_Click(object sender, EventArgs e)
     {
-        if ((DataContext?.StopAnimationCommand is null) || (!DataContext.StopAnimationCommand.CanExecute(null)))
+        if ((ViewModel?.StopAnimationCommand is null) || (!ViewModel.StopAnimationCommand.CanExecute(null)))
         {
             return;
         }
 
-        DataContext.StopAnimationCommand.Execute(null);
+        ViewModel.StopAnimationCommand.Execute(null);
         ValidateButtons();
     }
 
@@ -188,12 +188,12 @@ internal partial class FormRibbon
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
     private void ButtonAnimPlay_Click(object sender, EventArgs e)
     {
-        if ((DataContext?.PlayAnimationCommand is null) || (!DataContext.PlayAnimationCommand.CanExecute(null)))
+        if ((ViewModel?.PlayAnimationCommand is null) || (!ViewModel.PlayAnimationCommand.CanExecute(null)))
         {
             return;
         }
 
-        DataContext.PlayAnimationCommand.Execute(null);
+        ViewModel.PlayAnimationCommand.Execute(null);
         ValidateButtons();
     }
 
@@ -202,12 +202,12 @@ internal partial class FormRibbon
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
     private void ButtonAddTrack_Click(object sender, EventArgs e)
     {
-        if ((DataContext?.ShowAddTrackCommand is null) || (!DataContext.ShowAddTrackCommand.CanExecute(null)))
+        if ((ViewModel?.ShowAddTrackCommand is null) || (!ViewModel.ShowAddTrackCommand.CanExecute(null)))
         {
             return;
         }
 
-        DataContext.ShowAddTrackCommand.Execute(null);
+        ViewModel.ShowAddTrackCommand.Execute(null);
         ValidateButtons();
     }
 
@@ -216,12 +216,12 @@ internal partial class FormRibbon
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
     private void ButtonRemoveTrack_Click(object sender, EventArgs e)
     {
-        if ((DataContext?.DeleteTrackCommand is null) || (!DataContext.DeleteTrackCommand.CanExecute(null)))
+        if ((ViewModel?.DeleteTrackCommand is null) || (!ViewModel.DeleteTrackCommand.CanExecute(null)))
         {
             return;
         }
 
-        DataContext.DeleteTrackCommand.Execute(null);
+        ViewModel.DeleteTrackCommand.Execute(null);
         ValidateButtons();
     }
 
@@ -230,12 +230,12 @@ internal partial class FormRibbon
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
     private void ButtonAnimationClear_Click(object sender, EventArgs e)
     {
-        if ((DataContext?.ClearAnimationCommand is null) || (!DataContext.ClearAnimationCommand.CanExecute(null)))
+        if ((ViewModel?.ClearAnimationCommand is null) || (!ViewModel.ClearAnimationCommand.CanExecute(null)))
         {
             return;
         }
 
-        DataContext.ClearAnimationCommand.Execute(null);
+        ViewModel.ClearAnimationCommand.Execute(null);
         ValidateButtons();
     }
 
@@ -272,12 +272,12 @@ internal partial class FormRibbon
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
     private async void ButtonAnimationLoadBack_Click(object sender, EventArgs e)
     {
-        if ((DataContext?.LoadBackgroundImageCommand is null) || (!DataContext.LoadBackgroundImageCommand.CanExecute(null)))
+        if ((ViewModel?.LoadBackgroundImageCommand is null) || (!ViewModel.LoadBackgroundImageCommand.CanExecute(null)))
         {
             return;
         }
 
-        await DataContext.LoadBackgroundImageCommand.ExecuteAsync(null);
+        await ViewModel.LoadBackgroundImageCommand.ExecuteAsync(null);
         ValidateButtons();
     }
 
@@ -286,12 +286,12 @@ internal partial class FormRibbon
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
     private void ButtonAnimationClearBack_Click(object sender, EventArgs e)
     {
-        if ((DataContext?.ClearBackgroundImageCommand is null) || (!DataContext.ClearBackgroundImageCommand.CanExecute(null)))
+        if ((ViewModel?.ClearBackgroundImageCommand is null) || (!ViewModel.ClearBackgroundImageCommand.CanExecute(null)))
         {
             return;
         }
 
-        DataContext.ClearBackgroundImageCommand.Execute(null);
+        ViewModel.ClearBackgroundImageCommand.Execute(null);
         ValidateButtons();
     }
 
@@ -300,12 +300,12 @@ internal partial class FormRibbon
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
     private async void ButtonAnimationSprite_Click(object sender, EventArgs e)
     {
-        if ((DataContext?.LoadSpriteCommand is null) || (!DataContext.LoadSpriteCommand.CanExecute(null)))
+        if ((ViewModel?.LoadSpriteCommand is null) || (!ViewModel.LoadSpriteCommand.CanExecute(null)))
         {
             return;
         }
 
-        await DataContext.LoadSpriteCommand.ExecuteAsync(null);
+        await ViewModel.LoadSpriteCommand.ExecuteAsync(null);
         ValidateButtons();
     }
 
@@ -314,12 +314,12 @@ internal partial class FormRibbon
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
     private void ButtonPrevKey_Click(object sender, EventArgs e)
     {
-        if ((DataContext?.PrevKeyCommand is null) || (!DataContext.PrevKeyCommand.CanExecute(null)))
+        if ((ViewModel?.PrevKeyCommand is null) || (!ViewModel.PrevKeyCommand.CanExecute(null)))
         {
             return;
         }
 
-        DataContext.PrevKeyCommand.Execute(null);
+        ViewModel.PrevKeyCommand.Execute(null);
         ValidateButtons();
     }
 
@@ -328,12 +328,12 @@ internal partial class FormRibbon
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
     private void ButtonNextKey_Click(object sender, EventArgs e)
     {
-        if ((DataContext?.NextKeyCommand is null) || (!DataContext.NextKeyCommand.CanExecute(null)))
+        if ((ViewModel?.NextKeyCommand is null) || (!ViewModel.NextKeyCommand.CanExecute(null)))
         {
             return;
         }
 
-        DataContext.NextKeyCommand.Execute(null);
+        ViewModel.NextKeyCommand.Execute(null);
         ValidateButtons();
     }
 
@@ -342,12 +342,12 @@ internal partial class FormRibbon
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
     private void ButtonFirstKey_Click(object sender, EventArgs e)
     {
-        if ((DataContext?.FirstKeyCommand is null) && (DataContext.FirstKeyCommand.CanExecute(null)))
+        if ((ViewModel?.FirstKeyCommand is null) && (ViewModel.FirstKeyCommand.CanExecute(null)))
         {
             return;
         }
 
-        DataContext.FirstKeyCommand.Execute(null);
+        ViewModel.FirstKeyCommand.Execute(null);
         ValidateButtons();
     }
 
@@ -356,12 +356,12 @@ internal partial class FormRibbon
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
     private void ButtonLastKey_Click(object sender, EventArgs e)
     {
-        if ((DataContext?.LastKeyCommand is null) && (DataContext.LastKeyCommand.CanExecute(null)))
+        if ((ViewModel?.LastKeyCommand is null) && (ViewModel.LastKeyCommand.CanExecute(null)))
         {
             return;
         }
 
-        DataContext.LastKeyCommand.Execute(null);
+        ViewModel.LastKeyCommand.Execute(null);
         ValidateButtons();
     }
 
@@ -370,12 +370,12 @@ internal partial class FormRibbon
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
     private void ButtonAnimationProperties_Click(object sender, EventArgs e)
     {
-        if ((DataContext?.ShowAnimationPropertiesCommand is null) || (!DataContext.ShowAnimationPropertiesCommand.CanExecute(null)))
+        if ((ViewModel?.ShowAnimationPropertiesCommand is null) || (!ViewModel.ShowAnimationPropertiesCommand.CanExecute(null)))
         {
             return;
         }
 
-        DataContext.ShowAnimationPropertiesCommand.Execute(null);
+        ViewModel.ShowAnimationPropertiesCommand.Execute(null);
         ValidateButtons();
     }
 
@@ -385,12 +385,12 @@ internal partial class FormRibbon
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
     private async void ButtonAnimationSetKeyframe_Click(object sender, EventArgs e)
     {
-        if ((DataContext?.KeyEditor?.SetKeyCommand is null) || (!DataContext.KeyEditor.SetKeyCommand.CanExecute(null)))
+        if ((ViewModel?.KeyEditor?.SetKeyCommand is null) || (!ViewModel.KeyEditor.SetKeyCommand.CanExecute(null)))
         {
             return;
         }
 
-        await DataContext.KeyEditor.SetKeyCommand.ExecuteAsync(null);
+        await ViewModel.KeyEditor.SetKeyCommand.ExecuteAsync(null);
         ValidateButtons();
     }
 
@@ -399,12 +399,12 @@ internal partial class FormRibbon
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
     private void ButtonAnimationRemoveKeyframes_Click(object sender, EventArgs e)
     {
-        if ((DataContext?.KeyEditor?.RemoveKeyCommand is null) || (!DataContext.KeyEditor.RemoveKeyCommand.CanExecute(null)))
+        if ((ViewModel?.KeyEditor?.RemoveKeyCommand is null) || (!ViewModel.KeyEditor.RemoveKeyCommand.CanExecute(null)))
         {
             return;
         }
 
-        DataContext.KeyEditor.RemoveKeyCommand.Execute(null);
+        ViewModel.KeyEditor.RemoveKeyCommand.Execute(null);
         ValidateButtons();
     }
 
@@ -413,12 +413,12 @@ internal partial class FormRibbon
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
     private void ButtonAnimationClearKeyframes_Click(object sender, EventArgs e)
     {
-        if ((DataContext?.KeyEditor?.ClearKeysCommand is null) || (!DataContext.KeyEditor.ClearKeysCommand.CanExecute(null)))
+        if ((ViewModel?.KeyEditor?.ClearKeysCommand is null) || (!ViewModel.KeyEditor.ClearKeysCommand.CanExecute(null)))
         {
             return;
         }
 
-        DataContext.KeyEditor.ClearKeysCommand.Execute(null);
+        ViewModel.KeyEditor.ClearKeysCommand.Execute(null);
         ValidateButtons();
     }
 
@@ -427,12 +427,12 @@ internal partial class FormRibbon
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
     private async void ButtonSaveAnimation_Click(object sender, EventArgs e)
     {
-        if ((DataContext?.SaveContentCommand is null) || (!DataContext.SaveContentCommand.CanExecute(SaveReason.UserSave)))
+        if ((ViewModel?.SaveContentCommand is null) || (!ViewModel.SaveContentCommand.CanExecute(SaveReason.UserSave)))
         {
             return;
         }
 
-        await DataContext.SaveContentCommand.ExecuteAsync(SaveReason.UserSave);
+        await ViewModel.SaveContentCommand.ExecuteAsync(SaveReason.UserSave);
         ValidateButtons();
     }
 
@@ -441,12 +441,12 @@ internal partial class FormRibbon
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
     private async void ButtonNewAnimation_Click(object sender, EventArgs e)
     {
-        if ((DataContext?.NewAnimationCommand is null) || (!DataContext.NewAnimationCommand.CanExecute(null)))
+        if ((ViewModel?.NewAnimationCommand is null) || (!ViewModel.NewAnimationCommand.CanExecute(null)))
         {
             return;
         }
 
-        await DataContext.NewAnimationCommand.ExecuteAsync(null);
+        await ViewModel.NewAnimationCommand.ExecuteAsync(null);
         ValidateButtons();
     }
 
@@ -455,12 +455,12 @@ internal partial class FormRibbon
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
     private async void ButtonAnimationPaste_Click(object sender, EventArgs e)
     {
-        if ((DataContext?.KeyEditor?.PasteDataCommand is null) || (!DataContext.KeyEditor.PasteDataCommand.CanExecute(null)))
+        if ((ViewModel?.KeyEditor?.PasteDataCommand is null) || (!ViewModel.KeyEditor.PasteDataCommand.CanExecute(null)))
         {
             return;
         }
 
-        await DataContext.KeyEditor.PasteDataCommand.ExecuteAsync(null);
+        await ViewModel.KeyEditor.PasteDataCommand.ExecuteAsync(null);
     }
 
     /// <summary>Handles the Click event of the ButtonAnimationCopy control.</summary>
@@ -468,23 +468,23 @@ internal partial class FormRibbon
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
     private void ButtonAnimationCopy_Click(object sender, EventArgs e)
     {
-        if (DataContext?.KeyEditor?.CopyDataCommand is null)
+        if (ViewModel?.KeyEditor?.CopyDataCommand is null)
         {
             return;
         }
 
         var args = new KeyFrameCopyMoveData
         {                
-            KeyFrames = DataContext.Selected,
+            KeyFrames = ViewModel.Selected,
             Operation = CopyMoveOperation.Copy
         };
 
-        if (!DataContext.KeyEditor.CopyDataCommand.CanExecute(args))
+        if (!ViewModel.KeyEditor.CopyDataCommand.CanExecute(args))
         {
             return;
         }
 
-        DataContext.KeyEditor.CopyDataCommand.Execute(args);
+        ViewModel.KeyEditor.CopyDataCommand.Execute(args);
     }
 
     /// <summary>Handles the Click event of the ButtonAnimationCut control.</summary>
@@ -492,23 +492,23 @@ internal partial class FormRibbon
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
     private void ButtonAnimationCut_Click(object sender, EventArgs e)
     {
-        if (DataContext?.KeyEditor?.CopyDataCommand is null)
+        if (ViewModel?.KeyEditor?.CopyDataCommand is null)
         {
             return;
         }
 
         var args = new KeyFrameCopyMoveData
         {
-            KeyFrames = DataContext.Selected,
+            KeyFrames = ViewModel.Selected,
             Operation = CopyMoveOperation.Move
         };
 
-        if (!DataContext.KeyEditor.CopyDataCommand.CanExecute(args))
+        if (!ViewModel.KeyEditor.CopyDataCommand.CanExecute(args))
         {
             return;
         }
 
-        DataContext.KeyEditor.CopyDataCommand.Execute(args);
+        ViewModel.KeyEditor.CopyDataCommand.Execute(args);
     }
 
     /// <summary>Handles the Click event of the CheckAnimationEditTrack control.</summary>
@@ -516,12 +516,12 @@ internal partial class FormRibbon
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
     private void CheckAnimationEditTrack_Click(object sender, EventArgs e)
     {
-        if ((DataContext?.ActivateKeyEditorCommand is null) || (!DataContext.ActivateKeyEditorCommand.CanExecute(null)))
+        if ((ViewModel?.ActivateKeyEditorCommand is null) || (!ViewModel.ActivateKeyEditorCommand.CanExecute(null)))
         {
             return;
         }
 
-        DataContext.ActivateKeyEditorCommand.Execute(null);
+        ViewModel.ActivateKeyEditorCommand.Execute(null);
         ValidateButtons();
     }
 
@@ -530,12 +530,12 @@ internal partial class FormRibbon
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
     private void CheckAnimationLoop_Click(object sender, EventArgs e)
     {
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             return;
         }
 
-        DataContext.IsLooping = CheckAnimationLoop.Checked;
+        ViewModel.IsLooping = CheckAnimationLoop.Checked;
         ValidateButtons();
     }
 
@@ -670,13 +670,13 @@ internal partial class FormRibbon
     /// </summary>
     private void UnassignEvents()
     {
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             return;
         }
 
-        DataContext.KeyEditor.PropertyChanged += KeyEditor_PropertyChanged;
-        DataContext.PropertyChanged -= DataContext_PropertyChanged;
+        ViewModel.KeyEditor.PropertyChanged += KeyEditor_PropertyChanged;
+        ViewModel.PropertyChanged -= DataContext_PropertyChanged;
     }        
 
     /// <summary>
@@ -756,44 +756,44 @@ internal partial class FormRibbon
     {
         EnableRibbon(false);
 
-        if (DataContext is null)
+        if (ViewModel is null)
         {                
             return;
         }
 
         ButtonZoomAnimation.Enabled = true;
-        CheckAnimationLoop.Enabled = DataContext?.CurrentPanel is null;
-        
-        ButtonNewAnimation.Enabled = DataContext?.NewAnimationCommand?.CanExecute(null) ?? false;
-        ButtonSaveAnimation.Enabled = DataContext?.SaveContentCommand?.CanExecute(SaveReason.UserSave) ?? false;
-        ButtonAnimationLoadBack.Enabled = DataContext?.LoadBackgroundImageCommand?.CanExecute(null) ?? false;
-        ButtonAnimationClearBack.Enabled = DataContext?.ClearBackgroundImageCommand?.CanExecute(null) ?? false;
+        CheckAnimationLoop.Enabled = ViewModel?.CurrentPanel is null;
+
+        ButtonNewAnimation.Enabled = ViewModel?.NewAnimationCommand?.CanExecute(null) ?? false;
+        ButtonSaveAnimation.Enabled = ViewModel?.SaveContentCommand?.CanExecute(SaveReason.UserSave) ?? false;
+        ButtonAnimationLoadBack.Enabled = ViewModel?.LoadBackgroundImageCommand?.CanExecute(null) ?? false;
+        ButtonAnimationClearBack.Enabled = ViewModel?.ClearBackgroundImageCommand?.CanExecute(null) ?? false;
         ButtonAnimationKeyUndo.Enabled = ButtonAnimationUndo.Enabled = _currentUndoHandler?.UndoCommand?.CanExecute(null) ?? false;
         ButtonAnimationKeyRedo.Enabled = ButtonAnimationRedo.Enabled = _currentUndoHandler?.RedoCommand?.CanExecute(null) ?? false;            
-        ButtonAnimationSprite.Enabled = DataContext.LoadSpriteCommand?.CanExecute(null) ?? false;
-        ButtonAnimPlay.Enabled = DataContext.PlayAnimationCommand?.CanExecute(null) ?? false;
-        ButtonAnimStop.Enabled = DataContext.StopAnimationCommand?.CanExecute(null) ?? false;
-        ButtonPrevKey.Enabled = DataContext.PrevKeyCommand?.CanExecute(null) ?? false;
-        ButtonNextKey.Enabled = DataContext.NextKeyCommand?.CanExecute(null) ?? false;
-        ButtonFirstKey.Enabled = DataContext?.FirstKeyCommand?.CanExecute(null) ?? false;
-        ButtonLastKey.Enabled = DataContext?.LastKeyCommand?.CanExecute(null) ?? false;
-        ButtonAnimationProperties.Enabled = DataContext?.ShowAnimationPropertiesCommand?.CanExecute(null) ?? false;
-        ButtonAnimationGoBack.Enabled = CheckAnimationEditTrack.Enabled = DataContext?.ActivateKeyEditorCommand?.CanExecute(null) ?? false;
-        ButtonAnimationSetKeyframe.Enabled = (DataContext?.KeyEditor?.SetKeyCommand?.CanExecute(null) ?? false);
-        ButtonAddTrack.Enabled = DataContext.ShowAddTrackCommand?.CanExecute(null) ?? false;
-        ButtonRemoveTrack.Enabled = DataContext.DeleteTrackCommand?.CanExecute(null) ?? false;
-        ButtonAnimationRemoveKeyframes.Enabled = DataContext.KeyEditor?.RemoveKeyCommand?.CanExecute(null) ?? false;
-        ButtonAnimationClearKeyframes.Enabled = DataContext.KeyEditor?.ClearKeysCommand?.CanExecute(null) ?? false;
-        ButtonAnimationClear.Enabled = DataContext.ClearAnimationCommand?.CanExecute(null) ?? false;
+        ButtonAnimationSprite.Enabled = ViewModel.LoadSpriteCommand?.CanExecute(null) ?? false;
+        ButtonAnimPlay.Enabled = ViewModel.PlayAnimationCommand?.CanExecute(null) ?? false;
+        ButtonAnimStop.Enabled = ViewModel.StopAnimationCommand?.CanExecute(null) ?? false;
+        ButtonPrevKey.Enabled = ViewModel.PrevKeyCommand?.CanExecute(null) ?? false;
+        ButtonNextKey.Enabled = ViewModel.NextKeyCommand?.CanExecute(null) ?? false;
+        ButtonFirstKey.Enabled = ViewModel?.FirstKeyCommand?.CanExecute(null) ?? false;
+        ButtonLastKey.Enabled = ViewModel?.LastKeyCommand?.CanExecute(null) ?? false;
+        ButtonAnimationProperties.Enabled = ViewModel?.ShowAnimationPropertiesCommand?.CanExecute(null) ?? false;
+        ButtonAnimationGoBack.Enabled = CheckAnimationEditTrack.Enabled = ViewModel?.ActivateKeyEditorCommand?.CanExecute(null) ?? false;
+        ButtonAnimationSetKeyframe.Enabled = (ViewModel?.KeyEditor?.SetKeyCommand?.CanExecute(null) ?? false);
+        ButtonAddTrack.Enabled = ViewModel.ShowAddTrackCommand?.CanExecute(null) ?? false;
+        ButtonRemoveTrack.Enabled = ViewModel.DeleteTrackCommand?.CanExecute(null) ?? false;
+        ButtonAnimationRemoveKeyframes.Enabled = ViewModel.KeyEditor?.RemoveKeyCommand?.CanExecute(null) ?? false;
+        ButtonAnimationClearKeyframes.Enabled = ViewModel.KeyEditor?.ClearKeysCommand?.CanExecute(null) ?? false;
+        ButtonAnimationClear.Enabled = ViewModel.ClearAnimationCommand?.CanExecute(null) ?? false;
         var copyArgs = new KeyFrameCopyMoveData
         {
-            KeyFrames = DataContext.Selected,
+            KeyFrames = ViewModel.Selected,
             Operation = CopyMoveOperation.Copy
         };
-        ButtonAnimationCopy.Enabled = DataContext?.KeyEditor?.CopyDataCommand?.CanExecute(copyArgs) ?? false;
+        ButtonAnimationCopy.Enabled = ViewModel?.KeyEditor?.CopyDataCommand?.CanExecute(copyArgs) ?? false;
         copyArgs.Operation = CopyMoveOperation.Move;
-        ButtonAnimationCut.Enabled = DataContext?.KeyEditor?.CopyDataCommand?.CanExecute(copyArgs) ?? false;
-        ButtonAnimationPaste.Enabled = DataContext?.KeyEditor?.PasteDataCommand?.CanExecute(copyArgs) ?? false;
+        ButtonAnimationCut.Enabled = ViewModel?.KeyEditor?.CopyDataCommand?.CanExecute(copyArgs) ?? false;
+        ButtonAnimationPaste.Enabled = ViewModel?.KeyEditor?.PasteDataCommand?.CanExecute(copyArgs) ?? false;
     }
 
     /// <summary>
@@ -814,16 +814,16 @@ internal partial class FormRibbon
 
         InitializeFromDataContext(dataContext);
 
-        DataContext = dataContext;
+        ViewModel = dataContext;
         ValidateButtons();
 
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             return;
         }
 
-        DataContext.KeyEditor.PropertyChanged += KeyEditor_PropertyChanged;
-        DataContext.PropertyChanged += DataContext_PropertyChanged;
+        ViewModel.KeyEditor.PropertyChanged += KeyEditor_PropertyChanged;
+        ViewModel.PropertyChanged += DataContext_PropertyChanged;
     }        
     #endregion
 

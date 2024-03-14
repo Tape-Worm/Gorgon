@@ -63,14 +63,4 @@ public class ArgumentMissingException
         : base(string.Format(Resources.GOR_ERR_ARGUMENT_MISSING, memberName, parameterName), innerException)
     {
     }
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="ArgumentMissingException"/> class.
-    /// </summary>
-    /// <param name="info">The object that holds the serialized object data.</param>
-    /// <param name="context">The contextual information about the source or destination.</param>
-    protected ArgumentMissingException(SerializationInfo info, StreamingContext context)
-        : base(info, context)
-    {
-    }
 }

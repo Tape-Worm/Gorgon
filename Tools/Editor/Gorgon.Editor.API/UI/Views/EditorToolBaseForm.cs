@@ -324,7 +324,7 @@ public partial class EditorToolBaseForm
     /// </remarks>
     protected virtual void OnPropertyChanging(string propertyName)
     {
-    
+
     }
 
     /// <summary>
@@ -486,7 +486,7 @@ public partial class EditorToolBaseForm
     /// </remarks>
     protected virtual void OnUnassignEvents()
     {
-    
+
     }
 
     /// <summary>
@@ -499,7 +499,7 @@ public partial class EditorToolBaseForm
     /// </remarks>
     protected virtual void OnResetDataContext()
     {
-        
+
     }
 
     /// <summary>
@@ -634,7 +634,7 @@ public partial class EditorToolBaseForm
             _graphicsContext?.ReturnSwapPresenter(ref _swapChain);
             _graphicsContext = null;
         }
-                    
+
         GorgonSwapChain swapChain = context.LeaseSwapPresenter(RenderControl);
 
         // Always insert the default renderer.

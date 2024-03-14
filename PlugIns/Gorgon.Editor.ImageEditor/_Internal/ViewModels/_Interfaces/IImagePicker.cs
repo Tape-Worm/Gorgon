@@ -238,7 +238,7 @@ internal interface IImagePicker
     {
         get;
     }
-    
+
     /// <summary>
     /// Property to return the command used to update the source image.
     /// </summary>

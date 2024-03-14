@@ -42,7 +42,7 @@ internal static class Program
     /// <summary>
     /// Property to return the log used for debug log messages.
     /// </summary>
-	    public static IGorgonLog Log
+    public static IGorgonLog Log
     {
         get;
         private set;
@@ -61,9 +61,7 @@ internal static class Program
 
         try
         {
-#if NET6_0_OR_GREATER
             Application.SetHighDpiMode(HighDpiMode.PerMonitorV2);
-#endif
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             Application.Run(new Form());

@@ -826,7 +826,7 @@ internal class FontContent
             }
         }
 
-        
+
         if (points == (FontUnits == FontHeightMode.Points))
         {
             return;

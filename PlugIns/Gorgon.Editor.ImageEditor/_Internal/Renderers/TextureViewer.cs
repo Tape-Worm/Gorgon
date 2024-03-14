@@ -169,7 +169,7 @@ internal abstract class TextureViewer
             {
                 return;
             }
-            
+
             shader.Dispose();
             cBuffer?.Dispose();
         }

@@ -169,7 +169,7 @@ internal interface IAnimationContent
     {
         get;
     }       
-    
+
     /// <summary>
     /// Property to return the list of tracks and keys that were selected.
     /// </summary>

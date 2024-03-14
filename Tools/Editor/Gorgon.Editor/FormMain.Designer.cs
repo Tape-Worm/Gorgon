@@ -528,7 +528,7 @@ partial class FormMain
         this.Controls.Add(this.Stage);
         this.Controls.Add(this.PanelWorkSpace);
         this.Controls.Add(this.RibbonMain);
-        this.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+        
         this.ForeColor = System.Drawing.Color.White;
         this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
         this.MinimumSize = new System.Drawing.Size(1023, 767);

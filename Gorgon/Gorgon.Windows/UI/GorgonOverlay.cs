@@ -284,7 +284,7 @@ public class GorgonOverlay
             parentForm.Move += ParentForm_Move;
             parentForm.Layout += ParentForm_Layout;
         }
-                                
+
         _overlayForm.Show(parentForm ?? parent);
         _overlayForm.Opacity = TransparencyPercent / 100.0;
 

@@ -1,4 +1,4 @@
-#region MIT.
+﻿#region MIT.
 // 
 // Gorgon.
 // Copyright (C) 2011 Michael Winsor
@@ -518,7 +518,7 @@ public static class GorgonApplication
                 GorgonTiming.StartTiming<GorgonTimerMultimedia>();
             }
         }
-                    
+
         while ((appShouldProcess) && (!UserApi.PeekMessage(out MSG _, IntPtr.Zero, 0, 0, PeekMessageNoRemove)))
         {
             // Only update the time when we have focus, otherwise reset the time so we don't get super weird values

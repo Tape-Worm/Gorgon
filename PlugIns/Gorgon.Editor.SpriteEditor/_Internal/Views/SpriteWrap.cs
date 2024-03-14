@@ -46,7 +46,7 @@ internal partial class SpriteWrap
     /// Property to return the data context for the view.
     /// </summary>
     [Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-    public ISpriteTextureWrapEdit DataContext
+    public ISpriteTextureWrapEdit ViewModel
     {
         get;
         private set;
@@ -59,7 +59,7 @@ internal partial class SpriteWrap
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
     private void RadioHWrapping_Click(object sender, EventArgs e)
     {
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             return;
         }
@@ -68,7 +68,7 @@ internal partial class SpriteWrap
 
         if (button.Checked)
         {
-            DataContext.HorizontalWrapping = (TextureWrap)button.Tag;
+            ViewModel.HorizontalWrapping = (TextureWrap)button.Tag;
         }
 
         UpdateColorPickerState();
@@ -80,7 +80,7 @@ internal partial class SpriteWrap
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
     private void RadioVWrapping_Click(object sender, EventArgs e)
     {
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             return;
         }
@@ -89,7 +89,7 @@ internal partial class SpriteWrap
 
         if (button.Checked)
         {
-            DataContext.VerticalWrapping = (TextureWrap)button.Tag;
+            ViewModel.VerticalWrapping = (TextureWrap)button.Tag;
         }
 
         UpdateColorPickerState();
@@ -101,12 +101,12 @@ internal partial class SpriteWrap
     /// <param name="e">The <see cref="ColorChangedEventArgs"/> instance containing the event data.</param>
     private void Picker_ColorChanged(object sender, ColorChangedEventArgs e)
     {
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             return;
         }
 
-        DataContext.BorderColor = e.Color;
+        ViewModel.BorderColor = e.Color;
         ValidateOk();
     }
 
@@ -115,12 +115,12 @@ internal partial class SpriteWrap
     /// </summary>
     private void UnassignEvents()
     {
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             return;
         }
 
-        DataContext.PropertyChanged -= DataContext_PropertyChanged;
+        ViewModel.PropertyChanged -= DataContext_PropertyChanged;
     }
 
     /// <summary>Handles the PropertyChanged event of the DataContext control.</summary>
@@ -134,7 +134,7 @@ internal partial class SpriteWrap
                 Picker.ColorChanged -= Picker_ColorChanged;
                 try
                 {
-                    Picker.SelectedColor = DataContext.BorderColor;
+                    Picker.SelectedColor = ViewModel.BorderColor;
                 }
                 finally
                 {
@@ -142,10 +142,10 @@ internal partial class SpriteWrap
                 }
                 break;
             case nameof(ISpriteTextureWrapEdit.HorizontalWrapping):
-                SetRadioStates(DataContext);
+                SetRadioStates(ViewModel);
                 break;
             case nameof(ISpriteTextureWrapEdit.VerticalWrapping):
-                SetRadioStates(DataContext);
+                SetRadioStates(ViewModel);
                 break;
         }
         ValidateOk();
@@ -188,7 +188,7 @@ internal partial class SpriteWrap
         RadioVClamp.Checked = true;
         Picker.OriginalColor = Picker.SelectedColor = GorgonColor.White;
     }
-    
+
     /// <summary>
     /// Function to initialize the control with the data context.
     /// </summary>
@@ -211,12 +211,12 @@ internal partial class SpriteWrap
     {
         base.OnSubmit();
 
-        if ((DataContext?.OkCommand is null) || (!DataContext.OkCommand.CanExecute(null)))
+        if ((ViewModel?.OkCommand is null) || (!ViewModel.OkCommand.CanExecute(null)))
         {
             return;
         }
 
-        DataContext.OkCommand.Execute(null);
+        ViewModel.OkCommand.Execute(null);
     }
 
     /// <summary>Function to cancel the change.</summary>
@@ -224,19 +224,19 @@ internal partial class SpriteWrap
     {
         base.OnCancel();
 
-        if ((DataContext?.CancelCommand is null) || (!DataContext.CancelCommand.CanExecute(null)))
+        if ((ViewModel?.CancelCommand is null) || (!ViewModel.CancelCommand.CanExecute(null)))
         {
             return;
         }
 
-        DataContext.CancelCommand.Execute(null);
+        ViewModel.CancelCommand.Execute(null);
     }
 
     /// <summary>
     /// Function to validate the state of the OK button.
     /// </summary>
     /// <returns><b>true</b> if the OK button is valid, <b>false</b> if not.</returns>
-    protected override bool OnValidateOk() => (DataContext?.OkCommand is not null) && (DataContext.OkCommand.CanExecute(null));
+    protected override bool OnValidateOk() => (ViewModel?.OkCommand is not null) && (ViewModel.OkCommand.CanExecute(null));
 
     /// <summary>Raises the <see cref="E:System.Windows.Forms.UserControl.Load"/> event.</summary>
     /// <param name="e">An <see cref="EventArgs"/> that contains the event data.</param>
@@ -249,9 +249,9 @@ internal partial class SpriteWrap
             return;
         }
 
-        DataContext?.Load();
+        ViewModel?.Load();
     }
-    
+
     /// <summary>Function to assign a data context to the view as a view model.</summary>
     /// <param name="dataContext">The data context to assign.</param>
     /// <remarks>Data contexts should be nullable, in that, they should reset the view back to its original state when the context is null.</remarks>
@@ -259,14 +259,14 @@ internal partial class SpriteWrap
     {
         InitializeFromDataContext(dataContext);
 
-        DataContext = dataContext;
+        ViewModel = dataContext;
 
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             return;
         }
 
-        DataContext.PropertyChanged += DataContext_PropertyChanged;
+        ViewModel.PropertyChanged += DataContext_PropertyChanged;
     }
     #endregion
 

@@ -203,7 +203,7 @@ internal class Main
 
         project.SaveProjectMetadataCommand.Execute(null);
     }
-    
+
     /// <summary>
     /// Function to persist the settings back to the file system.
     /// </summary>
@@ -655,7 +655,7 @@ internal class Main
                     return;
                 }
             }
-            
+
             IProject project = await Task.Run(() => _projectManager.CreateProject(directory));
             CurrentProject = null;
 

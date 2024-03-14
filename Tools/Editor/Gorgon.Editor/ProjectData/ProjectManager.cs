@@ -308,7 +308,7 @@ internal class ProjectManager
         }
 
         _log.Print($"'{fileSystemFile}' has metadata. Copying to the .", LoggingLevel.Verbose);
-                    
+
         byte[] writeBuffer = ArrayPool<byte>.Shared.Rent(blockSize);
         Stream readStream = metaData.OpenStream();
         Stream writeStream = File.Open(metaDataOutput, FileMode.Create, FileAccess.Write, FileShare.None);

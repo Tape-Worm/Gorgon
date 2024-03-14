@@ -134,38 +134,38 @@ public class Cube
     {
         GorgonVertexPosUv[] vertices =
         {
-			    // Front face.
-			    new GorgonVertexPosUv(new Vector3(-0.5f, 0.5f, -0.5f), new Vector2(0, 0)),
+                // Front face.
+                new GorgonVertexPosUv(new Vector3(-0.5f, 0.5f, -0.5f), new Vector2(0, 0)),
             new GorgonVertexPosUv(new Vector3(0.5f, -0.5f, -0.5f), new Vector2(1.0f, 1.0f)),
             new GorgonVertexPosUv(new Vector3(-0.5f, -0.5f, -0.5f), new Vector2(0.0f, 1.0f)),
             new GorgonVertexPosUv(new Vector3(0.5f, 0.5f, -0.5f), new Vector2(1.0f, 0.0f)),
 
-			    // Right face.
-			    new GorgonVertexPosUv(new Vector3(0.5f, 0.5f, -0.5f), new Vector2(0, 0)),
+                // Right face.
+                new GorgonVertexPosUv(new Vector3(0.5f, 0.5f, -0.5f), new Vector2(0, 0)),
             new GorgonVertexPosUv(new Vector3(0.5f, -0.5f, 0.5f), new Vector2(1.0f, 1.0f)),
             new GorgonVertexPosUv(new Vector3(0.5f, -0.5f, -0.5f), new Vector2(0.0f, 1.0f)),
             new GorgonVertexPosUv(new Vector3(0.5f, 0.5f, 0.5f), new Vector2(1.0f, 0.0f)),
 
-			    // Back face.
-			    new GorgonVertexPosUv(new Vector3(0.5f, 0.5f, 0.5f), new Vector2(0, 0)),
+                // Back face.
+                new GorgonVertexPosUv(new Vector3(0.5f, 0.5f, 0.5f), new Vector2(0, 0)),
             new GorgonVertexPosUv(new Vector3(-0.5f, -0.5f, 0.5f), new Vector2(1.0f, 1.0f)),
             new GorgonVertexPosUv(new Vector3(0.5f, -0.5f, 0.5f), new Vector2(0.0f, 1.0f)),
             new GorgonVertexPosUv(new Vector3(-0.5f, 0.5f, 0.5f), new Vector2(1.0f, 0.0f)),
 
-			    // Left face.
-			    new GorgonVertexPosUv(new Vector3(-0.5f, 0.5f, 0.5f), new Vector2(0, 0)),
+                // Left face.
+                new GorgonVertexPosUv(new Vector3(-0.5f, 0.5f, 0.5f), new Vector2(0, 0)),
             new GorgonVertexPosUv(new Vector3(-0.5f, -0.5f, -0.5f), new Vector2(1.0f, 1.0f)),
             new GorgonVertexPosUv(new Vector3(-0.5f, -0.5f, 0.5f), new Vector2(0.0f, 1.0f)),
             new GorgonVertexPosUv(new Vector3(-0.5f, 0.5f, -0.5f), new Vector2(1.0f, 0.0f)),
 
-			    // Top face.
-			    new GorgonVertexPosUv(new Vector3(-0.5f, 0.5f, 0.5f), new Vector2(0, 0)),
+                // Top face.
+                new GorgonVertexPosUv(new Vector3(-0.5f, 0.5f, 0.5f), new Vector2(0, 0)),
             new GorgonVertexPosUv(new Vector3(0.5f, 0.5f, -0.5f), new Vector2(1.0f, 1.0f)),
             new GorgonVertexPosUv(new Vector3(-0.5f, 0.5f, -0.5f), new Vector2(0.0f, 1.0f)),
             new GorgonVertexPosUv(new Vector3(0.5f, 0.5f, 0.5f), new Vector2(1.0f, 0.0f)),
 
-			    // Bottom face.
-			    new GorgonVertexPosUv(new Vector3(-0.5f, -0.5f, -0.5f), new Vector2(0, 0)),
+                // Bottom face.
+                new GorgonVertexPosUv(new Vector3(-0.5f, -0.5f, -0.5f), new Vector2(0, 0)),
             new GorgonVertexPosUv(new Vector3(0.5f, -0.5f, 0.5f), new Vector2(1.0f, 1.0f)),
             new GorgonVertexPosUv(new Vector3(-0.5f, -0.5f, 0.5f), new Vector2(0.0f, 1.0f)),
             new GorgonVertexPosUv(new Vector3(0.5f, -0.5f, -0.5f), new Vector2(1.0f, 0.0f))

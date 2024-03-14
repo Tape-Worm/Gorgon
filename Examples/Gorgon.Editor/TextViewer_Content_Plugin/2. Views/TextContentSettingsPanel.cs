@@ -45,11 +45,11 @@ internal partial class TextContentSettingsPanel
     #region Properties.
     /// <summary>Property to return the ID of the panel.</summary>
     [Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-    public override string PanelID => DataContext?.ID.ToString() ?? Guid.Empty.ToString();
+    public override string PanelID => ViewModel?.ID.ToString() ?? Guid.Empty.ToString();
 
     /// <summary>Property to return the data context assigned to this view.</summary>
     [Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-    public ISettings DataContext
+    public ISettings ViewModel
     {
         get;
         private set;
@@ -62,22 +62,22 @@ internal partial class TextContentSettingsPanel
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
     private void Radio_CheckedChanged(object sender, EventArgs e)
     {
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             return;
         }
 
         if (RadioArial.Checked)
         {
-            DataContext.DefaultFont = FontFace.Arial;
+            ViewModel.DefaultFont = FontFace.Arial;
         }
         else if (RadioTimesNewRoman.Checked)
         {
-            DataContext.DefaultFont = FontFace.TimesNewRoman;
+            ViewModel.DefaultFont = FontFace.TimesNewRoman;
         }
         else if (RadioPapyrus.Checked)
         {
-            DataContext.DefaultFont = FontFace.Papyrus;
+            ViewModel.DefaultFont = FontFace.Papyrus;
         }
     }
 
@@ -119,7 +119,7 @@ internal partial class TextContentSettingsPanel
     public void SetDataContext(ISettings dataContext)
     {
         InitializeFromDataContext(dataContext);
-        DataContext = dataContext;
+        ViewModel = dataContext;
     }
     #endregion
 

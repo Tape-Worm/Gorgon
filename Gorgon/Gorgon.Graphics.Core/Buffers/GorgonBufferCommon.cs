@@ -843,7 +843,7 @@ public abstract class GorgonBufferCommon
         int typeSize = sizeof(T);
 
         size ??= SizeInBytes - sourceOffset;
-        
+
 #if DEBUG
         ValidateGetSetData(sourceOffset, 0, size.Value, SizeInBytes, destination.Length * typeSize);
 #endif
