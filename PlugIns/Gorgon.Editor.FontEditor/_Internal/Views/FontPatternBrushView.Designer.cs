@@ -34,7 +34,7 @@ namespace Gorgon.Editor.FontEditor;
             base.Dispose(disposing);
         }
 
-        #region Component Designer generated code
+    
 
         /// <summary> 
         /// Required method for Designer support - do not modify 
@@ -218,7 +218,7 @@ namespace Gorgon.Editor.FontEditor;
 
         }
 
-        #endregion
+    
 
         private System.Windows.Forms.Panel PanelPreview;
         private System.Windows.Forms.Label LabelPatternType;

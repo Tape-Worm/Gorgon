@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2020 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: July 1, 2020 12:34:36 AM
 // 
-#endregion
+
 
 using System.Buffers;
 using System.ComponentModel;
@@ -38,12 +38,12 @@ using Gorgon.Math;
 namespace Gorgon.Editor.AnimationEditor;
 
 /// <summary>
-/// The view model for the key editor context.
+/// The view model for the key editor context
 /// </summary>
 internal class KeyEditorContext
     : EditorContext<KeyEditorContextParameters>, IKeyEditorContext
 {
-    #region Classes.
+
     /// <summary>
     /// Arguments for undoing or redoing a key assignment.
     /// </summary>
@@ -96,16 +96,16 @@ internal class KeyEditorContext
         public bool Move;
     }
 
-    #endregion
 
-    #region Constants.
+
+
     /// <summary>
     /// The name of the context.
     /// </summary>
     public const string ContextName = "ContextKeyEditor";
-    #endregion
 
-    #region Variables.
+
+
     // The project file manager.
     private IContentFileManager _fileManager;
     // The list of sprites selected for loading texture keys.
@@ -118,9 +118,9 @@ internal class KeyEditorContext
     private GorgonSpriteAnimationController _controller;
     // The animation content.
     private IAnimationContent _content;
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to return the key value editor.
     /// </summary>
@@ -245,9 +245,9 @@ internal class KeyEditorContext
     {
         get;
     }
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>Handles the PropertyChanged event of the Content control.</summary>
     /// <param name="sender">The source of the event.</param>
     /// <param name="e">The <see cref="PropertyChangedEventArgs"/> instance containing the event data.</param>
@@ -1324,9 +1324,9 @@ internal class KeyEditorContext
 
         base.OnUnload();
     }
-    #endregion
 
-    #region Constructor/Finalizer.
+
+
     /// <summary>Initializes a new instance of the <see cref="KeyEditorContext"/> class.</summary>
     public KeyEditorContext()
     {
@@ -1340,5 +1340,5 @@ internal class KeyEditorContext
         PasteDataCommand = new EditorAsyncCommand<object>(DoPasteKeyframesAsync, CanPasteKeyframes);
         CopyMoveFramesCommand = new EditorAsyncCommand<KeyFrameCopyMoveData>(DoCopyMoveFramesAsync, CanCopyMoveFrames);
     }
-    #endregion
+
 }

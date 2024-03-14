@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2020 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: February 14, 2020 9:22:52 AM
 // 
-#endregion
+
 
 using System.Collections.ObjectModel;
 using Gorgon.Core;
@@ -39,12 +39,12 @@ using DX = SharpDX;
 namespace Gorgon.Editor.ImageEditor;
 
 /// <summary>
-/// View model for the image picker.
+/// View model for the image picker
 /// </summary>
 internal class ImagePicker
     : ViewModelBase<ImagePickerParameters, IHostContentServices>, IImagePicker
 {
-    #region Variables.
+
     // Flag to indicate that the image picker is active.
     private bool _isActive;
     // List of import data items.
@@ -68,9 +68,9 @@ internal class ImagePicker
     private bool _needsTransform;
     // Flag to indicate that the image being imported has multiple sub resources.
     private bool _multiSubResources;
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to return the settings for cropping/resizing/aligning an imported image.
     /// </summary>
@@ -349,9 +349,9 @@ internal class ImagePicker
     {
         get;
     }
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to check whether the image needs cropping or resizing.
     /// </summary>
@@ -829,9 +829,9 @@ internal class ImagePicker
 
         base.OnUnload();
     }
-    #endregion
 
-    #region Constructor/Finalizer.
+
+
     /// <summary>Initializes a new instance of the <see cref="ImagePicker"/> class.</summary>
     public ImagePicker()
     {
@@ -844,5 +844,5 @@ internal class ImagePicker
         UpdateImageCommand = new EditorCommand<object>(DoUpdateImage);
         RestoreCommand = new EditorCommand<object>(DoRestore, CanRestore);
     }
-    #endregion
+
 }

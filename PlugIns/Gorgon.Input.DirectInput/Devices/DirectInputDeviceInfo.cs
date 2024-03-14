@@ -1,4 +1,4 @@
-﻿#region MIT
+﻿
 // 
 // Gorgon
 // Copyright (C) 2015 Michael Winsor
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: Sunday, September 13, 2015 2:09:21 PM
 // 
-#endregion
+
 
 using Gorgon.Core;
 using Gorgon.Native;
@@ -31,16 +31,16 @@ using DI = SharpDX.DirectInput;
 namespace Gorgon.Input.DirectInput;
 
 /// <summary>
-/// Device information for a DirectInput gaming device.
+/// Device information for a DirectInput gaming device
 /// </summary>
 /// <remarks>
-/// Initializes a new instance of the <see cref="DirectInputDeviceInfo"/> class.
+/// Initializes a new instance of the <see cref="DirectInputDeviceInfo"/> class
 /// </remarks>
 /// <param name="devInstance">The DirectInput device instance.</param>
 internal class DirectInputDeviceInfo(DI.DeviceInstance devInstance)
         : IGorgonGamingDeviceInfo
 {
-    #region Properties.
+
     /// <summary>
     /// Property to return the <see cref="GorgonGamingDeviceAxisInfo"/> values for each axis on the gaming device.
     /// </summary>
@@ -127,9 +127,9 @@ internal class DirectInputDeviceInfo(DI.DeviceInstance devInstance)
     {
         get;
     } = devInstance.InstanceGuid;
-    #endregion
 
-    #region Methods.
+
+
 
     /// <summary>
     /// Function to retrieve the capabilities from the DirectInput joystick.
@@ -213,7 +213,7 @@ internal class DirectInputDeviceInfo(DI.DeviceInstance devInstance)
         return axisMappings;
     }
 
-    #endregion
-    #region Constructor.
-    #endregion
+
+
+
 }

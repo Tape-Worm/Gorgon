@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2020 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: February 13, 2020 12:32:15 PM
 // 
-#endregion
+
 
 using System.Collections.Specialized;
 using System.ComponentModel;
@@ -43,12 +43,12 @@ using DX = SharpDX;
 namespace Gorgon.Editor.ImageEditor;
 
 /// <summary>
-/// Dialog for assigning a list of images to array indices, depth slices, and mip levels.
+/// Dialog for assigning a list of images to array indices, depth slices, and mip levels
 /// </summary>
 internal partial class FormImagePicker
     : Form, IDataContext<IImagePicker>
 {
-    #region Variables.
+
     // A list of images held until the form is loaded for the first time.
     private readonly List<(string, Image)> _deferredImages = [];
     // The background texture.
@@ -84,9 +84,9 @@ internal partial class FormImagePicker
     private readonly ProgressPanelDisplay _progressPanel;
     // The sprite for the preview.
     private GorgonSprite _previewSprite;
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>Property to return the data context assigned to this view.</summary>
     public IImagePicker ViewModel
     {
@@ -102,9 +102,9 @@ internal partial class FormImagePicker
         get;
         set;
     }
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to validate the button state on the form.
     /// </summary>
@@ -1503,9 +1503,9 @@ internal partial class FormImagePicker
         ViewModel.PropertyChanged += DataContext_PropertyChanged;
         ViewModel.ChangedSubResources.CollectionChanged += ChangedSubResources_CollectionChanged;
     }
-    #endregion
 
-    #region Constructor/Finalizer.
+
+
     /// <summary>Initializes a new instance of the <see cref="FormImagePicker"/> class.</summary>
     public FormImagePicker()
     {
@@ -1522,5 +1522,5 @@ internal partial class FormImagePicker
         _waitPanel = new WaitPanelDisplay(this);
         _progressPanel = new ProgressPanelDisplay(this);
     }
-    #endregion
+
 }

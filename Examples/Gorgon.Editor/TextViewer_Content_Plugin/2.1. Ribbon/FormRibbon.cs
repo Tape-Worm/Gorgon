@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2021 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: February 13, 2021 4:04:07 PM
 // 
-#endregion
+
 
 using System.ComponentModel;
 using System.Numerics;
@@ -35,16 +35,16 @@ using Krypton.Toolkit;
 namespace Gorgon.Examples;
 
 /// <summary>
-/// Provides a ribbon interface for the plug in view.
+/// Provides a ribbon interface for the plug in view
 /// </summary>
 /// <remarks>
 /// We cannot provide a ribbon on the control directly because, for some reason, the Krypton components will only allow ribbons on forms. 
 /// 
 /// So, in order to provide ribbon functionality, we create a simple form and drop a Krypton ribbon control on it and set up our buttons for the 
-/// view functions. We also have to ensure that the ribbon component is marked as internal/public so we can access it from the main view.
+/// view functions. We also have to ensure that the ribbon component is marked as internal/public so we can access it from the main view
 /// 
 /// We expose the ribbon to the application by assigning the instance of the ribbon to the Ribbon property on the main view. The editor will 
-/// pick up the Ribbon property and merge the ribbon on this form into the ribbon on the application window.
+/// pick up the Ribbon property and merge the ribbon on this form into the ribbon on the application window
 /// 
 /// Typically we need to assign the view model for the main view to this form. This is so we can have the ribbon respond to the state of the 
 /// view model, and execute commands on the view model in response to ribbon button presses. 
@@ -52,7 +52,7 @@ namespace Gorgon.Examples;
 internal partial class FormRibbon
     : KryptonForm, IDataContext<ITextContent>
 {
-    #region Variables.
+
     // This allows us to set up a list of predefiend zoom values for zooming in and out on the content. It matches the zoom level we've picked 
     // with the menu item assigned to the zoom level.
 
@@ -68,9 +68,9 @@ internal partial class FormRibbon
     private ZoomLevels _zoomLevel = ZoomLevels.ToWindow;
     // The renderer for the content.
     private IContentRenderer _contentRenderer;
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to set or return the data context for the ribbon on the form.
     /// </summary>
@@ -114,9 +114,9 @@ internal partial class FormRibbon
             UpdateZoomMenu();
         }
     }
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>Handles the ZoomScale event of the ContentRenderer control.</summary>
     /// <param name="sender">The source of the event.</param>
     /// <param name="e">The <see cref="ZoomScaleEventArgs"/> instance containing the event data.</param>
@@ -463,9 +463,8 @@ internal partial class FormRibbon
         // we have to do some manual house keeping to keep it up to date.
         UpdateZoomMenu();
     }
-    #endregion
 
-    #region Constructor.
+
     /// <summary>Initializes a new instance of the FormRibbon class.</summary>
     public FormRibbon()
     {
@@ -493,5 +492,5 @@ internal partial class FormRibbon
         _menuFontItems[FontFace.TimesNewRoman] = ItemTimesNewRoman;
         _menuFontItems[FontFace.Papyrus] = ItemPapyrus;
     }
-    #endregion
+
 }

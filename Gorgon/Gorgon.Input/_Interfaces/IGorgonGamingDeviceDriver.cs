@@ -1,4 +1,4 @@
-﻿#region MIT
+﻿
 // 
 // Gorgon
 // Copyright (C) 2015 Michael Winsor
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: Thursday, September 17, 2015 8:15:57 PM
 // 
-#endregion
+
 
 using Gorgon.Core;
 using Gorgon.PlugIns;
@@ -30,18 +30,18 @@ using Gorgon.PlugIns;
 namespace Gorgon.Input;
 
 /// <summary>
-/// The required functionality for a gaming device driver.
+/// The required functionality for a gaming device driver
 /// </summary>
 /// <remarks>
 /// <para>
 /// A gaming device driver provides access to various gaming input devices like a joystick, game pad, etc... This allows for various input providers to be used when accessing these devices. For example, 
-/// Gorgon comes with 2 drivers: One for XBOX controllers (via XInput), and one for generic joysticks/game pads (via Direct Input).
+/// Gorgon comes with 2 drivers: One for XBOX controllers (via XInput), and one for generic joysticks/game pads (via Direct Input)
 /// </para>
 /// <para>
 /// <note type="important">
 /// The XInput driver does not enumerate or use any other type of controllers other than XBox controllers, and the Direct Input driver purposely ignores XBox controllers so that only generic devices 
 /// get enumerated. This is done because the XInput controller provides more features for the XBox controllers, and the mapping of the device interface (i.e. axes, POV, etc...) is not as straight 
-/// forward.
+/// forward
 /// </note>
 /// </para>
 /// <para>
@@ -50,7 +50,7 @@ namespace Gorgon.Input;
 /// </para>
 /// <para>
 /// Because drivers may need to set up native resources for internal use, this interface implements <see cref="IDisposable"/>, and in order to avoid leakage of resource data, the <see cref="IDisposable.Dispose"/> 
-/// method <b>must</b> be called when done with the driver.
+/// method <b>must</b> be called when done with the driver
 /// </para>
 /// </remarks>
 /// <example>
@@ -65,13 +65,13 @@ namespace Gorgon.Input;
 ///		var plugInService = new GorgonPlugInService(assemblies);
 ///		var factory = new GorgonGamingDeviceDriverFactory(plugInService);
 ///
-///		// Load the assembly for the XInput driver.
+///		// Load the assembly for the XInput driver
 ///		assemblies.Load(".\Gorgon.Input.XInput.dll");
 /// 
 ///		// Get the correct driver from the plug ins via the factory. 
 ///		IGorgonGamingDeviceDriver driver = factory.Load("Gorgon.Input.GorgonXInputDriver");
 /// 
-///		// Get connected devices only. You may change the parameter to false to retrieve all devices.
+///		// Get connected devices only. You may change the parameter to false to retrieve all devices
 ///		joysticks = driver.EnumerateGamingDevices(true);
 /// 
 ///		foreach(IGorgonGamingDeviceInfo info in joysticks)
@@ -85,7 +85,7 @@ namespace Gorgon.Input;
 public interface IGorgonGamingDeviceDriver
     : IGorgonNamedObject, IDisposable
 {
-    #region Properties.
+
     /// <summary>
     /// Property to return a description of the driver.
     /// </summary>
@@ -93,9 +93,9 @@ public interface IGorgonGamingDeviceDriver
     {
         get;
     }
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to enumerate the gaming devices supported by this driver.
     /// </summary>
@@ -132,5 +132,5 @@ public interface IGorgonGamingDeviceDriver
     /// This will create an instance of <see cref="IGorgonGamingDevice"/> for all devices supported by the driver at one time and return a list containing those instances.
     /// </remarks>
     IReadOnlyList<IGorgonGamingDevice> CreateGamingDevices(bool connectedOnly = false);
-    #endregion
+
 }

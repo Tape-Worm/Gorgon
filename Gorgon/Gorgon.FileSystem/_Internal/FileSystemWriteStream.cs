@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2015 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,26 +11,26 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: Thursday, September 24, 2015 8:33:14 PM
 // 
-#endregion
+
 
 namespace Gorgon.IO;
 
 /// <summary>
-/// A file stream writer that will update the virtual file information when it closes.
+/// A file stream writer that will update the virtual file information when it closes
 /// </summary>
 /// <remarks>
-/// Initializes a new instance of the <see cref="FileSystemWriteStream"/> class.
+/// Initializes a new instance of the <see cref="FileSystemWriteStream"/> class
 /// </remarks>
 /// <param name="writePath">The path to the writable file.</param>
 /// <param name="fileMode">The file mode to use to open the file.</param>
@@ -40,14 +40,14 @@ internal class FileSystemWriteStream(string writePath, FileMode fileMode)
            fileMode == FileMode.Open ? FileAccess.Read : fileMode == FileMode.OpenOrCreate ? FileAccess.ReadWrite : FileAccess.Write,
            fileMode == FileMode.Open ? FileShare.Read : FileShare.None)
 {
-    #region Variables.
+
     // The length of the stream, in bytes.
     private long _length;
     // Flag to indicate that the stream is disposed.
     private int _disposed;
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>Gets the length in bytes of the stream.</summary>
     public override long Length => (_disposed == 0) ? base.Length : _length;
 
@@ -59,9 +59,9 @@ internal class FileSystemWriteStream(string writePath, FileMode fileMode)
         get;
         set;
     }
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Releases the unmanaged resources used by the <see cref="FileStream"/> and optionally releases the managed resources.
     /// </summary>
@@ -95,5 +95,5 @@ internal class FileSystemWriteStream(string writePath, FileMode fileMode)
         }
     }
 
-    #endregion
+
 }

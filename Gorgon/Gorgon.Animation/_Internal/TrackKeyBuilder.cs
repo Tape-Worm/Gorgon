@@ -4,26 +4,26 @@ using Gorgon.Math;
 namespace Gorgon.Animation;
 
 /// <summary>
-/// The concrete version of a <see cref="IGorgonTrackKeyBuilder{T}"/>.
+/// The concrete version of a <see cref="IGorgonTrackKeyBuilder{T}"/>
 /// </summary>
 /// <typeparam name="T">The type of key frame.</typeparam>
-/// <seealso cref="GorgonAnimationBuilder"/>.
+/// <seealso cref="GorgonAnimationBuilder"/>
 /// <remarks>
-/// Initializes a new instance of the <see cref="TrackKeyBuilder{T}"/> class.
+/// Initializes a new instance of the <see cref="TrackKeyBuilder{T}"/> class
 /// </remarks>
 /// <param name="parent">The parent animation builder.</param>
 internal class TrackKeyBuilder<T>(GorgonAnimationBuilder parent)
     : IGorgonTrackKeyBuilder<T>
     where T : class, IGorgonKeyFrame
 {
-    #region Variables.
+
     // The comparer used to sort the key frames by time.
     private readonly IComparer<T> _comparer = new KeyframeIndexComparer<T>();
     // The animation builder for the animation that contains the track being edited.
     private readonly GorgonAnimationBuilder _parent = parent;
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to return the interpolation mode for the track.
     /// </summary>
@@ -49,9 +49,9 @@ internal class TrackKeyBuilder<T>(GorgonAnimationBuilder parent)
     {
         get;
     } = [];
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to locate a key frame by its time code.
     /// </summary>
@@ -251,5 +251,5 @@ internal class TrackKeyBuilder<T>(GorgonAnimationBuilder parent)
         return this;
     }
 
-    #endregion
+
 }

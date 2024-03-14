@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2020 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: May 25, 2020 8:57:16 PM
 // 
-#endregion
+
 
 using Gorgon.Editor.Content;
 using Gorgon.Editor.PlugIns;
@@ -30,12 +30,12 @@ using Gorgon.Editor.PlugIns;
 namespace Gorgon.Editor.UI.ViewModels;
 
 /// <summary>
-/// Common editor tool view model parameters.
+/// Common editor tool view model parameters
 /// </summary>
 /// <remarks>
 /// <para>
 /// These parameters are meant to be passed to a view model based on the <see cref="EditorToolViewModelBase{T}"/> type and will contain services from the host application, and any other information 
-/// required for editor tool plug in view models.
+/// required for editor tool plug in view models
 /// </para>
 /// <para>
 /// Tool plug in developers will use types derived from this type to pass custom initialization parameters to their tool plug in view models. 

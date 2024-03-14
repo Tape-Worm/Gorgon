@@ -1,6 +1,6 @@
-﻿#region MIT.
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2011 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: Wednesday, November 02, 2011 10:11:10 AM
 // 
-#endregion
+
 
 using System.Globalization;
 using Gorgon.Core;
@@ -35,17 +35,17 @@ using Gorgon.Windows.Properties;
 namespace Gorgon.UI;
 
 /// <summary>
-/// An application class for windows <see cref="Form"/> applications.
+/// An application class for windows <see cref="Form"/> applications
 /// </summary> 
 /// <remarks>
 /// <para>
 /// This class is meant as a replacement for the standard windows forms <see cref="Application"/> class. It expands the functionality of the application class by exposing useful functionality for 
-/// working with the main application <see cref="Form"/>.
+/// working with the main application <see cref="Form"/>
 /// </para>
 /// <para>
 /// One of the key components to this class is the introduction of a proper Idle loop. This allows an application to perform operations while the windows message pump is in an idle state. This is useful 
 /// for things like games, or applications that require constant interaction with other systems. To set an idle loop you may pass a method to execute in one of the <see cref="Run(Form, Func{bool})"/> 
-/// method overloads. Or, if you choose, you may assign an idle method to execute at any point in the application life cycle by assigning a method to the <see cref="IdleMethod"/>.
+/// method overloads. Or, if you choose, you may assign an idle method to execute at any point in the application life cycle by assigning a method to the <see cref="IdleMethod"/>
 /// </para> 
 /// <para>
 /// Like the <see cref="Application"/> class, this class also provides the ability to pass a windows <see cref="Form"/>, or <see cref="ApplicationContext"/> to one of the <see cref="Run(Form, Func{bool})"/> 
@@ -58,7 +58,7 @@ namespace Gorgon.UI;
 /// The main form of an application may be retrieved from the <see cref="MainForm"/> property. 
 /// </para>
 /// <para>
-/// If this is not suitable, one of the other <see cref="Run(Func{bool})"/> overloads will allow you to finely control the life cycle of your application.
+/// If this is not suitable, one of the other <see cref="Run(Func{bool})"/> overloads will allow you to finely control the life cycle of your application
 /// </para>
 /// </note>
 /// </para>
@@ -86,13 +86,13 @@ namespace Gorgon.UI;
 ///		}
 ///		catch (Exception ex)
 ///		{
-///			// You should always catch any unhandled exceptions and either log them, or display them, or something.
-///			// It can get real ugly for your users otherwise.
+///			// You should always catch any unhandled exceptions and either log them, or display them, or something
+///			// It can get real ugly for your users otherwise
 ///			ex.Catch(_ => GorgonDialogs.ErrorBox(null, _), GorgonApplication.Log);
 ///		}
 ///		finally
 ///		{
-///			// Do your clean up here.
+///			// Do your clean up here
 ///		}
 ///	}
 /// ]]>
@@ -100,14 +100,14 @@ namespace Gorgon.UI;
 /// </example>
 public static class GorgonApplication
 {
-    #region Constants.
+
     // Log file application name.
     private const string LogFile = "GorgonLibrary";
     // Peek message NoRemove flag.
     private const uint PeekMessageNoRemove = 0;
-    #endregion
 
-    #region Events.
+
+
     // Event fired when the application is about to exit.
     private static event EventHandler ExitEvent;
 
@@ -165,9 +165,9 @@ public static class GorgonApplication
             ThreadExitEvent -= value;
         }
     }
-    #endregion
 
-    #region Variables.
+
+
     // Main application form.
     private static Form _mainForm;
     // Flag to indicate that the application needs to close.
@@ -186,9 +186,9 @@ public static class GorgonApplication
     private static int _runAtomic;
     // Event used to put the application to sleep.
     private static readonly ManualResetEventSlim _unfocusedTimeout = new(false, 20);
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to return information about the computer.
     /// </summary>
@@ -480,9 +480,9 @@ public static class GorgonApplication
             }
         }
     }
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Handles the Idle event of the Application control.
     /// </summary>
@@ -943,9 +943,9 @@ public static class GorgonApplication
             Interlocked.Decrement(ref _runAtomic);
         }
     }
-    #endregion
 
-    #region Constructor.
+
+
     /// <summary>
     /// Initializes the <see cref="GorgonApplication"/> class.
     /// </summary>
@@ -965,5 +965,5 @@ public static class GorgonApplication
 
         StartupPath = new DirectoryInfo(Application.StartupPath.FormatDirectory(Path.DirectorySeparatorChar));
     }
-    #endregion
+
 }

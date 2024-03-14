@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2017 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: July 22, 2017 10:16:16 AM
 // 
-#endregion
+
 
 using System.Numerics;
 using Gorgon.Diagnostics;
@@ -32,25 +32,25 @@ using DX = SharpDX;
 namespace Gorgon.Graphics.Core;
 
 /// <summary>
-/// An readable and writable (unordered access) view for a <see cref="GorgonGraphicsResource"/>.
+/// An readable and writable (unordered access) view for a <see cref="GorgonGraphicsResource"/>
 /// </summary>
 /// <remarks>
 /// <para>
 /// This type of view allows for unordered access to a <see cref="GorgonGraphicsResource"/> like one of the <see cref="GorgonBuffer"/> types, a texture, etc... Any resource that needs a 
-/// unordered access must be created with the the <c>UnorderedAccess</c> flag.
+/// unordered access must be created with the the <c>UnorderedAccess</c> flag
 /// </para>
 /// <para>
 /// The unordered access allows a shader to read/write any part of a <see cref="GorgonGraphicsResource"/> by multiple threads without memory contention. This is done through the use of 
-/// <a target="_blank" href="https://msdn.microsoft.com/en-us/library/windows/desktop/ff476334(v=vs.85).aspx">atomic functions</a>.
+/// <a target="_blank" href="https://msdn.microsoft.com/en-us/library/windows/desktop/ff476334(v=vs.85).aspx">atomic functions</a>
 /// </para>
 /// <para>
 /// These types of views are most useful for <see cref="GorgonComputeShader"/> shaders, but can also be used by a <see cref="GorgonPixelShader"/> by passing a list of these views in to a 
-/// <see cref="GorgonDrawCallCommon">draw call</see>.
+/// <see cref="GorgonDrawCallCommon">draw call</see>
 /// </para>
 /// <para>
 /// <note type="warning">
 /// <para>
-/// Unordered access views do not support a multisampled <see cref="GorgonTexture2D"/>.
+/// Unordered access views do not support a multisampled <see cref="GorgonTexture2D"/>
 /// </para>
 /// </note>
 /// </para>
@@ -62,19 +62,19 @@ namespace Gorgon.Graphics.Core;
 /// <seealso cref="GorgonPixelShader"/>
 /// <seealso cref="GorgonDrawCallCommon"/>
 /// <remarks>
-/// Initializes a new instance of the <see cref="GorgonShaderResourceView"/> class.
+/// Initializes a new instance of the <see cref="GorgonShaderResourceView"/> class
 /// </remarks>
 /// <param name="resource">The resource to bind to the view.</param>
 /// <exception cref="ArgumentNullException">Thrown when the <paramref name="resource"/> parameter is <b>null</b>.</exception>
 public abstract class GorgonReadWriteView(GorgonGraphicsResource resource)
         : GorgonResourceView(resource)
 {
-    #region Variables.
+
     // The D3D11 UAV descriptor.
     private D3D11.UnorderedAccessViewDescription1 _uavDesc;
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to return a reference to the D3D11 UAV descriptor.
     /// </summary>
@@ -88,9 +88,9 @@ public abstract class GorgonReadWriteView(GorgonGraphicsResource resource)
         get;
         private set;
     }
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to perform the creation of a specific kind of view.
     /// </summary>
@@ -203,5 +203,5 @@ public abstract class GorgonReadWriteView(GorgonGraphicsResource resource)
         base.Dispose();
     }
 
-    #endregion
+
 }

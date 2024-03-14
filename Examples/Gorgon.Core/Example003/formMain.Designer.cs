@@ -23,8 +23,6 @@ partial class FormMain
         base.Dispose(disposing);
     }
 
-    #region Windows Form Designer generated code
-
     /// <summary>
     /// Required method for Designer support - do not modify
     /// the contents of this method with the code editor.
@@ -104,11 +102,10 @@ partial class FormMain
 
     }
 
-    #endregion
+
 
     private Label labelFPS;
     private Panel panelGraphics;
     private Label label1;
     private Panel panel1;
 }
-

@@ -20,7 +20,7 @@ partial class EditorSubPanelCommon
         base.Dispose(disposing);
     }
 
-    #region Component Designer generated code
+
 
     /// <summary> 
     /// Required method for Designer support - do not modify 
@@ -155,7 +155,7 @@ partial class EditorSubPanelCommon
 
     }
 
-    #endregion
+
 
     private System.Windows.Forms.Panel PanelCaptionBorder;
     private System.Windows.Forms.Panel panel2;

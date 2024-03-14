@@ -1,6 +1,6 @@
-﻿#region MIT.
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2012 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,23 +11,23 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: Wednesday, October 3, 2012 9:13:59 PM
 // 
-#endregion
+
 
 namespace Gorgon.Animation;
 
 /// <summary>
-/// An animation key frame for a <see cref="float"/> type.
+/// An animation key frame for a <see cref="float"/> type
 /// </summary>
 /// <remarks>
 /// <para>
@@ -35,19 +35,19 @@ namespace Gorgon.Animation;
 /// </para>
 /// <para>
 /// The track that the key frame is on is used to interpolate the value between key frames. This method makes it so that only a few key frames are required for an animation rather then setting a value
-/// for every time index.
+/// for every time index
 /// </para>
 /// </remarks>
 /// <seealso cref="IGorgonAnimationTrack{T}"/>
 public class GorgonKeySingle
     : IGorgonKeyFrame
 {
-    #region Variables.
+
     // The value for the key.
     private float _value;
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to return the time at which the key frame is stored.
     /// </summary>
@@ -69,17 +69,17 @@ public class GorgonKeySingle
     {
         get;
     } = typeof(float);
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to clone an object.
     /// </summary>
     /// <returns>The cloned object.</returns>
     public IGorgonKeyFrame Clone() => new GorgonKeySingle(this);
-    #endregion
 
-    #region Constructor/Destructor.
+
+
     /// <summary>Initializes a new instance of the <see cref="GorgonKeySingle"/> class.</summary>
     /// <param name="key">The key to copy.</param>
     /// <exception cref="ArgumentNullException">Thrown when the <paramref name="key"/> parameter is <b>null</b>.</exception>
@@ -99,5 +99,5 @@ public class GorgonKeySingle
         Time = time;
         Value = value;
     }
-    #endregion
+
 }

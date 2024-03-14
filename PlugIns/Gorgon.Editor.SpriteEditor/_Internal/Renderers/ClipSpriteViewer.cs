@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2020 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: April 4, 2020 9:35:21 PM
 // 
-#endregion
+
 
 using System.ComponentModel;
 using System.Numerics;
@@ -38,12 +38,12 @@ using DX = SharpDX;
 namespace Gorgon.Editor.SpriteEditor;
 
 /// <summary>
-/// A renderer used to render the current sprite along with its texture and providing feedback for clipping.
+/// A renderer used to render the current sprite along with its texture and providing feedback for clipping
 /// </summary>
 internal class ClipSpriteViewer
     : SpriteViewer
 {
-    #region Events.
+
     // Event triggered when toggling the manual input UI.
     private event EventHandler ToggleManualInputEvent;
 
@@ -72,9 +72,9 @@ internal class ClipSpriteViewer
             ToggleManualInputEvent -= value;
         }
     }
-    #endregion
 
-    #region Variables.
+
+
     // Marching ants rectangle.
     private readonly IRectClipperService _clipper;
     // The render target for the sprite texture.
@@ -83,9 +83,9 @@ internal class ClipSpriteViewer
     private GorgonTexture2DView _spriteTexture;
     // The sprite to render.
     private readonly GorgonSprite _sprite;
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to release the texture resources.
     /// </summary>
@@ -388,9 +388,9 @@ internal class ClipSpriteViewer
 
         MoveTo(new Vector2(spritePosition.X, spritePosition.Y), spriteZoomLevel.GetScale());
     }
-    #endregion
 
-    #region Constructor/Finalizer.
+
+
     /// <summary>Initializes a new instance of the <see cref="ClipSpriteViewer"/> class.</summary>
     /// <param name="renderer">The main renderer for the content view.</param>
     /// <param name="swapChain">The swap chain for the content view.</param>
@@ -405,5 +405,5 @@ internal class ClipSpriteViewer
         _sprite = new GorgonSprite();
         _clipper = selectionRect;
     }
-    #endregion
+
 }

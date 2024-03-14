@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2018 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: May 23, 2018 12:18:45 PM
 // 
-#endregion
+
 
 using Gorgon.Core;
 using Gorgon.Graphics.Core.Properties;
@@ -31,7 +31,7 @@ using Gorgon.Memory;
 namespace Gorgon.Graphics.Core;
 
 /// <summary>
-/// Common functionality for the a draw call fluent builder.
+/// Common functionality for the a draw call fluent builder
 /// </summary>
 /// <typeparam name="TB">The type of builder.</typeparam>
 /// <typeparam name="TDc">The type of draw call.</typeparam>
@@ -41,7 +41,7 @@ namespace Gorgon.Graphics.Core;
 /// <see cref="GorgonGraphics.Submit(GorgonDrawCall, in GorgonColor?, int, int)"/> methods.  
 /// </para>
 /// <para>
-/// State management is handled internally by Gorgon so that duplicate states are not set and thus, performance is not impacted by redundant states.
+/// State management is handled internally by Gorgon so that duplicate states are not set and thus, performance is not impacted by redundant states
 /// </para>
 /// <para>
 /// This builder type uses a fluent interface to assemble the draw call, its resources and its <see cref="GorgonPipelineState"/>. 
@@ -53,7 +53,7 @@ public abstract class GorgonDrawCallBuilderCommon<TB, TDc>
     where TB : GorgonDrawCallBuilderCommon<TB, TDc>
     where TDc : GorgonDrawCallCommon
 {
-    #region Properties.
+
     /// <summary>
     /// Property to return the draw call being edited.
     /// </summary>
@@ -61,9 +61,9 @@ public abstract class GorgonDrawCallBuilderCommon<TB, TDc>
     {
         get;
     }
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to create a new draw call.
     /// </summary>
@@ -736,9 +736,9 @@ public abstract class GorgonDrawCallBuilderCommon<TB, TDc>
     /// <returns>The draw call created or updated by this builder.</returns>
     /// <exception cref="GorgonException">Thrown if a <see cref="GorgonVertexShader"/> is not assigned to the <see cref="GorgonPipelineState.VertexShader"/> property with the <see cref="PipelineState(GorgonPipelineStateBuilder)"/> command.</exception>
     public TDc Build() => Build(null);
-    #endregion
 
-    #region Constructor/Finalizer.
+
+
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonDrawCallBuilder"/> class.
     /// </summary>
@@ -754,5 +754,5 @@ public abstract class GorgonDrawCallBuilderCommon<TB, TDc>
         DrawCall.D3DState.StreamOutBindings = new GorgonStreamOutBindings();
         DrawCall.D3DState.PipelineState = new GorgonPipelineState();
     }
-    #endregion
+
 }

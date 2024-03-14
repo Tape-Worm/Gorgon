@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2018 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: August 26, 2018 5:37:32 PM
 // 
-#endregion
+
 
 using System.Reflection;
 using System.Text;
@@ -45,12 +45,12 @@ using DX = SharpDX;
 namespace Gorgon.Editor;
 
 /// <summary>
-/// Bootstrap functionality for the application.
+/// Bootstrap functionality for the application
 /// </summary>
 internal class Boot
     : ApplicationContext
 {
-    #region Variables.
+
     // Splash screen.
     private FormSplash _splash;
     // The main application form.
@@ -63,9 +63,9 @@ internal class Boot
     private ToolPlugInService _toolPlugIns;
     // The service for managing content plug ins.
     private ContentPlugInService _contentPlugIns;
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>Handles the AssemblyResolve event of the CurrentDomain control.</summary>
     /// <param name="sender">The source of the event.</param>
     /// <param name="args">The <see cref="ResolveEventArgs"/> instance containing the event data.</param>
@@ -493,5 +493,5 @@ internal class Boot
             Cursor.Current = Cursors.Default;
         }
     }
-    #endregion
+
 }

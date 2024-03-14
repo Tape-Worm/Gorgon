@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2019 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: March 18, 2019 12:11:28 PM
 // 
-#endregion
+
 
 using System.Diagnostics;
 using Gorgon.Core;
@@ -41,7 +41,7 @@ using DX = SharpDX;
 namespace Gorgon.Editor.SpriteEditor;
 
 /// <summary>
-/// Functionality for handling an associated sprite texture.
+/// Functionality for handling an associated sprite texture
 /// </summary>
 /// <remarks>Initializes a new instance of the <see cref="SpriteTextureService"/> class.</remarks>
 /// <param name="graphicsContext">The graphics context for the application.</param>
@@ -51,7 +51,7 @@ namespace Gorgon.Editor.SpriteEditor;
 /// <param name="log">The logging interface for debug logging.</param>
 internal class SpriteTextureService(IGraphicsContext graphicsContext, IContentFileManager fileManager, IGorgonSpriteCodec spriteCodec, IGorgonImageCodec imageCodec, IGorgonLog log)
 {
-    #region Variables.
+
     // The graphics interface for the application.
     private readonly GorgonGraphics _graphics = graphicsContext.Graphics;
     // The 2D renderer for the application.
@@ -64,9 +64,9 @@ internal class SpriteTextureService(IGraphicsContext graphicsContext, IContentFi
     private readonly IGorgonSpriteCodec _spriteCodec = spriteCodec;
     // The logging interface for debug logging.
     private readonly IGorgonLog _log = log;
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to render the image data into an 32 bit RGBA pixel format render target and then return it as the properly formatted image data.
     /// </summary>
@@ -287,5 +287,5 @@ internal class SpriteTextureService(IGraphicsContext graphicsContext, IContentFi
             : _imageCodec.GetMetaData(stream);
     }
 
-    #endregion
+
 }

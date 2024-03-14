@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2016 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: June 15, 2016 9:39:42 PM
 // 
-#endregion
+
 
 using System.Reflection;
 using System.Runtime.CompilerServices;
@@ -33,13 +33,13 @@ using Gorgon.Reflection;
 namespace Gorgon.Graphics.Core;
 
 /// <summary>
-/// Provides information on how to set up a constant buffer.
+/// Provides information on how to set up a constant buffer
 /// </summary>
 /// <param name="SizeInBytes">The size of the constant buffer, in bytes.</param>
 public record GorgonConstantBufferInfo(int SizeInBytes)
     : IGorgonConstantBufferInfo
 {
-    #region Constructor/Finalizer.
+
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonConstantBufferInfo"/> class.
     /// </summary>
@@ -51,9 +51,9 @@ public record GorgonConstantBufferInfo(int SizeInBytes)
         Name = info.Name;
         Usage = info.Usage;
     }
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to return the intended usage flags for this buffer.
     /// </summary>
@@ -74,9 +74,9 @@ public record GorgonConstantBufferInfo(int SizeInBytes)
         get;
         init;
     } = GorgonGraphicsResource.GenerateName(GorgonConstantBuffer.NamePrefix);
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to create a <see cref="IGorgonConstantBufferInfo"/> based on the type representing a vertex.
     /// </summary>
@@ -136,5 +136,5 @@ public record GorgonConstantBufferInfo(int SizeInBytes)
 
         throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_TYPE_NOT_VALID_FOR_NATIVE, dataType.FullName));
     }
-    #endregion
+
 }

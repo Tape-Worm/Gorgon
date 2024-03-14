@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2018 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: August 11, 2018 3:43:13 PM
 // 
-#endregion
+
 
 using System.Numerics;
 using Gorgon.Animation;
@@ -36,22 +36,22 @@ using DX = SharpDX;
 namespace Gorgon.IO;
 
 /// <summary>
-/// A codec that can read version 1 sprite data.
+/// A codec that can read version 1 sprite data
 /// </summary>
 /// <remarks>
-/// Initializes a new instance of the <see cref="GorgonV1SpriteBinaryCodec"/> class.
+/// Initializes a new instance of the <see cref="GorgonV1SpriteBinaryCodec"/> class
 /// </remarks>
 /// <param name="renderer">The renderer used for resource handling.</param>
 /// <exception cref="ArgumentNullException">Thrown when the <paramref name="renderer"/> parameter is <b>null</b>.</exception>
 public class GorgonV1SpriteBinaryCodec(Gorgon2D renderer)
         : GorgonSpriteCodecCommon(renderer, Resources.GOR2DIO_V1_CODEC, Resources.GOR2DIO_V1_CODEC_DESCRIPTION)
 {
-    #region Variables.
+
     // The animation codec for the sprite.
     private readonly GorgonV1AnimationCodec _animationCodec = new(renderer);
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to return whether or not the codec can decode sprite data.
     /// </summary>
@@ -69,9 +69,9 @@ public class GorgonV1SpriteBinaryCodec(Gorgon2D renderer)
     {
         get;
     } = new Version(1, 2);
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to convert Gorgon 1.x image smoothing to 2.x texture filtering values.
     /// </summary>
@@ -516,6 +516,6 @@ public class GorgonV1SpriteBinaryCodec(Gorgon2D renderer)
     /// <exception cref="EndOfStreamException">Thrown if the current <paramref name="stream"/> position, plus the size of the data exceeds the length of the stream.</exception>
     public int GetAnimationCount(Stream stream) => _animationCodec.GetAnimationCount(stream);
 
-    #endregion
+
 
 }

@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2018 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: July 18, 2018 4:04:19 PM
 // 
-#endregion
+
 
 using System.Numerics;
 using Gorgon.Core;
@@ -37,11 +37,11 @@ using DX = SharpDX;
 namespace Gorgon.Examples;
 
 /// <summary>
-/// Our example entry point.
+/// Our example entry point
 /// </summary>
 static class Program
 {
-    #region Variables.
+
     // The core graphics functionality.
     private static GorgonGraphics _graphics;
     // Our swap chain that represents our "Screen".
@@ -68,13 +68,13 @@ static class Program
     private static bool _floatLeft = true;
     // The offset for the floating ship.
     private static float _floatOffset;
-    #endregion
 
-    #region Properties.
 
-    #endregion
 
-    #region Methods.
+
+
+
+
     /// <summary>
     /// Function called during CPU idle time.
     /// </summary>
@@ -319,5 +319,5 @@ static class Program
             _graphics?.Dispose();
         }
     }
-    #endregion
+
 }

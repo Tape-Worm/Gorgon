@@ -1,6 +1,6 @@
-﻿#region MIT.
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2013 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: Saturday, June 8, 2013 4:53:00 PM
 // 
-#endregion
+
 
 using System.Numerics;
 using Gorgon.Core;
@@ -38,11 +38,11 @@ using DXGI = SharpDX.DXGI;
 namespace Gorgon.Graphics.Core;
 
 /// <summary>
-/// Defines options for using a depth/stencil view.
+/// Defines options for using a depth/stencil view
 /// </summary>
 /// <remarks>
 /// <para>
-/// Limiting a depth-stencil buffer to read-only access allows more than one depth-stencil view to be bound to the pipeline.
+/// Limiting a depth-stencil buffer to read-only access allows more than one depth-stencil view to be bound to the pipeline
 /// </para>
 /// </remarks>
 [Flags]
@@ -67,11 +67,11 @@ public enum DepthStencilViewFlags
 }
 
 /// <summary>
-/// A depth/stencil view for textures.
+/// A depth/stencil view for textures
 /// </summary>
 /// <remarks>
 /// <para>
-/// This is a depth/stencil view to allow a <see cref="GorgonTexture2D"/> to be bound to the GPU pipeline as a depth/stencil resource.
+/// This is a depth/stencil view to allow a <see cref="GorgonTexture2D"/> to be bound to the GPU pipeline as a depth/stencil resource
 /// </para>
 /// <para>
 /// Use a resource view to allow a shader access to the contents of a resource (or sub resource).  When the resource is created with a typeless format, this will allow the resource to be cast to any 
@@ -82,7 +82,7 @@ public enum DepthStencilViewFlags
 public sealed class GorgonDepthStencil2DView
     : GorgonResourceView, IGorgonTexture2DInfo, IGorgonImageInfo
 {
-    #region Properties.
+
     /// <summary>
     /// Property to return the native D3D depth/stencil view.
     /// </summary>
@@ -292,9 +292,9 @@ public sealed class GorgonDepthStencil2DView
     /// Property to return whether the resource used by this view can be shared or not.
     /// </summary>
     public TextureSharingOptions Shared => Texture.Shared;
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to retrieve the description for a 2D depth/stencil view.
     /// </summary>
@@ -733,9 +733,9 @@ public sealed class GorgonDepthStencil2DView
         Texture = null;
         base.Dispose();
     }
-    #endregion
 
-    #region Constructor/Destructor.
+
+
 
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonDepthStencil2DView"/> class.
@@ -769,5 +769,5 @@ public sealed class GorgonDepthStencil2DView
 
         Bounds = new DX.Rectangle(0, 0, Width, Height);
     }
-    #endregion
+
 }

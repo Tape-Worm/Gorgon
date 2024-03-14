@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2021 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: February 12, 2021 12:16:12 PM
 // 
-#endregion
+
 
 using System.Runtime.CompilerServices;
 using Gorgon.Math;
@@ -30,10 +30,10 @@ using Gorgon.Math;
 namespace System.Numerics;
 
 /// <summary>
-/// Extension methods for the 4x4 matrix type.
+/// Extension methods for the 4x4 matrix type
 /// </summary>
 /// <remarks>
-/// This contains code adapted from <a href="https://github.com/sharpdx/SharpDX">SharpDX</a>.
+/// This contains code adapted from <a href="https://github.com/sharpdx/SharpDX">SharpDX</a>
 /// </remarks>
 public static class Matrix4x4Extensions
 {

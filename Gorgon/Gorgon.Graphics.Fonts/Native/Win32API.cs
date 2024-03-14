@@ -1,6 +1,6 @@
-﻿#region MIT.
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2011 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: Sunday, July 24, 2011 10:15:39 PM
 // 
-#endregion
+
 
 using System.Diagnostics;
 using System.Runtime.InteropServices;
@@ -34,12 +34,12 @@ namespace Gorgon.Native;
 
 // ReSharper disable InconsistentNaming
 /// <summary>
-/// Win 32 API function calls.
+/// Win 32 API function calls
 /// </summary>
 [SuppressUnmanagedCodeSecurity]
 internal static unsafe partial class Win32API
 {
-    #region Variables.
+
     // Current device context.
     private static nint _hdc = IntPtr.Zero;
     // Font handle.
@@ -50,9 +50,9 @@ internal static unsafe partial class Win32API
     private static Font _tempFont;
     // Synchronization object for threading.
     private static readonly object _syncLock = new();
-    #endregion
 
-    #region Win32 Methods.
+
+
     /// <summary>
     /// The SelectObject function selects an object into the specified device context (DC). The new object replaces the previous object of the same type.
     /// </summary>
@@ -100,9 +100,9 @@ internal static unsafe partial class Win32API
     /// <returns>If the function succeeds, the return value identifies the previous mapping mode.  If the function fails, the return value is zero.</returns>
     [LibraryImport("gdi32.dll", EntryPoint = "SetMapMode")]
     private static partial MapModes SetMapMode(nint hdc, MapModes fnMapMode);
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to set the active font.
     /// </summary>
@@ -239,13 +239,13 @@ internal static unsafe partial class Win32API
 
         return result;
     }
-    #endregion
 
-    #region Constructor.
+
+
     /// <summary>
     /// Initializes static members of the <see cref="Win32API"/> class.
     /// </summary>
     static Win32API() => Marshal.PrelinkAll(typeof(Win32API));
-    #endregion
+
 }
 // ReSharper restore InconsistentNaming

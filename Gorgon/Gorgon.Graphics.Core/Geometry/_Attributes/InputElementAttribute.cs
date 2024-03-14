@@ -1,6 +1,6 @@
-﻿#region MIT.
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2011 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,27 +11,27 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: Thursday, November 24, 2011 3:40:38 PM
 // 
-#endregion
+
 
 namespace Gorgon.Graphics.Core;
 
 /// <summary>
-/// An attribute to mark a field in a value type as an input element.
+/// An attribute to mark a field in a value type as an input element
 /// </summary>
 /// <remarks>
 /// <para>
-/// Apply this to a field in a value type to allow the <see cref="GorgonInputLayout.CreateUsingType{T}"/> method to parse the value type and build an input element element list from it.
+/// Apply this to a field in a value type to allow the <see cref="GorgonInputLayout.CreateUsingType{T}"/> method to parse the value type and build an input element element list from it
 /// </para>
 /// <para>
 /// Using Unknown for the format will tell the library to try and figure out the type from the field/property.  This will only work on members that return the following types:
@@ -78,11 +78,11 @@ namespace Gorgon.Graphics.Core;
 ///		</item>
 /// </list>
 /// </para>
-/// If the type of the member is not on this list, then an exception will be thrown when the input layout is generated.
+/// If the type of the member is not on this list, then an exception will be thrown when the input layout is generated
 /// </para>
 /// </remarks>
 /// <remarks>
-/// Initializes a new instance of the <see cref="InputElementAttribute"/> class.
+/// Initializes a new instance of the <see cref="InputElementAttribute"/> class
 /// </remarks>
 /// <param name="context">The context of the element.</param>
 /// <param name="format">The format/type of the element.</param>
@@ -91,7 +91,7 @@ namespace Gorgon.Graphics.Core;
 public class InputElementAttribute(string context, BufferFormat format, int offset)
         : Attribute
 {
-    #region Properties.
+
     /// <summary>
     /// Property to return the explicit order of the field.
     /// </summary>
@@ -203,8 +203,8 @@ public class InputElementAttribute(string context, BufferFormat format, int offs
         set;
     } = 0;
 
-    #endregion
-    #region Constructor/Destructor.
+
+
 
     /// <summary>
     /// Initializes a new instance of the <see cref="InputElementAttribute"/> class.
@@ -224,5 +224,5 @@ public class InputElementAttribute(string context, BufferFormat format, int offs
         Offset = 0;
         AutoOffset = true;
     }
-    #endregion
+
 }

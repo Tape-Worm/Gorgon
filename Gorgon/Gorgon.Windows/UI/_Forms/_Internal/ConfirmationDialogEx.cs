@@ -1,6 +1,6 @@
-﻿#region MIT.
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2011 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,32 +11,32 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: Saturday, June 18, 2011 4:21:02 PM
 // 
-#endregion
+
 
 namespace Gorgon.UI;
 
 /// <summary>
-/// Dialog for confirmation + plus to all option.
+/// Dialog for confirmation + plus to all option
 /// </summary>
 internal partial class ConfirmationDialogEx
     : ConfirmationDialog
 {
-    #region Variables.
 
-    #endregion
 
-    #region Methods.
+
+
+
     /// <summary>
     /// Raises the <see cref="E:System.Windows.Forms.Form.FormClosing"></see> event.
     /// </summary>
@@ -90,13 +90,13 @@ internal partial class ConfirmationDialogEx
 
         DrawMessage(g, maxTextHeight);
     }
-    #endregion
 
-    #region Constructor/Destructor.
+
+
     /// <summary>
     /// Constructor.
     /// </summary>
     public ConfirmationDialogEx() => InitializeComponent();
-    #endregion
+
 }
 

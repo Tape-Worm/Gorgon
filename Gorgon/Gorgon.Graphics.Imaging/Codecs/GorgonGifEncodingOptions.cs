@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2016 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: June 29, 2016 10:46:00 PM
 // 
-#endregion
+
 
 using Gorgon.Configuration;
 using Gorgon.Graphics.Imaging.Properties;
@@ -31,12 +31,12 @@ using Gorgon.Math;
 namespace Gorgon.Graphics.Imaging.Codecs;
 
 /// <summary>
-/// Options used when decoding an image from a stream as a GIF file.
+/// Options used when decoding an image from a stream as a GIF file
 /// </summary>
 public class GorgonGifEncodingOptions
     : IGorgonWicEncodingOptions
 {
-    #region Properties.
+
     /// <summary>
     /// Property to return the list of options available to the codec.
     /// </summary>
@@ -160,9 +160,9 @@ public class GorgonGifEncodingOptions
         get => Options.GetOptionValue<bool>(nameof(IGorgonImageCodecEncodingOptions.SaveAllFrames));
         set => Options.SetOptionValue(nameof(IGorgonImageCodecEncodingOptions.SaveAllFrames), value);
     }
-    #endregion
 
-    #region Constructor.
+
+
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonGifEncodingOptions"/> class.
     /// </summary>
@@ -176,5 +176,5 @@ public class GorgonGifEncodingOptions
                                           GorgonOption.CreateSingleOption(nameof(AlphaThreshold), 1.0f, Resources.GORIMG_OPT_GIF_ALPHA_THRESHOLD, 0.0f, 1.0f),
                                           GorgonOption.CreateOption(nameof(FrameDelays), new List<int>())
                                       ]);
-    #endregion
+
 }

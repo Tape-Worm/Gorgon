@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2018 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: July 2, 2018 10:29:39 AM
 // 
-#endregion
+
 
 using System.Numerics;
 using Gorgon.Core;
@@ -32,10 +32,10 @@ using Gorgon.Math;
 namespace Gorgon.Renderers;
 
 /// <summary>
-/// A value that defines a vertex for a triangle draw using the <see cref="Gorgon2D.DrawTriangle"/> method.
+/// A value that defines a vertex for a triangle draw using the <see cref="Gorgon2D.DrawTriangle"/> method
 /// </summary>
 /// <remarks>
-/// Initializes a new instance of the <see cref="GorgonTriangleVertex" /> struct.
+/// Initializes a new instance of the <see cref="GorgonTriangleVertex" /> struct
 /// </remarks>
 /// <param name="position">The position of the triangle point.</param>
 /// <param name="color">The color of the triangle pint.</param>
@@ -44,7 +44,7 @@ namespace Gorgon.Renderers;
 public readonly struct GorgonTriangleVertex(Vector2 position, GorgonColor color, Vector2? textureCoordinate = null, int textureArrayIndex = 0)
         : IGorgonEquatableByRef<GorgonTriangleVertex>
 {
-    #region Variables.
+
     /// <summary>
     /// The horizontal and vertical position of the point.
     /// </summary>
@@ -67,9 +67,9 @@ public readonly struct GorgonTriangleVertex(Vector2 position, GorgonColor color,
     /// The color of the point.
     /// </summary>
     public readonly GorgonColor Color = color;
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>Returns the hash code for this instance.</summary>
     /// <returns>A 32-bit signed integer that is the hash code for this instance.</returns>
     public override int GetHashCode() => HashCode.Combine(Color, TextureArrayIndex, TextureCoordinate, Position);
@@ -122,6 +122,6 @@ public readonly struct GorgonTriangleVertex(Vector2 position, GorgonColor color,
     /// <returns><b>true</b> if both instances are not equal, <b>false</b> if equal.</returns>
     public static bool operator !=(in GorgonTriangleVertex left, in GorgonTriangleVertex right) => !Equals(in left, in right);
 
-    #endregion
+
 
 }

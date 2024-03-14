@@ -11,17 +11,17 @@ using DX = SharpDX;
 namespace Gorgon.Editor.FontEditor;
 
 /// <summary>
-/// A context editor for modifying the textures on the font.
+/// A context editor for modifying the textures on the font
 /// </summary>
 internal class TextureEditorContext
     : EditorContext<TextureEditorContextParameters>, ITextureEditorContext
 {
-    #region Constants.
+
     // The name of the context.
     private const string ContextName = "TextureEditor";
-    #endregion
 
-    #region Variables.
+
+
     // Flag to indicate that the font uses premultiplied alpha for its textures.
     private bool _premultipliedAlpha;
     // The service used to generate fonts.
@@ -33,9 +33,9 @@ internal class TextureEditorContext
     private int _selectedArrayIndex;
     // The currently hosted panel view model.
     private IHostedPanelViewModel _currentPanel;
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to return the solid brush viewmodel.
     /// </summary>
@@ -314,9 +314,9 @@ internal class TextureEditorContext
     {
         get;
     }
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>Handles the WaitPanelDeactivated event of the CurrentPanel control.</summary>
     /// <param name="sender">The source of the event.</param>
     /// <param name="e">The <see cref="EventArgs" /> instance containing the event data.</param>
@@ -937,9 +937,9 @@ internal class TextureEditorContext
 
         base.OnUnload();
     }
-    #endregion
 
-    #region Constructor/Finalizer.
+
+
     /// <summary>Initializes a new instance of the <see cref="TextureEditorContext" /> class.</summary>
     public TextureEditorContext()
     {
@@ -955,6 +955,6 @@ internal class TextureEditorContext
         ActivateGradientBrushCommand = new EditorCommand<object>(DoActivateGradientBrush, CanActivateGradientBrush);
         ActivateTextureBrushCommand = new EditorCommand<object>(DoActivateTextureBrush, CanActivateTextureBrush);
     }
-    #endregion
+
 
 }

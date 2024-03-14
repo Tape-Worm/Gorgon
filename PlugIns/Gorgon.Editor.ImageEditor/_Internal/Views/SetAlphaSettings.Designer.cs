@@ -25,7 +25,7 @@ partial class SetAlphaSettings
         base.Dispose(disposing);
     }
 
-    #region Component Designer generated code
+
 
     /// <summary> 
     /// Required method for Designer support - do not modify 
@@ -231,7 +231,7 @@ partial class SetAlphaSettings
 
     }
 
-    #endregion
+
     private System.Windows.Forms.TableLayoutPanel TableBody;
     private System.Windows.Forms.Label LabelAlphaValue;
     private System.Windows.Forms.NumericUpDown NumericAlphaValue;

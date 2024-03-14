@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2018 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,27 +11,27 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: November 17, 2018 1:17:48 PM
 // 
-#endregion
+
 
 namespace Gorgon.Editor.Services;
 
 /// <summary>
-/// The service used to supply undo/redo functionality.
+/// The service used to supply undo/redo functionality
 /// </summary>
 public interface IUndoService
 {
-    #region Properties.
+
     /// <summary>
     /// Property to return whether or not the service can undo.
     /// </summary>
@@ -55,9 +55,9 @@ public interface IUndoService
     {
         get;
     }
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to cancel the currently executing undo/redo operation.
     /// </summary>
@@ -98,5 +98,5 @@ public interface IUndoService
     /// Function to clear the undo/redo stacks.
     /// </summary>
     void ClearStack();
-    #endregion
+
 }

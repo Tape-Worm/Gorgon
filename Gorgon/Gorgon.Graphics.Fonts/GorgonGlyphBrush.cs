@@ -1,6 +1,6 @@
-﻿#region MIT.
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2013 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: Saturday, October 12, 2013 9:03:05 PM
 // 
-#endregion
+
 
 using Gorgon.Core;
 using Gorgon.IO;
@@ -30,7 +30,7 @@ using Gorgon.IO;
 namespace Gorgon.Graphics.Fonts;
 
 /// <summary>
-/// The type of glyph brush to use when painting the glyphs for the font.
+/// The type of glyph brush to use when painting the glyphs for the font
 /// </summary>
 public enum GlyphBrushType
 {
@@ -57,12 +57,12 @@ public enum GlyphBrushType
 }
 
 /// <summary>
-/// A brush used to paint the glyphs when generating a font.
+/// A brush used to paint the glyphs when generating a font
 /// </summary>
 public abstract class GorgonGlyphBrush
     : IGorgonCloneable<GorgonGlyphBrush>, IEquatable<GorgonGlyphBrush>
 {
-    #region Properties.
+
     /// <summary>
     /// Property to return the type of brush.
     /// </summary>
@@ -70,9 +70,9 @@ public abstract class GorgonGlyphBrush
     {
         get;
     }
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to convert this brush to the equivalent GDI+ brush type.
     /// </summary>
@@ -119,5 +119,5 @@ public abstract class GorgonGlyphBrush
     /// <returns>
     ///   <c>true</c> if the specified <see cref="object"/> is equal to this instance; otherwise, <c>false</c>.</returns>
     public override bool Equals(object obj) => (obj as GorgonGlyphBrush).Equals(this);
-    #endregion
+
 }

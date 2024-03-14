@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2016 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: July 19, 2016 1:29:59 PM
 // 
-#endregion
+
 
 using System.Numerics;
 using Gorgon.Core;
@@ -38,11 +38,11 @@ using DX = SharpDX;
 namespace Gorgon.Graphics.Core;
 
 /// <summary>
-/// A shader view for textures.
+/// A shader view for textures
 /// </summary>
 /// <remarks>
 /// <para>
-/// This is a texture shader view to allow a <see cref="GorgonTexture2D"/> to be bound to the GPU pipeline as a shader resource.
+/// This is a texture shader view to allow a <see cref="GorgonTexture2D"/> to be bound to the GPU pipeline as a shader resource
 /// </para>
 /// <para>
 /// Use a resource view to allow a shader access to the contents of a resource (or sub resource).  When the resource is created with a typeless format, this will allow the resource to be cast to any 
@@ -52,7 +52,7 @@ namespace Gorgon.Graphics.Core;
 public sealed class GorgonTexture2DView
     : GorgonShaderResourceView, IGorgonTexture2DInfo, IGorgonImageInfo
 {
-    #region Properties.
+
     /// <summary>
     /// Property to return the type of image data.
     /// </summary>
@@ -232,9 +232,9 @@ public sealed class GorgonTexture2DView
     /// Property to return whether the resource used by this view can be shared or not.
     /// </summary>
     public TextureSharingOptions Shared => Texture.Shared;
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to retrieve the view description for a 2D texture.
     /// </summary>
@@ -880,9 +880,9 @@ public sealed class GorgonTexture2DView
         view.OwnsResource = true;
         return view;
     }
-    #endregion
 
-    #region Constructor/Destructor.
+
+
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonTexture2DView"/> class.
     /// </summary>
@@ -912,5 +912,5 @@ public sealed class GorgonTexture2DView
         ArrayIndex = arrayIndex;
         ArrayCount = arrayCount;
     }
-    #endregion
+
 }

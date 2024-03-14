@@ -1,6 +1,6 @@
-﻿#region MIT.
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2012 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: Tuesday, September 18, 2012 8:00:02 PM
 // 
-#endregion
+
 
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
@@ -32,13 +32,13 @@ using Gorgon.Math;
 namespace Gorgon.Examples;
 
 /// <summary>
-/// Entry point class.
+/// Entry point class
 /// </summary>
 /// <remarks>
-/// This example showcases the enhancements brought by the new GorgonBinaryReader and GorgonBinaryWriter objects.
+/// This example showcases the enhancements brought by the new GorgonBinaryReader and GorgonBinaryWriter objects
 /// 
 /// These objects provide extended functionality for the standard .NET BinaryReader/Writer classes so that generic types can be read and/or written, and raw memory (unsafe and ref managed pointers) can be 
-/// also be read and/or written.
+/// also be read and/or written
 /// </remarks>
 internal static class Program
 {

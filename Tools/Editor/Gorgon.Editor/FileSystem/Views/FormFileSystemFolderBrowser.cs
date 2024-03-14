@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2019 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: April 28, 2019 12:15:14 PM
 // 
-#endregion
+
 
 using System.ComponentModel;
 using Gorgon.Editor.UI;
@@ -32,17 +32,17 @@ using Gorgon.UI;
 namespace Gorgon.Editor;
 
 /// <summary>
-/// A folder browser for the project file system.
+/// A folder browser for the project file system
 /// </summary>
 internal partial class FormFileSystemFolderBrowser
     : Form, IDataContext<IFileExplorer>
 {
-    #region Variables.
+
     // The currently active directory.
     private IDirectory _currentDirectory;
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to set or return the description to display on the browser.
     /// </summary>
@@ -66,9 +66,9 @@ internal partial class FormFileSystemFolderBrowser
     /// </summary>
     [Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public string CurrentDirectory => FolderBrowser.CurrentDirectory;
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to retrieve the current directory as an <see cref="IDirectory"/> object.
     /// </summary>
@@ -282,10 +282,10 @@ internal partial class FormFileSystemFolderBrowser
 
         ViewModel = dataContext;
     }
-    #endregion
 
-    #region Constructor/Finalizer.
+
+
     /// <summary>Initializes a new instance of the <see cref="FormFileSystemFolderBrowser"/> class.</summary>
     public FormFileSystemFolderBrowser() => InitializeComponent();
-    #endregion
+
 }

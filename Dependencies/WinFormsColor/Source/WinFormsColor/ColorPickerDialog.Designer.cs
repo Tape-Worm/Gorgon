@@ -1,26 +1,24 @@
 ﻿namespace Fetze.WinFormsColor;
 
-    partial class ColorPickerDialog
+partial class ColorPickerDialog
+{
+    /// <summary>
+    /// Required designer variable.
+    /// </summary>
+    private System.ComponentModel.IContainer components = null;
+
+    /// <summary>
+    /// Clean up any resources being used.
+    /// </summary>
+    /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+    protected override void Dispose(bool disposing)
     {
-        /// <summary>
-        /// Required designer variable.
-        /// </summary>
-        private System.ComponentModel.IContainer components = null;
-
-        /// <summary>
-        /// Clean up any resources being used.
-        /// </summary>
-        /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
-        protected override void Dispose(bool disposing)
+        if (disposing && (components != null))
         {
-            if (disposing && (components != null))
-            {
-                components.Dispose();
-            }
-            base.Dispose(disposing);
+            components.Dispose();
         }
-
-    #region Windows Form Designer generated code
+        base.Dispose(disposing);
+    }
 
     /// <summary>
     /// Required method for Designer support - do not modify
@@ -430,33 +428,33 @@
         PerformLayout();
     }
 
-    #endregion
+
 
     private ColorPanel colorPanel;
-        private ColorSlider colorSlider;
-        private ColorShowBox colorShowBox;
-        private System.Windows.Forms.RadioButton radioHue;
-        private System.Windows.Forms.RadioButton radioSaturation;
-        private System.Windows.Forms.RadioButton radioValue;
-        private System.Windows.Forms.RadioButton radioRed;
-        private System.Windows.Forms.RadioButton radioBlue;
-        private System.Windows.Forms.RadioButton radioGreen;
-        private System.Windows.Forms.NumericUpDown numHue;
-        private System.Windows.Forms.NumericUpDown numSaturation;
-        private System.Windows.Forms.NumericUpDown numValue;
-        private System.Windows.Forms.NumericUpDown numRed;
-        private System.Windows.Forms.NumericUpDown numGreen;
-        private System.Windows.Forms.NumericUpDown numBlue;
-        private ColorSlider alphaSlider;
-        private System.Windows.Forms.TextBox textBoxHex;
-        private System.Windows.Forms.Label labelHex;
-        private System.Windows.Forms.Label labelOld;
-        private System.Windows.Forms.Label labelNew;
-        private System.Windows.Forms.Button buttonCancel;
-        private System.Windows.Forms.Button buttonOk;
-        private System.Windows.Forms.NumericUpDown numAlpha;
-        private System.Windows.Forms.Label labelAlpha;
-        private System.Windows.Forms.Label labelHueUnit;
-        private System.Windows.Forms.Label labelSaturationUnit;
-        private System.Windows.Forms.Label labelValueUnit;
-    }
+    private ColorSlider colorSlider;
+    private ColorShowBox colorShowBox;
+    private System.Windows.Forms.RadioButton radioHue;
+    private System.Windows.Forms.RadioButton radioSaturation;
+    private System.Windows.Forms.RadioButton radioValue;
+    private System.Windows.Forms.RadioButton radioRed;
+    private System.Windows.Forms.RadioButton radioBlue;
+    private System.Windows.Forms.RadioButton radioGreen;
+    private System.Windows.Forms.NumericUpDown numHue;
+    private System.Windows.Forms.NumericUpDown numSaturation;
+    private System.Windows.Forms.NumericUpDown numValue;
+    private System.Windows.Forms.NumericUpDown numRed;
+    private System.Windows.Forms.NumericUpDown numGreen;
+    private System.Windows.Forms.NumericUpDown numBlue;
+    private ColorSlider alphaSlider;
+    private System.Windows.Forms.TextBox textBoxHex;
+    private System.Windows.Forms.Label labelHex;
+    private System.Windows.Forms.Label labelOld;
+    private System.Windows.Forms.Label labelNew;
+    private System.Windows.Forms.Button buttonCancel;
+    private System.Windows.Forms.Button buttonOk;
+    private System.Windows.Forms.NumericUpDown numAlpha;
+    private System.Windows.Forms.Label labelAlpha;
+    private System.Windows.Forms.Label labelHueUnit;
+    private System.Windows.Forms.Label labelSaturationUnit;
+    private System.Windows.Forms.Label labelValueUnit;
+}

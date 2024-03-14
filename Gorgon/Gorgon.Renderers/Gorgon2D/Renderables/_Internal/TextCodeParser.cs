@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2018 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: June 12, 2018 12:37:25 PM
 // 
-#endregion
+
 
 using System.Globalization;
 using System.Text;
@@ -32,22 +32,22 @@ using Gorgon.Graphics;
 namespace Gorgon.Renderers;
 
 /// <summary>
-/// A parser used to analyze text with embedded codes.
+/// A parser used to analyze text with embedded codes
 /// </summary>
 internal class TextCodeParser
 {
-    #region Variables.
+
     // Buffer used to parse the string.
     private readonly StringBuilder _colorBuffer = new(16);
     // Buffer used to parse the string.
     private readonly StringBuilder _parseBuffer = new(256);
-    #endregion
 
-    #region Properties.
 
-    #endregion
 
-    #region Methods.
+
+
+
+
     /// <summary>
     /// Function to retrieve the color value from a hex code.
     /// </summary>
@@ -140,5 +140,5 @@ internal class TextCodeParser
 
         return (_parseBuffer.ToString(), blocks);
     }
-    #endregion
+
 }

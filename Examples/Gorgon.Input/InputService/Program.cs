@@ -1,6 +1,6 @@
-﻿#region MIT.
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2013 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: Thursday, January 3, 2013 9:43:42 PM
 // 
-#endregion
+
 
 using Gorgon.Core;
 using Gorgon.Input;
@@ -32,7 +32,7 @@ using Gorgon.UI;
 namespace Gorgon.Examples;
 
 /// <summary>
-/// Entry point class.
+/// Entry point class
 /// </summary>
 /// <remarks>
 /// The first step in loading a gaming device driver is to create a plug in assembly cache and plug in service to load the driver. 
@@ -42,34 +42,34 @@ namespace Gorgon.Examples;
 /// file). It is important to note that this is done for the example only, in most cases the developer will know the DLL and plugin 
 /// type and create it directly.  For example:
 /// 
-/// // Load the Xinput plugin DLL.
+/// // Load the Xinput plugin DLL
 /// GorgonGamingDeviceDriver xInputDriver;
 /// 
 /// using (var assemblyCache = new GorgonPlugInAssemblyCache())
 /// {
 ///		assemblyCache.Load("[directory for plugins]\Gorgon.Input.XInput.DLL"); 
 /// 
-///		// Create the plugin service.
+///		// Create the plugin service
 ///		var pluginService = new GorgonPlugInService(assemblyCache);
 ///
-///		// Create the factory for loading the drivers and load the driver.
+///		// Create the factory for loading the drivers and load the driver
 ///		var driverFactory = new GorgonGamingDeviceDriverFactory(inputServiceFactory);
 /// 
-///		// Finally, create the input service. Note the use of the fully qualified type name for the plugin name.
+///		// Finally, create the input service. Note the use of the fully qualified type name for the plugin name
 ///		xInputDriver = driverFactory.LoadDriver("Gorgon.Input.GorgonXInputDriver");
 /// }
 /// 
 /// While this is more complex than the previous version of Gorgon, it's also far more flexible when dealing with object composition 
-/// techniques like dependency injection.
+/// techniques like dependency injection
 /// </remarks>
 internal static class Program
 {
-    #region Variables.
+
     // The cache that will hold our plugin instances.
     private static GorgonMefPlugInCache _pluginCache;
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to load in the gaming device driver plug ins.
     /// </summary>
@@ -173,5 +173,5 @@ internal static class Program
             _pluginCache?.Dispose();
         }
     }
-    #endregion
+
 }

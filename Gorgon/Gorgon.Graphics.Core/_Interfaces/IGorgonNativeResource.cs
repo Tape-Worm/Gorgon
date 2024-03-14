@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2021 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,29 +11,29 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: February 11, 2021 11:38:43 PM
 // 
-#endregion
+
 
 
 namespace Gorgon.Graphics;
 
 /// <summary>
-/// Provides access to native pointers for resource objects (e.g. textures, devices, etc...).
+/// Provides access to native pointers for resource objects (e.g. textures, devices, etc...)
 /// </summary>
 /// <remarks>
 /// <para>
 /// External APIs to Gorgon sometimes require access to the underlying texture objects, device objects, etc...  This interface provides those items as native pointers so that they can be wrapped 
-/// directly by the external calls (including SharpDX).
+/// directly by the external calls (including SharpDX)
 /// </para>
 /// </remarks>
 public interface IGorgonNativeResource

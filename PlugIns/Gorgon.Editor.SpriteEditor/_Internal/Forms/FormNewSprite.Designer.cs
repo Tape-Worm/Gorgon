@@ -28,7 +28,7 @@ partial class FormNewSprite
         base.Dispose(disposing);
     }
 
-    #region Windows Form Designer generated code
+
 
     /// <summary>
     /// Required method for Designer support - do not modify
@@ -358,7 +358,7 @@ partial class FormNewSprite
 
     }
 
-    #endregion
+
 
     private Gorgon.UI.GorgonCueTextBox TextName;
     private System.Windows.Forms.TableLayoutPanel TableName;

@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2018 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: September 24, 2018 11:05:00 AM
 // 
-#endregion
+
 
 using Gorgon.Core;
 using Gorgon.Diagnostics;
@@ -35,14 +35,14 @@ using Gorgon.PlugIns;
 namespace Gorgon.Editor.Services;
 
 /// <summary>
-/// Functionality to capture and load file system providers from plugins.
+/// Functionality to capture and load file system providers from plugins
 /// </summary>
 /// <remarks>Initializes a new instance of the <see cref="FileSystemProviders"/> class.</remarks>
 /// <param name="hostServices">Services to pass around to the plug ins from the host application.</param>
 /// <exception cref="ArgumentNullException">Thrown when the <paramref name="commonServices"/> parameter is <b>null</b>.</exception>
 internal class FileSystemProviders(IHostServices hostServices)
 {
-    #region Variables.
+
     // A list of available file system reader providers.
     private readonly Dictionary<string, IGorgonFileSystemProvider> _readers = new(StringComparer.OrdinalIgnoreCase);
     // A list of available file system writer providers.
@@ -51,9 +51,9 @@ internal class FileSystemProviders(IHostServices hostServices)
     private readonly Dictionary<string, IDisabledPlugIn> _disabled = new(StringComparer.OrdinalIgnoreCase);
     // Common application services.
     private readonly IHostServices _hostServices = hostServices ?? throw new ArgumentNullException(nameof(hostServices));
-    #endregion
 
-    #region Properties.                
+
+                
     /// <summary>
     /// Property to return the list of disabled provider plug ins.
     /// </summary>
@@ -68,9 +68,9 @@ internal class FileSystemProviders(IHostServices hostServices)
     /// Property to return all loaded file system writer plug ins.
     /// </summary>
     public IReadOnlyDictionary<string, FileWriterPlugIn> Writers => _writers;
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to retrieve the file system provider that supports the specified file.
     /// </summary>
@@ -313,7 +313,7 @@ internal class FileSystemProviders(IHostServices hostServices)
         }
     }
 
-    #endregion
-    #region Constructor.
-    #endregion
+
+
+
 }

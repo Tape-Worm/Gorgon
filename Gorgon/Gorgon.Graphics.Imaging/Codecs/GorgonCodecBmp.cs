@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2016 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: August 4, 2016 11:22:47 PM
 // 
-#endregion
+
 
 using Gorgon.Graphics.Imaging.Properties;
 using SharpDX.WIC;
@@ -30,11 +30,11 @@ using SharpDX.WIC;
 namespace Gorgon.Graphics.Imaging.Codecs;
 
 /// <summary>
-/// A codec to handle read/writing of BMP files.
+/// A codec to handle read/writing of BMP files
 /// </summary>
 /// <remarks>
 /// <para>
-/// This codec will read and write lossless compressed files using the Windows Bitmap (BMP) format.
+/// This codec will read and write lossless compressed files using the Windows Bitmap (BMP) format
 /// </para>
 /// <para>
 /// This codec supports the following pixel formats:
@@ -56,7 +56,7 @@ namespace Gorgon.Graphics.Imaging.Codecs;
 /// <para>
 /// <note type="important">
 /// <para>
-/// This codec requires the Windows Imaging Components (WIC) to be installed for the operating system.
+/// This codec requires the Windows Imaging Components (WIC) to be installed for the operating system
 /// </para>
 /// </note>
 /// </para>
@@ -64,7 +64,7 @@ namespace Gorgon.Graphics.Imaging.Codecs;
 public sealed class GorgonCodecBmp
     : GorgonCodecWic<IGorgonWicEncodingOptions, IGorgonWicDecodingOptions>
 {
-    #region Variables.
+
     // Supported formats.
     private readonly BufferFormat[] _supportedFormats =
     [
@@ -73,16 +73,16 @@ public sealed class GorgonCodecBmp
         BufferFormat.B8G8R8X8_UNorm,
         BufferFormat.B5G6R5_UNorm
     ];
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to return the supported pixel formats for this codec.
     /// </summary>
     public override IReadOnlyList<BufferFormat> SupportedPixelFormats => _supportedFormats;
-    #endregion
 
-    #region Constructor/Destructor.
+
+
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonCodecBmp"/> class.
     /// </summary>
@@ -90,5 +90,5 @@ public sealed class GorgonCodecBmp
         : base("BMP", Resources.GORIMG_DESC_BMP_CODEC, ["bmp", "dib"], ContainerFormatGuids.Bmp, null, null)
     {
     }
-    #endregion
+
 }

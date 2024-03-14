@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2018 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: August 6, 2018 8:24:41 PM
 // 
-#endregion
+
 
 using Gorgon.Graphics;
 using Gorgon.Renderers;
@@ -31,7 +31,7 @@ using DX = SharpDX;
 namespace Gorgon.Examples;
 
 /// <summary>
-/// The states for the button.
+/// The states for the button
 /// </summary>
 public enum ButtonState
 {
@@ -46,23 +46,23 @@ public enum ButtonState
 }
 
 /// <summary>
-/// A button used to provide a GUI for the example.
+/// A button used to provide a GUI for the example
 /// </summary>
 /// <remarks>
-/// Initializes a new instance of the <see cref="Button"/> class.
+/// Initializes a new instance of the <see cref="Button"/> class
 /// </remarks>
 /// <param name="pass">The composition pass.</param>
 /// <exception cref="ArgumentNullException">Thrown when the <paramref name="pass"/> parameter is <b>null</b></exception>
 public class Button(IGorgon2DCompositorPass pass)
 {
-    #region Events.
+
     /// <summary>
     /// Event fired when the button is clicked.
     /// </summary>
     public event EventHandler Click;
-    #endregion
 
-    #region Variables.
+
+
     // Disabled background color
     private readonly GorgonColor _disabledBackColor = new(0, 0, 0, 0.3f);
     // Disabled foreground color
@@ -75,9 +75,9 @@ public class Button(IGorgon2DCompositorPass pass)
     private readonly GorgonColor _backColor = new(0, 0, 0, 0.85f);
     // The standard foreground color.
     private readonly GorgonColor _foreColor = GorgonColor.White;
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to set or return the state for the button.
     /// </summary>
@@ -135,9 +135,9 @@ public class Button(IGorgon2DCompositorPass pass)
     /// Property to return the text for the button.
     /// </summary>
     public string Text => Pass.Name;
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to trigger a button click.
     /// </summary>
@@ -146,8 +146,4 @@ public class Button(IGorgon2DCompositorPass pass)
         EventHandler handler = Click;
         handler?.Invoke(this, EventArgs.Empty);
     }
-
-    #endregion
-    #region Constructor
-    #endregion
 }

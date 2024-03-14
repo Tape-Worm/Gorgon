@@ -1,6 +1,6 @@
-﻿#region MIT.
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2014 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: Monday, August 11, 2014 10:22:49 PM
 // 
-#endregion
+
 
 using System.Numerics;
 using Gorgon.Graphics.Core;
@@ -32,16 +32,16 @@ using DX = SharpDX;
 namespace Gorgon.Examples;
 
 /// <summary>
-/// Defines a mesh that can be transformed.
+/// Defines a mesh that can be transformed
 /// </summary>
 /// <remarks>
-/// Initializes a new instance of the <see cref="MoveableMesh" /> class.
+/// Initializes a new instance of the <see cref="MoveableMesh" /> class
 /// </remarks>
 /// <param name="graphics">The graphics interface that owns this object.</param>
 internal abstract class MoveableMesh(GorgonGraphics graphics)
         : Mesh(graphics)
 {
-    #region Variables.
+
     // Position of the triangle.
     private Vector3 _position = Vector3.Zero;
 
@@ -69,9 +69,9 @@ internal abstract class MoveableMesh(GorgonGraphics graphics)
     private bool _needsSclTransform;
     private bool _needsRotTransform;
     private bool _needsWorldUpdate;
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to set or return the current position of the triangle.
     /// </summary>
@@ -150,16 +150,12 @@ internal abstract class MoveableMesh(GorgonGraphics graphics)
             return ref _world;
         }
     }
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to retrieve the 2D axis aligned bounding box for the mesh.
     /// </summary>
     /// <returns>The rectangle that represents a 2D axis aligned bounding box.</returns>
     public virtual DX.RectangleF GetAABB() => DX.RectangleF.Empty;
-
-    #endregion
-    #region Constructor.
-    #endregion
 }

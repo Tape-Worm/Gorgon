@@ -1,6 +1,6 @@
-﻿#region MIT.
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2012 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: Thursday, March 15, 2012 7:34:32 PM
 // 
-#endregion
+
 
 using Gorgon.Core;
 using Gorgon.Math;
@@ -31,7 +31,7 @@ using Gorgon.Properties;
 namespace Gorgon.Graphics;
 
 /// <summary>
-/// A structure with a width, height and depth.
+/// A structure with a width, height and depth
 /// </summary>
 /// <remarks>
 /// <para>
@@ -41,7 +41,7 @@ namespace Gorgon.Graphics;
 public struct GorgonBox
     : IGorgonEquatableByRef<GorgonBox>
 {
-    #region Variables.
+
     /// <summary>
     /// An empty box.
     /// </summary>
@@ -79,9 +79,9 @@ public struct GorgonBox
     /// Depth of the box.
     /// </summary>
     public int Depth;
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to determine if the box is empty.
     /// </summary>
@@ -129,9 +129,9 @@ public struct GorgonBox
     /// </summary>
     public readonly int Back => Z + Depth;
 
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Returns a <see cref="string" /> that represents this instance.
     /// </summary>
@@ -272,5 +272,5 @@ public struct GorgonBox
     /// true if the current object is equal to the other parameter; otherwise, false.
     /// </returns>
     public readonly bool Equals(in GorgonBox other) => Equals(in this, in other);
-    #endregion
+
 }

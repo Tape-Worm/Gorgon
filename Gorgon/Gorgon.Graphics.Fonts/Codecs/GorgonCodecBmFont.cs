@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2017 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: February 24, 2017 9:03:08 AM
 // 
-#endregion
+
 
 using System.Text;
 using Gorgon.Core;
@@ -31,7 +31,7 @@ using Gorgon.Graphics.Fonts.Properties;
 namespace Gorgon.Graphics.Fonts.Codecs;
 
 /// <summary>
-/// A font codec used to read font data using the BmFont format.
+/// A font codec used to read font data using the BmFont format
 /// </summary>
 /// <remarks>
 /// <para>
@@ -53,7 +53,7 @@ namespace Gorgon.Graphics.Fonts.Codecs;
 public class GorgonCodecBmFont
     : GorgonFontCodec
 {
-    #region Constants.
+
     // The line with the font information.
     private const string InfoLine = "info";
     // The line with common information.
@@ -88,9 +88,9 @@ public class GorgonCodecBmFont
     private const string CharIdTag = "id";
     // The tag that indicates whether the font has an outline.
     private const string OutlineTag = "outline";
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to return the default filename extension for font files.
     /// </summary>
@@ -129,9 +129,9 @@ public class GorgonCodecBmFont
     /// Property to return the abbreviated name of the codec (e.g. GorFont).
     /// </summary>
     public override string Codec => "BmFont";
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to break a series of line items into a list of key/value pairs for processing.
     /// </summary>
@@ -526,9 +526,9 @@ public class GorgonCodecBmFont
             stream.Position = position;
         }
     }
-    #endregion
 
-    #region Constructor/Finalizer.
+
+
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonCodecBmFont" /> class.
     /// </summary>
@@ -539,5 +539,5 @@ public class GorgonCodecBmFont
                                 [
                                     ".fnt"
                                 ];
-    #endregion
+
 }

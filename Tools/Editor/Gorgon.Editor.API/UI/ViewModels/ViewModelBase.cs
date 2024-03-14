@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2018 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: August 26, 2018 12:02:30 PM
 // 
-#endregion
+
 
 using System.ComponentModel;
 using Gorgon.Editor.PlugIns;
@@ -31,7 +31,7 @@ using Gorgon.Math;
 namespace Gorgon.Editor.UI;
 
 /// <summary>
-/// A base view model for the gorgon editor.
+/// A base view model for the gorgon editor
 /// </summary>
 /// <typeparam name="T">The type of injection parameters for the view model.  Must implement <see cref="IViewModelInjection{T}"/> and be a reference type.</typeparam>
 /// <typeparam name="THs">The type of services passed from the host application. Must implement <see cref="IHostServices"/>.</typeparam>
@@ -43,7 +43,7 @@ namespace Gorgon.Editor.UI;
 /// </para>
 /// <para>
 /// Common services used by the application, such as a message display service, content plug in service, etc... are provided through the <see cref="HostServices"/> property so that custom 
-/// view models can use standardized functionality to communicate with the user should the need arise.
+/// view models can use standardized functionality to communicate with the user should the need arise
 /// </para>
 /// <para>
 /// When implementing a view model, the developers should set up their properties like this:
@@ -54,16 +54,16 @@ namespace Gorgon.Editor.UI;
 ///     get => _backingStoreValue;
 ///     set
 ///     {
-///         // Always check to see if the value has changed. This keeps the view model from being too "chatty" with the UI.
+///         // Always check to see if the value has changed. This keeps the view model from being too "chatty" with the UI
 ///         if (_backingStoreValue == value)
 ///         {
 ///             return;
 ///         }
 ///         
-///         // Notify that the property is about to change. This allows the view to do any necessary clean up prior to updating the visual side.
+///         // Notify that the property is about to change. This allows the view to do any necessary clean up prior to updating the visual side
 ///         OnPropertyChanging();
 ///         _backingStoreValue = value;
-///         // Now, notify that the property has changed. The view will intercept the change and update the visual associated with the property.
+///         // Now, notify that the property has changed. The view will intercept the change and update the visual associated with the property
 ///         OnPropertyChanged();
 ///     }
 /// }
@@ -86,7 +86,7 @@ namespace Gorgon.Editor.UI;
 /// </para>
 /// <para>
 /// The view model is also equipped with several events that are used to notify the application that a long running operation is executing. Applications can intercept these events and display a 
-/// progress panel, or "please wait" panel. These should only be used with asynchronous operations as they will not update correctly if everything is running on the same thread.
+/// progress panel, or "please wait" panel. These should only be used with asynchronous operations as they will not update correctly if everything is running on the same thread
 /// </para>
 /// </remarks>
 public abstract class ViewModelBase<T, THs>
@@ -94,7 +94,7 @@ public abstract class ViewModelBase<T, THs>
     where THs : IHostServices
     where T : class, IViewModelInjection<THs>
 {
-    #region Events.
+
     /// <summary>
     /// Event triggered when a wait overlay panel needs to be activated.
     /// </summary>
@@ -114,14 +114,14 @@ public abstract class ViewModelBase<T, THs>
     /// Event triggered when the progress overlay should be deactivated.
     /// </summary>
     public event EventHandler ProgressDeactivated;
-    #endregion
 
-    #region Variables.
+
+
     // Flag to indicate that the view model has been loaded.
     private int _loaded;
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to return the services passed in from the host application.
     /// </summary>
@@ -130,9 +130,9 @@ public abstract class ViewModelBase<T, THs>
         get;
         private set;
     }
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to activate and/or update the progress panel overlay on the view, if the view supports it.
     /// </summary>
@@ -333,9 +333,9 @@ public abstract class ViewModelBase<T, THs>
 
         OnInitialize(injectionParameters);
     }
-    #endregion
 
-    #region Constructor.
+
+
     /// <summary>
     /// Initializes a new instance of the <see cref="ViewModelBase{T, THs}"/> class.
     /// </summary>
@@ -343,5 +343,5 @@ public abstract class ViewModelBase<T, THs>
     {
 
     }
-    #endregion
+
 }

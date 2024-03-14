@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2019 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: April 28, 2019 11:08:29 AM
 // 
-#endregion
+
 
 using Gorgon.Collections;
 using Gorgon.Core;
@@ -34,19 +34,19 @@ using Gorgon.UI;
 namespace Gorgon.Editor.Services;
 
 /// <summary>
-/// An interface used to browse the file system folder structure.
+/// An interface used to browse the file system folder structure
 /// </summary>
 /// <remarks>Initializes a new instance of the <see cref="FileSystemFolderBrowseService"/> class.</remarks>
 /// <param name="mainViewModel">The main view model for the application.</param>
 internal class FileSystemFolderBrowseService(IMain mainViewModel)
         : IFileSystemFolderBrowseService
 {
-    #region Variables.
+
     // The main view model for the application.
     private readonly IMain _mainViewModel = mainViewModel ?? throw new ArgumentNullException(nameof(mainViewModel));
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to retrieve the parent form for the message box.
     /// </summary>
@@ -94,7 +94,7 @@ internal class FileSystemFolderBrowseService(IMain mainViewModel)
         return browser.ShowDialog(GetParentForm()) != DialogResult.OK ? null : browser.CurrentDirectory.FormatDirectory('/');
     }
 
-    #endregion
-    #region Constructor.
-    #endregion
+
+
+
 }

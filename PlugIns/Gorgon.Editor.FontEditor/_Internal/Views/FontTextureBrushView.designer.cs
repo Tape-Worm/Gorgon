@@ -29,7 +29,7 @@ partial class FontTextureBrushView
         base.Dispose(disposing);
     }
 
-    #region Component Designer generated code
+
 
     /// <summary> 
     /// Required method for Designer support - do not modify 
@@ -272,7 +272,7 @@ partial class FontTextureBrushView
 
     }
 
-    #endregion
+
 
     private System.Windows.Forms.Label LabelTextureWrap;
     private System.Windows.Forms.ComboBox ComboWrapMode;

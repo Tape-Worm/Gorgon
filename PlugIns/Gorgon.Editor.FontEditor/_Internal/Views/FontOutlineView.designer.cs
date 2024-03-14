@@ -29,7 +29,7 @@ partial class FontOutlineView
         base.Dispose(disposing);
     }
 
-    #region Component Designer generated code
+
 
     /// <summary> 
     /// Required method for Designer support - do not modify 
@@ -167,7 +167,7 @@ partial class FontOutlineView
 
     }
 
-    #endregion
+
 
     private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
     private System.Windows.Forms.Label LabelSize;

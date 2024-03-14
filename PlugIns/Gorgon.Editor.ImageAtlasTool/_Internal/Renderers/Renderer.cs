@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2019 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: April 24, 2019 10:14:49 PM
 // 
-#endregion
+
 
 using System.Numerics;
 using Gorgon.Editor.ImageAtlasTool.Properties;
@@ -37,7 +37,7 @@ using DX = SharpDX;
 namespace Gorgon.Editor.ImageAtlasTool;
 
 /// <summary>
-/// The renderer used to draw the texture and sprites.
+/// The renderer used to draw the texture and sprites
 /// </summary>
 /// <remarks>Initializes a new instance of the <see cref="Renderer"/> class.</remarks>
 /// <param name="renderer">The 2D renderer for the application.</param>
@@ -46,16 +46,16 @@ namespace Gorgon.Editor.ImageAtlasTool;
 internal class Renderer(Gorgon2D renderer, GorgonSwapChain swapChain, IImageAtlas dataContext)
                 : DefaultToolRenderer<IImageAtlas>("Atlas Renderer", renderer, swapChain, dataContext)
 {
-    #region Variables.
+
     // The camera used to render.
     private GorgonOrthoCamera _camera;
     // The texture to display.
     private GorgonTexture2DView _texture;
     // The sprite used to display the texture.
     private GorgonSprite _textureSprite;
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to build a texture for the current image.
     /// </summary>
@@ -216,5 +216,5 @@ internal class Renderer(Gorgon2D renderer, GorgonSwapChain swapChain, IImageAtla
         };
     }
 
-    #endregion
+
 }

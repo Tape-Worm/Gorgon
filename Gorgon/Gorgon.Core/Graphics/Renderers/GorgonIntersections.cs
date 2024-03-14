@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2021 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,20 +11,19 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: February 12, 2021 8:21:53 PM
 // 
-#endregion
 
-#region SharpDX
+
 // Copyright (c) 2010-2014 SharpDX - Alexandre Mutel
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -35,7 +34,7 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
@@ -43,7 +42,7 @@
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // -----------------------------------------------------------------------------
 // Original code from SlimMath project. http://code.google.com/p/slimmath/
 // Greetings to SlimDX Group. Original code published with the following license:
@@ -69,7 +68,7 @@
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 * THE SOFTWARE.
 */
-#endregion
+
 
 using System.Numerics;
 using System.Runtime.CompilerServices;
@@ -79,7 +78,7 @@ using Gorgon.Renderers.Data;
 namespace Gorgon.Renderers;
 
 /// <summary>
-/// Defines the type of intersection on a plane.
+/// Defines the type of intersection on a plane
 /// </summary>
 public enum PlaneIntersection
 {
@@ -98,7 +97,7 @@ public enum PlaneIntersection
 }
 
 /// <summary>
-/// Describes how one bounding volume contains another.
+/// Describes how one bounding volume contains another
 /// </summary>
 public enum Containment
 {
@@ -141,7 +140,7 @@ public enum Containment
 */
 
 /// <summary>
-/// Contains static methods to help in determining intersections, containment, etc.
+/// Contains static methods to help in determining intersections, containment, etc
 /// </summary>
 public static class GorgonIntersections
 {

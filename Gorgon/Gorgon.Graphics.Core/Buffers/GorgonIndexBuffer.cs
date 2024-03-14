@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2016 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: June 15, 2016 9:33:57 PM
 // 
-#endregion
+
 
 using Gorgon.Core;
 using Gorgon.Diagnostics;
@@ -33,16 +33,16 @@ using D3D11 = SharpDX.Direct3D11;
 namespace Gorgon.Graphics.Core;
 
 /// <summary>
-/// A buffer for indices used to look up vertices within a <see cref="GorgonVertexBuffer"/>.
+/// A buffer for indices used to look up vertices within a <see cref="GorgonVertexBuffer"/>
 /// </summary>
 /// <remarks>
 /// <para>
-/// This buffer allows the use of indices to allow for smaller vertex buffers and providing a faster means of finding vertices to draw on the GPU.
+/// This buffer allows the use of indices to allow for smaller vertex buffers and providing a faster means of finding vertices to draw on the GPU
 /// </para>
 /// <para>
 /// To send indices to the GPU using a index buffer, an application can upload a value type values, representing the indices, to the buffer using one of the 
 /// <see cref="GorgonBufferCommon.SetData{T}(ReadOnlySpan{T}, int, CopyMode)"/> overloads. For best performance, it is recommended to upload index data only once, or rarely. However, in 
-/// some scenarios, and with the correct <see cref="IGorgonIndexBufferInfo.Usage"/> flag, indices can be updated regularly for things like dynamic tesselation of surface.
+/// some scenarios, and with the correct <see cref="IGorgonIndexBufferInfo.Usage"/> flag, indices can be updated regularly for things like dynamic tesselation of surface
 /// </para>
 /// <para> 
 /// <example language="csharp">
@@ -55,18 +55,18 @@ namespace Gorgon.Graphics.Core;
 /// 
 /// void InitializeIndexBuffer()
 /// {
-///		_indices = ... // Fill your index array here.
+///		_indices = ... // Fill your index array here
 /// 
-///		// Create the index buffer large enough so that it'll hold all 100 indices.
+///		// Create the index buffer large enough so that it'll hold all 100 indices
 ///     // Unlike other buffers, we're passing the number of indices instead of bytes. 
 ///     // This is because we can determine the number of bytes by whether we're using 
-///     // 16 bit indices (we are) and the index count.
+///     // 16 bit indices (we are) and the index count
 ///		_indexBuffer = new GorgonIndexBuffer("MyIB", graphics, new GorgonIndexBufferInfo
 ///	                                                               {
 ///		                                                              IndexCount = _indices.Length
 ///                                                                });
 /// 
-///		// Copy our data to the index buffer.
+///		// Copy our data to the index buffer
 ///     graphics.SetData<ushort>(_indices);
 /// }
 /// ]]>
@@ -77,19 +77,19 @@ namespace Gorgon.Graphics.Core;
 public sealed class GorgonIndexBuffer
     : GorgonBufferCommon, IGorgonIndexBufferInfo
 {
-    #region Constants.
+
     /// <summary>
     /// The prefix to assign to a default name.
     /// </summary>
     internal const string NamePrefix = nameof(GorgonIndexBuffer);
-    #endregion
 
-    #region Variables.
+
+
     // The information used to create the buffer.
     private readonly GorgonIndexBufferInfo _info;
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to return the bind flags used for the D3D 11 resource.
     /// </summary>
@@ -150,9 +150,9 @@ public sealed class GorgonIndexBuffer
     /// Property to return the name of this object.
     /// </summary>
     public override string Name => _info.Name;
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to initialize the buffer data.
     /// </summary>
@@ -295,9 +295,9 @@ public sealed class GorgonIndexBuffer
 
         return result;
     }
-    #endregion
 
-    #region Constructor/Finalizer.
+
+
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonIndexBuffer" /> class.
     /// </summary>
@@ -380,5 +380,5 @@ public sealed class GorgonIndexBuffer
         _info = new GorgonIndexBufferInfo(info ?? throw new ArgumentNullException(nameof(info)));
         Initialize(initialData.IsEmpty ? throw new ArgumentNullException(nameof(initialData)) : initialData);
     }
-    #endregion
+
 }

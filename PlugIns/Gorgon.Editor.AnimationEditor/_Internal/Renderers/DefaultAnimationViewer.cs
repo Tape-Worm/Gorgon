@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2020 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: June 10, 2020 6:38:49 AM
 // 
-#endregion
+
 
 using System.Numerics;
 using Gorgon.Editor.AnimationEditor.Properties;
@@ -38,7 +38,7 @@ using DX = SharpDX;
 namespace Gorgon.Editor.AnimationEditor;
 
 /// <summary>
-/// The default viewer for an aniamtion.
+/// The default viewer for an aniamtion
 /// </summary>
 /// <remarks>Initializes a new instance of the <see cref="DefaultAnimationViewer"/> class.</remarks>
 /// <param name="renderer">The main renderer for the content view.</param>
@@ -48,14 +48,14 @@ namespace Gorgon.Editor.AnimationEditor;
 internal class DefaultAnimationViewer(Gorgon2D renderer, GorgonSwapChain swapChain, IAnimationContent dataContext, IRectClipperService clipper)
         : AnimationViewer(ViewerName, renderer, swapChain, dataContext, clipper, false)
 {
-    #region Constants.
+
     /// <summary>
     /// The name of the viewer.
     /// </summary>
     public const string ViewerName = "AnimationDefaultRenderer";
-    #endregion
 
-    #region Variables.
+
+
     // The font used to rendering instructional text.
     private GorgonFont _font;
     // The set key frame instructions.
@@ -64,9 +64,9 @@ internal class DefaultAnimationViewer(Gorgon2D renderer, GorgonSwapChain swapCha
     private DX.Size2F _textSize;
     // Flag to indicate that we'll allow movement of the sprite.
     private bool _allowMove;
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>Function called when the camera is panned.</summary>
     /// <remarks>Developers can override this method to implement a custom action when the camera is panned around the view.</remarks>
     protected override void OnCameraMoved() => Clipper?.Refresh();
@@ -293,5 +293,5 @@ internal class DefaultAnimationViewer(Gorgon2D renderer, GorgonSwapChain swapCha
         ZoomToSprite(Sprite);
     }
 
-    #endregion
+
 }

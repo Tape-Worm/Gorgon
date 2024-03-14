@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2020 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: June 16, 2020 3:36:38 PM
 // 
-#endregion
+
 
 using Gorgon.Core;
 using Gorgon.Editor.AnimationEditor.Properties;
@@ -34,7 +34,7 @@ using DX = SharpDX;
 namespace Gorgon.Editor.AnimationEditor;
 
 /// <summary>
-/// A value for a texture key frame.
+/// A value for a texture key frame
 /// </summary>
 /// <remarks>Initializes a new instance of the <see cref="TextureValue"/> struct.</remarks>
 /// <param name="texture">The texture used when rendering the key.</param>
@@ -44,7 +44,7 @@ namespace Gorgon.Editor.AnimationEditor;
 internal readonly struct TextureValue(GorgonTexture2DView texture, IContentFile textureFile, int arrayIndex, DX.RectangleF textureCoordinates)
         : IGorgonEquatableByRef<TextureValue>
 {
-    #region Variables.
+
     /// <summary>
     /// The texture to use when rendering the key.
     /// </summary>
@@ -64,9 +64,9 @@ internal readonly struct TextureValue(GorgonTexture2DView texture, IContentFile 
     /// The file for the texture.
     /// </summary>
     public readonly IContentFile TextureFile = textureFile;
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>Returns a hash code for this instance.</summary>
     /// <returns>A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table.</returns>
     public override int GetHashCode() => HashCode.Combine(ArrayIndex, TextureCoordinates, Texture);
@@ -125,7 +125,7 @@ internal readonly struct TextureValue(GorgonTexture2DView texture, IContentFile 
     /// </returns>
     public bool Equals(in TextureValue other) => Equals(in other, in this);
 
-    #endregion
-    #region Constructor.
-    #endregion
+
+
+
 }

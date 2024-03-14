@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2019 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: May 5, 2019 5:03:12 PM
 // 
-#endregion
+
 
 using System.Collections;
 using System.ComponentModel;
@@ -35,12 +35,12 @@ using Gorgon.UI;
 namespace Gorgon.Editor.UI.Controls;
 
 /// <summary>
-/// A file explorer used to display editor content files.
+/// A file explorer used to display editor content files
 /// </summary>
 public partial class ContentFileExplorer
     : EditorBaseControl
 {
-    #region Classes.
+
     /// <summary>
     /// A comparer used to sort the files and directories.
     /// </summary>
@@ -52,7 +52,7 @@ public partial class ContentFileExplorer
     private class FileComparer(DataGridView gridView, DataGridViewColumn directory, DataGridViewColumn directoryName, DataGridViewColumn file)
                 : IComparer<DataGridViewRow>, IComparer
     {
-        #region Variables.
+    
         // The grid containing the data to sort.
         private readonly DataGridView _grid = gridView;
         // The column containing the directory flag.
@@ -61,9 +61,9 @@ public partial class ContentFileExplorer
         private readonly DataGridViewColumn _columnDirectoryName = directoryName;
         // The column containing the file path.
         private readonly DataGridViewColumn _columnFile = file;
-        #endregion
+    
 
-        #region Methods.
+    
         /// <summary>Compares two objects and returns a value indicating whether one is less than, equal to, or greater than the other.</summary>
         /// <param name="x">The first object to compare.</param>
         /// <param name="y">The second object to compare.</param>
@@ -110,13 +110,13 @@ public partial class ContentFileExplorer
         /// </returns>
         int IComparer.Compare(object x, object y) => Compare((DataGridViewRow)x, (DataGridViewRow)y);
 
-        #endregion
-        #region Constructor.
-        #endregion
+    
+    
+    
     }
-    #endregion
 
-    #region Events.
+
+
     /// <summary>
     /// Event triggered when a search term is entered into the search box.
     /// </summary>
@@ -140,9 +140,9 @@ public partial class ContentFileExplorer
     /// </summary>
     [Category("Behavior"), Description("Triggered when a file entry is unselected.")]
     public event EventHandler<ContentFileEntrySelectedEventArgs> FileEntryUnselected;
-    #endregion
 
-    #region Variables.
+
+
     // The directory font.
     private readonly Font _dirFont;
     // The comparer used to sort the grid.
@@ -160,9 +160,9 @@ public partial class ContentFileExplorer
     private CheckBox _checkBoxHeader;
     // The currently selected directory (for single select mode).
     private string _currentDirectory;
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to set or return the list of entries to display.
     /// </summary>
@@ -245,9 +245,9 @@ public partial class ContentFileExplorer
     /// </remarks>
     [Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public string CurrentDirectory => _currentDirectory;
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to build the cache for the file icons.
     /// </summary>
@@ -1030,9 +1030,9 @@ public partial class ContentFileExplorer
         GridFiles.Sort(_fileComparer);
         GridFiles.Select();
     }
-    #endregion
 
-    #region Constructor/Finalizer.
+
+
     /// <summary>Initializes a new instance of the <see cref="ContentFileExplorer"/> class.</summary>
     public ContentFileExplorer()
     {
@@ -1041,5 +1041,5 @@ public partial class ContentFileExplorer
         _dirFont = new Font(Font, FontStyle.Bold);
         _fileComparer = new FileComparer(GridFiles, ColumnDirectory, ColumnDirName, ColumnLocation);
     }
-    #endregion
+
 }

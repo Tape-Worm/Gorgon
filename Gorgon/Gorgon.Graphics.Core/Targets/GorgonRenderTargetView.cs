@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2018 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,29 +11,29 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: April 17, 2018 8:45:32 AM
 // 
-#endregion
+
 
 using D3D11 = SharpDX.Direct3D11;
 
 namespace Gorgon.Graphics.Core;
 
 /// <summary>
-/// A view to allow 2D texture based render targets to be bound to the pipeline.
+/// A view to allow 2D texture based render targets to be bound to the pipeline
 /// </summary>
 /// <remarks>
 /// <para>
-/// A render target view allows a render target (such as a <see cref="GorgonSwapChain"/> or a texture to be bound to the GPU pipeline as a render target resource.
+/// A render target view allows a render target (such as a <see cref="GorgonSwapChain"/> or a texture to be bound to the GPU pipeline as a render target resource
 /// </para>
 /// <para>
 /// The view can bind the entire resource, or a sub section of the resource as required. It will also allow for casting of the format to allow for reinterpreting the data stored within the the render 
@@ -44,7 +44,7 @@ namespace Gorgon.Graphics.Core;
 /// <seealso cref="GorgonTexture2D"/>
 /// <seealso cref="GorgonTexture3D"/>
 /// <remarks>
-/// Initializes a new instance of the <see cref="GorgonRenderTarget2DView"/> class.
+/// Initializes a new instance of the <see cref="GorgonRenderTarget2DView"/> class
 /// </remarks>
 /// <param name="resource">The resource to bind.</param>
 /// <param name="format">The format of the render target view.</param>
@@ -53,7 +53,7 @@ namespace Gorgon.Graphics.Core;
 public abstract class GorgonRenderTargetView(GorgonGraphicsResource resource, BufferFormat format, GorgonFormatInfo formatInfo)
                 : GorgonResourceView(resource)
 {
-    #region Properties.
+
     /// <summary>
     /// Property to return the native D3D depth/stencil view.
     /// </summary>
@@ -102,9 +102,9 @@ public abstract class GorgonRenderTargetView(GorgonGraphicsResource resource, Bu
     {
         get;
     }
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to clear the contents of the render target for this view.
     /// </summary>
@@ -125,7 +125,7 @@ public abstract class GorgonRenderTargetView(GorgonGraphicsResource resource, Bu
         }
     }
 
-    #endregion
-    #region Constructor/Destructor.
-    #endregion
+
+
+
 }

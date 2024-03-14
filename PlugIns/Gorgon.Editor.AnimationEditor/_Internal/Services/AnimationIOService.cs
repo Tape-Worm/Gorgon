@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2020 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: June 7, 2020 9:42:02 PM
 // 
-#endregion
+
 
 using System.Diagnostics;
 using System.Globalization;
@@ -38,7 +38,7 @@ using Gorgon.Renderers;
 namespace Gorgon.Editor.AnimationEditor.Services;
 
 /// <summary>
-/// A service used to manage IO for animations.
+/// A service used to manage IO for animations
 /// </summary>
 /// <remarks>Initializes a new instance of the <see cref="AnimationIOService"/> class.</remarks>
 /// <param name="fileManager">The content file manager.</param>
@@ -48,15 +48,15 @@ namespace Gorgon.Editor.AnimationEditor.Services;
 /// <param name="log">The logging interface for debug logging.</param>
 internal class AnimationIOService(IContentFileManager fileManager, ITextureCache textureCache, IGorgonAnimationCodec animCodec, IGorgonSpriteCodec spriteCodec, IGorgonLog log)
 {
-    #region Constants.
+
     /// <summary>
     /// The name of the attributes that define the start position.
     /// </summary>
     public const string StartPositionAttrX = "SpriteStartPositionX";
     public const string StartPositionAttrY = "SpriteStartPositionY";
-    #endregion
 
-    #region Classes.
+
+
     /// <summary>
     /// The primary sprite dependency data.
     /// </summary>
@@ -123,9 +123,9 @@ internal class AnimationIOService(IContentFileManager fileManager, ITextureCache
             get;
         } = textureFiles;
     }
-    #endregion
 
-    #region Variables.
+
+
     // The content file manager.
     private readonly IContentFileManager _fileManager = fileManager;
     // The image codec used to read image file data.
@@ -136,9 +136,9 @@ internal class AnimationIOService(IContentFileManager fileManager, ITextureCache
     private readonly IGorgonAnimationCodec _animationCodec = animCodec;
     // The logging interface for debug logging.
     private readonly IGorgonLog _log = log;
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>Function to load an associated sprite texture for sprite content.</summary>
     /// <param name="spriteContent">The sprite content file to use.</param>
     /// <returns>The texture associated with the sprite and the file containing the texture.</returns>
@@ -547,5 +547,5 @@ internal class AnimationIOService(IContentFileManager fileManager, ITextureCache
         }
     }
 
-    #endregion
+
 }

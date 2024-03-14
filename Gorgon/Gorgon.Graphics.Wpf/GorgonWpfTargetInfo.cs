@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2021 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,30 +11,30 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: January 6, 2021 1:29:04 PM
 // 
-#endregion
+
 
 using System.Windows.Controls;
 
 namespace Gorgon.Graphics.Wpf;
 
 /// <summary>
-/// Information used to define a WPF render target.
+/// Information used to define a WPF render target
 /// </summary>
 public class GorgonWpfTargetInfo
     : IGorgonWpfTargetInfo
 {
-    #region Properties.
+
     /// <summary>
     /// Property to return the name of the WPF target.
     /// </summary>
@@ -53,9 +53,9 @@ public class GorgonWpfTargetInfo
     {
         get;
     }
-    #endregion
 
-    #region Constructor/Finalizer.
+
+
     /// <summary>Initializes a new instance of the <see cref="GorgonWpfTargetInfo" /> class.</summary>
     /// <param name="info">The information object to clone.</param>
     /// <param name="newName">[Optional] The new name to assign to the target.</param>
@@ -85,5 +85,5 @@ public class GorgonWpfTargetInfo
         RenderImage = renderImage ?? throw new ArgumentNullException(nameof(renderImage));
         Name = string.IsNullOrEmpty(name) ? $"WPF_RenderTarget_{Guid.NewGuid():N}" : name;
     }
-    #endregion
+
 }

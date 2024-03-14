@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2019 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: April 20, 2019 2:19:56 PM
 // 
-#endregion
+
 
 using System.ComponentModel;
 using Gorgon.Editor.UI;
@@ -31,17 +31,17 @@ using Gorgon.Editor.UI.Views;
 namespace Gorgon.Examples;
 
 /// <summary>
-/// The panel used to settings for the text content plug in.
+/// The panel used to settings for the text content plug in
 /// </summary>
 /// <remarks>
 /// As mentioned in the plug in class, we create a panel control for presenting our plug in settings to the user. 
 /// 
-/// To create a settings panel, the class must inherit from the SettingsBaseControl and implement the IDataContext interface.
+/// To create a settings panel, the class must inherit from the SettingsBaseControl and implement the IDataContext interface
 /// </remarks>
 internal partial class TextContentSettingsPanel
     : SettingsBaseControl, IDataContext<ISettings>
 {
-    #region Properties.
+
     /// <summary>Property to return the ID of the panel.</summary>
     [Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public override string PanelID => ViewModel?.ID.ToString() ?? Guid.Empty.ToString();
@@ -53,9 +53,9 @@ internal partial class TextContentSettingsPanel
         get;
         private set;
     }
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>Handles the CheckedChanged event of the Radio controls.</summary>
     /// <param name="sender">The source of the event.</param>
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
@@ -120,10 +120,10 @@ internal partial class TextContentSettingsPanel
         InitializeFromDataContext(dataContext);
         ViewModel = dataContext;
     }
-    #endregion
 
-    #region Constructor/Finalizer.
+
+
     /// <summary>Initializes a new instance of the <see cref="TextContentSettingsPanel"/> class.</summary>
     public TextContentSettingsPanel() => InitializeComponent();
-    #endregion
+
 }

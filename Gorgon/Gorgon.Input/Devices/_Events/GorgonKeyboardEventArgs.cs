@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2015 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,26 +11,26 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: Wednesday, July 15, 2015 7:00:06 PM
 // 
-#endregion
+
 
 namespace Gorgon.Input;
 
 /// <summary>
-/// Event arguments for the various events triggered on the <see cref="GorgonRawKeyboard"/> interface.
+/// Event arguments for the various events triggered on the <see cref="GorgonRawKeyboard"/> interface
 /// </summary>
 /// <remarks>
-/// Initializes a new instance of the <see cref="GorgonKeyboardEventArgs"/> class.
+/// Initializes a new instance of the <see cref="GorgonKeyboardEventArgs"/> class
 /// </remarks>
 /// <param name="key">Key that is pressed.</param>
 /// <param name="modifierKey">Keys that are held down during the event.</param>
@@ -38,7 +38,7 @@ namespace Gorgon.Input;
 public class GorgonKeyboardEventArgs(Keys key, Keys modifierKey, int scanData)
         : EventArgs
 {
-    #region Properties.
+
     /// <summary>
     /// Property to return key that is pressed.
     /// </summary>
@@ -78,6 +78,6 @@ public class GorgonKeyboardEventArgs(Keys key, Keys modifierKey, int scanData)
         get;
     } = scanData;
 
-    #endregion
+
 
 }

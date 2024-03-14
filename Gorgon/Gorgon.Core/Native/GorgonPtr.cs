@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2020 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: December 1, 2020 9:29:00 PM
 // 
-#endregion
+
 
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
@@ -35,7 +35,7 @@ using DX = SharpDX;
 namespace Gorgon.Native;
 
 /// <summary>
-/// A value type representing a pointer to native (unmanaged) memory.
+/// A value type representing a pointer to native (unmanaged) memory
 /// </summary>
 /// <remarks>
 /// <para>
@@ -48,7 +48,7 @@ namespace Gorgon.Native;
 /// </para>
 /// <para>
 /// This pointer type only wraps a native pointer to previously allocated memory, therefore it does <b>not</b> perform any memory allocation on its own. Gorgon includes the 
-/// <see cref="GorgonNativeBuffer{T}"/> for that purpose. The <see cref="GorgonNativeBuffer{T}"/> will implicitly convert to this type, so it can be used in situations where this type is required.
+/// <see cref="GorgonNativeBuffer{T}"/> for that purpose. The <see cref="GorgonNativeBuffer{T}"/> will implicitly convert to this type, so it can be used in situations where this type is required
 /// </para>
 /// <para>
 /// <note type="information">
@@ -63,7 +63,7 @@ namespace Gorgon.Native;
 /// <para>
 /// This type is ~3x slower for access than a regular native pointer (x64). This is due to the safety features available to ensure the pointer does not cause a buffer over/underrun. For pure speed, 
 /// nothing beats a native pointer (or <c>nint</c>) and if your code is sensitive to microsecond timings (i.e. it needs to be near realtime/blazing fast), then use a native pointer instead 
-/// (developers can cast this type to a native pointer). But do so with the understanding that all safety is off and memory corruption is a very real possibility.
+/// (developers can cast this type to a native pointer). But do so with the understanding that all safety is off and memory corruption is a very real possibility
 /// </para>
 /// <para>
 /// <h3>Before making a choice, ALWAYS profile your application with a profiler. Never assume that the fastest functionality is required when memory safety is on the line.</h3>
@@ -77,7 +77,7 @@ public unsafe readonly struct GorgonPtr<T>
     : IEquatable<GorgonPtr<T>>, IComparable<GorgonPtr<T>>
     where T : unmanaged
 {
-    #region Variables.
+
     /// <summary>
     /// Represents a null pointer.
     /// </summary>
@@ -93,9 +93,9 @@ public unsafe readonly struct GorgonPtr<T>
     /// The number of items of type <typeparamref name="T"/> stored within the memory block. 
     /// </summary>
     public readonly int Length;
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to return the size, in bytes, of the type represented by <typeparamref name="T"/>.
     /// </summary>
@@ -141,9 +141,9 @@ public unsafe readonly struct GorgonPtr<T>
             return ref Unsafe.AsRef<T>(_ptr + index);
         }
     }
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Operator to determine if one pointer address is less than another.
     /// </summary>
@@ -1339,9 +1339,9 @@ public unsafe readonly struct GorgonPtr<T>
 
         return true;
     }
-    #endregion
 
-    #region Constructor/Finalizer.       
+
+       
     /// <summary>Initializes a new instance of the <see cref="GorgonPtr{T}" /> struct.</summary>
     /// <param name="ptr">The pointer to wrap.</param>
     /// <param name="indexOffset">The offset, in indices of this pointer within the memory block.</param>
@@ -1518,5 +1518,5 @@ public unsafe readonly struct GorgonPtr<T>
         _ptr = pointer;
         Length = count;
     }
-    #endregion       
+       
 }

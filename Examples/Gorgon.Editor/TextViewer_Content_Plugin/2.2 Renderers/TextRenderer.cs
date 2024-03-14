@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2020 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: August 3, 2020 4:40:15 PM
 // 
-#endregion
+
 
 using System.Numerics;
 using Gorgon.Editor.Rendering;
@@ -36,14 +36,14 @@ using DX = SharpDX;
 namespace Gorgon.Examples;
 
 /// <summary>
-/// This is a renderer that will print our text into the view.
+/// This is a renderer that will print our text into the view
 /// </summary>
 /// <remarks>
 /// A renderer is used to convey any graphical/visual content data back to the user. Changes made to the content are reflected in the renderer by monitoring
-/// the content view model and adjusting the internal content representation used by the renderer.
+/// the content view model and adjusting the internal content representation used by the renderer
 /// 
 /// The renderer works differently than our content control in that it does not wait for events to update itself, it is constantly running using an idle loop 
-/// to reflect content changes in real time.
+/// to reflect content changes in real time
 /// </remarks>
 /// <remarks>Initializes a new instance of the <see cref="TextRenderer"/> class.</remarks>
 /// <param name="renderer">The 2D renderer used to render our text.</param>
@@ -53,7 +53,7 @@ namespace Gorgon.Examples;
 internal class TextRenderer(Gorgon2D renderer, GorgonSwapChain mainRenderTarget, GorgonFontFactory fonts, ITextContent dataContext)
         : DefaultContentRenderer<ITextContent>("TextRenderer", renderer, mainRenderTarget, dataContext)
 {
-    #region Variables.
+
     // The sprite used to render our text data.
     private GorgonTextSprite _textSprite;
     // The factory used to create fonts.
@@ -62,9 +62,9 @@ internal class TextRenderer(Gorgon2D renderer, GorgonSwapChain mainRenderTarget,
     private GorgonFont _arial;
     private GorgonFont _timesNewRoman;
     private GorgonFont _papyrus;
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to update the font for the text sprite.
     /// </summary>
@@ -298,5 +298,5 @@ internal class TextRenderer(Gorgon2D renderer, GorgonSwapChain mainRenderTarget,
     /// </summary>
     public void DefaultZoom() => MoveTo(Vector2.Zero, 1);
 
-    #endregion
+
 }

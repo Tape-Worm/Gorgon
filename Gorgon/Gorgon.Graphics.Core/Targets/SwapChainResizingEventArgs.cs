@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2017 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,35 +11,35 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: July 9, 2017 4:32:41 PM
 // 
-#endregion
+
 
 using DX = SharpDX;
 
 namespace Gorgon.Graphics.Core;
 
 /// <summary>
-/// Event arguments for the <see cref="GorgonSwapChain.SwapChainResizing"/> event.
+/// Event arguments for the <see cref="GorgonSwapChain.SwapChainResizing"/> event
 /// </summary>
 /// <remarks>
-/// Initializes a new instance of the <see cref="SwapChainResizingEventArgs"/> class.
+/// Initializes a new instance of the <see cref="SwapChainResizingEventArgs"/> class
 /// </remarks>
 /// <param name="oldSize">The old size.</param>
 /// <param name="newSize">The new size.</param>
 public class SwapChainResizingEventArgs(DX.Size2 oldSize, DX.Size2 newSize)
         : EventArgs
 {
-    #region Properties.
+
     /// <summary>
     /// Property to return the old size of the swap chain backbuffers.
     /// </summary>
@@ -56,5 +56,5 @@ public class SwapChainResizingEventArgs(DX.Size2 oldSize, DX.Size2 newSize)
         get;
     } = newSize;
 
-    #endregion
+
 }

@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2020 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,27 +11,27 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: September 7, 2020 11:53:49 PM
 // 
-#endregion
+
 
 namespace Gorgon.Graphics.Core;
 
 /// <summary>
-/// Statistics gathered while rendering.
+/// Statistics gathered while rendering
 /// </summary>
 public struct GorgonGraphicsStatistics
 {
-    #region Variables.
+
     // The number of draw calls.
     internal long _drawCallCount;
 
@@ -49,9 +49,9 @@ public struct GorgonGraphicsStatistics
 
     // The number of stream out calls.
     internal long _streamOutCount;
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to return the number of calls to clear render targets or depth buffers.
     /// </summary>
@@ -81,5 +81,5 @@ public struct GorgonGraphicsStatistics
     /// Property to return the number of triangles submitted in the frame.
     /// </summary>
     public readonly long TriangleCount => _triangleCount;
-    #endregion
+
 }

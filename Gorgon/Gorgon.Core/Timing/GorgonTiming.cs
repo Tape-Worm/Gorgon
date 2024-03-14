@@ -1,6 +1,6 @@
-﻿#region MIT.
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2011 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,34 +11,34 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: Saturday, June 18, 2011 10:29:46 AM
 // 
-#endregion
+
 
 using Gorgon.Math;
 
 namespace Gorgon.Timing;
 
 /// <summary>
-/// Timing data for code within a Gorgon Idle loop.
+/// Timing data for code within a Gorgon Idle loop
 /// </summary>
 /// <remarks>
 /// <para>
 /// This class is used to calculate the time it takes for a single iteration an idle loop to execute. It will gather statistics such as the frames per second, the time elapsed since the application started 
-/// and peaks, lows and averages for those values.
+/// and peaks, lows and averages for those values
 /// </para>
 /// <para>
 /// To use this in a custom idle processing loop the user should initialize using the <see cref="StartTiming{T}"/> method, and then, in the loop, call the <see cref="Update"/> method to populate the data 
-/// with the most recent timings.
+/// with the most recent timings
 /// </para>
 /// </remarks>
 /// <example>
@@ -60,26 +60,26 @@ namespace Gorgon.Timing;
 /// </code> 
 /// And here is a a custom application loop using the <see cref="GorgonTiming"/> class:
 /// <code>
-/// // This assumes the Win32 API call to PeekMessage is imported.
+/// // This assumes the Win32 API call to PeekMessage is imported
 /// public void DoLoop()
 /// {
-///		MSG message;  // Win32 Message structure.
+///		MSG message;  // Win32 Message structure
 /// 
-///		// Before loop execution.
+///		// Before loop execution
 ///     GorgonTiming.StartTiming&lt;GorgonTimerQpc&gt;();
 /// 
 ///		while (!API.PeekMessage(out message, IntPtr.Zero, 0, 0, PeekMessage.NoRemove))
 ///     {
 ///			GorgonTiming.Update();
 /// 
-///			// Do your processing.
+///			// Do your processing
 ///		}
 /// }
 /// </code>
 /// </example>
 public static class GorgonTiming
 {
-    #region Variables.
+
     // Timer used in calculations.
     private static IGorgonTimer _timer;
     // The value to indicate how long the application has been running.
@@ -106,9 +106,9 @@ public static class GorgonTiming
     private static float? _lowestFps;
     // The lowest frame delta.
     private static float? _lowestDelta;
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to set or return the maximum frame delta, in seconds.
     /// </summary>
@@ -370,9 +370,9 @@ public static class GorgonTiming
         get;
         private set;
     }
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to gather timing data.
     /// </summary>
@@ -559,12 +559,12 @@ public static class GorgonTiming
     /// <param name="fps">Desired frames per second.</param>
     /// <returns>Frames per second in microseconds.</returns>
     public static double FpsToMicroseconds(double fps) => fps > 0 ? 1000000 / fps : 0;
-    #endregion
 
-    #region Constructor/Destructor.
+
+
     /// <summary>
     /// Initializes the <see cref="GorgonTiming"/> class.
     /// </summary>
     static GorgonTiming() => TimeScale = 1;
-    #endregion
+
 }

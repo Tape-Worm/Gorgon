@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2021 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: February 13, 2021 4:04:07 PM
 // 
-#endregion
+
 
 using System.ComponentModel;
 using System.Numerics;
@@ -35,12 +35,12 @@ using Krypton.Toolkit;
 namespace Gorgon.Editor.FontEditor;
 
 /// <summary>
-/// Provides a ribbon interface for the plug in view.
+/// Provides a ribbon interface for the plug in view
 /// </summary>
 internal partial class FormRibbon
     : KryptonForm, IDataContext<IFontContent>
 {
-    #region Variables.
+
     // The list of menu items associated with the zoom level.
     private readonly Dictionary<ZoomLevels, ToolStripMenuItem> _menuZoomItems = [];
 
@@ -48,9 +48,9 @@ internal partial class FormRibbon
     private ZoomLevels _zoomLevel = ZoomLevels.ToWindow;
     // The renderer for the content.
     private IContentRenderer _contentRenderer;
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to set or return the data context for the ribbon on the form.
     /// </summary>
@@ -89,9 +89,9 @@ internal partial class FormRibbon
             UpdateZoomMenu();
         }
     }
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>Handles the ZoomScale event of the ContentRenderer control.</summary>
     /// <param name="sender">The source of the event.</param>
     /// <param name="e">The <see cref="ZoomScaleEventArgs"/> instance containing the event data.</param>
@@ -680,9 +680,9 @@ internal partial class FormRibbon
         ComboFonts.SelectedIndexChanged += ComboFonts_SelectedIndexChanged;
         NumericSize.ValueChanged += NumericSize_ValueChanged;
     }
-    #endregion
 
-    #region Constructor.
+
+
     /// <summary>Initializes a new instance of the FormRibbon class.</summary>
     public FormRibbon()
     {
@@ -700,5 +700,5 @@ internal partial class FormRibbon
             _menuZoomItems[level] = menuItem;
         }
     }
-    #endregion
+
 }

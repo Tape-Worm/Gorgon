@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2016 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: June 20, 2016 10:52:04 PM
 // 
-#endregion
+
 
 using System.Collections;
 using Gorgon.Diagnostics;
@@ -32,19 +32,19 @@ using Gorgon.Native;
 namespace Gorgon.Graphics.Imaging;
 
 /// <summary>
-/// A container for a list of image buffers.
+/// A container for a list of image buffers
 /// </summary>
 class ImageBufferList
     : IGorgonImageBufferList
 {
-    #region Variables.
+
     // List of buffers.
     private IGorgonImageBuffer[] _buffers;
     // Image that owns this buffer.
     private readonly IGorgonImageInfo _imageInfo;
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to return the offsets of the mip map levels.
     /// </summary>
@@ -100,9 +100,9 @@ class ImageBufferList
             return _buffers[offsetSize.Item1];
         }
     }
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to create a list of buffers to use.
     /// </summary>
@@ -235,9 +235,9 @@ class ImageBufferList
     /// <param name="depthSliceOrArrayIndex">[Optional] The depth slice (for 3D images) or array index (for 1D or 2D images) to look up.</param>
     /// <returns></returns>
     public bool Contains(int mipLevel, int depthSliceOrArrayIndex = 0) => IndexOf(mipLevel, depthSliceOrArrayIndex) != -1;
-    #endregion
 
-    #region Constructor/Destructor.
+
+
     /// <summary>
     /// Initializes a new instance of the <see cref="ImageBufferList"/> class.
     /// </summary>
@@ -247,5 +247,5 @@ class ImageBufferList
         _imageInfo = imageInfo;
         _buffers = [];
     }
-    #endregion
+
 }

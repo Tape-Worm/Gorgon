@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2019 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: May 7, 2019 11:50:04 AM
 // 
-#endregion
+
 
 using System.ComponentModel;
 using Gorgon.Diagnostics;
@@ -39,17 +39,17 @@ using Gorgon.IO;
 namespace Gorgon.Editor.ImageSplitTool;
 
 /// <summary>
-/// The image file list view model.
+/// The image file list view model
 /// </summary>
 internal class ImageSelection
     : ViewModelBase<SplitParameters, IHostContentServices>, ISplit
 {
-    #region Constants.
+
     // The directory path for thumbnails this session.
     private const string ThumbnailPath = "/Thumbnails/";
-    #endregion
 
-    #region Variables.
+
+
     // The service used to search through the files.
     private ISearchService<IContentFileExplorerSearchEntry> _searchService;
     // The list of selected files.
@@ -74,9 +74,9 @@ internal class ImageSelection
     private TextureAtlasSplitter _splitService;
     // The progress for the splitting operation.
     private string _progress = string.Empty;
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to return the progress for the splitting operation.
     /// </summary>
@@ -198,9 +198,9 @@ internal class ImageSelection
     {
         get;
     }
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>Handles the PropertyChanged event of the File control.</summary>
     /// <param name="sender">The source of the event.</param>
     /// <param name="e">The <see cref="PropertyChangedEventArgs"/> instance containing the event data.</param>
@@ -515,9 +515,9 @@ internal class ImageSelection
 
         base.OnUnload();
     }
-    #endregion
 
-    #region Constructor/Finalizer.
+
+
     /// <summary>Initializes a new instance of the <see cref="ImageSelection"/> class.</summary>
     public ImageSelection()
     {
@@ -528,5 +528,5 @@ internal class ImageSelection
         SearchCommand = new EditorCommand<string>(DoSearch, CanSearch);
         CancelCommand = new EditorAsyncCommand<CancelEventArgs>(DoCancelAsync);
     }
-    #endregion
+
 }

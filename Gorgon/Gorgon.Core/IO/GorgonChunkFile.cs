@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2015 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: Sunday, June 14, 2015 2:26:21 PM
 // 
-#endregion
+
 
 using Gorgon.Core;
 using Gorgon.Properties;
@@ -30,25 +30,25 @@ using Gorgon.Properties;
 namespace Gorgon.IO;
 
 /// <summary>
-/// Base class for a Gorgon chunked formatted data readers/writers.
+/// Base class for a Gorgon chunked formatted data readers/writers
 /// </summary>
 /// <typeparam name="T">The type of read/writer to use when deserializing or serializing the data.</typeparam>
 /// <remarks>
 /// <para>
 /// This allows access to a file format that uses the concept of grouping sections of an object together into a grouping called a chunk. This chunk will hold binary data associated with an object allows 
-/// the developer to read/write only the pieces of the object that are absolutely necessary while skipping optional chunks.
+/// the developer to read/write only the pieces of the object that are absolutely necessary while skipping optional chunks
 /// </para>
 /// <para>
-/// A more detailed explanation of the chunk file format can be found in the <conceptualLink target="7b81343e-e2fc-4f0f-926a-d9193ae481fe">Gorgon Chunk File Format (GCFF)</conceptualLink> topic.
+/// A more detailed explanation of the chunk file format can be found in the <conceptualLink target="7b81343e-e2fc-4f0f-926a-d9193ae481fe">Gorgon Chunk File Format (GCFF)</conceptualLink> topic
 /// </para>
 /// <para>
 /// A chunk file object will expose a collection of <see cref="GorgonChunk"/> values, and these give the available chunks in the file and can be looked up either by the <see cref="ulong"/> value for 
 /// the chunk ID, or an 8 character <see cref="string"/> that represents the chunk (this is recommended for readability). This allows an application to do validation on the chunk file to ensure that 
-/// its format is correct. It also allows an application to discard chunks it doesn't care about or are optional. This allows for some level of versioning between chunk file formats.
+/// its format is correct. It also allows an application to discard chunks it doesn't care about or are optional. This allows for some level of versioning between chunk file formats
 /// </para>
 /// <para>
 /// Chunks can be accessed in any order, not just the order in which they were written. This allows an application to only take the pieces they require from the file, and leave the rest. It also allows 
-/// for optional chunks that can be skipped if not present, and read/written when they are.
+/// for optional chunks that can be skipped if not present, and read/written when they are
 /// </para>
 /// <note type="tip">
 /// <para>
@@ -61,7 +61,7 @@ namespace Gorgon.IO;
 /// <conceptualLink target="7b81343e-e2fc-4f0f-926a-d9193ae481fe">Gorgon Chunk File Format (GCFF) details</conceptualLink>
 public abstract class GorgonChunkFile<T>
 {
-    #region Constants.
+
     /// <summary>
     /// The header ID for the 1.0 version of the chunk file format. (GCFF0100)
     /// </summary>
@@ -70,9 +70,9 @@ public abstract class GorgonChunkFile<T>
     /// The chunk table chunk ID (CHUNKTBL)
     /// </summary>
     public const ulong ChunkTableID = 0x4C42544B4E554843;
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to return an editable list of chunks.
     /// </summary>
@@ -105,9 +105,9 @@ public abstract class GorgonChunkFile<T>
     /// Use this property to determine if a chunk exists when reading a chunk file.
     /// </remarks>
     public IGorgonReadOnlyChunkCollection Chunks => ChunkList;
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to perform validation against the requested chunk ID and the list of reserved values.
     /// </summary>
@@ -237,9 +237,9 @@ public abstract class GorgonChunkFile<T>
     public T OpenChunk(string chunkName) => chunkName is null
             ? throw new ArgumentNullException(nameof(chunkName))
             : string.IsNullOrEmpty(chunkName) ? throw new ArgumentEmptyException(nameof(chunkName)) : OpenChunk(chunkName.ChunkID());
-    #endregion
 
-    #region Constructor/Finalizer.
+
+
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonChunkFile{T}"/> class.
     /// </summary>
@@ -264,5 +264,5 @@ public abstract class GorgonChunkFile<T>
         ChunkList = [];
         Stream = new GorgonStreamWrapper(stream);
     }
-    #endregion
+
 }

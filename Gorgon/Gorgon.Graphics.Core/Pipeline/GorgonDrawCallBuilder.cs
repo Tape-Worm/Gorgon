@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2018 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: May 23, 2018 1:44:30 PM
 // 
-#endregion
+
 
 using Gorgon.Graphics.Core.Properties;
 using Gorgon.Memory;
@@ -30,23 +30,23 @@ using Gorgon.Memory;
 namespace Gorgon.Graphics.Core;
 
 /// <summary>
-/// A builder class used to create basic draw calls using fluent calls.
+/// A builder class used to create basic draw calls using fluent calls
 /// </summary>
 /// <remarks>
 /// <para>
-/// The draw call builder object allow applications to build the immutable draw call objects needed to send data and state information to the GPU.
+/// The draw call builder object allow applications to build the immutable draw call objects needed to send data and state information to the GPU
 /// </para>
 /// <para>
 /// A draw call is an immutable object that contains all of the state required to render mesh information. For each mesh an application needs to render, an single draw call should be issued via the
 /// <see cref="GorgonGraphics.Submit(GorgonDrawCall, in GorgonColor?, int, int)"/> methods.  
 /// </para>
 /// <para>
-/// State management is handled internally by Gorgon so that duplicate states are not set and thus, performance is not impacted by redundant states.
+/// State management is handled internally by Gorgon so that duplicate states are not set and thus, performance is not impacted by redundant states
 /// </para>
 /// <para>
 /// Because a draw call is immutable, it is not possible to modify a draw call after it's been created. However, a copy of a draw call can be created using the
 /// <see cref="GorgonDrawCallBuilderCommon{TB,TDc}.ResetTo"/> method on the this object. Or, the builder can be modified after the creation of your draw call that needs to be updated and a new call may
-/// be built then.
+/// be built then
 /// </para>
 /// <para>
 /// This builder type uses a fluent interface to assemble the draw call, its resources and its <see cref="GorgonPipelineState"/>. 
@@ -58,7 +58,7 @@ namespace Gorgon.Graphics.Core;
 public class GorgonDrawCallBuilder
     : GorgonDrawCallBuilderCommon<GorgonDrawCallBuilder, GorgonDrawCall>
 {
-    #region Methods.
+
     /// <summary>
     /// Function to create a new draw call.
     /// </summary>
@@ -125,9 +125,9 @@ public class GorgonDrawCallBuilder
         DrawCall.VertexCount = count;
         return this;
     }
-    #endregion
 
-    #region Constructor.
+
+
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonDrawCallBuilder"/> class.
     /// </summary>
@@ -136,5 +136,5 @@ public class GorgonDrawCallBuilder
     {
 
     }
-    #endregion
+
 }

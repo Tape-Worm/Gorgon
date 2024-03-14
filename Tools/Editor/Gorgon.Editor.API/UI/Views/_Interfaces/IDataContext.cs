@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2018 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: August 26, 2018 12:07:23 PM
 // 
-#endregion
+
 
 using System.ComponentModel;
 
@@ -43,7 +43,7 @@ namespace Gorgon.Editor.UI;
 /// <para>
 /// This pattern is not completely correct in the editor since WinForms is not really designed to use it, so some liberties have been taken. And, unfortunately, makes the job of building 
 /// a control for a plug in a little more work. The results are worth it however as the communication lines between view model and view are rigidly enforced and make it easier to maintain for larger 
-/// code bases.
+/// code bases
 /// </para>
 /// </note>
 /// </para>
@@ -57,7 +57,7 @@ namespace Gorgon.Editor.UI;
 public interface IDataContext<T>
     where T : class, IViewModel
 {
-    #region Properties.
+
     /// <summary>
     /// Property to return the data context assigned to this view.
     /// </summary>
@@ -65,9 +65,9 @@ public interface IDataContext<T>
     {
         get;
     }
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to assign a data context to the view as a view model.
     /// </summary>
@@ -78,5 +78,5 @@ public interface IDataContext<T>
     /// </para>
     /// </remarks>
     void SetDataContext(T dataContext);
-    #endregion
+
 }

@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2015 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: Wednesday, August 12, 2015 8:04:27 PM
 // 
-#endregion
+
 
 using System.Runtime.InteropServices;
 using System.Security;
@@ -30,12 +30,12 @@ using System.Security;
 namespace Gorgon.Native;
 
 /// <summary>
-/// Native functions from the windows multimedia API.
+/// Native functions from the windows multimedia API
 /// </summary>
 [SuppressUnmanagedCodeSecurity]
 internal static partial class WinMultimediaApi
 {
-    #region Methods.
+
     /// <summary>
     /// Function to return time from a medium precision timer.
     /// </summary>
@@ -74,12 +74,12 @@ internal static partial class WinMultimediaApi
     /// <returns>0 if successful, non-0 if not.</returns>
     [LibraryImport("winmm.dll")]
     public static partial int timeGetDevCaps(ref TIMECAPS timeCaps, int size);
-    #endregion
 
-    #region Constructor.
+
+
     /// <summary>
     /// Initializes static members of the <see cref="WinMultimediaApi"/> class.
     /// </summary>
     static WinMultimediaApi() => Marshal.PrelinkAll(typeof(WinMultimediaApi));
-    #endregion
+
 }

@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2020 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: February 18, 2020 7:27:02 PM
 // 
-#endregion
+
 
 using Gorgon.Editor.PlugIns;
 using Gorgon.Editor.UI;
@@ -32,12 +32,12 @@ using Gorgon.Math;
 namespace Gorgon.Editor.ImageEditor;
 
 /// <summary>
-/// The view model for picking a source image subresource.
+/// The view model for picking a source image subresource
 /// </summary>
 internal class SourceImagePicker
     : ViewModelBase<SourceImagePickerParameters, IHostContentServices>, ISourceImagePicker
 {
-    #region Variables.
+
     // The image being imported.
     private IGorgonImage _sourceImage;
     // The name of the image.
@@ -46,9 +46,9 @@ internal class SourceImagePicker
     private int _currentArrayDepth;
     // The current mip map level.
     private int _mipLevel;
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>Property to return the source image being imported.</summary>
     public IGorgonImage SourceImage
     {
@@ -152,9 +152,9 @@ internal class SourceImagePicker
             NotifyPropertyChanged(nameof(IImagePicker.CurrentArrayIndexDepthSlice));
         }
     }
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>Function to inject dependencies for the view model.</summary>
     /// <param name="injectionParameters">The parameters to inject.</param>
     /// <remarks>
@@ -199,5 +199,5 @@ internal class SourceImagePicker
 
         base.OnUnload();
     }
-    #endregion
+
 }

@@ -1,6 +1,6 @@
-﻿#region MIT.
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2013 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: Saturday, October 12, 2013 10:28:27 PM
 // 
-#endregion
+
 
 using System.Drawing.Drawing2D;
 using Gorgon.Graphics.Core;
@@ -36,7 +36,7 @@ using DX = SharpDX;
 namespace Gorgon.Graphics.Fonts;
 
 /// <summary>
-/// Defines how to draw the <see cref="GorgonGlyphTextureBrush"/>, or <see cref="GorgonGlyphPathGradientBrush"/> if the paint area is larger than the texture region.
+/// Defines how to draw the <see cref="GorgonGlyphTextureBrush"/>, or <see cref="GorgonGlyphPathGradientBrush"/> if the paint area is larger than the texture region
 /// </summary>
 public enum GlyphBrushWrapMode
 {
@@ -63,7 +63,7 @@ public enum GlyphBrushWrapMode
 }
 
 /// <summary>
-/// A brush used to draw glyphs using a texture.
+/// A brush used to draw glyphs using a texture
 /// </summary>
 /// <remarks>
 /// <para>
@@ -71,7 +71,7 @@ public enum GlyphBrushWrapMode
 /// </para>
 /// <para>
 /// The texture used by this brush is a <see cref="IGorgonImage"/> and not a <see cref="GorgonTexture2D"/>, and must be a 2D image, and have a format of <c>R8G8B8A8_UNorm_SRgb</c>,
-/// <c>BufferFormat.R8G8B8A8_UNorm</c>, <c>BufferFormat.B8G8R8A8_UNorm</c>, or <c>BufferFormat.B8G8R8A8_UNorm_SRgb</c>.
+/// <c>BufferFormat.R8G8B8A8_UNorm</c>, <c>BufferFormat.B8G8R8A8_UNorm</c>, or <c>BufferFormat.B8G8R8A8_UNorm_SRgb</c>
 /// </para>
 /// </remarks>
 /// <seealso cref="GorgonGlyphSolidBrush"/>
@@ -81,15 +81,15 @@ public enum GlyphBrushWrapMode
 public class GorgonGlyphTextureBrush
     : GorgonGlyphBrush
 {
-    #region Variables.
+
     // The data for the image.
     private byte[] _imageData = [];
     // The width and height of the texture.
     private int _width;
     private int _height;
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to return the type of brush.
     /// </summary>
@@ -130,9 +130,9 @@ public class GorgonGlyphTextureBrush
     /// Property to return the image data to apply to the brush.
     /// </summary>
     public Span<byte> Image => _imageData;
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>Function to write out the specifics of the font brush data to a file writer.</summary>
     /// <param name="writer">The writer used to write the brush data.</param>
     internal override void WriteBrushData(GorgonBinaryWriter writer)
@@ -277,9 +277,9 @@ public class GorgonGlyphTextureBrush
             && (brush.TextureRegion.Equals(TextureRegion))
             && (brush.Image.SequenceEqual(Image))));
     }
-    #endregion
 
-    #region Constructor
+
+
     /// <summary>Initializes a new instance of the <see cref="GorgonGlyphTextureBrush"/> class.</summary>
     internal GorgonGlyphTextureBrush() => TextureRegion = new DX.RectangleF(0, 0, 1, 1);
 
@@ -340,5 +340,5 @@ public class GorgonGlyphTextureBrush
         tempImage.Buffers[0].Data.CopyTo(_imageData.AsSpan());
         TextureRegion = new DX.RectangleF(0, 0, 1, 1);
     }
-    #endregion
+
 }

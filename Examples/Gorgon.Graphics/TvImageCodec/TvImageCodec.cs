@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2017 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: March 5, 2017 10:05:08 PM
 // 
-#endregion
+
 
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
@@ -35,18 +35,17 @@ using Gorgon.IO;
 namespace Gorgon.Examples;
 
 /// <summary>
-/// Our TV image codec.
+/// Our TV image codec
 /// </summary>
 /// <remarks>
-/// This codec will encode and decode image data as 1 channel/pixel to make the image look similar to the line patterns on a CRT tv screen.
+/// This codec will encode and decode image data as 1 channel/pixel to make the image look similar to the line patterns on a CRT tv screen
 /// <para>
-/// To create a codec, we must inherit the GorgonImageCodec object and implement functionality to load and save image data to and from a stream.
+/// To create a codec, we must inherit the GorgonImageCodec object and implement functionality to load and save image data to and from a stream
 /// </para>
 /// </remarks>
 internal class TvImageCodec
     : GorgonImageCodec<IGorgonImageCodecEncodingOptions, IGorgonImageCodecDecodingOptions>
 {
-    #region Value Types.
     /// <summary>
     /// The header for our image format.
     /// </summary>
@@ -74,9 +73,9 @@ internal class TvImageCodec
         /// </summary>
         public int Height;
     }
-    #endregion
 
-    #region Variables.
+
+
     // The magic number to identify the file.
     private const long MagicValue = 0x3074724356543020;
 
@@ -86,9 +85,9 @@ internal class TvImageCodec
     [
         BufferFormat.R8G8B8A8_UNorm
     ];
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to return the friendly description of the format.
     /// </summary>
@@ -125,9 +124,9 @@ internal class TvImageCodec
     /// Property to return whether the image codec supports block compression.
     /// </summary>
     public override bool SupportsBlockCompression => false;
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to read the meta data for the image.
     /// </summary>
@@ -442,9 +441,7 @@ internal class TvImageCodec
             stream.Position = position;
         }
     }
-    #endregion
 
-    #region Constructor
     /// <summary>
     /// Initializes a new instance of the <see cref="TvImageCodec"/> class.
     /// </summary>
@@ -454,5 +451,5 @@ internal class TvImageCodec
         // identify the image data type.  This is use by applications to determine 
         // which codec to use when loading an image.
         CodecCommonExtensions = ["tv"];
-    #endregion
+
 }

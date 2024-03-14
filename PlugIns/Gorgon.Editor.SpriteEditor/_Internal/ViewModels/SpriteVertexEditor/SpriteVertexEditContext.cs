@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2020 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: May 15, 2020 10:52:06 PM
 // 
-#endregion
+
 
 using System.Buffers;
 using System.Numerics;
@@ -35,19 +35,19 @@ using Gorgon.Math;
 namespace Gorgon.Editor.SpriteEditor;
 
 /// <summary>
-/// The view model for the vertex editor.
+/// The view model for the vertex editor
 /// </summary>
 internal class SpriteVertexEditContext
     : EditorContext<SpriteVertexEditContextParameters>, ISpriteVertexEditContext
 {
-    #region Constants.
+
     /// <summary>
     /// The name of the viewer associated with this context.
     /// </summary>
     public const string ViewerName = "ContextCornerOffsets";
-    #endregion
 
-    #region Variables.
+
+
     // The sprite content view model that owns this view model.
     private ISpriteContent _spriteContent;
     // The services from the host application.
@@ -56,9 +56,9 @@ internal class SpriteVertexEditContext
     private int _selectedVertex = -1;
     // The list of vertices.
     private readonly Vector2[] _vertices = new Vector2[4];
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>Property to set or return the vertex offset for the selected vertex.</summary>
     public Vector2 Offset
     {
@@ -159,9 +159,9 @@ internal class SpriteVertexEditContext
     {
         get;
     }
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to determine if the vertices can be reset to their original positions.
     /// </summary>
@@ -249,14 +249,14 @@ internal class SpriteVertexEditContext
 
         base.OnUnload();
     }
-    #endregion
 
-    #region Constructor/Finalizer.
+
+
     /// <summary>Initializes a new instance of the <see cref="SpriteVertexEditContext"/> class.</summary>
     public SpriteVertexEditContext()
     {
         ResetOffsetCommand = new EditorCommand<object>(DoReset, CanReset);
         CancelCommand = new EditorCommand<object>(DoCancel);
     }
-    #endregion
+
 }

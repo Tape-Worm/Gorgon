@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2019 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: April 1, 2019 11:51:35 PM
 // 
-#endregion
+
 
 using System.ComponentModel;
 using System.Numerics;
@@ -37,7 +37,7 @@ using DX = SharpDX;
 namespace Gorgon.Editor.SpriteEditor;
 
 /// <summary>
-/// A renderer to use with the sprite picker tool.
+/// A renderer to use with the sprite picker tool
 /// </summary>
 /// <remarks>Initializes a new instance of the <see cref="PickSpriteViewer"/> class.</remarks>
 /// <param name="renderer">The 2D renderer for the application </param>
@@ -48,14 +48,14 @@ namespace Gorgon.Editor.SpriteEditor;
 internal class PickSpriteViewer(Gorgon2D renderer, GorgonSwapChain swapChain, ISpriteContent dataContext, PickClipperService picker, IMarchingAnts selectionRect)
         : SpriteViewer(ViewerName, renderer, swapChain, dataContext)
 {
-    #region Constants.
+
     /// <summary>
     /// The name of the viewer.
     /// </summary>
     public const string ViewerName = "ContextSpritePick";
-    #endregion
 
-    #region Variables.
+
+
     // Marching ants rectangle.
     private readonly IMarchingAnts _marchAnts = selectionRect;
     // The rectangle clipping service.
@@ -68,9 +68,9 @@ internal class PickSpriteViewer(Gorgon2D renderer, GorgonSwapChain swapChain, IS
     private readonly GorgonSprite _sprite = new();
     // The region for the sprite.
     private DX.RectangleF _spriteRegion;
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to release the texture resources.
     /// </summary>
@@ -329,5 +329,5 @@ internal class PickSpriteViewer(Gorgon2D renderer, GorgonSwapChain swapChain, IS
     /// <summary>Function to set the default zoom/offset for the viewer.</summary>
     public override void DefaultZoom() => MoveTo(Vector2.Zero, ZoomLevels.ToWindow.GetScale());
 
-    #endregion
+
 }

@@ -1,6 +1,6 @@
-﻿#region MIT.
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2012 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: Sunday, April 15, 2012 9:19:40 AM
 // 
-#endregion
+
 
 using Gorgon.Graphics.Core;
 using DX = SharpDX;
@@ -30,7 +30,7 @@ using DX = SharpDX;
 namespace Gorgon.Graphics.Fonts;
 
 /// <summary>
-/// Provides information used to create a new <see cref="GorgonFont"/>.
+/// Provides information used to create a new <see cref="GorgonFont"/>
 /// </summary>
 /// <param name="FontFamilyName">The name of the font family to derive the font from.</param>
 /// <param name="Size">The height of the font.</param>
@@ -38,13 +38,13 @@ namespace Gorgon.Graphics.Fonts;
 /// <remarks>
 /// <para>
 /// The <paramref cref="Size"/> represents the height of the font, including ascent and descent. This is affected by the <paramref cref="FontHeightMode"/>. If the <param cref="FontHeightMode"/> is set 
-/// to <see cref="GorgonFontHeightMode.Points"/>, then this unit is the height size height for the font. Otherwise, this represents the font height in <see cref="GorgonFontHeightMode.Pixels"/>.
+/// to <see cref="GorgonFontHeightMode.Points"/>, then this unit is the height size height for the font. Otherwise, this represents the font height in <see cref="GorgonFontHeightMode.Pixels"/>
 /// </para>
 /// </remarks>
 public record GorgonFontInfo(string FontFamilyName, float Size, GorgonFontHeightMode FontHeightMode)
     : IGorgonFontInfo
 {
-    #region Constructor/Destructor.
+
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonFontInfo"/> class.
     /// </summary>
@@ -67,18 +67,18 @@ public record GorgonFontInfo(string FontFamilyName, float Size, GorgonFontHeight
         UsePremultipliedTextures = fontInfo.UsePremultipliedTextures;
         UseKerningPairs = fontInfo.UseKerningPairs;
     }
-    #endregion
 
-    #region Variables.
+
+
     // Texture size.
     private DX.Size2 _textureSize = new(256, 256);
     // The list of characters supported by the font.
     private char[] _characters = Enumerable.Range(32, 224).Select(Convert.ToChar).Where(c => !char.IsControl(c)).ToArray();
     // Packing spacing.
     private int _packSpace = 1;
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to return the width of the texture(s) used as the backing store for the bitmap font data.
     /// </summary>
@@ -403,5 +403,5 @@ public record GorgonFontInfo(string FontFamilyName, float Size, GorgonFontHeight
         get;
         init;
     } = $"{FontFamilyName} {Size} {FontHeightMode}";
-    #endregion
+
 }

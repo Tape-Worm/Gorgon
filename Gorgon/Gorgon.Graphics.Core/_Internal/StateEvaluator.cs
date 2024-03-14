@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2020 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: December 30, 2020 8:59:46 PM
 // 
-#endregion
+
 
 using System.Diagnostics;
 using Gorgon.Collections;
@@ -34,13 +34,13 @@ using DX = SharpDX;
 namespace Gorgon.Graphics.Core;
 
 /// <summary>
-/// Functionality for evaluating state changes.
+/// Functionality for evaluating state changes
 /// </summary>
 /// <remarks>Initializes a new instance of the <see cref="StateEvaluator" /> class.</remarks>
 /// <param name="graphics">The graphics interface that owns this evaluator.</param>
 internal class StateEvaluator(GorgonGraphics graphics)
 {
-    #region Variables.
+
     // The previous stencil reference value.
     private int _stencilReference;
     // The previous blend sample mask.
@@ -87,9 +87,9 @@ internal class StateEvaluator(GorgonGraphics graphics)
         VsConstantBuffers = new GorgonConstantBuffers(),
         VsSamplers = new GorgonSamplerStates()
     };
-    #endregion
 
-    #region Properties.
+
+
     // The viewports used to define the area to render into.
     public DX.ViewportF[] Viewports = new DX.ViewportF[16];
 
@@ -101,9 +101,9 @@ internal class StateEvaluator(GorgonGraphics graphics)
 
     // The currently bound depth/stencil buffer.
     public GorgonDepthStencil2DView DepthStencil;
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to compare the index buffer binding with stream out bindings.
     /// </summary>
@@ -828,7 +828,7 @@ internal class StateEvaluator(GorgonGraphics graphics)
         _blendSampleMask = int.MinValue;
     }
 
-    #endregion
-    #region Constructor.
-    #endregion
+
+
+
 }

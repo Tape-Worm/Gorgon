@@ -21,7 +21,7 @@ partial class FormOverlay
         base.Dispose(disposing);
     }
 
-    #region Windows Form Designer generated code
+
 
     /// <summary>
     /// Required method for Designer support - do not modify
@@ -56,5 +56,5 @@ partial class FormOverlay
 
     }
 
-    #endregion
+
 }

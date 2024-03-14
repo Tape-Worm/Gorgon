@@ -3,16 +3,16 @@
 namespace Gorgon.Input;
 
 /// <summary>
-/// Provides state for human interface data returned from Raw Input.
+/// Provides state for human interface data returned from Raw Input
 /// </summary>
 /// <remarks>
 /// <para>
 /// This allows a user to read, and parse human interface device data from an aribtrary device. It is recommended that this object be wrapped by an actual object that will be used to present the data 
-/// in an easy to manipulate format.
+/// in an easy to manipulate format
 /// </para>
 /// <para>
 /// This object implements <see cref="IDisposable"/> because it manipulates native memory. It is necessary to call the <see cref="IDisposable.Dispose"/> method in order to ensure there is no memory leak 
-/// when finished with this object.
+/// when finished with this object
 /// </para>
 /// </remarks>
 public interface IGorgonRawHID

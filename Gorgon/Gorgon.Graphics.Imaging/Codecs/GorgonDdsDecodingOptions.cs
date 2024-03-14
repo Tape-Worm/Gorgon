@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2016 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,25 +11,25 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: August 16, 2016 3:08:12 PM
 // 
-#endregion
+
 
 using Gorgon.Configuration;
 
 namespace Gorgon.Graphics.Imaging.Codecs;
 
 /// <summary>
-/// Flags used to decode an existing DDS image encoded with a legacy version of the format specification.
+/// Flags used to decode an existing DDS image encoded with a legacy version of the format specification
 /// </summary>
 [Flags]
 public enum DdsLegacyFlags
@@ -66,12 +66,12 @@ public enum DdsLegacyFlags
 }
 
 /// <summary>
-/// Options used when decoding an image from a stream as a DDS file.
+/// Options used when decoding an image from a stream as a DDS file
 /// </summary>
 public class GorgonDdsDecodingOptions
     : IGorgonImageCodecDecodingOptions
 {
-    #region Properties.
+
     /// <summary>
     /// Property to return the list of options available to the codec.
     /// </summary>
@@ -141,9 +141,9 @@ public class GorgonDdsDecodingOptions
             // Intentionally left blank.
         }
     }
-    #endregion
 
-    #region Constructor/Finalizer.
+
+
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonDdsDecodingOptions"/> class.
     /// </summary>
@@ -152,5 +152,5 @@ public class GorgonDdsDecodingOptions
                                             GorgonOption.CreateOption(nameof(LegacyFormatConversionFlags), DdsLegacyFlags.None),
                                             GorgonOption.CreateOption(nameof(Palette), new List<GorgonColor>())
                                       ]);
-    #endregion
+
 }

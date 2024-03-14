@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2021 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: January 16, 2021 12:46:29 PM
 // 
-#endregion
+
 
 using Gorgon.Core;
 using Gorgon.Graphics.Core.Properties;
@@ -31,7 +31,7 @@ using D3D11 = SharpDX.Direct3D11;
 namespace Gorgon.Graphics.Core;
 
 /// <summary>
-/// Types of queries that can be performed.
+/// Types of queries that can be performed
 /// </summary>
 public enum QueryType
 {
@@ -108,20 +108,20 @@ public enum QueryType
     StreamOutOverflowPredicate3 = D3D11.QueryType.StreamOutputOverflowPredicateStream3,
 }
 /// <summary>
-/// A query used to retrieve information about rendering.
+/// A query used to retrieve information about rendering
 /// </summary>
 public abstract class GorgonQuery<T>
     : IGorgonGraphicsObject, IDisposable
     where T : unmanaged
 {
-    #region Variables.
+
     // Flag to indicate that the query is executing.
     private int _isRunning;
     // The D3D query.
     private D3D11.Query _d3dQuery;
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to return the native D3D query.
     /// </summary>
@@ -149,9 +149,9 @@ public abstract class GorgonQuery<T>
     {
         get;
     }
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to initialize the query.
     /// </summary>
@@ -235,9 +235,9 @@ public abstract class GorgonQuery<T>
         this.UnregisterDisposable(Graphics);
         query?.Dispose();
     }
-    #endregion
 
-    #region Constructor/Finalizer.
+
+
     /// <summary>Initializes a new instance of the <see cref="GorgonQuery{T}" /> class.</summary>
     /// <param name="graphics">The graphics interface used to build the query.</param>
     /// <param name="name">[Optional] The name for the query.</param>
@@ -248,5 +248,5 @@ public abstract class GorgonQuery<T>
         Name = string.IsNullOrWhiteSpace(name) ? $"{GetType().Name}_{Guid.NewGuid():N}" : name;
         Initialize();
     }
-    #endregion
+
 }

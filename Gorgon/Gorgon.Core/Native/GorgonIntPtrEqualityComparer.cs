@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2015 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,28 +11,27 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: Wednesday, July 15, 2015 11:36:46 PM
 // 
-#endregion
+
 
 namespace Gorgon.Native;
 
 /// <summary>
-/// An equality comparer for the <c>nint</c> type.
+/// An equality comparer for the <c>nint</c> type
 /// </summary>
 public class GorgonnintEqualityComparer
     : IEqualityComparer<nint>
 {
-    #region IEqualityComparer<nint> Members
     /// <summary>
     /// Determines whether the specified objects are equal.
     /// </summary>
@@ -47,5 +46,5 @@ public class GorgonnintEqualityComparer
     /// <param name="obj">The <see cref="object" /> for which a hash code is to be returned.</param>
     /// <returns>A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table.</returns>
     public int GetHashCode(nint obj) => obj.GetHashCode();
-    #endregion
+
 }

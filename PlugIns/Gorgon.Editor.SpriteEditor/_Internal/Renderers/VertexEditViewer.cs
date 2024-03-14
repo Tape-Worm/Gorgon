@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2019 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: April 8, 2019 5:03:58 PM
 // 
-#endregion
+
 
 using System.Buffers;
 using System.ComponentModel;
@@ -36,7 +36,7 @@ using DX = SharpDX;
 namespace Gorgon.Editor.SpriteEditor;
 
 /// <summary>
-/// A renderer to use with the vertex offset editing tool.
+/// A renderer to use with the vertex offset editing tool
 /// </summary>
 /// <remarks>Initializes a new instance of the <see cref="VertexEditViewer"/> class.</remarks>
 /// <param name="dataContext">The sprite view model.</param>        
@@ -46,7 +46,7 @@ namespace Gorgon.Editor.SpriteEditor;
 internal class VertexEditViewer(Gorgon2D renderer, GorgonSwapChain swapChain, ISpriteContent dataContext, SpriteVertexEditService vertexEditor)
         : SingleSpriteViewer(SpriteVertexEditContext.ViewerName, renderer, swapChain, dataContext)
 {
-    #region Events.
+
     // Event triggered when toggling the manual input UI.
     private event EventHandler ToggleManualInputEvent;
 
@@ -75,14 +75,14 @@ internal class VertexEditViewer(Gorgon2D renderer, GorgonSwapChain swapChain, IS
             ToggleManualInputEvent -= value;
         }
     }
-    #endregion
 
-    #region Variables.
+
+
     // The editor used to update the sprite vertices.
     private readonly SpriteVertexEditService _vertexEditor = vertexEditor;
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to set the vertices in the vertex editor service.
     /// </summary>
@@ -311,5 +311,5 @@ internal class VertexEditViewer(Gorgon2D renderer, GorgonSwapChain swapChain, IS
         base.Dispose(disposing);
     }
 
-    #endregion
+
 }

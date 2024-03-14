@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2018 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: December 12, 2018 4:43:24 PM
 // 
-#endregion
+
 
 using Gorgon.Collections;
 using Gorgon.Core;
@@ -32,7 +32,7 @@ using Gorgon.Editor.ViewModels;
 namespace Gorgon.Editor.Services;
 
 /// <summary>
-/// A system used to search through the file system for files.
+/// A system used to search through the file system for files
 /// </summary>
 /// <remarks>Initializes a new instance of the <see cref="FileSystemSearchSystem"/> class.</remarks>
 /// <param name="rootDirectory">The root directory for the file system.</param>
@@ -40,7 +40,7 @@ namespace Gorgon.Editor.Services;
 internal class FileSystemSearchSystem(IDirectory rootDirectory)
         : ISearchService<IFile>
 {
-    #region Variables.
+
     // The root of the file system.
     private readonly IDirectory _rootDirectory = rootDirectory ?? throw new ArgumentNullException(nameof(rootDirectory));
     // The type of search keywords that can be used.
@@ -59,9 +59,9 @@ internal class FileSystemSearchSystem(IDirectory rootDirectory)
             Resources.GOREDIT_SEARCH_KEYWORD_DEPENDS_ON
         }
     };
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to parse the search text passed from the user to extract specific keywords.
     /// </summary>
@@ -341,5 +341,5 @@ internal class FileSystemSearchSystem(IDirectory rootDirectory)
         return searchResults;
     }
 
-    #endregion
+
 }

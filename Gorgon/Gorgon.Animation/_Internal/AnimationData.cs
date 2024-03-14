@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2018 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: August 15, 2018 11:01:36 PM
 // 
-#endregion
+
 
 using Gorgon.Core;
 using Gorgon.Graphics;
@@ -31,10 +31,10 @@ using Gorgon.Math;
 namespace Gorgon.Animation;
 
 /// <summary>
-/// A base class for a <see cref="IGorgonAnimation"/> implementation.
+/// A base class for a <see cref="IGorgonAnimation"/> implementation
 /// </summary>
 /// <remarks>
-/// Initializes a new instance of the <see cref="AnimationData" /> class.
+/// Initializes a new instance of the <see cref="AnimationData" /> class
 /// </remarks>
 /// <param name="name">The name of the track.</param>
 /// <param name="fps">The frames per second for the animation.</param>
@@ -44,12 +44,12 @@ namespace Gorgon.Animation;
 public class AnimationData(string name, float fps, float length)
         : GorgonNamedObject(name), IGorgonAnimation
 {
-    #region Variables.
+
     // Number of loops for the animation.
     private int _loopCount;
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to set or return the number of times to loop an animation.
     /// </summary>
@@ -149,9 +149,9 @@ public class AnimationData(string name, float fps, float length)
     {
         get;
     } = fps.Max(1);
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to retrieve the maximum number of key frames across all tracks.
     /// </summary>
@@ -168,7 +168,7 @@ public class AnimationData(string name, float fps, float length)
         return result.Max(Texture2DTracks.Select(item => item.Value).DefaultIfEmpty().Max(key => key?.KeyFrames.Count ?? 0));
     }
 
-    #endregion
-    #region Constructor/Destructor.
-    #endregion
+
+
+
 }

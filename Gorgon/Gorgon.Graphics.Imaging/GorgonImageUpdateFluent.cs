@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2020 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: December 27, 2020 4:49:31 PM
 // 
-#endregion
+
 
 using System.Collections.Concurrent;
 using Gorgon.Core;
@@ -36,7 +36,7 @@ using DX = SharpDX;
 namespace Gorgon.Graphics.Imaging;
 
 /// <summary>
-/// An anchor for repositioning the image after the image has been expanded.
+/// An anchor for repositioning the image after the image has been expanded
 /// </summary>
 public enum ImageExpandAnchor
 {
@@ -79,19 +79,19 @@ public enum ImageExpandAnchor
 }
 
 /// <summary>
-/// Operations for the <see cref="IGorgonImageUpdateFluent"/> interface.
+/// Operations for the <see cref="IGorgonImageUpdateFluent"/> interface
 /// </summary>
 public partial class GorgonImage
     : IGorgonImageUpdateFluent
 {
-    #region Variables.
+
     // Commands to execute when EndUpdate is called.
     private readonly ConcurrentQueue<Action> _commands = new();
     // WIC utility functions for editing the image.
     private WicUtilities _wic;
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to perform image format conversion.
     /// </summary>
@@ -967,5 +967,5 @@ public partial class GorgonImage
         }
         return this;
     }
-    #endregion
+
 }

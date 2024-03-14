@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2020 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: February 8, 2020 9:27:54 PM
 // 
-#endregion
+
 
 using System.ComponentModel;
 using Gorgon.Core;
@@ -37,19 +37,19 @@ using DX = SharpDX;
 namespace Gorgon.Editor.ImageEditor;
 
 /// <summary>
-/// A renderer used to display texture content with effects.
+/// A renderer used to display texture content with effects
 /// </summary>
 internal class TextureFxViewer
     : TextureViewer
 {
-    #region Constants.
+
     /// <summary>
     /// The effects renderer.
     /// </summary>
     public const string ViewerName = "ContextFx";
-    #endregion
 
-    #region Variables.
+
+
     // The number of blur passes.
     private int _passes = 1;
     // The amount to sharpen.
@@ -73,9 +73,9 @@ internal class TextureFxViewer
     private bool _oneBitInvert;
     // The service used to apply effects.
     private readonly IFxPreviewer _fxPreviewer;
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>Handles the BitSettingsPropertyChanged event.</summary>
     /// <param name="sender">The source of the event.</param>
     /// <param name="e">The <see cref="PropertyChangedEventArgs"/> instance containing the event data.</param>
@@ -292,9 +292,9 @@ internal class TextureFxViewer
         DataContext.FxContext.PosterizeSettings.PropertyChanged += PosterizeSettings_PropertyChanged;
         DataContext.FxContext.OneBitSettings.PropertyChanged += OneBitSettings_PropertyChanged;
     }
-    #endregion
 
-    #region Constructor/Finalizer.
+
+
     /// <summary>Initializes a new instance of the <see cref="TextureFxViewer"/> class.</summary>
     /// <param name="renderer">The main renderer for the content view.</param>
     /// <param name="swapChain">The swap chain for the content view.</param>
@@ -306,5 +306,5 @@ internal class TextureFxViewer
         AllowArrayDepthChange = false;
         AllowMipChange = false;
     }
-    #endregion
+
 }

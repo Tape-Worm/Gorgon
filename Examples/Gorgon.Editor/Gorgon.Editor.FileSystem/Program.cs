@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2018 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: July 18, 2018 4:04:19 PM
 // 
-#endregion
+
 
 using System.Numerics;
 using System.Windows.Forms;
@@ -41,11 +41,11 @@ using DX = SharpDX;
 namespace Gorgon.Examples;
 
 /// <summary>
-/// Our example entry point.
+/// Our example entry point
 /// </summary>
 static class Program
 {
-    #region Variables.
+
     // The plug in assembly cache.
     private static GorgonMefPlugInCache _assemblyCache;
     // The core graphics functionality.
@@ -71,9 +71,9 @@ static class Program
     private static GorgonSpriteAnimationController _animController;
     // The background scroll position.
     private static float _pos;
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to load the Gorgon pack file provider plugin.
     /// </summary>
@@ -270,5 +270,5 @@ static class Program
             _assemblyCache?.Dispose();
         }
     }
-    #endregion
+
 }

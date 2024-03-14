@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2018 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: July 25, 2018 7:36:58 PM
 // 
-#endregion
+
 
 using System.Numerics;
 using System.Runtime.CompilerServices;
@@ -41,12 +41,12 @@ using DX = SharpDX;
 namespace Gorgon.Renderers;
 
 /// <summary>
-/// An effect used to render a scene with per-pixel lighting.
+/// An effect used to render a scene with per-pixel lighting
 /// </summary>
 /// <remarks>
 /// <para>
 /// This effect simulates lighting on 2D rendering by using a normal map (and specular map) to determine how to render a pixels shading. It does this by using a G-Buffer which contains a render target 
-/// for the diffuse (unlit color), specular, and normal map data.
+/// for the diffuse (unlit color), specular, and normal map data
 /// </para>
 /// <para>
 /// The effect renders the lighting data in 2 passes. The first renders the diffuse layer using a callback defined by the user to render their objects that they wish to have lit.  Then, the 2nd pass 
@@ -57,7 +57,7 @@ namespace Gorgon.Renderers;
 /// <note type="information">
 /// <para>
 /// Please note that this last compositing pass is not done by the effect and must be handled by the user. This is done in the interest of flexibility to allow the user to decide how to best handle 
-/// the compositing of their scene.
+/// the compositing of their scene
 /// </para>
 /// </note>
 /// </para>
@@ -84,19 +84,19 @@ namespace Gorgon.Renderers;
 /// </list>
 /// </para>
 /// <para>
-/// The user must also supply at least a single light source to effectively view the lighting on the 2D object.
+/// The user must also supply at least a single light source to effectively view the lighting on the 2D object
 /// </para>
 /// </remarks>
 /// <seealso cref="Gorgon2DGBuffer"/>
 /// <remarks>
-/// Initializes a new instance of the <see cref="Gorgon2DLightingEffect"/> class.
+/// Initializes a new instance of the <see cref="Gorgon2DLightingEffect"/> class
 /// </remarks>
 /// <param name="renderer">The renderer used to draw with the effect.</param>
 /// <exception cref="ArgumentNullException">Thrown when the <paramref name="renderer"/> parameter is <b>null</b>.</exception>
 public class Gorgon2DLightingEffect(Gorgon2D renderer)
         : Gorgon2DEffect(renderer, Resources.GOR2D_EFFECT_LIGHTING, Resources.GOR2D_EFFECT_LIGHTING_DESC, 1)
 {
-    #region Value Types.
+ 
     // Constant buffer data for global data.
     [StructLayout(LayoutKind.Sequential, Size = 64, Pack = 16)]
     private struct GlobalEffectData
@@ -118,9 +118,9 @@ public class Gorgon2DLightingEffect(Gorgon2D renderer)
         /// </summary>
         public int ZCheck;
     }
-    #endregion
 
-    #region Variables.        
+
+        
     // Our custom vertex shader for per pixel lighting.
     private GorgonVertexShader _vertexLitTransformShader;
     private Gorgon2DShaderState<GorgonVertexShader> _vertexLitShaderState;
@@ -140,9 +140,9 @@ public class Gorgon2DLightingEffect(Gorgon2D renderer)
         AmbientColor = GorgonColor.Black,
         ZCheck = 1
     };
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to set or return the global ambient color.
     /// </summary>
@@ -172,9 +172,9 @@ public class Gorgon2DLightingEffect(Gorgon2D renderer)
     /// <summary>Property to return the number of passes required to render the effect.</summary>
     /// <remarks>This is merely for information, passes may or may not be exposed to the end user by the effect author.</remarks>
     public override int PassCount => Lights.Count + 1;
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to perform the actual rendering of the effect.
     /// </summary>
@@ -381,5 +381,5 @@ public class Gorgon2DLightingEffect(Gorgon2D renderer)
         OnRender(gbuffer.GBufferTexture, output, camera);
     }
 
-    #endregion
+
 }

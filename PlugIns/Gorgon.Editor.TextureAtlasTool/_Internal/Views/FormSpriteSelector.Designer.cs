@@ -27,7 +27,7 @@ partial class FormSpriteSelector
         base.Dispose(disposing);
     }
 
-    #region Windows Form Designer generated code
+
 
     /// <summary>
     /// Required method for Designer support - do not modify
@@ -274,7 +274,7 @@ partial class FormSpriteSelector
 
     }
 
-    #endregion
+
 
     private System.Windows.Forms.TableLayoutPanel TableFileSelection;
     private System.Windows.Forms.Button ButtonCancel;

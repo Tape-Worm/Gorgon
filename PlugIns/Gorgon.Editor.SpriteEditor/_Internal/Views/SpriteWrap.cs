@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2019 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: March 28, 2019 9:48:28 AM
 // 
-#endregion
+
 
 using System.ComponentModel;
 using Gorgon.Editor.UI;
@@ -33,12 +33,12 @@ using Gorgon.Graphics.Core;
 namespace Gorgon.Editor.SpriteEditor;
 
 /// <summary>
-/// A texture wrapping editing control for the sprite.
+/// A texture wrapping editing control for the sprite
 /// </summary>
 internal partial class SpriteWrap
     : EditorSubPanelCommon, IDataContext<ISpriteTextureWrapEdit>
 {
-    #region Properties.
+
     /// <summary>
     /// Property to return the data context for the view.
     /// </summary>
@@ -48,9 +48,9 @@ internal partial class SpriteWrap
         get;
         private set;
     }
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>Handles the Click event of the RadioHClamp control.</summary>
     /// <param name="sender">The source of the event.</param>
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
@@ -265,9 +265,9 @@ internal partial class SpriteWrap
 
         ViewModel.PropertyChanged += DataContext_PropertyChanged;
     }
-    #endregion
 
-    #region Constructor/Finalizer.
+
+
     /// <summary>Initializes a new instance of the <see cref="SpriteWrap"/> class.</summary>
     public SpriteWrap()
     {
@@ -279,5 +279,5 @@ internal partial class SpriteWrap
         RadioHMirrorOnce.Tag = RadioVMirrorOnce.Tag = TextureWrap.MirrorOnce;
         RadioHBorder.Tag = RadioVBorder.Tag = TextureWrap.Border;
     }
-    #endregion
+
 }

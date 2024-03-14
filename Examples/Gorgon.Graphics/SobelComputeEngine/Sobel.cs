@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2017 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: August 3, 2017 10:18:21 PM
 // 
-#endregion
+
 
 using Gorgon.Graphics.Core;
 using Gorgon.Math;
@@ -30,12 +30,12 @@ using Gorgon.Math;
 namespace Gorgon.Examples;
 
 /// <summary>
-/// The sobel edge detection shader.
+/// The sobel edge detection shader
 /// </summary>
 internal class Sobel
     : IDisposable
 {
-    #region Variables.
+
     // The compute engine to use.
     private readonly GorgonComputeEngine _compute;
     // The sobel constant data.
@@ -46,9 +46,9 @@ internal class Sobel
     private GorgonDispatchCall _dispatch;
     // The dispatch call builder.
     private readonly GorgonDispatchCallBuilder _dispatchBuilder;
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to process a texture into the output texture.
     /// </summary>
@@ -83,9 +83,9 @@ internal class Sobel
     /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
     /// </summary>
     public void Dispose() => _sobelData?.Dispose();
-    #endregion
 
-    #region Constructor/Finalizer.
+
+
     /// <summary>
     /// Initializes a new instance of the <see cref="Sobel"/> class.
     /// </summary>
@@ -111,5 +111,5 @@ internal class Sobel
         _dispatchBuilder.ConstantBuffer(_sobelData.GetView())
                         .ComputeShader(sobelShader);
     }
-    #endregion
+
 }

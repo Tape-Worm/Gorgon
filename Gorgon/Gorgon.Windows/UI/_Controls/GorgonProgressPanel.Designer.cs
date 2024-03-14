@@ -26,7 +26,7 @@ partial class GorgonProgressPanel
         base.Dispose(disposing);
     }
 
-    #region Component Designer generated code
+
 
     /// <summary> 
     /// Required method for Designer support - do not modify 
@@ -133,7 +133,7 @@ partial class GorgonProgressPanel
 
     }
 
-    #endregion
+
     private System.Windows.Forms.FlowLayoutPanel PanelLayout;
     private System.Windows.Forms.ProgressBar ProgressMeter;
     private System.Windows.Forms.Button ButtonCancel;

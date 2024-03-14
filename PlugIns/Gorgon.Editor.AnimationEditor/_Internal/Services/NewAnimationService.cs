@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2020 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: July 23, 2020 12:34:48 PM
 // 
-#endregion
+
 
 using Gorgon.Editor.AnimationEditor.Properties;
 using Gorgon.Editor.Content;
@@ -34,7 +34,7 @@ using Gorgon.UI;
 namespace Gorgon.Editor.AnimationEditor;
 
 /// <summary>
-/// The service used to query for new animation information.
+/// The service used to query for new animation information
 /// </summary>
 /// <remarks>Initializes a new instance of the <see cref="NewAnimationService"/> class.</remarks>
 /// <param name="fileManager">The project file manager.</param>
@@ -43,16 +43,16 @@ namespace Gorgon.Editor.AnimationEditor;
 /// <exception cref="ArgumentNullException">Thrown when the <paramref name="fileManager"/>, <paramref name="spriteCodec"/> or the <paramref name="imageCodec"/> parameter is <b>null</b>.</exception>
 internal class NewAnimationService(IContentFileManager fileManager, IGorgonSpriteCodec spriteCodec, IGorgonImageCodec imageCodec)
 {
-    #region Variables.
+
     // The file manager for the project file system.
     private readonly IContentFileManager _fileManager = fileManager ?? throw new ArgumentNullException(nameof(fileManager));
     // The image codec for loading texture data.
     private readonly IGorgonImageCodec _imageCodec = imageCodec ?? throw new ArgumentNullException(nameof(imageCodec));
     // THe sprite codec for loading sprite data.
     private readonly IGorgonSpriteCodec _spriteCodec = spriteCodec ?? throw new ArgumentNullException(nameof(spriteCodec));
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to determine if an image content file is a sprite or not.
     /// </summary>
@@ -130,7 +130,7 @@ internal class NewAnimationService(IContentFileManager fileManager, IGorgonSprit
             : (null, 0, 0, null, null);
     }
 
-    #endregion
-    #region Constructor.
-    #endregion
+
+
+
 }

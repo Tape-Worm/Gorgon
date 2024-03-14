@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2016 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: July 4, 2016 9:16:56 PM
 // 
-#endregion
+
 
 using Gorgon.Collections;
 using D3D11 = SharpDX.Direct3D11;
@@ -30,18 +30,18 @@ using D3D11 = SharpDX.Direct3D11;
 namespace Gorgon.Graphics.Core;
 
 /// <summary>
-/// A pipeline state object used to set up the complete graphics pipeline for Gorgon.
+/// A pipeline state object used to set up the complete graphics pipeline for Gorgon
 /// </summary>
 /// <remarks>
 /// <para>
 /// A pipeline state object is used to define the state of the pipeline prior to drawing anything. It can be used to assign shaders, and various other states that will affect how data is rasterized on 
-/// the GPU.
+/// the GPU
 /// </para>
 /// <para>
-/// The pipeline state object is immutable, and as such cannot be changed directly. To create a new pipeline state object, a <see cref="GorgonPipelineStateBuilder"/> must be used.
+/// The pipeline state object is immutable, and as such cannot be changed directly. To create a new pipeline state object, a <see cref="GorgonPipelineStateBuilder"/> must be used
 /// </para>
 /// <para>
-/// Pipeline states are assigned to a draw call via one of the draw call builders.
+/// Pipeline states are assigned to a draw call via one of the draw call builders
 /// </para>
 /// </remarks>
 /// <seealso cref="GorgonPipelineStateBuilder"/>
@@ -50,7 +50,7 @@ namespace Gorgon.Graphics.Core;
 /// <seealso cref="GorgonStreamOutCall"/>
 public class GorgonPipelineState
 {
-    #region Variables.
+
     // D3D States.
     private D3D11.RasterizerState1 _d3DRasterState;
     private D3D11.DepthStencilState _d3DDepthStencilState;
@@ -63,9 +63,9 @@ public class GorgonPipelineState
     private GorgonHullShader _hullShader;
     // Topology.
     private PrimitiveType _primitiveType;
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to set or return the states that have been updated in this pipeline state.
     /// </summary>
@@ -315,9 +315,9 @@ public class GorgonPipelineState
     /// Property to return the list of blending states for each render target.
     /// </summary>
     public IGorgonReadOnlyArray<GorgonBlendState> BlendStates => RwBlendStates;
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to clear the pipeline state.
     /// </summary>
@@ -368,9 +368,9 @@ public class GorgonPipelineState
         state.D3DDepthStencilState = D3DDepthStencilState;
         state.D3DRasterState = D3DRasterState;
     }
-    #endregion
 
-    #region Constructor.
+
+
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonPipelineState"/> class.
     /// </summary>
@@ -383,5 +383,5 @@ public class GorgonPipelineState
     internal GorgonPipelineState()
     {
     }
-    #endregion
+
 }

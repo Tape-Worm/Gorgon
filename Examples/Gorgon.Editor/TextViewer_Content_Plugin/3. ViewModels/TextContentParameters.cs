@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2020 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: August 4, 2020 11:21:27 PM
 // 
-#endregion
+
 
 using Gorgon.Editor.Content;
 using Gorgon.Editor.PlugIns;
@@ -32,13 +32,13 @@ using Gorgon.Editor.UI;
 namespace Gorgon.Examples;
 
 /// <summary>
-/// Parameters to pass in to the <see cref="ITextContent"/> view model.
+/// Parameters to pass in to the <see cref="ITextContent"/> view model
 /// </summary>
 /// <remarks>
 /// These are default values and configuration information for our view model. These are used when we initialize the view model 
 /// after we create an instance of the view model. 
 /// 
-/// Basically this provides us with Dependency Injection for the view model.
+/// Basically this provides us with Dependency Injection for the view model
 /// </remarks>
 /// <remarks>Initializes a new instance of the <see cref="TextContentParameters"/> class.</remarks>
 /// <param name="text">The initial text for the view model.</param>

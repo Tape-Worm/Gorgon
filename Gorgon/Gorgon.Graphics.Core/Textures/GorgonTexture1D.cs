@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2018 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: April 8, 2018 8:17:22 PM
 // 
-#endregion
+
 
 using System.Runtime.CompilerServices;
 using Gorgon.Core;
@@ -39,19 +39,19 @@ using DX = SharpDX;
 namespace Gorgon.Graphics.Core;
 
 /// <summary>
-/// A texture used to project an image onto a graphic primitive such as a triangle.
+/// A texture used to project an image onto a graphic primitive such as a triangle
 /// </summary>
 public sealed class GorgonTexture1D
     : GorgonGraphicsResource, IGorgonTexture1DInfo, IGorgonTextureResource
 {
-    #region Constants.
+
     /// <summary>
     /// The prefix used for generated names.
     /// </summary>
     internal const string NamePrefix = nameof(GorgonTexture1D);
-    #endregion
 
-    #region Variables.
+
+
     // Default texture loading options.
     private static readonly GorgonTextureLoadOptions _defaultLoadOptions = new();
     // The ID number of the texture.
@@ -68,9 +68,9 @@ public sealed class GorgonTexture1D
 #if NET48_OR_GREATER
 #pragma warning restore IDE0044 // Add readonly modifier
 #endif
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to return the bind flags used for the D3D 11 resource.
     /// </summary>
@@ -189,9 +189,9 @@ public sealed class GorgonTexture1D
     /// Property to return whether the size of the texture is a power of 2 or not.
     /// </summary>
     bool IGorgonImageInfo.IsPowerOfTwo => ((Width == 0) || (Width & (Width - 1)) == 0);
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to transfer texture data into an image buffer.
     /// </summary>
@@ -1638,9 +1638,9 @@ public sealed class GorgonTexture1D
     /// <summary>Function to retrieve a default shader resource view.</summary>
     /// <returns>The default shader resource view for the texture.</returns>
     GorgonShaderResourceView IGorgonTextureResource.GetShaderResourceView() => GetShaderResourceView();
-    #endregion
 
-    #region Constructor/Finalizer.
+
+
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonTexture1D"/> class.
     /// </summary>
@@ -1699,5 +1699,5 @@ public sealed class GorgonTexture1D
 
         this.RegisterDisposable(graphics);
     }
-    #endregion
+
 }

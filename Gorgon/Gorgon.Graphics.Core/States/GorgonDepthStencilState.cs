@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2016 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,29 +11,29 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: July 28, 2016 11:49:51 PM
 // 
-#endregion
+
 
 using D3D11 = SharpDX.Direct3D11;
 
 namespace Gorgon.Graphics.Core;
 
 /// <summary>
-/// Describes how rasterized primitive data is clipped against a depth/stencil buffer.
+/// Describes how rasterized primitive data is clipped against a depth/stencil buffer
 /// </summary>
 /// <remarks>
 /// <para>
-/// This will define how rasterized primitive data is clipped against a depth/stencil buffer. Depth reading, writing, and stencil operations are affected by this state.
+/// This will define how rasterized primitive data is clipped against a depth/stencil buffer. Depth reading, writing, and stencil operations are affected by this state
 /// </para>
 /// <para>
 /// The depth/stencil state contains 6 common depth/stencil states used by applications: <see cref="Default"/> (disabled depth/stencil), <see cref="DepthStencilEnabled"/> (both depth and stencil 
@@ -41,7 +41,7 @@ namespace Gorgon.Graphics.Core;
 /// <see cref="DepthEnabled"/> (depth enabled, stencil disabled), and <see cref="StencilEnabled"/> (stencil enabled, depth disabled). 
 /// </para>
 /// <para>
-/// A depth/stencil state is an immutable object, and as such can only be created by using a <see cref="GorgonDepthStencilStateBuilder"/>.
+/// A depth/stencil state is an immutable object, and as such can only be created by using a <see cref="GorgonDepthStencilStateBuilder"/>
 /// </para>
 /// </remarks>
 /// <seealso cref="GorgonGraphics"/>
@@ -50,7 +50,7 @@ namespace Gorgon.Graphics.Core;
 public class GorgonDepthStencilState
     : IEquatable<GorgonDepthStencilState>
 {
-    #region Common States.
+
     /// <summary>
     /// The default depth/stencil state.
     /// </summary>
@@ -174,9 +174,9 @@ public class GorgonDepthStencilState
         DepthComparison = Comparison.GreaterEqual
     };
 
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to set or return the depth comparison function.
     /// </summary>
@@ -279,9 +279,9 @@ public class GorgonDepthStencilState
     {
         get;
     }
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to build the Direct3D 11 depth/stencil state.
     /// </summary>
@@ -346,9 +346,9 @@ public class GorgonDepthStencilState
     /// A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table. 
     /// </returns>
     public override int GetHashCode() => HashCode.Combine(BackFaceStencilOp, FrontFaceStencilOp, DepthComparison, IsDepthEnabled, IsDepthWriteEnabled, IsStencilEnabled, StencilReadMask, StencilWriteMask);
-    #endregion
 
-    #region Constructor/Finalizer.
+
+
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonDepthStencilState"/> class.
     /// </summary>
@@ -377,5 +377,5 @@ public class GorgonDepthStencilState
         BackFaceStencilOp = new GorgonStencilOperation();
         FrontFaceStencilOp = new GorgonStencilOperation();
     }
-    #endregion
+
 }

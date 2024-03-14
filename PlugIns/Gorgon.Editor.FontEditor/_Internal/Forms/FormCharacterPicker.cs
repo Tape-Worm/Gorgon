@@ -1,6 +1,6 @@
-﻿#region MIT.
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2013 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,28 +11,28 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: Sunday, March 10, 2013 10:57:24 PM
 // 
-#endregion
+
 
 namespace Gorgon.Editor.FontEditor;
 
 /// <summary>
-/// Dialog to pick characters for conversion into bitmap glyphs.
+/// Dialog to pick characters for conversion into bitmap glyphs
 /// </summary>
 internal partial class FormCharacterPicker
         : Form
 {
-    #region Properties.
+
     /// <summary>
     /// Property to set or return the current font.
     /// </summary>
@@ -50,9 +50,9 @@ internal partial class FormCharacterPicker
         get => CharPicker.Characters;
         set => CharPicker.Characters = value;
     }
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>Handles the OkClicked event of the CharPicker control.</summary>
     /// <param name="sender">The source of the event.</param>
     /// <param name="e">The <see cref="EventArgs" /> instance containing the event data.</param>
@@ -62,12 +62,12 @@ internal partial class FormCharacterPicker
     /// <param name="sender">The source of the event.</param>
     /// <param name="e">The <see cref="EventArgs" /> instance containing the event data.</param>
     private void CharPicker_CancelClicked(object sender, EventArgs e) => DialogResult = DialogResult.Cancel;
-    #endregion
 
-    #region Constructor/Destructor.
+
+
     /// <summary>
     /// Initializes a new instance of the <see cref="FormCharacterPicker"/> class.
     /// </summary>
     public FormCharacterPicker() => InitializeComponent();
-    #endregion
+
 }

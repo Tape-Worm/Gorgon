@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2018 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: December 23, 2018 2:15:44 PM
 // 
-#endregion
+
 
 using System.Collections.Specialized;
 using System.ComponentModel;
@@ -37,12 +37,12 @@ using Gorgon.IO;
 namespace Gorgon.Editor.ViewModels;
 
 /// <summary>
-/// The view model for the content previewer.
+/// The view model for the content previewer
 /// </summary>
 internal class ContentPreview
     : ViewModelBase<ContentPreviewParameters, IHostServices>, IContentPreview
 {
-    #region Variables.
+
     // The directory path for thumbnails this session.
     private readonly static string _thumbnailPath = $"/Thumbnails/";
     // The file explorer view model, used to track selection changes.
@@ -69,9 +69,9 @@ internal class ContentPreview
     private bool _forceRefresh;
     // Flag to indicate whether the preview is loading or not.
     private bool _loading;
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to return the task used for loading the image preview.
     /// </summary>
@@ -162,9 +162,9 @@ internal class ContentPreview
             OnPropertyChanged();
         }
     }
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to load the preview thumbnail.
     /// </summary>
@@ -487,14 +487,14 @@ internal class ContentPreview
         _fileExplorer.PropertyChanged -= FileExplorer_PropertyChanged;
         _fileExplorer.PropertyChanging -= FileExplorer_PropertyChanging;
     }
-    #endregion
 
-    #region Constructor.
+
+
     /// <summary>Initializes a new instance of the <see cref="ContentPreview"/> class.</summary>
     public ContentPreview()
     {
         RefreshPreviewCommand = new EditorAsyncCommand<string>(DoRefreshPreview);
         ResetPreviewCommand = new EditorAsyncCommand<object>(DoResetPreview);
     }
-    #endregion
+
 }

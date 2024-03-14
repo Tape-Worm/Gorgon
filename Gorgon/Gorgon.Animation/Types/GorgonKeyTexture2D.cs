@@ -1,6 +1,6 @@
-﻿#region MIT.
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2012 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: Wednesday, October 3, 2012 9:14:18 PM
 // 
-#endregion
+
 
 using Gorgon.Core;
 using Gorgon.Graphics.Core;
@@ -32,7 +32,7 @@ using DX = SharpDX;
 namespace Gorgon.Animation;
 
 /// <summary>
-/// An animation key frame for a <see cref="GorgonTexture2DView"/>, texture coordinates and a texture array index.
+/// An animation key frame for a <see cref="GorgonTexture2DView"/>, texture coordinates and a texture array index
 /// </summary>
 /// <remarks>
 /// <para>
@@ -40,26 +40,26 @@ namespace Gorgon.Animation;
 /// </para>
 /// <para>
 /// The track that the key frame is on is used to interpolate the value between key frames. This method makes it so that only a few key frames are required for an animation rather then setting a value
-/// for every time index.
+/// for every time index
 /// </para>
 /// <para>
-/// The track for this key frame does not use interpolation. This means that there is no smooth transition between values and each value is "snapped" to when animating.
+/// The track for this key frame does not use interpolation. This means that there is no smooth transition between values and each value is "snapped" to when animating
 /// </para>
 /// </remarks>
 /// <seealso cref="IGorgonAnimationTrack{T}"/>
 public class GorgonKeyTexture2D
     : IGorgonKeyFrame
 {
-    #region Variables.
+
     // The texture coordinates.
     private DX.RectangleF _textureCoordinates;
     // The texture array index.
     private int _textureArrayIndex;
     // Texture to display.
     private GorgonTexture2DView _value;
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to set or return the texture view to use.
     /// </summary>
@@ -118,17 +118,17 @@ public class GorgonKeyTexture2D
     {
         get;
     } = typeof(GorgonTexture2DView);
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to clone the key.
     /// </summary>
     /// <returns>The cloned key.</returns>
     public IGorgonKeyFrame Clone() => new GorgonKeyTexture2D(this);
-    #endregion
 
-    #region Constructor/Destructor.
+
+
     /// <summary>Initializes a new instance of the <see cref="GorgonKeyTexture2D"/> class.</summary>
     /// <param name="key">The key to copy.</param>
     /// <exception cref="ArgumentNullException">Thrown when the <paramref name="key"/> parameter is <b>null</b>.</exception>
@@ -189,5 +189,5 @@ public class GorgonKeyTexture2D
         _textureCoordinates = textureCoordinates;
         _textureArrayIndex = textureArrayIndex;
     }
-    #endregion
+
 }

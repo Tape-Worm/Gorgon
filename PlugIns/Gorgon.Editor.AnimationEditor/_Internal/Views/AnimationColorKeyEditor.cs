@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2020 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: July 6, 2020 11:20:21 PM
 // 
-#endregion
+
 
 using System.ComponentModel;
 using Gorgon.Editor.UI;
@@ -32,17 +32,17 @@ using Gorgon.Graphics;
 namespace Gorgon.Editor.AnimationEditor;
 
 /// <summary>
-/// A color selection control for the sprite.
+/// A color selection control for the sprite
 /// </summary>
 internal partial class AnimationColorKeyEditor
     : EditorSubPanelCommon, IDataContext<IColorValueEditor>
 {
-    #region Variables.
+
     // Flag to indicate that the events are assigned.
     private int _eventsAssigned = 1;
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to return the data context for the view.
     /// </summary>
@@ -52,9 +52,9 @@ internal partial class AnimationColorKeyEditor
         get;
         private set;
     }
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to disable the events on the control.
     /// </summary>
@@ -301,10 +301,10 @@ internal partial class AnimationColorKeyEditor
 
         ViewModel.PropertyChanged += DataContext_PropertyChanged;
     }
-    #endregion
 
-    #region Constructor/Finalizer.
+
+
     /// <summary>Initializes a new instance of the <see cref="AnimationColorKeyEditor"/> class.</summary>
     public AnimationColorKeyEditor() => InitializeComponent();
-    #endregion
+
 }

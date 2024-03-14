@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2017 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: August 3, 2017 12:44:06 PM
 // 
-#endregion
+
 
 using Gorgon.Examples.Properties;
 using Gorgon.Graphics;
@@ -34,7 +34,7 @@ using Gorgon.UI;
 namespace Gorgon.Examples;
 
 /// <summary>
-/// The main application window.
+/// The main application window
 /// </summary>
 /// <remarks>
 /// <para>
@@ -49,7 +49,7 @@ namespace Gorgon.Examples;
 public partial class Form
     : System.Windows.Forms.Form
 {
-    #region Variables.
+
     // The graphics interface for the application.
     private GorgonGraphics _graphics;
     // The renderer used to display our textures.
@@ -66,9 +66,9 @@ public partial class Form
     private GorgonTexture2DView _outputView;
     // The output uav for the output texture.
     private GorgonTexture2DReadWriteView _outputUav;
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Handles the Click event of the ButtonImagePath control.
     /// </summary>
@@ -252,12 +252,12 @@ public partial class Form
             Cursor.Current = Cursors.Default;
         }
     }
-    #endregion
 
-    #region Constructor/Finalizer.
+
+
     /// <summary>
     /// Initializes a new instance of the <see cref="Form"/> class.
     /// </summary>
     public Form() => InitializeComponent();
-    #endregion
+
 }

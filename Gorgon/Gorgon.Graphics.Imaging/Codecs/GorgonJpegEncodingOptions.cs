@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2016 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: August 4, 2016 11:32:12 PM
 // 
-#endregion
+
 
 using Gorgon.Configuration;
 using Gorgon.Graphics.Imaging.Properties;
@@ -30,12 +30,12 @@ using Gorgon.Graphics.Imaging.Properties;
 namespace Gorgon.Graphics.Imaging.Codecs;
 
 /// <summary>
-/// Options used when encoding an image to a stream as a JPEG file.
+/// Options used when encoding an image to a stream as a JPEG file
 /// </summary>
 public sealed class GorgonJpegEncodingOptions
     : IGorgonWicEncodingOptions
 {
-    #region Properties.
+
     /// <summary>
     /// Property to set or return whether all frames in an image array should be persisted.
     /// </summary>
@@ -138,9 +138,9 @@ public sealed class GorgonJpegEncodingOptions
             // Intentionally left blank.
         }
     }
-    #endregion
 
-    #region Constructor.
+
+
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonJpegEncodingOptions"/> class.
     /// </summary>
@@ -150,5 +150,5 @@ public sealed class GorgonJpegEncodingOptions
                                           GorgonOption.CreateDoubleOption(nameof(DpiX), 72.0, Resources.GORIMG_OPT_WIC_DPIX),
                                           GorgonOption.CreateDoubleOption(nameof(DpiY), 72.0, Resources.GORIMG_OPT_WIC_DPIY)
                                       ]);
-    #endregion
+
 }

@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2019 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: February 5, 2019 7:57:48 PM
 // 
-#endregion
+
 
 using Gorgon.Editor.PlugIns;
 using Gorgon.Editor.UI;
@@ -31,7 +31,7 @@ using Gorgon.Graphics.Core;
 namespace Gorgon.Editor.ImageEditor.ViewModels;
 
 /// <summary>
-/// Parameters for the <see cref="IDimensionSettings"/> view model.
+/// Parameters for the <see cref="IDimensionSettings"/> view model
 /// </summary>
 /// <remarks>Initializes a new instance of the <see cref="DimensionSettingsParameters"/> class.</remarks>
 /// <param name="hostServices">Services from the host application.</param>
@@ -39,7 +39,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels;
 internal class DimensionSettingsParameters(IHostContentServices hostServices)
         : HostedPanelViewModelParameters(hostServices)
 {
-    #region Properties.
+
     /// <summary>
     /// Property to return the video adapter used by the application.
     /// </summary>
@@ -48,6 +48,6 @@ internal class DimensionSettingsParameters(IHostContentServices hostServices)
         get;
     } = hostServices.GraphicsContext.Graphics.VideoAdapter;
 
-    #endregion
+
 
 }

@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2019 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: January 4, 2019 12:19:03 PM
 // 
-#endregion
+
 
 using System.ComponentModel;
 using System.Diagnostics;
@@ -35,12 +35,12 @@ using Gorgon.Editor.Properties;
 namespace Gorgon.Editor;
 
 /// <summary>
-/// A base class used to monitor properties for changes.
+/// A base class used to monitor properties for changes
 /// </summary>
 public abstract class PropertyMonitor
     : INotifyPropertyChanging, INotifyPropertyChanged
 {
-    #region Events.
+
     /// <summary>
     /// Event triggered when a property is changed.
     /// </summary>
@@ -50,14 +50,14 @@ public abstract class PropertyMonitor
     /// Event triggered before a property is changed.
     /// </summary>
     public event PropertyChangingEventHandler PropertyChanging;
-    #endregion
 
-    #region Variables.
+
+
     // The list of properties to use.
     private HashSet<string> _properties;
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to set or return whether to use property name validation when evaluating property changes.
     /// </summary>
@@ -75,9 +75,9 @@ public abstract class PropertyMonitor
 #else
     }
 #endif
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to retrieve all property names.
     /// </summary>
@@ -288,5 +288,5 @@ public abstract class PropertyMonitor
             handler?.Invoke(this, new PropertyChangedEventArgs(propName));
         }
     }
-    #endregion
+
 }

@@ -1,6 +1,6 @@
-﻿#region MIT.
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2011 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: Tuesday, June 14, 2011 10:12:12 PM
 // 
-#endregion
+
 
 using System.Collections;
 using System.ComponentModel;
@@ -32,26 +32,26 @@ using Gorgon.Properties;
 namespace Gorgon.Collections;
 
 /// <summary>
-/// Base dictionary for Gorgon library named objects.
+/// Base dictionary for Gorgon library named objects
 /// </summary>
 /// <typeparam name="T">Type of object, must implement <see cref="IGorgonNamedObject">IGorgonNamedObject</see>.</typeparam>
 /// <remarks>
-/// This is a base class used to help in the creation of custom dictionaries that store objects that implement the <see cref="IGorgonNamedObject"/> interface.
+/// This is a base class used to help in the creation of custom dictionaries that store objects that implement the <see cref="IGorgonNamedObject"/> interface
 /// </remarks>
 /// <remarks>
-/// Initializes a new instance of the <see cref="GorgonBaseNamedObjectDictionary{T}"/> class.
+/// Initializes a new instance of the <see cref="GorgonBaseNamedObjectDictionary{T}"/> class
 /// </remarks>
 /// <param name="caseSensitive"><b>true</b> if the key names are case sensitive, <b>false</b> if not.</param>
 public abstract class GorgonBaseNamedObjectDictionary<T>(bool caseSensitive)
     : IGorgonNamedObjectDictionary<T>, IGorgonNamedObjectReadOnlyDictionary<T>
     where T : IGorgonNamedObject
 {
-    #region Variables.
+
     // Internal collection to hold our objects.
     private readonly Dictionary<string, T> _list = new(caseSensitive ? StringComparer.Ordinal : StringComparer.OrdinalIgnoreCase);
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to return the list of items in the underlying collection.
     /// </summary>
@@ -64,9 +64,9 @@ public abstract class GorgonBaseNamedObjectDictionary<T>(bool caseSensitive)
     {
         get;
     } = caseSensitive;
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to add several items to the list.
     /// </summary>
@@ -126,11 +126,6 @@ public abstract class GorgonBaseNamedObjectDictionary<T>(bool caseSensitive)
     /// <returns><b>true</b> if the item was found, <b>false</b> if not.</returns>
     public bool TryGetValue(string name, out T value) => _list.TryGetValue(name, out value);
 
-    #endregion
-    #region Constructor
-    #endregion
-
-    #region IEnumerable<T> Members
     /// <summary>
     /// Returns an enumerator that iterates through the collection.
     /// </summary>
@@ -145,9 +140,7 @@ public abstract class GorgonBaseNamedObjectDictionary<T>(bool caseSensitive)
             yield return item.Value;
         }
     }
-    #endregion
 
-    #region IEnumerable Members
     /// <summary>
     /// Returns an enumerator that iterates through a collection.
     /// </summary>
@@ -162,9 +155,7 @@ public abstract class GorgonBaseNamedObjectDictionary<T>(bool caseSensitive)
             yield return item.Value;
         }
     }
-    #endregion
 
-    #region ICollection<T> Members
     /// <summary>
     /// Gets the number of elements contained in the dictionary.
     /// </summary>
@@ -229,9 +220,7 @@ public abstract class GorgonBaseNamedObjectDictionary<T>(bool caseSensitive)
         _list.Remove(item?.Name ?? string.Empty);
         return true;
     }
-    #endregion
 
-    #region IGorgonNamedObjectDictionary<T> Members
     /// <summary>
     /// Gets a value indicating whether this instance is read only.
     /// </summary>
@@ -295,13 +284,9 @@ public abstract class GorgonBaseNamedObjectDictionary<T>(bool caseSensitive)
 
         _list.Remove(name);
     }
-    #endregion
 
-    #region IGorgonNamedObjectReadOnlyDictionary<T> Members
     /// <summary>
     /// Property to set or return an item in the dictionary by its name.
     /// </summary>
     T IGorgonNamedObjectReadOnlyDictionary<T>.this[string name] => _list[name];
-
-    #endregion
 }

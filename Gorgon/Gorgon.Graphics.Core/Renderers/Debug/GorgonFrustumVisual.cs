@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2021 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: January 15, 2021 2:48:43 PM
 // 
-#endregion
+
 
 using System.Numerics;
 using System.Runtime.CompilerServices;
@@ -33,12 +33,12 @@ using Gorgon.Renderers.Data;
 namespace Gorgon.Renderers.Debug;
 
 /// <summary>
-/// Provides a visual wireframe box to display a frustum for debug purposes.
+/// Provides a visual wireframe box to display a frustum for debug purposes
 /// </summary>
 public class GorgonFrustumVisual
     : IGorgonGraphicsObject, IDisposable
 {
-    #region Variables.        
+        
     // The builder used to build draw calls.
     private readonly GorgonDrawCallBuilder _builder = new();
     // The draw call to submit to the graphics interface.
@@ -55,17 +55,17 @@ public class GorgonFrustumVisual
     private GorgonVertexShader _vertexShader;
     // The pixel shader.
     private GorgonPixelShader _pixelShader;
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>Property to return the graphics interface that built this object.</summary>
     public GorgonGraphics Graphics
     {
         get;
     }
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to initialize the visual.
     /// </summary>
@@ -168,9 +168,9 @@ public class GorgonFrustumVisual
         _vertexBuffer.VertexBuffer?.Dispose();
         _inputLayout?.Dispose();
     }
-    #endregion
 
-    #region Constructor/Finalizer.
+
+
     /// <summary>Initializes a new instance of the <see cref="GorgonFrustumVisual" /> class.</summary>
     /// <param name="graphics">The graphics interface to update.</param>
     /// <exception cref="ArgumentNullException">Thrown when the <paramref name="graphics"/> parameter is <b>null</b>.</exception>
@@ -179,5 +179,5 @@ public class GorgonFrustumVisual
         Graphics = graphics ?? throw new ArgumentNullException(nameof(graphics));
         Initialize();
     }
-    #endregion
+
 }

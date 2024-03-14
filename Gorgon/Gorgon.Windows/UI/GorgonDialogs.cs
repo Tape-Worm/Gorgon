@@ -1,6 +1,6 @@
-﻿#region MIT.
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2011 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: Saturday, June 18, 2011 4:20:00 PM
 // 
-#endregion
+
 
 using System.Collections;
 using System.Text;
@@ -32,10 +32,10 @@ using Gorgon.Windows.Properties;
 namespace Gorgon.UI;
 
 /// <summary>
-/// Confirmation dialog result values.
+/// Confirmation dialog result values
 /// </summary>
 /// <remarks>
-/// The <c>Yes</c> and <c>No</c> fields can be OR'd with the <c>ToAll</c> field to indicate "Yes to all", or "No to all".
+/// The <c>Yes</c> and <c>No</c> fields can be OR'd with the <c>ToAll</c> field to indicate "Yes to all", or "No to all"
 /// </remarks>
 [Flags]
 public enum ConfirmationResult
@@ -63,11 +63,11 @@ public enum ConfirmationResult
 }
 
 /// <summary>
-/// Class used to display various dialog types with enhanced abilities over that of the standard <see cref="MessageBox"/> class.
+/// Class used to display various dialog types with enhanced abilities over that of the standard <see cref="MessageBox"/> class
 /// </summary>
 public static class GorgonDialogs
 {
-    #region Methods.
+
     /// <summary>
     /// Function to format the stack trace output.
     /// </summary>
@@ -432,5 +432,5 @@ public static class GorgonDialogs
 
         return result;
     }
-    #endregion
+
 }

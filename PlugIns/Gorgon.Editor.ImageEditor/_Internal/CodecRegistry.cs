@@ -9,7 +9,7 @@ using Gorgon.PlugIns;
 namespace Gorgon.Editor.ImageEditor;
 
 /// <summary>
-/// A registry for the image codecs used by the plug ins in this assembly.
+/// A registry for the image codecs used by the plug ins in this assembly
 /// </summary>
 /// <remarks>Initializes a new instance of the <see cref="CodecRegistry"/> class.</remarks>
 /// <param name="pluginCache">The cache of plug in assemblies.</param>
@@ -17,16 +17,16 @@ namespace Gorgon.Editor.ImageEditor;
 internal class CodecRegistry(GorgonMefPlugInCache pluginCache, IGorgonLog log)
         : ICodecRegistry
 {
-    #region Variables.
+
     // The cache containing the plug in assemblies.
     private readonly GorgonMefPlugInCache _pluginCache = pluginCache;
     // The service used to manage the plug ins.
     private readonly IGorgonPlugInService _pluginService = new GorgonMefPlugInService(pluginCache);
     // The log.
     private readonly IGorgonLog _log = log;
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to return the list of codecs.
     /// </summary>
@@ -50,9 +50,9 @@ internal class CodecRegistry(GorgonMefPlugInCache pluginCache, IGorgonLog log)
     {
         get;
     } = [];
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to load external image codec plug ins.
     /// </summary>
@@ -274,5 +274,5 @@ internal class CodecRegistry(GorgonMefPlugInCache pluginCache, IGorgonLog log)
         }
     }
 
-    #endregion
+
 }

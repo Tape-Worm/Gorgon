@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2019 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: March 2, 2019 11:15:34 AM
 // 
-#endregion
+
 
 using Gorgon.Editor.Content;
 using Gorgon.Editor.ImageSplitTool.Properties;
@@ -36,17 +36,17 @@ using Gorgon.UI;
 namespace Gorgon.Editor.ImageSplitTool;
 
 /// <summary>
-/// A plug in used to split a texture atlas up by using the sprites associated with it.
+/// A plug in used to split a texture atlas up by using the sprites associated with it
 /// </summary>
 internal class ImageSplitToolPlugIn
     : ToolPlugIn
 {
-    #region Variables.
+
     // The cached button definition.
     private ToolPlugInRibbonButton _button;
-    #endregion
 
-    #region Methods.		
+
+		
     /// <summary>
     /// Function to retrieve the sprite file entries from the file system.
     /// </summary>
@@ -295,13 +295,13 @@ internal class ImageSplitToolPlugIn
 
         base.OnShutdown();
     }
-    #endregion
 
-    #region Constructor/Finalizer.
+
+
     /// <summary>Initializes a new instance of the <see cref="ImageSplitToolPlugIn"/> class.</summary>
     public ImageSplitToolPlugIn()
         : base(Resources.GORIST_PLUGIN_DESC)
     {
     }
-    #endregion
+
 }

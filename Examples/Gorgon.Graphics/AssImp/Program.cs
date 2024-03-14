@@ -14,11 +14,10 @@ using DX = SharpDX;
 namespace Gorgon.Examples;
 
 /// <summary>
-/// The main application class.
+/// The main application class
 /// </summary>
 internal static class Program
 {
-    #region Value Types.
     /// <summary>
     /// GPU data for sending the world and WVP matrices.
     /// </summary>
@@ -58,9 +57,9 @@ internal static class Program
         /// </summary>
         public Vector3 CameraPos;
     }
-    #endregion
 
-    #region Variables.
+
+
     // The form for the application.
     private static FormMain _mainForm;
     // The primary graphics interface.
@@ -93,9 +92,9 @@ internal static class Program
     private static MaterialGpuData _materialGpu = new();
     // The matrix data to the send to the GPU.
     private static MatrixGpuData _matrixGpu = new();
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>Handles the SwapChainResized event of the Screen control.</summary>
     /// <param name="sender">The source of the event.</param>
     /// <param name="e">The <see cref="SwapChainResizedEventArgs" /> instance containing the event data.</param>
@@ -383,5 +382,5 @@ internal static class Program
             GorgonExample.UnloadResources();
         }
     }
-    #endregion
+
 }

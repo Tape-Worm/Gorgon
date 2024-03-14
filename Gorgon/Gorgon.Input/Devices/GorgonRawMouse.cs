@@ -1,4 +1,4 @@
-﻿#region MIT
+﻿
 // 
 // Gorgon
 // Copyright (C) 2015 Michael Winsor
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: Wednesday, September 9, 2015 8:21:31 PM
 // 
-#endregion
+
 
 using Gorgon.Core;
 using Gorgon.Graphics;
@@ -35,7 +35,7 @@ using DX = SharpDX;
 namespace Gorgon.Input;
 
 /// <summary>
-/// Provides events and state for mouse data returned from Raw Input.
+/// Provides events and state for mouse data returned from Raw Input
 /// </summary>
 /// <remarks>
 /// <para>
@@ -50,13 +50,13 @@ namespace Gorgon.Input;
 /// <para>
 /// Because there is no concept of a window (or screen dimensions either) for Raw Input, the data is usually received as relative. That is, the values received from raw input are vectors based on the last 
 /// known position of the mouse. In some cases this data may be absolute (e.g. a touch device), and in this case the position is given in the coordinates for the device. To see these values, an application 
-/// can read the <see cref="Position"/> or <see cref="RelativePositionOffset"/> properties.
+/// can read the <see cref="Position"/> or <see cref="RelativePositionOffset"/> properties
 /// </para>
 /// <para>
 /// <note type="tip">
 /// <para>
 /// This object is ideal for things like rotating a camera, as cursor ballistics may cause strange behaviour when moving. It is not recommended to use this object for things like a GUI as cursor ballistics 
-/// are not applied, and the positioning is not relative to any window or control. For those scenarios, the standard windows event mechanism is preferred.
+/// are not applied, and the positioning is not relative to any window or control. For those scenarios, the standard windows event mechanism is preferred
 /// </para>
 /// </note>
 /// </para>
@@ -64,7 +64,7 @@ namespace Gorgon.Input;
 public class GorgonRawMouse
     : IGorgonMouse
 {
-    #region Variables.
+
     // Range that a double click is valid within.
     private DX.Size2 _doubleClickSize;
     // Mouse horizontal and vertical position.
@@ -93,9 +93,9 @@ public class GorgonRawMouse
     private static readonly object _syncLock = new();
     // The device handle.
     private readonly nint _deviceHandle;
-    #endregion
 
-    #region Events.
+
+
     /// <summary>
     /// Event triggered when the mouse is moved.
     /// </summary>
@@ -120,9 +120,9 @@ public class GorgonRawMouse
     /// Event triggered when a double click is performed on a mouse button.
     /// </summary>
     public event EventHandler<GorgonMouseEventArgs> MouseDoubleClicked;
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to return the type of device.
     /// </summary>
@@ -325,9 +325,9 @@ public class GorgonRawMouse
         get;
         set;
     }
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to initiate a double click.
     /// </summary>
@@ -665,9 +665,9 @@ public class GorgonRawMouse
             MouseMove?.Invoke(this, new GorgonMouseEventArgs(Buttons, MouseButtons.None, _position, _wheelPosition, RelativePositionOffset, RelativeWheelDelta, 0, !rawInputData.IsRelative));
         }
     }
-    #endregion
 
-    #region Constructor/Finalizer.
+
+
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonRawMouse" /> class.
     /// </summary>
@@ -693,6 +693,6 @@ public class GorgonRawMouse
         _deviceHandle = mouseInfo.Handle;
         Info = mouseInfo;
     }
-    #endregion
+
 
 }

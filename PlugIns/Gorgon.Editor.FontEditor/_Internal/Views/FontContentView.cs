@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2020 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: August 3, 2020 3:45:05 PM
 // 
-#endregion
+
 
 using System.ComponentModel;
 using Gorgon.Editor.Rendering;
@@ -35,12 +35,12 @@ using Gorgon.Graphics.Fonts;
 namespace Gorgon.Editor.FontEditor;
 
 /// <summary>
-/// The view for the font content.
+/// The view for the font content
 /// </summary>
 internal partial class FontContentView
     : VisualContentBaseControl, IDataContext<IFontContent>
 {
-    #region Variables.
+
     // The renderer for our font data.
     private FontRenderer _renderer;
     // The marching ants selection rectangle.
@@ -49,9 +49,9 @@ internal partial class FontContentView
     private IRectClipperService _clipper;
     // The form containing the ribbon used to merge with the application ribbon.
     private readonly FormRibbon _ribbonForm;
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to set or return the font factory for our fonts.
     /// </summary>
@@ -68,9 +68,9 @@ internal partial class FontContentView
         get;
         private set;
     }
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to validate the controls on the view.
     /// </summary>
@@ -274,9 +274,9 @@ internal partial class FontContentView
         FontGradientBrush.SetDataContext(dataContext?.TextureEditor.GradientBrush);
         FontTextureBrush.SetDataContext(dataContext?.TextureEditor.TextureBrush);
     }
-    #endregion
 
-    #region Constructor/Finalizer.
+
+
     /// <summary>Initializes a new instance of the <see cref="FontContentView"/> class.</summary>
     public FontContentView()
     {
@@ -294,5 +294,5 @@ internal partial class FontContentView
         RegisterChildPanel(typeof(FontGradientBrush).FullName, FontGradientBrush);
         RegisterChildPanel(typeof(FontTextureBrush).FullName, FontTextureBrush);
     }
-    #endregion
+
 }

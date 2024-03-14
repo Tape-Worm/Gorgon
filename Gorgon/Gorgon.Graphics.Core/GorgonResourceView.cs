@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2018 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: May 20, 2018 11:49:55 AM
 // 
-#endregion
+
 
 using System.Diagnostics;
 using Gorgon.Diagnostics;
@@ -31,19 +31,19 @@ using D3D11 = SharpDX.Direct3D11;
 namespace Gorgon.Graphics.Core;
 
 /// <summary>
-/// The base class for a view that allows the GPU to access a resource in various ways.
+/// The base class for a view that allows the GPU to access a resource in various ways
 /// </summary>
 public abstract class GorgonResourceView
     : IDisposable, IGorgonGraphicsObject, IEquatable<GorgonResourceView>
 {
-    #region Variables.
+
     // The resource being viewed.
     private GorgonGraphicsResource _resource;
     // The resource view.
     private D3D11.ResourceView _view;
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to return the logging interface use for debug messages.
     /// </summary>
@@ -80,9 +80,9 @@ public abstract class GorgonResourceView
     {
         get;
     }
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to perform the creation of a specific kind of view.
     /// </summary>
@@ -163,9 +163,9 @@ public abstract class GorgonResourceView
     /// A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table. 
     /// </returns>
     public override int GetHashCode() => _view.GetHashCode();
-    #endregion
 
-    #region Constructor/Finalizer.
+
+
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonResourceView"/> class.
     /// </summary>
@@ -176,5 +176,5 @@ public abstract class GorgonResourceView
         _resource = resource ?? throw new ArgumentNullException(nameof(resource));
         Graphics = _resource.Graphics;
     }
-    #endregion
+
 }

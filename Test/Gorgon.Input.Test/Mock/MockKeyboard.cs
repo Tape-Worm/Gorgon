@@ -21,7 +21,7 @@ namespace Gorgon.Input.Test.Mock
         {
             get;
         }
-        #endregion
+    
 
         public MockKeyboard(IGorgonInputService service, IGorgonKeyboardInfo2 keyboard)
         {
@@ -124,7 +124,7 @@ namespace Gorgon.Input.Test.Mock
             IsExclusive = false;
             Window = null;
         }
-        #endregion
+    
 
         #region IGorgonKeyboard Members
 
@@ -137,6 +137,6 @@ namespace Gorgon.Input.Test.Mock
             throw new NotImplementedException();
         }
 
-        #endregion
+    
     }
 }

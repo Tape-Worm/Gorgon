@@ -32,7 +32,7 @@ partial class ImageEditorView
         base.Dispose(disposing);
     }
 
-    #region Component Designer generated code
+
 
     /// <summary> 
     /// Required method for Designer support - do not modify 
@@ -512,7 +512,7 @@ partial class ImageEditorView
 
     }
 
-    #endregion
+
 
     private System.Windows.Forms.TableLayoutPanel PanelImageViewControls;
     private System.Windows.Forms.Label LabelImageSize;

@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2020 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: August 14, 2020 10:12:30 AM
 // 
-#endregion
+
 
 using System.Numerics;
 using Gorgon.Core;
@@ -34,24 +34,23 @@ using Gorgon.Timing;
 namespace Gorgon.Examples;
 
 /// <summary>
-/// Object representing a particle system emitter.
+/// Object representing a particle system emitter
 /// </summary>
 /// <remarks>
 /// <para>
-/// The emitter is responsible for creating and managing the lifetime of the particles.
+/// The emitter is responsible for creating and managing the lifetime of the particles
 /// 
 /// This code was adapted from the HGE particle system code available at https://github.com/kvakvs/hge/
 /// </para>
 /// </remarks>
 public class ParticleEmitter
 {
-    #region Classes.
     /// <summary>
     /// Object representing a particle.
     /// </summary>
     private class Particle
     {
-        #region Variables.
+    
         /// <summary>
         /// Position of the particle.
         /// </summary>
@@ -104,9 +103,8 @@ public class ParticleEmitter
         /// Terminal age of the particle.
         /// </summary>
         public float TerminalAge;
-        #endregion
+   
 
-        #region Methods
         /// <summary>
         /// Function to copy the contents of this particle to another particle.
         /// </summary>
@@ -127,11 +125,10 @@ public class ParticleEmitter
             particle.Age = Age;
             particle.TerminalAge = TerminalAge;
         }
-        #endregion
+    
     }
-    #endregion
 
-    #region Variables.
+
     // List of particles.
     private Particle[] _particles = null;
     // Previous position.
@@ -144,9 +141,8 @@ public class ParticleEmitter
     private int _aliveCount;
     // The fractional remainder for the particle allocation calculation.
     private float _remainder;
-    #endregion
 
-    #region Properties.
+
     /// <summary>
     /// Property to set or return the scale for the emitter.
     /// </summary>
@@ -353,9 +349,9 @@ public class ParticleEmitter
         get;
         set;
     }
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to create and initialize the particles.
     /// </summary>
@@ -536,9 +532,7 @@ public class ParticleEmitter
             _renderer.DrawSprite(ParticleSprite);
         }
     }
-    #endregion
 
-    #region Constructor/Destructor.
     /// <summary>
     /// Initializes a new instance of the <see cref="ParticleEmitter"/> class.
     /// </summary>
@@ -578,5 +572,5 @@ public class ParticleEmitter
         // Force particle creation (assume 60 FPS).
         CreateParticles(1 / 60.0f);
     }
-    #endregion
+
 }

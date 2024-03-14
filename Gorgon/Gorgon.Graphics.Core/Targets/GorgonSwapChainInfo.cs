@@ -1,6 +1,6 @@
-﻿#region MIT.
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2013 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,23 +11,23 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: Tuesday, June 4, 2013 8:25:47 PM
 // 
-#endregion
+
 
 namespace Gorgon.Graphics.Core;
 
 /// <summary> 
-/// Settings for defining the set up for a swap chain.
+/// Settings for defining the set up for a swap chain
 /// </summary>
 /// <param name="Width">The width of the swap chain backbuffer.</param>
 /// <param name="Height">The height of the swap chain backbuffer.</param>
@@ -35,13 +35,13 @@ namespace Gorgon.Graphics.Core;
 /// <remarks>
 /// <para>
 /// The <paramref cref="Format"/> parameter must support being used a backbuffer format and this can be determined by using the <see cref="GorgonGraphics.FormatSupport"/> 
-/// property.
+/// property
 /// </para>
 /// </remarks>
 public record GorgonSwapChainInfo(int Width, int Height, BufferFormat Format)
     : IGorgonSwapChainInfo
 {
-    #region Constructor.
+
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonSwapChainInfo"/> class.
     /// </summary>
@@ -54,9 +54,9 @@ public record GorgonSwapChainInfo(int Width, int Height, BufferFormat Format)
         Name = string.IsNullOrEmpty(newName) ? info.Name : newName;
         StretchBackBuffer = info.StretchBackBuffer;
     }
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to return whether the back buffer contents will be stretched to fit the size of the presentation target area (typically the client area of the window).
     /// </summary>
@@ -77,5 +77,5 @@ public record GorgonSwapChainInfo(int Width, int Height, BufferFormat Format)
         get;
         init;
     } = GorgonGraphicsResource.GenerateName(GorgonSwapChain.NamePrefix);
-    #endregion
+
 }

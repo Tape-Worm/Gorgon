@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2018 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: October 30, 2018 7:58:37 PM
 // 
-#endregion
+
 
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
@@ -50,12 +50,11 @@ using DX = SharpDX;
 namespace Gorgon.Editor.ImageEditor.ViewModels;
 
 /// <summary>
-/// The image editor content.
+/// The image editor content
 /// </summary>
 internal class ImageContent
     : ContentEditorViewModelBase<ImageContentParameters>, IImageContent
 {
-    #region Undo Args.
     /// <summary>
     /// The arguments used to undo/redo a conversion.
     /// </summary>
@@ -161,9 +160,9 @@ internal class ImageContent
         /// </summary>
         public bool IsPremultiplied;
     }
-    #endregion
 
-    #region Constants.
+
+
     /// <summary>
     /// The attribute key name for the image codec attribute.
     /// </summary>
@@ -176,9 +175,9 @@ internal class ImageContent
     /// The attribute key name for the premultiplied alpha flag.
     /// </summary>
     public const string PremultipliedAttr = "Premultiplied";
-    #endregion
 
-    #region Variables.
+
+
     // The list of available codecs matched by extension.
     private readonly List<(GorgonFileExtension extension, IGorgonImageCodec codec)> _codecs = [];
     // The directory to store the undo cache data.
@@ -225,9 +224,9 @@ internal class ImageContent
     private (string ExePath, string FriendlyName, Drawing.Bitmap IconLarge, Drawing.Bitmap IconSmall) _externalEditorInfo;
     // Information for the user defined editor.
     private (string ExePath, string FriendlyName, Drawing.Bitmap IconLarge, Drawing.Bitmap IconSmall) _userEditorInfo;
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to return the settings for the image editor plugin.
     /// </summary>
@@ -668,9 +667,9 @@ internal class ImageContent
     {
         get;
     }
-    #endregion
 
-    #region Methods.        
+
+        
     /// <summary>Handles the CollectionChanged event of the CodecPlugInPaths control.</summary>
     /// <param name="sender">The source of the event.</param>
     /// <param name="e">The <see cref="NotifyCollectionChangedEventArgs"/> instance containing the event data.</param>
@@ -3214,9 +3213,9 @@ internal class ImageContent
             base.OnUnload();
         }
     }
-    #endregion
 
-    #region Constructor/Finalizer.
+
+
     /// <summary>Initializes a new instance of the ImageContent class.</summary>
     public ImageContent()
     {
@@ -3235,5 +3234,5 @@ internal class ImageContent
         CopyToImageCommand = new EditorAsyncCommand<CopyToImageArgs>(DoCopyToImageAsync, CanCopyToImage);
         ShowFxCommand = new EditorCommand<object>(() => DoShowFx(), CanShowFx);
     }
-    #endregion
+
 }

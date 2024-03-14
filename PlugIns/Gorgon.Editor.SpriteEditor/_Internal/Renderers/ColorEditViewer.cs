@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2019 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: April 16, 2019 11:31:06 AM
 // 
-#endregion
+
 
 using System.ComponentModel;
 using System.Numerics;
@@ -35,7 +35,7 @@ using DX = SharpDX;
 namespace Gorgon.Editor.SpriteEditor;
 
 /// <summary>
-/// The renderer used when updating a sprites colors.
+/// The renderer used when updating a sprites colors
 /// </summary>
 /// <remarks>Initializes a new instance of the <see cref="ColorEditViewer"/> class.</remarks>
 /// <param name="renderer">The 2D renderer for the application.</param>
@@ -44,7 +44,7 @@ namespace Gorgon.Editor.SpriteEditor;
 internal class ColorEditViewer(Gorgon2D renderer, GorgonSwapChain swapChain, ISpriteContent dataContext)
         : SingleSpriteViewer(typeof(SpriteColorEdit).FullName, renderer, swapChain, dataContext)
 {
-    #region Variables.
+
     // The handles for corner selection.
     private readonly DX.RectangleF[] _handles = new DX.RectangleF[5];
     // The handles that are selected.
@@ -53,9 +53,9 @@ internal class ColorEditViewer(Gorgon2D renderer, GorgonSwapChain swapChain, ISp
     private int _activeHandleIndex = -1;
     // Working color set.
     private readonly GorgonColor[] _colors = new GorgonColor[4];
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to set the selected colors.
     /// </summary>
@@ -392,5 +392,5 @@ internal class ColorEditViewer(Gorgon2D renderer, GorgonSwapChain swapChain, ISp
         DataContext.ColorEditor.PropertyChanged += ColorEditor_PropertyChanged;
     }
 
-    #endregion
+
 }

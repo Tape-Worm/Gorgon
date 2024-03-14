@@ -5,12 +5,12 @@ using Gorgon.Math;
 namespace Gorgon.Graphics.Core;
 
 /// <summary>
-/// A view for a <see cref="GorgonConstantBuffer"/>.
+/// A view for a <see cref="GorgonConstantBuffer"/>
 /// </summary>
 /// <remarks>
 /// <para>
 /// This type of view will allow applications to access a <see cref="GorgonConstantBuffer"/> that may be larger than the 4096 constant limit. This is performed by offering a "window" into the constant
-/// buffer data that can be used to tell a shader which portion of the buffer to access at any given time.
+/// buffer data that can be used to tell a shader which portion of the buffer to access at any given time
 /// </para>
 /// <para>
 /// <note type="important">
@@ -18,10 +18,10 @@ namespace Gorgon.Graphics.Core;
 /// Due to the nature of constant buffers on GPU hardware, these views are not aligned to a constant (which is a float4, or 16 bytes), but rather aligned to 16 constants (16 float4 values, or 256 
 /// bytes). This requires that your buffer be set up to be a multiple of 256 bytes in its <see cref="IGorgonConstantBufferInfo.SizeInBytes"/>.  This makes each element in the view the same as 16 float4
 /// values (or 256 bytes). That means when an offset of 2, and a count of 4 is set in the view, it is actually at an offset of 32 float4 values (512 bytes), and covers a range of 64 float4 values
-/// (1024 bytes). Because of this, care should be taken to ensure the buffer matches this alignment if constant buffer offsets/counts are to be used in your application.
+/// (1024 bytes). Because of this, care should be taken to ensure the buffer matches this alignment if constant buffer offsets/counts are to be used in your application
 /// </para>
 /// <para>
-/// If no offsetting into the buffer is required, then the above information is not applicable.
+/// If no offsetting into the buffer is required, then the above information is not applicable
 /// </para>
 /// </note>
 /// </para>
@@ -30,14 +30,14 @@ namespace Gorgon.Graphics.Core;
 public sealed class GorgonConstantBufferView
     : IGorgonGraphicsObject, IGorgonConstantBufferInfo, IDisposable, IEquatable<GorgonConstantBufferView>
 {
-    #region Variables.
+
     // Flag to indicate that the view owns the buffer resource.
     private bool _ownsBuffer;
     // The buffer associated with the view.
     private GorgonConstantBuffer _buffer;
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to set or return whether the view constant range has been adjusted
     /// </summary>
@@ -126,9 +126,9 @@ public sealed class GorgonConstantBufferView
         get;
         private set;
     }
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to change the view element range in the associated constant buffer.
     /// </summary>
@@ -350,9 +350,9 @@ public sealed class GorgonConstantBufferView
     /// <param name="other">An object to compare with this object.</param>
     /// <returns><see langword="true" /> if the current object is equal to the <paramref name="other" /> parameter; otherwise, <see langword="false" />.</returns>
     public bool Equals(GorgonConstantBufferView other) => (ReferenceEquals(this, other)) && (!ViewAdjusted);
-    #endregion
 
-    #region Constructor/Finalizer.
+
+
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonConstantBufferView"/> class.
     /// </summary>
@@ -366,5 +366,5 @@ public sealed class GorgonConstantBufferView
         TotalElementCount = (int)(buffer.SizeInBytes / 256.0f).FastFloor().Min(1);
         AdjustView(firstElement, elementCount);
     }
-    #endregion
+
 }

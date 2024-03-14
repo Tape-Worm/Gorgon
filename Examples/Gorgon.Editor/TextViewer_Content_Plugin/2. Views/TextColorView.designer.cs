@@ -27,8 +27,6 @@ partial class TextColorView
         base.Dispose(disposing);
     }
 
-    #region Component Designer generated code
-
     /// <summary> 
     /// Required method for Designer support - do not modify 
     /// the contents of this method with the code editor.
@@ -69,7 +67,7 @@ partial class TextColorView
 
     }
 
-    #endregion
+
 
     private Editor.UI.Controls.ColorPicker Picker;
 }

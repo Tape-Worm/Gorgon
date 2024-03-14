@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2020 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: June 10, 2020 6:38:49 AM
 // 
-#endregion
+
 
 using System.Buffers;
 using System.Numerics;
@@ -39,7 +39,7 @@ using DX = SharpDX;
 namespace Gorgon.Editor.AnimationEditor;
 
 /// <summary>
-/// The viewer for editing a vector 2 key value for an aniamtion.
+/// The viewer for editing a vector 2 key value for an aniamtion
 /// </summary>
 /// <remarks>Initializes a new instance of the <see cref="DefaultAnimationViewer"/> class.</remarks>
 /// <param name="renderer">The main renderer for the content view.</param>
@@ -51,14 +51,14 @@ namespace Gorgon.Editor.AnimationEditor;
 internal class Vector2AnimationViewer(Gorgon2D renderer, GorgonSwapChain swapChain, IAnimationContent dataContext, IRectClipperService clipper, IAnchorEditService anchorEditor, VertexEditService vertexEditor)
         : AnimationViewer(ViewerName, renderer, swapChain, dataContext, clipper, true)
 {
-    #region Constants.
+
     /// <summary>
     /// The name of the viewer.
     /// </summary>
     public const string ViewerName = nameof(AnimationTrackKeyType.Vector2);
-    #endregion
 
-    #region Variables.
+
+
     // The anchor editor service.
     private readonly IAnchorEditService _anchorEdit = anchorEditor;
     // The editor used to modify sprite vertices.
@@ -67,9 +67,9 @@ internal class Vector2AnimationViewer(Gorgon2D renderer, GorgonSwapChain swapCha
     private int _clipAnchorEvent;
     // Previous angle when modifying vertices for a sprite.
     private GorgonSprite _vertexEditSprite;
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to enable the events for the clipper/anchor editor.
     /// </summary>
@@ -601,9 +601,9 @@ internal class Vector2AnimationViewer(Gorgon2D renderer, GorgonSwapChain swapCha
 
         base.OnUnload();
     }
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>Function to set the default zoom/offset for the viewer.</summary>
     public override void DefaultZoom()
     {
@@ -615,5 +615,5 @@ internal class Vector2AnimationViewer(Gorgon2D renderer, GorgonSwapChain swapCha
         ZoomToSprite(Sprite);
     }
 
-    #endregion
+
 }

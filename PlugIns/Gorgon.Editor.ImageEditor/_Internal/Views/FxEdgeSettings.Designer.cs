@@ -26,7 +26,7 @@ partial class FxEdgeSettings
         base.Dispose(disposing);
     }
 
-    #region Component Designer generated code
+
 
     /// <summary> 
     /// Required method for Designer support - do not modify 
@@ -271,7 +271,7 @@ partial class FxEdgeSettings
 
     }
 
-    #endregion
+
 
     private System.Windows.Forms.Label label1;
     private System.Windows.Forms.TrackBar TrackThreshold;

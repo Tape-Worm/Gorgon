@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2018 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: August 9, 2018 8:45:09 AM
 // 
-#endregion
+
 
 using System.Collections;
 using System.Numerics;
@@ -38,7 +38,7 @@ using DX = SharpDX;
 namespace Gorgon.Renderers;
 
 /// <summary>
-/// A builder used to create a new <see cref="GorgonPolySprite"/> object.
+/// A builder used to create a new <see cref="GorgonPolySprite"/> object
 /// </summary>
 /// <remarks>
 /// <para>
@@ -47,38 +47,38 @@ namespace Gorgon.Renderers;
 /// <para>
 /// The polygonal sprite created by this builder is built up by adding multiple <see cref="GorgonPolySpriteVertex"/> objects to the builder and calling the <see cref="Build"/> method. These vertices 
 /// make up the "hull" of the polygon (basically the outer shape of the polygon), which gets turned into triangles so it can be rendered by Gorgon. Vertex manipulation is not the only functionality 
-/// provided by the builder, other initial values may also be assigned for the created sprite as well.
+/// provided by the builder, other initial values may also be assigned for the created sprite as well
 /// <para>
 /// <note type="important">
-/// A minimum of 3 vertices are required to build a polygonal sprite. Attempting to do so with less will cause an exception.
+/// A minimum of 3 vertices are required to build a polygonal sprite. Attempting to do so with less will cause an exception
 /// </note>
 /// </para>
 /// </para>
 /// <para>
 /// This builder is not the only way to create a polygonal sprite, users can define a series of triangle vertices and indices and use 
-/// <see cref="GorgonPolySprite.Create(GorgonGraphics, IReadOnlyList{GorgonPolySpriteVertex}, IReadOnlyList{int})"/> on the <see cref="GorgonPolySprite"/>.
+/// <see cref="GorgonPolySprite.Create(GorgonGraphics, IReadOnlyList{GorgonPolySpriteVertex}, IReadOnlyList{int})"/> on the <see cref="GorgonPolySprite"/>
 /// </para>
 /// <para>
-/// The resulting polygonal sprite from this builder implements <see cref="IDisposable"/>. Therefore, it is the user's responsibility to dispose of the object when they are done with it.
+/// The resulting polygonal sprite from this builder implements <see cref="IDisposable"/>. Therefore, it is the user's responsibility to dispose of the object when they are done with it
 /// </para>
 /// </remarks>
 /// <seealso cref="GorgonPolySpriteVertex"/>
 /// <seealso cref="GorgonPolySprite"/>
 /// <remarks>
-/// Initializes a new instance of the <see cref="GorgonPolySpriteBuilder" /> class.
+/// Initializes a new instance of the <see cref="GorgonPolySpriteBuilder" /> class
 /// </remarks>
 /// <param name="renderer">The renderer interface to use for building the polygon sprite.</param>
 public class GorgonPolySpriteBuilder(Gorgon2D renderer)
         : IGorgonFluentBuilder<GorgonPolySpriteBuilder, GorgonPolySprite>, IEnumerable<GorgonPolySpriteVertex>, IGorgonGraphicsObject
 {
-    #region Variables.
+
     // The working sprite.
     private readonly GorgonPolySprite _workingSprite = new();
     // The triangulator used to convert the polygon into a triangle mesh.
     private readonly Triangulator _triangulator = new(null);
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to return the number of vertices in the polysprite.
     /// </summary>
@@ -91,9 +91,9 @@ public class GorgonPolySpriteBuilder(Gorgon2D renderer)
     {
         get;
     } = renderer?.Graphics ?? throw new ArgumentNullException(nameof(renderer));
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to copy the values from one sprite to another.
     /// </summary>
@@ -580,7 +580,7 @@ public class GorgonPolySpriteBuilder(Gorgon2D renderer)
     /// <returns>An <see cref="IEnumerator" /> object that can be used to iterate through the collection.</returns>
     IEnumerator IEnumerable.GetEnumerator() => ((IEnumerable)_workingSprite.RwVertices).GetEnumerator();
 
-    #endregion
-    #region Constructor.
-    #endregion
+
+
+
 }

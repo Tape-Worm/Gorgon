@@ -1,6 +1,6 @@
-﻿#region MIT.
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2012 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: Friday, April 13, 2012 6:51:08 AM
 // 
-#endregion
+
 
 using System.Drawing.Imaging;
 using System.Drawing.Text;
@@ -37,26 +37,26 @@ using DX = SharpDX;
 namespace Gorgon.Graphics.Fonts;
 
 /// <summary>
-/// A font used to render text data.
+/// A font used to render text data
 /// </summary>
 /// <remarks>
 /// <para>
 /// This type contains all the necessary information used to render glyphs to represent characters on the screen. Complete kerning information is provided as well (if available on the original font object), 
-/// and can be customized by the user.
+/// and can be customized by the user
 /// </para>
 /// <para>
-/// The font also contains a customizable glyph collection that users can modify to provide custom glyph to character mapping (e.g. a special texture used for a single character).
+/// The font also contains a customizable glyph collection that users can modify to provide custom glyph to character mapping (e.g. a special texture used for a single character)
 /// </para>
 /// </remarks>
 public sealed class GorgonFont
     : GorgonNamedObject, IGorgonFontInfo, IDisposable
 {
-    #region Variables.
+
     // The information used to generate the font.
     private readonly GorgonFontInfo _info;
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to return the factory that registered this font.
     /// </summary>
@@ -348,9 +348,9 @@ public sealed class GorgonFont
     /// </para>
     /// </remarks>
     public bool UseKerningPairs => _info.UseKerningPairs;
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to copy bitmap data to a texture.
     /// </summary>
@@ -849,9 +849,9 @@ public sealed class GorgonFont
             }
         }
     }
-    #endregion
 
-    #region Constructor/Destructor.
+
+
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonFont"/> class.
     /// </summary>
@@ -871,5 +871,5 @@ public sealed class GorgonFont
         Glyphs = [];
         KerningPairs = new Dictionary<GorgonKerningPair, int>();
     }
-    #endregion
+
 }

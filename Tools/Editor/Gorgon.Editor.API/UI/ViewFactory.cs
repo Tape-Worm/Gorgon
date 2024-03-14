@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2018 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: November 11, 2018 12:43:46 AM
 // 
-#endregion
+
 
 using System.Reflection;
 using Gorgon.Editor.PlugIns;
@@ -31,7 +31,7 @@ using Gorgon.Editor.Properties;
 namespace Gorgon.Editor.UI;
 
 /// <summary>
-/// A factory used to create views based on view model types.
+/// A factory used to create views based on view model types
 /// </summary>
 /// <remarks>
 /// <para>
@@ -40,12 +40,12 @@ namespace Gorgon.Editor.UI;
 /// </remarks>
 public static class ViewFactory
 {
-    #region Variables.
+
     // A list of view builders used to create views.
     private static readonly Dictionary<string, Func<Control>> _viewBuilders = new(StringComparer.OrdinalIgnoreCase);
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>Function to register the specified view model with a view builder.</summary>
     /// <typeparam name="T">The type of view model. Must implement <see cref="IViewModel"/>.</typeparam>
     /// <param name="constructor">The function that will create and return the view.</param>
@@ -199,5 +199,5 @@ public static class ViewFactory
             ? throw new KeyNotFoundException(string.Format(Resources.GOREDIT_ERR_CANNOT_FIND_VIEW_FACTORY, typeName))
             : (T)_viewBuilders[interfaceType.AssemblyQualifiedName]();
     }
-    #endregion
+
 }

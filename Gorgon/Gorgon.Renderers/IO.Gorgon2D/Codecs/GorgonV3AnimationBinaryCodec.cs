@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2018 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: August 25, 2018 2:43:32 PM
 // 
-#endregion
+
 
 using System.Numerics;
 using Gorgon.Animation;
@@ -36,17 +36,17 @@ using DX = SharpDX;
 namespace Gorgon.IO;
 
 /// <summary>
-/// A codec used to read/write animations as binary formatted data.
+/// A codec used to read/write animations as binary formatted data
 /// </summary>
 /// <remarks>
-/// Initializes a new instance of the <see cref="GorgonV3AnimationBinaryCodec"/> class.
+/// Initializes a new instance of the <see cref="GorgonV3AnimationBinaryCodec"/> class
 /// </remarks>
 /// <param name="renderer">The renderer used for resource handling.</param>
 /// <exception cref="ArgumentNullException">Thrown when the <paramref name="renderer"/> is <b>null</b>.</exception>
 public class GorgonV3AnimationBinaryCodec(Gorgon2D renderer)
         : GorgonAnimationCodecCommon(renderer, Resources.GOR2DIO_V3_ANIM_BIN_CODEC, Resources.GOR2DIO_V3_ANIM_BIN_CODEC_DESCRIPTION)
 {
-    #region Properties.
+
     /// <summary>
     /// The version data chunk ID.
     /// </summary>
@@ -98,9 +98,9 @@ public class GorgonV3AnimationBinaryCodec(Gorgon2D renderer)
     /// Property to return the version of animation data that the codec supports.
     /// </summary>
     public override Version Version => GorgonV3AnimationJsonCodec.Version30;
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to load the texture information.
     /// </summary>
@@ -440,5 +440,5 @@ public class GorgonV3AnimationBinaryCodec(Gorgon2D renderer)
         }
     }
 
-    #endregion
+
 }

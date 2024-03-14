@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2021 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: September 10, 2021 12:46:10 PM
 // 
-#endregion
+
 
 using Gorgon.Editor.PlugIns;
 using Gorgon.Editor.UI;
@@ -30,7 +30,7 @@ using Gorgon.Editor.UI;
 namespace Gorgon.Editor.FontEditor;
 
 /// <summary>
-/// Parameters for the <see cref="FontTextureBrush"/> view model.
+/// Parameters for the <see cref="FontTextureBrush"/> view model
 /// </summary>
 /// <remarks>Initializes a new instance of the <see cref="FontTextureBrushParameters" /> class.</remarks>
 /// <param name="imageLoader">The service used to load images.</param>
@@ -39,7 +39,7 @@ namespace Gorgon.Editor.FontEditor;
 internal class FontTextureBrushParameters(ImageLoadService imageLoader, IHostContentServices hostServices)
         : HostedPanelViewModelParameters(hostServices)
 {
-    #region Properties.
+
     /// <summary>
     /// Property to return the service used to load texture images.
     /// </summary>
@@ -48,6 +48,6 @@ internal class FontTextureBrushParameters(ImageLoadService imageLoader, IHostCon
         get;
     } = imageLoader ?? throw new ArgumentNullException(nameof(imageLoader));
 
-    #endregion
+
 
 }

@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2017 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: March 2, 2017 12:11:47 AM
 // 
-#endregion
+
 
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
@@ -36,22 +36,22 @@ namespace Gorgon.Examples;
 /// This is an example of using the core graphics API.  
 /// 
 /// It will show how to create and initialize the graphics API.  We do this by creating a GorgonGraphics object and a 
-/// GorgonSwapChain object that is used to display graphical data.
+/// GorgonSwapChain object that is used to display graphical data
 /// 
 /// GorgonGraphics
 /// ===========================================================================================================================
 /// 
 /// This is the primary object used to send data to the GPU. This object can be used to define which video device can be used 
 /// for rendering, and multiple GorgonGraphics objects can allow an application to use multiple video devices at once time
-/// (note: This is not the same as multiple head outputs on a video device).
+/// (note: This is not the same as multiple head outputs on a video device)
 /// 
 /// Graphics objects created with Gorgon must pass in an instance of the GorgonGraphics object for the specific video device 
-/// when creating them. This associates the data created by these objects to the video device used for rendering.
+/// when creating them. This associates the data created by these objects to the video device used for rendering
 /// 
 /// The GorgonGraphics object can also be used to force a specific feature level for a video device. This allows Gorgon to 
 /// be compatible with a wide range of video devices that don't support Direct3D 11.1 (at this point, this option is kind of 
 /// moot as the vast majority of video devices these days are more than capable of D3D 11.1). If the feature level is not 
-/// defined, then the maximum feature level supported by the device is used.
+/// defined, then the maximum feature level supported by the device is used
 /// 
 /// To initialize the GorgonGraphics object, an application needs to pass in an IGorgonVideoDeviceInfo object associated 
 /// with the desired video device. This will be retrieved from the IGorgonVideoDeviceList object which is merely a collection 
@@ -63,7 +63,7 @@ namespace Gorgon.Examples;
 /// ===========================================================================================================================
 /// 
 /// A swap chain allows us to send our graphics data to the screen.  We can create multiple swap chains and even make them all 
-/// full screen (provided they are different monitors).
+/// full screen (provided they are different monitors)
 ///
 /// A GorgonSwapChain requries an IGorgonSwapChainInfo object that will contain the swap chain settings required for initializing 
 /// a swap chain. Because a swap chain uses multiple buffers to present graphical data to the screen, a buffer size is required 
@@ -72,7 +72,7 @@ namespace Gorgon.Examples;
 /// 
 /// Swap chains can also enter/exit full screen exclusive mode, and in this example we use Alt+Enter to switch between full 
 /// screen and windowed mode. Gorgon also has functionality to set up a borderless full screen window (which is preferable to an 
-/// exclusive full screen mode).
+/// exclusive full screen mode)
 /// 
 /// For this example we're just going to assign a window (although this could be any type that inherits from 
 /// System.Windows.Forms.Control) to the swap chain via its constructor, and set its initial size to the client size of the 
@@ -80,15 +80,15 @@ namespace Gorgon.Examples;
 /// 
 /// When setting up a swap chain, it is important to know which buffer format to use for the back buffers.  To this end, the 
 /// GorgonGraphics.VideoDevice has a method called GetBufferFormatSupport that will indicate which formats are valid for use as 
-/// a swap chain format. Well behaved applications should check with this method prior to setting up the swap chain.
+/// a swap chain format. Well behaved applications should check with this method prior to setting up the swap chain
 /// 
 /// Finally, to see something on the screen an application needs to call the Present method on the swap chain. This flips the 
 /// current backbuffer frame to the window and can have a presentation interval to lock down the presentation to the refresh 
-/// rate for the current video mode (this does not apply to windowed mode, and as such is not necessary for this application).
+/// rate for the current video mode (this does not apply to windowed mode, and as such is not necessary for this application)
 /// </summary>
 internal static class Program
 {
-    #region Variables.
+
     // The graphics interface for the application.
     private static GorgonGraphics _graphics;
     // Our primary swap chain.
@@ -107,9 +107,9 @@ internal static class Program
     private static readonly DX.Rectangle[] _clearRegions = new DX.Rectangle[2];
     // Clearing pattern values (0 = full swap chain, 1 upper left/lower right only, 2 upper right, lower left only)
     private static int _clearPattern;
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to handle idle time for the application.
     /// </summary>
@@ -335,7 +335,7 @@ internal static class Program
         // To enter full screen borderless window mode, call EnterFullScreen with no parameters.
         _swap.EnterFullScreen(in nearestMode, output);
     }
-    #endregion
+
 
     /// <summary>
     /// The main entry point for the application.

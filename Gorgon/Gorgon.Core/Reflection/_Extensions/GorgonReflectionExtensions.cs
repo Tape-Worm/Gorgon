@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2015 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: Wednesday, May 27, 2015 8:49:48 PM
 // 
-#endregion
+
 
 using System.Linq.Expressions;
 using System.Reflection;
@@ -32,7 +32,7 @@ using Gorgon.Properties;
 namespace Gorgon.Reflection;
 
 /// <summary>
-/// Delegate method used to create a new object instance with a generic type.
+/// Delegate method used to create a new object instance with a generic type
 /// </summary>
 /// <typeparam name="T">Type of object returned by the activator method.</typeparam>
 /// <param name="args">Arguments to pass to the activator.</param>
@@ -40,7 +40,7 @@ namespace Gorgon.Reflection;
 public delegate T ObjectActivator<out T>(params object[] args);
 
 /// <summary>
-/// Delegate method used to host a property getter method.
+/// Delegate method used to host a property getter method
 /// </summary>
 /// <typeparam name="T">The type of object that hosts the property.</typeparam>
 /// <typeparam name="TP">Type of value returned by the property getter.</typeparam>
@@ -49,7 +49,7 @@ public delegate T ObjectActivator<out T>(params object[] args);
 public delegate TP PropertyGetter<in T, out TP>(T instance);
 
 /// <summary>
-/// Delegate method used to host a property setter method.
+/// Delegate method used to host a property setter method
 /// </summary>
 /// <typeparam name="T">The type of object that hosts the property.</typeparam>
 /// <typeparam name="TP">Type of value set by the property setter.</typeparam>
@@ -58,7 +58,7 @@ public delegate TP PropertyGetter<in T, out TP>(T instance);
 public delegate void PropertySetter<in T, in TP>(T instance, TP value);
 
 /// <summary>
-/// Utility extensions to be used with reflection types.
+/// Utility extensions to be used with reflection types
 /// </summary>
 /// <remarks>
 /// The extensions present in this type are meant to be used as alternatives to reflection functionality, which often has poor performance. 

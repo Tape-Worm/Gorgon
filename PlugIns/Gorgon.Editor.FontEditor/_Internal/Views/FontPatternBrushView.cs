@@ -1,6 +1,6 @@
-﻿#region MIT.
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2014 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: Monday, March 10, 2014 12:44:57 AM
 // 
-#endregion
+
 
 using System.ComponentModel;
 using System.Drawing.Drawing2D;
@@ -36,28 +36,28 @@ using Gorgon.Graphics.Fonts;
 namespace Gorgon.Editor.FontEditor;
 
 /// <summary>
-/// A panel used to dislpay hatch patterns for font glyphs.
+/// A panel used to dislpay hatch patterns for font glyphs
 /// </summary>
 internal partial class FontPatternBrushView
     : EditorSubPanelCommon, IDataContext<IFontPatternBrush>
 {
-    #region Variables.
+
     // Bitmap used to draw the preview.
     private Bitmap _previewBitmap;
     // Lock for reentrancy on events.
     private int _eventLock;
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>Property to return the data context assigned to this view.</summary>
     public IFontPatternBrush ViewModel
     {
         get;
         private set;
     }
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Handles the Paint event of the panelPreview control.
     /// </summary>
@@ -332,9 +332,9 @@ internal partial class FontPatternBrushView
         HookEvents();
         ValidateOk();
     }
-    #endregion
 
-    #region Constructor/Destructor.
+
+
     /// <summary>
     /// Initializes a new instance of the <see cref="FontPatternBrushView"/> class.
     /// </summary>
@@ -343,5 +343,5 @@ internal partial class FontPatternBrushView
         InitializeComponent();
         ComboHatch.RefreshPatterns();
     }
-    #endregion
+
 }

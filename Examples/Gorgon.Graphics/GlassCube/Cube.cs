@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2017 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: March 4, 2017 10:22:08 AM
 // 
-#endregion
+
 
 using System.Numerics;
 using Gorgon.Graphics.Core;
@@ -32,12 +32,12 @@ using Gorgon.Renderers.Geometry;
 namespace Gorgon.Examples;
 
 /// <summary>
-/// Object representing a 3D dimensional cube.
+/// Object representing a 3D dimensional cube
 /// </summary>
 public class Cube
     : IDisposable
 {
-    #region Variables.
+
     // The matrix that defines our rotation.
     private Matrix4x4 _rotation = Matrix4x4.Identity;
     // The matrix that defines our translation.
@@ -45,9 +45,9 @@ public class Cube
     // The world matrix to send to the vertex shader for transformation.
     // This is the combination of the rotation and translation matrix.
     private Matrix4x4 _world = Matrix4x4.Identity;
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to return the vertex buffer that holds the cube vertex data.
     /// </summary>
@@ -84,9 +84,9 @@ public class Cube
             return ref _world;
         }
     }
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to rotate the cube.
     /// </summary>
@@ -121,9 +121,7 @@ public class Cube
         VertexBuffer[0].VertexBuffer.Dispose();
         IndexBuffer?.Dispose();
     }
-    #endregion
 
-    #region Constructor/Destructor.
     /// <summary>
     /// Initializes a new instance of the <see cref="Cube"/> class.
     /// </summary>
@@ -201,5 +199,4 @@ public class Cube
                                                                vertices)
         };
     }
-    #endregion
 }

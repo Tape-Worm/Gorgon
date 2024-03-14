@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2018 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: August 28, 2018 1:49:45 PM
 // 
-#endregion
+
 
 using System.ComponentModel;
 using System.Text;
@@ -35,7 +35,7 @@ using Gorgon.Windows.Properties;
 namespace Gorgon.UI;
 
 /// <summary>
-/// A file folder browser.
+/// A file folder browser
 /// </summary>
 /// <remarks>
 /// <para>
@@ -44,13 +44,13 @@ namespace Gorgon.UI;
 /// </para>
 /// <para>
 /// The control is patterned after the FileDialogBrowser control, but without needing to have a file name. It is also more customizable allowing users to supply their own icons for folders and
-/// drive types.
+/// drive types
 /// </para>
 /// </remarks>
 public partial class GorgonFolderBrowser
     : UserControl
 {
-    #region Variables.
+
     // Flag to indicate that the browser is in read only mode.
     private bool _isReadOnly;
     // The directory that we are currently viewing in the list.
@@ -87,9 +87,9 @@ public partial class GorgonFolderBrowser
     private char _directorySeparator = Path.DirectorySeparatorChar;
     // The current directory.
     private string _currentDirectory;
-    #endregion
 
-    #region Events.
+
+
     /// <summary>
     /// Event triggered when a folder is about to be deleted from the file system.
     /// </summary>
@@ -119,9 +119,9 @@ public partial class GorgonFolderBrowser
     /// </summary>
     [Category("Behavior"), Description("Event triggered when the folder was set to active by entering it in the interface.")]
     public event EventHandler<FolderSelectedArgs> FolderEntered;
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to set or return the character to use as the directory separator.
     /// </summary>
@@ -484,9 +484,9 @@ public partial class GorgonFolderBrowser
             ValidateControls();
         }
     }
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to format the directory path name to fit the settings of the control.
     /// </summary>
@@ -1685,9 +1685,9 @@ public partial class GorgonFolderBrowser
         LabelError.Text = message.Replace('\n', ' ').Replace('\r', ' ');
         PanelError.Visible = true;
     }
-    #endregion
 
-    #region Constructor/Finalizer.
+
+
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonFolderBrowser"/> class.
     /// </summary>
@@ -1700,5 +1700,5 @@ public partial class GorgonFolderBrowser
         ListDirectories.Sorting = SortOrder.None;
         _sortColumn = ColumnDirectoryName;
     }
-    #endregion
+
 }

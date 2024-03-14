@@ -1,4 +1,4 @@
-﻿#region MIT
+﻿
 // 
 // Gorgon
 // Copyright (C) 2015 Michael Winsor
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: Tuesday, September 08, 2015 1:26:21 AM
 // 
-#endregion
+
 
 using System.Buffers;
 using System.ComponentModel;
@@ -35,9 +35,8 @@ using Gorgon.Memory;
 
 namespace Gorgon.Native;
 
-#region Enumerations.
 /// <summary>
-/// Enumeration containing HID usage page flags.
+/// Enumeration containing HID usage page flags
 /// </summary>
 // ReSharper disable InconsistentNaming
 public enum HIDUsagePage
@@ -102,7 +101,7 @@ public enum HIDUsagePage
 }
 
 /// <summary>
-/// Enumeration for HID usage flags.
+/// Enumeration for HID usage flags
 /// </summary>
 public enum HIDUsage
     : ushort
@@ -201,7 +200,7 @@ public enum HIDUsage
 // ReSharper restore InconsistentNaming
 
 /// <summary>
-/// Enumeration containing the command types to issue.
+/// Enumeration containing the command types to issue
 /// </summary>
 internal enum RawInputCommand
 {
@@ -228,7 +227,7 @@ internal enum RawInputCommand
 }
 
 /// <summary>
-/// Enumeration containing flags for a raw input device.
+/// Enumeration containing flags for a raw input device
 /// </summary>
 [Flags]
 internal enum RawInputDeviceFlags
@@ -254,26 +253,26 @@ internal enum RawInputDeviceFlags
     /// <summary>If set, this enables the caller to receive input in the background only if the foreground application does not process it. In other words, if the foreground application is not registered for raw input, then the background application that is registered will receive the input.</summary>
     InputSinkEx = 0x00001000
 }
-#endregion
+
 
 /// <summary>
 /// Native raw Input API functionality
 /// </summary>
 internal static partial class RawInputApi
 {
-    #region Variables.
+
     // The size of the raw input data header.
     private static readonly int _headerSize = Unsafe.SizeOf<RAWINPUTHEADER>();
-    #endregion
 
-    #region Constants.
+
+
     /// <summary>
     /// The window message for Raw Input.
     /// </summary>
     public const int WmRawInput = 0x00FF;
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to retrieve raw input data.
     /// </summary>
@@ -600,12 +599,12 @@ internal static partial class RawInputApi
             }
         }
     }
-    #endregion
 
-    #region Constructor.
+
+
     /// <summary>
     /// Initializes static members of the <see cref="RawInputApi"/> class.
     /// </summary>
     static RawInputApi() => Marshal.PrelinkAll(typeof(RawInputApi));
-    #endregion
+
 }

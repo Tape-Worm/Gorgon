@@ -26,7 +26,7 @@ partial class AnimationTrackContainer
         base.Dispose(disposing);
     }
 
-    #region Component Designer generated code
+
 
     /// <summary> 
     /// Required method for Designer support - do not modify 
@@ -141,7 +141,7 @@ partial class AnimationTrackContainer
 
     }
 
-    #endregion
+
 
     private DataGridViewEx GridTrackKeys;
     private System.Windows.Forms.DataGridViewImageColumn Column0;

@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2020 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: June 10, 2020 4:04:09 PM
 // 
-#endregion
+
 
 using System.Collections.Specialized;
 using System.ComponentModel;
@@ -36,12 +36,12 @@ using Gorgon.Math;
 namespace Gorgon.Editor.AnimationEditor;
 
 /// <summary>
-/// A container component for handling animation tracks and key frames.
+/// A container component for handling animation tracks and key frames
 /// </summary>
 internal partial class AnimationTrackContainer
     : UserControl, IDataContext<IAnimationContent>
 {
-    #region Variables.
+
     // The style to apply to column headers when a playing animation is on a specific key frame column.
     private readonly DataGridViewCellStyle _headerActive;
     private readonly DataGridViewCellStyle _activeCellStyle;
@@ -51,9 +51,9 @@ internal partial class AnimationTrackContainer
     private int _selectionEvent = 1;
     // The data to copy/move.
     private readonly KeyFrameCopyMoveData _copyMoveData = new();
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>Property to return the data context assigned to this view.</summary>
     [Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public IAnimationContent ViewModel
@@ -61,9 +61,9 @@ internal partial class AnimationTrackContainer
         get;
         private set;
     }
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to disable grid events.
     /// </summary>
@@ -854,9 +854,9 @@ internal partial class AnimationTrackContainer
         ViewModel.PropertyChanging += DataContext_PropertyChanging;
         ViewModel.Tracks.CollectionChanged += Tracks_CollectionChanged;
     }
-    #endregion
 
-    #region Constructor.
+
+
     /// <summary>Initializes a new instance of the <see cref="AnimationTrackContainer"/> class.</summary>
     public AnimationTrackContainer()
     {
@@ -880,5 +880,5 @@ internal partial class AnimationTrackContainer
             ForeColor = DarkFormsRenderer.CutForeground
         };
     }
-    #endregion
+
 }

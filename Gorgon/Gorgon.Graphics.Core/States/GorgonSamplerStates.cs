@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2016 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: July 4, 2016 1:05:13 AM
 // 
-#endregion
+
 
 using Gorgon.Collections;
 using Gorgon.Math;
@@ -31,19 +31,19 @@ using D3D11 = SharpDX.Direct3D11;
 namespace Gorgon.Graphics.Core;
 
 /// <summary>
-/// A list of texture sampler states to apply to the pipeline.
+/// A list of texture sampler states to apply to the pipeline
 /// </summary>
 public sealed class GorgonSamplerStates
     : GorgonArray<GorgonSamplerState>
 {
-    #region Constants.
+
     /// <summary>
     /// The maximum number of allowed sampler states that can be bound at the same time.
     /// </summary>
     public const int MaximumSamplerStateCount = D3D11.CommonShaderStage.SamplerSlotCount;
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to return the native samplers.
     /// </summary>
@@ -51,9 +51,9 @@ public sealed class GorgonSamplerStates
     {
         get;
     } = new D3D11.SamplerState[MaximumSamplerStateCount];
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function called when a dirty item is found and added.
     /// </summary>
@@ -65,9 +65,9 @@ public sealed class GorgonSamplerStates
     /// Function called when the array is cleared.
     /// </summary>
     protected override void OnClear() => Array.Clear(Native, 0, Native.Length);
-    #endregion
 
-    #region Constructor/Finalizer.
+
+
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonSamplerStates"/> class.
     /// </summary>
@@ -85,5 +85,5 @@ public sealed class GorgonSamplerStates
             this[i] = states[i];
         }
     }
-    #endregion
+
 }

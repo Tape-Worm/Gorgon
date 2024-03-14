@@ -1,6 +1,6 @@
-﻿#region MIT.
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2011 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: Friday, July 15, 2011 6:22:48 AM
 // 
-#endregion
+
 
 using Gorgon.Diagnostics;
 using Gorgon.Input.XInput.Properties;
@@ -31,12 +31,12 @@ using XI = SharpDX.XInput;
 namespace Gorgon.Input.XInput;
 
 /// <summary>
-/// The driver for XInput functionality.
+/// The driver for XInput functionality
 /// </summary>
 public class GorgonXInputDriver
     : GorgonGamingDeviceDriver
 {
-    #region Methods.
+
     /// <summary>
     /// Function to enumerate the gaming devices supported by this driver.
     /// </summary>
@@ -94,9 +94,9 @@ public class GorgonXInputDriver
     {
         // Nothing to do dispose.
     }
-    #endregion
 
-    #region Constructor/Destructor.
+
+
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonXInputDriver"/> class.
     /// </summary>
@@ -104,5 +104,5 @@ public class GorgonXInputDriver
         : base(Resources.GORINP_XINP_SERVICEDESC)
     {
     }
-    #endregion
+
 }

@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2015 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,27 +11,26 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: Wednesday, August 12, 2015 11:45:26 PM
 // 
-#endregion
+
 
 using System.Runtime.InteropServices;
 
 // ReSharper disable InconsistentNaming
 namespace Gorgon.Native;
 
-#region Virtual key enum.
 /// <summary>
-/// Enumeration for virtual keys.
+/// Enumeration for virtual keys
 /// </summary>
 internal enum VirtualKeys
     : ushort
@@ -425,10 +424,10 @@ internal enum VirtualKeys
     /// <summary>Key: Modifiers</summary>
     Modifiers = None
 }
-#endregion
+
 
 /// <summary>
-/// Enumeration containing flags for raw keyboard input.
+/// Enumeration containing flags for raw keyboard input
 /// </summary>
 [Flags]
 internal enum RawKeyboardFlags
@@ -449,7 +448,7 @@ internal enum RawKeyboardFlags
 }
 
 /// <summary>
-/// Value type for raw input from a keyboard.
+/// Value type for raw input from a keyboard
 /// </summary>	
 [StructLayout(LayoutKind.Explicit)]
 internal struct RAWINPUTKEYBOARD

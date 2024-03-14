@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2019 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,46 +11,46 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: May 14, 2019 11:50:37 AM
 // 
-#endregion
+
 
 namespace Gorgon.Graphics.Core;
 
 /// <summary>
-/// A factory for creating/retrieving render targets for temporary use.
+/// A factory for creating/retrieving render targets for temporary use
 /// </summary>
 /// <remarks>
 /// <para>
 /// During the lifecycle of an application, many render targets may be required. In most instances, creating a render target for a scene and disposing of it when done is all that is required. But, when 
-/// dealing with effects, shaders, etc... render targets may need to be created and released during a frame and doing this several times in a frame can be costly.
+/// dealing with effects, shaders, etc... render targets may need to be created and released during a frame and doing this several times in a frame can be costly
 /// </para>
 /// <para>
 /// This factory allows applications to "rent" a render target and return it when done with only an initial cost when creating a target for the first time. This way, temporary render targets can be reused 
-/// when needed.
+/// when needed
 /// </para>
 /// <para>
 /// When the factory retrieves a target, it will check its internal pool and see if a render target already exists. If it exists, and is not in use, it will return the existing target. If the target 
-/// does not exist, or is being used elsewhere, then a new target is created and added to the pool.
+/// does not exist, or is being used elsewhere, then a new target is created and added to the pool
 /// </para>
 /// <para>
 /// Targets retrieved by this factory must be returned when they are no longer needed, otherwise the purpose of the factory is defeated. As such, best practice is to rent and return a render target during 
 /// the lifetime of a single frame. If the <see cref="GorgonGraphics.IsDebugEnabled"/> property is set to <b>true</b>, then after a swap chain presentation, a warning will be sent to the application log 
-/// complaining about render targets still rented out at the end of the frame.
+/// complaining about render targets still rented out at the end of the frame
 /// </para>
 /// </remarks>
 public interface IGorgonRenderTargetFactory
 {
-    #region Properties.
+
     /// <summary>
     /// Property to return the number of render targets that are currently in flight.
     /// </summary>
@@ -83,9 +83,9 @@ public interface IGorgonRenderTargetFactory
         get;
         set;
     }
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to expire any previously allocated targets after a certain amount of time.
     /// </summary>
@@ -128,5 +128,5 @@ public interface IGorgonRenderTargetFactory
     /// <param name="rtv">The render target to return.</param>
     /// <returns><b>true</b> if the target was returned successfully, <b>false</b> if not.</returns>
     bool Return(GorgonRenderTarget2DView rtv);
-    #endregion
+
 }

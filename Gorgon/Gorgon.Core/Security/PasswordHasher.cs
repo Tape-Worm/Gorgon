@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2020 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: November 30, 2020 10:31:30 PM
 // 
-#endregion
+
 
 using System.Security.Cryptography;
 using Gorgon.Core;
@@ -30,16 +30,16 @@ using Gorgon.Core;
 namespace Gorgon.Security;
 
 /// <summary>
-/// Provides functionality for hashing and salting password strings.
+/// Provides functionality for hashing and salting password strings
 /// </summary>
 /// <remarks>
 /// <para>
-/// This class provides functionality to create hashed and salted passwords using an SHA1 hash algorithm.
+/// This class provides functionality to create hashed and salted passwords using an SHA1 hash algorithm
 /// </para>
 /// </remarks>
 public static class PasswordHasher
 {
-    #region Constants.
+
     // The number of iterations to use when hashing (for key stretching).
     private const int PasswordHashIterations = 20000;
     // The size, in bytes, of the SHA1 hash.
@@ -54,9 +54,9 @@ public static class PasswordHasher
     /// If the password supplied exceeds this value, then it will be cropped to this length before hashing.
     /// </remarks>
     public const int MaxiumumPasswordLength = 256;
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to generate a salt value.
     /// </summary>
@@ -122,5 +122,5 @@ public static class PasswordHasher
 
         return (iv, key);
     }
-    #endregion
+
 }

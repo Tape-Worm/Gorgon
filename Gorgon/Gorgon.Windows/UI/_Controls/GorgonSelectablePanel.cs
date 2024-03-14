@@ -1,6 +1,6 @@
-﻿#region MIT.
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2013 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,31 +11,31 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: Tuesday, October 29, 2013 10:06:31 PM
 // 
-#endregion
+
 
 using System.ComponentModel;
 
 namespace Gorgon.UI;
 
 /// <summary>
-/// A <see cref="Panel"/> that can receive keyboard focus.
+/// A <see cref="Panel"/> that can receive keyboard focus
 /// </summary>
 [ToolboxItem(true), ToolboxBitmap(typeof(GorgonSelectablePanel), "Resources.GorgonSelectablePanel.bmp")]
 public class GorgonSelectablePanel
     : Panel
 {
-    #region Enums.
+
     /// <summary>
     /// Types of messages that passed to a window.
     /// </summary>
@@ -47,24 +47,24 @@ public class GorgonSelectablePanel
         MiddleButtonDown = 0x0207,
         MouseWheel = 0x020A
     }
-    #endregion
 
-    #region Variables.
+
+
     // Show focus flag.
     private bool _showFocus = true;
     // Flag to indicate that the panel is resizing.
     private bool _resizing;
-    #endregion
 
-    #region Events.
+
+
     /// <summary>
     /// Event triggered when drawing this control to a bitmap.
     /// </summary>
     [Category("Appearance"), Description("Event triggered when this control is rendered to a bitmap, or printed.")]
     public event EventHandler<PaintEventArgs> RenderToBitmap;
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Gets or sets a value indicating whether the user can give the focus to this control using the TAB key.
     /// </summary>
@@ -100,9 +100,9 @@ public class GorgonSelectablePanel
             Invalidate();
         }
     }
-    #endregion
 
-    #region Methods.        
+
+        
     /// <summary>Raises the <see cref="RenderToBitmap"/> event.</summary>
     /// <param name="e">A <see cref="PaintEventArgs"/> that contains the event data.</param>
     protected override void OnPrint(PaintEventArgs e)
@@ -198,9 +198,9 @@ public class GorgonSelectablePanel
 
         base.WndProc(ref m);
     }
-    #endregion
 
-    #region Constructor/Destructor.
+
+
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonSelectablePanel"/> class.
     /// </summary>
@@ -209,5 +209,5 @@ public class GorgonSelectablePanel
         SetStyle(ControlStyles.Selectable, true);
         TabStop = true;
     }
-    #endregion
+
 }

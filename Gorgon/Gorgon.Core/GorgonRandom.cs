@@ -1,6 +1,6 @@
-﻿#region MIT.
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2012 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: Sunday, October 14, 2012 4:37:30 PM
 // 
-#endregion
+
 
 using CenterCLR.XorRandomGenerator;
 using Gorgon.Math;
@@ -31,18 +31,18 @@ using Simplex;
 namespace Gorgon.Core;
 
 /// <summary>
-/// A random number generator for floating point and integer values.
+/// A random number generator for floating point and integer values
 /// </summary>
 /// <remarks>
 /// <para>
-/// This class expands upon the functionality of the <see cref="Random"/> class by providing <see cref="float"/> random numbers, and ranges for <see cref="double"/> and <see cref="float"/> random numbers.
+/// This class expands upon the functionality of the <see cref="Random"/> class by providing <see cref="float"/> random numbers, and ranges for <see cref="double"/> and <see cref="float"/> random numbers
 /// </para>
 /// <para>
-/// It also provides a simplex noise implementation for generation of repeatable random noise.
+/// It also provides a simplex noise implementation for generation of repeatable random noise
 /// </para> 
 /// <para>
 /// The simplex noise functionality uses the Noise.cs functionality built by Benjamin Ward, which was based on another implementation by Heikki Törmälä.  Both of which are derived from the original Java 
-/// implementation by Stefan Gustavson.
+/// implementation by Stefan Gustavson
 /// <list type="bullet">
 ///     <item>
 ///         <term>Benjamin Ward</term>
@@ -62,14 +62,14 @@ namespace Gorgon.Core;
 /// <seealso cref="Random"/>
 public static class GorgonRandom
 {
-    #region Variables.
+
     // Seed used to generate random numbers.
     private static int _seed;
     // Random number generator.
     private static XorRandom _rnd;
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to set or return the random seed value.
     /// </summary>
@@ -103,9 +103,9 @@ public static class GorgonRandom
             Noise.Perm = [.. value];
         }
     }
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to generate 1 dimensional simplex noise.
     /// </summary>
@@ -234,12 +234,12 @@ public static class GorgonRandom
     /// </summary>
     /// <returns>A random <see cref="int"/> value between 0 and <see cref="int.MaxValue"/>-1.</returns>
     public static int RandomInt32() => _rnd.Next();
-    #endregion
 
-    #region Constructor/Destructor.
+
+
     /// <summary>
     /// Initializes the <see cref="GorgonRandom" /> class.
     /// </summary>
     static GorgonRandom() => Seed = (int)DateTime.Now.TimeOfDay.TotalMilliseconds;
-    #endregion
+
 }

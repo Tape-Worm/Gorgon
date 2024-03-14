@@ -1,6 +1,6 @@
-﻿#region MIT.
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2014 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: Sunday, March 2, 2014 8:52:44 PM
 // 
-#endregion
+
 
 using System.ComponentModel;
 using System.Diagnostics;
@@ -36,12 +36,12 @@ using Gorgon.Graphics;
 namespace Gorgon.Editor.FontEditor;
 
 /// <summary>
-/// A panel that will allow for editing of a linear gradient brush.
+/// A panel that will allow for editing of a linear gradient brush
 /// </summary>
 internal partial class FontGradientBrushView
     : EditorSubPanelCommon, IDataContext<IFontGradientBrush>
 {
-    #region Variables.
+
     // Flag to indicate that the node is being dragged.
     private bool _nodeDrag;
     // Node dragging cursor offset.
@@ -58,18 +58,18 @@ internal partial class FontGradientBrushView
     private int _eventLock;
     // Points for drawing a triangle.
     private readonly PointF[] _trianglePoints = new PointF[3];
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>Property to return the data context assigned to this view.</summary>
     public IFontGradientBrush ViewModel
     {
         get;
         private set;
     }
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>Handles the PropertyChanged event of the DataContext control.</summary>
     /// <param name="sender">The source of the event.</param>
     /// <param name="e">The <see cref="PropertyChangedEventArgs" /> instance containing the event data.</param>
@@ -893,12 +893,12 @@ internal partial class FontGradientBrushView
         ViewModel.PropertyChanged += DataContext_PropertyChanged;
         HookEvents();
     }
-    #endregion
 
-    #region Constructor/Destructor.
+
+
     /// <summary>
     /// Initializes a new instance of the <see cref="FontGradientBrushView"/> class.
     /// </summary>
     public FontGradientBrushView() => InitializeComponent();
-    #endregion
+
 }

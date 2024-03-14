@@ -1,6 +1,6 @@
-﻿#region MIT.
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2011 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: Thursday, December 15, 2011 12:49:30 PM
 // 
-#endregion
+
 
 using Gorgon.Diagnostics;
 using SharpDX.D3DCompiler;
@@ -31,26 +31,26 @@ using D3D11 = SharpDX.Direct3D11;
 namespace Gorgon.Graphics.Core;
 
 /// <summary>
-/// A shader that operates on a single pixel (fragment) at a time on the GPU.
+/// A shader that operates on a single pixel (fragment) at a time on the GPU
 /// </summary>
 /// <remarks>
 /// <para>
-/// A pixel shader is a program that is used to modify the color of a single pixel (aka fragment) at a time on the GPU. This allows for effects like blurring, or sampling texel data for display.
+/// A pixel shader is a program that is used to modify the color of a single pixel (aka fragment) at a time on the GPU. This allows for effects like blurring, or sampling texel data for display
 /// </para>
 /// <para>
 /// In Gorgon, shaders can be compiled from a string containing source code via the <see cref="GorgonShaderFactory"/>, or loaded from a <see cref="Stream"/> or file for quicker access. The 
-/// <see cref="GorgonShaderFactory"/> is required to compile or read shaders, they cannot be created via the <c>new</c> keyword.
+/// <see cref="GorgonShaderFactory"/> is required to compile or read shaders, they cannot be created via the <c>new</c> keyword
 /// </para>
 /// </remarks>
 public sealed class GorgonPixelShader
     : GorgonShader
 {
-    #region Variables.
+
     // The D3D 11 pixel shader.
     private D3D11.PixelShader _shader;
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to return the Direct3D pixel shader.
     /// </summary>
@@ -60,9 +60,9 @@ public sealed class GorgonPixelShader
     /// Property to return the type of shader.
     /// </summary>
     public override ShaderType ShaderType => ShaderType.Pixel;
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
     /// </summary>
@@ -78,9 +78,9 @@ public sealed class GorgonPixelShader
 
         base.Dispose();
     }
-    #endregion
 
-    #region Constructor/Destructor.
+
+
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonPixelShader" /> class.
     /// </summary>
@@ -93,5 +93,5 @@ public sealed class GorgonPixelShader
         {
             DebugName = name + "_ID3D11PixelShader"
         };
-    #endregion
+
 }

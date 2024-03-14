@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2019 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: March 28, 2019 9:48:28 AM
 // 
-#endregion
+
 
 using System.ComponentModel;
 using Gorgon.Editor.UI;
@@ -33,17 +33,17 @@ using Gorgon.Math;
 namespace Gorgon.Editor.SpriteEditor;
 
 /// <summary>
-/// A color selection control for the sprite pick tool mask color.
+/// A color selection control for the sprite pick tool mask color
 /// </summary>
 internal partial class SpritePickMaskColor
     : EditorSubPanelCommon, IDataContext<ISpritePickMaskEditor>
 {
-    #region Variables.
+
     // The original mask value.
     private ClipMask _originalMask;
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to return the data context for the view.
     /// </summary>
@@ -53,9 +53,9 @@ internal partial class SpritePickMaskColor
         get;
         private set;
     }
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>Handles the Click event of the RadioAlpha control.</summary>
     /// <param name="sender">The source of the event.</param>
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
@@ -288,10 +288,10 @@ internal partial class SpritePickMaskColor
 
         ViewModel.PropertyChanged += DataContext_PropertyChanged;
     }
-    #endregion
 
-    #region Constructor/Finalizer.
+
+
     /// <summary>Initializes a new instance of the <see cref="SpriteColor"/> class.</summary>
     public SpritePickMaskColor() => InitializeComponent();
-    #endregion
+
 }

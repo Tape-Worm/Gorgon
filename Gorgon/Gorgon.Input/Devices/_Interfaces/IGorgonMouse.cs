@@ -1,4 +1,4 @@
-﻿#region MIT
+﻿
 // 
 // Gorgon
 // Copyright (C) 2015 Michael Winsor
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: Thursday, September 10, 2015 10:00:48 PM
 // 
-#endregion
+
 
 using Gorgon.Core;
 using DX = SharpDX;
@@ -30,7 +30,7 @@ using DX = SharpDX;
 namespace Gorgon.Input;
 
 /// <summary>
-/// Enumeration for mouse buttons.
+/// Enumeration for mouse buttons
 /// </summary>
 [Flags]
 public enum MouseButtons
@@ -74,12 +74,12 @@ public enum MouseButtons
 }
 
 /// <summary>
-/// Provides events and state for mouse data from a physical mouse.
+/// Provides events and state for mouse data from a physical mouse
 /// </summary>
 public interface IGorgonMouse
     : IGorgonRawInputDevice, IGorgonRawInputDeviceData<GorgonRawMouseData>
 {
-    #region Events.
+
     /// <summary>
     /// Event triggered when the mouse is moved.
     /// </summary>
@@ -104,9 +104,9 @@ public interface IGorgonMouse
     /// Event triggered when a double click is performed on a mouse button.
     /// </summary>
     event EventHandler<GorgonMouseEventArgs> MouseDoubleClicked;
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to set or return the last reported relative position movement offset.
     /// </summary>
@@ -247,5 +247,5 @@ public interface IGorgonMouse
         get;
         set;
     }
-    #endregion
+
 }

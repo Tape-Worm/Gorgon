@@ -5,7 +5,7 @@ using Gorgon.Editor.UI.Views;
 namespace Gorgon.Editor.UI;
 
 /// <summary>
-/// A base view model for hosted panels within a <see cref="ContentBaseControl"/>.
+/// A base view model for hosted panels within a <see cref="ContentBaseControl"/>
 /// </summary>
 /// <typeparam name="T">The type of view model parameters. Must inherit from <see cref="HostedPanelViewModelParameters"/>.</typeparam>
 /// <remarks>
@@ -15,21 +15,21 @@ namespace Gorgon.Editor.UI;
 /// </para>
 /// <para>
 /// To use a hosted panel the plug in must define the panel by inheriting from this view model, and passing in parameters that inherit from <see cref="HostedPanelViewModelParameters"/>. A view must be 
-/// registered with the <see cref="ContentBaseControl"/>.<see cref="ContentBaseControl.RegisterChildPanel(string, System.Windows.Forms.Control)"/> method.
+/// registered with the <see cref="ContentBaseControl"/>.<see cref="ContentBaseControl.RegisterChildPanel(string, System.Windows.Forms.Control)"/> method
 /// </para>
 /// </remarks>
 public abstract class HostedPanelViewModelBase<T>
     : ViewModelBase<T, IHostContentServices>, IHostedPanelViewModel
     where T : HostedPanelViewModelParameters
 {
-    #region Variables.
+
     // Flag to indicate that the editor is active.
     private bool _isActive;
     // The command to execute when the OK button is clicked.
     private IEditorCommand<object> _okCommand;
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>Property to set or return whether the panel is active or not.</summary>
     public bool IsActive
     {
@@ -77,9 +77,9 @@ public abstract class HostedPanelViewModelBase<T>
             OnPropertyChanged();
         }
     }
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to cancel the dimension change operation.
     /// </summary>
@@ -103,10 +103,10 @@ public abstract class HostedPanelViewModelBase<T>
     /// </summary>
     /// <returns><b>true</b> if the cancel operation was handled, or <b>false</b> if not.</returns>
     protected virtual bool OnCancel() => false;
-    #endregion
 
-    #region Constructor.
+
+
     /// <summary>Initializes a new instance of the <see cref="HostedPanelViewModelBase{T}"/> class.</summary>
     protected HostedPanelViewModelBase() => CancelCommand = new EditorCommand<object>(DoCancel);
-    #endregion
+
 }

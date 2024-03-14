@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2017 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: March 6, 2017 10:47:10 PM
 // 
-#endregion
+
 
 using System.Numerics;
 using System.Runtime.CompilerServices;
@@ -35,12 +35,12 @@ using DX = SharpDX;
 namespace Gorgon.Graphics.Core;
 
 /// <summary>
-/// Provides functionality for blitting a texture to the currently active <see cref="GorgonGraphics.RenderTargets">render target</see>.
+/// Provides functionality for blitting a texture to the currently active <see cref="GorgonGraphics.RenderTargets">render target</see>
 /// </summary>
 public class GorgonTextureBlitter
     : IDisposable
 {
-    #region Variables.
+
     // The graphics interface that owns this instance.
     private readonly GorgonGraphics _graphics;
     // The vertices used to blit the texture.
@@ -85,9 +85,9 @@ public class GorgonTextureBlitter
     private GorgonTexture2DView _defaultTexture;
     // The camera space for blitting the texture.
     private readonly GorgonOrthoCamera _camera;
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to initialize the blitter.
     /// </summary>
@@ -467,9 +467,9 @@ public class GorgonTextureBlitter
         _blitVertexShader?.Dispose();
         _blitPixelShader?.Dispose();
     }
-    #endregion
 
-    #region Constructor/Finalizer.
+
+
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonTextureBlitter"/> class.
     /// </summary>
@@ -482,5 +482,5 @@ public class GorgonTextureBlitter
         _fsPsoBuilder = new GorgonPipelineStateBuilder(_graphics);
         _camera = new GorgonOrthoCamera(_graphics, DX.Size2F.Empty, name: "Blitter camera");
     }
-    #endregion
+
 }

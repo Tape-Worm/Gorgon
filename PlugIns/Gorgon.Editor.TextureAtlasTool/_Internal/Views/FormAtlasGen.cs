@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2019 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: April 24, 2019 6:55:01 PM
 // 
-#endregion
+
 
 using System.ComponentModel;
 using System.Diagnostics;
@@ -37,19 +37,19 @@ using DX = SharpDX;
 namespace Gorgon.Editor.TextureAtlasTool;
 
 /// <summary>
-/// The main view for the tool.
+/// The main view for the tool
 /// </summary>
 internal partial class FormAtlasGen
     : EditorToolBaseForm, IDataContext<ITextureAtlas>
 {
-    #region Variables.
+
     // The file selector for sprites.
     private FormSpriteSelector _spriteSelector;
     // Flag to indicate that the dialog should close when the file selector closes.
     private bool _closeOnFileSelectionClose = true;
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>Property to return the data context assigned to this view.</summary>
     [Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public ITextureAtlas ViewModel
@@ -67,9 +67,9 @@ internal partial class FormAtlasGen
         get;
         private set;
     }
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to validate the controls on the form.
     /// </summary>
@@ -477,9 +477,9 @@ internal partial class FormAtlasGen
         AddRenderer(atlasRenderer.Name, atlasRenderer);
         SwitchRenderer(atlasRenderer.Name);
     }
-    #endregion
 
-    #region Constructor/Finalizer.
+
+
     /// <summary>Initializes a new instance of the <see cref="FormAtlasGen"/> class.</summary>
     public FormAtlasGen() => InitializeComponent();
 
@@ -487,5 +487,5 @@ internal partial class FormAtlasGen
     /// <param name="settings">The settings for the plug in.</param>
     public FormAtlasGen(TextureAtlasSettings settings)
         : this() => Settings = settings;
-    #endregion
+
 }

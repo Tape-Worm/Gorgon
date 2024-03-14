@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2019 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: March 28, 2019 9:48:28 AM
 // 
-#endregion
+
 
 using System.Collections.Specialized;
 using System.ComponentModel;
@@ -34,12 +34,12 @@ using Gorgon.Editor.UI.Controls;
 namespace Gorgon.Editor.AnimationEditor;
 
 /// <summary>
-/// A panel used to add new tracks to an animation.
+/// A panel used to add new tracks to an animation
 /// </summary>
 internal partial class AnimationAddTrack
     : EditorSubPanelCommon, IDataContext<IAddTrack>
 {
-    #region Classes.
+
     /// <summary>
     /// A list box item for the track.
     /// </summary>
@@ -59,12 +59,12 @@ internal partial class AnimationAddTrack
         /// <returns>A <see cref="string"/> that represents this instance.</returns>
         public override string ToString() => TrackRegistration.Description;
     }
-    #endregion
 
-    #region Variables.
-    #endregion
 
-    #region Properties.
+
+
+
+
     /// <summary>
     /// Property to return the data context for the view.
     /// </summary>
@@ -74,9 +74,9 @@ internal partial class AnimationAddTrack
         get;
         private set;
     }
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>Handles the CollectionChanged event of the AvailableTracks control.</summary>
     /// <param name="sender">The source of the event.</param>
     /// <param name="e">The <see cref="NotifyCollectionChangedEventArgs"/> instance containing the event data.</param>
@@ -284,10 +284,10 @@ internal partial class AnimationAddTrack
 
         ValidateOk();
     }
-    #endregion
 
-    #region Constructor/Finalizer.
+
+
     /// <summary>Initializes a new instance of the <see cref="AnimationAddTrack"/> class.</summary>
     public AnimationAddTrack() => InitializeComponent();
-    #endregion
+
 }

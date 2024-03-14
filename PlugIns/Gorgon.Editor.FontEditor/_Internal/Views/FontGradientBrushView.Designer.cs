@@ -50,7 +50,7 @@ namespace Gorgon.Editor.FontEditor;
             base.Dispose(disposing);
         }
 
-        #region Component Designer generated code
+    
 
         /// <summary> 
         /// Required method for Designer support - do not modify 
@@ -484,7 +484,7 @@ namespace Gorgon.Editor.FontEditor;
 
         }
 
-        #endregion
+    
         private System.Windows.Forms.Label LabelAngle;
         private System.Windows.Forms.NumericUpDown NumericAngle;
         private System.Windows.Forms.Label LabelDegrees;

@@ -1,33 +1,31 @@
 ﻿namespace Fetze.WinFormsColor;
 
-    partial class ColorPickerPanel
+partial class ColorPickerPanel
+{
+    /// <summary>
+    /// Required designer variable.
+    /// </summary>
+    private System.ComponentModel.IContainer components = null;
+
+    /// <summary>
+    /// Clean up any resources being used.
+    /// </summary>
+    /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+    protected override void Dispose(bool disposing)
     {
-        /// <summary>
-        /// Required designer variable.
-        /// </summary>
-        private System.ComponentModel.IContainer components = null;
-
-        /// <summary>
-        /// Clean up any resources being used.
-        /// </summary>
-        /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
-        protected override void Dispose(bool disposing)
+        if (disposing && (components != null))
         {
-            if (disposing && (components != null))
-            {
-                components.Dispose();
-            }
-            base.Dispose(disposing);
+            components.Dispose();
         }
+        base.Dispose(disposing);
+    }
 
-        #region Windows Form Designer generated code
-
-        /// <summary>
-        /// Required method for Designer support - do not modify
-        /// the contents of this method with the code editor.
-        /// </summary>
-        private void InitializeComponent()
-        {
+    /// <summary>
+    /// Required method for Designer support - do not modify
+    /// the contents of this method with the code editor.
+    /// </summary>
+    private void InitializeComponent()
+    {
         System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ColorPickerPanel));
         this.radioHue = new System.Windows.Forms.RadioButton();
         this.radioSaturation = new System.Windows.Forms.RadioButton();
@@ -328,8 +326,8 @@
         // 
         // colorShowBox
         // 
-        this.colorShowBox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-        | System.Windows.Forms.AnchorStyles.Left) 
+        this.colorShowBox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+        | System.Windows.Forms.AnchorStyles.Left)
         | System.Windows.Forms.AnchorStyles.Right)));
         this.colorShowBox.AutoSize = true;
         this.colorShowBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
@@ -496,22 +494,22 @@
         this.ResumeLayout(false);
         this.PerformLayout();
 
-        }
+    }
 
-        #endregion
-        private System.Windows.Forms.RadioButton radioHue;
-        private System.Windows.Forms.RadioButton radioSaturation;
-        private System.Windows.Forms.RadioButton radioValue;
-        private System.Windows.Forms.RadioButton radioRed;
-        private System.Windows.Forms.RadioButton radioBlue;
-        private System.Windows.Forms.RadioButton radioGreen;
-        private System.Windows.Forms.NumericUpDown numHue;
-        private System.Windows.Forms.NumericUpDown numSaturation;
-        private System.Windows.Forms.NumericUpDown numValue;
-        private System.Windows.Forms.NumericUpDown numRed;
-        private System.Windows.Forms.NumericUpDown numGreen;
-        private System.Windows.Forms.NumericUpDown numBlue;
-        private System.Windows.Forms.Label labelHex;
+
+    private System.Windows.Forms.RadioButton radioHue;
+    private System.Windows.Forms.RadioButton radioSaturation;
+    private System.Windows.Forms.RadioButton radioValue;
+    private System.Windows.Forms.RadioButton radioRed;
+    private System.Windows.Forms.RadioButton radioBlue;
+    private System.Windows.Forms.RadioButton radioGreen;
+    private System.Windows.Forms.NumericUpDown numHue;
+    private System.Windows.Forms.NumericUpDown numSaturation;
+    private System.Windows.Forms.NumericUpDown numValue;
+    private System.Windows.Forms.NumericUpDown numRed;
+    private System.Windows.Forms.NumericUpDown numGreen;
+    private System.Windows.Forms.NumericUpDown numBlue;
+    private System.Windows.Forms.Label labelHex;
     private System.Windows.Forms.Label labelAlpha;
     private ColorSlider alphaSlider;
     private ColorSlider colorSlider;

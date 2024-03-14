@@ -8,12 +8,12 @@ using Gorgon.Math;
 namespace Gorgon.Editor.FontEditor;
 
 /// <summary>
-/// The view model for the font gradient brush interface.
+/// The view model for the font gradient brush interface
 /// </summary>
 internal class FontGradientBrush
     : HostedPanelViewModelBase<HostedPanelViewModelParameters>, IFontGradientBrush, IFontBrush
 {
-    #region Variables.
+
     // The brush to edit.
     private GorgonGlyphLinearGradientBrush _brush = DefaultBrush;
     // The list of nodes for weighting the gradient.
@@ -37,9 +37,9 @@ internal class FontGradientBrush
         GammaCorrection = false,
         ScaleAngle = false
     };
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>Property to return whether the panel is modal.</summary>
     public override bool IsModal => true;
 
@@ -198,9 +198,9 @@ internal class FontGradientBrush
     {
         get;
     }
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to sort the node list.
     /// </summary>
@@ -517,9 +517,9 @@ internal class FontGradientBrush
     /// <summary>Function to inject dependencies for the view model.</summary>
     /// <param name="injectionParameters">The parameters to inject.</param>
     protected override void OnInitialize(HostedPanelViewModelParameters injectionParameters) => ExtractBrushData(DefaultBrush);
-    #endregion
 
-    #region Constructor.
+
+
     /// <summary>Initializes a new instance of the <see cref="FontGradientBrush" /> class.</summary>
     public FontGradientBrush()
     {
@@ -531,5 +531,5 @@ internal class FontGradientBrush
         SetWeightCommand = new EditorCommand<float>(DoSetWeight, CanSetWeight);
         SetColorCommand = new EditorCommand<GorgonColor>(DoSetColor, CanSetColor);
     }
-    #endregion
+
 }

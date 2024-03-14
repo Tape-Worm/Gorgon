@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2019 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: March 2, 2019 2:09:04 AM
 // 
-#endregion
+
 
 using System.ComponentModel;
 using System.Numerics;
@@ -41,12 +41,12 @@ using DX = SharpDX;
 namespace Gorgon.Editor.SpriteEditor;
 
 /// <summary>
-/// Content view model for a sprite.
+/// Content view model for a sprite
 /// </summary>
 internal class SpriteContent
     : ContentEditorViewModelBase<SpriteContentParameters>, ISpriteContent
 {
-    #region Classes.
+
     /// <summary>
     /// Arguments for an undo/redo operation.
     /// </summary>
@@ -81,9 +81,9 @@ internal class SpriteContent
         /// </summary>
         public GorgonSamplerState SamplerState;
     }
-    #endregion
 
-    #region Variables.
+
+
     // The default color for a sprite.
     private static readonly GorgonColor[] _defaultColor =
     [
@@ -105,9 +105,9 @@ internal class SpriteContent
     private IContentFile _originalTexture;
     // The currently active panel.
     private IHostedPanelViewModel _currentPanel;
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to return the sprite color editor.
     /// </summary>
@@ -491,9 +491,9 @@ internal class SpriteContent
         get;
         private set;
     }
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>Handles the PropertyChanged event of the ColorEditor control.</summary>
     /// <param name="sender">The source of the event.</param>
     /// <param name="e">The <see cref="PropertyChangedEventArgs"/> instance containing the event data.</param>
@@ -1767,9 +1767,9 @@ internal class SpriteContent
                 return true;
         }
     }
-    #endregion
 
-    #region Constructor/Finalizer.
+
+
     /// <summary>Initializes a new instance of the <see cref="SpriteContent"/> class.</summary>
     public SpriteContent()
     {
@@ -1786,5 +1786,5 @@ internal class SpriteContent
         SetTextureFilteringCommand = new EditorCommand<SampleFilter>(DoSetTextureFilter, CanSetTextureFilter);
         SetTextureCommand = new EditorAsyncCommand<SetTextureArgs>(DoSetTexture, CanSetTexture);
     }
-    #endregion
+
 }

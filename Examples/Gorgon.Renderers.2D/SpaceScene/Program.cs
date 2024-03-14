@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2019 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: May 18, 2019 1:25:32 PM
 // 
-#endregion
+
 
 using System.Numerics;
 using Gorgon.Core;
@@ -41,14 +41,14 @@ using DX = SharpDX;
 namespace Gorgon.Examples;
 
 /// <summary>
-/// This example shows many of the features present in Gorgon to show how they could be used to build a 2D top down game with special effects.
-/// It employs the 2D rendering system, lighting effect, bloom effect, post processing and even 3D using the core graphics API.
+/// This example shows many of the features present in Gorgon to show how they could be used to build a 2D top down game with special effects
+/// It employs the 2D rendering system, lighting effect, bloom effect, post processing and even 3D using the core graphics API
 /// 
 /// Due to the effects employed, this example requires a fair bit of video RAM and a fairly fast GPU. 
 /// </summary>
 static class Program
 {
-    #region Variables.
+
     // The cache for our plug in assemblies.
     private static GorgonMefPlugInCache _assemblyCache;
     // The primary graphics interface.
@@ -87,9 +87,9 @@ static class Program
     private static GorgonTextSprite _textSprite;
     // Flag to indicate that the instructions be shown.
     private static bool _showInstructions = true;
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>Handles the KeyUp event of the Keyboard control.</summary>
     /// <param name="sender">The source of the event.</param>
     /// <param name="e">The <see cref="GorgonKeyboardEventArgs"/> instance containing the event data.</param>
@@ -428,5 +428,5 @@ static class Program
             _assemblyCache?.Dispose();
         }
     }
-    #endregion
+
 }

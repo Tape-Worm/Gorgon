@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2020 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: May 7, 2020 12:57:05 PM
 // 
-#endregion
+
 
 using Gorgon.Editor.Content;
 using Gorgon.Editor.SpriteEditor.Properties;
@@ -35,7 +35,7 @@ using DX = SharpDX;
 namespace Gorgon.Editor.SpriteEditor;
 
 /// <summary>
-/// The service used to query for new sprite information.
+/// The service used to query for new sprite information
 /// </summary>
 /// <remarks>Initializes a new instance of the <see cref="NewSpriteService"/> class.</remarks>
 /// <param name="fileManager">The project file manager.</param>
@@ -43,14 +43,14 @@ namespace Gorgon.Editor.SpriteEditor;
 /// <exception cref="ArgumentNullException">Thrown when the <paramref name="fileManager"/> parameter is <b>null</b>.</exception>
 internal class NewSpriteService(IContentFileManager fileManager, IGorgonImageCodec imageCodec)
 {
-    #region Variables.
+
     // The file manager for the project file system.
     private readonly IContentFileManager _fileManager = fileManager ?? throw new ArgumentNullException(nameof(fileManager));
     // The image codec for loading texture data.
     private readonly IGorgonImageCodec _imageCodec = imageCodec ?? throw new ArgumentNullException(nameof(imageCodec));
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to determine if an image content file is a 2D image or not.
     /// </summary>
@@ -113,7 +113,7 @@ internal class NewSpriteService(IContentFileManager fileManager, IGorgonImageCod
             : (null, null, DX.Size2F.Zero);
     }
 
-    #endregion
-    #region Constructor.
-    #endregion
+
+
+
 }

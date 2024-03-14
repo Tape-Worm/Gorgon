@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2019 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: May 20, 2019 11:07:41 PM
 // 
-#endregion
+
 
 using System.Numerics;
 using Gorgon.Animation;
@@ -33,12 +33,12 @@ using DX = SharpDX;
 namespace Gorgon.Examples;
 
 /// <summary>
-/// An animation controller for animating our 3D entitis.
+/// An animation controller for animating our 3D entitis
 /// </summary>
 /// <remarks>
 /// <para>
 /// This shows how we can use Gorgon's animation system with a 3D object. By overriding the methods and telling the controller which property or properties to update, the system will continuously 
-/// update the object with each call to the Update method.
+/// update the object with each call to the Update method
 /// </para>
 /// </remarks>
 internal class MeshAnimationController

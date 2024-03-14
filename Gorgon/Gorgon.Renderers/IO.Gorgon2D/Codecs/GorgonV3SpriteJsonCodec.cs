@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2018 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: August 11, 2018 3:43:13 PM
 // 
-#endregion
+
 
 using System.Buffers;
 using System.Text;
@@ -37,17 +37,17 @@ using Newtonsoft.Json.Linq;
 namespace Gorgon.IO;
 
 /// <summary>
-/// A codec that can read and write a JSON formatted version of Gorgon v3 sprite data.
+/// A codec that can read and write a JSON formatted version of Gorgon v3 sprite data
 /// </summary>
 /// <remarks>
-/// Initializes a new instance of the <see cref="GorgonV3SpriteJsonCodec"/> class.
+/// Initializes a new instance of the <see cref="GorgonV3SpriteJsonCodec"/> class
 /// </remarks>
 /// <param name="renderer">The renderer used for resource handling.</param>
 /// <exception cref="ArgumentNullException">Thrown when the <paramref name="renderer"/> parameter is <b>null</b>.</exception>
 public class GorgonV3SpriteJsonCodec(Gorgon2D renderer)
         : GorgonSpriteCodecCommon(renderer, Resources.GOR2DIO_V3_JSON_CODEC, Resources.GOR2DIO_V3_JSON_CODEC_DESCRIPTION)
 {
-    #region Properties.
+
     /// <summary>
     /// Property to return whether or not the codec can decode sprite data.
     /// </summary>
@@ -62,9 +62,9 @@ public class GorgonV3SpriteJsonCodec(Gorgon2D renderer)
     /// Property to return the version of sprite data that the codec supports.
     /// </summary>
     public override Version Version => CurrentVersion;
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to retrieve the stream as JSON.Net object.
     /// </summary>
@@ -292,5 +292,5 @@ public class GorgonV3SpriteJsonCodec(Gorgon2D renderer)
 #pragma warning restore IDE0046 // Convert to conditional expression
     }
 
-    #endregion
+
 }

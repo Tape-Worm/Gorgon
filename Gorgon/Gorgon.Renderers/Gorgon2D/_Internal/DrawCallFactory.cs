@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2018 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: June 7, 2018 4:18:45 PM
 // 
-#endregion
+
 
 using System.Runtime.CompilerServices;
 using Gorgon.Graphics.Core;
@@ -30,17 +30,17 @@ using Gorgon.Graphics.Core;
 namespace Gorgon.Renderers;
 
 /// <summary>
-/// A factory used to produce draw calls.
+/// A factory used to produce draw calls
 /// </summary>
 /// <remarks>
-/// Initializes a new instance of the <see cref="DrawCallFactory"/> class.
+/// Initializes a new instance of the <see cref="DrawCallFactory"/> class
 /// </remarks>
 /// <param name="graphics">The graphics interface to use when creating states.</param>
 /// <param name="defaultTexture">The default texture to use as a fallback when no texture is passed by renderable.</param>
 /// <param name="inputLayout">The input layout defining a vertex type.</param>
 internal sealed class DrawCallFactory(GorgonGraphics graphics, GorgonTexture2DView defaultTexture, GorgonInputLayout inputLayout)
 {
-    #region Variables.
+
     // The allocater used to create draw calls.
     private readonly GorgonDrawCallPoolAllocator<GorgonDrawIndexCall> _drawIndexAllocator = new(128);
     // The allocater used to create draw calls.
@@ -55,9 +55,9 @@ internal sealed class DrawCallFactory(GorgonGraphics graphics, GorgonTexture2DVi
     private readonly GorgonTexture2DView _defaultTexture = defaultTexture;
     // The current input layout.
     private readonly GorgonInputLayout _inputLayout = inputLayout;
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to set or return the buffer used to hold alpha test data.
     /// </summary>
@@ -66,9 +66,9 @@ internal sealed class DrawCallFactory(GorgonGraphics graphics, GorgonTexture2DVi
         get;
         set;
     }
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to set up common states for a draw call type.
     /// </summary>
@@ -156,5 +156,5 @@ internal sealed class DrawCallFactory(GorgonGraphics graphics, GorgonTexture2DVi
                                 .Build(_drawIndexAllocator);
     }
 
-    #endregion
+
 }

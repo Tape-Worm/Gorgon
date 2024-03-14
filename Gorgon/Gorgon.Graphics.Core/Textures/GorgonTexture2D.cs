@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2018 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: April 8, 2018 8:17:22 PM
 // 
-#endregion
+
 
 using System.Numerics;
 using System.Runtime.CompilerServices;
@@ -39,19 +39,19 @@ using DXGI = SharpDX.DXGI;
 namespace Gorgon.Graphics.Core;
 
 /// <summary>
-/// A texture used to project an image onto a graphic primitive such as a triangle.
+/// A texture used to project an image onto a graphic primitive such as a triangle
 /// </summary>
 public sealed class GorgonTexture2D
     : GorgonGraphicsResource, IGorgonTexture2DInfo, IGorgonTextureResource, IGorgonSharedResource
 {
-    #region Constants.
+
     /// <summary>
     /// The prefix used for generated names.
     /// </summary>
     internal const string NamePrefix = nameof(GorgonTexture2D);
-    #endregion
 
-    #region Variables.
+
+
     // Default texture loading options.
     private static readonly GorgonTexture2DLoadOptions _defaultLoadOptions = new();
     // The ID number of the texture.
@@ -84,9 +84,9 @@ public sealed class GorgonTexture2D
     private DXGI.Resource _sharedResource;
     // The keyed mutex for the shared resource.
     private DXGI.KeyedMutex _keyedMutex;
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to return the bind flags used for the D3D 11 resource.
     /// </summary>
@@ -227,9 +227,9 @@ public sealed class GorgonTexture2D
     /// Settings this flag to <b>true</b> allows the texture to be used with external graphics interfaces such as a Direct3D device. This is useful for providing interoperation between systems.
     /// </remarks>
     public TextureSharingOptions Shared => _info.Shared;
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to transfer texture data into an image buffer.
     /// </summary>
@@ -2353,9 +2353,9 @@ public sealed class GorgonTexture2D
     /// </para>
     /// </remarks>
     void IGorgonSharedResource.Release(long key) => _keyedMutex?.Release(key);
-    #endregion
 
-    #region Constructor/Finalizer.
+
+
     /// <summary>Initializes a new instance of the <see cref="GorgonTexture2D" /> class.</summary>
     /// <param name="graphics">The graphics interface used to create this texture.</param>
     /// <param name="surface">The pointer to an external rendering surface.</param>
@@ -2522,5 +2522,5 @@ public sealed class GorgonTexture2D
 
         this.RegisterDisposable(graphics);
     }
-    #endregion
+
 }

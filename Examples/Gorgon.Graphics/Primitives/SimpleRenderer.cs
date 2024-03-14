@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2017 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: July 30, 2017 1:49:31 PM
 // 
-#endregion
+
 
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
@@ -42,17 +42,15 @@ using Gorgon.Renderers.Lights;
 namespace Gorgon.Examples;
 
 /// <summary>
-/// A simple renderer used to display and animate the scene data.
+/// A simple renderer used to display and animate the scene data
 /// </summary>
 internal class SimpleRenderer
     : IDisposable
 {
-    #region Constants.
+
     // The maximum number of available lights.
     private const int MaxLights = 8;
-    #endregion
 
-    #region Value Types.
     /// <summary>
     /// View/projection matrices.
     /// </summary>
@@ -91,9 +89,9 @@ internal class SimpleRenderer
         /// </summary>
         public float SpecularPower;
     }
-    #endregion
 
-    #region Variables.
+
+
     // The graphics interface to use.
     private readonly GorgonGraphics _graphics;
     // A constant buffer for holding the projection*view matrix.
@@ -124,9 +122,9 @@ internal class SimpleRenderer
     private readonly GorgonBoundingFrustum _frustum = new();
     // The visual for AABBs.
     private readonly GorgonAABBVisual _aabbVisual;
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to return the list of meshes to render.
     /// </summary>
@@ -173,9 +171,9 @@ internal class SimpleRenderer
         get;
         set;
     }
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to create a draw call based on a mesh.
     /// </summary>
@@ -470,9 +468,9 @@ internal class SimpleRenderer
             texture.Value.Dispose();
         }
     }
-    #endregion
 
-    #region Constructor/Finalizer.
+
+
     /// <summary>
     /// Initializes a new instance of the <see cref="SimpleRenderer"/> class.
     /// </summary>
@@ -494,5 +492,5 @@ internal class SimpleRenderer
 
         InitializeConstantBuffers();
     }
-    #endregion
+
 }

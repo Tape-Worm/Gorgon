@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2019 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: May 9, 2019 5:34:12 PM
 // 
-#endregion
+
 
 using System.Numerics;
 using Gorgon.Animation;
@@ -40,21 +40,20 @@ using DX = SharpDX;
 namespace Gorgon.Examples;
 
 /// <summary>
-/// This is an updated version of the "DeepAsAPuddle" example from Gorgon v1.x.
+/// This is an updated version of the "DeepAsAPuddle" example from Gorgon v1.x
 /// 
 /// This example shows how to use the depth buffer in conjunction with 2D graphics to provide the illusion of a scene with 
-/// depth by having a character walk behind an obstacle (similar to old Sierra/Lucasarts adventure games).
+/// depth by having a character walk behind an obstacle (similar to old Sierra/Lucasarts adventure games)
 /// 
 /// By using a depth buffer, the order in which we draw our sprites no longer matters because the Depth property is used to 
 /// determine how far "in" a sprite is within the scene. For example, 2 sprites, A and B, where A has a depth of 0.2 and B 
-/// has a depth of 0.1 will always have B render before A (depending on depth stencil state).
+/// has a depth of 0.1 will always have B render before A (depending on depth stencil state)
 /// 
 /// Be aware there are limitations with this trick. If you render a sprite with translucency with a lower depth value before 
-/// a sprite with a high depth value, the pixels will overwrite what's behind it.
+/// a sprite with a high depth value, the pixels will overwrite what's behind it
 /// </summary>
 static class Program
 {
-    #region Enums.
     /// <summary>
     /// The name of an animation.
     /// </summary>
@@ -64,9 +63,7 @@ static class Program
         Turn = 1,
         WalkLeft = 2
     }
-    #endregion
 
-    #region Variables.
     // The primary graphics interface.
     private static GorgonGraphics _graphics;
     // The main "screen" for the application.
@@ -97,9 +94,9 @@ static class Program
     private static GorgonMefPlugInCache _assemblyCache;
     // The cache for holding sprite textures.
     private static GorgonTextureCache<GorgonTexture2D> _textureCache;
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to draw the background layer.
     /// </summary>
@@ -423,9 +420,9 @@ static class Program
 
         GorgonExample.EndInit();
     }
-    #endregion
 
-    #region Constructor/Finalizer.
+
+
     /// <summary>
     /// The main entry point for the application.
     /// </summary>
@@ -468,5 +465,5 @@ static class Program
             _assemblyCache?.Dispose();
         }
     }
-    #endregion
+
 }

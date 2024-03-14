@@ -27,7 +27,7 @@ partial class SpriteWrap
         base.Dispose(disposing);
     }
 
-    #region Component Designer generated code
+
 
     /// <summary> 
     /// Required method for Designer support - do not modify 
@@ -329,7 +329,7 @@ partial class SpriteWrap
 
     }
 
-    #endregion
+
 
     private UI.Controls.ColorPicker Picker;
     private System.Windows.Forms.TableLayoutPanel TableHWrapping;

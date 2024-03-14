@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2019 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,46 +11,46 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: November 24, 2019 7:59:40 PM
 // 
-#endregion
+
 
 using System.ComponentModel;
 
 namespace Gorgon.Editor.Views;
 
 /// <summary>
-/// An extended tree.
+/// An extended tree
 /// </summary>
 internal class TreeEx
     : TreeView
 {
-    #region Events.
+
     /// <summary>
     /// The event fired when the node edit is canceled.
     /// </summary>
     public event EventHandler EditCanceled;
-    #endregion
 
-    #region Variables.
+
+
     // Text box used to rename a node.
     private TextBox _renameBox;
     // The node being renamed.
     private TreeNode _renameNode;
     // The points for the expand/collapse icon polygon.
     private readonly PointF[] _expandIconPoints = new PointF[3];
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>Gets or sets a value indicating whether the label text of the tree nodes can be edited.</summary>
     [EditorBrowsable(EditorBrowsableState.Never), Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public new bool LabelEdit
@@ -180,9 +180,9 @@ internal class TreeEx
     /// </summary>
     [Browsable(false)]
     public bool IsEditing => _renameNode is not null;
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Handles the LostFocus event of the _renameBox control.
     /// </summary>
@@ -599,9 +599,9 @@ internal class TreeEx
 
         HideRenameBox(true);
     }
-    #endregion
 
-    #region Constructor/Finalizer.
+
+
     /// <summary>Initializes a new instance of the <see cref="TreeEx"/> class.</summary>
     public TreeEx()
     {
@@ -614,5 +614,5 @@ internal class TreeEx
         ShowRootLines = ShowLines = false;
         FullRowSelect = true;
     }
-    #endregion
+
 }

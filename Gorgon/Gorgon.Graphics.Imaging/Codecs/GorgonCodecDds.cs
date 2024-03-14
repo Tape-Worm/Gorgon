@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2016 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,14 +11,14 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: August 16, 2016 12:57:49 PM
 // 
@@ -27,7 +27,6 @@
 // SharpDX by Alexandre Mutel (http://sharpdx.org)
 // DirectXTex by Chuck Walburn (http://directxtex.codeplex.com)
 
-#region SharpDX/DirectXTex licenses
 // Copyright (c) 2010-2016 SharpDX - Alexandre Mutel
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -38,7 +37,7 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
@@ -46,7 +45,7 @@
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // -----------------------------------------------------------------------------
 // The following code is a port of DirectXTex http://directxtex.codeplex.com
 // -----------------------------------------------------------------------------
@@ -54,53 +53,53 @@
 //
 // This license governs use of the accompanying software. If you use the 
 // software, you accept this license. If you do not accept the license, do not
-// use the software.
+// use the software
 //
 // 1. Definitions
 // The terms "reproduce," "reproduction," "derivative works," and 
-// "distribution" have the same meaning here as under U.S. copyright law.
+// "distribution" have the same meaning here as under U.S. copyright law
 // A "contribution" is the original software, or any additions or changes to 
-// the software.
+// the software
 // A "contributor" is any person that distributes its contribution under this 
-// license.
+// license
 // "Licensed patents" are a contributor's patent claims that read directly on 
-// its contribution.
+// its contribution
 //
 // 2. Grant of Rights
 // (A) Copyright Grant- Subject to the terms of this license, including the 
 // license conditions and limitations in section 3, each contributor grants 
 // you a non-exclusive, worldwide, royalty-free copyright license to reproduce
 // its contribution, prepare derivative works of its contribution, and 
-// distribute its contribution or any derivative works that you create.
+// distribute its contribution or any derivative works that you create
 // (B) Patent Grant- Subject to the terms of this license, including the license
 // conditions and limitations in section 3, each contributor grants you a 
 // non-exclusive, worldwide, royalty-free license under its licensed patents to
 // make, have made, use, sell, offer for sale, import, and/or otherwise dispose
 // of its contribution in the software or derivative works of the contribution 
-// in the software.
+// in the software
 //
 // 3. Conditions and Limitations
 // (A) No Trademark License- This license does not grant you rights to use any 
-// contributors' name, logo, or trademarks.
+// contributors' name, logo, or trademarks
 // (B) If you bring a patent claim against any contributor over patents that 
 // you claim are infringed by the software, your patent license from such 
-// contributor to the software ends automatically.
+// contributor to the software ends automatically
 // (C) If you distribute any portion of the software, you must retain all 
 // copyright, patent, trademark, and attribution notices that are present in the
-// software.
+// software
 // (D) If you distribute any portion of the software in source code form, you 
 // may do so only under this license by including a complete copy of this 
 // license with your distribution. If you distribute any portion of the software
 // in compiled or object code form, you may only do so under a license that 
-// complies with this license.
+// complies with this license
 // (E) The software is licensed "as-is." You bear the risk of using it. The
 // contributors give no express warranties, guarantees or conditions. You may
 // have additional consumer rights under your local laws which this license 
 // cannot change. To the extent permitted under your local laws, the 
 // contributors exclude the implied warranties of merchantability, fitness for a
 // particular purpose and non-infringement.
-#endregion
-#endregion
+
+
 
 using System.Buffers;
 using System.Runtime.CompilerServices;
@@ -114,14 +113,14 @@ using Gorgon.Native;
 namespace Gorgon.Graphics.Imaging.Codecs;
 
 /// <summary>
-/// A codec to handle reading/writing DDDS files.
+/// A codec to handle reading/writing DDDS files
 /// </summary>
 /// <remarks>
 /// <para>
-/// This codec will read and write compressed or uncompressed (lossy, depending on pixel format) files using the Direct Draw Surface (DDS) format.
+/// This codec will read and write compressed or uncompressed (lossy, depending on pixel format) files using the Direct Draw Surface (DDS) format
 /// </para>
 /// <para>
-/// This file format is the best suited for use with Gorgon as it supports a multitude of options and is far more flexible than other legacy formats such as TGA or PNG.
+/// This file format is the best suited for use with Gorgon as it supports a multitude of options and is far more flexible than other legacy formats such as TGA or PNG
 /// </para>
 /// <para>
 /// While the DDS codec will support any format for Direct 3D 10 (except typeless formats) and above, it does not support the following legacy Direct3D 9 formats:
@@ -165,12 +164,12 @@ namespace Gorgon.Graphics.Imaging.Codecs;
 public sealed class GorgonCodecDds
     : GorgonImageCodec<IGorgonImageCodecEncodingOptions, GorgonDdsDecodingOptions>
 {
-    #region Constants.
+
     // The DDS file magic number: "DDS "
     private const uint MagicNumber = 0x20534444;
-    #endregion
 
-    #region Variables.
+
+
     private static readonly DdsPixelFormat _pfDxt1 = new(DdsPixelFormatFlags.FourCC, MakeFourCC('D', 'X', 'T', '1'), 0, 0, 0, 0, 0);     // DXT1		
     private static readonly DdsPixelFormat _pfDxt2 = new(DdsPixelFormatFlags.FourCC, MakeFourCC('D', 'X', 'T', '2'), 0, 0, 0, 0, 0);     // DXT2
     private static readonly DdsPixelFormat _pfDxt3 = new(DdsPixelFormatFlags.FourCC, MakeFourCC('D', 'X', 'T', '3'), 0, 0, 0, 0, 0);     // DXT3
@@ -248,9 +247,9 @@ public sealed class GorgonCodecDds
 
     // Supported buffer formats.
     private readonly BufferFormat[] _formats;
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to return the pixel formats supported by the codec.
     /// </summary>
@@ -288,9 +287,9 @@ public sealed class GorgonCodecDds
     /// Property to return the abbreviated name of the codec (e.g. PNG).
     /// </summary>
     public override string Codec => "DDS";
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to create a FOURCC value.
     /// </summary>
@@ -1476,9 +1475,9 @@ public sealed class GorgonCodecDds
         }
         return magicNumber == MagicNumber;
     }
-    #endregion
 
-    #region Constructor/Destructor.
+
+
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonCodecDds" /> class.
     /// </summary>
@@ -1493,5 +1492,5 @@ public sealed class GorgonCodecDds
                     where format != BufferFormat.Unknown && !info.IsTypeless
                     select format).ToArray();
     }
-    #endregion
+
 }

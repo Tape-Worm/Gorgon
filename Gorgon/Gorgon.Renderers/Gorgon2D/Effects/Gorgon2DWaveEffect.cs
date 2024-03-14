@@ -1,6 +1,6 @@
-﻿#region MIT.
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2012 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: Monday, April 02, 2012 1:41:47 PM
 // 
-#endregion
+
 
 using System.Runtime.InteropServices;
 using Gorgon.Graphics;
@@ -35,7 +35,7 @@ using DX = SharpDX;
 namespace Gorgon.Renderers;
 
 /// <summary>
-/// Type of wave effect.
+/// Type of wave effect
 /// </summary>
 public enum WaveType
 {
@@ -54,16 +54,16 @@ public enum WaveType
 }
 
 /// <summary>
-/// An effect that renders a wavy image.
+/// An effect that renders a wavy image
 /// </summary>
 /// <remarks>
-/// Initializes a new instance of the <see cref="Gorgon2DWaveEffect"/> class.
+/// Initializes a new instance of the <see cref="Gorgon2DWaveEffect"/> class
 /// </remarks>
 /// <param name="renderer">The renderer used to render the effect.</param>
 public class Gorgon2DWaveEffect(Gorgon2D renderer)
         : Gorgon2DEffect(renderer, Resources.GOR2D_EFFECT_WAVE, Resources.GOR2D_EFFECT_WAVE_DESC, 1), IGorgon2DCompositorEffect
 {
-    #region Value Types.
+ 
     /// <summary>
     /// Settings for the effect shader.
     /// </summary>
@@ -103,9 +103,9 @@ public class Gorgon2DWaveEffect(Gorgon2D renderer)
         /// </summary>
         public WaveType WaveType => (WaveType)_waveType;
     }
-    #endregion
 
-    #region Variables.
+
+
     // Constant buffer for the wave information.
     private GorgonConstantBufferView _waveBuffer;
     // Settings for the effect shader.
@@ -117,9 +117,9 @@ public class Gorgon2DWaveEffect(Gorgon2D renderer)
     private Gorgon2DShaderState<GorgonPixelShader> _waveState;
     // The batch state for rendering.
     private Gorgon2DBatchState _batchState;
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to set or return the wave type.
     /// </summary>
@@ -213,9 +213,9 @@ public class Gorgon2DWaveEffect(Gorgon2D renderer)
             _isUpdated = true;
         }
     }
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function called to initialize the effect.
     /// </summary>
@@ -352,7 +352,7 @@ public class Gorgon2DWaveEffect(Gorgon2D renderer)
         End();
     }
 
-    #endregion
-    #region Constructor/Destructor.
-    #endregion
+
+
+
 }

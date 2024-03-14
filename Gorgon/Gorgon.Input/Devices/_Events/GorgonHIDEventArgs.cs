@@ -1,4 +1,4 @@
-﻿#region MIT
+﻿
 // 
 // Gorgon
 // Copyright (C) 2015 Michael Winsor
@@ -11,28 +11,28 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: Thursday, September 10, 2015 11:17:57 PM
 // 
-#endregion
+
 
 using Gorgon.Native;
 
 namespace Gorgon.Input;
 
 /// <summary>
-/// Event arguments for an <see cref="GorgonRawHID.DataReceived"/> event.
+/// Event arguments for an <see cref="GorgonRawHID.DataReceived"/> event
 /// </summary>
 /// <remarks>
-/// Initializes a new instance of the <see cref="GorgonHIDEventArgs"/> class.
+/// Initializes a new instance of the <see cref="GorgonHIDEventArgs"/> class
 /// </remarks>
 /// <param name="data">The HID data.</param>
 /// <param name="size">The size of an individual HID input.</param>
@@ -40,7 +40,7 @@ namespace Gorgon.Input;
 public class GorgonHIDEventArgs(GorgonPtr<byte> data, int size, int count)
         : EventArgs
 {
-    #region Properties.
+
     /// <summary>
     /// Property to return the data buffer storing the HID data.
     /// </summary>
@@ -65,5 +65,5 @@ public class GorgonHIDEventArgs(GorgonPtr<byte> data, int size, int count)
         get;
     } = count;
 
-    #endregion
+
 }

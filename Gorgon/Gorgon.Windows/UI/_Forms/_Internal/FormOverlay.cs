@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2020 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,28 +11,28 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: December 5, 2020 3:43:01 PM
 // 
-#endregion
+
 
 namespace Gorgon.UI;
 
 /// <summary>
-/// The form used to display the translucent overlay.
+/// The form used to display the translucent overlay
 /// </summary>
 public partial class FormOverlay
     : Form
 {
-    #region Properties.
+
     /// <summary>Gets the required creation parameters when the control handle is created.</summary>
     protected override CreateParams CreateParams
     {
@@ -47,10 +47,10 @@ public partial class FormOverlay
             return baseParams;
         }
     }
-    #endregion
 
-    #region Constructor/Finalizer.
+
+
     /// <summary>Initializes a new instance of the <see cref="FormOverlay" /> class.</summary>
     public FormOverlay() => InitializeComponent();
-    #endregion
+
 }

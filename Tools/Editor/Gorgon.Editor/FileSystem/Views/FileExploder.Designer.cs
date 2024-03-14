@@ -30,7 +30,7 @@ partial class FileExploder
         base.Dispose(disposing);
     }
 
-    #region Component Designer generated code
+
 
     /// <summary> 
     /// Required method for Designer support - do not modify 
@@ -570,7 +570,7 @@ partial class FileExploder
         ResumeLayout(false);
         PerformLayout();
     }
-    #endregion
+
 
     private TreeEx TreeDirectories;
     private System.Windows.Forms.ImageList TreeNodeIcons;

@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2020 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: July 4, 2020 12:40:55 AM
 // 
-#endregion
+
 
 using System.Numerics;
 using Gorgon.Animation;
@@ -35,14 +35,14 @@ using Gorgon.Renderers;
 namespace Gorgon.Editor.AnimationEditor;
 
 /// <summary>
-/// A processor for handling setting up key frames with relevant data.
+/// A processor for handling setting up key frames with relevant data
 /// </summary>
 /// <remarks>Initializes a new instance of the <see cref="KeyProcessorService"/> class.</remarks>
 /// <param name="textureCache">The texture cache.</param>
 /// <param name="log">The log.</param>
 internal class KeyProcessorService(ITextureCache textureCache, IGorgonLog log)
 {
-    #region Variables.
+
     // The texture cache used to retrieve textures for sprites.
     private readonly ITextureCache _textureCache = textureCache;
     // The log used for debug messages.
@@ -53,9 +53,9 @@ internal class KeyProcessorService(ITextureCache textureCache, IGorgonLog log)
     private readonly SetKeyFramesArgs _setKeysArgs = new();
     // The synchronization lock for multiple threads.
     private readonly object _syncLock = new();
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to retrieve a list of files for each key frame in a texture track.
     /// </summary>
@@ -337,5 +337,5 @@ internal class KeyProcessorService(ITextureCache textureCache, IGorgonLog log)
         }
     }
 
-    #endregion
+
 }

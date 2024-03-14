@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2019 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: March 24, 2019 10:22:58 AM
 // 
-#endregion
+
 
 using System.Numerics;
 using Gorgon.Graphics;
@@ -33,7 +33,7 @@ using DX = SharpDX;
 namespace Gorgon.Editor.SpriteEditor;
 
 /// <summary>
-/// Defines what data to use as a mask when determining clip boundaries.
+/// Defines what data to use as a mask when determining clip boundaries
 /// </summary>
 internal enum ClipMask
 {
@@ -48,11 +48,11 @@ internal enum ClipMask
 }
 
 /// <summary>
-/// A clipper that automatically defines the bounds of the sprite based on pixel data.
+/// A clipper that automatically defines the bounds of the sprite based on pixel data
 /// </summary>
 internal class PickClipperService
 {
-    #region Value Types.
+ 
     /// <summary>
     /// Stores a span of lines that form the boundaries of where to clip.
     /// </summary>
@@ -71,18 +71,18 @@ internal class PickClipperService
         /// </summary>
         public int Y;
     }
-    #endregion
 
-    #region Variables.
+
+
     // A list of pixels that have been checked by the clipper.
     private bool[] _pixels = [];
     // The image data.
     private IGorgonImageBuffer _imageData;
     // The padding for the rectangle.
     private int _padding;
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to set or return the padding for the clipping rectangle.
     /// </summary>
@@ -116,9 +116,9 @@ internal class PickClipperService
             _pixels = new bool[_imageData.Width * _imageData.Height];
         }
     }
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to determine if the pixel at the specified location is a value that falls within the mask.
     /// </summary>
@@ -348,5 +348,5 @@ internal class PickClipperService
         // Ensure that we don't get a degenerate rectangle.
         return ((clipRegion.IsEmpty) || (clipRegion.Width < 0) || (clipRegion.Height < 0)) ? null : clipRegion;
     }
-    #endregion
+
 }

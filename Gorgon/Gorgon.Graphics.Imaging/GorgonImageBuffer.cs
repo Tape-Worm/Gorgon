@@ -1,6 +1,6 @@
-﻿#region MIT.
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2013 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: Tuesday, July 23, 2013 7:58:34 PM
 // 
-#endregion
+
 
 using Gorgon.Core;
 using Gorgon.Graphics.Imaging.Properties;
@@ -33,12 +33,12 @@ using DX = SharpDX;
 namespace Gorgon.Graphics.Imaging;
 
 /// <summary>
-/// An image buffer containing data about a part of a <see cref="IGorgonImage"/>.
+/// An image buffer containing data about a part of a <see cref="IGorgonImage"/>
 /// </summary>
 public class GorgonImageBuffer
     : IGorgonImageBuffer
 {
-    #region Properties.
+
     /// <summary>
     /// Property to return the format of the buffer.
     /// </summary>
@@ -122,9 +122,9 @@ public class GorgonImageBuffer
     {
         get;
     }
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to set the alpha channel for a specific buffer in the image.
     /// </summary>
@@ -400,9 +400,9 @@ public class GorgonImageBuffer
     /// </summary>
     /// <param name="value">The byte value used to fill the buffer.</param>
     public void Fill(byte value) => Data.Fill(value);
-    #endregion
 
-    #region Constructor/Destructor.
+
+
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonImageBuffer" /> class.
     /// </summary>
@@ -466,5 +466,5 @@ public class GorgonImageBuffer
         Depth = 1;
         Format = format;
     }
-    #endregion
+
 }

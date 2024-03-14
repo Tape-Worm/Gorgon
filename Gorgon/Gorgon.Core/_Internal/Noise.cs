@@ -5,7 +5,7 @@
 namespace Simplex;
 
 /// <summary>
-/// Implementation of the Perlin simplex noise, an improved Perlin noise algorithm.
+/// Implementation of the Perlin simplex noise, an improved Perlin noise algorithm
 /// Based loosely on SimplexNoise1234 by Stefan Gustavson <a href="http://staffwww.itn.liu.se/~stegu/aqsis/aqsis-newnoise">http://staffwww.itn.liu.se/~stegu/aqsis/aqsis-newnoise</a>
 /// </summary>
 internal class Noise

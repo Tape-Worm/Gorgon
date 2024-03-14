@@ -1,4 +1,4 @@
-﻿#region MIT
+﻿
 // 
 // Gorgon
 // Copyright (C) 2015 Michael Winsor
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: Saturday, September 12, 2015 1:47:55 PM
 // 
-#endregion
+
 
 using Gorgon.Core;
 using Gorgon.Diagnostics;
@@ -32,10 +32,10 @@ using Gorgon.PlugIns;
 namespace Gorgon.Input;
 
 /// <summary>
-/// A factory used to load gaming device drivers.
+/// A factory used to load gaming device drivers
 /// </summary>
 /// <remarks>
-/// Initializes a new instance of the <see cref="GorgonGamingDeviceDriverFactory"/> class.
+/// Initializes a new instance of the <see cref="GorgonGamingDeviceDriverFactory"/> class
 /// </remarks>
 /// <param name="pluginCache">The plug in cache that will hold the plug in assemblies.</param>
 /// <param name="log">[Optional] The logger used for debugging.</param>
@@ -43,16 +43,16 @@ namespace Gorgon.Input;
 public sealed class GorgonGamingDeviceDriverFactory(GorgonMefPlugInCache pluginCache, IGorgonLog log = null)
         : IGorgonGamingDeviceDriverFactory
 {
-    #region Variables.
+
     // The logger used for debugging.
     private readonly IGorgonLog _log = log ?? GorgonLog.NullLog;
     // The plug in service to use when loading drivers.
     private readonly IGorgonPlugInService _plugInService = new GorgonMefPlugInService(pluginCache);
     // The cache holding the plug in assemblies.
     private readonly GorgonMefPlugInCache _plugInCache = pluginCache ?? throw new ArgumentNullException(nameof(pluginCache));
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to load all drivers from the plug in assemblies that are currently loaded.
     /// </summary>
@@ -143,5 +143,5 @@ public sealed class GorgonGamingDeviceDriverFactory(GorgonMefPlugInCache pluginC
         return result;
     }
 
-    #endregion
+
 }

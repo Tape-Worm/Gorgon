@@ -29,7 +29,7 @@ partial class FontSolidBrushView
         base.Dispose(disposing);
     }
 
-    #region Component Designer generated code
+
 
     /// <summary> 
     /// Required method for Designer support - do not modify 
@@ -99,7 +99,7 @@ partial class FontSolidBrushView
 
     }
 
-    #endregion
+
 
     private ColorPicker PickerSolidBrush;
     private System.Windows.Forms.TableLayoutPanel TableControls;

@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2016 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,32 +11,32 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: June 20, 2016 9:22:50 PM
 // 
-#endregion
+
 
 using Gorgon.Math;
 
 namespace Gorgon.Graphics.Imaging;
 
 /// <summary>
-/// A record used to define the properties of a <see cref="IGorgonImage"/>.
+/// A record used to define the properties of a <see cref="IGorgonImage"/>
 /// </summary>
 /// <param name="ImageType">The type of image to build.</param>
 /// <param name="Format">The pixel format layout of the data in the image.</param>
 public record GorgonImageInfo(ImageDataType ImageType, BufferFormat Format)
     : IGorgonImageInfo
 {
-    #region Constructor.
+
     /// <summary>
     /// A copy constructor for an <see cref="IGorgonImageInfo"/>.
     /// </summary>
@@ -52,9 +52,9 @@ public record GorgonImageInfo(ImageDataType ImageType, BufferFormat Format)
         MipCount = info.MipCount.Max(1);
         HasPreMultipliedAlpha = info.HasPreMultipliedAlpha;
     }
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to return the total number of images there are in an image array.
     /// </summary>
@@ -160,5 +160,5 @@ public record GorgonImageInfo(ImageDataType ImageType, BufferFormat Format)
         get;
         internal init;
     }
-    #endregion
+
 }

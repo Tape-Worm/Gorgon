@@ -1,6 +1,6 @@
-﻿#region MIT.
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2012 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: Thursday, April 05, 2012 8:23:51 AM
 // 
-#endregion
+
 
 using System.Numerics;
 using System.Runtime.InteropServices;
@@ -35,12 +35,12 @@ using DX = SharpDX;
 namespace Gorgon.Renderers;
 
 /// <summary>
-/// An effect that renders the edges of an image with Sobel edge detection.
+/// An effect that renders the edges of an image with Sobel edge detection
 /// </summary>
 public class Gorgon2DSobelEdgeDetectEffect
     : Gorgon2DEffect, IGorgon2DCompositorEffect
 {
-    #region Value Types.
+ 
     /// <summary>
     /// Settings for the effect shader.
     /// </summary>
@@ -71,9 +71,9 @@ public class Gorgon2DSobelEdgeDetectEffect
         /// </summary>
         public float Threshold => _texelThreshold.Z;
     }
-    #endregion
 
-    #region Variables.
+
+
     // Buffer for the sobel edge detection.
     private GorgonConstantBufferView _sobelBuffer;
     // The pixel shader for the effect.
@@ -89,9 +89,9 @@ public class Gorgon2DSobelEdgeDetectEffect
     private float _lineThickness = 1.0f;
     // The texture size used to calculate the line thickness.
     private DX.Size2F _textureSize = new(512.0f, 512.0f);
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to set or return the offset of the shapren/embossing edges.
     /// </summary>
@@ -176,9 +176,9 @@ public class Gorgon2DSobelEdgeDetectEffect
             _isUpdated = true;
         }
     }
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function called when the effect is being initialized.
     /// </summary>
@@ -310,9 +310,9 @@ public class Gorgon2DSobelEdgeDetectEffect
                                         new DX.RectangleF(0, 0, 1, 1));
         End();
     }
-    #endregion
 
-    #region Constructor/Destructor.
+
+
     /// <summary>
     /// Initializes a new instance of the <see cref="Gorgon2DSobelEdgeDetectEffect"/> class.
     /// </summary>
@@ -323,5 +323,5 @@ public class Gorgon2DSobelEdgeDetectEffect
         _settings = new Settings(Color.Black, Vector2.Zero, 0.75f);
         Macros.Add(new GorgonShaderMacro("SOBEL_EDGE_EFFECT"));
     }
-    #endregion
+
 }

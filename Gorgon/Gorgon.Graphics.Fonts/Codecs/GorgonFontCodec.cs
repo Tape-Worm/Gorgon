@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2017 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: February 24, 2017 12:20:41 AM
 // 
-#endregion
+
 
 using Gorgon.Core;
 using Gorgon.Graphics.Fonts.Properties;
@@ -31,23 +31,23 @@ using DX = SharpDX;
 namespace Gorgon.Graphics.Fonts.Codecs;
 
 /// <summary>
-/// The base class used to define functionality to allow applications to write their own codecs for reading/writing font data.
+/// The base class used to define functionality to allow applications to write their own codecs for reading/writing font data
 /// </summary>
 /// <remarks>
 /// <para>
 /// Implementors that want to create their own font import/export functionality should do so by inheriting from this class. It contains functionality that will allow the fonts to be created and registered 
-/// with a <seealso cref="GorgonFontFactory"/>.
+/// with a <seealso cref="GorgonFontFactory"/>
 /// </para>
 /// </remarks>
 /// <remarks>
-/// Initializes a new instance of the <see cref="GorgonFontCodec"/> class.
+/// Initializes a new instance of the <see cref="GorgonFontCodec"/> class
 /// </remarks>
 /// <param name="factory">The font factory that holds cached font information.</param>
 /// <exception cref="ArgumentNullException">Thrown when the <paramref name="factory"/> parameter is <b>null</b>.</exception>
 public abstract class GorgonFontCodec(GorgonFontFactory factory)
         : IGorgonFontCodec
 {
-    #region Properties.
+
     /// <summary>
     /// Property to return the font factory containing cached font data.
     /// </summary>
@@ -127,9 +127,9 @@ public abstract class GorgonFontCodec(GorgonFontFactory factory)
     /// property.
     /// </remarks>
     string IGorgonNamedObject.Name => Codec;
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to write the font data to the stream.
     /// </summary>
@@ -465,5 +465,5 @@ public abstract class GorgonFontCodec(GorgonFontFactory factory)
     /// </returns>
     public override string ToString() => string.Format(Resources.GORGFX_TOSTR_FONT_CODEC, Codec);
 
-    #endregion
+
 }

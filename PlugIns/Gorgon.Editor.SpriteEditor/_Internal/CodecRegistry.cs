@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2019 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: April 24, 2019 1:54:37 PM
 // 
-#endregion
+
 
 using System.Reflection;
 using Gorgon.Diagnostics;
@@ -35,7 +35,7 @@ using Gorgon.Renderers;
 namespace Gorgon.Editor.SpriteEditor;
 
 /// <summary>
-/// A registry for the sprite codecs used by the plug ins in this assembly.
+/// A registry for the sprite codecs used by the plug ins in this assembly
 /// </summary>
 /// <remarks>Initializes a new instance of the <see cref="CodecRegistry"/> class.</remarks>
 /// <param name="pluginCache">The cache of plug in assemblies.</param>
@@ -43,7 +43,7 @@ namespace Gorgon.Editor.SpriteEditor;
 /// <param name="log">The log for debug output.</param>
 internal class CodecRegistry(GorgonMefPlugInCache pluginCache, Gorgon2D renderer, IGorgonLog log)
 {
-    #region Variables.
+
     // The cache containing the plug in assemblies.
     private readonly GorgonMefPlugInCache _pluginCache = pluginCache;
     // The service used to manage the plug ins.
@@ -52,9 +52,9 @@ internal class CodecRegistry(GorgonMefPlugInCache pluginCache, Gorgon2D renderer
     private readonly IGorgonLog _log = log;
     // The 2D renderer for the application.
     private readonly Gorgon2D _renderer = renderer;
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to return the list of codecs.
     /// </summary>
@@ -78,9 +78,9 @@ internal class CodecRegistry(GorgonMefPlugInCache pluginCache, Gorgon2D renderer
     {
         get;
     } = [];
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to load external sprite codec plug ins.
     /// </summary>
@@ -287,5 +287,5 @@ internal class CodecRegistry(GorgonMefPlugInCache pluginCache, Gorgon2D renderer
         }
     }
 
-    #endregion
+
 }

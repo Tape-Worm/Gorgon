@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2021 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,24 +11,24 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: January 16, 2021 1:57:57 PM
 // 
-#endregion
+
 
 
 namespace Gorgon.Graphics.Core;
 
 /// <summary>
-/// A query for performing occlusion testing.
+/// A query for performing occlusion testing
 /// </summary>
 /// <remarks>Initializes a new instance of the <see cref="GorgonOcclusionQuery" /> class.</remarks>
 /// <param name="graphics">The graphics interface used to build the query.</param>
@@ -36,12 +36,12 @@ namespace Gorgon.Graphics.Core;
 public class GorgonOcclusionQuery(GorgonGraphics graphics, string name = null)
         : GorgonQuery<ulong>(graphics, name)
 {
-    #region Properties.
+
     /// <summary>Property to return the type of query to execute.</summary>
     public override QueryType QueryType => QueryType.Occlusion;
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to retrieve the result data for the query.
     /// </summary>
@@ -49,5 +49,5 @@ public class GorgonOcclusionQuery(GorgonGraphics graphics, string name = null)
     /// <returns><b>true</b> if the query results are ready to be consumed, or <b>false</b> if not.</returns>
     protected override bool OnGetData(out ulong result) => Graphics.D3DDeviceContext.GetData(D3dQuery, out result);
 
-    #endregion
+
 }

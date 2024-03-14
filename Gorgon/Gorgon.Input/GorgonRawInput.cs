@@ -1,4 +1,4 @@
-﻿#region MIT
+﻿
 // 
 // Gorgon
 // Copyright (C) 2015 Michael Winsor
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: Tuesday, September 07, 2015 1:45:21 PM
 // 
-#endregion
+
 
 using Gorgon.Diagnostics;
 using Gorgon.Native;
@@ -30,7 +30,7 @@ using Gorgon.Native;
 namespace Gorgon.Input;
 
 /// <summary>
-/// Raw Input functionality for keyboards, mice and human interface devices.
+/// Raw Input functionality for keyboards, mice and human interface devices
 /// </summary>
 /// <remarks>
 /// <para>
@@ -42,7 +42,7 @@ namespace Gorgon.Input;
 /// </para>
 /// <para>
 /// The <see cref="GorgonRawInput"/> object will also coordinate <c>WM_INPUT</c> messages and forward Raw Input data to an appropriate raw input device. This is done to allow multiple devices of the same 
-/// type (e.g. multiple mice) to be used individually.
+/// type (e.g. multiple mice) to be used individually
 /// </para>
 /// </remarks>
 /// <example>
@@ -54,22 +54,22 @@ namespace Gorgon.Input;
 /// 
 /// private void CreateRawMouse(Control yourMainApplicationWindow)
 /// {
-///    // The 'yourMainApplicationWindow' is the primary window used by your application.
+///    // The 'yourMainApplicationWindow' is the primary window used by your application
 ///    _rawInput = new GorgonRawInput(yourMainApplicationWindow);
 /// 
 ///    _mouse = new GorgonRawMouse();
 /// 
 ///    _rawInput.RegisterDevice(_mouse);
 /// 
-///	   // Configure your mouse object for events here...
+///	   // Configure your mouse object for events here..
 /// }
 /// 
 /// private void ApplicationShutDown()
 /// {
-///		// The device should be unregistered as soon as it's no longer needed.
+///		// The device should be unregistered as soon as it's no longer needed
 ///     _rawInput.UnregisterDevice(_mouse);
 /// 
-///		// Always dispose this object, otherwise message hooks may still persist and cause issues.
+///		// Always dispose this object, otherwise message hooks may still persist and cause issues
 ///     _rawInput.Dispose();
 /// }
 /// ]]>
@@ -78,7 +78,7 @@ namespace Gorgon.Input;
 public class GorgonRawInput
     : IGorgonRawInput
 {
-    #region Variables.
+
     // Our message used to route raw input messages.
     private Lazy<RawInputMessageFilter> _filter;
     // The logger used for debugging.
@@ -95,9 +95,9 @@ public class GorgonRawInput
     private readonly Dictionary<DeviceKey, IGorgonRawInputDeviceData<GorgonRawKeyboardData>> _keyboardDevices = [];
     // The list of pointing devices registered on the system.
     private readonly Dictionary<DeviceKey, IGorgonRawInputDeviceData<GorgonRawMouseData>> _mouseDevices = [];
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to unhook raw input from the application.
     /// </summary>
@@ -576,9 +576,9 @@ public class GorgonRawInput
 
         GC.SuppressFinalize(this);
     }
-    #endregion
 
-    #region Constructor/Finalizer.
+
+
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonRawInput"/> class.
     /// </summary>
@@ -610,5 +610,5 @@ public class GorgonRawInput
     {
         UnhookRawInput();
     }
-    #endregion
+
 }

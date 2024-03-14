@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2019 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: March 15, 2019 11:56:19 AM
 // 
-#endregion
+
 
 using Gorgon.Animation;
 using Gorgon.Editor.Rendering;
@@ -33,7 +33,7 @@ using Gorgon.Renderers;
 namespace Gorgon.Editor.SpriteEditor;
 
 /// <summary>
-/// Provides rendering functionality for the sprite editor.
+/// Provides rendering functionality for the sprite editor
 /// </summary>
 /// <remarks>Initializes a new instance of the <see cref="SpriteViewer"/> class.</remarks>
 /// <param name="name">The name of the renderer.</param>
@@ -43,14 +43,14 @@ namespace Gorgon.Editor.SpriteEditor;
 internal abstract class SpriteViewer(string name, Gorgon2D renderer, GorgonSwapChain swapChain, ISpriteContent dataContext)
         : DefaultContentRenderer<ISpriteContent>(name, renderer, swapChain, dataContext), ISpriteViewer
 {
-    #region Variables.
+
     // The controller for animating the content.
     private readonly ImageAnimationController _animController = new();
     private IGorgonAnimation _opacityAnimation;
     private readonly GorgonAnimationBuilder _animationBuilder = new();
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to return whether the opactiy animation is playing.
     /// </summary>
@@ -69,9 +69,9 @@ internal abstract class SpriteViewer(string name, Gorgon2D renderer, GorgonSwapC
         get;
         set;
     }
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to animate the sprite texture opacity.
     /// </summary>
@@ -142,5 +142,5 @@ internal abstract class SpriteViewer(string name, Gorgon2D renderer, GorgonSwapC
     /// <summary>Function to set the default zoom/offset for the viewer.</summary>
     public abstract void DefaultZoom();
 
-    #endregion
+
 }

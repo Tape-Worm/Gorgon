@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2019 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: May 19, 2019 11:01:36 PM
 // 
-#endregion
+
 
 using System.Numerics;
 using Gorgon.Animation;
@@ -41,11 +41,11 @@ using DX = SharpDX;
 namespace Gorgon.Examples;
 
 /// <summary>
-/// The resource management system.
+/// The resource management system
 /// </summary>
 /// <remarks>
 /// This is responsible for caching all of our data for the scene. We load sprites, textures, 3D meshes, post processing effects and individual effects into the manager 
-/// and then access them via dictionaries so we can get at our data by name.
+/// and then access them via dictionaries so we can get at our data by name
 /// </remarks>
 /// <remarks>Initializes a new instance of the <see cref="ResourceManagement"/> class.</remarks>
 /// <param name="renderer">The renderer for the application.</param>
@@ -53,7 +53,7 @@ namespace Gorgon.Examples;
 internal class ResourceManagement(Gorgon2D renderer, GorgonMefPlugInCache plugIns)
         : IDisposable
 {
-    #region Variables.
+
     // The cache used to hold texture data.
     private readonly GorgonTextureCache<GorgonTexture2D> _textureCache = new(renderer.Graphics);
     // The loader used to read content data from the file system.
@@ -77,9 +77,9 @@ internal class ResourceManagement(Gorgon2D renderer, GorgonMefPlugInCache plugIn
     private readonly Dictionary<string, Gorgon2DCompositor> _postProcess = new(StringComparer.OrdinalIgnoreCase);
     // The list of effects used by the application.
     private readonly Dictionary<string, Gorgon2DEffect> _effects = new(StringComparer.OrdinalIgnoreCase);
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to return the effects used by the application.
     /// </summary>
@@ -127,9 +127,9 @@ internal class ResourceManagement(Gorgon2D renderer, GorgonMefPlugInCache plugIn
     /// Propert to return all of the post process compositors.
     /// </summary>
     public IReadOnlyDictionary<string, Gorgon2DCompositor> PostProcessCompositors => _postProcess;
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to load the images for the textures.
     /// </summary>
@@ -428,5 +428,5 @@ internal class ResourceManagement(Gorgon2D renderer, GorgonMefPlugInCache plugIn
         }
     }
 
-    #endregion
+
 }

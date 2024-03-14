@@ -5,7 +5,7 @@ using Gorgon.Graphics.Fonts;
 namespace Gorgon.Editor.FontEditor;
 
 /// <summary>
-/// A view model for the font gradient brush interface.
+/// A view model for the font gradient brush interface
 /// </summary>
 internal interface IFontGradientBrush
     : IHostedPanelViewModel

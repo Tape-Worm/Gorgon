@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2018 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: April 8, 2018 1:27:04 PM
 // 
-#endregion
+
 
 using System.Collections;
 using Gorgon.Collections;
@@ -31,17 +31,17 @@ using Gorgon.Native;
 namespace Gorgon.Graphics.Core;
 
 /// <summary>
-/// A list of outputs on a video adapter.
+/// A list of outputs on a video adapter
 /// </summary>
 public sealed class GorgonVideoAdapterOutputList
     : IGorgonNamedObjectReadOnlyDictionary<IGorgonVideoOutputInfo>
 {
-    #region Variables.
+
     // The backing store for the list.
     private readonly IReadOnlyDictionary<string, IGorgonVideoOutputInfo> _outputs;
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to return whether the keys are case sensitive.
     /// </summary>
@@ -55,9 +55,9 @@ public sealed class GorgonVideoAdapterOutputList
     /// Property to return an item in the dictionary by its name.
     /// </summary>
     public IGorgonVideoOutputInfo this[string name] => _outputs[name];
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to return the correct output where the majority of a window resides.
     /// </summary>
@@ -98,9 +98,9 @@ public sealed class GorgonVideoAdapterOutputList
     /// <summary>Returns an enumerator that iterates through a collection.</summary>
     /// <returns>An <see cref="IEnumerator" /> object that can be used to iterate through the collection.</returns>
     IEnumerator IEnumerable.GetEnumerator() => _outputs.Select(output => output.Value).GetEnumerator();
-    #endregion
 
-    #region Constructor/Finalizer.
+
+
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonVideoAdapterOutputList"/> class.
     /// </summary>
@@ -111,5 +111,5 @@ public sealed class GorgonVideoAdapterOutputList
     /// </summary>
     /// <param name="outputs">The list of outputs to wrap.</param>
     internal GorgonVideoAdapterOutputList(IReadOnlyDictionary<string, IGorgonVideoOutputInfo> outputs) => _outputs = outputs;
-    #endregion
+
 }

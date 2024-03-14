@@ -23,7 +23,7 @@ namespace Gorgon.Editor;
             base.Dispose(disposing);
         }
 
-    #region Windows Form Designer generated code
+
 
     /// <summary>
     /// Required method for Designer support - do not modify
@@ -155,7 +155,7 @@ namespace Gorgon.Editor;
         PerformLayout();
     }
 
-    #endregion
+
     private TableLayoutPanel tableLayoutPanel1;
     private PictureBox pictureBox1;
     private FlowLayoutPanel flowLayoutPanel1;

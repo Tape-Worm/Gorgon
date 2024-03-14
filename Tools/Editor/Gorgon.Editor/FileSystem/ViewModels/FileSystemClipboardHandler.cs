@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2020 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: January 15, 2020 10:24:37 AM
 // 
-#endregion
+
 
 using Gorgon.Diagnostics;
 using Gorgon.Editor.Services;
@@ -31,12 +31,12 @@ using Gorgon.Editor.UI;
 namespace Gorgon.Editor.ViewModels;
 
 /// <summary>
-/// The clip board handler for file system objects.
+/// The clip board handler for file system objects
 /// </summary>
 internal class FileSystemClipboardHandler
     : PropertyMonitor, IClipboardHandler
 {
-    #region Variables.
+
     // Flag to indicate whether clipboard data is available.
     private bool _hasClipboardData;
     // The service used to access the clipboard.
@@ -48,9 +48,9 @@ internal class FileSystemClipboardHandler
     // Supported data types for the clipboard.
     private readonly Type _supportedDataTypeDirectory = typeof(IDirectoryCopyMoveData);
     private readonly Type _supportedDataTypeFile = typeof(IFileCopyMoveData);
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>Property to return whether the clipboard has data or not.</summary>
     public bool HasData
     {
@@ -96,9 +96,9 @@ internal class FileSystemClipboardHandler
         get;
     }
 
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to determine if data can be pasted into the file system.
     /// </summary>
@@ -312,9 +312,9 @@ internal class FileSystemClipboardHandler
             _log.LogException(ex);
         }
     }
-    #endregion
 
-    #region Constructor/Finalizer.
+
+
     /// <summary>Initializes a new instance of the <see cref="FileSystemClipboardHandler"/> class.</summary>
     /// <param name="fileExplorer">The file explorer view model that owns this handler.</param>
     /// <param name="clipboardService">The clipboard service used to access clipboard data in Windows.</param>
@@ -330,5 +330,5 @@ internal class FileSystemClipboardHandler
         CopyDataCommand = new EditorCommand<object>(DoCopyData, CanCopyData);
         PasteDataCommand = new EditorAsyncCommand<object>(DoPasteDataAsync, CanPasteData);
     }
-    #endregion
+
 }

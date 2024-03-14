@@ -1,13 +1,13 @@
-﻿// Triangulator source code by Nick Gravelyn.
+﻿// Triangulator source code by Nick Gravelyn
 // https://github.com/nickgravelyn/Triangulator
 //
-// Licensed under the MIT license.
+// Licensed under the MIT license
 // https://github.com/nickgravelyn/Triangulator/blob/master/LICENSE
 
 namespace GorgonTriangulator;
 
 /// <summary>
-/// Implements a List structure as a cyclical list where indices are wrapped.
+/// Implements a List structure as a cyclical list where indices are wrapped
 /// </summary>
 /// <typeparam name="T">The Type to hold in the list.</typeparam>
 internal class CyclicalList<T> : List<T>

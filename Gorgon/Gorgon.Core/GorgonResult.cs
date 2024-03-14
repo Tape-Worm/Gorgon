@@ -1,6 +1,6 @@
-﻿#region MIT.
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2011 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,30 +11,29 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: Tuesday, June 14, 2011 8:57:48 PM
 // 
-#endregion
+
 
 using Gorgon.Properties;
 
 namespace Gorgon.Core;
 
 /// <summary>
-/// An error code message that is usually sent along with a <see cref="GorgonException"/>.
+/// An error code message that is usually sent along with a <see cref="GorgonException"/>
 /// </summary>
 public readonly struct GorgonResult
     : IGorgonNamedObject, IGorgonEquatableByRef<GorgonResult>
 {
-    #region Predefined error codes.
     // Base error code.
     private const int ErrorBase = 0x7FF000;
 
@@ -107,9 +106,9 @@ public readonly struct GorgonResult
     /// Cannot compile the source code.
     /// </summary>
     public static GorgonResult CannotCompile => new(nameof(CannotCompile), ErrorBase + 11, Resources.GOR_RESULT_DESC_CANNOT_COMPILE);
-    #endregion
+    
 
-    #region Properties.
+
     /// <summary>
     /// Property to set or return the error message to be sent along with the <see cref="GorgonException"/>.
     /// </summary>
@@ -151,9 +150,9 @@ public readonly struct GorgonResult
     /// true if the current object is equal to the <paramref name="other" /> parameter; otherwise, false.
     /// </returns>
     public bool Equals(in GorgonResult other) => Equals(in this, in other);
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to compare two instances for equality.
     /// </summary>
@@ -186,9 +185,7 @@ public readonly struct GorgonResult
     /// A 32-bit signed integer that is the hash code for this instance.
     /// </returns>
     public override int GetHashCode() => HashCode.Combine(Code, Name);
-    #endregion
 
-    #region Operators.
     /// <summary>
     /// Operator to test for equality.
     /// </summary>
@@ -204,9 +201,9 @@ public readonly struct GorgonResult
     /// <param name="right">The right item to test.</param>
     /// <returns><b>true</b> if not equal, <b>false</b> if the items are equal.</returns>
     public static bool operator !=(GorgonResult left, GorgonResult right) => ((left.Code != right.Code) || (string.Equals(left.Name, right.Name, StringComparison.OrdinalIgnoreCase)));
-    #endregion
 
-    #region Constructor/Destructor.
+
+
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonResult"/> struct.
     /// </summary>
@@ -241,5 +238,5 @@ public readonly struct GorgonResult
         Description = description;
         Code = code;
     }
-    #endregion
+
 }

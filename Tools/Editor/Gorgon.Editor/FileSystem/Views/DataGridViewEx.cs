@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2020 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: January 11, 2020 3:32:25 PM
 // 
-#endregion
+
 
 using System.ComponentModel;
 using Gorgon.Math;
@@ -30,21 +30,21 @@ using Gorgon.Math;
 namespace Gorgon.Editor.Views;
 
 /// <summary>
-/// A data grid view with extended functionality.
+/// A data grid view with extended functionality
 /// </summary>
 internal class DataGridViewEx
     : DataGridView
 {
-    #region Variables.
+
     // The region for dragging.
     private Rectangle _dragRegion;
     // Pass through event arguments.
     private MouseEventArgs _passThruEventArgs;
     // The list of rows for dragging.
     private readonly List<DataGridViewRow> _dragRows = [];
-    #endregion
 
-    #region Events.
+
+
     // Event fired when rows are dragged.
     private event EventHandler<RowsDragEventArgs> RowsDragEvent;
 
@@ -74,9 +74,9 @@ internal class DataGridViewEx
             RowsDragEvent -= value;
         }
     }
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>Processes keys used for navigating in the <see cref="DataGridView"/>.</summary>
     /// <param name="e">Contains information about the key that was pressed.</param>
     /// <returns>
@@ -259,5 +259,5 @@ internal class DataGridViewEx
 
         base.Dispose(disposing);
     }
-    #endregion
+
 }

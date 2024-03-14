@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2016 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: July 28, 2016 11:49:51 PM
 // 
-#endregion
+
 
 using System.Diagnostics;
 using Gorgon.Core;
@@ -32,18 +32,18 @@ using D3D11 = SharpDX.Direct3D11;
 namespace Gorgon.Graphics.Core;
 
 /// <summary>
-/// Describes how texture sampling should be performed when a texture is sampled in a shader.
+/// Describes how texture sampling should be performed when a texture is sampled in a shader
 /// </summary>
 /// <remarks>
 /// <para>
-/// This will define how a texture is sampled inside of a shader when rendering. Filtering, addressing, etc... are all defined in this state.
+/// This will define how a texture is sampled inside of a shader when rendering. Filtering, addressing, etc... are all defined in this state
 /// </para>
 /// <para>
 /// The sampler state contains 4 common samplers used by applications: <see cref="Default"/> (bilinear filtering), <see cref="PointFiltering"/> (point or "pixelated" filtering), 
 /// <see cref="AnisotropicFiltering"/>, and <see cref="Wrapping"/>. 
 /// </para>
 /// <para>
-/// A sampler state is an immutable object, and as such can only be created by using a <see cref="GorgonSamplerStateBuilder"/>.
+/// A sampler state is an immutable object, and as such can only be created by using a <see cref="GorgonSamplerStateBuilder"/>
 /// </para>
 /// </remarks>
 /// <seealso cref="GorgonGraphics"/>
@@ -52,7 +52,6 @@ namespace Gorgon.Graphics.Core;
 public class GorgonSamplerState
     : IEquatable<GorgonSamplerState>
 {
-    #region Common sampler states.
     /// <summary>
     /// A default sampler state.
     /// </summary>
@@ -94,9 +93,9 @@ public class GorgonSamplerState
         WrapV = TextureWrap.Wrap,
         WrapW = TextureWrap.Wrap
     };
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to return the Direct3D native sampler state.
     /// </summary>
@@ -295,9 +294,9 @@ public class GorgonSamplerState
         get;
         internal set;
     }
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to build the D3D11 sampler state.
     /// </summary>
@@ -367,9 +366,9 @@ public class GorgonSamplerState
         hashCode.Add(MipLevelOfDetailBias);
         return hashCode.ToHashCode();
     }
-    #endregion
 
-    #region Constructor/Finalizer.
+
+
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonSamplerState"/> class.
     /// </summary>
@@ -404,5 +403,5 @@ public class GorgonSamplerState
         ComparisonFunction = Comparison.Never;
         MipLevelOfDetailBias = 0.0f;
     }
-    #endregion
+
 }

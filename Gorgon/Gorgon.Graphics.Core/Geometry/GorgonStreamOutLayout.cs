@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2017 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: July 25, 2017 9:36:23 PM
 // 
-#endregion
+
 
 using Gorgon.Core;
 using Gorgon.Graphics.Core.Properties;
@@ -31,23 +31,23 @@ using D3D11 = SharpDX.Direct3D11;
 namespace Gorgon.Graphics.Core;
 
 /// <summary>
-/// Defines the layout of an input item within a buffer.
+/// Defines the layout of an input item within a buffer
 /// </summary>
 /// <remarks>
 /// <para>
 /// This defines the layout of a piece of data within a stream out buffer. The layout is defined by a list of <see cref="GorgonStreamOutElement"/> values that determine 
-/// how the data within the layout is arranged.
+/// how the data within the layout is arranged
 /// </para>
 /// </remarks>
 public sealed class GorgonStreamOutLayout
     : GorgonNamedObject
 {
-    #region Variables.
+
     // Elements used to build the layout.
     private readonly GorgonStreamOutElement[] _elements;
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to return the native elements for the stream output.
     /// </summary>
@@ -60,9 +60,9 @@ public sealed class GorgonStreamOutLayout
     /// Property to return the input elements for this layout.
     /// </summary>
     public IReadOnlyList<GorgonStreamOutElement> Elements => _elements;
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to determine if an element already exists with the same context, index and slot.
     /// </summary>
@@ -109,9 +109,9 @@ public sealed class GorgonStreamOutLayout
 
         return true;
     }
-    #endregion
 
-    #region Constructor/Destructor.
+
+
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonStreamOutLayout"/> class.
     /// </summary>
@@ -160,5 +160,5 @@ public sealed class GorgonStreamOutLayout
             Native[i] = _elements[i].NativeElement;
         }
     }
-    #endregion
+
 }

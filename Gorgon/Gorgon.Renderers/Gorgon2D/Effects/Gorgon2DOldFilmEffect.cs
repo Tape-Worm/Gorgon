@@ -1,6 +1,6 @@
-﻿#region MIT.
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2013 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: Thursday, August 22, 2013 11:54:51 PM
 // 
-#endregion
+
 
 using System.Numerics;
 using System.Runtime.InteropServices;
@@ -37,7 +37,7 @@ using DX = SharpDX;
 namespace Gorgon.Renderers;
 
 /// <summary>
-/// A post process effect to give an old scratched film effect.
+/// A post process effect to give an old scratched film effect
 /// </summary>
 /// <remarks>
 /// <para>
@@ -47,14 +47,14 @@ namespace Gorgon.Renderers;
 public class Gorgon2DOldFilmEffect
     : Gorgon2DEffect, IGorgon2DCompositorEffect
 {
-    #region Constants.
+
     /// <summary>
     /// The name of the shader include for Gorgon's <see cref="Gorgon2DOldFilmEffect"/>.
     /// </summary>
     public const string Gorgon2DFilmGrainIncludeName = "FilmGrainShaders";
-    #endregion
 
-    #region Value Types.
+
+ 
     /// <summary>
     /// Settings for scratches.
     /// </summary>
@@ -103,9 +103,9 @@ public class Gorgon2DOldFilmEffect
         /// </summary>
         public float SepiaToneAmount;
     }
-    #endregion
 
-    #region Variables.
+
+
     // Texture used to hold random noise for the shader.
     private GorgonTexture2DView _randomTexture;
     // Flag to indicate whether the effect has updated parameters or not.
@@ -127,9 +127,9 @@ public class Gorgon2DOldFilmEffect
     private Gorgon2DShaderState<GorgonPixelShader> _filmState;
     // The batch state to use when rendering.
     private Gorgon2DBatchState _batchState;
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to set or return the noise frequency used in generating scratches in the film.
     /// </summary>
@@ -363,9 +363,9 @@ public class Gorgon2DOldFilmEffect
         get;
         set;
     }
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Funciton to generate random noise for the effect.
     /// </summary>
@@ -659,9 +659,9 @@ public class Gorgon2DOldFilmEffect
 
         EndRender(output);
     }
-    #endregion
 
-    #region Constructor/Destructor.
+
+
     /// <summary>
     /// Initializes a new instance of the <see cref="Gorgon2DOldFilmEffect"/> class.
     /// </summary>
@@ -694,5 +694,5 @@ public class Gorgon2DOldFilmEffect
             SepiaDarkColor = new GorgonColor(0.2f, 0.102f, 0, 1.0f)
         };
     }
-    #endregion
+
 }

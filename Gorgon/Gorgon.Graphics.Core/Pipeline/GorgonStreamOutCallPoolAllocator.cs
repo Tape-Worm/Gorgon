@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2018 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,28 +11,28 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: May 31, 2018 1:37:08 PM
 // 
-#endregion
+
 
 using Gorgon.Memory;
 
 namespace Gorgon.Graphics.Core;
 
 /// <summary>
-/// An allocator used to retrieve draw calls from a pool.
+/// An allocator used to retrieve draw calls from a pool
 /// </summary>
 /// <remarks>
-/// Initializes a new instance of the <see cref="GorgonLinearPool{T}"/> class.
+/// Initializes a new instance of the <see cref="GorgonLinearPool{T}"/> class
 /// </remarks>
 /// <param name="objectCount">The number of total objects available to the allocator.</param>
 /// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="objectCount"/> parameter is less than 1.</exception>

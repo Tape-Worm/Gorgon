@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2018 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: August 23, 2018 4:42:41 PM
 // 
-#endregion
+
 
 using System.Numerics;
 using System.Text;
@@ -44,11 +44,11 @@ using DX = SharpDX;
 namespace Gorgon.Examples;
 
 /// <summary>
-/// Common functionality for the example applications.
+/// Common functionality for the example applications
 /// </summary>
 public static class GorgonExample
 {
-    #region Variables.
+
     // The Gorgon logo.
     private static GorgonTexture2DView _logo;
     // The font factory to use.
@@ -61,9 +61,9 @@ public static class GorgonExample
     private static readonly StringBuilder _statsText = new();
     // The main window for the application.
     private static FormMain _mainForm;
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to set or return the path to the plug in directory.
     /// </summary>
@@ -100,9 +100,9 @@ public static class GorgonExample
     /// Property to return the font factory used to handle font creation for our examples.
     /// </summary>
     public static GorgonFontFactory Fonts => _factory;
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to retrieve the directory that contains the plugins for an application.
     /// </summary>
@@ -374,5 +374,5 @@ public static class GorgonExample
 
         return _mainForm;
     }
-    #endregion
+
 }

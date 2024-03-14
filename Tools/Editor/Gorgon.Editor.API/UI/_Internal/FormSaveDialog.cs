@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2021 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: December 12, 2021 1:32:41 AM
 // 
-#endregion
+
 
 using System.Data;
 using Gorgon.Editor.Content;
@@ -33,12 +33,12 @@ using Gorgon.UI;
 namespace Gorgon.Editor.UI.Controls;
 
 /// <summary>
-/// A dialog used to save files back to the file system.
+/// A dialog used to save files back to the file system
 /// </summary>
 internal partial class FormSaveDialog
     : Form
 {
-    #region Variables.
+
     // The file manager for the project.
     private IContentFileManager _fileManager;
     // The file type filter.
@@ -47,9 +47,9 @@ internal partial class FormSaveDialog
     private string _currentFileName;
     // The current directory.
     private string _currentDirectory;
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to set or return the project file manager/
     /// </summary>
@@ -110,9 +110,9 @@ internal partial class FormSaveDialog
         get;
         private set;
     }
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to validate the controls on the form.
     /// </summary>
@@ -255,10 +255,10 @@ internal partial class FormSaveDialog
         FileExplorer.Entries = [.. dirs.Values];
         ValidateControls();
     }
-    #endregion
 
-    #region Constructor/Finalizer.
+
+
     /// <summary>Initializes a new instance of the <see cref="FormSaveDialog" /> class.</summary>
     public FormSaveDialog() => InitializeComponent();
-    #endregion
+
 }

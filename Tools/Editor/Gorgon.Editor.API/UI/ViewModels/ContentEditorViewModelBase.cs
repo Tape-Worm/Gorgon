@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2018 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: October 29, 2018 4:15:09 PM
 // 
-#endregion
+
 
 using Gorgon.Editor.Content;
 using Gorgon.Editor.PlugIns;
@@ -33,7 +33,7 @@ using Gorgon.IO;
 namespace Gorgon.Editor.UI;
 
 /// <summary>
-/// Common functionality for a content view model.
+/// Common functionality for a content view model
 /// </summary>
 /// <typeparam name="T">The type of dependency injection object. Must be a class, and implement <see cref="IContentViewModelInjection"/>.</typeparam>
 /// <remarks>
@@ -43,11 +43,11 @@ namespace Gorgon.Editor.UI;
 /// </para>
 /// <para>
 /// Content is what the editor defines as the items that users will create/edit with the editor, this could be images, sprites, music, sound, scripts, etc... Developers of content plug ins must inherit 
-/// from this type so that their content model data is updated from the UI, and returns feedback to the UI.
+/// from this type so that their content model data is updated from the UI, and returns feedback to the UI
 /// </para>
 /// <para>
 /// As an example, if you wanted to create a very simple text editor, you would define a view with a multi-line textbox control on it, and then create a TextEditorContent view model based on this type 
-/// and add a command to recieve updates from the UI (e.g. when text is entered), and a property to return the current text stored in the data.
+/// and add a command to recieve updates from the UI (e.g. when text is entered), and a property to return the current text stored in the data
 /// </para>
 /// <para>
 /// Views that are associated with view models derived from this type must inherit from the <see cref="ContentBaseControl"/>. And developers must register their content views using the 
@@ -60,7 +60,7 @@ public abstract class ContentEditorViewModelBase<T>
     : ViewModelBase<T, IHostContentServices>, IEditorContent
     where T : class, IContentViewModelInjection
 {
-    #region Variables.
+
     // The command used to close the content.
     private IEditorAsyncCommand<CloseContentArgs> _closeCommand;
 
@@ -81,9 +81,9 @@ public abstract class ContentEditorViewModelBase<T>
 
     // The number of files selected in the project file explorer.
     private bool _filesSelected;
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to return the file manager used to manage content files.
     /// </summary>
@@ -295,9 +295,9 @@ public abstract class ContentEditorViewModelBase<T>
             OnPropertyChanged();
         }
     }
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>Handles the Renamed event of the File control.</summary>
     /// <param name="sender">The source of the event.</param>
     /// <param name="e">The <see cref="ContentFileRenamedEventArgs"/> instance containing the event data.</param>
@@ -454,10 +454,10 @@ public abstract class ContentEditorViewModelBase<T>
         _file.IsOpen = false;
         _file.IsChanged = false;
     }
-    #endregion
 
-    #region Constructor/Finalizer.
+
+
     /// <summary>Initializes a new instance of the EditorContentCommon class.</summary>
     protected ContentEditorViewModelBase() => CloseContentCommand = new EditorAsyncCommand<CloseContentArgs>(DoCloseContentAsync);
-    #endregion
+
 }

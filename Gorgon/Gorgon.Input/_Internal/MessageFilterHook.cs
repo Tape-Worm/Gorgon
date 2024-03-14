@@ -1,4 +1,4 @@
-﻿#region MIT
+﻿
 // 
 // Gorgon
 // Copyright (C) 2015 Michael Winsor
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: Wednesday, September 16, 2015 8:48:16 PM
 // 
-#endregion
+
 
 using System.Runtime.InteropServices;
 using Gorgon.Native;
@@ -30,14 +30,14 @@ using Gorgon.Native;
 namespace Gorgon.Input;
 
 /// <summary>
-/// A message filter hook to allow for intercepting a message to a window.
+/// A message filter hook to allow for intercepting a message to a window
 /// </summary>
 /// <remarks>
 /// This was adapted from the source code for SharpDX by Alexandre Mutel at http://sharpdx.org
 /// </remarks>
 internal class MessageFilterHook
 {
-    #region Delegates.
+
     /// <summary>
     /// Delegate for the callback into the window procedure.
     /// </summary>
@@ -47,9 +47,9 @@ internal class MessageFilterHook
     /// <param name="lParam">Window parameter 2.</param>
     /// <returns>The result of processing the message.</returns>
     private delegate nint WndProc(nint hwnd, int msg, nint wParam, nint lParam);
-    #endregion
 
-    #region Variables.
+
+
     // A list of message hooks registered to varying windows.
     private static readonly Dictionary<nint, MessageFilterHook> _registeredHooks = new(new GorgonnintEqualityComparer());
     // Default window procedure.
@@ -65,9 +65,9 @@ internal class MessageFilterHook
     private List<RawInputMessageFilter> _messageFilters = [];
     // Flag to indicate whether the hook is installed.
     private bool _hooked;
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to process the messages through the installed message filters.
     /// </summary>
@@ -246,13 +246,13 @@ internal class MessageFilterHook
             hook.UninstallWindowProcedure();
         }
     }
-    #endregion
 
-    #region Constructor/Finalizer.
+
+
     /// <summary>
     /// Initializes a new instance of the <see cref="MessageFilterHook"/> class.
     /// </summary>
     /// <param name="hwnd">The window handle to hook.</param>
     private MessageFilterHook(nint hwnd) => _hwnd = hwnd;
-    #endregion
+
 }

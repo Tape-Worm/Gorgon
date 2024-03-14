@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2015 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,44 +11,44 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: Thursday, May 21, 2015 11:21:36 PM
 // 
-#endregion
+
 
 using Gorgon.Core;
 
 namespace Gorgon.Collections.Specialized;
 
 /// <summary>
-/// A dictionary to contain <see cref="IGorgonNamedObject"/> types.
+/// A dictionary to contain <see cref="IGorgonNamedObject"/> types
 /// </summary>
 /// <typeparam name="T">The type of object to store in the list. Must implement the <see cref="IGorgonNamedObject"/> interface.</typeparam>
 /// <remarks>
 /// <para>
-/// This is a concrete implementation of the <see cref="GorgonBaseNamedObjectDictionary{T}"/> type.
+/// This is a concrete implementation of the <see cref="GorgonBaseNamedObjectDictionary{T}"/> type
 /// </para>
 /// <para>
-/// This collection is <b><i>not</i></b> thread safe.
+/// This collection is <b><i>not</i></b> thread safe
 /// </para>
 /// </remarks>
 /// <remarks>
-/// Initializes a new instance of the <see cref="GorgonNamedObjectDictionary{T}"/> class.
+/// Initializes a new instance of the <see cref="GorgonNamedObjectDictionary{T}"/> class
 /// </remarks>
 /// <param name="caseSensitive">[Optional] <b>true</b> to use case sensitive keys, <b>false</b> to ignore casing.</param>
 public class GorgonNamedObjectDictionary<T>(bool caseSensitive = true)
     : GorgonBaseNamedObjectDictionary<T>(caseSensitive)
     where T : IGorgonNamedObject
 {
-    #region Properties.
+
     /// <summary>
     /// Property to return an item in this list by name.
     /// </summary>
@@ -76,9 +76,9 @@ public class GorgonNamedObjectDictionary<T>(bool caseSensitive = true)
             UpdateItem(name, value);
         }
     }
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to clear the items from the list.
     /// </summary>
@@ -109,6 +109,6 @@ public class GorgonNamedObjectDictionary<T>(bool caseSensitive = true)
     /// <exception cref="KeyNotFoundException">Thrown when no item with the specified <paramref name="name"/> can be found.</exception>
     public void Remove(string name) => Items.Remove(name);
 
-    #endregion
+
 
 }

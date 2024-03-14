@@ -33,7 +33,7 @@ partial class ContentBaseControl
         base.Dispose(disposing);
     }
 
-    #region Component Designer generated code
+
 
     /// <summary> 
     /// Required method for Designer support - do not modify 
@@ -184,7 +184,7 @@ partial class ContentBaseControl
 
     }
 
-    #endregion
+
 
     [System.Runtime.CompilerServices.AccessedThroughProperty(nameof(PresentationPanel))]
     private System.Windows.Forms.Panel PanelPresenter;

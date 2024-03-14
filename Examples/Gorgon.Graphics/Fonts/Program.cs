@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2018 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: August 14, 2018 7:28:55 PM
 // 
-#endregion
+
 
 using System.Numerics;
 using Gorgon.Core;
@@ -42,11 +42,11 @@ using DX = SharpDX;
 namespace Gorgon.Examples;
 
 /// <summary>
-/// The example entry point.
+/// The example entry point
 /// </summary>
 static class Program
 {
-    #region Variables.
+
     // The main graphics interface.
     private static GorgonGraphics _graphics;
     // The swap chain representing our "screen".
@@ -91,9 +91,9 @@ static class Program
     private static float _angleSpeed = 360.0f;
     // The text to display.
     private readonly static string _text = Resources.Lorem_Ipsum;
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to generate the Gorgon bitmap fonts.
     /// </summary>
@@ -448,5 +448,5 @@ static class Program
             _graphics?.Dispose();
         }
     }
-    #endregion
+
 }

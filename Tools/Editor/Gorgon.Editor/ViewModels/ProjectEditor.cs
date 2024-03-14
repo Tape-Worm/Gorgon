@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2018 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: September 4, 2018 12:46:15 PM
 // 
-#endregion
+
 
 using System.ComponentModel;
 using System.Diagnostics;
@@ -41,7 +41,7 @@ using Microsoft.IO;
 namespace Gorgon.Editor.ViewModels;
 
 /// <summary>
-/// The type of project item stored in the project metadata.
+/// The type of project item stored in the project metadata
 /// </summary>
 internal enum ProjectItemType
 {
@@ -56,19 +56,19 @@ internal enum ProjectItemType
 }
 
 /// <summary>
-/// The view model for the project editor interface.
+/// The view model for the project editor interface
 /// </summary>
 internal class ProjectEditor
     : ViewModelBase<ProjectEditorParameters, IHostContentServices>, IProjectEditor
 {
-    #region Constants.        
+        
     /// <summary>
     /// Metadata naming for the project item type attribute.
     /// </summary>
     public const string ProjectItemTypeAttrName = "ProjectItemType";
-    #endregion
 
-    #region Variables.
+
+
     // The project data for the view model.
     private IProject _projectData;
     // The file explorer view model.
@@ -91,9 +91,9 @@ internal class ProjectEditor
     private IReadOnlyList<IContentPlugInMetadata> _contentCreators;
     // The current clipboard context.
     private IClipboardHandler _clipboardContext;
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to return the available tool plug in button definitions for the application.
     /// </summary>
@@ -291,9 +291,9 @@ internal class ProjectEditor
     {
         get;
     }
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to persist the project metadata to the disk.
     /// </summary>
@@ -1043,9 +1043,9 @@ internal class ProjectEditor
 
         base.OnUnload();
     }
-    #endregion
 
-    #region Constructor.
+
+
     /// <summary>Initializes a new instance of the <see cref="ProjectEditor"/> class.</summary>
     public ProjectEditor()
     {
@@ -1056,5 +1056,5 @@ internal class ProjectEditor
         CreateContentCommand = new EditorAsyncCommand<Guid>(DoCreateContentAsync, CanCreateContent);
         ContentClosedCommand = new EditorCommand<object>(DoContentClosed);
     }
-    #endregion
+
 }

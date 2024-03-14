@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2017 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,38 +11,38 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: August 1, 2017 11:00:30 PM
 // 
-#endregion
+
 
 using D3D11 = SharpDX.Direct3D11;
 
 namespace Gorgon.Graphics.Core;
 
 /// <summary>
-/// An engine used to perform computation on the GPU.
+/// An engine used to perform computation on the GPU
 /// </summary>
 /// <remarks>
 /// <para>
-/// This system uses multiple threads/waves to perform work in parallel on the GPU, which gives exceptional performance when executing expensive computations.
+/// This system uses multiple threads/waves to perform work in parallel on the GPU, which gives exceptional performance when executing expensive computations
 /// </para>
 /// <para>
 /// The compute engine sends compuational work to the GPU via a <see cref="GorgonComputeShader"/>. This interface is different from the <see cref="GorgonGraphics"/> interface in that it does not rely 
-/// on the standard GPU pipeline to execute, and is stateful (i.e. applications set a state, run the engine, set another state, run again, etc...).
+/// on the standard GPU pipeline to execute, and is stateful (i.e. applications set a state, run the engine, set another state, run again, etc...)
 /// </para>
 /// </remarks>
 /// <seealso cref="GorgonGraphics"/>
 /// <remarks>
-/// Initializes a new instance of the <see cref="GorgonComputeEngine"/> class.
+/// Initializes a new instance of the <see cref="GorgonComputeEngine"/> class
 /// </remarks>
 /// <param name="graphics">The graphics interface that allows access to the GPU.</param>
 /// <exception cref="ArgumentNullException">Thrown when the <paramref name="graphics"/> parameter is <b>null</b>.</exception>
@@ -51,14 +51,14 @@ namespace Gorgon.Graphics.Core;
 public sealed class GorgonComputeEngine(GorgonGraphics graphics)
         : IGorgonGraphicsObject
 {
-    #region Constants.
+
     /// <summary>
     /// The maximum number of thread groups that can be sent when executing the shader.
     /// </summary>
     public const int MaxThreadGroupCount = D3D11.ComputeShaderStage.DispatchMaximumThreadGroupsPerDimension + 1;
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to return the graphics interface that owns this object.
     /// </summary>
@@ -66,9 +66,9 @@ public sealed class GorgonComputeEngine(GorgonGraphics graphics)
     {
         get;
     } = graphics ?? throw new ArgumentNullException(nameof(graphics));
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to execute a <see cref="GorgonComputeShader"/>.
     /// </summary>
@@ -129,5 +129,5 @@ public sealed class GorgonComputeEngine(GorgonGraphics graphics)
     /// </remarks>
     public void Execute(GorgonDispatchCall dispatchCall, GorgonBufferCommon indirectArgs, int threadGroupOffset = 0) => Graphics.Dispatch(dispatchCall, indirectArgs, threadGroupOffset);
 
-    #endregion
+
 }

@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2018 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: August 28, 2018 12:43:55 PM
 // 
-#endregion
+
 
 using Gorgon.Collections;
 using Gorgon.Editor.Metadata;
@@ -38,7 +38,7 @@ using Gorgon.IO.Providers;
 namespace Gorgon.Editor.ViewModels;
 
 /// <summary>
-/// A factory for generating view models and their dependencies.
+/// A factory for generating view models and their dependencies
 /// </summary>
 /// <remarks>Initializes a new instance of the <see cref="ViewModelFactory"/> class.</remarks>
 /// <param name="settings">The settings for the editor.</param>
@@ -47,7 +47,7 @@ namespace Gorgon.Editor.ViewModels;
 /// <param name="contentServices">Common host services to pass into plug ins.</param>        
 internal class ViewModelFactory(Editor.EditorSettings settings, ProjectManager projectManager, FileSystemProviders fileSystemProviders, HostContentServices contentServices)
 {
-    #region Variables.        
+        
     // The buffer to hold directory paths.
     private readonly Dictionary<string, IDirectory> _directoryBuffer = new(StringComparer.OrdinalIgnoreCase);
     // The host content services.
@@ -62,9 +62,9 @@ internal class ViewModelFactory(Editor.EditorSettings settings, ProjectManager p
     private SynchronizationContext _syncContext;
     // The list of content creator plug ins.
     private IReadOnlyList<IContentPlugInMetadata> _contentCreators = [];
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to send the item specified in the path to the recycle bin.
     /// </summary>
@@ -603,7 +603,7 @@ internal class ViewModelFactory(Editor.EditorSettings settings, ProjectManager p
         return result;
     }
 
-    #endregion
-    #region Constructor.
-    #endregion
+
+
+
 }

@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2015 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,30 +11,30 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: Sunday, October 11, 2015 11:51:54 PM
 // 
-#endregion
+
 
 using Gorgon.Properties;
 
 namespace Gorgon.Math;
 
 /// <summary>
-/// A representation of a rational number.
+/// A representation of a rational number
 /// </summary>
 public readonly struct GorgonRationalNumber
     : IEquatable<GorgonRationalNumber>, IComparable<GorgonRationalNumber>
 {
-    #region Variables.
+
     /// <summary>
     /// An empty rational number.
     /// </summary>
@@ -49,9 +49,9 @@ public readonly struct GorgonRationalNumber
     /// The denominator for the number.
     /// </summary>
     public readonly int Denominator;
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to compare two instances for equality.
     /// </summary>
@@ -108,9 +108,7 @@ public readonly struct GorgonRationalNumber
     /// </returns>
     /// <param name="other">An object to compare with this instance. </param>
     public int CompareTo(GorgonRationalNumber other) => Equals(this, other) ? 0 : this < other ? -1 : 1;
-    #endregion
 
-    #region Operators.
     /// <summary>
     /// Performs an implicit conversion from <see cref="GorgonRationalNumber"/> to <see cref="decimal"/>.
     /// </summary>
@@ -252,9 +250,9 @@ public readonly struct GorgonRationalNumber
 
         return leftRational >= rightRational;
     }
-    #endregion
 
-    #region Constructor/Finalizer.
+
+
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonRationalNumber"/> struct.
     /// </summary>
@@ -271,5 +269,5 @@ public readonly struct GorgonRationalNumber
         Numerator = numerator;
         Denominator = denominator;
     }
-    #endregion
+
 }

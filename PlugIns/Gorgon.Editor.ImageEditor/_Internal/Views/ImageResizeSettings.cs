@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2019 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: January 15, 2019 9:04:41 PM
 // 
-#endregion
+
 
 using System.ComponentModel;
 using Gorgon.Editor.ImageEditor.Properties;
@@ -33,12 +33,12 @@ using Gorgon.Graphics.Imaging;
 namespace Gorgon.Editor.ImageEditor;
 
 /// <summary>
-/// The panel used to provide settings for image import resizing.
+/// The panel used to provide settings for image import resizing
 /// </summary>
 internal partial class ImageResizeSettings
     : EditorSubPanelCommon, IDataContext<ICropResizeSettings>
 {
-    #region Properties.
+
     /// <summary>Property to return the data context assigned to this view.</summary>
     /// <value>The data context.</value>
     [Browsable(false)]
@@ -47,9 +47,9 @@ internal partial class ImageResizeSettings
         get;
         private set;
     }
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to validate the state of the controls in the view.
     /// </summary>
@@ -328,9 +328,9 @@ internal partial class ImageResizeSettings
             ValidateControls();
         }
     }
-    #endregion
 
-    #region Constructor/Finalizer.
+
+
     /// <summary>Initializes a new instance of the <see cref="Editor.Views.ImageResizeSettings"/> class.</summary>
     public ImageResizeSettings()
     {
@@ -344,5 +344,5 @@ internal partial class ImageResizeSettings
             ComboImageFilter.Items.Add(filter);
         }
     }
-    #endregion
+
 }

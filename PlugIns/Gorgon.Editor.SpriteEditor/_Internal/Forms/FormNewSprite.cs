@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2020 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: March 31, 2020 10:49:39 PM
 // 
-#endregion
+
 
 using System.ComponentModel;
 using Gorgon.Editor.Content;
@@ -40,12 +40,12 @@ using DX = SharpDX;
 namespace Gorgon.Editor.SpriteEditor;
 
 /// <summary>
-/// A form used to set up a new sprite.
+/// A form used to set up a new sprite
 /// </summary>
 internal partial class FormNewSprite
     : Form
 {
-    #region Variables.
+
     // The list of textures.
     private IReadOnlyList<IContentFile> _textures = [];
     // The preview image for the selected texture.
@@ -58,9 +58,9 @@ internal partial class FormNewSprite
     private DX.Size2F? _originalSize;
     // The path to the preview directory.
     private static readonly string _previewDirPath = $"/Thumbnails/";
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to set or return the image codec for sprites.
     /// </summary>
@@ -114,9 +114,9 @@ internal partial class FormNewSprite
         get;
         private set;
     }
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>Handles the FileEntrySelected event of the FileTextures control.</summary>
     /// <param name="sender">The source of the event.</param>
     /// <param name="e">The <see cref="ContentFileEntrySelectedEventArgs"/> instance containing the event data.</param>
@@ -369,10 +369,10 @@ internal partial class FormNewSprite
             NumericHeight.Value = (int)_originalSize.Value.Height.Max(1).Min((int)NumericHeight.Maximum);
         }
     }
-    #endregion
 
-    #region Constructor/Finalizer.
+
+
     /// <summary>Initializes a new instance of the <see cref="FormNewSprite"/> class.</summary>
     public FormNewSprite() => InitializeComponent();
-    #endregion
+
 }

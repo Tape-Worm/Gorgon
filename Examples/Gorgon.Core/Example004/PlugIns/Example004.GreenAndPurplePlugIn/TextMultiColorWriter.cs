@@ -1,6 +1,6 @@
-﻿#region MIT.
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2013 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,29 +11,29 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: Tuesday, January 1, 2013 7:44:21 PM
 // 
-#endregion
+
 
 namespace Gorgon.Examples;
 
 /// <summary>
-/// Our writer that uses multiple colors.
+/// Our writer that uses multiple colors
 /// 
 /// So now we can implement our green/purple text color writer by passing in the color 
-/// on the constructor from the plug in interface.
+/// on the constructor from the plug in interface
 /// </summary>
 /// <remarks>
-/// Initializes a new instance of the <see cref="TextMultiColorWriter"/> class.
+/// Initializes a new instance of the <see cref="TextMultiColorWriter"/> class
 /// </remarks>
 /// <param name="color">The color to use when printing the text.</param>
 internal class TextMultiColorWriter(ConsoleColor color)

@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2015 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,28 +11,28 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: Saturday, September 19, 2015 11:45:31 PM
 // 
-#endregion
+
 
 using Gorgon.IO.Providers;
 
 namespace Gorgon.IO.GorPack;
 
 /// <summary>
-/// Gorgon packed file physical file information.
+/// Gorgon packed file physical file information
 /// </summary>
 /// <remarks>
-/// Initializes a new instance of the <see cref="GorPackPhysicalFileInfo" /> class.
+/// Initializes a new instance of the <see cref="GorPackPhysicalFileInfo" /> class
 /// </remarks>
 /// <param name="physicalPath">The physical path.</param>
 /// <param name="fileName">Name of the file.</param>
@@ -52,7 +52,7 @@ internal class GorPackPhysicalFileInfo(string physicalPath,
                                long? compressedSize)
         : IGorgonPhysicalFileInfo
 {
-    #region Properties.
+
     /// <summary>
     /// Property to return the date of creation for the file.
     /// </summary>
@@ -149,16 +149,16 @@ internal class GorPackPhysicalFileInfo(string physicalPath,
     /// </para>
     /// </remarks>
     public bool IsEncrypted => false;
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>Function to refresh the file information.</summary>
     public void Refresh()
     {
         // We don't need to refresh a packed file.
     }
 
-    #endregion
-    #region Constructor.
-    #endregion
+
+
+
 }

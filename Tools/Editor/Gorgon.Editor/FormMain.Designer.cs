@@ -30,7 +30,7 @@ partial class FormMain
         base.Dispose(disposing);
     }
 
-    #region Windows Form Designer generated code
+
 
     /// <summary>
     /// Required method for Designer support - do not modify
@@ -574,7 +574,7 @@ partial class FormMain
         this.PerformLayout();
 
     }
-    #endregion
+
     private Krypton.Ribbon.KryptonRibbon RibbonMain;
     private Krypton.Ribbon.KryptonRibbonTab TabFileSystem;
     private Krypton.Ribbon.KryptonRibbonGroup RibbonGroupFileSystemNew;

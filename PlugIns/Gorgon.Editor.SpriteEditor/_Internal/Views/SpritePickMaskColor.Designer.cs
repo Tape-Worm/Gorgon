@@ -27,7 +27,7 @@ partial class SpritePickMaskColor
         base.Dispose(disposing);
     }
 
-    #region Component Designer generated code
+
 
     /// <summary> 
     /// Required method for Designer support - do not modify 
@@ -248,7 +248,7 @@ partial class SpritePickMaskColor
 
     }
 
-    #endregion
+
 
     private UI.Controls.ColorPicker Picker;
     private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;

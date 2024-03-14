@@ -29,7 +29,7 @@ partial class FontTextureSizeView
         base.Dispose(disposing);
     }
 
-    #region Component Designer generated code
+
 
     /// <summary> 
     /// Required method for Designer support - do not modify 
@@ -171,7 +171,7 @@ partial class FontTextureSizeView
 
     }
 
-    #endregion
+
 
     private System.Windows.Forms.Label LabelTextureHeight;
     private System.Windows.Forms.Label LabelTextureWidth;

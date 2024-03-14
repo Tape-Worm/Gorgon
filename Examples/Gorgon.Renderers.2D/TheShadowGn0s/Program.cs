@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2018 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: August 25, 2018 10:57:09 AM
 // 
-#endregion
+
 
 using System.Numerics;
 using Gorgon.Core;
@@ -39,11 +39,11 @@ using DX = SharpDX;
 namespace Gorgon.Examples;
 
 /// <summary>
-/// The entry point for the example application.
+/// The entry point for the example application
 /// </summary>
 static class Program
 {
-    #region Constants.
+
     // Text to display for "help".
     private const string HelpText = @"Help:
 F1 - Show/hide this text.
@@ -51,9 +51,9 @@ S - Show frame stats.
 Click - move other ship into foreground.
 Mousewheel - blur/sharpen background.
 ESC - Quit.";
-    #endregion
 
-    #region Variables.
+
+
     // The graphics interface.
     private static GorgonGraphics _graphics;
     // Our swap chain representing our "screen".
@@ -89,13 +89,13 @@ ESC - Quit.";
     private static GorgonFont _helpFont;
     // Flag to indicate that the help text should be visible.
     private static bool _showHelp = true;
-    #endregion
 
-    #region Properties.
 
-    #endregion
 
-    #region Methods.
+
+
+
+
     /// <summary>
     /// Function to draw the lower layer.
     /// </summary>
@@ -435,9 +435,9 @@ ESC - Quit.";
     /// <param name="sender">The source of the event.</param>
     /// <param name="e">The <see cref="MouseEventArgs"/> instance containing the event data.</param>
     private static void Window_MouseMove(object sender, MouseEventArgs e) => _fgSprite.Position = new Vector2(e.X, e.Y);
-    #endregion
 
-    #region Constructor/Finalizer.
+
+
     /// <summary>
     /// The main entry point for the application.
     /// </summary>
@@ -474,5 +474,5 @@ ESC - Quit.";
             _graphics?.Dispose();
         }
     }
-    #endregion
+
 }

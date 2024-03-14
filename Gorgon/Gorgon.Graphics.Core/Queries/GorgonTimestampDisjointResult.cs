@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2021 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: January 16, 2021 5:59:25 PM
 // 
-#endregion
+
 
 using Gorgon.Core;
 using Gorgon.Graphics.Core.Properties;
@@ -31,12 +31,12 @@ using D3D11 = SharpDX.Direct3D11;
 namespace Gorgon.Graphics.Core;
 
 /// <summary>
-/// The result from a <see cref="GorgonTimestampDisjointQuery"/>.
+/// The result from a <see cref="GorgonTimestampDisjointQuery"/>
 /// </summary>    
 public readonly struct GorgonTimestampDisjointResult
     : IGorgonEquatableByRef<GorgonTimestampDisjointResult>
 {
-    #region Variables.
+
     /// <summary>
     /// The frequency that the counter increments at, in Hz.
     /// </summary>
@@ -51,9 +51,9 @@ public readonly struct GorgonTimestampDisjointResult
     /// Disjoint is <b>false</b>.
     /// </remarks>
     public readonly bool IsDisjoint;
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>Returns a hash code for this instance.</summary>
     /// <returns>A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table.</returns>
     public override int GetHashCode() => HashCode.Combine(Frequency, IsDisjoint);
@@ -79,9 +79,9 @@ public readonly struct GorgonTimestampDisjointResult
     /// <returns>
     ///   <c>true</c> if the specified <see cref="object" /> is equal to this instance; otherwise, <c>false</c>.</returns>
     public override bool Equals(object obj) => (obj is GorgonTimestampDisjointResult result) ? result.Equals(in this) : base.Equals(obj);
-    #endregion
 
-    #region Constructor.
+
+
     /// <summary>Initializes a new instance of the <see cref="GorgonTimestampDisjointResult" /> struct.</summary>
     /// <param name="timestamp">The timestamp to evaluate.</param>
     internal GorgonTimestampDisjointResult(D3D11.QueryDataTimestampDisjoint timestamp)
@@ -89,5 +89,5 @@ public readonly struct GorgonTimestampDisjointResult
         Frequency = (ulong)timestamp.Frequency;
         IsDisjoint = timestamp.Disjoint;
     }
-    #endregion
+
 }

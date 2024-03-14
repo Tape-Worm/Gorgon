@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2016 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,30 +11,30 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: August 4, 2016 6:21:01 PM
 // 
-#endregion
+
 
 using Gorgon.Core;
 
 namespace Gorgon.Graphics.Imaging.Codecs;
 
 /// <summary>
-/// A codec to reading and/or writing image data.
+/// A codec to reading and/or writing image data
 /// </summary>
 /// <remarks>
 /// <para>
 /// A codec allows for reading and/or writing of data in an encoded format.  Users may inherit from this object to define their own image formats, or use one of the predefined image codecs available in 
-/// Gorgon.
+/// Gorgon
 /// </para>
 /// <para>
 /// Currently, Gorgon supports the following codecs:
@@ -179,7 +179,7 @@ namespace Gorgon.Graphics.Imaging.Codecs;
 ///				</list>
 ///			</description>
 ///			<description>
-///				Supports the full array of image options like arrays, mip maps, 3D images and all Direct 3D 11 pixel formats.
+///				Supports the full array of image options like arrays, mip maps, 3D images and all Direct 3D 11 pixel formats
 ///			</description>
 ///		</item>
 /// </list>
@@ -187,13 +187,13 @@ namespace Gorgon.Graphics.Imaging.Codecs;
 /// </para>
 /// <para>
 ///	While many of the image formats supplied will be useful out of the box, the system can read/write images via a <see cref="GorgonImageCodecPlugIn"/> if the supplied formats are too limited or do not 
-/// support a necessary feature.
+/// support a necessary feature
 /// </para>
 /// </remarks>
 public interface IGorgonImageCodec
     : IGorgonNamedObject
 {
-    #region Properties.
+
     /// <summary>
     /// Property to return whether the codec supports encoding of image data.
     /// </summary>
@@ -279,9 +279,9 @@ public interface IGorgonImageCodec
     {
         get;
     }
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to load an image from a stream.
     /// </summary>
@@ -422,5 +422,5 @@ public interface IGorgonImageCodec
     /// </para> 
     /// </remarks>
     IGorgonImageInfo GetMetaData(Stream stream);
-    #endregion
+
 }

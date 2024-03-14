@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2016 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: July 28, 2016 12:20:33 AM
 // 
-#endregion
+
 
 using Gorgon.Core;
 using D3D11 = SharpDX.Direct3D11;
@@ -30,12 +30,12 @@ using D3D11 = SharpDX.Direct3D11;
 namespace Gorgon.Graphics.Core;
 
 /// <summary>
-/// Defines the flags that describe how the texture should be used.
+/// Defines the flags that describe how the texture should be used
 /// </summary>
 /// <remarks>
 /// <para>
 /// This values can be OR'd together for use in different stages of the pipeline. For example, <c>ShaderResource | RenderTarget</c> allows the texture to be used as a render target and a shader input 
-/// (although, not at the same time) through either a render target view, or shader resource view.
+/// (although, not at the same time) through either a render target view, or shader resource view
 /// </para>
 /// </remarks>
 [Flags]
@@ -121,7 +121,7 @@ public enum TextureBinding
 }
 
 /// <summary>
-/// Values to indicate how texture resources should be shared.
+/// Values to indicate how texture resources should be shared
 /// </summary>
 public enum TextureSharingOptions
 {
@@ -140,11 +140,11 @@ public enum TextureSharingOptions
 }
 
 /// <summary>
-/// Information used to create a 2D texture object.
+/// Information used to create a 2D texture object
 /// </summary>
 /// <remarks>
 /// <para>
-/// This provides an immutable view of the texture information so that it cannot be modified after the texture is created.
+/// This provides an immutable view of the texture information so that it cannot be modified after the texture is created
 /// </para>
 /// </remarks>
 public interface IGorgonTexture2DInfo

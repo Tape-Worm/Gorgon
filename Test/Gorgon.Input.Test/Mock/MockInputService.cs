@@ -27,6 +27,6 @@ namespace Gorgon.Input.Test.Mock
         {
             return new List<IGorgonJoystickInfo2>();
         }
-        #endregion
+    
     }
 }

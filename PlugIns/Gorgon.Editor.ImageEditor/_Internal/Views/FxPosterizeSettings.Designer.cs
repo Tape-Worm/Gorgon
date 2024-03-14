@@ -26,7 +26,7 @@ partial class FxPosterizeSettings
         base.Dispose(disposing);
     }
 
-    #region Component Designer generated code
+
 
     /// <summary> 
     /// Required method for Designer support - do not modify 
@@ -137,7 +137,7 @@ partial class FxPosterizeSettings
 
     }
 
-    #endregion
+
 
     private System.Windows.Forms.TableLayoutPanel TableOptions;
     private System.Windows.Forms.TrackBar TrackAmount;

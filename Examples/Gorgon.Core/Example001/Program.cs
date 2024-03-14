@@ -1,6 +1,6 @@
-﻿#region MIT.
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2012 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: Tuesday, September 11, 2012 8:35:18 PM
 // 
-#endregion
+
 
 using System.Windows.Forms;
 using Gorgon.Timing;
@@ -30,15 +30,15 @@ using Gorgon.Timing;
 namespace Gorgon.Examples;
 
 /// <summary>
-/// Entry point class.
+/// Entry point class
 /// </summary>
 internal class Program
 {
-    #region Variables.
-    private static bool _quit;          // Flag to quit the application.
-    #endregion
 
-    #region Methods.
+    private static bool _quit;          // Flag to quit the application.
+
+
+
     /// <summary>
     /// Function to draw the time at the bottom of the window.
     /// </summary>
@@ -195,5 +195,5 @@ internal class Program
             Console.CursorTop = Console.WindowHeight - 1;
         }
     }
-    #endregion
+
 }

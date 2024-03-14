@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2021 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,20 +11,19 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: February 12, 2021 1:03:15 PM
 // 
-#endregion
 
-#region SharpDX
+
 // Copyright (c) 2010-2014 SharpDX - Alexandre Mutel
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -35,7 +34,7 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
@@ -43,7 +42,7 @@
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // -----------------------------------------------------------------------------
 // Original code from SlimMath project. http://code.google.com/p/slimmath/
 // Greetings to SlimDX Group. Original code published with the following license:
@@ -69,7 +68,7 @@
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 * THE SOFTWARE.
 */
-#endregion
+
 
 using System.ComponentModel;
 using System.Globalization;
@@ -83,13 +82,13 @@ using Gorgon.Properties;
 namespace Gorgon.Renderers.Data;
 
 /// <summary>
-/// Represents an axis-aligned bounding box in three dimensional space.
+/// Represents an axis-aligned bounding box in three dimensional space
 /// </summary>
 [StructLayout(LayoutKind.Sequential, Pack = 4)]
 public readonly struct GorgonBoundingBox
     : IGorgonEquatableByRef<GorgonBoundingBox>
 {
-    #region Variables.
+
     /// <summary>
     /// A default, empty, bounding box.
     /// </summary>
@@ -104,9 +103,9 @@ public readonly struct GorgonBoundingBox
     /// The maximum point of the box.
     /// </summary>
     public readonly Vector3 Maximum;
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Returns the width of the bounding box
     /// </summary>
@@ -222,9 +221,9 @@ public readonly struct GorgonBoundingBox
         7 => Maximum,
         _ => new Vector3(float.NaN),
     };
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Constructs a <see cref="GorgonBoundingBox"/> that fully contains the given points.
     /// </summary>
@@ -409,9 +408,7 @@ public readonly struct GorgonBoundingBox
     /// <returns>
     ///   <b>true</b> if equal, <b>false</b> if not.</returns>
     public bool Equals(in GorgonBoundingBox other) => Minimum.Equals(Maximum);
-    #endregion
 
-    #region Constructor.
     /// <summary>Initializes a new instance of the <see cref="GorgonBoundingBox" /> struct.</summary>
     /// <param name="minX">The minimum x.</param>
     /// <param name="minY">The minimum y.</param>
@@ -435,5 +432,4 @@ public readonly struct GorgonBoundingBox
         Minimum = minimum;
         Maximum = maximum;
     }
-    #endregion
 }

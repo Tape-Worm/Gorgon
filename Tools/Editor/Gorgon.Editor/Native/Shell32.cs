@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2018 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: November 28, 2018 6:52:18 PM
 // 
-#endregion
+
 
 using System.Runtime.InteropServices;
 using System.Runtime.InteropServices.Marshalling;
@@ -30,7 +30,7 @@ using System.Runtime.InteropServices.Marshalling;
 namespace Gorgon.Editor.Native;
 
 /// <summary>
-/// Possible flags for the SHFileOperation method.
+/// Possible flags for the SHFileOperation method
 /// </summary>
 [Flags]
 internal enum FileOperationFlags
@@ -99,11 +99,11 @@ internal struct SHFILEOPSTRUCT
 }
 
 /// <summary>
-/// Shell 32 functionality.
+/// Shell 32 functionality
 /// </summary>
 /// <remarks>
 /// <para>
-/// This code was lifted from https://stackoverflow.com/questions/3282418/send-a-file-to-the-recycle-bin.
+/// This code was lifted from https://stackoverflow.com/questions/3282418/send-a-file-to-the-recycle-bin
 /// </para>
 /// </remarks>
 internal static partial class Shell32

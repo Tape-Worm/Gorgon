@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2020 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: August 3, 2020 4:40:15 PM
 // 
-#endregion
+
 
 using System.ComponentModel;
 using System.Numerics;
@@ -40,7 +40,7 @@ using DX = SharpDX;
 namespace Gorgon.Editor.FontEditor;
 
 /// <summary>
-/// This is a renderer that will render the texture used in a texture brush.
+/// This is a renderer that will render the texture used in a texture brush
 /// </summary>
 /// <remarks>Initializes a new instance of the <see cref="FontRenderer"/> class.</remarks>
 /// <param name="renderer">The 2D renderer used to render our font.</param>
@@ -50,7 +50,7 @@ namespace Gorgon.Editor.FontEditor;
 internal class TextureBrushRenderer(Gorgon2D renderer, GorgonSwapChain mainRenderTarget, IRectClipperService clipper, IFontContent dataContext)
         : DefaultContentRenderer<IFontContent>(typeof(FontTextureBrush).FullName, renderer, mainRenderTarget, dataContext)
 {
-    #region Variables.
+
     // The editor context.
     private IFontTextureBrush _context;
     // The texture to display when a sprite lacks a texture association.
@@ -62,9 +62,9 @@ internal class TextureBrushRenderer(Gorgon2D renderer, GorgonSwapChain mainRende
     private GorgonTexture2DView _targetTexture;
     // The clipper used to cut out a part of the texture.
     private readonly IRectClipperService _clipper = clipper;
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>Handles the PropertyChanging event of the Context control.</summary>
     /// <param name="sender">The source of the event.</param>
     /// <param name="e">The <see cref="PropertyChangingEventArgs" /> instance containing the event data.</param>
@@ -375,5 +375,5 @@ internal class TextureBrushRenderer(Gorgon2D renderer, GorgonSwapChain mainRende
     /// </summary>
     public void DefaultZoom() => MoveTo(Vector2.Zero, 1);
 
-    #endregion
+
 }

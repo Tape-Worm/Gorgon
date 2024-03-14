@@ -1,6 +1,6 @@
 ﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2024 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,14 +11,14 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: Thursday, June 23, 2011 11:22:58 AM
 // 
@@ -36,7 +36,7 @@ using Gorgon.Properties;
 namespace Gorgon.PlugIns;
 
 /// <summary>
-/// The type of platform that the code in the assembly is expected to run on.
+/// The type of platform that the code in the assembly is expected to run on
 /// </summary>
 public enum AssemblyPlatformType
 {
@@ -59,23 +59,23 @@ public enum AssemblyPlatformType
 }
 
 /// <summary>
-/// A cache to hold MEF plugin assemblies.
+/// A cache to hold MEF plugin assemblies
 /// </summary>
 /// <remarks>
 /// <para>
 /// This assembly cache is meant to load/hold a list of plugin assemblies that contain types that implement the <see cref="GorgonPlugIn"/> type and is 
-/// meant to be used in conjunction with the <see cref="IGorgonPlugInService"/> type.
+/// meant to be used in conjunction with the <see cref="IGorgonPlugInService"/> type
 /// </para>
 /// <para>
 /// The cache attempts to ensure that the application only loads an assembly once during the lifetime of the application in order to cut down on 
-/// overhead and potential errors that can come up when multiple assemblies with the same qualified name are loaded into the same context.
+/// overhead and potential errors that can come up when multiple assemblies with the same qualified name are loaded into the same context
 /// </para>
 /// </remarks>
 /// <example>
 /// This example shows how to load a plugin and get its plugin instance. It will use the <c>ConcreteFunctionalityPlugIn</c> above:
 /// <code language="csharp"> 
 /// <![CDATA[
-/// // Our base functionality.
+/// // Our base functionality
 /// private FunctionalityBase _functionality;
 /// private GorgonMefPlugInCache _assemblies;
 /// 
@@ -83,10 +83,10 @@ public enum AssemblyPlatformType
 /// {
 ///		assemblies = new GorgonMefPlugInCache();
 ///		
-///		// For brevity, we've omitted checking to see if the assembly is valid and such.
+///		// For brevity, we've omitted checking to see if the assembly is valid and such
 ///		// In the real world, you should always determine whether the assembly can be loaded 
-///		// before calling the Load method.
-///		_assemblies.LoadPlugInAssemblies(@"Your\Directory\Here", "file search pattern");  // You can pass a wild card like *.dll, *.exe, etc..., or an absolute file name like "MyPlugin.dll".
+///		// before calling the Load method
+///		_assemblies.LoadPlugInAssemblies(@"Your\Directory\Here", "file search pattern");  // You can pass a wild card like *.dll, *.exe, etc..., or an absolute file name like "MyPlugin.dll"
 /// 			
 ///		IGorgonPlugInService pluginService = new GorgonMefPlugInService(_assemblies);
 /// 
@@ -107,7 +107,7 @@ public enum AssemblyPlatformType
 public sealed class GorgonMefPlugInCache
     : IDisposable
 {
-    #region Variables.
+
     // The contract name for the plug in.
     private readonly string _contractName = typeof(GorgonPlugIn).FullName;
     // The root catalog for the plugins.
@@ -118,9 +118,9 @@ public sealed class GorgonMefPlugInCache
     private static readonly object _syncLock = new();
     // The builder used for type registration.
     private readonly RegistrationBuilder _builder = new();
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to return the logging interface for debug logging.
     /// </summary>
@@ -137,9 +137,9 @@ public sealed class GorgonMefPlugInCache
         get;
         private set;
     }
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to update the list of assemblies.
     /// </summary>
@@ -417,9 +417,9 @@ public sealed class GorgonMefPlugInCache
             Log.Print($"{PlugInAssemblies.Count} cached with valid plug in types.", LoggingLevel.Verbose);
         }
     }
-    #endregion
 
-    #region Constructor.
+
+
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonMefPlugInCache"/> class.
     /// </summary>
@@ -435,5 +435,5 @@ public sealed class GorgonMefPlugInCache
         Log = log ?? GorgonLog.NullLog;
         _container = new CompositionContainer(_rootCatalog, CompositionOptions.DisableSilentRejection | CompositionOptions.IsThreadSafe);
     }
-    #endregion
+
 }

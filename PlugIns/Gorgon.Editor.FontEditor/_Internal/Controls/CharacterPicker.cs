@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2021 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: September 3, 2021 8:09:39 PM
 // 
-#endregion
+
 
 using System.ComponentModel;
 using System.Data;
@@ -35,12 +35,12 @@ using Gorgon.UI;
 namespace Gorgon.Editor.FontEditor;
 
 /// <summary>
-/// A control that allows the user to select specific characters for font generation.
+/// A control that allows the user to select specific characters for font generation
 /// </summary>
 public partial class CharacterPicker
         : EditorBaseControl
 {
-    #region Variables.
+
     // Page for characters.
     private int _page;
     // Character ranges for the font.
@@ -57,9 +57,9 @@ public partial class CharacterPicker
     private Font _current;
     // The list of selected characters.
     private IEnumerable<char> _characters;
-    #endregion
 
-    #region Events.
+
+
     // Events for handling button clicks.
     private EventHandler _okClickedEvent;
     private EventHandler _cancelClickedEvent;
@@ -146,9 +146,9 @@ public partial class CharacterPicker
             _cancelClickedEvent -= value;
         }
     }
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to set or return whether the OK/Cancel buttons are visible.
     /// </summary>
@@ -196,9 +196,9 @@ public partial class CharacterPicker
             }
         }
     }
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Handles the Click event of the buttonSelectAll control.
     /// </summary>
@@ -651,9 +651,9 @@ public partial class CharacterPicker
 
         CurrentFontChanged();
     }
-    #endregion
 
-    #region Constructor.
+
+
     /// <summary>Initializes a new instance of the <see cref="CharacterPicker" /> class.</summary>
     public CharacterPicker()
     {
@@ -670,5 +670,5 @@ public partial class CharacterPicker
             ScrollVertical.Width = (int)(ScrollVertical.Width * (DeviceDpi / 96.0));
         }
     }
-    #endregion
+
 }

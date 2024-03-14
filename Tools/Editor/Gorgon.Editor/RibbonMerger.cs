@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2018 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: September 28, 2018 9:03:32 PM
 // 
-#endregion
+
 
 using System.ComponentModel;
 using System.Globalization;
@@ -33,26 +33,26 @@ using Drawing = System.Drawing;
 namespace Gorgon.Editor;
 
 /// <summary>
-/// Merges a krypton ribbon with another ribbon.
+/// Merges a krypton ribbon with another ribbon
 /// </summary>
 /// <remarks>
 /// <para>
-/// To affect the order of the merged groups and tabs, set the Tag property to a value from 0 to n, where n is the count of the target group minus 1.
+/// To affect the order of the merged groups and tabs, set the Tag property to a value from 0 to n, where n is the count of the target group minus 1
 /// </para>
 /// </remarks>
 /// <remarks>
-/// Initializes a new instance of the <see cref="RibbonMerger"/> class.
+/// Initializes a new instance of the <see cref="RibbonMerger"/> class
 /// </remarks>
 /// <param name="targetRibbon">The target ribbon that will receive the items from the merged ribbon.</param>
 /// <exception cref="ArgumentNullException">Thrown when the <paramref name="targetRibbon"/> is <b>null</b>.</exception>
 internal class RibbonMerger(KryptonRibbon targetRibbon)
 {
-    #region Variables.
+
     // The list of merged items.
     private readonly HashSet<Component> _mergedItems = [];
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to return the target ribbon that will receive the merged items.
     /// </summary>
@@ -60,9 +60,9 @@ internal class RibbonMerger(KryptonRibbon targetRibbon)
     {
         get;
     } = targetRibbon ?? throw new ArgumentNullException(nameof(targetRibbon));
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to retrieve the sorting index from the items tag.
     /// </summary>
@@ -402,5 +402,5 @@ internal class RibbonMerger(KryptonRibbon targetRibbon)
         }
     }
 
-    #endregion
+
 }

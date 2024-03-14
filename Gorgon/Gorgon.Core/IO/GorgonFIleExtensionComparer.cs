@@ -1,6 +1,6 @@
-﻿#region MIT.
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2015 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,28 +11,27 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: Monday, March 9, 2015 12:37:10 AM
 // 
-#endregion
+
 
 namespace Gorgon.IO;
 
 /// <summary>
-/// A comparer used to perform a comparison on two instances of <see cref="GorgonFileExtension"/>.
+/// A comparer used to perform a comparison on two instances of <see cref="GorgonFileExtension"/>
 /// </summary>
 public class GorgonFileExtensionComparer
     : IComparer<GorgonFileExtension>
 {
-    #region IComparer<GorgonFileExtension> Members
     /// <summary>
     /// Compares two objects and returns a value indicating whether one is less than, equal to, or greater than the other.
     /// </summary>
@@ -74,5 +73,4 @@ public class GorgonFileExtensionComparer
     /// </list>
     /// </returns>
     public int Compare(GorgonFileExtension x, GorgonFileExtension y) => string.Compare(x.Extension, y.Extension, StringComparison.OrdinalIgnoreCase);
-    #endregion
 }

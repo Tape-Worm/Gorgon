@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2018 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: August 13, 2018 1:01:46 PM
 // 
-#endregion
+
 
 using Gorgon.IO;
 using Newtonsoft.Json;
@@ -31,11 +31,11 @@ using Newtonsoft.Json.Linq;
 namespace Gorgon.Renderers;
 
 /// <summary>
-/// Extension methods for the <see cref="GorgonSprite"/> object.
+/// Extension methods for the <see cref="GorgonSprite"/> object
 /// </summary>
 public static class GorgonSpriteExtensions
 {
-    #region Constants.
+
     /// <summary>
     /// The property name for the header value.
     /// </summary>
@@ -44,9 +44,9 @@ public static class GorgonSpriteExtensions
     /// The property name for the header value.
     /// </summary>
     internal const string JsonVersionProp = "version";
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to convert a sprite into a JSON formatted string.
     /// </summary>
@@ -120,5 +120,5 @@ public static class GorgonSpriteExtensions
 
         return jsonObj.ToString(prettyFormat ? Formatting.Indented : Formatting.None);
     }
-    #endregion
+
 }

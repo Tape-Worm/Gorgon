@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2017 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,31 +11,31 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: March 4, 2017 12:47:54 PM
 // 
-#endregion
+
 
 using Avalonia;
 
 namespace Gorgon.Examples;
 
 /// <summary>
-/// Glass cube example program.
+/// Glass cube example program
 /// 
 /// This example introduces some animation, a texured 3D cube, and handling resizing of the swap chain.  
 /// 
 /// For the animation, we give our cube a world matrix which defines how to transform the vertices of the cube in world space. This, like the projection and view matrix is transmitted 
 /// to the GPU via a constant buffer by updating the matrix, and multiplying it by the world and view matrix once per frame. Once the transformation matrix is combined, we then upload
-/// it to the constant buffer and the vertex shader will then transform the vertices for the cube accordingly.
+/// it to the constant buffer and the vertex shader will then transform the vertices for the cube accordingly
 /// 
 /// Resizing the swap chain is optional, but if Gorgon is told not to handle the buffer resizing (like in other examples), the results can be less than ideal. When the swap chain is 
 /// configured with StretchBackBuffer = False, then the contents of the back buffer are stretched when presented to the front buffer surface. This can give a blurry look if the back 
@@ -46,7 +46,7 @@ namespace Gorgon.Examples;
 /// resizing. However, it will not remember that the view/texture were assigned as the current render target (we could do this, but it causes complications in more complex scenarios 
 /// like multi-monitor rendering). So, to counter this, a swap chain has a Before/After swap chain resized event that we can hook into. In the after resize event, we just merely 
 /// reassign the swap chain as the render target in the draw call. We also must resize the view port and the projection matrix to match our window (and assign it to the draw call), or 
-/// else things will not render in the correct position or size within the window.
+/// else things will not render in the correct position or size within the window
 /// </summary>
 internal static class Program
 {

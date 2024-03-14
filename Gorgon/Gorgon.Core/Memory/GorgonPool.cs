@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2016 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: June 11, 2016 7:26:28 PM
 // 
-#endregion
+
 
 using System.Collections.Concurrent;
 using Gorgon.Core;
@@ -31,14 +31,14 @@ using Gorgon.Properties;
 namespace Gorgon.Memory;
 
 /// <summary>
-/// A memory allocation strategy that uses a standar pool/free list allocator to perform memory allocations.
+/// A memory allocation strategy that uses a standar pool/free list allocator to perform memory allocations
 /// </summary>
 /// <typeparam name="T">The type of objects to allocate.  These must be a reference type.</typeparam>
 /// <remarks>
 /// <para>
 /// While the .NET memory manager is quite fast (e.g. <c>new</c>), and is useful for most cases, it does have the problem of creating garbage. When these items are created and discarded, 
 /// the garbage collector may kick in at any given time, causing performance issues during time critical code (e.g. a rendering loop). By allocating a large pool of objects and then drawing 
-/// directly from this pool, we can reuse existing, but expired objects to ensure that the garbage collector does not collect these items until we are truly done with them.
+/// directly from this pool, we can reuse existing, but expired objects to ensure that the garbage collector does not collect these items until we are truly done with them
 /// </para>
 /// <para>
 /// This type will allocate a new object on demand (and optionally initialize that new object).  When the user is done with the object, they can deallocate it and it will be put back into a free list, 
@@ -46,21 +46,21 @@ namespace Gorgon.Memory;
 /// nullified.  
 /// </para>
 /// <para>
-/// This allocator will never grow beyond its initial size. So care must be taken ahead of time to ensure the pool is large enough.
+/// This allocator will never grow beyond its initial size. So care must be taken ahead of time to ensure the pool is large enough
 /// </para>
 /// </remarks>
 public class GorgonPool<T>
     : IGorgonAllocator<T>
     where T : class
 {
-    #region Variables.
+
     // The list of items that are free for use.
     private readonly ConcurrentStack<T> _freeList;
     // The number of available slots.
     private int _availableSlots;
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to set or return the allocator to use when creating new instances of an object.
     /// </summary>
@@ -86,9 +86,9 @@ public class GorgonPool<T>
     /// </remarks>
     /// <seealso cref="Reset"/>
     public int AvailableSlots => _availableSlots;
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to allocate a new object from the pool.
     /// </summary>
@@ -178,9 +178,9 @@ public class GorgonPool<T>
         _freeList.Clear();
         Interlocked.Exchange(ref _availableSlots, TotalSize);
     }
-    #endregion
 
-    #region Constructor/Finalizer.
+
+
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonLinearPool{T}"/> class.
     /// </summary>
@@ -205,5 +205,5 @@ public class GorgonPool<T>
         _availableSlots = TotalSize = objectCount;
         _freeList = new ConcurrentStack<T>();
     }
-    #endregion
+
 }

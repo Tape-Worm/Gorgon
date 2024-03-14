@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2018 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: October 30, 2018 7:11:23 PM
 // 
-#endregion
+
 
 using Gorgon.Core;
 using Gorgon.Editor.Metadata;
@@ -30,19 +30,19 @@ using Gorgon.Editor.Metadata;
 namespace Gorgon.Editor.Content;
 
 /// <summary>
-/// A data structure representing a file containing content.
+/// A data structure representing a file containing content
 /// </summary>
 public interface IContentFile
     : IGorgonNamedObject
 {
-    #region Events.
+
     /// <summary>
     /// Event triggered if this content file was renamed.
     /// </summary>
     event EventHandler<ContentFileRenamedEventArgs> Renamed;
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to set or return whether the file has changes.
     /// </summary>
@@ -84,9 +84,9 @@ public interface IContentFile
         get;
         set;
     }
-    #endregion
 
-    #region Methods.  
+
+  
     /// <summary>
     /// Function to link a content file to be dependant upon this content.
     /// </summary>
@@ -111,5 +111,5 @@ public interface IContentFile
 
     /// <summary>Function called to refresh the information about the file.</summary>
     void Refresh();
-    #endregion
+
 }

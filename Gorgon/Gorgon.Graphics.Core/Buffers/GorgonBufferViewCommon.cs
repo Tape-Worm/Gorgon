@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2017 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,26 +11,26 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: July 5, 2017 2:53:14 PM
 // 
-#endregion
+
 
 namespace Gorgon.Graphics.Core;
 
 /// <summary>
-/// The base class for buffer shader views.
+/// The base class for buffer shader views
 /// </summary>
 /// <remarks>
-/// Initializes a new instance of the <see cref="GorgonBufferViewCommon"/> class.
+/// Initializes a new instance of the <see cref="GorgonBufferViewCommon"/> class
 /// </remarks>
 /// <param name="buffer">The buffer to bind to the view.</param>
 /// <param name="startingElement">The starting element in the buffer to view.</param>
@@ -40,7 +40,7 @@ namespace Gorgon.Graphics.Core;
 public abstract class GorgonBufferViewCommon(GorgonBuffer buffer, int startingElement, int elementCount, int totalElementCount)
         : GorgonShaderResourceView(buffer)
 {
-    #region Properties.
+
     /// <summary>
     /// Property to return the buffer associated with the view.
     /// </summary>
@@ -81,9 +81,9 @@ public abstract class GorgonBufferViewCommon(GorgonBuffer buffer, int startingEl
     {
         get;
     }
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
     /// </summary>
@@ -93,5 +93,5 @@ public abstract class GorgonBufferViewCommon(GorgonBuffer buffer, int startingEl
         base.Dispose();
     }
 
-    #endregion
+
 }

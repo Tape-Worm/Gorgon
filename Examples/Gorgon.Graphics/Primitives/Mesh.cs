@@ -1,6 +1,6 @@
-﻿#region MIT.
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2014 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: Thursday, September 18, 2014 2:11:22 AM
 // 
-#endregion
+
 
 using System.Numerics;
 using Gorgon.Graphics.Core;
@@ -33,21 +33,21 @@ using Gorgon.Renderers.Geometry;
 namespace Gorgon.Examples;
 
 /// <summary>
-/// Base class for a mesh object.
+/// Base class for a mesh object
 /// </summary>
 /// <remarks>
-/// Initializes a new instance of the <see cref="Mesh"/> class.
+/// Initializes a new instance of the <see cref="Mesh"/> class
 /// </remarks>
 /// <param name="graphics">The graphics interface that owns this object.</param>
 internal abstract class Mesh(GorgonGraphics graphics)
         : IDisposable
 {
-    #region Variables.
+
     // The axis aligned bounding box for the mesh.
     private GorgonBoundingBox _aabb;
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to return the material for this mesh.
     /// </summary>
@@ -131,9 +131,9 @@ internal abstract class Mesh(GorgonGraphics graphics)
         get;
         set;
     } = true;
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to update the axis aligned bounding box for the mesh.
     /// </summary>
@@ -249,8 +249,4 @@ internal abstract class Mesh(GorgonGraphics graphics)
         VertexBuffer?.Dispose();
         IndexBuffer?.Dispose();
     }
-
-    #endregion
-    #region Constructor.
-    #endregion
 }

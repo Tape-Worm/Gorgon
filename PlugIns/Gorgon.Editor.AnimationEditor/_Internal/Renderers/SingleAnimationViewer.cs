@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2020 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: June 10, 2020 6:38:49 AM
 // 
-#endregion
+
 
 using System.Numerics;
 using Gorgon.Animation;
@@ -36,7 +36,7 @@ using DX = SharpDX;
 namespace Gorgon.Editor.AnimationEditor;
 
 /// <summary>
-/// The viewer for editing a single floating point key value for an aniamtion.
+/// The viewer for editing a single floating point key value for an aniamtion
 /// </summary>
 /// <remarks>Initializes a new instance of the <see cref="DefaultAnimationViewer"/> class.</remarks>
 /// <param name="renderer">The main renderer for the content view.</param>
@@ -45,21 +45,21 @@ namespace Gorgon.Editor.AnimationEditor;
 internal class SingleAnimationViewer(Gorgon2D renderer, GorgonSwapChain swapChain, IAnimationContent dataContext)
         : AnimationViewer(ViewerName, renderer, swapChain, dataContext, null, true)
 {
-    #region Constants.
+
     /// <summary>
     /// The name of the viewer.
     /// </summary>
     public const string ViewerName = nameof(AnimationTrackKeyType.Single);
-    #endregion
 
-    #region Variables.
+
+
     // The starting angle for the sprite.
     private float _startAngle;
     // Flag to indicate we're dragging the angle.
     private bool _dragAngle;
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to calculate an angle, in degrees, from the current mouse position.
     /// </summary>
@@ -250,9 +250,9 @@ internal class SingleAnimationViewer(Gorgon2D renderer, GorgonSwapChain swapChai
 
         SupportsOnionSkinning = SelectedTrackID == TrackSpriteProperty.Angle;
     }
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>Function to set the default zoom/offset for the viewer.</summary>
     public override void DefaultZoom()
     {
@@ -264,5 +264,5 @@ internal class SingleAnimationViewer(Gorgon2D renderer, GorgonSwapChain swapChai
         ZoomToSprite(Sprite);
     }
 
-    #endregion
+
 }

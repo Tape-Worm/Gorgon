@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2018 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: May 23, 2018 12:18:45 PM
 // 
-#endregion
+
 
 using Gorgon.Core;
 using Gorgon.Memory;
@@ -30,14 +30,14 @@ using Gorgon.Memory;
 namespace Gorgon.Graphics.Core;
 
 /// <summary>
-/// Common functionality for the a state fluent builder, which allows creation of state objects using <see cref="GorgonStateBuilderPoolAllocator{T}"/>.
+/// Common functionality for the a state fluent builder, which allows creation of state objects using <see cref="GorgonStateBuilderPoolAllocator{T}"/>
 /// </summary>
 /// <typeparam name="TB">The type of builder.</typeparam>
 /// <typeparam name="TRs">The type of state.</typeparam>
 /// <remarks>
 /// <para>
 /// This is the same as the <see cref="GorgonStateBuilderCommon{TB, TRs}"/> base class, only it exposes functionality to provide object allocation via a <see cref="GorgonStateBuilderPoolAllocator{T}"/>. 
-/// The provides efficient reuse of objects to minimize garbage collection and improve performance. All state builder classes will descend from this unless they implement their own caching strategy.
+/// The provides efficient reuse of objects to minimize garbage collection and improve performance. All state builder classes will descend from this unless they implement their own caching strategy
 /// </para>
 /// </remarks>
 /// <seealso cref="GorgonStateBuilderCommon{TB, TRs}"/>
@@ -47,7 +47,7 @@ public abstract class GorgonStateBuilderAllocator<TB, TRs>
     where TB : GorgonStateBuilderCommon<TB, TRs>
     where TRs : class, IEquatable<TRs>
 {
-    #region Methods.
+
     /// <summary>
     /// Function to update the properties of the state, allocated from an allocator, from the working copy.
     /// </summary>
@@ -79,9 +79,9 @@ public abstract class GorgonStateBuilderAllocator<TB, TRs>
 
         return state;
     }
-    #endregion
 
-    #region Constructor/Finalizer.
+
+
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonStateBuilderAllocator{TB,TRs}"/> class.
     /// </summary>
@@ -90,5 +90,5 @@ public abstract class GorgonStateBuilderAllocator<TB, TRs>
         : base(renderState)
     {
     }
-    #endregion
+
 }

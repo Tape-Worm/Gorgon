@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2018 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: July 28, 2018 11:33:52 AM
 // 
-#endregion
+
 
 using System.Numerics;
 using Gorgon.Core;
@@ -39,14 +39,14 @@ using DX = SharpDX;
 namespace Gorgon.Examples;
 
 /// <summary>
-/// The main entry point for the application.
+/// The main entry point for the application
 /// </summary>
 /// <remarks>
-/// This example shows how to use the G-Buffer and Lighting effect to provide lighting for your sprites.
+/// This example shows how to use the G-Buffer and Lighting effect to provide lighting for your sprites
 /// </remarks>
 static class Program
 {
-    #region Variables.
+
     // The primary graphics interface.
     private static GorgonGraphics _graphics;
     // The main "screen" for the application.
@@ -78,9 +78,9 @@ static class Program
     private static GorgonOrthoCamera _camera;
     // Flag to indicate we should rotate the logo.
     private static bool _rotate;
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function called when the application goes into an idle state.
     /// </summary>
@@ -414,5 +414,5 @@ static class Program
             _graphics?.Dispose();
         }
     }
-    #endregion
+
 }

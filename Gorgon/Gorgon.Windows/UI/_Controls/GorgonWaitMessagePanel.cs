@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2018 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: August 31, 2018 10:50:08 AM
 // 
-#endregion
+
 
 using System.ComponentModel;
 using Gorgon.Windows.Properties;
@@ -30,17 +30,17 @@ using Gorgon.Windows.Properties;
 namespace Gorgon.UI;
 
 /// <summary>
-/// A message panel to display on an overlay.
+/// A message panel to display on an overlay
 /// </summary>
 public partial class GorgonWaitMessagePanel
     : UserControl
 {
-    #region Variables.
+
     // The image used for the wait icon.
     private Image _waitIcon;
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Indicates the border style for the for wait message box.
     /// </summary>
@@ -235,12 +235,12 @@ public partial class GorgonWaitMessagePanel
             }
         }
     }
-    #endregion
 
-    #region Constructor/Finalizer.
+
+
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonWaitMessagePanel"/> class.
     /// </summary>
     public GorgonWaitMessagePanel() => InitializeComponent();
-    #endregion
+
 }

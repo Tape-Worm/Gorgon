@@ -10,14 +10,14 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: Tuesday, September 07, 2015 2:27:10 PM
 // 
@@ -29,7 +29,7 @@ using Gorgon.Native;
 namespace Gorgon.Input;
 
 /// <summary>
-/// Provides events and state for keyboard data returned from Raw Input.
+/// Provides events and state for keyboard data returned from Raw Input
 /// </summary>
 /// <remarks>
 /// <para>
@@ -39,7 +39,7 @@ namespace Gorgon.Input;
 public class GorgonRawKeyboard
     : IGorgonKeyboard
 {
-    #region Events.
+
     /// <summary>
     /// Event fired when a key is pressed on the keyboard.
     /// </summary>
@@ -49,18 +49,18 @@ public class GorgonRawKeyboard
     /// Event fired when a key is released on the keyboard.
     /// </summary>
     public event EventHandler<GorgonKeyboardEventArgs> KeyUp;
-    #endregion
 
-    #region Variables.
+
+
     // The character buffer to hold the characters represented by a key press.
     private static readonly char[] _characterBuffer = new char[1];
     // The state values for the keys on the keyboard when translating a key press to a character.
     private static readonly byte[] _charStates = new byte[256];
     // The device handle.
     private readonly nint _deviceHandle;
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to return the handle for the device.
     /// </summary>
@@ -91,9 +91,9 @@ public class GorgonRawKeyboard
     {
         get;
     }
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to retrieve information for the system keyboard if no specific keyboard is defined on creation.
     /// </summary>
@@ -335,9 +335,9 @@ public class GorgonRawKeyboard
             OnKeyUp(keyCode, rawInputData.ScanCode);
         }
     }
-    #endregion
 
-    #region Constructor.
+
+
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonRawKeyboard"/> class.
     /// </summary>
@@ -356,5 +356,5 @@ public class GorgonRawKeyboard
         KeyStates = new GorgonKeyStateCollection();
         KeyStates.Reset();
     }
-    #endregion
+
 }

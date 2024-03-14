@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2018 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,42 +11,42 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: December 11, 2018 8:38:27 PM
 // 
-#endregion
+
 
 using System.ComponentModel;
 
 namespace Gorgon.UI;
 
 /// <summary>
-/// An enhancement to the standard text box to show a cue value when no text is available.
+/// An enhancement to the standard text box to show a cue value when no text is available
 /// </summary>
 public class GorgonCueTextBox
     : TextBox
 {
-    #region Constants.
+
     // Paint message.
     private const int WM_PAINT = 0x000F;
-    #endregion
 
-    #region Variables.
+
+
     // Text for the cue.
     private string _cueText = string.Empty;
     // Font used to draw the cue.
     private Font _cueFont;
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to set or return the text for the textbox cue.
     /// </summary>
@@ -62,9 +62,9 @@ public class GorgonCueTextBox
             Invalidate();
         }
     }
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to create the font used for the cue text.
     /// </summary>
@@ -169,5 +169,5 @@ public class GorgonCueTextBox
 
         base.Dispose(disposing);
     }
-    #endregion
+
 }

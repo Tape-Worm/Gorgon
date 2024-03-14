@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2021 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: January 16, 2021 12:10:27 AM
 // 
-#endregion
+
 
 using System.Numerics;
 using System.Runtime.CompilerServices;
@@ -32,12 +32,12 @@ using Gorgon.Graphics.Core;
 namespace Gorgon.Renderers.Geometry;
 
 /// <summary>
-/// A vertex with a position, normal, diffuse color, UV texture coordinate, and a tangent vector.
+/// A vertex with a position, normal, diffuse color, UV texture coordinate, and a tangent vector
 /// </summary>
 [StructLayout(LayoutKind.Sequential, Pack = 1)]
 public struct GorgonVertexPosNormUvTangent
 {
-    #region Variables.
+
     /// <summary>
     /// The size of the vertex, in bytes.
     /// </summary>
@@ -66,9 +66,9 @@ public struct GorgonVertexPosNormUvTangent
     /// </summary>
     [InputElement(3, "TANGENT")]
     public Vector4 Tangent;
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Deconstructs this instance into individual position values.
     /// </summary>
@@ -94,9 +94,9 @@ public struct GorgonVertexPosNormUvTangent
         uv = UV;
         tangent = Tangent;
     }
-    #endregion
 
-    #region Constructor.
+
+
     /// <summary>Initializes a new instance of the <see cref="GorgonVertexPosNormUvTangent" /> struct.</summary>
     /// <param name="pos">The position.</param>
     /// <param name="normal">The vertex normal.</param>
@@ -122,5 +122,5 @@ public struct GorgonVertexPosNormUvTangent
         Normal = normal;
         Tangent = tangent;
     }
-    #endregion
+
 }

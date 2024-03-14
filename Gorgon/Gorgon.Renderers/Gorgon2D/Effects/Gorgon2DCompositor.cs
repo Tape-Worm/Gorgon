@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2018 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: August 2, 2018 12:25:08 PM
 // 
-#endregion
+
 
 using System.Collections;
 using Gorgon.Collections.Specialized;
@@ -37,23 +37,23 @@ using DX = SharpDX;
 namespace Gorgon.Renderers;
 
 /// <summary>
-/// A compositor system used to chain multiple effects together.
+/// A compositor system used to chain multiple effects together
 /// </summary>
 /// <remarks>
 /// <para>
 /// This processor will take a scene and composite it using a series of effects (or plain rendering without effects).  The results of these effects will be passed on to the next effect and rendered
-/// until all effects are processed. The final image is then output to a render target specified by the user.
+/// until all effects are processed. The final image is then output to a render target specified by the user
 /// </para>
 /// </remarks>
 /// <remarks>
-/// Initializes a new instance of the <see cref="Gorgon2DCompositor"/> class.
+/// Initializes a new instance of the <see cref="Gorgon2DCompositor"/> class
 /// </remarks>
 /// <param name="renderer">The renderer to use when rendering the effects.</param>
 /// <exception cref="ArgumentNullException">Thrown when the <paramref name="renderer"/> parameter is <b>null</b>.</exception>
 public class Gorgon2DCompositor(Gorgon2D renderer)
         : IDisposable, IGorgonGraphicsObject, IReadOnlyList<IGorgon2DCompositorPass>
 {
-    #region Variables.
+
     // The ping render target in the ping-pong target scheme.
     private GorgonRenderTarget2DView _pingTarget;
     // The pong render target in the ping-pong target scheme.
@@ -70,9 +70,9 @@ public class Gorgon2DCompositor(Gorgon2D renderer)
     private GorgonColor? _initialClear = GorgonColor.BlackTransparent;
     // The color used to clear the final render target.
     private GorgonColor? _finalClear = GorgonColor.BlackTransparent;
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to return the graphics interface that built this object.
     /// </summary>
@@ -116,9 +116,9 @@ public class Gorgon2DCompositor(Gorgon2D renderer)
             return this[index];
         }
     }
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to free any resources allocated by the compositor.
     /// </summary>
@@ -613,5 +613,5 @@ public class Gorgon2DCompositor(Gorgon2D renderer)
     /// <returns>An <see cref="IEnumerator"/> object that can be used to iterate through the collection.</returns>
     IEnumerator IEnumerable.GetEnumerator() => ((IEnumerable)_passes).GetEnumerator();
 
-    #endregion
+
 }

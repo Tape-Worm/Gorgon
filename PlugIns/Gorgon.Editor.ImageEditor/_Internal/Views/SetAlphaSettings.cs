@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2019 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: January 15, 2019 9:04:41 PM
 // 
-#endregion
+
 
 using System.ComponentModel;
 using Gorgon.Core;
@@ -34,12 +34,12 @@ using Gorgon.Math;
 namespace Gorgon.Editor.ImageEditor;
 
 /// <summary>
-/// The panel used to provide settings for setting image alpha.
+/// The panel used to provide settings for setting image alpha
 /// </summary>
 internal partial class SetAlphaSettings
     : EditorSubPanelCommon, IDataContext<IAlphaSettings>
 {
-    #region Properties.
+
     /// <summary>Property to return the data context assigned to this view.</summary>
     /// <value>The data context.</value>
     [Browsable(false)]
@@ -48,9 +48,9 @@ internal partial class SetAlphaSettings
         get;
         private set;
     }
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>Handles the PropertyChanged event of the DataContext control.</summary>
     /// <param name="sender">The source of the event.</param>
     /// <param name="e">The <see cref="PropertyChangedEventArgs"/> instance containing the event data.</param>
@@ -224,10 +224,10 @@ internal partial class SetAlphaSettings
 
         ViewModel.PropertyChanged += DataContext_PropertyChanged;
     }
-    #endregion
 
-    #region Constructor/Finalizer.
+
+
     /// <summary>Initializes a new instance of the <see cref="SetAlphaSettings"/> class.</summary>
     public SetAlphaSettings() => InitializeComponent();
-    #endregion
+
 }

@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2017 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: February 23, 2017 11:39:19 PM
 // 
-#endregion
+
 
 using Gorgon.Core;
 using Gorgon.Graphics.Fonts.Properties;
@@ -31,20 +31,20 @@ using Gorgon.IO;
 namespace Gorgon.Graphics.Fonts.Codecs;
 
 /// <summary>
-/// A font codec used to read/write font data using the standard Gorgon Font format.
+/// A font codec used to read/write font data using the standard Gorgon Font format
 /// </summary>
 /// <remarks>
 /// <para>
 /// This codec will create binary font data using the native font file format for Gorgon. 
 /// </para>
 /// <para>
-/// The version number of 1.1 does not represent the version of Gorgon, but the version of the format.
+/// The version number of 1.1 does not represent the version of Gorgon, but the version of the format
 /// </para>
 /// </remarks>
 public sealed class GorgonCodecGorFont
     : GorgonFontCodec
 {
-    #region Constants.
+
     // BRSHDATA chunk.
     private const string BrushChunk = "BRSHDATA";
     // FONTINFO chunk.
@@ -53,9 +53,9 @@ public sealed class GorgonCodecGorFont
     private const string TextureInfoChunk = "TXTRINFO";
     // Header for a Gorgon font file.
     private const string FileHeader = "GORFNT11";
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to return the default filename extension for font files.
     /// </summary>
@@ -91,9 +91,9 @@ public sealed class GorgonCodecGorFont
     /// Property to return the abbreviated name of the codec (e.g. GorFont).
     /// </summary>
     public override string Codec => "GorFont";
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to read the chunk containing the font information.
     /// </summary>
@@ -410,9 +410,9 @@ public sealed class GorgonCodecGorFont
             stream.Position = position;
         }
     }
-    #endregion
 
-    #region Constructor.
+
+
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonCodecGorFont"/> class.
     /// </summary>
@@ -423,5 +423,5 @@ public sealed class GorgonCodecGorFont
                                 [
                                     ".gorFont"
                                 ];
-    #endregion
+
 }

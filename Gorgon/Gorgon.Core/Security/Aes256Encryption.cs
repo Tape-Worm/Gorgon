@@ -7,12 +7,12 @@ using Microsoft.IO;
 namespace Gorgon.Security;
 
 /// <summary>
-/// Encryption functionality that will encrypt or decrypt data based on an AES 256 crypto provider.
+/// Encryption functionality that will encrypt or decrypt data based on an AES 256 crypto provider
 /// </summary>
 public class Aes256Encryption
     : IEncryption
 {
-    #region Variables.
+
     // The stream pool used to retrieve memory streams.
     private static readonly RecyclableMemoryStreamManager _streamManager = new(new RecyclableMemoryStreamManager.Options
     {
@@ -22,9 +22,9 @@ public class Aes256Encryption
 
     // The initialization vector and key.
     private readonly (byte[] IV, byte[] Key) _ivKey;
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to extract the symmetric key from the key data passed to the constructor.
     /// </summary>
@@ -208,9 +208,9 @@ public class Aes256Encryption
         using var hashGen = new Rfc2898DeriveBytes(password, salt, 100, HashAlgorithmName.SHA3_256);
         return (hashGen.GetBytes(aes.BlockSize / 8), hashGen.GetBytes(aes.KeySize / 8));
     }
-    #endregion
 
-    #region Constructor/Finalizer.
+
+
     /// <summary>
     /// Initializes a new instance of the <see cref="Aes256Encryption"/> class.
     /// </summary>
@@ -272,5 +272,5 @@ public class Aes256Encryption
 
         _ivKey = (iv, key);
     }
-    #endregion
+
 }

@@ -27,7 +27,7 @@ partial class AnimationFloatKeyEditor
         base.Dispose(disposing);
     }
 
-    #region Component Designer generated code
+
 
     /// <summary> 
     /// Required method for Designer support - do not modify 
@@ -213,7 +213,7 @@ partial class AnimationFloatKeyEditor
 
     }
 
-    #endregion
+
 
     private System.Windows.Forms.TableLayoutPanel TableKeyValues;
     private System.Windows.Forms.Label LabelValue1;

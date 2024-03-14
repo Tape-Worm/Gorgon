@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2018 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: June 13, 2018 4:13:14 PM
 // 
-#endregion
+
 
 using Gorgon.Collections;
 using Gorgon.Graphics.Core;
@@ -31,13 +31,13 @@ using Gorgon.Renderers.Cameras;
 namespace Gorgon.Renderers;
 
 /// <summary>
-/// A shader state for use with a <see cref="Gorgon2DBatchState"/>.
+/// A shader state for use with a <see cref="Gorgon2DBatchState"/>
 /// </summary>
 /// <typeparam name="T">The type of shader. Must inherit from <see cref="GorgonShader"/>.</typeparam>
 /// <remarks>
 /// <para>
 /// This provides state information wrapped around shaders based on <see cref="GorgonShader"/>. These states are used for passing shader programs and related states to the 
-/// <see cref="Gorgon2DBatchState"/> when setting up a batch render via <see cref="Gorgon2D.Begin(Gorgon2DBatchState, GorgonCameraCommon)"/>.
+/// <see cref="Gorgon2DBatchState"/> when setting up a batch render via <see cref="Gorgon2D.Begin(Gorgon2DBatchState, GorgonCameraCommon)"/>
 /// </para>
 /// <para>
 /// If a custom pixel or vertex shader is assigned to the state, then developers should note which resource slots, and constant buffer slots are used by the 2D renderer itself. Gorgon will allow 
@@ -95,7 +95,7 @@ namespace Gorgon.Renderers;
 ///		</item>
 /// </list>
 /// </para>
-/// Following this list, a developer can use any texture slot from 2 and up, and any constant buffer slots between 2 (or 1 for pixel shaders) and 11 for their own data.
+/// Following this list, a developer can use any texture slot from 2 and up, and any constant buffer slots between 2 (or 1 for pixel shaders) and 11 for their own data
 /// </para>    
 /// </remarks>
 /// <seealso cref="GorgonPipelineState"/>
@@ -105,7 +105,7 @@ namespace Gorgon.Renderers;
 public sealed class Gorgon2DShaderState<T>
     where T : GorgonShader
 {
-    #region Variables.
+
     /// <summary>
     /// The constant buffers, with read/write access.
     /// </summary>
@@ -118,9 +118,9 @@ public sealed class Gorgon2DShaderState<T>
     /// The shader resource views, with read/write access.
     /// </summary>
     internal GorgonArray<GorgonShaderResourceView> RwSrvs = new(16);
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to return the shader.
     /// </summary>
@@ -144,14 +144,14 @@ public sealed class Gorgon2DShaderState<T>
     /// Property to return the list of shader resources for the shader.
     /// </summary>
     public IGorgonReadOnlyArray<GorgonShaderResourceView> ShaderResources => RwSrvs;
-    #endregion
 
-    #region Constructor.
+
+
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonShaderResources"/> class.
     /// </summary>
     internal Gorgon2DShaderState()
     {
     }
-    #endregion
+
 }

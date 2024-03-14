@@ -1,6 +1,6 @@
-﻿#region MIT.
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2011 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: Monday, June 27, 2011 9:31:05 AM
 // 
-#endregion
+
 
 using Gorgon.IO.Zip.Properties;
 using ICSharpCode.SharpZipLib.Zip;
@@ -30,21 +30,21 @@ using ICSharpCode.SharpZipLib.Zip;
 namespace Gorgon.IO.Zip;
 
 /// <summary>
-/// A stream used to read zip files.
+/// A stream used to read zip files
 /// </summary>
 internal class ZipFileStream
     : GorgonFileSystemStream
 {
-    #region Variables.
+
     // Flag to inidcate that the object was disposed.
     private bool _disposed;
     private ZipInputStream _zipStream;      // Input stream for the zip file.
     private long _position;                 // Position in the stream.
     private long _basePosition;             // Base position in the stream.
     private long _length;                   // File length.
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// When overridden in a derived class, gets a value indicating whether the current stream supports writing.
     /// </summary>
@@ -133,9 +133,9 @@ internal class ZipFileStream
         get => _zipStream.ReadTimeout;
         set => _zipStream.ReadTimeout = value;
     }
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to get the zip entry stream.
     /// </summary>
@@ -360,9 +360,9 @@ internal class ZipFileStream
     /// <exception cref="NotSupportedException">The stream does not support writing, or the stream is already closed. </exception>
     /// <exception cref="ObjectDisposedException">Methods were called after the stream was closed. </exception>
     public override void WriteByte(byte value) => throw new NotSupportedException();
-    #endregion
 
-    #region Constructor/Destructor.
+
+
     /// <summary>
     /// Initializes a new instance of the <see cref="ZipFileStream"/> class.
     /// </summary>
@@ -370,5 +370,5 @@ internal class ZipFileStream
     /// <param name="stream">The stream.</param>
     internal ZipFileStream(IGorgonVirtualFile file, Stream stream)
         : base(file, stream) => GetZipEntryStream(file, stream);
-    #endregion
+
 }

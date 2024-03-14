@@ -1,6 +1,6 @@
-﻿#region MIT.
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2012 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,19 +11,19 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: Thursday, May 31, 2012 9:08:49 AM
 // 
 // This code was adapted from the stack overflow answer at http://stackoverflow.com/questions/254129/how-to-i-display-a-sort-arrow-in-the-header-of-a-list-view-column-using-c
-#endregion
+
 
 using Gorgon.Core;
 using Gorgon.Native;
@@ -31,11 +31,11 @@ using Gorgon.Native;
 namespace System.Windows.Forms;
 
 /// <summary>
-/// Extensions used for the list view object.
+/// Extensions used for the list view object
 /// </summary>
 public static class GorgonListViewExtensions
 {
-    #region Constants.
+
     // List view message to return the header.
     private const uint LvmGetHeader = 0x101F;
     // Header message used to retrieve an item.
@@ -48,7 +48,7 @@ public static class GorgonListViewExtensions
     private const int HeaderSortDown = 0x200;
     // Flag to make the column sort descending.
     private const int HeaderSortUp = 0x400;
-    #endregion
+
 
     /// <summary>
     /// Function to retrieve the boundaries for the header on a list view.

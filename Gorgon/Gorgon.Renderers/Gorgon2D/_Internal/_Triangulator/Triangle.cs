@@ -1,13 +1,13 @@
-﻿// Triangulator source code by Nick Gravelyn.
+﻿// Triangulator source code by Nick Gravelyn
 // https://github.com/nickgravelyn/Triangulator
 //
-// Licensed under the MIT license.
+// Licensed under the MIT license
 // https://github.com/nickgravelyn/Triangulator/blob/master/LICENSE
 
 namespace GorgonTriangulator;
 
 /// <summary>
-/// A basic triangle structure that holds the three vertices that make up a given triangle.
+/// A basic triangle structure that holds the three vertices that make up a given triangle
 /// </summary>
 internal readonly struct Triangle(Vertex a, Vertex b, Vertex c)
         : IEquatable<Triangle>

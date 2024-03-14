@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2020 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: June 14, 2020 10:18:07 PM
 // 
-#endregion
+
 
 using Gorgon.Animation;
 using Gorgon.Editor.AnimationEditor.Properties;
@@ -35,12 +35,12 @@ using Gorgon.Renderers;
 namespace Gorgon.Editor.AnimationEditor;
 
 /// <summary>
-/// A view model for a track.
+/// A view model for a track
 /// </summary>
 internal class Track
     : ViewModelBase<TrackParameters, IHostContentServices>, ITrack
 {
-    #region Classes.
+
     /// <summary>
     /// Undo/redo arguments for changing the track interpolation.
     /// </summary>
@@ -51,9 +51,9 @@ internal class Track
         /// </summary>
         public TrackInterpolationMode Mode;
     }
-    #endregion
 
-    #region Variables.
+
+
     // The registration for the track.
     private GorgonTrackRegistration _registration;
     // The current track interpolation mode.
@@ -64,9 +64,9 @@ internal class Track
     private IKeyFrame[] _keyFrames = [];
     // The service for undo/redo functionality.
     private IUndoService _undoService;
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to return the sprite property updated by this track.
     /// </summary>
@@ -180,9 +180,9 @@ internal class Track
     {
         get;
     }
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to assign the track ID property.
     /// </summary>
@@ -315,14 +315,14 @@ internal class Track
 
         SetTrackID();
     }
-    #endregion
 
-    #region Constructor.
+
+
     /// <summary>Initializes a new instance of the <see cref="Track"/> class.</summary>
     public Track()
     {
         SetInterpolationModeCommand = new EditorCommand<TrackInterpolationMode>(DoSetInterpolation);
         SetKeyFramesCommand = new EditorCommand<SetKeyFramesArgs>(DoSetKeyFrames);
     }
-    #endregion
+
 }

@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2018 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: May 31, 2018 1:14:58 PM
 // 
-#endregion
+
 
 using System.Numerics;
 using System.Runtime.CompilerServices;
@@ -33,12 +33,12 @@ using Gorgon.Graphics.Core;
 namespace Gorgon.Renderers.Geometry;
 
 /// <summary>
-/// A vertex with a position, diffuse color, and UV texture coordinate.
+/// A vertex with a position, diffuse color, and UV texture coordinate
 /// </summary>
 [StructLayout(LayoutKind.Sequential, Pack = 1)]
 public struct GorgonVertexPosColorUv
 {
-    #region Variables.
+
     /// <summary>
     /// The size of the vertex, in bytes.
     /// </summary>
@@ -61,9 +61,9 @@ public struct GorgonVertexPosColorUv
     /// </summary>
     [InputElement(1, "TEXCOORD")]
     public Vector2 UV;
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Deconstructs this instance into individual position values.
     /// </summary>
@@ -87,9 +87,9 @@ public struct GorgonVertexPosColorUv
         color = Color;
         uv = UV;
     }
-    #endregion
 
-    #region Constructor.
+
+
     /// <summary>Initializes a new instance of the <see cref="GorgonVertexPosColorUv" /> struct.</summary>
     /// <param name="pos">The position.</param>
     /// <param name="color">The diffuse color for the vertex.</param>
@@ -111,5 +111,5 @@ public struct GorgonVertexPosColorUv
         UV = uv;
         Color = color;
     }
-    #endregion
+
 }

@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2018 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: December 12, 2018 4:43:24 PM
 // 
-#endregion
+
 
 using Gorgon.Core;
 using Gorgon.Editor.Properties;
@@ -31,7 +31,7 @@ using Gorgon.Editor.UI.Controls;
 namespace Gorgon.Editor.Services;
 
 /// <summary>
-/// A system used to search through the file system for files.
+/// A system used to search through the file system for files
 /// </summary>
 /// <remarks>Initializes a new instance of the <see cref="EditorContentSearchService"/> class.</remarks>
 /// <param name="rows">The list of rows from the data grid containing the editor files.</param>
@@ -39,7 +39,7 @@ namespace Gorgon.Editor.Services;
 public class EditorContentSearchService(IReadOnlyList<IContentFileExplorerSearchEntry> rows)
         : ISearchService<IContentFileExplorerSearchEntry>
 {
-    #region Variables.
+
     // The rows containing the editor files.
     private readonly IReadOnlyList<IContentFileExplorerSearchEntry> _rows = rows ?? throw new ArgumentNullException(nameof(rows));
     // The type of search keywords that can be used.
@@ -48,9 +48,9 @@ public class EditorContentSearchService(IReadOnlyList<IContentFileExplorerSearch
         { Resources.GOREDIT_SEARCH_DIRECTORY_TAG1, "directory" },
         { Resources.GOREDIT_SEARCH_DIRECTORY_TAG2, "directory" }
     };
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to parse the search text passed from the user to extract specific keywords.
     /// </summary>
@@ -251,5 +251,5 @@ public class EditorContentSearchService(IReadOnlyList<IContentFileExplorerSearch
         return searchResults;
     }
 
-    #endregion
+
 }

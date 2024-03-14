@@ -1,6 +1,6 @@
-﻿#region MIT.
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2011 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: Thursday, November 24, 2011 3:38:16 PM
 // 
-#endregion
+
 
 using System.Diagnostics;
 using System.Numerics;
@@ -37,22 +37,22 @@ using DX = SharpDX;
 namespace Gorgon.Graphics.Core;
 
 /// <summary>
-/// Defines the layout of an input item within a buffer.
+/// Defines the layout of an input item within a buffer
 /// </summary>
 /// <remarks>
 /// <para>
 /// This defines the layout of a piece of data within a buffer, specifically, a vertex within a vertex buffer. The layout is defined by a list of <see cref="GorgonInputElement"/> values that determine 
-/// how the data within the layout is arranged.
+/// how the data within the layout is arranged
 /// </para>
 /// <para>
 /// Users may create a layout manually, or, derive it from a value type (<c>struct</c>). If deriving from a value type, then the members of the value type must be decorated with a 
-/// <see cref="InputElementAttribute"/> to define where the member is located within the layout data structure.
+/// <see cref="InputElementAttribute"/> to define where the member is located within the layout data structure
 /// </para>
 /// </remarks>
 public sealed class GorgonInputLayout
     : IGorgonNamedObject, IEquatable<GorgonInputLayout>, IDisposable
 {
-    #region Variables.
+
     // Type mapping for types.
     private static readonly Dictionary<Type, BufferFormat> _typeMapping = new()
     {
@@ -140,9 +140,9 @@ public sealed class GorgonInputLayout
     private Dictionary<int, int> _slotSizes;
     // The Direct 3D input layout.
     private D3D11.InputLayout _d3DInputLayout;
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to return the Direct 3D input layout.
     /// </summary>
@@ -189,9 +189,9 @@ public sealed class GorgonInputLayout
     {
         get;
     }
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to convert this input layout into a Direct3D input layout.
     /// </summary>
@@ -881,9 +881,9 @@ public sealed class GorgonInputLayout
 
         this.UnregisterDisposable(Graphics);
     }
-    #endregion
 
-    #region Constructor/Destructor.
+
+
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonInputLayout"/> class.
     /// </summary>
@@ -932,5 +932,5 @@ public sealed class GorgonInputLayout
 
         this.RegisterDisposable(graphics);
     }
-    #endregion
+
 }

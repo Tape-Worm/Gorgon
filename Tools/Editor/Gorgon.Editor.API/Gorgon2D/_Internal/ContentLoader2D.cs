@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2020 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: August 2, 2020 1:12:20 PM
 // 
-#endregion
+
 
 using System.Globalization;
 using Gorgon.Animation;
@@ -40,7 +40,7 @@ using Gorgon.Renderers;
 namespace Gorgon.IO;
 
 /// <summary>
-/// Loads <see cref="Gorgon2D"/> specific content from an editor file system.
+/// Loads <see cref="Gorgon2D"/> specific content from an editor file system
 /// </summary>
 /// <remarks>
 /// <para>
@@ -50,7 +50,7 @@ namespace Gorgon.IO;
 /// <note type="important">
 /// <para>
 /// These methods load the data using the layout and metadata information as provided by the default plug ins for the editor.  Custom plug ins for sprite data, etc... may not work with these methods 
-/// unless those plug ins follow the same file layout as the default plug ins.
+/// unless those plug ins follow the same file layout as the default plug ins
 /// </para>
 /// </note>
 /// </para>
@@ -63,7 +63,7 @@ namespace Gorgon.IO;
 internal class ContentLoader2D(IGorgonFileSystem fileSystem, IProjectMetadata metadata, Gorgon2D renderer, GorgonTextureCache<GorgonTexture2D> textureCache)
         : IGorgonContentLoader
 {
-    #region Variables.
+
     // The renderer used to handle loading.
     private readonly Gorgon2D _renderer = renderer;
     // The graphics interface used to handle loading textures.
@@ -72,9 +72,9 @@ internal class ContentLoader2D(IGorgonFileSystem fileSystem, IProjectMetadata me
     private readonly IGorgonFileSystem _fileSystem = fileSystem;
     // The metadata from the editor.
     private readonly IProjectMetadata _metadata = metadata;
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>Property to return a list of codecs that can be used to load animation content data.</summary>
     /// <remarks>Codecs added here are for external codecs. All built-in codecs for Gorgon will not appear in this list and are always used when loading files.</remarks>
     public IList<IGorgonAnimationCodec> ExternalAnimationCodecs
@@ -101,9 +101,9 @@ internal class ContentLoader2D(IGorgonFileSystem fileSystem, IProjectMetadata me
     {
         get;
     } = textureCache;
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to retrieve the list of available codecs for loading animation data.
     /// </summary>
@@ -727,5 +727,5 @@ internal class ContentLoader2D(IGorgonFileSystem fileSystem, IProjectMetadata me
         return Convert.ToBoolean(excluded, CultureInfo.InvariantCulture);
     }
 
-    #endregion
+
 }

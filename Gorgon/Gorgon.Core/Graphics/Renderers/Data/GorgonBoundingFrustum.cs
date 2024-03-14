@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2021 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,20 +11,19 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: February 12, 2021 6:35:57 PM
 // 
-#endregion
 
-#region SharpDX
+
 // Copyright (c) 2010-2014 SharpDX - Alexandre Mutel
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -35,7 +34,7 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
@@ -44,7 +43,7 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-#endregion
+
 
 using System.Collections;
 using System.Numerics;
@@ -55,7 +54,7 @@ using Gorgon.Memory;
 namespace Gorgon.Renderers.Data;
 
 /// <summary>
-/// The names of the frustum planes.
+/// The names of the frustum planes
 /// </summary>
 public enum FrustumPlane
 {
@@ -86,7 +85,7 @@ public enum FrustumPlane
 }
 
 /// <summary>
-/// The identifiers for the frustum corners.
+/// The identifiers for the frustum corners
 /// </summary>
 public enum FrustumCorner
 {
@@ -126,23 +125,22 @@ public enum FrustumCorner
 
 /// <summary>
 /// Defines a frustum which can be used in frustum culling, zoom to Extents (zoom to fit) operations, 
-/// (matrix, frustum, camera) interchange, and many kind of intersection testing.
+/// (matrix, frustum, camera) interchange, and many kind of intersection testing
 /// </summary>
 public class GorgonBoundingFrustum
 {
-    #region Classes.        
     /// <summary>
     /// The list of corners.
     /// </summary>
     public class CornerList
         : IEnumerable<Vector3>
     {
-        #region Variables.
+    
         // The vectors indicating the corners of the frustum.
         private readonly Vector3[] _corners = new Vector3[8];
-        #endregion
+    
 
-        #region Properties.
+    
         /// <summary>
         /// Property to return the number of corners in the frustum.
         /// </summary>
@@ -157,9 +155,9 @@ public class GorgonBoundingFrustum
         /// Property to return a readonly reference to the plane by index.
         /// </summary>
         public ref readonly Vector3 this[int index] => ref _corners[index];
-        #endregion
+    
 
-        #region Methods.
+    
         /// <summary>
         /// Function to assign a corner.
         /// </summary>
@@ -186,7 +184,7 @@ public class GorgonBoundingFrustum
         /// <summary>Returns an enumerator that iterates through a collection.</summary>
         /// <returns>An <see cref="IEnumerator">IEnumerator</see> object that can be used to iterate through the collection.</returns>
         IEnumerator IEnumerable.GetEnumerator() => _corners.GetEnumerator();
-        #endregion
+    
     }
 
     /// <summary>
@@ -195,12 +193,12 @@ public class GorgonBoundingFrustum
     public class PlaneList
         : IEnumerable<Plane>
     {
-        #region Variables.
+    
         // The list of planes for the frustum.
         private readonly Plane[] _planes = new Plane[6];
-        #endregion
+    
 
-        #region Properties.
+    
         /// <summary>
         /// Property to return the number of planes in the frustum.
         /// </summary>
@@ -215,9 +213,9 @@ public class GorgonBoundingFrustum
         /// Property to return a readonly reference to the plane by index.
         /// </summary>
         public ref readonly Plane this[int index] => ref _planes[index];
-        #endregion
+    
 
-        #region Methods.
+    
         /// <summary>
         /// Function to assign a plane.
         /// </summary>
@@ -244,11 +242,11 @@ public class GorgonBoundingFrustum
         /// <summary>Returns an enumerator that iterates through a collection.</summary>
         /// <returns>An <see cref="IEnumerator">IEnumerator</see> object that can be used to iterate through the collection.</returns>
         IEnumerator IEnumerable.GetEnumerator() => _planes.GetEnumerator();
-        #endregion
+    
     }
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to return the plane list for this frustum.
     /// </summary>
@@ -269,9 +267,9 @@ public class GorgonBoundingFrustum
     /// Indicate whether the current BoundingFrustrum is Orthographic.
     /// </summary>
     public bool IsOrthographic => (Planes[FrustumPlane.Left].Normal.Equals(-Planes[FrustumPlane.Right].Normal)) && ((-Planes[FrustumPlane.Top].Normal).Equals((-Planes[FrustumPlane.Bottom].Normal)));
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to create a plane based on 3 points.
     /// </summary>
@@ -606,5 +604,5 @@ public class GorgonBoundingFrustum
     /// <param name="boundingBox">The bounding box.</param>
     /// <returns>The zoom to fit vector</returns>
     public Vector3 GetZoomToExtentsShiftVector(in GorgonBoundingBox boundingBox) => GetZoomToExtentsShiftDistance(in boundingBox) * Planes[FrustumPlane.Near].Normal;
-    #endregion
+
 }

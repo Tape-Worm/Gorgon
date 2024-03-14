@@ -1,4 +1,4 @@
-﻿#region MIT
+﻿
 // 
 // Gorgon
 // Copyright (C) 2015 Michael Winsor
@@ -11,23 +11,23 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: Thursday, September 10, 2015 10:12:40 PM
 // 
-#endregion
+
 
 namespace Gorgon.Input;
 
 /// <summary>
-/// Key states.
+/// Key states
 /// </summary>
 public enum KeyState
 {
@@ -42,7 +42,7 @@ public enum KeyState
 }
 
 /// <summary>
-/// The type of keyboard.
+/// The type of keyboard
 /// </summary>
 public enum KeyboardType
 {
@@ -85,13 +85,13 @@ public enum KeyboardType
 }
 
 /// <summary>
-/// Provides events and state for keyboard data from an input provider.
+/// Provides events and state for keyboard data from an input provider
 /// </summary>
 
 public interface IGorgonKeyboard
     : IGorgonRawInputDevice, IGorgonRawInputDeviceData<GorgonRawKeyboardData>
 {
-    #region Events.
+
     /// <summary>
     /// Event fired when a key is pressed on the keyboard.
     /// </summary>
@@ -101,9 +101,9 @@ public interface IGorgonKeyboard
     /// Event fired when a key is released on the keyboard.
     /// </summary>
     event EventHandler<GorgonKeyboardEventArgs> KeyUp;
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to return information about this keyboard.
     /// </summary>
@@ -119,9 +119,9 @@ public interface IGorgonKeyboard
     {
         get;
     }
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to convert a keyboard key into a character (if applicable).
     /// </summary>
@@ -142,5 +142,5 @@ public interface IGorgonKeyboard
     /// </para>
     /// </remarks>
     string KeyToCharacter(Keys key, Keys modifier);
-    #endregion
+
 }

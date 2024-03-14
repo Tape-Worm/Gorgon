@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2019 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: April 20, 2019 2:19:56 PM
 // 
-#endregion
+
 
 using System.Collections.Specialized;
 using System.ComponentModel;
@@ -32,12 +32,12 @@ using Gorgon.Editor.UI.Views;
 namespace Gorgon.Editor.AnimationEditor;
 
 /// <summary>
-/// The panel used to display settings for image codec support.
+/// The panel used to display settings for image codec support
 /// </summary>
 internal partial class AnimationCodecSettingsPanel
     : SettingsBaseControl, IDataContext<IImportSettings>
 {
-    #region Properties.
+
     /// <summary>Property to return the ID of the panel.</summary>
     [Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public override string PanelID => ViewModel?.ID.ToString() ?? Guid.Empty.ToString();
@@ -49,9 +49,9 @@ internal partial class AnimationCodecSettingsPanel
         get;
         private set;
     }
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to validate the buttons on the control.
     /// </summary>
@@ -321,10 +321,10 @@ internal partial class AnimationCodecSettingsPanel
         ViewModel.CodecPlugInPaths.CollectionChanged += CodecPlugInPaths_CollectionChanged;
         ViewModel.SelectedCodecs.CollectionChanged += SelectedCodecs_CollectionChanged;
     }
-    #endregion
 
-    #region Constructor/Finalizer.
+
+
     /// <summary>Initializes a new instance of the <see cref="AnimationCodecSettingsPanel"/> class.</summary>
     public AnimationCodecSettingsPanel() => InitializeComponent();
-    #endregion
+
 }

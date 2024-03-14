@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2018 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: August 17, 2018 2:02:22 PM
 // 
-#endregion
+
 
 using Gorgon.Animation.Properties;
 using Gorgon.Core;
@@ -33,7 +33,7 @@ using Gorgon.Math;
 namespace Gorgon.Animation;
 
 /// <summary>
-/// A builder used to create <see cref="IGorgonAnimation"/> objects.
+/// A builder used to create <see cref="IGorgonAnimation"/> objects
 /// </summary>
 /// <remarks>
 /// <para>
@@ -42,18 +42,18 @@ namespace Gorgon.Animation;
 /// <para>
 /// Animations are composed of multiple tracks which represent the properties on the objects that are to be animated. Within these tracks, there are multiple key frames which indicate the value of 
 /// the property at a specified time (measured in seconds). When the animation plays, the values in these key frames are interpolated between each frame to give the appearance of a smooth transition 
-/// between the values.
+/// between the values
 /// </para>
 /// <para>
 /// When building an animation using this builder type the tracks are edited via one of the several Edit methods on the builder. Each edit method corresponds to the type of data for the track (e.g. 
-/// Vector2, float, etc...) and takes the registration <see cref="GorgonTrackRegistration.TrackName"/> of the track to indicate which track (and object property) is being edited.
+/// Vector2, float, etc...) and takes the registration <see cref="GorgonTrackRegistration.TrackName"/> of the track to indicate which track (and object property) is being edited
 /// </para>
 /// </remarks>
 /// <seealso cref="GorgonTrackRegistration"/>
 public class GorgonAnimationBuilder
     : IGorgonFluentBuilder<GorgonAnimationBuilder, IGorgonAnimation>
 {
-    #region Variables.
+
     // A list of builders for single floating point value tracks.
     private readonly Dictionary<string, TrackKeyBuilder<GorgonKeySingle>> _singleTracks = new(StringComparer.OrdinalIgnoreCase);
     // A list of builders for vector 2 tracks.
@@ -70,9 +70,9 @@ public class GorgonAnimationBuilder
     private readonly Dictionary<string, TrackKeyBuilder<GorgonKeyGorgonColor>> _colorTracks = new(StringComparer.OrdinalIgnoreCase);
     // A list of builders for texture tracks.
     private readonly Dictionary<string, TrackKeyBuilder<GorgonKeyTexture2D>> _textureTracks = new(StringComparer.OrdinalIgnoreCase);
-    #endregion
 
-    #region Methods.       
+
+       
     /// <summary>
     /// Function to edit a track that uses single floating point values for its key frame values.
     /// </summary>
@@ -887,5 +887,5 @@ public class GorgonAnimationBuilder
 
         return Build($"Animation_{Guid.NewGuid():N}", maxTime.Max(0));
     }
-    #endregion
+
 }

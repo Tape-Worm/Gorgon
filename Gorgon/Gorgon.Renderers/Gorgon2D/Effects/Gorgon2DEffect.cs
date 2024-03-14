@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2018 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: July 4, 2018 9:54:28 PM
 // 
-#endregion
+
 
 using Gorgon.Core;
 using Gorgon.Diagnostics;
@@ -35,7 +35,7 @@ using DX = SharpDX;
 namespace Gorgon.Renderers;
 
 /// <summary>
-/// A state that tells the effect how to proceed prior to rendering a pass.
+/// A state that tells the effect how to proceed prior to rendering a pass
 /// </summary>
 public enum PassContinuationState
 {
@@ -54,7 +54,7 @@ public enum PassContinuationState
 }
 
 /// <summary>
-/// A base class used to implement special effects for 2D rendering.
+/// A base class used to implement special effects for 2D rendering
 /// </summary>
 /// <remarks>
 /// <para>
@@ -64,7 +64,7 @@ public enum PassContinuationState
 /// Effects can operate in any way the developer deems appropriate as long as the internal code executes in the correct order. In Gorgon, the predefined effects such as Guassian Blur operate in 
 /// one of 3 modes: Immediate, Render texture, or both. The immediate mode works in the same way as the <see cref="Gorgon2D"/> renderer, by calling a Begin and End method and rendering the various 
 /// graphics types in between the Begin/End calls. The Render Texture mode will take a <see cref="GorgonTexture2DView"/> (often the output of a render target) and render it into a 
-/// <see cref="GorgonRenderTargetView"/>. This mode would usually be used in post processing.
+/// <see cref="GorgonRenderTargetView"/>. This mode would usually be used in post processing
 /// </para>
 /// <para>
 /// Rendering in an effect is usually done in 1 or more passes. With each pass usually building on the result of the previous pass. Developers are free to expose each pass to the end user for 
@@ -72,14 +72,14 @@ public enum PassContinuationState
 /// </para>
 /// <para>
 /// To create a custom effect, applications should inherit this class and override the appropriate methods to set up state, and perform rendering pass(es). Gorgon has multiple predefined effects 
-/// that developers can examine for reference.
+/// that developers can examine for reference
 /// </para>
 /// </remarks>
 /// <seealso cref="Gorgon2D"/>
 /// <seealso cref="GorgonTexture2DView"/>
 /// <seealso cref="GorgonRenderTargetView"/>
 /// <remarks>
-/// Initializes a new instance of the <see cref="Gorgon2DEffect"/> class.
+/// Initializes a new instance of the <see cref="Gorgon2DEffect"/> class
 /// </remarks>
 /// <param name="renderer">The 2D renderer used to render the effect.</param>
 /// <param name="effectName">Name of the effect.</param>
@@ -90,7 +90,7 @@ public enum PassContinuationState
 public abstract class Gorgon2DEffect(Gorgon2D renderer, string effectName, string effectDescription, int passCount)
         : GorgonNamedObject(effectName), IDisposable, IGorgonGraphicsObject
 {
-    #region Variables.
+
     // Flag to indicate that the effect is initialized.
     private bool _isInitialized;
     // The previous size of the output.
@@ -111,9 +111,9 @@ public abstract class Gorgon2DEffect(Gorgon2D renderer, string effectName, strin
     private GorgonDepthStencilState _depthStencilStateOverride;
     // The state used to override the default raster state for the effect.
     private GorgonRasterState _rasterStateOverride;
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to return the allocator to use with batch states.
     /// </summary>
@@ -192,9 +192,9 @@ public abstract class Gorgon2DEffect(Gorgon2D renderer, string effectName, strin
     {
         get;
     } = effectDescription ?? string.Empty;
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to set up state prior to rendering.
     /// </summary>
@@ -643,5 +643,5 @@ public abstract class Gorgon2DEffect(Gorgon2D renderer, string effectName, strin
         GC.SuppressFinalize(this);
     }
 
-    #endregion
+
 }

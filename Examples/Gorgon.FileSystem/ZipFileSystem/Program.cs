@@ -1,6 +1,6 @@
-﻿#region MIT.
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2013 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: Thursday, January 17, 2013 11:07:10 PM
 // 
-#endregion
+
 
 using Gorgon.Core;
 using Gorgon.Diagnostics;
@@ -33,12 +33,12 @@ using Gorgon.PlugIns;
 namespace Gorgon.Examples;
 
 /// <summary>
-/// Example entry point.
+/// Example entry point
 /// </summary>
 /// <remarks>
 /// Gorgon is capable of making use of Virtual File Systems.  This is quite different from the file system type that was in the
 /// first version of Gorgon which was really nothing more than a compressed file reader/writer (even though it could mount 
-/// folders).
+/// folders)
 /// 
 /// Virtual File Systems take a directory, or some packed data file and mount it as a root directory.  Any subsequent directories
 /// and files inside of the directory (or file) are mapped to be relative to the root point on the file system.  For example,
@@ -47,28 +47,28 @@ namespace Gorgon.Examples;
 /// that was mounted as the root of the VFS.  This allows for a certain level of security to keep users from writing or reading
 /// areas outside of the intended directory structure.  
 /// 
-/// Gorgon's VFS is modeled after the PhysFS project (http://icculus.org/physfs/).
+/// Gorgon's VFS is modeled after the PhysFS project (http://icculus.org/physfs/)
 /// 
 /// In this example, we'll mount a zip file as the root of the virtual file system.  All sub directories and files under the root 
 /// directory will become accessible from the virtual file system.  The program will enumerate the directories and files and list 
-/// them in the console window with relevant file information.
+/// them in the console window with relevant file information
 /// </remarks>
 internal static class Program
 {
-    #region Constants.
-    private const string PlugInName = "Gorgon.IO.Zip.ZipProvider";
-    #endregion
 
-    #region Variables.
+    private const string PlugInName = "Gorgon.IO.Zip.ZipProvider";
+
+
+
     // The plugin assemblies.
     private static GorgonMefPlugInCache _pluginAssemblies;
     // File system.
     private static GorgonFileSystem _fileSystem;
     // The log file used for debug logging.
     private static IGorgonLog _log;
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to retrieve the directory that contains the plugins for an application.
     /// </summary>
@@ -260,5 +260,5 @@ internal static class Program
             _log.LogEnd();
         }
     }
-    #endregion
+
 }

@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2018 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: August 26, 2018 6:58:49 PM
 // 
-#endregion
+
 
 using Gorgon.Graphics.Core;
 using Gorgon.Graphics.Fonts;
@@ -31,11 +31,11 @@ using Gorgon.Renderers;
 namespace Gorgon.Editor.Rendering;
 
 /// <summary>
-/// A graphics context for passing the graphics interfaces to various views.
+/// A graphics context for passing the graphics interfaces to various views
 /// </summary>
 public interface IGraphicsContext
 {
-    #region Properties.
+
     /// <summary>
     /// Property to return information about the video adapter selected.
     /// </summary>
@@ -75,9 +75,9 @@ public interface IGraphicsContext
     {
         get;
     }
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to return a leased out swap chain.
     /// </summary>
@@ -90,5 +90,5 @@ public interface IGraphicsContext
     /// <param name="control">The control that will be bound to the swap chain.</param>
     /// <returns>A new swap chain bound to the control.</returns>
     GorgonSwapChain LeaseSwapPresenter(Control control);
-    #endregion
+
 }

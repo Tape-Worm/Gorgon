@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2020 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: February 6, 2020 9:57:02 PM
 // 
-#endregion
+
 
 using System.ComponentModel;
 using System.Numerics;
@@ -40,7 +40,7 @@ using DX = SharpDX;
 namespace Gorgon.Editor.Rendering;
 
 /// <summary>
-/// A default implementation of a <see cref="IContentRenderer"/>.
+/// A default implementation of a <see cref="IContentRenderer"/>
 /// </summary>
 /// <typeparam name="T">The type of view model for the renderer. Must implement the <see cref="IVisualEditorContent"/> interface, and be a reference type.</typeparam>
 /// <remarks>
@@ -50,7 +50,7 @@ namespace Gorgon.Editor.Rendering;
 /// <para>
 /// The default renderer provides support for panning, and zooming on content and will animate those functions. Inherited renderers will receive these functions, but can override them as needed. The 
 /// panning operation can activated by pressing CTRL + Middle mouse button, the scrollbars on the view control, or moving the mouse wheel (press Shift to move horizontally). Zooming can be activated by 
-/// moving the mouse wheel while holding the CTRL key.
+/// moving the mouse wheel while holding the CTRL key
 /// </para>
 /// <para>
 /// The panning and zooming operations (which were a pain in the ass to write) use a camera (a <see cref="GorgonOrthoCamera"/>) to apply the offsets and scaling for the pan/zoom operations. This 
@@ -60,11 +60,11 @@ namespace Gorgon.Editor.Rendering;
 /// <para>
 /// When applying the camera to your own custom content rendering the coordinate system will change to be in world space, meaning that the content will be relative to the center of the content 
 /// dimensions. For example, if the content is 640x480, then 0x0 will be the center of the content, -320x-240 will be the upper left, and 320x240 will be the lower right. So rendering a sprite at 0x0 
-/// will put it in the center of the view.
+/// will put it in the center of the view
 /// </para>
 /// <para>
 /// Renderers will also receive access to the view model applied to the view, so the renderer can respond to changes on the content and adjust the visuals appropriately. The view model must implement 
-/// the <see cref="IVisualEditorContent"/> interface before they can be used with a renderer.
+/// the <see cref="IVisualEditorContent"/> interface before they can be used with a renderer
 /// </para>
 /// </remarks>
 /// <seealso cref="IContentRenderer"/>
@@ -75,7 +75,7 @@ public class DefaultContentRenderer<T>
     : GorgonNamedObject, IContentRenderer
     where T : class, IVisualEditorContent
 {
-    #region Variables.
+
     // The synchronization lock for events.
     private readonly object _zoomEventLock = new();
     private readonly object _offsetEventLock = new();
@@ -108,9 +108,9 @@ public class DefaultContentRenderer<T>
     private Vector3 _camDragStart;
     // Font factory a font factory for generating fonts to use with the renderer.
     private GorgonFontFactory _fontFactory;
-    #endregion
 
-    #region Events.
+
+
     // The event triggered when the camera is zoomed.
     private EventHandler<ZoomScaleEventArgs> _zoomEvent;
     // The event triggered when the camera is moved.
@@ -211,9 +211,9 @@ public class DefaultContentRenderer<T>
             }
         }
     }
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to return the default texture used to draw the background.
     /// </summary>
@@ -394,9 +394,9 @@ public class DefaultContentRenderer<T>
     /// Property to return the current zoom level.
     /// </summary>
     public float Zoom => _camera.Zoom.X;
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to reset the "to window" zoom state.
     /// </summary>
@@ -1369,9 +1369,9 @@ public class DefaultContentRenderer<T>
 
         ForceMoveTo(offset, zoom, false);
     }
-    #endregion
 
-    #region Constructor.
+
+
     /// <summary>Initializes a new instance of the <see cref="DefaultContentRenderer{T}"/> class.</summary>
     /// <param name="name">The name of the renderer.</param>
     /// <param name="renderer">The main renderer for the content view.</param>
@@ -1388,5 +1388,5 @@ public class DefaultContentRenderer<T>
 
         SetDataContext(dataContext);
     }
-    #endregion
+
 }

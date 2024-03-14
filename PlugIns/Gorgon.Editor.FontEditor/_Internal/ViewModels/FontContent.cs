@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2020 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: August 3, 2020 3:51:47 PM
 // 
-#endregion
+
 
 using System.ComponentModel;
 using Gorgon.Diagnostics;
@@ -39,12 +39,12 @@ using Drawing = System.Drawing;
 namespace Gorgon.Editor.FontEditor;
 
 /// <summary>
-/// The view model used to communicate with the font content control.
+/// The view model used to communicate with the font content control
 /// </summary>
 internal class FontContent
     : ContentEditorViewModelBase<FontContentParameters>, IFontContent
 {
-    #region Variables.
+
     // The currently active panel.
     private IHostedPanelViewModel _currentPanel;
     // The service used for providing undo/redo functionality.
@@ -59,9 +59,9 @@ internal class FontContent
     private bool _isItalic;
     // The selected font family.
     private Drawing.FontFamily _fontFamily;
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to set or return the currently active hosted panel.
     /// </summary>
@@ -366,9 +366,9 @@ internal class FontContent
     {
         get;
     }
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>Handles the FontUpdating event of the FontService control.</summary>
     /// <param name="sender">The source of the event.</param>
     /// <param name="e">The <see cref="EventArgs" /> instance containing the event data.</param>
@@ -1360,9 +1360,9 @@ internal class FontContent
 
         base.OnUnload();
     }
-    #endregion
 
-    #region Constructor/Finalizer.
+
+
     /// <summary>Initializes a new instance of the <see cref="FontContent"/> class.</summary>
     public FontContent()
     {
@@ -1380,5 +1380,5 @@ internal class FontContent
         ActivateCharacterSelectionCommand = new EditorCommand<object>(DoActivateCharacterSelection, CanActivateCharacterSelection);
         NewFontCommand = new EditorAsyncCommand<object>(DoCreateFontAsync, CanCreateFont);
     }
-    #endregion
+
 }

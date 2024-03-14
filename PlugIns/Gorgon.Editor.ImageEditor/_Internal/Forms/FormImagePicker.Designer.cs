@@ -34,7 +34,7 @@ partial class FormImagePicker
         base.Dispose(disposing);
     }
 
-    #region Windows Form Designer generated code
+
 
     /// <summary>
     /// Required method for Designer support - do not modify
@@ -1019,7 +1019,7 @@ partial class FormImagePicker
 
     }
 
-    #endregion
+
 
     private System.Windows.Forms.Panel PanelDialogButtons;
     private System.Windows.Forms.Button ButtonOK;

@@ -1,6 +1,6 @@
-﻿#region MIT.
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2014 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: Thursday, August 7, 2014 9:38:25 PM
 // 
-#endregion
+
 
 using System.Numerics;
 using Gorgon.Examples.Properties;
@@ -44,11 +44,11 @@ using GI = Gorgon.Input;
 namespace Gorgon.Examples;
 
 /// <summary>
-/// Our application entry point.
+/// Our application entry point
 /// </summary>
 internal static class Program
 {
-    #region Variables.
+
     // The main application window.
     private static FormMain _window;
     // Camera.
@@ -95,7 +95,7 @@ internal static class Program
     private static GorgonFont _font;
     // The text sprite used to display our info.
     private static GorgonTextSprite _textSprite;
-    #endregion
+
 
     /// <summary>
     /// Main application loop.

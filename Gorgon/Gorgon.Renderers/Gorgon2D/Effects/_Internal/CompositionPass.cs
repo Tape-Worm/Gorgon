@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2018 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: August 2, 2018 3:38:43 PM
 // 
-#endregion
+
 
 using Gorgon.Core;
 using Gorgon.Graphics;
@@ -32,10 +32,10 @@ using Gorgon.Renderers.Cameras;
 namespace Gorgon.Renderers;
 
 /// <summary>
-/// Defines the a composition pass for the <see cref="Gorgon2DCompositor"/>.
+/// Defines the a composition pass for the <see cref="Gorgon2DCompositor"/>
 /// </summary>
 /// <remarks>
-/// Initializes a new instance of the <see cref="CompositionPass"/> class.
+/// Initializes a new instance of the <see cref="CompositionPass"/> class
 /// </remarks>
 /// <param name="name">The name of this object.</param>
 /// <exception cref="ArgumentNullException">Thrown when the <paramref name="name"/> is <b>null</b>.</exception>
@@ -43,7 +43,7 @@ namespace Gorgon.Renderers;
 internal class CompositionPass(string name)
         : GorgonNamedObject(name), IGorgon2DCompositorPass
 {
-    #region Properties.
+
     /// <summary>
     /// Property to set or return the method to call when rendering without an effect.
     /// </summary>
@@ -106,5 +106,5 @@ internal class CompositionPass(string name)
         set;
     } = true;
 
-    #endregion
+
 }

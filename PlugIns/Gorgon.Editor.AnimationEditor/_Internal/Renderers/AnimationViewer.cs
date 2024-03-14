@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2020 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: June 8, 2020 7:33:05 PM
 // 
-#endregion
+
 
 using System.ComponentModel;
 using System.Numerics;
@@ -38,7 +38,7 @@ using DX = SharpDX;
 namespace Gorgon.Editor.AnimationEditor;
 
 /// <summary>
-/// Provides rendering functionality for the animation editor.
+/// Provides rendering functionality for the animation editor
 /// </summary>
 /// <remarks>Initializes a new instance of the <see cref="AnimationViewer"/> class.</remarks>
 /// <param name="name">The name of the renderer.</param>
@@ -50,7 +50,7 @@ namespace Gorgon.Editor.AnimationEditor;
 internal abstract class AnimationViewer(string name, Gorgon2D renderer, GorgonSwapChain swapChain, IAnimationContent dataContext, IRectClipperService clipper, bool supportOnionSkin)
         : DefaultContentRenderer<IAnimationContent>(name, renderer, swapChain, dataContext)
 {
-    #region Variables.
+
     // The main render target view.
     private GorgonRenderTarget2DView _mainRtv;
     // The main render target texture.
@@ -65,9 +65,9 @@ internal abstract class AnimationViewer(string name, Gorgon2D renderer, GorgonSw
     private IKeyFrame _nextKey;
     // The effect for the onion skin.
     private Gorgon2DSilhouetteEffect _silhouette;
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to return the rectangle clipper interface.
     /// </summary>
@@ -109,9 +109,9 @@ internal abstract class AnimationViewer(string name, Gorgon2D renderer, GorgonSw
     /// Property to return the canvas that will receive the rendering for the animated sprite.
     /// </summary>
     protected GorgonRenderTarget2DView Canvas => _mainRtv;
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to create the main render target view.
     /// </summary>
@@ -668,5 +668,5 @@ internal abstract class AnimationViewer(string name, Gorgon2D renderer, GorgonSw
     /// <summary>Function to set the default zoom/offset for the viewer.</summary>
     public abstract void DefaultZoom();
 
-    #endregion
+
 }

@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2021 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: September 4, 2021 10:15:00 AM
 // 
-#endregion
+
 
 using Gorgon.Editor.UI;
 using Drawing = System.Drawing;
@@ -30,21 +30,21 @@ using Drawing = System.Drawing;
 namespace Gorgon.Editor.FontEditor;
 
 /// <summary>
-/// View model for the font character selection view.
+/// View model for the font character selection view
 /// </summary>
 internal class FontCharacterSelection
     : HostedPanelViewModelBase<FontCharacterSelectionParameters>, IFontCharacterSelection
 {
-    #region Variables.
+
     // The characters to use as glyphs.
     private IEnumerable<char> _characters = FontService.DefaultCharacters;
     // The font generation service.
     private FontService _fontService;
     // The current font.
     private Drawing.Font _currentFont;
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>Property to set or return the characters to use as the font glyphs.</summary>
     public IEnumerable<char> Characters
     {
@@ -85,9 +85,9 @@ internal class FontCharacterSelection
 
     /// <summary>Property to return whether the panel is modal.</summary>
     public override bool IsModal => true;
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>Function to inject dependencies for the view model.</summary>
     /// <param name="injectionParameters">The parameters to inject.</param>
     /// <remarks>
@@ -117,5 +117,5 @@ internal class FontCharacterSelection
 
         base.OnUnload();
     }
-    #endregion
+
 }

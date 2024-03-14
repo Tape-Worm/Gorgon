@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2016 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: July 9, 2016 3:47:30 PM
 // 
-#endregion
+
 
 using Gorgon.Collections;
 using Gorgon.Math;
@@ -31,7 +31,7 @@ using D3D11 = SharpDX.Direct3D11;
 namespace Gorgon.Graphics.Core;
 
 /// <summary>
-/// A list of constant buffers used for shaders.
+/// A list of constant buffers used for shaders
 /// </summary>
 /// <remarks>
 /// <para>
@@ -42,14 +42,14 @@ namespace Gorgon.Graphics.Core;
 public sealed class GorgonConstantBuffers
     : GorgonArray<GorgonConstantBufferView>
 {
-    #region Constants.
+
     /// <summary>
     /// The maximum size for a constant buffer binding list.
     /// </summary>
     public const int MaximumConstantBufferCount = D3D11.CommonShaderStage.ConstantBufferApiSlotCount;
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to return the native buffers.
     /// </summary>
@@ -73,9 +73,9 @@ public sealed class GorgonConstantBuffers
     {
         get;
     } = new int[MaximumConstantBufferCount];
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function called when a dirty item is found and added.
     /// </summary>
@@ -119,9 +119,9 @@ public sealed class GorgonConstantBuffers
 
         return -1;
     }
-    #endregion
 
-    #region Constructor
+
+
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonConstantBuffers"/> class.
     /// </summary>
@@ -139,5 +139,5 @@ public sealed class GorgonConstantBuffers
             this[i] = bufferViews[i];
         }
     }
-    #endregion
+
 }

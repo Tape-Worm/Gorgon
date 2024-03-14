@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2020 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: February 6, 2020 8:21:58 PM
 // 
-#endregion
+
 
 using System.ComponentModel;
 using System.Numerics;
@@ -40,35 +40,35 @@ using Gorgon.UI;
 namespace Gorgon.Editor.UI.Views;
 
 /// <summary>
-/// A base content editor view that is used to display renderable content.
+/// A base content editor view that is used to display renderable content
 /// </summary>
 /// <remarks>
 /// <para>
 /// This base editor view is used to render custom content and provide controls/functionality for zooming, and panning that content. This content editor view takes a view model that implements the 
-/// <see cref="IVisualEditorContent"/> interface.
+/// <see cref="IVisualEditorContent"/> interface
 /// </para>
 /// <para>
 /// Content plug in developers should inherit from this control to provide standardized functionality for viewing content via the <see cref="GorgonGraphics"/>, and <see cref="Gorgon2D"/> interfaces. 
 /// This should help simplify plug in UI development and allow developers to focus on creating UIs for editing their content without having to worry about developing boilerplate code for view 
-/// manipulation.
+/// manipulation
 /// </para>
 /// <para>
-/// By default this control will render a background using a checkerboard texture to illustrate opacity. This can be overridden by the developer on the view model.
+/// By default this control will render a background using a checkerboard texture to illustrate opacity. This can be overridden by the developer on the view model
 /// </para>
 /// </remarks>
 public partial class VisualContentBaseControl
     : ContentBaseControl
 {
-    #region Variables.
+
     // A list of renderers used to draw our content to the UI.
     private readonly Dictionary<string, IContentRenderer> _renderers = new(StringComparer.OrdinalIgnoreCase);
     // Flag for event transformation registration.
     private int _transformEventRegister;
     // The data context for the view.
     private IVisualEditorContent _dataContext;
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to return the current renderer.
     /// </summary>
@@ -139,9 +139,9 @@ public partial class VisualContentBaseControl
     /// </summary>
     [Browsable(false)]
     public Panel RenderWindow => PanelRenderWindow;
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to handle idle time and rendering.
     /// </summary>
@@ -708,10 +708,10 @@ public partial class VisualContentBaseControl
         ShowFocusState(true);
         RenderControl.Select();
     }
-    #endregion
 
-    #region Constructor/Finalizer.
+
+
     /// <summary>Initializes a new instance of the <see cref="VisualContentBaseControl"/> class.</summary>
     public VisualContentBaseControl() => InitializeComponent();
-    #endregion
+
 }

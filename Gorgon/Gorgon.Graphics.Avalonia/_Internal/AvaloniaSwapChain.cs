@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2023 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: February 19, 2023 9:53:51 PM
 // 
-#endregion
+
 
 using Avalonia;
 using Avalonia.Rendering.Composition;
@@ -31,10 +31,10 @@ using Gorgon.Graphics.Core;
 namespace Gorgon.Graphics.Avalonia;
 
 /// <summary>
-/// A helper class for composition-backed swapchains.
+/// A helper class for composition-backed swapchains
 /// </summary>
 /// <remarks>
-/// Initializes an instance of the <see cref="AvaloniaSwapChain"/> class.
+/// Initializes an instance of the <see cref="AvaloniaSwapChain"/> class
 /// </remarks>
 /// <param name="graphics">The graphics interface bound to the swap chain.</param>
 /// <param name="gpuInterop">The interop layer for the GPU.</param>
@@ -42,7 +42,7 @@ namespace Gorgon.Graphics.Avalonia;
 internal class AvaloniaSwapChain(GorgonGraphics graphics, ICompositionGpuInterop gpuInterop, CompositionDrawingSurface surface)
         : IAsyncDisposable, IGorgonGraphicsObject
 {
-    #region Variables.
+
     // The GPU interop for composition.
     private readonly ICompositionGpuInterop _gpuInterop = gpuInterop;
     // The surface that will receive the drawing information.
@@ -51,9 +51,9 @@ internal class AvaloniaSwapChain(GorgonGraphics graphics, ICompositionGpuInterop
     private readonly List<AvaloniaSwapChainImage> _pendingImages = [];
     // The currently active render target image.
     private AvaloniaSwapChainImage _currentImage;
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to return the graphics interface that built this object.
     /// </summary>
@@ -62,9 +62,9 @@ internal class AvaloniaSwapChain(GorgonGraphics graphics, ICompositionGpuInterop
         get;
         private set;
     } = graphics;
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to retrieve the image for the swap chain that is not already in flight.
     /// </summary>
@@ -148,7 +148,7 @@ internal class AvaloniaSwapChain(GorgonGraphics graphics, ICompositionGpuInterop
         }
     }
 
-    #endregion
-    #region Constructor.
-    #endregion
+
+
+
 }

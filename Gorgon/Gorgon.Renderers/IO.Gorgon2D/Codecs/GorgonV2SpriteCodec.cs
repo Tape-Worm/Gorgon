@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2018 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: August 11, 2018 3:43:13 PM
 // 
-#endregion
+
 
 using System.Numerics;
 using System.Runtime.CompilerServices;
@@ -37,17 +37,17 @@ using DX = SharpDX;
 namespace Gorgon.IO;
 
 /// <summary>
-/// A codec that can read version 2 sprite data.
+/// A codec that can read version 2 sprite data
 /// </summary>
 /// <remarks>
-/// Initializes a new instance of the <see cref="GorgonV2SpriteCodec"/> class.
+/// Initializes a new instance of the <see cref="GorgonV2SpriteCodec"/> class
 /// </remarks>
 /// <param name="renderer">The renderer used for resource handling.</param>
 /// <exception cref="ArgumentNullException">Thrown when the <paramref name="renderer"/> parameter is <b>null</b>.</exception>
 public class GorgonV2SpriteCodec(Gorgon2D renderer)
         : GorgonSpriteCodecCommon(renderer, Resources.GOR2DIO_V2_CODEC, Resources.GOR2DIO_V2_CODEC_DESCRIPTION)
 {
-    #region Enums.
+
     /// <summary>
     /// Filtering to apply to a texture.
     /// </summary>
@@ -97,9 +97,9 @@ public class GorgonV2SpriteCodec(Gorgon2D renderer)
         /// <remarks>This flag is mutually exclusive and applies to minification, magnification and mip mapping.</remarks>
         CompareAnisotropic = 131072,
     }
-    #endregion
 
-    #region Constants.
+
+
     // Sprite texture data chunk.
     private const string TextureDataChunk = "TXTRDATA";
     // Sprite render data chunk.
@@ -111,9 +111,9 @@ public class GorgonV2SpriteCodec(Gorgon2D renderer)
     /// Header for the Gorgon sprite file.
     /// </summary>		
     public const string FileHeader = "GORSPR20";
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to return whether or not the codec can decode sprite data.
     /// </summary>
@@ -131,9 +131,9 @@ public class GorgonV2SpriteCodec(Gorgon2D renderer)
     {
         get;
     } = new Version(2, 0);
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to convert Gorgon 2.x texture filtering to 3.x texture filtering values.
     /// </summary>
@@ -500,5 +500,5 @@ public class GorgonV2SpriteCodec(Gorgon2D renderer)
     /// <param name="stream">The stream that will contain the sprite.</param>
     protected override void OnSaveToStream(GorgonSprite sprite, Stream stream) => throw new NotSupportedException();
 
-    #endregion
+
 }

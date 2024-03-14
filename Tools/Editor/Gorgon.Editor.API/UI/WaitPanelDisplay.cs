@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2020 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,39 +11,39 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: February 17, 2020 1:19:36 AM
 // 
-#endregion
+
 
 using Gorgon.UI;
 
 namespace Gorgon.Editor.UI;
 
 /// <summary>
-/// Displays a wait panel on an application during long running operations.
+/// Displays a wait panel on an application during long running operations
 /// </summary>
 public class WaitPanelDisplay
     : IDisposable
 {
-    #region Variables.
+
     // The form to display for the wait panel.
     private readonly GorgonWaitOverlay _waitForm;
     // The view model to hook into.
     private IViewModel _viewModel;
     // The form to parent the wait panel.
     private readonly Control _appForm;
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to unassign the events from the view model.
     /// </summary>
@@ -100,9 +100,9 @@ public class WaitPanelDisplay
 
     /// <summary>Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.</summary>
     public void Dispose() => UnassignEvents();
-    #endregion
 
-    #region Constructor/Finalizer.
+
+
     /// <summary>Initializes a new instance of the <see cref="WaitPanelDisplay"/> class.</summary>
     /// <param name="appForm">The application form that will be the parent to the wait panel.</param>
     /// <exception cref="ArgumentNullException">Thrown when the <paramref name="appForm"/> parameter is <b>null</b>.</exception>
@@ -114,5 +114,5 @@ public class WaitPanelDisplay
             OverlayColor = Graphics.GorgonColor.Black
         };
     }
-    #endregion       
+       
 }

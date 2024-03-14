@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2015 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: Wednesday, December 9, 2015 8:53:48 PM
 // 
-#endregion
+
 
 using Gorgon.Core;
 using Gorgon.Graphics.Imaging.Properties;
@@ -30,7 +30,7 @@ using Gorgon.Graphics.Imaging.Properties;
 namespace Gorgon.Graphics.Imaging;
 
 /// <summary>
-/// Information about the pitch layout for buffer data.
+/// Information about the pitch layout for buffer data
 /// </summary>
 /// <remarks>
 /// <para>
@@ -44,18 +44,18 @@ namespace Gorgon.Graphics.Imaging;
 /// <para>
 /// In many cases, the "width" of an image is not necessarily the number of pixels across, it may also include extra padding information for alignment purposes. This information is returned in the 
 /// <see cref="RowPitch"/> for the pitch layout. This value is typically the number of <c>pixels * bytes per pixel + padding bytes</c>. Like a 2D image, a depth (3D) image must use this information to 
-/// determine where to start reading/writing data in the memory occupied by the image.
+/// determine where to start reading/writing data in the memory occupied by the image
 /// </para>
 /// <para>
 /// For depth (3D) images, there is a slice value. This indicates the total size of one element along the Z-axis and typically represents the <c>bytes in the width * height</c> of the image. The 
 /// <see cref="SlicePitch"/> returns the total size of a single slice. The slice is calculated by <c>bytes in the width * height * slice index (z element)</c>). For a 2D image, this value represents just 
-/// a single slice (i.e. <c>bytes in the width * height</c>).
+/// a single slice (i.e. <c>bytes in the width * height</c>)
 /// </para>
 /// </remarks>
 public readonly struct GorgonPitchLayout
     : IEquatable<GorgonPitchLayout>
 {
-    #region Variables.
+
     /// <summary>
     /// The number of bytes per line of data.
     /// </summary>
@@ -90,9 +90,9 @@ public readonly struct GorgonPitchLayout
     /// the height of the image. For example, if an image has a height of 256 pixels, it would be 64 blocks in the vertical direction.
     /// </remarks>
     public readonly int VerticalBlockCount;
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to compare two instances for equality.
     /// </summary>
@@ -151,9 +151,9 @@ public readonly struct GorgonPitchLayout
     /// <param name="right">The right instance to compare.</param>
     /// <returns><b>true</b> if not equal, <b>false</b> if they are.</returns>
     public static bool operator !=(GorgonPitchLayout left, GorgonPitchLayout right) => !Equals(left, right);
-    #endregion
 
-    #region Constructor.
+
+
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonPitchLayout" /> struct.
     /// </summary>
@@ -190,5 +190,5 @@ public readonly struct GorgonPitchLayout
         HorizontalBlockCount = horizontalBlockCount;
         VerticalBlockCount = verticalBlockCount;
     }
-    #endregion
+
 }

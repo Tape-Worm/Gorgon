@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2019 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: January 4, 2019 9:42:51 PM
 // 
-#endregion
+
 
 using Gorgon.Core;
 using Gorgon.Diagnostics;
@@ -37,7 +37,7 @@ using Gorgon.IO;
 namespace Gorgon.Editor.ImageEditor;
 
 /// <summary>
-/// Provides I/O functionality for reading/writing image data.
+/// Provides I/O functionality for reading/writing image data
 /// </summary>
 /// <remarks>Initializes a new instance of the <see cref="ImageEditor.ImageIO"/> class.</remarks>
 /// <param name="defaultCodec">The default codec used by the plug in.</param>
@@ -59,7 +59,7 @@ internal class ImageIOService(IGorgonImageCodec defaultCodec,
     TexConvCompressor bcCompressor,
     IGorgonLog log) : IImageIOService
 {
-    #region Variables.
+
     // The block compressor.
     private readonly TexConvCompressor _compressor = bcCompressor;
     // The export image dialog service.
@@ -72,9 +72,9 @@ internal class ImageIOService(IGorgonImageCodec defaultCodec,
     private readonly IBusyStateService _busyState = busyService;
     // The image to use as a placeholder for thumbnail generation.
     private readonly IGorgonImage _noThumbImage = noThumbnailImage;
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to return the default plugin codec.
     /// </summary>
@@ -103,9 +103,9 @@ internal class ImageIOService(IGorgonImageCodec defaultCodec,
     /// Property to return whether or not block compression is supported.
     /// </summary>
     public bool CanHandleBlockCompression => _compressor is not null;
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to import an image file from the physical file system into the current image.
     /// </summary>
@@ -535,5 +535,5 @@ internal class ImageIOService(IGorgonImageCodec defaultCodec,
         return DefaultCodec.GetMetaData(stream);
     }
 
-    #endregion
+
 }

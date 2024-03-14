@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2017 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: November 21, 2017 8:44:47 PM
 // 
-#endregion
+
 
 using Gorgon.Graphics.Imaging;
 using D3D11 = SharpDX.Direct3D11;
@@ -30,10 +30,10 @@ using D3D11 = SharpDX.Direct3D11;
 namespace Gorgon.Graphics.Core;
 
 /// <summary>
-/// Defines the support given to a specific <see cref="BufferFormat"/>.
+/// Defines the support given to a specific <see cref="BufferFormat"/>
 /// </summary>
 /// <remarks>
-/// Initializes a new instance of the <see cref="FormatSupportInfo"/> class.
+/// Initializes a new instance of the <see cref="FormatSupportInfo"/> class
 /// </remarks>
 /// <param name="format">The format being queried.</param>
 /// <param name="formatSupport">The format support.</param>
@@ -44,7 +44,7 @@ internal class FormatSupportInfo(BufferFormat format,
                                  D3D11.ComputeShaderFormatSupport computeSupport,
                                  GorgonMultisampleInfo multisampleMax) : IGorgonFormatSupportInfo
 {
-    #region Properties.
+
     /// <summary>
     /// Property to return the format that is being queried for support.
     /// </summary>
@@ -101,9 +101,9 @@ internal class FormatSupportInfo(BufferFormat format,
     {
         get;
     } = multisampleMax;
-    #endregion
 
-    #region Methods.
+
+
 
     /// <summary>
     /// Function to determine if a format is suitable for the texture type specified by <see cref="ImageDataType"/>.
@@ -119,5 +119,5 @@ internal class FormatSupportInfo(BufferFormat format,
         _ => false,
     };
 
-    #endregion
+
 }

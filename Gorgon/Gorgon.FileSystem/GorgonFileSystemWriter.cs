@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2015 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: Wednesday, September 23, 2015 7:21:55 PM
 // 
-#endregion
+
 
 using System.Buffers;
 using System.Text;
@@ -37,30 +37,30 @@ using Gorgon.PlugIns;
 namespace Gorgon.IO;
 
 /// <summary>
-/// Specifies a writable area on the physical file system for a virtual file system.
+/// Specifies a writable area on the physical file system for a virtual file system
 /// </summary>
 /// <remarks>
 /// <para>
 /// The <see cref="IGorgonFileSystem"/> is a read only object that is only capable of returning existing files and directories from a physical file system. This is by design in order to keep the integrity 
 /// and security of the original file system intact. However, in some cases, the need to write data is required by the application, and that data should be reflected in the current file system. Thus, we 
-/// have the <see cref="IGorgonFileSystemWriter{T}"/> interface.
+/// have the <see cref="IGorgonFileSystemWriter{T}"/> interface
 /// </para>
 /// <para>
 /// This object will allow applications to define an area on a physical file system that can be written to by the application. This provides isolation from the main file system and gives a degree of security 
 /// when persisting data to an application. For example, if you have a zip file mounted in <c>/</c> and you want to write some data in a new directory, then you could create this object and provide a 
 /// path to the writable area: <c>c:\users\username\AppData\YourApplication\CustomData\</c>. When creating, or deleting a directory or file, all data will be shunted to that physical location. For example, 
 /// creating a directory named <c>CustomDirectory</c> would actually put the directory under <c>c:\users\AppData\YourApplication\CustomData\CustomDirectory</c>. Likewise, a file named <c>SomeFile.txt</c> would 
-/// be put under <c>>c:\users\username\AppData\YourApplication\CustomData\SomeFile.txt</c>.
+/// be put under <c>>c:\users\username\AppData\YourApplication\CustomData\SomeFile.txt</c>
 /// </para>
 /// <para>
 /// If the <see cref="IGorgonFileSystem"/> already has a file or directory mounted from a physical file system, then files from the write area will override those files, providing the most up to date copy of 
 /// the data in the physical file systems. There is no actual change to the original files and they will remain in their original location, untouched. Only the files in the directory designated to be the writable 
-/// area for a file system will be used for write operations.
+/// area for a file system will be used for write operations
 /// </para>
 /// <para> 
 /// <note type="tip">
 /// <para>
-/// When attaching a <see cref="IGorgonFileSystemWriter{T}"/> to a <see cref="IGorgonFileSystem"/>, the write area location is <u>always</u> mounted to the root of the virtual file system.
+/// When attaching a <see cref="IGorgonFileSystemWriter{T}"/> to a <see cref="IGorgonFileSystem"/>, the write area location is <u>always</u> mounted to the root of the virtual file system
 /// </para>
 /// </note> 
 /// </para>
@@ -68,7 +68,7 @@ namespace Gorgon.IO;
 /// <note type="warning">
 /// <para>
 /// Because the <see cref="IGorgonFileSystem.Mount"/> method always overrides existing files and directories (with the same path) with files and directories from the last loaded physical file system, the write 
-/// area may have its files overridden if <see cref="IGorgonFileSystem.Mount"/> is called after linking the write area with a <see cref="IGorgonFileSystem"/>.
+/// area may have its files overridden if <see cref="IGorgonFileSystem.Mount"/> is called after linking the write area with a <see cref="IGorgonFileSystem"/>
 /// </para>
 /// </note>
 /// </para>
@@ -80,14 +80,14 @@ namespace Gorgon.IO;
 /// IGorgonFileSystem fileSystem = new GorgonFileSystem();
 /// IGorgonFileSystemWriter writeArea = new GorgonFileSystemWriter(fileSystem, @"C:\MyWritingSpot\");
 /// 
-/// // Mount a directory for this file system.
+/// // Mount a directory for this file system
 /// fileSystem.Mount(@"C:\MyDirectory\", "/"); 
 /// 
 /// // Ensure that we mount the write area to ensure that the files in the write directory 
-/// // are available.
+/// // are available
 /// writeArea.Mount();
 /// 
-/// // Create a text file.
+/// // Create a text file
 /// using (Stream stream = writeArea.OpenStream("/AFile.txt", FileMode.Create))
 /// {
 ///		using (StreamWriter writer = new StreamWriter(stream, Encoding.UTF8))
@@ -96,7 +96,7 @@ namespace Gorgon.IO;
 ///		}
 /// }
 /// 
-/// // This should retrieve the updated file.
+/// // This should retrieve the updated file
 /// IGorgonVirtualFile file = fileSystem.GetFile("/AFile.txt");
 /// 
 /// ]]>
@@ -105,12 +105,12 @@ namespace Gorgon.IO;
 public class GorgonFileSystemWriter
     : GorgonPlugIn, IGorgonFileSystemWriter<FileStream>
 {
-    #region Constants.
+
     // The maximum size for the working buffers.
     private const int MaxBufferSize = 262_144;
-    #endregion
 
-    #region Events.
+
+
     /// <summary>
     /// Event triggered when a virtual directory has been added to the file system.
     /// </summary>
@@ -167,9 +167,9 @@ public class GorgonFileSystemWriter
     /// Event triggered when virtual files were moved.
     /// </summary>
     public event EventHandler<VirtualFileCopiedMovedEventArgs> VirtualFileMoved;
-    #endregion
 
-    #region Variables.
+
+
     // The list of invalid file name characters.
     private readonly char[] _invalidFileNameChars = Path.GetInvalidFileNameChars();
     // Locking synchronization for multiple threads.
@@ -184,9 +184,9 @@ public class GorgonFileSystemWriter
     private byte[] _writeBuffer;
     // The buffer used for building a path.
     private readonly StringBuilder _pathBuffer = new(1024);
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to return the file system linked to this writable area.
     /// </summary>
@@ -205,9 +205,9 @@ public class GorgonFileSystemWriter
     {
         get;
     }
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to replace a path with a new root path.
     /// </summary>
@@ -2404,9 +2404,7 @@ public class GorgonFileSystemWriter
 
         return result;
     }
-    #endregion
 
-    #region Constructor.
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonFileSystemWriter"/> class.
     /// </summary>
@@ -2449,5 +2447,5 @@ public class GorgonFileSystemWriter
         WriteLocation = writeLocation.FormatDirectory(Path.DirectorySeparatorChar);
         _mountPoint = new GorgonFileSystemMountPoint(fileSystem.DefaultProvider, WriteLocation, "/");
     }
-    #endregion
+
 }

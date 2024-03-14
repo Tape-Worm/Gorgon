@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2020 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: December 30, 2020 10:45:30 PM
 // 
-#endregion
+
 
 using System.Diagnostics;
 using System.Linq.Expressions;
@@ -38,14 +38,14 @@ using DXGI = SharpDX.DXGI;
 namespace Gorgon.Graphics.Core;
 
 /// <summary>
-/// Functionality to apply Direct3D 11 states and resources.
+/// Functionality to apply Direct3D 11 states and resources
 /// </summary>
 /// <remarks>Initializes a new instance of the <see cref="D3D11StateApplicator" /> class.</remarks>
 /// <param name="graphics">The graphics interface that owns this applicator.</param>
 /// <param name="targets">The list of active render targets.</param>
 internal class D3D11StateApplicator(GorgonGraphics graphics, GorgonRenderTargetView[] targets)
 {
-    #region Variables.
+
     // An empty UAV count to get around an idiotic design decision (no count exposed on the method) for UAVs on compute shaders
     private static readonly int[] _emptyUavCounts = new int[GorgonReadWriteViewBindings.MaximumReadWriteViewCount];
     // An empty UAV to get around an idiotic design decision (no count exposed on the method) for UAVs on compute shaders
@@ -77,9 +77,9 @@ internal class D3D11StateApplicator(GorgonGraphics graphics, GorgonRenderTargetV
 
     // The device context used for applying state and resource information.
     private readonly GorgonGraphics _graphics = graphics;
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to retrieve the internal set scissor rectangle method that allows us to assign scissor rectangles via a pointer rather than a params array.
     /// </summary>
@@ -814,8 +814,8 @@ internal class D3D11StateApplicator(GorgonGraphics graphics, GorgonRenderTargetV
         }
     }
 
-    #endregion
-    #region Constructor/Finalizer.
+
+
 
     /// <summary>
     /// Static constructor.
@@ -828,5 +828,5 @@ internal class D3D11StateApplicator(GorgonGraphics graphics, GorgonRenderTargetV
         FixSetRenderTargets();
         FixSetScissorRects();
     }
-    #endregion
+
 }

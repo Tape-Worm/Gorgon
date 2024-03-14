@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2019 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: April 20, 2019 2:22:57 PM
 // 
-#endregion
+
 
 using Gorgon.Core;
 using Gorgon.Editor.ImageEditor.Properties;
@@ -31,19 +31,19 @@ using Gorgon.Editor.UI;
 namespace Gorgon.Editor.ImageEditor;
 
 /// <summary>
-/// Settings view model for image codecs.
+/// Settings view model for image codecs
 /// </summary>
 internal class Settings
     : SettingsCategoryBase<SettingsParameters>, ISettings
 {
-    #region Variables.
+
     // The underlying settings for the plug in.
     private ImageEditorSettings _settings;
     // The range for the alpha setting funtionality.
     private GorgonRange _alphaRange;
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>Gets the name.</summary>
     public override string Name => Resources.GORIMG_SETTINGS_DESC;
 
@@ -184,9 +184,9 @@ internal class Settings
     {
         get;
     }
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to assign the exe path.
     /// </summary>
@@ -218,10 +218,10 @@ internal class Settings
         _settings = injectionParameters.Settings;
         _alphaRange = new GorgonRange(_settings.AlphaRangeMin, _settings.AlphaRangeMax);
     }
-    #endregion
 
-    #region Constructor
+
+
     /// <summary>Initializes a new instance of the <see cref="Settings" /> class.</summary>
     public Settings() => UpdatePathCommand = new EditorCommand<string>(DoSetPath);
-    #endregion
+
 }

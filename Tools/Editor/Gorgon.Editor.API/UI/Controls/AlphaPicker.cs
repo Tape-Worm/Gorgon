@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2020 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: July 7, 2020 12:31:02 AM
 // 
-#endregion
+
 
 using System.ComponentModel;
 using System.Drawing.Drawing2D;
@@ -31,21 +31,21 @@ using Gorgon.Math;
 namespace Gorgon.Editor.UI.Controls;
 
 /// <summary>
-/// A control used to pick an alpha (transparency) value.
+/// A control used to pick an alpha (transparency) value
 /// </summary>
 public partial class AlphaPicker
     : UserControl
 {
-    #region Variables.
+
     // The position of the cursor indicator.
     private float _alphaValue;
     // The points for the cursor polygon.
     private readonly PointF[] _cursor = new PointF[3];
     // Flag to indicate that the numeric control events are enabled.
     private int _numericEventsEnabled = 1;
-    #endregion
 
-    #region Events.
+
+
     // Event triggered when the alpha value was changed.
     private event EventHandler AlphaValueChangedEvent;
 
@@ -75,9 +75,9 @@ public partial class AlphaPicker
             AlphaValueChangedEvent -= value;
         }
     }
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to set or return the alpha value.
     /// </summary>
@@ -87,9 +87,9 @@ public partial class AlphaPicker
         get => (int)(_alphaValue * 255);
         set => SetAlphaValue(value / 255.0f);
     }
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to disable the events on the numeric control.
     /// </summary>
@@ -177,11 +177,11 @@ public partial class AlphaPicker
 
         SetAlphaValue(e.X / (float)PanelAlpha.ClientSize.Width);
     }
-    #endregion
 
-    #region Constructor/Finalizer.
+
+
     /// <summary>Initializes a new instance of the <see cref="AlphaPicker"/> class.</summary>
     public AlphaPicker() => InitializeComponent();
-    #endregion
+
 
 }

@@ -1,6 +1,6 @@
-﻿#region MIT.
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2011 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: Saturday, June 18, 2011 4:20:26 PM
 // 
-#endregion
+
 
 using System.ComponentModel;
 using System.Drawing.Text;
@@ -30,18 +30,18 @@ using System.Drawing.Text;
 namespace Gorgon.UI;
 
 /// <summary>
-/// The base form for Gorgon dialogs.
+/// The base form for Gorgon dialogs
 /// </summary>
 internal partial class BaseDialog
     : Form
 {
-    #region Variables.
+
     private string _message = string.Empty;             // Message to be displayed.
     private Point _textPosition = new(60, 2);     // Text position.
     private Size _maxTextSize;                          // Maximum text size.
-    #endregion
 
-    #region Properties
+
+
     /// <summary>
     /// Property to set or return the maximum width of the text.
     /// </summary>
@@ -92,9 +92,9 @@ internal partial class BaseDialog
             ValidateFunctions();
         }
     }
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Raises the <see cref="E:System.Windows.Forms.Control.KeyDown"></see> event.
     /// </summary>
@@ -278,12 +278,12 @@ internal partial class BaseDialog
             DrawDialog(e.Graphics);
         }
     }
-    #endregion
 
-    #region Constructor
+
+
     /// <summary>
     /// Constructor.
     /// </summary>
     public BaseDialog() => InitializeComponent();
-    #endregion
+
 }

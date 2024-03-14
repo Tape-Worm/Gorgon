@@ -1,6 +1,6 @@
-﻿#region MIT.
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2012 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: Monday, April 02, 2012 1:41:47 PM
 // 
-#endregion
+
 
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
@@ -33,20 +33,20 @@ using DX = SharpDX;
 namespace Gorgon.Renderers;
 
 /// <summary>
-/// An effect that renders as gray scale.
+/// An effect that renders as gray scale
 /// </summary>
 public class Gorgon2DGrayScaleEffect
     : Gorgon2DEffect, IGorgon2DCompositorEffect
 {
-    #region Variables.
+
     // The batch state to use when rendering.
     private Gorgon2DBatchState _batchState;
     // The shader used to render grayscale images.
     private GorgonPixelShader _grayScaleShader;
     private Gorgon2DShaderState<GorgonPixelShader> _grayScaleState;
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function called when the effect is being initialized.
     /// </summary>
@@ -149,9 +149,9 @@ public class Gorgon2DGrayScaleEffect
                                         new DX.RectangleF(0, 0, 1, 1));
         End();
     }
-    #endregion
 
-    #region Constructor/Destructor.
+
+
     /// <summary>
     /// Initializes a new instance of the <see cref="Gorgon2DGrayScaleEffect" /> class.
     /// </summary>
@@ -160,5 +160,5 @@ public class Gorgon2DGrayScaleEffect
         : base(renderer, Resources.GOR2D_EFFECT_GRAYSCALE, Resources.GOR2D_EFFECT_GRAYSCALE_DESC, 1) =>
         // A macro used to define the size of the kernel weight data structure.
         Macros.Add(new GorgonShaderMacro("GRAYSCALE_EFFECT"));
-    #endregion
+
 }

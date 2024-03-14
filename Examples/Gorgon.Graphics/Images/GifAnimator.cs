@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2018 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,32 +11,32 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: April 5, 2018 12:49:36 PM
 // 
-#endregion
+
 
 namespace Gorgon.Examples;
 
 /// <summary>
-/// Updates the animation frame index for a GIF.
+/// Updates the animation frame index for a GIF
 /// </summary>
 /// <remarks>
-/// Initializes a new instance of the <see cref="GifAnimator"/> class.
+/// Initializes a new instance of the <see cref="GifAnimator"/> class
 /// </remarks>
 /// <param name="syncContext">The synchronize context.</param>
 /// <exception cref="ArgumentNullException">Thrown when the <paramref name="syncContext"/> parameter is <b>null</b>.</exception>
 class GifAnimator(SynchronizationContext syncContext)
 {
-    #region Variables.
+
     // The task that updates the frame index.
     private Task _animationTask;
     // The current sychronization context.
@@ -44,9 +44,9 @@ class GifAnimator(SynchronizationContext syncContext)
     // Cancellation support.
     private CancellationTokenSource _cancel;
     private int _currentFrame;
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to return the current frame of animation.
     /// </summary>
@@ -64,9 +64,9 @@ class GifAnimator(SynchronizationContext syncContext)
         get;
         set;
     }
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to reset the frame index.
     /// </summary>
@@ -130,6 +130,6 @@ class GifAnimator(SynchronizationContext syncContext)
         _cancel = null;
     }
 
-    #endregion
+
 
 }

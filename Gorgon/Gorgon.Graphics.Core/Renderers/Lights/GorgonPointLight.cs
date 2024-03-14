@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2018 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: July 25, 2018 8:30:32 PM
 // 
-#endregion
+
 
 using System.Numerics;
 using Gorgon.Core;
@@ -32,12 +32,12 @@ using Gorgon.Renderers.Data;
 namespace Gorgon.Renderers.Lights;
 
 /// <summary>
-/// Point light properties for passing to a GPU lighting shader.
+/// Point light properties for passing to a GPU lighting shader
 /// </summary>
 public sealed class GorgonPointLight
     : GorgonLightCommon, IGorgonNamedObject, IEquatable<GorgonPointLight>
 {
-    #region Variables.
+
     // The position for a point light.
     private Vector3 _position;
     // The attenuation of a point light.
@@ -48,9 +48,9 @@ public sealed class GorgonPointLight
     private float _range = float.MaxValue.Sqrt();
     // The GPU data for the light.
     private GorgonGpuLightData _lightData;
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to set or return the type of light to render.
     /// </summary>
@@ -154,9 +154,9 @@ public sealed class GorgonPointLight
             IsUpdated = true;
         }
     }
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>Indicates whether the current object is equal to another object of the same type.</summary>
     /// <param name="other">An object to compare with this object.</param>
     /// <returns>
@@ -198,9 +198,9 @@ public sealed class GorgonPointLight
 
         return ref _lightData;
     }
-    #endregion
 
-    #region Constructor/Destructor.
+
+
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonPointLight"/> class.
     /// </summary>
@@ -227,5 +227,5 @@ public sealed class GorgonPointLight
         _attenuationB = copy._attenuationB;
         _attenuationC = copy._attenuationC;
     }
-    #endregion
+
 }

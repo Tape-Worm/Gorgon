@@ -1,6 +1,6 @@
-﻿#region MIT.
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2012 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: Tuesday, September 18, 2012 8:00:02 PM
 // 
-#endregion
+
 
 using System.Drawing;
 using System.Windows.Forms;
@@ -34,16 +34,16 @@ using Gorgon.UI;
 namespace Gorgon.Examples;
 
 /// <summary>
-/// Entry point class.
+/// Entry point class
 /// </summary>
 /// <remarks>
-/// This example is tiny bit more advanced.  It'll show how to use an application context with Gorgon and how to dynamically switch idle loops on the fly.
+/// This example is tiny bit more advanced.  It'll show how to use an application context with Gorgon and how to dynamically switch idle loops on the fly
 /// 
-/// It will also demonstrate the use of the Console log.
+/// It will also demonstrate the use of the Console log
 /// </remarks>
 internal static class Program
 {
-    #region Variables.
+
     // Random number generator.
     private static readonly Random _rnd = new();
     // Last horizontal coordinate.
@@ -60,9 +60,9 @@ internal static class Program
     private static IGorgonLog _log;
     // The current idle method.
     private static Func<bool> _currentIdle;
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function that's called during idle time.
     /// </summary>
@@ -197,5 +197,5 @@ internal static class Program
             ex.Catch(_ => GorgonDialogs.ErrorBox(null, _), GorgonApplication.Log);
         }
     }
-    #endregion
+
 }

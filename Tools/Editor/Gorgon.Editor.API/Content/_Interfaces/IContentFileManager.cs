@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2019 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: March 2, 2019 5:29:01 PM
 // 
-#endregion
+
 
 using Gorgon.Graphics.Core;
 using Gorgon.IO;
@@ -30,18 +30,18 @@ using Gorgon.IO;
 namespace Gorgon.Editor.Content;
 
 /// <summary>
-/// Provides access to the file system for reading, writing, creating and deleting content files and directories.
+/// Provides access to the file system for reading, writing, creating and deleting content files and directories
 /// </summary>
 public interface IContentFileManager
 {
-    #region Events.
+
     /// <summary>
     /// Event triggered when the selected files change.
     /// </summary>
     event EventHandler SelectedFilesChanged;
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to return the current directory.
     /// </summary>
@@ -49,9 +49,9 @@ public interface IContentFileManager
     {
         get;
     }
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to determine if a directory is excluded from a packed file.
     /// </summary>
@@ -185,5 +185,5 @@ public interface IContentFileManager
     /// </summary>
     /// <returns>The <see cref="IGorgonFileSystem"/> for this content manager.</returns>
     IGorgonFileSystem ToGorgonFileSystem();
-    #endregion
+
 }

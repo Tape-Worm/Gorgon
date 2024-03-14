@@ -3,7 +3,7 @@
 namespace Gorgon.Editor.Rendering;
 
 /// <summary>
-/// Draws a marching ants effect for a rectangle.
+/// Draws a marching ants effect for a rectangle
 /// </summary>
 public interface IMarchingAnts
     : IDisposable

@@ -1,6 +1,6 @@
-﻿#region MIT.
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2013 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: Thursday, January 17, 2013 11:06:54 PM
 // 
-#endregion
+
 
 using Gorgon.Core;
 using Gorgon.Diagnostics;
@@ -31,12 +31,12 @@ using Gorgon.UI;
 namespace Gorgon.Examples;
 
 /// <summary>
-/// Example entry point.
+/// Example entry point
 /// </summary>
 /// <remarks>To see a description of this example, look in formMain.cs</remarks>
 internal static class Program
 {
-    #region Properties.
+
     /// <summary>
     /// Property to return the log used for debug log messages.
     /// </summary>
@@ -45,9 +45,9 @@ internal static class Program
         get;
         private set;
     }
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// The main entry point for the application.
     /// </summary>
@@ -73,5 +73,5 @@ internal static class Program
             Log.LogEnd();
         }
     }
-    #endregion
+
 }

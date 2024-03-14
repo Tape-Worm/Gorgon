@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2016 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,25 +11,25 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: December 20, 2016 11:29:23 AM
 // 
-#endregion
+
 using Gorgon.Core;
 using Gorgon.Graphics.Core;
 
 namespace Gorgon.Graphics.Fonts;
 
 /// <summary>
-/// Anti-aliasing modes for the font.
+/// Anti-aliasing modes for the font
 /// </summary>
 public enum GorgonFontAntiAliasMode
 {
@@ -44,7 +44,7 @@ public enum GorgonFontAntiAliasMode
 }
 
 /// <summary>
-/// Font height mode.
+/// Font height mode
 /// </summary>
 public enum GorgonFontHeightMode
 {
@@ -59,7 +59,7 @@ public enum GorgonFontHeightMode
 }
 
 /// <summary>
-/// Font style.
+/// Font style
 /// </summary>
 public enum GorgonFontStyle
 {
@@ -82,11 +82,11 @@ public enum GorgonFontStyle
 }
 
 /// <summary>
-/// Provides information used to create a new <see cref="GorgonFont"/>.
+/// Provides information used to create a new <see cref="GorgonFont"/>
 /// </summary>
 /// <remarks>
 /// <para>
-/// This interface is used to provide an immutable view of the information used to generate a new <see cref="GorgonFont"/>.
+/// This interface is used to provide an immutable view of the information used to generate a new <see cref="GorgonFont"/>
 /// </para>
 /// </remarks>
 public interface IGorgonFontInfo

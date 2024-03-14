@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2018 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: October 12, 2018 1:38:47 PM
 // 
-#endregion
+
 
 using System.Buffers;
 using System.Diagnostics;
@@ -39,12 +39,12 @@ using Microsoft.IO;
 namespace Gorgon.Editor.GorPackWriterPlugIn;
 
 /// <summary>
-/// Gorgon packed file writer plug in interface.
+/// Gorgon packed file writer plug in interface
 /// </summary>
 internal class GorPackWriterPlugIn
     : FileWriterPlugIn
 {
-    #region Constants.
+
     // The header for the file.
     private const string FileHeader = "GORPACK1.SharpZip.BZ2";
     // The type name for v2 of the Gorgon file writer plugin.
@@ -53,9 +53,9 @@ internal class GorPackWriterPlugIn
     /// The maximum size of a write transfer buffer, in bytes.
     /// </summary>
     public const int MaxBufferSize = 1048575;
-    #endregion
 
-    #region Variables.
+
+
     // The memory stream manager for efficient memory usage.
     private static readonly RecyclableMemoryStreamManager _memStreamManager = new(new RecyclableMemoryStreamManager.Options
     {
@@ -64,9 +64,9 @@ internal class GorPackWriterPlugIn
     });
     // The global buffer used to write out data to a stream.
     private byte[] _globalWriteBuffer;
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>Property to return the equivalent type name for v2 of the Gorgon file writer plugin.</summary>
     /// <remarks>This is here to facilitate importing of file metadata from v2 of the gorgon editor files. Only specify a compatible type here, otherwise things will go wrong.</remarks>
     public override string V2PlugInName => EquivV2PlugIn;
@@ -76,9 +76,9 @@ internal class GorPackWriterPlugIn
     /// </summary>
     /// <value>The capabilities.</value>
     public override WriterCapabilities Capabilities => WriterCapabilities.Compression;
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to create a new path node.
     /// </summary>
@@ -641,9 +641,9 @@ internal class GorPackWriterPlugIn
             }
         }
     }
-    #endregion
 
-    #region Constructor/Destructor.
+
+
     /// <summary>
     /// Initializes a new instance of the <see cref="GorPackWriterPlugIn"/> class.
     /// </summary>
@@ -651,5 +651,5 @@ internal class GorPackWriterPlugIn
         : base(Resources.GORPKW_DESC, [new GorgonFileExtension("gorPack", Resources.GORPKW_GORPACK_FILE_EXT_DESC)])
     {
     }
-    #endregion
+
 }

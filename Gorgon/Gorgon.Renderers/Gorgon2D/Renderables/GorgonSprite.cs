@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2018 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: June 7, 2018 3:13:51 PM
 // 
-#endregion
+
 
 using System.Numerics;
 using Gorgon.Core;
@@ -36,11 +36,11 @@ using DX = SharpDX;
 namespace Gorgon.Renderers;
 
 /// <summary>
-/// A class that defines a rectangluar region to display a 2D image.
+/// A class that defines a rectangluar region to display a 2D image
 /// </summary>
 public class GorgonSprite
 {
-    #region Variables.
+
     // The absolute anchor position.
     private Vector2 _absoluteAnchor;
 #pragma warning disable IDE0032 // Use auto property
@@ -57,9 +57,9 @@ public class GorgonSprite
         ActualVertexCount = 4,
         IndexCount = 6
     };
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to return whether or not the sprite has had its position, size, texture information, or object space vertices updated since it was last drawn.
     /// </summary>
@@ -455,9 +455,9 @@ public class GorgonSprite
             Renderable.HasTextureChanges = true;
         }
     }
-    #endregion
 
-    #region Method.
+
+
     /// <summary>
     /// Function to copy the sprite data into the specified sprite.
     /// </summary>
@@ -501,9 +501,9 @@ public class GorgonSprite
         sprite.Renderable.HasTransformChanges = true;
         sprite.Renderable.HasVertexChanges = true;
     }
-    #endregion
 
-    #region Constructor/Finalizer.
+
+
     /// <summary>Initializes a new instance of the <see cref="GorgonSprite"/> class.</summary>
     /// <param name="clone">The clone.</param>
     /// <exception cref="ArgumentNullException">Thrown when the <paramref name="clone"/> parameter is <b>null</b>.</exception>
@@ -531,5 +531,5 @@ public class GorgonSprite
             Renderable.Vertices[i].Position.W = 1.0f;
         }
     }
-    #endregion
+
 }

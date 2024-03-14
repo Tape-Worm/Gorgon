@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2019 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,32 +11,32 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: January 4, 2019 10:58:00 AM
 // 
-#endregion
+
 
 using System.ComponentModel;
 
 namespace Gorgon.Editor.Tools;
 
 /// <summary>
-/// Arguments for the <see cref="IEditorTool.CloseToolCommand"/>.
+/// Arguments for the <see cref="IEditorTool.CloseToolCommand"/>
 /// </summary>
 /// <remarks>Initializes a new instance of the <see cref="CloseToolArgs"/> class.</remarks>
 /// <param name="checkForChanges"><b>true</b> to check for changes prior to closing, <b>false</b> to skip the check and force a close.</param>
 public class CloseToolArgs(bool checkForChanges)
         : CancelEventArgs
 {
-    #region Properties.
+
     /// <summary>
     /// Property to return whether or not to check the content for changes prior to closing.
     /// </summary>
@@ -45,7 +45,7 @@ public class CloseToolArgs(bool checkForChanges)
         get;
     } = checkForChanges;
 
-    #endregion
-    #region Constructor.
-    #endregion
+
+
+
 }

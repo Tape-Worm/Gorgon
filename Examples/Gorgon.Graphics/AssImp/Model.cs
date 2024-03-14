@@ -9,19 +9,19 @@ using Gorgon.Renderers.Geometry;
 namespace Gorgon.Examples;
 
 /// <summary>
-/// Model data to render.
+/// Model data to render
 /// </summary>
 internal class Model
     : IDisposable
 {
-    #region Variables.
+
     // The list of meshes to render.
     private readonly Dictionary<Material, List<(int BaseStart, int Start, int Count)>> _meshes = [];
     // The world matrix for this model.
     private System.Numerics.Matrix4x4 _worldMatrix;
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to return the list of meshes to render.
     /// </summary>
@@ -116,9 +116,9 @@ internal class Model
         get;
         set;
     }
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to retrieve the list of materials for the model.
     /// </summary>
@@ -325,5 +325,5 @@ internal class Model
 
         return result;
     }
-    #endregion
+
 }

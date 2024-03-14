@@ -1,6 +1,6 @@
-﻿#region MIT.
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2012 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: Friday, April 13, 2012 7:12:15 AM
 // 
-#endregion
+
 
 using System.Globalization;
 using Gorgon.Core;
@@ -34,12 +34,12 @@ using DX = SharpDX;
 namespace Gorgon.Graphics.Fonts;
 
 /// <summary>
-/// A glyph used to define a character in a <see cref="GorgonFont"/>.
+/// A glyph used to define a character in a <see cref="GorgonFont"/>
 /// </summary>
 public sealed class GorgonGlyph
     : IGorgonNamedObject, IEquatable<GorgonGlyph>
 {
-    #region Properties.
+
     /// <summary>
     /// Property to return the name of this object.
     /// </summary>
@@ -155,9 +155,9 @@ public sealed class GorgonGlyph
         get;
         set;
     }
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to change the texture pointed at by this glyph.
     /// </summary>
@@ -253,9 +253,9 @@ public sealed class GorgonGlyph
     /// <param name="obj">An object to compare with this object.</param>
     /// <returns><see langword="true" /> if the current object is equal to the <paramref name="obj" /> parameter; otherwise, <see langword="false" />.</returns>
     public override bool Equals(object obj) => Equals(obj as GorgonGlyph);
-    #endregion
 
-    #region Constructor/Destructor.
+
+
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonGlyph"/> class.
     /// </summary>
@@ -271,5 +271,5 @@ public sealed class GorgonGlyph
         Character = character;
         Advance = advance;
     }
-    #endregion
+
 }

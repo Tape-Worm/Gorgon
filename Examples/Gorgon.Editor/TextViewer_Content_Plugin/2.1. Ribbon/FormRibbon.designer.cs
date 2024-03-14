@@ -33,8 +33,6 @@ partial class FormRibbon
         base.Dispose(disposing);
     }
 
-    #region Windows Form Designer generated code
-
     /// <summary>
     /// Required method for Designer support - do not modify
     /// the contents of this method with the code editor.
@@ -418,7 +416,7 @@ partial class FormRibbon
 
     }
 
-    #endregion
+
     private Krypton.Ribbon.KryptonRibbonTab TabText;
     private Krypton.Ribbon.KryptonRibbonGroup GroupImageFile;
     private Krypton.Ribbon.KryptonRibbonGroupTriple kryptonRibbonGroupTriple1;

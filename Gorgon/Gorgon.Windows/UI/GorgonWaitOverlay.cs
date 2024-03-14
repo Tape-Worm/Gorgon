@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2020 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,29 +11,29 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: December 5, 2020 3:41:43 PM
 // 
-#endregion
+
 
 using Gorgon.Graphics;
 
 namespace Gorgon.UI;
 
 /// <summary>
-/// Functionality to display a translucent (like plexi-glass) panel on top of a control or form with a message and spinning icon to indicate that the system is busy.
+/// Functionality to display a translucent (like plexi-glass) panel on top of a control or form with a message and spinning icon to indicate that the system is busy
 /// </summary>
 public class GorgonWaitOverlay
 {
-    #region Variables.
+
     // The overlay used to dim the background.
     private readonly Lazy<GorgonOverlay> _overlay = new(() => new GorgonOverlay(), true);
 
@@ -45,9 +45,9 @@ public class GorgonWaitOverlay
 
     // The parent control.
     private WeakReference<Control> _parent;
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to return whether the overlay is active or not.
     /// </summary>
@@ -70,9 +70,9 @@ public class GorgonWaitOverlay
         get => _overlay.Value.OverlayColor;
         set => _overlay.Value.OverlayColor = value;
     }
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>Handles the Resize event of the Parent control.</summary>
     /// <param name="sender">The source of the event.</param>
     /// <param name="e">The <see cref="EventArgs" /> instance containing the event data.</param>
@@ -259,5 +259,5 @@ public class GorgonWaitOverlay
             _overlay.Value.Hide();
         }
     }
-    #endregion
+
 }

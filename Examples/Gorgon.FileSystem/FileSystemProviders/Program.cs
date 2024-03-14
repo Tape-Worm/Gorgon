@@ -1,6 +1,6 @@
-﻿#region MIT.
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2013 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: Saturday, January 5, 2013 3:29:58 PM
 // 
-#endregion
+
 
 using Gorgon.Core;
 using Gorgon.Diagnostics;
@@ -32,12 +32,12 @@ using Gorgon.PlugIns;
 namespace Gorgon.Examples;
 
 /// <summary>
-/// Example entry point.
+/// Example entry point
 /// </summary>
 /// <remarks>
 /// Gorgon is capable of making use of Virtual File Systems.  This is quite different from the file system type that was in the
 /// first version of Gorgon which was really nothing more than a compressed file reader/writer (even though it could mount 
-/// folders).
+/// folders)
 /// 
 /// Virtual File Systems take a directory, or some packed data file and mount it as a root directory.  Any subsequent directories
 /// and files inside of the directory (or file) are mapped to be relative to the root point on the file system.  For example,
@@ -46,28 +46,28 @@ namespace Gorgon.Examples;
 /// that was mounted as the root of the VFS.  This allows for a certain level of security to keep users from writing or reading
 /// areas outside of the intended directory structure.  
 /// 
-/// Gorgon's VFS is modelled after the PhysFS project (http://icculus.org/physfs/).
+/// Gorgon's VFS is modelled after the PhysFS project (http://icculus.org/physfs/)
 /// 
 /// The VFS object in Gorgon comes with the ability to mount a directory as a root of a VFS.  However, it's possible to mount a
 /// zip file, or the old Gorgon BZip2 Pack file format as a VFS.  This is done through file system providers.  Similar to the
 /// input factories, these providers are plug ins and can be loaded into a file system object to give access to these types of 
 /// files.  A provider plug in can be written to pull data from a SQL server, or a network stream or any access point that can
-/// stream data.
+/// stream data
 /// 
-/// In this example, we'll show how to load some of these providers.
+/// In this example, we'll show how to load some of these providers
 /// </remarks>
 internal static class Program
 {
-    #region Variables.
+
     // The providers that were loaded.
     private static IReadOnlyList<GorgonFileSystemProvider> _providers;
     // The cache that will hold the assemblies where our plugins will live.
     private static GorgonMefPlugInCache _pluginAssemblies;
     // The log used for debug logging.
     private static IGorgonLog _log;
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to return the path to the plug ins.
     /// </summary>
@@ -94,9 +94,9 @@ internal static class Program
             return Path.GetFullPath(path);
         }
     }
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to retrieve the directory that contains the plugins for an application.
     /// </summary>
@@ -229,5 +229,5 @@ internal static class Program
             _log.LogEnd();
         }
     }
-    #endregion
+
 }

@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2019 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: April 4, 2019 8:59:29 PM
 // 
-#endregion
+
 
 using Gorgon.Editor.UI;
 using Gorgon.Graphics;
@@ -30,19 +30,19 @@ using Gorgon.Graphics;
 namespace Gorgon.Examples;
 
 /// <summary>
-/// The view model for the text color editor.
+/// The view model for the text color editor
 /// </summary>
 internal class TextColor
     : HostedPanelViewModelBase<HostedPanelViewModelParameters>, ITextColor
 {
-    #region Variables.
+
     // The original color for the sprite.
     private GorgonColor _originalColor = GorgonColor.Black;
     // The current color for the sprite.
     private GorgonColor _color = GorgonColor.Black;
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>Property to set or return the currently selected color.</summary>
     public GorgonColor SelectedColor
     {
@@ -78,9 +78,9 @@ internal class TextColor
 
     /// <summary>Property to return whether the panel is modal.</summary>
     public override bool IsModal => true;
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>Function to inject dependencies for the view model.</summary>
     /// <param name="injectionParameters">The parameters to inject.</param>
     /// <remarks>
@@ -90,5 +90,5 @@ internal class TextColor
     {
         // Nothing to inject.
     }
-    #endregion
+
 }

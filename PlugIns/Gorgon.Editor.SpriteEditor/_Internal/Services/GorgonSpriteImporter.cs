@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2018 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: December 18, 2018 12:30:56 AM
 // 
-#endregion
+
 
 using System.Diagnostics;
 using Gorgon.Diagnostics;
@@ -35,7 +35,7 @@ using Gorgon.Renderers;
 namespace Gorgon.Editor.SpriteEditor.Services;
 
 /// <summary>
-/// A sprite importer that reads in a sprite file, and converts it into a Gorgon sprite (v3) format image prior to import into the application.
+/// A sprite importer that reads in a sprite file, and converts it into a Gorgon sprite (v3) format image prior to import into the application
 /// </summary>
 /// <remarks>Initializes a new instance of the <see cref="GorgonSpriteImporter"/> class.</remarks>
 /// <param name="projectFileSystem">The read only file system used by the project.</param>
@@ -46,7 +46,7 @@ namespace Gorgon.Editor.SpriteEditor.Services;
 internal class GorgonSpriteImporter(IGorgonFileSystem projectFileSystem, IGorgonFileSystemWriter<Stream> tempFileSystem, CodecRegistry codecs, Gorgon2D renderer, IGorgonLog log)
         : IEditorContentImporter
 {
-    #region Variables.
+
     // The log used for debug message logging.
     private readonly IGorgonLog _log = log ?? GorgonLog.NullLog;
     // The DDS codec used to import files.
@@ -61,14 +61,14 @@ internal class GorgonSpriteImporter(IGorgonFileSystem projectFileSystem, IGorgon
     private readonly IGorgonFileSystemWriter<Stream> _tempFileSystem = tempFileSystem;
     // The path to the temporary directory.
     private string _tempDirPath;
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>Property to return whether or not the imported file needs to be cleaned up after processing.</summary>
     public bool NeedsCleanup => true;
-    #endregion
 
-    #region Methods.
+
+
 
     /// <summary>
     /// Function to locate the associated texture file for a sprite.
@@ -231,5 +231,5 @@ internal class GorgonSpriteImporter(IGorgonFileSystem projectFileSystem, IGorgon
         }
     }
 
-    #endregion
+
 }

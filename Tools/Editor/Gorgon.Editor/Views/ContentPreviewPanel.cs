@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2018 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: December 22, 2018 8:59:01 PM
 // 
-#endregion
+
 
 using System.ComponentModel;
 using System.Numerics;
@@ -43,12 +43,12 @@ using DX = SharpDX;
 namespace Gorgon.Editor.Views;
 
 /// <summary>
-/// The preview window for editor content.
+/// The preview window for editor content
 /// </summary>
 internal partial class ContentPreviewPanel
     : EditorBaseControl, IDataContext<IContentPreview>
 {
-    #region Variables.
+
     // The swap chain for the window.
     private GorgonSwapChain _swapChain;
     // The renderer used to draw the preview image.
@@ -63,9 +63,9 @@ internal partial class ContentPreviewPanel
     private GorgonFont _titleFont;
     // The text to draw.
     private GorgonTextSprite _titleText;
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to set or return the application graphics context.
     /// </summary>
@@ -83,9 +83,9 @@ internal partial class ContentPreviewPanel
         get;
         private set;
     }
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>Handles the PropertyChanged event of the DataContext control.</summary>
     /// <param name="sender">The source of the event.</param>
     /// <param name="e">The <see cref="PropertyChangedEventArgs"/> instance containing the event data.</param>        
@@ -323,9 +323,9 @@ internal partial class ContentPreviewPanel
 
         ViewModel.PropertyChanged += DataContext_PropertyChanged;
     }
-    #endregion
 
-    #region Constructor/Finalizer.
+
+
     /// <summary>Initializes a new instance of the <see cref="Views.ContentPreview"/> class.</summary>
     public ContentPreviewPanel()
     {
@@ -335,5 +335,5 @@ internal partial class ContentPreviewPanel
 
         InitializeComponent();
     }
-    #endregion
+
 }

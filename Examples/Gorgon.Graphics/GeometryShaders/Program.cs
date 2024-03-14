@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2018 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: June 3, 2018 11:04:26 AM
 // 
-#endregion
+
 
 using System.Diagnostics;
 using System.Numerics;
@@ -40,17 +40,17 @@ using DX = SharpDX;
 namespace Gorgon.Examples;
 
 /// <summary>
-/// This example shows how to use a geometry shader with the Gorgon core graphics library.
+/// This example shows how to use a geometry shader with the Gorgon core graphics library
 ///
 /// A geometry shader is used to generate primitive data based on incoming primitive vertices (e.g. a set of vertices for a triangle, a single point, etc...). Using this, 
-/// we can dynamically build geometry on the GPU.
+/// we can dynamically build geometry on the GPU
 ///
 /// This example will take a single triangle, and build a fully 3D pyramid along with some animation in the geometry shader. It will also show how an application can build
-/// geometry without using an input layout, or vertex buffer.
+/// geometry without using an input layout, or vertex buffer
 /// </summary>
 static class Program
 {
-    #region Variables.
+
     // The main application form.
     private static FormMain _mainForm;
     // The graphics interface for the application.
@@ -85,9 +85,9 @@ static class Program
     private static float _angle;
     // The height offset.
     private static float _heightOffset;
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to update the world project matrix.
     /// </summary>
@@ -350,5 +350,5 @@ static class Program
             _graphics?.Dispose();
         }
     }
-    #endregion
+
 }

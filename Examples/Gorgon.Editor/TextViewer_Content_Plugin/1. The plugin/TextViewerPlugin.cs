@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2020 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: August 3, 2020 1:41:20 PM
 // 
-#endregion
+
 
 using System.Diagnostics;
 using System.Text;
@@ -42,31 +42,31 @@ using Microsoft.IO;
 namespace Gorgon.Examples;
 
 /// <summary>
-/// An example content plug in for the Gorgon Editor.
+/// An example content plug in for the Gorgon Editor
 /// </summary>
 /// <remarks>
 /// 
-/// The Gorgon Editor is able to load in various plug ins for end user content creation. This allows for flexibility by keeping the content workflow localized to one central application.
+/// The Gorgon Editor is able to load in various plug ins for end user content creation. This allows for flexibility by keeping the content workflow localized to one central application
 /// 
 /// Content plug ins produce/edit content files that contain the native data for the content (e.g. an image file will contain image data in a standard format like dds). But along with 
 /// these files metadata is stored so that extraneous data that can't be stored in the file itself can be accessed. The metadata can be attributes which is a key/value string pair that 
 /// can contain things like codec information, state information, etc...  Along with this attribute data, a list of categorized dependency file paths can be stored so that files that the 
-/// content requires to open correctly can be opened by the editor as required.
+/// content requires to open correctly can be opened by the editor as required
 /// 
 /// In this example, we'll show how to build a simple text viewer for the editor.  This class is the main entry point for the plug in. The editor calls the code in here to initialize and 
-/// prepare the content for editing, so this is where we need to start.
+/// prepare the content for editing, so this is where we need to start
 /// 
 /// Some notes before we begin:
 /// #1 This is a DLL project, for it to work correctly, the resulting DLL must be copied to the Plugins content directory of the Gorgon.Editor install location. For example, 
-/// if the editor is installed in C:\Gorgon\Editor\, then the plug in should be copied into the C:\Gorgon\Editor\Plugins\Content directory.
+/// if the editor is installed in C:\Gorgon\Editor\, then the plug in should be copied into the C:\Gorgon\Editor\Plugins\Content directory
 /// 
-/// #2 Running this plug in from Visual Studio should automatically copy the plug in and start up the editor.
+/// #2 Running this plug in from Visual Studio should automatically copy the plug in and start up the editor
 /// 
 /// #3 This is not meant for inexperienced developers. If you are a beginner, or just not comfortable with C#, it may be very confusing to understand as there are a lot of pieces to 
-/// building an editor plug in. Proceed at your own peril.
+/// building an editor plug in. Proceed at your own peril
 /// 
 /// There are several parts to a content plug in:
-/// 1. The plug in (this file).
+/// 1. The plug in (this file)
 /// 2. The views (UI for the content editor)
 /// 3. The view models (for MVVM)
 /// 4. The services (functionality to perform various operations using agnostic code)
@@ -75,12 +75,12 @@ namespace Gorgon.Examples;
 /// To start, we need to set up the initial plug in code to communicate with the host application (our editor).  
 /// 
 /// We begin by creating a class, and inheriting from the ContentPlugIn base class, and implement the IContentPlugInMetadata interface. The base class provides common functionality and 
-/// abstract methods to override that will allow building a preview image, and return information about the plug in.
+/// abstract methods to override that will allow building a preview image, and return information about the plug in
 /// </remarks>
 internal class TextViewerPlugin
     : ContentPlugIn, IContentPlugInMetadata
 {
-    #region Constants.
+
     // All content plug ins should provide a type value providing an ID describing what content is produced by this plug in. This will be stored 
     // in the metadata for the content file and can be used to identify the type of content when it is used as a dependency.
 
@@ -88,9 +88,9 @@ internal class TextViewerPlugin
     /// The type of content handled by this content plug in.
     /// </summary>
     public const string ContentTypeValue = "Text";
-    #endregion
 
-    #region Variables.
+
+
     // No thumbnail image.
     // This is the default image that will be displayed in the preview panel on the main window. 
     // Some plug ins will want to render small representation of the content so users can determine 
@@ -120,9 +120,9 @@ internal class TextViewerPlugin
     /// The name of the settings file.
     /// </summary>
     public static readonly string SettingsName = typeof(TextViewerPlugin).FullName;
-    #endregion
 
-    #region Properties.
+
+
     // This name is used as an internal identifier for the plug in. This is typically the fully qualified type name of the plug in class.
 
     /// <summary>Property to return the name of the plug in.</summary>
@@ -176,9 +176,9 @@ internal class TextViewerPlugin
     /// Plug in developers can override this to default the file name extension for their content when creating new content with <see cref="GetDefaultContentAsync(string, HashSet{string})"/>.
     /// </remarks>
     protected override GorgonFileExtension DefaultFileExtension => new(".txt", "Text files");
-    #endregion
 
-    #region Methods.
+
+
     // This method is not explicitly required, but is included here to set up default metadata attributes for our content.
     // It's only called if the plug in needs to determine if the file can be opened or not. Typically this is done when 
     // a file has no metadata, and thus no simple means of determining which plug in can open the file. 
@@ -516,9 +516,9 @@ internal class TextViewerPlugin
     /// <summary>Function to retrieve the icon used for new content creation.</summary>
     /// <returns>An image for the icon.</returns>
     public Image GetNewIcon() => Resources.textviewer_example_new_24x24;
-    #endregion
 
-    #region Constructor/Finalizer.
+
+
     // When we construct the plug in object, we'll need to send back a friendly description 
     // for display purposes.
 
@@ -529,5 +529,5 @@ internal class TextViewerPlugin
         SmallIconID = Guid.NewGuid();
         NewIconID = Guid.NewGuid();
     }
-    #endregion
+
 }

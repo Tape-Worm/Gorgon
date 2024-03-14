@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2018 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: October 29, 2018 1:04:03 PM
 // 
-#endregion
+
 
 using Gorgon.Editor.Content;
 using Gorgon.Editor.PlugIns;
@@ -32,12 +32,12 @@ using Newtonsoft.Json;
 namespace Gorgon.Editor.Services;
 
 /// <summary>
-/// Provides access to the various tool plugins in the application.
+/// Provides access to the various tool plugins in the application
 /// </summary>
 public interface IToolPlugInService
     : IDisabledPlugInService
 {
-    #region Properties.
+
     /// <summary>
     /// Property to return the list of tool plugins loaded in to the application.
     /// </summary>
@@ -53,9 +53,9 @@ public interface IToolPlugInService
     {
         get;
     }
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function called when a project is loaded/created.
     /// </summary>
@@ -95,5 +95,5 @@ public interface IToolPlugInService
     /// </para>
     /// </remarks>
     void WriteContentSettings<T>(string name, T contentSettings, params JsonConverter[] converters) where T : class;
-    #endregion
+
 }

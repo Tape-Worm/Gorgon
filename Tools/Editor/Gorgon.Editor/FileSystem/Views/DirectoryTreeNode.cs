@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2019 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: December 8, 2019 3:20:08 PM
 // 
-#endregion
+
 
 using System.ComponentModel;
 using Gorgon.Editor.UI;
@@ -31,12 +31,12 @@ using Gorgon.Editor.ViewModels;
 namespace Gorgon.Editor.Views;
 
 /// <summary>
-/// An tree node, representing a directory, for the <see cref="TreeEx"/> control.
+/// An tree node, representing a directory, for the <see cref="TreeEx"/> control
 /// </summary>
 internal class DirectoryTreeNode
     : TreeNode, IDataContext<IDirectory>
 {
-    #region Properties.
+
     /// <summary>Property to return the data context assigned to this view.</summary>
     public IDirectory ViewModel
     {
@@ -54,9 +54,9 @@ internal class DirectoryTreeNode
                 : base.ForeColor;
         set => base.ForeColor = value;
     }
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>Handles the PropertyChanged event of the DataContext control.</summary>
     /// <param name="sender">The source of the event.</param>
     /// <param name="e">The <see cref="PropertyChangedEventArgs"/> instance containing the event data.</param>
@@ -162,5 +162,5 @@ internal class DirectoryTreeNode
 
         ViewModel = dataContext;
     }
-    #endregion
+
 }

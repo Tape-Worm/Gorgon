@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2021 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: January 30, 2021 10:36:37 PM
 // 
-#endregion
+
 
 using System.Numerics;
 using System.Runtime.CompilerServices;
@@ -44,15 +44,15 @@ namespace Gorgon.Examples;
 /// <summary>
 /// GlassCube WPF
 /// 
-/// This is a WPF version of the GlassCube example. The purpose here is to show how to interoperate Gorgon with WPF.
+/// This is a WPF version of the GlassCube example. The purpose here is to show how to interoperate Gorgon with WPF
 /// 
 /// For the most part, the code for rendering is exactly the same as the original WinForms code. But, unlike the WinForms version, no swap chain is required 
 /// to display the image. Instead, WPF uses an Image control, with a D3D11Image as its image source. This setup gives us a render target that we can render 
-/// into like normal.
+/// into like normal
 /// 
 /// To enable WPF rendering, place an Image control in your XAML (inside of a grid, canvas, whatever, doesn't matter). Then, add a reference to the 
 /// Microsoft.Wpf.Interop.DirectX.dll (included in the Dependencies directory) assembly, and assign the D3D11Image to the ImageSource property of the Image 
-/// control. Ensure that your Image control has a name (x:Name attribute on the XAML). To see an example setup for this, look at the MainWindow.xaml file.
+/// control. Ensure that your Image control has a name (x:Name attribute on the XAML). To see an example setup for this, look at the MainWindow.xaml file
 /// 
 /// Once that is done, we create an instance of the GorgonWpfTarget object after we initialize the GorgonGraphics object and assign the Image control via the  
 /// constructor. 
@@ -61,30 +61,30 @@ namespace Gorgon.Examples;
 /// rendering we cannot just assign the Idle property on GorgonApplication. Instead, we assign the rendering method by calling the Run method on the 
 /// GorgonWPFTarget. 
 /// 
-/// When rendering, just pass the GorgonWPFTarget.RenderTargetView to the GorgonGraphics.SetRenderTarget method and you're off the races.
+/// When rendering, just pass the GorgonWPFTarget.RenderTargetView to the GorgonGraphics.SetRenderTarget method and you're off the races
 /// 
-/// And that is all that's required to get Gorgon working with WPF.
+/// And that is all that's required to get Gorgon working with WPF
 /// 
 /// Now, for the bad news. There are several limitations due to the nature of WPF:
 /// * This example, and anything using the Microsoft.Wpf.Interop.DirectX assembly MUST be compiled as x64. The assembly is compiled to x64 by default. If x86 
 ///   is required, developers can grab the source for the assembly from https://github.com/Microsoft/WPFDXInterop and compile it as x86. Then replace the x64 
-///   reference with the x86 reference in the Gorgon.Graphics.WPF project and then recompile that as x86. This, however, is not recommended and unsupported.
+///   reference with the x86 reference in the Gorgon.Graphics.WPF project and then recompile that as x86. This, however, is not recommended and unsupported
 ///   
-/// * No exclusive full screen support. However, windowed full screen should still be possible if the Window is setup correctly.
+/// * No exclusive full screen support. However, windowed full screen should still be possible if the Window is setup correctly
 /// 
-/// * Only the 32 bit BGRA format is supported for the render target. This is enforced by WPF.
+/// * Only the 32 bit BGRA format is supported for the render target. This is enforced by WPF
 /// 
-/// * A maximum frame rate of 60 frames per second is enforced by WPF. There is no stable way around this at this time.
+/// * A maximum frame rate of 60 frames per second is enforced by WPF. There is no stable way around this at this time
 /// </summary>
 public partial class MainWindow
     : Window
 {
-    #region Constants.
+
     // The target delta time.
     private const float TargetDelta = 1 / 60.0f;
-    #endregion
 
-    #region Variables.
+
+
     // The primary graphics interface.
     private GorgonGraphics _graphics;
     // The WPF render target. This is where we'll send our rendering.
@@ -119,9 +119,9 @@ public partial class MainWindow
     private Point? _dragStart;
     // Flag to indicate that the window is being dragged.
     private bool _isDragging;
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>Handles the SizeChanged event of the grid control.</summary>
     /// <param name="sender">The source of the event.</param>
     /// <param name="e">The <see cref="SizeChangedEventArgs" /> instance containing the event data.</param>
@@ -450,10 +450,7 @@ public partial class MainWindow
         _isDragging = false;
         _dragStart = null;
     }
-    #endregion
 
-    #region Constructor.
     /// <summary>Initializes a new instance of the <see cref="MainWindow" /> class.</summary>
     public MainWindow() => InitializeComponent();
-    #endregion
 }

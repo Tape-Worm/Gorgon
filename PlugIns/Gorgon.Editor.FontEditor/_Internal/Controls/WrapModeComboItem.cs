@@ -1,6 +1,6 @@
-﻿#region MIT.
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2014 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: Tuesday, March 11, 2014 9:18:52 PM
 // 
-#endregion
+
 
 using System.Drawing.Drawing2D;
 using Gorgon.Graphics.Fonts;
@@ -30,17 +30,17 @@ using Gorgon.Graphics.Fonts;
 namespace Gorgon.Editor.FontEditor;
 
 /// <summary>
-/// A wrap mode combo box item.
+/// A wrap mode combo box item
 /// </summary>
 /// <remarks>
-/// Initializes a new instance of the <see cref="WrapModeComboItem"/> class.
+/// Initializes a new instance of the <see cref="WrapModeComboItem"/> class
 /// </remarks>
 /// <param name="wrapMode">The wrap mode.</param>
 /// <param name="text">The text.</param>
 internal struct WrapModeComboItem(GlyphBrushWrapMode wrapMode, string text)
         : IEquatable<WrapModeComboItem>
 {
-    #region Variables.
+
     // Item text.
     private readonly string _text = text;
 
@@ -48,9 +48,9 @@ internal struct WrapModeComboItem(GlyphBrushWrapMode wrapMode, string text)
     /// The wrapping mode.
     /// </summary>
     public readonly GlyphBrushWrapMode WrapMode = wrapMode;
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Operator to determine if two instances are equal.
     /// </summary>
@@ -114,8 +114,8 @@ internal struct WrapModeComboItem(GlyphBrushWrapMode wrapMode, string text)
     /// </returns>
     public override readonly string ToString() => _text;
 
-    #endregion
-    #region Constructor/Destructor.
+
+
 
     /// <summary>
     /// Initializes a new instance of the <see cref="WrapModeComboItem"/> struct.
@@ -125,9 +125,7 @@ internal struct WrapModeComboItem(GlyphBrushWrapMode wrapMode, string text)
         : this(wrapMode, string.Empty)
     {
     }
-    #endregion
 
-    #region IEquatable<WrapModeComboItem> Members
     /// <summary>
     /// Indicates whether the current object is equal to another object of the same type.
     /// </summary>
@@ -136,5 +134,5 @@ internal struct WrapModeComboItem(GlyphBrushWrapMode wrapMode, string text)
     /// true if the current object is equal to the <paramref name="other" /> parameter; otherwise, false.
     /// </returns>
     public bool Equals(WrapModeComboItem other) => Equals(ref this, ref other);
-    #endregion
+
 }

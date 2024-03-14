@@ -27,7 +27,7 @@ partial class AnimationColorKeyEditor
         base.Dispose(disposing);
     }
 
-    #region Component Designer generated code
+
 
     /// <summary> 
     /// Required method for Designer support - do not modify 
@@ -86,7 +86,7 @@ partial class AnimationColorKeyEditor
 
     }
 
-    #endregion
+
 
     private UI.Controls.ColorPicker PickerColor;
     private UI.Controls.AlphaPicker PickerAlpha;

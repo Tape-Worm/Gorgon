@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2018 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: March 22, 2018 11:32:20 AM
 // 
-#endregion
+
 
 using System.Diagnostics;
 using Gorgon.Core;
@@ -31,17 +31,17 @@ using Gorgon.IO;
 namespace Gorgon.Diagnostics.LogProviders;
 
 /// <summary>
-/// A provider used to store logging messages to a text file.
+/// A provider used to store logging messages to a text file
 /// </summary>
 internal class LogTextFileProvider
     : IGorgonLogProvider
 {
-    #region Variables.
+
     // The file information for the log file.
     private readonly FileInfo _filePath;
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to open the data store for writing.
     /// </summary>
@@ -129,9 +129,9 @@ internal class LogTextFileProvider
             stream?.Close();
         }
     }
-    #endregion
 
-    #region Constructor/Finalizer.
+
+
     /// <summary>
     /// Initializes a new instance of the <see cref="LogTextFileProvider"/> class.
     /// </summary>
@@ -152,5 +152,5 @@ internal class LogTextFileProvider
 
         _filePath = new FileInfo(filePath.FormatPath(Path.DirectorySeparatorChar));
     }
-    #endregion
+
 }

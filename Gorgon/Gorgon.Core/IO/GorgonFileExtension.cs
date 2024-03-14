@@ -1,6 +1,6 @@
-﻿#region MIT.
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2013 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: Sunday, September 22, 2013 8:28:38 PM
 // 
-#endregion
+
 
 using Gorgon.Core;
 using Gorgon.Properties;
@@ -30,20 +30,20 @@ using Gorgon.Properties;
 namespace Gorgon.IO;
 
 /// <summary>
-/// An extension and description for a file.
+/// An extension and description for a file
 /// </summary>
 /// <remarks>
 /// <para>
-/// This type allows for easy manipulation of file extensions and their descriptions when populating a file dialog extension list.
+/// This type allows for easy manipulation of file extensions and their descriptions when populating a file dialog extension list
 /// </para>
 /// <para>
-/// The file extensions can be compared to each other to determine uniqueness. When comparing file extensions, the comparison is done with a case-insensitive comparer.
+/// The file extensions can be compared to each other to determine uniqueness. When comparing file extensions, the comparison is done with a case-insensitive comparer
 /// </para>
 /// </remarks>
 public readonly struct GorgonFileExtension
         : IEquatable<GorgonFileExtension>, IComparable<GorgonFileExtension>, IEquatable<string>, IComparable<string>, IGorgonNamedObject
 {
-    #region Variables.
+
     /// <summary>
     /// The file extension without the leading period.
     /// </summary>
@@ -53,9 +53,9 @@ public readonly struct GorgonFileExtension
     /// The description of the file type.
     /// </summary>
     public readonly string Description;
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to return the name of the object.
     /// </summary>
@@ -76,9 +76,9 @@ public readonly struct GorgonFileExtension
     {
         get;
     }
-    #endregion
 
-    #region Operators.
+
+
     /// <summary>
     /// Operator to return whether 2 instances are equal.
     /// </summary>
@@ -126,9 +126,9 @@ public readonly struct GorgonFileExtension
     /// <param name="right">Right instance to compare.</param>
     /// <returns><b>true</b> if greater than, <b>false</b> if not.</returns>
     public static bool operator >(GorgonFileExtension left, GorgonFileExtension right) => string.Compare(left.Extension, right.Extension, StringComparison.OrdinalIgnoreCase) == 1;
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to return if instances are equal.
     /// </summary>
@@ -222,9 +222,9 @@ public readonly struct GorgonFileExtension
             : string.Compare(Extension, other, StringComparison.OrdinalIgnoreCase);
 #pragma warning restore IDE0046 // Convert to conditional expression
     }
-    #endregion
 
-    #region Constructor/Destructor.
+
+
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonFileExtension"/> struct.
     /// </summary>
@@ -260,5 +260,5 @@ public readonly struct GorgonFileExtension
         : this(extension, string.Empty)
     {
     }
-    #endregion
+
 }

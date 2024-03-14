@@ -14,7 +14,7 @@ using Gorgon.Timing;
 namespace Gorgon.Graphics.Avalonia;
 
 /// <summary>
-/// A control used to display an Avalonia swap chain so that Gorgon can render into it.
+/// A control used to display an Avalonia swap chain so that Gorgon can render into it
 /// </summary>
 /// <remarks>
 /// <para>
@@ -26,23 +26,23 @@ namespace Gorgon.Graphics.Avalonia;
 /// </para>
 /// <para>
 /// The application loop Idle method is different from the Windows Forms version. It receives a <see cref="GorgonRenderTarget2DView"/> which represents the render target from Avalonia. When this target 
-/// receives rendering, it will appear in the Avalonia window. All other rendering functionality works as it does with other UI systems.
+/// receives rendering, it will appear in the Avalonia window. All other rendering functionality works as it does with other UI systems
 /// </para>
 /// <para>
 /// When finished, the application should destroy any resources it created in the <c>DetachedFromLogicalTree</c> event on the control. This, however, may vary depending on how things are utilized
-/// throughout your application.
+/// throughout your application
 /// </para>
 /// <para>
-/// This control exposes a <see cref="Resized"/> event which users can use to handle a resize of the control and recalculate things like view size, and project matrices.
+/// This control exposes a <see cref="Resized"/> event which users can use to handle a resize of the control and recalculate things like view size, and project matrices
 /// </para>
 /// <para>
-/// For an example on how to use the control properly, check the GlassCube.Avalonia example.
+/// For an example on how to use the control properly, check the GlassCube.Avalonia example
 /// </para>
 /// </remarks>
 public class GorgonAvaloniaSwapChainControl
     : Control
 {
-    #region Variables.
+
     // The interop layer for the GPU.
     private ICompositionGpuInterop _gpuInterop;
     // The surface that will receive the rendering.
@@ -57,9 +57,9 @@ public class GorgonAvaloniaSwapChainControl
     private Func<GorgonRenderTarget2DView, bool> _idle;
     // Flag to indicate that the next frame is queued for rendering.
     private bool _nextFrameQueued;
-    #endregion
 
-    #region Events.
+
+
     /// <summary>
     /// Event for a resized control.
     /// </summary>
@@ -73,9 +73,9 @@ public class GorgonAvaloniaSwapChainControl
         add => AddHandler(ResizedEvent, value);
         remove => RemoveHandler(ResizedEvent, value);
     }
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to extract the functionality for composition of the swap chain on the control.
     /// </summary>
@@ -234,5 +234,5 @@ public class GorgonAvaloniaSwapChainControl
         _nextFrameQueued = true;
         _compositor?.RequestCompositionUpdate(Update);
     }
-    #endregion
+
 }

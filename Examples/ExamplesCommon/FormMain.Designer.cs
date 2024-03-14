@@ -20,8 +20,6 @@ partial class FormMain
         base.Dispose(disposing);
     }
 
-    #region Windows Form Designer generated code
-
     /// <summary>
     /// Required method for Designer support - do not modify
     /// the contents of this method with the code editor.
@@ -55,8 +53,6 @@ partial class FormMain
         this.Text = "EXAMPLE TITLE GOES HERE";
         this.ResumeLayout(false);
     }
-
-    #endregion
 
     private System.Windows.Forms.Label LabelPleaseWait;
 }

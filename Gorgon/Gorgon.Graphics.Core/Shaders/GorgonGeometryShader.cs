@@ -1,6 +1,6 @@
-﻿#region MIT.
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2011 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: Thursday, December 15, 2011 12:49:30 PM
 // 
-#endregion
+
 
 using Gorgon.Diagnostics;
 using SharpDX.D3DCompiler;
@@ -31,26 +31,26 @@ using D3D11 = SharpDX.Direct3D11;
 namespace Gorgon.Graphics.Core;
 
 /// <summary>
-/// A shader that can be used to produce new geometry.
+/// A shader that can be used to produce new geometry
 /// </summary>
 /// <remarks>
 /// <para>
-/// A geometry shader is a program that is used to build new geometry on the GPU. This allows for effects like point sprites.
+/// A geometry shader is a program that is used to build new geometry on the GPU. This allows for effects like point sprites
 /// </para>
 /// <para>
 /// In Gorgon, shaders can be compiled from a string containing source code via the <see cref="GorgonShaderFactory"/>, or loaded from a <see cref="Stream"/> or file for quicker access. The 
-/// <see cref="GorgonShaderFactory"/> is required to compile or read shaders, they cannot be created via the <c>new</c> keyword.
+/// <see cref="GorgonShaderFactory"/> is required to compile or read shaders, they cannot be created via the <c>new</c> keyword
 /// </para>
 /// </remarks>
 public sealed class GorgonGeometryShader
     : GorgonShader
 {
-    #region Variables.
+
     // The D3D 11 geometry shader.
     private D3D11.GeometryShader _shader;
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to set or return the Direct3D geometry shader.
     /// </summary>
@@ -72,9 +72,9 @@ public sealed class GorgonGeometryShader
     /// Property to return the type of shader.
     /// </summary>
     public override ShaderType ShaderType => ShaderType.Geometry;
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to convert this geometry shader to use a stream output.
     /// </summary>
@@ -131,9 +131,9 @@ public sealed class GorgonGeometryShader
 
         base.Dispose();
     }
-    #endregion
 
-    #region Constructor/Destructor.
+
+
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonGeometryShader" /> class.
     /// </summary>
@@ -157,5 +157,5 @@ public sealed class GorgonGeometryShader
         {
             DebugName = name + "_ID3D11GeometryShader"
         };
-    #endregion
+
 }

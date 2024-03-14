@@ -1,6 +1,6 @@
-﻿#region MIT.
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2013 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: Saturday, January 19, 2013 7:32:49 PM
 // 
-#endregion
+
 
 using System.Numerics;
 using System.Text;
@@ -45,23 +45,23 @@ using DX = SharpDX;
 namespace Gorgon.Examples;
 
 /// <summary>
-/// Main application form.
+/// Main application form
 /// </summary>
 /// <remarks>
-/// This example is a port of the Gorgon 1.x BZip packed file system example into Gorgon 3.x.
+/// This example is a port of the Gorgon 1.x BZip packed file system example into Gorgon 3.x
 /// 
 /// In this example we mount a Gorgon packed file as a virtual file system and pull in an image, 
-/// some Gorgon 2.0 sprites, the backing sprite image and some text for display.
+/// some Gorgon 2.0 sprites, the backing sprite image and some text for display
 /// 
 /// The difference between this example and the folder file system example is that we're loading
 /// a packed file from the previous version of Gorgon as a file system.  The scenario is the same
 /// as loading a zip file:  Load the provider plug in into the file system, and mount the packed
-/// file.
+/// file
 /// </remarks>
 public partial class Form
     : System.Windows.Forms.Form
 {
-    #region Variables.
+
     // The plug in assembly cache.
     private GorgonMefPlugInCache _assemblyCache;
     // The file system.
@@ -98,9 +98,9 @@ public partial class Form
     private bool _showHelp = true;
     // Show rendering statistics.	
     private bool _showStats;
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to load the Gorgon pack file provider plugin.
     /// </summary>
@@ -460,12 +460,10 @@ public partial class Form
             Cursor = Cursors.Default;
         }
     }
-    #endregion
 
-    #region Constructor/Destructor.
     /// <summary>
     /// Constructor.
     /// </summary>
     public Form() => InitializeComponent();
-    #endregion
+
 }

@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2020 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,30 +11,30 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: March 1, 2020 8:20:42 PM
 // 
-#endregion
+
 
 using Gorgon.Graphics.Imaging;
 
 namespace Gorgon.Editor.ImageEditor;
 
 /// <summary>
-/// The service used to apply effects and generate previews for effects.
+/// The service used to apply effects and generate previews for effects
 /// </summary>
 internal interface IFxService
     : IDisposable
 {
-    #region Properties.
+
     /// <summary>
     /// Property to return the image that will contain the effect output.
     /// </summary>
@@ -42,9 +42,9 @@ internal interface IFxService
     {
         get;
     }
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to apply the current effect that is using a preview.
     /// </summary>
@@ -73,5 +73,5 @@ internal interface IFxService
     /// <param name="arrayDepth">The selected array index or depth slice (volume textures).</param>
     /// <param name="mipLevel">The currently selected mip map level.</param>
     void SetImage(IGorgonImage image, int arrayDepth, int mipLevel);
-    #endregion
+
 }

@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2018 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: September 4, 2018 10:43:51 PM
 // 
-#endregion
+
 
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
@@ -43,18 +43,18 @@ using Gorgon.Timing;
 namespace Gorgon.Editor.ViewModels;
 
 /// <summary>
-/// The file explorer view model.
+/// The file explorer view model
 /// </summary>
 internal class FileExplorer
     : ViewModelBase<FileExplorerParameters, IHostContentServices>, IFileExplorer, IContentFileManager
 {
-    #region Constants.
+
     // The amount of time, in milliseconds, to pause an operation so the user can cancel the operation.
     private const int MaxUserInteractionTimeMilliseconds = 50;
     private const int MinUserInteractionTimeMilliseconds = 5;
-    #endregion
 
-    #region Events.
+
+
     // Internal event for the file system updated event.
     private event EventHandler FileSystemUpdatedEvent;
     // Event triggered when the SelectedFileCount changes.
@@ -121,9 +121,9 @@ internal class FileExplorer
             }
         }
     }
-    #endregion
 
-    #region Variables.
+
+
     // The synchronization locks for the file system events.
     private readonly object _fsUpdatedEventLock = new();
     private readonly object _selectedChangedEventLock = new();
@@ -156,9 +156,9 @@ internal class FileExplorer
     private int _userInteractionTimeMilliseconds = MaxUserInteractionTimeMilliseconds;
     private readonly IGorgonTimer _uiTimer = GorgonTimerQpc.SupportsQpc() ? new GorgonTimerQpc() : new GorgonTimerMultimedia();
     private double _lastTime = -1;
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>Property to return the current directory.</summary>
     string IContentFileManager.CurrentDirectory => SelectedDirectory?.FullPath ?? Root.FullPath;
 
@@ -415,9 +415,9 @@ internal class FileExplorer
     {
         get;
     }
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to call the <see cref="SelectedFilesChangedEvent"/>
     /// </summary>
@@ -3540,9 +3540,9 @@ internal class FileExplorer
 
         return excluder.IsExcluded;
     }
-    #endregion
 
-    #region Constructor/Finalizer.
+
+
     /// <summary>
     /// Initializes a new instance of the <see cref="FileExplorer"/> class.
     /// </summary>
@@ -3566,5 +3566,5 @@ internal class FileExplorer
         RefreshCommand = new EditorAsyncCommand<object>(DoRefreshAsync);
         GetDirectoryCommand = new EditorCommand<GetDirectoryArgs>(DoGetDirectory, CanGetDirectory);
     }
-    #endregion
+
 }

@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2019 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: March 28, 2019 9:48:28 AM
 // 
-#endregion
+
 
 using System.ComponentModel;
 using Gorgon.Editor.UI;
@@ -32,21 +32,21 @@ using Gorgon.Graphics;
 namespace Gorgon.Examples;
 
 /// <summary>
-/// A color selection control for the text.
+/// A color selection control for the text
 /// </summary>
 /// <remarks>
-/// This view is a sub panel of the main view. It shows up when input is required from the user before applying that input to the actual content.
+/// This view is a sub panel of the main view. It shows up when input is required from the user before applying that input to the actual content
 /// When the sub panel is activated it appears on the right hand side of the content view and can have an OK/Cancel button if the panel is modal 
-/// or it can apply its values to the content in real time if not.
+/// or it can apply its values to the content in real time if not
 /// 
 /// In this example, we use this sub panel to provide us with a color picker editor that will adjust the color of the text content. 
 /// 
-/// To implement a sub panel, inherit from the EditorSubPanelCommon class and implement an IDataContext interface.
+/// To implement a sub panel, inherit from the EditorSubPanelCommon class and implement an IDataContext interface
 /// </remarks>
 internal partial class TextColorView
     : EditorSubPanelCommon, IDataContext<ITextColor>
 {
-    #region Properties.
+
     /// <summary>
     /// Property to return the data context for the view.
     /// </summary>
@@ -56,9 +56,9 @@ internal partial class TextColorView
         get;
         private set;
     }
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>Handles the ColorChanged event of the Picker control.</summary>
     /// <param name="sender">The source of the event.</param>
     /// <param name="e">The <see cref="ColorChangedEventArgs"/> instance containing the event data.</param>
@@ -217,10 +217,10 @@ internal partial class TextColorView
 
         ViewModel.PropertyChanged += DataContext_PropertyChanged;
     }
-    #endregion
 
-    #region Constructor/Finalizer.
+
+
     /// <summary>Initializes a new instance of the <see cref="TextColorView"/> class.</summary>
     public TextColorView() => InitializeComponent();
-    #endregion
+
 }

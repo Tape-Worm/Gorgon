@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2020 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: February 7, 2020 3:36:57 PM
 // 
-#endregion
+
 
 using System.Numerics;
 using Gorgon.Animation;
@@ -35,13 +35,13 @@ using DX = SharpDX;
 namespace Gorgon.Editor.Rendering;
 
 /// <summary>
-/// Provides animation capability for camera actions.
+/// Provides animation capability for camera actions
 /// </summary>
 internal class CameraAnimationController<T>
     : GorgonAnimationController<GorgonOrthoCamera>
     where T : class, IVisualEditorContent
 {
-    #region Variables.
+
     /// <summary>
     /// The track registration for the position.
     /// </summary>
@@ -53,9 +53,9 @@ internal class CameraAnimationController<T>
 
     // The renderer that is animating.
     private readonly DefaultContentRenderer<T> _renderer;
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>Function called when a <see cref="GorgonColor"/> value needs to be updated on the animated object.</summary>
     /// <param name="track">The track currently being processed.</param>
     /// <param name="animObject">The object to update.</param>
@@ -141,9 +141,9 @@ internal class CameraAnimationController<T>
     {
         // Not needed.
     }
-    #endregion
 
-    #region Constructor.
+
+
     /// <summary>Initializes a new instance of the <see cref="CameraAnimationController{T}"/> class.</summary>
     public CameraAnimationController(DefaultContentRenderer<T> renderer)
     {
@@ -152,5 +152,5 @@ internal class CameraAnimationController<T>
         RegisterTrack(ZoomTrack);
         RegisterTrack(PositionTrack);
     }
-    #endregion
+
 }

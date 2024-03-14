@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2019 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: February 5, 2019 7:54:23 PM
 // 
-#endregion
+
 
 using Gorgon.Editor.ImageEditor.Properties;
 using Gorgon.Editor.UI;
@@ -32,21 +32,21 @@ using Gorgon.Math;
 namespace Gorgon.Editor.ImageEditor.ViewModels;
 
 /// <summary>
-/// The view model for the image dimensions editor.
+/// The view model for the image dimensions editor
 /// </summary>
 internal class MipMapSettings
     : HostedPanelViewModelBase<HostedPanelViewModelParameters>, IMipMapSettings
 {
-    #region Variables.
+
     // The maximum number of mip map levels.
     private int _maxMipLevels = int.MaxValue;
     // The current resizing filter.
     private ImageFilter _resizeFilter = ImageFilter.Fant;
     // The number of mip map levels in the image.
     private int _mipLevels = 2;
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>Property to return whether the panel is modal.</summary>
     public override bool IsModal => true;
 
@@ -108,9 +108,9 @@ internal class MipMapSettings
     {
         get;
     }
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to update the maximum mip map count for the current spatial dimensions.
     /// </summary>
@@ -155,9 +155,9 @@ internal class MipMapSettings
             HostServices.MessageDisplay.ShowError(ex, Resources.GORIMG_ERR_IMAGE_INFO);
         }
     }
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>Function to inject dependencies for the view model.</summary>
     /// <param name="injectionParameters">The parameters to inject.</param>
     /// <remarks>
@@ -167,10 +167,10 @@ internal class MipMapSettings
     {
 
     }
-    #endregion
 
-    #region Constructor.
+
+
     /// <summary>Initializes a new instance of the <see cref="DimensionSettings"/> class.</summary>
     public MipMapSettings() => UpdateImageInfoCommand = new EditorCommand<IGorgonImage>(DoUpdateImageInfo);
-    #endregion
+
 }

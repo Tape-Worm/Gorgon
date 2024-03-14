@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2018 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: August 10, 2018 9:11:41 PM
 // 
-#endregion
+
 
 using System.Numerics;
 using Gorgon.Core;
@@ -39,11 +39,11 @@ using DX = SharpDX;
 namespace Gorgon.Examples;
 
 /// <summary>
-/// Main entry point for the example application.
+/// Main entry point for the example application
 /// </summary>
 static class Program
 {
-    #region Variables.
+
     // The primary graphics interface.
     private static GorgonGraphics _graphics;
     // The main "screen" for the application.
@@ -59,9 +59,9 @@ static class Program
     // Angles of rotation in degrees.
     private static float _angle1;
     private static float _angle2 = 360.0f;
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function called when the application goes into an idle state.
     /// </summary>
@@ -274,5 +274,5 @@ static class Program
             _graphics?.Dispose();
         }
     }
-    #endregion
+
 }

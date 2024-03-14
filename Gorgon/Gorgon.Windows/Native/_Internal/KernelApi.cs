@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2015 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: Wednesday, August 12, 2015 8:07:36 PM
 // 
-#endregion
+
 
 using System.Runtime.InteropServices;
 using System.Security;
@@ -30,7 +30,7 @@ using System.Security;
 namespace Gorgon.Native;
 
 /// <summary>
-/// The type of control signal used to close the console window.
+/// The type of control signal used to close the console window
 /// </summary>
 internal enum ConsoleCloseSignal
     : uint
@@ -58,19 +58,19 @@ internal enum ConsoleCloseSignal
 }
 
 /// <summary>
-/// Native windows kernal API functionality.
+/// Native windows kernal API functionality
 /// </summary>
 [SuppressUnmanagedCodeSecurity]
 internal static partial class KernelApi
 {
-    #region Constants.
+
     /// <summary>
     /// Standard output handle.
     /// </summary>
     public const int StdOutputHandle = -11;
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to return the number of bytes of installed physical RAM.
     /// </summary>
@@ -102,18 +102,18 @@ internal static partial class KernelApi
             return GlobalMemoryStatusEx(ref memory) ? memory.ullAvailablePhysical : -1;
         }
     }
-    #endregion
 
-    #region Delegates.
+
+
     /// <summary>
     /// Event delegate for closing the console window.
     /// </summary>
     /// <param name="dwControlType">The type of event.</param>
     /// <returns><b>true</b> if the event is handled, <b>false</b> if not.</returns>
     public delegate bool ConsoleCloseHandler(ConsoleCloseSignal dwControlType);
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to retrieve the standard handle.
     /// </summary>
@@ -226,12 +226,12 @@ internal static partial class KernelApi
     [LibraryImport("kernel32")]
     [return: MarshalAs(UnmanagedType.Bool)]
     public static partial bool QueryPerformanceCounter(out long performanceCount);
-    #endregion
 
-    #region Constructor.
+
+
     /// <summary>
     /// Initializes static members of the <see cref="KernelApi"/> class.
     /// </summary>
     static KernelApi() => Marshal.PrelinkAll(typeof(KernelApi));
-    #endregion
+
 }

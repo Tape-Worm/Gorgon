@@ -1,4 +1,4 @@
-﻿#region MIT
+﻿
 // 
 // Gorgon
 // Copyright (C) 2015 Michael Winsor
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: Sunday, September 13, 2015 1:47:57 PM
 // 
-#endregion
+
 
 using Gorgon.Diagnostics;
 using Gorgon.Input.DirectInput.Properties;
@@ -31,23 +31,23 @@ using DI = SharpDX.DirectInput;
 namespace Gorgon.Input.DirectInput;
 
 /// <summary>
-/// The driver for DirectInput functionality.
+/// The driver for DirectInput functionality
 /// </summary>
 /// <remarks>
-/// This driver will enumerate all gaming devices except those covered by the XInput driver. To use those devices, use the XInput driver directly.
+/// This driver will enumerate all gaming devices except those covered by the XInput driver. To use those devices, use the XInput driver directly
 /// </remarks>
 internal sealed class GorgonDirectInputDriver
     : GorgonGamingDeviceDriver
 {
-    #region Variables.
+
     // Primary direct input interface.
     private Lazy<DI.DirectInput> _directInput;
     // The available axis mappings for the individual gaming devices.
     private readonly Dictionary<IGorgonGamingDeviceInfo, IReadOnlyDictionary<GamingDeviceAxis, DI.DeviceObjectId>> _axisMappings =
                                 [];
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>Releases unmanaged and - optionally - managed resources.</summary>
     /// <param name="disposing">
     ///   <c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
@@ -139,13 +139,13 @@ internal sealed class GorgonDirectInputDriver
             // Attempt to acquire the device immediately.
             IsAcquired = true
         };
-    #endregion
 
-    #region Constructor/Finalizer.
+
+
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonDirectInputDriver"/> class.
     /// </summary>
     public GorgonDirectInputDriver()
         : base(Resources.GORINP_DI_DESC) => _directInput = new Lazy<DI.DirectInput>(() => new DI.DirectInput(), true);
-    #endregion
+
 }

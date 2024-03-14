@@ -23,6 +23,6 @@ namespace Gorgon.Input.Test.Mock
                    };
         }
 
-        #endregion
+    
     }
 }

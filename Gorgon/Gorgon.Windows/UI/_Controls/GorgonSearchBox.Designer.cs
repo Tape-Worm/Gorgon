@@ -20,7 +20,7 @@ partial class GorgonSearchBox
         base.Dispose(disposing);
     }
 
-    #region Component Designer generated code
+
 
     /// <summary> 
     /// Required method for Designer support - do not modify 
@@ -111,7 +111,7 @@ partial class GorgonSearchBox
 
     }
 
-    #endregion
+
 
     private GorgonCueTextBox TextSearch;
     private System.Windows.Forms.Button ButtonClearSearch;

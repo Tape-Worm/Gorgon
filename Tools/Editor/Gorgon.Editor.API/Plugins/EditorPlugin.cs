@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2018 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: October 12, 2018 12:48:16 PM
 // 
-#endregion
+
 
 using Gorgon.Editor.UI;
 using Gorgon.PlugIns;
@@ -30,12 +30,12 @@ using Gorgon.PlugIns;
 namespace Gorgon.Editor.PlugIns;
 
 /// <summary>
-/// The type of plug in supported by the editor.
+/// The type of plug in supported by the editor
 /// </summary>
 /// <remarks>
 /// <para>
 /// This indicates the supported plug in types that the editor recognizes (with the exception of the <see cref="Unknown"/> value). Any plug in created for use with the application <b>must</b> 
-/// be one of these types, otherwise it will not be loaded by the host application.
+/// be one of these types, otherwise it will not be loaded by the host application
 /// </para>
 /// </remarks>
 public enum PlugInType
@@ -67,21 +67,21 @@ public enum PlugInType
 }
 
 /// <summary>
-/// The base class for an editor plug in.
+/// The base class for an editor plug in
 /// </summary>
 /// <remarks>
-/// Initializes a new instance of the <see cref="EditorPlugIn"/> class.
+/// Initializes a new instance of the <see cref="EditorPlugIn"/> class
 /// </remarks>
 /// <param name="description">Optional description of the plugin.</param>
 public abstract class EditorPlugIn(string description)
         : GorgonPlugIn(description)
 {
-    #region Variables.
+
     // Empty string array for IsPlugInAvailable.
     private readonly IReadOnlyList<string> _defaultPlugInAvailablity = [];
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to return the common services from the host application.
     /// </summary>
@@ -114,9 +114,9 @@ public abstract class EditorPlugIn(string description)
     {
         get;
     }
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to retrieve the settings interface for this plug in.
     /// </summary>
@@ -173,5 +173,5 @@ public abstract class EditorPlugIn(string description)
     /// </remarks>
     public IReadOnlyList<string> IsPlugInAvailable() => OnGetPlugInAvailability();
 
-    #endregion
+
 }

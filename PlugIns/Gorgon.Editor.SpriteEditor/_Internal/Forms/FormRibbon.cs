@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2019 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: April 2, 2019 11:23:30 PM
 // 
-#endregion
+
 
 using System.ComponentModel;
 using System.Numerics;
@@ -38,15 +38,15 @@ using DX = SharpDX;
 namespace Gorgon.Editor.SpriteEditor;
 
 /// <summary>
-/// Provides a ribbon interface for the plug in view.
+/// Provides a ribbon interface for the plug in view
 /// </summary>
 /// <remarks>
-/// We cannot provide a ribbon on the control directly. For some reason, the krypton components will only allow ribbons on forms.
+/// We cannot provide a ribbon on the control directly. For some reason, the krypton components will only allow ribbons on forms
 /// </remarks>
 internal partial class FormRibbon
     : KryptonForm, IDataContext<ISpriteContent>
 {
-    #region Variables.
+
     // The list of menu items associated with the zoom level.
     private readonly Dictionary<ZoomLevels, ToolStripMenuItem> _menuItems = [];
     // The buttons on the ribbon.
@@ -59,9 +59,9 @@ internal partial class FormRibbon
     private ZoomLevels _zoomLevel = ZoomLevels.ToWindow;
     // The renderer for the content.
     private IContentRenderer _contentRenderer;
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to set or return the current graphics context.
     /// </summary>        
@@ -109,9 +109,9 @@ internal partial class FormRibbon
             UpdateZoomMenu();
         }
     }
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>Handles the ZoomScale event of the ContentRenderer control.</summary>
     /// <param name="sender">The source of the event.</param>
     /// <param name="e">The <see cref="ZoomScaleEventArgs"/> instance containing the event data.</param>
@@ -946,9 +946,9 @@ internal partial class FormRibbon
         _zoomLevel = ZoomLevels.ToWindow;
         UpdateZoomMenu();
     }
-    #endregion
 
-    #region Constructor.
+
+
     /// <summary>Initializes a new instance of the FormRibbon class.</summary>
     public FormRibbon()
     {
@@ -968,5 +968,5 @@ internal partial class FormRibbon
             _menuItems[level] = menuItem;
         }
     }
-    #endregion
+
 }

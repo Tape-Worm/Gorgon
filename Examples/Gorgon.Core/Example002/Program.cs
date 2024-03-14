@@ -1,6 +1,6 @@
-﻿#region MIT.
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2012 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: Wednesday, September 12, 2012 8:26:10 PM
 // 
-#endregion
+
 
 using System.Drawing;
 using System.Windows.Forms;
@@ -33,21 +33,21 @@ using Gorgon.UI;
 namespace Gorgon.Examples;
 
 /// <summary>
-/// Entry point class.
+/// Entry point class
 /// </summary>
 /// <remarks>This example doesn't do much, just uses the idle time to draw pixels to the window.  It's meant to show 
 /// how to use the idle loop from outside of the form.</remarks>
 internal static class Program
 {
-    #region Variables.
+
     private static readonly Random _rnd = new();			// Random number generator.
     private static FormMain _form;                              // Our application form.
     private static int _lastX;                                  // Last horizontal coordinate.
     private static int _lastY;                                  // Last vertical coordinate.
     private static float _lastTime;                             // Last time we drew.
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function that's called during idle time.
     /// </summary>
@@ -114,5 +114,5 @@ internal static class Program
             ex.Catch(_ => GorgonDialogs.ErrorBox(null, _), GorgonApplication.Log);
         }
     }
-    #endregion
+
 }

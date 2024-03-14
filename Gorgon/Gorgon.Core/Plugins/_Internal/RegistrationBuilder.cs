@@ -1,10 +1,10 @@
 ﻿#if NETSTANDARD2_0
-// Licensed to the .NET Foundation under one or more agreements.
-// The .NET Foundation licenses this file to you under the MIT license.
+// Licensed to the .NET Foundation under one or more agreements
+// The .NET Foundation licenses this file to you under the MIT license
 // See the LICENSE file in the project root for more information.
 
-// This code is here because for some stupid reason, Microsoft has made it so that the System.ComponentModel.Composition.Registration nuget package only works on netstandard 2.1.
-// Obviously, this is untrue as this code works just fine under netstandard 2.0. This could be a mistake on their part, but it's more likely some idiotic decision they've made.
+// This code is here because for some stupid reason, Microsoft has made it so that the System.ComponentModel.Composition.Registration nuget package only works on netstandard 2.1
+// Obviously, this is untrue as this code works just fine under netstandard 2.0. This could be a mistake on their part, but it's more likely some idiotic decision they've made
 // All of this code has been pulled from the .NET Runtime github repo at (and modified to compile by moi):
 // https://github.com/dotnet/runtime
 

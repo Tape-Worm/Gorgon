@@ -1,6 +1,6 @@
-﻿#region MIT.
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2013 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: Friday, July 19, 2013 10:13:11 PM
 // 
-#endregion
+
 
 using System.Numerics;
 using Gorgon.Core;
@@ -39,11 +39,11 @@ using DXGI = SharpDX.DXGI;
 namespace Gorgon.Graphics.Core;
 
 /// <summary>
-/// A view to allow 2D texture based render targets to be bound to the pipeline.
+/// A view to allow 2D texture based render targets to be bound to the pipeline
 /// </summary>
 /// <remarks>
 /// <para>
-/// A render target view allows a render target (such as a <see cref="GorgonSwapChain"/> or a texture to be bound to the GPU pipeline as a render target resource.
+/// A render target view allows a render target (such as a <see cref="GorgonSwapChain"/> or a texture to be bound to the GPU pipeline as a render target resource
 /// </para>
 /// <para>
 /// The view can bind the entire resource, or a sub section of the resource as required. It will also allow for casting of the format to allow for reinterpreting the data stored within the the render 
@@ -56,7 +56,7 @@ namespace Gorgon.Graphics.Core;
 public sealed class GorgonRenderTarget2DView
         : GorgonRenderTargetView, IGorgonTexture2DInfo, IGorgonImageInfo
 {
-    #region Properties.
+
     /// <summary>
     /// Property to set or return the owner <see cref="RenderTargetFactory"/> for this texture.
     /// </summary>
@@ -236,9 +236,9 @@ public sealed class GorgonRenderTarget2DView
     /// Property to return whether the resource used by this view can be shared or not.
     /// </summary>
     public TextureSharingOptions Shared => Texture.Shared;
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to retrieve the view description.
     /// </summary>
@@ -577,9 +577,9 @@ public sealed class GorgonRenderTarget2DView
 
         return result;
     }
-    #endregion
 
-    #region Constructor/Destructor.
+
+
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonRenderTarget2DView" /> class.
     /// </summary>
@@ -600,5 +600,5 @@ public sealed class GorgonRenderTarget2DView
         MipHeight = (Height >> MipSlice).Max(1);
         Bounds = new DX.Rectangle(0, 0, Width, Height);
     }
-    #endregion
+
 }

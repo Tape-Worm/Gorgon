@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2018 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: October 30, 2018 8:12:24 PM
 // 
-#endregion
+
 
 using System.ComponentModel;
 using Gorgon.Editor.ImageEditor.Fx;
@@ -39,19 +39,19 @@ using DX = SharpDX;
 namespace Gorgon.Editor.ImageEditor;
 
 /// <summary>
-/// The main view for the image editor.
+/// The main view for the image editor
 /// </summary>
 internal partial class ImageEditorView
     : VisualContentBaseControl, IDataContext<IImageContent>
 {
-    #region Variables.        
+        
     // The form for the ribbon.
     private readonly FormRibbon _ribbonForm;
     // The form for the image picker.
     private readonly FormImagePicker _imagePickerForm;
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>Property to return the data context assigned to this view.</summary>
     /// <value>The data context.</value>
     public IImageContent ViewModel
@@ -59,9 +59,9 @@ internal partial class ImageEditorView
         get;
         private set;
     }
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to validate the controls on the view.
     /// </summary>
@@ -543,9 +543,9 @@ internal partial class ImageEditorView
 
         ViewModel = dataContext;
     }
-    #endregion
 
-    #region Constructor/Finalizer.
+
+
     /// <summary>Initializes a new instance of the ImageEditorView class.</summary>
     public ImageEditorView()
     {
@@ -567,5 +567,5 @@ internal partial class ImageEditorView
         RegisterChildPanel(typeof(FxPosterize).FullName, FxPosterizeSettings);
         RegisterChildPanel(typeof(FxOneBit).FullName, Fx1BitSettings);
     }
-    #endregion
+
 }

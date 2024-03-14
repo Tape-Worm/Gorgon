@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2019 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: April 22, 2019 10:47:26 PM
 // 
-#endregion
+
 
 using Gorgon.Core;
 using Gorgon.Editor.ImageEditor.Properties;
@@ -33,11 +33,11 @@ using Gorgon.PlugIns;
 namespace Gorgon.Editor.ImageEditor;
 
 /// <summary>
-/// A factory used to build data that is shared between the importer and image editor plugins.
+/// A factory used to build data that is shared between the importer and image editor plugins
 /// </summary>
 internal static class SharedDataFactory
 {
-    #region Variables.
+
     // A weak reference to the common services in the application.
     private static WeakReference<IHostContentServices> _hostServices;
     // The service used to handling content plug ins.
@@ -49,9 +49,9 @@ internal static class SharedDataFactory
     private static readonly Lazy<ICodecRegistry> _codecRegistryFactory;
     // The factory that creates/loads the settings view model.
     private static readonly Lazy<(Settings settings, SettingsPlugins pluginSettings)> _settingsViewModelFactory;
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to retrieve the common plug in cache.
     /// </summary>
@@ -128,9 +128,9 @@ internal static class SharedDataFactory
         Interlocked.CompareExchange(ref _hostServices, new WeakReference<IHostContentServices>(hostServices), null);
         return (_codecRegistryFactory.Value, _settingsViewModelFactory.Value.settings, _settingsViewModelFactory.Value.pluginSettings);
     }
-    #endregion
 
-    #region Constructor/Finalizer.
+
+
     /// <summary>Initializes static members of the <see cref="SharedDataFactory"/> class.</summary>
     static SharedDataFactory()
     {
@@ -139,5 +139,5 @@ internal static class SharedDataFactory
         _codecRegistryFactory = new Lazy<ICodecRegistry>(GetCodecRegistry, LazyThreadSafetyMode.ExecutionAndPublication);
         _settingsViewModelFactory = new Lazy<(Settings, SettingsPlugins)>(GetSettingsViewModel, LazyThreadSafetyMode.ExecutionAndPublication);
     }
-    #endregion
+
 }

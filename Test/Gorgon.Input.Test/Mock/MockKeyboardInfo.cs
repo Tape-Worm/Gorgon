@@ -13,7 +13,7 @@
 
         public KeyboardType KeyboardType => KeyboardType.USB;
 
-        #endregion
+    
 
         #region IGorgonInputDeviceInfo2 Members
 
@@ -25,6 +25,6 @@
 
         public InputDeviceType InputDeviceType => InputDeviceType.Keyboard;
 
-        #endregion
+    
     }
 }

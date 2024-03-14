@@ -12,7 +12,7 @@ using Microsoft.Wpf.Interop.DirectX;
 namespace Gorgon.Graphics.Wpf;
 
 /// <summary>
-/// A render target used to allow Gorgon to interoperate with WPF.
+/// A render target used to allow Gorgon to interoperate with WPF
 /// </summary>
 /// <remarks>
 /// <para>
@@ -39,12 +39,12 @@ namespace Gorgon.Graphics.Wpf;
 /// <para>
 /// Because WPF works so very differently from Windows Forms, handling the idle time when rendering is supposed to happen is handled differently. Developers will no longer need to call 
 /// <c>GorgonApplication.Run</c> in Program.cs and pass in their idle method callback. Instead, developers will pass in the idle method into the <see cref="Run"/> method on this target type. 
-/// From that point forward, Gorgon will work the same as it always did.
+/// From that point forward, Gorgon will work the same as it always did
 /// </para>
 /// </remarks>
 /// <example>
 ///     <para>
-///     Below is a small example showing how to initialize and use the WPF target.
+///     Below is a small example showing how to initialize and use the WPF target
 ///     </para>
 ///     <code lang="xaml">
 ///     <![CDATA[
@@ -86,7 +86,7 @@ namespace Gorgon.Graphics.Wpf;
 ///     
 ///     private bool Idle()
 ///     {
-///         // We'll just clear the screen here.  Exciting.
+///         // We'll just clear the screen here.  Exciting
 ///         _graphics.SetRenderTarget(_target.RenderTargetView);
 ///         
 ///         _target.RenderTargetView(GorgonColor.CornFlowerBlue);
@@ -94,10 +94,10 @@ namespace Gorgon.Graphics.Wpf;
 ///         return true;
 ///     }
 ///     
-///     // Handle the window shut down.
+///     // Handle the window shut down
 ///     private void MainWindow_Closing(object sender, CancelEventArgs e)
 ///     {
-///         // ALWAYS dispose your objects.
+///         // ALWAYS dispose your objects
 ///         _target?.Dispose();
 ///         _graphics?.Dispose();
 ///     }
@@ -105,8 +105,8 @@ namespace Gorgon.Graphics.Wpf;
 ///     // In your MainWindow.xaml.cs file:
 ///     private void MainWindow_Loaded(object sender, RoutedEventArgs e)
 ///     {
-///         // Initialize Gorgon as we have in the other examples.
-///         // Find out which devices we have installed in the system.
+///         // Initialize Gorgon as we have in the other examples
+///         // Find out which devices we have installed in the system
 ///         IReadOnlyList<IGorgonVideoAdapterInfo> deviceList = GorgonGraphics.EnumerateAdapters();
 ///
 ///         if (deviceList.Count == 0)
@@ -120,16 +120,16 @@ namespace Gorgon.Graphics.Wpf;
 ///             return;
 ///         }
 ///
-///         // Create the graphics interface.
+///         // Create the graphics interface
 ///         _graphics = new GorgonGraphics(deviceList[0]);
 ///
-///         // Create the WPF render target.
+///         // Create the WPF render target
 ///         // We pass in an Image component type here. This Image component MUST have its ImageSource property bound to a D3D11Image 
-///         // object, otherwise this will not work.
+///         // object, otherwise this will not work
 ///         _target = new GorgonWpfTarget(_graphics, new GorgonWpfTargetInfo(WpfImage, "WPF Render Target"));
 ///         
 ///         // Unlike our Windows Forms code, we do not use GorgonApplication.Run(), instead we pass the render method (Idle) into 
-///         // the target itself.
+///         // the target itself
 ///         _target.Run(Idle);
 ///     }
 ///     ]]>
@@ -138,7 +138,7 @@ namespace Gorgon.Graphics.Wpf;
 public class GorgonWpfTarget
     : IGorgonWpfTargetInfo, IGorgonGraphicsObject, IDisposable
 {
-    #region Variables.
+
     // The window containing the D3DImage component.
     private Window _window;
     // The control that will receive rendering.
@@ -149,9 +149,9 @@ public class GorgonWpfTarget
     private readonly GorgonWpfTargetInfo _info;
     // Flag to indicate rendering has started.
     private int _started;
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to return the backing texture for the WPF surface to render into.
     /// </summary>
@@ -196,9 +196,9 @@ public class GorgonWpfTarget
     {
         get;
     }
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to build a render target from the WPF surface.
     /// </summary>
@@ -369,9 +369,9 @@ public class GorgonWpfTarget
 
         CompositionTarget.Rendering -= CompositionTarget_Rendering;
     }
-    #endregion
 
-    #region Constructor/Finalizer.
+
+
     /// <summary>Initializes a new instance of the <see cref="GorgonWpfTarget" /> class.</summary>
     /// <param name="graphics">The graphics object used to create the necessary resources.</param>
     /// <param name="info">The information used to build the object.</param>
@@ -388,5 +388,5 @@ public class GorgonWpfTarget
 
         Initialize();
     }
-    #endregion
+
 }

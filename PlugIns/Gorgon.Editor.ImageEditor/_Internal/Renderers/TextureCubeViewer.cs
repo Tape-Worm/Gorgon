@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2019 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: January 9, 2019 1:43:36 PM
 // 
-#endregion
+
 
 using System.Numerics;
 using Gorgon.Editor.ImageEditor.ViewModels;
@@ -38,7 +38,7 @@ using DX = SharpDX;
 namespace Gorgon.Editor.ImageEditor;
 
 /// <summary>
-/// A viewer for a 2D cube texture.
+/// A viewer for a 2D cube texture
 /// </summary>
 /// <remarks>Initializes a new instance of the <see cref="TextureCubeViewer"/> class.</remarks>
 /// <param name="renderer">The main renderer for the content view.</param>
@@ -48,7 +48,7 @@ namespace Gorgon.Editor.ImageEditor;
 internal class TextureCubeViewer(Gorgon2D renderer, GorgonSwapChain swapChain, GorgonFontFactory fontFactory, IImageContent dataContext)
         : TextureViewer(ImageDataType.ImageCube.ToString(), "Gorgon2DTextureArrayView", 0, renderer, swapChain, dataContext)
 {
-    #region Variables.
+
     // The texture to display.
     private GorgonTexture2D _texture;
     // The view for the texture.
@@ -62,9 +62,9 @@ internal class TextureCubeViewer(Gorgon2D renderer, GorgonSwapChain swapChain, G
     private IMarchingAnts _selectionRect;
     // The font factory used to generate the font for the glyphs.
     private readonly GorgonFontFactory _fontFactory = fontFactory;
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>Releases unmanaged and - optionally - managed resources.</summary>
     /// <param name="disposing">
     ///   <c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
@@ -221,5 +221,5 @@ internal class TextureCubeViewer(Gorgon2D renderer, GorgonSwapChain swapChain, G
         _selectionRect = new MarchingAnts(Renderer);
     }
 
-    #endregion
+
 }

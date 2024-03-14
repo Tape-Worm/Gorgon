@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2018 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: September 27, 2018 10:11:34 PM
 // 
-#endregion
+
 
 using Gorgon.Editor.UI;
 using Gorgon.Editor.ViewModels;
@@ -30,17 +30,17 @@ using Gorgon.Editor.ViewModels;
 namespace Gorgon.Editor.Views;
 
 /// <summary>
-/// Defines which grid rows that are currently being dragged.
+/// Defines which grid rows that are currently being dragged
 /// </summary>    
 internal class GridRowsDragData
     : IFileCopyMoveData, IContentFileDragData
 {
-    #region Variables.
+
     // The list of paths for the files being dragged.
     private readonly string[] _filePaths;
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to return the grid rows being dragged.
     /// </summary>
@@ -94,9 +94,9 @@ internal class GridRowsDragData
         get;
         set;
     }
-    #endregion
 
-    #region Constructor/Finalizer.
+
+
     /// <summary>
     /// Initializes a new instance of the <see cref="GridRowsDragData"/> class.
     /// </summary>
@@ -115,5 +115,5 @@ internal class GridRowsDragData
         _filePaths = files.Select(item => item.FullPath).ToArray();
         Operation = dragOperation;
     }
-    #endregion
+
 }

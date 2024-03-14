@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2020 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: February 14, 2020 12:33:11 PM
 // 
-#endregion
+
 
 using Gorgon.Graphics.Imaging;
 using Gorgon.IO;
@@ -30,7 +30,7 @@ using Gorgon.IO;
 namespace Gorgon.Editor.ImageEditor;
 
 /// <summary>
-/// Data for the image picker import files.
+/// Data for the image picker import files
 /// </summary>
 /// <remarks>Initializes a new instance of the <see cref="ImagePickerImportData"/> class.</remarks>
 /// <param name="originalFilePath">The original file path.</param>
@@ -39,7 +39,7 @@ namespace Gorgon.Editor.ImageEditor;
 /// <param name="originalMetadata">The original size of the image.</param>
 internal class ImagePickerImportData(string originalFilePath, IGorgonVirtualFile fromFile, IGorgonImage thumbnail, IGorgonImageInfo originalMetadata)
 {
-    #region Properties.
+
     /// <summary>
     /// Property to return the image containing the thumbnail.
     /// </summary>
@@ -73,7 +73,7 @@ internal class ImagePickerImportData(string originalFilePath, IGorgonVirtualFile
         get;
     } = originalMetadata;
 
-    #endregion
-    #region Constructor.
-    #endregion
+
+
+
 }

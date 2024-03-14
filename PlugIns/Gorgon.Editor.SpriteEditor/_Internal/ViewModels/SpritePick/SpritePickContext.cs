@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2020 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: May 4, 2020 12:18:53 AM
 // 
-#endregion
+
 
 using Gorgon.Diagnostics;
 using Gorgon.Editor.PlugIns;
@@ -36,12 +36,12 @@ using DX = SharpDX;
 namespace Gorgon.Editor.SpriteEditor;
 
 /// <summary>
-/// The context controller for the FX context.
+/// The context controller for the FX context
 /// </summary>
 internal class SpritePickContext
     : EditorContext<SpritePickContextParameters>, ISpritePickContext
 {
-    #region Variables.
+
     // The sprite content view model.
     private ISpriteContent _spriteContent;
     // The services from the host application.
@@ -56,9 +56,9 @@ internal class SpritePickContext
     private IGorgonImage _imageData;
     // The padding, in pixels, around the picked rectangle.
     private int _padding;
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>Property to return the context name.</summary>
     /// <remarks>This value is used as a unique ID for the context.</remarks>
     public override string Name => PickSpriteViewer.ViewerName;
@@ -210,9 +210,9 @@ internal class SpritePickContext
             return string.Format(Resources.GORSPR_TEXT_SPRITE_INFO, rect.Left, rect.Top, rect.Right, rect.Bottom, rect.Width, rect.Height);
         }
     }
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to determine whether the array index for the sprite can be updated.
     /// </summary>
@@ -373,9 +373,9 @@ internal class SpritePickContext
 
         base.OnUnload();
     }
-    #endregion
 
-    #region Constructor/Finalizer.
+
+
     /// <summary>Initializes a new instance of the <see cref="SpritePickContext"/> class.</summary>
     public SpritePickContext()
     {
@@ -384,5 +384,5 @@ internal class SpritePickContext
         UpdateArrayIndexCommand = new EditorCommand<int>(DoUpdateArrayIndex, CanUpdateArrayIndex);
         CancelCommand = new EditorCommand<object>(DoCancel, CanCancel);
     }
-    #endregion
+
 }

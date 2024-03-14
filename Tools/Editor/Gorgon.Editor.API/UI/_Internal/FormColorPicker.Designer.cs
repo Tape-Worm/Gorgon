@@ -20,7 +20,7 @@ partial class FormColorPicker
         base.Dispose(disposing);
     }
 
-    #region Windows Form Designer generated code
+
 
     /// <summary>
     /// Required method for Designer support - do not modify
@@ -141,7 +141,7 @@ partial class FormColorPicker
 
     }
 
-    #endregion
+
 
     private UI.Controls.ColorPicker Picker;
     private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;

@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2019 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: February 27, 2019 1:06:53 PM
 // 
-#endregion
+
 
 using System.Diagnostics;
 using Gorgon.Diagnostics;
@@ -33,14 +33,14 @@ using Gorgon.UI;
 namespace Gorgon.Editor.ImageEditor;
 
 /// <summary>
-/// Functionality to edit image data using an external program.
+/// Functionality to edit image data using an external program
 /// </summary>
 /// <remarks>Initializes a new instance of the <see cref="ImageExternalEditService"/> class.</remarks>
 /// <param name="log">The log used for debug messages.</param>
 internal class ImageExternalEditService(IGorgonLog log)
         : IImageExternalEditService
 {
-    #region Classes.
+
     /// <summary>
     /// Data manipulated by the file system watcher should the file be altered in any way.
     /// </summary>
@@ -55,14 +55,14 @@ internal class ImageExternalEditService(IGorgonLog log)
         /// </summary>
         public bool HasChanges;
     }
-    #endregion
 
-    #region Variables.
+
+
     // The log used for debug logging messages.
     private readonly IGorgonLog _log = log ?? GorgonLog.NullLog;
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to create a file system watcher for the specified file.
     /// </summary>
@@ -158,7 +158,7 @@ internal class ImageExternalEditService(IGorgonLog log)
         return true;
     }
 
-    #endregion
-    #region Constructor.
-    #endregion
+
+
+
 }

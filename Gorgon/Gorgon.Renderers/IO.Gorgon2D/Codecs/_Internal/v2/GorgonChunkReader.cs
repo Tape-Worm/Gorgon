@@ -1,6 +1,6 @@
-﻿#region MIT.
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2013 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: Wednesday, January 23, 2013 7:37:44 PM
 // 
-#endregion
+
 
 using System.Text;
 using Gorgon.IO;
@@ -30,20 +30,20 @@ using Gorgon.IO;
 namespace GorgonLibrary.IO;
 
 /// <summary>
-/// Reads Gorgon chunked formatted data.
+/// Reads Gorgon chunked formatted data
 /// </summary>
 /// <remarks>This object will take data and turn it into chunks of data.  This is similar to the old IFF format in that 
 /// it allows Gorgon's file formats to be future proof.  That is, if a later version of Gorgon has support for a feature
 /// that does not exist in a previous version, then the older version will be able to read the file and skip the 
 /// unnecessary parts.</remarks>
 /// <remarks>
-/// Initializes a new instance of the <see cref="GorgonChunkReader" /> class.
+/// Initializes a new instance of the <see cref="GorgonChunkReader" /> class
 /// </remarks>
 /// <param name="stream">The stream.</param>
 internal class GorgonChunkReader(Stream stream)
         : GorgonChunkedFormat(stream, ChunkAccessMode.Read)
 {
-    #region Methods.
+
     /// <summary>
     /// Function to determine if the next bytes indicate match the chunk ID.
     /// </summary>
@@ -432,7 +432,7 @@ internal class GorgonChunkReader(Stream stream)
         return new SharpDX.RectangleF(Reader.ReadSingle(), Reader.ReadSingle(), Reader.ReadSingle(), Reader.ReadSingle());
     }
 
-    #endregion
-    #region Constructor/Destructor.
-    #endregion
+
+
+
 }

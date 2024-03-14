@@ -1,6 +1,6 @@
-﻿#region MIT.
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2011 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: Monday, June 27, 2011 9:33:12 AM
 // 
-#endregion
+
 
 using Gorgon.IO.Providers;
 using Gorgon.IO.Zip.Properties;
@@ -31,24 +31,24 @@ using ICSharpCode.SharpZipLib.Zip;
 namespace Gorgon.IO.Zip;
 
 /// <summary>
-/// A file system provider for zip files.
+/// A file system provider for zip files
 /// </summary>
 internal class ZipProvider
     : GorgonFileSystemProvider
 {
-    #region Variables.
+
     /// <summary>
     /// Header bytes for a zip file.
     /// </summary>
     public static IEnumerable<byte> ZipHeader = [0x50, 0x4B, 0x3, 0x4];
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>Property to return whether this provider only gives read only access to the physical file system.</summary>
     public override bool IsReadOnly => true;
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to enumerate the files and directories from a physical location and map it to a virtual location.
     /// </summary>
@@ -183,9 +183,9 @@ internal class ZipProvider
 
         return headerBytes.SequenceEqual(ZipHeader);
     }
-    #endregion
 
-    #region Constructor/Destructor.
+
+
     /// <summary>
     /// Initializes a new instance of the <see cref="ZipProvider"/> class.
     /// </summary>
@@ -194,5 +194,5 @@ internal class ZipProvider
                               {
                                   new GorgonFileExtension("Zip", Resources.GORFS_ZIP_FILE_DESC)
                               };
-    #endregion
+
 }

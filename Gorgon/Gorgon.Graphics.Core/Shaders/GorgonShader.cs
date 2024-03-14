@@ -1,6 +1,6 @@
-﻿#region MIT.
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2011 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: Thursday, December 15, 2011 9:29:56 AM
 // 
-#endregion
+
 
 using Gorgon.Core;
 using Gorgon.Diagnostics;
@@ -33,7 +33,7 @@ using SharpDX.D3DCompiler;
 namespace Gorgon.Graphics.Core;
 
 /// <summary>
-/// Shader types.
+/// Shader types
 /// </summary>
 public enum ShaderType
 {
@@ -64,34 +64,34 @@ public enum ShaderType
 }
 
 /// <summary>
-/// The base shader object.
+/// The base shader object
 /// </summary>
 /// <remarks>
 /// <para>
 /// Shaders are used to modify data on the GPU via a program uploaded to the GPU. This allows for a wide range of effects on GPU data. For example, a gaussian blur algorithm can be written using a pixel 
-/// shader to blur an image.
+/// shader to blur an image
 /// </para>
 /// <para>
 /// In Gorgon, shaders can be compiled from a string containing source code via the <see cref="GorgonShaderFactory"/>, or loaded from a <see cref="Stream"/> or file for quicker access. The 
-/// <see cref="GorgonShaderFactory"/> is required to compile or read shaders, they cannot be created via the <c>new</c> keyword.
+/// <see cref="GorgonShaderFactory"/> is required to compile or read shaders, they cannot be created via the <c>new</c> keyword
 /// </para>
 /// <para>
-/// All shaders in Gorgon will inherit from this type.
+/// All shaders in Gorgon will inherit from this type
 /// </para>
 /// </remarks>
 public abstract class GorgonShader
     : GorgonNamedObject, IDisposable, IGorgonGraphicsObject
 {
-    #region Variables.
+
     // The ID for the shaders.
     private static long _shaderID;
     // Flag to indicate whether the shader is compiled for debug.
     private bool _isDebug;
     // The D3D byte code for the shader.
     private ShaderBytecode _byteCode;
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to return the shader byte code.
     /// </summary>
@@ -125,9 +125,9 @@ public abstract class GorgonShader
     {
         get;
     }
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to persist the shader data to a stream as a <see cref="GorgonChunkFile{T}"/>.
     /// </summary>
@@ -351,9 +351,9 @@ public abstract class GorgonShader
 
         GC.SuppressFinalize(this);
     }
-    #endregion
 
-    #region Constructor/Destructor.
+
+
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonShader"/> class.
     /// </summary>
@@ -371,5 +371,5 @@ public abstract class GorgonShader
 
         graphics.Log.Print($"Creating {ShaderType} Shader '{name}' ({ID})", LoggingLevel.Verbose);
     }
-    #endregion
+
 }

@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2019 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: January 4, 2019 10:10:47 PM
 // 
-#endregion
+
 
 using Gorgon.Editor.Content;
 using Gorgon.Graphics;
@@ -33,11 +33,11 @@ using Gorgon.IO;
 namespace Gorgon.Editor.ImageEditor;
 
 /// <summary>
-/// Provides I/O functionality for reading/writing image data.
+/// Provides I/O functionality for reading/writing image data
 /// </summary>
 internal interface IImageIOService
 {
-    #region Properties.
+
     /// <summary>
     /// Property to return whether or not block compression is supported.
     /// </summary>
@@ -69,9 +69,9 @@ internal interface IImageIOService
     {
         get;
     }
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to save the specified image file.
     /// </summary>
@@ -136,5 +136,5 @@ internal interface IImageIOService
     /// <param name="filePath">The path to the file to read.</param>
     /// <returns>An image information object containing data about the image.</returns>
     IGorgonImageInfo GetImageInfo(string filePath);
-    #endregion
+
 }

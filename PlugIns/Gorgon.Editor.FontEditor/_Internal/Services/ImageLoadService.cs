@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2021 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: September 10, 2021 8:45:45 PM
 // 
-#endregion
+
 
 using Gorgon.Editor.Content;
 using Gorgon.Graphics;
@@ -32,21 +32,21 @@ using Gorgon.Graphics.Imaging.Codecs;
 namespace Gorgon.Editor.FontEditor;
 
 /// <summary>
-/// A service for loading images.
+/// A service for loading images
 /// </summary>
 /// <remarks>Initializes a new instance of the <see cref="ImageLoadService" /> class.</remarks>
 /// <param name="codec">The codec.</param>
 /// <param name="fileManager">The file manager.</param>
 internal class ImageLoadService(IGorgonImageCodec codec, IContentFileManager fileManager)
 {
-    #region Variables.
+
     // The file manager for the application.
     private readonly IContentFileManager _fileManager = fileManager;
     // The codec for the images.
     private readonly IGorgonImageCodec _codec = codec;
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to return whether the file in the path is an image file or not.
     /// </summary>
@@ -122,5 +122,5 @@ internal class ImageLoadService(IGorgonImageCodec codec, IContentFileManager fil
         return Task.Run(LoadImage);
     }
 
-    #endregion
+
 }

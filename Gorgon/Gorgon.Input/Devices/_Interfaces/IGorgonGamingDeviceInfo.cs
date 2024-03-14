@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2015 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,28 +11,28 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: Saturday, July 4, 2015 2:20:46 PM
 // 
-#endregion
+
 
 using Gorgon.Core;
 
 namespace Gorgon.Input;
 
 /// <summary>
-/// Flags to indicate which extra capabilities are supported by the gaming device.
+/// Flags to indicate which extra capabilities are supported by the gaming device
 /// </summary>
 /// <remarks>
-/// The values in this enumeration may be OR'd together to indicate support for multiple items, or it will return <see cref="None"/> if the device does not have any special capabilities.
+/// The values in this enumeration may be OR'd together to indicate support for multiple items, or it will return <see cref="None"/> if the device does not have any special capabilities
 /// </remarks>
 [Flags]
 public enum GamingDeviceCapabilityFlags
@@ -72,7 +72,7 @@ public enum GamingDeviceCapabilityFlags
 }
 
 /// <summary>
-/// Contains values for common, well known, gaming device axes.
+/// Contains values for common, well known, gaming device axes
 /// </summary>
 public enum GamingDeviceAxis
 {
@@ -135,7 +135,7 @@ public enum GamingDeviceAxis
 }
 
 /// <summary>
-/// Contains information for a gaming device (gaming device, game pad, etc...).
+/// Contains information for a gaming device (gaming device, game pad, etc...)
 /// </summary>
 public interface IGorgonGamingDeviceInfo
 {

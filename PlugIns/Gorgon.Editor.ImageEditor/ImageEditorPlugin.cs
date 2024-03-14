@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2018 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: October 29, 2018 2:52:09 PM
 // 
-#endregion
+
 
 using System.Diagnostics;
 using Gorgon.Core;
@@ -47,12 +47,12 @@ using DX = SharpDX;
 namespace Gorgon.Editor.ImageEditor;
 
 /// <summary>
-/// Gorgon image editor content plug in interface.
+/// Gorgon image editor content plug in interface
 /// </summary>
 internal class ImageEditorPlugIn
     : ContentPlugIn, IContentPlugInMetadata
 {
-    #region Variables.
+
     // This is the only codec supported by the image plug in.  Images will be converted when imported.
     private readonly GorgonCodecDds _ddsCodec = new();
 
@@ -76,9 +76,9 @@ internal class ImageEditorPlugIn
     /// The name of the settings file.
     /// </summary>
     public static readonly string SettingsName = typeof(ImageEditorPlugIn).FullName;
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>Property to return the name of the plug in.</summary>
     string IContentPlugInMetadata.PlugInName => Name;
 
@@ -102,9 +102,9 @@ internal class ImageEditorPlugIn
 
     /// <summary>Property to return the friendly (i.e shown on the UI) name for the type of content.</summary>
     public string ContentType => Resources.GORIMG_CONTENT_TYPE;
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to render the thumbnail into the image passed in.
     /// </summary>
@@ -545,11 +545,11 @@ internal class ImageEditorPlugIn
     /// <summary>Function to retrieve the icon used for new content creation.</summary>
     /// <returns>An image for the icon.</returns>
     public Drawing.Image GetNewIcon() => null;
-    #endregion
 
-    #region Constructor/Finalizer.
+
+
     /// <summary>Initializes a new instance of the ImageEditorPlugIn class.</summary>
     public ImageEditorPlugIn()
         : base(Resources.GORIMG_DESC) => SmallIconID = Guid.NewGuid();
-    #endregion
+
 }

@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2021 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: January 3, 2021 11:59:00 PM
 // 
-#endregion
+
 
 using System.Runtime.CompilerServices;
 using D3D11 = SharpDX.Direct3D11;
@@ -30,28 +30,28 @@ using D3D11 = SharpDX.Direct3D11;
 namespace Gorgon.Graphics.Core;
 
 /// <summary>
-/// A cache for holding previously defined pipeline state objects.
+/// A cache for holding previously defined pipeline state objects
 /// </summary>
 /// <remarks>Initializes a new instance of the <see cref="PipelineStateCache" /> class.</remarks>
 /// <param name="device">The Direct3D device.</param>
 internal class PipelineStateCache(D3D11.Device5 device)
         : IDisposable
 {
-    #region Constants.
+
     // The initial size for the cache.
     private const int InitialCacheSize = 16;
-    #endregion
 
-    #region Variables.
+
+
     // A syncrhonization lock for multiple thread when dealing with the pipeline state cache.
     private readonly object _stateLock = new();
     // A list of cached pipeline states.
     private GorgonPipelineState[] _cachedPipelineStates = new GorgonPipelineState[InitialCacheSize];
     // The Direct 3D device.
     private readonly D3D11.Device5 _device = device;
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to invalidate the cache data.
     /// </summary>
@@ -243,5 +243,5 @@ internal class PipelineStateCache(D3D11.Device5 device)
     /// <summary>Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.</summary>
     public void Dispose() => InvalidateCache();
 
-    #endregion
+
 }

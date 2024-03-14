@@ -5,7 +5,7 @@ using Gorgon.UI;
 namespace Gorgon.Editor.Services;
 
 /// <summary>
-/// A service used to present a save as dialog for the project file system.
+/// A service used to present a save as dialog for the project file system
 /// </summary>
 /// <remarks>Initializes a new instance of the <see cref="SaveAsService" /> class.</remarks>
 /// <param name="fileManager">The file manager for the project.</param>
@@ -13,12 +13,12 @@ namespace Gorgon.Editor.Services;
 public class SaveAsService(IContentFileManager fileManager)
         : ISaveAsService
 {
-    #region Variables.
+
     // The file manager for the project.
     private readonly IContentFileManager _fileManager = fileManager ?? throw new ArgumentNullException(nameof(fileManager));
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to present a means of providing a path for a save as operation.
     /// </summary>
@@ -53,5 +53,5 @@ public class SaveAsService(IContentFileManager fileManager)
         }
     }
 
-    #endregion
+
 }

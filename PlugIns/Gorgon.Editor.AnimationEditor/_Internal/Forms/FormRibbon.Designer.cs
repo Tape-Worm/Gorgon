@@ -31,7 +31,7 @@ partial class FormRibbon
         base.Dispose(disposing);
     }
 
-    #region Windows Form Designer generated code
+
 
     /// <summary>
     /// Required method for Designer support - do not modify
@@ -828,7 +828,7 @@ partial class FormRibbon
 
     }
 
-    #endregion
+
     private Krypton.Ribbon.KryptonRibbonTab TabAnimation;
     private Krypton.Ribbon.KryptonRibbonGroup GroupAnimationFile;
     private Krypton.Ribbon.KryptonRibbonGroupTriple kryptonRibbonGroupTriple1;

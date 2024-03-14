@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2015 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: Monday, June 15, 2015 8:57:39 PM
 // 
-#endregion
+
 
 using Gorgon.Core;
 using Gorgon.Properties;
@@ -30,24 +30,24 @@ using Gorgon.Properties;
 namespace Gorgon.IO;
 
 /// <summary>
-/// A reader that will read in and parse the contents of a <conceptualLink target="7b81343e-e2fc-4f0f-926a-d9193ae481fe">Gorgon Chunk File Format (GCFF)</conceptualLink> file.
+/// A reader that will read in and parse the contents of a <conceptualLink target="7b81343e-e2fc-4f0f-926a-d9193ae481fe">Gorgon Chunk File Format (GCFF)</conceptualLink> file
 /// </summary>
 /// <remarks>
 /// <para>
 /// This allows access to a file format that uses the concept of grouping sections of an object together into a grouping called a chunk. This chunk will hold binary data associated with an object allows 
-/// the developer to read/write only the pieces of the object that are absolutely necessary while skipping optional chunks.
+/// the developer to read/write only the pieces of the object that are absolutely necessary while skipping optional chunks
 /// </para>
 /// <para>
-/// A more detailed explanation of the chunk file format can be found in the <conceptualLink target="7b81343e-e2fc-4f0f-926a-d9193ae481fe">Gorgon Chunk File Format (GCFF)</conceptualLink> topic.
+/// A more detailed explanation of the chunk file format can be found in the <conceptualLink target="7b81343e-e2fc-4f0f-926a-d9193ae481fe">Gorgon Chunk File Format (GCFF)</conceptualLink> topic
 /// </para>
 /// <para>
 /// A chunk file object will expose a collection of <see cref="GorgonChunk"/> values, and these give the available chunks in the file and can be looked up either by the <see cref="ulong"/> value for 
 /// the chunk ID, or an 8 character <see cref="string"/> that represents the chunk (this is recommended for readability). This allows an application to do validation on the chunk file to ensure that 
-/// its format is correct. It also allows an application to discard chunks it doesn't care about or are optional. This allows for some level of versioning between chunk file formats.
+/// its format is correct. It also allows an application to discard chunks it doesn't care about or are optional. This allows for some level of versioning between chunk file formats
 /// </para>
 /// <para>
 /// Chunks can be accessed in any order, not just the order in which they were written. This allows an application to only take the pieces they require from the file, and leave the rest. It also allows 
-/// for optional chunks that can be skipped if not present, and read/written when they are.
+/// for optional chunks that can be skipped if not present, and read/written when they are
 /// </para>
 /// <note type="tip">
 /// <para>
@@ -60,7 +60,7 @@ namespace Gorgon.IO;
 /// This example builds on the example provided in the <see cref="GorgonChunkFileWriter"/> example and shows how to read in the file created by that example:
 /// <code language="csharp">
 /// <![CDATA[
-///		// An application defined file header ID. Useful for identifying the contents of the file.
+///		// An application defined file header ID. Useful for identifying the contents of the file
 ///		const ulong FileHeader = 0xBAADBEEFBAADF00D;	
 /// 
 ///		const string StringsChunk = "STRNGLST";
@@ -73,18 +73,18 @@ namespace Gorgon.IO;
 /// 
 ///		// Notice that we're passing in an array of file header ID values. This allows us to allow the formatter to 
 ///		// read the file with multiple versions of the header ID. This gives us an ability to provide backwards 
-///		// compatibility with file types.
+///		// compatibility with file types
 ///		GorgonChunkFileReader file = new GorgonChunkFileReader(myStream, new [] { FileHeader });
 /// 
 ///		try
 ///		{
-///			// Open the file for writing within the stream.
+///			// Open the file for writing within the stream
 ///			file.Open();
 /// 
 ///			// Read the chunk that contains the integers. Note that this is different than the writer example,
 ///			// we wrote these items last, and in a sequential file read, we'd have to read the values last when 
-///			// reading the file. But with this format, we can find the chunk and read it from anywhere in the file.
-///			// Alternatively, we could pass in an ulong value for the chunk ID instead of a string.
+///			// reading the file. But with this format, we can find the chunk and read it from anywhere in the file
+///			// Alternatively, we could pass in an ulong value for the chunk ID instead of a string
 ///			using (GorgonBinaryReader reader = file.OpenChunk(IntChunk))
 ///			{
 ///				ints = new int[reader.ReadInt32()];
@@ -95,7 +95,7 @@ namespace Gorgon.IO;
 ///				}
 ///			}			
 /// 
-///			// Read the chunk that contains strings.
+///			// Read the chunk that contains strings
 ///			using (GorgonBinaryReader reader = file.OpenChunk(StringsChunk))
 ///			{
 ///				strings = new string[reader.ReadInt32()];
@@ -109,7 +109,7 @@ namespace Gorgon.IO;
 ///		finally
 ///		{
 ///			// Ensure that we close the file, otherwise it'll be corrupt because the 
-///			// chunk table will not be persisted.
+///			// chunk table will not be persisted
 ///			file.Close();
 /// 
 ///			if (myStream is not null)
@@ -123,7 +123,7 @@ namespace Gorgon.IO;
 public sealed class GorgonChunkFileReader
     : GorgonChunkFile<GorgonBinaryReader>
 {
-    #region Variables.
+
     // The list of allowable application specific Id values.
     private readonly HashSet<ulong> _appSpecificIds;
     // The currently active chunk.
@@ -134,9 +134,9 @@ public sealed class GorgonChunkFileReader
     private long _headerEnd;
     // The size of the file, in bytes.
     private long _fileSize;
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to read in the chunk table from the file.
     /// </summary>
@@ -381,9 +381,9 @@ public sealed class GorgonChunkFileReader
 
         return _activeReader;
     }
-    #endregion
 
-    #region Constructor/Finalizer.
+
+
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonChunkFileReader"/> class.
     /// </summary>
@@ -431,5 +431,5 @@ public sealed class GorgonChunkFileReader
             throw new ArgumentEmptyException(nameof(appSpecificIds));
         }
     }
-    #endregion
+
 }

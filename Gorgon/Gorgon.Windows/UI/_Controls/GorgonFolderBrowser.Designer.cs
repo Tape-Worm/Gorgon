@@ -20,7 +20,7 @@ partial class GorgonFolderBrowser
         base.Dispose(disposing);
     }
 
-    #region Component Designer generated code
+
 
     /// <summary> 
     /// Required method for Designer support - do not modify 
@@ -352,7 +352,7 @@ partial class GorgonFolderBrowser
         PerformLayout();
     }
 
-    #endregion
+
 
     private System.Windows.Forms.Label LabelHeader;
     private System.Windows.Forms.ListView ListDirectories;

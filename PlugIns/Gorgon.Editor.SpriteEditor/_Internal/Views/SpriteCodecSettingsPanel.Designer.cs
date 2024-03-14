@@ -27,7 +27,7 @@ partial class SpriteCodecSettingsPanel
         base.Dispose(disposing);
     }
 
-    #region Component Designer generated code
+
 
     /// <summary> 
     /// Required method for Designer support - do not modify 
@@ -129,7 +129,7 @@ partial class SpriteCodecSettingsPanel
 
     }
 
-    #endregion
+
 
     private System.Windows.Forms.ToolStrip StripMenu;
     private System.Windows.Forms.ListView ListCodecs;

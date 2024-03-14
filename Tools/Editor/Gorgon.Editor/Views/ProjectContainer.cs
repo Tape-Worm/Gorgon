@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2018 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: September 4, 2018 11:09:28 AM
 // 
-#endregion
+
 
 using System.ComponentModel;
 using System.Diagnostics;
@@ -36,12 +36,12 @@ using Krypton.Ribbon;
 namespace Gorgon.Editor.Views;
 
 /// <summary>
-/// The view used for editing projects.
+/// The view used for editing projects
 /// </summary>
 internal partial class ProjectContainer
     : EditorBaseControl, IDataContext<IProjectEditor>
 {
-    #region Events.
+
     // The file explorer context change event.
     private event EventHandler FileExplorerContextChangedEvent;
 
@@ -181,9 +181,9 @@ internal partial class ProjectContainer
             }
         }
     }
-    #endregion
 
-    #region Variables.
+
+
     // Synchronization lock for the file explorer context changed event.
     private readonly object _eventLock = new();
     // Flag to indicate that the data context load should be deferred.
@@ -194,9 +194,9 @@ internal partial class ProjectContainer
     private ContentBaseControl _contentControl;
     // The graphics context for the application.
     private IGraphicsContext _graphicsContext;
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to set or return the settings for the application.
     /// </summary>
@@ -236,9 +236,9 @@ internal partial class ProjectContainer
         get;
         private set;
     }
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to set the splitter distance.
     /// </summary>
@@ -781,12 +781,12 @@ internal partial class ProjectContainer
         ViewModel.PropertyChanging += DataContext_PropertyChanging;
         ViewModel.PropertyChanged += DataContext_PropertyChanged;
     }
-    #endregion
 
-    #region Constructor/Finalizer.
+
+
     /// <summary>
     /// Initializes a new instance of the <see cref="ProjectContainer"/> class.
     /// </summary>
     public ProjectContainer() => InitializeComponent();
-    #endregion
+
 }

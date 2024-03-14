@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2017 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: July 4, 2017 10:05:54 PM
 // 
-#endregion
+
 
 using Gorgon.Core;
 using Gorgon.Diagnostics;
@@ -33,24 +33,24 @@ using D3D11 = SharpDX.Direct3D11;
 namespace Gorgon.Graphics.Core;
 
 /// <summary>
-/// A generic buffer for holding data to pass to shaders on the GPU.
+/// A generic buffer for holding data to pass to shaders on the GPU
 /// </summary>
 public sealed class GorgonBuffer
     : GorgonBufferCommon, IGorgonBufferInfo
 {
-    #region Constants.
+
     /// <summary>
     /// The prefix to assign to a default name.
     /// </summary>
     internal const string NamePrefix = nameof(GorgonBuffer);
-    #endregion
 
-    #region Variables.
+
+
     // The information used to create the buffer.
     private GorgonBufferInfo _info;
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to return the bind flags used for the D3D 11 resource.
     /// </summary>
@@ -162,9 +162,9 @@ public sealed class GorgonBuffer
     /// </remarks>
     public bool IndirectArgs => (_info.IndirectArgs) && (((Binding & BufferBinding.Shader) == BufferBinding.Shader) ||
                                                          ((Binding & BufferBinding.ReadWrite) == BufferBinding.ReadWrite));
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to retrieve the binding flags for the buffer.
     /// </summary>
@@ -795,9 +795,9 @@ public sealed class GorgonBuffer
 
         return result;
     }
-    #endregion
 
-    #region Constructor.
+
+
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonBuffer" /> class.
     /// </summary>
@@ -817,5 +817,5 @@ public sealed class GorgonBuffer
 
         Initialize(initialData);
     }
-    #endregion
+
 }

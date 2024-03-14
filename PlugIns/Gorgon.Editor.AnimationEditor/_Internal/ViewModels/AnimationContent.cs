@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2019 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: March 2, 2019 2:09:04 AM
 // 
-#endregion
+
 
 using System.Buffers;
 using System.Collections.ObjectModel;
@@ -48,12 +48,12 @@ using Gorgon.Renderers;
 namespace Gorgon.Editor.AnimationEditor;
 
 /// <summary>
-/// Content view model for a animation.
+/// Content view model for a animation
 /// </summary>
 internal class AnimationContent
     : ContentEditorViewModelBase<AnimationContentParameters>, IAnimationContent
 {
-    #region Classes.
+
     /// <summary>
     /// Data stored for adding a track using undo/redo.
     /// </summary>
@@ -92,9 +92,9 @@ internal class AnimationContent
         // The list of keys to store.
         public Dictionary<ITrack, List<IKeyFrame>> Keys;
     }
-    #endregion
 
-    #region Variables.
+
+
     // The primary sprite.
     private (GorgonSprite sprite, IContentFile spriteFile, IContentFile textureFile) _primarySprite;
     // The background image to display for guiding.
@@ -123,9 +123,9 @@ internal class AnimationContent
     private IReadOnlyList<TrackKeySelection> _selected = [];
     // The starting position of the primary sprite.
     private Vector2 _primaryStart;
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to return the add track view model.
     /// </summary>
@@ -541,9 +541,9 @@ internal class AnimationContent
     {
         get;
     }
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to default the selection to the first keyframe in the first track.
     /// </summary>
@@ -2256,9 +2256,9 @@ internal class AnimationContent
                 return true;
         }
     }
-    #endregion
 
-    #region Constructor/Finalizer.
+
+
     /// <summary>Initializes a new instance of the <see cref="AnimationContent"/> class.</summary>
     public AnimationContent()
     {
@@ -2284,5 +2284,5 @@ internal class AnimationContent
         SaveContentCommand = new EditorAsyncCommand<SaveReason>(DoSaveAsync, CanSave);
         NewAnimationCommand = new EditorAsyncCommand<object>(DoCreateAnimationAsync, CanCreateAnimation);
     }
-    #endregion
+
 }

@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2019 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: April 20, 2019 10:58:12 AM
 // 
-#endregion
+
 
 using Gorgon.Editor.PlugIns;
 using Gorgon.Editor.Properties;
@@ -31,12 +31,12 @@ using Gorgon.Editor.UI;
 namespace Gorgon.Editor.ViewModels;
 
 /// <summary>
-/// An item to display on the <see cref="ISettingsPlugInsList"/> view model.
+/// An item to display on the <see cref="ISettingsPlugInsList"/> view model
 /// </summary>
 internal class SettingsPlugInListItem
     : ViewModelBase<SettingsPlugInListItemParameters, IHostServices>, ISettingsPlugInListItem
 {
-    #region Variables.
+
     // The name of the plug in.
     private string _name;
     // The plug in type.
@@ -47,9 +47,9 @@ internal class SettingsPlugInListItem
     private string _disableReason;
     // The path to the plug in assembly.
     private string _path;
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>Property to return the name/description for the plug in.</summary>
     public string Name
     {
@@ -137,9 +137,9 @@ internal class SettingsPlugInListItem
             OnPropertyChanged();
         }
     }
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>Function to inject dependencies for the view model.</summary>
     /// <param name="injectionParameters">The parameters to inject.</param>
     /// <exception cref="ArgumentMissingException">Name - injectionParameters</exception>
@@ -155,5 +155,5 @@ internal class SettingsPlugInListItem
                                                                                         : injectionParameters.DisabledReason;
         Path = injectionParameters.Path;
     }
-    #endregion
+
 }

@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2020 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: April 4, 2020 9:35:21 PM
 // 
-#endregion
+
 
 using System.Numerics;
 using Gorgon.Core;
@@ -37,7 +37,7 @@ using DX = SharpDX;
 namespace Gorgon.Editor.SpriteEditor;
 
 /// <summary>
-/// A renderer used to render the current sprite along with its texture.
+/// A renderer used to render the current sprite along with its texture
 /// </summary>
 /// <remarks>Initializes a new instance of the <see cref="DefaultSpriteViewer"/> class.</remarks>
 /// <param name="renderer">The main renderer for the content view.</param>
@@ -47,14 +47,14 @@ namespace Gorgon.Editor.SpriteEditor;
 internal class DefaultSpriteViewer(Gorgon2D renderer, GorgonSwapChain swapChain, ISpriteContent dataContext, IMarchingAnts marchingAnts)
         : SpriteViewer(ViewerName, renderer, swapChain, dataContext)
 {
-    #region Constants.
+
     /// <summary>
     /// The name of the viewer.
     /// </summary>
     public const string ViewerName = "DefaultSpriteViewer";
-    #endregion
 
-    #region Variables.
+
+
     // Marching ants rectangle.
     private readonly IMarchingAnts _marchAnts = marchingAnts;
     // The render target for the sprite texture.
@@ -65,9 +65,9 @@ internal class DefaultSpriteViewer(Gorgon2D renderer, GorgonSwapChain swapChain,
     private readonly GorgonSprite _sprite = new();
     // The region where the sprite is located on the texture.
     private DX.RectangleF _spriteRegion;
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>Function called when a property on the <see cref="DefaultContentRenderer{T}.DataContext"/> has been changed.</summary>
     /// <param name="propertyName">The name of the property that was changed.</param>
     /// <remarks>Developers should override this method to detect changes on the content view model and reflect those changes in the rendering.</remarks>
@@ -291,5 +291,5 @@ internal class DefaultSpriteViewer(Gorgon2D renderer, GorgonSwapChain swapChain,
         MoveTo(new Vector2(spritePosition.X, spritePosition.Y), spriteZoomLevel.GetScale());
     }
 
-    #endregion
+
 }

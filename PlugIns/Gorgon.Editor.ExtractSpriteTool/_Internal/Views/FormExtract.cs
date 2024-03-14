@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2019 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: April 24, 2019 6:55:01 PM
 // 
-#endregion
+
 
 using System.ComponentModel;
 using Gorgon.Editor.ExtractSpriteTool.Properties;
@@ -36,12 +36,12 @@ using DX = SharpDX;
 namespace Gorgon.Editor.ExtractSpriteTool;
 
 /// <summary>
-/// The main view for the tool.
+/// The main view for the tool
 /// </summary>
 internal partial class FormExtract
     : EditorToolBaseForm, IDataContext<IExtract>
 {
-    #region Properties.
+
     [Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     /// <summary>Property to return the data context assigned to this view.</summary>
     public IExtract ViewModel
@@ -59,9 +59,9 @@ internal partial class FormExtract
         get;
         private set;
     }
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to validate the controls on the form.
     /// </summary>
@@ -585,9 +585,9 @@ internal partial class FormExtract
 
         ViewModel = dataContext;
     }
-    #endregion
 
-    #region Constructor/Finalizer.
+
+
     /// <summary>Initializes a new instance of the <see cref="FormExtract"/> class.</summary>
     /// <param name="settings">The settings.</param>
     public FormExtract(ExtractSpriteToolSettings settings)
@@ -599,5 +599,5 @@ internal partial class FormExtract
 
     /// <summary>Initializes a new instance of the <see cref="FormExtract"/> class.</summary>
     public FormExtract() => InitializeComponent();
-    #endregion
+
 }

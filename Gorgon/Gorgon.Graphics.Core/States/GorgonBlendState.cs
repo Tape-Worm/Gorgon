@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2016 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,29 +11,29 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: July 30, 2016 12:21:01 PM
 // 
-#endregion
+
 
 namespace Gorgon.Graphics.Core;
 
 /// <summary>
-/// Describes how rasterized data is blended with a <see cref="GorgonRenderTargetView"/> and how render targets blend with each other.
+/// Describes how rasterized data is blended with a <see cref="GorgonRenderTargetView"/> and how render targets blend with each other
 /// </summary>
 /// <remarks>
 /// <para>
 /// This will define how rasterized data is blended with the current render target(s). The ability to disable blending, define how blending operations are performed, etc... are all done through this 
 /// state. This state also defines how blending is performed between adjacent render target(s) in the <see cref="GorgonGraphics.RenderTargets"/>. This is controlled by the 
-/// <see cref="GorgonPipelineState.IsIndependentBlendingEnabled"/> flag on the <see cref="GorgonPipelineState"/> object.
+/// <see cref="GorgonPipelineState.IsIndependentBlendingEnabled"/> flag on the <see cref="GorgonPipelineState"/> object
 /// </para>
 /// <para>
 /// The blend state contains 5 common blend states used by applications: <see cref="Default"/> (blending enabled for the first render target, using modulated blending), <see cref="NoBlending"/> 
@@ -41,7 +41,7 @@ namespace Gorgon.Graphics.Core;
 /// target, with premultiplied blending ops for source and dest), and <see cref="Inverted"/> (blending enabled on the first render target, with inverted ops for source and dest). 
 /// </para>
 /// <para>
-/// A blend state is an immutable object, and as such can only be created by using a <see cref="GorgonBlendStateBuilder"/>.
+/// A blend state is an immutable object, and as such can only be created by using a <see cref="GorgonBlendStateBuilder"/>
 /// </para>
 /// </remarks>
 /// <seealso cref="GorgonGraphics"/>
@@ -50,7 +50,6 @@ namespace Gorgon.Graphics.Core;
 public class GorgonBlendState
     : IEquatable<GorgonBlendState>
 {
-    #region Common States.
     /// <summary>
     /// The default blending state.
     /// </summary>
@@ -98,9 +97,9 @@ public class GorgonBlendState
     /// Modulated blending on render target 0 with source alpha overwriting the destination alpha.
     /// </summary>
     public static readonly GorgonBlendState ModulatedAlphaOverwrite;
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to return whether blending should be enabled for this render target.
     /// </summary>
@@ -249,9 +248,9 @@ public class GorgonBlendState
         get;
         internal set;
     }
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>Indicates whether the current object is equal to another object of the same type.</summary>
     /// <returns>true if the current object is equal to the <paramref name="state" /> parameter; otherwise, false.</returns>
     /// <param name="state">An object to compare with this object.</param>
@@ -280,9 +279,9 @@ public class GorgonBlendState
     /// A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table. 
     /// </returns>
     public override int GetHashCode() => HashCode.Combine(WriteMask, AlphaBlendOperation, ColorBlendOperation, DestinationAlphaBlend, DestinationColorBlend, IsBlendingEnabled, SourceAlphaBlend, SourceColorBlend);
-    #endregion
 
-    #region Constructor/Finalizer.
+
+
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonBlendState"/> class.
     /// </summary>
@@ -393,5 +392,5 @@ public class GorgonBlendState
             DestinationColorBlend = Blend.InverseSourceColor
         };
     }
-    #endregion
+
 }

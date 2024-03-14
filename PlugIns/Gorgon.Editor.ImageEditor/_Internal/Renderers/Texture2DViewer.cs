@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2020 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: February 8, 2020 9:27:54 PM
 // 
-#endregion
+
 
 using System.Diagnostics;
 using Gorgon.Editor.ImageEditor.ViewModels;
@@ -35,7 +35,7 @@ using DX = SharpDX;
 namespace Gorgon.Editor.ImageEditor;
 
 /// <summary>
-/// A renderer used to display 2D texture content.
+/// A renderer used to display 2D texture content
 /// </summary>
 /// <remarks>Initializes a new instance of the <see cref="Texture2DViewer"/> class.</remarks>
 /// <param name="renderer">The main renderer for the content view.</param>
@@ -44,14 +44,14 @@ namespace Gorgon.Editor.ImageEditor;
 internal class Texture2DViewer(Gorgon2D renderer, GorgonSwapChain swapChain, IImageContent dataContext)
         : TextureViewer(ImageDataType.Image2D.ToString(), "Gorgon2DTextureArrayView", 0, renderer, swapChain, dataContext)
 {
-    #region Variables.
+
     // The texture view.
     private GorgonTexture2DView _textureView;
     // The texture resource.
     private GorgonTexture2D _texture;
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to destroy the texture.
     /// </summary>
@@ -109,5 +109,5 @@ internal class Texture2DViewer(Gorgon2D renderer, GorgonSwapChain swapChain, IIm
         Renderer.End();
     }
 
-    #endregion
+
 }

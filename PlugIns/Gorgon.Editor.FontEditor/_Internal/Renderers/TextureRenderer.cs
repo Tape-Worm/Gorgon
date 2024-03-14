@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2020 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: August 3, 2020 4:40:15 PM
 // 
-#endregion
+
 
 using System.Numerics;
 using Gorgon.Editor.Rendering;
@@ -34,17 +34,17 @@ using DX = SharpDX;
 namespace Gorgon.Editor.FontEditor;
 
 /// <summary>
-/// This is a renderer that will render the textures that make up the font.
+/// This is a renderer that will render the textures that make up the font
 /// </summary>
 internal class TextureRenderer
     : DefaultContentRenderer<IFontContent>
 {
-    #region Variables.
+
     // The editor context.
     private ITextureEditorContext _context;
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to retrieve the batch state for rendering.
     /// </summary>
@@ -176,14 +176,14 @@ internal class TextureRenderer
     /// Function to set the view to a default zoom level.
     /// </summary>
     public void DefaultZoom() => MoveTo(Vector2.Zero, 1);
-    #endregion
 
-    #region Constructor/Finalizer.
+
+
     /// <summary>Initializes a new instance of the <see cref="FontRenderer"/> class.</summary>
     /// <param name="renderer">The 2D renderer used to render our font.</param>
     /// <param name="mainRenderTarget">The main render target for the view.</param>
     /// <param name="dataContext">The view model for our text data.</param>
     public TextureRenderer(Gorgon2D renderer, GorgonSwapChain mainRenderTarget, IFontContent dataContext)
         : base("TextureEditor", renderer, mainRenderTarget, dataContext) => CanZoom = true;
-    #endregion
+
 }

@@ -20,7 +20,7 @@ partial class Stage
         base.Dispose(disposing);
     }
 
-    #region Component Designer generated code
+
 
     /// <summary> 
     /// Required method for Designer support - do not modify 
@@ -363,7 +363,7 @@ partial class Stage
 
     }
 
-    #endregion
+
 
     private System.Windows.Forms.Panel PanelFunctions;
     private System.Windows.Forms.Panel PanelButtons;

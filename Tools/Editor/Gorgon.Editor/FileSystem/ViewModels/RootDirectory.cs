@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2018 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: November 28, 2018 4:20:34 PM
 // 
-#endregion
+
 
 using System.Collections.ObjectModel;
 using Gorgon.Editor.PlugIns;
@@ -32,17 +32,17 @@ using Gorgon.IO;
 namespace Gorgon.Editor.ViewModels;
 
 /// <summary>
-/// The root directory for the editor virtual file system.
+/// The root directory for the editor virtual file system
 /// </summary>
 internal class RootDirectory
     : ViewModelBase<RootDirectoryParameters, IHostServices>, IDirectory
 {
-    #region Variables.
+
     // The root directory wrapped by the view model.
     private IGorgonVirtualDirectory _root;
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>Property to return the ID for the directory.</summary>
     public string ID => "FFFFFFF1FFF1FFF1FFF1FFFFFFFFFFF1";
 
@@ -102,9 +102,9 @@ internal class RootDirectory
             // We cannot cut a directory.
         }
     }
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to calculate the total size, in bytes, for the files contained within this directory, and any sub directory within this directory.
     /// </summary>
@@ -117,10 +117,10 @@ internal class RootDirectory
     /// Applications should call this when setting up the view model for complex operations and/or dependency injection. The constructor should only be used for simple set up and initialization of objects.
     /// </remarks>
     protected override void OnInitialize(RootDirectoryParameters injectionParameters) => _root = injectionParameters.RootDirectory;
-    #endregion
 
-    #region Constructor.
+
+
     /// <summary>Initializes a new instance of the <see cref="RootDirectory"/> class.</summary>
     public RootDirectory() => GetSizeInBytesCommand = new EditorCommand<GetSizeInBytesCommandArgs>(DoGetSizeInBytes);
-    #endregion
+
 }

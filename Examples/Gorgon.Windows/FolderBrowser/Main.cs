@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2020 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: December 7, 2020 3:17:59 PM
 // 
-#endregion
+
 
 using Gorgon.IO;
 using Gorgon.UI;
@@ -30,7 +30,7 @@ using Gorgon.UI;
 namespace Gorgon.Examples;
 
 /// <summary>
-/// Main example window.
+/// Main example window
 /// </summary>
 /// <remarks>
 /// <para>
@@ -38,21 +38,21 @@ namespace Gorgon.Examples;
 /// of .NET.  
 /// 
 /// With this browser you can not only select a folder, but rename, add and delete folders. It also supports setting a virtual root so that the browser cannot go above a 
-/// certain directory level.
+/// certain directory level
 /// 
 /// Finally the directory selector can be configured to use the Gorgon File System by setting the root directory to the physical file system path and the directory separator 
-/// character ('/'), and then handling any events triggered to translate back and forth.
+/// character ('/'), and then handling any events triggered to translate back and forth
 /// </para>
 /// </remarks>
 public partial class Main
     : Form
 {
-    #region Variables.
+
     // The area where we can make changes (our resource area).
     private DirectoryInfo _writeArea;
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>Function called when the browser enters a new folder.</summary>
     /// <param name="sender">The sender of the event.</param>
     /// <param name="e">The event parameters.</param>
@@ -93,10 +93,10 @@ public partial class Main
             Browser.Text = "Double click on a folder to change it.";
         }
     }
-    #endregion
 
-    #region Constructor/Finalizer.
+
+
     /// <summary>Initializes a new instance of the <see cref="Main" /> class.</summary>
     public Main() => InitializeComponent();
-    #endregion
+
 }

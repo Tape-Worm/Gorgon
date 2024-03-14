@@ -26,7 +26,7 @@ partial class AlphaPicker
         base.Dispose(disposing);
     }
 
-    #region Component Designer generated code
+
 
     /// <summary> 
     /// Required method for Designer support - do not modify 
@@ -137,7 +137,7 @@ partial class AlphaPicker
 
     }
 
-    #endregion
+
     private System.Windows.Forms.TableLayoutPanel TableAlpha;
     private System.Windows.Forms.Label LabelAlpha;
     private System.Windows.Forms.NumericUpDown NumericAlpha;

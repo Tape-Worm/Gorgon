@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2018 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: August 24, 2018 2:33:28 PM
 // 
-#endregion
+
 
 using System.Numerics;
 using Gorgon.Animation;
@@ -39,12 +39,12 @@ using DX = SharpDX;
 namespace Gorgon.Examples;
 
 /// <summary>
-/// Main application form.
+/// Main application form
 /// </summary>
 public partial class Form
     : System.Windows.Forms.Form
 {
-    #region Variables.
+
     // Our primary graphics interface.
     private GorgonGraphics _graphics;
     // The swap chain for the left panel.
@@ -71,9 +71,9 @@ public partial class Form
     private Vector2 _scale = new(2, 2);
     // The original size of the left panel.
     private Vector2 _originalSize;
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Handles the SplitterMoved event of the SplitViews control.
     /// </summary>
@@ -335,12 +335,12 @@ public partial class Form
             Cursor.Current = Cursors.Default;
         }
     }
-    #endregion
 
-    #region Constructor/Finalizer.
+
+
     /// <summary>
     /// Initializes a new instance of the <see cref="Form"/> class.
     /// </summary>
     public Form() => InitializeComponent();
-    #endregion
+
 }

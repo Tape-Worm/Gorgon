@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2020 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: March 1, 2020 8:12:59 PM
 // 
-#endregion
+
 
 using Gorgon.Core;
 using Gorgon.Editor.Rendering;
@@ -36,14 +36,14 @@ using DX = SharpDX;
 namespace Gorgon.Editor.ImageEditor;
 
 /// <summary>
-/// The service used to generate the effects to apply to the image currently being edited.
+/// The service used to generate the effects to apply to the image currently being edited
 /// </summary>
 /// <remarks>Initializes a new instance of the <see cref="FxService"/> class.</remarks>
 /// <param name="graphics">The graphics context for the application.</param>
 internal class FxService(IGraphicsContext graphics)
         : IFxService, IFxPreviewer
 {
-    #region Variables.
+
     // The graphics context for the application.
     private readonly IGraphicsContext _graphics = graphics;
     // The blur effect shader.
@@ -71,9 +71,9 @@ internal class FxService(IGraphicsContext graphics)
     private GorgonTexture2DView _texture;
     // The working image that our textures are based on.
     private IGorgonImage _workingImage;
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to return the image that will contain the effect output.
     /// </summary>
@@ -92,9 +92,9 @@ internal class FxService(IGraphicsContext graphics)
         get;
         private set;
     }
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to destroy the texture data.
     /// </summary>
@@ -474,5 +474,5 @@ internal class FxService(IGraphicsContext graphics)
         blur?.Dispose();
     }
 
-    #endregion
+
 }

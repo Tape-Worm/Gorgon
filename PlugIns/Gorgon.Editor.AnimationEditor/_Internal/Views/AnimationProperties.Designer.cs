@@ -27,7 +27,7 @@ partial class AnimationProperties
         base.Dispose(disposing);
     }
 
-    #region Component Designer generated code
+
 
     /// <summary> 
     /// Required method for Designer support - do not modify 
@@ -294,7 +294,7 @@ partial class AnimationProperties
 
     }
 
-    #endregion
+
 
     private System.Windows.Forms.TableLayoutPanel TableProperties;
     private System.Windows.Forms.NumericUpDown NumericFps;

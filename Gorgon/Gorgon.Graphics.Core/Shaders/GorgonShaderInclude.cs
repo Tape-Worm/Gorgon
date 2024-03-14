@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2016 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: July 20, 2016 11:17:52 PM
 // 
-#endregion
+
 
 using Gorgon.Core;
 using Gorgon.Graphics.Core.Properties;
@@ -30,19 +30,19 @@ using Gorgon.Graphics.Core.Properties;
 namespace Gorgon.Graphics.Core;
 
 /// <summary>
-/// An include file for a shader.
+/// An include file for a shader
 /// </summary>
 /// <remarks>
 /// <para>
 /// Use this object to load in included external functions for a shader.  If the shader source contains an HLSL <c>#include</c> directive, the shader compiler will try to locate that include file on 
 /// the file system.  However, this does not work when the files are loaded from a <see cref="Stream"/> (it wouldn't know where to find the include file).  So to facilitate this, this object will 
-/// contain the source for the include file and will be looked up <i>before</i> the file system is checked for the include file.
+/// contain the source for the include file and will be looked up <i>before</i> the file system is checked for the include file
 /// </para>
 /// <para>
 /// Gorgon uses a special keyword in shaders to allow shader files to include other files as part of the source. This keyword is named <c>#GorgonInclude</c> and is similar to the HLSL 
 /// <c>#include</c> keyword. The difference is that this keyword allows users to include shader source from memory instead of a separate source file. This is done by assigning a name to the included 
 /// source code in the <c>#GorgonInclude</c> keyword, and adding the <see cref="GorgonShaderInclude"/> containing the source to the <see cref="GorgonShaderFactory.Includes"/> property on the 
-/// <see cref="GorgonShaderFactory"/> class. When the include is loaded from a file, then it will automatically be added to the <see cref="GorgonShaderFactory.Includes"/> property.
+/// <see cref="GorgonShaderFactory"/> class. When the include is loaded from a file, then it will automatically be added to the <see cref="GorgonShaderFactory.Includes"/> property
 /// </para>
 /// <para>
 /// The parameters for the <c>#GorgonInclude</c>keyword are: 
@@ -58,14 +58,14 @@ namespace Gorgon.Graphics.Core;
 /// </list>
 /// </para>
 /// <para>
-/// These include objects are ignored with binary shader data loaded from a <see cref="Stream"/> or file as those will aready contain the included source compiled into bytecode.
+/// These include objects are ignored with binary shader data loaded from a <see cref="Stream"/> or file as those will aready contain the included source compiled into bytecode
 /// </para>
 /// </remarks>
 /// <seealso cref="GorgonShaderFactory"/>
 public readonly struct GorgonShaderInclude
     : IGorgonNamedObject, IEquatable<GorgonShaderInclude>
 {
-    #region Variables.
+
     /// <summary>
     /// The name of the shader include file.
     /// </summary>
@@ -74,16 +74,16 @@ public readonly struct GorgonShaderInclude
     /// The source code for the shader include file.
     /// </summary>
     public readonly string SourceCodeFile;
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to return the name of the include file.
     /// </summary>
     string IGorgonNamedObject.Name => Name;
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Returns a <see cref="string" /> that represents this instance.
     /// </summary>
@@ -141,9 +141,9 @@ public readonly struct GorgonShaderInclude
     /// true if the current object is equal to the <paramref name="other" /> parameter; otherwise, false.
     /// </returns>
     public bool Equals(GorgonShaderInclude other) => Equals(this, other);
-    #endregion
 
-    #region Constructor/Destructor.
+
+
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonShaderInclude"/> struct.
     /// </summary>
@@ -169,5 +169,5 @@ public readonly struct GorgonShaderInclude
         Name = includeName;
         SourceCodeFile = includeSourceFile;
     }
-    #endregion
+
 }

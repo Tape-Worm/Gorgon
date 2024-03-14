@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2020 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: May 22, 2020 7:20:50 PM
 // 
-#endregion
+
 
 using Gorgon.Editor.PlugIns;
 using Gorgon.Editor.UI;
@@ -31,7 +31,7 @@ using Gorgon.Graphics.Core;
 namespace Gorgon.Editor.SpriteEditor;
 
 /// <summary>
-/// Parameters for the <see cref="ISpriteTextureWrapEdit"/> view model.
+/// Parameters for the <see cref="ISpriteTextureWrapEdit"/> view model
 /// </summary>
 /// <remarks>Initializes a new instance of the <see cref="SpriteTextureWrapEditParameters"/> class.</remarks>
 /// <param name="builder">The sampler state builder used to create the wrapping state.</param>

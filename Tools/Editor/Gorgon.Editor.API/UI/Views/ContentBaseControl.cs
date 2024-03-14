@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2018 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: October 29, 2018 4:12:28 PM
 // 
-#endregion
+
 
 using System.ComponentModel;
 using Gorgon.Core;
@@ -36,12 +36,12 @@ using Krypton.Ribbon;
 namespace Gorgon.Editor.UI.Views;
 
 /// <summary>
-/// The base control used to render content.
+/// The base control used to render content
 /// </summary>
 public partial class ContentBaseControl
     : EditorBaseControl, IRendererControl
 {
-    #region Variables.
+
     // Synchronization objects for events.
     private readonly object _closeEventLock = new();
     private readonly object _dragEnterEventLock = new();
@@ -53,9 +53,9 @@ public partial class ContentBaseControl
     private IEditorContent _dataContext;
     // A list of child panel views identified by name.
     private readonly Dictionary<string, Control> _panelViews = new(StringComparer.OrdinalIgnoreCase);
-    #endregion
 
-    #region Events.
+
+
     // Event triggered when the content is closed.
     private event EventHandler ContentClosedEvent;
     // Event triggered when a drag enter operation is bubbled up to the parent.
@@ -196,9 +196,9 @@ public partial class ContentBaseControl
             }
         }
     }
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to return the currently hosted panel in the <see cref="HostPanelControls"/>.
     /// </summary>
@@ -285,9 +285,9 @@ public partial class ContentBaseControl
     /// <summary>Property to return the swap chain assigned to the control.</summary>
     [Browsable(false)]
     public GorgonSwapChain SwapChain => _swapChain;
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>Handles the Click event of the ButtonClose control.</summary>
     /// <param name="sender">The source of the event.</param>
     /// <param name="e">The [EventArgs] instance containing the event data.</param>
@@ -897,10 +897,10 @@ public partial class ContentBaseControl
         GraphicsContext = context;
         _swapChain = swapChain;
     }
-    #endregion
 
-    #region Constructor/Finalizer.
+
+
     /// <summary>Initializes a new instance of the ContentBaseControl class.</summary>
     public ContentBaseControl() => InitializeComponent();
-    #endregion
+
 }

@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2018 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: August 11, 2018 7:56:39 PM
 // 
-#endregion
+
 
 using Gorgon.Core;
 using Gorgon.Graphics;
@@ -32,10 +32,10 @@ using Newtonsoft.Json;
 namespace Gorgon.IO;
 
 /// <summary>
-/// A converter used to convert a texture sampler to and from a string.
+/// A converter used to convert a texture sampler to and from a string
 /// </summary>
 /// <remarks>
-/// Initializes a new instance of the <see cref="JsonSamplerConverter"/> class.
+/// Initializes a new instance of the <see cref="JsonSamplerConverter"/> class
 /// </remarks>
 /// <param name="graphics">The graphics interface used for resource look up.</param>
 internal class JsonSamplerConverter(GorgonGraphics graphics)

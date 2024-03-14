@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2015 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: Thursday, September 24, 2015 10:30:17 PM
 // 
-#endregion
+
 
 using Gorgon.Core;
 using Gorgon.IO.Providers;
@@ -30,17 +30,17 @@ using Gorgon.IO.Providers;
 namespace Gorgon.IO;
 
 /// <summary>
-/// The virtual file System interface.
+/// The virtual file System interface
 /// </summary>
 /// <remarks>
 /// <para>
 /// This will allow the user to mount directories or packed files (such as Zip files) into a unified file system.  For example, if the user has mounted MyData.zip and C:\users\Bob\Data\ into the file 
 /// system then all files and/or directories from both sources would be combined into a single virtual file system. This has the advantage of being able to access disparate file systems without having 
-/// to run through multiple interfaces to get at their data.
+/// to run through multiple interfaces to get at their data
 /// </para>
 /// <para>
 /// The virtual file system is a read only file system. This is done by design so that the integrity of the original physical file systems can be preserved. If your application needs to write data into 
-/// the file system, then the <see cref="IGorgonFileSystemWriter{T}"/> has been provided to give access to a writable area that will integrate with this object.
+/// the file system, then the <see cref="IGorgonFileSystemWriter{T}"/> has been provided to give access to a writable area that will integrate with this object
 /// </para>
 /// <para>
 /// Physical file systems (such as a windows directory or a Zip file) are "mounted" into this object. When a physical file system is mounted, all of the file names (and other info) and directory names 
@@ -68,7 +68,7 @@ namespace Gorgon.IO;
 /// Once a provider plug in is loaded, then the contents of that file system can be mounted like a standard directory. 
 /// </para>
 /// <para>
-/// When a file system provider is added to the virtual file system object upon creation, the object will contain 2 providers, the default provider is always available with any additional providers.
+/// When a file system provider is added to the virtual file system object upon creation, the object will contain 2 providers, the default provider is always available with any additional providers
 /// </para>
 /// </remarks>
 /// <seealso cref="IGorgonFileSystemWriter{T}"/>
@@ -85,18 +85,18 @@ namespace Gorgon.IO;
 /// This example shows how to load a provider from the provider factory and use it with the file system:
 /// <code language="csharp">
 /// <![CDATA[
-/// // First we need to load the assembly with the provider plug in.
+/// // First we need to load the assembly with the provider plug in
 /// using (GorgonPlugInAssemblyCache assemblies = new GorgonPlugInAssemblyCache())
 /// {
 ///		assemblies.Load(@"C:\PlugIns\GorgonFileSystem.Zip.dll"); 
 ///		GorgonPlugInService plugInService = new GorgonPlugInService(assemblies);
 /// 
-///		// We'll use the factory to get the zip plug in provider.
+///		// We'll use the factory to get the zip plug in provider
 ///		IGorgonFileSystemProviderFactory factory = new GorgonFileSystemProviderFactory(plugInService);
 ///		
 ///		IGorgonFileSystemProvider zipProvider = factory.CreateProvider("Gorgon.IO.Zip.ZipProvider");
 /// 
-///		// Now create the file system with the zip provider.
+///		// Now create the file system with the zip provider
 ///		IGorgonFileSystem fileSystem = new GorgonFileSystem(zipProvider);
 ///		fileSystem.Mount(@"C:\ZipFiles\MyFileSystem.zip", "/");
 /// }  
@@ -105,7 +105,7 @@ namespace Gorgon.IO;
 /// </example>
 public interface IGorgonFileSystem
 {
-    #region Properties.
+
 
     /// <summary>
     /// Property to return the <see cref="IGorgonFileSystemProvider"/> installed in this file system.
@@ -155,9 +155,9 @@ public interface IGorgonFileSystem
     {
         get;
     }
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to find all the directories with the name specified by the directory mask.
     /// </summary>
@@ -505,5 +505,5 @@ public interface IGorgonFileSystem
     /// </code>
     /// </example>
     GorgonFileSystemMountPoint Mount(string physicalPath, string mountPath = null);
-    #endregion
+
 }

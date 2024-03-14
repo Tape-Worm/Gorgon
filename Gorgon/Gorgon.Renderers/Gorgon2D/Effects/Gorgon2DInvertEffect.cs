@@ -1,6 +1,6 @@
-﻿#region MIT.
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2012 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: Wednesday, April 04, 2012 12:35:23 PM
 // 
-#endregion
+
 
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
@@ -33,12 +33,12 @@ using DX = SharpDX;
 namespace Gorgon.Renderers;
 
 /// <summary>
-/// An effect that renders an inverted image.
+/// An effect that renders an inverted image
 /// </summary>
 public class Gorgon2DInvertEffect
     : Gorgon2DEffect, IGorgon2DCompositorEffect
 {
-    #region Variables.
+
     // Buffer for the inversion effect.
     private GorgonConstantBufferView _invertBuffer;
     // Flag to invert the alpha channel.
@@ -48,9 +48,9 @@ public class Gorgon2DInvertEffect
     private Gorgon2DShaderState<GorgonPixelShader> _invertState;
     // The batch render state.
     private Gorgon2DBatchState _batchState;
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to set or return whether to invert the alpha channel.
     /// </summary>
@@ -68,9 +68,9 @@ public class Gorgon2DInvertEffect
             _invertBuffer?.Buffer.SetData(in _invertAlpha);
         }
     }
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function called to build a new (or return an existing) 2D batch state.
     /// </summary>
@@ -196,14 +196,14 @@ public class Gorgon2DInvertEffect
                                         new DX.RectangleF(0, 0, 1, 1));
         End();
     }
-    #endregion
 
-    #region Constructor/Destructor.
+
+
     /// <summary>
     /// Initializes a new instance of the <see cref="Gorgon2DInvertEffect" /> class.
     /// </summary>
     /// <param name="renderer">The renderer used to draw with this effect.</param>
     public Gorgon2DInvertEffect(Gorgon2D renderer)
         : base(renderer, Resources.GOR2D_EFFECT_INVERT, Resources.GOR2D_EFFECT_INVERT_DESC, 1) => Macros.Add(new GorgonShaderMacro("INVERSE_EFFECT"));
-    #endregion
+
 }

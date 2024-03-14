@@ -21,7 +21,7 @@ partial class FormImageSelector
         base.Dispose(disposing);
     }
 
-    #region Windows Form Designer generated code
+
 
     /// <summary>
     /// Required method for Designer support - do not modify
@@ -308,7 +308,7 @@ partial class FormImageSelector
 
     }
 
-    #endregion
+
     private System.Windows.Forms.Button ButtonCancel;
     private System.Windows.Forms.Button ButtonSplit;
     private UI.Controls.ContentFileExplorer ContentFileExplorer;

@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2020 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: December 5, 2020 3:34:58 PM
 // 
-#endregion
+
 
 using Gorgon.Graphics;
 using Gorgon.Timing;
@@ -31,37 +31,37 @@ using Gorgon.UI;
 namespace Gorgon.Examples;
 
 /// <summary>
-/// Main example window.
+/// Main example window
 /// </summary>
 /// <remarks>
 /// <para>
 /// This example shows how to use the overlay objects to create a "plexi-glass" appearance over the window, or any of its child controls. 
 /// Similar to how web or WPF applications show a loading screen where the background dims or lightens to indicate that the controls 
-/// behind are inaccessible. Often this is displayed with an accompanying control that the user can interact with.
+/// behind are inaccessible. Often this is displayed with an accompanying control that the user can interact with
 /// 
 /// Gorgon has 3 of these overlay object types:
-/// 1. GorgonOverlay - Displays a translucent layer on top of the form/control.
+/// 1. GorgonOverlay - Displays a translucent layer on top of the form/control
 /// 2. GorgonWaitOverlay - Displays the translucent layer on top of the form/control, plus a window that shows a customizable "please wait" 
-///    dialog with an animated icon.
+///    dialog with an animated icon
 /// 3. GorgonProgressOverlay - Displays the translucent layer on top of the form/control, plus a window that shows a customizable progress  
-///    meter used to show a long running operation's progress.
+///    meter used to show a long running operation's progress
 ///    
 /// The amount of translucency, and color of these overlay objects can be adjusted by the user for all panels, and each panel type has its 
-/// own set of customizable parameters to update the display as needed.
+/// own set of customizable parameters to update the display as needed
 /// </para>
 /// </remarks>
 public partial class FormMain
     : Form
 {
-    #region Variables.
+
     // An overlay without any other windows or decoration, just sits on top of the control.
     private readonly GorgonOverlay _overlay = new()
     {
         TransparencyPercent = 75
     };
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>Handles the Click event of the ButtonOverlayForm control.</summary>
     /// <param name="sender">The source of the event.</param>
     /// <param name="e">The <see cref="EventArgs" /> instance containing the event data.</param>
@@ -203,10 +203,10 @@ public partial class FormMain
 
         wait.Hide();
     }
-    #endregion
 
-    #region Constructor/Finalizer.
+
+
     /// <summary>Initializes a new instance of the <see cref="FormMain" /> class.</summary>
     public FormMain() => InitializeComponent();
-    #endregion
+
 }

@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2016 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,50 +11,50 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: July 28, 2016 11:49:51 PM
 // 
-#endregion
+
 
 namespace Gorgon.Graphics.Core;
 
 /// <summary>
-/// A builder for a <see cref="GorgonSamplerState"/>.
+/// A builder for a <see cref="GorgonSamplerState"/>
 /// </summary>
 /// <remarks>
 /// <para>
-/// Use this builder to create a new immutable <see cref="GorgonSamplerState"/> to pass to a <see cref="GorgonPipelineState"/>. This object provides a fluent interface to help build up a sampler state.
+/// Use this builder to create a new immutable <see cref="GorgonSamplerState"/> to pass to a <see cref="GorgonPipelineState"/>. This object provides a fluent interface to help build up a sampler state
 /// </para>
 /// <para>
-/// This will define how a texture is sampled inside of a shader when rendering. Filtering, addressing, etc... are all defined in this state.
+/// This will define how a texture is sampled inside of a shader when rendering. Filtering, addressing, etc... are all defined in this state
 /// </para>
 /// <para>
-/// A sampler state is an immutable object, and as such can only be created by using this object.
+/// A sampler state is an immutable object, and as such can only be created by using this object
 /// </para>
 /// <para>
 /// Unlike the other state builders, this builder does not offer the optional use of a <see cref="GorgonStateBuilderPoolAllocator{T}"/>. This is because the state is cached internally and does not need 
-/// an allocator pool.
+/// an allocator pool
 /// </para>
 /// </remarks>
 /// <seealso cref="GorgonGraphics"/>
 /// <seealso cref="GorgonPipelineState"/>
 /// <seealso cref="GorgonSamplerState"/>
 /// <remarks>
-/// Initializes a new instance of the <see cref="GorgonSamplerStateBuilder" /> class.
+/// Initializes a new instance of the <see cref="GorgonSamplerStateBuilder" /> class
 /// </remarks>
 /// <param name="graphics">The graphics interface used to build sampler states.</param>
 public class GorgonSamplerStateBuilder(GorgonGraphics graphics)
         : GorgonStateBuilderCommon<GorgonSamplerStateBuilder, GorgonSamplerState>(new GorgonSamplerState()), IGorgonGraphicsObject
 {
-    #region Properties.
+
     /// <summary>
     /// Property to return the graphics interface that built this object.
     /// </summary>
@@ -62,9 +62,9 @@ public class GorgonSamplerStateBuilder(GorgonGraphics graphics)
     {
         get;
     } = graphics ?? throw new ArgumentNullException(nameof(graphics));
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to copy the values of one state into another.
     /// </summary>
@@ -247,7 +247,7 @@ public class GorgonSamplerStateBuilder(GorgonGraphics graphics)
         return this;
     }
 
-    #endregion
-    #region Constructor.
-    #endregion
+
+
+
 }

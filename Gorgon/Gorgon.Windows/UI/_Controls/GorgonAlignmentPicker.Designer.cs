@@ -26,7 +26,7 @@ partial class GorgonAlignmentPicker
         base.Dispose(disposing);
     }
 
-    #region Component Designer generated code
+
 
     /// <summary> 
     /// Required method for Designer support - do not modify 
@@ -239,7 +239,7 @@ partial class GorgonAlignmentPicker
 
     }
 
-    #endregion
+
 
     private System.Windows.Forms.Panel panelAnchor;
     private System.Windows.Forms.RadioButton radioBottomRight;

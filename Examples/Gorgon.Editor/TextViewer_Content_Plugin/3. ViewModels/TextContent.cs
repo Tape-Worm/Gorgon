@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2020 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: August 3, 2020 3:51:47 PM
 // 
-#endregion
+
 
 using System.Text;
 using Gorgon.Editor.Services;
@@ -32,7 +32,7 @@ using Gorgon.Graphics;
 namespace Gorgon.Examples;
 
 /// <summary>
-/// Undo/redo data for undoing and redoing text change operations.
+/// Undo/redo data for undoing and redoing text change operations
 /// </summary>
 internal class TextChangeUndoRedo
 {
@@ -40,21 +40,21 @@ internal class TextChangeUndoRedo
 }
 
 /// <summary>
-/// The view model used to communicate with the text viewer control.
+/// The view model used to communicate with the text viewer control
 /// </summary>
 /// <remarks>
 /// <para>
 /// The editor makes heavy use of MVVM (or, more accurately, a bastardized version of MVVM) to communicate data to and from the view. We use this 
-/// view model to facilitate that.
+/// view model to facilitate that
 /// 
 /// In this example, our view model will present our content data back to the view via the properties (presentation), and handle content modification 
-/// via the commands (controller).
+/// via the commands (controller)
 /// </para>
 /// </remarks>
 internal class TextContent
     : ContentEditorViewModelBase<TextContentParameters>, ITextContent
 {
-    #region Variables.
+
     // The text content.
     private string _text;
     // The font used to draw the text.
@@ -67,9 +67,9 @@ internal class TextContent
     private TextEditorService _textEditor;
     // The service used for providing undo/redo functionality.
     private IUndoService _undoService;
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to return the view model for the text color editor.
     /// </summary>
@@ -236,9 +236,9 @@ internal class TextContent
     {
         get;
     }
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>Handles the PropertyChanged event of the TextColor control.</summary>
     /// <param name="sender">The source of the event.</param>
     /// <param name="e">The <see cref="PropertyChangedEventArgs"/> instance containing the event data.</param>
@@ -624,9 +624,9 @@ internal class TextContent
 
         base.OnUnload();
     }
-    #endregion
 
-    #region Constructor/Finalizer.
+
+
     /// <summary>Initializes a new instance of the <see cref="TextContent"/> class.</summary>
     public TextContent()
     {
@@ -636,5 +636,5 @@ internal class TextContent
         UndoCommand = new EditorCommand<object>(DoUndoAsync, CanUndo);
         RedoCommand = new EditorCommand<object>(DoRedoAsync, CanRedo);
     }
-    #endregion
+
 }

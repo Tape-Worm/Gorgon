@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2019 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: January 5, 2019 1:44:44 PM
 // 
-#endregion
+
 
 using System.Text;
 using Gorgon.Editor.ImageEditor.Properties;
@@ -33,7 +33,7 @@ using Gorgon.IO;
 namespace Gorgon.Editor.ImageEditor;
 
 /// <summary>
-/// Dialog serivce used for retrieving paths for importing image data.
+/// Dialog serivce used for retrieving paths for importing image data
 /// </summary>
 /// <remarks>Initializes a new instance of the <see cref="ImportImageDialogService"/> class.</remarks>
 /// <param name="settings">The settings.</param>
@@ -41,23 +41,23 @@ namespace Gorgon.Editor.ImageEditor;
 internal class ImportImageDialogService(ISettings settings, ICodecRegistry codecs)
         : FileOpenDialogService, IImportImageDialogService
 {
-    #region Variables.
+
     // The settings for the image editor.
     private readonly ISettings _settings = settings ?? throw new ArgumentNullException(nameof(settings));
     // The codecs available to the importer.
     private readonly ICodecRegistry _codecs = codecs ?? throw new ArgumentNullException(nameof(codecs));
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>Property to return the codec used for exporting.</summary>
     public IGorgonImageCodec SelectedCodec
     {
         get;
         private set;
     }
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to retrieve the last directory path used for import/export.
     /// </summary>
@@ -149,7 +149,7 @@ internal class ImportImageDialogService(ISettings settings, ICodecRegistry codec
         return filePath;
     }
 
-    #endregion
-    #region Constructor.
-    #endregion
+
+
+
 }

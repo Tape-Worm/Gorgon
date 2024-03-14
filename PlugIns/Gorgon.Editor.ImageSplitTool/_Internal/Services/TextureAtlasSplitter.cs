@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2020 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: August 18, 2020 11:10:05 AM
 // 
-#endregion
+
 
 using Gorgon.Diagnostics;
 using Gorgon.Editor.Content;
@@ -40,11 +40,11 @@ using DX = SharpDX;
 namespace Gorgon.Editor.ImageSplitTool;
 
 /// <summary>
-/// A service used to split an atlas texture into smaller images by using the associated sprite regions to define the image size.
+/// A service used to split an atlas texture into smaller images by using the associated sprite regions to define the image size
 /// </summary>
 internal class TextureAtlasSplitter
 {
-    #region Variables.
+
     // The core graphics interface from the editor.
     private readonly GorgonGraphics _graphics;
     // The renderer used for rendering the image data.
@@ -59,13 +59,13 @@ internal class TextureAtlasSplitter
     private readonly IGorgonLog _log;
     // The list of image and sprite files.
     private readonly IReadOnlyDictionary<IContentFile, IReadOnlyList<IContentFile>> _imagesAndSprites;
-    #endregion
 
-    #region Properties.
 
-    #endregion
 
-    #region Methods.
+
+
+
+
     /// <summary>
     /// Function to load the image data.
     /// </summary>
@@ -398,9 +398,9 @@ internal class TextureAtlasSplitter
             }
         }
     }
-    #endregion
 
-    #region Constructor/Finalizer.
+
+
     /// <summary>Initializes a new instance of the <see cref="TextureAtlasSplitter"/> class.</summary>
     /// <param name="renderer">The renderer used to generate image data.</param>
     /// <param name="imagesAndSprites">The list of image and sprite dependency files</param>
@@ -418,5 +418,5 @@ internal class TextureAtlasSplitter
         _spriteCodec = spriteCodec;
         _log = log;
     }
-    #endregion        
+        
 }

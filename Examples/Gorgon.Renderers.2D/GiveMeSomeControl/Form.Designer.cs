@@ -20,8 +20,6 @@ partial class Form
         base.Dispose(disposing);
     }
 
-    #region Windows Form Designer generated code
-
     /// <summary>
     /// Required method for Designer support - do not modify
     /// the contents of this method with the code editor.
@@ -137,7 +135,7 @@ partial class Form
         this.ResumeLayout(false);
 
         }
-        #endregion
+    
 
         private System.Windows.Forms.SplitContainer SplitViews;
         private System.Windows.Forms.Panel GroupControl1;

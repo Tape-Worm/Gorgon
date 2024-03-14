@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2019 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: March 31, 2019 10:25:11 PM
 // 
-#endregion
+
 
 using System.Numerics;
 using Gorgon.Editor.SpriteEditor.Properties;
@@ -36,24 +36,24 @@ using DX = SharpDX;
 namespace Gorgon.Editor.SpriteEditor;
 
 /// <summary>
-/// A renderer used to render when the sprite lacks a texture association.
+/// A renderer used to render when the sprite lacks a texture association
 /// </summary>
 internal class NoTextureViewer
     : SpriteViewer
 {
-    #region Constants.
+
     /// <summary>
     /// The name of the viewer.
     /// </summary>
     public const string ViewerName = "SpriteNoTextureRenderer";
-    #endregion
 
-    #region Variables.
+
+
     // The texture to display when a sprite lacks a texture association.
     private GorgonTexture2DView _noImage;
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>Releases unmanaged and - optionally - managed resources.</summary>
     /// <param name="disposing">
     ///   <c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
@@ -100,9 +100,9 @@ internal class NoTextureViewer
     {
         // This viewer cannot pan or zoom.
     }
-    #endregion
 
-    #region Constructor/Finalizer.
+
+
     /// <summary>Initializes a new instance of the <see cref="NoTextureViewer"/> class.</summary>
     /// <param name="renderer">The 2D renderer for the application.</param>
     /// <param name="swapChain">The swap chain for the render area.</param>
@@ -114,5 +114,5 @@ internal class NoTextureViewer
         CanPanHorizontally = false;
         CanZoom = false;
     }
-    #endregion
+
 }

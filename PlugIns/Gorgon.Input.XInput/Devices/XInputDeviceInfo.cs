@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2015 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: Sunday, July 5, 2015 3:54:34 PM
 // 
-#endregion
+
 
 using Gorgon.Core;
 using XI = SharpDX.XInput;
@@ -30,17 +30,17 @@ using XI = SharpDX.XInput;
 namespace Gorgon.Input.XInput;
 
 /// <summary>
-/// XInput controller information.
+/// XInput controller information
 /// </summary>
 /// <remarks>
-/// Initializes a new instance of the <see cref="XInputDeviceInfo"/> class.
+/// Initializes a new instance of the <see cref="XInputDeviceInfo"/> class
 /// </remarks>
 /// <param name="deviceDescription">The description for the game pad controller.</param>
 /// <param name="id">The index ID of the device.</param>
 internal class XInputDeviceInfo(string deviceDescription, XI.UserIndex id)
         : IGorgonGamingDeviceInfo
 {
-    #region Properties.
+
     /// <summary>
     /// Property to return the list of supported buttons for this controller.
     /// </summary>
@@ -126,9 +126,9 @@ internal class XInputDeviceInfo(string deviceDescription, XI.UserIndex id)
     {
         get;
     } = id.ToGuid();
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to retrieve the capabilities of the xinput device.
     /// </summary>
@@ -276,5 +276,5 @@ internal class XInputDeviceInfo(string deviceDescription, XI.UserIndex id)
         AxisInfo = axes.Select(item => new GorgonGamingDeviceAxisInfo(item.Key, item.Value, 0)).ToDictionary(k => k.Axis, v => v);
     }
 
-    #endregion
+
 }

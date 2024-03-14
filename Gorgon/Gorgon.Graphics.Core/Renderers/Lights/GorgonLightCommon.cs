@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2018 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: July 25, 2018 8:30:32 PM
 // 
-#endregion
+
 
 using Gorgon.Core;
 using Gorgon.Graphics;
@@ -32,7 +32,7 @@ using Gorgon.Renderers.Data;
 namespace Gorgon.Renderers.Lights;
 
 /// <summary>
-/// Defines the type of light used when rendering.
+/// Defines the type of light used when rendering
 /// </summary>
 public enum LightType
 {
@@ -51,12 +51,12 @@ public enum LightType
 }
 
 /// <summary>
-/// Base common properties for a light.
+/// Base common properties for a light
 /// </summary>
 public abstract class GorgonLightCommon
 : IGorgonNamedObject
 {
-    #region Variables.
+
     // The color for a light.
     private GorgonColor _color = GorgonColor.White;
     // Flag to indicate whether the specular reflection is enabled.
@@ -67,9 +67,9 @@ public abstract class GorgonLightCommon
     private float _specIntensity = 1.0f;
     // The intensity of the light.
     private float _intensity = 1.0f;
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to return whether the light was updated or not.
     /// </summary>
@@ -184,17 +184,17 @@ public abstract class GorgonLightCommon
     {
         get;
     }
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to return data that can be updated to the GPU for use in shaders.
     /// </summary>
     /// <returns>A reference to the data to send to the GPU.</returns>
     public abstract ref readonly GorgonGpuLightData GetGpuData();
-    #endregion
 
-    #region Constructor/Destructor.
+
+
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonLightCommon"/> class.
     /// </summary>
@@ -218,5 +218,5 @@ public abstract class GorgonLightCommon
         SpecularPower = copy.SpecularPower;
         Intensity = copy.Intensity;
     }
-    #endregion
+
 }

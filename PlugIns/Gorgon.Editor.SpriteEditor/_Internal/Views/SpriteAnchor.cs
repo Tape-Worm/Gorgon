@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2019 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: April 4, 2019 8:58:41 AM
 // 
-#endregion
+
 
 using System.ComponentModel;
 using System.Numerics;
@@ -33,12 +33,12 @@ using Gorgon.Math;
 namespace Gorgon.Editor.SpriteEditor;
 
 /// <summary>
-/// A view used to manually update the sprite anchor value.
+/// A view used to manually update the sprite anchor value
 /// </summary>
 internal partial class SpriteAnchor
     : EditorSubPanelCommon, IDataContext<ISpriteAnchorEdit>
 {
-    #region Variables.
+
     // Mid point of top side.
     private float _midTop;
     // Mid point of left side.
@@ -47,18 +47,18 @@ internal partial class SpriteAnchor
     private float _midBottom;
     // Mid point of right side.
     private float _midRight;
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>Property to return the data context assigned to this view.</summary>
     public ISpriteAnchorEdit ViewModel
     {
         get;
         private set;
     }
-    #endregion
 
-    #region Methods.        
+
+        
     /// <summary>
     /// Function to set the mid points for the edges of the sprite.
     /// </summary>
@@ -411,10 +411,10 @@ internal partial class SpriteAnchor
 
         ViewModel.PropertyChanged += DataContext_PropertyChanged;
     }
-    #endregion
 
-    #region Constructor/Finalizer.
+
+
     /// <summary>Initializes a new instance of the <see cref="SpriteAnchor"/> class.</summary>
     public SpriteAnchor() => InitializeComponent();
-    #endregion
+
 }

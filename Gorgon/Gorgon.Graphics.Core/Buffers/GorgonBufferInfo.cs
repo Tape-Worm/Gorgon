@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2017 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,34 +11,34 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: July 5, 2017 2:44:43 PM
 // 
-#endregion
+
 
 namespace Gorgon.Graphics.Core;
 
 /// <summary>
-/// Provides the necessary information required to set up a generic unstructured buffer.
+/// Provides the necessary information required to set up a generic unstructured buffer
 /// </summary>
 /// <param name="SizeInBytes">The size of the buffer, in bytes.</param>
 /// <remarks>
 /// <para>
-/// For buffers that set <see cref="IGorgonBufferInfo.AllowRawView"/> to <b>true</b>, the <see cref="SizeInBytes"/> value will be rounded up to the nearest multiple of 4 at buffer creation time.
+/// For buffers that set <see cref="IGorgonBufferInfo.AllowRawView"/> to <b>true</b>, the <see cref="SizeInBytes"/> value will be rounded up to the nearest multiple of 4 at buffer creation time
 /// </para>
 /// </remarks>
 public record GorgonBufferInfo(int SizeInBytes)
     : IGorgonBufferInfo
 {
-    #region Constructor/Finalizer.
+
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonBufferInfo"/> class.
     /// </summary>
@@ -55,9 +55,9 @@ public record GorgonBufferInfo(int SizeInBytes)
         AllowRawView = info.AllowRawView;
         IndirectArgs = info.IndirectArgs;
     }
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to return whether to allow the CPU read access to the buffer.
     /// </summary>
@@ -187,5 +187,5 @@ public record GorgonBufferInfo(int SizeInBytes)
         get;
         init;
     } = GorgonGraphicsResource.GenerateName(GorgonBuffer.NamePrefix);
-    #endregion
+
 }

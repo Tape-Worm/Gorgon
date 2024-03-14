@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2019 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: October 30, 2019 11:02:53 AM
 // 
-#endregion
+
 
 using Gorgon.Animation.Properties;
 using Gorgon.Core;
@@ -30,7 +30,7 @@ using Gorgon.Core;
 namespace Gorgon.Animation;
 
 /// <summary>
-/// The type of key frame data for a track.
+/// The type of key frame data for a track
 /// </summary>
 public enum AnimationTrackKeyType
 {
@@ -69,7 +69,7 @@ public enum AnimationTrackKeyType
 }
 
 /// <summary>
-/// Defines a registration for a track in the controller.
+/// Defines a registration for a track in the controller
 /// </summary>
 /// <remarks>
 /// <para>
@@ -77,18 +77,18 @@ public enum AnimationTrackKeyType
 /// </para>
 /// <para>
 /// Applications defining their own animation controllers should define which tracks correspond to which properties by declaring a static field and registering that with the 
-/// <see cref="GorgonAnimationController{T}.RegisterTrack(GorgonTrackRegistration)"/> method in the static constructor of the custom controller.
+/// <see cref="GorgonAnimationController{T}.RegisterTrack(GorgonTrackRegistration)"/> method in the static constructor of the custom controller
 /// </para>
 /// </remarks>
 public class GorgonTrackRegistration
     : IEquatable<GorgonTrackRegistration>
 {
-    #region Variables.
+
     // The counter for generating IDs.
     private static int _idCount;
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to return the numeric ID of the track.
     /// </summary>
@@ -141,9 +141,9 @@ public class GorgonTrackRegistration
     {
         get;
     }
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>Returns a <see cref="string"/> that represents this instance.</summary>
     /// <returns>A <see cref="string"/> that represents this instance.</returns>
     public override string ToString() => string.Format(Resources.GORANM_TOSTR_TRACKREG, TrackName, KeyType.ToString());
@@ -162,9 +162,7 @@ public class GorgonTrackRegistration
     ///     <span class="keyword">true</span> (<span class="keyword">True</span> in Visual Basic)</span> if the current object is equal to the <paramref name="other" /> parameter; otherwise, <span class="keyword"><span class="languageSpecificText"><span class="cs">false</span><span class="vb">False</span><span class="cpp">false</span></span></span><span class="nu"><span class="keyword">false</span> (<span class="keyword">False</span> in Visual Basic)</span>.
     /// </returns>
     public bool Equals(GorgonTrackRegistration other) => (string.Equals(TrackName, other.TrackName, StringComparison.OrdinalIgnoreCase)) && (KeyType == other.KeyType);
-    #endregion
 
-    #region Constructor.
     /// <summary>Initializes a new instance of the <see cref="GorgonTrackRegistration"/> struct.</summary>
     /// <param name="trackName">The name of the track.</param>
     /// <param name="description">The friendly description of the track.</param>
@@ -190,5 +188,5 @@ public class GorgonTrackRegistration
         SupportedInterpolation = interpolationSupport;
         ID = Interlocked.Increment(ref _idCount);
     }
-    #endregion
+
 }

@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2020 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: June 21, 2020 12:18:20 AM
 // 
-#endregion
+
 
 using Gorgon.Diagnostics;
 using Gorgon.Editor.Content;
@@ -36,7 +36,7 @@ namespace Gorgon.Editor.Rendering;
 
 
 /// <summary>
-/// A texture cache used to keep textures resident for use over a user defined lifetime.
+/// A texture cache used to keep textures resident for use over a user defined lifetime
 /// </summary>
 /// <remarks>
 /// <para>
@@ -46,11 +46,11 @@ namespace Gorgon.Editor.Rendering;
 /// <para>
 /// This is where the texture cache can be used to solve the problem. A texture cache will keep the textures resident in memory as long as they're being used. When a texture is requested by passing in 
 /// its <see cref="IContentFile"/> it will load the texture if it is not previously cached, or if the actual texture object was disposed. If the texture was previously cached, then the cached texture 
-/// will be returned, incrementing an internal count, which is used to determine how many items are using the texture.
+/// will be returned, incrementing an internal count, which is used to determine how many items are using the texture
 /// </para>
 /// <para>
 /// When a texture is no longer required, the texture should <b>not</b> be disposed. Instead, use the texture cache to return the texture which will automatically dispose of it when no more objects 
-/// are using it. If the texture is required again, then retrieving it from the texture cache will load the texture again.
+/// are using it. If the texture is required again, then retrieving it from the texture cache will load the texture again
 /// </para>
 /// </remarks>
 /// <seealso cref="IContentFile"/>
@@ -64,7 +64,7 @@ namespace Gorgon.Editor.Rendering;
 public class TextureCache(GorgonGraphics graphics, IContentFileManager fileManager, IGorgonFileSystemWriter<Stream> tempWriter, IGorgonImageCodec codec, IGorgonLog log)
         : ITextureCache
 {
-    #region Classes.
+
     /// <summary>
     /// An entry in the texture cache.
     /// </summary>
@@ -101,14 +101,14 @@ public class TextureCache(GorgonGraphics graphics, IContentFileManager fileManag
             texture?.Dispose();
         }
     }
-    #endregion
 
-    #region Constants.
+
+
     // The path to the texture cache directory.
     private const string CacheDirectory = "/Gorgon.Editor/TextureCache/";
-    #endregion
 
-    #region Variables.
+
+
     // The graphics interface used to create the textures.
     private readonly GorgonGraphics _graphics = graphics ?? throw new ArgumentNullException(nameof(graphics));
     // The project file system manager.
@@ -123,9 +123,9 @@ public class TextureCache(GorgonGraphics graphics, IContentFileManager fileManag
     private IGorgonVirtualDirectory _cacheDirectory;
     // The log interface for capturing debug messages.
     private readonly IGorgonLog _log = log ?? throw new ArgumentNullException(nameof(log));
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to load a texture for the texture cache.
     /// </summary>
@@ -557,5 +557,5 @@ public class TextureCache(GorgonGraphics graphics, IContentFileManager fileManag
         return entry.Users;
     }
 
-    #endregion
+
 }

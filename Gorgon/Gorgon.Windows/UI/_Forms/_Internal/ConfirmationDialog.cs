@@ -1,6 +1,6 @@
-﻿#region MIT.
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2011 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,35 +11,35 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: Saturday, June 18, 2011 4:20:43 PM
 // 
-#endregion
+
 
 using System.ComponentModel;
 
 namespace Gorgon.UI;
 
 /// <summary>
-/// Dialog for confirmation.
+/// Dialog for confirmation
 /// </summary>
 internal partial class ConfirmationDialog
     : BaseDialog
 {
-    #region Variables.
+
     // Don't show the cancel button.
     private bool _showCancel;
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to set or return whether to show the cancel button.
     /// </summary>
@@ -72,9 +72,9 @@ internal partial class ConfirmationDialog
         get;
         protected set;
     }
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Raises the <see cref="E:System.Windows.Forms.Form.FormClosing"></see> event.
     /// </summary>
@@ -170,9 +170,9 @@ internal partial class ConfirmationDialog
             buttonNo.Focus();
         }
     }
-    #endregion
 
-    #region Constructor/Destructor.
+
+
     /// <summary>
     /// Constructor.
     /// </summary>
@@ -181,6 +181,6 @@ internal partial class ConfirmationDialog
         ConfirmationResult = ConfirmationResult.None;
         InitializeComponent();
     }
-    #endregion
+
 }
 

@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2019 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,37 +11,37 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: May 6, 2019 10:14:55 AM
 // 
-#endregion
+
 
 using Gorgon.Editor.Content;
 
 namespace Gorgon.Editor.UI.Controls;
 
 /// <summary>
-/// An file system directory entry for the <see cref="ContentFileExplorer"/>.
+/// An file system directory entry for the <see cref="ContentFileExplorer"/>
 /// </summary>
 public class ContentFileExplorerFileEntry
     : PropertyMonitor, IContentFileExplorerSearchEntry
 {
-    #region Variables.
+
     // Flag to indicate that this entry is visible.
     private bool _visible = true;
     // Flag to indicate that the entry is selected.
     private bool _isSelected;
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to return the parent of this entry.
     /// </summary>
@@ -121,9 +121,9 @@ public class ContentFileExplorerFileEntry
 
     /// <summary>Property to return whether or not this entry is a directory.</summary>
     bool IContentFileExplorerSearchEntry.IsDirectory => false;
-    #endregion
 
-    #region Constructor/Finalizer.
+
+
     /// <summary>Initializes a new instance of the <see cref="ContentFileExplorerFileEntry"/> class.</summary>
     /// <param name="contentFile">The content file associated with this entry.</param>
     /// <param name="parent">The parent directory for this file.</param>
@@ -141,5 +141,5 @@ public class ContentFileExplorerFileEntry
             AssociationType = contentType;
         }
     }
-    #endregion
+
 }

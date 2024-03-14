@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2018 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: October 29, 2018 1:19:30 PM
 // 
-#endregion
+
 
 using System.Text;
 using Gorgon.Core;
@@ -38,12 +38,12 @@ using Newtonsoft.Json;
 namespace Gorgon.Editor.Services;
 
 /// <summary>
-/// The service used for managing the content plugins.
+/// The service used for managing the content plugins
 /// </summary>
 internal class ContentPlugInService
     : IContentPlugInService, IDisposable
 {
-    #region Variables.
+
     // The plugin list.
     private readonly Dictionary<string, ContentPlugIn> _plugins = new(StringComparer.OrdinalIgnoreCase);
     // The plugin list.
@@ -54,9 +54,9 @@ internal class ContentPlugInService
     private readonly string _settingsDir;
     // The services passed from the host to the content plug ins.
     private readonly IHostContentServices _hostServices;
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>Property to return the list of content plugins loaded in to the application.</summary>
     /// <value>The plugins.</value>
     public IReadOnlyDictionary<string, ContentPlugIn> PlugIns => _plugins;
@@ -77,9 +77,9 @@ internal class ContentPlugInService
         get;
         set;
     }
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to retrieve the actual plug in based on the name associated with the project metadata item.
     /// </summary>
@@ -501,9 +501,9 @@ internal class ContentPlugInService
             plugIn.ProjectClosed();
         }
     }
-    #endregion
 
-    #region Constructor.
+
+
     /// <summary>Initializes a new instance of the ContentPlugInService class.</summary>
     /// <param name="settingsDirectory">The directory that will contain settings for the content plug ins.</param>
     /// <param name="hostServices">The services to pass from the host application to the content plug ins.</param>
@@ -521,5 +521,5 @@ internal class ContentPlugInService
 
         _hostServices = hostServices ?? throw new ArgumentNullException(nameof(hostServices));
     }
-    #endregion
+
 }

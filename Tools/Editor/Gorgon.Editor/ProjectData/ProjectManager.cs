@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2018 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: September 1, 2018 8:41:18 PM
 // 
-#endregion
+
 
 using System.Buffers;
 using System.Diagnostics;
@@ -42,10 +42,10 @@ using Newtonsoft.Json;
 namespace Gorgon.Editor.ProjectData;
 
 /// <summary>
-/// A project manager used to create, destroy, load and save a project.
+/// A project manager used to create, destroy, load and save a project
 /// </summary>
 /// <remarks>
-/// Initializes a new instance of the <see cref="ProjectManager"/> class.
+/// Initializes a new instance of the <see cref="ProjectManager"/> class
 /// </remarks>
 /// <param name="providers">The file system providers used to read and write project files.</param>
 /// <param name="contentPlugIns">The plug in service used to manage content.</param>
@@ -53,25 +53,25 @@ namespace Gorgon.Editor.ProjectData;
 /// <exception cref="ArgumentNullException">Thrown when the <paramref name="providers"/> parameter is <b>null</b>.</exception>
 internal class ProjectManager(FileSystemProviders providers, IGorgonLog log)
 {
-    #region Constants
+
     // The temporary directory name.
     private const string TemporaryDirectoryName = "tmp";
     // The source directory name.
     private const string SourceDirectoryName = "src";
     // The file system directory name.
     private const string FileSystemDirectoryName = "fs";
-    #endregion
 
-    #region Variables.
+
+
     // The stream used for the lock file.
     private Stream _lockStream;
     // The log interface for debug messages.
     private readonly IGorgonLog _log = log ?? GorgonLog.NullLog;
     // The provider service for handling reading and writing project files.
     private readonly FileSystemProviders _providers = providers ?? throw new ArgumentNullException(nameof(providers));
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to set up the required project directories.
     /// </summary>
@@ -955,5 +955,5 @@ internal class ProjectManager(FileSystemProviders providers, IGorgonLog log)
         return true;
     }
 
-    #endregion
+
 }

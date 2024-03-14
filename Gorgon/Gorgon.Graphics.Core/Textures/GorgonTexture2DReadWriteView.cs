@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2017 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: July 22, 2017 10:31:48 AM
 // 
-#endregion
+
 
 using System.Numerics;
 using Gorgon.Core;
@@ -39,25 +39,25 @@ using DX = SharpDX;
 namespace Gorgon.Graphics.Core;
 
 /// <summary>
-/// Provides a read/write (unordered access) view for a <see cref="GorgonTexture2D"/>.
+/// Provides a read/write (unordered access) view for a <see cref="GorgonTexture2D"/>
 /// </summary>
 /// <remarks>
 /// <para>
 /// This type of view allows for unordered access to a <see cref="GorgonTexture2D"/>. The texture must have been created with the <see cref="TextureBinding.ReadWriteView"/> flag in its 
-/// <see cref="IGorgonTexture2DInfo.Binding"/> property.
+/// <see cref="IGorgonTexture2DInfo.Binding"/> property
 /// </para>
 /// <para>
 /// The unordered access allows a shader to read/write any part of a <see cref="GorgonGraphicsResource"/> by multiple threads without memory contention. This is done through the use of 
-/// <a target="_blank" href="https://msdn.microsoft.com/en-us/library/windows/desktop/ff476334(v=vs.85).aspx">atomic functions</a>.
+/// <a target="_blank" href="https://msdn.microsoft.com/en-us/library/windows/desktop/ff476334(v=vs.85).aspx">atomic functions</a>
 /// </para>
 /// <para>
 /// These types of views are most useful for <see cref="GorgonComputeShader"/> shaders, but can also be used by a <see cref="GorgonPixelShader"/> by passing a list of these views in to a 
-/// <see cref="GorgonDrawCallCommon">draw call</see>.
+/// <see cref="GorgonDrawCallCommon">draw call</see>
 /// </para>
 /// <para>
 /// <note type="warning">
 /// <para>
-/// Unordered access views do not support <see cref="GorgonTexture2D"/> textures with <see cref="GorgonMultisampleInfo">multisampling</see> enabled.
+/// Unordered access views do not support <see cref="GorgonTexture2D"/> textures with <see cref="GorgonMultisampleInfo">multisampling</see> enabled
 /// </para>
 /// </note>
 /// </para>
@@ -71,7 +71,7 @@ namespace Gorgon.Graphics.Core;
 public sealed class GorgonTexture2DReadWriteView
     : GorgonReadWriteView, IGorgonTexture2DInfo, IGorgonImageInfo
 {
-    #region Properties.
+
     /// <summary>
     /// Property to return the type of image data.
     /// </summary>
@@ -235,9 +235,9 @@ public sealed class GorgonTexture2DReadWriteView
     /// Property to return whether the resource used by this view can be shared or not.
     /// </summary>
     public TextureSharingOptions Shared => Texture.Shared;
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>Function to retrieve the necessary parameters to create the native view.</summary>
     /// <returns>The D3D11 UAV descriptor.</returns>        
     private protected override ref readonly D3D11.UnorderedAccessViewDescription1 OnGetUavParams()
@@ -776,9 +776,9 @@ public sealed class GorgonTexture2DReadWriteView
         view.OwnsResource = true;
         return view;
     }
-    #endregion
 
-    #region Constructor/Finalizer.
+
+
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonTexture2DReadWriteView"/> class.
     /// </summary>
@@ -805,5 +805,5 @@ public sealed class GorgonTexture2DReadWriteView
         ArrayIndex = arrayIndex;
         ArrayCount = arrayCount;
     }
-    #endregion
+
 }

@@ -1,6 +1,6 @@
-﻿#region MIT.
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2013 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: Monday, January 21, 2013 9:03:04 AM
 // 
-#endregion
+
 
 using System.Buffers;
 using System.Globalization;
@@ -34,11 +34,11 @@ using Gorgon.Properties;
 namespace Gorgon.IO;
 
 /// <summary>
-/// Extension methods for IO operations and string formatting.
+/// Extension methods for IO operations and string formatting
 /// </summary>
 public static class GorgonIOExtensions
 {
-    #region Variables.
+
     // The system directory path separator.
     private static readonly string _directoryPathSeparator = Path.DirectorySeparatorChar.ToString(CultureInfo.InvariantCulture);
     // The system alternate path separator.
@@ -47,9 +47,9 @@ public static class GorgonIOExtensions
     private static readonly char[] _illegalPathChars = Path.GetInvalidPathChars();
     // Illegal file name characters.
     private static readonly char[] _illegalFileChars = Path.GetInvalidFileNameChars();
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to read data into a span from a stream.
     /// </summary>
@@ -742,5 +742,5 @@ public static class GorgonIOExtensions
                | ((ulong)((byte)chunkName[1]) << 8)
                | (byte)chunkName[0];
     }
-    #endregion
+
 }

@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2021 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,25 +11,25 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: February 12, 2021 1:07:51 AM
 // 
-#endregion
+
 
 using System.Numerics;
 
 namespace Gorgon.Math;
 
 /// <summary>
-/// Returns spline interpolated values across a set of points.
+/// Returns spline interpolated values across a set of points
 /// </summary>
 /// <remarks>
 /// <para>
@@ -38,7 +38,7 @@ namespace Gorgon.Math;
 /// <para>
 /// Because this class provides smoothing between the nodes on the a spline, the result is very different than that of a linear interpolation. A linear interpolation will go in a straight line until 
 /// the end point is reached. This can give a jagged looking effect when a point moves between several points that are in vastly different places. But the spline will smooth the transition for the 
-/// value travelling to the destination points, thus giving a curved appearance when a point traverses the spline.
+/// value travelling to the destination points, thus giving a curved appearance when a point traverses the spline
 /// </para>
 /// </remarks>
 /// <example>
@@ -64,8 +64,8 @@ namespace Gorgon.Math;
 ///		Vector4 result = spline.GetInterpolatedValue(currentTime);
 /// 
 ///		// Do something with the result... like plot a pixel:
-///		// e.g PutPixel(result.X, result.Y, Color.Blue); or something.
-///		// and over 5 seconds, a curved series of points should be plotted.
+///		// e.g PutPixel(result.X, result.Y, Color.Blue); or something
+///		// and over 5 seconds, a curved series of points should be plotted
 /// 
 ///		currentTime = GorgonTiming.SecondsSinceStart / (endTime - startTime);
 /// } 
@@ -107,7 +107,7 @@ public interface IGorgonSplineCalculation
 }
 
 /// <summary>
-/// Returns spline interpolated values across a set of points.
+/// Returns spline interpolated values across a set of points
 /// </summary>
 /// <remarks>
 /// <para>
@@ -116,10 +116,10 @@ public interface IGorgonSplineCalculation
 /// <para>
 /// Because this class provides smoothing between the nodes on the a spline, the result is very different than that of a linear interpolation. A linear interpolation will go in a straight line until 
 /// the end point is reached. This can give a jagged looking effect when a point moves between several points that are in vastly different places. But the spline will smooth the transition for the 
-/// value travelling to the destination points, thus giving a curved appearance when a point traverses the spline.
+/// value travelling to the destination points, thus giving a curved appearance when a point traverses the spline
 /// </para>
 /// <para>
-/// When adding or removing <see cref="Points"/> from the spline, remember to call <see cref="UpdateTangents"/> to recalculate the tangents.
+/// When adding or removing <see cref="Points"/> from the spline, remember to call <see cref="UpdateTangents"/> to recalculate the tangents
 /// </para>
 /// </remarks>
 /// <example>
@@ -145,8 +145,8 @@ public interface IGorgonSplineCalculation
 ///		Vector4 result = spline.GetInterpolatedValue(currentTime);
 /// 
 ///		// Do something with the result... like plot a pixel:
-///		// e.g PutPixel(result.X, result.Y, Color.Blue); or something.
-///		// and over 5 seconds, a curved series of points should be plotted.
+///		// e.g PutPixel(result.X, result.Y, Color.Blue); or something
+///		// and over 5 seconds, a curved series of points should be plotted
 /// 
 ///		currentTime = GorgonTiming.SecondsSinceStart / (endTime - startTime);
 /// } 
@@ -156,7 +156,7 @@ public interface IGorgonSplineCalculation
 public interface IGorgonSpline
     : IGorgonSplineCalculation
 {
-    #region Properties.
+
     /// <summary>
     /// Property to return the list of points for the spline.
     /// </summary>
@@ -167,9 +167,9 @@ public interface IGorgonSpline
     {
         get;
     }
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to calculate the tangent vectors.
     /// </summary>
@@ -178,5 +178,5 @@ public interface IGorgonSpline
     /// it must be called whenever a change to the <see cref="Points"/> property is made.
     /// </remarks>
     void UpdateTangents();
-    #endregion
+
 }

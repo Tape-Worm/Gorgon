@@ -1,6 +1,6 @@
-﻿#region MIT.
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2011 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: Sunday, October 16, 2011 2:10:22 PM
 // 
-#endregion
+
 
 using Gorgon.Graphics.Core.Properties;
 /* Unmerged change from project 'Gorgon.Graphics.Core (net5.0-windows)'
@@ -38,32 +38,32 @@ using DXGI = SharpDX.DXGI;
 namespace Gorgon.Graphics.Core;
 
 /// <summary>
-/// Values to define the number and quality of multisampling.
+/// Values to define the number and quality of multisampling
 /// </summary>
 /// <param name="Count">The number of samples per pixel.</param>
 /// <param name="Quality">The quality for a sample.</param>
 /// <remarks>
 /// <para>
-/// There is a performance penalty for setting the <see cref="Quality"/> value to higher levels.
+/// There is a performance penalty for setting the <see cref="Quality"/> value to higher levels
 /// </para>
 /// <para>
-/// Setting the <see cref="Count"/> and <see cref="Quality"/> values to 1 and 0 respectively, will disable multisampling.
+/// Setting the <see cref="Count"/> and <see cref="Quality"/> values to 1 and 0 respectively, will disable multisampling
 /// </para>
 /// <para>
-/// If multisample anti-aliasing is being used, all bound render targets and depth buffers must have the same sample counts and quality levels.
+/// If multisample anti-aliasing is being used, all bound render targets and depth buffers must have the same sample counts and quality levels
 /// </para>
 /// <para>
 /// <note type="warning">
 /// <para>
 /// This value must be 0 or less than/equal to the quality returned by <see cref="IGorgonFormatSupportInfo.MaxMultisampleCountQuality"/>.  Failure to do so will cause an exception for objects that use this 
-/// type.
+/// type
 /// </para>
 /// </note>
 /// </para>
 /// </remarks>
 public record GorgonMultisampleInfo(int Count, int Quality)
 {
-    #region Variables.
+
     /// <summary>
     /// The default multisampling value.
     /// </summary>
@@ -81,9 +81,9 @@ public record GorgonMultisampleInfo(int Count, int Quality)
     /// A pattern where all of the samples are located at the pixel center.
     /// </summary>
     public static readonly int CenteredMultisamplePatternQuality = unchecked((int)0xfffffffe);
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Returns a <see cref="string" /> that represents this instance.
     /// </summary>
@@ -91,5 +91,5 @@ public record GorgonMultisampleInfo(int Count, int Quality)
     /// A <see cref="string" /> that represents this instance.
     /// </returns>
     public override string ToString() => string.Format(Resources.GORGFX_TOSTR_MULTISAMPLEINFO, Count, Quality);
-    #endregion
+
 }

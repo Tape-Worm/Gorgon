@@ -1,6 +1,6 @@
-﻿#region MIT.
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2011 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: Sunday, July 03, 2011 9:26:17 AM
 // 
-#endregion
+
 
 using Gorgon.IO.GorPack.Properties;
 using ICSharpCode.SharpZipLib.BZip2;
@@ -30,12 +30,12 @@ using ICSharpCode.SharpZipLib.BZip2;
 namespace Gorgon.IO.GorPack;
 
 /// <summary>
-/// A stream used to read Gorgon bzip2 pack files.
+/// A stream used to read Gorgon bzip2 pack files
 /// </summary>
 internal class GorPackFileStream
     : GorgonFileSystemStream
 {
-    #region Variables.
+
     // Flag to indicate that the object was disposed.
     private bool _disposed;
     // Input stream for the bzip file.
@@ -44,9 +44,9 @@ internal class GorPackFileStream
     private long _position;
     // Base position in the stream.
     private readonly long _basePosition;
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// When overridden in a derived class, gets a value indicating whether the current stream supports writing.
     /// </summary>
@@ -139,9 +139,9 @@ internal class GorPackFileStream
         get => _bzipStream.ReadTimeout;
         set => _bzipStream.ReadTimeout = value;
     }
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Releases the unmanaged resources used by the <see cref="Stream"/> and optionally releases the managed resources.
     /// </summary>
@@ -327,9 +327,9 @@ internal class GorPackFileStream
     /// <exception cref="NotSupportedException">The stream does not support writing, or the stream is already closed. </exception>
     /// <exception cref="ObjectDisposedException">Methods were called after the stream was closed. </exception>
     public override void WriteByte(byte value) => throw new NotSupportedException();
-    #endregion
 
-    #region Constructor/Destructor.
+
+
     /// <summary>
     /// Initializes a new instance of the <see cref="GorPackFileStream"/> class.
     /// </summary>
@@ -345,5 +345,5 @@ internal class GorPackFileStream
         Length = file.Size;
         _basePosition = stream.Position;
     }
-    #endregion
+
 }

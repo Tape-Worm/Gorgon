@@ -20,7 +20,7 @@ partial class VisualContentBaseControl
         base.Dispose(disposing);
     }
 
-    #region Component Designer generated code
+
 
     /// <summary> 
     /// Required method for Designer support - do not modify 
@@ -148,7 +148,7 @@ partial class VisualContentBaseControl
 
     }
 
-    #endregion
+
 
     private System.Windows.Forms.TableLayoutPanel TableViewControls;
     private System.Windows.Forms.HScrollBar ScrollHorizontal;

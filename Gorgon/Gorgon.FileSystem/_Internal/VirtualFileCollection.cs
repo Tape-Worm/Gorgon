@@ -1,6 +1,6 @@
-﻿#region MIT.
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2011 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: Monday, June 27, 2011 8:59:49 AM
 // 
-#endregion
+
 
 using System.Collections;
 using Gorgon.Collections;
@@ -32,19 +32,19 @@ using Gorgon.IO.Providers;
 namespace Gorgon.IO;
 
 /// <summary>
-/// A collection of file entries available from the file system.
+/// A collection of file entries available from the file system
 /// </summary>
 internal class VirtualFileCollection
     : IGorgonNamedObjectReadOnlyDictionary<IGorgonVirtualFile>
 {
-    #region Variables.
+
     // Parent directory for this file system entry.
     private readonly VirtualDirectory _parent;
     // The list of file entries.
     private readonly Dictionary<string, VirtualFile> _files = new(StringComparer.OrdinalIgnoreCase);
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to return whether the keys are case sensitive.
     /// </summary>
@@ -90,9 +90,9 @@ internal class VirtualFileCollection
     /// The number of elements in the collection. 
     /// </returns>
     public int Count => _files.Count;
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to return whether a file entry with the specified name exists in this collection.
     /// </summary>
@@ -216,13 +216,13 @@ internal class VirtualFileCollection
     /// An <see cref="IEnumerator" /> object that can be used to iterate through the collection.
     /// </returns>
     IEnumerator IEnumerable.GetEnumerator() => ((IEnumerable)_files.Values).GetEnumerator();
-    #endregion
 
-    #region Constructor/Destructor.
+
+
     /// <summary>
     /// Initializes a new instance of the <see cref="VirtualFileCollection"/> class.
     /// </summary>
     /// <param name="parent">The parent directory that owns this collection.</param>
     internal VirtualFileCollection(VirtualDirectory parent) => _parent = parent;
-    #endregion
+
 }

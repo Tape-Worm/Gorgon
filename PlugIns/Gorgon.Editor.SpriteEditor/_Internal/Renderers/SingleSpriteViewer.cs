@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2019 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: April 2, 2019 5:24:26 PM
 // 
-#endregion
+
 
 using System.Numerics;
 using Gorgon.Animation;
@@ -36,19 +36,19 @@ using DX = SharpDX;
 namespace Gorgon.Editor.SpriteEditor;
 
 /// <summary>
-/// A renderer for a single sprite (without background).
+/// A renderer for a single sprite (without background)
 /// </summary>
 internal class SingleSpriteViewer
     : SpriteViewer
 {
-    #region Variables.
+
     // The controller for animating the content.
     private readonly ImageAnimationController _animController = new();
     private IGorgonAnimation _opacityAnimation;
     private readonly GorgonAnimationBuilder _animationBuilder = new();
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to return whether the opactiy animation is playing.
     /// </summary>
@@ -71,9 +71,9 @@ internal class SingleSpriteViewer
         get;
         private set;
     }
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to update the sprite colors.
     /// </summary>
@@ -209,9 +209,9 @@ internal class SingleSpriteViewer
 
         ForceMoveTo(new Vector2(spritePosition.X, spritePosition.Y), spriteZoomLevel.GetScale(), true);
     }
-    #endregion
 
-    #region Constructor/Finalizer.
+
+
     /// <summary>Initializes a new instance of the <see cref="SingleSpriteViewer"/> class.</summary>
     /// <param name="name">The name of the renderer.</param>
     /// <param name="renderer">The 2D renderer for the application </param>
@@ -219,5 +219,5 @@ internal class SingleSpriteViewer
     /// <param name="dataContext">The graphics interface for the application.</param>
     protected SingleSpriteViewer(string name, Gorgon2D renderer, GorgonSwapChain swapChain, ISpriteContent dataContext)
         : base(name, renderer, swapChain, dataContext) => Sprite = new GorgonSprite();
-    #endregion
+
 }

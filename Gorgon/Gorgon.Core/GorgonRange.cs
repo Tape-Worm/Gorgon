@@ -1,6 +1,6 @@
-﻿#region MIT.
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2011 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: Friday, June 24, 2011 9:58:10 AM
 // 
-#endregion
+
 
 using System.Runtime.InteropServices;
 using Gorgon.Math;
@@ -31,19 +31,18 @@ using Newtonsoft.Json;
 
 namespace Gorgon.Core;
 
-#region Double
 /// <summary>
-/// A type that represents a range between two <see cref="double"/> values.
+/// A type that represents a range between two <see cref="double"/> values
 /// </summary>
 /// <remarks>
 /// This a means to determine the range between a minimum <see cref="double"/> value and a maximum <see cref="double"/> value. Use this object to determine if a value falls within a specific range of 
-/// values.
+/// values
 /// </remarks>
 [StructLayout(LayoutKind.Sequential, Pack = 8)]
 public readonly struct GorgonRangeD
     : IGorgonEquatableByRef<GorgonRangeD>, IComparable<GorgonRangeD>
 {
-    #region Variables.
+
     /// <summary>
     /// The minimum value in the range.
     /// </summary>
@@ -57,9 +56,9 @@ public readonly struct GorgonRangeD
     /// An empty range value.
     /// </summary>
     public static readonly GorgonRangeD Empty = new(0.0, 0.0);
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to return whether the range is empty or not.
     /// </summary>
@@ -71,9 +70,9 @@ public readonly struct GorgonRangeD
     /// </summary>
     [JsonIgnore]
     public double Range => (Minimum < Maximum) ? (Maximum - Minimum) : (Minimum - Maximum);
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to return whether the <see cref="double"/> value falls within this <see cref="GorgonRangeD"/>.
     /// </summary>
@@ -313,10 +312,10 @@ public readonly struct GorgonRangeD
     /// A 32-bit signed integer that indicates the relative order of the objects being compared. The return value has the following meanings: Value Meaning Less than zero This object is less than the other parameter.Zero This object is equal to other. Greater than zero This object is greater than other.
     /// </returns>
     public int CompareTo(GorgonRangeD other) => Range.CompareTo(other.Range);
-    #endregion
 
 
-    #region Operators.
+
+
     /// <summary>
     /// Function to perform an explicit conversion from <see cref="GorgonRangeD"/> to <see cref="GorgonRangeM"/>.
     /// </summary>
@@ -478,9 +477,9 @@ public readonly struct GorgonRangeD
     /// <param name="right">The right instance to compare.</param>
     /// <returns><b>true</b> if left is greater than right.</returns>
     public static bool operator <=(GorgonRangeD left, GorgonRangeD right) => left.Range <= right.Range;
-    #endregion
 
-    #region Constructor.
+
+
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonRangeD" /> struct.
     /// </summary>
@@ -508,23 +507,21 @@ public readonly struct GorgonRangeD
             Minimum = max;
         }
     }
-    #endregion
-}
-#endregion
 
-#region Decimal
+}
+
 /// <summary>
-/// A type that represents a range between two <see cref="decimal"/> values.
+/// A type that represents a range between two <see cref="decimal"/> values
 /// </summary>
 /// <remarks>
 /// This a means to determine the range between a minimum <see cref="decimal"/> value and a maximum <see cref="decimal"/> value. Use this object to determine if a value falls within a specific range of 
-/// values.
+/// values
 /// </remarks>
 [StructLayout(LayoutKind.Sequential, Pack = 4)]
 public readonly struct GorgonRangeM
     : IGorgonEquatableByRef<GorgonRangeM>, IComparable<GorgonRangeM>
 {
-    #region Variables.
+
     /// <summary>
     /// The minimum value in the range.
     /// </summary>
@@ -538,9 +535,9 @@ public readonly struct GorgonRangeM
     /// An empty range value.
     /// </summary>
     public static readonly GorgonRangeM Empty = new(0.0M, 0.0M);
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to return whether the range is empty or not.
     /// </summary>
@@ -552,9 +549,9 @@ public readonly struct GorgonRangeM
     /// </summary>
     [JsonIgnore]
     public decimal Range => (Minimum < Maximum) ? (Maximum - Minimum) : (Minimum - Maximum);
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to return whether the <see cref="decimal"/> value falls within this <see cref="GorgonRangeM"/>.
     /// </summary>
@@ -795,10 +792,10 @@ public readonly struct GorgonRangeM
     /// A 32-bit signed integer that indicates the relative order of the objects being compared. The return value has the following meanings: Value Meaning Less than zero This object is less than the other parameter.Zero This object is equal to other. Greater than zero This object is greater than other.
     /// </returns>
     public int CompareTo(GorgonRangeM other) => Range.CompareTo(other.Range);
-    #endregion
 
 
-    #region Operators.
+
+
     /// <summary>
     /// Function to perform an explicit conversion from <see cref="GorgonRangeM"/> to <see cref="GorgonRangeD"/>.
     /// </summary>
@@ -960,9 +957,9 @@ public readonly struct GorgonRangeM
     /// <param name="right">The right instance to compare.</param>
     /// <returns><b>true</b> if left is greater than right.</returns>
     public static bool operator <=(GorgonRangeM left, GorgonRangeM right) => left.Range <= right.Range;
-    #endregion
 
-    #region Constructor.
+
+
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonRangeM" /> struct.
     /// </summary>
@@ -990,23 +987,21 @@ public readonly struct GorgonRangeM
             Minimum = max;
         }
     }
-    #endregion
-}
-#endregion
 
-#region Float
+}
+
 /// <summary>
-/// A type that represents a range between two <see cref="float"/> values.
+/// A type that represents a range between two <see cref="float"/> values
 /// </summary>
 /// <remarks>
 /// This a means to determine the range between a minimum <see cref="float"/> value and a maximum <see cref="float"/> value. Use this object to determine if a value falls within a specific range of 
-/// values.
+/// values
 /// </remarks>
 [StructLayout(LayoutKind.Sequential, Pack = 4)]
 public readonly struct GorgonRangeF
     : IGorgonEquatableByRef<GorgonRangeF>, IComparable<GorgonRangeF>
 {
-    #region Variables.
+
     /// <summary>
     /// The minimum value in the range.
     /// </summary>
@@ -1020,9 +1015,9 @@ public readonly struct GorgonRangeF
     /// An empty range value.
     /// </summary>
     public static readonly GorgonRangeF Empty = new(0.0f, 0.0f);
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to return whether the range is empty or not.
     /// </summary>
@@ -1035,9 +1030,9 @@ public readonly struct GorgonRangeF
     [JsonIgnore]
     public float Range => (Minimum < Maximum) ? (Maximum - Minimum) : (Minimum - Maximum);
 
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to return whether the <see cref="float"/> value falls within this <see cref="GorgonRangeF"/>.
     /// </summary>
@@ -1278,9 +1273,9 @@ public readonly struct GorgonRangeF
     /// true if the current object is equal to the <paramref name="other"/> parameter; otherwise, false.
     /// </returns>
     public bool Equals(in GorgonRangeF other) => (Minimum.EqualsEpsilon(other.Minimum)) && (Maximum.EqualsEpsilon(other.Maximum));
-    #endregion
 
-    #region Constructor.
+
+
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonRangeF" /> struct.
     /// </summary>
@@ -1308,9 +1303,9 @@ public readonly struct GorgonRangeF
             Minimum = max;
         }
     }
-    #endregion
 
-    #region Operators.
+
+
     /// <summary>
     /// Function to perform an explicit conversion from <see cref="GorgonRangeF"/> to <see cref="GorgonRangeM"/>.
     /// </summary>
@@ -1472,23 +1467,21 @@ public readonly struct GorgonRangeF
     /// <param name="right">The right instance to compare.</param>
     /// <returns><b>true</b> if left is greater than right.</returns>
     public static bool operator <=(GorgonRangeF left, GorgonRangeF right) => left.Range <= right.Range;
-    #endregion
-}
-#endregion
 
-#region int
+}
+
 /// <summary>
-/// A type that represents a range between two <see cref="int"/> values.
+/// A type that represents a range between two <see cref="int"/> values
 /// </summary>
 /// <remarks>
 /// This a means to determine the range between a minimum <see cref="int"/> value and a maximum <see cref="int"/> value. Use this object to determine if a value falls within a specific range of 
-/// values.
+/// values
 /// </remarks>
 [StructLayout(LayoutKind.Sequential, Pack = 4)]
 public readonly struct GorgonRange
     : IGorgonEquatableByRef<GorgonRange>, IComparable<GorgonRange>
 {
-    #region Variables.
+
     /// <summary>
     /// The minimum value in the range.
     /// </summary>
@@ -1502,9 +1495,9 @@ public readonly struct GorgonRange
     /// An empty range value.
     /// </summary>
     public static readonly GorgonRange Empty = new(0, 0);
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to return whether the range is empty or not.
     /// </summary>
@@ -1516,9 +1509,9 @@ public readonly struct GorgonRange
     /// </summary>
     [JsonIgnore]
     public int Range => (Minimum < Maximum) ? (Maximum - Minimum) : (Minimum - Maximum);
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to return whether the <see cref="int"/> value falls within this <see cref="GorgonRange"/>.
     /// </summary>
@@ -1759,9 +1752,9 @@ public readonly struct GorgonRange
     /// A 32-bit signed integer that indicates the relative order of the objects being compared. The return value has the following meanings: Value Meaning Less than zero This object is less than the other parameter.Zero This object is equal to other. Greater than zero This object is greater than other.
     /// </returns>
     public int CompareTo(GorgonRange other) => Range.CompareTo(other.Range);
-    #endregion
 
-    #region Constructor.
+
+
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonRange" /> struct.
     /// </summary>
@@ -1789,9 +1782,9 @@ public readonly struct GorgonRange
             Minimum = max;
         }
     }
-    #endregion
 
-    #region Operators.
+
+
     /// <summary>
     /// Function to perform an explicit conversion from <see cref="GorgonRange"/> to <see cref="GorgonRangeM"/>.
     /// </summary>
@@ -1954,6 +1947,6 @@ public readonly struct GorgonRange
     /// <param name="right">The right instance to compare.</param>
     /// <returns><b>true</b> if left is greater than right.</returns>
     public static bool operator <=(GorgonRange left, GorgonRange right) => left.Range <= right.Range;
-    #endregion
+
 }
-#endregion
+

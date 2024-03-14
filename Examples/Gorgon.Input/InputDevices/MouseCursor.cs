@@ -1,6 +1,6 @@
-﻿#region MIT.
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2013 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: Thursday, January 10, 2013 8:33:49 AM
 // 
-#endregion
+
 
 using System.Drawing.Imaging;
 using DrawingGraphics = System.Drawing.Graphics;
@@ -30,12 +30,12 @@ using DrawingGraphics = System.Drawing.Graphics;
 namespace Gorgon.Examples;
 
 /// <summary>
-/// This will display our mouse cursor on a double buffered surface.
+/// This will display our mouse cursor on a double buffered surface
 /// </summary>
 internal class MouseCursor
     : IDisposable
 {
-    #region Variables.
+
     // Flag to indicate that the object was disposed.
     private bool _disposed;
     // Buffered graphics context.
@@ -50,9 +50,9 @@ internal class MouseCursor
     private DrawingGraphics _graphics;
     // Color to clear the surface with.
     private readonly Color _clearColor;
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to set or return the cursor hot spot.
     /// </summary>
@@ -61,9 +61,9 @@ internal class MouseCursor
         get;
         set;
     }
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to clean up any objects that are allocating memory.
     /// </summary>
@@ -152,23 +152,7 @@ internal class MouseCursor
         _buffer.Graphics.DrawImage(cursor, new Point(position.X + Hotspot.X, position.Y + Hotspot.Y));
         _buffer.Render(_graphics);
     }
-    #endregion
 
-    #region Constructor/Destructor.
-    /// <summary>
-    /// Initializes a new instance of the <see cref="MouseCursor" /> class.
-    /// </summary>
-    /// <param name="displayControl">The control that acts as our display area.</param>
-    public MouseCursor(Control displayControl)
-    {
-        CreateDoubleBufferSurface(displayControl);
-
-        _clearColor = displayControl.BackColor;
-        displayControl.Resize += DisplayControl_Resize;
-    }
-    #endregion
-
-    #region IDisposable Implementation.
     /// <summary>
     /// Releases unmanaged and - optionally - managed resources.
     /// </summary>
@@ -196,5 +180,16 @@ internal class MouseCursor
         Dispose(true);
         GC.SuppressFinalize(this);
     }
-    #endregion
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="MouseCursor" /> class.
+    /// </summary>
+    /// <param name="displayControl">The control that acts as our display area.</param>
+    public MouseCursor(Control displayControl)
+    {
+        CreateDoubleBufferSurface(displayControl);
+
+        _clearColor = displayControl.BackColor;
+        displayControl.Resize += DisplayControl_Resize;
+    }
 }

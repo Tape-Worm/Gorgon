@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2020 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: February 22, 2020 5:43:26 PM
 // 
-#endregion
+
 
 using Gorgon.Editor.UI;
 using Gorgon.Math;
@@ -30,17 +30,17 @@ using Gorgon.Math;
 namespace Gorgon.Editor.ImageEditor.Fx;
 
 /// <summary>
-/// The view model for the gaussian blur effect settings.
+/// The view model for the gaussian blur effect settings
 /// </summary>
 internal class FxBlur
     : HostedPanelViewModelBase<HostedPanelViewModelParameters>, IFxBlur
 {
-    #region Variables.
+
     // The amount of blur to apply.
     private int _blurAmount = 1;
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>Property to return whether the panel is modal.</summary>
     public override bool IsModal => false;
 
@@ -62,9 +62,9 @@ internal class FxBlur
             OnPropertyChanged();
         }
     }
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>Function to inject dependencies for the view model.</summary>
     /// <param name="injectionParameters">The parameters to inject.</param>
     /// <remarks>
@@ -78,5 +78,5 @@ internal class FxBlur
     protected override void OnInitialize(HostedPanelViewModelParameters injectionParameters)
     {
     }
-    #endregion
+
 }

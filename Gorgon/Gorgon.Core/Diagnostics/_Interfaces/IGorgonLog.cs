@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2015 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,25 +11,25 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: Friday, May 23, 2015 2:36:10 PM
 // 
-#endregion
+
 
 using Gorgon.Diagnostics.LogProviders;
 
 namespace Gorgon.Diagnostics;
 
 /// <summary>
-/// Enumeration containing the logging levels.
+/// Enumeration containing the logging levels
 /// </summary>
 public enum LoggingLevel
 {
@@ -46,7 +46,7 @@ public enum LoggingLevel
 }
 
 /// <summary>
-/// Provides logging functionality for an application.
+/// Provides logging functionality for an application
 /// </summary>
 /// <remarks>
 /// <para>
@@ -55,7 +55,7 @@ public enum LoggingLevel
 /// </remarks>
 public interface IGorgonLog
 {
-    #region Properties.
+
     /// <summary>
     /// Property to return the provider for this log.
     /// </summary>
@@ -80,9 +80,9 @@ public interface IGorgonLog
     {
         get;
     }
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to perform any one time inital logging.
     /// </summary>
@@ -112,5 +112,5 @@ public interface IGorgonLog
     /// <param name="level">Level that this message falls under.</param>
     /// <param name="arguments">List of optional arguments.</param>
     void Print(string formatSpecifier, LoggingLevel level, params object[] arguments);
-    #endregion
+
 }

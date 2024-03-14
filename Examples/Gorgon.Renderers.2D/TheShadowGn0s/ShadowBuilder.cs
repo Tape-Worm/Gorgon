@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2018 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: August 25, 2018 12:04:13 PM
 // 
-#endregion
+
 
 using System.Numerics;
 using Gorgon.Graphics;
@@ -33,10 +33,10 @@ using DX = SharpDX;
 namespace Gorgon.Examples;
 
 /// <summary>
-/// Builds the shadows for our application.
+/// Builds the shadows for our application
 /// </summary>
 /// <remarks>
-/// Initializes a new instance of the <see cref="ShadowBuilder"/> class.
+/// Initializes a new instance of the <see cref="ShadowBuilder"/> class
 /// </remarks>
 /// <param name="renderer">The renderer.</param>
 /// <param name="effect">The gaussian blur effect to use in order to soften the shadows.</param>
@@ -44,7 +44,7 @@ namespace Gorgon.Examples;
 /// <param name="sprite2">The second sprite to draw.</param>
 public class ShadowBuilder(Gorgon2D renderer, Gorgon2DGaussBlurEffect effect, GorgonSprite sprite1, GorgonSprite sprite2)
 {
-    #region Variables.
+
     // The renderer.
     private readonly Gorgon2D _renderer = renderer;
     // Our gaussian blur effect.
@@ -52,9 +52,9 @@ public class ShadowBuilder(Gorgon2D renderer, Gorgon2DGaussBlurEffect effect, Go
     // Our sprites to draw.
     private readonly GorgonSprite _sprite1 = sprite1;
     private readonly GorgonSprite _sprite2 = sprite2;
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to build the shadows for the sprites.
     /// </summary>
@@ -135,5 +135,5 @@ public class ShadowBuilder(Gorgon2D renderer, Gorgon2DGaussBlurEffect effect, Go
         return (resultSprites, resultTexture);
     }
 
-    #endregion
+
 }

@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2018 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: August 26, 2018 8:51:04 PM
 // 
-#endregion
+
 
 using System.Collections.Specialized;
 using System.ComponentModel;
@@ -39,12 +39,11 @@ using DX = SharpDX;
 namespace Gorgon.Editor;
 
 /// <summary>
-/// The main application form.
+/// The main application form
 /// </summary>
 internal partial class FormMain
     : KryptonForm, IDataContext<IMain>
 {
-    #region Enumerations.
     /// <summary>
     /// States for the closing handler.
     /// </summary>
@@ -63,9 +62,9 @@ internal partial class FormMain
         /// </summary>
         Closed = 2
     }
-    #endregion
 
-    #region Variables.
+
+
     // The context for a clipboard handler object.
     private IClipboardHandler _clipboardContext;
     // The flag to indicate that the application is already closing.
@@ -96,9 +95,9 @@ internal partial class FormMain
     private readonly ProgressPanelDisplay _progressForm;
     // The application settings.
     private readonly EditorSettings _settings;
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to return the data context assigned to this view.
     /// </summary>
@@ -118,9 +117,9 @@ internal partial class FormMain
         get => PanelProject.GraphicsContext;
         set => PanelProject.GraphicsContext = value;
     }
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to release all tool ribbon items.
     /// </summary>
@@ -1410,9 +1409,9 @@ internal partial class FormMain
             ValidateRibbonButtons();
         }
     }
-    #endregion
 
-    #region Constructor/Finalizer.
+
+
     /// <summary>
     /// Initializes a new instance of the <see cref="FormMain"/> class.
     /// </summary>
@@ -1436,5 +1435,5 @@ internal partial class FormMain
     /// <param name="settings">The settings for the application.</param>
     public FormMain(EditorSettings settings)
         : this() => PanelProject.Settings = _settings = settings;
-    #endregion
+
 }

@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2021 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: September 5, 2021 7:38:51 PM
 // 
-#endregion
+
 
 using System.ComponentModel;
 using Gorgon.Editor.UI;
@@ -33,17 +33,17 @@ using Gorgon.Graphics.Fonts;
 namespace Gorgon.Editor.FontEditor;
 
 /// <summary>
-/// The view for changing the font outline parameters.
+/// The view for changing the font outline parameters
 /// </summary>
 internal partial class FontSolidBrushView
     : EditorSubPanelCommon, IDataContext<IFontSolidBrush>
 {
-    #region Variables.
+
     // The event hook counter.
     private int _eventHook;
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to return the data context for the view.
     /// </summary>
@@ -53,9 +53,9 @@ internal partial class FontSolidBrushView
         get;
         private set;
     }
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to unhook the events.
     /// </summary>
@@ -258,10 +258,10 @@ internal partial class FontSolidBrushView
         ViewModel.PropertyChanged += DataContext_PropertyChanged;
         ValidateControls();
     }
-    #endregion
 
-    #region Constructor/Finalizer.
+
+
     /// <summary>Initializes a new instance of the <see cref="FontOutlineView"/> class.</summary>
     public FontSolidBrushView() => InitializeComponent();
-    #endregion
+
 }

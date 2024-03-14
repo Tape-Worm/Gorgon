@@ -20,7 +20,7 @@ partial class FormProgress
         base.Dispose(disposing);
     }
 
-    #region Windows Form Designer generated code
+
 
     /// <summary>
     /// Required method for Designer support - do not modify
@@ -79,7 +79,7 @@ partial class FormProgress
         PerformLayout();
     }
 
-    #endregion
+
 
 #pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
     /// <summary>

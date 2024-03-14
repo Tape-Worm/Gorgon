@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2018 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: September 4, 2018 3:13:35 PM
 // 
-#endregion
+
 
 using System.Collections.Specialized;
 using System.ComponentModel;
@@ -38,7 +38,7 @@ using Gorgon.UI;
 namespace Gorgon.Editor.Views;
 
 /// <summary>
-/// The context for the file explorer.
+/// The context for the file explorer
 /// </summary>
 internal enum FileExplorerContext
 {
@@ -57,17 +57,17 @@ internal enum FileExplorerContext
 }
 
 /// <summary>
-/// The file explorer used to manipulate files for the project.
+/// The file explorer used to manipulate files for the project
 /// </summary>
 internal partial class FileExploder
     : EditorBaseControl, IDataContext<IFileExplorer>
 {
-    #region Constants
+
     // The name for a dummy node.
     private const string DummyNodeName = "*$__DUMMY__$*";
-    #endregion
 
-    #region Events.
+
+
     // The event fired when the control context is changed.
     private event EventHandler ControlContextChangedEvent;
 
@@ -139,9 +139,9 @@ internal partial class FileExploder
             }
         }
     }
-    #endregion
 
-    #region Variables.
+
+
     // The synchronization lock for the control context changed event.
     private readonly object _eventLock = new();
     // Flag to indicate that the events for the tree are hooked up.
@@ -169,9 +169,9 @@ internal partial class FileExploder
     private FileExplorerContext _controlContext = FileExplorerContext.None;
     // Flag to indicate if a rename operation is active.
     private bool _isRenaming;
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to set or return the application settings.
     /// </summary>
@@ -229,9 +229,9 @@ internal partial class FileExploder
             OnIsRenamingChanged();
         }
     }
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to set the distance for the splitter panels.
     /// </summary>
@@ -3117,9 +3117,9 @@ internal partial class FileExploder
 
         ViewModel.SelectDirectoryCommand.Execute(node.Name);
     }
-    #endregion
 
-    #region Constructor/Finalizer.
+
+
     /// <summary>
     /// Initializes a new instance of the <see cref="FileExploder"/> class.
     /// </summary>
@@ -3163,5 +3163,5 @@ internal partial class FileExploder
             ForeColor = DarkFormsRenderer.DisabledColor,
         };
     }
-    #endregion
+
 }

@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2019 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: May 9, 2019 7:50:58 AM
 // 
-#endregion
+
 
 using System.ComponentModel;
 using System.Numerics;
@@ -41,12 +41,12 @@ using DX = SharpDX;
 namespace Gorgon.Editor.TextureAtlasTool;
 
 /// <summary>
-/// A dialog used for sprite selection.
+/// A dialog used for sprite selection
 /// </summary>
 internal partial class FormSpriteSelector
     : Form, IDataContext<ISpriteFiles>
 {
-    #region Variables.
+
     // Flag to indicate that the form is being designed in the IDE.
     private readonly bool _isDesignTime;
     // The graphics context for the application.
@@ -57,9 +57,9 @@ internal partial class FormSpriteSelector
     private GorgonTexture2DView _previewImage;
     // The previous idle function.
     private Func<bool> _oldIdle;
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>Property to return the data context assigned to this view.</summary>
     [Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public ISpriteFiles ViewModel
@@ -67,9 +67,9 @@ internal partial class FormSpriteSelector
         get;
         private set;
     }
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to validate the controls on the form.
     /// </summary>
@@ -358,14 +358,14 @@ internal partial class FormSpriteSelector
 
         ViewModel.PropertyChanged += DataContext_PropertyChanged;
     }
-    #endregion
 
-    #region Constructor/Finalizer.
+
+
     /// <summary>Initializes a new instance of the <see cref="FormSpriteSelector"/> class.</summary>
     public FormSpriteSelector()
     {
         _isDesignTime = LicenseManager.UsageMode == LicenseUsageMode.Designtime;
         InitializeComponent();
     }
-    #endregion
+
 }

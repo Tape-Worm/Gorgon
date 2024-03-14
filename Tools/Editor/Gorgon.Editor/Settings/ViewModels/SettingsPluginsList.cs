@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2019 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: April 20, 2019 11:50:31 AM
 // 
-#endregion
+
 
 using System.Collections.ObjectModel;
 using Gorgon.Editor.PlugIns;
@@ -32,17 +32,17 @@ using Gorgon.Editor.UI;
 namespace Gorgon.Editor.ViewModels;
 
 /// <summary>
-/// The plug in list category for the settings.
+/// The plug in list category for the settings
 /// </summary>
 internal class SettingsPlugInsList
     : ViewModelBase<SettingsPlugInsListParameters, IHostServices>, ISettingsPlugInsList
 {
-    #region Variables.
+
     // The current plug in.
     private ISettingsPlugInListItem _current;
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>Property to return the plug ins.</summary>
     public ObservableCollection<ISettingsPlugInListItem> PlugIns
     {
@@ -79,9 +79,9 @@ internal class SettingsPlugInsList
     /// <remarks>For best practice, the name should only be set once during the lifetime of an object. Hence, this interface only provides a read-only implementation of this
     /// property.</remarks>
     public string Name => Resources.GOREDIT_SETTINGS_CATEGORY_PLUGINS;
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to select a plug in from the list.
     /// </summary>
@@ -110,10 +110,10 @@ internal class SettingsPlugInsList
     /// Applications should call this when setting up the view model for complex operations and/or dependency injection. The constructor should only be used for simple set up and initialization of objects.
     /// </remarks>
     protected override void OnInitialize(SettingsPlugInsListParameters injectionParameters) => PlugIns = new ObservableCollection<ISettingsPlugInListItem>(injectionParameters.PlugIns?.OrderBy(item => item.Name, StringComparer.CurrentCultureIgnoreCase));
-    #endregion
 
-    #region Constructor/Finalizer.
+
+
     /// <summary>Initializes a new instance of the <see cref="SettingsPlugInsList"/> class.</summary>
     public SettingsPlugInsList() => SelectPlugInCommand = new EditorCommand<int>(DoSelectPlugIn);
-    #endregion
+
 }

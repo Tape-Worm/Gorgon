@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2021 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: September 1, 2021 6:49:26 PM
 // 
-#endregion
+
 
 using System.Diagnostics;
 using Gorgon.Editor.Content;
@@ -35,12 +35,12 @@ using Gorgon.IO;
 namespace Gorgon.Editor.FontEditor;
 
 /// <summary>
-/// The service used to handle fonts.
+/// The service used to handle fonts
 /// </summary>
 internal class FontService
     : IDisposable
 {
-    #region Variables.
+
     // The factory used to build fonts.
     private readonly GorgonFontFactory _factory;
     // The worker font.
@@ -62,9 +62,9 @@ internal class FontService
     public static readonly IEnumerable<char> DefaultCharacters = Enumerable.Range(32, 224)
                                                                            .Select(Convert.ToChar)
                                                                            .Where(c => !char.IsControl(c));
-    #endregion
 
-    #region Events.
+
+
     /// <summary>
     /// Event fired before the font is updated.
     /// </summary>
@@ -125,9 +125,9 @@ internal class FontService
             FontUpdatedEvent -= value;
         }
     }
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to return the textures for the font.
     /// </summary>
@@ -151,9 +151,9 @@ internal class FontService
     /// Property to return the current worker font.
     /// </summary>
     public GorgonFont WorkerFont => _font;
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to retrieve the list of textures for the font.
     /// </summary>
@@ -299,9 +299,9 @@ internal class FontService
             Interlocked.Exchange(ref _lock, 0);
         }
     }
-    #endregion
 
-    #region Constructor/Finalizer.
+
+
     /// <summary>Initializes a new instance of the <see cref="FontService" /> class.</summary>
     /// <param name="factory">The factory used to build the font.</param>
     /// <param name="font">The current font to use as the worker font.</param>
@@ -316,5 +316,5 @@ internal class FontService
 
         GetTextures();
     }
-    #endregion        
+        
 }

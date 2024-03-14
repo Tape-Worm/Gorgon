@@ -1,6 +1,6 @@
-﻿#region MIT.
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2016 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,14 +11,14 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: Tuesday, February 12, 2013 8:49:57 PM
 // 
@@ -27,7 +27,6 @@
 // SharpDX by Alexandre Mutel (http://sharpdx.org)
 // DirectXTex by Chuck Walburn (http://directxtex.codeplex.com)
 
-#region SharpDX/DirectXTex licenses
 // Copyright (c) 2010-2016 SharpDX - Alexandre Mutel
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -38,7 +37,7 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
@@ -46,7 +45,7 @@
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // -----------------------------------------------------------------------------
 // The following code is a port of DirectXTex http://directxtex.codeplex.com
 // -----------------------------------------------------------------------------
@@ -54,53 +53,53 @@
 //
 // This license governs use of the accompanying software. If you use the 
 // software, you accept this license. If you do not accept the license, do not
-// use the software.
+// use the software
 //
 // 1. Definitions
 // The terms "reproduce," "reproduction," "derivative works," and 
-// "distribution" have the same meaning here as under U.S. copyright law.
+// "distribution" have the same meaning here as under U.S. copyright law
 // A "contribution" is the original software, or any additions or changes to 
-// the software.
+// the software
 // A "contributor" is any person that distributes its contribution under this 
-// license.
+// license
 // "Licensed patents" are a contributor's patent claims that read directly on 
-// its contribution.
+// its contribution
 //
 // 2. Grant of Rights
 // (A) Copyright Grant- Subject to the terms of this license, including the 
 // license conditions and limitations in section 3, each contributor grants 
 // you a non-exclusive, worldwide, royalty-free copyright license to reproduce
 // its contribution, prepare derivative works of its contribution, and 
-// distribute its contribution or any derivative works that you create.
+// distribute its contribution or any derivative works that you create
 // (B) Patent Grant- Subject to the terms of this license, including the license
 // conditions and limitations in section 3, each contributor grants you a 
 // non-exclusive, worldwide, royalty-free license under its licensed patents to
 // make, have made, use, sell, offer for sale, import, and/or otherwise dispose
 // of its contribution in the software or derivative works of the contribution 
-// in the software.
+// in the software
 //
 // 3. Conditions and Limitations
 // (A) No Trademark License- This license does not grant you rights to use any 
-// contributors' name, logo, or trademarks.
+// contributors' name, logo, or trademarks
 // (B) If you bring a patent claim against any contributor over patents that 
 // you claim are infringed by the software, your patent license from such 
-// contributor to the software ends automatically.
+// contributor to the software ends automatically
 // (C) If you distribute any portion of the software, you must retain all 
 // copyright, patent, trademark, and attribution notices that are present in the
-// software.
+// software
 // (D) If you distribute any portion of the software in source code form, you 
 // may do so only under this license by including a complete copy of this 
 // license with your distribution. If you distribute any portion of the software
 // in compiled or object code form, you may only do so under a license that 
-// complies with this license.
+// complies with this license
 // (E) The software is licensed "as-is." You bear the risk of using it. The
 // contributors give no express warranties, guarantees or conditions. You may
 // have additional consumer rights under your local laws which this license 
 // cannot change. To the extent permitted under your local laws, the 
 // contributors exclude the implied warranties of merchantability, fitness for a
 // particular purpose and non-infringement.
-#endregion
-#endregion
+
+
 
 using System.Runtime.CompilerServices;
 using Gorgon.Core;
@@ -111,7 +110,7 @@ using Gorgon.Native;
 namespace Gorgon.Graphics.Imaging.Codecs;
 
 /// <summary>
-/// TGA specific conversion flags.
+/// TGA specific conversion flags
 /// </summary>
 [Flags]
 internal enum TGAConversionFlags
@@ -151,11 +150,11 @@ internal enum TGAConversionFlags
 }
 
 /// <summary>
-/// A codec to handle reading/writing Truevision TGA files.
+/// A codec to handle reading/writing Truevision TGA files
 /// </summary>
 /// <remarks>
 /// <para>
-/// This codec will read RLE compressed and uncompressed files, and write compressed files using the Truevision Targa (TGA) format.
+/// This codec will read RLE compressed and uncompressed files, and write compressed files using the Truevision Targa (TGA) format
 /// </para>
 /// <para>
 /// Most 16/24/32 bit TGA files will be readable using this codec, however the following limitations may keep the file from being decoded by this codec:
@@ -175,7 +174,7 @@ internal enum TGAConversionFlags
 public sealed class GorgonCodecTga
     : GorgonImageCodec<IGorgonImageCodecEncodingOptions, GorgonTgaDecodingOptions>
 {
-    #region Variables.
+
     // List of supported image formats.
     private readonly BufferFormat[] _supportedFormats =
     [
@@ -189,9 +188,9 @@ public sealed class GorgonCodecTga
         BufferFormat.B8G8R8A8_UNorm,
         BufferFormat.B8G8R8X8_UNorm
     ];
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to return the pixel formats supported by the codec.
     /// </summary>
@@ -226,9 +225,9 @@ public sealed class GorgonCodecTga
     /// Property to return whether the image codec supports a depth component for volume textures.
     /// </summary>
     public override bool SupportsDepth => false;
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to read in the TGA header from a stream.
     /// </summary>
@@ -1056,14 +1055,14 @@ public sealed class GorgonCodecTga
 
         return (header.ImageType is not TgaImageType.BlackAndWhite and not TgaImageType.BlackAndWhiteRLE) || (header.BPP is 8);
     }
-    #endregion
 
-    #region Constructor/Destructor.
+
+
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonCodecTga" /> class.
     /// </summary>
     /// <param name="decodingOptions">[Optional] Codec specific options to use when decoding image data.</param>
     public GorgonCodecTga(GorgonTgaDecodingOptions decodingOptions = null)
         : base(null, decodingOptions) => CodecCommonExtensions = ["tga", "tpic"];
-    #endregion
+
 }

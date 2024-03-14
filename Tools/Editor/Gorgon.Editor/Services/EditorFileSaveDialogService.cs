@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2018 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: September 24, 2018 12:48:59 PM
 // 
-#endregion
+
 
 using System.Text;
 using Gorgon.Editor.PlugIns;
@@ -33,22 +33,22 @@ using Gorgon.UI;
 namespace Gorgon.Editor.Services;
 
 /// <summary>
-/// A service used to show a dialog for saving an editor file.
+/// A service used to show a dialog for saving an editor file
 /// </summary>
 /// <remarks>
-/// Initializes a new instance of the <see cref="EditorFileSaveDialogService"/> class.
+/// Initializes a new instance of the <see cref="EditorFileSaveDialogService"/> class
 /// </remarks>
 /// <param name="settings">The application settings.</param>
 /// <param name="providers">The providers used for opening/saving files.</param>
 internal class EditorFileSaveDialogService(EditorSettings settings, FileSystemProviders providers)
         : IFileDialogService
 {
-    #region Variables.
+
     // The previously selected file extension filter index.
     private int _lastSelectedExtensionIndex = -1;
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to set or return a file filter.
     /// </summary>        
@@ -111,9 +111,9 @@ internal class EditorFileSaveDialogService(EditorSettings settings, FileSystemPr
         get;
         set;
     }
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to build a file system writer filter string for file dialogs.
     /// </summary>
@@ -293,5 +293,5 @@ internal class EditorFileSaveDialogService(EditorSettings settings, FileSystemPr
         }
     }
 
-    #endregion
+
 }

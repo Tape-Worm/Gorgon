@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2019 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: March 14, 2019 11:33:25 AM
 // 
-#endregion
+
 
 using System.Collections.Specialized;
 using System.ComponentModel;
@@ -40,12 +40,12 @@ using DX = SharpDX;
 namespace Gorgon.Editor.AnimationEditor;
 
 /// <summary>
-/// The primary view for the animation editor.
+/// The primary view for the animation editor
 /// </summary>
 internal partial class AnimationEditorView
     : VisualContentBaseControl, IDataContext<IAnimationContent>
 {
-    #region Variables.
+
     // The form for the ribbon.
     private readonly FormRibbon _ribbonForm;
     // The list of tracks in the animation.
@@ -62,9 +62,9 @@ internal partial class AnimationEditorView
     private IAnchorEditService _anchorService;
     // The service to facilitate vertex editing for an animation.
     private VertexEditService _vertexEditorService;
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>Property to return the data context assigned to this view.</summary>
     [Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public IAnimationContent ViewModel
@@ -72,9 +72,9 @@ internal partial class AnimationEditorView
         get;
         private set;
     }
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>Handles the PropertyChanged event of the KeyEditor control.</summary>
     /// <param name="sender">The source of the event.</param>
     /// <param name="e">The <see cref="PropertyChangedEventArgs"/> instance containing the event data.</param>
@@ -456,9 +456,9 @@ internal partial class AnimationEditorView
         ViewModel.Tracks.CollectionChanged += Tracks_CollectionChanged;
         ViewModel.KeyEditor.PropertyChanged += KeyEditor_PropertyChanged;
     }
-    #endregion
 
-    #region Constructor/Finalizer.
+
+
     /// <summary>Initializes a new instance of the <see cref="AnimationEditorView"/> class.</summary>
     public AnimationEditorView(AnimationEditorSettings settings)
         : this() => _ribbonForm.Settings = settings;
@@ -476,5 +476,5 @@ internal partial class AnimationEditorView
         RegisterChildPanel(typeof(KeyValueEditor).FullName, FloatValuesEditor);
         RegisterChildPanel(typeof(ColorValueEditor).FullName, ColorValuesEditor);
     }
-    #endregion
+
 }

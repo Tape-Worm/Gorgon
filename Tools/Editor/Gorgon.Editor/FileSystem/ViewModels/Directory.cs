@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2018 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: September 4, 2018 10:48:10 PM
 // 
-#endregion
+
 
 using System.Collections.ObjectModel;
 using Gorgon.Collections;
@@ -33,12 +33,12 @@ using Gorgon.IO;
 namespace Gorgon.Editor.ViewModels;
 
 /// <summary>
-/// A node for a file system directory.
+/// A node for a file system directory
 /// </summary>
 internal class Directory
     : ViewModelBase<DirectoryParameters, IHostServices>, IDirectory, IExcludable
 {
-    #region Variables.
+
     // The directory wrapped by the view model.
     private IGorgonVirtualDirectory _directory;
     // The physical directory represented by this view model.
@@ -49,9 +49,9 @@ internal class Directory
     private bool _isCut;
     // Flag to indicate that the directory is excluded from a packed file system.
     private bool _isExcluded;
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to set or return a flag to indicate whether the directory was marked for a cut operation.
     /// </summary>
@@ -182,9 +182,9 @@ internal class Directory
             }
         }
     }
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to calculate the total size, in bytes, for the files contained within this directory, and any sub directory within this directory.
     /// </summary>
@@ -275,9 +275,9 @@ internal class Directory
         Parent = injectionParameters.Parent;
         PhysicalPath = injectionParameters.PhysicalPath;
     }
-    #endregion
 
-    #region Constructor/Finalizer.
+
+
     /// <summary>
     /// Initializes a new instance of the <see cref="Directory" /> class.
     /// </summary>
@@ -288,5 +288,5 @@ internal class Directory
         ParentRenamedCommand = new EditorCommand<object>(DoParentRenamed);
         RenameCommand = new EditorCommand<RenameArgs>(DoRename, CanRename);
     }
-    #endregion
+
 }

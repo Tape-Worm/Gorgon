@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2018 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: December 17, 2018 10:00:39 PM
 // 
-#endregion
+
 
 using Gorgon.Editor.ImageEditor.Properties;
 using Gorgon.Editor.ImageEditor.Services;
@@ -35,20 +35,20 @@ using Gorgon.IO;
 namespace Gorgon.Editor.ImageEditor;
 
 /// <summary>
-/// A plugin used to build an importer for image data.
+/// A plugin used to build an importer for image data
 /// </summary>
 internal class ImageImporterPlugIn
     : ContentImportPlugIn
 {
-    #region Variables.
+
     // The image editor settings.
     private ISettingsPlugins _settings;
 
     // The codec registry.
     private ICodecRegistry _codecs;
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>Function to retrieve the settings interface for this plug in.</summary>
     /// <param name="injector">Objects to inject into the view model.</param>
     /// <returns>The settings interface view model.</returns>
@@ -143,14 +143,14 @@ internal class ImageImporterPlugIn
 
         return codecs.CodecFileTypes.FirstOrDefault(item => item.extension == extension).codec;
     }
-    #endregion
 
-    #region Constructor/Finalizer.
+
+
     /// <summary>Initializes a new instance of the <see cref="ImageImporterPlugIn"/> class.</summary>
     public ImageImporterPlugIn()
         : base(Resources.GORIMG_IMPORT_DESC)
     {
 
     }
-    #endregion
+
 }

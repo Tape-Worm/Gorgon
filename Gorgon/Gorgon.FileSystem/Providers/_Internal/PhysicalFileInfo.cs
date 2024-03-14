@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2015 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,39 +11,39 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: Saturday, September 19, 2015 8:34:24 PM
 // 
-#endregion
+
 
 using System.Text;
 
 namespace Gorgon.IO.Providers;
 
 /// <summary>
-/// Provides information about a file stored in a physical file system.
+/// Provides information about a file stored in a physical file system
 /// </summary>
 internal class PhysicalFileInfo
     : IGorgonPhysicalFileInfo
 {
-    #region Variables.
+
     // File information.
     private readonly FileInfo _fileInfo;
     // The physical root directory for the file.
     private readonly string _physicalRoot;
     // The buffer used to update the virtual path.
     private readonly StringBuilder _pathBuffer = new();
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to return the full path to the physical file.
     /// </summary>
@@ -120,9 +120,9 @@ internal class PhysicalFileInfo
     /// </para>
     /// </remarks>
     public bool IsEncrypted => false;
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>Function to refresh the file information.</summary>
     public void Refresh()
     {
@@ -137,9 +137,9 @@ internal class PhysicalFileInfo
 
         VirtualPath = _pathBuffer.ToString();
     }
-    #endregion
 
-    #region Constructor.
+
+
     /// <summary>
     /// Initializes a new instance of the <see cref="PhysicalFileInfo" /> class.
     /// </summary>
@@ -164,5 +164,5 @@ internal class PhysicalFileInfo
         _fileInfo = file;
         VirtualPath = virtualPath;
     }
-    #endregion
+
 }

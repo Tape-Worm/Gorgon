@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2020 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: March 26, 2020 9:05:50 PM
 // 
-#endregion
+
 
 using Gorgon.Editor.UI;
 using Gorgon.Math;
@@ -30,20 +30,20 @@ using Gorgon.Math;
 namespace Gorgon.Editor.ImageEditor;
 
 /// <summary>
-/// The settings view model for the one bit effect.
+/// The settings view model for the one bit effect
 /// </summary>
 internal class FxOneBit
     : HostedPanelViewModelBase<HostedPanelViewModelParameters>, IFxOneBit
 {
-    #region Variables.
+
     // The min and max threshold for white pixels.
     private int _minThreshold = 127;
     private int _maxThreshold = 255;
     // The flag used to invert the black/white values.
     private bool _invert;
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to set or return the maximum threshold to convert to white (or black if inverted).
     /// </summary>
@@ -103,9 +103,9 @@ internal class FxOneBit
 
     /// <summary>Property to return whether the panel is modal.</summary>
     public override bool IsModal => false;
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>Function to inject dependencies for the view model.</summary>
     /// <param name="injectionParameters">The parameters to inject.</param>
     /// <remarks>
@@ -119,5 +119,5 @@ internal class FxOneBit
     protected override void OnInitialize(HostedPanelViewModelParameters injectionParameters)
     {
     }
-    #endregion
+
 }

@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2015 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,28 +11,28 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: Saturday, August 1, 2015 12:29:34 PM
 // 
-#endregion
+
 
 using DX = SharpDX;
 
 namespace Gorgon.Input;
 
 /// <summary>
-/// Mouse event arguments.
+/// Mouse event arguments
 /// </summary>
 /// <remarks>
-/// Initializes a new instance of the <see cref="GorgonMouseEventArgs" /> class.
+/// Initializes a new instance of the <see cref="GorgonMouseEventArgs" /> class
 /// </remarks>
 /// <param name="buttons">Buttons that are pressed during mouse event.</param>
 /// <param name="shiftButtons">Buttons that are held down during the mouse event.</param>
@@ -45,7 +45,7 @@ namespace Gorgon.Input;
 public class GorgonMouseEventArgs(MouseButtons buttons, MouseButtons shiftButtons, DX.Point position, int wheelPosition, DX.Point relativePosition, int wheelDelta, int clickCount, bool isAbsolute)
         : EventArgs
 {
-    #region Properties.
+
     /// <summary>
     /// Property to return the buttons that were held down during a <see cref="GorgonRawMouse"/> event.
     /// </summary>
@@ -121,7 +121,7 @@ public class GorgonMouseEventArgs(MouseButtons buttons, MouseButtons shiftButton
         get;
     } = isAbsolute;
 
-    #endregion
-    #region Constructor/Destructor.
-    #endregion
+
+
+
 }

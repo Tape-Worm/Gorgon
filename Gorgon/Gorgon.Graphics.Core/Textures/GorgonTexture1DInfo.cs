@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2016 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,32 +11,32 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: June 13, 2016 8:45:14 PM
 // 
-#endregion
+
 
 using Gorgon.Graphics.Imaging;
 
 namespace Gorgon.Graphics.Core;
 
 /// <summary>
-/// Information used to create a 1D texture object.
+/// Information used to create a 1D texture object
 /// </summary>
 /// <param name="Width">The width of the texture, in pixels.</param>
 /// <param name="Format">The texel format for the texture.</param>
 public record GorgonTexture1DInfo(int Width, BufferFormat Format)
     : IGorgonTexture1DInfo, IGorgonImageInfo
 {
-    #region Constructor.
+
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonTexture1DInfo"/> class.
     /// </summary>
@@ -51,9 +51,9 @@ public record GorgonTexture1DInfo(int Width, BufferFormat Format)
         MipLevels = info.MipLevels;
         Usage = info.Usage;
     }
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>
     /// Property to return the name of the texture.
     /// </summary>
@@ -171,5 +171,5 @@ public record GorgonTexture1DInfo(int Width, BufferFormat Format)
     /// Property to return whether the size of the texture is a power of 2 or not.
     /// </summary>
     bool IGorgonImageInfo.IsPowerOfTwo => ((Width == 0) || (Width & (Width - 1)) == 0);
-    #endregion
+
 }

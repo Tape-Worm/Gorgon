@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2018 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,39 +11,39 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: May 29, 2018 3:09:46 PM
 // 
-#endregion
+
 
 using Gorgon.Collections;
 
 namespace Gorgon.Graphics.Core;
 
 /// <summary>
-/// A pipeline state for stream out buffers.
+/// A pipeline state for stream out buffers
 /// </summary>
 /// <remarks>
 /// <para>
 /// A pipeline state object is used to define the state of the pipeline prior to drawing anything. It can be used to assign shaders, and various other states that will affect how data is rasterized on 
-/// the GPU.
+/// the GPU
 /// </para>
 /// <para>
-/// This pipeline state is similar to a <see cref="GorgonPipelineState"/>, except that it only contains the necessary states that it can use when rendering a stream out buffer.
+/// This pipeline state is similar to a <see cref="GorgonPipelineState"/>, except that it only contains the necessary states that it can use when rendering a stream out buffer
 /// </para>
 /// <para>
-/// The pipeline state object is immutable, and as such cannot be changed directly. To create a new pipeline state object, a <see cref="GorgonStreamOutPipelineStateBuilder"/> must be used.
+/// The pipeline state object is immutable, and as such cannot be changed directly. To create a new pipeline state object, a <see cref="GorgonStreamOutPipelineStateBuilder"/> must be used
 /// </para>
 /// <para>
-/// Pipeline states are assigned to a <see cref="GorgonStreamOutCall"/>.
+/// Pipeline states are assigned to a <see cref="GorgonStreamOutCall"/>
 /// </para>
 /// </remarks>
 /// <seealso cref="GorgonPipelineStateBuilder"/>
@@ -52,7 +52,7 @@ namespace Gorgon.Graphics.Core;
 /// <seealso cref="GorgonStreamOutPipelineStateBuilder"/>
 public class GorgonStreamOutPipelineState
 {
-    #region Properties.
+
     /// <summary>
     /// Property to set or return the pipeline state.
     /// </summary>
@@ -61,9 +61,9 @@ public class GorgonStreamOutPipelineState
         get;
         set;
     }
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Property to return the type of primitive to use when drawing.
     /// </summary>
@@ -115,9 +115,9 @@ public class GorgonStreamOutPipelineState
     /// Property to return the list of blending states for each render target.
     /// </summary>
     public IGorgonReadOnlyArray<GorgonBlendState> BlendStates => PipelineState.RwBlendStates;
-    #endregion
 
-    #region Constructor/Finalizer.
+
+
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonStreamOutPipelineState" /> class.
     /// </summary>
@@ -136,5 +136,5 @@ public class GorgonStreamOutPipelineState
     internal GorgonStreamOutPipelineState()
     {
     }
-    #endregion
+
 }

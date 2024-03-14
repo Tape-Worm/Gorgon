@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2016 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: June 20, 2016 11:49:00 PM
 // 
-#endregion
+
 
 using Gorgon.Core;
 using Gorgon.Graphics.Imaging.Codecs;
@@ -36,7 +36,7 @@ using DX = SharpDX;
 namespace Gorgon.Graphics.Imaging;
 
 /// <summary>
-/// The type of resize to perform.
+/// The type of resize to perform
 /// </summary>
 enum ResizeMode
 {
@@ -55,12 +55,12 @@ enum ResizeMode
 }
 
 /// <summary>
-/// Utilities that use WIC (Windows Imaging Component) to perform image manipulation operations.
+/// Utilities that use WIC (Windows Imaging Component) to perform image manipulation operations
 /// </summary> 
 class WicUtilities
     : IDisposable
 {
-    #region Constants.
+
     // Encoding option for interlacing.
     private const string EncOptInterlacing = "Interlacing";
     // Encoding option for filtering.
@@ -71,9 +71,9 @@ class WicUtilities
     private const string DecOptPalette = "Palette";
     // Decoding option for the alpha threshold.
     private const string DecOptAlphaThreshold = "AlphaThreshold";
-    #endregion
 
-    #region Value Types.
+
+ 
     /// <summary>
     /// A value to hold a WIC to Gorgon buffer format value.
     /// </summary>
@@ -113,9 +113,7 @@ class WicUtilities
         /// </summary>
         public readonly Guid Destination = dest;
     }
-    #endregion
 
-    #region Conversion Tables.
     // Formats for conversion between Gorgon and WIC.
     private readonly WICGorgonFormat[] _wicDXGIFormats =
     [
@@ -177,14 +175,14 @@ class WicUtilities
         new(PixelFormat.Format80bppCMYKAlpha, PixelFormat.Format64bppRGBA),
         new(PixelFormat.Format96bppRGBFixedPoint, PixelFormat.Format128bppRGBAFloat)
     ];
-    #endregion
 
-    #region Variables.
+
+
     // The WIC factory.
     private readonly ImagingFactory _factory;
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>
     /// Function to find the best buffer format for a given pixel format.
     /// </summary>
@@ -1403,12 +1401,12 @@ class WicUtilities
     /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
     /// </summary>
     public void Dispose() => _factory?.Dispose();
-    #endregion
 
-    #region Constructor/Finalizer.
+
+
     /// <summary>
     /// Initializes a new instance of the <see cref="WicUtilities"/> class.
     /// </summary>
     public WicUtilities() => _factory = new ImagingFactory();
-    #endregion
+
 }

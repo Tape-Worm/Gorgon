@@ -20,7 +20,7 @@ partial class FormWait
         base.Dispose(disposing);
     }
 
-    #region Windows Form Designer generated code
+
 
     /// <summary>
     /// Required method for Designer support - do not modify
@@ -72,7 +72,7 @@ partial class FormWait
 
     }
 
-    #endregion
+
 
     // The wait panel embedded in the form.
     internal Gorgon.UI.GorgonWaitMessagePanel Wait;

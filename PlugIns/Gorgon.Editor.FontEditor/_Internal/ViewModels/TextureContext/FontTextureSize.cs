@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2021 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,36 +11,36 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: September 3, 2021 9:48:54 AM
 // 
-#endregion
+
 
 using Gorgon.Editor.UI;
 
 namespace Gorgon.Editor.FontEditor;
 
 /// <summary>
-/// View model for the texture size editor.
+/// View model for the texture size editor
 /// </summary>
 internal class FontTextureSize
     : HostedPanelViewModelBase<HostedPanelViewModelParameters>, IFontTextureSize
 {
-    #region Variables.
+
     // The texture size.
     private int _textureWidth = 512;
     private int _textureHeight = 512;
-    #endregion
 
-    #region Properties.
+
+
     /// <summary>Property to set or return the width of the font textures.</summary>
     public int TextureWidth
     {
@@ -77,9 +77,9 @@ internal class FontTextureSize
 
     /// <summary>Property to return whether the panel is modal.</summary>
     public override bool IsModal => true;
-    #endregion
 
-    #region Methods.
+
+
     /// <summary>Function to inject dependencies for the view model.</summary>
     /// <param name="injectionParameters">The parameters to inject.</param>
     /// <remarks>
@@ -94,5 +94,5 @@ internal class FontTextureSize
     {
         // Empty on purpose.
     }
-    #endregion
+
 }

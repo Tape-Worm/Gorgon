@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2016 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: August 16, 2016 1:03:56 PM
 // 
-#endregion
+
 
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
@@ -30,7 +30,7 @@ using System.Runtime.InteropServices;
 namespace Gorgon.Graphics.Imaging.Codecs;
 
 /// <summary>
-/// Flags to convert older DDS files (pre-DX10).
+/// Flags to convert older DDS files (pre-DX10)
 /// </summary>
 [Flags]
 internal enum DdsConversionFlags
@@ -94,7 +94,7 @@ internal enum DdsConversionFlags
 }
 
 /// <summary>
-/// Flags for the header.
+/// Flags for the header
 /// </summary>
 [Flags]
 internal enum DdsHeaderFlags
@@ -131,7 +131,7 @@ internal enum DdsHeaderFlags
 }
 
 /// <summary>
-/// Misc. flags for the header.
+/// Misc. flags for the header
 /// </summary>
 [Flags]
 internal enum DdsHeaderMiscFlags
@@ -144,7 +144,7 @@ internal enum DdsHeaderMiscFlags
 }
 
 /// <summary>
-/// Flags for the pixel format.
+/// Flags for the pixel format
 /// </summary>
 [Flags]
 internal enum DdsPixelFormatFlags
@@ -182,7 +182,7 @@ internal enum DdsPixelFormatFlags
 
 // ReSharper disable InconsistentNaming
 /// <summary>
-/// DDS surface flags.
+/// DDS surface flags
 /// </summary>
 [Flags]
 internal enum DdsCaps1
@@ -203,7 +203,7 @@ internal enum DdsCaps1
 }
 
 /// <summary>
-/// DDS cube map directions.
+/// DDS cube map directions
 /// </summary>
 [Flags]
 internal enum DdsCaps2
@@ -249,10 +249,10 @@ internal enum DdsCaps2
 // ReSharper restore InconsistentNaming
 
 /// <summary>
-/// DDS legacy conversion type.
+/// DDS legacy conversion type
 /// </summary>
 /// <remarks>
-/// Initializes a new instance of the <see cref="DdsLegacyConversion" /> struct.
+/// Initializes a new instance of the <see cref="DdsLegacyConversion" /> struct
 /// </remarks>
 /// <param name="format">The format.</param>
 /// <param name="flags">The flags.</param>
@@ -274,7 +274,7 @@ internal readonly struct DdsLegacyConversion(BufferFormat format, DdsConversionF
 }
 
 /// <summary>
-/// DDS file header.
+/// DDS file header
 /// </summary>
 [StructLayout(LayoutKind.Sequential, Pack = 1)]
 internal struct DdsHeader
@@ -348,7 +348,7 @@ internal struct DdsHeader
 }
 
 /// <summary>
-/// DDS DirectX 10 header.
+/// DDS DirectX 10 header
 /// </summary>
 [StructLayout(LayoutKind.Sequential, Pack = 1)]
 internal struct Dx10Header
@@ -376,10 +376,10 @@ internal struct Dx10Header
 }
 
 /// <summary>
-/// Pixel format descriptor.
+/// Pixel format descriptor
 /// </summary>
 /// <remarks>
-/// Initializes a new instance of the <see cref="DdsPixelFormat" /> struct.
+/// Initializes a new instance of the <see cref="DdsPixelFormat" /> struct
 /// </remarks>
 /// <param name="flags">The flags.</param>
 /// <param name="fourCC">The four CC.</param>
