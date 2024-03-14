@@ -24,7 +24,6 @@
 // 
 #endregion
 
-using System.Collections.Generic;
 using Gorgon.Collections;
 
 namespace Gorgon.Configuration;

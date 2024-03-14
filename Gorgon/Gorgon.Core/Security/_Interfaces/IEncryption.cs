@@ -24,8 +24,6 @@
 // 
 #endregion
 
-using System.Text;
-
 namespace Gorgon.Security;
 
 /// <summary>

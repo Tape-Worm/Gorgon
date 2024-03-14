@@ -24,9 +24,7 @@
 // 
 #endregion
 
-using System;
 using System.Globalization;
-using System.IO;
 using Gorgon.Core;
 using Gorgon.Diagnostics.LogProviders;
 

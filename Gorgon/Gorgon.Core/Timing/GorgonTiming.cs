@@ -24,7 +24,6 @@
 // 
 #endregion
 
-using System.Threading;
 using Gorgon.Math;
 
 namespace Gorgon.Timing;

@@ -2,8 +2,6 @@
 // Author: Benjamin Ward
 // Originally authored by Heikki Törmälä
 
-using System;
-
 namespace Simplex;
 
 /// <summary>

@@ -24,7 +24,6 @@
 // 
 #endregion
 
-using System;
 using System.Globalization;
 using Gorgon.Math;
 using Gorgon.Properties;

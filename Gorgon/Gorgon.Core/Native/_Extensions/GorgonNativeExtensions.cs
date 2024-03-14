@@ -24,8 +24,6 @@
 // 
 #endregion
 
-using System;
-using System.IO;
 using System.Runtime.CompilerServices;
 using Gorgon.IO;
 using Gorgon.Math;

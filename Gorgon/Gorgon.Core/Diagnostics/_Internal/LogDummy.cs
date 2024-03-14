@@ -24,8 +24,6 @@
 // 
 #endregion
 
-using System;
-using System.Threading;
 using Gorgon.Diagnostics.LogProviders;
 
 namespace Gorgon.Diagnostics;

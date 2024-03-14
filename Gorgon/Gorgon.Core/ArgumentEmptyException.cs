@@ -24,8 +24,6 @@
 // 
 #endregion
 
-using System;
-using System.Runtime.Serialization;
 using Gorgon.Properties;
 
 namespace Gorgon.Core;

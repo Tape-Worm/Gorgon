@@ -1,8 +1,5 @@
-﻿using System;
-using System.IO;
-using System.Security;
+﻿using System.Security;
 using System.Security.Cryptography;
-using System.Text;
 using Gorgon.Core;
 using Gorgon.Properties;
 using Microsoft.IO;

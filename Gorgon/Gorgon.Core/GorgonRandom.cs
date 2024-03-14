@@ -24,9 +24,6 @@
 // 
 #endregion
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using CenterCLR.XorRandomGenerator;
 using Gorgon.Math;
 using Simplex;

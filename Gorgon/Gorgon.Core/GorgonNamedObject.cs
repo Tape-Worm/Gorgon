@@ -24,7 +24,6 @@
 // 
 #endregion
 
-using System;
 using Gorgon.Properties;
 
 namespace Gorgon.Core;
@@ -41,6 +40,20 @@ public abstract class GorgonNamedObject
     #region Variables.
     // The name.
     private string _name;
+    #endregion
+
+    #region Properties.
+    /// <summary>
+    /// Property to return the name of this object.
+    /// </summary>
+    /// <remarks>
+    /// Unlike the interface this property is derived from, this property has a protected setter to assign the name at a later stage during an objects initialization. 
+    /// </remarks>
+    public virtual string Name
+    {
+        get => _name;
+        protected set => _name = value;
+    }
     #endregion
 
     #region Methods.
@@ -79,20 +92,6 @@ public abstract class GorgonNamedObject
         }
 
         _name = name;
-    }
-    #endregion
-
-    #region IGorgonNamedObject Members
-    /// <summary>
-    /// Property to return the name of this object.
-    /// </summary>
-    /// <remarks>
-    /// Unlike the interface this property is derived from, this property has a protected setter to assign the name at a later stage during an objects initialization. 
-    /// </remarks>
-    public virtual string Name
-    {
-        get => _name;
-        protected set => _name = value;
     }
     #endregion
 }
