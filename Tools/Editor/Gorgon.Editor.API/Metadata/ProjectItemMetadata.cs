@@ -25,8 +25,6 @@
 #endregion
 
 
-using System;
-using System.Collections.Generic;
 using Gorgon.Editor.PlugIns;
 using Newtonsoft.Json;
 

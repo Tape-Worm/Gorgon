@@ -1,5 +1,4 @@
-﻿using System;
-using DX = SharpDX;
+﻿using DX = SharpDX;
 
 namespace Gorgon.Editor.Rendering;
 

@@ -24,9 +24,6 @@
 // 
 #endregion
 
-using System;
-using System.Collections.Generic;
-using System.IO;
 using System.Xml.Linq;
 using Gorgon.Diagnostics;
 using Gorgon.Editor.Metadata;

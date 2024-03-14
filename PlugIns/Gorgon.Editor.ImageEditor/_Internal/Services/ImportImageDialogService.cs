@@ -24,10 +24,6 @@
 // 
 #endregion
 
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using System.Text;
 using Gorgon.Editor.ImageEditor.Properties;
 using Gorgon.Editor.Services;

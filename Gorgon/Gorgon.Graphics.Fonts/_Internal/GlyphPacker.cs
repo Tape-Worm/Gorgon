@@ -24,8 +24,6 @@
 // 
 #endregion
 
-using System;
-using System.Drawing;
 using Gorgon.Graphics.Fonts.Properties;
 
 namespace Gorgon.Graphics.Fonts;

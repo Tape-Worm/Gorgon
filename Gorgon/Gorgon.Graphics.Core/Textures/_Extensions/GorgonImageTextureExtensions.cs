@@ -24,8 +24,6 @@
 // 
 #endregion
 
-using System;
-using System.Drawing;
 using Gorgon.Graphics.Imaging;
 using Gorgon.Graphics.Imaging.GdiPlus;
 

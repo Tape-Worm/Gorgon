@@ -24,22 +24,12 @@
 // 
 #endregion
 
-using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Globalization;
-using System.Linq;
-using System.Windows.Forms;
-using Gorgon.Core;
-using Gorgon.Editor.FontEditor.Properties;
-using Gorgon.UI;
-
 namespace Gorgon.Editor.FontEditor;
 
-    /// <summary>
-    /// Dialog to pick characters for conversion into bitmap glyphs.
-    /// </summary>
-    internal partial class FormCharacterPicker 
+/// <summary>
+/// Dialog to pick characters for conversion into bitmap glyphs.
+/// </summary>
+internal partial class FormCharacterPicker 
         : Form
     {
         #region Properties.

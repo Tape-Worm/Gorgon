@@ -24,9 +24,7 @@
 // 
 #endregion
 
-using System;
 using System.ComponentModel;
-using System.Windows.Forms;
 using Gorgon.Editor.ExtractSpriteTool.Properties;
 using Gorgon.Editor.Rendering;
 using Gorgon.Editor.UI;

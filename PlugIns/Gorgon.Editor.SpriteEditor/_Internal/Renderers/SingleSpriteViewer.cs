@@ -24,7 +24,6 @@
 // 
 #endregion
 
-using System.Linq;
 using System.Numerics;
 using Gorgon.Animation;
 using Gorgon.Editor.UI;

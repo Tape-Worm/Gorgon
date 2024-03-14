@@ -24,8 +24,6 @@
 // 
 #endregion
 
-using System;
-using System.Linq;
 using Gorgon.Native;
 using Microsoft.Win32;
 

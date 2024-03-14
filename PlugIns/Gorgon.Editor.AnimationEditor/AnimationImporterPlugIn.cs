@@ -24,9 +24,6 @@
 // 
 #endregion
 
-using System;
-using System.IO;
-using System.Linq;
 using Gorgon.Editor.AnimationEditor.Properties;
 using Gorgon.Editor.AnimationEditor.Services;
 using Gorgon.Editor.PlugIns;

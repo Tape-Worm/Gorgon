@@ -24,10 +24,6 @@
 // 
 #endregion
 
-using System;
-using System.Drawing;
-using System.Threading;
-using System.Threading.Tasks;
 using Gorgon.Editor.Content;
 using Gorgon.Editor.UI;
 using Gorgon.Graphics.Imaging;

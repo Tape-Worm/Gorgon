@@ -25,8 +25,6 @@
 #endregion
 
 using System.Numerics;
-using System.Threading;
-using System.Windows.Forms;
 using Gorgon.Editor.ImageEditor.ViewModels;
 using Gorgon.Editor.Rendering;
 using Gorgon.Graphics;
@@ -35,6 +33,7 @@ using Gorgon.Graphics.Fonts;
 using Gorgon.Graphics.Imaging;
 using Gorgon.Renderers;
 using DX = SharpDX;
+using FontStyle = Gorgon.Graphics.Fonts.FontStyle;
 
 namespace Gorgon.Editor.ImageEditor;
 

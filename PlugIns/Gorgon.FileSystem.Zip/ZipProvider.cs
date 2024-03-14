@@ -24,10 +24,6 @@
 // 
 #endregion
 
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using Gorgon.IO.Providers;
 using Gorgon.IO.Zip.Properties;
 using ICSharpCode.SharpZipLib.Zip;

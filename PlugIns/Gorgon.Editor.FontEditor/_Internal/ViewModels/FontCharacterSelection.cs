@@ -24,12 +24,8 @@
 // 
 #endregion
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using Drawing = System.Drawing;
 using Gorgon.Editor.UI;
-using System.ComponentModel.DataAnnotations;
 
 namespace Gorgon.Editor.FontEditor;
 

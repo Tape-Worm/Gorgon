@@ -23,7 +23,6 @@
 // Created: December 20, 2016 11:29:23 AM
 // 
 #endregion
-using System.Collections.Generic;
 using Gorgon.Core;
 using Gorgon.Graphics.Core;
 
@@ -337,7 +336,7 @@ public interface IGorgonFontInfo
     /// Property to return the style for the font.
     /// </summary>
     /// <remarks>
-    /// The default value is <see cref="System.Drawing.FontStyle.Regular"/>.
+    /// The default value is <see cref="FontStyle.Normal"/>.
     /// </remarks>
     FontStyle FontStyle
     {

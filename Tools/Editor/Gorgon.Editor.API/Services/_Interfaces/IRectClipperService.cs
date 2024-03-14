@@ -24,8 +24,6 @@
 // 
 #endregion
 
-using System;
-using System.Windows.Forms;
 using Gorgon.Editor.Rendering;
 using Gorgon.Renderers.Cameras;
 using DX = SharpDX;

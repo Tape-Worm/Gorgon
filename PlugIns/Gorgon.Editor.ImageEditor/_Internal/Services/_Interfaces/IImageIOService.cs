@@ -24,7 +24,6 @@
 // 
 #endregion
 
-using System.IO;
 using Gorgon.Editor.Content;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Imaging;

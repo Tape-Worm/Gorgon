@@ -24,7 +24,6 @@
 // 
 #endregion
 
-using System;
 using Microsoft.Extensions.Configuration;
 using DX = SharpDX;
 

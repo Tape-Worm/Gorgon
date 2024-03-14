@@ -24,7 +24,6 @@
 // 
 #endregion
 
-using System;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
 using Gorgon.Graphics.Core.Properties;

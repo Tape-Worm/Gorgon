@@ -28,6 +28,7 @@
     <AssemblyOriginatorKeyFile>
     </AssemblyOriginatorKeyFile>
     <DelaySign>false</DelaySign>
+    <ImplicitUsings>enable</ImplicitUsings>
     <AssemblyVersion>4.0.0.0</AssemblyVersion>
     <FileVersion>4.0.0.0</FileVersion>
   </PropertyGroup>

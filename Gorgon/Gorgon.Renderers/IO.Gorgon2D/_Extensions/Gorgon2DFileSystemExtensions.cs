@@ -24,17 +24,13 @@
 // 
 #endregion
 
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using Gorgon.Animation;
 using Gorgon.Core;
 using Gorgon.Graphics.Core;
 using Gorgon.Graphics.Imaging.Codecs;
 using Gorgon.IO.Properties;
 using Gorgon.Renderers;
-using SharpDX;
+using DX = SharpDX;
 
 namespace Gorgon.IO.Extensions;
 
@@ -124,7 +120,7 @@ public static class Gorgon2DFileSystemExtensions
         {
             if (!textureStream.CanSeek)
             {
-                Stream newStream = new DataStream((int)textureStream.Length, true, true);
+                Stream newStream = new DX.DataStream((int)textureStream.Length, true, true);
                 textureStream.CopyTo(newStream);
                 newStream.Position = 0;
                 textureStream.Dispose();
@@ -353,7 +349,7 @@ public static class Gorgon2DFileSystemExtensions
         {
             if (!spriteStream.CanSeek)
             {
-                Stream newStream = new DataStream((int)spriteStream.Length, true, true);
+                Stream newStream = new DX.DataStream((int)spriteStream.Length, true, true);
                 spriteStream.CopyTo(newStream);
                 spriteStream.Dispose();
                 newStream.Position = 0;
@@ -501,7 +497,7 @@ public static class Gorgon2DFileSystemExtensions
         {
             if (!spriteStream.CanSeek)
             {
-                Stream newStream = new DataStream((int)spriteStream.Length, true, true);
+                Stream newStream = new DX.DataStream((int)spriteStream.Length, true, true);
                 spriteStream.CopyTo(newStream);
                 newStream.Position = 0;
                 spriteStream.Dispose();
@@ -652,7 +648,7 @@ public static class Gorgon2DFileSystemExtensions
         {
             if (!animStream.CanSeek)
             {
-                Stream newStream = new DataStream((int)animStream.Length, true, true);
+                Stream newStream = new DX.DataStream((int)animStream.Length, true, true);
                 animStream.CopyTo(newStream);
                 newStream.Position = 0;
 
@@ -703,10 +699,10 @@ public static class Gorgon2DFileSystemExtensions
 
                     if ((needsCoordinateFix) && (textureKey.Value is not null))
                     {
-                        textureKey.TextureCoordinates = new RectangleF(textureKey.TextureCoordinates.X / textureKey.Value.Width,
-                                                                       textureKey.TextureCoordinates.Y / textureKey.Value.Height,
-                                                                       textureKey.TextureCoordinates.Width / textureKey.Value.Width,
-                                                                       textureKey.TextureCoordinates.Height / textureKey.Value.Height);
+                        textureKey.TextureCoordinates = new DX.RectangleF(textureKey.TextureCoordinates.X / textureKey.Value.Width,
+                                                                          textureKey.TextureCoordinates.Y / textureKey.Value.Height,
+                                                                          textureKey.TextureCoordinates.Width / textureKey.Value.Width,
+                                                                          textureKey.TextureCoordinates.Height / textureKey.Value.Height);
                     }
                 }
             }

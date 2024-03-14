@@ -24,7 +24,6 @@
 // 
 #endregion
 
-using System;
 using System.Windows.Controls;
 
 namespace Gorgon.Graphics.Wpf;

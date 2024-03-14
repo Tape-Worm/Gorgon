@@ -24,7 +24,7 @@
 // 
 #endregion
 
-using Gorgon.Graphics.Imaging;
+using ImageType = Gorgon.Graphics.Imaging.ImageType;
 
 namespace Gorgon.Graphics.Core;
 

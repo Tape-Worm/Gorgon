@@ -24,9 +24,6 @@
 // 
 #endregion
 
-using System;
-using System.IO;
-using System.Linq;
 using Gorgon.Editor.PlugIns;
 using Gorgon.Editor.Services;
 using Gorgon.Editor.SpriteEditor.Properties;

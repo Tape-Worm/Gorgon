@@ -24,10 +24,8 @@
 // 
 #endregion
 
-using System;
 using System.Globalization;
 using System.Numerics;
-using System.Threading;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Math;

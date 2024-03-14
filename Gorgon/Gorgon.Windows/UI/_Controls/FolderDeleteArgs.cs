@@ -25,7 +25,6 @@
 #endregion
 
 using System.ComponentModel;
-using System.Threading.Tasks;
 
 namespace Gorgon.UI;
 

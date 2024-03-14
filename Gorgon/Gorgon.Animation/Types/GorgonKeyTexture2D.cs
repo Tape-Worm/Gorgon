@@ -24,7 +24,6 @@
 // 
 #endregion
 
-using System;
 using Gorgon.Core;
 using Gorgon.Graphics.Core;
 using Newtonsoft.Json;
@@ -48,7 +47,7 @@ namespace Gorgon.Animation;
 /// </para>
 /// </remarks>
 /// <seealso cref="IGorgonAnimationTrack{T}"/>
-    public class GorgonKeyTexture2D
+public class GorgonKeyTexture2D
     : IGorgonKeyFrame
 {
     #region Variables.

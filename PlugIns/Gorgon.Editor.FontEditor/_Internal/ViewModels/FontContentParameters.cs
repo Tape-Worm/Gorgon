@@ -24,13 +24,10 @@
 // 
 #endregion
 
-using System;
 using Gorgon.Editor.Content;
 using Gorgon.Editor.PlugIns;
 using Gorgon.Editor.Services;
 using Gorgon.Editor.UI;
-using Gorgon.Graphics.Fonts;
-using Gorgon.Graphics.Fonts.Codecs;
 
 namespace Gorgon.Editor.FontEditor;
 

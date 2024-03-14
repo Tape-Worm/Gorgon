@@ -23,7 +23,6 @@
 // Created: February 15, 2017 9:07:03 PM
 // 
 #endregion
-using System.Drawing;
 using Gorgon.Graphics.Core;
 using DX = SharpDX;
 

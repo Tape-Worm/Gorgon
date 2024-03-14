@@ -25,7 +25,6 @@
 #endregion
 
 using System.Numerics;
-using System.Threading;
 using Gorgon.Editor.ImageEditor.Properties;
 using Gorgon.Editor.ImageEditor.ViewModels;
 using Gorgon.Graphics;

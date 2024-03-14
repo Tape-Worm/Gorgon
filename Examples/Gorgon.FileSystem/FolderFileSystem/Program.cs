@@ -24,13 +24,9 @@
 // 
 #endregion
 
-using System;
-using System.IO;
-using System.Linq;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
 using Gorgon.IO;
-using Gorgon.IO.Providers;
 using Gorgon.Math;
 
 namespace Gorgon.Examples;

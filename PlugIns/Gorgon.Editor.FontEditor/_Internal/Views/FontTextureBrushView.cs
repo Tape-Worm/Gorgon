@@ -24,9 +24,7 @@
 // 
 #endregion
 
-using System;
 using System.ComponentModel;
-using System.Threading;
 using DX = SharpDX;
 using Gorgon.Editor.FontEditor.Properties;
 using Gorgon.Editor.UI;

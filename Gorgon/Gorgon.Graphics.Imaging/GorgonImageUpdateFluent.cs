@@ -24,10 +24,7 @@
 // 
 #endregion
 
-using System;
 using System.Collections.Concurrent;
-using System.Linq;
-using System.Threading;
 using Gorgon.Core;
 using Gorgon.Graphics.Imaging.Properties;
 using Gorgon.Math;

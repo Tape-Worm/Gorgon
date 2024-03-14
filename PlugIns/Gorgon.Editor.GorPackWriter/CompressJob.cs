@@ -24,8 +24,6 @@
 // 
 #endregion
 
-using System.Collections.Generic;
-using System.IO;
 using System.Xml.Linq;
 
 namespace Gorgon.Editor.GorPackWriterPlugIn;

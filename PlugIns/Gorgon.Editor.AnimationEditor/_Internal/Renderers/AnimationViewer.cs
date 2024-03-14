@@ -25,10 +25,7 @@
 #endregion
 
 using System.ComponentModel;
-using System.Diagnostics;
 using System.Numerics;
-using System.Threading;
-using System.Windows.Forms;
 using Gorgon.Animation;
 using Gorgon.Editor.Rendering;
 using Gorgon.Editor.Services;

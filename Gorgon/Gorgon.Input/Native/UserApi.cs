@@ -22,13 +22,11 @@
 // Created: Wednesday, August 12, 2015 11:29:45 PM
 // 
 
-using System;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Runtime.InteropServices.Marshalling;
 using System.Security;
-using System.Windows.Forms;
 using Gorgon.Input;
 using Gorgon.Input.Native;
 using Gorgon.Input.Properties;

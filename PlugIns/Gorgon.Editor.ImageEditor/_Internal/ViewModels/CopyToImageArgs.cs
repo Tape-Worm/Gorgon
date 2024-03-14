@@ -24,7 +24,6 @@
 // 
 #endregion
 
-using System.Collections.Generic;
 using System.ComponentModel;
 
 namespace Gorgon.Editor.ImageEditor.ViewModels;

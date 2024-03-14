@@ -24,11 +24,9 @@
 // 
 #endregion
 
-using System.IO;
 using Gorgon.Editor.Properties;
 using Gorgon.Graphics.Imaging;
 using Gorgon.Graphics.Imaging.Codecs;
-using Gorgon.Renderers;
 using Microsoft.IO;
 
 namespace Gorgon.Editor;

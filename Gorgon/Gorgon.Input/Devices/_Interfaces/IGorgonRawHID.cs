@@ -1,5 +1,4 @@
-﻿using System;
-using Gorgon.Native;
+﻿using Gorgon.Native;
 
 namespace Gorgon.Input;
 

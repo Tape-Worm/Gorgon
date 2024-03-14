@@ -24,9 +24,6 @@
 // 
 #endregion
 
-using System;
-using System.IO;
-using System.Windows.Forms;
 using Gorgon.Diagnostics;
 
 namespace Gorgon.Examples;

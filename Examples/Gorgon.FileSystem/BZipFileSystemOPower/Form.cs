@@ -24,14 +24,8 @@
 // 
 #endregion
 
-using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.IO;
-using System.Linq;
 using System.Numerics;
 using System.Text;
-using System.Windows.Forms;
 using Gorgon.Core;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
@@ -64,7 +58,7 @@ namespace Gorgon.Examples;
 /// as loading a zip file:  Load the provider plug in into the file system, and mount the packed
 /// file.
 /// </remarks>
-    public partial class Form
+public partial class Form
     : System.Windows.Forms.Form
 {
     #region Variables.

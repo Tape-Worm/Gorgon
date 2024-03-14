@@ -24,24 +24,14 @@
 // 
 #endregion
 
-using System;
 using System.ComponentModel;
 using System.Diagnostics;
-using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
-using System.Linq;
-using System.Threading;
-using System.Windows.Forms;
-using Gorgon.Core;
 using Gorgon.Editor.FontEditor.Properties;
 using Gorgon.Editor.UI;
 using Gorgon.Editor.UI.Controls;
 using Gorgon.Graphics;
-using Gorgon.Graphics.Fonts;
-using Gorgon.Math;
-using Gorgon.Memory;
-using Gorgon.UI;
 
 namespace Gorgon.Editor.FontEditor;
 

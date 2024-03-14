@@ -24,11 +24,8 @@
 // 
 #endregion
 
-using System;
 using System.Diagnostics;
-using System.IO;
 using System.Text;
-using System.Threading;
 using Gorgon.Native;
 using Gorgon.Windows.Properties;
 using Microsoft.Win32.SafeHandles;

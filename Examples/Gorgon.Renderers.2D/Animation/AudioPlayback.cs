@@ -24,10 +24,6 @@
 // 
 #endregion
 
-using System;
-using System.IO;
-using System.Threading;
-using System.Threading.Tasks;
 using Mm = SharpDX.Multimedia;
 using Xa = SharpDX.XAudio2;
 

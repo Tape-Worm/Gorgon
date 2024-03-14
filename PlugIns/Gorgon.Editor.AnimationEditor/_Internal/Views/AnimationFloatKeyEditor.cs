@@ -24,12 +24,8 @@
 // 
 #endregion
 
-using System;
 using System.ComponentModel;
-using System.Linq;
 using System.Numerics;
-using System.Threading;
-using System.Windows.Forms;
 using Gorgon.Editor.AnimationEditor.Properties;
 using Gorgon.Editor.UI;
 using Gorgon.Editor.UI.Controls;

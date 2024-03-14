@@ -24,7 +24,6 @@
 // 
 #endregion
 
-using System;
 using Gorgon.IO.Providers;
 
 namespace Gorgon.IO.GorPack;

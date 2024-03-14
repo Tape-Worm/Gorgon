@@ -39,7 +39,6 @@
 // DirectXTex: https://github.com/Microsoft/DirectXTex
 #endregion
 
-using System;
 using System.Diagnostics;
 using Gorgon.Graphics.Imaging;
 using Gorgon.Math;

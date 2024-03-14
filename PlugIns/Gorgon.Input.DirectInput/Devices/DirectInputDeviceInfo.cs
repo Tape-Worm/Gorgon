@@ -24,9 +24,6 @@
 // 
 #endregion
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using Gorgon.Core;
 using Gorgon.Native;
 using DI = SharpDX.DirectInput;

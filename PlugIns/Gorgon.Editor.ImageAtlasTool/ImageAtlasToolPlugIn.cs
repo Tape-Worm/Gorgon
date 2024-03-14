@@ -24,9 +24,6 @@
 // 
 #endregion
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using Gorgon.Editor.Content;
 using Gorgon.Editor.ImageAtlasTool.Properties;
 using Gorgon.Editor.PlugIns;

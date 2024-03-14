@@ -24,7 +24,6 @@
 // 
 #endregion
 
-using System;
 using Gorgon.Math;
 
 namespace Gorgon.Graphics.Imaging;

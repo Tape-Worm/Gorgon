@@ -24,12 +24,8 @@
 // 
 #endregion
 
-using System;
-using System.IO;
 using System.Numerics;
 using System.Text;
-using System.Threading;
-using System.Windows.Forms;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
 using Gorgon.Examples.Properties;
@@ -43,6 +39,7 @@ using Gorgon.Timing;
 using Gorgon.UI;
 using Drawing = System.Drawing;
 using DX = SharpDX;
+using FontStyle = Gorgon.Graphics.Fonts.FontStyle;
 
 namespace Gorgon.Examples;
 

@@ -24,16 +24,9 @@
 // 
 #endregion
 
-using System;
-using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel;
-using System.Drawing;
-using System.IO;
-using System.Linq;
 using System.Numerics;
-using System.Threading;
-using System.Windows.Forms;
 using Gorgon.Core;
 using Gorgon.Editor.ImageEditor.Properties;
 using Gorgon.Editor.Rendering;

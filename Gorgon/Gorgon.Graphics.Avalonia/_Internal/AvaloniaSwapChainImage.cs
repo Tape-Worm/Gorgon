@@ -1,6 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
-using Avalonia.Platform;
+﻿using Avalonia.Platform;
 using Avalonia.Rendering.Composition;
 using Gorgon.Graphics.Core;
 using Avalonia;

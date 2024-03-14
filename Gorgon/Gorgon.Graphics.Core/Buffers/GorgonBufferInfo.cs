@@ -24,8 +24,6 @@
 // 
 #endregion
 
-using System;
-
 namespace Gorgon.Graphics.Core;
 
 #if NET6_0_OR_GREATER

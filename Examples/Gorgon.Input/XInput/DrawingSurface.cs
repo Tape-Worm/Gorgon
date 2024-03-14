@@ -24,10 +24,7 @@
 // 
 #endregion
 
-using System;
-using System.Drawing;
 using System.Drawing.Imaging;
-using System.Windows.Forms;
 using Gorgon.Examples.Properties;
 using Gorgon.Timing;
 using DrawingGraphics = System.Drawing.Graphics;

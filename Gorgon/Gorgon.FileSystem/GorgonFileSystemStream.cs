@@ -24,9 +24,6 @@
 // 
 #endregion
 
-using System;
-using System.IO;
-
 namespace Gorgon.IO;
 
 /// <summary>

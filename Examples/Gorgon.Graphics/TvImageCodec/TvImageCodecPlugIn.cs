@@ -23,7 +23,6 @@
 // Created: March 5, 2017 10:00:01 PM
 // 
 #endregion
-using System.Collections.Generic;
 using Gorgon.Graphics.Imaging.Codecs;
 
 namespace Gorgon.Examples;

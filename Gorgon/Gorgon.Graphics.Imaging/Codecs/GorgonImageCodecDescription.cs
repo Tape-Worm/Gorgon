@@ -24,7 +24,6 @@
 // 
 #endregion
 
-using System;
 using Gorgon.Graphics.Imaging.Properties;
 
 namespace Gorgon.Graphics.Imaging.Codecs;

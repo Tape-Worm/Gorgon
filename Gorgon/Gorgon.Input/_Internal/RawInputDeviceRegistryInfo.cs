@@ -24,7 +24,6 @@
 // 
 #endregion
 
-using System;
 using Gorgon.Diagnostics;
 using Gorgon.Input.Properties;
 using Gorgon.Native;

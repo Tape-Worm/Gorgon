@@ -26,7 +26,6 @@
 
 using Gorgon.Editor.UI;
 using Gorgon.Graphics;
-using Gorgon.Graphics.Fonts;
 
 namespace Gorgon.Editor.FontEditor;
 

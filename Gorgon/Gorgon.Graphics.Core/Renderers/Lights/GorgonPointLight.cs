@@ -24,7 +24,6 @@
 // 
 #endregion
 
-using System;
 using System.Numerics;
 using Gorgon.Core;
 using Gorgon.Math;
@@ -35,7 +34,7 @@ namespace Gorgon.Renderers.Lights;
 /// <summary>
 /// Point light properties for passing to a GPU lighting shader.
 /// </summary>
-    public sealed class GorgonPointLight
+public sealed class GorgonPointLight
     : GorgonLightCommon, IGorgonNamedObject, IEquatable<GorgonPointLight>
 {
     #region Variables.

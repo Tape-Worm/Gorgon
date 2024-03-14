@@ -24,7 +24,6 @@
 // 
 #endregion
 
-using System;
 using System.Numerics;
 
 namespace Gorgon.Animation;
@@ -42,7 +41,7 @@ namespace Gorgon.Animation;
 /// </para>
 /// </remarks>
 /// <seealso cref="IGorgonAnimationTrack{T}"/>
-    public class GorgonKeyQuaternion
+public class GorgonKeyQuaternion
     : IGorgonKeyFrame
 {
     #region Variables.

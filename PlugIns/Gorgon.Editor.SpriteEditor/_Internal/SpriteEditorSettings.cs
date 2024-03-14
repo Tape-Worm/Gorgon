@@ -24,8 +24,6 @@
 // 
 #endregion
 
-using System;
-using System.Collections.Generic;
 using Gorgon.Graphics;
 using Newtonsoft.Json;
 using DX = SharpDX;

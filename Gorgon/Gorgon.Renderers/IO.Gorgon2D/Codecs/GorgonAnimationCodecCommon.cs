@@ -24,9 +24,6 @@
 // 
 #endregion
 
-using System;
-using System.Collections.Generic;
-using System.IO;
 using Gorgon.Animation;
 using Gorgon.Core;
 using Gorgon.Graphics.Core;

@@ -25,7 +25,6 @@
 #endregion
 
 using System.Numerics;
-using System.Windows.Forms;
 using DX = SharpDX;
 
 namespace Gorgon.Editor.Rendering;

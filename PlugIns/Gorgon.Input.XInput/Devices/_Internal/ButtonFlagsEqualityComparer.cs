@@ -24,7 +24,6 @@
 // 
 #endregion
 
-using System.Collections.Generic;
 using XI = SharpDX.XInput;
 
 namespace Gorgon.Input.XInput;

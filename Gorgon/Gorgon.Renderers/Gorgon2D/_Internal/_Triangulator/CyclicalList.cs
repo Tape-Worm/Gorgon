@@ -4,8 +4,6 @@
 // Licensed under the MIT license.
 // https://github.com/nickgravelyn/Triangulator/blob/master/LICENSE
 
-using System.Collections.Generic;
-
 namespace GorgonTriangulator;
 
 /// <summary>

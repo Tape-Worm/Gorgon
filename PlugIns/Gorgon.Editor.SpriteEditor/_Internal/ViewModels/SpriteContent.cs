@@ -24,14 +24,8 @@
 // 
 #endregion
 
-using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.IO;
-using System.Linq;
 using System.Numerics;
-using System.Threading;
-using System.Threading.Tasks;
 using Gorgon.Editor.Content;
 using Gorgon.Editor.Services;
 using Gorgon.Editor.SpriteEditor.Properties;

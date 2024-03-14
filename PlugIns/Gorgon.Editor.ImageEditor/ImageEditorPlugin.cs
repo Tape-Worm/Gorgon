@@ -24,14 +24,7 @@
 // 
 #endregion
 
-using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-using System.Windows.Forms;
 using Drawing = System.Drawing;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
@@ -49,7 +42,6 @@ using Gorgon.Graphics.Imaging.Codecs;
 using Gorgon.Graphics.Imaging.GdiPlus;
 using Gorgon.IO;
 using Gorgon.Math;
-using Gorgon.Editor.ImageEditor.Native;
 using DX = SharpDX;
 
 namespace Gorgon.Editor.ImageEditor;

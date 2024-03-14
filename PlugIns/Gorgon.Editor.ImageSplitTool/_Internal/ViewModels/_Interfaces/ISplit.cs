@@ -24,7 +24,6 @@
 // 
 #endregion
 
-using System.Collections.Generic;
 using System.ComponentModel;
 using Gorgon.Editor.Tools;
 using Gorgon.Editor.UI;

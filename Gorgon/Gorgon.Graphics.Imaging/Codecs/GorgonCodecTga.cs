@@ -102,9 +102,6 @@
 #endregion
 #endregion
 
-using System;
-using System.Collections.Generic;
-using System.IO;
 using System.Runtime.CompilerServices;
 using Gorgon.Core;
 using Gorgon.Graphics.Imaging.Properties;

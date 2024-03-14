@@ -1,5 +1,4 @@
-﻿using System;
-#region MIT
+﻿#region MIT
 // 
 // Gorgon.
 // Copyright (C) 2020 Michael Winsor

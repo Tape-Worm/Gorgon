@@ -24,18 +24,9 @@
 // 
 #endregion
 
-using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Collections.Specialized;
-using System.IO;
-using System.Linq;
 using Gorgon.Core;
 using Gorgon.Editor.ImageEditor.Properties;
-using Gorgon.Editor.Services;
 using Gorgon.Editor.UI;
-using Gorgon.Graphics.Imaging.Codecs;
-using Gorgon.IO;
 
 namespace Gorgon.Editor.ImageEditor;
 

@@ -24,19 +24,13 @@
 // 
 #endregion
 
-using System;
 using System.Buffers;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Globalization;
-using System.IO;
-using System.Linq;
 using System.Numerics;
-using System.Threading;
-using System.Threading.Tasks;
 using Gorgon.Animation;
 using Gorgon.Collections;
 using Gorgon.Core;

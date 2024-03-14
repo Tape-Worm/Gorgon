@@ -24,9 +24,6 @@
 // 
 #endregion
 
-using System;
-using System.Collections.Generic;
-
 namespace Gorgon.Animation;
 
 /// <summary>

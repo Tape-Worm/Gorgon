@@ -24,12 +24,7 @@
 // 
 #endregion
 
-using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.IO;
 using System.Numerics;
-using System.Windows.Forms;
 using Gorgon.Examples.Properties;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
@@ -41,23 +36,23 @@ using DX = SharpDX;
 namespace Gorgon.Examples;
 
 /// <summary>
-    /// This is an example based on the MiniTri example that will draw a single triangle with a texture.
-    /// 
-    /// Like the MiniTri example, we'll be drawing a single triangle, but instead of using a single color per vertex on the triangle, we'll be applying a texture to the triangle. 
-    /// 
-    /// To map the location within the texture to a point in the triangle, we'll change our vertex structure to use a Vector2 called UV. This is the UV coordinates for mapping the texture to the vertex. 
-    /// This value is in Texel space, and has a range of 0.0f - 1.0f, where 0.0 is the top/left, and 1.0f is the right/bottom. Larger values than 1.0f will either be clamped (the default), wrapped, or 
-    /// have a border color drawn.
-    /// 
-    /// To assign a texture, we modify our draw call to assign the texture's resource view to the PixelShaderResources on the draw call.
-    /// 
-    /// To properly sample the texture in the pixel shader, we'll also create a texture sampler which defines how the texture data should be read when processing in the pixel shader. This example uses 
-    /// default sampling which uses a bilinear filter to smooth the texture when it is zoomed in or out. Like the texture resource view, we assign this sampler to the PixelShaderSamplers on the draw 
-    /// call. 
-    /// 
-    /// One final note: The textures and samplers are assigned to slots. These slots must correspond to the slots declared in the pixel shader. So, for example, if we have declared a texture at slot 4 
-    /// in out pixel shader, then slot 4 on the PixelShaderResources must contain the texture, likewise for samplers.
-    /// </summary>
+/// This is an example based on the MiniTri example that will draw a single triangle with a texture.
+/// 
+/// Like the MiniTri example, we'll be drawing a single triangle, but instead of using a single color per vertex on the triangle, we'll be applying a texture to the triangle. 
+/// 
+/// To map the location within the texture to a point in the triangle, we'll change our vertex structure to use a Vector2 called UV. This is the UV coordinates for mapping the texture to the vertex. 
+/// This value is in Texel space, and has a range of 0.0f - 1.0f, where 0.0 is the top/left, and 1.0f is the right/bottom. Larger values than 1.0f will either be clamped (the default), wrapped, or 
+/// have a border color drawn.
+/// 
+/// To assign a texture, we modify our draw call to assign the texture's resource view to the PixelShaderResources on the draw call.
+/// 
+/// To properly sample the texture in the pixel shader, we'll also create a texture sampler which defines how the texture data should be read when processing in the pixel shader. This example uses 
+/// default sampling which uses a bilinear filter to smooth the texture when it is zoomed in or out. Like the texture resource view, we assign this sampler to the PixelShaderSamplers on the draw 
+/// call. 
+/// 
+/// One final note: The textures and samplers are assigned to slots. These slots must correspond to the slots declared in the pixel shader. So, for example, if we have declared a texture at slot 4 
+/// in out pixel shader, then slot 4 on the PixelShaderResources must contain the texture, likewise for samplers.
+/// </summary>
 internal static class Program
 {
     #region Variables.

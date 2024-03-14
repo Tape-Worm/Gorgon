@@ -24,12 +24,7 @@
 // 
 #endregion
 
-using System;
 using System.ComponentModel;
-using System.IO;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 using Gorgon.Diagnostics;
 using Gorgon.Editor.Content;
 using Gorgon.Editor.FontEditor.Properties;
@@ -39,6 +34,7 @@ using Gorgon.Graphics.Fonts;
 using Gorgon.IO;
 using Gorgon.Math;
 using Drawing = System.Drawing;
+using FontStyle = Gorgon.Graphics.Fonts.FontStyle;
 
 namespace Gorgon.Editor.FontEditor;
 
@@ -595,7 +591,6 @@ internal class FontContent
     /// <returns>A task for asynchronous operation.</returns>
     private async Task DoSetItalicAsync(bool flag)
     {
-#if NET6_0_OR_GREATER
         async Task<bool> SetItalicAsync(GorgonFontInfo args)
         {
             ShowWaitPanel(Resources.GORFNT_TEXT_PLEASE_WAIT_GEN_FONT);
@@ -640,11 +635,6 @@ internal class FontContent
 
         _undoService.Record(Resources.GORFNT_UNDO_ITALIC, UndoRedoActionAsync, UndoRedoActionAsync, undoArgs, redoArgs);
         NotifyPropertyChanged(nameof(UndoCommand));
-#else
-#pragma warning disable IDE0022 // Use expression body for methods
-        await Task.CompletedTask;
-#pragma warning restore IDE0022 // Use expression body for methods
-#endif
     }
 
     /// <summary>

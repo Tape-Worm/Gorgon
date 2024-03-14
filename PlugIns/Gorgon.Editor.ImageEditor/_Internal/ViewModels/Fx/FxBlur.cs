@@ -24,7 +24,6 @@
 // 
 #endregion
 
-using System.Linq;
 using Gorgon.Editor.UI;
 using Gorgon.Math;
 

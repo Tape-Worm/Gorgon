@@ -24,7 +24,6 @@
 // 
 #endregion
 
-using System;
 using Gorgon.IO;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;

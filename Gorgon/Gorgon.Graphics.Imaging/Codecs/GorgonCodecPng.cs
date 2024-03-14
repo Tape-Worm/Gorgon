@@ -25,7 +25,6 @@
 #endregion
 
 
-using System.Collections.Generic;
 using Gorgon.Graphics.Imaging.Properties;
 using SharpDX.WIC;
 

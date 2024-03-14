@@ -24,10 +24,8 @@
 // 
 #endregion
 
-using System;
 using System.ComponentModel;
 using System.Numerics;
-using System.Windows.Forms;
 using Gorgon.Editor.UI;
 
 namespace Gorgon.Editor.SpriteEditor;

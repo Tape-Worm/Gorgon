@@ -1,5 +1,4 @@
-﻿using System;
-using Gorgon.Editor.PlugIns;
+﻿using Gorgon.Editor.PlugIns;
 using Gorgon.Editor.Properties;
 using Gorgon.Editor.UI.Views;
 

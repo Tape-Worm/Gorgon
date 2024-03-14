@@ -24,8 +24,6 @@
 // 
 #endregion
 
-using System;
-using System.Threading;
 using Gorgon.Animation.Properties;
 using Gorgon.Core;
 

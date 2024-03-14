@@ -26,8 +26,6 @@
 
 using System.ComponentModel;
 using System.Numerics;
-using System.Threading;
-using System.Windows.Forms;
 using Gorgon.Core;
 using Gorgon.Editor.Rendering;
 using Gorgon.Editor.UI;

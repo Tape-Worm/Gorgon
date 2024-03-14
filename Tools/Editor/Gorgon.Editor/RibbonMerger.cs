@@ -24,12 +24,8 @@
 // 
 #endregion
 
-using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Globalization;
-using System.Linq;
-using System.Windows.Forms;
 using Drawing = System.Drawing;
 using Gorgon.Math;
 using Krypton.Ribbon;

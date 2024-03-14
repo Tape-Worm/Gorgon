@@ -24,8 +24,6 @@
 // 
 #endregion
 
-using System;
-using System.Collections.Generic;
 using Newtonsoft.Json;
 
 namespace Gorgon.Editor.ImageEditor;

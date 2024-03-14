@@ -24,11 +24,7 @@
 // 
 #endregion
 
-using System;
 using System.Globalization;
-using System.IO;
-using System.Threading;
-using System.Windows.Forms;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
 using Gorgon.IO;

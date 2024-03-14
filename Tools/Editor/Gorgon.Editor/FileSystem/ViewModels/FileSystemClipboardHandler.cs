@@ -24,8 +24,6 @@
 // 
 #endregion
 
-using System;
-using System.Threading.Tasks;
 using Gorgon.Diagnostics;
 using Gorgon.Editor.Services;
 using Gorgon.Editor.UI;

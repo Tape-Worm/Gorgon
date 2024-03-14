@@ -26,7 +26,6 @@
 
 using System.Numerics;
 using Gorgon.Collections;
-using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 
 namespace Gorgon.Examples;

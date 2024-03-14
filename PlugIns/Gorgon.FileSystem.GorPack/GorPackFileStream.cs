@@ -24,8 +24,6 @@
 // 
 #endregion
 
-using System;
-using System.IO;
 using Gorgon.IO.GorPack.Properties;
 using ICSharpCode.SharpZipLib.BZip2;
 

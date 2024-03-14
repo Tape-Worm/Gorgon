@@ -24,7 +24,6 @@
 // 
 #endregion
 
-using System;
 using Krypton.Ribbon;
 
 namespace Gorgon.Editor;

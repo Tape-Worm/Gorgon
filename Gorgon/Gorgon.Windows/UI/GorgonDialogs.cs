@@ -24,10 +24,8 @@
 // 
 #endregion
 
-using System;
 using System.Collections;
 using System.Text;
-using System.Windows.Forms;
 using Gorgon.Core;
 using Gorgon.Windows.Properties;
 

@@ -24,7 +24,6 @@
 // 
 #endregion
 
-using System;
 using Gorgon.Animation;
 using Gorgon.Graphics;
 using Newtonsoft.Json;

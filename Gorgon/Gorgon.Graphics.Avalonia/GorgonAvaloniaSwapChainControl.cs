@@ -1,7 +1,4 @@
-﻿using System;
-using System.Numerics;
-using System.Threading;
-using System.Threading.Tasks;
+﻿using System.Numerics;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Interactivity;

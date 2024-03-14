@@ -1,18 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-using DX = SharpDX;
+﻿using DX = SharpDX;
 using Gorgon.Editor.FontEditor.Properties;
 using Gorgon.Editor.Services;
 using Gorgon.Editor.UI;
 using Gorgon.Graphics.Core;
 using Gorgon.Graphics.Fonts;
-using Gorgon.Graphics.Imaging;
 using Gorgon.Math;
 using Gorgon.Diagnostics;
-using Gorgon.Graphics;
 using System.ComponentModel;
 
 namespace Gorgon.Editor.FontEditor;

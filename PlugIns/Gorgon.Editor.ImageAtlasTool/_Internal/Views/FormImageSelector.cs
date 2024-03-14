@@ -24,11 +24,8 @@
 // 
 #endregion
 
-using System;
 using System.ComponentModel;
 using System.Numerics;
-using System.Threading;
-using System.Windows.Forms;
 using Gorgon.Editor.ImageAtlasTool.Properties;
 using Gorgon.Editor.Rendering;
 using Gorgon.Editor.UI;

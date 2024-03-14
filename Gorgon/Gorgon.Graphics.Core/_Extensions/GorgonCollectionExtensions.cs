@@ -24,8 +24,6 @@
 // 
 #endregion
 
-using System;
-using System.Collections.Generic;
 using SharpDX.Direct3D;
 using SharpDX.DXGI;
 using D3D11 = SharpDX.Direct3D11;

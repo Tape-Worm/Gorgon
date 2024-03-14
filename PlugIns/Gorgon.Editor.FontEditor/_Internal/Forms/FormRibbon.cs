@@ -24,17 +24,11 @@
 // 
 #endregion
 
-using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
 using System.Numerics;
-using Drawing = System.Drawing;
-using System.Windows.Forms;
 using Gorgon.Editor.FontEditor.Properties;
 using Gorgon.Editor.Rendering;
 using Gorgon.Editor.UI;
-using Gorgon.Graphics.Imaging;
 using Krypton.Toolkit;
 using Gorgon.Graphics.Fonts;
 

@@ -24,10 +24,6 @@
 // 
 #endregion
 
-using System;
-using System.Collections.Generic;
-using System.Windows.Forms;
-
 namespace Gorgon.Editor.Views;
 
 /// <summary>

@@ -24,11 +24,7 @@
 // 
 #endregion
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
-using System.Windows.Forms;
 using Gorgon.Editor.PlugIns;
 using Gorgon.Editor.Properties;
 

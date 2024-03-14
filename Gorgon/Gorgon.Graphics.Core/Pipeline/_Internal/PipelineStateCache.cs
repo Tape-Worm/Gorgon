@@ -24,7 +24,6 @@
 // 
 #endregion
 
-using System;
 using System.Runtime.CompilerServices;
 using D3D11 = SharpDX.Direct3D11;
 

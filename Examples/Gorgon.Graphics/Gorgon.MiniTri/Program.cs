@@ -24,11 +24,7 @@
 // 
 #endregion
 
-using System;
-using System.Collections.Generic;
-using System.Drawing;
 using System.Numerics;
-using System.Windows.Forms;
 using Gorgon.Examples.Properties;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;

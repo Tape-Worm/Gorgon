@@ -24,7 +24,6 @@
 // 
 #endregion
 
-using System.Collections.Generic;
 using DX = SharpDX;
 
 namespace Gorgon.Renderers.Services;

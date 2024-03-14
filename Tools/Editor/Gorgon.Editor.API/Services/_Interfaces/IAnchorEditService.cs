@@ -24,9 +24,7 @@
 // 
 #endregion
 
-using System;
 using System.Numerics;
-using System.Windows.Forms;
 using Gorgon.Editor.Rendering;
 using Gorgon.Renderers;
 using Gorgon.Renderers.Cameras;

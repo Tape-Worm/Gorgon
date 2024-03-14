@@ -24,7 +24,6 @@
 // 
 #endregion
 
-using System.Collections.Generic;
 using Gorgon.Core;
 using Gorgon.Graphics;
 using Newtonsoft.Json;

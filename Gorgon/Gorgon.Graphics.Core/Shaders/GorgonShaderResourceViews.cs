@@ -24,9 +24,6 @@
 // 
 #endregion
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using Gorgon.Collections;
 using Gorgon.Math;
 using D3D11 = SharpDX.Direct3D11;

@@ -24,7 +24,6 @@
 // 
 #endregion
 
-using System;
 using Avalonia;
 
 namespace Gorgon.Examples;

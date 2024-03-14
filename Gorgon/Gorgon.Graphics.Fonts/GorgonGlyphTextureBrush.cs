@@ -24,19 +24,13 @@
 // 
 #endregion
 
-using System;
-using System.Drawing;
 using System.Drawing.Drawing2D;
-using System.IO;
-using System.Linq;
 using Gorgon.Graphics.Core;
 using Gorgon.Graphics.Fonts.Properties;
 using Gorgon.Graphics.Imaging;
 using Gorgon.Graphics.Imaging.Codecs;
 using Gorgon.Graphics.Imaging.GdiPlus;
 using Gorgon.IO;
-using Gorgon.Memory;
-using Gorgon.Native;
 using DX = SharpDX;
 
 namespace Gorgon.Graphics.Fonts;

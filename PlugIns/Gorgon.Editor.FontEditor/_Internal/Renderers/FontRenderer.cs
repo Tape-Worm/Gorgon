@@ -24,12 +24,9 @@
 // 
 #endregion
 
-using System.Drawing;
 using System.Numerics;
-using Gorgon.Editor.FontEditor;
 using Gorgon.Editor.FontEditor.Properties;
 using Gorgon.Editor.Rendering;
-using Gorgon.Editor.UI;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Graphics.Fonts;

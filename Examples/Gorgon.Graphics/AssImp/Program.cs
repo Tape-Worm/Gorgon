@@ -1,7 +1,4 @@
-﻿using System;
-using System.Numerics;
-using System.Collections.Generic;
-using System.Windows.Forms;
+﻿using System.Numerics;
 using Gorgon.Examples.Properties;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
@@ -10,11 +7,7 @@ using Gorgon.UI;
 using DX = SharpDX;
 using Gorgon.Renderers.Cameras;
 using System.Runtime.CompilerServices;
-using Gorgon.Math;
 using Gorgon.Timing;
-using Gorgon.Graphics.Imaging.Codecs;
-using Gorgon.Graphics.Imaging;
-using System.IO;
 using Gorgon.Renderers;
 using System.Runtime.InteropServices;
 

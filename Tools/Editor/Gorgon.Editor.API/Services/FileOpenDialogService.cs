@@ -24,8 +24,6 @@
 // 
 #endregion
 
-using System.IO;
-using System.Windows.Forms;
 using Gorgon.Editor.Properties;
 using Gorgon.UI;
 

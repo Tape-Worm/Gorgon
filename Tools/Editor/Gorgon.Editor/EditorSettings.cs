@@ -24,8 +24,6 @@
 // 
 #endregion
 
-using System.Collections.Generic;
-using System.Windows.Forms;
 using Gorgon.Editor.ProjectData;
 using DX = SharpDX;
 

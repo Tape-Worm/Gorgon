@@ -24,15 +24,11 @@
 // 
 #endregion
 
-using System;
-using System.IO;
-using System.Threading.Tasks;
 using Gorgon.Editor.Content;
 using Gorgon.Editor.PlugIns;
 using Gorgon.Editor.Properties;
 using Gorgon.Editor.UI.Views;
 using Gorgon.IO;
-using SharpDX.IO;
 
 namespace Gorgon.Editor.UI;
 

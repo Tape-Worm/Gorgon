@@ -22,9 +22,7 @@
 // Created: Tuesday, September 07, 2015 2:27:10 PM
 // 
 
-using System;
 using System.Runtime.InteropServices;
-using System.Windows.Forms;
 using Gorgon.Input.Properties;
 using Gorgon.Native;
 

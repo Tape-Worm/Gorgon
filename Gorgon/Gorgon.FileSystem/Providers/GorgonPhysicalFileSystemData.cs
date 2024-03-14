@@ -24,8 +24,6 @@
 // 
 #endregion
 
-using System.Collections.Generic;
-
 namespace Gorgon.IO.Providers;
 
 /// <summary>

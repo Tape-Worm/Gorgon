@@ -24,12 +24,8 @@
 // 
 #endregion
 
-using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
-using System.IO;
-using System.Linq;
 using Gorgon.Editor.Content;
 using Gorgon.Editor.Services;
 using Gorgon.Editor.TextureAtlasTool.Properties;

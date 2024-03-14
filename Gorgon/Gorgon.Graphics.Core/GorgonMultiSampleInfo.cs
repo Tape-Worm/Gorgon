@@ -24,7 +24,6 @@
 // 
 #endregion
 
-using System;
 using Gorgon.Graphics.Core.Properties;
 /* Unmerged change from project 'Gorgon.Graphics.Core (net5.0-windows)'
 Before:

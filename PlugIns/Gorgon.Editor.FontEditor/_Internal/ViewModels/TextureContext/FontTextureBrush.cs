@@ -24,19 +24,10 @@
 // 
 #endregion
 
-using System;
-using System.Collections.Generic;
-using System.Drawing.Drawing2D;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using DX = SharpDX;
-using Gorgon.Editor.Services;
 using Gorgon.Editor.UI;
-using Gorgon.Graphics.Core;
 using Gorgon.Graphics.Fonts;
 using Gorgon.Graphics.Imaging;
-using Gorgon.Editor.Content;
 using Gorgon.Editor.FontEditor.Properties;
 using Gorgon.Math;
 

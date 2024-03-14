@@ -5,7 +5,6 @@
 // https://github.com/nickgravelyn/Triangulator/blob/master/LICENSE
 //
 
-using System.Collections.Generic;
 using System.Diagnostics;
 
 /* Unmerged change from project 'Gorgon.Renderers.Gorgon2D (net5.0-windows)'

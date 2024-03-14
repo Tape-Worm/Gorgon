@@ -24,9 +24,6 @@
 // 
 #endregion
 
-using System;
-using SharpDX.DXGI;
-
 namespace Gorgon.Graphics.Core;
 
 #if NET6_0_OR_GREATER

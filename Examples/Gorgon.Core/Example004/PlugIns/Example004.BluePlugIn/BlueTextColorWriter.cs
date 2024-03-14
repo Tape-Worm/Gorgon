@@ -24,8 +24,6 @@
 // 
 #endregion
 
-using System;
-
 namespace Gorgon.Examples;
 
 /// <summary>
