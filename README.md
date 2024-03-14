@@ -32,7 +32,7 @@ Gorgon is licensed under the [MIT license](http://opensource.org/licenses/MIT).
 How far along are you?  Is it done yet?  How about now?
 -------------------------------------------------------
 
-Gorgon 3.2 is in development.
+Gorgon 4.0 is in development.
 
 What can it do?
 ---------------
@@ -135,7 +135,7 @@ Gorgon provides a set of libraries that are capable of handling pretty much any 
 What's required?
 ----------------
 
-  * [.NET 6.0](https://dotnet.microsoft.com/download)
+  * [.NET 8.0](https://dotnet.microsoft.com/download)
   * Windows 10 (Build 15063 or later).
   * A video card that supports Microsoft DirectX 11.2 or better
 
@@ -147,12 +147,13 @@ To compile the library
 To use the library
 ------------------
 
-  * You may use any .NET 6.0 enabled language (e.g. Visual Basic .NET) to write an application with Gorgon.
+  * You may use any .NET 8.0 enabled language (e.g. Visual Basic .NET) to write an application with Gorgon.
 
 Source code
 -----------
 
-The master branch contains the current release version of Gorgon 3.2.  
+The develop branch contains the current development version of Gorgon 4.0.  
+Teh main branch contains the release version of Gorgon 3.2.
 
 Acknowledgements
 ================
