@@ -23,7 +23,7 @@
   </metadata>
   <files>
     <file src=".\icon.png" target="images\Gorgon_Icon_64x64.png" />
-    <file src="..\lib\Gorgon.Graphics.Avalonia.dll" target="lib\net6.0\Gorgon.Graphics.Avalonia.dll" />
-    <file src="..\lib\Gorgon.Graphics.Avalonia.xml" target="lib\net6.0\Gorgon.Graphics.Avalonia.xml" />    
+    <file src="..\lib\Gorgon.Graphics.Avalonia.dll" target="lib\net8.0\Gorgon.Graphics.Avalonia.dll" />
+    <file src="..\lib\Gorgon.Graphics.Avalonia.xml" target="lib\net8.0\Gorgon.Graphics.Avalonia.xml" />    
   </files>
 </package>

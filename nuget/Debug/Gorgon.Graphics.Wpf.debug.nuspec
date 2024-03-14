@@ -25,8 +25,8 @@
     <file src=".\icon.png" target="images\Gorgon_Icon_64x64.png" />
     <file src=".\Gorgon.Graphics.Wpf.debug.targets" target="build\Gorgon.Graphics.Wpf.debug.targets" />
     <file src="..\lib\ijwhost.dll" target="build\ijwhost.dll" />
-    <file src="..\lib\Microsoft.Wpf.Interop.DirectX.dll" target="build\net6.0\Microsoft.Wpf.Interop.DirectX.dll" />
-    <file src="..\lib\Gorgon.Graphics.Wpf.dll" target="lib\net6.0\Gorgon.Graphics.Wpf.dll" />
-    <file src="..\lib\Gorgon.Graphics.Wpf.xml" target="lib\net6.0\Gorgon.Graphics.Wpf.xml" />    
+    <file src="..\lib\Microsoft.Wpf.Interop.DirectX.dll" target="build\net8.0\Microsoft.Wpf.Interop.DirectX.dll" />
+    <file src="..\lib\Gorgon.Graphics.Wpf.dll" target="lib\net8.0\Gorgon.Graphics.Wpf.dll" />
+    <file src="..\lib\Gorgon.Graphics.Wpf.xml" target="lib\net8.0\Gorgon.Graphics.Wpf.xml" />    
   </files>
 </package>

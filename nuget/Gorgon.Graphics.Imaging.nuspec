@@ -25,8 +25,8 @@
   </metadata>
   <files>
     <file src=".\icon.png" target="images\Gorgon_Icon_64x64.png" />
-    <file src="..\lib\Gorgon.Graphics.Imaging.dll" target="lib\net6.0\Gorgon.Graphics.Imaging.dll" />
-    <file src="..\lib\Gorgon.Graphics.Imaging.xml" target="lib\net6.0\Gorgon.Graphics.Imaging.xml" />
-    <file src="..\lib\BCnEncoder.dll" target="lib\net6.0\BCnEncoder.dll" />
+    <file src="..\lib\Gorgon.Graphics.Imaging.dll" target="lib\net8.0\Gorgon.Graphics.Imaging.dll" />
+    <file src="..\lib\Gorgon.Graphics.Imaging.xml" target="lib\net8.0\Gorgon.Graphics.Imaging.xml" />
+    <file src="..\lib\BCnEncoder.dll" target="lib\net8.0\BCnEncoder.dll" />
   </files>
 </package>

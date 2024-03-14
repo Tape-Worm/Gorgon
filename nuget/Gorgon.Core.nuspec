@@ -31,7 +31,7 @@
   </metadata>
   <files>
     <file src=".\icon.png" target="images\Gorgon_Icon_64x64.png" />
-    <file src="..\lib\Gorgon.Core.dll" target="lib\net6.0\Gorgon.Core.dll" />
-    <file src="..\lib\Gorgon.Core.xml" target="lib\net6.0\Gorgon.Core.xml" />
+    <file src="..\lib\Gorgon.Core.dll" target="lib\net8.0\Gorgon.Core.dll" />
+    <file src="..\lib\Gorgon.Core.xml" target="lib\net8.0\Gorgon.Core.xml" />
   </files>
 </package>
