@@ -50,9 +50,11 @@ jobs:
         inputs:
           testSelector: 'testAssemblies'
           testAssemblyVer2: |
-            '**/bin/**/*.Tests.dll'
+            '**/bin/**/?(Gorgon*.Tests.dll)'
             '!**/obj/**'
           searchFolder: '$(System.DefaultWorkingDirectory)\Test'
+          failOnMinTestsNotRun: true
+          minimumExpectedTests: 1
 
       - task: VSBuild@1
         inputs:
