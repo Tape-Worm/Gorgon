@@ -10,6 +10,8 @@ trigger:
     include:
       - BugFixes
 
+pr: none
+
 jobs:
   - job: 'BugFixes_Debug'
     pool:
