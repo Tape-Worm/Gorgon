@@ -145,7 +145,7 @@ public partial class Form
         }
         catch (Exception ex)
         {
-            ex.Catch(_ => GorgonDialogs.ErrorBox(this, _), Program.Log);
+            ex.Handle(e => GorgonDialogs.ErrorBox(this, e), Program.Log);
             splitFileSystem.Panel2.Controls.Add(_instructions);
         }
     }
@@ -170,7 +170,7 @@ public partial class Form
         }
         catch (Exception ex)
         {
-            ex.Catch(_ => GorgonDialogs.ErrorBox(this, _), Program.Log);
+            ex.Handle(e => GorgonDialogs.ErrorBox(this, e), Program.Log);
         }
     }
 
@@ -193,7 +193,7 @@ public partial class Form
         }
         catch (Exception ex)
         {
-            ex.Catch(_ => GorgonDialogs.ErrorBox(this, _), Program.Log);
+            ex.Handle(e => GorgonDialogs.ErrorBox(this, e), Program.Log);
         }
     }
 
@@ -399,7 +399,7 @@ public partial class Form
         }
         catch (Exception ex)
         {
-            ex.Catch(_ => GorgonDialogs.ErrorBox(this, _), Program.Log);
+            ex.Handle(e => GorgonDialogs.ErrorBox(this, e), Program.Log);
             GorgonApplication.Quit();
         }
     }

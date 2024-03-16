@@ -1,5 +1,4 @@
-﻿
-// 
+﻿// 
 // Gorgon
 // Copyright (C) 2019 Michael Winsor
 // 
@@ -23,7 +22,7 @@
 // Created: March 25, 2019 9:58:48 AM
 // 
 
-
+using Gorgon.Core;
 using Gorgon.Editor.PlugIns;
 using Gorgon.Editor.UI;
 using Gorgon.Graphics;
@@ -37,11 +36,8 @@ namespace Gorgon.Editor.SpriteEditor;
 internal class Settings
     : ViewModelBase<SettingsParameters, IHostContentServices>, ISettings
 {
-
     // The plug in settings.
     private SpriteEditorSettings _settings;
-
-
 
     /// <summary>
     /// Property to set or return the type of masking to perform when picking a sprite using the <see cref="SpriteEditTool.SpritePick"/> tool.
@@ -138,8 +134,6 @@ internal class Settings
         }
     }
 
-
-
     /// <summary>Function to inject dependencies for the view model.</summary>
     /// <param name="injectionParameters">The parameters to inject.</param>
     /// <exception cref="ArgumentMissingException">Thrown when required parameters are missing.</exception>
@@ -147,5 +141,4 @@ internal class Settings
     /// Applications should call this when setting up the view model for complex operations and/or dependency injection. The constructor should only be used for simple set up and initialization of objects.
     /// </remarks>
     protected override void OnInitialize(SettingsParameters injectionParameters) => _settings = injectionParameters.Settings ?? throw new ArgumentMissingException(nameof(SettingsParameters.Settings), nameof(injectionParameters));
-
 }

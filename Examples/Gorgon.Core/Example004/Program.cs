@@ -165,11 +165,11 @@ internal static class Program
         }
         catch (Exception ex)
         {
-            ex.Catch(_ =>
+            ex.Handle(e =>
                      {
                          Console.Clear();
                          Console.ForegroundColor = ConsoleColor.Red;
-                         Console.WriteLine($"Exception:\n{ex.Message}\n\nStack Trace:{ex.StackTrace}");
+                         Console.WriteLine($"Exception:\n{e.Message}\n\nStack Trace:{e.StackTrace}");
                      },
                      _log);
             Console.ResetColor();

@@ -103,7 +103,7 @@ public partial class Form
         }
         catch (Exception ex)
         {
-            ex.Catch(_ => GorgonDialogs.ErrorBox(this, _), Program.Log);
+            ex.Handle(e => GorgonDialogs.ErrorBox(this, e), Program.Log);
         }
         finally
         {
@@ -127,7 +127,7 @@ public partial class Form
         }
         catch (Exception ex)
         {
-            ex.Catch(_ => GorgonDialogs.ErrorBox(this, _), Program.Log);
+            ex.Handle(e => GorgonDialogs.ErrorBox(this, e), Program.Log);
         }
         finally
         {
@@ -151,7 +151,7 @@ public partial class Form
         }
         catch (Exception ex)
         {
-            ex.Catch(except => GorgonDialogs.ErrorBox(this, except), Program.Log);
+            ex.Handle(e => GorgonDialogs.ErrorBox(this, e), Program.Log);
         }
         finally
         {

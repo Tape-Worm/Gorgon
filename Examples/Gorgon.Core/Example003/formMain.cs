@@ -74,7 +74,7 @@ public partial class FormMain : Form
         }
         catch (Exception ex)
         {
-            ex.Catch(_ => GorgonDialogs.ErrorBox(this, _), GorgonApplication.Log);
+            ex.Handle(e => GorgonDialogs.ErrorBox(this, e), GorgonApplication.Log);
         }
     }
 
@@ -106,7 +106,7 @@ public partial class FormMain : Form
         }
         catch (Exception ex)
         {
-            ex.Catch(_ => GorgonDialogs.ErrorBox(this, _), GorgonApplication.Log);
+            ex.Handle(e => GorgonDialogs.ErrorBox(this, e), GorgonApplication.Log);
         }
     }
 

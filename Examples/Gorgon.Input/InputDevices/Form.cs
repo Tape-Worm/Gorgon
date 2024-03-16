@@ -445,7 +445,7 @@ public partial class Form : System.Windows.Forms.Form
         {
             // We do this here instead of just calling the dialog because this
             // function will send the exception to the Gorgon log file.
-            ex.Catch(_ => GorgonDialogs.ErrorBox(this, _), GorgonApplication.Log);
+            ex.Handle(e => GorgonDialogs.ErrorBox(this, e), GorgonApplication.Log);
             GorgonApplication.Quit();
         }
     }

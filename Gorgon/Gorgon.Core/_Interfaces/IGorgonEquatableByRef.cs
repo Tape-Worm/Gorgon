@@ -43,12 +43,10 @@ public interface IGorgonEquatableByRef<T>
     : IEquatable<T>
     where T : struct
 {
-
     /// <summary>
     /// Function to compare this instance with another.
     /// </summary>
     /// <param name="other">The other instance to use for comparison.</param>
     /// <returns><b>true</b> if equal, <b>false</b> if not.</returns>
     bool Equals(in T other);
-
 }

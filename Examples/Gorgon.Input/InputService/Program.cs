@@ -159,7 +159,7 @@ internal static class Program
         }
         catch (Exception ex)
         {
-            ex.Catch(e =>
+            ex.Handle(e =>
                      {
                          Console.Clear();
                          Console.ForegroundColor = ConsoleColor.Red;

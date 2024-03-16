@@ -1,7 +1,5 @@
-﻿
-// 
-// Gorgon
-// Copyright (C) 2011 Michael Winsor
+﻿// Gorgon.
+// Copyright (C) 2024 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -11,29 +9,26 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software
+// all copies or substantial portions of the Software.
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE
+// THE SOFTWARE.
 // 
-// Created: Tuesday, June 14, 2011 8:56:44 PM
-// 
-
+// Created: November 17, 2023 5:05:48 PM
+//
 
 namespace Gorgon.Core;
 
 /// <summary>
-/// A custom exception that allows the passing of a <see cref="GorgonResult"/> code
+/// A custom exception that allows the passing of a <see cref="GorgonResult"/> code.
 /// </summary>
-[Serializable]
 public class GorgonException
     : Exception
 {
-
     /// <summary>
     /// Property to return the exception result code.
     /// </summary>
@@ -41,8 +36,6 @@ public class GorgonException
     {
         get;
     }
-
-
 
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonException"/> class.
@@ -65,7 +58,7 @@ public class GorgonException
     /// <param name="result">The result.</param>
     /// <param name="message">Message data to append to the error.</param>
     /// <param name="inner">The inner exception.</param>
-    public GorgonException(GorgonResult result, string message, Exception inner)
+    public GorgonException(GorgonResult result, string message, Exception inner = null)
         : base(result.Description + (!string.IsNullOrEmpty(message) ? "\n" + message : string.Empty), inner) => ResultCode = result;
 
     /// <summary>
@@ -82,7 +75,7 @@ public class GorgonException
     /// <param name="result">The result.</param>
     /// <param name="inner">The inner exception.</param>
     public GorgonException(GorgonResult result, Exception inner)
-        : this(result, null, inner)
+        : this(result, string.Empty, inner)
     {
     }
 
@@ -91,13 +84,7 @@ public class GorgonException
     /// </summary>
     /// <param name="result">The result.</param>
     public GorgonException(GorgonResult result)
-        : this(result, null, null)
+        : this(result, string.Empty, null)
     {
     }
-
-    /// <summary>
-    /// Default constructor.
-    /// </summary>
-    public GorgonException() => ResultCode = new GorgonResult("GorgonException", int.MinValue, string.Empty);
-
 }

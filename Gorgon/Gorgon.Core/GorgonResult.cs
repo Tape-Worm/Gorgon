@@ -1,7 +1,5 @@
-﻿
-// 
-// Gorgon
-// Copyright (C) 2011 Michael Winsor
+﻿// Gorgon.
+// Copyright (C) 2024 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -11,28 +9,27 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software
+// all copies or substantial portions of the Software.
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE
+// THE SOFTWARE.
 // 
-// Created: Tuesday, June 14, 2011 8:57:48 PM
-// 
-
+// Created: November 17, 2023 5:06:05 PM
+//
 
 using Gorgon.Properties;
 
 namespace Gorgon.Core;
 
 /// <summary>
-/// An error code message that is usually sent along with a <see cref="GorgonException"/>
+/// An error code message that is usually sent along with a <see cref="GorgonException"/>.
 /// </summary>
 public readonly struct GorgonResult
-    : IGorgonNamedObject, IGorgonEquatableByRef<GorgonResult>
+    : IGorgonNamedObject, IEquatable<GorgonResult>
 {
     // Base error code.
     private const int ErrorBase = 0x7FF000;
@@ -107,31 +104,25 @@ public readonly struct GorgonResult
     /// </summary>
     public static GorgonResult CannotCompile => new(nameof(CannotCompile), ErrorBase + 11, Resources.GOR_RESULT_DESC_CANNOT_COMPILE);
 
-
-
-    /// <summary>
-    /// Property to set or return the error message to be sent along with the <see cref="GorgonException"/>.
-    /// </summary>
-    public string Description
-    {
-        get;
-    }
-
-    /// <summary>
-    /// Property to set or return the error code to be sent along with the <see cref="GorgonException"/>.
-    /// </summary>
-    public int Code
-    {
-        get;
-    }
-
     /// <summary>
     /// Property to return the name of the error.
     /// </summary>
-    public string Name
-    {
-        get;
-    }
+    string IGorgonNamedObject.Name => Name;
+
+    /// <summary>
+    /// The error message to be sent along with the <see cref="GorgonException"/>.
+    /// </summary>
+    public readonly string Description;
+
+    /// <summary>
+    /// The error code to be sent along with the <see cref="GorgonException"/>.
+    /// </summary>
+    public readonly int Code;
+
+    /// <summary>
+    /// The name of the error.
+    /// </summary>
+    public readonly string Name;
 
     /// <summary>
     /// Indicates whether the current object is equal to another object of the same type.
@@ -140,18 +131,7 @@ public readonly struct GorgonResult
     /// <returns>
     /// true if the current object is equal to the <paramref name="other" /> parameter; otherwise, false.
     /// </returns>
-    public bool Equals(GorgonResult other) => Equals(in this, in other);
-
-    /// <summary>
-    /// Indicates whether the current object is equal to another object of the same type.
-    /// </summary>
-    /// <param name="other">An object to compare with this object.</param>
-    /// <returns>
-    /// true if the current object is equal to the <paramref name="other" /> parameter; otherwise, false.
-    /// </returns>
-    public bool Equals(in GorgonResult other) => Equals(in this, in other);
-
-
+    public bool Equals(GorgonResult other) => Equals(this, other);
 
     /// <summary>
     /// Function to compare two instances for equality.
@@ -159,7 +139,7 @@ public readonly struct GorgonResult
     /// <param name="left">The left instance to compare.</param>
     /// <param name="right">The right instance to compare.</param>
     /// <returns><b>true</b> if equal, <b>false</b> if not.</returns>
-    public static bool Equals(in GorgonResult left, in GorgonResult right) => ((left.Code == right.Code) && (string.Equals(left.Name, right.Name, StringComparison.OrdinalIgnoreCase)));
+    public static bool Equals(GorgonResult left, GorgonResult right) => ((left.Code == right.Code) && (string.Equals(left.Name, right.Name, StringComparison.OrdinalIgnoreCase)));
 
     /// <summary>
     /// Indicates whether this instance and a specified object are equal.
@@ -168,7 +148,7 @@ public readonly struct GorgonResult
     /// <returns>
     /// true if <paramref name="obj"/> and this instance are the same type and represent the same value; otherwise, false.
     /// </returns>
-    public override bool Equals(object obj) => obj is GorgonResult result && result.Equals(this);
+    public override bool Equals(object obj) => obj is GorgonResult result ? Equals(this, result) : base.Equals(obj);
 
     /// <summary>
     /// Returns the fully qualified type name of this instance.
@@ -192,7 +172,7 @@ public readonly struct GorgonResult
     /// <param name="left">The left item to test.</param>
     /// <param name="right">The right item to test.</param>
     /// <returns><b>true</b> if equal, <b>false</b> if not.</returns>
-    public static bool operator ==(GorgonResult left, GorgonResult right) => ((left.Code == right.Code) && (string.Equals(left.Name, right.Name, StringComparison.OrdinalIgnoreCase)));
+    public static bool operator ==(GorgonResult left, GorgonResult right) => Equals(left, right);
 
     /// <summary>
     /// Operator to test for inequality.
@@ -200,9 +180,7 @@ public readonly struct GorgonResult
     /// <param name="left">The left item to test.</param>
     /// <param name="right">The right item to test.</param>
     /// <returns><b>true</b> if not equal, <b>false</b> if the items are equal.</returns>
-    public static bool operator !=(GorgonResult left, GorgonResult right) => ((left.Code != right.Code) || (string.Equals(left.Name, right.Name, StringComparison.OrdinalIgnoreCase)));
-
-
+    public static bool operator !=(GorgonResult left, GorgonResult right) => !Equals(left, right);
 
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonResult"/> struct.
@@ -210,7 +188,7 @@ public readonly struct GorgonResult
     /// <param name="name">The name of the error.</param>
     /// <param name="code">The numeric code assigned to the error.</param>
     /// <param name="description">The full description of the error.</param>
-    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="name"/> or <paramref name="description"/> parameter is <b>null</b></exception>
+    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="name"/> or <paramref name="description"/> parameter is <b>null</b>.</exception>
     /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="name"/> or <paramref name="description"/> parameter is an empty string.</exception>
     public GorgonResult(string name, int code, string description)
     {
@@ -219,14 +197,14 @@ public readonly struct GorgonResult
             throw new ArgumentNullException(nameof(name));
         }
 
-        if (string.IsNullOrWhiteSpace(name))
-        {
-            throw new ArgumentEmptyException(nameof(name));
-        }
-
         if (description is null)
         {
             throw new ArgumentNullException(nameof(description));
+        }
+
+        if (string.IsNullOrWhiteSpace(name))
+        {
+            throw new ArgumentEmptyException(nameof(name));
         }
 
         if (string.IsNullOrEmpty(description))
@@ -238,5 +216,4 @@ public readonly struct GorgonResult
         Description = description;
         Code = code;
     }
-
 }

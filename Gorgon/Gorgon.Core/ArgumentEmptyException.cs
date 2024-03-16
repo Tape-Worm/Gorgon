@@ -31,7 +31,6 @@ namespace Gorgon.Core;
 /// <summary>
 /// An exception that should be thrown when a non-null parameter (e.g. <see cref="string"/>) requires a value, and does not.  
 /// </summary>
-[Serializable]
 public class ArgumentEmptyException
     : ArgumentException
 {

@@ -1,5 +1,4 @@
-﻿
-// 
+﻿// 
 // Gorgon
 // Copyright (C) 2018 Michael Winsor
 // 
@@ -23,10 +22,9 @@
 // Created: September 17, 2018 8:19:33 AM
 // 
 
-
 using Gorgon.Properties;
 
-namespace Gorgon;
+namespace Gorgon.Core;
 
 /// <summary>
 /// Exception to be thrown when an argument is missing
@@ -36,7 +34,6 @@ namespace Gorgon;
 /// The ideal use case for this exception is when a method expects a structure of data with specific members and a required member is not initialized (e.g. <b>null</b>)
 /// </para>
 /// </remarks>
-[Serializable]
 public class ArgumentMissingException
     : Exception
 {

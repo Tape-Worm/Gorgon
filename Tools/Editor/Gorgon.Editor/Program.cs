@@ -198,7 +198,7 @@ static class Program
         }
         catch (Exception ex)
         {
-            ex.Catch(_ => GorgonDialogs.ErrorBox(null, Resources.GOREDIT_ERR_GENERAL_ERROR, Resources.GOREDIT_ERR_ERROR, ex), Log);
+            ex.Handle(e => GorgonDialogs.ErrorBox(null, Resources.GOREDIT_ERR_GENERAL_ERROR, Resources.GOREDIT_ERR_ERROR, e), Log);
         }
         finally
         {

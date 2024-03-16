@@ -35,11 +35,8 @@ namespace Gorgon.Examples;
 /// </summary>
 internal static class MenuOptions
 {
-
     // Computer information.
     private static readonly IGorgonComputerInfo _computerInfo = new GorgonComputerInfo();
-
-
 
     /// <summary>
     /// Function to throw the inner exception.
@@ -60,7 +57,7 @@ internal static class MenuOptions
     /// Function to throw the outer exception.
     /// </summary>
     /// <param name="inner">Inner exception.</param>
-    private static void OuterException(Exception inner) => throw inner.Repackage("This will be the outer exception.\n\nLook at the 'Details' to see the full exception stack.");
+    private static void OuterException(Exception inner) => throw new GorgonException(GorgonResult.AccessDenied, "This will be the outer exception.\n\nLook at the 'Details' to see the full exception stack.");
 
     /// <summary>
     /// Function to display information about the computer.

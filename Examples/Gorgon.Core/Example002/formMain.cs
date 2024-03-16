@@ -38,7 +38,6 @@ namespace Gorgon.Examples;
 /// </summary>
 public partial class FormMain : Form
 {
-
     // GDI+ form graphics interface.
     private DrawingGraphics _formGraphics;
     // GDI+ graphics interface.
@@ -46,15 +45,10 @@ public partial class FormMain : Form
     // Image for our form.
     private Bitmap _bitmap;
 
-
-
     /// <summary>
     /// Property to return the size of the graphics canvas.
     /// </summary>
     public Size GraphicsSize => _bitmap.Size;
-
-
-
 
     /// <summary>
     /// Raises the <see cref="E:System.Windows.Forms.Form.Load" /> event.
@@ -74,7 +68,7 @@ public partial class FormMain : Form
         }
         catch (Exception ex)
         {
-            ex.Catch(_ => GorgonDialogs.ErrorBox(this, _), GorgonApplication.Log);
+            ex.Handle(e => GorgonDialogs.ErrorBox(this, e), GorgonApplication.Log);
         }
     }
 
@@ -106,10 +100,9 @@ public partial class FormMain : Form
         }
         catch (Exception ex)
         {
-            ex.Catch(_ => GorgonDialogs.ErrorBox(this, _), GorgonApplication.Log);
+            ex.Handle(e => GorgonDialogs.ErrorBox(this, e), GorgonApplication.Log);
         }
     }
-
 
     /// <summary>
     /// Raises the <see cref="E:System.Windows.Forms.Form.FormClosing" /> event.

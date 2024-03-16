@@ -203,7 +203,7 @@ public static class GorgonExample
         }
 
         Cursor.Show();
-        ex.Catch(e => GorgonDialogs.ErrorBox(null, "There was an error running the application and it must now close.", "Error", ex), GorgonApplication.Log);
+        ex.Handle(e => GorgonDialogs.ErrorBox(null, "There was an error running the application and it must now close.", "Error", e), GorgonApplication.Log);
     }
 
     /// <summary>

@@ -51,7 +51,7 @@ static class Program
         }
         catch (Exception ex)
         {
-            ex.Catch(_ => GorgonDialogs.ErrorBox(null, _), GorgonApplication.Log);
+            ex.Handle(e => GorgonDialogs.ErrorBox(null, e), GorgonApplication.Log);
         }
     }
 

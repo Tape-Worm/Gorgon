@@ -66,7 +66,7 @@ internal static class Program
         }
         catch (Exception ex)
         {
-            ex.Catch(_ => GorgonDialogs.ErrorBox(null, _), Log);
+            ex.Handle(e => GorgonDialogs.ErrorBox(null, e), Log);
         }
         finally
         {
