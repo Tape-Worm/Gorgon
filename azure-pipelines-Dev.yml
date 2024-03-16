@@ -47,9 +47,10 @@ jobs:
           script: 'ProjectSigner.exe $(Agent.TempDirectory)\GorgonFull.snk -y'
 
       - task: VSTest@3
-        testSelector: 'testAssemblies'
-        testAssemblyVer2: '**\bin\**\*.Tests.dll'
-        searchFolder: '$(System.DefaultWorkingDirectory)\Tests'
+        inputs:
+          testSelector: 'testAssemblies'
+          testAssemblyVer2: '**\bin\**\*.Tests.dll'
+          searchFolder: '$(System.DefaultWorkingDirectory)\Tests'
 
       - task: VSBuild@1
         inputs:
