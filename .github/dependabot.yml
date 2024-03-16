@@ -1,12 +1,5 @@
 version: 2
 updates:
-  - package-ecosystem: "gitsubmodule"
-    directory: "/"
-    schedule:
-      interval: "weekly"
-      day: "saturday"
-    reviewers:
-        - "Tape-Worm"
   - package-ecosystem: "nuget"
     directory: "/"
     schedule:

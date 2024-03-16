@@ -30,7 +30,7 @@ jobs:
         displayName: 'Updating version to $(Build.BuildNumber)'
         inputs:
           script: 'CsProjVersionUpdater.exe $(Build.BuildNumber)'
-          workingDirectory: '/Tools/CsProjVersionUpdater/'
+          workingDirectory: '$(Build.SourcesDirectory)/Tools/CsProjVersionUpdater/'
 
       - task: NuGetToolInstaller@1
         inputs:
@@ -48,7 +48,7 @@ jobs:
         displayName: 'Signing code...'
         inputs:
           script: 'ProjectSigner.exe $(Agent.TempDirectory)\GorgonFull.snk -y'
-          workingDirectory: '/Tools/ProjectSigner/'
+          workingDirectory: '$(Build.SourcesDirectory)/Tools/ProjectSigner/'
 
       - task: VSBuild@1
         inputs:
