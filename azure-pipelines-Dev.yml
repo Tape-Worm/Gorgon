@@ -50,7 +50,7 @@ jobs:
         inputs:
           testSelector: 'testAssemblies'
           testAssemblyVer2: '**\bin\**\*.Tests.dll'
-          searchFolder: '$(System.DefaultWorkingDirectory)\Tests'
+          searchFolder: '$(System.DefaultWorkingDirectory)\Test'
 
       - task: VSBuild@1
         inputs:
