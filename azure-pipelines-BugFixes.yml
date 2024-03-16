@@ -74,3 +74,13 @@ jobs:
           solution: '$(solution)'
           platform: '$(buildPlatform)'
           configuration: '$(buildConfiguration)'
+
+      - task: VSTest@3
+        inputs:
+          testSelector: 'testAssemblies'
+          testAssemblyVer2: |
+            **/bin/**/?(Gorgon*.Tests.dll)
+            !**/obj/**
+          searchFolder: '$(System.DefaultWorkingDirectory)/Test'
+          failOnMinTestsNotRun: true
+          minimumExpectedTests: 1

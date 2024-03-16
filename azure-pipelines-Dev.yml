@@ -5,13 +5,13 @@
 
 name: 4.0.$(Rev:r).$(DayOfYear)
 
-trigger:
+pr:
   branches:
     include:
       - develop
 
 jobs:
-  - job: 'develop'
+  - job: 'Pull request build'
     pool:
       vmImage: 'windows-2022'
 
@@ -54,48 +54,6 @@ jobs:
           configuration: '$(buildConfiguration)'
           msbuildArgs: '/p:SourceLinkCreate=true'
 
-      - task: CopyFiles@2
-        displayName: 'Copying Lib to $(Build.ArtifactStagingDirectory)/$(buildConfiguration)/Gorgon/lib'
-        inputs:
-          SourceFolder: '$(Build.SourcesDirectory)/Gorgon'
-          Contents: | 
-            **/$(buildConfiguration)/**/?(*.dll|Gorgon*.xml|Gorgon*.pdb)            
-            !**/obj/**/*
-            !**/$(buildConfiguration)/**/net48/**/*
-            !**/$(buildConfiguration)/**/**/ref/**/*
-          CleanTargetFolder: true
-          TargetFolder: '$(Build.ArtifactStagingDirectory)/$(buildConfiguration)/Gorgon/lib'
-          flattenFolders: true
-          Overwrite: true
-
-      - task: CopyFiles@2
-        displayName: 'Copying Plugins to $(Build.ArtifactStagingDirectory)/$(buildConfiguration)/Gorgon/PlugIns'
-        inputs:
-          SourceFolder: '$(Build.SourcesDirectory)/PlugIns/Bin/$(buildConfiguration)/'
-          Contents: '**/?(*.dll|Gorgon*.pdb)'
-          CleanTargetFolder: true
-          TargetFolder: '$(Build.ArtifactStagingDirectory)/$(buildConfiguration)/Gorgon/PlugIns'
-
-      - task: CopyFiles@2
-        displayName: 'Copying Tools to $(Build.ArtifactStagingDirectory)/Gorgon/Tools'
-        inputs:
-          SourceFolder: '$(Build.SourcesDirectory)/Tools/Editor/Gorgon.Editor/bin/$(buildConfiguration)'
-          Contents: |
-            **/?(*.exe|*.dll|*.config|Gorgon.Editor.API.xml|Readme.txt|Gorgon.Editor.runtimeconfig.json)
-            !**/TextViewerContentExample.*
-            !**/**/ref/**/*
-            !**/net48/**/*
-          CleanTargetFolder: true
-          TargetFolder: '$(Build.ArtifactStagingDirectory)/$(buildConfiguration)/Gorgon/Tools'
-                    
-      - task: CopyFiles@2
-        displayName: 'Copying nuget files to artifacts'
-        inputs:
-          SourceFolder: '$(Build.SourcesDirectory)/nuget/debug'
-          Contents: '**/*'
-          CleanTargetFolder: true
-          TargetFolder: '$(Build.ArtifactStagingDirectory)/NugetSupport/Debug'
-
       - task: VSTest@3
         inputs:
           testSelector: 'testAssemblies'
@@ -105,24 +63,3 @@ jobs:
           searchFolder: '$(System.DefaultWorkingDirectory)/Test'
           failOnMinTestsNotRun: true
           minimumExpectedTests: 1
-
-      - task: PublishBuildArtifacts@1
-        inputs:
-          PathtoPublish: '$(Build.ArtifactStagingDirectory)'
-          ArtifactName: develop_drop
-
-# Index sources and publish symbols
-# Index your source code and publish symbols to a file share or Azure Artifacts symbol server
-      - task: PublishSymbols@2
-        inputs:
-          SymbolsFolder: '$(Build.SourcesDirectory)'
-          SearchPattern: |              
-              **/bin/**/Gorgon*.pdb
-              !**/Dependencies/**
-              !**/Examples/**
-          IndexSources: false
-          PublishSymbols: true
-          SymbolServerType: 'TeamServices'
-          DetailedLog: true
-          TreatNotIndexedAsWarning: false
-          SymbolsArtifactName: 'Gorgon_Symbols_$(BuildConfiguration)_$(Build.BuildNumber)'
