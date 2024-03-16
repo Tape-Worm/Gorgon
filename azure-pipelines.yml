@@ -29,7 +29,7 @@ jobs:
       - task: CmdLine@2
         displayName: 'Updating version to $(Build.BuildNumber)'
         inputs:
-          script: 'CsProjVersionUpdater.exe $(Build.BuildNumber)'
+          script: 'Tools/CsProjVersionUpdater/CsProjVersionUpdater.exe $(Build.BuildNumber)'
 
       - task: NuGetToolInstaller@1
         inputs:
@@ -46,7 +46,7 @@ jobs:
       - task: CmdLine@2
         displayName: 'Signing code...'
         inputs:
-          script: 'ProjectSigner.exe $(Agent.TempDirectory)\GorgonFull.snk -y'
+          script: 'Tools/ProjectSigner/ProjectSigner.exe $(Agent.TempDirectory)\GorgonFull.snk -y'
 
       - task: VSBuild@1
         inputs:
@@ -94,7 +94,7 @@ jobs:
         displayName: 'Copying artifacts to $(Build.ArtifactStagingDirectory)/Examples'
         inputs:
           targetType: filePath
-          filePath: '.\Deploy_Examples.ps1'
+          filePath: '.\Tools\Scripts\Deploy_Examples.ps1'
 
       - task: CopyFiles@2
         displayName: 'Copying nuget files to artifacts'
@@ -125,7 +125,7 @@ jobs:
       - task: CmdLine@2
         displayName: 'Updating version to $(Build.BuildNumber)'
         inputs:
-          script: 'CsProjVersionUpdater.exe $(Build.BuildNumber)'
+          script: 'Tools/CsProjVersionUpdater/CsProjVersionUpdater.exe $(Build.BuildNumber)'
 
       - task: NuGetToolInstaller@1
         inputs:
@@ -142,7 +142,7 @@ jobs:
       - task: CmdLine@2
         displayName: 'Signing code...'
         inputs:
-          script: 'ProjectSigner.exe $(Agent.TempDirectory)\GorgonFull.snk -y'
+          script: 'Tools/ProjectSigner/ProjectSigner.exe $(Agent.TempDirectory)\GorgonFull.snk -y'
 
       - task: VSBuild@1
         inputs:

@@ -104,39 +104,8 @@ All C# code must adhere to the [best practices](https://docs.microsoft.com/en-us
 
 Additionally, code must be formatted, as closely as possible, in the style present throughout the library code base.  This means:
 
-* Use Tabs - not spaces. 
-* Only use #region blocks to organize your code. Do _NOT_ use them to hide code, or separate access modifiers (e.g. do not use #region Private members, #region Protected members, etc...).<details><summary>What regions are acceptable?</summary>
-  ~~~csharp
-  #region Constants.
-  // Constants go here.
-  #endregion
- 
-  #region Classes.
-  // Inner classes go here.  These should always be private.
-  #endregion
-  
-  #region ValueTypes.
-  // Inner value types go here (struct).  These should always be private.
-  #endregion
-  
-  #region Events.
-  // Event declarations go here.
-  #endregion
-  
-  #region Properties.
-  // Properties go here.
-  #endregion
-  
-  #region Methods.
-  // Methods go here.
-  #endregion
-  
-  #region Constructor.
-  // Constructors go here.
-  // Finalizers too (change "Constructor" to "Constructor/Finalizer")
-  #endregion
-  ~~~
-  </details>
+* Use spaces - not tabs. 
+* Do not use #region blocks.
 * Try to adhere as closely to [SOLID](https://en.wikipedia.org/wiki/SOLID) principles as possible. 
 * When building user interfaces, try to use [MVVM](https://en.wikipedia.org/wiki/Model%E2%80%93view%E2%80%93viewmodel) (or something approaching my bastardization of it - see the Editor code).
 * Try to use small, concise methods. Do not write massive methods that take more than 1.5 pages to get through.

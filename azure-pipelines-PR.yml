@@ -27,7 +27,7 @@ jobs:
       - task: CmdLine@2
         displayName: 'Updating version to $(Build.BuildNumber)'
         inputs:
-          script: 'CsProjVersionUpdater.exe $(Build.BuildNumber)'
+          script: 'Tools/CsProjVersionUpdater/CsProjVersionUpdater.exe $(Build.BuildNumber)'
 
       - task: NuGetToolInstaller@1
         inputs:
