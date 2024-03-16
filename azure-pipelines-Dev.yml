@@ -50,9 +50,9 @@ jobs:
         inputs:
           testSelector: 'testAssemblies'
           testAssemblyVer2: |
-            '**/bin/**/?(Gorgon*.Tests.dll)'
-            '!**/obj/**'
-          searchFolder: '$(System.DefaultWorkingDirectory)\Test'
+            **/bin/**/?(Gorgon*.Tests.dll)
+            !**/obj/**
+          searchFolder: '$(System.DefaultWorkingDirectory)/Test'
           failOnMinTestsNotRun: true
           minimumExpectedTests: 1
 
