@@ -138,6 +138,7 @@ What's required?
   * [.NET 8.0](https://dotnet.microsoft.com/download)
   * Windows 10 (Build 15063 or later).
   * A video card that supports Microsoft DirectX 11.2 or better
+  * [Microsoft Visual Studio 2022](https://visualstudio.microsoft.com/vs/) or [JetBrains Rider](https://www.jetbrains.com/rider/)
 
 To compile the library
 ----------------------
