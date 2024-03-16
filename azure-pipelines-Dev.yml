@@ -49,7 +49,9 @@ jobs:
       - task: VSTest@3
         inputs:
           testSelector: 'testAssemblies'
-          testAssemblyVer2: '**\bin\**\*.Tests.dll'
+          testAssemblyVer2: |
+            '**/bin/**/*.Tests.dll'
+            '!**/obj/**'
           searchFolder: '$(System.DefaultWorkingDirectory)\Test'
 
       - task: VSBuild@1
