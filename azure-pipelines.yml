@@ -10,6 +10,8 @@ trigger:
     include:
       - main
 
+pr: none
+
 jobs:
   - job: 'Release'
     pool:
