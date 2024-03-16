@@ -142,7 +142,7 @@ What's required?
 To compile the library
 ----------------------
 
-  * [Visual C# 2022](https://visualstudio.microsoft.com/vs/community/) [v17.0](https://docs.microsoft.com/en-us/visualstudio/releases/2022/release-notes) or later. 
+  See the [Compiling Gorgon](https://www.tape-worm.net/GorgonDocs/articles/CompilingGorgon.html) article. 
 
 To use the library
 ------------------
