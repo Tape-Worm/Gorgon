@@ -145,7 +145,7 @@ internal class BatchRenderable
     /// <summary>
     /// Property to set or return the alpha test data.
     /// </summary>
-    public AlphaTestData AlphaTestData = new(true, GorgonRangeF.Empty);
+    public AlphaTestData AlphaTestData = new(true, GorgonRange<float>.Empty);
 
     /// <summary>
     /// Property to set or return the vertices for this renderable.

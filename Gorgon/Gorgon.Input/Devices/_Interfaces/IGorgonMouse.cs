@@ -177,18 +177,18 @@ public interface IGorgonMouse
     }
 
     /// <summary>
-    /// Property to set or return the <see cref="GorgonRange"/> used to constrain the mouse <see cref="WheelPosition"/>.
+    /// Property to set or return the <see cref="GorgonRange{T}"/> used to constrain the mouse <see cref="WheelPosition"/>.
     /// </summary>
     /// <remarks>
     /// <para>
-    /// If a mouse wheel exists on the device, this will constrain the value of the <see cref="WheelPosition"/> within the specified <see cref="GorgonRange"/>. This means that a wheel with a position of  
+    /// If a mouse wheel exists on the device, this will constrain the value of the <see cref="WheelPosition"/> within the specified <see cref="GorgonRange{T}"/>. This means that a wheel with a position of  
     /// 160, with a constraint of 180-190 will make the <see cref="WheelPosition"/> property return 180.
     /// </para>
     /// <para>
-    /// Passing <see cref="GorgonRange.Empty"/> to this property will remove the constraint on the position.
+    /// Passing <see cref="GorgonRange{T}.Empty"/> to this property will remove the constraint on the position.
     /// </para>
     /// </remarks>
-    GorgonRange WheelConstraint
+    GorgonRange<int> WheelConstraint
     {
         get;
         set;

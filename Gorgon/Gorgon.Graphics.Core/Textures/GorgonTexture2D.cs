@@ -740,7 +740,7 @@ public sealed class GorgonTexture2D
     /// </note>
     /// </para>
     /// </remarks>
-    public void CopyTo(GorgonTexture1D destinationTexture, GorgonRange? sourceRange = null, int sourceY = 0, int sourceArrayIndex = 0, int sourceMipLevel = 0, int destX = 0, int destArrayIndex = 0, int destMipLevel = 0, CopyMode copyMode = CopyMode.None)
+    public void CopyTo(GorgonTexture1D destinationTexture, GorgonRange<int>? sourceRange = null, int sourceY = 0, int sourceArrayIndex = 0, int sourceMipLevel = 0, int destX = 0, int destArrayIndex = 0, int destMipLevel = 0, CopyMode copyMode = CopyMode.None)
     {
         destinationTexture.ValidateObject(nameof(destinationTexture));
 

@@ -40,7 +40,6 @@ namespace Gorgon.Renderers;
 /// </summary>
 public class GorgonSprite
 {
-
     // The absolute anchor position.
     private Vector2 _absoluteAnchor;
 #pragma warning disable IDE0032 // Use auto property
@@ -57,8 +56,6 @@ public class GorgonSprite
         ActualVertexCount = 4,
         IndexCount = 6
     };
-
-
 
     /// <summary>
     /// Property to return whether or not the sprite has had its position, size, texture information, or object space vertices updated since it was last drawn.
@@ -389,11 +386,11 @@ public class GorgonSprite
     /// To disable alpha testing outright, set this property to <b>null</b>.
     /// </para>
     /// </remarks>
-    public GorgonRangeF? AlphaTest
+    public GorgonRange<float>? AlphaTest
     {
         get => Renderable.AlphaTestData.IsEnabled == 0
                 ? null
-                : new GorgonRangeF(Renderable.AlphaTestData.LowerAlpha, Renderable.AlphaTestData.UpperAlpha);
+                : new GorgonRange<float>(Renderable.AlphaTestData.LowerAlpha, Renderable.AlphaTestData.UpperAlpha);
         set
         {
             // ReSharper disable once ConvertIfStatementToSwitchStatement
@@ -404,7 +401,7 @@ public class GorgonSprite
                     return;
                 }
 
-                Renderable.AlphaTestData = new AlphaTestData(false, new GorgonRangeF(Renderable.AlphaTestData.LowerAlpha, Renderable.AlphaTestData.UpperAlpha));
+                Renderable.AlphaTestData = new AlphaTestData(false, new GorgonRange<float>(Renderable.AlphaTestData.LowerAlpha, Renderable.AlphaTestData.UpperAlpha));
                 Renderable.StateChanged = true;
                 return;
             }
@@ -456,8 +453,6 @@ public class GorgonSprite
         }
     }
 
-
-
     /// <summary>
     /// Function to copy the sprite data into the specified sprite.
     /// </summary>
@@ -502,8 +497,6 @@ public class GorgonSprite
         sprite.Renderable.HasVertexChanges = true;
     }
 
-
-
     /// <summary>Initializes a new instance of the <see cref="GorgonSprite"/> class.</summary>
     /// <param name="clone">The clone.</param>
     /// <exception cref="ArgumentNullException">Thrown when the <paramref name="clone"/> parameter is <b>null</b>.</exception>
@@ -531,5 +524,4 @@ public class GorgonSprite
             Renderable.Vertices[i].Position.W = 1.0f;
         }
     }
-
 }

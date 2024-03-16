@@ -38,7 +38,6 @@ namespace Gorgon.Graphics.Imaging;
 public class GorgonImageBuffer
     : IGorgonImageBuffer
 {
-
     /// <summary>
     /// Property to return the format of the buffer.
     /// </summary>
@@ -123,8 +122,6 @@ public class GorgonImageBuffer
         get;
     }
 
-
-
     /// <summary>
     /// Function to set the alpha channel for a specific buffer in the image.
     /// </summary>
@@ -144,7 +141,7 @@ public class GorgonImageBuffer
     /// If the <paramref name="region"/> is not specified, then the entire buffer is updated, otherwise only the values within the <paramref name="region"/> are updated. 
     /// </para>
     /// </remarks>
-    public void SetAlpha(float alphaValue, GorgonRangeF? updateAlphaRange = null, DX.Rectangle? region = null)
+    public void SetAlpha(float alphaValue, GorgonRange<float>? updateAlphaRange = null, DX.Rectangle? region = null)
     {
         // If we don't have an alpha channel, then don't do anything.
         if (!FormatInformation.HasAlpha)
@@ -158,7 +155,7 @@ public class GorgonImageBuffer
             throw new NotSupportedException(string.Format(Resources.GORIMG_ERR_FORMAT_NOT_SUPPORTED, Format));
         }
 
-        updateAlphaRange ??= new GorgonRangeF(0, 1);
+        updateAlphaRange ??= new GorgonRange<float>(0, 1);
 
         var fullRect = new DX.Rectangle(0, 0, Width - 1, Height - 1);
 
@@ -466,5 +463,4 @@ public class GorgonImageBuffer
         Depth = 1;
         Format = format;
     }
-
 }

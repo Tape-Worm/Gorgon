@@ -440,7 +440,7 @@ public sealed class GorgonTexture3D
     /// <remarks>
     /// <para>
     /// This method copies the contents of this texture into the texture specified by the <paramref name="destTexture"/> parameter. If a sub resource for the <paramref name="destTexture"/> must be 
-    /// copied, use the <see cref="CopyTo(GorgonTexture3D, in DX.Rectangle?, GorgonRange?, int, int, int, int, int, CopyMode)"/> method.
+    /// copied, use the <see cref="CopyTo(GorgonTexture1D, GorgonRange{int}?, int, int, int, int, int, int, CopyMode)"/> method.
     /// </para>
     /// <para>
     /// This method does not perform stretching, filtering or clipping.
@@ -575,7 +575,7 @@ public sealed class GorgonTexture3D
     /// </note>
     /// </para>
     /// </remarks>
-    public void CopyTo(GorgonTexture1D destinationTexture, GorgonRange? sourceRange = null, int sourceY = 0, int sourceDepthSlice = 0, int sourceMipLevel = 0, int destX = 0, int destArrayIndex = 0, int destMipLevel = 0, CopyMode copyMode = CopyMode.None)
+    public void CopyTo(GorgonTexture1D destinationTexture, GorgonRange<int>? sourceRange = null, int sourceY = 0, int sourceDepthSlice = 0, int sourceMipLevel = 0, int destX = 0, int destArrayIndex = 0, int destMipLevel = 0, CopyMode copyMode = CopyMode.None)
     {
         destinationTexture.ValidateObject(nameof(destinationTexture));
 
@@ -603,7 +603,7 @@ public sealed class GorgonTexture3D
         }
 
         // Ensure the indices are clipped to our settings.
-        var srcDepth = new GorgonRange(sourceDepthSlice.Min(Depth - 1).Max(0), (sourceDepthSlice + 1).Min(Depth).Max(1));
+        GorgonRange<int> srcDepth = new(sourceDepthSlice.Min(Depth - 1).Max(0), (sourceDepthSlice + 1).Min(Depth).Max(1));
         sourceMipLevel = sourceMipLevel.Min(MipLevels - 1).Max(0);
         destArrayIndex = destArrayIndex.Min(destinationTexture.ArrayCount - 1).Max(0);
         destMipLevel = destMipLevel.Min(destinationTexture.MipLevels - 1).Max(0);
@@ -747,7 +747,7 @@ public sealed class GorgonTexture3D
         }
 
         // Ensure the indices are clipped to our settings.
-        var srcDepth = new GorgonRange(sourceDepthSlice.Min(Depth - 1).Max(0), (sourceDepthSlice + 1).Min(Depth).Max(1));
+        GorgonRange<int> srcDepth = new(sourceDepthSlice.Min(Depth - 1).Max(0), (sourceDepthSlice + 1).Min(Depth).Max(1));
         sourceMipLevel = sourceMipLevel.Min(MipLevels - 1).Max(0);
         destArrayIndex = destArrayIndex.Min(destinationTexture.ArrayCount - 1).Max(0);
         destMipLevel = destMipLevel.Min(destinationTexture.MipLevels - 1).Max(0);
@@ -870,7 +870,7 @@ public sealed class GorgonTexture3D
     /// </note>
     /// </para>
     /// </remarks>
-    public void CopyTo(GorgonTexture3D destinationTexture, in DX.Rectangle? sourceRectangle = null, GorgonRange? sourceDepthSliceRange = null, int sourceMipLevel = 0, int destX = 0, int destY = 0, int destZ = 0, int destMipLevel = 0, CopyMode copyMode = CopyMode.None)
+    public void CopyTo(GorgonTexture3D destinationTexture, in DX.Rectangle? sourceRectangle = null, GorgonRange<int>? sourceDepthSliceRange = null, int sourceMipLevel = 0, int destX = 0, int destY = 0, int destZ = 0, int destMipLevel = 0, CopyMode copyMode = CopyMode.None)
     {
         destinationTexture.ValidateObject(nameof(destinationTexture));
 
@@ -910,9 +910,9 @@ public sealed class GorgonTexture3D
 
 
         // Ensure the indices are clipped to our settings.
-        GorgonRange srcDepth = sourceDepthSliceRange is null
-                                   ? new GorgonRange(0, Depth)
-                                   : new GorgonRange(sourceDepthSliceRange.Value.Minimum.Min(Depth - 1).Max(0), sourceDepthSliceRange.Value.Maximum.Min(Depth).Max(1));
+        GorgonRange<int> srcDepth = sourceDepthSliceRange is null
+                                   ? new(0, Depth)
+                                   : new(sourceDepthSliceRange.Value.Minimum.Min(Depth - 1).Max(0), sourceDepthSliceRange.Value.Maximum.Min(Depth).Max(1));
 
         if (srcDepth.Maximum <= srcDepth.Minimum)
         {
@@ -921,7 +921,7 @@ public sealed class GorgonTexture3D
 
         // Ensure the indices are clipped to our settings.
         sourceMipLevel = sourceMipLevel.Min(MipLevels - 1).Max(0);
-        srcDepth = new GorgonRange(srcDepth.Minimum.Min(destinationTexture.Depth - 1).Max(0), srcDepth.Maximum.Min(destinationTexture.Depth).Max(1));
+        srcDepth = new GorgonRange<int>(srcDepth.Minimum.Min(destinationTexture.Depth - 1).Max(0), srcDepth.Maximum.Min(destinationTexture.Depth).Max(1));
         destMipLevel = destMipLevel.Min(MipLevels - 1).Max(0);
         destZ = destZ.Min(destinationTexture.Depth - 1).Max(0);
 

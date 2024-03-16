@@ -369,11 +369,11 @@ public class GorgonPolySprite
     /// To disable alpha testing outright, set this property to <b>null</b>.
     /// </para>
     /// </remarks>
-    public GorgonRangeF? AlphaTest
+    public GorgonRange<float>? AlphaTest
     {
         get => Renderable.AlphaTestData.IsEnabled == 0
                 ? null
-                : new GorgonRangeF(Renderable.AlphaTestData.LowerAlpha, Renderable.AlphaTestData.UpperAlpha);
+                : new GorgonRange<float>(Renderable.AlphaTestData.LowerAlpha, Renderable.AlphaTestData.UpperAlpha);
         set
         {
             // ReSharper disable once ConvertIfStatementToSwitchStatement
@@ -384,7 +384,7 @@ public class GorgonPolySprite
                     return;
                 }
 
-                Renderable.AlphaTestData = new AlphaTestData(false, new GorgonRangeF(Renderable.AlphaTestData.LowerAlpha, Renderable.AlphaTestData.UpperAlpha));
+                Renderable.AlphaTestData = new AlphaTestData(false, new GorgonRange<float>(Renderable.AlphaTestData.LowerAlpha, Renderable.AlphaTestData.UpperAlpha));
                 Renderable.StateChanged = true;
                 return;
             }

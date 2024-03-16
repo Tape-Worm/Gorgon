@@ -107,7 +107,7 @@ internal class PickSpriteViewer(Gorgon2D renderer, GorgonSwapChain swapChain, IS
     private void RenderSpriteTexture()
     {
         GorgonRenderTargetView prevTarget = Graphics.RenderTargets[0];
-        GorgonRangeF? prevAlphaTest = Renderer.PrimitiveAlphaTestRange;
+        GorgonRange<float>? prevAlphaTest = Renderer.PrimitiveAlphaTestRange;
         var clearRegion = _sprite.Texture.ToPixel(_sprite.TextureRegion).ToRectangleF();
 
         _spriteTarget.Clear(GorgonColor.BlackTransparent);

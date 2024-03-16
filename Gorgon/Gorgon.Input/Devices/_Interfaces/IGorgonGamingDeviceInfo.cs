@@ -201,7 +201,7 @@ public interface IGorgonGamingDeviceInfo
     /// If the device does not support vibration, then this list will be empty.
     /// </para>
     /// </remarks>
-    IReadOnlyList<GorgonRange> VibrationMotorRanges
+    IReadOnlyList<GorgonRange<int>> VibrationMotorRanges
     {
         get;
     }

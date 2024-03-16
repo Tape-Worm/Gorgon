@@ -463,12 +463,12 @@ internal class ImageUpdaterService : IImageUpdaterService
     /// <param name="value">The value to assign.</param>
     /// <param name="inclusionRange">The range of alpha values to update.</param>
     /// <returns>A new image with the updated alpha.</returns>
-    public IGorgonImage SetAlphaValue(IGorgonImage sourceImage, int currentMipLevel, int currentArrayOrDepth, int value, GorgonRange inclusionRange)
+    public IGorgonImage SetAlphaValue(IGorgonImage sourceImage, int currentMipLevel, int currentArrayOrDepth, int value, GorgonRange<int> inclusionRange)
     {
         IGorgonImage result = sourceImage.Clone();
 
         result.Buffers[currentMipLevel, currentArrayOrDepth]
-              .SetAlpha(value / 255.0f, new GorgonRangeF(inclusionRange.Minimum / 255.0f, inclusionRange.Maximum / 255.0f));
+              .SetAlpha(value / 255.0f, new GorgonRange<float>(inclusionRange.Minimum / 255.0f, inclusionRange.Maximum / 255.0f));
 
         return result;
     }

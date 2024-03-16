@@ -156,7 +156,7 @@ public class GorgonV3SpriteBinaryCodec(Gorgon2D renderer)
             // If we do not have alpha test information, then skip writing its data.
             if (binReader.ReadBoolean())
             {
-                sprite.AlphaTest = binReader.ReadValue<GorgonRangeF>();
+                sprite.AlphaTest = binReader.ReadValue<GorgonRange<float>>();
             }
 
             // Write out corner data.

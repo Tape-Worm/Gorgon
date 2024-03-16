@@ -71,7 +71,6 @@ public enum TextDrawMode
 /// </summary>
 public class GorgonTextSprite
 {
-
     // The text to render.
     private string _text;
     // Text with embedded codes.
@@ -90,8 +89,6 @@ public class GorgonTextSprite
     /// It is exposed an internal variable (which goes against C# best practices) for performance reasons (property accesses add up over time).
     /// </summary>
     internal readonly TextRenderable Renderable = new();
-
-
 
     /// <summary>
     /// Property to return whether or not the sprite has had its position, size, texture information, or object space vertices updated since it was last drawn.
@@ -549,14 +546,14 @@ public class GorgonTextSprite
     /// To disable alpha testing outright, set this property to <b>null</b>.
     /// </para>
     /// </remarks>
-    public GorgonRangeF? AlphaTest
+    public GorgonRange<float>? AlphaTest
     {
         get
         {
             BatchRenderable renderable = Renderable;
             return renderable.AlphaTestData.IsEnabled == 0
                 ? null
-                : new GorgonRangeF(renderable.AlphaTestData.LowerAlpha, renderable.AlphaTestData.UpperAlpha);
+                : new GorgonRange<float>(renderable.AlphaTestData.LowerAlpha, renderable.AlphaTestData.UpperAlpha);
         }
         set
         {
@@ -569,7 +566,7 @@ public class GorgonTextSprite
                     return;
                 }
 
-                renderable.AlphaTestData = new AlphaTestData(false, new GorgonRangeF(renderable.AlphaTestData.LowerAlpha, renderable.AlphaTestData.UpperAlpha));
+                renderable.AlphaTestData = new AlphaTestData(false, new GorgonRange<float>(renderable.AlphaTestData.LowerAlpha, renderable.AlphaTestData.UpperAlpha));
                 renderable.StateChanged = true;
                 return;
             }
@@ -578,8 +575,6 @@ public class GorgonTextSprite
             renderable.StateChanged = true;
         }
     }
-
-
 
     /// <summary>
     /// Function to update the boundaries on the text sprite.
@@ -614,8 +609,6 @@ public class GorgonTextSprite
         Renderable.HasVertexChanges = true;
         Renderable.VertexCountChanged = (Renderable.Vertices is null) || (estimatedVertexCount > Renderable.Vertices.Length);
     }
-
-
 
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonTextSprite"/> class.

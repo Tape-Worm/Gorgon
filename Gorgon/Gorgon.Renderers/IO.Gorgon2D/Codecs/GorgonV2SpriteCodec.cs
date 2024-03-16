@@ -360,7 +360,7 @@ public class GorgonV2SpriteCodec(Gorgon2D renderer)
 
         // Culling mode is not per-sprite anymore.
         reader.SkipBytes(Unsafe.SizeOf<CullingMode>());
-        sprite.AlphaTest = reader.Read<GorgonRangeF>();
+        sprite.AlphaTest = reader.Read<GorgonRange<float>>();
 
         // Blending values are not per-sprite anymore.
         // Depth/stencil values are not per-sprite anymore.
@@ -462,7 +462,7 @@ public class GorgonV2SpriteCodec(Gorgon2D renderer)
 
         // Read rendering information.
         reader.Begin(RenderDataChunk);
-        reader.SkipBytes(Unsafe.SizeOf<CullingMode>() + Unsafe.SizeOf<GorgonRangeF>() + 91);
+        reader.SkipBytes(Unsafe.SizeOf<CullingMode>() + GorgonRange<float>.SizeInBytes + 91);
         reader.End();
 
         // Read texture information.

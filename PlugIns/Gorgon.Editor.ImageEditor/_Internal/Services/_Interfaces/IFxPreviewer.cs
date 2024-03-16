@@ -35,7 +35,6 @@ namespace Gorgon.Editor.ImageEditor;
 /// </summary>
 internal interface IFxPreviewer
 {
-
     /// <summary>
     /// Property to return the texture holding the unalterd image.
     /// </summary>
@@ -51,8 +50,6 @@ internal interface IFxPreviewer
     {
         get;
     }
-
-
 
     /// <summary>
     /// Function to generate a blurred image preview.
@@ -81,12 +78,11 @@ internal interface IFxPreviewer
     /// </summary>
     /// <param name="range">The threshold range of colors to consider as "on".</param>
     /// <param name="invert"><b>true</b> to invert the colors, <b>false</b> to leave as-is.</param>
-    void GenerateOneBitPreview(GorgonRangeF range, bool invert);
+    void GenerateOneBitPreview(GorgonRange<float> range, bool invert);
 
     /// <summary>
     /// Function to generate a posterize effect preview.
     /// </summary>
     /// <param name="amount">The amount to posterize.</param>
     void GeneratePosterizePreview(int amount);
-
 }

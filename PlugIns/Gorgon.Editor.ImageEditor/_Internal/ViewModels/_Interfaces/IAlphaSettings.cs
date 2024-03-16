@@ -47,7 +47,7 @@ internal interface IAlphaSettings
     /// <summary>
     /// Property to set or return the lower and upper bounds of the alpha range to update.
     /// </summary>
-    GorgonRange UpdateRange
+    GorgonRange<int> UpdateRange
     {
         get;
         set;

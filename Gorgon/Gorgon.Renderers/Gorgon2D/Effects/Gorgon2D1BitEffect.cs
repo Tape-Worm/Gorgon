@@ -58,7 +58,7 @@ public class Gorgon2D1BitEffect
     /// <param name="invert">if set to <b>true</b> [invert].</param>
     /// <param name="useAlpha">if set to <b>true</b> [use alpha].</param>
     [StructLayout(LayoutKind.Explicit, Size = 32)]
-    private readonly struct Settings(GorgonRangeF range, bool average, bool invert, bool useAlpha)
+    private readonly struct Settings(GorgonRange<float> range, bool average, bool invert, bool useAlpha)
     {
         [FieldOffset(0)]
         private readonly int _useAverage = Convert.ToInt32(average);           // Flag to indicate that the average of the texel colors should be used.
@@ -71,7 +71,7 @@ public class Gorgon2D1BitEffect
         /// Range of values that are considered "on".
         /// </summary>
         [FieldOffset(16)]
-        public readonly GorgonRangeF WhiteRange = range;
+        public readonly GorgonRange<float> WhiteRange = range;
 
         /// <summary>
         /// Flag to indicate that the average of the texel colors should be used.
@@ -164,7 +164,7 @@ public class Gorgon2D1BitEffect
     /// <summary>
     /// Property to set or return the range of values that are considered to be "on".
     /// </summary>
-    public GorgonRangeF Threshold
+    public GorgonRange<float> Threshold
     {
         get => _settings.WhiteRange;
         set
@@ -324,7 +324,7 @@ public class Gorgon2D1BitEffect
     public Gorgon2D1BitEffect(Gorgon2D renderer)
         : base(renderer, Resources.GOR2D_EFFECT_1BIT, Resources.GOR2D_EFFECT_1BIT_DESC, 1)
     {
-        _settings = new Settings(new GorgonRangeF(0.5f, 1.0f), false, false, true);
+        _settings = new Settings(new GorgonRange<float>(0.5f, 1.0f), false, false, true);
         Macros.Add(new GorgonShaderMacro("GRAYSCALE_EFFECT"));
         Macros.Add(new GorgonShaderMacro("ONEBIT_EFFECT"));
     }

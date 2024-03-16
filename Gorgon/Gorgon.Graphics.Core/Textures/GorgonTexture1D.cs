@@ -487,7 +487,7 @@ public sealed class GorgonTexture1D
     /// </note>
     /// </para>
     /// </remarks>
-    public void CopyTo(GorgonTexture1D destinationTexture, GorgonRange? sourceRange = null, int sourceArrayIndex = 0, int sourceMipLevel = 0, int destX = 0, int destArrayIndex = 0, int destMipLevel = 0, CopyMode copyMode = CopyMode.None)
+    public void CopyTo(GorgonTexture1D destinationTexture, GorgonRange<int>? sourceRange = null, int sourceArrayIndex = 0, int sourceMipLevel = 0, int destX = 0, int destArrayIndex = 0, int destMipLevel = 0, CopyMode copyMode = CopyMode.None)
     {
         destinationTexture.ValidateObject(nameof(destinationTexture));
 
@@ -635,7 +635,7 @@ public sealed class GorgonTexture1D
     /// </note>
     /// </para>
     /// </remarks>
-    public void CopyTo(GorgonTexture2D destinationTexture, GorgonRange? sourceRange = null, int sourceArrayIndex = 0, int sourceMipLevel = 0, int destX = 0, int destY = 0, int destArrayIndex = 0, int destMipLevel = 0, CopyMode copyMode = CopyMode.None)
+    public void CopyTo(GorgonTexture2D destinationTexture, GorgonRange<int>? sourceRange = null, int sourceArrayIndex = 0, int sourceMipLevel = 0, int destX = 0, int destY = 0, int destArrayIndex = 0, int destMipLevel = 0, CopyMode copyMode = CopyMode.None)
     {
         destinationTexture.ValidateObject(nameof(destinationTexture));
 
@@ -775,7 +775,7 @@ public sealed class GorgonTexture1D
     /// </note>
     /// </para>
     /// </remarks>
-    public void CopyTo(GorgonTexture3D destinationTexture, GorgonRange? sourceRange = null, int sourceArrayIndex = 0, int sourceMipLevel = 0, int destX = 0, int destY = 0, int destZ = 0, int destMipLevel = 0, CopyMode copyMode = CopyMode.None)
+    public void CopyTo(GorgonTexture3D destinationTexture, GorgonRange<int>? sourceRange = null, int sourceArrayIndex = 0, int sourceMipLevel = 0, int destX = 0, int destY = 0, int destZ = 0, int destMipLevel = 0, CopyMode copyMode = CopyMode.None)
     {
         destinationTexture.ValidateObject(nameof(destinationTexture));
 
@@ -989,7 +989,7 @@ public sealed class GorgonTexture1D
     /// ]]>
     /// </code>
     /// </example>
-    public void SetData(IGorgonImageBuffer imageBuffer, GorgonRange? destinationRange = null, int destArrayIndex = 0, int destMipLevel = 0, CopyMode copyMode = CopyMode.None)
+    public void SetData(IGorgonImageBuffer imageBuffer, GorgonRange<int>? destinationRange = null, int destArrayIndex = 0, int destMipLevel = 0, CopyMode copyMode = CopyMode.None)
     {
 #if DEBUG
         if (Usage == ResourceUsage.Immutable)
@@ -1219,16 +1219,16 @@ public sealed class GorgonTexture1D
     /// </summary>
     /// <param name="texelCoordinates">The texel rectangle to convert.</param>
     /// <returns>The pixel rectangle.</returns>
-    public GorgonRange ToPixel(GorgonRangeF texelCoordinates) => new((int)(texelCoordinates.Minimum * Width),
-                               (int)(texelCoordinates.Maximum * Width));
+    public GorgonRange<int> ToPixel(GorgonRange<float> texelCoordinates) => new((int)(texelCoordinates.Minimum * Width),
+                                                                                (int)(texelCoordinates.Maximum * Width));
 
     /// <summary>
     /// Function to convert a pixel rectangle into a texel rectangle.
     /// </summary>
     /// <param name="pixelCoordinates">The pixel rectangle to convert.</param>
     /// <returns>The texel rectangle.</returns>
-    public GorgonRangeF ToTexel(GorgonRange pixelCoordinates) => new(pixelCoordinates.Minimum / (float)Width,
-                                pixelCoordinates.Maximum / (float)Width);
+    public GorgonRange<float> ToTexel(GorgonRange<int> pixelCoordinates) => new(pixelCoordinates.Minimum / (float)Width,
+                                                                                pixelCoordinates.Maximum / (float)Width);
 
     /// <summary>
     /// Function to create a new <see cref="GorgonTexture1DView"/> for this texture.

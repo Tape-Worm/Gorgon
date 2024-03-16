@@ -136,7 +136,7 @@ public class GorgonPolySpriteBuilder(Gorgon2D renderer)
     /// If the <paramref name="alphaTest"/> value is <b>null</b>, then alpha testing will be turned off for the sprite.
     /// </para>
     /// </remarks>
-    public GorgonPolySpriteBuilder AlphaTest(GorgonRangeF? alphaTest = null)
+    public GorgonPolySpriteBuilder AlphaTest(GorgonRange<float>? alphaTest = null)
     {
         _workingSprite.AlphaTest = alphaTest;
         return this;
@@ -537,7 +537,7 @@ public class GorgonPolySpriteBuilder(Gorgon2D renderer)
         _workingSprite.Renderable.ActualVertexCount = 0;
         _workingSprite.Renderable.IndexCount = 0;
         _workingSprite.Position = Vector2.Zero;
-        _workingSprite.AlphaTest = GorgonRangeF.Empty;
+        _workingSprite.AlphaTest = GorgonRange<float>.Empty;
         _workingSprite.Anchor = Vector2.Zero;
         _workingSprite.Angle = 0.0f;
         _workingSprite.Bounds = DX.RectangleF.Empty;

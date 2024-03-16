@@ -167,10 +167,10 @@ public class GorgonV3PolySpriteBinaryCodec(Gorgon2D renderer)
             Vector2 anchor = binReader.ReadValue<Vector2>();
 
             // If we do not have alpha test information, then skip writing its data.
-            GorgonRangeF? alphaRange = null;
+            GorgonRange<float>? alphaRange = null;
             if (binReader.ReadBoolean())
             {
-                alphaRange = binReader.ReadValue<GorgonRangeF>();
+                alphaRange = binReader.ReadValue<GorgonRange<float>>();
             }
 
             reader.CloseChunk();

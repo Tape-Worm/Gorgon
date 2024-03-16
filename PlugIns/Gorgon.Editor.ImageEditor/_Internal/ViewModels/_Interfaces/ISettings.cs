@@ -91,7 +91,7 @@ internal interface ISettings
     /// <summary>
     /// Property to set or return the last used alpha value when setting the alpha channel on an image.
     /// </summary>
-    GorgonRange LastAlphaRange
+    GorgonRange<int> LastAlphaRange
     {
         get;
         set;

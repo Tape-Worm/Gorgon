@@ -1,5 +1,4 @@
-﻿
-// 
+﻿// 
 // Gorgon
 // Copyright (C) 2015 Michael Winsor
 // 
@@ -40,7 +39,6 @@ namespace Gorgon.Input.DirectInput;
 internal class DirectInputDeviceInfo(DI.DeviceInstance devInstance)
         : IGorgonGamingDeviceInfo
 {
-
     /// <summary>
     /// Property to return the <see cref="GorgonGamingDeviceAxisInfo"/> values for each axis on the gaming device.
     /// </summary>
@@ -108,7 +106,7 @@ internal class DirectInputDeviceInfo(DI.DeviceInstance devInstance)
     /// If the device does not support vibration, then this list will be empty.
     /// </para>
     /// </remarks>
-    public IReadOnlyList<GorgonRange> VibrationMotorRanges
+    public IReadOnlyList<GorgonRange<int>> VibrationMotorRanges
     {
         get;
     } = [];
@@ -128,17 +126,14 @@ internal class DirectInputDeviceInfo(DI.DeviceInstance devInstance)
         get;
     } = devInstance.InstanceGuid;
 
-
-
-
     /// <summary>
     /// Function to retrieve the capabilities from the DirectInput joystick.
     /// </summary>
     /// <param name="joystick">The DirectInput joystick to evaluate.</param>
     public IReadOnlyDictionary<GamingDeviceAxis, DI.DeviceObjectId> GetDeviceCaps(DI.Joystick joystick)
     {
-        var defaults = new Dictionary<GamingDeviceAxis, int>();
-        var axisRanges = new Dictionary<GamingDeviceAxis, GorgonRange>();
+        Dictionary<GamingDeviceAxis, int> defaults = [];
+        Dictionary<GamingDeviceAxis, GorgonRange<int>> axisRanges = [];
 
         ProductID = joystick.Properties.ProductId;
         ManufacturerID = joystick.Properties.VendorId;
@@ -160,7 +155,7 @@ internal class DirectInputDeviceInfo(DI.DeviceInstance devInstance)
                 continue;
             }
 
-            var range = new GorgonRange(properties.Range.Minimum, properties.Range.Maximum);
+            GorgonRange<int> range = new(properties.Range.Minimum, properties.Range.Maximum);
             int midPoint = ((range.Range + 1) / 2) + range.Minimum;
 
             switch (usage)
@@ -212,8 +207,4 @@ internal class DirectInputDeviceInfo(DI.DeviceInstance devInstance)
 
         return axisMappings;
     }
-
-
-
-
 }

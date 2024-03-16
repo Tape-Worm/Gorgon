@@ -426,9 +426,9 @@ public partial class MainForm
             // Poll the joystick.
             _joystick.Poll();
 
-            GorgonRange xAxisRange = _joystick.Info.AxisInfo[GamingDeviceAxis.XAxis].Range;
-            GorgonRange yAxisRange = _joystick.Info.AxisInfo[GamingDeviceAxis.YAxis].Range;
-            GorgonRange throttleRange = GorgonRange.Empty;
+            GorgonRange<int> xAxisRange = _joystick.Info.AxisInfo[GamingDeviceAxis.XAxis].Range;
+            GorgonRange<int> yAxisRange = _joystick.Info.AxisInfo[GamingDeviceAxis.YAxis].Range;
+            GorgonRange<int> throttleRange = GorgonRange<int>.Empty;
 
             if (_joystick.Info.AxisInfo.TryGetValue(GamingDeviceAxis.Throttle, out GorgonGamingDeviceAxisInfo info))
             {
@@ -438,15 +438,15 @@ public partial class MainForm
             // Adjust position to match screen coordinates.
             cursorPosition = new Vector2(_joystick.Axis[GamingDeviceAxis.XAxis].Value - xAxisRange.Minimum,
                                          _joystick.Axis[GamingDeviceAxis.YAxis].Value - yAxisRange.Minimum);
+
             cursorPosition.X = cursorPosition.X / (xAxisRange.Range + 1) * _screen.Width;
-            cursorPosition.Y = _screen.Height - (cursorPosition.Y / (yAxisRange.Range + 1) * _screen.Height);
+            cursorPosition.Y = cursorPosition.Y / (yAxisRange.Range + 1) * _screen.Height;
 
             if (throttleRange.Range != 0)
             {
                 _radius = ((1.0f - (_joystick.Axis[GamingDeviceAxis.Throttle].Value / (float)throttleRange.Range)) * 8) + 2;
             }
         }
-
 
         // Draw cursor.
         _2D.Begin(_inverted);
@@ -632,7 +632,7 @@ public partial class MainForm
                     // Turn off dead zones for this example.
                     foreach (IGorgonGamingDeviceAxis axis in device.Axis)
                     {
-                        axis.DeadZone = GorgonRange.Empty;
+                        axis.DeadZone = GorgonRange<int>.Empty;
                     }
 
                     _joystickList.Add(device);

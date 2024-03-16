@@ -23,7 +23,6 @@
 // Created: Wednesday, August 12, 2015 9:25:53 PM
 // 
 
-
 using Gorgon.Core;
 using Gorgon.Input.Properties;
 
@@ -42,9 +41,8 @@ namespace Gorgon.Input;
 /// <param name="axis">The identifier for the axis.</param>
 /// <param name="range">The range of the axis.</param>
 /// <param name="defaultValue">The default value for the axis when in resting position.</param>
-public class GorgonGamingDeviceAxisInfo(GamingDeviceAxis axis, GorgonRange range, int defaultValue)
+public class GorgonGamingDeviceAxisInfo(GamingDeviceAxis axis, GorgonRange<int> range, int defaultValue)
 {
-
     /// <summary>
     /// Property to return the identifier for the axis.
     /// </summary>
@@ -59,7 +57,7 @@ public class GorgonGamingDeviceAxisInfo(GamingDeviceAxis axis, GorgonRange range
     /// <remarks>
     /// This value will vary depending on the underlying provider used for the physical device.
     /// </remarks>
-    public GorgonRange Range
+    public GorgonRange<int> Range
     {
         get;
     } = range;
@@ -76,16 +74,9 @@ public class GorgonGamingDeviceAxisInfo(GamingDeviceAxis axis, GorgonRange range
         get;
     } = defaultValue;
 
-
-
     /// <summary>
     /// Returns a <see cref="string" /> that represents this instance.
     /// </summary>
     /// <returns>A <see cref="string" /> that represents this instance.</returns>
     public override string ToString() => string.Format(Resources.GORINP_TOSTR_JOYSTICKAXIS, Axis, Range.Minimum, Range.Maximum);
-
-
-
-
-
 }

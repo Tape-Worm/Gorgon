@@ -275,7 +275,7 @@ static class Program
         // The 1 bit effect.
         _1BitEffect = new Gorgon2D1BitEffect(_renderer)
         {
-            Threshold = new GorgonRangeF(0.5f, 1.0f),
+            Threshold = new GorgonRange<float>(0.5f, 1.0f),
             ConvertAlphaChannel = false
         };
 

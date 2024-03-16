@@ -40,7 +40,6 @@ namespace Gorgon.Editor.AnimationEditor;
 /// </remarks>
 internal class KeyValueMetadata
 {
-
     // The value count.
     private int _valueCount = 4;
     // The metadata for the values.
@@ -50,8 +49,6 @@ internal class KeyValueMetadata
     /// A default copy of the metadata.
     /// </summary>
     public static readonly KeyValueMetadata Default;
-
-
 
     /// <summary>
     /// Property to set or return the number of values to use.
@@ -76,8 +73,6 @@ internal class KeyValueMetadata
     /// </summary>
     public IReadOnlyList<MetadataValues> ValueMetadata => _valueData;
 
-
-
     /// <summary>
     /// Function to set the metadata for a specific value.
     /// </summary>
@@ -97,11 +92,9 @@ internal class KeyValueMetadata
         {
             DisplayName = (string.IsNullOrWhiteSpace(displayName) ? string.Format(Resources.GORANM_TEXT_DEFAULT_VALUE_NAME, valueIndex + 1) : displayName),
             DecimalCount = decimalCount,
-            MinMax = new GorgonRangeF(min, max)
+            MinMax = new GorgonRange<float>(min, max)
         };
     }
-
-
 
     /// <summary>Initializes static members of the <see cref="KeyValueMetadata"/> class.</summary>
     static KeyValueMetadata()
@@ -115,5 +108,4 @@ internal class KeyValueMetadata
             Default.SetData(i, string.Format(Resources.GORANM_TEXT_DEFAULT_VALUE_NAME, i + 1), 6, short.MinValue, short.MaxValue);
         }
     }
-
 }

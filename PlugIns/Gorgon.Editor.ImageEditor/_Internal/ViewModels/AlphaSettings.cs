@@ -37,13 +37,10 @@ namespace Gorgon.Editor.ImageEditor;
 internal class AlphaSettings
     : HostedPanelViewModelBase<HostedPanelViewModelParameters>, IAlphaSettings
 {
-
     // The number of mip map levels in the image.
     private int _alpha = 255;
     // The range of alpha values to update.
-    private GorgonRange _alphaUpdateRange = new(0, 255);
-
-
+    private GorgonRange<int> _alphaUpdateRange = new(0, 255);
 
     /// <summary>Property to return whether the panel is modal.</summary>
     public override bool IsModal => true;
@@ -51,7 +48,7 @@ internal class AlphaSettings
     /// <summary>
     /// Property to set or return the lower and upper bounds of the alpha range to update.
     /// </summary>
-    public GorgonRange UpdateRange
+    public GorgonRange<int> UpdateRange
     {
         get => _alphaUpdateRange;
         set
@@ -86,8 +83,6 @@ internal class AlphaSettings
         }
     }
 
-
-
     /// <summary>Function to inject dependencies for the view model.</summary>
     /// <param name="injectionParameters">The parameters to inject.</param>
     /// <remarks>
@@ -96,5 +91,4 @@ internal class AlphaSettings
     protected override void OnInitialize(HostedPanelViewModelParameters injectionParameters)
     {
     }
-
 }

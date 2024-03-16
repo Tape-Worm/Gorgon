@@ -35,7 +35,6 @@ namespace Gorgon.Input.XInput;
 internal class XInputDevice
     : GorgonGamingDevice
 {
-
     // Last packet number.
     private int _lastPacket = int.MaxValue;
     // The XInput controller.
@@ -45,11 +44,8 @@ internal class XInputDevice
     // The strongly typed device information data.
     private readonly XInputDeviceInfo _info;
 
-
-
+    /// <inheritdoc/>
     public override bool IsConnected => _controller.IsConnected;
-
-
 
     /// <summary>
     /// Function to acquire a gaming device.
@@ -120,7 +116,8 @@ internal class XInputDevice
 
         if (Axis.TryGetValue(GamingDeviceAxis.LeftStickY, out IGorgonGamingDeviceAxis yAxis))
         {
-            yAxis.Value = state.LeftThumbY;
+            // For some reason, the Y axis is inverted.
+            yAxis.Value = -state.LeftThumbY;
         }
 
         if ((Info.Capabilities & GamingDeviceCapabilityFlags.SupportsSecondaryXAxis) == GamingDeviceCapabilityFlags.SupportsSecondaryXAxis)
@@ -130,7 +127,8 @@ internal class XInputDevice
 
         if ((Info.Capabilities & GamingDeviceCapabilityFlags.SupportsSecondaryYAxis) == GamingDeviceCapabilityFlags.SupportsSecondaryYAxis)
         {
-            Axis[GamingDeviceAxis.RightStickY].Value = state.RightThumbY;
+            // For some reason, the Y axis is inverted.
+            Axis[GamingDeviceAxis.RightStickY].Value = -state.RightThumbY;
         }
 
         if ((Info.Capabilities & GamingDeviceCapabilityFlags.SupportsThrottle) == GamingDeviceCapabilityFlags.SupportsThrottle)
@@ -239,8 +237,6 @@ internal class XInputDevice
         _lastPacket = int.MaxValue;
     }
 
-
-
     /// <summary>
     /// Initializes a new instance of the <see cref="XInputDevice" /> class.
     /// </summary>
@@ -255,33 +251,32 @@ internal class XInputDevice
 
         if (Axis.Contains(GamingDeviceAxis.XAxis))
         {
-            Axis[GamingDeviceAxis.XAxis].DeadZone = new GorgonRange(-XI.Gamepad.LeftThumbDeadZone, XI.Gamepad.LeftThumbDeadZone);
+            Axis[GamingDeviceAxis.XAxis].DeadZone = new GorgonRange<int>(-XI.Gamepad.LeftThumbDeadZone, XI.Gamepad.LeftThumbDeadZone);
         }
 
         if (Axis.Contains(GamingDeviceAxis.YAxis))
         {
-            Axis[GamingDeviceAxis.YAxis].DeadZone = new GorgonRange(-XI.Gamepad.LeftThumbDeadZone, XI.Gamepad.LeftThumbDeadZone);
+            Axis[GamingDeviceAxis.YAxis].DeadZone = new GorgonRange<int>(-XI.Gamepad.LeftThumbDeadZone, XI.Gamepad.LeftThumbDeadZone);
         }
 
         if ((deviceInfo.Capabilities & GamingDeviceCapabilityFlags.SupportsSecondaryXAxis) == GamingDeviceCapabilityFlags.SupportsSecondaryXAxis)
         {
-            Axis[GamingDeviceAxis.XAxis2].DeadZone = new GorgonRange(-XI.Gamepad.RightThumbDeadZone, XI.Gamepad.RightThumbDeadZone);
+            Axis[GamingDeviceAxis.XAxis2].DeadZone = new GorgonRange<int>(-XI.Gamepad.RightThumbDeadZone, XI.Gamepad.RightThumbDeadZone);
         }
 
         if ((deviceInfo.Capabilities & GamingDeviceCapabilityFlags.SupportsSecondaryYAxis) == GamingDeviceCapabilityFlags.SupportsSecondaryYAxis)
         {
-            Axis[GamingDeviceAxis.YAxis2].DeadZone = new GorgonRange(-XI.Gamepad.RightThumbDeadZone, XI.Gamepad.RightThumbDeadZone);
+            Axis[GamingDeviceAxis.YAxis2].DeadZone = new GorgonRange<int>(-XI.Gamepad.RightThumbDeadZone, XI.Gamepad.RightThumbDeadZone);
         }
 
         if ((deviceInfo.Capabilities & GamingDeviceCapabilityFlags.SupportsThrottle) == GamingDeviceCapabilityFlags.SupportsThrottle)
         {
-            Axis[GamingDeviceAxis.RightTrigger].DeadZone = new GorgonRange(0, XI.Gamepad.TriggerThreshold);
+            Axis[GamingDeviceAxis.RightTrigger].DeadZone = new GorgonRange<int>(0, XI.Gamepad.TriggerThreshold);
         }
 
         if ((deviceInfo.Capabilities & GamingDeviceCapabilityFlags.SupportsRudder) == GamingDeviceCapabilityFlags.SupportsRudder)
         {
-            Axis[GamingDeviceAxis.LeftTrigger].DeadZone = new GorgonRange(0, XI.Gamepad.TriggerThreshold);
+            Axis[GamingDeviceAxis.LeftTrigger].DeadZone = new GorgonRange<int>(0, XI.Gamepad.TriggerThreshold);
         }
     }
-
 }

@@ -137,7 +137,7 @@ public interface IGorgonImageBuffer
     /// If the <paramref name="region"/> is not specified, then the entire buffer is updated, otherwise only the values within the <paramref name="region"/> are updated. 
     /// </para>
     /// </remarks>
-    void SetAlpha(float alphaValue, GorgonRangeF? updateAlphaRange = null, DX.Rectangle? region = null);
+    void SetAlpha(float alphaValue, GorgonRange<float>? updateAlphaRange = null, DX.Rectangle? region = null);
 
     /// <summary>
     /// Function to copy the image buffer data from this buffer into another.

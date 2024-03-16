@@ -202,7 +202,7 @@ internal class TextureFxViewer
         }
         else if (DataContext.CurrentPanel == DataContext.FxContext.OneBitSettings)
         {
-            _fxPreviewer.GenerateOneBitPreview(new GorgonRangeF(_oneBitMin / 255.0f, _oneBitMax / 255.0f), _oneBitInvert);
+            _fxPreviewer.GenerateOneBitPreview(new GorgonRange<float>(_oneBitMin / 255.0f, _oneBitMax / 255.0f), _oneBitInvert);
         }
     }
 

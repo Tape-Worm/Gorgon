@@ -26,6 +26,7 @@
 
 using System.Runtime.InteropServices;
 using Gorgon.Core;
+using Gorgon.Math;
 
 namespace Gorgon.Renderers;
 
@@ -39,10 +40,9 @@ namespace Gorgon.Renderers;
 /// <param name="isEnabled"><b>true</b> to enable alpha testing, <b>false</b> to disable.</param>
 /// <param name="alphaRange">The alpha range to clip.</param>
 [StructLayout(LayoutKind.Sequential, Pack = 1, Size = 16)]
-internal readonly struct AlphaTestData(bool isEnabled, GorgonRangeF alphaRange)
+internal readonly struct AlphaTestData(bool isEnabled, GorgonRange<float> alphaRange)
         : IEquatable<AlphaTestData>
 {
-
     /// <summary>
     /// 4 byte compatiable flag for constant buffer.
     /// </summary>
@@ -60,19 +60,16 @@ internal readonly struct AlphaTestData(bool isEnabled, GorgonRangeF alphaRange)
     /// <remarks>If the alpha is lower than this value, it will be clipped.</remarks>
     public readonly float UpperAlpha = alphaRange.Maximum;
 
-
-
     /// <summary>
     /// Function to determine equality between two instances.
     /// </summary>
-    /// <param name="left"></param>
-    /// <param name="right"></param>
-    /// <returns></returns>
-    public static bool Equals(in AlphaTestData left, in AlphaTestData right) =>
-        // ReSharper disable CompareOfFloatsByEqualityOperator
-        ((left.IsEnabled == right.IsEnabled)
-                && (left.UpperAlpha == right.UpperAlpha)
-                && (left.LowerAlpha == right.LowerAlpha));// ReSharper restore CompareOfFloatsByEqualityOperator
+    /// <param name="left">The left value to compare.</param>
+    /// <param name="right">The right value to compare.</param>
+    /// <returns><b>true</b> if equal, <b>false</b> if not.</returns>
+    public static bool Equals(ref readonly AlphaTestData left, ref readonly AlphaTestData right) =>
+                (left.IsEnabled == right.IsEnabled)
+                && (left.UpperAlpha.EqualsEpsilon(right.UpperAlpha))
+                && (left.LowerAlpha.EqualsEpsilon(right.LowerAlpha));
 
     /// <summary>
     /// Determines whether the specified <see cref="object" /> is equal to this instance.
@@ -100,5 +97,4 @@ internal readonly struct AlphaTestData(bool isEnabled, GorgonRangeF alphaRange)
     /// true if the current object is equal to the <paramref name="other" /> parameter; otherwise, false.
     /// </returns>
     public bool Equals(AlphaTestData other) => Equals(in this, in other);
-
 }

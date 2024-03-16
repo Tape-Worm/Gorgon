@@ -69,10 +69,10 @@ public interface IGorgonGamingDeviceAxis
     /// until it exceeds the dead zone threshold. 
     /// </para>
     /// <para>
-    /// Specify <see cref="GorgonRange.Empty"/> to disable the dead zone on the axis.
+    /// Specify <see cref="GorgonRange{T}.Empty"/> to disable the dead zone on the axis.
     /// </para>
     /// </remarks>
-    GorgonRange DeadZone
+    GorgonRange<int> DeadZone
     {
         get;
         set;

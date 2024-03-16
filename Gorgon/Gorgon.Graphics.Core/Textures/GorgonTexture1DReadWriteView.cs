@@ -63,7 +63,6 @@ namespace Gorgon.Graphics.Core;
 public sealed class GorgonTexture1DReadWriteView
     : GorgonReadWriteView, IGorgonTexture1DInfo, IGorgonImageInfo
 {
-
     /// <summary>
     /// Property to return the type of image data.
     /// </summary>
@@ -183,7 +182,7 @@ public sealed class GorgonTexture1DReadWriteView
     /// <remarks>
     /// This value is the full bounding range of the first mip map level for the texture associated with the view.
     /// </remarks>
-    public GorgonRange Bounds
+    public GorgonRange<int> Bounds
     {
         get;
     }
@@ -211,8 +210,6 @@ public sealed class GorgonTexture1DReadWriteView
     /// </summary>
     public TextureBinding Binding => Texture?.Binding ?? TextureBinding.None;
 
-
-
     /// <summary>Function to retrieve the necessary parameters to create the native view.</summary>
     /// <returns>The D3D11 UAV descriptor.</returns>
     private protected override ref readonly D3D11.UnorderedAccessViewDescription1 OnGetUavParams()
@@ -235,11 +232,11 @@ public sealed class GorgonTexture1DReadWriteView
     }
 
     /// <summary>
-    /// Function to convert a <see cref="GorgonRangeF"/> of texel coordinates to pixel space.
+    /// Function to convert a <see cref="GorgonRange{T}"/> of texel coordinates to pixel space.
     /// </summary>
     /// <param name="texelCoordinates">The texel coordinates to convert.</param>
     /// <param name="mipLevel">[Optional] The mip level to use.</param>
-    /// <returns>A <see cref="GorgonRange"/> containing the pixel space coordinates.</returns>
+    /// <returns>A <see cref="GorgonRange{T}"/> containing the pixel space coordinates.</returns>
     /// <remarks>
     /// <para>
     /// If specified, the <paramref name="mipLevel"/> only applies to the <see cref="MipSlice"/> for this view, it will be constrained if it falls outside of that range.
@@ -247,26 +244,26 @@ public sealed class GorgonTexture1DReadWriteView
     /// for the underlying <see cref="Texture"/> is used.
     /// </para>
     /// </remarks>
-    public GorgonRange ToPixel(GorgonRangeF texelCoordinates, int? mipLevel = null)
+    public GorgonRange<int> ToPixel(GorgonRange<float> texelCoordinates, int? mipLevel = null)
     {
         float width = Texture.Width;
 
         if (mipLevel is null)
         {
-            return new GorgonRange((int)(texelCoordinates.Minimum * width), (int)(texelCoordinates.Maximum * width));
+            return new GorgonRange<int>((int)(texelCoordinates.Minimum * width), (int)(texelCoordinates.Maximum * width));
         }
 
         width = GetMipWidth(mipLevel.Value);
 
-        return new GorgonRange((int)(texelCoordinates.Minimum * width), (int)(texelCoordinates.Maximum * width));
+        return new GorgonRange<int>((int)(texelCoordinates.Minimum * width), (int)(texelCoordinates.Maximum * width));
     }
 
     /// <summary>
-    /// Function to convert a <see cref="GorgonRange"/> of pixel coordinates to texel space.
+    /// Function to convert a <see cref="GorgonRange{T}"/> of pixel coordinates to texel space.
     /// </summary>
     /// <param name="pixelCoordinates">The pixel coordinates to convert.</param>
     /// <param name="mipLevel">[Optional] The mip level to use.</param>
-    /// <returns>A <see cref="GorgonRangeF"/> containing the texel space coordinates.</returns>
+    /// <returns>A <see cref="GorgonRange{T}"/> containing the texel space coordinates.</returns>
     /// <remarks>
     /// <para>
     /// If specified, the <paramref name="mipLevel"/> only applies to the <see cref="MipSlice"/> for this view, it will be constrained if it falls outside of that range.
@@ -274,18 +271,18 @@ public sealed class GorgonTexture1DReadWriteView
     /// for the underlying <see cref="Texture"/> is used.
     /// </para>
     /// </remarks>
-    public GorgonRangeF ToTexel(GorgonRange pixelCoordinates, int? mipLevel = null)
+    public GorgonRange<float> ToTexel(GorgonRange<int> pixelCoordinates, int? mipLevel = null)
     {
         float width = Texture.Width;
 
         if (mipLevel is null)
         {
-            return new GorgonRangeF(pixelCoordinates.Minimum / width, pixelCoordinates.Maximum / width);
+            return new GorgonRange<float>(pixelCoordinates.Minimum / width, pixelCoordinates.Maximum / width);
         }
 
         width = GetMipWidth(mipLevel.Value);
 
-        return new GorgonRangeF(pixelCoordinates.Minimum / width, pixelCoordinates.Maximum / width);
+        return new GorgonRange<float>(pixelCoordinates.Minimum / width, pixelCoordinates.Maximum / width);
     }
 
     /// <summary>
@@ -628,7 +625,7 @@ public sealed class GorgonTexture1DReadWriteView
         FormatInformation = formatInfo ?? throw new ArgumentNullException(nameof(formatInfo));
         Format = format;
         Texture = texture;
-        Bounds = new GorgonRange(0, Width);
+        Bounds = new GorgonRange<int>(0, Width);
         MipSlice = firstMipLevel;
         ArrayIndex = arrayIndex;
         ArrayCount = arrayCount;

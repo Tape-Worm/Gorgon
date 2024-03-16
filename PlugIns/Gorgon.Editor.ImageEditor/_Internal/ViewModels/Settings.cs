@@ -36,13 +36,10 @@ namespace Gorgon.Editor.ImageEditor;
 internal class Settings
     : SettingsCategoryBase<SettingsParameters>, ISettings
 {
-
     // The underlying settings for the plug in.
     private ImageEditorSettings _settings;
     // The range for the alpha setting funtionality.
-    private GorgonRange _alphaRange;
-
-
+    private GorgonRange<int> _alphaRange;
 
     /// <summary>Gets the name.</summary>
     public override string Name => Resources.GORIMG_SETTINGS_DESC;
@@ -85,11 +82,10 @@ internal class Settings
         }
     }
 
-
     /// <summary>
     /// Property to return the last used alpha value when setting the alpha channel on an image.
     /// </summary>
-    public GorgonRange LastAlphaRange
+    public GorgonRange<int> LastAlphaRange
     {
         get => _alphaRange;
         set
@@ -100,7 +96,7 @@ internal class Settings
             }
 
             OnPropertyChanging();
-            _alphaRange = new GorgonRange(value.Minimum, value.Maximum);
+            _alphaRange = new GorgonRange<int>(value.Minimum, value.Maximum);
             _settings.AlphaRangeMin = value.Minimum;
             _settings.AlphaRangeMax = value.Maximum;
             OnPropertyChanged();
@@ -185,8 +181,6 @@ internal class Settings
         get;
     }
 
-
-
     /// <summary>
     /// Function to assign the exe path.
     /// </summary>
@@ -216,12 +210,9 @@ internal class Settings
     protected override void OnInitialize(SettingsParameters injectionParameters)
     {
         _settings = injectionParameters.Settings;
-        _alphaRange = new GorgonRange(_settings.AlphaRangeMin, _settings.AlphaRangeMax);
+        _alphaRange = new GorgonRange<int>(_settings.AlphaRangeMin, _settings.AlphaRangeMax);
     }
-
-
 
     /// <summary>Initializes a new instance of the <see cref="Settings" /> class.</summary>
     public Settings() => UpdatePathCommand = new EditorCommand<string>(DoSetPath);
-
 }

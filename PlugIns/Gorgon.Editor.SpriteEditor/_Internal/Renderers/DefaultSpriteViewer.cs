@@ -163,7 +163,7 @@ internal class DefaultSpriteViewer(Gorgon2D renderer, GorgonSwapChain swapChain,
     private void RenderSpriteTexture()
     {
         GorgonRenderTargetView prevTarget = Graphics.RenderTargets[0];
-        GorgonRangeF? prevAlphaTest = Renderer.PrimitiveAlphaTestRange;
+        GorgonRange<float>? prevAlphaTest = Renderer.PrimitiveAlphaTestRange;
         var clearRegion = DataContext.Texture.ToPixel(_sprite.TextureRegion).ToRectangleF();
 
         _spriteTarget.Clear(GorgonColor.BlackTransparent);

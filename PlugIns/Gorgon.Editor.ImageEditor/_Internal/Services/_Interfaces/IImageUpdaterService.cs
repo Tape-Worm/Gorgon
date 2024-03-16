@@ -128,5 +128,5 @@ internal interface IImageUpdaterService
     /// <param name="value">The value to assign.</param>
     /// <param name="inclusionRange">The range of alpha values to update.</param>
     /// <returns>A new image with the updated alpha.</returns>
-    IGorgonImage SetAlphaValue(IGorgonImage sourceImage, int currentMipLevel, int currentArrayOrDepth, int value, GorgonRange inclusionRange);
+    IGorgonImage SetAlphaValue(IGorgonImage sourceImage, int currentMipLevel, int currentArrayOrDepth, int value, GorgonRange<int> inclusionRange);
 }

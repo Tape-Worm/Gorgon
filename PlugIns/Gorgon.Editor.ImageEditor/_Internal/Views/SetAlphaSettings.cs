@@ -81,7 +81,7 @@ internal partial class SetAlphaSettings
             return;
         }
 
-        ViewModel.UpdateRange = new GorgonRange((int)NumericMinAlpha.Value, ViewModel.UpdateRange.Maximum);
+        ViewModel.UpdateRange = new GorgonRange<int>((int)NumericMinAlpha.Value, ViewModel.UpdateRange.Maximum);
     }
 
     /// <summary>Handles the ValueChanged event of the NumericMaxAlpha control.</summary>
@@ -94,7 +94,7 @@ internal partial class SetAlphaSettings
             return;
         }
 
-        ViewModel.UpdateRange = new GorgonRange(ViewModel.UpdateRange.Minimum, (int)NumericMaxAlpha.Value);
+        ViewModel.UpdateRange = new GorgonRange<int>(ViewModel.UpdateRange.Minimum, (int)NumericMaxAlpha.Value);
     }
 
     /// <summary>Handles the ValueChanged event of the NumericMipLevels control.</summary>

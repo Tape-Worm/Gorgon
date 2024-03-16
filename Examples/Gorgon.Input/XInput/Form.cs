@@ -134,7 +134,7 @@ public partial class Form : System.Windows.Forms.Form
         // Update the origin of the spray.
         state.Origin = _stickPosition[index];
 
-        GorgonRange throttleRange = device.Info.AxisInfo[GamingDeviceAxis.RightTrigger].Range;
+        GorgonRange<int> throttleRange = device.Info.AxisInfo[GamingDeviceAxis.RightTrigger].Range;
 
         // Find out if we're spraying.
         if (device.Axis[GamingDeviceAxis.RightTrigger].Value > throttleRange.Minimum)
@@ -175,8 +175,8 @@ public partial class Form : System.Windows.Forms.Form
     /// <param name="index">Index of the controller.</param>
     private void DrawControllerCursor(IGorgonGamingDevice controller, int index)
     {
-        GorgonRange xRange = controller.Info.AxisInfo[GamingDeviceAxis.LeftStickX].Range;
-        GorgonRange yRange = controller.Info.AxisInfo[GamingDeviceAxis.LeftStickY].Range;
+        GorgonRange<int> xRange = controller.Info.AxisInfo[GamingDeviceAxis.LeftStickX].Range;
+        GorgonRange<int> yRange = controller.Info.AxisInfo[GamingDeviceAxis.LeftStickY].Range;
         int playerColorValue = (int)(((uint)0xFF << (index * 8)) | 0xFF000000);                     // Get the color based on the controller index.			
         var cursorSize = new Size(_surface.CursorSize.Width / 2, _surface.CursorSize.Height / 2);   // Get the cursor size with offset.
 

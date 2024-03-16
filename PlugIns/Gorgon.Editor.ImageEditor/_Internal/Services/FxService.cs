@@ -360,7 +360,7 @@ internal class FxService(IGraphicsContext graphics)
     /// <param name="range">The threshold range of colors to consider as "on".</param>
     /// <param name="invert">
     ///   <b>true</b> to invert the colors, <b>false</b> to leave as-is.</param>
-    public void GenerateOneBitPreview(GorgonRangeF range, bool invert)
+    public void GenerateOneBitPreview(GorgonRange<float> range, bool invert)
     {
         if (_texture is null)
         {

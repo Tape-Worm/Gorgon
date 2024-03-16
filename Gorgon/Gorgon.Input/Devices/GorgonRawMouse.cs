@@ -64,7 +64,6 @@ namespace Gorgon.Input;
 public class GorgonRawMouse
     : IGorgonMouse
 {
-
     // Range that a double click is valid within.
     private DX.Size2 _doubleClickSize;
     // Mouse horizontal and vertical position.
@@ -74,7 +73,7 @@ public class GorgonRawMouse
     // Constraints for the pointing device position.
     private DX.Rectangle _positionConstraint;
     // Constraints for the pointing device wheel.
-    private GorgonRange _wheelConstraint;
+    private GorgonRange<int> _wheelConstraint;
     // The delay, in milliseconds, between clicks for a double click event.
     private int _doubleClickDelay;
     // The number of times a button was fully clicked.
@@ -93,8 +92,6 @@ public class GorgonRawMouse
     private static readonly object _syncLock = new();
     // The device handle.
     private readonly nint _deviceHandle;
-
-
 
     /// <summary>
     /// Event triggered when the mouse is moved.
@@ -255,18 +252,18 @@ public class GorgonRawMouse
     }
 
     /// <summary>
-    /// Property to set or return the <see cref="GorgonRange"/> used to constrain the mouse <see cref="IGorgonMouse.WheelPosition"/>.
+    /// Property to set or return the <see cref="GorgonRange{T}"/> used to constrain the mouse <see cref="IGorgonMouse.WheelPosition"/>.
     /// </summary>
     /// <remarks>
     /// <para>
-    /// If a mouse wheel exists on the device, this will constrain the value of the <see cref="IGorgonMouse.WheelPosition"/> within the specified <see cref="GorgonRange"/>. This means that a wheel with a position of  
+    /// If a mouse wheel exists on the device, this will constrain the value of the <see cref="IGorgonMouse.WheelPosition"/> within the specified <see cref="GorgonRange{T}"/>. This means that a wheel with a position of  
     /// 160, with a constraint of 180-190 will make the <see cref="IGorgonMouse.WheelPosition"/> property return 180.
     /// </para>
     /// <para>
-    /// Passing <see cref="GorgonRange.Empty"/> to this property will remove the constraint on the position.
+    /// Passing <see cref="GorgonRange{T}.Empty"/> to this property will remove the constraint on the position.
     /// </para>
     /// </remarks>
-    public GorgonRange WheelConstraint
+    public GorgonRange<int> WheelConstraint
     {
         get => _wheelConstraint;
         set
@@ -326,8 +323,6 @@ public class GorgonRawMouse
         set;
     }
 
-
-
     /// <summary>
     /// Function to initiate a double click.
     /// </summary>
@@ -350,7 +345,6 @@ public class GorgonRawMouse
         _doubleClickPosition = Position;
         _doubleClickButton = button;
     }
-
 
     /// <summary>
     /// Function to handle mouse down button events.
@@ -595,7 +589,7 @@ public class GorgonRawMouse
     /// </summary>
     private void ConstrainWheelData()
     {
-        if (_wheelConstraint == GorgonRange.Empty)
+        if (_wheelConstraint == GorgonRange<int>.Empty)
         {
             return;
         }
@@ -666,8 +660,6 @@ public class GorgonRawMouse
         }
     }
 
-
-
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonRawMouse" /> class.
     /// </summary>
@@ -693,6 +685,4 @@ public class GorgonRawMouse
         _deviceHandle = mouseInfo.Handle;
         Info = mouseInfo;
     }
-
-
 }

@@ -54,7 +54,7 @@ public class MetadataValues
     /// <summary>
     /// Property to set or return the minimum/maximum values for the value.
     /// </summary>
-    public GorgonRangeF MinMax
+    public GorgonRange<float> MinMax
     {
         get;
         set;

@@ -23,7 +23,6 @@
 // Created: Wednesday, August 12, 2015 9:29:01 PM
 // 
 
-
 using Gorgon.Core;
 
 namespace Gorgon.Input;
@@ -37,13 +36,10 @@ namespace Gorgon.Input;
 internal class GamingDeviceAxisProperties
     : IGorgonGamingDeviceAxis
 {
-
     // The value for the axis.
     private int _value;
     // The default value for the axis.
     private readonly int _defaultValue;
-
-
 
     /// <summary>
     /// Property to return the identifier for the axis.
@@ -61,7 +57,7 @@ internal class GamingDeviceAxisProperties
     /// </remarks>
     public int Value
     {
-        get => DeadZone.Equals(GorgonRange.Empty) || !DeadZone.Contains(_value) ? _value : _defaultValue;
+        get => DeadZone.Equals(GorgonRange<int>.Empty) || !DeadZone.Contains(_value) ? _value : _defaultValue;
         set => _value = value;
     }
 
@@ -81,16 +77,14 @@ internal class GamingDeviceAxisProperties
     /// until it exceeds the dead zone threshold. 
     /// </para>
     /// <para>
-    /// Specify <see cref="GorgonRange.Empty"/> to disable the dead zone on the axis.
+    /// Specify <see cref="GorgonRange{T}.Empty"/> to disable the dead zone on the axis.
     /// </para>
     /// </remarks>
-    public GorgonRange DeadZone
+    public GorgonRange<int> DeadZone
     {
         get;
         set;
     }
-
-
 
     /// <summary>
     /// Initializes a new instance of the <see cref="GamingDeviceAxisProperties"/> class.
@@ -101,5 +95,4 @@ internal class GamingDeviceAxisProperties
         Axis = info.Axis;
         _defaultValue = info.DefaultValue;
     }
-
 }

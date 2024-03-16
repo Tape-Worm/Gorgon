@@ -163,7 +163,7 @@ internal class DirectInputDevice
             float deadZone = axis.Axis == GamingDeviceAxis.Throttle ? 0.02f : 0.10f;
             int deadZoneActual = (int)(info.Range.Range * deadZone);
 
-            axis.DeadZone = new GorgonRange(info.DefaultValue - deadZoneActual, info.DefaultValue + deadZoneActual);
+            axis.DeadZone = new GorgonRange<int>(info.DefaultValue - deadZoneActual, info.DefaultValue + deadZoneActual);
         }
 
         return result;

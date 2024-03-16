@@ -40,7 +40,6 @@ namespace Gorgon.Input.XInput;
 internal class XInputDeviceInfo(string deviceDescription, XI.UserIndex id)
         : IGorgonGamingDeviceInfo
 {
-
     /// <summary>
     /// Property to return the list of supported buttons for this controller.
     /// </summary>
@@ -81,7 +80,7 @@ internal class XInputDeviceInfo(string deviceDescription, XI.UserIndex id)
     /// If the device does not support vibration, then this list will be empty.
     /// </para>
     /// </remarks>
-    public IReadOnlyList<GorgonRange> VibrationMotorRanges
+    public IReadOnlyList<GorgonRange<int>> VibrationMotorRanges
     {
         get;
         private set;
@@ -127,8 +126,6 @@ internal class XInputDeviceInfo(string deviceDescription, XI.UserIndex id)
         get;
     } = id.ToGuid();
 
-
-
     /// <summary>
     /// Function to retrieve the capabilities of the xinput device.
     /// </summary>
@@ -137,21 +134,20 @@ internal class XInputDeviceInfo(string deviceDescription, XI.UserIndex id)
     {
         Capabilities = GamingDeviceCapabilityFlags.None;
 
-
         controller.GetCapabilities(XI.DeviceQueryType.Any, out XI.Capabilities capabilities);
 
         // Get vibration caps.
-        var vibrationRanges = new List<GorgonRange>();
+        List<GorgonRange<int>> vibrationRanges = [];
 
         if (capabilities.Vibration.LeftMotorSpeed != 0)
         {
-            vibrationRanges.Add(new GorgonRange(0, ushort.MaxValue));
+            vibrationRanges.Add(new GorgonRange<int>(0, ushort.MaxValue));
             Capabilities |= GamingDeviceCapabilityFlags.SupportsVibration;
         }
 
         if (capabilities.Vibration.RightMotorSpeed != 0)
         {
-            vibrationRanges.Add(new GorgonRange(0, ushort.MaxValue));
+            vibrationRanges.Add(new GorgonRange<int>(0, ushort.MaxValue));
             Capabilities |= GamingDeviceCapabilityFlags.SupportsVibration;
         }
 
@@ -237,44 +233,42 @@ internal class XInputDeviceInfo(string deviceDescription, XI.UserIndex id)
         }
 
         // Find out the ranges for each axis.
-        var axes = new Dictionary<GamingDeviceAxis, GorgonRange>();
+        Dictionary<GamingDeviceAxis, GorgonRange<int>> axes = [];
 
         if (capabilities.Gamepad.LeftThumbX != 0)
         {
-            axes[GamingDeviceAxis.XAxis] = new GorgonRange(short.MinValue, short.MaxValue);
+            axes[GamingDeviceAxis.XAxis] = new GorgonRange<int>(short.MinValue, short.MaxValue);
         }
 
         if (capabilities.Gamepad.LeftThumbY != 0)
         {
-            axes[GamingDeviceAxis.YAxis] = new GorgonRange(short.MinValue, short.MaxValue);
+            axes[GamingDeviceAxis.YAxis] = new GorgonRange<int>(short.MinValue, short.MaxValue);
         }
 
         if (capabilities.Gamepad.RightThumbX != 0)
         {
-            axes[GamingDeviceAxis.XAxis2] = new GorgonRange(short.MinValue, short.MaxValue);
+            axes[GamingDeviceAxis.XAxis2] = new GorgonRange<int>(short.MinValue, short.MaxValue);
             Capabilities |= GamingDeviceCapabilityFlags.SupportsSecondaryXAxis;
         }
 
         if (capabilities.Gamepad.RightThumbY != 0)
         {
-            axes[GamingDeviceAxis.YAxis2] = new GorgonRange(short.MinValue, short.MaxValue);
+            axes[GamingDeviceAxis.YAxis2] = new GorgonRange<int>(short.MinValue, short.MaxValue);
             Capabilities |= GamingDeviceCapabilityFlags.SupportsSecondaryYAxis;
         }
 
         if (capabilities.Gamepad.LeftTrigger != 0)
         {
-            axes[GamingDeviceAxis.LeftTrigger] = new GorgonRange(0, byte.MaxValue);
+            axes[GamingDeviceAxis.LeftTrigger] = new GorgonRange<int>(0, byte.MaxValue);
             Capabilities |= GamingDeviceCapabilityFlags.SupportsRudder;
         }
 
         if (capabilities.Gamepad.RightTrigger != 0)
         {
-            axes[GamingDeviceAxis.RightTrigger] = new GorgonRange(0, byte.MaxValue);
+            axes[GamingDeviceAxis.RightTrigger] = new GorgonRange<int>(0, byte.MaxValue);
             Capabilities |= GamingDeviceCapabilityFlags.SupportsThrottle;
         }
 
         AxisInfo = axes.Select(item => new GorgonGamingDeviceAxisInfo(item.Key, item.Value, 0)).ToDictionary(k => k.Axis, v => v);
     }
-
-
 }

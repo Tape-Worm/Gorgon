@@ -40,11 +40,10 @@ namespace Gorgon.Editor.FontEditor;
 public partial class CharacterPicker
         : EditorBaseControl
 {
-
     // Page for characters.
     private int _page;
     // Character ranges for the font.
-    private IDictionary<string, GorgonRange> _characterRanges;
+    private IDictionary<string, GorgonRange<int>> _characterRanges;
     // GDI+ graphics.
     private System.Drawing.Graphics _graphics;
     // Font handle.
@@ -57,8 +56,6 @@ public partial class CharacterPicker
     private Font _current;
     // The list of selected characters.
     private IEnumerable<char> _characters;
-
-
 
     // Events for handling button clicks.
     private EventHandler _okClickedEvent;
@@ -197,8 +194,6 @@ public partial class CharacterPicker
         }
     }
 
-
-
     /// <summary>
     /// Handles the Click event of the buttonSelectAll control.
     /// </summary>
@@ -208,7 +203,7 @@ public partial class CharacterPicker
     {
         try
         {
-            var item = (KeyValuePair<string, GorgonRange>)ListCharacterRanges.SelectedItems[0].Tag;
+            var item = (KeyValuePair<string, GorgonRange<int>>)ListCharacterRanges.SelectedItems[0].Tag;
 
             string newString = string.Empty;
 
@@ -468,7 +463,7 @@ public partial class CharacterPicker
         }
 
         ListViewItem charSet = ListCharacterRanges.SelectedItems[0];
-        GorgonRange range = ((KeyValuePair<string, GorgonRange>)charSet.Tag).Value;
+        GorgonRange<int> range = ((KeyValuePair<string, GorgonRange<int>>)charSet.Tag).Value;
         int lineCount = ((int)System.Math.Ceiling(range.Range / 8.0f)) - 1;
         if (lineCount > 6)
         {
@@ -550,8 +545,8 @@ public partial class CharacterPicker
         }
 
         ListCharacterRanges.BeginUpdate();
-        IOrderedEnumerable<KeyValuePair<string, GorgonRange>> sortedRanges = _characterRanges.OrderBy(item => item.Value.Minimum);
-        foreach (KeyValuePair<string, GorgonRange> range in sortedRanges)
+        IOrderedEnumerable<KeyValuePair<string, GorgonRange<int>>> sortedRanges = _characterRanges.OrderBy(item => item.Value.Minimum);
+        foreach (KeyValuePair<string, GorgonRange<int>> range in sortedRanges)
         {
             var item = new ListViewItem(((ushort)range.Value.Minimum).FormatHex() + ".." + ((ushort)range.Value.Maximum).FormatHex());
             item.SubItems.Add(range.Key);
@@ -652,8 +647,6 @@ public partial class CharacterPicker
         CurrentFontChanged();
     }
 
-
-
     /// <summary>Initializes a new instance of the <see cref="CharacterPicker" /> class.</summary>
     public CharacterPicker()
     {
@@ -670,5 +663,4 @@ public partial class CharacterPicker
             ScrollVertical.Width = (int)(ScrollVertical.Width * (DeviceDpi / 96.0));
         }
     }
-
 }

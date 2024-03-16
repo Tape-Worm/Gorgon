@@ -21,9 +21,6 @@ x86/
 build/
 bld/
 Docs/Help/
-Test/*
-!Test/Gorgon.Core.Test/
-!Test/Gorgon.Input.Test/
 Artifacts/
 *.snk
 Tools/Backup/

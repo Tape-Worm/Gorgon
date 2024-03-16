@@ -241,7 +241,7 @@ internal class TextureBrushRenderer(Gorgon2D renderer, GorgonSwapChain mainRende
     private void RenderTexture()
     {
         GorgonRenderTargetView prevTarget = Graphics.RenderTargets[0];
-        GorgonRangeF? prevAlphaTest = Renderer.PrimitiveAlphaTestRange;
+        GorgonRange<float>? prevAlphaTest = Renderer.PrimitiveAlphaTestRange;
         var clearRegion = _image.ToPixel(_context.Region).ToRectangleF();
 
         _target.Clear(GorgonColor.BlackTransparent);

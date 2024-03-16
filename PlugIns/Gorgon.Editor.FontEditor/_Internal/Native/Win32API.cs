@@ -39,7 +39,7 @@ namespace Gorgon.Editor.FontEditor;
 internal static partial class Win32API
 {
     // List of ranges.
-    private static IDictionary<string, GorgonRange> _ranges;
+    private static IDictionary<string, GorgonRange<int>> _ranges;
     // List of code point names.
     private static IDictionary<int, string> _codePointNames;
 
@@ -79,7 +79,7 @@ internal static partial class Win32API
     private static void BuildUnicodeRangeList()
     {
         IList<string> rangeLines = Resources.UnicodeBlocks.Split(new[] { '\n' }, StringSplitOptions.RemoveEmptyEntries);
-        _ranges = new SortedDictionary<string, GorgonRange>();
+        _ranges = new SortedDictionary<string, GorgonRange<int>>();
 
         // Break out the lines.
         foreach (string line in rangeLines)
@@ -92,7 +92,7 @@ internal static partial class Win32API
                 continue;
             }
 
-            var range = new GorgonRange(int.Parse(items[0][..items[0].IndexOf('.')], NumberStyles.HexNumber),
+            var range = new GorgonRange<int>(int.Parse(items[0][..items[0].IndexOf('.')], NumberStyles.HexNumber),
                                         int.Parse(items[0][(items[0].LastIndexOf('.') + 1)..], NumberStyles.HexNumber));
 
             // Combine the first 2 latin categories into the one category.
@@ -100,7 +100,7 @@ internal static partial class Win32API
             {
                 if (!_ranges.ContainsKey("Latin + Latin Supplement"))
                 {
-                    _ranges.Add("Latin + Latin Supplement", new GorgonRange(0, 0xFF));
+                    _ranges.Add("Latin + Latin Supplement", new GorgonRange<int>(0, 0xFF));
                 }
             }
             else
@@ -155,9 +155,9 @@ internal static partial class Win32API
     /// </summary>
     /// <param name="hDc">Device context.</param>
     /// <returns>A list of ranges.</returns>
-    public static IDictionary<string, GorgonRange> GetUnicodeRanges(IntPtr hDc)
+    public static IDictionary<string, GorgonRange<int>> GetUnicodeRanges(IntPtr hDc)
     {
-        Dictionary<string, GorgonRange> result;
+        Dictionary<string, GorgonRange<int>> result;
 
         if (_ranges == null)
         {
@@ -172,7 +172,7 @@ internal static partial class Win32API
         ref int bufferPtr = ref buffer.AsRef<int>(12);
         int itemCount = bufferPtr;
 
-        result = new Dictionary<string, GorgonRange>(itemCount);
+        result = new Dictionary<string, GorgonRange<int>>(itemCount);
 
         int ptrOffset = 16;
 
@@ -187,11 +187,11 @@ internal static partial class Win32API
 
 
 
-            var value = new GorgonRange(min, max + min - 1);
+            var value = new GorgonRange<int>(min, max + min - 1);
 
-            KeyValuePair<string, GorgonRange> rangeName = (from unicodeRange in _ranges
-                                                           where unicodeRange.Value.Contains(value.Minimum) && unicodeRange.Value.Contains(value.Maximum)
-                                                           select unicodeRange).SingleOrDefault();
+            KeyValuePair<string, GorgonRange<int>> rangeName = (from unicodeRange in _ranges
+                                                                where unicodeRange.Value.Contains(value.Minimum) && unicodeRange.Value.Contains(value.Maximum)
+                                                                select unicodeRange).SingleOrDefault();
 
             if ((!string.IsNullOrEmpty(rangeName.Key)) && (!result.ContainsKey(rangeName.Key)))
             {
@@ -204,5 +204,4 @@ internal static partial class Win32API
 
     /// <summary>Initializes static members of the <see cref="Win32API" /> class.</summary>
     static Win32API() => Marshal.PrelinkAll(typeof(Win32API));
-
 }

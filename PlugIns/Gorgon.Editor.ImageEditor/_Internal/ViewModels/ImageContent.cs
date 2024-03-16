@@ -89,7 +89,7 @@ internal class ImageContent
         /// <summary>
         /// The minimum/maximum alpha threshold.
         /// </summary>
-        public GorgonRange MinMax;
+        public GorgonRange<int> MinMax;
 
         /// <summary>
         /// The mip level used when setting alpha.
