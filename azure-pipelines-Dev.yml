@@ -29,8 +29,7 @@ jobs:
       - task: CmdLine@2
         displayName: 'Updating version to $(Build.BuildNumber)'
         inputs:
-          script: 'CsProjVersionUpdater.exe $(Build.BuildNumber)'
-          workingDirectory: '$(Build.SourcesDirectory)/Tools/CsProjVersionUpdater/'
+          script: '$(Build.SourcesDirectory)/Tools/CsProjVersionUpdater/CsProjVersionUpdater.exe $(Build.BuildNumber)'          
 
       - task: NuGetToolInstaller@1
         inputs:
@@ -47,8 +46,7 @@ jobs:
       - task: CmdLine@2
         displayName: 'Signing code...'
         inputs:
-          script: 'ProjectSigner.exe $(Agent.TempDirectory)\GorgonFull.snk -y'
-          workingDirectory: '$(Build.SourcesDirectory)/Tools/ProjectSigner/'
+          script: '$(Build.SourcesDirectory)/Tools/ProjectSigner/ProjectSigner.exe $(Agent.TempDirectory)\GorgonFull.snk -y'          
 
       - task: VSBuild@1
         inputs:
