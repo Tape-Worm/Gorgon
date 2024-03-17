@@ -58,6 +58,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\ExamplesCommon\ExamplesCommon.csproj" />
+    <ProjectReference Include="..\ComputeEngine\ComputeEngine.csproj" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />
