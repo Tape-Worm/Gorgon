@@ -33,7 +33,7 @@ using Gorgon.Graphics.Imaging.Properties;
 using Gorgon.Math;
 using Gorgon.Native;
 using Gorgon.UI;
-using BCnEncode = BCnEncoder.Encoder;
+using BCnEncode = Gorgon.BCnEncoder.Encoder;
 using DX = SharpDX;
 
 namespace Gorgon.Graphics.Imaging;
