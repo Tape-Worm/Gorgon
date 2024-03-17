@@ -1,8 +1,7 @@
-[submodule "Dependencies/BCnEncoder.NET"]
-	path = Dependencies/BCnEncoder.NET
-	url = https://github.com/Tape-Worm/BCnEncoder.NET.git
-	ignore = dirty
 [submodule "Dependencies/Microsoft.Wpf.Interop.DirectX"]
 	path = Dependencies/Microsoft.Wpf.Interop.DirectX
 	url = https://github.com/Tape-Worm/WPFDXInterop.git
 	branch = master
+[submodule "Dependencies/Gorgon.BCnEncoder.NET"]
+	path = Dependencies/Gorgon.BCnEncoder.NET
+	url = https://github.com/Tape-Worm/Gorgon.BCnEncoder.NET
