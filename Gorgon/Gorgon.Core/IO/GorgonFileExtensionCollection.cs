@@ -25,6 +25,7 @@
 
 
 using Gorgon.Collections;
+using Gorgon.Core;
 using Gorgon.Properties;
 
 namespace Gorgon.IO;
@@ -35,7 +36,6 @@ namespace Gorgon.IO;
 public class GorgonFileExtensionCollection
     : GorgonBaseNamedObjectDictionary<GorgonFileExtension>
 {
-
     /// <summary>
     /// Property to set or return an extension in the collection.
     /// </summary>
@@ -43,7 +43,7 @@ public class GorgonFileExtensionCollection
     {
         get
         {
-            if (extension.StartsWith(".", StringComparison.Ordinal))
+            if (extension.StartsWith('.'))
             {
                 extension = extension[1..];
             }
@@ -54,7 +54,7 @@ public class GorgonFileExtensionCollection
         }
         set
         {
-            if (extension.StartsWith(".", StringComparison.Ordinal))
+            if (extension.StartsWith('.'))
             {
                 extension = extension[1..];
             }
@@ -95,15 +95,13 @@ public class GorgonFileExtensionCollection
     /// </summary>
     /// <param name="extension">The file extension to remove from the collection.</param>
     /// <exception cref="ArgumentNullException">Thrown when the <paramref name="extension"/> parameter is <b>null</b>.</exception>
+    /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="extension"/> parameter is empty.</exception>
     /// <exception cref="KeyNotFoundException">Thrown when the <paramref name="extension"/> could not be found in the collection.</exception>
     public void Remove(string extension)
     {
-        if (extension is null)
-        {
-            throw new ArgumentNullException(nameof(extension));
-        }
+        ArgumentEmptyException.ThrowIfNullOrWhiteSpace(extension);
 
-        if (extension.StartsWith(".", StringComparison.Ordinal))
+        if (extension.StartsWith('.'))
         {
             extension = extension[1..];
         }
@@ -136,8 +134,6 @@ public class GorgonFileExtensionCollection
     /// </summary>
     public void Clear() => Items.Clear();
 
-
-
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonFileExtensionCollection"/> class.
     /// </summary>
@@ -145,5 +141,4 @@ public class GorgonFileExtensionCollection
         : base(false)
     {
     }
-
 }

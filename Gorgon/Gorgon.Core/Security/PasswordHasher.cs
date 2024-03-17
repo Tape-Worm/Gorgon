@@ -79,15 +79,9 @@ public static class PasswordHasher
     /// </remarks>
     public static string HashAndSalt(string password, byte[] salt)
     {
-        if (password is null)
-        {
-            throw new ArgumentNullException(nameof(password));
-        }
+        ArgumentNullException.ThrowIfNull(password);
 
-        if (salt is null)
-        {
-            throw new ArgumentNullException(nameof(salt));
-        }
+        ArgumentNullException.ThrowIfNull(salt);
 
         if (string.IsNullOrWhiteSpace(password))
         {

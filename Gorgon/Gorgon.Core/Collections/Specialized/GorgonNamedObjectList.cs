@@ -91,10 +91,7 @@ public class GorgonNamedObjectList<T>(bool caseSensitive = true)
     /// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="index"/> is less than 0.</exception>
     public void Insert(int index, T item)
     {
-        if (index < 0)
-        {
-            throw new ArgumentOutOfRangeException(nameof(index));
-        }
+        ArgumentOutOfRangeException.ThrowIfNegative(index);        
 
         Items.Insert(index, item);
     }

@@ -76,7 +76,7 @@ public class Aes256Encryption
 
         using var aes = Aes.Create();
         using ICryptoTransform transform = aes.CreateDecryptor(_ivKey.Key, _ivKey.IV);
-        using MemoryStream stream = _streamManager.GetStream();
+        using RecyclableMemoryStream stream = _streamManager.GetStream();
         using var writer = new CryptoStream(stream, transform, CryptoStreamMode.Write);
         writer.Write(data, 0, data.Length);
 
@@ -108,7 +108,7 @@ public class Aes256Encryption
 
         using var aes = Aes.Create();
         using ICryptoTransform transform = aes.CreateEncryptor(_ivKey.Key, _ivKey.IV);
-        using MemoryStream stream = _streamManager.GetStream();
+        using RecyclableMemoryStream stream = _streamManager.GetStream();
         using var writer = new CryptoStream(stream, transform, CryptoStreamMode.Write);
         writer.Write(data, 0, data.Length);
         writer.FlushFinalBlock();
@@ -222,10 +222,7 @@ public class Aes256Encryption
     /// </exception>
     public Aes256Encryption(byte[] keyPairFileData)
     {
-        if (keyPairFileData is null)
-        {
-            throw new ArgumentNullException(nameof(keyPairFileData));
-        }
+        ArgumentNullException.ThrowIfNull(keyPairFileData);
 
         if (keyPairFileData.Length == 0)
         {
@@ -250,15 +247,9 @@ public class Aes256Encryption
     /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="iv"/>, or the <paramref name="key"/> parameters are empty.</exception>
     public Aes256Encryption(byte[] iv, byte[] key)
     {
-        if (iv is null)
-        {
-            throw new ArgumentNullException(nameof(iv));
-        }
+        ArgumentNullException.ThrowIfNull(iv);
 
-        if (key is null)
-        {
-            throw new ArgumentNullException(nameof(key));
-        }
+        ArgumentNullException.ThrowIfNull(key);
 
         if (iv.Length == 0)
         {

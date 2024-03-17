@@ -234,11 +234,12 @@ public abstract class GorgonChunkFile<T>
     /// </remarks>
     /// <seealso cref="GorgonChunkFileReader.OpenChunk(ulong)"/>
     /// <seealso cref="GorgonChunkFileWriter.OpenChunk(ulong)"/>
-    public T OpenChunk(string chunkName) => chunkName is null
-            ? throw new ArgumentNullException(nameof(chunkName))
-            : string.IsNullOrEmpty(chunkName) ? throw new ArgumentEmptyException(nameof(chunkName)) : OpenChunk(chunkName.ChunkID());
+    public T OpenChunk(string chunkName)
+    {
+        ArgumentEmptyException.ThrowIfNullOrWhiteSpace(chunkName);
 
-
+        return OpenChunk(chunkName.ChunkID());
+    }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonChunkFile{T}"/> class.
@@ -251,10 +252,7 @@ public abstract class GorgonChunkFile<T>
     /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="stream"/> is has its <see cref="Stream.CanSeek"/> property set to <b>false</b>.</exception>
     protected GorgonChunkFile(Stream stream)
     {
-        if (stream is null)
-        {
-            throw new ArgumentNullException(nameof(stream));
-        }
+        ArgumentNullException.ThrowIfNull(stream);        
 
         if (!stream.CanSeek)
         {

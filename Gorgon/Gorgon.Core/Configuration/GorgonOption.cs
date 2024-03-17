@@ -686,7 +686,7 @@ public class GorgonOption
     /// </remarks>
     public static IGorgonOption CreateOption<T>(string name, T value, T defaultValue, string description = null)
     {
-        IGorgonOption result = new GorgonOption(name, typeof(T), defaultValue, null, null, description);
+        GorgonOption result = new(name, typeof(T), defaultValue, null, null, description);
         result.SetValue(value);
         return result;
     }
@@ -704,15 +704,7 @@ public class GorgonOption
     /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="name"/> parameter is empty.</exception>
     private GorgonOption(string name, Type type, object defaultValue, object minValue, object maxValue, string description)
     {
-        if (name is null)
-        {
-            throw new ArgumentNullException(nameof(name));
-        }
-
-        if (string.IsNullOrWhiteSpace(name))
-        {
-            throw new ArgumentEmptyException(nameof(name));
-        }
+        ArgumentEmptyException.ThrowIfNullOrWhiteSpace(name);
 
         Name = name;
         Type = type;

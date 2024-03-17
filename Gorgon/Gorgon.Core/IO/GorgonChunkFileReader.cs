@@ -265,10 +265,7 @@ public sealed class GorgonChunkFileReader
     /// <exception cref="IOException">Thrown when the <paramref name="stream"/> is write-only.</exception>
     public static bool IsReadable(Stream stream)
     {
-        if (stream is null)
-        {
-            throw new ArgumentNullException(nameof(stream));
-        }
+        ArgumentNullException.ThrowIfNull(stream);
 
         if (!stream.CanRead)
         {
@@ -418,18 +415,12 @@ public sealed class GorgonChunkFileReader
         {
             throw new ArgumentException(Resources.GOR_ERR_STREAM_IS_WRITEONLY, nameof(stream));
         }
-
-        if (appSpecificIds is null)
-        {
-            throw new ArgumentNullException(nameof(appSpecificIds));
-        }
+        
+        ArgumentNullException.ThrowIfNull(appSpecificIds);
 
         _appSpecificIds = new HashSet<ulong>(appSpecificIds.Distinct().OrderByDescending(item => item));
-
-        if (_appSpecificIds.Count == 0)
-        {
-            throw new ArgumentEmptyException(nameof(appSpecificIds));
-        }
+        
+        ArgumentEmptyException.ThrowIfNullOrEmpty(_appSpecificIds, nameof(appSpecificIds));
     }
 
 }

@@ -90,14 +90,12 @@ public static class GorgonReflectionExtensions
             return (null, null);
         }
 
-#pragma warning disable IDE0046 // Convert to conditional expression
         if ((paramTypes.Length == 0) && (constructors.Length == 1))
         {
             return constructors[0];
         }
 
         return constructors.FirstOrDefault(item => paramTypes.SequenceEqual(item.Item2.Select(propItem => propItem.ParameterType)));
-#pragma warning restore IDE0046 // Convert to conditional expression
     }
 
     /// <summary>
@@ -133,10 +131,7 @@ public static class GorgonReflectionExtensions
     /// <returns>The method that will retrieve a property value from an instance.</returns>
     public static PropertyGetter<T, TP> CreatePropertyGetter<T, TP>(this PropertyInfo propertyInfo)
     {
-        if (propertyInfo is null)
-        {
-            throw new ArgumentNullException(nameof(propertyInfo));
-        }
+        ArgumentNullException.ThrowIfNull(propertyInfo);
 
         if (propertyInfo.DeclaringType is null)
         {
@@ -219,10 +214,7 @@ public static class GorgonReflectionExtensions
     /// </exception>
     public static PropertySetter<T, TP> CreatePropertySetter<T, TP>(this PropertyInfo propertyInfo)
     {
-        if (propertyInfo is null)
-        {
-            throw new ArgumentNullException(nameof(propertyInfo));
-        }
+        ArgumentNullException.ThrowIfNull(propertyInfo);
 
         if (propertyInfo.DeclaringType is null)
         {
@@ -305,10 +297,7 @@ public static class GorgonReflectionExtensions
     /// <exception cref="InvalidCastException">Thrown when the type of the generic type parameter <typeparamref name="T"/> is not the same as the <paramref name="type"/> parameter.</exception>
     public static ObjectActivator<T> CreateActivator<T>(this Type type, params Type[] paramTypes)
     {
-        if (type is null)
-        {
-            throw new ArgumentNullException(nameof(type));
-        }
+        ArgumentNullException.ThrowIfNull(type);
 
         if (type.IsInterface)
         {
@@ -402,10 +391,7 @@ public static class GorgonReflectionExtensions
     /// </remarks>
     public static bool IsFieldSafeForNative(this FieldInfo field)
     {
-        if (field is null)
-        {
-            throw new ArgumentNullException(nameof(field));
-        }
+        ArgumentNullException.ThrowIfNull(field);
 
         // Don't check static fields or if the type we're checking is the type that's being examined.
         if ((field.IsStatic) || (field.FieldType == field.DeclaringType))
@@ -458,10 +444,7 @@ public static class GorgonReflectionExtensions
     /// </remarks>
     public static bool IsSafeForNative(this Type type)
     {
-        if (type is null)
-        {
-            throw new ArgumentNullException(nameof(type));
-        }
+        ArgumentNullException.ThrowIfNull(type);
 
         if ((type.StructLayoutAttribute is null) || (type.IsAutoLayout))
         {
@@ -519,10 +502,7 @@ public static class GorgonReflectionExtensions
     /// </remarks>
     public static bool IsSafeForNative(this Type type, out IReadOnlyList<FieldInfo> incompatibleFields)
     {
-        if (type is null)
-        {
-            throw new ArgumentNullException(nameof(type));
-        }
+        ArgumentNullException.ThrowIfNull(type);
 
         var result = new List<FieldInfo>();
         incompatibleFields = result;

@@ -69,10 +69,7 @@ public sealed class GorgonOptionBag
     public GorgonOptionBag(IEnumerable<IGorgonOption> options)
         : base(false)
     {
-        if (options is null)
-        {
-            throw new ArgumentNullException(nameof(options));
-        }
+        ArgumentNullException.ThrowIfNull(options);        
 
         foreach (IGorgonOption option in options)
         {

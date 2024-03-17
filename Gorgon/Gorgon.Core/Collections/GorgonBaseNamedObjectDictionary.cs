@@ -267,15 +267,7 @@ public abstract class GorgonBaseNamedObjectDictionary<T>(bool caseSensitive)
     /// <exception cref="KeyNotFoundException">Thrown when no item with the name specified could be found in the dictionary.</exception>
     void IGorgonNamedObjectDictionary<T>.Remove(string name)
     {
-        if (name == null)
-        {
-            throw new ArgumentNullException(nameof(name));
-        }
-
-        if (string.IsNullOrWhiteSpace(name))
-        {
-            throw new ArgumentEmptyException(nameof(name));
-        }
+        ArgumentEmptyException.ThrowIfNullOrWhiteSpace(name);
 
         if (!Contains(name))
         {

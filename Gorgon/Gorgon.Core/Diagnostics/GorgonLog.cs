@@ -38,6 +38,8 @@ namespace Gorgon.Diagnostics;
 public abstract class GorgonLog
     : IGorgonThreadedLog
 {
+    // List of separators for new lines.
+    private static readonly char[] _newLineSeparators = ['\n', '\r'];
 
     // Logging filter.
     private LoggingLevel _filterLevel = LoggingLevel.All;
@@ -107,8 +109,6 @@ public abstract class GorgonLog
         protected set;
     }
 
-
-
     /// <summary>
     /// Function to format a stack trace to be more presentable.
     /// </summary>
@@ -123,14 +123,14 @@ public abstract class GorgonLog
         }
 
         stack = stack.Replace('\t', ' ');
-        string[] lines = stack.Split(new[] { '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries);
+        string[] lines = stack.Split(_newLineSeparators, StringSplitOptions.RemoveEmptyEntries);
 
         // Output to each log file.
         resultMessage.AppendFormat("{0}Stack trace:\r\n", indicator);
         for (int i = lines.Length - 1; i >= 0; i--)
         {
             int inIndex = lines[i].LastIndexOf(") in ", StringComparison.Ordinal);
-            int pathIndex = lines[i].LastIndexOf(@"\", StringComparison.Ordinal);
+            int pathIndex = lines[i].LastIndexOf('\\');
 
             if ((inIndex > -1) && (pathIndex > -1))
             {
@@ -157,11 +157,7 @@ public abstract class GorgonLog
         }
 
         message = message.Replace('\t', ' ');
-        string[] lines = message.Split(new[]
-                                       {
-                                           '\n',
-                                           '\r'
-                                       },
+        string[] lines = message.Split(_newLineSeparators,
                                        StringSplitOptions.RemoveEmptyEntries);
 
         for (int i = 0; i < lines.Length; i++)
@@ -356,11 +352,7 @@ public abstract class GorgonLog
         else
         {
             // Get a list of lines.
-            string[] formattedLines = formatSpecifier.Split(new[]
-                                                            {
-                                                                '\r',
-                                                                '\n'
-                                                            },
+            string[] formattedLines = formatSpecifier.Split(_newLineSeparators,
                                                             StringSplitOptions.RemoveEmptyEntries);
 
             foreach (string line in formattedLines)
@@ -451,17 +443,9 @@ public abstract class GorgonLog
     /// </remarks>
     protected GorgonLog(string appName, Version version = null)
     {
-        if (appName is null)
-        {
-            throw new ArgumentNullException(nameof(appName));
-        }
+        ArgumentEmptyException.ThrowIfNullOrWhiteSpace(appName);
 
-        if (string.IsNullOrWhiteSpace(appName))
-        {
-            throw new ArgumentEmptyException(nameof(appName));
-        }
-
-        ThreadID = Thread.CurrentThread.ManagedThreadId;
+        ThreadID = Environment.CurrentManagedThreadId;
 
         LogApplication = appName;
 

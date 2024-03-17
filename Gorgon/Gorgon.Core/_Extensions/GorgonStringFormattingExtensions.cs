@@ -122,10 +122,7 @@ public static class GorgonStringFormattingExtension
     /// </remarks>
     public static string ToStringWithDeclaration(this XDocument document)
     {
-        if (document is null)
-        {
-            throw new ArgumentNullException(nameof(document));
-        }
+        ArgumentNullException.ThrowIfNull(document);
 
         StringBuilder serializedXML = new StringBuilder();
 

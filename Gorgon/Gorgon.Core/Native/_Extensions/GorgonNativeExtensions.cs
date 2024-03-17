@@ -49,10 +49,7 @@ public static class GorgonNativeExtensions
     public static GorgonNativeBuffer<T> ToNativeBuffer<T>(this Stream stream, int? count = null)
         where T : unmanaged
     {
-        if (stream is null)
-        {
-            throw new ArgumentNullException(nameof(stream));
-        }
+        ArgumentNullException.ThrowIfNull(stream);
 
         if (stream.Position == stream.Length)
         {
@@ -113,10 +110,7 @@ public static class GorgonNativeExtensions
     public static void CopyTo<T>(this Stream stream, GorgonPtr<T> pointer, int index = 0, int? count = null)
         where T : unmanaged
     {
-        if (stream is null)
-        {
-            throw new ArgumentNullException(nameof(stream));
-        }
+        ArgumentNullException.ThrowIfNull(stream);
 
         if (stream.Position == stream.Length)
         {
@@ -263,10 +257,7 @@ public static class GorgonNativeExtensions
     public static void CopyTo<T>(this T[] array, GorgonPtr<T> pointer, int arrayIndex = 0, int? count = null, int pointerIndex = 0)
         where T : unmanaged
     {
-        if (array is null)
-        {
-            throw new ArgumentNullException(nameof(array));
-        }
+        ArgumentNullException.ThrowIfNull(array);
 
         if (pointer == GorgonPtr<T>.NullPtr)
         {

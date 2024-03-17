@@ -293,10 +293,7 @@ public class GorgonBinaryWriter(Stream output, Encoding encoder, bool keepStream
     public void WriteRange<T>(T[] value, int startIndex = 0, int? count = null)
         where T : unmanaged
     {
-        if (value is null)
-        {
-            throw new ArgumentNullException(nameof(value));
-        }
+        ArgumentNullException.ThrowIfNull(value);
 
         count ??= value.Length - startIndex;
 

@@ -59,10 +59,7 @@ public static class GorgonIOExtensions
     /// <exception cref="ArgumentNullException">Thrown when the <paramref name="stream"/> parameter is <b>null</b>.</exception>
     public static int Read(this Stream stream, Span<byte> buffer)
     {
-        if (stream is null)
-        {
-            throw new ArgumentNullException(nameof(stream));
-        }
+        ArgumentNullException.ThrowIfNull(stream);
 
         ArrayPool<byte> pool = GorgonArrayPool<byte>.GetBestPool(buffer.Length);
         byte[] readBuffer = pool.Rent(buffer.Length);
@@ -90,10 +87,7 @@ public static class GorgonIOExtensions
     /// <exception cref="ArgumentNullException">Thrown when the <paramref name="stream"/> parameter is <b>null</b>.</exception>
     public static void Write(this Stream stream, ReadOnlySpan<byte> buffer)
     {
-        if (stream is null)
-        {
-            throw new ArgumentNullException(nameof(stream));
-        }
+        ArgumentNullException.ThrowIfNull(stream);        
 
         ArrayPool<byte> pool = GorgonArrayPool<byte>.GetBestPool(buffer.Length);
         byte[] writeBuffer = pool.Rent(buffer.Length);
@@ -175,29 +169,18 @@ public static class GorgonIOExtensions
     /// </remarks>
     public static int CopyToStream(this Stream stream, Stream destination, int count, byte[] buffer)
     {
-        if (stream is null)
-        {
-            throw new ArgumentNullException(nameof(stream));
-        }
+        ArgumentNullException.ThrowIfNull(stream);               
+        ArgumentNullException.ThrowIfNull(destination);
+        ArgumentNullException.ThrowIfNull(buffer);
 
         if (!stream.CanRead)
         {
             throw new ArgumentException(Resources.GOR_ERR_STREAM_IS_WRITEONLY, nameof(stream));
         }
 
-        if (destination is null)
-        {
-            throw new ArgumentNullException(nameof(destination));
-        }
-
         if (!destination.CanWrite)
         {
             throw new ArgumentException(Resources.GOR_ERR_STREAM_IS_READONLY, nameof(destination));
-        }
-
-        if (buffer is null)
-        {
-            throw new ArgumentNullException(nameof(buffer));
         }
 
         if (buffer.Length == 0)
@@ -272,10 +255,7 @@ public static class GorgonIOExtensions
             return 0;
         }
 
-        if (stream is null)
-        {
-            throw new ArgumentNullException(nameof(stream));
-        }
+        ArgumentNullException.ThrowIfNull(stream);
 
         if (!stream.CanWrite)
         {
@@ -380,10 +360,7 @@ public static class GorgonIOExtensions
     {
         int stringLength = 0;
 
-        if (stream is null)
-        {
-            throw new ArgumentNullException(nameof(stream));
-        }
+        ArgumentNullException.ThrowIfNull(stream);        
 
         encoding ??= Encoding.UTF8;
 
@@ -741,12 +718,10 @@ public static class GorgonIOExtensions
     /// </para>
     /// </remarks>
     /// <exception cref="ArgumentNullException">Thrown when the <paramref name="chunkName"/> parameter is <b>null</b>.</exception>
+    /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="chunkName"/> parameter is empty.</exception>"
     public static ulong ChunkID(this string chunkName)
     {
-        if (chunkName is null)
-        {
-            throw new ArgumentNullException(nameof(chunkName));
-        }
+        ArgumentEmptyException.ThrowIfNullOrEmpty(chunkName);
 
         if (chunkName.Length > 8)
         {

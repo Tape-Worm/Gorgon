@@ -24,6 +24,7 @@
 // 
 
 
+using System.Runtime.CompilerServices;
 using Gorgon.Properties;
 
 namespace Gorgon.Core;
@@ -32,16 +33,95 @@ namespace Gorgon.Core;
 /// An exception that should be thrown when a non-null parameter (e.g. <see cref="string"/>) requires a value, and does not.  
 /// </summary>
 public class ArgumentEmptyException
-    : ArgumentException
+    : Exception
 {
+    /// <summary>
+    /// Function to throw the appropriate exception if the string is <b>null</b>, empty or contains only whitespace.
+    /// </summary>
+    /// <param name="value">The value to evaluate.</param>
+    /// <param name="parameterName">The name of the parameter.</param>
+    /// <exception cref="ArgumentNullException">Thrown if the <paramref name="value"/> parameter is <b>null</b>.</exception>
+    /// <exception cref="ArgumentEmptyException">Thrown if the <paramref name="value"/> parameter is empty or only has whitespace.</exception>
+    public static void ThrowIfNullOrWhiteSpace(string value, [CallerArgumentExpression(nameof(value))] string parameterName = null)
+    {
+        if (value is null)
+        {
+            throw new ArgumentNullException(parameterName);
+        }
+
+        if (string.IsNullOrWhiteSpace(value))
+        {        
+            throw new ArgumentEmptyException(parameterName);
+        }
+    }
+
+    /// <summary>
+    /// Function to throw the appropriate exception if the string is <b>null</b>, empty.
+    /// </summary>
+    /// <param name="value">The value to evaluate.</param>
+    /// <param name="parameterName">The name of the parameter.</param>
+    /// <exception cref="ArgumentNullException">Thrown if the <paramref name="value"/> parameter is <b>null</b>.</exception>
+    /// <exception cref="ArgumentEmptyException">Thrown if the <paramref name="value"/> parameter is empty.</exception>
+    public static void ThrowIfNullOrEmpty(string value, [CallerArgumentExpression(nameof(value))] string parameterName = null)
+    {
+        if (value is null)
+        {
+            throw new ArgumentNullException(parameterName);
+        }
+
+        if (string.IsNullOrEmpty(value))
+        {
+            throw new ArgumentEmptyException(parameterName);
+        }
+    }
+
+    /// <summary>
+    /// Function to throw the appropriate exception if the argument is <b>null</b>, or empty.
+    /// </summary>
+    /// <param name="value">The value to evaluate.</param>
+    /// <param name="parameterName">The name of the parameter.</param>
+    /// <exception cref="ArgumentNullException">Thrown if the <paramref name="value"/> parameter is <b>null</b>.</exception>
+    /// <exception cref="ArgumentEmptyException">Thrown if the <paramref name="value"/> parameter is empty.</exception>
+    public static void ThrowIfNullOrEmpty<T>(IReadOnlyCollection<T> value, [CallerArgumentExpression(nameof(value))] string parameterName = null)
+    {
+        if (value is null)
+        {
+            throw new ArgumentNullException(parameterName);
+        }
+
+        if (value.Count == 0)
+        {
+            throw new ArgumentEmptyException(parameterName);
+        }
+    }
+
+    /// <summary>
+    /// Function to throw the appropriate exception if the argument is <b>null</b>, or empty.
+    /// </summary>
+    /// <param name="value">The value to evaluate.</param>
+    /// <param name="parameterName">The name of the parameter.</param>
+    /// <exception cref="ArgumentNullException">Thrown if the <paramref name="value"/> parameter is <b>null</b>.</exception>
+    /// <exception cref="ArgumentEmptyException">Thrown if the <paramref name="value"/> parameter is empty.</exception>
+    public static void ThrowIfNullOrEmpty<TKey, TValue>(IReadOnlyDictionary<TKey, TValue> value, [CallerArgumentExpression(nameof(value))] string parameterName = null)
+    {
+        if (value is null)
+        {
+            throw new ArgumentNullException(parameterName);
+        }
+
+        if (value.Count == 0)
+        {
+            throw new ArgumentEmptyException(parameterName);
+        }
+    }
+
     /// <summary>
     /// Initializes a new instance of the <see cref="ArgumentEmptyException"/> class.
     /// </summary>
     /// <param name="parameterName">The name of the parameter that caused the exception.</param>
     public ArgumentEmptyException(string parameterName)
-        : base(Resources.GOR_ERR_PARAMETER_MUST_NOT_BE_EMPTY, parameterName)
+        : base(string.Format(Resources.GOR_ERR_PARAMETER_MUST_NOT_BE_EMPTY, parameterName))
     {
-
     }
 
     /// <summary>
@@ -50,8 +130,7 @@ public class ArgumentEmptyException
     /// <param name="parameterName">The name of the parameter that caused the exception.</param>
     /// <param name="innerException">The inner exception for this exception.</param>
     public ArgumentEmptyException(string parameterName, Exception innerException)
-        : base(Resources.GOR_ERR_PARAMETER_MUST_NOT_BE_EMPTY, parameterName, innerException)
+        : base(string.Format(Resources.GOR_ERR_PARAMETER_MUST_NOT_BE_EMPTY, parameterName), innerException)
     {
-
     }
 }

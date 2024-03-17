@@ -199,10 +199,7 @@ public sealed class GorgonMefPlugInService(GorgonMefPlugInCache mefCache)
     /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="pluginName"/> is empty.</exception>
     public T GetPlugIn<T>(string pluginName) where T : GorgonPlugIn
     {
-        if (pluginName is null)
-        {
-            throw new ArgumentNullException(nameof(pluginName));
-        }
+        ArgumentNullException.ThrowIfNull(pluginName);
 
         if (string.IsNullOrWhiteSpace(pluginName))
         {
@@ -371,10 +368,7 @@ public sealed class GorgonMefPlugInService(GorgonMefPlugInCache mefCache)
     /// <returns><b>true</b> if the plugin was unloaded successfully, <b>false</b> if it did not exist in the collection, or failed to unload.</returns>
     public bool Unload(string name)
     {
-        if (name is null)
-        {
-            throw new ArgumentNullException(nameof(name));
-        }
+        ArgumentNullException.ThrowIfNull(name);
 
         if (string.IsNullOrWhiteSpace(name))
         {

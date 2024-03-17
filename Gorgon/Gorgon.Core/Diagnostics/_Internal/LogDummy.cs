@@ -109,5 +109,5 @@ internal class LogDummy
     /// <summary>
     /// Initializes a new instance of the <see cref="LogDummy"/> class.
     /// </summary>
-    public LogDummy() => ThreadID = Thread.CurrentThread.ManagedThreadId;
+    public LogDummy() => ThreadID = Environment.CurrentManagedThreadId;
 }

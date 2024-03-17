@@ -140,15 +140,7 @@ internal class LogTextFileProvider
     /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="filePath"/> parameter is empty.</exception>
     public LogTextFileProvider(string filePath)
     {
-        if (filePath is null)
-        {
-            throw new ArgumentNullException(nameof(filePath));
-        }
-
-        if (string.IsNullOrWhiteSpace(filePath))
-        {
-            throw new ArgumentEmptyException(nameof(filePath));
-        }
+        ArgumentEmptyException.ThrowIfNullOrWhiteSpace(filePath);
 
         _filePath = new FileInfo(filePath.FormatPath(Path.DirectorySeparatorChar));
     }

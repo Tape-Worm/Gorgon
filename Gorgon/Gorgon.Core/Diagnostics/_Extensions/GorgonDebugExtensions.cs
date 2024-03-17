@@ -457,10 +457,7 @@ public static class GorgonDebugExtensions
     [Conditional("DEBUG"), DebuggerStepThrough]
     public static void ValidateIndex(this ICollection collection, int index)
     {
-        if (collection is null)
-        {
-            throw new ArgumentNullException(nameof(collection));
-        }
+        ArgumentNullException.ThrowIfNull(collection);
 
         if ((index < 0) || (index >= collection.Count))
         {

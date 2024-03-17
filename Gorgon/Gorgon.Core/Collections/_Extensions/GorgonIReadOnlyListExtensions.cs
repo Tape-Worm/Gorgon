@@ -17,20 +17,11 @@ public static class GorgonIReadOnlyListExtensions
     /// <exception cref="ArgumentNullException">Thrown when the <paramref name="list"/>, or the <paramref name="predicate"/> parameter is <b>null</b>.</exception>
     public static int LastIndexOf<T>(this IReadOnlyList<T> list, Predicate<T> predicate)
     {
-        if (list is null)
-        {
-            throw new ArgumentNullException(nameof(list));
-        }
-
-        if (predicate is null)
-        {
-            throw new ArgumentNullException(nameof(predicate));
-        }
+        ArgumentNullException.ThrowIfNull(list);
+        ArgumentNullException.ThrowIfNull(predicate);
 
         switch (list)
         {
-            case null:
-                throw new ArgumentNullException(nameof(list));
             case List<T> concreteList:
                 return concreteList.FindLastIndex(predicate);
         }
@@ -56,25 +47,11 @@ public static class GorgonIReadOnlyListExtensions
     /// <exception cref="ArgumentNullException">Thrown when the <paramref name="list"/>, or the <paramref name="predicate"/> parameter is <b>null</b>.</exception>
     public static int FirstIndexOf<T>(this IReadOnlyList<T> list, Predicate<T> predicate)
     {
-        if (list is null)
-        {
-            throw new ArgumentNullException(nameof(list));
-        }
-
-        if (predicate is null)
-        {
-            throw new ArgumentNullException(nameof(predicate));
-        }
-
-        if (predicate is null)
-        {
-            throw new ArgumentNullException(nameof(predicate));
-        }
+        ArgumentNullException.ThrowIfNull(list);
+        ArgumentNullException.ThrowIfNull(predicate);
 
         switch (list)
         {
-            case null:
-                throw new ArgumentNullException(nameof(list));
             case List<T> concreteList:
                 return concreteList.FindIndex(predicate);
         }
@@ -256,15 +233,8 @@ public static class GorgonIReadOnlyListExtensions
     /// <exception cref="ArgumentException">Thrown when the <paramref name="array"/> isn't large enough to support the entire list.</exception>
     public static void CopyTo<T>(this IReadOnlyList<T> list, T[] array)
     {
-        if (list is null)
-        {
-            throw new ArgumentNullException(nameof(list));
-        }
-
-        if (array is null)
-        {
-            throw new ArgumentNullException(nameof(array));
-        }
+        ArgumentNullException.ThrowIfNull(list);
+        ArgumentNullException.ThrowIfNull(array);
 
         if (array.Length < list.Count)
         {

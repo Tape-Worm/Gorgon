@@ -515,15 +515,8 @@ public unsafe readonly struct GorgonPtr<T>
             throw new NullReferenceException();
         }
 
-        if (offset < 0)
-        {
-            throw new ArgumentOutOfRangeException(nameof(offset), Resources.GOR_ERR_DATABUFF_OFFSET_TOO_SMALL);
-        }
-
-        if (offset >= SizeInBytes)
-        {
-            throw new ArgumentOutOfRangeException(nameof(SizeInBytes), string.Format(Resources.GOR_ERR_INDEX_OUT_OF_RANGE, 0, SizeInBytes));
-        }
+        ArgumentOutOfRangeException.ThrowIfLessThan(offset, 0);       
+        ArgumentOutOfRangeException.ThrowIfGreaterThanOrEqual(offset, SizeInBytes);
 
         return ref Unsafe.AsRef<Tc>(offset + (byte*)_ptr);
     }
@@ -577,22 +570,12 @@ public unsafe readonly struct GorgonPtr<T>
             throw new ArgumentNullException(nameof(destination));
         }
 
-        if (sourceIndex < 0)
-        {
-            throw new ArgumentOutOfRangeException(nameof(sourceIndex), Resources.GOR_ERR_DATABUFF_OFFSET_TOO_SMALL);
-        }
-
-        if (destIndex < 0)
-        {
-            throw new ArgumentOutOfRangeException(nameof(destIndex), Resources.GOR_ERR_DATABUFF_OFFSET_TOO_SMALL);
-        }
+        ArgumentOutOfRangeException.ThrowIfLessThan(sourceIndex, 0);
+        ArgumentOutOfRangeException.ThrowIfLessThan(destIndex, 0);
 
         count ??= Length - sourceIndex;
 
-        if (count < 0)
-        {
-            throw new ArgumentOutOfRangeException(nameof(count), Resources.GOR_ERR_DATABUFF_SIZE_TOO_SMALL);
-        }
+        ArgumentOutOfRangeException.ThrowIfLessThan(count.Value, 0);        
 
         if (sourceIndex + count.Value > Length)
         {
@@ -629,33 +612,20 @@ public unsafe readonly struct GorgonPtr<T>
     /// </para>
     /// </remarks>
     public void CopyTo(GorgonNativeBuffer<T> destination, int sourceIndex = 0, int? count = null, int destIndex = 0)
-    {
+    {        
         if (_ptr == null)
         {
             throw new NullReferenceException();
         }
 
-        if (destination == null)
-        {
-            throw new ArgumentNullException(nameof(destination));
-        }
+        ArgumentNullException.ThrowIfNull(destination);
 
-        if (sourceIndex < 0)
-        {
-            throw new ArgumentOutOfRangeException(nameof(sourceIndex), Resources.GOR_ERR_DATABUFF_OFFSET_TOO_SMALL);
-        }
-
-        if (destIndex < 0)
-        {
-            throw new ArgumentOutOfRangeException(nameof(destIndex), Resources.GOR_ERR_DATABUFF_OFFSET_TOO_SMALL);
-        }
+        ArgumentOutOfRangeException.ThrowIfLessThan(sourceIndex, 0);
+        ArgumentOutOfRangeException.ThrowIfLessThan(destIndex, 0);
 
         count ??= Length - sourceIndex;
 
-        if (count < 0)
-        {
-            throw new ArgumentOutOfRangeException(nameof(count), Resources.GOR_ERR_DATABUFF_SIZE_TOO_SMALL);
-        }
+        ArgumentOutOfRangeException.ThrowIfLessThan(count.Value, 0);
 
         if (sourceIndex + count.Value > Length)
         {
@@ -698,27 +668,13 @@ public unsafe readonly struct GorgonPtr<T>
             throw new NullReferenceException();
         }
 
-        if (destination == null)
-        {
-            throw new ArgumentNullException(nameof(destination));
-        }
-
-        if (sourceIndex < 0)
-        {
-            throw new ArgumentOutOfRangeException(nameof(sourceIndex), Resources.GOR_ERR_DATABUFF_OFFSET_TOO_SMALL);
-        }
-
-        if (destIndex < 0)
-        {
-            throw new ArgumentOutOfRangeException(nameof(destIndex), Resources.GOR_ERR_DATABUFF_OFFSET_TOO_SMALL);
-        }
+        ArgumentNullException.ThrowIfNull(destination);
+        ArgumentOutOfRangeException.ThrowIfLessThan(sourceIndex, 0);        
+        ArgumentOutOfRangeException.ThrowIfLessThan(destIndex, 0);        
 
         count ??= Length - sourceIndex;
 
-        if (count < 0)
-        {
-            throw new ArgumentOutOfRangeException(nameof(count), Resources.GOR_ERR_DATABUFF_SIZE_TOO_SMALL);
-        }
+        ArgumentOutOfRangeException.ThrowIfLessThan(count.Value, 0);        
 
         if (sourceIndex + count.Value > Length)
         {
@@ -762,27 +718,18 @@ public unsafe readonly struct GorgonPtr<T>
             throw new NullReferenceException();
         }
 
-        if (stream == null)
-        {
-            throw new ArgumentNullException(nameof(stream));
-        }
+        ArgumentNullException.ThrowIfNull(stream);
 
         if (!stream.CanWrite)
         {
             throw new IOException(Resources.GOR_ERR_STREAM_IS_READONLY);
         }
 
-        if (startIndex < 0)
-        {
-            throw new ArgumentOutOfRangeException(nameof(startIndex), Resources.GOR_ERR_DATABUFF_OFFSET_TOO_SMALL);
-        }
+        ArgumentOutOfRangeException.ThrowIfLessThan(startIndex, 0);        
 
         count ??= Length - startIndex;
 
-        if (count < 0)
-        {
-            throw new ArgumentOutOfRangeException(nameof(count), Resources.GOR_ERR_DATABUFF_SIZE_TOO_SMALL);
-        }
+        ArgumentOutOfRangeException.ThrowIfLessThan(count.Value, 0);        
 
         if (startIndex + count.Value > Length)
         {
@@ -824,18 +771,12 @@ public unsafe readonly struct GorgonPtr<T>
             throw new NullReferenceException();
         }
 
-        if (index < 0)
-        {
-            throw new ArgumentOutOfRangeException(nameof(index), Resources.GOR_ERR_DATABUFF_OFFSET_TOO_SMALL);
-        }
+        ArgumentOutOfRangeException.ThrowIfLessThan(index, 0);        
 
         count ??= Length - index;
 
-        if (count < 0)
-        {
-            throw new ArgumentOutOfRangeException(nameof(count), Resources.GOR_ERR_DATABUFF_SIZE_TOO_SMALL);
-        }
-
+        ArgumentOutOfRangeException.ThrowIfLessThan(count.Value, 0);
+        
         if (index + count.Value > Length)
         {
             throw new ArgumentException(Resources.GOR_ERR_DATABUFF_BUFFER_OVERRUN);
@@ -953,26 +894,18 @@ public unsafe readonly struct GorgonPtr<T>
             throw new NullReferenceException();
         }
 
-        if (index < 0)
-        {
-            throw new ArgumentOutOfRangeException(nameof(index), Resources.GOR_ERR_DATABUFF_OFFSET_TOO_SMALL);
-        }
+        ArgumentOutOfRangeException.ThrowIfLessThan(index, 0);
 
         count ??= Length - index;
 
-        if (count < 0)
-        {
-            throw new ArgumentOutOfRangeException(nameof(count), Resources.GOR_ERR_DATABUFF_SIZE_TOO_SMALL);
-        }
+        ArgumentOutOfRangeException.ThrowIfLessThan(count.Value, 0);
 
-#pragma warning disable IDE0046 // Convert to conditional expression
         if (index + count.Value > Length)
         {
             throw new ArgumentException(Resources.GOR_ERR_DATABUFF_BUFFER_OVERRUN);
         }
 
         return new DX.DataStream((nint)(_ptr + index), count.Value * sizeof(T), true, true);
-#pragma warning restore IDE0046 // Convert to conditional expression
     }
 
     /// <summary>
@@ -1018,26 +951,18 @@ public unsafe readonly struct GorgonPtr<T>
             throw new NullReferenceException();
         }
 
-        if (index < 0)
-        {
-            throw new ArgumentOutOfRangeException(nameof(index), Resources.GOR_ERR_DATABUFF_OFFSET_TOO_SMALL);
-        }
+        ArgumentOutOfRangeException.ThrowIfLessThan(index, 0);
 
         count ??= Length - index;
 
-        if (count < 0)
-        {
-            throw new ArgumentOutOfRangeException(nameof(count), Resources.GOR_ERR_DATABUFF_SIZE_TOO_SMALL);
-        }
+        ArgumentOutOfRangeException.ThrowIfLessThan(count.Value, 0);
 
-#pragma warning disable IDE0046 // Convert to conditional expression
         if (index + count.Value > Length)
         {
             throw new ArgumentException(Resources.GOR_ERR_DATABUFF_BUFFER_OVERRUN);
         }
 
         return new DX.DataBuffer((nint)(_ptr + index), count.Value * sizeof(T));
-#pragma warning restore IDE0046 // Convert to conditional expression
     }
 
     /// <summary>
@@ -1083,26 +1008,18 @@ public unsafe readonly struct GorgonPtr<T>
             throw new NullReferenceException();
         }
 
-        if (index < 0)
-        {
-            throw new ArgumentOutOfRangeException(nameof(index), Resources.GOR_ERR_DATABUFF_OFFSET_TOO_SMALL);
-        }
+        ArgumentOutOfRangeException.ThrowIfLessThan(index, 0);
 
         count ??= Length - index;
 
-        if (count < 0)
-        {
-            throw new ArgumentOutOfRangeException(nameof(count), Resources.GOR_ERR_DATABUFF_SIZE_TOO_SMALL);
-        }
+        ArgumentOutOfRangeException.ThrowIfLessThan(count.Value, 0);
 
-#pragma warning disable IDE0046 // Convert to conditional expression
         if (index + count.Value > Length)
         {
             throw new ArgumentException(Resources.GOR_ERR_DATABUFF_BUFFER_OVERRUN);
         }
 
         return new DX.DataPointer((nint)(_ptr + index), count.Value * sizeof(T));
-#pragma warning restore IDE0046 // Convert to conditional expression
     }
 
     /// <summary>
@@ -1127,26 +1044,18 @@ public unsafe readonly struct GorgonPtr<T>
             throw new NullReferenceException();
         }
 
-        if (index < 0)
-        {
-            throw new ArgumentOutOfRangeException(nameof(index), Resources.GOR_ERR_DATABUFF_OFFSET_TOO_SMALL);
-        }
+        ArgumentOutOfRangeException.ThrowIfLessThan(index, 0);
 
         count ??= Length - index;
 
-        if (count < 0)
-        {
-            throw new ArgumentOutOfRangeException(nameof(count), Resources.GOR_ERR_DATABUFF_SIZE_TOO_SMALL);
-        }
+        ArgumentOutOfRangeException.ThrowIfLessThan(count.Value, 0);
 
-#pragma warning disable IDE0046 // Convert to conditional expression
         if (index + count.Value > Length)
         {
             throw new ArgumentException(Resources.GOR_ERR_DATABUFF_BUFFER_OVERRUN);
         }
 
         return new Span<T>(_ptr + index, count.Value);
-#pragma warning restore IDE0046 // Convert to conditional expression
     }
 
     /// <summary>
@@ -1340,8 +1249,6 @@ public unsafe readonly struct GorgonPtr<T>
         return true;
     }
 
-
-
     /// <summary>Initializes a new instance of the <see cref="GorgonPtr{T}" /> struct.</summary>
     /// <param name="ptr">The pointer to wrap.</param>
     /// <param name="indexOffset">The offset, in indices of this pointer within the memory block.</param>
@@ -1392,10 +1299,7 @@ public unsafe readonly struct GorgonPtr<T>
     /// </remarks>
     public GorgonPtr(DX.DataBuffer dataBuffer)
     {
-        if (dataBuffer == null)
-        {
-            throw new ArgumentNullException(nameof(dataBuffer));
-        }
+        ArgumentNullException.ThrowIfNull(dataBuffer);
 
         _index = 0;
         _ptr = (T*)dataBuffer.DataPointer;
@@ -1413,10 +1317,7 @@ public unsafe readonly struct GorgonPtr<T>
     /// </remarks>
     public GorgonPtr(DX.DataStream dataStream)
     {
-        if (dataStream == null)
-        {
-            throw new ArgumentNullException(nameof(dataStream));
-        }
+        ArgumentNullException.ThrowIfNull(dataStream);
 
         _index = 0;
         _ptr = (T*)dataStream.DataPointer;
@@ -1432,22 +1333,13 @@ public unsafe readonly struct GorgonPtr<T>
     /// <exception cref="ArgumentException">Thrown when the <paramref name="index"/> plus the <paramref name="count"/> is larger than the capacity of the <paramref name="buffer"/>.</exception>
     public GorgonPtr(GorgonNativeBuffer<T> buffer, int index = 0, int? count = null)
     {
-        if (buffer == null)
-        {
-            throw new ArgumentNullException(nameof(buffer));
-        }
+        ArgumentNullException.ThrowIfNull(buffer);
 
-        if (index < 0)
-        {
-            throw new ArgumentOutOfRangeException(nameof(index), Resources.GOR_ERR_DATABUFF_OFFSET_TOO_SMALL);
-        }
+        ArgumentOutOfRangeException.ThrowIfLessThan(index, 0);
 
-        count ??= buffer.Length - index;
+        count ??= Length - index;
 
-        if (count <= 0)
-        {
-            throw new ArgumentOutOfRangeException(nameof(count));
-        }
+        ArgumentOutOfRangeException.ThrowIfLessThan(count.Value, 0);
 
         if ((index + count) > buffer.Length)
         {
@@ -1479,7 +1371,7 @@ public unsafe readonly struct GorgonPtr<T>
             throw new NullReferenceException(Resources.GOR_ERR_PTR_NULL);
         }
 
-        if (count <= 0)
+        if (count <= 1)
         {
             throw new ArgumentException(Resources.GOR_ERR_DATABUFF_SIZE_TOO_SMALL, nameof(count));
         }
@@ -1509,7 +1401,7 @@ public unsafe readonly struct GorgonPtr<T>
             throw new NullReferenceException(Resources.GOR_ERR_PTR_NULL);
         }
 
-        if (count <= 0)
+        if (count <= 1)
         {
             throw new ArgumentException(Resources.GOR_ERR_DATABUFF_SIZE_TOO_SMALL, nameof(count));
         }

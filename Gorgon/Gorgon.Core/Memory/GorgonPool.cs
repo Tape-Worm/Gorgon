@@ -143,10 +143,7 @@ public class GorgonPool<T>
     /// </remarks>
     public void Deallocate(ref T item, Action<T> finalizer = null)
     {
-        if (item is null)
-        {
-            throw new ArgumentNullException(nameof(item));
-        }
+        ArgumentNullException.ThrowIfNull(item);
 
         if (Interlocked.Increment(ref _availableSlots) > TotalSize)
         {

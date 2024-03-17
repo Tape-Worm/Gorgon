@@ -889,14 +889,12 @@ public static class GorgonMathExtensions
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static int Sign(this sbyte value)
     {
-#pragma warning disable IDE0046 // Convert to conditional expression
         if (value == 0)
         {
             return 0;
         }
 
         return value < 0 ? -1 : 1;
-#pragma warning restore IDE0046 // Convert to conditional expression
     }
 
     /// <summary>
@@ -907,14 +905,12 @@ public static class GorgonMathExtensions
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static int Sign(this short value)
     {
-#pragma warning disable IDE0046 // Convert to conditional expression
         if (value == 0)
         {
             return 0;
         }
 
         return value < 0 ? -1 : 1;
-#pragma warning restore IDE0046 // Convert to conditional expression
     }
 
     /// <summary>
@@ -925,14 +921,12 @@ public static class GorgonMathExtensions
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static int Sign(this decimal value)
     {
-#pragma warning disable IDE0046 // Convert to conditional expression
         if (value == 0)
         {
             return 0;
         }
 
         return value < 0 ? -1 : 1;
-#pragma warning restore IDE0046 // Convert to conditional expression
     }
 
     /// <summary>
@@ -943,14 +937,12 @@ public static class GorgonMathExtensions
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static int Sign(this float value)
     {
-#pragma warning disable IDE0046 // Convert to conditional expression
         if (value.EqualsEpsilon(0))
         {
             return 0;
         }
 
         return value < 0 ? -1 : 1;
-#pragma warning restore IDE0046 // Convert to conditional expression
     }
 
     /// <summary>
@@ -961,14 +953,12 @@ public static class GorgonMathExtensions
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static int Sign(this double value)
     {
-#pragma warning disable IDE0046 // Convert to conditional expression
         if (value.EqualsEpsilon(0))
         {
             return 0;
         }
 
         return value < 0 ? -1 : 1;
-#pragma warning restore IDE0046 // Convert to conditional expression
     }
 
     /// <summary>

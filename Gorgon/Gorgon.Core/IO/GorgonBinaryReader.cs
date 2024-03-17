@@ -375,10 +375,7 @@ public class GorgonBinaryReader(Stream input, Encoding encoder, bool keepStreamO
     public void ReadRange<T>(T[] value, int startIndex = 0, int? count = null)
         where T : unmanaged
     {
-        if (value is null)
-        {
-            throw new ArgumentNullException(nameof(value));
-        }
+        ArgumentNullException.ThrowIfNull(value);
 
         count ??= value.Length - startIndex;
 

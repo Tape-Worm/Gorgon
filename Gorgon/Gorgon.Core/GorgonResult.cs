@@ -192,25 +192,8 @@ public readonly struct GorgonResult
     /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="name"/> or <paramref name="description"/> parameter is an empty string.</exception>
     public GorgonResult(string name, int code, string description)
     {
-        if (name is null)
-        {
-            throw new ArgumentNullException(nameof(name));
-        }
-
-        if (description is null)
-        {
-            throw new ArgumentNullException(nameof(description));
-        }
-
-        if (string.IsNullOrWhiteSpace(name))
-        {
-            throw new ArgumentEmptyException(nameof(name));
-        }
-
-        if (string.IsNullOrEmpty(description))
-        {
-            throw new ArgumentEmptyException(nameof(description));
-        }
+        ArgumentEmptyException.ThrowIfNullOrWhiteSpace(name);
+        ArgumentEmptyException.ThrowIfNullOrWhiteSpace(description);
 
         Name = name;
         Description = description;

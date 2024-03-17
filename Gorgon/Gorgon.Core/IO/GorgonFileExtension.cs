@@ -43,7 +43,6 @@ namespace Gorgon.IO;
 public readonly struct GorgonFileExtension
         : IEquatable<GorgonFileExtension>, IComparable<GorgonFileExtension>, IEquatable<string>, IComparable<string>, IGorgonNamedObject
 {
-
     /// <summary>
     /// The file extension without the leading period.
     /// </summary>
@@ -53,8 +52,6 @@ public readonly struct GorgonFileExtension
     /// The description of the file type.
     /// </summary>
     public readonly string Description;
-
-
 
     /// <summary>
     /// Property to return the name of the object.
@@ -76,8 +73,6 @@ public readonly struct GorgonFileExtension
     {
         get;
     }
-
-
 
     /// <summary>
     /// Operator to return whether 2 instances are equal.
@@ -189,16 +184,13 @@ public readonly struct GorgonFileExtension
     /// </returns>
     public bool Equals(string other)
     {
-#pragma warning disable IDE0046 // Convert to conditional expression
         if (string.IsNullOrWhiteSpace(other))
         {
             return false;
         }
 
-        return other.StartsWith(".", StringComparison.Ordinal)
-            ? string.Equals(FullExtension, other, StringComparison.OrdinalIgnoreCase)
+        return other.StartsWith('.') ? string.Equals(FullExtension, other, StringComparison.OrdinalIgnoreCase)
             : string.Equals(Extension, other, StringComparison.OrdinalIgnoreCase);
-#pragma warning restore IDE0046 // Convert to conditional expression
     }
 
     /// <summary>
@@ -208,19 +200,15 @@ public readonly struct GorgonFileExtension
     /// <returns>
     /// A value that indicates the relative order of the objects being compared. The return value has the following meanings: Value Meaning Less than zero This object is less than the <paramref name="other" /> parameter.Zero This object is equal to <paramref name="other" />. Greater than zero This object is greater than <paramref name="other" />.
     /// </returns>
-    /// <exception cref="NotImplementedException"></exception>
     public int CompareTo(string other)
     {
-#pragma warning disable IDE0046 // Convert to conditional expression
         if (string.IsNullOrWhiteSpace(other))
         {
             return -1;
         }
 
-        return other.StartsWith(".", StringComparison.Ordinal)
-            ? string.Compare(FullExtension, other, StringComparison.OrdinalIgnoreCase)
+        return other.StartsWith('.') ? string.Compare(FullExtension, other, StringComparison.OrdinalIgnoreCase)
             : string.Compare(Extension, other, StringComparison.OrdinalIgnoreCase);
-#pragma warning restore IDE0046 // Convert to conditional expression
     }
 
 
@@ -230,21 +218,15 @@ public readonly struct GorgonFileExtension
     /// </summary>
     /// <param name="extension">The extension.</param>
     /// <param name="description">The description.</param>
+    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="extension"/> parameter is <b>null</b>.</exception>
+    /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="extension"/> parameter is empty.</exception>
     public GorgonFileExtension(string extension, string description)
     {
-        if (extension is null)
-        {
-            throw new ArgumentNullException(nameof(extension));
-        }
+        ArgumentEmptyException.ThrowIfNullOrWhiteSpace(extension);
 
-        if (extension.StartsWith(".", StringComparison.Ordinal))
+        if (extension.StartsWith('.'))
         {
             extension = extension[1..];
-        }
-
-        if (string.IsNullOrWhiteSpace(extension))
-        {
-            throw new ArgumentEmptyException(nameof(extension));
         }
 
         Extension = extension;
@@ -256,6 +238,8 @@ public readonly struct GorgonFileExtension
     /// Initializes a new instance of the <see cref="GorgonFileExtension"/> struct.
     /// </summary>
     /// <param name="extension">The extension.</param>
+    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="extension"/> parameter is <b>null</b>.</exception>
+    /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="extension"/> parameter is empty.</exception>
     public GorgonFileExtension(string extension)
         : this(extension, string.Empty)
     {

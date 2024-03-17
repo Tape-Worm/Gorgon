@@ -343,10 +343,7 @@ public sealed class GorgonMefPlugInCache
     /// </remarks>
     public void LoadPlugInAssemblies(string directoryPath, string filePattern = "*.dll")
     {
-        if (directoryPath is null)
-        {
-            throw new ArgumentNullException(nameof(directoryPath));
-        }
+        ArgumentNullException.ThrowIfNull(directoryPath);
 
         if (string.IsNullOrWhiteSpace(directoryPath))
         {

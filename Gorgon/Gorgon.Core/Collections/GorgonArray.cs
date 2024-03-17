@@ -322,10 +322,7 @@ public class GorgonArray<T>
     /// <exception cref="ArgumentNullException">Thrown when the <paramref name="array"/> parameter is <b>null</b>.</exception>
     public void CopyDirty(GorgonArray<T> array)
     {
-        if (array == null)
-        {
-            throw new ArgumentNullException(nameof(array));
-        }
+        ArgumentNullException.ThrowIfNull(array);
 
         // Find all the dirty entries (if we haven't already).
         if (_dirtyItems.Count == 0)
@@ -357,10 +354,7 @@ public class GorgonArray<T>
     /// <exception cref="ArgumentNullException"><paramref name="array" /> == null.</exception>
     public void CopyTo(GorgonArray<T> array, int destIndex = 0)
     {
-        if (array == null)
-        {
-            throw new ArgumentNullException(nameof(array));
-        }
+        ArgumentNullException.ThrowIfNull(array);
 
         if (array == this)
         {

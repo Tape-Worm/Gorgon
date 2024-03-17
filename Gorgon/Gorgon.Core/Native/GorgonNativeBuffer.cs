@@ -75,15 +75,12 @@ public sealed class GorgonNativeBuffer<T>
     : IDisposable, IReadOnlyList<T>
     where T : unmanaged
 {
-
     // The pointer to unmanaged memory.
     private GorgonPtr<T> _memoryBlock;
     // A pinned array.
     private GCHandle _pinnedArray;
     // Flag to indicate that we allocated this memory ourselves.
     private readonly bool _ownsMemory;
-
-
 
     /// <summary>
     /// Property to return whether this buffer is an alias of a pointer.
@@ -133,8 +130,6 @@ public sealed class GorgonNativeBuffer<T>
     /// <exception cref="IndexOutOfRangeException">Thrown if the index is less than 0, or greater than/equal to <see cref="Length"/>.</exception>
     public ref T this[int index] => ref _memoryBlock[index];
 
-
-
     /// <summary>
     /// Function to validate parameters used to create a native buffer from a managed array.
     /// </summary>
@@ -144,16 +139,9 @@ public sealed class GorgonNativeBuffer<T>
     /// <param name="count">The number of items in the array to map to the buffer.</param>
     internal static void ValidateArrayParams<TArrayType>(TArrayType[] array, int index, int count)
     {
-        if (array is null)
-        {
-            throw new ArgumentNullException(nameof(array));
-        }
-
-        if (index < 0)
-        {
-            throw new ArgumentOutOfRangeException(nameof(index), Resources.GOR_ERR_DATABUFF_OFFSET_TOO_SMALL);
-        }
-
+        ArgumentNullException.ThrowIfNull(array);
+        ArgumentOutOfRangeException.ThrowIfLessThan(index, 0);
+        
         if ((index + count) > array.Length)
         {
             throw new ArgumentException(string.Format(Resources.GOR_ERR_DATABUFF_SIZE_OFFSET_TOO_LARGE, index, count));
@@ -187,6 +175,8 @@ public sealed class GorgonNativeBuffer<T>
         DX.Utilities.FreeMemory(_memoryBlock);
         GC.RemoveMemoryPressure(SizeInBytes);
         _memoryBlock = GorgonPtr<T>.NullPtr;
+
+        GC.SuppressFinalize(this);
     }
 
     /// <summary>
@@ -235,10 +225,7 @@ public sealed class GorgonNativeBuffer<T>
     /// </remarks>
     public void CopyTo(GorgonNativeBuffer<T> destination, int sourceIndex = 0, int? count = null, int destIndex = 0)
     {
-        if (destination is null)
-        {
-            throw new ArgumentNullException(nameof(destination));
-        }
+        ArgumentNullException.ThrowIfNull(destination);        
 
         _memoryBlock.CopyTo(destination._memoryBlock, sourceIndex, count, destIndex);
     }
@@ -265,10 +252,7 @@ public sealed class GorgonNativeBuffer<T>
     /// </remarks>
     public void CopyTo(T[] destination, int sourceIndex = 0, int? count = null, int destIndex = 0)
     {
-        if (destination is null)
-        {
-            throw new ArgumentNullException(nameof(destination));
-        }
+        ArgumentNullException.ThrowIfNull(destination);
 
         _memoryBlock.CopyTo(destination, sourceIndex, count, destIndex);
     }

@@ -71,7 +71,6 @@ public static class GorgonArrayPool<T>
     /// <returns>The best suited array pool.</returns>
     public static ArrayPool<T> GetBestPool(int size)
     {
-#pragma warning disable IDE0046 // Convert to conditional expression
         if (size <= 1_048_576)
         {
             return SharedTiny;
@@ -88,8 +87,6 @@ public static class GorgonArrayPool<T>
         }
 
         return size <= 131_217_728 ? SharedLarge : SharedHuge;
-#pragma warning restore IDE0046 // Convert to conditional expression
-
     }
 
 }
