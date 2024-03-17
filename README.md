@@ -154,7 +154,7 @@ Source code
 -----------
 
 The develop branch contains the current development version of Gorgon 4.0.  
-Teh main branch contains the release version of Gorgon 3.2.
+The [main](Gorgon/tree/main) branch contains the release version of Gorgon 3.2.
 
 Acknowledgements
 ================
