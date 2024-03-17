@@ -208,5 +208,4 @@ static class Program
             CommonEditorResources.UnloadResources();
         }
     }
-
 }
