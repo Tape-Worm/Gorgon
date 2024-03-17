@@ -13,7 +13,7 @@
     <RepositoryUrl>https://github.com/Tape-Worm/Gorgon</RepositoryUrl>
     <RepositoryType>Git</RepositoryType>
     <PackageTags>C#, .NET Framework, Direct 3D, SharpDX, Winforms</PackageTags>
-    <EnableNETAnalyzers>false</EnableNETAnalyzers>
+    <EnableNETAnalyzers>True</EnableNETAnalyzers>
     <RootNamespace>Gorgon</RootNamespace>
     <NeutralLanguage>
     </NeutralLanguage>
@@ -22,12 +22,12 @@
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
     <AssemblyVersion>4.0.0.0</AssemblyVersion>
     <FileVersion>4.0.0.0</FileVersion>
-
     <SignAssembly>false</SignAssembly>
     <AssemblyOriginatorKeyFile>
     </AssemblyOriginatorKeyFile>
     <DelaySign>false</DelaySign>
     <ImplicitUsings>enable</ImplicitUsings>
+    <EnforceCodeStyleInBuild>True</EnforceCodeStyleInBuild>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <DocumentationFile>bin\Release\Gorgon.Core.xml</DocumentationFile>
@@ -85,11 +85,7 @@
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\g.png">
-      <Pack>True</Pack>
-      <PackagePath>
-      </PackagePath>
-    </None>
+    <None Include="..\g.png"/>
   </ItemGroup>
   <ItemGroup>
     <Compile Update="Properties\Resources.Designer.cs">

@@ -145,7 +145,7 @@ internal class LogTextFileProvider
             throw new ArgumentNullException(nameof(filePath));
         }
 
-        if (filePath.IsWhiteSpaceOrEmpty())
+        if (string.IsNullOrWhiteSpace(filePath))
         {
             throw new ArgumentEmptyException(nameof(filePath));
         }

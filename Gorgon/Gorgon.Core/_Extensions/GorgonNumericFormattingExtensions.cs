@@ -1,7 +1,5 @@
-﻿
-// 
-// Gorgon
-// Copyright (C) 2011 Michael Winsor
+﻿// Gorgon.
+// Copyright (C) 2024 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -11,18 +9,17 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software
+// all copies or substantial portions of the Software.
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE
+// THE SOFTWARE.
 // 
-// Created: Thursday, August 25, 2011 8:10:31 PM
-// 
-
+// Created: November 17, 2023 6:26:10 PM
+//
 
 using System.Globalization;
 using Gorgon.Math;
@@ -31,10 +28,19 @@ using Gorgon.Properties;
 namespace Gorgon.Core;
 
 /// <summary>
-/// Extension methods to provide formatting on numeric values for memory and hexadecimal values
+/// Extension methods to provide formatting on numeric values for memory and hexadecimal values.
 /// </summary>
 public static class GorgonNumericFormattingExtension
 {
+    /// <summary>
+    /// FUnction to return a string formatted to the current culture.
+    /// </summary>
+    /// <param name="value">Value to format.</param>
+    /// <param name="sizeType">Size value to use.</param>
+    /// <param name="requireDecimal">[Optional] <b>true</b> if the value should have a decimal place always appear, or <b>false</b> if not.</param>
+    /// <returns>The string formatted to the current culture.</returns>
+    private static string GetCultureStringDecimal(decimal value, string sizeType, bool requireDecimal) =>
+        string.Format(CultureInfo.CurrentCulture, requireDecimal ? "{0:0.0#} {1}" : "{0:0.#} {1}", value, sizeType);
 
     /// <summary>
     /// FUnction to return a string formatted to the current culture.
@@ -42,7 +48,7 @@ public static class GorgonNumericFormattingExtension
     /// <param name="value">Value to format.</param>
     /// <param name="sizeType">Size value to use.</param>
     /// <param name="requireDecimal">[Optional] <b>true</b> if the value should have a decimal place always appear, or <b>false</b> if not.</param>
-    /// <returns>The string formatted to the current UI culture.</returns>
+    /// <returns>The string formatted to the current culture.</returns>
     private static string GetCultureString(double value, string sizeType, bool requireDecimal = true) =>
         string.Format(CultureInfo.CurrentCulture, requireDecimal ? "{0:0.0#} {1}" : "{0:0.#} {1}", value, sizeType);
 
@@ -186,7 +192,7 @@ public static class GorgonNumericFormattingExtension
     /// <para>
     /// If the value cannot be represented with a string suffix, then the number of bytes will be displayed as default.
     /// </para>
-    /// </remarks>
+    /// </remarks>    
     public static string FormatMemory(this uint amount)
     {
         double scale = amount / 1073741824.0;
@@ -381,6 +387,49 @@ public static class GorgonNumericFormattingExtension
         scale = amount / 1024.0;
 
         return GetCultureString(scale >= 1.0 ? scale : amount, scale >= 1.0 ? Resources.GOR_UNIT_MEM_KB : Resources.GOR_UNIT_MEM_BYTES, false);
+    }
+
+    /// <summary>
+    /// Function to return a formatted string containing the memory amount.
+    /// </summary>
+    /// <param name="amount">Amount of memory in bytes to format.</param>
+    /// <returns>A string containing the formatted amount of memory.</returns>
+    /// <remarks>
+    /// This overload is like the <see cref="FormatMemory(int)"/> method, only it will return the value with decimal formatting. e.g: "3.25 MB" instead of "3.0 MB"
+    /// </remarks>
+    public static string FormatMemory(this decimal amount)
+    {
+        decimal scale = amount.Abs() / 1125899906842624.0M;
+
+        if (scale >= 1.0M)
+        {
+            return GetCultureStringDecimal(scale >= 1.0M ? scale : amount, Resources.GOR_UNIT_MEM_PB, true);
+        }
+
+        scale = amount / 1099511627776.0M;
+
+        if (scale >= 1.0M)
+        {
+            return GetCultureStringDecimal(scale >= 1.0M ? scale : amount, Resources.GOR_UNIT_MEM_TB, true);
+        }
+
+        scale = amount / 1073741824.0M;
+
+        if (scale >= 1.0M)
+        {
+            return GetCultureStringDecimal(scale >= 1.0M ? scale : amount, Resources.GOR_UNIT_MEM_GB, true);
+        }
+
+        scale = amount / 1048576.0M;
+
+        if (scale >= 1.0M)
+        {
+            return GetCultureStringDecimal(scale >= 1.0M ? scale : amount, Resources.GOR_UNIT_MEM_MB, true);
+        }
+
+        scale = amount / 1024.0M;
+
+        return GetCultureStringDecimal(scale >= 1.0M ? scale : amount, scale >= 1.0M ? Resources.GOR_UNIT_MEM_KB : Resources.GOR_UNIT_MEM_BYTES, false);
     }
 
     /// <summary>
@@ -618,7 +667,7 @@ public static class GorgonNumericFormattingExtension
     /// 
     /// Console.WriteLine(hexValue.FormatHex()); // Produces "074B814C" for x86, and "00000000074B814C" for x64
     /// </code>
-    /// </remarks>
+    /// </remarks>    
     public static string FormatHex(this nuint pointer) => Environment.Is64BitProcess
                    ? ((long)pointer).ToString("x").PadLeft(16, '0')
                    : ((int)pointer).ToString("x").PadLeft(8, '0');

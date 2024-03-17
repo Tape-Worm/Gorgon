@@ -40,7 +40,6 @@ namespace Gorgon.Editor;
 public abstract class PropertyMonitor
     : INotifyPropertyChanging, INotifyPropertyChanged
 {
-
     /// <summary>
     /// Event triggered when a property is changed.
     /// </summary>
@@ -51,12 +50,8 @@ public abstract class PropertyMonitor
     /// </summary>
     public event PropertyChangingEventHandler PropertyChanging;
 
-
-
     // The list of properties to use.
     private HashSet<string> _properties;
-
-
 
     /// <summary>
     /// Property to set or return whether to use property name validation when evaluating property changes.
@@ -75,8 +70,6 @@ public abstract class PropertyMonitor
 #else
     }
 #endif
-
-
 
     /// <summary>
     /// Function to retrieve all property names.
@@ -110,16 +103,14 @@ public abstract class PropertyMonitor
         foreach (PropertyInfo prop in props)
         {
             // We only care about the member name, not which interface owns it, so strip off the declaring part.
-            name.Length = 0;
-            name.Append(prop.Name);
-            int lastIndex = name.LastIndexOf('.');
+            string finalName = prop.Name;
+
+            int lastIndex = finalName.LastIndexOf('.');
 
             if ((lastIndex != -1) && (lastIndex < name.Length - 1))
             {
-                name.Remove(0, lastIndex + 1);
+                finalName = prop.Name[(lastIndex + 1)..^1];
             }
-
-            string finalName = name.ToString();
 
             if (!_properties.Contains(finalName))
             {
@@ -288,5 +279,4 @@ public abstract class PropertyMonitor
             handler?.Invoke(this, new PropertyChangedEventArgs(propName));
         }
     }
-
 }

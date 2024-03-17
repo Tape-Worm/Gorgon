@@ -36,17 +36,10 @@ namespace Gorgon.Renderers;
 /// </summary>
 internal class TextCodeParser
 {
-
     // Buffer used to parse the string.
     private readonly StringBuilder _colorBuffer = new(16);
     // Buffer used to parse the string.
     private readonly StringBuilder _parseBuffer = new(256);
-
-
-
-
-
-
 
     /// <summary>
     /// Function to retrieve the color value from a hex code.
@@ -73,6 +66,47 @@ internal class TextCodeParser
     }
 
     /// <summary>
+    /// Function to find the index of the control characters in a string builder.
+    /// </summary>
+    /// <param name="line">The line containing the text to evaluate.</param>
+    /// <param name="value">The string value to look for.</param>
+    /// <param name="startIndex">The starting index within the line to start searching from.</param>
+    /// <returns>The index of the control character, or -1 if not found.</returns>
+    private int IndexOfControlChars(StringBuilder line, string value, int startIndex)
+    {
+        if (line.Length < value.Length)
+        {
+            return -1;
+        }
+
+        int charCount = 0;
+
+        for (int i = 0; i < value.Length; ++i)
+        {
+            char c = value[i];
+
+            for (int j = startIndex; j < line.Length; ++j)
+            {
+                if (char.ToUpperInvariant(c) != char.ToUpperInvariant(line[j]))
+                {
+                    continue;
+                }
+
+                startIndex = j;
+                ++charCount;
+                break;
+            }
+
+            if (charCount == value.Length)
+            {
+                return (startIndex - charCount) + 1;
+            }
+        }
+
+        return -1;
+    }
+
+    /// <summary>
     /// Function to parse the text.
     /// </summary>
     /// <param name="encodedText">The encoded text to parse.</param>
@@ -84,19 +118,19 @@ internal class TextCodeParser
             return (encodedText, new List<ColorBlock>());
         }
 
-        var blocks = new List<ColorBlock>();
+        List<ColorBlock> blocks = [];
         int startTagIndex;
         _parseBuffer.Length = 0;
         _parseBuffer.Append(encodedText);
 
         do
-        {
-            startTagIndex = _parseBuffer.IndexOf("[c", comparison: StringComparison.CurrentCultureIgnoreCase);
+        {               
+            startTagIndex = IndexOfControlChars(_parseBuffer, "[c", 0);
 
             int endTagIndex;
             if (startTagIndex != -1)
             {
-                endTagIndex = _parseBuffer.IndexOf("]", startTagIndex, StringComparison.CurrentCulture);
+                endTagIndex = IndexOfControlChars(_parseBuffer, "]", startTagIndex);
             }
             else
             {
@@ -106,7 +140,7 @@ internal class TextCodeParser
             int closeTagIndex;
             if (endTagIndex != -1)
             {
-                closeTagIndex = _parseBuffer.IndexOf("[/c]", endTagIndex, StringComparison.CurrentCultureIgnoreCase);
+                closeTagIndex = IndexOfControlChars(_parseBuffer, "[/c]", endTagIndex);
             }
             else
             {
@@ -140,5 +174,4 @@ internal class TextCodeParser
 
         return (_parseBuffer.ToString(), blocks);
     }
-
 }

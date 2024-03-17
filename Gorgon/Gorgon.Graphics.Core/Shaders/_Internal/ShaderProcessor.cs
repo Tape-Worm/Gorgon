@@ -170,19 +170,19 @@ internal class ShaderProcessor
         IList<string> lines = code.ToString().Split('\n');
         int i = 0;
 
-        var includeLine = new StringBuilder();
+        StringBuilder includeLine = new();
 
         while (i < lines.Count)
         {
-            includeLine.Length = 0;
-            includeLine.Append(lines[i]);
-            TrimLine(includeLine);
-
-            if (includeLine.IndexOf("#GorgonInclude", comparison: StringComparison.OrdinalIgnoreCase) != 0)
+            if (lines[i].IndexOf("#GorgonInclude", StringComparison.OrdinalIgnoreCase) != 0)
             {
                 result.Append($"{lines[i++]}\r\n");
                 continue;
             }
+
+            includeLine.Length = 0;
+            includeLine.Append(lines[i]);
+            TrimLine(includeLine);
 
             ++i;
             GorgonShaderInclude includeFile = ParseIncludeLine(includeLine, false);

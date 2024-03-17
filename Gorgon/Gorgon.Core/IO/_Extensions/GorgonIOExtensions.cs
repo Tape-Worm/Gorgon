@@ -533,10 +533,15 @@ public static class GorgonIOExtensions
         {
             directorySeparator = Path.DirectorySeparatorChar;
         }
+        string pathRoot = Path.GetPathRoot(path) ?? string.Empty;
+        var output = new StringBuilder(path[pathRoot.Length..]);
 
-        var output = new StringBuilder(path);
+        output = _illegalPathChars.Concat(_illegalFileChars)
+                                  .Distinct()
+                                  .Where(c => c != Path.DirectorySeparatorChar && c != Path.AltDirectorySeparatorChar)
+                                  .Aggregate(output, (current, illegalChar) => current.Replace(illegalChar, '_'));
 
-        output = _illegalPathChars.Aggregate(output, (current, illegalChar) => current.Replace(illegalChar, '_'));
+        output.Insert(0, pathRoot);
 
         if (directorySeparator != Path.AltDirectorySeparatorChar)
         {
@@ -554,9 +559,28 @@ public static class GorgonIOExtensions
         }
 
         // Remove doubled up separators.
-        while (output.LastIndexOf(doubleSeparator, StringComparison.Ordinal) > -1)
+        int i = 0;
+
+        while (i < output.Length)
         {
-            output = output.Replace(doubleSeparator, directorySep);
+            if (output[i] != directorySeparator)
+            {
+                ++i;
+                continue;
+            }
+
+            if (i == output.Length - 1)
+            {
+                break;
+            }
+
+            if (output[i + 1] == directorySeparator)
+            {
+                output.Remove(i, 1);
+                continue;
+            }
+
+            ++i;
         }
 
         return output.ToString();
