@@ -109,9 +109,9 @@ internal class EditorFileOpenDialogService(EditorSettings settings, FileSystemPr
     /// <returns>The string containing the file dialog filter.</returns>
     private string GetReaderDialogFilterString()
     {
-        var result = new StringBuilder();
-        var filter = new StringBuilder();
-        var allFilter = new StringBuilder();
+        StringBuilder result = new();
+        StringBuilder filter = new();
+        StringBuilder allFilter = new();
 
         IReadOnlyList<(string, IReadOnlyList<GorgonFileExtension>)> extensions = Providers.GetReaderFileExtensions().ToArray();
 

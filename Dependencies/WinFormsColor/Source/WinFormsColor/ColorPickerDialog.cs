@@ -8,7 +8,6 @@ using System.Windows.Forms;
 
 namespace Fetze.WinFormsColor;
 
-#pragma warning disable IDE0090 // Use 'new(...)'
 public partial class ColorPickerDialog : Form
 {
     public enum PrimaryAttrib
@@ -615,4 +614,4 @@ public partial class ColorPickerDialog : Form
         }
     }
 }
-#pragma warning restore IDE0090 // Use 'new(...)'
+

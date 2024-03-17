@@ -214,8 +214,8 @@ internal partial class FormImageSelector
         _graphicsContext.Graphics.SetRenderTarget(_swapChain.RenderTargetView);
         _swapChain.RenderTargetView.Clear(PanelPreviewRender.BackColor);
 
-        var renderRegion = GetRenderRegion().ToRectangleF();
-        var halfClient = new Vector2(renderRegion.Width * 0.5f, renderRegion.Height * 0.5f);
+        DX.RectangleF renderRegion = GetRenderRegion().ToRectangleF();
+        Vector2 halfClient = new(renderRegion.Width * 0.5f, renderRegion.Height * 0.5f);
 
         _graphicsContext.Renderer2D.Begin();
         _graphicsContext.Renderer2D.DrawFilledRectangle(renderRegion, DarkFormsRenderer.DarkBackground);

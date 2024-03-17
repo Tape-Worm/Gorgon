@@ -74,8 +74,8 @@ public class GorgonV31AnimationJsonCodec(Gorgon2D renderer)
     /// <returns>The data as a JSON.Net object.</returns>
     private static JsonReader GetJsonReader(Stream stream)
     {
-        var reader = new StreamReader(stream, Encoding.UTF8, true, 1024, true);
-        var jsonReader = new JsonTextReader(reader)
+        StreamReader reader = new(stream, Encoding.UTF8, true, 1024, true);
+        JsonTextReader jsonReader = new(reader)
         {
             CloseInput = true
         };
@@ -136,7 +136,7 @@ public class GorgonV31AnimationJsonCodec(Gorgon2D renderer)
     {
         List<Tk> ReadKeys()
         {
-            var keys = new List<Tk>();
+            List<Tk> keys = [];
             Type type = typeof(Tk);
 
             while ((reader.Read()) && (reader.TokenType != JsonToken.EndArray))
@@ -217,7 +217,7 @@ public class GorgonV31AnimationJsonCodec(Gorgon2D renderer)
     {
         string jsonString = null;
 
-        var result = new List<string>();
+        List<string> result = [];
 
         // Loads the texture names.
         void LoadNames(JsonReader reader)
@@ -280,14 +280,14 @@ public class GorgonV31AnimationJsonCodec(Gorgon2D renderer)
             }
         }
 
-        using (var wrappedStream = new GorgonStreamWrapper(stream, stream.Position, stream.Length - stream.Position, false))
-        using (var streamReader = new StreamReader(wrappedStream, Encoding.UTF8, true, 80192, true))
+        using (GorgonStreamWrapper wrappedStream = new(stream, stream.Position, stream.Length - stream.Position, false))
+        using (StreamReader streamReader = new(wrappedStream, Encoding.UTF8, true, 80192, true))
         {
             jsonString = streamReader.ReadToEnd();
         }
 
-        using (var baseReader = new StringReader(jsonString))
-        using (var reader = new JsonTextReader(baseReader))
+        using (StringReader baseReader = new(jsonString))
+        using (JsonTextReader reader = new(baseReader))
         {
             if (!IsReadableJObject(reader))
             {
@@ -367,26 +367,26 @@ public class GorgonV31AnimationJsonCodec(Gorgon2D renderer)
         int loopCount = 0;
         bool isLooped = false;
 
-        var colorConvert = new JsonGorgonColorKeyConverter();
-        var textureConvert = new JsonTextureKeyConverter(renderer.Graphics, textureOverrides);
-        var singleConverter = new JsonSingleKeyConverter();
-        var vec2Converter = new JsonVector2KeyConverter();
-        var vec3Converter = new JsonVector3KeyConverter();
-        var vec4Converter = new JsonVector4KeyConverter();
-        var quatConverter = new JsonQuaternionKeyConverter();
-        var rectConverter = new JsonRectKeyConverter();
+        JsonGorgonColorKeyConverter colorConvert = new();
+        JsonTextureKeyConverter textureConvert = new(renderer.Graphics, textureOverrides);
+        JsonSingleKeyConverter singleConverter = new();
+        JsonVector2KeyConverter vec2Converter = new();
+        JsonVector3KeyConverter vec3Converter = new();
+        JsonVector4KeyConverter vec4Converter = new();
+        JsonQuaternionKeyConverter quatConverter = new();
+        JsonRectKeyConverter rectConverter = new();
 
-        var vec4 = new Dictionary<string, (List<GorgonKeyVector4>, TrackInterpolationMode, bool)>(StringComparer.OrdinalIgnoreCase);
-        var quat = new Dictionary<string, (List<GorgonKeyQuaternion>, TrackInterpolationMode, bool)>(StringComparer.OrdinalIgnoreCase);
-        var vec3 = new Dictionary<string, (List<GorgonKeyVector3>, TrackInterpolationMode, bool)>(StringComparer.OrdinalIgnoreCase);
-        var vec2 = new Dictionary<string, (List<GorgonKeyVector2>, TrackInterpolationMode, bool)>(StringComparer.OrdinalIgnoreCase);
-        var singles = new Dictionary<string, (List<GorgonKeySingle>, TrackInterpolationMode, bool)>(StringComparer.OrdinalIgnoreCase);
-        var colors = new Dictionary<string, (List<GorgonKeyGorgonColor>, TrackInterpolationMode, bool)>(StringComparer.OrdinalIgnoreCase);
-        var rects = new Dictionary<string, (List<GorgonKeyRectangle>, TrackInterpolationMode, bool)>(StringComparer.OrdinalIgnoreCase);
-        var textures = new Dictionary<string, (List<GorgonKeyTexture2D>, TrackInterpolationMode, bool)>(StringComparer.OrdinalIgnoreCase);
+        Dictionary<string, (List<GorgonKeyVector4>, TrackInterpolationMode, bool)> vec4 = new(StringComparer.OrdinalIgnoreCase);
+        Dictionary<string, (List<GorgonKeyQuaternion>, TrackInterpolationMode, bool)> quat = new(StringComparer.OrdinalIgnoreCase);
+        Dictionary<string, (List<GorgonKeyVector3>, TrackInterpolationMode, bool)> vec3 = new(StringComparer.OrdinalIgnoreCase);
+        Dictionary<string, (List<GorgonKeyVector2>, TrackInterpolationMode, bool)> vec2 = new(StringComparer.OrdinalIgnoreCase);
+        Dictionary<string, (List<GorgonKeySingle>, TrackInterpolationMode, bool)> singles = new(StringComparer.OrdinalIgnoreCase);
+        Dictionary<string, (List<GorgonKeyGorgonColor>, TrackInterpolationMode, bool)> colors = new(StringComparer.OrdinalIgnoreCase);
+        Dictionary<string, (List<GorgonKeyRectangle>, TrackInterpolationMode, bool)> rects = new(StringComparer.OrdinalIgnoreCase);
+        Dictionary<string, (List<GorgonKeyTexture2D>, TrackInterpolationMode, bool)> textures = new(StringComparer.OrdinalIgnoreCase);
 
-        using (var baseReader = new StringReader(json))
-        using (var reader = new JsonTextReader(baseReader))
+        using (StringReader baseReader = new(json))
+        using (JsonTextReader reader = new(baseReader))
         {
             if (!IsReadableJObject(reader))
             {
@@ -447,7 +447,7 @@ public class GorgonV31AnimationJsonCodec(Gorgon2D renderer)
             }
         }
 
-        var builder = new GorgonAnimationBuilder();
+        GorgonAnimationBuilder builder = new();
 
         if (singles.Count > 0)
         {
@@ -561,7 +561,7 @@ public class GorgonV31AnimationJsonCodec(Gorgon2D renderer)
     /// <param name="stream">The stream that will contain the animation.</param>
     protected override void OnSaveToStream(IGorgonAnimation animation, Stream stream)
     {
-        using var writer = new StreamWriter(stream, Encoding.UTF8, 1024, true);
+        using StreamWriter writer = new(stream, Encoding.UTF8, 1024, true);
         writer.Write(animation.ToJson());
     }
 
@@ -575,8 +575,8 @@ public class GorgonV31AnimationJsonCodec(Gorgon2D renderer)
     /// <returns>A new <see cref="IGorgonAnimation"/>.</returns>
     protected override IGorgonAnimation OnReadFromStream(string name, Stream stream, int byteCount, IEnumerable<GorgonTexture2DView> textureOverrides)
     {
-        using var wrappedStream = new GorgonStreamWrapper(stream, stream.Position, byteCount, false);
-        using var reader = new StreamReader(wrappedStream, Encoding.UTF8, true, 80192, true);
+        using GorgonStreamWrapper wrappedStream = new(stream, stream.Position, byteCount, false);
+        using StreamReader reader = new(wrappedStream, Encoding.UTF8, true, 80192, true);
         string jsonString = reader.ReadToEnd();
         return FromJson(Renderer, name, jsonString, textureOverrides);
     }

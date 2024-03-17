@@ -151,7 +151,7 @@ internal abstract class AnimationViewer(string name, Gorgon2D renderer, GorgonSw
     /// <remarks>Developers can override this method to render a custom background.</remarks>
     private void DrawBackgroundImage()
     {
-        var region = new DX.RectangleF(RenderRegion.Width * -Camera.Anchor.X,
+        DX.RectangleF region = new(RenderRegion.Width * -Camera.Anchor.X,
                                        RenderRegion.Height * -Camera.Anchor.Y,
                                        RenderRegion.Width,
                                        RenderRegion.Height);
@@ -434,7 +434,7 @@ internal abstract class AnimationViewer(string name, Gorgon2D renderer, GorgonSw
     /// <remarks>Developers can override this method to render a custom background.</remarks>
     protected sealed override void OnRenderBackground()
     {
-        var textureSize = new DX.RectangleF(0, 0, (float)ClientSize.Width / BackgroundPattern.Width, (float)ClientSize.Height / BackgroundPattern.Height);
+        DX.RectangleF textureSize = new(0, 0, (float)ClientSize.Width / BackgroundPattern.Width, (float)ClientSize.Height / BackgroundPattern.Height);
 
         Renderer.Begin();
         Renderer.DrawFilledRectangle(new DX.RectangleF(0, 0, ClientSize.Width, ClientSize.Height),

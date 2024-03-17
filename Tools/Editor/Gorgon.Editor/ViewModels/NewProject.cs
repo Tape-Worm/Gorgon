@@ -302,7 +302,7 @@ internal class NewProject
             {
                 if (!string.IsNullOrWhiteSpace(lastPath))
                 {
-                    var parentDir = new DirectoryInfo(lastPath);
+                    DirectoryInfo parentDir = new(lastPath);
 
                     if (parentDir.Parent is not null)
                     {
@@ -444,7 +444,7 @@ internal class NewProject
                 path = Path.Combine(System.IO.Directory.GetCurrentDirectory(), path);
             }
 
-            var dir = new DirectoryInfo(path);
+            DirectoryInfo dir = new(path);
 
             if (!ValidateDirectory(dir.FullName))
             {

@@ -41,7 +41,7 @@ internal class JsonVector2Converter
     /// <param name="serializer">The calling serializer.</param>
     public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
     {
-        var v2 = (Vector2)value;
+        Vector2 v2 = (Vector2)value;
         writer.WriteStartObject();
         writer.WritePropertyName("x");
         writer.WriteValue(v2.X);

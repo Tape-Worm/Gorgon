@@ -104,7 +104,7 @@ internal static class ResourceFactory
         }
 
         // Upload the data to the texture.
-        var dataBoxes = new DX.DataBox[GorgonImage.CalculateDepthSliceCount(desc.Depth, desc.MipLevels)];
+        DX.DataBox[] dataBoxes = new DX.DataBox[GorgonImage.CalculateDepthSliceCount(desc.Depth, desc.MipLevels)];
         int depthLevel = desc.Depth;
         int dataBoxIndex = 0;
 
@@ -150,7 +150,7 @@ internal static class ResourceFactory
         }
 
         // Upload the data to the texture.
-        var dataBoxes = new DX.DataBox[GorgonImage.CalculateDepthSliceCount(1, desc.MipLevels) * desc.ArraySize];
+        DX.DataBox[] dataBoxes = new DX.DataBox[GorgonImage.CalculateDepthSliceCount(1, desc.MipLevels) * desc.ArraySize];
 
         for (int arrayIndex = 0; arrayIndex < desc.ArraySize; ++arrayIndex)
         {
@@ -188,7 +188,7 @@ internal static class ResourceFactory
         }
 
         // Upload the data to the texture.
-        var dataBoxes = new DX.DataBox[GorgonImage.CalculateDepthSliceCount(1, desc.MipLevels) * desc.ArraySize];
+        DX.DataBox[] dataBoxes = new DX.DataBox[GorgonImage.CalculateDepthSliceCount(1, desc.MipLevels) * desc.ArraySize];
 
         for (int arrayIndex = 0; arrayIndex < desc.ArraySize; ++arrayIndex)
         {

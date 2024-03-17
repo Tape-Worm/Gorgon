@@ -163,7 +163,7 @@ static class Program
     /// </summary>
     private static void InitApplicationUserDirectory()
     {
-        var dir = new DirectoryInfo(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Tape_Worm", "Gorgon.Editor"));
+        DirectoryInfo dir = new(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Tape_Worm", "Gorgon.Editor"));
 
         if (!dir.Exists)
         {

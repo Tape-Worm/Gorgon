@@ -157,7 +157,7 @@ public abstract class GorgonQuery<T>
     /// </summary>
     private void Initialize()
     {
-        var queryDesc = new D3D11.QueryDescription
+        D3D11.QueryDescription queryDesc = new()
         {
             Type = (D3D11.QueryType)QueryType
         };

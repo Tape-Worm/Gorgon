@@ -529,7 +529,7 @@ public sealed class GorgonSwapChain
     {
         try
         {
-            var newSize = new DX.Size2(ParentForm.ClientSize.Width, ParentForm.ClientSize.Height);
+            DX.Size2 newSize = new(ParentForm.ClientSize.Width, ParentForm.ClientSize.Height);
 
             // If the actual size didn't change, then don't trigger a resize of the swap chain.
             if (newSize.Equals(_originalSize))
@@ -827,7 +827,7 @@ public sealed class GorgonSwapChain
                 Debug.Assert(output is not null, "Cannot find a suitable output for full screen borderless window mode.");
             }
 
-            var videoMode = new GorgonVideoMode(output.DesktopBounds.Width, output.DesktopBounds.Height, backbufferFormat);
+            GorgonVideoMode videoMode = new(output.DesktopBounds.Width, output.DesktopBounds.Height, backbufferFormat);
             _fullScreenBordlessState.BorderStyle = ParentForm.FormBorderStyle;
             _fullScreenBordlessState.FormWindowState = ParentForm.WindowState;
             _fullScreenBordlessState.ClientSize = ParentForm.ClientSize;
@@ -1151,7 +1151,7 @@ public sealed class GorgonSwapChain
 
         DXGISwapChain.ResizeBuffers((IsWindowed || _isFullScreenBorderless) ? 2 : 3, newWidth, newHeight, _resizeState.ResizeFormat, flags);
 
-        var oldSize = new DX.Size2(_info.Width, _info.Height);
+        DX.Size2 oldSize = new(_info.Width, _info.Height);
 
         _info = _info with
         {
@@ -1190,7 +1190,7 @@ public sealed class GorgonSwapChain
             throw new GorgonException(GorgonResult.CannotCreate, Resources.GORGFX_ERR_BACKBUFFER_USAGE_INVALID);
         }
 
-        var texture = new GorgonTexture2D(Graphics, new GorgonTexture2DInfo(_backBufferTextures[0])
+        GorgonTexture2D texture = new(Graphics, new GorgonTexture2DInfo(_backBufferTextures[0])
         {
             Name = $"{Name} - Backbuffer copy",
             Usage = usage,
@@ -1411,7 +1411,7 @@ public sealed class GorgonSwapChain
             desc.Flags |= DXGI.SwapChainFlags.AllowTearing;
         }
 
-        using (var dxgiSwapChain = new DXGI.SwapChain1(Graphics.DXGIFactory, Graphics.D3DDevice, control.Handle, ref desc)
+        using (DXGI.SwapChain1 dxgiSwapChain = new(Graphics.DXGIFactory, Graphics.D3DDevice, control.Handle, ref desc)
         {
             DebugName = $"{info.Name}_DXGISwapChain4"
         })

@@ -62,7 +62,7 @@ public static class GdiPlusExtensions
                     // So, we must convert to ABGR even though the DXGI format is RGBA. The memory layout is from lowest 
                     // (R at byte 0) to the highest byte (A at byte 3).
                     // Thus, R is the lowest byte, and A is the highest: A(24), B(16), G(8), R(0).
-                    var color = new GorgonColor(*offset);
+                    GorgonColor color = new(*offset);
                     ref int destBuffer = ref buffer.Data.AsRef<int>(destOffset);
                     destBuffer = color.ToABGR();
                     offset++;
@@ -100,7 +100,7 @@ public static class GdiPlusExtensions
                     byte g = *offset++;
                     byte r = *offset++;
 
-                    var color = new GorgonColor(r / 255.0f, g / 255.0f, b / 255.0f, 1.0f);
+                    GorgonColor color = new(r / 255.0f, g / 255.0f, b / 255.0f, 1.0f);
                     ref int destBuffer = ref buffer.Data.AsRef<int>(destOffset);
                     destBuffer = color.ToABGR();
                     destOffset += 4;
@@ -212,7 +212,7 @@ public static class GdiPlusExtensions
                 throw new GorgonException(GorgonResult.FormatNotSupported, string.Format(Resources.GORIMG_ERR_FORMAT_NOT_SUPPORTED, buffer.Format));
         }
 
-        var result = new Bitmap(buffer.Width, buffer.Height, pixelFormat);
+        Bitmap result = new(buffer.Width, buffer.Height, pixelFormat);
 
         unsafe
         {
@@ -525,7 +525,7 @@ public static class GdiPlusExtensions
             throw new GorgonException(GorgonResult.FormatNotSupported, string.Format(Resources.GORIMG_ERR_FORMAT_NOT_SUPPORTED, bitmap.PixelFormat));
         }
 
-        var info = new GorgonImageInfo(ImageDataType.Image2D, BufferFormat.R8G8B8A8_UNorm)
+        GorgonImageInfo info = new(ImageDataType.Image2D, BufferFormat.R8G8B8A8_UNorm)
         {
             Width = bitmap.Width,
             Height = bitmap.Height

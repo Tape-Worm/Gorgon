@@ -86,7 +86,7 @@ internal class TextureAtlasSplitter
     /// <returns>A list of sprites.</returns>
     private IReadOnlyList<(IContentFile file, GorgonSprite sprite)> LoadSprites(IReadOnlyList<IContentFile> spriteFiles, GorgonTexture2DView texture, CancellationToken cancelToken)
     {
-        var result = new List<(IContentFile, GorgonSprite)>();
+        List<(IContentFile, GorgonSprite)> result = [];
 
         foreach (IContentFile file in spriteFiles)
         {
@@ -189,7 +189,7 @@ internal class TextureAtlasSplitter
             format = sprite.Texture.Format;
         }
 
-        using var target = GorgonRenderTarget2DView.CreateRenderTarget(_graphics, new GorgonTexture2DInfo((int)sprite.Size.Width,
+        using GorgonRenderTarget2DView target = GorgonRenderTarget2DView.CreateRenderTarget(_graphics, new GorgonTexture2DInfo((int)sprite.Size.Width,
                                                                                                                                    (int)sprite.Size.Height,
                                                                                                                                    format)
         {
@@ -220,7 +220,7 @@ internal class TextureAtlasSplitter
     private IReadOnlyList<(string newImagePath, IGorgonImage image, string newSpritePath, GorgonSprite sprite)> SplitImage(IReadOnlyList<(IContentFile file, GorgonSprite sprite)> sprites, string outputDirectory, ref ConfirmationResult response)
     {
         // The list of images from the sprites.
-        var result = new List<(string newImagePath, IGorgonImage image, string newSpritePath, GorgonSprite sprite)>();
+        List<(string newImagePath, IGorgonImage image, string newSpritePath, GorgonSprite sprite)> result = [];
         string imageFileExtension = _imageCodec.CodecCommonExtensions.Count > 0 ? _imageCodec.CodecCommonExtensions[0] : string.Empty;
         string spriteFileExtension = _spriteCodec.FileExtensions.Count > 0 ? _spriteCodec.FileExtensions[0].Extension : string.Empty;
 

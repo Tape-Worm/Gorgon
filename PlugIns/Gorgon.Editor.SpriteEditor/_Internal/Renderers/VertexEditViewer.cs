@@ -231,7 +231,7 @@ internal class VertexEditViewer(Gorgon2D renderer, GorgonSwapChain swapChain, IS
         Vector3 topLeft = Camera.Unproject(new Vector3(spriteRegion.Left, spriteRegion.Top, 0));
         Vector3 bottomRight = Camera.Unproject(new Vector3(spriteRegion.Right, spriteRegion.Bottom, 0));
 
-        var position = new Vector2(topLeft.X + ((bottomRight.X - topLeft.X) * 0.5f), topLeft.Y + ((bottomRight.Y - topLeft.Y) * 0.5f));
+        Vector2 position = new(topLeft.X + ((bottomRight.X - topLeft.X) * 0.5f), topLeft.Y + ((bottomRight.Y - topLeft.Y) * 0.5f));
         Renderer.Begin();
         Renderer.DrawLine(position.X, 0, position.X, ClientSize.Height, GorgonColor.Black);
         Renderer.DrawLine(0, position.Y, ClientSize.Width, position.Y, GorgonColor.Black);
@@ -243,8 +243,8 @@ internal class VertexEditViewer(Gorgon2D renderer, GorgonSwapChain swapChain, IS
     {
         base.DrawSprite();
 
-        var spriteTopLeft = new Vector3(Sprite.Bounds.Left, Sprite.Bounds.Top, 0);
-        var spriteBottomRight = new Vector3(Sprite.Bounds.Right, Sprite.Bounds.Bottom, 0);
+        Vector3 spriteTopLeft = new(Sprite.Bounds.Left, Sprite.Bounds.Top, 0);
+        Vector3 spriteBottomRight = new(Sprite.Bounds.Right, Sprite.Bounds.Bottom, 0);
         Camera.Unproject(in spriteTopLeft, out Vector3 transformedTopLeft);
         Camera.Unproject(in spriteBottomRight, out Vector3 transformedBottomRight);
 

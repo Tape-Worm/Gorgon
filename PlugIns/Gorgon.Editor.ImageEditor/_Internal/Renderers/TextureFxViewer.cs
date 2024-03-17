@@ -227,7 +227,7 @@ internal class TextureFxViewer
     {
         Graphics.SetRenderTarget(MainRenderTarget);
 
-        var color = new GorgonColor(GorgonColor.White, Opacity);
+        GorgonColor color = new(GorgonColor.White, Opacity);
 
         Renderer.Begin(BatchState, Camera);
         Renderer.DrawFilledRectangle(new DX.RectangleF(RenderRegion.Width * -0.5f,

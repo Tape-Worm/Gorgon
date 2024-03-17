@@ -486,7 +486,7 @@ public class GorgonPolySpriteBuilder(Gorgon2D renderer)
             throw new GorgonException(GorgonResult.CannotCreate, Resources.GOR2D_ERR_POLY_SPRITE_NOT_ENOUGH_VERTS);
         }
 
-        var newSprite = new GorgonPolySprite();
+        GorgonPolySprite newSprite = new();
 
         CopySprite(newSprite, _workingSprite);
 

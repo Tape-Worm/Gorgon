@@ -132,7 +132,7 @@ internal class PlanetLayer(GorgonGraphics graphics, ResourceManagement resources
     {
         Matrix4x4 worldMatrix = Matrix4x4.Identity;
         Vector3 cameraPos = _viewMatrix.GetTranslation();
-        var emptyMaterial = new Material
+        Material emptyMaterial = new()
         {
             Albedo = GorgonColor.White,
             SpecularPower = 1.0f,
@@ -159,7 +159,7 @@ internal class PlanetLayer(GorgonGraphics graphics, ResourceManagement resources
     private void UpdateMaterial(MoveableMesh mesh)
     {
         // Send the material data over to the shader.
-        var materialData = new Material
+        Material materialData = new()
         {
             UVOffset = mesh.Material.TextureOffset,
             SpecularPower = mesh.Material.SpecularPower
@@ -175,7 +175,7 @@ internal class PlanetLayer(GorgonGraphics graphics, ResourceManagement resources
     private void UpdateMeshWorldMatrix(MoveableMesh mesh)
     {
         Vector3 newPosition = mesh.Position + new Vector3(Offset, 0);
-        var position = new Vector2(newPosition.X, newPosition.Y);
+        Vector2 position = new(newPosition.X, newPosition.Y);
         Vector2 transformed = position;
 
         mesh.Position = new Vector3(transformed / ParallaxLevel, mesh.Position.Z);

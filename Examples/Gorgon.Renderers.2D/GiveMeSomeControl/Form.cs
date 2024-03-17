@@ -111,7 +111,7 @@ public partial class Form
     /// </summary>
     private void BuildAnimation()
     {
-        var builder = new GorgonAnimationBuilder();
+        GorgonAnimationBuilder builder = new();
 
         IGorgonTrackKeyBuilder<GorgonKeyTexture2D> track = builder.Edit2DTexture("Texture");
 

@@ -90,7 +90,7 @@ internal class ViewModelFactory(Editor.EditorSettings settings, ProjectManager p
     /// <returns>The view model.</returns>
     private ISettingsPlugInListItem CreatePlugInListItem(EditorPlugIn plugin)
     {
-        var result = new SettingsPlugInListItem();
+        SettingsPlugInListItem result = new();
         result.Initialize(new SettingsPlugInListItemParameters(plugin, _hostContentServices));
         return result;
     }
@@ -102,7 +102,7 @@ internal class ViewModelFactory(Editor.EditorSettings settings, ProjectManager p
     /// <returns>The view model.</returns>
     private ISettingsPlugInListItem CreatePlugInListItem(IGorgonFileSystemProvider plugin)
     {
-        var result = new SettingsPlugInListItem();
+        SettingsPlugInListItem result = new();
         result.Initialize(new SettingsPlugInListItemParameters(plugin, _hostContentServices));
         return result;
     }
@@ -114,7 +114,7 @@ internal class ViewModelFactory(Editor.EditorSettings settings, ProjectManager p
     /// <returns>The view model.</returns>
     private ISettingsPlugInListItem CreatePlugInListItem(IDisabledPlugIn plugin)
     {
-        var result = new SettingsPlugInListItem();
+        SettingsPlugInListItem result = new();
         result.Initialize(new SettingsPlugInListItemParameters(plugin, _hostContentServices));
         return result;
     }
@@ -135,7 +135,7 @@ internal class ViewModelFactory(Editor.EditorSettings settings, ProjectManager p
             .Concat(_hostContentServices.ContentPlugInService.DisabledPlugIns.Select(item => CreatePlugInListItem(item.Value)))
             .Concat(_hostContentServices.ToolPlugInService.DisabledPlugIns.Select(item => CreatePlugInListItem(item.Value)));
 
-        var result = new SettingsPlugInsList();
+        SettingsPlugInsList result = new();
         result.Initialize(new SettingsPlugInsListParameters(_hostContentServices)
         {
             PlugIns = plugins
@@ -149,7 +149,7 @@ internal class ViewModelFactory(Editor.EditorSettings settings, ProjectManager p
     /// <returns>The list of categories.</returns>
     private IEnumerable<ISettingsCategory> GetPlugInSettingsCategories()
     {
-        var result = new List<ISettingsCategory>();
+        List<ISettingsCategory> result = [];
 
         IEnumerable<EditorPlugIn> plugins = _fileSystemProviders.Writers.Select(item => (EditorPlugIn)item.Value)
             .Concat(_hostContentServices.ContentPlugInService.PlugIns.Select(item => item.Value))
@@ -195,18 +195,17 @@ internal class ViewModelFactory(Editor.EditorSettings settings, ProjectManager p
             throw new ArgumentNullException(nameof(project));
         }
 
-        var directories = new Dictionary<string, IDirectory>(StringComparer.OrdinalIgnoreCase)
+        Dictionary<string, IDirectory> directories = new(StringComparer.OrdinalIgnoreCase)
         {
             [parent.FullPath] = parent
         };
 
         IGorgonVirtualDirectory parentVirtDir = fileSystem.GetDirectory(parent.FullPath) ?? throw new DirectoryNotFoundException(string.Format(Resources.GOREDIT_ERR_DIRECTORY_NOT_FOUND, parent.FullPath));
 
-        var subDirs = new List<IGorgonVirtualDirectory>
-        {
-            parentVirtDir
-        };
-        subDirs.AddRange(parentVirtDir.Directories.Traverse(d => d.Directories));
+        List<IGorgonVirtualDirectory> subDirs =
+        [
+            parentVirtDir, .. parentVirtDir.Directories.Traverse(d => d.Directories)
+        ];
 
         for (int i = 0; i < subDirs.Count; ++i)
         {
@@ -222,7 +221,7 @@ internal class ViewModelFactory(Editor.EditorSettings settings, ProjectManager p
                     continue;
                 }
 
-                var newDir = new Directory();
+                Directory newDir = new();
                 newDir.Initialize(new DirectoryParameters(_hostContentServices, this)
                 {
                     VirtualDirectory = subDir,
@@ -253,7 +252,7 @@ internal class ViewModelFactory(Editor.EditorSettings settings, ProjectManager p
             {
                 project.ProjectItems.TryGetValue(file.FullPath, out ProjectItemMetadata metaData);
 
-                var newFile = new File();
+                File newFile = new();
                 newFile.Initialize(new FileParameters(_hostContentServices, this)
                 {
                     VirtualFile = file,
@@ -273,7 +272,7 @@ internal class ViewModelFactory(Editor.EditorSettings settings, ProjectManager p
     /// <returns>A new file explorer view model.</returns>
     private FileExplorer CreateFileExplorer(IProject project, IGorgonFileSystemWriter<FileStream> fileSystem)
     {
-        var root = new RootDirectory();
+        RootDirectory root = new();
         root.Initialize(new RootDirectoryParameters(_hostContentServices, this)
         {
             RootDirectory = fileSystem.FileSystem.RootDirectory,
@@ -284,10 +283,10 @@ internal class ViewModelFactory(Editor.EditorSettings settings, ProjectManager p
         // Create view models for all directories/files.
         EnumerateFileSystemObjects(fileSystem.FileSystem, root, project);
 
-        var searchService = new FileSystemSearchSystem(root);
+        FileSystemSearchSystem searchService = new(root);
 
-        var result = new FileExplorer();
-        var clipboardHandler = new FileSystemClipboardHandler(result, _hostContentServices.ClipboardService, _hostContentServices.Log);
+        FileExplorer result = new();
+        FileSystemClipboardHandler clipboardHandler = new(result, _hostContentServices.ClipboardService, _hostContentServices.Log);
         result.Initialize(new FileExplorerParameters(_hostContentServices, this)
         {
             Root = root,
@@ -330,7 +329,7 @@ internal class ViewModelFactory(Editor.EditorSettings settings, ProjectManager p
             throw new DirectoryNotFoundException();
         }
 
-        var newFile = new File();
+        File newFile = new();
         newFile.Initialize(new FileParameters(_hostContentServices, this)
         {
             VirtualFile = destFile,
@@ -349,7 +348,7 @@ internal class ViewModelFactory(Editor.EditorSettings settings, ProjectManager p
     /// <returns>The file view model.</returns>
     public IFile CreateFile(IGorgonVirtualFile file, IDirectory parent)
     {
-        var newFile = new File();
+        File newFile = new();
         newFile.Initialize(new FileParameters(_hostContentServices, this)
         {
             VirtualFile = file,
@@ -376,7 +375,7 @@ internal class ViewModelFactory(Editor.EditorSettings settings, ProjectManager p
             _directoryBuffer[dir.FullPath] = dir;
         }
 
-        var result = new List<IFile>();
+        List<IFile> result = [];
 
         foreach (IGorgonVirtualFile file in files)
         {
@@ -385,7 +384,7 @@ internal class ViewModelFactory(Editor.EditorSettings settings, ProjectManager p
                 throw new DirectoryNotFoundException();
             }
 
-            var newFile = new File();
+            File newFile = new();
             newFile.Initialize(new FileParameters(_hostContentServices, this)
             {
                 VirtualFile = file,
@@ -406,7 +405,7 @@ internal class ViewModelFactory(Editor.EditorSettings settings, ProjectManager p
     /// <returns>A new directory view model.</returns>
     public IDirectory CreateDirectory(IGorgonVirtualDirectory directory, IDirectory parent)
     {
-        var newDir = new Directory();
+        Directory newDir = new();
         newDir.Initialize(new DirectoryParameters(_hostContentServices, this)
         {
             VirtualDirectory = directory,
@@ -441,7 +440,7 @@ internal class ViewModelFactory(Editor.EditorSettings settings, ProjectManager p
             _directoryBuffer[child.FullPath] = child;
         }
 
-        var result = new List<IDirectory>();
+        List<IDirectory> result = [];
 
         bool isExcluded = false;
         if (parent is IExcludable excludeParent)
@@ -456,7 +455,7 @@ internal class ViewModelFactory(Editor.EditorSettings settings, ProjectManager p
                 continue;
             }
 
-            var newDir = new Directory();
+            Directory newDir = new();
             newDir.Initialize(new DirectoryParameters(_hostContentServices, this)
             {
                 VirtualDirectory = virtDir,
@@ -489,7 +488,7 @@ internal class ViewModelFactory(Editor.EditorSettings settings, ProjectManager p
                                                                             .OfType<IContentPlugInMetadata>()
                                                                             .ToArray();
 
-        var settingsVm = new EditorSettings();
+        EditorSettings settingsVm = new();
         IEnumerable<ISettingsCategory> categories = GetPlugInSettingsCategories();
         settingsVm.Initialize(new EditorSettingsParameters
         {
@@ -498,13 +497,13 @@ internal class ViewModelFactory(Editor.EditorSettings settings, ProjectManager p
             HostServices = _hostContentServices
         });
 
-        var newProjectVm = new NewProject
+        NewProject newProjectVm = new()
         {
             GPUName = gpuName,
         };
-        var recentFilesVm = new Recent();
+        Recent recentFilesVm = new();
 
-        var mainVm = new Main();
+        Main mainVm = new();
 
         newProjectVm.Initialize(new NewProjectParameters(_hostContentServices, this)
         {
@@ -550,8 +549,8 @@ internal class ViewModelFactory(Editor.EditorSettings settings, ProjectManager p
         _hostContentServices.ContentPlugInService.ProjectDeactivated();
 
         FileExplorer fileExplorer = null;
-        var result = new ProjectEditor();
-        var tempFileSystem = new GorgonFileSystem(_hostContentServices.Log);
+        ProjectEditor result = new();
+        GorgonFileSystem tempFileSystem = new(_hostContentServices.Log);
         GorgonFileSystem fileSystem = null;
         IGorgonFileSystemWriter<Stream> tempWriter = null;
 
@@ -574,7 +573,7 @@ internal class ViewModelFactory(Editor.EditorSettings settings, ProjectManager p
             fileExplorer = CreateFileExplorer(projectData, writer);
         });
 
-        var previewer = new ContentPreview();
+        ContentPreview previewer = new();
         previewer.Initialize(new ContentPreviewParameters(_hostContentServices, this)
         {
             FileExplorer = fileExplorer,

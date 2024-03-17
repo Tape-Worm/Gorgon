@@ -98,7 +98,7 @@ public static class PasswordHasher
             password = password[..MaxiumumPasswordLength];
         }
 
-        using var hashProvider = new Rfc2898DeriveBytes(password, salt, PasswordHashIterations, HashAlgorithmName.SHA3_256);
+        using Rfc2898DeriveBytes hashProvider = new(password, salt, PasswordHashIterations, HashAlgorithmName.SHA3_256);
         return Convert.ToBase64String(hashProvider.GetBytes(HashSize));
     }
 
@@ -110,7 +110,7 @@ public static class PasswordHasher
     /// <returns>A tuple containing the initialization vector and key.</returns>
     public static (byte[] IV, byte[] key) GenerateIvKey(string password, byte[] salt)
     {
-        using var hashProvider = new Rfc2898DeriveBytes(password, salt, PasswordHashIterations, HashAlgorithmName.SHA3_256);
+        using Rfc2898DeriveBytes hashProvider = new(password, salt, PasswordHashIterations, HashAlgorithmName.SHA3_256);
         byte[] key = hashProvider.GetBytes(32);
         byte[] iv = hashProvider.GetBytes(16);
 

@@ -119,7 +119,7 @@ internal class ImageEditorPlugIn
                 Usage = ResourceUsage.Immutable,
                 IsTextureCube = false
             });
-            using var rtv = GorgonRenderTarget2DView.CreateRenderTarget(HostContentServices.GraphicsContext.Graphics, new GorgonTexture2DInfo((int)(image.Width * scale),
+            using GorgonRenderTarget2DView rtv = GorgonRenderTarget2DView.CreateRenderTarget(HostContentServices.GraphicsContext.Graphics, new GorgonTexture2DInfo((int)(image.Width * scale),
                                                                                                                                                                        (int)(image.Height * scale),
                                                                                                                                                                        BufferFormat.R8G8B8A8_UNorm)
             {
@@ -149,7 +149,7 @@ internal class ImageEditorPlugIn
 
         // The availability of texconv.exe determines whether or not we can use block compressed formats or not.
         HostContentServices.Log.Print("Checking for texconv.exe...", LoggingLevel.Simple);
-        var pluginDir = new DirectoryInfo(Path.GetDirectoryName(GetType().Assembly.Location));
+        DirectoryInfo pluginDir = new(Path.GetDirectoryName(GetType().Assembly.Location));
         result = new FileInfo(Path.Combine(pluginDir.FullName, "texconv.exe"));
 
         if (!result.Exists)
@@ -289,7 +289,7 @@ internal class ImageEditorPlugIn
             compressor = new TexConvCompressor(texConvExe, scratchArea, _ddsCodec);
         }
 
-        var imageIO = new ImageIOService(_ddsCodec,
+        ImageIOService imageIO = new(_ddsCodec,
             _codecs,
             new ExportImageDialogService(_settings),
             new ImportImageDialogService(_settings, _codecs),
@@ -299,13 +299,13 @@ internal class ImageEditorPlugIn
             compressor,
             HostContentServices.Log);
 
-        var imageData = await Task.Run(() =>
+        (IGorgonImage image, IGorgonVirtualFile workingFile, BufferFormat originalFormat) imageData = await Task.Run(() =>
         {
             using Stream inStream = ContentFileManager.OpenStream(file.Path, FileMode.Open);
             return imageIO.LoadImageFile(inStream, file.Name);
         });
 
-        var services = new ImageEditorServices
+        ImageEditorServices services = new()
         {
             HostContentServices = HostContentServices,
             ImageIO = imageIO,
@@ -314,24 +314,24 @@ internal class ImageEditorPlugIn
             ExternalEditorService = new ImageExternalEditService(HostContentServices.Log)
         };
 
-        var imagePicker = new ImagePicker();
-        var sourceImagePicker = new SourceImagePicker();
-        var cropResizeSettings = new CropResizeSettings();
-        var dimensionSettings = new DimensionSettings();
-        var mipSettings = new MipMapSettings();
-        var alphaSettings = new AlphaSettings
+        ImagePicker imagePicker = new();
+        SourceImagePicker sourceImagePicker = new();
+        CropResizeSettings cropResizeSettings = new();
+        DimensionSettings dimensionSettings = new();
+        MipMapSettings mipSettings = new();
+        AlphaSettings alphaSettings = new()
         {
             AlphaValue = _settings.LastAlphaValue,
             UpdateRange = _settings.LastAlphaRange
         };
-        var blurSettings = new FxBlur();
-        var sharpenSettings = new FxSharpen();
-        var embossSettings = new FxEmboss();
-        var edgeDetectSettings = new FxEdgeDetect();
-        var posterizeSettings = new FxPosterize();
-        var oneBitSettings = new FxOneBit();
+        FxBlur blurSettings = new();
+        FxSharpen sharpenSettings = new();
+        FxEmboss embossSettings = new();
+        FxEdgeDetect edgeDetectSettings = new();
+        FxPosterize posterizeSettings = new();
+        FxOneBit oneBitSettings = new();
 
-        var injector = new HostedPanelViewModelParameters(HostContentServices);
+        HostedPanelViewModelParameters injector = new(HostContentServices);
 
         cropResizeSettings.Initialize(injector);
         dimensionSettings.Initialize(new DimensionSettingsParameters(HostContentServices));
@@ -352,8 +352,8 @@ internal class ImageEditorPlugIn
             SourceImagePicker = sourceImagePicker
         });
 
-        var content = new ImageContent();
-        var fxContext = new FxContext();
+        ImageContent content = new();
+        FxContext fxContext = new();
 
         fxContext.Initialize(new FxContextParameters(content, _fxServices, blurSettings, sharpenSettings, embossSettings, edgeDetectSettings, posterizeSettings, oneBitSettings, HostContentServices));
         content.Initialize(new ImageContentParameters(fileManager,

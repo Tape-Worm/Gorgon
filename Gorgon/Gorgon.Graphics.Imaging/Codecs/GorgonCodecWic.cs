@@ -129,7 +129,7 @@ public abstract class GorgonCodecWic<TWicEncOpt, TWicDecOpt>
     /// <exception cref="GorgonException">Thrown when the image data in the stream has a pixel format that is unsupported.</exception>
     protected override IGorgonImage OnDecodeFromStream(Stream stream, long size)
     {
-        var wic = new WicUtilities();
+        WicUtilities wic = new();
         Stream streamAlias = stream;
 
         try
@@ -193,7 +193,7 @@ public abstract class GorgonCodecWic<TWicEncOpt, TWicDecOpt>
             throw new IOException(string.Format(Resources.GORIMG_ERR_STREAM_IS_READONLY));
         }
 
-        var wic = new WicUtilities();
+        WicUtilities wic = new();
 
         try
         {
@@ -264,7 +264,7 @@ public abstract class GorgonCodecWic<TWicEncOpt, TWicDecOpt>
             throw new IOException(Resources.GORIMG_ERR_STREAM_CANNOT_SEEK);
         }
 
-        var wic = new WicUtilities();
+        WicUtilities wic = new();
 
         try
         {
@@ -339,7 +339,7 @@ public abstract class GorgonCodecWic<TWicEncOpt, TWicDecOpt>
             return [];
         }
 
-        var wic = new WicUtilities();
+        WicUtilities wic = new();
 
         try
         {
@@ -392,7 +392,7 @@ public abstract class GorgonCodecWic<TWicEncOpt, TWicDecOpt>
             throw new IOException(Resources.GORIMG_ERR_STREAM_CANNOT_SEEK);
         }
 
-        var wic = new WicUtilities();
+        WicUtilities wic = new();
 
         try
         {

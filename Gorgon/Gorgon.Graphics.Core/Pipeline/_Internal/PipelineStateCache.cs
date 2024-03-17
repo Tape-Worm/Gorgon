@@ -219,7 +219,7 @@ internal class PipelineStateCache(D3D11.Device5 device)
             }
 
             // Setup any uninitialized states.
-            var resultState = new GorgonPipelineState(newState)
+            GorgonPipelineState resultState = new(newState)
             {
                 ID = index
             };

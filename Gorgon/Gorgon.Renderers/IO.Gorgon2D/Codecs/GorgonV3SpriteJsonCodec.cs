@@ -72,8 +72,8 @@ public class GorgonV3SpriteJsonCodec(Gorgon2D renderer)
     /// <returns>The data as a JSON.Net object.</returns>
     private static JsonReader GetJsonReader(Stream stream)
     {
-        var reader = new StreamReader(stream, Encoding.UTF8, true, 1024, true);
-        var jsonReader = new JsonTextReader(reader)
+        StreamReader reader = new(stream, Encoding.UTF8, true, 1024, true);
+        JsonTextReader jsonReader = new(reader)
         {
             CloseInput = true
         };
@@ -128,8 +128,8 @@ public class GorgonV3SpriteJsonCodec(Gorgon2D renderer)
     /// <returns>A new <see cref="GorgonSprite"/>.</returns>
     protected override GorgonSprite OnReadFromStream(Stream stream, int byteCount, GorgonTexture2DView overrideTexture)
     {
-        using var wrappedStream = new GorgonStreamWrapper(stream, stream.Position, byteCount, false);
-        using var reader = new StreamReader(wrappedStream, Encoding.UTF8, true, 80192, true);
+        using GorgonStreamWrapper wrappedStream = new(stream, stream.Position, byteCount, false);
+        using StreamReader reader = new(wrappedStream, Encoding.UTF8, true, 80192, true);
         string jsonString = reader.ReadToEnd();
         return FromJson(Renderer, overrideTexture, jsonString);
     }
@@ -141,7 +141,7 @@ public class GorgonV3SpriteJsonCodec(Gorgon2D renderer)
     /// <param name="stream">The stream that will contain the sprite.</param>
     protected override void OnSaveToStream(GorgonSprite sprite, Stream stream)
     {
-        using var writer = new StreamWriter(stream, Encoding.UTF8, 1024, true);
+        using StreamWriter writer = new(stream, Encoding.UTF8, 1024, true);
         writer.Write(sprite.ToJson());
     }
 
@@ -261,7 +261,7 @@ public class GorgonV3SpriteJsonCodec(Gorgon2D renderer)
         }
 
         // Set up serialization so we can convert our more complicated structures.
-        var serializer = new JsonSerializer
+        JsonSerializer serializer = new()
         {
             CheckAdditionalContent = false
         };
@@ -276,11 +276,11 @@ public class GorgonV3SpriteJsonCodec(Gorgon2D renderer)
         serializer.Converters.Add(new VersionConverter());
 
         // Parse the string so we can extract our header/version for comparison.
-        var jobj = JObject.Parse(json);
+        JObject jobj = JObject.Parse(json);
         ulong jsonID = jobj[GorgonSpriteExtensions.JsonHeaderProp].Value<ulong>();
         Version jsonVersion = jobj[GorgonSpriteExtensions.JsonVersionProp].ToObject<Version>(serializer);
 
-#pragma warning disable IDE0046 // Convert to conditional expression
+
         if (jsonID != CurrentFileHeader)
         {
             throw new GorgonException(GorgonResult.CannotRead, Resources.GOR2DIO_ERR_JSON_NOT_SPRITE);
@@ -289,7 +289,7 @@ public class GorgonV3SpriteJsonCodec(Gorgon2D renderer)
         return !jsonVersion.Equals(CurrentVersion)
             ? throw new GorgonException(GorgonResult.CannotRead, string.Format(Resources.GOR2DIO_ERR_SPRITE_VERSION_MISMATCH, CurrentVersion, jsonVersion))
             : jobj.ToObject<GorgonSprite>(serializer);
-#pragma warning restore IDE0046 // Convert to conditional expression
+
     }
 
 

@@ -115,13 +115,13 @@ public struct GorgonRay(Vector3 position, Vector3 direction)
     /// <returns>Resulting <see cref="GorgonRay"/>.</returns>
     public static GorgonRay GetPickRay(int x, int y, in DX.ViewportF viewport, in Matrix4x4 worldViewProjection)
     {
-        var nearPoint = new Vector3(x, y, 0);
-        var farPoint = new Vector3(x, y, 1);
+        Vector3 nearPoint = new(x, y, 0);
+        Vector3 farPoint = new(x, y, 1);
 
         nearPoint = nearPoint.Unproject(viewport.X, viewport.Y, viewport.Width, viewport.Height, viewport.MinDepth, viewport.MaxDepth, in worldViewProjection);
         farPoint = farPoint.Unproject(viewport.X, viewport.Y, viewport.Width, viewport.Height, viewport.MinDepth, viewport.MaxDepth, in worldViewProjection);
 
-        var direction = Vector3.Normalize(farPoint - nearPoint);
+        Vector3 direction = Vector3.Normalize(farPoint - nearPoint);
 
         return new GorgonRay(nearPoint, direction);
     }

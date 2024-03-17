@@ -108,8 +108,8 @@ internal class ComboFonts
 
         e.Graphics.TextRenderingHint = TextRenderingHint.ClearTypeGridFit;
         Size measure = TextRenderer.MeasureText(e.Graphics, fontName, Font, e.Bounds.Size, flags);
-        var textBounds = new Rectangle(e.Bounds.Width - measure.Width + e.Bounds.Left, e.Bounds.Top, e.Bounds.Width, e.Bounds.Height);
-        var fontBounds = new Rectangle(e.Bounds.Left, e.Bounds.Top, textBounds.X - 2, e.Bounds.Height);
+        Rectangle textBounds = new(e.Bounds.Width - measure.Width + e.Bounds.Left, e.Bounds.Top, e.Bounds.Width, e.Bounds.Height);
+        Rectangle fontBounds = new(e.Bounds.Left, e.Bounds.Top, textBounds.X - 2, e.Bounds.Height);
         TextRenderer.DrawText(e.Graphics, fontName, font, fontBounds, Enabled ? e.ForeColor : Color.DimGray, e.BackColor, flags);
         TextRenderer.DrawText(e.Graphics, fontName, Font, textBounds, Enabled ? e.ForeColor : Color.DimGray, e.BackColor, flags);
     }

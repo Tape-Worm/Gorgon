@@ -726,7 +726,7 @@ public abstract class GorgonBufferCommon
         ValidateGetSetData(sourceOffset, 0, size.Value, SizeInBytes, size.Value);
 #endif
 
-        var result = new T[arraySize];
+        T[] result = new T[arraySize];
 
         fixed (T* resultPtr = &result[0])
         {

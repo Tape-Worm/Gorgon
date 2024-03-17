@@ -120,7 +120,7 @@ public class GorgonCueTextBox
                 {
                     // If the font has not been created, then create it now.
                     _cueFont ??= new Font(Font, FontStyle.Italic);
-                    using var brush = new SolidBrush(BackColor);
+                    using SolidBrush brush = new(BackColor);
                     g.FillRectangle(brush, ClientRectangle);
                     TextRenderer.DrawText(g, _cueText, _cueFont, ClientRectangle, Color.FromKnownColor(KnownColor.GrayText), TextFormatFlags.Left);
                 }

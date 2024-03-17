@@ -61,7 +61,7 @@ internal partial class SpriteWrap
             return;
         }
 
-        var button = (RadioButton)sender;
+        RadioButton button = (RadioButton)sender;
 
         if (button.Checked)
         {
@@ -82,7 +82,7 @@ internal partial class SpriteWrap
             return;
         }
 
-        var button = (RadioButton)sender;
+        RadioButton button = (RadioButton)sender;
 
         if (button.Checked)
         {

@@ -91,7 +91,7 @@ internal partial class AnimationAddTrack
             switch (e.Action)
             {
                 case NotifyCollectionChangedAction.Add:
-                    var added = (GorgonTrackRegistration)e.NewItems[0];
+                    GorgonTrackRegistration added = (GorgonTrackRegistration)e.NewItems[0];
 
                     Debug.Assert(added is not null, "Must have a value to add to the list.");
 
@@ -103,7 +103,7 @@ internal partial class AnimationAddTrack
                     ListTracks.Items.Add(new TrackListItem(added));
                     break;
                 case NotifyCollectionChangedAction.Remove:
-                    var removed = (GorgonTrackRegistration)e.OldItems[0];
+                    GorgonTrackRegistration removed = (GorgonTrackRegistration)e.OldItems[0];
 
                     Debug.Assert(removed is not null, "Must have a value to remove from the list.");
 

@@ -72,9 +72,9 @@ internal class NoTextureViewer
     protected sealed override void OnRenderBackground()
     {
         float newSize = RenderRegion.Width < RenderRegion.Height ? RenderRegion.Width : RenderRegion.Height;
-        var size = new DX.Size2F(newSize.Min(_noImage.Width), newSize.Min(_noImage.Width));
-        var halfClient = new DX.Size2F(RenderRegion.Width * 0.5f, RenderRegion.Height * 0.5f);
-        var pos = new Vector2((int)(halfClient.Width - size.Width * 0.5f), (int)(halfClient.Height - size.Height * 0.5f));
+        DX.Size2F size = new(newSize.Min(_noImage.Width), newSize.Min(_noImage.Width));
+        DX.Size2F halfClient = new(RenderRegion.Width * 0.5f, RenderRegion.Height * 0.5f);
+        Vector2 pos = new((int)(halfClient.Width - size.Width * 0.5f), (int)(halfClient.Height - size.Height * 0.5f));
 
         Renderer.Begin();
         Renderer.DrawFilledRectangle(new DX.RectangleF(pos.X, pos.Y, size.Width, size.Height), GorgonColor.White, _noImage, new DX.RectangleF(0, 0, 1, 1));

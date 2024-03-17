@@ -204,7 +204,7 @@ internal partial class FormMain
                 // Add a separator if ask for one (as long as it's not the first item in the group).
                 if ((button.IsSeparator) && (button != buttonItem.Value[0]))
                 {
-                    var sep = new KryptonRibbonGroupSeparator();
+                    KryptonRibbonGroupSeparator sep = new();
                     _toolSeparators.Add(sep);
                     ribGroup.Items.Add(sep);
                 }
@@ -244,7 +244,7 @@ internal partial class FormMain
                     lines = null;
                 }
 
-                var newButton = new KryptonRibbonGroupButton
+                KryptonRibbonGroupButton newButton = new()
                 {
                     TextLine1 = button.DisplayText,
                     ButtonType = GroupButtonType.Push,
@@ -307,7 +307,7 @@ internal partial class FormMain
             return;
         }
 
-        var button = (KryptonRibbonGroupButton)sender;
+        KryptonRibbonGroupButton button = (KryptonRibbonGroupButton)sender;
 
         string name = button.Tag?.ToString() ?? string.Empty;
 
@@ -498,7 +498,7 @@ internal partial class FormMain
 
         try
         {
-            var args = new DeleteArgs(fileExplorer.Root.ID);
+            DeleteArgs args = new(fileExplorer.Root.ID);
             if ((fileExplorer?.DeleteDirectoryCommand is null) || (!fileExplorer.DeleteDirectoryCommand.CanExecute(args)))
             {
                 return;
@@ -563,7 +563,7 @@ internal partial class FormMain
             return;
         }
 
-        var args = new SaveEventArgs(false);
+        SaveEventArgs args = new(false);
         StageLive_Save(this, args);
     }
 
@@ -624,7 +624,7 @@ internal partial class FormMain
             return;
         }
 
-        var args = new CancelEventArgs();
+        CancelEventArgs args = new();
 
         if (!ViewModel.CurrentProject.SaveProjectToPackFileCommand.CanExecute(args))
         {
@@ -794,7 +794,7 @@ internal partial class FormMain
     {
         if (ViewModel?.CurrentProject?.SaveProjectToPackFileCommand is not null)
         {
-            var saveAsArgs = new CancelEventArgs();
+            CancelEventArgs saveAsArgs = new();
             Stage.CanSavePackedFile = ViewModel.CurrentProject.SaveProjectToPackFileCommand.CanExecute(saveAsArgs);
         }
         else
@@ -1020,21 +1020,21 @@ internal partial class FormMain
                 continue;
             }
 
-            var menuItem = new ToolStripMenuItem(string.Format(Resources.GOREDIT_CREATE_NEW, item.ContentType), icon)
+            ToolStripMenuItem menuItem = new(string.Format(Resources.GOREDIT_CREATE_NEW, item.ContentType), icon)
             {
                 Name = id,
                 Tag = item.NewIconID
             };
             menuItem.Click += NewItem_Click;
 
-            var dirCreateMenuItem = new ToolStripMenuItem(string.Format(Resources.GOREDIT_CREATE_NEW, item.ContentType), icon)
+            ToolStripMenuItem dirCreateMenuItem = new(string.Format(Resources.GOREDIT_CREATE_NEW, item.ContentType), icon)
             {
                 Name = id,
                 Tag = item.NewIconID
             };
             dirCreateMenuItem.Click += NewItem_Click;
 
-            var fileCreateMenuItem = new ToolStripMenuItem(string.Format(Resources.GOREDIT_CREATE_NEW, item.ContentType), icon)
+            ToolStripMenuItem fileCreateMenuItem = new(string.Format(Resources.GOREDIT_CREATE_NEW, item.ContentType), icon)
             {
                 Name = id,
                 Tag = item.NewIconID
@@ -1054,8 +1054,8 @@ internal partial class FormMain
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
     private void NewItem_Click(object sender, EventArgs e)
     {
-        var item = (ToolStripItem)sender;
-        var id = (Guid)item.Tag;
+        ToolStripItem item = (ToolStripItem)sender;
+        Guid id = (Guid)item.Tag;
 
         if ((ViewModel?.CurrentProject?.CreateContentCommand is null) || (!ViewModel.CurrentProject.CreateContentCommand.CanExecute(id)))
         {
@@ -1330,7 +1330,7 @@ internal partial class FormMain
                         break;
                 }
 
-                var args = new AppCloseArgs(windowDimensions, windowState);
+                AppCloseArgs args = new(windowDimensions, windowState);
 
                 // If we don't have anything to handle the shut down, then just shut it all down.
                 if ((ViewModel.AppClosingAsyncCommand is null) || (!ViewModel.AppClosingAsyncCommand.CanExecute(args)))

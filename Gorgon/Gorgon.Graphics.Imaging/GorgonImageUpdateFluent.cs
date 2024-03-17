@@ -118,7 +118,7 @@ public partial class GorgonImage
             return;
         }
 
-        var destInfo = new GorgonFormatInfo(format);
+        GorgonFormatInfo destInfo = new(format);
 
         GorgonImage newImage = _wic.ConvertToFormat(this, format, dithering, FormatInfo.IsSRgb, destInfo.IsSRgb);
 
@@ -228,7 +228,7 @@ public partial class GorgonImage
         BufferFormat tempFormat = (destFormat is not BufferFormat.B8G8R8A8_UNorm and not BufferFormat.R8G8B8A8_UNorm) ? BufferFormat.B8G8R8A8_UNorm : destFormat;
 
         // Create an worker image in B8G8R8A8 format.
-        var destInfo = new GorgonImageInfo(ImageType, tempFormat)
+        GorgonImageInfo destInfo = new(ImageType, tempFormat)
         {
             Depth = Depth,
             Height = Height,
@@ -238,7 +238,7 @@ public partial class GorgonImage
         };
 
         // Our destination image for B8G8R8A8 or R8G8B8A8.
-        var destImage = new GorgonImage(destInfo);
+        GorgonImage destImage = new(destInfo);
 
         // We have to manually upsample from R4G4B4A4 to B8R8G8A8.
         // Because we're doing this manually, dithering won't be an option unless 
@@ -276,7 +276,7 @@ public partial class GorgonImage
     /// <returns>The updated image.</returns>
     private GorgonImage ConvertToB4G4R4A4(ImageDithering dithering)
     {
-        var destInfo = new GorgonImageInfo(ImageType, BufferFormat.B4G4R4A4_UNorm)
+        GorgonImageInfo destInfo = new(ImageType, BufferFormat.B4G4R4A4_UNorm)
         {
             Depth = Depth,
             Height = Height,
@@ -286,7 +286,7 @@ public partial class GorgonImage
         };
 
         // This is our working buffer for B4G4R4A4.
-        var workingImage = new GorgonImage(destInfo);
+        GorgonImage workingImage = new(destInfo);
         GorgonImage tempBuffer = null;
 
         try
@@ -374,12 +374,12 @@ public partial class GorgonImage
                 return;
             }
 
-            var destSettings = new GorgonImageInfo(this)
+            GorgonImageInfo destSettings = new(this)
             {
                 MipCount = mipCount
             };
 
-            var newImage = new GorgonImage(destSettings);
+            GorgonImage newImage = new(destSettings);
 
             // Copy the top mip level from the source image to the dest image.
             for (int array = 0; array < ArrayCount; ++array)
@@ -451,8 +451,8 @@ public partial class GorgonImage
             }
 
             // If the intersection of the crop rectangle and the source buffer are the same (and the depth is the same), then we don't need to crop.
-            var bufferRect = new DX.Rectangle(0, 0, Width, Height);
-            var clipRect = DX.Rectangle.Intersect(cropRect, bufferRect);
+            DX.Rectangle bufferRect = new(0, 0, Width, Height);
+            DX.Rectangle clipRect = DX.Rectangle.Intersect(cropRect, bufferRect);
 
             if ((bufferRect.Equals(ref clipRect)) && (newDepth == Depth))
             {
@@ -842,7 +842,7 @@ public partial class GorgonImage
     /// <seealso cref="Decompress"/>
     IGorgonImageUpdateFinalize IGorgonImageUpdateFluent.Compress(BufferFormat compressionFormat, bool useBC1Alpha, BcCompressionQuality quality, bool multithreadCompression)
     {
-        var formatInfo = new GorgonFormatInfo(compressionFormat);
+        GorgonFormatInfo formatInfo = new(compressionFormat);
 
         if ((!formatInfo.IsCompressed) || (formatInfo.IsTypeless) || (compressionFormat == BufferFormat.BC6H_Sf16) || (compressionFormat == BufferFormat.BC6H_Uf16))
         {
@@ -868,12 +868,12 @@ public partial class GorgonImage
                          .EndUpdate();
             }
 
-            var encoder = new BCnEncode.BcEncoder
+            BCnEncode.BcEncoder encoder = new()
             {
                 LuminanceAsRed = true
             };
 
-            var info = new GorgonImageInfo(ImageType, compressionFormat)
+            GorgonImageInfo info = new(ImageType, compressionFormat)
             {
                 MipCount = MipCount,
                 ArrayCount = ArrayCount,
@@ -883,7 +883,7 @@ public partial class GorgonImage
                 Height = Height
             };
 
-            var newBuffer = new GorgonNativeBuffer<byte>(CalculateSizeInBytes(info));
+            GorgonNativeBuffer<byte> newBuffer = new(CalculateSizeInBytes(info));
             ImageBufferList bufferList;
 
             try

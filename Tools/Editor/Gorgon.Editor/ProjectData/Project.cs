@@ -131,7 +131,7 @@ internal class Project
     {
         foreach (KeyValuePair<string, Project30ItemMetadata> item in project.ProjectItems)
         {
-            var newItem = new ProjectItemMetadata
+            ProjectItemMetadata newItem = new()
             {
                 PlugInName = item.Value.PlugInName
             };

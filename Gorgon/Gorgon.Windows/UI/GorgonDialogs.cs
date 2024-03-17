@@ -75,7 +75,7 @@ public static class GorgonDialogs
     /// <returns>A formatted stack trace.</returns>
     private static string FormatStackTrace(string stackTrace)
     {
-        var result = new StringBuilder(8192);
+        StringBuilder result = new(8192);
 
         if (string.IsNullOrEmpty(stackTrace))
         {
@@ -117,7 +117,7 @@ public static class GorgonDialogs
         }
 
         // Find all inner exceptions.
-        var errorText = new StringBuilder(1024);
+        StringBuilder errorText = new(1024);
         Exception nextException = innerException;
 
         while (nextException is not null)
@@ -155,7 +155,7 @@ public static class GorgonDialogs
             // Print custom information.
             if (extraInfo.Count > 0)
             {
-                var customData = new StringBuilder(256);
+                StringBuilder customData = new(256);
 
                 foreach (DictionaryEntry item in extraInfo)
                 {
@@ -271,7 +271,7 @@ public static class GorgonDialogs
                 errorDialog.Text = caption;
             }
 
-            var parentForm = owner as Form;
+            Form parentForm = owner as Form;
 
             errorDialog.ShowDialog(parentForm);
 

@@ -96,7 +96,7 @@ internal class Boot
         ];
 
         // Step 2. - We did not locate the assembly in the loaded assembly list.  Check the local directory for the assembly requesting the reference.
-        var name = new AssemblyName(args.Name);
+        AssemblyName name = new(args.Name);
 
         foreach (string path in paths)
         {
@@ -106,11 +106,11 @@ internal class Boot
                 continue;
             }
 
-            var file = new FileInfo(Path.Combine(path, name.Name));
+            FileInfo file = new(Path.Combine(path, name.Name));
 
             if (file.Exists)
             {
-                var assembly = Assembly.LoadFile(file.FullName);
+                Assembly assembly = Assembly.LoadFile(file.FullName);
                 AssemblyName loadedName = assembly.GetName();
 
                 if (AssemblyName.ReferenceMatchesDefinition(loadedName, name))
@@ -179,7 +179,7 @@ internal class Boot
     private EditorSettings LoadSettings()
     {
 #if DEBUG
-        var settingsFile = new FileInfo(Path.Combine(Program.ApplicationUserDirectory.FullName, "Gorgon.Editor.Settings.DEBUG.json"));
+        FileInfo settingsFile = new(Path.Combine(Program.ApplicationUserDirectory.FullName, "Gorgon.Editor.Settings.DEBUG.json"));
 #else
         var settingsFile = new FileInfo(Path.Combine(Program.ApplicationUserDirectory.FullName, "Gorgon.Editor.Settings.json"));
 #endif
@@ -187,8 +187,8 @@ internal class Boot
 
         _splash.InfoText = "Loading application settings...";
 
-        var defaultSize = new Size(1280.Min(Screen.PrimaryScreen.WorkingArea.Width), 800.Min(Screen.PrimaryScreen.WorkingArea.Height));
-        var defaultLocation = new Point((Screen.PrimaryScreen.WorkingArea.Width / 2) - (defaultSize.Width / 2) + Screen.PrimaryScreen.WorkingArea.X,
+        Size defaultSize = new(1280.Min(Screen.PrimaryScreen.WorkingArea.Width), 800.Min(Screen.PrimaryScreen.WorkingArea.Height));
+        Point defaultLocation = new((Screen.PrimaryScreen.WorkingArea.Width / 2) - (defaultSize.Width / 2) + Screen.PrimaryScreen.WorkingArea.X,
                                           (Screen.PrimaryScreen.WorkingArea.Height / 2) - (defaultSize.Height / 2) + Screen.PrimaryScreen.WorkingArea.Y);
 
         EditorSettings CreateEditorSettings() => new()
@@ -214,7 +214,7 @@ internal class Boot
             {
                 Program.Log.Print($"Loading application settings from '{settingsFile.FullName}'", LoggingLevel.Intermediate);
                 reader = new StreamReader(settingsFile.FullName, Encoding.UTF8, true);
-                var settings = new JsonSerializerSettings();
+                JsonSerializerSettings settings = new();
                 settings.Converters.Add(new JsonSharpDxRectConverter());
                 settings.Error = (o, e) =>
                 {
@@ -250,7 +250,7 @@ internal class Boot
             result.LastOpenSavePath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments).FormatDirectory(Path.DirectorySeparatorChar);
         }
 
-        var lastOpenSavePath = new DirectoryInfo(result.LastOpenSavePath);
+        DirectoryInfo lastOpenSavePath = new(result.LastOpenSavePath);
 
         if (!lastOpenSavePath.Exists)
         {
@@ -265,11 +265,11 @@ internal class Boot
         // If we're not on one of the screens, then default to the main screen.
         if (result.WindowBounds is not null)
         {
-            var rect = new Rectangle(result.WindowBounds.Value.X,
+            Rectangle rect = new(result.WindowBounds.Value.X,
                                      result.WindowBounds.Value.Y,
                                      result.WindowBounds.Value.Width,
                                      result.WindowBounds.Value.Height);
-            var onScreen = Screen.FromRectangle(rect);
+            Screen onScreen = Screen.FromRectangle(rect);
 
             // If we detected that we're on the primary screen (meaning we aren't on any of the others), but we don't intersect with the working area,
             // then we need to reset.
@@ -372,7 +372,7 @@ internal class Boot
     private FileSystemProviders LoadFileSystemPlugIns(DirectoryInfo plugInDir, IHostServices hostServices)
     {
         string fileSystemPlugInsDir = Path.Combine(plugInDir.FullName, "Filesystem");
-        var result = new FileSystemProviders(hostServices);
+        FileSystemProviders result = new(hostServices);
 
         if (!System.IO.Directory.Exists(fileSystemPlugInsDir))
         {
@@ -414,7 +414,7 @@ internal class Boot
             // Initalize the common resources.
             CommonEditorResources.LoadResources();
 
-            var hostServices = new HostContentServices
+            HostContentServices hostServices = new()
             {
                 Log = Program.Log
             };
@@ -432,7 +432,7 @@ internal class Boot
             hostServices.ColorPicker = new ColorPickerService();
             hostServices.GraphicsContext = _graphicsContext;
 
-            var plugInLocation = new DirectoryInfo(Path.Combine(GorgonApplication.StartupPath.FullName, "PlugIns"));
+            DirectoryInfo plugInLocation = new(Path.Combine(GorgonApplication.StartupPath.FullName, "PlugIns"));
 
             if (!plugInLocation.Exists)
             {
@@ -450,10 +450,10 @@ internal class Boot
             LoadContentPlugIns(plugInLocation, hostServices);
 
             // Create the project manager for the application
-            var projectManager = new ProjectManager(fileSystemProviders, Program.Log);
+            ProjectManager projectManager = new(fileSystemProviders, Program.Log);
 
             // Setup the factory used to build view models for the application.
-            var factory = new ViewModelFactory(settings, projectManager, fileSystemProviders, hostServices);
+            ViewModelFactory factory = new(settings, projectManager, fileSystemProviders, hostServices);
 
             // Show our main interface.
             _mainForm = new FormMain(settings);

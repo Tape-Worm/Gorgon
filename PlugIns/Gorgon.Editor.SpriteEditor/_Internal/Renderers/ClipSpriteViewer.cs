@@ -123,7 +123,7 @@ internal class ClipSpriteViewer
     {
         GorgonRenderTargetView prevTarget = Graphics.RenderTargets[0];
         GorgonRange<float>? prevAlphaTest = Renderer.PrimitiveAlphaTestRange;
-        var clearRegion = _sprite.Texture.ToPixel(_sprite.TextureRegion).ToRectangleF();
+        DX.RectangleF clearRegion = _sprite.Texture.ToPixel(_sprite.TextureRegion).ToRectangleF();
 
         _spriteTarget.Clear(GorgonColor.BlackTransparent);
 
@@ -168,7 +168,7 @@ internal class ClipSpriteViewer
                     break;
                 }
 
-                var rect = new DX.RectangleF(DataContext.SpriteClipContext.SpriteRectangle.Left,
+                DX.RectangleF rect = new(DataContext.SpriteClipContext.SpriteRectangle.Left,
                                              DataContext.SpriteClipContext.SpriteRectangle.Top,
                                              size.Value.Width,
                                              size.Value.Height);
@@ -349,7 +349,7 @@ internal class ClipSpriteViewer
     /// <summary>Function to draw the sprite.</summary>
     protected override void DrawSprite()
     {
-        var halfRegion = new Vector2(RenderRegion.Width * -0.5f, RenderRegion.Height * -0.5f);
+        Vector2 halfRegion = new(RenderRegion.Width * -0.5f, RenderRegion.Height * -0.5f);
 
         RenderSpriteTexture();
 

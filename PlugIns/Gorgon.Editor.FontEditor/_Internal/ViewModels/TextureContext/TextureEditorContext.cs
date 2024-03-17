@@ -851,7 +851,7 @@ internal class TextureEditorContext
             }
         }
 
-        var brush = (IFontBrush)CurrentPanel;
+        IFontBrush brush = (IFontBrush)CurrentPanel;
 
         Task UndoRedoAction(GorgonFontInfo args, CancellationToken _) => ApplyBrushAsync(args);
 

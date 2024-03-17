@@ -67,7 +67,7 @@ public class ShadowBuilder(Gorgon2D renderer, Gorgon2DGaussBlurEffect effect, Go
         // Then, we apply a gaussian blur to the render target several times to "smooth" out the edges.
         // Once that is done, we can create new sprites from our render target texture that point to the blurred image.
 
-        var resultTexture = GorgonTexture2DView.CreateTexture(_renderer.Graphics,
+        GorgonTexture2DView resultTexture = GorgonTexture2DView.CreateTexture(_renderer.Graphics,
                                                                               new GorgonTexture2DInfo((int)(_sprite1.Size.Width + _sprite2.Size.Width) * 2,
                                                                                                            (int)(_sprite1.Size.Height + _sprite2.Size.Height) * 2,
                                                                                                            BufferFormat.R8G8B8A8_UNorm)

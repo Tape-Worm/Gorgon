@@ -406,7 +406,7 @@ public class Gorgon2DGBuffer
 
         if ((_indices.normalIndex != normalMapIndex) || (_indices.specularIndex != specularMapIndex))
         {
-            var gbufferParams = new Vector4(normalMapIndex, specularMapIndex, 0, 0);
+            Vector4 gbufferParams = new(normalMapIndex, specularMapIndex, 0, 0);
             _params.Buffer.SetData(in gbufferParams);
             _indices = (normalMapIndex, specularMapIndex);
         }

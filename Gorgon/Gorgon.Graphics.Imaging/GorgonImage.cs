@@ -247,7 +247,7 @@ public partial class GorgonImage
         height = 1.Max(height);
         arrayCountOrDepth = 1.Max(arrayCountOrDepth);
         mipCount = 1.Max(mipCount);
-        var formatInfo = new GorgonFormatInfo(format);
+        GorgonFormatInfo formatInfo = new(format);
         int result = 0;
 
         if (formatInfo.SizeInBytes == 0)
@@ -421,7 +421,7 @@ public partial class GorgonImage
             sourceFormat = BufferFormat.B8G8R8A8_UNorm;
         }
 
-        using var wic = new WicUtilities();
+        using WicUtilities wic = new();
         return wic.CanConvertFormats(sourceFormat,
                                      [
                                              format
@@ -444,11 +444,11 @@ public partial class GorgonImage
         // If we're converting from B4G4R4A4, then we need to use another path.
         if (_imageInfo.Format == BufferFormat.B4G4R4A4_UNorm)
         {
-            using var wic = new WicUtilities();
+            using WicUtilities wic = new();
             return wic.CanConvertFormats(BufferFormat.B8G8R8A8_UNorm, destFormats);
         }
 
-        using (var wic = new WicUtilities())
+        using (WicUtilities wic = new())
         {
             return wic.CanConvertFormats(_imageInfo.Format, destFormats);
         }
@@ -474,14 +474,14 @@ public partial class GorgonImage
             throw new ArgumentNullException(nameof(image));
         }
 
-        var info = new GorgonImageInfo(image);
-        var formatInfo = new GorgonFormatInfo(info.Format);
-        var data = new GorgonNativeBuffer<byte>(image.SizeInBytes);
+        GorgonImageInfo info = new(image);
+        GorgonFormatInfo formatInfo = new(info.Format);
+        GorgonNativeBuffer<byte> data = new(image.SizeInBytes);
         GorgonPtr<byte> ptr = data.Pointer;
 
         image.ImageData.CopyTo(ptr);
 
-        var buffers = new ImageBufferList(info);
+        ImageBufferList buffers = new(info);
         buffers.CreateBuffers(in ptr);
 
         _imageData.Dispose();
@@ -551,12 +551,12 @@ public partial class GorgonImage
         // Performs the actual decompression.
         void DoDecompress()
         {
-            var decoder = new BCnDecode.BcDecoder
+            BCnDecode.BcDecoder decoder = new()
             {
                 LuminanceAsRed = true
             };
 
-            var info = new GorgonImageInfo(ImageType, BufferFormat.R8G8B8A8_UNorm)
+            GorgonImageInfo info = new(ImageType, BufferFormat.R8G8B8A8_UNorm)
             {
                 MipCount = MipCount,
                 ArrayCount = ArrayCount,
@@ -567,7 +567,7 @@ public partial class GorgonImage
             };
 
             ImageBufferList bufferList;
-            var decoded = new GorgonNativeBuffer<byte>(CalculateSizeInBytes(info));
+            GorgonNativeBuffer<byte> decoded = new(CalculateSizeInBytes(info));
 
             try
             {

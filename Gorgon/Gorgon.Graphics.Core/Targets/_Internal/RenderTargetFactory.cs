@@ -227,7 +227,7 @@ internal class RenderTargetFactory(GorgonGraphics graphics)
             _expiryTimer.Reset();
         }
 
-        var newRtv = GorgonRenderTarget2DView.CreateRenderTarget(_graphics, newInfo);
+        GorgonRenderTarget2DView newRtv = GorgonRenderTarget2DView.CreateRenderTarget(_graphics, newInfo);
         // Cache a default shader resource view (the texture holds the cache, we hold a separate one so we can clean it up later).
         _srvs.Add(newRtv.GetShaderResourceView());
         newRtv.OwnerFactory = this;

@@ -206,10 +206,10 @@ internal class SceneRenderer
         {
             // Since we're altering the size of the sprites, we'll need to get the original width/height from another place.
             // This can be extracted from the sprite texture region (assuming the region is 1:1 with pixel space, scaling the texture coordinates will mess this up).
-            var size = sprite.Texture.ToPixel(sprite.TextureRegion.Size).ToSize2F();
+            DX.Size2F size = sprite.Texture.ToPixel(sprite.TextureRegion.Size).ToSize2F();
 
             // Scale the size of the sprite to match our base resolution of 1920x1080.
-            var newSize = new DX.Size2F(size.Width / screen.Width * _camera.ViewDimensions.Width * 0.75f, size.Height / screen.Height * _camera.ViewDimensions.Height * 0.75f);
+            DX.Size2F newSize = new(size.Width / screen.Width * _camera.ViewDimensions.Width * 0.75f, size.Height / screen.Height * _camera.ViewDimensions.Height * 0.75f);
 
             sprite.Size = newSize;
         }

@@ -41,9 +41,9 @@ public static class GorgonTreeLinqExtensions
     /// <exception cref="ArgumentNullException">Thrown when the <paramref name="children"/> parameter is <b>null</b>.</exception>
     public static IEnumerable<T> TraverseDepthFirst<T>(this IEnumerable<T> children, Func<T, IEnumerable<T>> getChildren)
     {
-        ArgumentNullException.ThrowIfNull(children);        
+        ArgumentNullException.ThrowIfNull(children);
 
-        var queue = new Stack<T>();
+        Stack<T> queue = new();
         foreach (T child in children)
         {
             queue.Push(child);
@@ -79,9 +79,9 @@ public static class GorgonTreeLinqExtensions
     /// <exception cref="ArgumentNullException">Thrown when the <paramref name="children"/> parameter is <b>null</b>.</exception>
     public static IEnumerable<T> Traverse<T>(this IEnumerable<T> children, Func<T, IEnumerable<T>> getChildren)
     {
-        ArgumentNullException.ThrowIfNull(children);        
+        ArgumentNullException.ThrowIfNull(children);
 
-        var queue = new Queue<T>();
+        Queue<T> queue = new();
         foreach (T child in children)
         {
             queue.Enqueue(child);

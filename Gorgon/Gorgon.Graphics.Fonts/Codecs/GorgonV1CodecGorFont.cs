@@ -97,7 +97,7 @@ public sealed class GorgonV1CodecGorFont
     private static GorgonFontInfo GetFontInfo(GorgonChunkFileReader fontFile, string name)
     {
         GorgonBinaryReader reader = fontFile.OpenChunk(FontInfoChunk);
-        var info = new GorgonFontInfo(reader.ReadString(), reader.ReadSingle(), reader.ReadValue<GorgonFontHeightMode>())
+        GorgonFontInfo info = new(reader.ReadString(), reader.ReadSingle(), reader.ReadValue<GorgonFontHeightMode>())
         {
             Name = name,
             FontStyle = reader.ReadValue<GorgonFontStyle>(),
@@ -160,7 +160,7 @@ public sealed class GorgonV1CodecGorFont
     /// <seealso cref="GorgonFontFactory" />
     protected override async Task<GorgonFont> OnLoadFromStreamAsync(string name, Stream stream)
     {
-        var fontFile = new GorgonChunkFileReader(stream,
+        GorgonChunkFileReader fontFile = new(stream,
                                                  [
                                                      FileHeader.ChunkID()
                                                  ]);
@@ -184,7 +184,7 @@ public sealed class GorgonV1CodecGorFont
             if (fontFile.Chunks.Contains(BrushChunk))
             {
                 reader = fontFile.OpenChunk(BrushChunk);
-                var brushType = (GlyphBrushType)reader.ReadInt32();
+                GlyphBrushType brushType = (GlyphBrushType)reader.ReadInt32();
 
                 fontBrush = brushType switch
                 {
@@ -211,7 +211,7 @@ public sealed class GorgonV1CodecGorFont
         }
         finally
         {
-            var brush = fontInfo?.Brush as IDisposable;
+            IDisposable brush = fontInfo?.Brush as IDisposable;
             brush?.Dispose();
             fontFile.Close();
         }
@@ -225,7 +225,7 @@ public sealed class GorgonV1CodecGorFont
     /// <returns>A new <seealso cref="GorgonFont"/>, or, an existing font from the <seealso cref="GorgonFontFactory"/> cache.</returns>
     protected override GorgonFont OnLoadFromStream(string name, Stream stream)
     {
-        var fontFile = new GorgonChunkFileReader(stream,
+        GorgonChunkFileReader fontFile = new(stream,
                                                  [
                                                      FileHeader.ChunkID()
                                                  ]);
@@ -250,7 +250,7 @@ public sealed class GorgonV1CodecGorFont
             if (fontFile.Chunks.Contains(BrushChunk))
             {
                 reader = fontFile.OpenChunk(BrushChunk);
-                var brushType = (GlyphBrushType)reader.ReadInt32();
+                GlyphBrushType brushType = (GlyphBrushType)reader.ReadInt32();
 
                 fontBrush = brushType switch
                 {
@@ -277,7 +277,7 @@ public sealed class GorgonV1CodecGorFont
         }
         finally
         {
-            var brush = fontInfo?.Brush as IDisposable;
+            IDisposable brush = fontInfo?.Brush as IDisposable;
             brush?.Dispose();
             fontFile.Close();
         }
@@ -321,7 +321,7 @@ public sealed class GorgonV1CodecGorFont
         }
 
         long position = stream.Position;
-        var reader = new GorgonBinaryReader(stream, true);
+        GorgonBinaryReader reader = new(stream, true);
 
         try
         {

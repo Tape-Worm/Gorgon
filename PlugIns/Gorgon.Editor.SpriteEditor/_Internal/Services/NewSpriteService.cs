@@ -97,7 +97,7 @@ internal class NewSpriteService(IContentFileManager fileManager, IGorgonImageCod
                                                     && (Is2DImage(item)))
                                             .ToArray();
 
-        using var newSpriteForm = new FormNewSprite()
+        using FormNewSprite newSpriteForm = new()
         {
             ImageCodec = _imageCodec,
             FileManager = _fileManager,

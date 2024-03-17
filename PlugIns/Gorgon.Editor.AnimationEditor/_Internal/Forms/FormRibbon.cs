@@ -469,7 +469,7 @@ internal partial class FormRibbon
             return;
         }
 
-        var args = new KeyFrameCopyMoveData
+        KeyFrameCopyMoveData args = new()
         {
             KeyFrames = ViewModel.Selected,
             Operation = CopyMoveOperation.Copy
@@ -493,7 +493,7 @@ internal partial class FormRibbon
             return;
         }
 
-        var args = new KeyFrameCopyMoveData
+        KeyFrameCopyMoveData args = new()
         {
             KeyFrames = ViewModel.Selected,
             Operation = CopyMoveOperation.Move
@@ -709,7 +709,7 @@ internal partial class FormRibbon
     /// <param name="e">The [EventArgs] instance containing the event data.</param>
     private void ItemZoom_Click(object sender, EventArgs e)
     {
-        var item = (ToolStripMenuItem)sender;
+        ToolStripMenuItem item = (ToolStripMenuItem)sender;
 
         if ((item.Tag is null) || (!Enum.TryParse(item.Tag.ToString(), out ZoomLevels zoom)))
         {
@@ -781,7 +781,7 @@ internal partial class FormRibbon
         ButtonAnimationRemoveKeyframes.Enabled = ViewModel.KeyEditor?.RemoveKeyCommand?.CanExecute(null) ?? false;
         ButtonAnimationClearKeyframes.Enabled = ViewModel.KeyEditor?.ClearKeysCommand?.CanExecute(null) ?? false;
         ButtonAnimationClear.Enabled = ViewModel.ClearAnimationCommand?.CanExecute(null) ?? false;
-        var copyArgs = new KeyFrameCopyMoveData
+        KeyFrameCopyMoveData copyArgs = new()
         {
             KeyFrames = ViewModel.Selected,
             Operation = CopyMoveOperation.Copy

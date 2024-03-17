@@ -182,11 +182,11 @@ public class GorgonTextureAtlasService
     /// <returns>The list of rectangles/array indices and a flag to indicate whether the sprites were already on an atlas or not.</returns>
     private (IReadOnlyList<IReadOnlyDictionary<int, TextureRects>> rects, bool noChange) CalculateRegions(IReadOnlyList<GorgonSprite> sprites, DX.Size2 maxTextureSize, int maxArrayCount)
     {
-        var result = new List<IReadOnlyDictionary<int, TextureRects>>();
-        var rects = new Dictionary<int, TextureRects>();
+        List<IReadOnlyDictionary<int, TextureRects>> result = [];
+        Dictionary<int, TextureRects> rects = [];
         DX.Rectangle spriteRegion;
         TextureRects newRect = null;
-        var textureBounds = new DX.Rectangle(0, 0, maxTextureSize.Width, maxTextureSize.Height);
+        DX.Rectangle textureBounds = new(0, 0, maxTextureSize.Width, maxTextureSize.Height);
 
 
 
@@ -324,7 +324,7 @@ public class GorgonTextureAtlasService
                                                       .Distinct()
                                                       .ToArray();
 
-        var result = new Dictionary<GorgonSprite, (int textureIndex, DX.Rectangle rect, int arrayindex)>();
+        Dictionary<GorgonSprite, (int textureIndex, DX.Rectangle rect, int arrayindex)> result = [];
 
         (IReadOnlyList<IReadOnlyDictionary<int, TextureRects>> rects, _) = CalculateRegions(filtered, TextureSize, ArrayCount);
 
@@ -458,11 +458,11 @@ public class GorgonTextureAtlasService
 
         // Get the total number of textures.
         int textureCount = regions.Max(item => item.Value.textureIndex) + 1;
-        var srvs = new GorgonTexture2DView[textureCount];
+        GorgonTexture2DView[] srvs = new GorgonTexture2DView[textureCount];
         GorgonRenderTarget2DView rtv = null;
         GorgonRenderTargetView original = _graphics.RenderTargets[0];
-        var sprites = new List<(GorgonSprite, GorgonSprite)>(regions.Count);
-        var rtvs = new HashSet<GorgonRenderTargetView>();
+        List<(GorgonSprite, GorgonSprite)> sprites = new(regions.Count);
+        HashSet<GorgonRenderTargetView> rtvs = [];
         string textureName = $"{(string.IsNullOrWhiteSpace(BaseTextureName) ? "texture_atlas" : BaseTextureName)}_{{0}}.dds";
 
         try

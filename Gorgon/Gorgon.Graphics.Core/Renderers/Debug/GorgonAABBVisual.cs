@@ -87,7 +87,7 @@ public class GorgonAABBVisual
     /// </summary>
     private void Initialize()
     {
-        var vertexBuffer = new GorgonVertexBuffer(Graphics, new GorgonVertexBufferInfo(_lineVertices.Length * Unsafe.SizeOf<Vector3>())
+        GorgonVertexBuffer vertexBuffer = new(Graphics, new GorgonVertexBufferInfo(_lineVertices.Length * Unsafe.SizeOf<Vector3>())
         {
             Name = "AABB Visual VertexBuffer",
             Usage = ResourceUsage.Dynamic
@@ -165,7 +165,7 @@ public class GorgonAABBVisual
 
         _vertexBuffer.VertexBuffer.SetData<Vector3>(_lineVertices);
 
-        var viewProj = Matrix4x4.Multiply(viewMatrix, projectionMatrix);
+        Matrix4x4 viewProj = Matrix4x4.Multiply(viewMatrix, projectionMatrix);
         viewProj = Matrix4x4.Transpose(viewProj);
         _constantBuffer.Buffer.SetData(in viewProj);
 

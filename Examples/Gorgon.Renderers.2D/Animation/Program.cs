@@ -80,7 +80,7 @@ static class Program
     /// </summary>
     private static void MakeAn80sMusicVideo()
     {
-        var animBuilder = new GorgonAnimationBuilder();
+        GorgonAnimationBuilder animBuilder = new();
 
         // When building animations, you can create your own animation tracks to handle which properties on the 
         // sprite get updated. These often correspond to property names, so passing "Position" as the name will 
@@ -217,7 +217,7 @@ static class Program
             _target.Clear(GorgonColor.CornFlowerBlue);
 
             // Load our textures.
-            var gif = new GorgonCodecGif(decodingOptions: new GorgonGifDecodingOptions
+            GorgonCodecGif gif = new(decodingOptions: new GorgonGifDecodingOptions
             {
                 ReadAllFrames = true
             });
@@ -259,8 +259,8 @@ static class Program
             MakeAn80sMusicVideo();
 
             // We need to set up a blend state so that the alpha in the render target doesn't get overwritten.
-            var builder = new Gorgon2DBatchStateBuilder();
-            var blendBuilder = new GorgonBlendStateBuilder();
+            Gorgon2DBatchStateBuilder builder = new();
+            GorgonBlendStateBuilder blendBuilder = new();
             _targetBatchState = builder.BlendState(blendBuilder
                                                    .ResetTo(GorgonBlendState.Default)
                                                    .DestinationBlend(alpha: Blend.DestinationAlpha)

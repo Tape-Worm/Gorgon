@@ -176,7 +176,7 @@ internal static partial class UserApi
 
     public static CursorInfoFlags IsCursorVisible()
     {
-        var cursorInfo = new CURSORINFO
+        CURSORINFO cursorInfo = new()
         {
             cbSize = Unsafe.SizeOf<CURSORINFO>(),
             flags = CursorInfoFlags.CursorHidden,

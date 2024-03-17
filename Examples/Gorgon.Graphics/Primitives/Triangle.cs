@@ -55,7 +55,7 @@ internal class Triangle
         point2.Tangent = new Vector4(1.0f, 0, 0, 1.0f);
         point3.Tangent = new Vector4(1.0f, 0, 0, 1.0f);
 
-        var points = new GorgonVertexPosNormUvTangent[3];
+        GorgonVertexPosNormUvTangent[] points = new GorgonVertexPosNormUvTangent[3];
         int[] indices = new int[3];
 
         points[0] = point1;

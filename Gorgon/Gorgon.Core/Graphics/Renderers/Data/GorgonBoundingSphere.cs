@@ -166,7 +166,7 @@ public readonly struct GorgonBoundingSphere(in Vector3 center, float radius)
     /// <param name="result">When the method completes, the newly constructed bounding sphere.</param>
     public static void FromBox(in GorgonBoundingBox box, out GorgonBoundingSphere result)
     {
-        var center = Vector3.Lerp(box.Minimum, box.Maximum, 0.5f);
+        Vector3 center = Vector3.Lerp(box.Minimum, box.Maximum, 0.5f);
 
         float x = box.Minimum.X - box.Maximum.X;
         float y = box.Minimum.Y - box.Maximum.Y;

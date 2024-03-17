@@ -147,7 +147,7 @@ public partial class FormMain : Form
         }
         else
         {
-            using var pen = new Pen(color);
+            using Pen pen = new(color);
             _graphics.DrawLine(pen, new Point(lastX, lastY), new Point(x, y));
         }
     }

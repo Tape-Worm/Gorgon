@@ -36,7 +36,7 @@ internal class Noise
             else
             {
                 Perm = new byte[512];
-                var random = new Random(value);
+                Random random = new(value);
                 random.NextBytes(Perm);
             }
 

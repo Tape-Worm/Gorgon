@@ -70,7 +70,7 @@ internal static partial class Win32API
     private static bool IsWindowsVersionOrGreater(uint majorVersion, uint minorVersion, uint? buildNumber, ushort? servicePackMajorVersion)
     {
         int size = Marshal.SizeOf<OSVERSIONINFOEX>();
-        var osInfoEx = new OSVERSIONINFOEX
+        OSVERSIONINFOEX osInfoEx = new()
         {
             dwOSVersionInfoSize = (uint)size,
             dwMajorVersion = majorVersion,

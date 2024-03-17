@@ -79,7 +79,7 @@ public partial class Form
         Cursor.Current = Cursors.WaitCursor;
 
         IGorgonImage image = null;
-        var png = new GorgonCodecPng();
+        GorgonCodecPng png = new();
 
         try
         {
@@ -168,8 +168,8 @@ public partial class Form
             // every frame.
             _sobel.Process(_sourceTexture, _outputUav, TrackThickness.Value, TrackThreshold.Value / 100.0f);
 
-            var png = new GorgonCodecPng();
-            using var tempTexture = new GorgonTexture2D(_graphics, new GorgonTexture2DInfo(_outputTexture)
+            GorgonCodecPng png = new();
+            using GorgonTexture2D tempTexture = new(_graphics, new GorgonTexture2DInfo(_outputTexture)
             {
                 Format = BufferFormat.R8G8B8A8_UNorm
             });

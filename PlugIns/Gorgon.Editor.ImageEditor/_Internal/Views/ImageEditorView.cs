@@ -203,7 +203,7 @@ internal partial class ImageEditorView
             return;
         }
 
-        var size = new DX.Size2((dataContext.Width >> dataContext.CurrentMipLevel).Max(1), (dataContext.Height >> dataContext.CurrentMipLevel).Max(1));
+        DX.Size2 size = new((dataContext.Width >> dataContext.CurrentMipLevel).Max(1), (dataContext.Height >> dataContext.CurrentMipLevel).Max(1));
 
         LabelMipDetails.Text = string.Format(Resources.GORIMG_TEXT_MIP_DETAILS, dataContext.CurrentMipLevel + 1, dataContext.MipCount, size.Width, size.Height);
     }
@@ -295,12 +295,12 @@ internal partial class ImageEditorView
         }
 
         float dpi;
-        using (var g = System.Drawing.Graphics.FromHwnd(IntPtr.Zero))
+        using (System.Drawing.Graphics g = System.Drawing.Graphics.FromHwnd(IntPtr.Zero))
         {
             dpi = g.DpiX / 96.0f;
         }
 
-        var args = new CopyToImageArgs(contentData.FilePaths, dpi);
+        CopyToImageArgs args = new(contentData.FilePaths, dpi);
 
         if ((ViewModel?.CopyToImageCommand is null) || (!ViewModel.CopyToImageCommand.CanExecute(args)))
         {
@@ -329,7 +329,7 @@ internal partial class ImageEditorView
             return;
         }
 
-        var args = new CopyToImageArgs(contentData.FilePaths, 1.0f);
+        CopyToImageArgs args = new(contentData.FilePaths, 1.0f);
 
         if ((ViewModel?.CopyToImageCommand is null) || (!ViewModel.CopyToImageCommand.CanExecute(args)))
         {

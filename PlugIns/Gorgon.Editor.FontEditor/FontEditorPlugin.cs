@@ -254,7 +254,7 @@ internal class FontEditorPlugin
 
         using GorgonFont font = _fontFactory.GetFont(fontInfo);
 
-        var stream = CommonEditorResources.MemoryStreamManager.GetStream() as RecyclableMemoryStream;
+        RecyclableMemoryStream stream = CommonEditorResources.MemoryStreamManager.GetStream() as RecyclableMemoryStream;
         _defaultCodec.Save(font, stream);
 
         return Task.FromResult<(string, RecyclableMemoryStream)>((newName, stream));
@@ -272,7 +272,7 @@ internal class FontEditorPlugin
     /// </remarks>
     protected async override Task<IEditorContent> OnOpenContentAsync(IContentFile file, IContentFileManager fileManager, IGorgonFileSystemWriter<Stream> scratchArea, IUndoService undoService)
     {
-        var content = new FontContent();
+        FontContent content = new();
         Stream stream = null;
 
         try
@@ -469,12 +469,12 @@ internal class FontEditorPlugin
         GorgonGraphics graphics = HostContentServices.GraphicsContext.Graphics;
         Gorgon2D renderer = HostContentServices.GraphicsContext.Renderer2D;
 
-        using var gDpi = Drawing.Graphics.FromHwnd(GorgonApplication.MainForm.Handle);
+        using Drawing.Graphics gDpi = Drawing.Graphics.FromHwnd(GorgonApplication.MainForm.Handle);
         float dpiScale = gDpi.DpiX / 96.0f;
-        var targetSize = new DX.Size2F(256 * dpiScale, 256 * dpiScale).ToSize2();
+        DX.Size2 targetSize = new DX.Size2F(256 * dpiScale, 256 * dpiScale).ToSize2();
 
         using GorgonFont font = await _previewerCodec.FromStreamAsync(fileStream, filePath);
-        using var target = GorgonRenderTarget2DView.CreateRenderTarget(HostContentServices.GraphicsContext.Graphics, new GorgonTexture2DInfo(targetSize.Width, targetSize.Height, BufferFormat.R8G8B8A8_UNorm)
+        using GorgonRenderTarget2DView target = GorgonRenderTarget2DView.CreateRenderTarget(HostContentServices.GraphicsContext.Graphics, new GorgonTexture2DInfo(targetSize.Width, targetSize.Height, BufferFormat.R8G8B8A8_UNorm)
         {
             Binding = TextureBinding.ShaderResource
         });

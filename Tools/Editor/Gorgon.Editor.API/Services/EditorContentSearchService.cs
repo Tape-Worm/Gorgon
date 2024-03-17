@@ -58,7 +58,7 @@ public class EditorContentSearchService(IReadOnlyList<IContentFileExplorerSearch
     /// <returns>A tuple containing the type of keyword, and the search string.</returns>
     private (string keyword, string search) ParseSearchString(string searchText)
     {
-        var searchKeyword = new KeyValuePair<string, string>(string.Empty, string.Empty);
+        KeyValuePair<string, string> searchKeyword = new(string.Empty, string.Empty);
 
         foreach (KeyValuePair<string, string> keyword in _searchKeywords)
         {
@@ -177,8 +177,8 @@ public class EditorContentSearchService(IReadOnlyList<IContentFileExplorerSearch
         (SearchMode mode, string modeSearchText) = ExtractSearchMode(searchText);
 
         // Test code for search:
-        var searchResults = new List<IContentFileExplorerSearchEntry>();
-        var dirResults = new List<IContentFileExplorerSearchEntry>();
+        List<IContentFileExplorerSearchEntry> searchResults = [];
+        List<IContentFileExplorerSearchEntry> dirResults = [];
         bool isDirSearch = string.Equals(keyword, "directory", StringComparison.OrdinalIgnoreCase);
 
         foreach (IContentFileExplorerSearchEntry row in _rows)

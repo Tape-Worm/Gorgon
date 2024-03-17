@@ -60,22 +60,22 @@ internal class Cube
         float columnHeight = 1.0f / rows;
         Matrix4x4 rotation = Matrix4x4.Identity;
 
-        var orientVector = Vector3.Cross(normal, up);
-        var translate = Vector3.Multiply(normal, 0.5f);
+        Vector3 orientVector = Vector3.Cross(normal, up);
+        Vector3 translate = Vector3.Multiply(normal, 0.5f);
 
         rotation.SetRow(0, new Vector4(orientVector, 0));
         rotation.SetRow(1, new Vector4(up, 0));
         rotation.SetRow(2, new Vector4(normal, 0));
         rotation.SetRow(3, new Vector4(translate, 1));
 
-        var transformNormal = Vector3.Transform(normal, _orientation);
+        Vector3 transformNormal = Vector3.Transform(normal, _orientation);
         transformNormal = Vector3.Normalize(transformNormal);
 
         for (int y = 0; y <= rows; ++y)
         {
             for (int x = 0; x <= columns; ++x)
             {
-                var vertexPos = new Vector3(((x * columnWidth) - 0.5f) * size.X,
+                Vector3 vertexPos = new(((x * columnWidth) - 0.5f) * size.X,
                                             ((y * columnHeight) - 0.5f) * size.Y,
                                             0);
 
@@ -139,10 +139,10 @@ internal class Cube
         IndexCount = faceIndexCount * 6;
         TriangleCount = IndexCount / 3;
 
-        var orientation = Quaternion.CreateFromYawPitchRoll(angle.Y.ToRadians(), angle.X.ToRadians(), angle.Z.ToRadians());
+        Quaternion orientation = Quaternion.CreateFromYawPitchRoll(angle.Y.ToRadians(), angle.X.ToRadians(), angle.Z.ToRadians());
         _orientation = Matrix4x4.CreateFromQuaternion(orientation);
 
-        var vertexData = new GorgonVertexPosNormUvTangent[VertexCount];
+        GorgonVertexPosNormUvTangent[] vertexData = new GorgonVertexPosNormUvTangent[VertexCount];
         int[] indexData = new int[IndexCount];
 
         // Front.

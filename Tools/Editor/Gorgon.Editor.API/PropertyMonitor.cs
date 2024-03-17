@@ -98,7 +98,7 @@ public abstract class PropertyMonitor
         // Get any explicitly implemented properties from interfaces.
         props = GetType().GetProperties(BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.DeclaredOnly);
 
-        var name = new StringBuilder(128);
+        StringBuilder name = new(128);
 
         foreach (PropertyInfo prop in props)
         {

@@ -98,7 +98,7 @@ internal partial class FormImageSelector
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
     private async void ButtonCancel_Click(object sender, EventArgs e)
     {
-        var args = new CancelEventArgs();
+        CancelEventArgs args = new();
         if ((ViewModel?.CancelCommand is null) || (!ViewModel.CancelCommand.CanExecute(args)))
         {
             Close();
@@ -209,7 +209,7 @@ internal partial class FormImageSelector
     {
         base.OnSetupGraphics(graphicsContext, swapChain);
 
-        var renderer = new Renderer(graphicsContext.Renderer2D, swapChain, ViewModel);
+        Renderer renderer = new(graphicsContext.Renderer2D, swapChain, ViewModel);
         renderer.Initialize();
 
         AddRenderer("PreviewRenderer", renderer);
@@ -241,7 +241,7 @@ internal partial class FormImageSelector
 
         e.Cancel = true;
 
-        var args = new CancelEventArgs();
+        CancelEventArgs args = new();
         await ViewModel.CancelCommand.ExecuteAsync(args);
 
         if (args.Cancel)

@@ -254,7 +254,7 @@ internal class ContentPlugInService
         }
 
         using Stream stream = File.Open(settingsFile, FileMode.Open, FileAccess.Read, FileShare.Read);
-        using var reader = new StreamReader(stream, Encoding.UTF8);
+        using StreamReader reader = new(stream, Encoding.UTF8);
         return JsonConvert.DeserializeObject<T>(reader.ReadToEnd(), converters);
     }
 
@@ -286,7 +286,7 @@ internal class ContentPlugInService
 
         string settingsFile = GetContentPlugInSettingsPath(name);
         using Stream stream = File.Open(settingsFile, FileMode.Create, FileAccess.Write, FileShare.None);
-        using var writer = new StreamWriter(stream, Encoding.UTF8, 80000, false);
+        using StreamWriter writer = new(stream, Encoding.UTF8, 80000, false);
         writer.Write(JsonConvert.SerializeObject(contentSettings, converters));
     }
 

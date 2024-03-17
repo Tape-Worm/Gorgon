@@ -157,7 +157,7 @@ public class GorgonImageBuffer
 
         updateAlphaRange ??= new GorgonRange<float>(0, 1);
 
-        var fullRect = new DX.Rectangle(0, 0, Width - 1, Height - 1);
+        DX.Rectangle fullRect = new(0, 0, Width - 1, Height - 1);
 
         if (region is null)
         {
@@ -228,7 +228,7 @@ public class GorgonImageBuffer
             throw new NotSupportedException(string.Format(Resources.GORIMG_ERR_FORMAT_NOT_SUPPORTED, Format));
         }
 
-        var sourceBufferDims = new DX.Rectangle
+        DX.Rectangle sourceBufferDims = new()
         {
             Left = 0,
             Top = 0,
@@ -285,7 +285,7 @@ public class GorgonImageBuffer
         }
 
         // Ensure that the regions actually fit within their respective buffers.
-        var dstRegion = DX.Rectangle.Intersect(new DX.Rectangle(destX, destY, srcRegion.Width, srcRegion.Height),
+        DX.Rectangle dstRegion = DX.Rectangle.Intersect(new DX.Rectangle(destX, destY, srcRegion.Width, srcRegion.Height),
                                                 new DX.Rectangle(0, 0, buffer.Width, buffer.Height));
 
         // If the source/dest region is empty, then we have nothing to copy.
@@ -368,7 +368,7 @@ public class GorgonImageBuffer
             throw new NotSupportedException(string.Format(Resources.GORIMG_ERR_FORMAT_NOT_SUPPORTED, Format));
         }
 
-        var finalRegion = DX.Rectangle.Intersect(clipRegion, new DX.Rectangle(0, 0, Width, Height));
+        DX.Rectangle finalRegion = DX.Rectangle.Intersect(clipRegion, new DX.Rectangle(0, 0, Width, Height));
 
         if ((finalRegion.Width <= 0)
             || (finalRegion.Height <= 0))
@@ -378,7 +378,7 @@ public class GorgonImageBuffer
 
         GorgonPtr<byte> regionStart = Data + (finalRegion.Top * PitchInformation.RowPitch) + (finalRegion.Left * FormatInformation.SizeInBytes);
         GorgonPtr<byte> regionEnd = Data + (finalRegion.Bottom * PitchInformation.RowPitch) + (finalRegion.Right * FormatInformation.SizeInBytes);
-        var pitch = new GorgonPitchLayout(PitchInformation.RowPitch, (int)(regionEnd - regionStart));
+        GorgonPitchLayout pitch = new(PitchInformation.RowPitch, (int)(regionEnd - regionStart));
 
         return new GorgonImageBuffer(new GorgonPtr<byte>(regionStart, pitch.SlicePitch),
                                      pitch,

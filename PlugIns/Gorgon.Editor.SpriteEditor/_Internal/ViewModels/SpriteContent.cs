@@ -914,12 +914,12 @@ internal class SpriteContent
             return Task.CompletedTask;
         }
 
-        var colorUndoArgs = new SpriteUndoArgs
+        SpriteUndoArgs colorUndoArgs = new()
         {
             VertexColor = [.. _sprite.CornerColors]
         };
 
-        var colorRedoArgs = new SpriteUndoArgs
+        SpriteUndoArgs colorRedoArgs = new()
         {
             VertexColor = [.. ColorEditor.SpriteColor]
         };
@@ -976,14 +976,14 @@ internal class SpriteContent
             return Task.CompletedTask;
         }
 
-        var vtxUndoArgs = new SpriteUndoArgs
+        SpriteUndoArgs vtxUndoArgs = new()
         {
             VertexOffset = [.. _sprite.CornerOffsets]
         };
 
         Vector3[] verts = SpriteVertexEditContext.Vertices.Select(item => new Vector3(item.X, item.Y, 0)).ToArray();
 
-        var vtxRedoArgs = new SpriteUndoArgs
+        SpriteUndoArgs vtxRedoArgs = new()
         {
             VertexOffset = verts
         };
@@ -1076,7 +1076,7 @@ internal class SpriteContent
         {
             try
             {
-                var textureRect = coordinates.ToRectangle();
+                DX.Rectangle textureRect = coordinates.ToRectangle();
                 textureRect.Inflate(SpritePickContext.Padding, SpritePickContext.Padding);
                 TextureCoordinates = Texture.ToTexel(textureRect);
                 Size = new DX.Size2F((int)coordinates.Size.Width, (int)coordinates.Size.Height);
@@ -1107,13 +1107,13 @@ internal class SpriteContent
             return Task.CompletedTask;
         }
 
-        var texCoordUndoArgs = new SpriteUndoArgs
+        SpriteUndoArgs texCoordUndoArgs = new()
         {
             TextureCoordinates = Texture.ToPixel(TextureCoordinates).ToRectangleF(),
             ArrayIndex = ArrayIndex,
             VertexOffset = [.. _sprite.CornerOffsets]
         };
-        var texCoordRedoArgs = new SpriteUndoArgs
+        SpriteUndoArgs texCoordRedoArgs = new()
         {
             TextureCoordinates = SpritePickContext.SpriteRectangle,
             ArrayIndex = SpritePickContext.ArrayIndex,
@@ -1183,13 +1183,13 @@ internal class SpriteContent
             return Task.CompletedTask;
         }
 
-        var texCoordUndoArgs = new SpriteUndoArgs
+        SpriteUndoArgs texCoordUndoArgs = new()
         {
             TextureCoordinates = Texture.ToPixel(TextureCoordinates).ToRectangleF(),
             ArrayIndex = ArrayIndex,
             VertexOffset = [.. _sprite.CornerOffsets]
         };
-        var texCoordRedoArgs = new SpriteUndoArgs
+        SpriteUndoArgs texCoordRedoArgs = new()
         {
             TextureCoordinates = SpriteClipContext.SpriteRectangle,
             ArrayIndex = SpriteClipContext.ArrayIndex,
@@ -1416,12 +1416,12 @@ internal class SpriteContent
             return Task.CompletedTask;
         }
 
-        var wrapUndoArgs = new SpriteUndoArgs
+        SpriteUndoArgs wrapUndoArgs = new()
         {
             SamplerState = SamplerState
         };
 
-        var wrapRedoArgs = new SpriteUndoArgs
+        SpriteUndoArgs wrapRedoArgs = new()
         {
             SamplerState = WrappingEditor.CurrentSampler
         };
@@ -1446,7 +1446,7 @@ internal class SpriteContent
             return false;
         }
 
-        var halfSprite = new Vector2(Size.Width * 0.5f, Size.Height * 0.5f);
+        Vector2 halfSprite = new(Size.Width * 0.5f, Size.Height * 0.5f);
         Vector2 anchorPosition = new Vector2(_sprite.Anchor.X * Size.Width - halfSprite.X,
                                                    _sprite.Anchor.Y * Size.Height - halfSprite.Y).Truncate();
         return (!AnchorEditor.Anchor.Equals(anchorPosition));
@@ -1457,7 +1457,7 @@ internal class SpriteContent
     /// </summary>
     private void DoCommitAnchorChange()
     {
-        var halfSprite = new Vector2(Size.Width * 0.5f, Size.Height * 0.5f);
+        Vector2 halfSprite = new(Size.Width * 0.5f, Size.Height * 0.5f);
 
         bool SetAnchor(Vector2 anchor)
         {
@@ -1489,12 +1489,12 @@ internal class SpriteContent
             return Task.CompletedTask;
         }
 
-        var anchorUndoArgs = new SpriteUndoArgs
+        SpriteUndoArgs anchorUndoArgs = new()
         {
             Anchor = _sprite.Anchor
         };
 
-        var anchorRedoArgs = new SpriteUndoArgs
+        SpriteUndoArgs anchorRedoArgs = new()
         {
             Anchor = new Vector2((AnchorEditor.Anchor.X + halfSprite.X) / Size.Width,
                                     (AnchorEditor.Anchor.Y + halfSprite.Y) / Size.Height)
@@ -1571,12 +1571,12 @@ internal class SpriteContent
                 break;
         }
 
-        var anchorUndoArgs = new SpriteUndoArgs
+        SpriteUndoArgs anchorUndoArgs = new()
         {
             SamplerState = SamplerState
         };
 
-        var anchorRedoArgs = new SpriteUndoArgs
+        SpriteUndoArgs anchorRedoArgs = new()
         {
             SamplerState = newState
         };

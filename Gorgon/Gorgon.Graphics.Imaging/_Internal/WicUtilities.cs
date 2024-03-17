@@ -298,7 +298,7 @@ class WicUtilities
     /// <returns>The WIC bitmap pointing to the data stored in <paramref name="imageData"/>.</returns>
     private Bitmap GetBitmap(IGorgonImageBuffer imageData, Guid pixelFormat)
     {
-        var dataRect = new DX.DataRectangle(imageData.Data, imageData.PitchInformation.RowPitch);
+        DX.DataRectangle dataRect = new(imageData.Data, imageData.PitchInformation.RowPitch);
         return new Bitmap(_factory, imageData.Width, imageData.Height, pixelFormat, dataRect);
     }
 
@@ -314,7 +314,7 @@ class WicUtilities
     private FormatConverter GetFormatConverter(BitmapSource bitmap, Guid targetFormat, ImageDithering dither, Palette palette, float alpha8Bit)
     {
         BitmapPaletteType paletteType = BitmapPaletteType.Custom;
-        var result = new FormatConverter(_factory);
+        FormatConverter result = new(_factory);
 
         if (!result.CanConvert(bitmap.PixelFormat, targetFormat))
         {
@@ -362,7 +362,7 @@ class WicUtilities
         srcContext.InitializeFromExifColorSpace(srcIsSRgb ? 1 : 2);
         destContext.InitializeFromExifColorSpace(destIsSRgb ? 1 : 2);
 
-        var result = new ColorTransform(_factory);
+        ColorTransform result = new(_factory);
         result.Initialize(source, srcContext, destContext, pixelFormat);
 
         return result;
@@ -420,7 +420,7 @@ class WicUtilities
         }
 
         // Generate from our custom palette.
-        var dxColors = new DX.Color[paletteColors.Count];
+        DX.Color[] dxColors = new DX.Color[paletteColors.Count];
         int size = paletteColors.Count.Min(dxColors.Length);
 
         for (int i = 0; i < size; i++)
@@ -438,7 +438,7 @@ class WicUtilities
             }
         }
 
-        var wicPalette = new Palette(_factory);
+        Palette wicPalette = new(_factory);
         wicPalette.Initialize(dxColors);
 
         return (wicPalette, alpha);
@@ -477,7 +477,7 @@ class WicUtilities
         }
 
         // Generate from our custom palette.
-        var dxColors = new DX.Color[paletteColors.Count];
+        DX.Color[] dxColors = new DX.Color[paletteColors.Count];
         int size = paletteColors.Count.Min(dxColors.Length);
 
         for (int i = 0; i < size; i++)
@@ -607,9 +607,9 @@ class WicUtilities
             return [];
         }
 
-        var result = new List<BufferFormat>();
+        List<BufferFormat> result = [];
 
-        using (var converter = new FormatConverter(_factory))
+        using (FormatConverter converter = new(_factory))
         {
             foreach (BufferFormat destFormat in destFormats)
             {
@@ -659,9 +659,9 @@ class WicUtilities
     /// <returns>A <see cref="GorgonImageInfo"/> containing information about the image data.</returns>
     private (GorgonImageInfo, BitmapFrameDecode, BitmapDecoder, WICStream, Guid) GetImageMetaData(Stream stream, Guid fileFormat, IGorgonWicDecodingOptions options)
     {
-        var wicStream = new WICStream(_factory, stream);
+        WICStream wicStream = new(_factory, stream);
 
-        var decoder = new BitmapDecoder(_factory, fileFormat);
+        BitmapDecoder decoder = new(_factory, fileFormat);
         decoder.Initialize(wicStream, DecodeOptions.CacheOnDemand);
 
         if (decoder.ContainerFormat != fileFormat)
@@ -870,7 +870,7 @@ class WicUtilities
     /// <param name="filter">The filter to apply when smoothing the image during scaling.</param>
     private void ScaleBitmapData(BitmapSource bitmap, IGorgonImageBuffer buffer, int width, int height, ImageFilter filter)
     {
-        using var scaler = new BitmapScaler(_factory);
+        using BitmapScaler scaler = new(_factory);
         scaler.Initialize(bitmap, width, height, (BitmapInterpolationMode)filter);
 
         if (bitmap.PixelFormat == scaler.PixelFormat)
@@ -910,8 +910,8 @@ class WicUtilities
     /// <param name="height">The new height of the image data.</param>
     private void CropBitmapData(BitmapSource bitmap, IGorgonImageBuffer buffer, int offsetX, int offsetY, int width, int height)
     {
-        using var clipper = new BitmapClipper(_factory);
-        var rect = DX.Rectangle.Intersect(new DX.Rectangle(0, 0, bitmap.Size.Width, bitmap.Size.Height),
+        using BitmapClipper clipper = new(_factory);
+        DX.Rectangle rect = DX.Rectangle.Intersect(new DX.Rectangle(0, 0, bitmap.Size.Width, bitmap.Size.Height),
                                                    new DX.Rectangle(offsetX, offsetY, width, height));
 
         if (rect.IsEmpty)
@@ -954,7 +954,7 @@ class WicUtilities
     public IReadOnlyList<DX.Point> GetFrameOffsetMetadata(Stream stream, Guid fileFormat, IReadOnlyList<string> metadataNames)
     {
         long oldPosition = stream.Position;
-        var wrapper = new GorgonStreamWrapper(stream, stream.Position);
+        GorgonStreamWrapper wrapper = new(stream, stream.Position);
         BitmapDecoder decoder = null;
         WICStream wicStream = null;
         BitmapFrameDecode frame = null;
@@ -976,7 +976,7 @@ class WicUtilities
                 return [];
             }
 
-            var result = new DX.Point[decoder.FrameCount];
+            DX.Point[] result = new DX.Point[decoder.FrameCount];
 
             for (int i = 0; i < result.Length; ++i)
             {
@@ -1008,7 +1008,7 @@ class WicUtilities
     public GorgonImageInfo GetImageMetaDataFromStream(Stream stream, Guid fileFormat, IGorgonImageCodecDecodingOptions options)
     {
         long oldPosition = stream.Position;
-        var wrapper = new GorgonStreamWrapper(stream, stream.Position);
+        GorgonStreamWrapper wrapper = new(stream, stream.Position);
         (GorgonImageInfo ImageInfo,
             BitmapFrameDecode FrameDecoder,
             BitmapDecoder Decoder,
@@ -1182,7 +1182,7 @@ class WicUtilities
             throw new GorgonException(GorgonResult.FormatNotSupported, string.Format(Resources.GORIMG_ERR_FORMAT_NOT_SUPPORTED, imageData.Format));
         }
 
-        var imageInfo = new GorgonImageInfo(workingImage.ImageType, workingImage.Format)
+        GorgonImageInfo imageInfo = new(workingImage.ImageType, workingImage.Format)
         {
             Width = newWidth,
             Height = newHeight,
@@ -1191,7 +1191,7 @@ class WicUtilities
             MipCount = calculatedMipLevels
         };
 
-        var result = new GorgonImage(imageInfo);
+        GorgonImage result = new(imageInfo);
         Bitmap bitmap = null;
 
         try
@@ -1261,7 +1261,7 @@ class WicUtilities
         Guid destFormat = GetGUID(format);
 
         // Duplicate the settings, and update the format.
-        var resultInfo = new GorgonImageInfo(imageData.ImageType, format)
+        GorgonImageInfo resultInfo = new(imageData.ImageType, format)
         {
             Width = imageData.Width,
             Height = imageData.Height,
@@ -1270,7 +1270,7 @@ class WicUtilities
             MipCount = imageData.MipCount
         };
 
-        var result = new GorgonImage(resultInfo);
+        GorgonImage result = new(resultInfo);
 
         try
         {
@@ -1285,7 +1285,7 @@ class WicUtilities
                         // Get the array/mip/depth buffer.
                         IGorgonImageBuffer destBuffer = result.Buffers[mip, imageData.ImageType == ImageDataType.Image3D ? depth : array];
                         IGorgonImageBuffer srcBuffer = imageData.Buffers[mip, imageData.ImageType == ImageDataType.Image3D ? depth : array];
-                        var rect = new DX.DataRectangle(srcBuffer.Data, srcBuffer.PitchInformation.RowPitch);
+                        DX.DataRectangle rect = new(srcBuffer.Data, srcBuffer.PitchInformation.RowPitch);
 
                         Bitmap bitmap = null;
                         BitmapSource formatConverter = null;
@@ -1344,7 +1344,7 @@ class WicUtilities
     public int[] GetFrameDelays(Stream stream, Guid decoderFormat, string delayMetaDataName)
     {
         long oldPosition = stream.Position;
-        var wrapper = new GorgonStreamWrapper(stream, stream.Position);
+        GorgonStreamWrapper wrapper = new(stream, stream.Position);
         BitmapDecoder decoder = null;
         WICStream wicStream = null;
         BitmapFrameDecode frame = null;

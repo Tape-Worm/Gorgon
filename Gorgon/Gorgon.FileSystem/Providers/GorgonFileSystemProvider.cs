@@ -292,7 +292,7 @@ public abstract class GorgonFileSystemProvider(string providerDescription)
             throw new ArgumentNullException(nameof(physicalLocation));
         }
 
-#pragma warning disable IDE0046 // Convert to conditional expression
+
 
         if (mountPoint is null)
         {
@@ -302,7 +302,7 @@ public abstract class GorgonFileSystemProvider(string providerDescription)
         return string.IsNullOrWhiteSpace(physicalLocation)
             ? throw new ArgumentEmptyException(nameof(physicalLocation))
             : OnEnumerate(physicalLocation, mountPoint);
-#pragma warning restore IDE0046 // Convert to conditional expression
+
 
     }
 
@@ -331,7 +331,7 @@ public abstract class GorgonFileSystemProvider(string providerDescription)
             throw new ArgumentNullException(nameof(physicalLocation));
         }
 
-#pragma warning disable IDE0046 // Convert to conditional expression
+
         if (mountPoint is null)
         {
             throw new ArgumentNullException(nameof(mountPoint));
@@ -340,7 +340,7 @@ public abstract class GorgonFileSystemProvider(string providerDescription)
         return string.IsNullOrWhiteSpace(physicalLocation)
             ? throw new ArgumentEmptyException(nameof(physicalLocation))
             : OnEnumerateFiles(physicalLocation, mountPoint);
-#pragma warning restore IDE0046 // Convert to conditional expression
+
     }
 
     /// <summary>
@@ -372,7 +372,7 @@ public abstract class GorgonFileSystemProvider(string providerDescription)
     /// </remarks>
     public bool CanReadFileSystem(string physicalPath)
     {
-#pragma warning disable IDE0046 // Convert to conditional expression
+
         if (physicalPath is null)
         {
             throw new ArgumentNullException(nameof(physicalPath));
@@ -381,7 +381,7 @@ public abstract class GorgonFileSystemProvider(string providerDescription)
         return string.IsNullOrWhiteSpace(physicalPath)
             ? throw new ArgumentEmptyException(nameof(physicalPath))
             : OnCanReadFile(physicalPath);
-#pragma warning restore IDE0046 // Convert to conditional expression
+
     }
 
 

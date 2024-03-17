@@ -131,8 +131,8 @@ internal class VolumeRenderer(GorgonGraphics graphics)
         // the shader.
         _cube.RotateXYZ(_rotationAngle, _rotationAngle, 0);
 
-        var temp = Matrix4x4.Multiply(_cube.WorldMatrix, _view);
-        var wvp = Matrix4x4.Transpose(Matrix4x4.Multiply(temp, _projection));
+        Matrix4x4 temp = Matrix4x4.Multiply(_cube.WorldMatrix, _view);
+        Matrix4x4 wvp = Matrix4x4.Transpose(Matrix4x4.Multiply(temp, _projection));
 
         _cubeTransform.SetData(in wvp);
     }
@@ -156,7 +156,7 @@ internal class VolumeRenderer(GorgonGraphics graphics)
             _volumeSections[i] = _volumeRtSections[i].GetShaderResourceView();
         }
 
-        var drawBuilder = new GorgonDrawIndexCallBuilder();
+        GorgonDrawIndexCallBuilder drawBuilder = new();
         _cubeDirDrawCall = drawBuilder
             .ResetTo(_cubeDirDrawCall)
             .ShaderResource(ShaderType.Pixel, _textureView, 0)
@@ -176,7 +176,7 @@ internal class VolumeRenderer(GorgonGraphics graphics)
     {
         float newWidth = (clientSize.Width / 5.0f).Max(64).Min(640);
         float aspect = (float)clientSize.Height / clientSize.Width;
-        var cubeRegionSize = new DX.Size2F(newWidth, newWidth * aspect);
+        DX.Size2F cubeRegionSize = new(newWidth, newWidth * aspect);
 
         VolumeRegion = new DX.RectangleF(clientSize.Width - cubeRegionSize.Width - 1, 1, cubeRegionSize.Width, cubeRegionSize.Height);
         _projection = Matrix4x4.CreatePerspectiveFieldOfView(60.0f.ToRadians(), (float)clientSize.Width / clientSize.Height, 0.1f, 1000.0f);
@@ -198,9 +198,9 @@ internal class VolumeRenderer(GorgonGraphics graphics)
     {
         _textureView = texture;
 
-        var size = new Vector3(texture.Width, texture.Height, texture.Depth);
+        Vector3 size = new(texture.Width, texture.Height, texture.Depth);
         float maxSize = texture.Width.Max(texture.Height).Max(texture.Depth);
-        var volParams = new VolumeRayParameters
+        VolumeRayParameters volParams = new()
         {
             Steps = new Vector3(1.0f / texture.Width,
             1.0f / texture.Height,
@@ -209,7 +209,7 @@ internal class VolumeRenderer(GorgonGraphics graphics)
         };
         _volumeRayParams.SetData(in volParams);
 
-        var scaleFactor = new Vector4(1.0f, 1.0f, 1.0f / (maxSize / size.Z), 1.0f);
+        Vector4 scaleFactor = new(1.0f, 1.0f, 1.0f / (maxSize / size.Z), 1.0f);
         _volumeScaleFactor.SetData(in scaleFactor);
 
         RebuildVolumeData();
@@ -264,8 +264,8 @@ internal class VolumeRenderer(GorgonGraphics graphics)
 
         UpdateCubeTransform();
 
-        var pipelineBuilder = new GorgonPipelineStateBuilder(_graphics);
-        var drawBuilder = new GorgonDrawIndexCallBuilder();
+        GorgonPipelineStateBuilder pipelineBuilder = new(_graphics);
+        GorgonDrawIndexCallBuilder drawBuilder = new();
 
         pipelineBuilder
             .PixelShader(_cubePosShader)

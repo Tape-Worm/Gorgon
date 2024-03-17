@@ -101,7 +101,7 @@ public class GorgonTextureBlitter
                 // Trap other threads until we're done initializing and then release them.
                 while ((_blitVertexShader is null) && (_initializedFlag > 0))
                 {
-                    var wait = new SpinWait();
+                    SpinWait wait = new();
                     wait.SpinOnce();
                 }
 
@@ -206,7 +206,7 @@ public class GorgonTextureBlitter
             return;
         }
 
-        var targetSize = new DX.Size2F(_graphics.RenderTargets[0].Width, _graphics.RenderTargets[0].Height);
+        DX.Size2F targetSize = new(_graphics.RenderTargets[0].Width, _graphics.RenderTargets[0].Height);
 
         if ((_camera.Changes == CameraChange.None) && (targetSize.Equals(_camera.ViewDimensions)))
         {

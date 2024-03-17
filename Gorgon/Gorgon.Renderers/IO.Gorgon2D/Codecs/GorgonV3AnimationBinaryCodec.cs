@@ -154,7 +154,7 @@ public class GorgonV3AnimationBinaryCodec(Gorgon2D renderer)
         }
 
         using GorgonBinaryReader binReader = reader.OpenChunk(VersionData);
-        var fileVersion = new Version(binReader.ReadByte(), binReader.ReadByte());
+        Version fileVersion = new(binReader.ReadByte(), binReader.ReadByte());
         reader.CloseChunk();
 
         return Version.Equals(fileVersion);
@@ -185,7 +185,7 @@ public class GorgonV3AnimationBinaryCodec(Gorgon2D renderer)
 
             binReader = reader.OpenChunk(TextureData);
             int keyCount = binReader.ReadInt32();
-            var result = new List<string>();
+            List<string> result = [];
 
             for (int i = 0; i < keyCount; ++i)
             {
@@ -240,9 +240,9 @@ public class GorgonV3AnimationBinaryCodec(Gorgon2D renderer)
             Graphics.Log.Print("WARNING: The texture overrides parameter is not supported for version 3 files. Textures will not be overridden.", Diagnostics.LoggingLevel.Intermediate);
         }
 
-        var builder = new GorgonAnimationBuilder();
+        GorgonAnimationBuilder builder = new();
 
-        var reader = new GorgonChunkFileReader(stream,
+        GorgonChunkFileReader reader = new(stream,
                                                [
                                                    CurrentFileHeader
                                                ]);

@@ -165,7 +165,7 @@ internal class SpriteAnchorEdit
             }
 
             OnPropertyChanging();
-            var range = new DX.RectangleF
+            DX.RectangleF range = new()
             {
                 Left = float.MaxValue,
                 Top = float.MaxValue,

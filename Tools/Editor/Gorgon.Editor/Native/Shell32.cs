@@ -120,7 +120,7 @@ internal static partial class Shell32
     {
         try
         {
-            var fs = new SHFILEOPSTRUCT
+            SHFILEOPSTRUCT fs = new()
             {
                 wFunc = FileOperationType.FO_DELETE,
                 pFrom = path + '\0' + '\0',

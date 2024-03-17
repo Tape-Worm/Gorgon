@@ -772,7 +772,7 @@ internal class ImageContent
                 int startArrayOrDepth = ImageType == ImageDataType.Image3D ? CurrentDepthSlice : CurrentArrayIndex;
                 int width = ImageData.Buffers[CurrentMipLevel, startArrayOrDepth].Width;
                 int height = ImageData.Buffers[CurrentMipLevel, startArrayOrDepth].Height;
-                var newSize = new DX.Size2(width, height);
+                DX.Size2 newSize = new(width, height);
 
                 NotifyPropertyChanging(nameof(ImageData));
 
@@ -1125,7 +1125,7 @@ internal class ImageContent
     /// <returns>A list of formats.</returns>
     private ObservableCollection<BufferFormat> GetFilteredFormats()
     {
-        var result = new ObservableCollection<BufferFormat>();
+        ObservableCollection<BufferFormat> result = [];
         IReadOnlyList<BufferFormat> supportedFormats = _imageIO.DefaultCodec.SupportedPixelFormats;
 
         if (ImageData.FormatInfo.IsCompressed)
@@ -1150,7 +1150,7 @@ internal class ImageContent
                 continue;
             }
 
-            var formatInfo = new GorgonFormatInfo(format);
+            GorgonFormatInfo formatInfo = new(format);
 
             if ((formatInfo.IsPacked) || (formatInfo.IsTypeless))
             {
@@ -1286,7 +1286,7 @@ internal class ImageContent
                     return Task.FromException(new InvalidCastException("Will not see me"));
                 }
 
-                var destFormat = new GorgonFormatInfo(format);
+                GorgonFormatInfo destFormat = new(format);
 
                 // Ensure that we can actually convert.
                 if (!destFormat.IsCompressed)
@@ -1355,7 +1355,7 @@ internal class ImageContent
     /// <param name="codec">The codec to use when exporting.</param>
     private void DoExportImage(IGorgonImageCodec codec)
     {
-        var missingSupport = new StringBuilder();
+        StringBuilder missingSupport = new();
         IGorgonImage exportImage = ImageData.Clone();
         IGorgonImage workImage = exportImage;
 
@@ -1580,7 +1580,7 @@ internal class ImageContent
 
             try
             {
-                var formatInfo = new GorgonFormatInfo(CurrentPixelFormat);
+                GorgonFormatInfo formatInfo = new(CurrentPixelFormat);
 
                 // Block compressed files must be a multiple of 4 for width and height. 
                 if ((formatInfo.IsCompressed) &&
@@ -2245,7 +2245,7 @@ internal class ImageContent
         ShowWaitPanel(Resources.GORIMG_TEXT_IMPORTING);
         await Task.Run(() =>
         {
-            var ddsCodec = new GorgonCodecDds();
+            GorgonCodecDds ddsCodec = new();
 
             using (Stream imageStream = _imageIO.ScratchArea.OpenStream(importItem.FromFile.FullPath, FileMode.Open))
             {
@@ -2408,7 +2408,7 @@ internal class ImageContent
         IGorgonImage importImage = null;
         IGorgonVirtualFile tempFile = null;
         Stream imageStream = null;
-        var cancelSource = new CancellationTokenSource();
+        CancellationTokenSource cancelSource = new();
         IReadOnlyList<ImagePickerImportData> imports = [];
 
         void CancelAction() => cancelSource?.Cancel();
@@ -2427,7 +2427,7 @@ internal class ImageContent
             imports = await Task.Run(() =>
             {
                 Stream stream = null;
-                var importedFiles = new List<ImagePickerImportData>();
+                List<ImagePickerImportData> importedFiles = [];
                 IGorgonImageInfo originalMetadata;
 
                 _imageIO.ScratchArea.CreateDirectory("/Import/");
@@ -2485,7 +2485,7 @@ internal class ImageContent
 
             // If we have more than 1 image selected, or the import image is not the same size as the destination image, then we can use the 
             // picker to update the image.
-            var imgPickerArgs = new ActivateImagePickerArgs(imports, ImageData)
+            ActivateImagePickerArgs imgPickerArgs = new(imports, ImageData)
             {
                 CurrentArrayIndexDepthSlice = ImageType == ImageDataType.Image3D ? _currentDepthSlice : _currentArrayindex,
                 MipLevel = _currentMipLevel
@@ -2759,11 +2759,11 @@ internal class ImageContent
     /// <returns>A task for asynchronous operation.</returns>
     private async Task DoSetPremultipliedAlphaAsync(bool value)
     {
-        var premultipliedUndoArgs = new PremultipliedUndoArgs
+        PremultipliedUndoArgs premultipliedUndoArgs = new()
         {
             IsPremultiplied = !value
         };
-        var premultipliedRedoArgs = new PremultipliedUndoArgs
+        PremultipliedUndoArgs premultipliedRedoArgs = new()
         {
             IsPremultiplied = value
         };
@@ -3039,13 +3039,13 @@ internal class ImageContent
 
             HostServices.Log.Print($"Found executable path {exePath}.", LoggingLevel.Verbose);
 
-            using var icon = Drawing.Icon.ExtractAssociatedIcon(exePath);
+            using Icon icon = Drawing.Icon.ExtractAssociatedIcon(exePath);
             bitmap = Drawing.Bitmap.FromHicon(icon.Handle);
             bitmapSm = new(bitmap, 16, 16);
         }
         else
         {
-            using var icon = Drawing.Icon.ExtractAssociatedIcon(exePath);
+            using Icon icon = Drawing.Icon.ExtractAssociatedIcon(exePath);
             bitmap = Drawing.Bitmap.FromHicon(icon.Handle);
             bitmapSm = new(bitmap, 16, 16);
         }

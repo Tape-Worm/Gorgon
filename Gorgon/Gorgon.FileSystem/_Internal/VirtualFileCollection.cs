@@ -156,7 +156,7 @@ internal class VirtualFileCollection
             throw new IOException(string.Format(Resources.GORFS_ERR_FILE_EXISTS, fileInfo.FullPath));
         }
 
-        var result = new VirtualFile(mountPoint, fileInfo, _parent);
+        VirtualFile result = new(mountPoint, fileInfo, _parent);
 
         // Create the entry.
         _files.Add(fileInfo.Name, result);

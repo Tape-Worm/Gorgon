@@ -117,7 +117,7 @@ internal partial class FormImagePicker
             return;
         }
 
-        var data = _selectedFile?.Tag as ImagePickerImportData;
+        ImagePickerImportData data = _selectedFile?.Tag as ImagePickerImportData;
 
         bool enableList = dataContext.SelectFileCommand?.CanExecute(data) ?? false;
         PanelDialogButtons.Visible = LabelImportDesc.Visible = ListImages.Visible = enableList;
@@ -296,7 +296,7 @@ internal partial class FormImagePicker
         DX.RectangleF clearRegion;
         _previewSprite.Color = new GorgonColor(GorgonColor.White, 1.00f);
 
-        var importBounds = new DX.RectangleF(_previewSprite.Position.X - (_previewSprite.ScaledSize.Width * _previewSprite.Anchor.X),
+        DX.RectangleF importBounds = new(_previewSprite.Position.X - (_previewSprite.ScaledSize.Width * _previewSprite.Anchor.X),
                                              _previewSprite.Position.Y - (_previewSprite.ScaledSize.Height * _previewSprite.Anchor.Y),
                                              _previewSprite.ScaledSize.Width, _previewSprite.ScaledSize.Height);
 
@@ -335,16 +335,16 @@ internal partial class FormImagePicker
 
         IGorgonImage image = ViewModel.SourcePicker.SourceImage;
         Gorgon2D renderer = GraphicsContext.Renderer2D;
-        var halfClient = new Vector2((PanelSourceImage.ClientSize.Width - 6) * 0.5f, (PanelSourceImage.ClientSize.Height - 6) * 0.5f);
+        Vector2 halfClient = new((PanelSourceImage.ClientSize.Width - 6) * 0.5f, (PanelSourceImage.ClientSize.Height - 6) * 0.5f);
         float scale = ((float)(PanelSourceImage.ClientSize.Width - 6) / ViewModel.SourcePicker.MipWidth).Min((float)(PanelSourceImage.ClientSize.Height - 6) / ViewModel.SourcePicker.MipHeight);
         float width = ViewModel.SourcePicker.MipWidth * scale;
         float height = ViewModel.SourcePicker.MipHeight * scale;
         float x = halfClient.X - (width * 0.5f) + 2;
         float y = halfClient.Y - (height * 0.5f) + 2;
-        var imageBounds = new DX.RectangleF(x, y, width, height);
+        DX.RectangleF imageBounds = new(x, y, width, height);
 
         // Update the shader to display the correct depth slice/mip level.
-        var tParams = new TextureViewer.TextureParams
+        TextureViewer.TextureParams tParams = new()
         {
             DepthSlice = image.ImageType == ImageDataType.Image3D ? (float)ViewModel.SourcePicker.CurrentArrayIndexDepthSlice / ViewModel.SourcePicker.MipDepth : 0,
             MipLevel = ViewModel.SourcePicker.CurrentMipLevel
@@ -390,7 +390,7 @@ internal partial class FormImagePicker
         Gorgon2D renderer = GraphicsContext.Renderer2D;
         IGorgonImage image = ViewModel.ImageData;
 
-        var halfClient = new Vector2((PanelArrayDepth.ClientSize.Width - 6) * 0.5f, (PanelArrayDepth.ClientSize.Height - 6) * 0.5f);
+        Vector2 halfClient = new((PanelArrayDepth.ClientSize.Width - 6) * 0.5f, (PanelArrayDepth.ClientSize.Height - 6) * 0.5f);
         float scale = ((float)(PanelArrayDepth.ClientSize.Width - 6) / ViewModel.MipWidth).Min((float)(PanelArrayDepth.ClientSize.Height - 6) / ViewModel.MipHeight);
         float width = ViewModel.MipWidth * scale;
         float height = ViewModel.MipHeight * scale;
@@ -398,7 +398,7 @@ internal partial class FormImagePicker
         float y = halfClient.Y - (height * 0.5f) + 3;
 
         // Update the shader to display the correct depth slice/mip level.
-        var tParams = new TextureViewer.TextureParams
+        TextureViewer.TextureParams tParams = new()
         {
             DepthSlice = image.ImageType == ImageDataType.Image3D ? (float)ViewModel.CurrentArrayIndexDepthSlice / ViewModel.MipDepth : 0,
             MipLevel = ViewModel.CurrentMipLevel
@@ -418,7 +418,7 @@ internal partial class FormImagePicker
         renderer.End();
 
         // Draw the target texture.
-        var imageBounds = new DX.RectangleF((int)x, (int)y, (int)width, (int)height);
+        DX.RectangleF imageBounds = new((int)x, (int)y, (int)width, (int)height);
         renderer.Begin(image.ImageType == ImageDataType.Image3D ? _batch3DState : _batch2DState);
         renderer.DrawFilledRectangle(imageBounds,
                                      GorgonColor.White,
@@ -521,8 +521,8 @@ internal partial class FormImagePicker
             }, ViewModel.SourcePicker.SourceImage);
         }
 
-        var shaderBuilder = new Gorgon2DShaderStateBuilder<GorgonPixelShader>();
-        var batchBuilder = new Gorgon2DBatchStateBuilder();
+        Gorgon2DShaderStateBuilder<GorgonPixelShader> shaderBuilder = new();
+        Gorgon2DBatchStateBuilder batchBuilder = new();
 
         _batchSource3DState = batchBuilder.Clear()
                             .PixelShaderState(shaderBuilder
@@ -571,8 +571,8 @@ internal partial class FormImagePicker
             }, ViewModel.ImageData);
         }
 
-        var shaderBuilder = new Gorgon2DShaderStateBuilder<GorgonPixelShader>();
-        var batchBuilder = new Gorgon2DBatchStateBuilder();
+        Gorgon2DShaderStateBuilder<GorgonPixelShader> shaderBuilder = new();
+        Gorgon2DBatchStateBuilder batchBuilder = new();
 
         _batch2DState = batchBuilder.PixelShaderState(shaderBuilder
                             .ConstantBuffer(_textureParameters, 1)
@@ -683,7 +683,7 @@ internal partial class FormImagePicker
             return;
         }
 
-        var data = new DataObject();
+        DataObject data = new();
         data.SetData(typeof(ListViewItem), e.Item);
 
         ListImages.DoDragDrop(data, DragDropEffects.Move);
@@ -838,7 +838,7 @@ internal partial class FormImagePicker
             return;
         }
 
-        var picker = (GorgonAlignmentPicker)sender;
+        GorgonAlignmentPicker picker = (GorgonAlignmentPicker)sender;
 
         ViewModel.CropResizeSettings.CurrentAlignment = picker.Alignment;
     }
@@ -976,7 +976,7 @@ internal partial class FormImagePicker
         }
 
         _selectedFile = ListImages.SelectedItems.Count > 0 ? ListImages.SelectedItems[0] : null;
-        var data = (ImagePickerImportData)_selectedFile?.Tag;
+        ImagePickerImportData data = (ImagePickerImportData)_selectedFile?.Tag;
 
         if ((ViewModel?.SelectFileCommand is null) || (!ViewModel.SelectFileCommand.CanExecute(data)))
         {
@@ -1327,7 +1327,7 @@ internal partial class FormImagePicker
             {
                 string fileName = Path.GetFileName(data.OriginalFilePath);
 
-                var item = new ListViewItem
+                ListViewItem item = new()
                 {
                     Tag = data,
                     Name = data.FromFile.FullPath,
@@ -1434,7 +1434,7 @@ internal partial class FormImagePicker
         Size = new Size(ViewModel.Settings.PickerWidth, ViewModel.Settings.PickerHeight);
         CenterToParent();
 
-        var state = (FormWindowState)ViewModel.Settings.PickerWindowState;
+        FormWindowState state = (FormWindowState)ViewModel.Settings.PickerWindowState;
         if (state == FormWindowState.Maximized)
         {
             WindowState = FormWindowState.Maximized;
@@ -1512,7 +1512,7 @@ internal partial class FormImagePicker
         InitializeComponent();
 
         // Populate the image filter drop down.
-        var filters = (ImageFilter[])Enum.GetValues(typeof(ImageFilter));
+        ImageFilter[] filters = (ImageFilter[])Enum.GetValues(typeof(ImageFilter));
 
         foreach (ImageFilter filter in filters)
         {

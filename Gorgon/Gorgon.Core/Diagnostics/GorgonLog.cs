@@ -180,7 +180,7 @@ public abstract class GorgonLog
     {
         string indicator = string.Empty; // Inner exception indicator.
         string branch = string.Empty; // Branching character.
-        var exception = new StringBuilder(1024);
+        StringBuilder exception = new(1024);
 
         if ((ex is null)
             || (LogFilterLevel == LoggingLevel.NoLogging))

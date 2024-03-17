@@ -111,7 +111,7 @@ internal class ImageExternalEditService(IGorgonLog log)
 
         GorgonApplication.MainForm.Visible = false;
 
-        var startInfo = new ProcessStartInfo(exePath)
+        ProcessStartInfo startInfo = new(exePath)
         {
             ErrorDialog = true,
             ErrorDialogParentHandle = GorgonApplication.MainForm.Handle,
@@ -125,7 +125,7 @@ internal class ImageExternalEditService(IGorgonLog log)
 
         Process externalProcess = null;
 
-        var values = new WatchValues()
+        WatchValues values = new()
         {
             FilePath = workingFile.PhysicalFile.FullPath,
             HasChanges = false

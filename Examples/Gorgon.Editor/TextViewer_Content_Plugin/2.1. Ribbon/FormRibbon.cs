@@ -295,7 +295,7 @@ internal partial class FormRibbon
         // we should be executing a command on the view model so that we can handle mutations 
         // and edge cases as needed.
 
-        var menuitem = (ToolStripMenuItem)sender;
+        ToolStripMenuItem menuitem = (ToolStripMenuItem)sender;
 
         FontFace fontFace = _menuFontItems.FirstOrDefault(item => item.Value == menuitem).Key;
 
@@ -316,7 +316,7 @@ internal partial class FormRibbon
     /// <param name="e">The [EventArgs] instance containing the event data.</param>
     private void ItemZoom_Click(object sender, EventArgs e)
     {
-        var item = (ToolStripMenuItem)sender;
+        ToolStripMenuItem item = (ToolStripMenuItem)sender;
 
         if ((item.Tag is null) || (!Enum.TryParse(item.Tag.ToString(), out ZoomLevels zoom)))
         {

@@ -230,7 +230,7 @@ public abstract class FileWriterPlugIn
             throw new ArgumentNullException(nameof(filePath));
         }
 
-#pragma warning disable IDE0046 // Convert to conditional expression
+
         if (workspace is null)
         {
             throw new ArgumentNullException(nameof(workspace));
@@ -239,7 +239,7 @@ public abstract class FileWriterPlugIn
         return !workspace.Exists
             ? throw new DirectoryNotFoundException(string.Format(Resources.GOREDIT_ERR_DIR_NOT_FOUND, workspace.FullName))
             : OnWriteAsync(filePath, workspace, progressCallback, cancelToken);
-#pragma warning restore IDE0046 // Convert to conditional expression
+
     }
 
     /// <summary>
@@ -265,7 +265,7 @@ public abstract class FileWriterPlugIn
             throw new ArgumentNullException(nameof(fileExtensions));
         }
 
-        var extensions = new GorgonFileExtensionCollection();
+        GorgonFileExtensionCollection extensions = [];
 
         foreach (GorgonFileExtension extension in fileExtensions)
         {

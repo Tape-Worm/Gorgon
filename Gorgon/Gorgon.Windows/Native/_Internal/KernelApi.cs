@@ -78,7 +78,7 @@ internal static partial class KernelApi
     {
         get
         {
-            var memory = new MEMORYSTATUSEX
+            MEMORYSTATUSEX memory = new()
             {
                 dwLength = (uint)Marshal.SizeOf(typeof(MEMORYSTATUSEX))
             };
@@ -94,7 +94,7 @@ internal static partial class KernelApi
     {
         get
         {
-            var memory = new MEMORYSTATUSEX
+            MEMORYSTATUSEX memory = new()
             {
                 dwLength = (uint)Marshal.SizeOf(typeof(MEMORYSTATUSEX))
             };

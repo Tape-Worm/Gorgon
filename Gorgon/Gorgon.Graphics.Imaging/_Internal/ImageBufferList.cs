@@ -110,7 +110,7 @@ class ImageBufferList
     internal void CreateBuffers(in GorgonPtr<byte> data)
     {
         int bufferIndex = 0;
-        var formatInfo = new GorgonFormatInfo(_imageInfo.Format);   // Format information.
+        GorgonFormatInfo formatInfo = new(_imageInfo.Format);   // Format information.
 
         // Allocate enough room for the array and mip levels.
         _buffers = new IGorgonImageBuffer[GorgonImage.CalculateDepthSliceCount(_imageInfo.Depth, _imageInfo.MipCount) * _imageInfo.ArrayCount];

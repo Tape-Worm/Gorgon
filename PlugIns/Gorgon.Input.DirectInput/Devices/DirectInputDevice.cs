@@ -124,7 +124,7 @@ internal class DirectInputDevice
     /// <returns>The DirectInput joystick object.</returns>
     private DI.Joystick CreateJoystick(DI.DirectInput directInput, IGorgonGamingDeviceInfo deviceInfo)
     {
-        var result = new DI.Joystick(directInput, deviceInfo.DeviceID);
+        DI.Joystick result = new(directInput, deviceInfo.DeviceID);
 
         nint mainWindow = FindMainApplicationWindow();
 

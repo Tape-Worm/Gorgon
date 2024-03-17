@@ -53,14 +53,6 @@ internal class FileSystemNodeComparer
     /// <returns>
     /// A signed integer that indicates the relative values of <paramref name="x" /> and <paramref name="y" />, as shown in the following table.Value Meaning Less than zero <paramref name="x" /> is less than <paramref name="y" />. Zero <paramref name="x" /> equals <paramref name="y" />. Greater than zero <paramref name="x" /> is greater than <paramref name="y" />.
     /// </returns>
-    public int Compare(object x, object y)
-    {
-#pragma warning disable IDE0019 // Use pattern matching
-        var xNode = x as DirectoryTreeNode;
-        var yNode = y as DirectoryTreeNode;
-#pragma warning restore IDE0019 // Use pattern matching
-
-        return ((xNode is null) || (yNode is null)) ? 0 : Compare(xNode, yNode);
-    }
+    public int Compare(object x, object y) => ((x is not DirectoryTreeNode xNode) || (y is not DirectoryTreeNode yNode)) ? 0 : Compare(xNode, yNode);
 
 }

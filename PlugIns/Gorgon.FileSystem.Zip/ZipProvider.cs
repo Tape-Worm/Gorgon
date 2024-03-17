@@ -74,10 +74,10 @@ internal class ZipProvider
     /// </remarks>
     protected override GorgonPhysicalFileSystemData OnEnumerate(string physicalLocation, IGorgonVirtualDirectory mountPoint)
     {
-        var directories = new List<string>();
-        var files = new List<IGorgonPhysicalFileInfo>();
+        List<string> directories = [];
+        List<IGorgonPhysicalFileInfo> files = [];
 
-        using (var zipStream = new ZipInputStream(File.Open(physicalLocation, FileMode.Open, FileAccess.Read, FileShare.Read)))
+        using (ZipInputStream zipStream = new(File.Open(physicalLocation, FileMode.Open, FileAccess.Read, FileShare.Read)))
         {
             ZipEntry entry;
 

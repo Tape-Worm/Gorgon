@@ -323,7 +323,7 @@ public class GorgonBoundingFrustum
     {
         //http://www.chadvernon.com/blog/resources/directx9/frustum-culling/
 
-        var result = new GorgonBoundingFrustum();
+        GorgonBoundingFrustum result = new();
 
         result.Update(in viewProjMatrix);
 
@@ -338,7 +338,7 @@ public class GorgonBoundingFrustum
     /// <returns>The new bounding frustum.</returns>
     public static GorgonBoundingFrustum Create(in Matrix4x4 viewMatrix, in Matrix4x4 projectionMatrix)
     {
-        var result = Matrix4x4.Multiply(viewMatrix, projectionMatrix);
+        Matrix4x4 result = Matrix4x4.Multiply(viewMatrix, projectionMatrix);
         return Create(in result);
     }
 
@@ -349,7 +349,7 @@ public class GorgonBoundingFrustum
     /// <returns>The inverted frustum.</returns>
     public static GorgonBoundingFrustum CreateInverted(GorgonBoundingFrustum frustum)
     {
-        var result = new GorgonBoundingFrustum();
+        GorgonBoundingFrustum result = new();
         result.Planes.Set(FrustumPlane.Near, new Plane(-frustum.Planes[FrustumPlane.Near].Normal, frustum.Planes[FrustumPlane.Near].D));
         result.Planes.Set(FrustumPlane.Far, new Plane(-frustum.Planes[FrustumPlane.Far].Normal, frustum.Planes[FrustumPlane.Far].D));
         result.Planes.Set(FrustumPlane.Left, new Plane(-frustum.Planes[FrustumPlane.Left].Normal, frustum.Planes[FrustumPlane.Left].D));
@@ -384,7 +384,7 @@ public class GorgonBoundingFrustum
         float nearHalfWidth = nearHalfHeight * aspect;
         float farHalfWidth = farHalfHeight * aspect;
 
-        var rightDir = Vector3.Normalize(Vector3.Cross(upDir, lookDir));
+        Vector3 rightDir = Vector3.Normalize(Vector3.Cross(upDir, lookDir));
         Vector3 Near1 = nearCenter - nearHalfHeight * upDir + nearHalfWidth * rightDir;
         Vector3 Near2 = nearCenter + nearHalfHeight * upDir + nearHalfWidth * rightDir;
         Vector3 Near3 = nearCenter + nearHalfHeight * upDir - nearHalfWidth * rightDir;
@@ -394,7 +394,7 @@ public class GorgonBoundingFrustum
         Vector3 Far3 = farCenter + farHalfHeight * upDir - farHalfWidth * rightDir;
         Vector3 Far4 = farCenter - farHalfHeight * upDir - farHalfWidth * rightDir;
 
-        var result = new GorgonBoundingFrustum();
+        GorgonBoundingFrustum result = new();
         CreatePlaneFromPoints(in Near1, in Near2, in Near3, out Plane plane);
         plane = Plane.Normalize(plane);
         result.Planes.Set(FrustumPlane.Near, in plane);
@@ -500,7 +500,7 @@ public class GorgonBoundingFrustum
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void Update(in Matrix4x4 view, in Matrix4x4 projection)
     {
-        var viewProj = Matrix4x4.Multiply(view, projection);
+        Matrix4x4 viewProj = Matrix4x4.Multiply(view, projection);
         Update(in viewProj);
     }
 

@@ -853,14 +853,12 @@ public static class GorgonMathExtensions
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static int Sign(this int value)
     {
-#pragma warning disable IDE0046 // Convert to conditional expression
         if (value == 0)
         {
             return 0;
         }
 
         return value < 0 ? -1 : 1;
-#pragma warning restore IDE0046 // Convert to conditional expression
     }
 
     /// <summary>
@@ -871,14 +869,12 @@ public static class GorgonMathExtensions
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static int Sign(this long value)
     {
-#pragma warning disable IDE0046 // Convert to conditional expression
         if (value == 0)
         {
             return 0;
         }
 
         return value < 0 ? -1 : 1;
-#pragma warning restore IDE0046 // Convert to conditional expression
     }
 
     /// <summary>

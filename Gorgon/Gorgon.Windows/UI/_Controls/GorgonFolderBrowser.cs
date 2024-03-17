@@ -501,7 +501,7 @@ public partial class GorgonFolderBrowser
             return RootFolder is null ? string.Empty : dirSep;
         }
 
-        var path = new StringBuilder(directoryName.FormatDirectory(Path.DirectorySeparatorChar));
+        StringBuilder path = new(directoryName.FormatDirectory(Path.DirectorySeparatorChar));
 
         if (RootFolder is not null)
         {
@@ -561,10 +561,10 @@ public partial class GorgonFolderBrowser
     {
         try
         {
-            var dir = new DirectoryInfo(_currentDirectory.FormatDirectory(Path.DirectorySeparatorChar));
+            DirectoryInfo dir = new(_currentDirectory.FormatDirectory(Path.DirectorySeparatorChar));
             string dirPath = FormatDirectoryPath(dir.FullName);
 
-            var args = new FolderDeleteArgs(dirPath);
+            FolderDeleteArgs args = new(dirPath);
             EventHandler<FolderDeleteArgs> handler = FolderDeleting;
             handler?.Invoke(this, args);
 
@@ -656,9 +656,9 @@ public partial class GorgonFolderBrowser
         try
         {
             string dirName = GetNewName(Resources.GOR_NEW_DIR);
-            var dir = new DirectoryInfo(Path.Combine(_activeDirectory, dirName).FormatDirectory(Path.DirectorySeparatorChar));
+            DirectoryInfo dir = new(Path.Combine(_activeDirectory, dirName).FormatDirectory(Path.DirectorySeparatorChar));
 
-            var args = new FolderAddArgs(FormatDirectoryPath(dir.Parent?.FullName), FormatDirectoryPath(dir.FullName), dir.Name);
+            FolderAddArgs args = new(FormatDirectoryPath(dir.Parent?.FullName), FormatDirectoryPath(dir.FullName), dir.Name);
             EventHandler<FolderAddArgs> handler = FolderAdding;
             FolderAdding?.Invoke(this, args);
 
@@ -730,7 +730,7 @@ public partial class GorgonFolderBrowser
                 return;
             }
 
-            var dir = new DirectoryInfo(Path.Combine(_activeDirectory, name).FormatDirectory(Path.DirectorySeparatorChar));
+            DirectoryInfo dir = new(Path.Combine(_activeDirectory, name).FormatDirectory(Path.DirectorySeparatorChar));
 
             if ((!string.Equals(name, editingItem.Text, StringComparison.OrdinalIgnoreCase)) && ((dir.Exists) || (File.Exists(dir.FullName))))
             {
@@ -748,9 +748,9 @@ public partial class GorgonFolderBrowser
                 return;
             }
 
-            var originalDir = new DirectoryInfo(Path.Combine(_activeDirectory, editingItem.Text).FormatDirectory(Path.DirectorySeparatorChar));
+            DirectoryInfo originalDir = new(Path.Combine(_activeDirectory, editingItem.Text).FormatDirectory(Path.DirectorySeparatorChar));
 
-            var args = new FolderRenameArgs(FormatDirectoryPath(originalDir.FullName), originalDir.Name, FormatDirectoryPath(dir.FullName), dir.Name);
+            FolderRenameArgs args = new(FormatDirectoryPath(originalDir.FullName), originalDir.Name, FormatDirectoryPath(dir.FullName), dir.Name);
             EventHandler<FolderRenameArgs> handler = FolderRenaming;
             handler?.Invoke(this, args);
 
@@ -1064,7 +1064,7 @@ public partial class GorgonFolderBrowser
                 return;
             }
 
-            var dir = new DirectoryInfo(path);
+            DirectoryInfo dir = new(path);
 
             if (!dir.Exists)
             {
@@ -1280,7 +1280,7 @@ public partial class GorgonFolderBrowser
     /// <param name="dir">The directory to evaluate.</param>
     private void GetDirectories(string dir)
     {
-        var dirEntry = new DirectoryInfo(dir.FormatDirectory(Path.DirectorySeparatorChar));
+        DirectoryInfo dirEntry = new(dir.FormatDirectory(Path.DirectorySeparatorChar));
 
         IEnumerable<DirectoryInfo> directories = dirEntry.GetDirectories()
                                                     .Where(item => ((item.Attributes & FileAttributes.System) != FileAttributes.System)
@@ -1308,7 +1308,7 @@ public partial class GorgonFolderBrowser
 
         foreach (DirectoryInfo directory in directories)
         {
-            var item = new ListViewItem(directory.Name)
+            ListViewItem item = new(directory.Name)
             {
                 ImageIndex = 0,
                 Tag = new DirectoryInfo(directory.FullName.FormatDirectory(Path.DirectorySeparatorChar)),
@@ -1322,7 +1322,7 @@ public partial class GorgonFolderBrowser
 
         foreach (FileInfo file in files)
         {
-            var item = new ListViewItem(file.Name)
+            ListViewItem item = new(file.Name)
             {
                 ImageIndex = 6,
                 Tag = null,
@@ -1349,7 +1349,7 @@ public partial class GorgonFolderBrowser
         try
         {
             ListDirectories.Items.Clear();
-            var driveTypes = (DriveType[])Enum.GetValues(typeof(DriveType));
+            DriveType[] driveTypes = (DriveType[])Enum.GetValues(typeof(DriveType));
 
             foreach (DriveType drive in driveTypes)
             {
@@ -1388,7 +1388,7 @@ public partial class GorgonFolderBrowser
                         continue;
                 }
 
-                var item = new ListViewItem(driveName)
+                ListViewItem item = new(driveName)
                 {
                     Tag = null,
                     Font = Font,
@@ -1434,7 +1434,7 @@ public partial class GorgonFolderBrowser
 
         foreach (DriveInfo drive in drives)
         {
-            var item = new ListViewItem(drive.Name)
+            ListViewItem item = new(drive.Name)
             {
                 Tag = drive.RootDirectory,
                 Font = Font,

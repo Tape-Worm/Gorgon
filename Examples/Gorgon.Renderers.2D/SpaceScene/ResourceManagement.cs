@@ -137,7 +137,7 @@ internal class ResourceManagement(Gorgon2D renderer, GorgonMefPlugInCache plugIn
     /// <returns>A list of loaded images.</returns>
     private async Task<IReadOnlyDictionary<string, GorgonTexture2D>> LoadImageData(string path)
     {
-        var result = new Dictionary<string, GorgonTexture2D>(StringComparer.OrdinalIgnoreCase);
+        Dictionary<string, GorgonTexture2D> result = new(StringComparer.OrdinalIgnoreCase);
 
         IReadOnlyList<IGorgonVirtualFile> textureFiles = _fileSystem.GetContentItems(path, CommonEditorContentTypes.ImageType);
 
@@ -156,7 +156,7 @@ internal class ResourceManagement(Gorgon2D renderer, GorgonMefPlugInCache plugIn
     /// <returns>A list of loaded sprites.</returns>
     private async Task<IReadOnlyDictionary<string, GorgonSprite>> LoadSpriteDataAsync(string path)
     {
-        var result = new Dictionary<string, GorgonSprite>(StringComparer.OrdinalIgnoreCase);
+        Dictionary<string, GorgonSprite> result = new(StringComparer.OrdinalIgnoreCase);
 
         IReadOnlyList<IGorgonVirtualFile> spriteFiles = _fileSystem.GetContentItems(path, CommonEditorContentTypes.SpriteType);
 
@@ -173,7 +173,7 @@ internal class ResourceManagement(Gorgon2D renderer, GorgonMefPlugInCache plugIn
     /// </summary>
     private void GenerateAnimations()
     {
-        var builder = new GorgonAnimationBuilder();
+        GorgonAnimationBuilder builder = new();
 
         IGorgonAnimation planetRotation = builder
             .Clear()
@@ -223,12 +223,12 @@ internal class ResourceManagement(Gorgon2D renderer, GorgonMefPlugInCache plugIn
     /// </summary>
     private void BuildPostProcessCompositors()
     {
-        var chromatic = new Gorgon2DChromaticAberrationEffect(_renderer)
+        Gorgon2DChromaticAberrationEffect chromatic = new(_renderer)
         {
             Intensity = 0.125f
         };
 
-        var bloom = new Gorgon2DBloomEffect(_renderer)
+        Gorgon2DBloomEffect bloom = new(_renderer)
         {
             BloomIntensity = 7.0f,
             BlurAmount = 10.0f,
@@ -240,7 +240,7 @@ internal class ResourceManagement(Gorgon2D renderer, GorgonMefPlugInCache plugIn
         };
         bloom.Precache();
 
-        var finalPostProcess = new Gorgon2DCompositor(_renderer);
+        Gorgon2DCompositor finalPostProcess = new(_renderer);
         finalPostProcess
             .Clear()
             .InitialClearColor(GorgonColor.BlackTransparent)
@@ -250,8 +250,8 @@ internal class ResourceManagement(Gorgon2D renderer, GorgonMefPlugInCache plugIn
 
         _postProcess["Final Pass"] = finalPostProcess;
 
-        var deferredLighting = new Gorgon2DLightingEffect(_renderer);
-        var gbuffer = new Gorgon2DGBuffer(_renderer, 1280, 800);
+        Gorgon2DLightingEffect deferredLighting = new(_renderer);
+        Gorgon2DGBuffer gbuffer = new(_renderer, 1280, 800);
         deferredLighting.AmbientColor = new GorgonColor(0.025f, 0.025f, 0.025f, 1.0f);
         _effects[nameof(bloom)] = bloom;
         _effects[nameof(chromatic)] = chromatic;
@@ -271,7 +271,7 @@ internal class ResourceManagement(Gorgon2D renderer, GorgonMefPlugInCache plugIn
     private void Generate3DModels()
     {
         // The 3D model for the earth. It has a diffuse/albedo map, a normal map and a specular map.
-        var earthSphere = new IcoSphere(_graphics,
+        IcoSphere earthSphere = new(_graphics,
                                         3.0f,
                                         new DX.RectangleF(0, 0, 1, 1),
                                         Vector3.Zero,
@@ -295,7 +295,7 @@ internal class ResourceManagement(Gorgon2D renderer, GorgonMefPlugInCache plugIn
 
         // This will serve as the cloud layer, it'll just sit on top of the other sphere to give the appearance of cloud cover moving over the land.
         // This will be additively blended with the land sphere above and use another pixel shader that has a slight emissive effect.
-        var earthCloudSphere = new IcoSphere(_graphics,
+        IcoSphere earthCloudSphere = new(_graphics,
                                              3.01f,
                                              new DX.RectangleF(0, 0, 1, 1),
                                              Vector3.Zero,

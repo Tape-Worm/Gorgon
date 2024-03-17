@@ -223,7 +223,7 @@ public static class VectorExtensions
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static Vector3 Project(Vector3 vector, float x, float y, float width, float height, float minZ, float maxZ, Matrix4x4 worldViewProjection)
     {
-        var v = Vector3.Transform(vector, worldViewProjection);
+        Vector3 v = Vector3.Transform(vector, worldViewProjection);
         return new Vector3(((1.0f + v.X) * 0.5f * width) + x, ((1.0f - v.Y) * 0.5f * height) + y, (v.Z * (maxZ - minZ)) + minZ);
     }
 
@@ -242,7 +242,7 @@ public static class VectorExtensions
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static Vector3 Unproject(this Vector3 vector, float x, float y, float width, float height, float minZ, float maxZ, in Matrix4x4 worldViewProjection)
     {
-        var v = new Vector3();
+        Vector3 v = new();
         Matrix4x4.Invert(worldViewProjection, out Matrix4x4 matrix);
 
         v.X = (((vector.X - x) / width) * 2.0f) - 1.0f;

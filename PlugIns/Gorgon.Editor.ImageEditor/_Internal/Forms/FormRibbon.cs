@@ -447,7 +447,7 @@ internal partial class FormRibbon
         }
 
         float dpi;
-        using (var g = System.Drawing.Graphics.FromHwnd(IntPtr.Zero))
+        using (System.Drawing.Graphics g = System.Drawing.Graphics.FromHwnd(IntPtr.Zero))
         {
             dpi = g.DpiX / 96.0f;
         }
@@ -466,8 +466,8 @@ internal partial class FormRibbon
             return;
         }
 
-        var item = (ToolStripMenuItem)sender;
-        var format = (BufferFormat)item.Tag;
+        ToolStripMenuItem item = (ToolStripMenuItem)sender;
+        BufferFormat format = (BufferFormat)item.Tag;
 
         if ((ViewModel.ConvertFormatCommand is not null) && (ViewModel.ConvertFormatCommand.CanExecute(format)))
         {
@@ -484,8 +484,8 @@ internal partial class FormRibbon
     /// <param name="e">The [EventArgs] instance containing the event data.</param>
     private void CodecItem_Click(object sender, EventArgs e)
     {
-        var item = (ToolStripMenuItem)sender;
-        var codec = item.Tag as IGorgonImageCodec;
+        ToolStripMenuItem item = (ToolStripMenuItem)sender;
+        IGorgonImageCodec codec = item.Tag as IGorgonImageCodec;
 
         if ((ViewModel?.ExportImageCommand is not null) && (ViewModel.ExportImageCommand.CanExecute(codec)))
         {
@@ -685,9 +685,9 @@ internal partial class FormRibbon
 
         foreach (BufferFormat format in dataContext.PixelFormats)
         {
-            var info = new GorgonFormatInfo(format);
+            GorgonFormatInfo info = new(format);
 
-            var item = new ToolStripMenuItem(format.ToString())
+            ToolStripMenuItem item = new(format.ToString())
             {
                 Name = format.ToString(),
                 Checked = dataContext.CurrentPixelFormat == format,
@@ -736,7 +736,7 @@ internal partial class FormRibbon
     /// <param name="codec">The codec to add.</param>
     private void AddCodecItem(IGorgonImageCodec codec)
     {
-        var item = new ToolStripMenuItem($"{codec.CodecDescription} ({codec.Codec})")
+        ToolStripMenuItem item = new($"{codec.CodecDescription} ({codec.Codec})")
         {
             Name = codec.Name,
             CheckOnClick = false,
@@ -832,7 +832,7 @@ internal partial class FormRibbon
     /// <param name="e">The [EventArgs] instance containing the event data.</param>
     private void ItemZoom_Click(object sender, EventArgs e)
     {
-        var item = (ToolStripMenuItem)sender;
+        ToolStripMenuItem item = (ToolStripMenuItem)sender;
 
         if ((item.Tag is null) || (!Enum.TryParse(item.Tag.ToString(), out ZoomLevels zoom)))
         {
@@ -860,7 +860,7 @@ internal partial class FormRibbon
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
     private void ItemImageType_Click(object sender, EventArgs e)
     {
-        var item = (ToolStripMenuItem)sender;
+        ToolStripMenuItem item = (ToolStripMenuItem)sender;
 
         if (item.Tag is null)
         {
@@ -868,7 +868,7 @@ internal partial class FormRibbon
             return;
         }
 
-        var imageType = (ImageDataType)item.Tag;
+        ImageDataType imageType = (ImageDataType)item.Tag;
 
         if ((ViewModel?.ChangeImageTypeCommand is null)
             || (!ViewModel.ChangeImageTypeCommand.CanExecute(imageType))

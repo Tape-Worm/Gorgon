@@ -160,7 +160,7 @@ internal partial class EditorSettingsPanel
     /// <param name="clearPanelLookup"><b>true</b> to clear the panel look up, <b>false</b> to leave it alone.</param>
     private void ClearExtraPanels(bool clearPanelLookup)
     {
-        var controls = new List<SettingsBaseControl>(SplitSettingsNav.Panel2.Controls.OfType<SettingsBaseControl>().Where(item => item != PlugInList));
+        List<SettingsBaseControl> controls = new(SplitSettingsNav.Panel2.Controls.OfType<SettingsBaseControl>().Where(item => item != PlugInList));
 
         ListCategories.SelectedIndex = 0;
 

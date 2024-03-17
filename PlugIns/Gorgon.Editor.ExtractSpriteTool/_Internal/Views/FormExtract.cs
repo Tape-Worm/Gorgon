@@ -234,7 +234,7 @@ internal partial class FormExtract
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
     private void ButtonOk_Click(object sender, EventArgs e)
     {
-        var args = new SaveSpritesArgs();
+        SaveSpritesArgs args = new();
 
         if ((ViewModel?.SaveSpritesCommand is null) || (!ViewModel.SaveSpritesCommand.CanExecute(args)))
         {
@@ -555,7 +555,7 @@ internal partial class FormExtract
     {
         base.OnSetupGraphics(graphicsContext, swapChain);
 
-        var extractRenderer = new Renderer(graphicsContext.Renderer2D, swapChain, ViewModel);
+        Renderer extractRenderer = new(graphicsContext.Renderer2D, swapChain, ViewModel);
         AddRenderer(extractRenderer.Name, extractRenderer);
         SwitchRenderer(extractRenderer.Name);
     }

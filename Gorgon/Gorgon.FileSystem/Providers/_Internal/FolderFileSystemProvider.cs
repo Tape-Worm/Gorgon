@@ -77,7 +77,7 @@ internal sealed class FolderFileSystemProvider
     /// <returns>A read only list of <see cref="IGorgonPhysicalFileInfo"/> entries.</returns>
     private static IReadOnlyList<IGorgonPhysicalFileInfo> OnEnumerateFiles(string physicalLocation, IGorgonVirtualDirectory mountPoint, bool recurse)
     {
-        var directoryInfo = new DirectoryInfo(physicalLocation);
+        DirectoryInfo directoryInfo = new(physicalLocation);
 
         IEnumerable<FileInfo> files = directoryInfo.GetFiles("*", recurse ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly)
                                                    .Where(item =>
@@ -105,7 +105,7 @@ internal sealed class FolderFileSystemProvider
     /// <returns>A read only list of <see cref="string"/> values representing the mapped directory entries.</returns>
     private static IReadOnlyList<string> OnEnumerateDirectories(string physicalLocation, IGorgonVirtualDirectory mountPoint)
     {
-        var directoryInfo = new DirectoryInfo(physicalLocation);
+        DirectoryInfo directoryInfo = new(physicalLocation);
 
         IEnumerable<DirectoryInfo> directories =
             directoryInfo.GetDirectories("*", SearchOption.AllDirectories)
@@ -192,7 +192,7 @@ internal sealed class FolderFileSystemProvider
     /// <returns>The physical file system path.</returns>
     protected override string OnGetPhysicalPath(string virtualPath, GorgonFileSystemMountPoint mountPoint)
     {
-        var result = new StringBuilder(virtualPath, 256);
+        StringBuilder result = new(virtualPath, 256);
 
         result.Replace("/", GorgonFileSystem.PhysicalDirSeparator);
         result.Insert(0, mountPoint.PhysicalPath.FormatDirectory(GorgonFileSystem.PhysicalDirSeparator[0]));
@@ -216,7 +216,7 @@ internal sealed class FolderFileSystemProvider
     /// </remarks>
     protected override IReadOnlyDictionary<string, IGorgonPhysicalFileInfo> OnEnumerateFiles(string physicalLocation, IGorgonVirtualDirectory mountPoint)
     {
-        var directoryInfo = new DirectoryInfo(physicalLocation);
+        DirectoryInfo directoryInfo = new(physicalLocation);
 
         return directoryInfo.GetFiles("*", SearchOption.TopDirectoryOnly)
                             .Where(item =>

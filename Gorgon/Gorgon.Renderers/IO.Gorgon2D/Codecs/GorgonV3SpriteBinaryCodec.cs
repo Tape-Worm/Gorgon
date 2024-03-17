@@ -139,12 +139,12 @@ public class GorgonV3SpriteBinaryCodec(Gorgon2D renderer)
     /// <returns>A new <see cref="GorgonSprite"/>.</returns>
     protected override GorgonSprite OnReadFromStream(Stream stream, int byteCount, GorgonTexture2DView overrideTexture)
     {
-        var reader = new GorgonChunkFileReader(stream,
+        GorgonChunkFileReader reader = new(stream,
                                                [
                                                    CurrentFileHeader
                                                ]);
         GorgonBinaryReader binReader = null;
-        var sprite = new GorgonSprite();
+        GorgonSprite sprite = new();
 
         try
         {
@@ -187,7 +187,7 @@ public class GorgonV3SpriteBinaryCodec(Gorgon2D renderer)
                 return sprite;
             }
 
-            var builder = new GorgonSamplerStateBuilder(Renderer.Graphics);
+            GorgonSamplerStateBuilder builder = new(Renderer.Graphics);
             binReader = reader.OpenChunk(TextureSamplerData);
             binReader.ReadValue(out SampleFilter filter);
             binReader.ReadValue(out GorgonColor borderColor);
@@ -224,7 +224,7 @@ public class GorgonV3SpriteBinaryCodec(Gorgon2D renderer)
     /// <param name="stream">The stream that will contain the sprite.</param>
     protected override void OnSaveToStream(GorgonSprite sprite, Stream stream)
     {
-        var writer = new GorgonChunkFileWriter(stream, CurrentFileHeader);
+        GorgonChunkFileWriter writer = new(stream, CurrentFileHeader);
         GorgonBinaryWriter binWriter = null;
 
         try
@@ -321,7 +321,7 @@ public class GorgonV3SpriteBinaryCodec(Gorgon2D renderer)
         }
 
         using GorgonBinaryReader binReader = reader.OpenChunk(VersionData);
-        var fileVersion = new Version(binReader.ReadByte(), binReader.ReadByte());
+        Version fileVersion = new(binReader.ReadByte(), binReader.ReadByte());
         reader.CloseChunk();
 
         return Version.Equals(fileVersion);

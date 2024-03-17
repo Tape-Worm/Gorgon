@@ -55,7 +55,7 @@ internal class VideoAdapterEnumerator
 
         using Adapter warp = factory.GetWarpAdapter();
         using Adapter4 warpAdapter4 = warp.QueryInterface<Adapter4>();
-        using var D3DDevice = new D3D11.Device(warpAdapter4, flags);
+        using D3D11.Device D3DDevice = new(warpAdapter4, flags);
         using D3D11.Device5 D3DDevice5 = D3DDevice.QueryInterface<D3D11.Device5>();
         FeatureSet? featureSet = GetFeatureLevel(D3DDevice5);
 
@@ -65,7 +65,7 @@ internal class VideoAdapterEnumerator
             return null;
         }
 
-        var result = new VideoAdapterInfo(index, warpAdapter4, featureSet.Value, [], VideoDeviceType.Software);
+        VideoAdapterInfo result = new(index, warpAdapter4, featureSet.Value, [], VideoDeviceType.Software);
 
         PrintLog(result, log);
 
@@ -168,7 +168,7 @@ internal class VideoAdapterEnumerator
     /// <returns>A list if video output info values.</returns>
     private static Dictionary<string, VideoOutputInfo> GetOutputs(D3D11.Device5 device, Adapter4 adapter, int outputCount, IGorgonLog log)
     {
-        var result = new Dictionary<string, VideoOutputInfo>(StringComparer.OrdinalIgnoreCase);
+        Dictionary<string, VideoOutputInfo> result = new(StringComparer.OrdinalIgnoreCase);
 
         // Devices created under RDP/TS do not support output selection.
         if (SystemInformation.TerminalServerSession)
@@ -181,7 +181,7 @@ internal class VideoAdapterEnumerator
         {
             using Output output = adapter.GetOutput(i);
             using Output6 output6 = output.QueryInterface<Output6>();
-            var outputInfo = new VideoOutputInfo(i, output6, GetVideoModes(device, output6));
+            VideoOutputInfo outputInfo = new(i, output6, GetVideoModes(device, output6));
 
             if (outputInfo.VideoModes.Count == 0)
             {
@@ -213,11 +213,11 @@ internal class VideoAdapterEnumerator
     /// </remarks>
     public static IReadOnlyList<IGorgonVideoAdapterInfo> Enumerate(bool enumerateWARPDevice, IGorgonLog log)
     {
-        var devices = new List<IGorgonVideoAdapterInfo>();
+        List<IGorgonVideoAdapterInfo> devices = [];
 
         log ??= GorgonLog.NullLog;
 
-        using (var factory2 = new Factory2(GorgonGraphics.IsDebugEnabled))
+        using (Factory2 factory2 = new(GorgonGraphics.IsDebugEnabled))
         using (Factory5 factory5 = factory2.QueryInterface<Factory5>())
         {
             int adapterCount = factory5.GetAdapterCount1();
@@ -246,7 +246,7 @@ internal class VideoAdapterEnumerator
                 }
 
                 // We create a D3D device here to filter out unsupported video modes from the format list.
-                using var D3DDevice = new D3D11.Device(adapter, flags, D3D.FeatureLevel.Level_12_1,
+                using D3D11.Device D3DDevice = new(adapter, flags, D3D.FeatureLevel.Level_12_1,
                                                                         D3D.FeatureLevel.Level_12_0,
                                                                         D3D.FeatureLevel.Level_11_1,
                                                                         D3D.FeatureLevel.Level_11_0,
@@ -275,7 +275,7 @@ internal class VideoAdapterEnumerator
                     log.Print($"WARNING:  Video adapter '{adapterName}' has no outputs. Full screen mode will not be possible.", LoggingLevel.Verbose);
                 }
 
-                var videoAdapter = new VideoAdapterInfo(i, adapter, featureSet.Value, outputs, VideoDeviceType.Hardware);
+                VideoAdapterInfo videoAdapter = new(i, adapter, featureSet.Value, outputs, VideoDeviceType.Hardware);
 
                 devices.Add(videoAdapter);
                 PrintLog(videoAdapter, log);

@@ -308,7 +308,7 @@ public sealed class GorgonTexture3D
             throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_DEPTH_STENCIL_NOT_SUPPORTED));
         }
 
-        var formatInfo = new GorgonFormatInfo(Format);
+        GorgonFormatInfo formatInfo = new(Format);
 
         if (Usage == ResourceUsage.Dynamic)
         {
@@ -406,7 +406,7 @@ public sealed class GorgonTexture3D
                 break;
         }
 
-        var tex3DDesc = new D3D11.Texture3DDescription1
+        D3D11.Texture3DDescription1 tex3DDesc = new()
         {
             Format = (Format)Format,
             Width = Width,
@@ -1018,7 +1018,7 @@ public sealed class GorgonTexture3D
             Usage = ResourceUsage.Staging,
             Binding = TextureBinding.None
         };
-        var staging = new GorgonTexture3D(Graphics, info);
+        GorgonTexture3D staging = new(Graphics, info);
 
         // Copy the data from this texture into the new staging texture.
         CopyTo(staging);
@@ -1144,10 +1144,10 @@ public sealed class GorgonTexture3D
 
         // Clip the destination rectangle against our texture size.
         DX.Rectangle destRect = destRectangle ?? new DX.Rectangle(0, 0, width, height);
-        var maxRect = new DX.Rectangle(0, 0, width, height);
+        DX.Rectangle maxRect = new(0, 0, width, height);
         DX.Rectangle.Intersect(ref destRect, ref maxRect, out DX.Rectangle destBounds);
 
-        var finalBounds = new DX.Rectangle(destBounds.X, destBounds.Y, imageBuffer.Width.Min(destBounds.Width), imageBuffer.Height.Min(destBounds.Height));
+        DX.Rectangle finalBounds = new(destBounds.X, destBounds.Y, imageBuffer.Width.Min(destBounds.Width), imageBuffer.Height.Min(destBounds.Height));
 
         unsafe
         {
@@ -1449,7 +1449,7 @@ public sealed class GorgonTexture3D
 
         mipCount = mipCount.Min(MipLevels - firstMipLevel).Max(1);
 
-        var key = new TextureViewKey(format, firstMipLevel, mipCount, 0, 0);
+        TextureViewKey key = new(format, firstMipLevel, mipCount, 0, 0);
 
         if ((_cachedSrvs.TryGetValue(key, out GorgonTexture3DView view))
             && (view.Native is not null))
@@ -1519,7 +1519,7 @@ public sealed class GorgonTexture3D
         }
 
         // Ensure the size of the data type fits the requested format.
-        var info = new GorgonFormatInfo(format);
+        GorgonFormatInfo info = new(format);
 
         if (info.IsTypeless)
         {
@@ -1544,7 +1544,7 @@ public sealed class GorgonTexture3D
 
         depthSliceCount = depthSliceCount.Min(Depth - startDepthSlice).Max(1);
 
-        var key = new TextureViewKey(format, firstMipLevel, _info.MipLevels, startDepthSlice, depthSliceCount);
+        TextureViewKey key = new(format, firstMipLevel, _info.MipLevels, startDepthSlice, depthSliceCount);
 
         if ((_cachedReadWriteViews.TryGetValue(key, out GorgonTexture3DReadWriteView view))
             && (view.Native is not null))
@@ -1633,7 +1633,7 @@ public sealed class GorgonTexture3D
 
         depthSliceCount = depthSliceCount.Min(Depth - startDepthSlice).Max(1);
 
-        var key = new TextureViewKey(format, firstMipLevel, 1, startDepthSlice, depthSliceCount);
+        TextureViewKey key = new(format, firstMipLevel, 1, startDepthSlice, depthSliceCount);
 
         if ((_cachedRtvs.TryGetValue(key, out GorgonRenderTarget3DView view))
             && (view.Native is not null))

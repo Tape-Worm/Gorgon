@@ -80,9 +80,9 @@ internal class AudioPlayback
         _tokenSource = new CancellationTokenSource();
         _currentPlayback = Task.Run(() =>
                            {
-                               var stream = new Mm.SoundStream(File.Open(path, FileMode.Open, FileAccess.Read, FileShare.None));
+                               Mm.SoundStream stream = new(File.Open(path, FileMode.Open, FileAccess.Read, FileShare.None));
                                Mm.WaveFormat format = stream.Format;
-                               var buffer = new Xa.AudioBuffer
+                               Xa.AudioBuffer buffer = new()
                                {
                                    Stream = stream.ToDataStream(),
                                    AudioBytes = (int)stream.Length,
@@ -91,13 +91,13 @@ internal class AudioPlayback
 
                                stream.Close();
 
-                               var source = new Xa.SourceVoice(_audio, format);
+                               Xa.SourceVoice source = new(_audio, format);
                                source.SubmitSourceBuffer(buffer, stream.DecodedPacketsInfo);
                                source.Start();
 
                                try
                                {
-                                   var waiter = new SpinWait();
+                                   SpinWait waiter = new();
                                    while ((!_tokenSource.Token.IsCancellationRequested) && (!source.IsDisposed) && (source.State.BuffersQueued > 0))
                                    {
                                        waiter.SpinOnce();

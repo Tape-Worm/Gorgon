@@ -99,15 +99,15 @@ public sealed class GorgonGeometryShader
 
         int[] strideList = strides?.Take(4).ToArray() ?? [];
         // Clone the byte code just in case we decide to destroy the original.
-        var byteCode = new ShaderBytecode(D3DByteCode.Data);
+        ShaderBytecode byteCode = new(D3DByteCode.Data);
 
         Graphics.Log.Print($"Converting '{Name}' to Stream-Out.", LoggingLevel.Verbose);
 
-        var shader = new D3D11.GeometryShader(Graphics.D3DDevice, byteCode, streamOutLayout.Native, strideList, 0)
+        D3D11.GeometryShader shader = new(Graphics.D3DDevice, byteCode, streamOutLayout.Native, strideList, 0)
         {
             DebugName = $"{Name}_ID3D11GeometryShader (SO)"
         };
-        var result = new GorgonGeometryShader(Graphics, Name + " (SO)", IsDebug, byteCode, shader)
+        GorgonGeometryShader result = new(Graphics, Name + " (SO)", IsDebug, byteCode, shader)
         {
             StreamOutLayout = streamOutLayout
         };

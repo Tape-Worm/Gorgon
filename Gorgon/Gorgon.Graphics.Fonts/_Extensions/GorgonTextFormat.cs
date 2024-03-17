@@ -101,7 +101,7 @@ public static class GorgonTextFormat
                 continue;
             }
 
-            var kerning = new GorgonKerningPair(character, line[i + 1]);
+            GorgonKerningPair kerning = new(character, line[i + 1]);
 
             if (font.KerningPairs.TryGetValue(kerning, out int kernAmount))
             {
@@ -133,7 +133,7 @@ public static class GorgonTextFormat
             return string.Empty;
         }
 
-        var workingBuffer = new StringBuilder(renderText);
+        StringBuilder workingBuffer = new(renderText);
         tabSpacing = tabSpacing.Max(1);
 
         // Strip all carriage returns.
@@ -172,7 +172,7 @@ public static class GorgonTextFormat
             return text;
         }
 
-        var wordText = new StringBuilder(text);
+        StringBuilder wordText = new(text);
 
         if (!font.TryGetDefaultGlyph(out GorgonGlyph defaultGlyph))
         {

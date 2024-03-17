@@ -426,7 +426,7 @@ public sealed class GorgonGraphics
         Adapter4 resultAdapter;
         D3D11.Device5 resultDevice;
 
-        using (var factory2 = new Factory2(IsDebugEnabled))
+        using (Factory2 factory2 = new(IsDebugEnabled))
         {
             resultFactory = factory2.QueryInterface<Factory5>();
 
@@ -435,7 +435,7 @@ public sealed class GorgonGraphics
                                           : resultFactory.GetWarpAdapter());
             resultAdapter = adapter.QueryInterface<Adapter4>();
 
-            using var device = new D3D11.Device(resultAdapter, flags, requestedFeatureLevel)
+            using D3D11.Device device = new(resultAdapter, flags, requestedFeatureLevel)
             {
                 DebugName = $"'{adapterInfo.Name}' D3D {requestedFeatureLevel.D3DVersion()} {(adapterInfo.VideoDeviceType == VideoDeviceType.Software ? "Software Adapter" : "Adapter")}"
             };
@@ -456,12 +456,12 @@ public sealed class GorgonGraphics
     private IReadOnlyDictionary<BufferFormat, IGorgonFormatSupportInfo> EnumerateFormatSupport(D3D11.Device5 device)
     {
         IEnumerable<BufferFormat> formats = (BufferFormat[])Enum.GetValues(typeof(BufferFormat));
-        var result = new Dictionary<BufferFormat, IGorgonFormatSupportInfo>();
+        Dictionary<BufferFormat, IGorgonFormatSupportInfo> result = [];
 
         // Get support values for each format.
         foreach (BufferFormat format in formats)
         {
-            var dxgiFormat = (Format)format;
+            Format dxgiFormat = (Format)format;
 
             // NOTE: NV12 seems to come back as value of -92093664, no idea what the extra flags might be, the documentation for D3D doesn't
             //       specify the flags.
@@ -495,7 +495,7 @@ public sealed class GorgonGraphics
             return true;
         }
 
-        var cancelArgs = new CancelEventArgs();
+        CancelEventArgs cancelArgs = new();
         cancelHandler(this, cancelArgs);
 
         return !cancelArgs.Cancel;
@@ -520,7 +520,7 @@ public sealed class GorgonGraphics
             return rtvsUpdated;
         }
 
-        var cancelArgs = new CancelEventArgs();
+        CancelEventArgs cancelArgs = new();
         cancelHandler(this, cancelArgs);
 
         return !cancelArgs.Cancel;
@@ -550,7 +550,7 @@ public sealed class GorgonGraphics
             return dsvUpdated;
         }
 
-        var cancelArgs = new CancelEventArgs();
+        CancelEventArgs cancelArgs = new();
         cancelHandler(this, cancelArgs);
 
         return !cancelArgs.Cancel;

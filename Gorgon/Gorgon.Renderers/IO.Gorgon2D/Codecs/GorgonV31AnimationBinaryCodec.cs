@@ -181,7 +181,7 @@ public class GorgonV31AnimationBinaryCodec(Gorgon2D renderer)
         }
 
         using GorgonBinaryReader binReader = reader.OpenChunk(VersionData);
-        var fileVersion = new Version(binReader.ReadByte(), binReader.ReadByte());
+        Version fileVersion = new(binReader.ReadByte(), binReader.ReadByte());
         reader.CloseChunk();
 
         return Version.Equals(fileVersion);
@@ -411,7 +411,7 @@ public class GorgonV31AnimationBinaryCodec(Gorgon2D renderer)
     /// <param name="stream">The stream that will contain the animation.</param>
     protected override void OnSaveToStream(IGorgonAnimation animation, Stream stream)
     {
-        var writer = new GorgonChunkFileWriter(stream, CurrentFileHeader);
+        GorgonChunkFileWriter writer = new(stream, CurrentFileHeader);
         GorgonBinaryWriter binWriter = null;
 
         try
@@ -454,9 +454,9 @@ public class GorgonV31AnimationBinaryCodec(Gorgon2D renderer)
     /// <returns>The names of the texture associated with the animations, or an empty list if no textures were found.</returns>
     protected override IReadOnlyList<string> OnGetAssociatedTextureNames(Stream stream)
     {
-        var result = new List<string>();
+        List<string> result = [];
         GorgonBinaryReader binReader = null;
-        var reader = new GorgonChunkFileReader(stream,
+        GorgonChunkFileReader reader = new(stream,
                                                [
                                                    CurrentFileHeader
                                                ]);
@@ -524,9 +524,9 @@ public class GorgonV31AnimationBinaryCodec(Gorgon2D renderer)
     /// </remarks>
     protected override IGorgonAnimation OnReadFromStream(string name, Stream stream, int byteCount, IEnumerable<GorgonTexture2DView> textureOverrides)
     {
-        var builder = new GorgonAnimationBuilder();
+        GorgonAnimationBuilder builder = new();
 
-        var reader = new GorgonChunkFileReader(stream,
+        GorgonChunkFileReader reader = new(stream,
                                                [
                                                    CurrentFileHeader
                                                ]);

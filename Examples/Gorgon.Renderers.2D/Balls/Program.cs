@@ -151,7 +151,7 @@ static class Program
         // Generate balls.
         for (int i = start; i < _ballCount; i++)
         {
-            var ball = new Ball
+            Ball ball = new()
             {
                 Position = new Vector2(halfWidth - (_ball.Size.Width * 0.5f), halfHeight - (_ball.Size.Height * 0.5f)),
                 PositionDelta = new Vector2((GorgonRandom.RandomSingle() * _mainScreen.Width) - (halfWidth),
@@ -184,7 +184,7 @@ static class Program
         {
             Ball currentBall = _ballList[i];
 
-            var scaleData = Vector2.Multiply(currentBall.PositionDelta, frameTime);
+            Vector2 scaleData = Vector2.Multiply(currentBall.PositionDelta, frameTime);
             currentBall.Position = Vector2.Add(currentBall.Position, scaleData);
             currentBall.Scale += currentBall.ScaleDelta * frameTime;
             currentBall.Rotation += currentBall.RotationDelta * frameTime;
@@ -431,7 +431,7 @@ static class Program
                 // We should check, just in case.
                 if (output is not null)
                 {
-                    var mode = new GorgonVideoMode(_mainScreen.Width, _mainScreen.Height, _mainScreen.Format);
+                    GorgonVideoMode mode = new(_mainScreen.Width, _mainScreen.Height, _mainScreen.Format);
 
                     // Find the best video mode that matches the settings we've requested.
                     output.VideoModes.FindNearestVideoMode(output, in mode, out GorgonVideoMode actualMode);
@@ -538,8 +538,8 @@ static class Program
             // Assign event handlers.
             _window.KeyDown += Form_KeyDown;
 
-            var stateBuilder = new Gorgon2DBatchStateBuilder();
-            var blendStateBuilder = new GorgonBlendStateBuilder();
+            Gorgon2DBatchStateBuilder stateBuilder = new();
+            GorgonBlendStateBuilder blendStateBuilder = new();
 
             _blurBlend = stateBuilder.BlendState(blendStateBuilder.ResetTo(GorgonBlendState.Default)
                                                                   .SourceBlend(alpha: Blend.InverseDestinationAlpha)
@@ -668,7 +668,7 @@ static class Program
                         // Always check to ensure that we have an output (if we're in a RDP session, this will be NULL).
                         if (output is not null)
                         {
-                            var mode = new GorgonVideoMode(_window.ClientSize.Width, _window.ClientSize.Height, _mainScreen.Format);
+                            GorgonVideoMode mode = new(_window.ClientSize.Width, _window.ClientSize.Height, _mainScreen.Format);
                             _mainScreen.EnterFullScreen(in mode, output);
                         }
                     }

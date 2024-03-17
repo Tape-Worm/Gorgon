@@ -186,7 +186,7 @@ internal class SimpleRenderer
             return;
         }
 
-        var vertexShader = (GorgonVertexShader)shader;
+        GorgonVertexShader vertexShader = (GorgonVertexShader)shader;
 
         if (!ShaderCache.TryGetValue(mesh.Material.PixelShader, out shader))
         {
@@ -202,7 +202,7 @@ internal class SimpleRenderer
             _vertexLayout = GorgonInputLayout.CreateUsingType<GorgonVertexPosNormUvTangent>(_graphics, vertexShader);
         }
 
-        var pixelShader = (GorgonPixelShader)shader;
+        GorgonPixelShader pixelShader = (GorgonPixelShader)shader;
 
         GorgonPipelineState pipelineState = _stateBuilder.Clear()
                                                          .DepthStencilState(mesh.IsDepthWriteEnabled
@@ -348,7 +348,7 @@ internal class SimpleRenderer
                                                 }).GetView();
 
         // Initialize the constant buffers.
-        var emptyViewProjection = new ViewProjectionData
+        ViewProjectionData emptyViewProjection = new()
         {
             Projection = Matrix4x4.Identity,
             View = Matrix4x4.Identity,
@@ -356,7 +356,7 @@ internal class SimpleRenderer
         };
         Matrix4x4 emptyWorld = Matrix4x4.Identity;
 
-        var emptyMaterial = new Material
+        Material emptyMaterial = new()
         {
             SpecularPower = 1.0f,
             UVOffset = Vector2.Zero
@@ -373,7 +373,7 @@ internal class SimpleRenderer
     /// </summary>
     private void UpdateMaterials(MeshMaterial material)
     {
-        var materialData = new Material
+        Material materialData = new()
         {
             UVOffset = material.TextureOffset,
             SpecularPower = material.SpecularPower
@@ -403,7 +403,7 @@ internal class SimpleRenderer
                 _cameraBuffer.Buffer.SetData(Camera.Position);
             }
 
-            var viewProjData = new ViewProjectionData
+            ViewProjectionData viewProjData = new()
             {
                 Projection = Camera.GetProjectionMatrix(),
                 View = Camera.GetViewMatrix()
@@ -482,7 +482,7 @@ internal class SimpleRenderer
         _aabbVisual = new GorgonAABBVisual(_graphics);
         _drawBuilder = new GorgonDrawIndexCallBuilder();
         _stateBuilder = new GorgonPipelineStateBuilder(_graphics);
-        var sampleBuilder = new GorgonSamplerStateBuilder(_graphics);
+        GorgonSamplerStateBuilder sampleBuilder = new(_graphics);
         _defaultSampler = sampleBuilder.Wrapping(TextureWrap.Wrap, TextureWrap.Wrap).Build();
 
         TextureCache = new Dictionary<string, GorgonTexture2DView>(StringComparer.Ordinal);

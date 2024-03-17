@@ -249,7 +249,7 @@ internal partial class ContentPreviewPanel
 
         _renderer.Begin();
 
-        var halfClient = new Vector2(ClientSize.Width / 2.0f, ClientSize.Height / 2.0f);
+        Vector2 halfClient = new(ClientSize.Width / 2.0f, ClientSize.Height / 2.0f);
         float scale = ((float)ClientSize.Width / image.Width).Min((float)ClientSize.Height / image.Height);
         float width = image.Width * scale;
         float height = image.Height * scale;

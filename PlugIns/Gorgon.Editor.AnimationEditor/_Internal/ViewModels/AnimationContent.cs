@@ -1288,7 +1288,7 @@ internal class AnimationContent
             return Task.CompletedTask;
         }
 
-        var filteredTracks = new List<ITrack>(tracks);
+        List<ITrack> filteredTracks = new(tracks);
 
         removeTrackUndoArgs = new RemoveTrackUndoRedoData
         {
@@ -1423,7 +1423,7 @@ internal class AnimationContent
                 return;
             }
 
-            var selected = new List<TrackKeySelection>();
+            List<TrackKeySelection> selected = [];
 
             for (int i = 0; i < args.Count; ++i)
             {
@@ -1435,7 +1435,7 @@ internal class AnimationContent
                     continue;
                 }
 
-                var keySelection = new TrackKeySelection.KeySelection[keyIndices.Count];
+                TrackKeySelection.KeySelection[] keySelection = new TrackKeySelection.KeySelection[keyIndices.Count];
 
                 for (int j = 0; j < keyIndices.Count; ++j)
                 {
@@ -1807,14 +1807,14 @@ internal class AnimationContent
     /// <returns><b>true</b> if the properties can be updated, <b>false</b> if not.</returns>
     private bool CanUpdateAnimationProperties()
     {
-#pragma warning disable IDE0046 // Convert to conditional expression
+
         if ((_primarySprite.sprite is null) || (_currentPanel != Properties))
         {
             return false;
         }
 
         return ((!Length.EqualsEpsilon(Properties.Length)) || (!Fps.EqualsEpsilon(Properties.Fps)) || (IsLooping != Properties.IsLooped) || (_animation.LoopCount != Properties.LoopCount));
-#pragma warning restore IDE0046 // Convert to conditional expression
+
 
     }
 
@@ -1835,7 +1835,7 @@ internal class AnimationContent
         // Function to store the track key frames for recall.
         Dictionary<ITrack, List<IKeyFrame>> StoreKeyframes()
         {
-            var result = new Dictionary<ITrack, List<IKeyFrame>>();
+            Dictionary<ITrack, List<IKeyFrame>> result = [];
 
             for (int i = 0; i < Tracks.Count; ++i)
             {

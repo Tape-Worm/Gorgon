@@ -73,8 +73,8 @@ public class GorgonV3PolySpriteJsonCodec(Gorgon2D renderer)
     /// <returns>The data as a JSON.Net object.</returns>
     private static JsonReader GetJsonReader(Stream stream)
     {
-        var reader = new StreamReader(stream, Encoding.UTF8, true, 1024, true);
-        var jsonReader = new JsonTextReader(reader)
+        StreamReader reader = new(stream, Encoding.UTF8, true, 1024, true);
+        JsonTextReader jsonReader = new(reader)
         {
             CloseInput = true
         };
@@ -129,8 +129,8 @@ public class GorgonV3PolySpriteJsonCodec(Gorgon2D renderer)
     /// <returns>A new <see cref="GorgonPolySprite"/>.</returns>
     protected override GorgonPolySprite OnReadFromStream(Stream stream, int byteCount, GorgonTexture2DView overrideTexture)
     {
-        using var wrappedStream = new GorgonStreamWrapper(stream, stream.Position, byteCount, false);
-        using var reader = new StreamReader(wrappedStream, Encoding.UTF8, true, 80192, true);
+        using GorgonStreamWrapper wrappedStream = new(stream, stream.Position, byteCount, false);
+        using StreamReader reader = new(wrappedStream, Encoding.UTF8, true, 80192, true);
         string jsonString = reader.ReadToEnd();
         return FromJson(Renderer, overrideTexture, jsonString);
     }
@@ -142,7 +142,7 @@ public class GorgonV3PolySpriteJsonCodec(Gorgon2D renderer)
     /// <param name="stream">The stream that will contain the sprite.</param>
     protected override void OnSaveToStream(GorgonPolySprite sprite, Stream stream)
     {
-        using var writer = new StreamWriter(stream, Encoding.UTF8, 1024, true);
+        using StreamWriter writer = new(stream, Encoding.UTF8, 1024, true);
         writer.Write(sprite.ToJson());
     }
 
@@ -234,7 +234,7 @@ public class GorgonV3PolySpriteJsonCodec(Gorgon2D renderer)
         }
 
         // Set up serialization so we can convert our more complicated structures.
-        var serializer = new JsonSerializer
+        JsonSerializer serializer = new()
         {
             CheckAdditionalContent = false
         };
@@ -249,7 +249,7 @@ public class GorgonV3PolySpriteJsonCodec(Gorgon2D renderer)
         serializer.Converters.Add(new VersionConverter());
 
         // Parse the string so we can extract our header/version for comparison.
-        var jobj = JObject.Parse(json);
+        JObject jobj = JObject.Parse(json);
         ulong jsonID = jobj[GorgonSpriteExtensions.JsonHeaderProp].Value<ulong>();
         Version jsonVersion = jobj[GorgonSpriteExtensions.JsonVersionProp].ToObject<Version>(serializer);
 
@@ -268,13 +268,13 @@ public class GorgonV3PolySpriteJsonCodec(Gorgon2D renderer)
         // We have to rebuild the sprite because it's only data at this point and we need to build up its vertex/index buffers before we can render it.
         if (workingSpriteData.Indices.Count == 0)
         {
-            var builder = new GorgonPolySpriteBuilder(renderer);
+            GorgonPolySpriteBuilder builder = new(renderer);
             builder.ResetTo(workingSpriteData);
 
             return builder.Build();
         }
 
-        var result = GorgonPolySprite.Create(renderer, workingSpriteData.Vertices, workingSpriteData.Indices);
+        GorgonPolySprite result = GorgonPolySprite.Create(renderer, workingSpriteData.Vertices, workingSpriteData.Indices);
         result.Anchor = workingSpriteData.Anchor;
         result.AlphaTest = workingSpriteData.AlphaTest;
         result.Texture = workingSpriteData.Texture;

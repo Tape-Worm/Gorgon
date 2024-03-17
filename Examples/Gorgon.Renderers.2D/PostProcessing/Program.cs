@@ -151,7 +151,7 @@ static class Program
         {
             Drawing.Point cursorPosition = _screen.Window.PointToClient(Cursor.Position);
 
-            var pos = new DX.RectangleF(cursorPosition.X - _dragOffset.X, cursorPosition.Y - _dragOffset.Y, _dragButton.Bounds.Width, _dragButton.Bounds.Height);
+            DX.RectangleF pos = new(cursorPosition.X - _dragOffset.X, cursorPosition.Y - _dragOffset.Y, _dragButton.Bounds.Width, _dragButton.Bounds.Height);
             _renderer.DrawFilledRectangle(pos, _dragButton.BackColor);
             _renderer.DrawString(_dragButton.Text, new Vector2(pos.Left, pos.Top), color: _dragButton.ForeColor);
         }
@@ -215,7 +215,7 @@ static class Program
     private static void LayoutGUI()
     {
         float maxWidth = 0;
-        var position = new Vector2(0, 70);
+        Vector2 position = new(0, 70);
 
         for (int i = 0; i < _buttons.Length; ++i)
         {
@@ -247,7 +247,7 @@ static class Program
     /// <param name="e">The <see cref="EventArgs" /> instance containing the event data.</param>
     private static void Button_Click(object sender, EventArgs e)
     {
-        var button = (Button)sender;
+        Button button = (Button)sender;
         button.Pass.Enabled = !button.Pass.Enabled;
     }
 
@@ -344,11 +344,11 @@ static class Program
                                                   texture,
                                                   new DX.RectangleF(0, 0, 1, 1));
 
-                       var midPoint = new Vector2(target.Width * 0.5f, target.Height * 0.5f);
+                       Vector2 midPoint = new(target.Width * 0.5f, target.Height * 0.5f);
 
                        for (int i = 160; i >= 100; --i)
                        {
-                           var region = new DX.RectangleF(midPoint.X - i * 0.5f, midPoint.Y - i * 0.5f, i, i);
+                           DX.RectangleF region = new(midPoint.X - i * 0.5f, midPoint.Y - i * 0.5f, i, i);
 
                            renderer.DrawFilledEllipse(region, GorgonColor.Lerp(GorgonColor.RedPure, GorgonColor.YellowPure, 1.0f - ((i - 100) / 60.0f)));
                        }
@@ -414,7 +414,7 @@ static class Program
             GorgonExample.LoadResources(_graphics);
 
             // Load the Gorgon logo to show in the lower right corner.
-            var ddsCodec = new GorgonCodecDds();
+            GorgonCodecDds ddsCodec = new();
 
             // Import the images we'll use in our post process chain.
             if (!LoadImageFiles(ddsCodec))
@@ -482,7 +482,7 @@ static class Program
 
             if (_dragButton is not null)
             {
-                var dragPosition = new DX.RectangleF(e.X - _dragOffset.X, e.Y - _dragOffset.Y, _dragButton.Bounds.Width, _dragButton.Bounds.Height);
+                DX.RectangleF dragPosition = new(e.X - _dragOffset.X, e.Y - _dragOffset.Y, _dragButton.Bounds.Width, _dragButton.Bounds.Height);
 
                 if ((!button.Bounds.Intersects(dragPosition)) || (targetAcquired))
                 {
@@ -526,7 +526,7 @@ static class Program
 
         if (_dragButton is not null)
         {
-            var dragPosition = new DX.RectangleF(e.X - _dragOffset.X, e.Y - _dragOffset.Y, _dragButton.Bounds.Width, _dragButton.Bounds.Height);
+            DX.RectangleF dragPosition = new(e.X - _dragOffset.X, e.Y - _dragOffset.Y, _dragButton.Bounds.Width, _dragButton.Bounds.Height);
             int index = -1;
             for (int i = 0; i < _buttons.Length; ++i)
             {

@@ -76,7 +76,7 @@ internal static class Program
             _log.Print("In new idle loop.", LoggingLevel.All);
         }
 
-        var form = (FormMain)GorgonApplication.ApplicationContext.MainForm;     // Get our main form from the context.
+        FormMain form = (FormMain)GorgonApplication.ApplicationContext.MainForm;     // Get our main form from the context.
 
         // Draw some bars every 16 ms.
         if ((GorgonTiming.MillisecondsSinceStart - _lastTime) >= 16.6f)
@@ -141,7 +141,7 @@ internal static class Program
             _log.Print("In primary idle loop.", LoggingLevel.All);
         }
 
-        var form = (FormMain)GorgonApplication.ApplicationContext.MainForm;     // Get our main form from the context.
+        FormMain form = (FormMain)GorgonApplication.ApplicationContext.MainForm;     // Get our main form from the context.
 
         int x = _rnd.Next(0, form.GraphicsSize.Width - 1);
         int y = _rnd.Next(0, form.GraphicsSize.Height - 1);

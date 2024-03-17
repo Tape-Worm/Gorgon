@@ -175,7 +175,7 @@ public class GorgonSelectablePanel
     /// <param name="m">The Windows <see cref="Message" /> to process.</param>
     protected override void WndProc(ref Message m)
     {
-        var message = (WindowMessages)m.Msg;
+        WindowMessages message = (WindowMessages)m.Msg;
 
         switch (message)
         {

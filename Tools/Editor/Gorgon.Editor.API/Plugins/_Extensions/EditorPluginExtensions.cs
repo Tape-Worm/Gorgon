@@ -67,7 +67,7 @@ public static class EditorPlugInExtensions
             throw new ArgumentNullException(nameof(pluginAssemblyFiles));
         }
 
-        var records = new List<PlugInAssemblyState>();
+        List<PlugInAssemblyState> records = [];
 
         // We use this to determine whether the plug in can be loaded into the current platform.
         AssemblyPlatformType currentPlatform = Environment.Is64BitProcess ? AssemblyPlatformType.x64 : AssemblyPlatformType.x86;

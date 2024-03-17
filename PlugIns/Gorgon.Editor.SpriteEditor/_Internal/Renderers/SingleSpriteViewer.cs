@@ -137,7 +137,7 @@ internal class SingleSpriteViewer
     /// <remarks>Developers can override this method to render a custom background.</remarks>
     protected override void OnRenderBackground()
     {
-        var textureSize = new DX.RectangleF(0, 0, RenderRegion.Width / BackgroundPattern.Width * Camera.Zoom.X, RenderRegion.Height / BackgroundPattern.Height * Camera.Zoom.X);
+        DX.RectangleF textureSize = new(0, 0, RenderRegion.Width / BackgroundPattern.Width * Camera.Zoom.X, RenderRegion.Height / BackgroundPattern.Height * Camera.Zoom.X);
 
         Renderer.Begin(camera: Camera);
         Renderer.DrawFilledRectangle(new DX.RectangleF(RenderRegion.Width * -0.5f, RenderRegion.Height * -0.5f, RenderRegion.Width, RenderRegion.Height), new GorgonColor(GorgonColor.White, TextureOpacity), BackgroundPattern, textureSize);
@@ -154,7 +154,7 @@ internal class SingleSpriteViewer
     {
         base.DrawSprite();
 
-        var halfRegion = new Vector2(DataContext.Texture.Width * -0.5f, DataContext.Texture.Height * -0.5f);
+        Vector2 halfRegion = new(DataContext.Texture.Width * -0.5f, DataContext.Texture.Height * -0.5f);
 
 
         Renderer.Begin(camera: Camera);

@@ -345,7 +345,6 @@ public class GorgonAnimationBuilder
             throw new ArgumentNullException(nameof(name));
         }
 
-#pragma warning disable IDE0046 // Convert to conditional expression
         if (string.IsNullOrWhiteSpace(name))
         {
             throw new ArgumentEmptyException(nameof(name));
@@ -354,7 +353,6 @@ public class GorgonAnimationBuilder
         return !_singleTracks.Remove(name)
             ? throw new KeyNotFoundException(string.Format(Resources.GORANM_TRACK_DOES_NOT_EXIST, name))
             : this;
-#pragma warning restore IDE0046 // Convert to conditional expression
     }
 
 
@@ -373,8 +371,6 @@ public class GorgonAnimationBuilder
             throw new ArgumentNullException(nameof(name));
         }
 
-#pragma warning disable IDE0046 // Convert to conditional expression
-
         if (string.IsNullOrWhiteSpace(name))
         {
             throw new ArgumentEmptyException(nameof(name));
@@ -383,8 +379,6 @@ public class GorgonAnimationBuilder
         return !_vector2Tracks.Remove(name)
             ? throw new KeyNotFoundException(string.Format(Resources.GORANM_TRACK_DOES_NOT_EXIST, name))
             : this;
-#pragma warning restore IDE0046 // Convert to conditional expression
-
     }
 
     /// <summary>
@@ -402,8 +396,6 @@ public class GorgonAnimationBuilder
             throw new ArgumentNullException(nameof(name));
         }
 
-#pragma warning disable IDE0046 // Convert to conditional expression
-
         if (string.IsNullOrWhiteSpace(name))
         {
             throw new ArgumentEmptyException(nameof(name));
@@ -412,8 +404,6 @@ public class GorgonAnimationBuilder
         return !_vector3Tracks.Remove(name)
             ? throw new KeyNotFoundException(string.Format(Resources.GORANM_TRACK_DOES_NOT_EXIST, name))
             : this;
-#pragma warning restore IDE0046 // Convert to conditional expression
-
     }
 
     /// <summary>
@@ -431,8 +421,6 @@ public class GorgonAnimationBuilder
             throw new ArgumentNullException(nameof(name));
         }
 
-#pragma warning disable IDE0046 // Convert to conditional expression
-
         if (string.IsNullOrWhiteSpace(name))
         {
             throw new ArgumentEmptyException(nameof(name));
@@ -441,8 +429,6 @@ public class GorgonAnimationBuilder
         return !_vector4Tracks.Remove(name)
             ? throw new KeyNotFoundException(string.Format(Resources.GORANM_TRACK_DOES_NOT_EXIST, name))
             : this;
-#pragma warning restore IDE0046 // Convert to conditional expression
-
     }
 
     /// <summary>
@@ -460,8 +446,6 @@ public class GorgonAnimationBuilder
             throw new ArgumentNullException(nameof(name));
         }
 
-#pragma warning disable IDE0046 // Convert to conditional expression
-
         if (string.IsNullOrWhiteSpace(name))
         {
             throw new ArgumentEmptyException(nameof(name));
@@ -470,8 +454,6 @@ public class GorgonAnimationBuilder
         return !_quatTracks.Remove(name)
             ? throw new KeyNotFoundException(string.Format(Resources.GORANM_TRACK_DOES_NOT_EXIST, name))
             : this;
-#pragma warning restore IDE0046 // Convert to conditional expression
-
     }
 
     /// <summary>
@@ -489,8 +471,6 @@ public class GorgonAnimationBuilder
             throw new ArgumentNullException(nameof(name));
         }
 
-#pragma warning disable IDE0046 // Convert to conditional expression
-
         if (string.IsNullOrWhiteSpace(name))
         {
             throw new ArgumentEmptyException(nameof(name));
@@ -499,8 +479,6 @@ public class GorgonAnimationBuilder
         return !_rectangleTracks.Remove(name)
             ? throw new KeyNotFoundException(string.Format(Resources.GORANM_TRACK_DOES_NOT_EXIST, name))
             : this;
-#pragma warning restore IDE0046 // Convert to conditional expression
-
     }
 
     /// <summary>
@@ -518,8 +496,6 @@ public class GorgonAnimationBuilder
             throw new ArgumentNullException(nameof(name));
         }
 
-#pragma warning disable IDE0046 // Convert to conditional expression
-
         if (string.IsNullOrWhiteSpace(name))
         {
             throw new ArgumentEmptyException(nameof(name));
@@ -528,8 +504,6 @@ public class GorgonAnimationBuilder
         return !_colorTracks.Remove(name)
             ? throw new KeyNotFoundException(string.Format(Resources.GORANM_TRACK_DOES_NOT_EXIST, name))
             : this;
-#pragma warning restore IDE0046 // Convert to conditional expression
-
     }
 
     /// <summary>
@@ -547,8 +521,6 @@ public class GorgonAnimationBuilder
             throw new ArgumentNullException(nameof(name));
         }
 
-#pragma warning disable IDE0046 // Convert to conditional expression
-
         if (string.IsNullOrWhiteSpace(name))
         {
             throw new ArgumentEmptyException(nameof(name));
@@ -557,7 +529,6 @@ public class GorgonAnimationBuilder
         return !_textureTracks.Remove(name)
             ? throw new KeyNotFoundException(string.Format(Resources.GORANM_TRACK_DOES_NOT_EXIST, name))
             : this;
-#pragma warning restore IDE0046 // Convert to conditional expression
     }
 
     /// <summary>
@@ -604,14 +575,14 @@ public class GorgonAnimationBuilder
             return keyTime.EqualsEpsilon(newTime) ? keyTime : newTime;
         }
 
-        var singles = new Dictionary<string, IGorgonAnimationTrack<GorgonKeySingle>>(StringComparer.OrdinalIgnoreCase);
-        var vec2 = new Dictionary<string, IGorgonAnimationTrack<GorgonKeyVector2>>(StringComparer.OrdinalIgnoreCase);
-        var vec3 = new Dictionary<string, IGorgonAnimationTrack<GorgonKeyVector3>>(StringComparer.OrdinalIgnoreCase);
-        var vec4 = new Dictionary<string, IGorgonAnimationTrack<GorgonKeyVector4>>(StringComparer.OrdinalIgnoreCase);
-        var quat = new Dictionary<string, IGorgonAnimationTrack<GorgonKeyQuaternion>>(StringComparer.OrdinalIgnoreCase);
-        var rect = new Dictionary<string, IGorgonAnimationTrack<GorgonKeyRectangle>>(StringComparer.OrdinalIgnoreCase);
-        var color = new Dictionary<string, IGorgonAnimationTrack<GorgonKeyGorgonColor>>(StringComparer.OrdinalIgnoreCase);
-        var texture = new Dictionary<string, IGorgonAnimationTrack<GorgonKeyTexture2D>>(StringComparer.OrdinalIgnoreCase);
+        Dictionary<string, IGorgonAnimationTrack<GorgonKeySingle>> singles = new(StringComparer.OrdinalIgnoreCase);
+        Dictionary<string, IGorgonAnimationTrack<GorgonKeyVector2>> vec2 = new(StringComparer.OrdinalIgnoreCase);
+        Dictionary<string, IGorgonAnimationTrack<GorgonKeyVector3>> vec3 = new(StringComparer.OrdinalIgnoreCase);
+        Dictionary<string, IGorgonAnimationTrack<GorgonKeyVector4>> vec4 = new(StringComparer.OrdinalIgnoreCase);
+        Dictionary<string, IGorgonAnimationTrack<GorgonKeyQuaternion>> quat = new(StringComparer.OrdinalIgnoreCase);
+        Dictionary<string, IGorgonAnimationTrack<GorgonKeyRectangle>> rect = new(StringComparer.OrdinalIgnoreCase);
+        Dictionary<string, IGorgonAnimationTrack<GorgonKeyGorgonColor>> color = new(StringComparer.OrdinalIgnoreCase);
+        Dictionary<string, IGorgonAnimationTrack<GorgonKeyTexture2D>> texture = new(StringComparer.OrdinalIgnoreCase);
 
         foreach (KeyValuePair<string, TrackKeyBuilder<GorgonKeySingle>> builder in _singleTracks)
         {
@@ -770,7 +741,7 @@ public class GorgonAnimationBuilder
 
         foreach (KeyValuePair<string, IGorgonAnimationTrack<GorgonKeySingle>> track in builderObject.SingleTracks)
         {
-            var trackBuilder = new TrackKeyBuilder<GorgonKeySingle>(this);
+            TrackKeyBuilder<GorgonKeySingle> trackBuilder = new(this);
             trackBuilder.SetInterpolationMode(track.Value.InterpolationMode);
             trackBuilder.Enabled();
             trackBuilder.Keys.AddRange(track.Value.KeyFrames.Select(item => new GorgonKeySingle(item)));
@@ -779,7 +750,7 @@ public class GorgonAnimationBuilder
 
         foreach (KeyValuePair<string, IGorgonAnimationTrack<GorgonKeyVector2>> track in builderObject.Vector2Tracks)
         {
-            var trackBuilder = new TrackKeyBuilder<GorgonKeyVector2>(this);
+            TrackKeyBuilder<GorgonKeyVector2> trackBuilder = new(this);
             trackBuilder.SetInterpolationMode(track.Value.InterpolationMode);
             trackBuilder.Enabled();
             trackBuilder.Keys.AddRange(track.Value.KeyFrames.Select(item => new GorgonKeyVector2(item)));
@@ -788,7 +759,7 @@ public class GorgonAnimationBuilder
 
         foreach (KeyValuePair<string, IGorgonAnimationTrack<GorgonKeyVector3>> track in builderObject.Vector3Tracks)
         {
-            var trackBuilder = new TrackKeyBuilder<GorgonKeyVector3>(this);
+            TrackKeyBuilder<GorgonKeyVector3> trackBuilder = new(this);
             trackBuilder.SetInterpolationMode(track.Value.InterpolationMode);
             trackBuilder.Enabled();
             trackBuilder.Keys.AddRange(track.Value.KeyFrames.Select(item => new GorgonKeyVector3(item)));
@@ -797,7 +768,7 @@ public class GorgonAnimationBuilder
 
         foreach (KeyValuePair<string, IGorgonAnimationTrack<GorgonKeyVector4>> track in builderObject.Vector4Tracks)
         {
-            var trackBuilder = new TrackKeyBuilder<GorgonKeyVector4>(this);
+            TrackKeyBuilder<GorgonKeyVector4> trackBuilder = new(this);
             trackBuilder.SetInterpolationMode(track.Value.InterpolationMode);
             trackBuilder.Enabled();
             trackBuilder.Keys.AddRange(track.Value.KeyFrames.Select(item => new GorgonKeyVector4(item)));
@@ -806,7 +777,7 @@ public class GorgonAnimationBuilder
 
         foreach (KeyValuePair<string, IGorgonAnimationTrack<GorgonKeyQuaternion>> track in builderObject.QuaternionTracks)
         {
-            var trackBuilder = new TrackKeyBuilder<GorgonKeyQuaternion>(this);
+            TrackKeyBuilder<GorgonKeyQuaternion> trackBuilder = new(this);
             trackBuilder.SetInterpolationMode(track.Value.InterpolationMode);
             trackBuilder.Enabled();
             trackBuilder.Keys.AddRange(track.Value.KeyFrames.Select(item => new GorgonKeyQuaternion(item)));
@@ -815,7 +786,7 @@ public class GorgonAnimationBuilder
 
         foreach (KeyValuePair<string, IGorgonAnimationTrack<GorgonKeyRectangle>> track in builderObject.RectangleTracks)
         {
-            var trackBuilder = new TrackKeyBuilder<GorgonKeyRectangle>(this);
+            TrackKeyBuilder<GorgonKeyRectangle> trackBuilder = new(this);
             trackBuilder.SetInterpolationMode(track.Value.InterpolationMode);
             trackBuilder.Enabled();
             trackBuilder.Keys.AddRange(track.Value.KeyFrames.Select(item => new GorgonKeyRectangle(item)));
@@ -824,7 +795,7 @@ public class GorgonAnimationBuilder
 
         foreach (KeyValuePair<string, IGorgonAnimationTrack<GorgonKeyGorgonColor>> track in builderObject.ColorTracks)
         {
-            var trackBuilder = new TrackKeyBuilder<GorgonKeyGorgonColor>(this);
+            TrackKeyBuilder<GorgonKeyGorgonColor> trackBuilder = new(this);
             trackBuilder.SetInterpolationMode(track.Value.InterpolationMode);
             trackBuilder.Enabled();
             trackBuilder.Keys.AddRange(track.Value.KeyFrames.Select(item => new GorgonKeyGorgonColor(item)));
@@ -833,7 +804,7 @@ public class GorgonAnimationBuilder
 
         foreach (KeyValuePair<string, IGorgonAnimationTrack<GorgonKeyTexture2D>> track in builderObject.Texture2DTracks)
         {
-            var trackBuilder = new TrackKeyBuilder<GorgonKeyTexture2D>(this);
+            TrackKeyBuilder<GorgonKeyTexture2D> trackBuilder = new(this);
             trackBuilder.SetInterpolationMode(track.Value.InterpolationMode);
             trackBuilder.Enabled();
             trackBuilder.Keys.AddRange(track.Value.KeyFrames.Select(item => new GorgonKeyTexture2D(item)));

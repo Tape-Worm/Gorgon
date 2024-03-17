@@ -79,14 +79,14 @@ internal class ProjectManager(FileSystemProviders providers, IGorgonLog log)
     /// <returns>The required folders for the project.</returns>
     private (DirectoryInfo workspace, DirectoryInfo fileSystemDir, DirectoryInfo tempDir, DirectoryInfo srcDir) SetupProjectFolders(string basePath)
     {
-        var workspace = new DirectoryInfo(basePath);
+        DirectoryInfo workspace = new(basePath);
 
         workspace.Create();
         workspace.Refresh();
 
-        var fileSystemDir = new DirectoryInfo(Path.Combine(workspace.FullName, FileSystemDirectoryName));
-        var tempDir = new DirectoryInfo(Path.Combine(workspace.FullName, TemporaryDirectoryName));
-        var srcDir = new DirectoryInfo(Path.Combine(workspace.FullName, SourceDirectoryName));
+        DirectoryInfo fileSystemDir = new(Path.Combine(workspace.FullName, FileSystemDirectoryName));
+        DirectoryInfo tempDir = new(Path.Combine(workspace.FullName, TemporaryDirectoryName));
+        DirectoryInfo srcDir = new(Path.Combine(workspace.FullName, SourceDirectoryName));
 
         tempDir.Create();
         fileSystemDir.Create();
@@ -239,14 +239,13 @@ internal class ProjectManager(FileSystemProviders providers, IGorgonLog log)
         }
 
         // Copy all files into the directories we just created.
-        var files = fileSystem.FindFiles("/", "*")
+        List<IGorgonVirtualFile> files = [.. fileSystem.FindFiles("/", "*")
                             .Where(item => item != metaData)
-                            .OrderByDescending(item => item.Size)
-                            .ToList();
+                            .OrderByDescending(item => item.Size)];
 
         int maxJobCount = (Environment.ProcessorCount * 2).Min(32).Max(1);
         int filesPerJob = (int)((float)files.Count / maxJobCount).FastCeiling();
-        var jobs = new List<Task>();
+        List<Task> jobs = [];
 
         if ((files.Count <= 100) || (maxJobCount < 2))
         {
@@ -267,12 +266,12 @@ internal class ProjectManager(FileSystemProviders providers, IGorgonLog log)
             }
         }
 
-        var buffers = new List<byte[]>(files.Count);
+        List<byte[]> buffers = new(files.Count);
 
         // Build up the tasks for our jobs.
         while (files.Count > 0)
         {
-            var jobData = new FileCopyJob
+            FileCopyJob jobData = new()
             {
                 ReadBuffer = ArrayPool<byte>.Shared.Rent(blockSize)
             };
@@ -338,8 +337,8 @@ internal class ProjectManager(FileSystemProviders providers, IGorgonLog log)
     /// <exception cref="GorgonException">Thrown if the project was not a valid editor project.</exception>
     private string GetVersion(string metaDataFile, string location)
     {
-        using var reader = new StreamReader(metaDataFile, Encoding.UTF8);
-        using var jsonReader = new JsonTextReader(reader);
+        using StreamReader reader = new(metaDataFile, Encoding.UTF8);
+        using JsonTextReader jsonReader = new(reader);
         // First property must be the version #.
         if ((!jsonReader.Read()) || (!jsonReader.Read()))
         {
@@ -372,7 +371,7 @@ internal class ProjectManager(FileSystemProviders providers, IGorgonLog log)
 
         string projectVersion = GetVersion(metaDataFile, location);
 
-        using (var reader = new StreamReader(metaDataFile, Encoding.UTF8))
+        using (StreamReader reader = new(metaDataFile, Encoding.UTF8))
         {
             string readJsonData = reader.ReadToEnd();
 
@@ -593,7 +592,7 @@ internal class ProjectManager(FileSystemProviders providers, IGorgonLog log)
 
         string metadataFile = Path.Combine(projectWorkspace.FullName, CommonEditorConstants.EditorMetadataFileName);
 
-        var result = new Project(projectWorkspace, projectTemp, projectFileSystem, projectSource);
+        Project result = new(projectWorkspace, projectTemp, projectFileSystem, projectSource);
 
         BuildMetadataDatabase(result, metadataFile);
 
@@ -666,7 +665,7 @@ internal class ProjectManager(FileSystemProviders providers, IGorgonLog log)
 
         try
         {
-            var excludedPaths = new List<(string virtDir, string physDir)>();
+            List<(string virtDir, string physDir)> excludedPaths = [];
 
             foreach (KeyValuePair<string, ProjectItemMetadata> metaData in project.ProjectItems)
             {
@@ -819,7 +818,7 @@ internal class ProjectManager(FileSystemProviders providers, IGorgonLog log)
             _log.Print("No metadata file exists. A new one will be created.", LoggingLevel.Verbose);
 
             // Create a dummy project, so we have something to serialize.
-            var dummyProject = new Project(new DirectoryInfo(workspace), tempDir, fsDir, srcDir);
+            Project dummyProject = new(new DirectoryInfo(workspace), tempDir, fsDir, srcDir);
 
             // If we have v2 meatdata, upgrade the file.
             string v2Metadata = Path.Combine(fsDir.FullName, V2MetadataImporter.V2MetadataFilename);
@@ -830,7 +829,7 @@ internal class ProjectManager(FileSystemProviders providers, IGorgonLog log)
                 return false;
             }
 
-            var importer = new V2MetadataImporter(v2Metadata, _log);
+            V2MetadataImporter importer = new(v2Metadata, _log);
             importer.Import(dummyProject);
             PersistMetadata(dummyProject, CancellationToken.None);
 

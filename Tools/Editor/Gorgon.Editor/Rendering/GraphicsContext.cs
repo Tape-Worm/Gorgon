@@ -160,7 +160,7 @@ internal class GraphicsContext
             _swapChainLeases.Remove(control.Name);
         }
 
-        var resultSwap = new GorgonSwapChain(Graphics, control,
+        GorgonSwapChain resultSwap = new(Graphics, control,
                                                          new GorgonSwapChainInfo(control.ClientSize.Width, control.ClientSize.Height, BufferFormat.R8G8B8A8_UNorm)
                                                          {
                                                              Name = $"{control.Name} Swap Chain"
@@ -189,9 +189,9 @@ internal class GraphicsContext
         // Choose the adapter with the highest feature level.
         IGorgonVideoAdapterInfo adapter = adapters.OrderByDescending(item => item.FeatureSet).First();
 
-        var graphics = new GorgonGraphics(adapter, log: log);
-        var fontFactory = new GorgonFontFactory(graphics);
-        var blitter = new GorgonTextureBlitter(graphics);
+        GorgonGraphics graphics = new(adapter, log: log);
+        GorgonFontFactory fontFactory = new(graphics);
+        GorgonTextureBlitter blitter = new(graphics);
 
         return new GraphicsContext(graphics, blitter, fontFactory);
     }

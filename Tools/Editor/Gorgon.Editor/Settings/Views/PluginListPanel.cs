@@ -96,7 +96,7 @@ internal partial class PlugInListPanel
 
             foreach (ISettingsPlugInListItem item in dataContext.PlugIns)
             {
-                var listItem = new ListViewItem()
+                ListViewItem listItem = new()
                 {
                     Name = item.Name,
                     Text = item.Name

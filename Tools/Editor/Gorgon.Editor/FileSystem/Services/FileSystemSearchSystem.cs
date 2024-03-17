@@ -69,7 +69,7 @@ internal class FileSystemSearchSystem(IDirectory rootDirectory)
     /// <returns>A tuple containing the type of keyword, the keyword value, and the search string.</returns>
     private (string keyword, string value, string search) ParseSearchString(string searchText)
     {
-        var searchKeyword = new KeyValuePair<string, string>(string.Empty, string.Empty);
+        KeyValuePair<string, string> searchKeyword = new(string.Empty, string.Empty);
 
         foreach (KeyValuePair<string, string> keyword in _searchKeywords)
         {
@@ -313,7 +313,7 @@ internal class FileSystemSearchSystem(IDirectory rootDirectory)
         (SearchMode mode, string modeSearchText) = ExtractSearchMode(string.IsNullOrWhiteSpace(searchText) ? keywordValue : searchText);
 
         // Test code for search:
-        var searchResults = new List<IFile>();
+        List<IFile> searchResults = [];
 
         if ((!string.IsNullOrWhiteSpace(keyword)) && (CheckKeyword(keyword, mode, modeSearchText, searchResults)))
         {

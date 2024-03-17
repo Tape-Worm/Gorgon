@@ -120,7 +120,7 @@ internal class SamplerCache(D3D11.Device5 device)
             }
 
             // We didn't find what we wanted, so create a new one.
-            var resultState = new GorgonSamplerState(newState)
+            GorgonSamplerState resultState = new(newState)
             {
                 ID = index
             };

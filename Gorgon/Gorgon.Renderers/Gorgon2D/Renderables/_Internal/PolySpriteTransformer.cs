@@ -78,8 +78,8 @@ internal class PolySpriteTransformer
         transMat.M42 = bounds.Top;
         transMat.M43 = depth;
 
-        var tempMat = Matrix4x4.Multiply(anchorMat, scaleMat);
-        var tempMat2 = Matrix4x4.Multiply(tempMat, rotMat);
+        Matrix4x4 tempMat = Matrix4x4.Multiply(anchorMat, scaleMat);
+        Matrix4x4 tempMat2 = Matrix4x4.Multiply(tempMat, rotMat);
         worldMatrix = Matrix4x4.Multiply(tempMat2, transMat);
     }
 

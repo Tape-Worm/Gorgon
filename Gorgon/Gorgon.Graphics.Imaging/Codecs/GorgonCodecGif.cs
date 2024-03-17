@@ -84,7 +84,7 @@ public sealed class GorgonCodecGif(GorgonGifEncodingOptions encodingOptions = nu
     /// <returns>A dictionary containing the key/value pair describing the metadata to write to the frame, or <b>null</b> if the frame contains no metadata.</returns>
     protected override IReadOnlyDictionary<string, object> GetCustomEncodingMetadata(int frameIndex, IGorgonImageInfo settings)
     {
-        var result = new Dictionary<string, object>();
+        Dictionary<string, object> result = [];
 
         if (EncodingOptions?.Palette is not null)
         {
@@ -194,7 +194,7 @@ public sealed class GorgonCodecGif(GorgonGifEncodingOptions encodingOptions = nu
         }
 
         long position = stream.Position;
-        var wic = new WicUtilities();
+        WicUtilities wic = new();
 
         try
         {

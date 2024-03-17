@@ -95,7 +95,7 @@ static class Program
     {
         // Update the animated offset for the center point.  We need to put this into a Vector4 because our data needs to be 
         // aligned to a 16 byte boundary for constant buffers.
-        var offset = new Vector4(_heightOffset, 0, 0, 0);
+        Vector4 offset = new(_heightOffset, 0, 0, 0);
 
         _worldMatrix = Matrix4x4.CreateRotationY(_angle.ToRadians());
         _worldMatrix.SetRow(3, new Vector4(0, 0, 2.0f, 1.0f));

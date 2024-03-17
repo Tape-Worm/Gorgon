@@ -266,12 +266,12 @@ internal class ColorEditViewer(Gorgon2D renderer, GorgonSwapChain swapChain, ISp
             return;
         }
 
-        var spriteTopLeft = new Vector3(SpriteRegion.Left, SpriteRegion.Top, 0);
-        var spriteBottomRight = new Vector3(SpriteRegion.Right, SpriteRegion.Bottom, 0);
+        Vector3 spriteTopLeft = new(SpriteRegion.Left, SpriteRegion.Top, 0);
+        Vector3 spriteBottomRight = new(SpriteRegion.Right, SpriteRegion.Bottom, 0);
         Camera.Unproject(in spriteTopLeft, out Vector3 transformedTopLeft);
         Camera.Unproject(in spriteBottomRight, out Vector3 transformedBottomRight);
 
-        var screenRect = new DX.RectangleF
+        DX.RectangleF screenRect = new()
         {
             Left = transformedTopLeft.X,
             Top = transformedTopLeft.Y,
@@ -341,7 +341,7 @@ internal class ColorEditViewer(Gorgon2D renderer, GorgonSwapChain swapChain, ISp
             }
 
             Renderer.DrawRectangle(handleBounds, GorgonColor.Black);
-            var inner = new DX.RectangleF(handleBounds.Left + 1, handleBounds.Top + 1, handleBounds.Width - 2, handleBounds.Height - 2);
+            DX.RectangleF inner = new(handleBounds.Left + 1, handleBounds.Top + 1, handleBounds.Width - 2, handleBounds.Height - 2);
             Renderer.DrawRectangle(inner, GorgonColor.White);
 
             if ((i < 4) && (_selected[i]))

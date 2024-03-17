@@ -150,7 +150,7 @@ public abstract class GorgonGamingDeviceDriver(string description)
             return Array.Empty<GorgonGamingDevice>();
         }
 
-        var result = new List<IGorgonGamingDevice>();
+        List<IGorgonGamingDevice> result = [];
 
         foreach (IGorgonGamingDeviceInfo deviceInfo in infoList)
         {

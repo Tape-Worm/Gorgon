@@ -156,7 +156,7 @@ internal partial class RecentItemButton
             return;
         }
 
-        var dir = new DirectoryInfo(_recentItem.FilePath);
+        DirectoryInfo dir = new(_recentItem.FilePath);
         LabelTitle.Text = dir.Name;
         LabelPath.Text = dir.FullName;
         LabelDateTime.Text = _recentItem.LastUsedDate.ToString();

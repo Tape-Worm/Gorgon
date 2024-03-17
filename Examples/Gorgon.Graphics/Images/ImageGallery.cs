@@ -103,7 +103,7 @@ class ImageGallery
     private void CreateCustomImage()
     {
         // Create the image at the original size.
-        var sourceImage = new GorgonImage(new GorgonImageInfo(ImageDataType.Image2D, BufferFormat.R8G8B8A8_UNorm)
+        GorgonImage sourceImage = new(new GorgonImageInfo(ImageDataType.Image2D, BufferFormat.R8G8B8A8_UNorm)
         {
             Width = 320,
             Height = 240
@@ -124,7 +124,7 @@ class ImageGallery
                 int pixelStride = sourceImage.Buffers[0].PitchInformation.RowPitch / sourceImage.Buffers[0].Width;
                 // This is the position inside of the buffer, in bytes.
                 int position = (y * sourceImage.Buffers[0].PitchInformation.RowPitch) + (x * pixelStride);
-                var color = new GorgonColor(rColorFade, 1.0f - rColorFade, bColorFade, 1.0f);
+                GorgonColor color = new(rColorFade, 1.0f - rColorFade, bColorFade, 1.0f);
 
                 // Notice we're using AsRef here.  This allows us to read a value as another type.  In this case, we've chosen an 
                 // int32 value to represent an ARGB pixel. Because this value is a reference to the location in memory, we can assign 
@@ -159,7 +159,7 @@ class ImageGallery
     {
         // Note here that we're passing in codec specific options into the codec.
         // In this case, we're telling the codec to read all the frames from the animated GIF.
-        var gifCodec = new GorgonCodecGif(decodingOptions: new GorgonGifDecodingOptions
+        GorgonCodecGif gifCodec = new(decodingOptions: new GorgonGifDecodingOptions
         {
             ReadAllFrames = true
         });
@@ -171,7 +171,7 @@ class ImageGallery
         _gifGraphics = System.Drawing.Graphics.FromImage(_gifBuffer);
 
         float imageAspect = _images[3].Height / (float)_images[3].Width;
-        var newSize = new Size(_imageSize.Width, (int)(_imageSize.Width * imageAspect));
+        Size newSize = new(_imageSize.Width, (int)(_imageSize.Width * imageAspect));
 
         // With this one, the source image isn't in the same aspect ratio as our thumbnail size.
         // So we need to expand the image boundaries to fit.  The expand method will do just that.
@@ -228,12 +228,12 @@ class ImageGallery
         // This will create a new image, and draw custom data to that image.
         CreateCustomImage();
 
-        var imageDirectory = new DirectoryInfo(Path.Combine(path, "Images"));
-        var ddsFileInfo = new FileInfo(Path.Combine(imageDirectory.FullName, "colleen.dds"));
-        var tgaFileInfo = new FileInfo(Path.Combine(imageDirectory.FullName, "colleen2.tga"));
-        var gifFileInfo = new FileInfo(Path.Combine(imageDirectory.FullName, "rain.gif"));
-        var pngFileInfo = new FileInfo(Path.Combine(imageDirectory.FullName, "skull.png"));
-        var bmpFileInfo = new FileInfo(Path.Combine(imageDirectory.FullName, "nebula1.bmp"));
+        DirectoryInfo imageDirectory = new(Path.Combine(path, "Images"));
+        FileInfo ddsFileInfo = new(Path.Combine(imageDirectory.FullName, "colleen.dds"));
+        FileInfo tgaFileInfo = new(Path.Combine(imageDirectory.FullName, "colleen2.tga"));
+        FileInfo gifFileInfo = new(Path.Combine(imageDirectory.FullName, "rain.gif"));
+        FileInfo pngFileInfo = new(Path.Combine(imageDirectory.FullName, "skull.png"));
+        FileInfo bmpFileInfo = new(Path.Combine(imageDirectory.FullName, "nebula1.bmp"));
 
         // Load each image and resize to the requested width & height.
         // Here we see how to use an image codec to read image data from a file.
@@ -293,7 +293,7 @@ class ImageGallery
             Interlocked.Increment(ref _isDrawing);
 
             // Our position for the current image.
-            var position = new Point(0, 0);
+            Point position = new(0, 0);
 
             for (int i = 0; i < _images.Length; ++i)
             {
@@ -366,7 +366,7 @@ class ImageGallery
         _boldContentFont = new Font(baseFont, FontStyle.Bold);
         _dpi = 96.Max(deviceDpi);
         float newScaleWidth = deviceDpi / 96.0f;
-        var dpiScale = new SizeF(newScaleWidth, newScaleWidth);
+        SizeF dpiScale = new(newScaleWidth, newScaleWidth);
         _imageSize = new Size((int)(dpiScale.Width * 320), (int)(dpiScale.Height * 240));
     }
 

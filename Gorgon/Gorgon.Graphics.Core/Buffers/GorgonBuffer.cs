@@ -200,7 +200,7 @@ public sealed class GorgonBuffer
     private D3D11.BufferDescription BuildBufferDesc(ref GorgonBufferInfo bufferInfo)
     {
         D3D11.BindFlags bindFlags = GetBindingFlags(bufferInfo.Binding);
-        var resourceUsage = (D3D11.ResourceUsage)bufferInfo.Usage;
+        D3D11.ResourceUsage resourceUsage = (D3D11.ResourceUsage)bufferInfo.Usage;
 
         // Round up to the nearest multiple of 4.
         int structureSize = (bufferInfo.StructureSize + 3) & ~3;
@@ -338,7 +338,7 @@ public sealed class GorgonBuffer
     /// <returns>The staging buffer to retrieve.</returns>
     public GorgonBuffer GetStaging()
     {
-        var buffer = new GorgonBuffer(Graphics,
+        GorgonBuffer buffer = new(Graphics,
                                                new GorgonBufferInfo(_info)
                                                {
                                                    Name = $"{Name} Staging",
@@ -437,7 +437,7 @@ public sealed class GorgonBuffer
             throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_BUFFER_INCORRECT_BINDING, BufferBinding.Shader));
         }
 
-        var formatInfo = new GorgonFormatInfo(format);
+        GorgonFormatInfo formatInfo = new(format);
 
         if (formatInfo.IsTypeless)
         {
@@ -455,7 +455,7 @@ public sealed class GorgonBuffer
 
         elementCount = elementCount.Min(totalElementCount - startElement).Max(1);
 
-        var key = new BufferShaderViewKey(startElement, elementCount, format);
+        BufferShaderViewKey key = new(startElement, elementCount, format);
         if (GetView(key) is GorgonBufferView view)
         {
             return view;
@@ -511,7 +511,7 @@ public sealed class GorgonBuffer
 
         elementCount = elementCount.Min(totalElementCount - startElement).Max(1);
 
-        var key = new BufferShaderViewKey(startElement, elementCount, 0);
+        BufferShaderViewKey key = new(startElement, elementCount, 0);
 
         if (GetView(key) is GorgonStructuredView view)
         {
@@ -569,7 +569,7 @@ public sealed class GorgonBuffer
         }
 
         // Ensure the size of the data type fits the requested format.
-        var info = new GorgonFormatInfo(format);
+        GorgonFormatInfo info = new(format);
 
         if (info.IsTypeless)
         {
@@ -587,7 +587,7 @@ public sealed class GorgonBuffer
 
         elementCount = elementCount.Min(totalElementCount - startElement).Max(1);
 
-        var key = new BufferShaderViewKey(startElement, elementCount, format);
+        BufferShaderViewKey key = new(startElement, elementCount, format);
         GorgonBufferReadWriteView result = GetReadWriteView<GorgonBufferReadWriteView>(key);
 
         if (result is not null)
@@ -652,7 +652,7 @@ public sealed class GorgonBuffer
 
         elementCount = elementCount.Min(totalElementCount - startElement).Max(1);
 
-        var key = new BufferShaderViewKey(startElement, elementCount, (int)uavType);
+        BufferShaderViewKey key = new(startElement, elementCount, (int)uavType);
         GorgonStructuredReadWriteView result = GetReadWriteView<GorgonStructuredReadWriteView>(key);
 
         if (result is not null)
@@ -717,7 +717,7 @@ public sealed class GorgonBuffer
 
         elementCount = elementCount.Min(totalElementCount - startElement).Max(1);
 
-        var key = new BufferShaderViewKey(startElement, elementCount, elementType);
+        BufferShaderViewKey key = new(startElement, elementCount, elementType);
 
         if (GetView(key) is GorgonRawView view)
         {
@@ -781,7 +781,7 @@ public sealed class GorgonBuffer
 
         elementCount = elementCount.Min(totalElementCount - startElement).Max(1);
 
-        var key = new BufferShaderViewKey(startElement, elementCount, elementType);
+        BufferShaderViewKey key = new(startElement, elementCount, elementType);
         GorgonRawReadWriteView result = GetReadWriteView<GorgonRawReadWriteView>(key);
 
         if (result is not null)

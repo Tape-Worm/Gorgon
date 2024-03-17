@@ -127,7 +127,7 @@ internal partial class BaseDialog
             return;
         }
 
-        var currentScreen = Screen.FromControl(this);
+        Screen currentScreen = Screen.FromControl(this);
 
         _textPosition = new Point(pictureDialog.DisplayRectangle.Right + 4, 2);
 

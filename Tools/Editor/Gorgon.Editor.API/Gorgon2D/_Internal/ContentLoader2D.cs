@@ -110,7 +110,7 @@ internal class ContentLoader2D(IGorgonFileSystem fileSystem, IProjectMetadata me
     /// <returns>A list of animation codecs by type name.</returns>
     private IReadOnlyDictionary<string, IGorgonAnimationCodec> GetAnimationCodecs()
     {
-        var result = new Dictionary<string, IGorgonAnimationCodec>(StringComparer.OrdinalIgnoreCase)
+        Dictionary<string, IGorgonAnimationCodec> result = new(StringComparer.OrdinalIgnoreCase)
         {
             { typeof(GorgonV31AnimationBinaryCodec).FullName, new GorgonV31AnimationBinaryCodec(_renderer) },
             { typeof(GorgonV31AnimationJsonCodec).FullName, new GorgonV31AnimationJsonCodec(_renderer) }
@@ -131,7 +131,7 @@ internal class ContentLoader2D(IGorgonFileSystem fileSystem, IProjectMetadata me
     /// <returns>A list of sprite codecs by type name.</returns>
     private IReadOnlyDictionary<string, IGorgonSpriteCodec> GetSpriteCodecs()
     {
-        var result = new Dictionary<string, IGorgonSpriteCodec>(StringComparer.OrdinalIgnoreCase)
+        Dictionary<string, IGorgonSpriteCodec> result = new(StringComparer.OrdinalIgnoreCase)
         {
             { typeof(GorgonV3SpriteBinaryCodec).FullName, new GorgonV3SpriteBinaryCodec(_renderer) },
             { typeof(GorgonV3SpriteJsonCodec).FullName, new GorgonV3SpriteJsonCodec(_renderer) },
@@ -154,7 +154,7 @@ internal class ContentLoader2D(IGorgonFileSystem fileSystem, IProjectMetadata me
     /// <returns>A list of image codecs by type name.</returns>
     private IReadOnlyDictionary<string, IGorgonImageCodec> GetImageCodecs()
     {
-        var result = new Dictionary<string, IGorgonImageCodec>(StringComparer.OrdinalIgnoreCase)
+        Dictionary<string, IGorgonImageCodec> result = new(StringComparer.OrdinalIgnoreCase)
         {
             { typeof(GorgonCodecDds).FullName, new GorgonCodecDds() },
             { typeof(GorgonCodecPng).FullName, new GorgonCodecPng() },
@@ -254,7 +254,7 @@ internal class ContentLoader2D(IGorgonFileSystem fileSystem, IProjectMetadata me
             throw new FileNotFoundException(string.Format(Resources.GOREDIT_ERR_FILE_NOT_FOUND, path));
         }
 
-        var dependencies = new Dictionary<string, List<IGorgonVirtualFile>>(StringComparer.OrdinalIgnoreCase);
+        Dictionary<string, List<IGorgonVirtualFile>> dependencies = new(StringComparer.OrdinalIgnoreCase);
 
         foreach (KeyValuePair<string, List<string>> item in metadata.DependsOn)
         {

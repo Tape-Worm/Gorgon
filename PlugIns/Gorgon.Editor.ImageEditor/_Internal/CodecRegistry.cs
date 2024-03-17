@@ -145,10 +145,10 @@ internal class CodecRegistry(GorgonMefPlugInCache pluginCache, IGorgonLog log)
     /// <returns>A list of codec plugs ins that were loaded.</returns>
     public IReadOnlyList<GorgonImageCodecPlugIn> AddCodecPlugIn(string path, out IReadOnlyList<string> errors)
     {
-        var localErrors = new List<string>();
+        List<string> localErrors = [];
         errors = localErrors;
 
-        var result = new List<GorgonImageCodecPlugIn>();
+        List<GorgonImageCodecPlugIn> result = [];
         _log.Print("Loading image codecs...", LoggingLevel.Intermediate);
 
         IReadOnlyList<PlugInAssemblyState> assemblies = _pluginCache.ValidateAndLoadAssemblies([path], _log);
@@ -172,7 +172,7 @@ internal class CodecRegistry(GorgonMefPlugInCache pluginCache, IGorgonLog log)
 
         // Since we can't unload an assembly, we'll have to force a rescan of the plug ins. We may have unloaded one prior, and we might need to get it back.
         _pluginService.ScanPlugIns();
-        var assemblyName = AssemblyName.GetAssemblyName(path);
+        AssemblyName assemblyName = AssemblyName.GetAssemblyName(path);
         IReadOnlyList<GorgonImageCodecPlugIn> pluginList = _pluginService.GetPlugIns<GorgonImageCodecPlugIn>(assemblyName);
 
         if (pluginList.Count == 0)

@@ -91,11 +91,11 @@ public static class GorgonCollectionExtensions
             return;
         }
 
-        using var factory = new Factory1();
+        using Factory1 factory = new();
         using Adapter1 adapter = factory.GetAdapter1(output.Adapter.Index);
         using Output giOutput = adapter.GetOutput(output.Index);
         using Output1 giOutput1 = giOutput.QueryInterface<Output1>();
-        using var device = new D3D11.Device(adapter,
+        using D3D11.Device device = new(adapter,
                                                         GorgonGraphics.IsDebugEnabled
                                                             ? D3D11.DeviceCreationFlags.Debug
                                                             : D3D11.DeviceCreationFlags.None,

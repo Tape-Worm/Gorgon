@@ -360,7 +360,7 @@ public sealed class GorgonFont
 
         try
         {
-            var pixels = new GorgonPtr<int>(sourcePixels.Scan0, bitmap.Width * bitmap.Height);
+            GorgonPtr<int> pixels = new(sourcePixels.Scan0, bitmap.Width * bitmap.Height);
             GorgonPtr<int> destBuffer = image.Buffers[0, arrayIndex].Data.To<int>();
 
             // Both buffers should be the same size. If they are not, bad things happen.
@@ -376,7 +376,7 @@ public sealed class GorgonFont
                     // So, we must convert to ABGR even though the DXGI format is RGBA. The memory layout is from lowest 
                     // (R at byte 0) to the highest byte (A at byte 3).
                     // Thus, R is the lowest byte, and A is the highest: A(24), B(16), G(8), R(0).
-                    var color = new GorgonColor(srcColor);
+                    GorgonColor color = new(srcColor);
 
                     if (_info.UsePremultipliedTextures)
                     {
@@ -420,7 +420,7 @@ public sealed class GorgonFont
 
             foreach (KERNINGPAIR pair in kerningPairs.Where(item => item.KernAmount != 0))
             {
-                var newPair = new GorgonKerningPair(Convert.ToChar(pair.First), Convert.ToChar(pair.Second));
+                GorgonKerningPair newPair = new(Convert.ToChar(pair.First), Convert.ToChar(pair.Second));
 
                 if ((!allowedCharacters.Contains(newPair.LeftCharacter)) ||
                     (!allowedCharacters.Contains(newPair.RightCharacter)))
@@ -445,12 +445,12 @@ public sealed class GorgonFont
     /// <returns>A new list of available characters, sorted by character.</returns>
     private List<char> GetAvailableCharacters()
     {
-        var result = (from character in _info.Characters
+        List<char> result = [.. (from character in _info.Characters
                       where (!char.IsControl(character))
                             && (Convert.ToInt32(character) >= 32)
                             && (!char.IsWhiteSpace(character))
                       orderby character
-                      select character).ToList();
+                      select character)];
 
         // Ensure the default character is there.
         if (!result.Contains(_info.DefaultCharacter))
@@ -468,9 +468,9 @@ public sealed class GorgonFont
     /// <returns>A list of images to upload to the GPU.</returns>
     private IReadOnlyList<(IGorgonImage image, IEnumerable<GlyphInfo> glyphs)> GenerateImages(Dictionary<Bitmap, IEnumerable<GlyphInfo>> glyphData)
     {
-        var result = new List<(IGorgonImage, IEnumerable<GlyphInfo>)>();
+        List<(IGorgonImage, IEnumerable<GlyphInfo>)> result = [];
 
-        var imageSettings = new GorgonImageInfo(ImageDataType.Image2D, BufferFormat.R8G8B8A8_UNorm)
+        GorgonImageInfo imageSettings = new(ImageDataType.Image2D, BufferFormat.R8G8B8A8_UNorm)
         {
             Width = _info.TextureWidth,
             Height = _info.TextureHeight,
@@ -480,7 +480,7 @@ public sealed class GorgonFont
         GorgonImage image = null;
         int arrayIndex = 0;
         int bitmapCount = glyphData.Count;
-        var glyphs = new List<GlyphInfo>();
+        List<GlyphInfo> glyphs = [];
 
         // We copy each bitmap into a texture array index until we've hit the max texture array size, and then 
         // we move to a new texture.  This will keep our glyph textures inside of a single texture object until 
@@ -527,7 +527,7 @@ public sealed class GorgonFont
             return;
         }
 
-        var textureSettings = new GorgonTexture2DInfo(_info.TextureWidth, _info.TextureHeight, BufferFormat.R8G8B8A8_UNorm)
+        GorgonTexture2DInfo textureSettings = new(_info.TextureWidth, _info.TextureHeight, BufferFormat.R8G8B8A8_UNorm)
         {
             Usage = ResourceUsage.Default,
             Binding = TextureBinding.ShaderResource,
@@ -584,7 +584,7 @@ public sealed class GorgonFont
                 continue;
             }
 
-            var newGlyph = new GorgonGlyph(glyph.Key, advance)
+            GorgonGlyph newGlyph = new(glyph.Key, advance)
             {
                 Offset = glyph.Value.Offset,
                 OutlineOffset = HasOutline ? glyph.Value.OutlineOffset : DX.Point.Zero
@@ -624,7 +624,7 @@ public sealed class GorgonFont
             List<char> availableCharacters = GetAvailableCharacters();
 
             // Set up the code to draw glyphs to bitmaps.
-            var glyphDraw = new GlyphDraw(_info, fontData);
+            GlyphDraw glyphDraw = new(_info, fontData);
 
             // Gather the boundaries for each glyph character.
             Dictionary<char, GlyphRegions> glyphBounds = glyphDraw.GetGlyphRegions(availableCharacters, HasOutline);

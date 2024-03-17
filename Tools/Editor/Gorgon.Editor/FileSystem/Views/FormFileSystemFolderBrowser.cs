@@ -76,7 +76,7 @@ internal partial class FormFileSystemFolderBrowser
     /// <returns>The <see cref="IDirectory"/>, or <b>null</b> if the directory was not found.</returns>
     private IDirectory GetDirectory(string path)
     {
-        var args = new GetDirectoryArgs(path);
+        GetDirectoryArgs args = new(path);
         if ((ViewModel?.GetDirectoryCommand is null) || (!ViewModel.GetDirectoryCommand.CanExecute(args)))
         {
             return null;
@@ -105,7 +105,7 @@ internal partial class FormFileSystemFolderBrowser
             return;
         }
 
-        var args = new DeleteArgs(dir.ID);
+        DeleteArgs args = new(dir.ID);
 
         if ((ViewModel.DeleteDirectoryCommand is null) || (!ViewModel.DeleteDirectoryCommand.CanExecute(args)))
         {
@@ -132,7 +132,7 @@ internal partial class FormFileSystemFolderBrowser
             return;
         }
 
-        var args = new CreateDirectoryArgs
+        CreateDirectoryArgs args = new()
         {
             Name = e.DirectoryName,
             ParentDirectory = _currentDirectory ?? ViewModel.Root
@@ -172,7 +172,7 @@ internal partial class FormFileSystemFolderBrowser
             return;
         }
 
-        var args = new RenameArgs(e.OldName, e.NewName)
+        RenameArgs args = new(e.OldName, e.NewName)
         {
             ID = prevDir.ID
         };

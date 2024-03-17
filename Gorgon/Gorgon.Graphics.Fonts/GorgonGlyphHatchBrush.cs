@@ -410,7 +410,7 @@ public class GorgonGlyphHatchBrush
     /// </returns>
     public override bool Equals(GorgonGlyphBrush other)
     {
-        var brush = other as GorgonGlyphHatchBrush;
+        GorgonGlyphHatchBrush brush = other as GorgonGlyphHatchBrush;
 
         return ((brush == this) || ((brush is not null)
             && (brush.HatchStyle == HatchStyle)

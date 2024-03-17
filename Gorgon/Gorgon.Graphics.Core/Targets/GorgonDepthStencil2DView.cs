@@ -689,7 +689,7 @@ public sealed class GorgonDepthStencil2DView
                                LoggingLevel.Simple);
         }
 
-        var newInfo = new GorgonTexture2DInfo(info)
+        GorgonTexture2DInfo newInfo = new(info)
         {
             // Can't see a reason to use anything other than default for dsvs
             Usage = ResourceUsage.Default,
@@ -718,7 +718,7 @@ public sealed class GorgonDepthStencil2DView
             }
         }
 
-        var texture = new GorgonTexture2D(graphics, newInfo);
+        GorgonTexture2D texture = new(graphics, newInfo);
         GorgonDepthStencil2DView result = texture.GetDepthStencilView(depthStencilFormat, flags: viewFlags);
         result.OwnsResource = true;
 

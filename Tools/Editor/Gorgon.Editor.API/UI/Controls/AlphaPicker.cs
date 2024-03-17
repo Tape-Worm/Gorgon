@@ -147,7 +147,7 @@ public partial class AlphaPicker
     /// <param name="e">The <see cref="PaintEventArgs"/> instance containing the event data.</param>
     private void PanelAlpha_Paint(object sender, PaintEventArgs e)
     {
-        using var brush = new LinearGradientBrush(PanelAlpha.ClientRectangle, Color.FromArgb(0, 0, 0, 0), Color.White, LinearGradientMode.Horizontal);
+        using LinearGradientBrush brush = new(PanelAlpha.ClientRectangle, Color.FromArgb(0, 0, 0, 0), Color.White, LinearGradientMode.Horizontal);
         e.Graphics.FillRectangle(brush, PanelAlpha.ClientRectangle);
     }
 

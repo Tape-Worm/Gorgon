@@ -67,10 +67,10 @@ internal class TextureAtlasToolPlugIn
     /// <returns>The flattened list of entries used for searching and the file system entry hierarchy.</returns>
     private (List<IContentFileExplorerSearchEntry> searchEntries, List<ContentFileExplorerDirectoryEntry> fileSystemEntries) GetFileEntries()
     {
-        var searchEntries = new List<IContentFileExplorerSearchEntry>();
-        var fileSystemEntries = new List<ContentFileExplorerDirectoryEntry>();
+        List<IContentFileExplorerSearchEntry> searchEntries = [];
+        List<ContentFileExplorerDirectoryEntry> fileSystemEntries = [];
         ContentFileExplorerDirectoryEntry dirEntry = null;
-        var fileEntries = new List<ContentFileExplorerFileEntry>();
+        List<ContentFileExplorerFileEntry> fileEntries = [];
         IEnumerable<string> dirs = ContentFileManager.EnumerateDirectories("/", "*", true);
         IEnumerable<IContentFile> spriteFiles = ContentFileManager.EnumerateContentFiles("/", "*")
                                             .Where(item => (item.Metadata.Attributes.TryGetValue(CommonEditorConstants.ContentTypeAttr, out string fileType))
@@ -86,7 +86,7 @@ internal class TextureAtlasToolPlugIn
 
             foreach (IContentFile file in spriteFiles)
             {
-                var fileEntry = new ContentFileExplorerFileEntry(file, dirEntry);
+                ContentFileExplorerFileEntry fileEntry = new(file, dirEntry);
                 if (selectedFiles.Any(item => string.Equals(item, file.Path, StringComparison.OrdinalIgnoreCase)))
                 {
                     fileEntry.IsSelected = true;
@@ -115,7 +115,7 @@ internal class TextureAtlasToolPlugIn
 
             foreach (IContentFile file in spriteFiles)
             {
-                var fileEntry = new ContentFileExplorerFileEntry(file, dirEntry);
+                ContentFileExplorerFileEntry fileEntry = new(file, dirEntry);
                 if (selectedFiles.Any(item => string.Equals(item, file.Path, StringComparison.OrdinalIgnoreCase)))
                 {
                     fileEntry.IsSelected = true;

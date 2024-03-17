@@ -302,7 +302,7 @@ public class GorgonWpfTarget
             throw new GorgonException(GorgonResult.CannotCreate, Resources.GORWPF_NO_APP_WINDOW);
         }
 
-        var hwnd = new WindowInteropHelper(_window);
+        WindowInteropHelper hwnd = new(_window);
         _d3dImage.WindowOwner = hwnd.Handle;
         _d3dImage.OnRender = Render;
 

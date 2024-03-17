@@ -198,7 +198,7 @@ internal partial class ShellApi
         IImageList imageList = null;
 
         // COM interface ID for the shell image list.
-        var IID = new Guid(IID_IImageList);
+        Guid IID = new(IID_IImageList);
 
         _ = SHGetImageList((int)ShellIconSize.ExtraLarge, ref IID, ref imageList);
 

@@ -104,7 +104,7 @@ internal class DdsImageImporter(IGorgonFileSystemWriter<Stream> tempFileSystemWr
             return null;
         }
 
-        var ddsCodec = new GorgonCodecDds();
+        GorgonCodecDds ddsCodec = new();
 
         if (string.IsNullOrWhiteSpace(_tempDirPath))
         {

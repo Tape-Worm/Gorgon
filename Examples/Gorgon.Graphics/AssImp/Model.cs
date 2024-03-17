@@ -185,7 +185,7 @@ internal class Model
         int indexStart = 0;
         int vertexIndex = 0;
 
-        var vertices = new GorgonVertexPosNormColorUv[vertexCount];
+        GorgonVertexPosNormColorUv[] vertices = new GorgonVertexPosNormColorUv[vertexCount];
         short[] indices = new short[indexCount];
 
         float minX = float.MaxValue;
@@ -256,7 +256,7 @@ internal class Model
     /// <returns>The read only reference to the world matrix for the model.</returns>
     public ref readonly System.Numerics.Matrix4x4 GetWorldMatrix()
     {
-        var quatRotation = System.Numerics.Quaternion.CreateFromYawPitchRoll(RotateY.ToRadians(), RotateX.ToRadians(), 0);
+        System.Numerics.Quaternion quatRotation = System.Numerics.Quaternion.CreateFromYawPitchRoll(RotateY.ToRadians(), RotateX.ToRadians(), 0);
         _worldMatrix = System.Numerics.Matrix4x4.CreateFromQuaternion(quatRotation);
         return ref _worldMatrix;
     }

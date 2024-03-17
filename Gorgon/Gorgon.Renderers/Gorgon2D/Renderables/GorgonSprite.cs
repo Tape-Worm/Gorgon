@@ -42,12 +42,7 @@ public class GorgonSprite
 {
     // The absolute anchor position.
     private Vector2 _absoluteAnchor;
-#pragma warning disable IDE0032 // Use auto property
-    // The colors for the sprite corners.
-    private readonly GorgonSpriteColors _cornerColors;
-    // The offsets for the sprite corners.
-    private readonly GorgonRectangleOffsets _cornerOffsets;
-#pragma warning restore IDE0032 // Use auto property
+
     // The renderable data for this sprite.
     // It is exposed as an internal variable (which goes against C# best practices) for performance reasons (property accesses add up over time).
     internal readonly BatchRenderable Renderable = new()
@@ -68,7 +63,10 @@ public class GorgonSprite
     /// <summary>
     /// Property to return the interface that allows colors to be assigned to each corner of the sprite.
     /// </summary>
-    public GorgonSpriteColors CornerColors => _cornerColors;
+    public GorgonSpriteColors CornerColors
+    {
+        get;
+    }
 
     /// <summary>
     /// Property to set or return the color of the sprite.
@@ -80,13 +78,16 @@ public class GorgonSprite
     public GorgonColor Color
     {
         get => Renderable.Vertices[0].Color;
-        set => _cornerColors.SetAll(in value);
+        set => CornerColors.SetAll(in value);
     }
 
     /// <summary>
     /// Property to return the interface that allows an offset to be applied to each corner of the sprite.
     /// </summary>
-    public GorgonRectangleOffsets CornerOffsets => _cornerOffsets;
+    public GorgonRectangleOffsets CornerOffsets
+    {
+        get;
+    }
 
     /// <summary>
     /// Property to set or return the texture to render.
@@ -516,8 +517,8 @@ public class GorgonSprite
     /// </summary>
     public GorgonSprite()
     {
-        _cornerColors = new GorgonSpriteColors(GorgonColor.White, Renderable);
-        _cornerOffsets = new GorgonRectangleOffsets(Renderable);
+        CornerColors = new GorgonSpriteColors(GorgonColor.White, Renderable);
+        CornerOffsets = new GorgonRectangleOffsets(Renderable);
 
         for (int i = 0; i < Renderable.Vertices.Length; ++i)
         {

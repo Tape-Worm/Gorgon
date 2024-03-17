@@ -158,7 +158,7 @@ internal static class Program
         // Note that we depth a depth range from 0.001f up to 1000.0f.  This provides a near and far plane for clipping.  
         // These clipping values must have the world transformed vertex data inside of it or else it will not render. Note that the near/far plane is not a 
         // linear range and Z accuracy can get worse the further from the near plane that you get (particularly with depth buffers).
-        var camera = new GorgonPerspectiveCamera(_graphics, new DX.Size2F(window.ClientSize.Width, window.ClientSize.Height), 0.125f, 1000.0f)
+        GorgonPerspectiveCamera camera = new(_graphics, new DX.Size2F(window.ClientSize.Width, window.ClientSize.Height), 0.125f, 1000.0f)
         {
             Fov = 65.0f
         };
@@ -271,8 +271,8 @@ internal static class Program
             //
             // Builders work on a fluent interface.  Much like LINQ and can be used to create multiple draw calls from the same 
             // builder.
-            var drawCallBuilder = new GorgonDrawCallBuilder();
-            var pipelineStateBuilder = new GorgonPipelineStateBuilder(_graphics);
+            GorgonDrawCallBuilder drawCallBuilder = new();
+            GorgonPipelineStateBuilder pipelineStateBuilder = new(_graphics);
 
             _drawCall = drawCallBuilder.VertexBuffer(_inputLayout, _vertexBuffer)
                                        .VertexRange(0, 3)

@@ -279,7 +279,7 @@ internal partial class FormRibbon
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
     private void NumericFixed_ValueChanged(object sender, EventArgs e)
     {
-        var size = new DX.Size2F((float)NumericFixedWidth.Value, (float)NumericFixedHeight.Value);
+        DX.Size2F size = new((float)NumericFixedWidth.Value, (float)NumericFixedHeight.Value);
 
         if ((!ButtonFixedSize.Checked)
             || (ViewModel?.SpriteClipContext?.FixedSizeCommand is null)
@@ -728,7 +728,7 @@ internal partial class FormRibbon
     /// <param name="e">The [EventArgs] instance containing the event data.</param>
     private void ItemZoom_Click(object sender, EventArgs e)
     {
-        var item = (ToolStripMenuItem)sender;
+        ToolStripMenuItem item = (ToolStripMenuItem)sender;
 
         if ((item.Tag is null) || (!Enum.TryParse(item.Tag.ToString(), out ZoomLevels zoom)))
         {

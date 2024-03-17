@@ -100,7 +100,7 @@ public class GorgonRawKeyboard
     /// <returns>The device information for the system keyboard.</returns>
     private static RawKeyboardInfo GetSysKeyboardInfo()
     {
-        var rawInfo = new RID_DEVICE_INFO_KEYBOARD
+        RID_DEVICE_INFO_KEYBOARD rawInfo = new()
         {
             dwNumberOfFunctionKeys = UserApi.FunctionKeyCount,
             dwKeyboardMode = 0,

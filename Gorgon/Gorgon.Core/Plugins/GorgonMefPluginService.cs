@@ -242,7 +242,7 @@ public sealed class GorgonMefPlugInService(GorgonMefPlugInCache mefCache)
                                     {
                                         Debug.Assert(item.Value.Metadata.ContainsKey("Assembly"), "Assembly info not found.");
 
-                                        var name = item.Value.Metadata["Assembly"] as AssemblyName;
+                                        AssemblyName name = item.Value.Metadata["Assembly"] as AssemblyName;
 
                                         Debug.Assert(name is not null, "Assembly name is null.");
 
@@ -276,7 +276,7 @@ public sealed class GorgonMefPlugInService(GorgonMefPlugInCache mefCache)
                                     {
                                         Debug.Assert(item.Value.Metadata.ContainsKey("Assembly"), "Assembly info not found.");
 
-                                        var name = item.Value.Metadata["Assembly"] as AssemblyName;
+                                        AssemblyName name = item.Value.Metadata["Assembly"] as AssemblyName;
 
                                         Debug.Assert(name is not null, "Assembly name is null.");
 
@@ -301,7 +301,7 @@ public sealed class GorgonMefPlugInService(GorgonMefPlugInCache mefCache)
             {
                 if (Interlocked.Exchange(ref _scanned, 1) == 1)
                 {
-                    var wait = new SpinWait();
+                    SpinWait wait = new();
                     wait.SpinOnce();
                     continue;
                 }
@@ -336,7 +336,7 @@ public sealed class GorgonMefPlugInService(GorgonMefPlugInCache mefCache)
         }
         catch (ReflectionTypeLoadException rex)
         {
-            var errorMessage = new StringBuilder(512);
+            StringBuilder errorMessage = new(512);
 
             foreach (Exception loadEx in rex.LoaderExceptions)
             {

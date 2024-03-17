@@ -293,7 +293,7 @@ public class Gorgon2DGaussBlurEffect
     private void UpdateOffsets()
     {
         // This adjusts just how far from the texel the blurring can occur.
-        var unitSize = new Vector2(1.0f / BlurRenderTargetsSize.Width, 1.0f / BlurRenderTargetsSize.Height);
+        Vector2 unitSize = new(1.0f / BlurRenderTargetsSize.Width, 1.0f / BlurRenderTargetsSize.Height);
 
         int pointerOffset = 0;
         int yOffset = (((_blurRadius) * 2) + 1);

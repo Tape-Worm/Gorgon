@@ -78,7 +78,7 @@ public class GorgonGlyphLinearGradientBrush
         }
         set
         {
-            var newValue = new GorgonGlyphBrushInterpolator(0, value);
+            GorgonGlyphBrushInterpolator newValue = new(0, value);
 
             if (Interpolation.Count == 0)
             {
@@ -107,7 +107,7 @@ public class GorgonGlyphLinearGradientBrush
         }
         set
         {
-            var newValue = new GorgonGlyphBrushInterpolator(1, value);
+            GorgonGlyphBrushInterpolator newValue = new(1, value);
 
             switch (Interpolation.Count)
             {
@@ -208,7 +208,7 @@ public class GorgonGlyphLinearGradientBrush
     /// </returns>
     internal override Brush ToGDIBrush()
     {
-        var result = new LinearGradientBrush(new Rectangle(GradientRegion.X, GradientRegion.Y, GradientRegion.Width, GradientRegion.Height),
+        LinearGradientBrush result = new(new Rectangle(GradientRegion.X, GradientRegion.Y, GradientRegion.Width, GradientRegion.Height),
                                              StartColor,
                                              EndColor,
                                              Angle,
@@ -217,7 +217,7 @@ public class GorgonGlyphLinearGradientBrush
             GammaCorrection = GammaCorrection
         };
 
-        var interpolationColors = new ColorBlend(Interpolation.Count);
+        ColorBlend interpolationColors = new(Interpolation.Count);
 
         for (int i = 0; i < Interpolation.Count; i++)
         {
@@ -234,7 +234,7 @@ public class GorgonGlyphLinearGradientBrush
     /// <returns>The cloned object.</returns>
     public override GorgonGlyphBrush Clone()
     {
-        var brush = new GorgonGlyphLinearGradientBrush
+        GorgonGlyphLinearGradientBrush brush = new()
         {
             Angle = Angle,
             ScaleAngle = ScaleAngle,
@@ -265,7 +265,7 @@ public class GorgonGlyphLinearGradientBrush
     /// </returns>
     public override bool Equals(GorgonGlyphBrush other)
     {
-        var brush = other as GorgonGlyphLinearGradientBrush;
+        GorgonGlyphLinearGradientBrush brush = other as GorgonGlyphLinearGradientBrush;
 
         return ((brush == this) || ((brush is not null)
             && (brush.Angle.EqualsEpsilon(Angle))

@@ -170,7 +170,7 @@ public static class GorgonShaderFactory
 
         // We will store the shader as a Gorgon chunked binary format. 
         // This will break the shader into parts within the file to allow us the ability to read portions of the file.
-        var chunkReader = new GorgonChunkFileReader(stream,
+        GorgonChunkFileReader chunkReader = new(stream,
                                                                       [
                                                                           BinaryShaderFileHeader.ChunkID()
                                                                       ]);
@@ -250,7 +250,7 @@ public static class GorgonShaderFactory
 
             ObjectActivator<GorgonShader> shaderCtor = _shaderFactory[shaderType];
 
-            var result = (T)shaderCtor(graphics.D3DDevice,
+            T result = (T)shaderCtor(graphics.D3DDevice,
                                        entryPoint,
                                        debug,
                                        byteCode);
@@ -455,7 +455,7 @@ public static class GorgonShaderFactory
 
             ObjectActivator<GorgonShader> shaderCtor = _shaderFactory[shaderType.Value.Shader];
 
-            var result = (T)shaderCtor(graphics,
+            T result = (T)shaderCtor(graphics,
                                        entryPoint,
                                        debug,
                                        byteCode.Bytecode);

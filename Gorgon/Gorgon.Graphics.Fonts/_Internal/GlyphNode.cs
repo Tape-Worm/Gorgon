@@ -119,7 +119,7 @@ internal class GlyphNode(GlyphNode parentNode)
         Right = new GlyphNode(this);
 
         // Subdivide.
-        var delta = new Size(Region.Width - dimensions.Width, Region.Height - dimensions.Height);
+        Size delta = new(Region.Width - dimensions.Width, Region.Height - dimensions.Height);
 
         if (delta.Width > delta.Height)
         {

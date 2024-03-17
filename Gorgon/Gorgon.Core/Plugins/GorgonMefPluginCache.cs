@@ -271,7 +271,7 @@ public sealed class GorgonMefPlugInCache
             return AssemblySigningResults.NotSigned;
         }
 
-        var assemblyName = AssemblyName.GetAssemblyName(assemblyPath);
+        AssemblyName assemblyName = AssemblyName.GetAssemblyName(assemblyPath);
         byte[] compareToken = assemblyName.GetPublicKey();
 
         return (compareToken is null) || (publicKey.Length != compareToken.Length) || (!publicKey.SequenceEqual(compareToken))
@@ -358,7 +358,7 @@ public sealed class GorgonMefPlugInCache
             filePattern = "*.dll";
         }
 
-        var directory = new DirectoryInfo(directoryPath);
+        DirectoryInfo directory = new(directoryPath);
 
         Log.Print($"Searching '{directory.FullName}\\{filePattern}' for plug in assemblies.", LoggingLevel.Simple);
 
@@ -399,7 +399,7 @@ public sealed class GorgonMefPlugInCache
     {
         lock (_syncLock)
         {
-            var assemblyList = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            HashSet<string> assemblyList = new(StringComparer.OrdinalIgnoreCase);
             foreach (DirectoryCatalog catalog in _rootCatalog.Catalogs.OfType<DirectoryCatalog>())
             {
                 UpdateAssemblyList(catalog, assemblyList);

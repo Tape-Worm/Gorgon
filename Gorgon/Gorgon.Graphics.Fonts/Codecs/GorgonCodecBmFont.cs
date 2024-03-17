@@ -139,7 +139,7 @@ public class GorgonCodecBmFont
     /// <returns>A new dictionary containing the key/value pairs.</returns>
     private static Dictionary<string, string> GetLineKeyValuePairs(string lineItems)
     {
-        var result = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+        Dictionary<string, string> result = new(StringComparer.OrdinalIgnoreCase);
 
         // Strip out identifier.
         int keySep = lineItems.IndexOf(' ');
@@ -269,7 +269,7 @@ public class GorgonCodecBmFont
         int.TryParse(outline, out int outlineSize);
 
         // Create with required settings.
-        var result = new GorgonFontInfo(face, Convert.ToSingle(size), GorgonFontHeightMode.Pixels)
+        GorgonFontInfo result = new(face, Convert.ToSingle(size), GorgonFontHeightMode.Pixels)
         {
             PackingSpacing = packSpacing,
             FontStyle = style,
@@ -332,7 +332,7 @@ public class GorgonCodecBmFont
     private static string ParseCharacters(StreamReader reader)
     {
         string countLine = reader.ReadLine();
-        var characterList = new StringBuilder();
+        StringBuilder characterList = new();
 
         if (string.IsNullOrWhiteSpace(countLine))
         {
@@ -429,7 +429,7 @@ public class GorgonCodecBmFont
     /// </returns>
     protected override GorgonFontInfo OnGetMetaData(Stream stream)
     {
-        using var reader = new StreamReader(stream, Encoding.ASCII, true, 80000, true);
+        using StreamReader reader = new(stream, Encoding.ASCII, true, 80000, true);
         GorgonFontInfo result = ParseInfoLine(reader.ReadLine());
         ParseCommonLine(reader.ReadLine(), out (int TextureLineSkip, int TextureWidth, int TextureHeight) textureInfo);
         SkipTextures(reader, textureInfo.TextureLineSkip);
@@ -513,7 +513,7 @@ public class GorgonCodecBmFont
         }
 
         long position = stream.Position;
-        var reader = new StreamReader(stream, Encoding.ASCII, true, 80000, true);
+        StreamReader reader = new(stream, Encoding.ASCII, true, 80000, true);
 
         try
         {

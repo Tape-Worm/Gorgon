@@ -123,7 +123,7 @@ internal class GorPackWriterPlugIn
     {
         Debug.Assert(outStream is not null, "outStream is not null");
 
-        using var bzStream = new Ionic.BZip2.ParallelBZip2OutputStream(outStream, compressionRate, true);
+        using Ionic.BZip2.ParallelBZip2OutputStream bzStream = new(outStream, compressionRate, true);
         long streamSize = inStream.Length;
 
         while (streamSize > 0)
@@ -167,11 +167,11 @@ internal class GorPackWriterPlugIn
     /// <returns>A list of all elements that represent files for compression.</returns>
     private List<(XElement fileNode, FileInfo physicalPath)> BuildFatXml(DirectoryInfo workspace, XElement fatRoot, CancellationToken cancelToken)
     {
-        var subDirs = new Queue<DirectoryInfo>();
+        Queue<DirectoryInfo> subDirs = new();
         subDirs.Enqueue(workspace);
-        var parentNodes = new Queue<XElement>();
+        Queue<XElement> parentNodes = new();
         parentNodes.Enqueue(fatRoot);
-        var fileNodes = new List<(XElement fileNode, FileInfo physicalPath)>();
+        List<(XElement fileNode, FileInfo physicalPath)> fileNodes = [];
 
         if (cancelToken.IsCancellationRequested)
         {
@@ -278,7 +278,7 @@ internal class GorPackWriterPlugIn
 
         long compressSize = 0;
         string filePath = Path.Combine(outDirectory.FullName, Path.GetFileNameWithoutExtension(file.Name) + Guid.NewGuid().ToString("N") + file.Extension);
-        var result = new FileInfo(filePath);
+        FileInfo result = new(filePath);
         Stream outputFile = null;
         Stream fileStream = null;
         byte[] writeBuffer = ArrayPool<byte>.Shared.Rent(MaxBufferSize);
@@ -403,7 +403,7 @@ internal class GorPackWriterPlugIn
         }
 
         // Initialize our file allocation table.
-        var fat = new XDocument(new XDeclaration("1.0", "utf-8", "yes"),
+        XDocument fat = new(new XDeclaration("1.0", "utf-8", "yes"),
                              new XElement("FileSystem",
                                  new XElement("Header", "GORFS1.0")));
 
@@ -425,7 +425,7 @@ internal class GorPackWriterPlugIn
         int fileCount = 0;
         int totalFileCount = fileNodes.Count;
         int filesPerJob = (int)((float)totalFileCount / maxJobCount).FastCeiling();
-        var jobs = new List<Task<CompressJob>>();
+        List<Task<CompressJob>> jobs = [];
 
         if ((totalFileCount <= 100) || (maxJobCount < 2))
         {
@@ -468,7 +468,7 @@ internal class GorPackWriterPlugIn
         // Build up the tasks for our jobs.
         while (fileNodes.Count > 0)
         {
-            var jobData = new CompressJob();
+            CompressJob jobData = new();
 
             // Copy the file information to the compression job data.
             int length = filesPerJob.Min(fileNodes.Count);
@@ -556,7 +556,7 @@ internal class GorPackWriterPlugIn
     protected override async Task OnWriteAsync(string file, DirectoryInfo workspace, Action<int, int, bool> progressCallback, CancellationToken cancelToken)
     {
         // We will dump our file data into a temporary work space.
-        var tempFolderPath = new DirectoryInfo(Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString("N")));
+        DirectoryInfo tempFolderPath = new(Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString("N")));
 
         if (!tempFolderPath.Exists)
         {
@@ -564,7 +564,7 @@ internal class GorPackWriterPlugIn
             tempFolderPath.Refresh();
         }
 
-        var tempFile = new FileInfo(Path.Combine(tempFolderPath.FullName, "working_file"));
+        FileInfo tempFile = new(Path.Combine(tempFolderPath.FullName, "working_file"));
         GorgonBinaryWriter writer = null;
         FileStream inStream = null;
         FileStream outStream = null;

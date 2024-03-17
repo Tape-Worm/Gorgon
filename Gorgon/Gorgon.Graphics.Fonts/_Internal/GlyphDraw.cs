@@ -187,8 +187,8 @@ internal class GlyphDraw(IGorgonFontInfo fontInfo, GdiFontData fontData)
     private DX.Rectangle CropGlyphRegion(char character, RectangleF glyphBounds, Bitmap glyphBitmap, System.Drawing.Graphics glyphGraphics, bool drawOutline)
     {
         BitmapData pixels = null;
-        var cropTopLeft = new Point(0, 0);
-        var cropRightBottom = new Point(glyphBitmap.Width - 1, glyphBitmap.Height - 1);
+        Point cropTopLeft = new(0, 0);
+        Point cropRightBottom = new(glyphBitmap.Width - 1, glyphBitmap.Height - 1);
 
         try
         {
@@ -279,7 +279,7 @@ internal class GlyphDraw(IGorgonFontInfo fontInfo, GdiFontData fontData)
         glyphGraphics.Clear(Color.FromArgb(0));
 
         // Assign a region for the glyph brush.
-        using (var glyphRenderer = new GraphicsPath())
+        using (GraphicsPath glyphRenderer = new())
         {
             glyphRenderer.AddString(charString,
                                         _fontData.Font.FontFamily,
@@ -307,7 +307,7 @@ internal class GlyphDraw(IGorgonFontInfo fontInfo, GdiFontData fontData)
 
         glyphGraphics.Clear(Color.FromArgb(0));
 
-        using (var outlineRenderer = new GraphicsPath())
+        using (GraphicsPath outlineRenderer = new())
         {
             outlineRenderer.AddString(charString,
                                         _fontData.Font.FontFamily,
@@ -320,7 +320,7 @@ internal class GlyphDraw(IGorgonFontInfo fontInfo, GdiFontData fontData)
             if ((_fontInfo.OutlineColor1 == _fontInfo.OutlineColor2)
                 || (_fontInfo.OutlineSize < 3))
             {
-                using var outlinePen = new Pen(_fontInfo.OutlineColor1, _fontInfo.OutlineSize * 2);
+                using Pen outlinePen = new(_fontInfo.OutlineColor1, _fontInfo.OutlineSize * 2);
                 outlinePen.LineJoin = LineJoin.Round;
                 glyphGraphics.DrawPath(outlinePen, outlineRenderer);
             }
@@ -336,7 +336,7 @@ internal class GlyphDraw(IGorgonFontInfo fontInfo, GdiFontData fontData)
 
                     GorgonColor.Lerp(in start, in end, delta, out GorgonColor penColor);
 
-                    using var outlinePen = new Pen(penColor, i);
+                    using Pen outlinePen = new(penColor, i);
                     outlinePen.LineJoin = LineJoin.Round;
                     glyphGraphics.DrawPath(outlinePen, outlineRenderer);
                 }
@@ -389,7 +389,7 @@ internal class GlyphDraw(IGorgonFontInfo fontInfo, GdiFontData fontData)
     /// <returns>The size of the largest glyph.</returns>
     private static DX.Size2 GetMaxGlyphSize(Dictionary<char, GlyphRegions> glyphBounds, bool hasOutline)
     {
-        var result = new DX.Size2(int.MinValue, int.MinValue);
+        DX.Size2 result = new(int.MinValue, int.MinValue);
         foreach (KeyValuePair<char, GlyphRegions> glyphBound in glyphBounds)
         {
             result = !hasOutline
@@ -448,7 +448,7 @@ internal class GlyphDraw(IGorgonFontInfo fontInfo, GdiFontData fontData)
 
             DX.Rectangle outlineRect = glyphBounds[character].OutlineRegion;
 
-            var size = new DX.Size2(charRect.Width + 1, charRect.Height + 1);
+            DX.Size2 size = new(charRect.Width + 1, charRect.Height + 1);
 
             Rectangle? placement = GlyphPacker.Add(new Size(charRect.Width + packingSpace, charRect.Height + packingSpace));
             Rectangle? outlinePlacement = null;
@@ -518,11 +518,11 @@ internal class GlyphDraw(IGorgonFontInfo fontInfo, GdiFontData fontData)
     /// <returns>A list of bitmaps assigned to the characters.</returns>
     public Dictionary<char, GlyphInfo> DrawToPackedBitmaps(List<char> characters, Dictionary<char, GlyphRegions> glyphBounds, bool hasOutline)
     {
-        var result = new Dictionary<char, GlyphInfo>();
+        Dictionary<char, GlyphInfo> result = [];
         System.Drawing.Graphics packedGraphics = null;
         DX.Size2 maxGlyphSize = GetMaxGlyphSize(glyphBounds, hasOutline);
-        var glyphBitmap = new Bitmap(maxGlyphSize.Width + 10, maxGlyphSize.Height + 10, PixelFormat.Format32bppArgb);
-        var glyphGraphics = System.Drawing.Graphics.FromImage(glyphBitmap);
+        Bitmap glyphBitmap = new(maxGlyphSize.Width + 10, maxGlyphSize.Height + 10, PixelFormat.Format32bppArgb);
+        System.Drawing.Graphics glyphGraphics = System.Drawing.Graphics.FromImage(glyphBitmap);
         GorgonGlyphBrush glyphBrush = _fontInfo.Brush ?? new GorgonGlyphSolidBrush
         {
             Color = GorgonColor.White
@@ -548,7 +548,7 @@ internal class GlyphDraw(IGorgonFontInfo fontInfo, GdiFontData fontData)
 
             while (characters.Count > 0)
             {
-                var packedBitmap = new Bitmap(_fontInfo.TextureWidth, _fontInfo.TextureHeight, PixelFormat.Format32bppArgb);
+                Bitmap packedBitmap = new(_fontInfo.TextureWidth, _fontInfo.TextureHeight, PixelFormat.Format32bppArgb);
                 packedGraphics?.Dispose();
                 packedGraphics = System.Drawing.Graphics.FromImage(packedBitmap);
 
@@ -560,8 +560,8 @@ internal class GlyphDraw(IGorgonFontInfo fontInfo, GdiFontData fontData)
                 // Sort by size.
                 characters.Sort((left, right) =>
                                 {
-                                    var leftSize = new DX.Size2(glyphBounds[left].CharacterRegion.Width, glyphBounds[left].CharacterRegion.Height);
-                                    var rightSize = new DX.Size2(glyphBounds[right].CharacterRegion.Width, glyphBounds[right].CharacterRegion.Height);
+                                    DX.Size2 leftSize = new(glyphBounds[left].CharacterRegion.Width, glyphBounds[left].CharacterRegion.Height);
+                                    DX.Size2 rightSize = new(glyphBounds[right].CharacterRegion.Width, glyphBounds[right].CharacterRegion.Height);
 
                                     return leftSize.Height == rightSize.Height ? left.CompareTo(right) : leftSize.Height < rightSize.Height ? 1 : -1;
                                 });
@@ -591,11 +591,11 @@ internal class GlyphDraw(IGorgonFontInfo fontInfo, GdiFontData fontData)
     /// <returns>A list of glyph regions.</returns>
     public Dictionary<char, GlyphRegions> GetGlyphRegions(List<char> characters, bool hasOutline)
     {
-        var result = new Dictionary<char, GlyphRegions>();
+        Dictionary<char, GlyphRegions> result = [];
         System.Drawing.Graphics glyphBitmapGraphics = null;
         Bitmap glyphBitmap = null;
-        var tempBitmap = new Bitmap(_fontInfo.TextureWidth, _fontInfo.TextureHeight, PixelFormat.Format32bppArgb);
-        var tempBitmapGraphics = System.Drawing.Graphics.FromImage(tempBitmap);
+        Bitmap tempBitmap = new(_fontInfo.TextureWidth, _fontInfo.TextureHeight, PixelFormat.Format32bppArgb);
+        System.Drawing.Graphics tempBitmapGraphics = System.Drawing.Graphics.FromImage(tempBitmap);
 
         tempBitmapGraphics.PageUnit = GraphicsUnit.Pixel;
 

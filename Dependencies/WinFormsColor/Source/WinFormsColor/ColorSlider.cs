@@ -9,7 +9,6 @@ using System.Windows.Forms;
 
 namespace Fetze.WinFormsColor;
 
-#pragma warning disable IDE0090 // Use 'new(...)'
 public class ColorSlider : UserControl
 {
     private Bitmap srcImage = null;
@@ -306,5 +305,5 @@ public class ColorSlider : UserControl
     private bool ShouldSerializeMinimum() => designSerializeColor;
     private bool ShouldSerializeMaximum() => designSerializeColor;
 }
-#pragma warning restore IDE0090 // Use 'new(...)'
+
 

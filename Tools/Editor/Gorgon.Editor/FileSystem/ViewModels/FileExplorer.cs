@@ -863,8 +863,8 @@ internal class FileExplorer
     /// <param name="directory">The directory to remove from the cache.</param>
     private void RemoveDirectoryFromCache(IDirectory directory)
     {
-        var dirIDList = new List<IDirectory>();
-        var fileIDList = new List<IFile>();
+        List<IDirectory> dirIDList = [];
+        List<IFile> fileIDList = [];
 
         if (directory != Root)
         {
@@ -897,8 +897,7 @@ internal class FileExplorer
     /// <param name="directory">The directory containing the files to remove from the cache.</param>
     private void RemoveFilesFromCache(IDirectory directory)
     {
-        var fileIDs = new List<IFile>();
-        fileIDs.AddRange(directory.Files);
+        List<IFile> fileIDs = [.. directory.Files];
 
         foreach (IFile file in fileIDs)
         {
@@ -916,7 +915,7 @@ internal class FileExplorer
     /// <param name="e">The <see cref="NotifyCollectionChangedEventArgs"/> instance containing the event data.</param>
     private void Directories_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
     {
-        var directories = (IReadOnlyList<IDirectory>)sender;
+        IReadOnlyList<IDirectory> directories = (IReadOnlyList<IDirectory>)sender;
         IDirectory dir;
 
         switch (e.Action)
@@ -950,7 +949,7 @@ internal class FileExplorer
     /// <param name="e">The <see cref="NotifyCollectionChangedEventArgs"/> instance containing the event data.</param>
     private void Files_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
     {
-        var files = (IReadOnlyList<IFile>)sender;
+        IReadOnlyList<IFile> files = (IReadOnlyList<IFile>)sender;
         IFile file;
 
         switch (e.Action)
@@ -1111,7 +1110,7 @@ internal class FileExplorer
     /// <param name="updateSelections"><b>true</b> to update file selections, <b>false</b> to leave as-is.</param>
     private void UpdateFileViewModels(IReadOnlyList<(IGorgonVirtualFile src, IGorgonVirtualFile dest)> files, IDirectory destDirectory, bool updateSelections)
     {
-        var selected = new ObservableCollection<IFile>();
+        ObservableCollection<IFile> selected = [];
 
         foreach ((IGorgonVirtualFile src, IGorgonVirtualFile dest) in files)
         {
@@ -1289,9 +1288,9 @@ internal class FileExplorer
     /// <param name="args">The arguments for the command.</param>
     private async Task DoDeleteDirectoryAsync(DeleteArgs args)
     {
-        var cancelSource = new CancellationTokenSource();
-        var deletedDirs = new List<IDirectory>();
-        var deletedFiles = new List<IFile>();
+        CancellationTokenSource cancelSource = new();
+        List<IDirectory> deletedDirs = [];
+        List<IFile> deletedFiles = [];
 
         // Event handlers to track which directories and files were successfully deleted.
         void DirectoriesDeleted(object sender, VirtualDirectoryDeletedEventArgs e)
@@ -1466,7 +1465,7 @@ internal class FileExplorer
     {
         CancellationTokenSource cancelSource = null;
         string currentFilePath = string.Empty;
-        var deletedFiles = new List<IFile>();
+        List<IFile> deletedFiles = [];
 
         // Update the progress of the delete operation.
         void ProgressUpdate(string filePath)
@@ -1685,7 +1684,7 @@ internal class FileExplorer
 
         try
         {
-            var selected = new ObservableCollection<IFile>();
+            ObservableCollection<IFile> selected = [];
 
             foreach (string id in ids)
             {
@@ -1910,7 +1909,7 @@ internal class FileExplorer
     /// <param name="copyData">The source and destination directory.</param>
     private async Task DoMoveDirectoryAsync(IDirectoryCopyMoveData copyData)
     {
-        var cancelSource = new CancellationTokenSource();
+        CancellationTokenSource cancelSource = new();
         IReadOnlyList<(IGorgonVirtualDirectory src, IGorgonVirtualDirectory dest)> movedDirs = null;
         IReadOnlyList<(IGorgonVirtualFile src, IGorgonVirtualFile dest)> movedFiles = null;
 
@@ -2085,7 +2084,7 @@ internal class FileExplorer
     {
         string currentFile = string.Empty;
 
-        var cancelSource = new CancellationTokenSource();
+        CancellationTokenSource cancelSource = new();
         IReadOnlyList<(IGorgonVirtualFile src, IGorgonVirtualFile dest)> movedFiles = null;
 
         // Progress reporting.
@@ -2123,7 +2122,7 @@ internal class FileExplorer
 
         IDirectory destDirectory = null;
 
-        var srcFiles = new List<IFile>();
+        List<IFile> srcFiles = [];
 
         try
         {
@@ -2218,7 +2217,7 @@ internal class FileExplorer
     {
         string currentFile = string.Empty;
 
-        var cancelSource = new CancellationTokenSource();
+        CancellationTokenSource cancelSource = new();
         IReadOnlyList<(IGorgonVirtualFile src, IGorgonVirtualFile dest)> copiedFiles = [];
 
         // Progress reporting.
@@ -2256,7 +2255,7 @@ internal class FileExplorer
         void FilesCopied(object sender, VirtualFileCopiedMovedEventArgs e) => copiedFiles = e.VirtualFiles;
 
         IDirectory destDirectory = null;
-        var srcFiles = new List<IFile>();
+        List<IFile> srcFiles = [];
 
         try
         {
@@ -2343,7 +2342,7 @@ internal class FileExplorer
     /// <param name="copyData">The source and destination directory.</param>
     private async Task DoCopyDirectoryAsync(IDirectoryCopyMoveData copyData)
     {
-        var cancelSource = new CancellationTokenSource();
+        CancellationTokenSource cancelSource = new();
         IReadOnlyList<(IGorgonVirtualDirectory src, IGorgonVirtualDirectory dest)> copiedDirs = [];
         IReadOnlyList<(IGorgonVirtualFile src, IGorgonVirtualFile dest)> copiedFiles = [];
 
@@ -2493,7 +2492,7 @@ internal class FileExplorer
     {
         string currentFile = string.Empty;
 
-        var cancelSource = new CancellationTokenSource();
+        CancellationTokenSource cancelSource = new();
 
         // Progress reporting.
         void ProgressCallback(string path, double percent)
@@ -2578,7 +2577,7 @@ internal class FileExplorer
     /// <returns>A task for asynchronous operation.</returns>
     private async Task DoExportDirectoryAsync()
     {
-        var cancelSource = new CancellationTokenSource();
+        CancellationTokenSource cancelSource = new();
 
         IDirectory srcDir = SelectedDirectory;
         DirectoryInfo destDir = null;
@@ -2673,11 +2672,11 @@ internal class FileExplorer
     /// <returns>A task for asynchronous operation.</returns>
     private async Task DoImportAsync(IImportData args)
     {
-        var cancelSource = new CancellationTokenSource();
+        CancellationTokenSource cancelSource = new();
         IReadOnlyList<IGorgonVirtualDirectory> copiedDirs = [];
         IReadOnlyList<IGorgonVirtualFile> copiedFiles = [];
-        var importers = new HashSet<IEditorContentImporter>();
-        var importedFilePaths = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+        HashSet<IEditorContentImporter> importers = [];
+        Dictionary<string, string> importedFilePaths = new(StringComparer.OrdinalIgnoreCase);
 
         // Progress reporting.
         void ProgressCallback(string path, double percent)
@@ -2820,7 +2819,7 @@ internal class FileExplorer
 
             UpdateDirectoryViewModels(copiedDirs, destDirectory);
 
-            var selected = new ObservableCollection<IFile>();
+            ObservableCollection<IFile> selected = [];
 
             IReadOnlyList<IFile> files = _factory.CreateFiles(copiedFiles, destDirectory);
 
@@ -3075,7 +3074,7 @@ internal class FileExplorer
         // Function to update the UI.
         void UpdateUI(object context)
         {
-            var newDir = (IGorgonVirtualDirectory)context;
+            IGorgonVirtualDirectory newDir = (IGorgonVirtualDirectory)context;
 
             IDirectory parentDir = _directories.Values.FirstOrDefault(item => string.Equals(item.FullPath, newDir.Parent.FullPath, StringComparison.OrdinalIgnoreCase));
             _factory.CreateDirectory((IGorgonVirtualDirectory)context, parentDir);
@@ -3168,7 +3167,7 @@ internal class FileExplorer
     /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="path"/> parameter is empty.</exception>
     IContentFile IContentFileManager.GetFile(string path)
     {
-#pragma warning disable IDE0046 // Convert to conditional expression
+
         if (path is null)
         {
             throw new ArgumentNullException(nameof(path));
@@ -3177,7 +3176,7 @@ internal class FileExplorer
         return string.IsNullOrWhiteSpace(path)
             ? throw new ArgumentEmptyException(nameof(path))
             : _files.Values.FirstOrDefault(item => string.Equals(item.FullPath, path, StringComparison.OrdinalIgnoreCase)) as IContentFile;
-#pragma warning restore IDE0046 // Convert to conditional expression
+
     }
 
     /// <summary>
@@ -3220,7 +3219,7 @@ internal class FileExplorer
         // Updates the UI.
         void UpdateUI(object ctx)
         {
-            var e = (VirtualFileClosedEventArgs)ctx;
+            VirtualFileClosedEventArgs e = (VirtualFileClosedEventArgs)ctx;
             IDirectory parent = _directories.Values.FirstOrDefault(item => string.Equals(item.FullPath, e.VirtualFile.Directory.FullPath, StringComparison.OrdinalIgnoreCase));
 
             if (fileViewModel is null)

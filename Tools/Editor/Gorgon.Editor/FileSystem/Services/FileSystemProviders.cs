@@ -169,7 +169,7 @@ internal class FileSystemProviders(IHostServices hostServices)
     /// <returns>A list of all file extensions available for all writers.</returns>
     public IReadOnlyList<(string desc, FileWriterPlugIn plugin, IReadOnlyList<GorgonFileExtension> extensions)> GetWriterFileExtensions()
     {
-        var result = new Dictionary<string, (FileWriterPlugIn, List<GorgonFileExtension>)>(StringComparer.CurrentCultureIgnoreCase);
+        Dictionary<string, (FileWriterPlugIn, List<GorgonFileExtension>)> result = new(StringComparer.CurrentCultureIgnoreCase);
 
         foreach (KeyValuePair<string, FileWriterPlugIn> provider in _writers.OrderBy(item => item.Value.Description))
         {
@@ -203,7 +203,7 @@ internal class FileSystemProviders(IHostServices hostServices)
     /// <returns>A list of all file extensions available for all readers.</returns>
     public IReadOnlyList<(string desc, IReadOnlyList<GorgonFileExtension> extensions)> GetReaderFileExtensions()
     {
-        var result = new Dictionary<string, List<GorgonFileExtension>>(StringComparer.CurrentCultureIgnoreCase);
+        Dictionary<string, List<GorgonFileExtension>> result = new(StringComparer.CurrentCultureIgnoreCase);
 
         foreach (KeyValuePair<string, IGorgonFileSystemProvider> provider in _readers.OrderBy(item => item.Value.Description))
         {

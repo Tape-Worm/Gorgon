@@ -459,11 +459,11 @@ internal class ImageAtlas
     /// <returns>A list of sprites for each image.</returns>
     private IReadOnlyDictionary<IContentFile, GorgonSprite> GetSprites()
     {
-        var result = new Dictionary<IContentFile, GorgonSprite>();
+        Dictionary<IContentFile, GorgonSprite> result = [];
 
         foreach (KeyValuePair<IContentFile, IGorgonImage> image in _images)
         {
-            var spriteTexture = GorgonTexture2DView.CreateTexture(HostServices.GraphicsContext.Graphics,
+            GorgonTexture2DView spriteTexture = GorgonTexture2DView.CreateTexture(HostServices.GraphicsContext.Graphics,
                                                                   new GorgonTexture2DInfo(image.Value.Width, image.Value.Height, image.Value.Format)
                                                                   {
                                                                       Name = image.Key.Path,
@@ -472,7 +472,7 @@ internal class ImageAtlas
                                                                       Usage = ResourceUsage.Immutable
                                                                   }, image.Value);
 
-            var sprite = new GorgonSprite
+            GorgonSprite sprite = new()
             {
                 Texture = spriteTexture,
                 TextureRegion = new DX.RectangleF(0, 0, 1, 1),
@@ -700,14 +700,14 @@ internal class ImageAtlas
             return false;
         }
 
-#pragma warning disable IDE0046 // Convert to conditional expression
+
         if (Atlas is not null)
         {
             return (Atlas.Textures is not null) && (Atlas.Textures.Count != 0) && ((PreviewArrayIndex - 1 >= 0) || (PreviewTextureIndex - 1 >= 0));
         }
 
         return (Images is not null) && (Images.Count != 0) && (_currentImageIndex - 1 >= 0);
-#pragma warning restore IDE0046 // Convert to conditional expression
+
     }
 
     /// <summary>

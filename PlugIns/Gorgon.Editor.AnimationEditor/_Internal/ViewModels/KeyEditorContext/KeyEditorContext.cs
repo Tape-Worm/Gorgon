@@ -278,7 +278,7 @@ internal class KeyEditorContext
         {
             try
             {
-                var commandArgs = new SetKeyFramesArgs();
+                SetKeyFramesArgs commandArgs = new();
 
                 ShowWaitPanel(Resources.GORANM_TEXT_PLEASE_WAIT);
 
@@ -327,7 +327,7 @@ internal class KeyEditorContext
         {
             try
             {
-                var commandArgs = new SetKeyFramesArgs();
+                SetKeyFramesArgs commandArgs = new();
 
                 HostServices.BusyService.SetBusy();
 
@@ -558,7 +558,7 @@ internal class KeyEditorContext
                     switch (currentTrack.KeyType)
                     {
                         case AnimationTrackKeyType.Single when currentTrack.SpriteProperty == TrackSpriteProperty.Opacity:
-                            var opacity = new Vector4(newFloatValues?.X ?? key.KeyFrame?.FloatValue.X ?? 1.0f, 0, 0, 0);
+                            Vector4 opacity = new(newFloatValues?.X ?? key.KeyFrame?.FloatValue.X ?? 1.0f, 0, 0, 0);
                             keyFrames[key.KeyIndex] = SetFloatValuesKeyFrameData(currentTrack, key.TimeIndex, opacity);
                             break;
                         case AnimationTrackKeyType.Single:
@@ -1097,12 +1097,12 @@ internal class KeyEditorContext
     {
         try
         {
-            var copiedData = new List<TrackKeySelection>();
+            List<TrackKeySelection> copiedData = [];
 
             // Duplicate the data in the selection.
             foreach (TrackKeySelection trackSel in args.KeyFrames)
             {
-                var copiedKeys = new List<TrackKeySelection.KeySelection>();
+                List<TrackKeySelection.KeySelection> copiedKeys = [];
                 foreach (TrackKeySelection.KeySelection keySel in trackSel.SelectedKeys.OrderBy(item => item.TimeIndex))
                 {
                     IKeyFrame keyFrame = keySel.KeyFrame;
@@ -1115,7 +1115,7 @@ internal class KeyEditorContext
                         }
                         else
                         {
-                            var textureValue = new TextureValue(null, keyFrame.TextureValue.TextureFile, keyFrame.TextureValue.ArrayIndex, keyFrame.TextureValue.TextureCoordinates);
+                            TextureValue textureValue = new(null, keyFrame.TextureValue.TextureFile, keyFrame.TextureValue.ArrayIndex, keyFrame.TextureValue.TextureCoordinates);
                             keyFrame = _contentServices.ViewModelFactory.CreateKeyFrame(keyFrame.Time, ref textureValue);
                         }
                     }
@@ -1128,10 +1128,10 @@ internal class KeyEditorContext
 
             await CopyMoveFramesAsync(copiedData, args.DestinationKeyIndex, args.Operation == CopyMoveOperation.Move);
 
-            var selection = new (int trackIndex, IReadOnlyList<int> keys)[]
-            {
+            (int trackIndex, IReadOnlyList<int> keys)[] selection =
+            [
                 (args.KeyFrames[0].TrackIndex, new[] { args.DestinationKeyIndex })
-            };
+            ];
 
             if ((_content.SelectTrackAndKeysCommand is not null) && (_content.SelectTrackAndKeysCommand.CanExecute(selection)))
             {
@@ -1201,7 +1201,7 @@ internal class KeyEditorContext
     /// <returns><b>true</b> if the keyframes can be copied to the clipboard, <b>false</b> if not.</returns>
     private bool CanCopyKeyFrames(object args)
     {
-        var copyData = args as IKeyFrameCopyMoveData;
+        IKeyFrameCopyMoveData copyData = args as IKeyFrameCopyMoveData;
 
         return (copyData?.KeyFrames is not null) && (copyData.KeyFrames.Count > 0) && (_content.CommandContext == this);
     }
@@ -1212,16 +1212,16 @@ internal class KeyEditorContext
     /// <param name="args">The arguments for copying.</param>
     private void DoCopyKeyFrames(object args)
     {
-        var copyData = (IKeyFrameCopyMoveData)args;
+        IKeyFrameCopyMoveData copyData = (IKeyFrameCopyMoveData)args;
 
         try
         {
-            var copiedData = new List<TrackKeySelection>();
+            List<TrackKeySelection> copiedData = [];
 
             // Duplicate the data in the selection.
             foreach (TrackKeySelection trackSel in copyData.KeyFrames)
             {
-                var copiedKeys = new List<TrackKeySelection.KeySelection>();
+                List<TrackKeySelection.KeySelection> copiedKeys = [];
                 foreach (TrackKeySelection.KeySelection keySel in trackSel.SelectedKeys.OrderBy(item => item.TimeIndex))
                 {
                     IKeyFrame keyFrame = keySel.KeyFrame;
@@ -1234,7 +1234,7 @@ internal class KeyEditorContext
                         }
                         else
                         {
-                            var textureValue = new TextureValue(null, keyFrame.TextureValue.TextureFile, keyFrame.TextureValue.ArrayIndex, keyFrame.TextureValue.TextureCoordinates);
+                            TextureValue textureValue = new(null, keyFrame.TextureValue.TextureFile, keyFrame.TextureValue.ArrayIndex, keyFrame.TextureValue.TextureCoordinates);
                             keyFrame = _contentServices.ViewModelFactory.CreateKeyFrame(keyFrame.Time, ref textureValue);
                         }
                     }

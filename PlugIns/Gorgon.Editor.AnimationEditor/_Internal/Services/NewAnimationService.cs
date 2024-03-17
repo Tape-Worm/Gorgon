@@ -112,7 +112,7 @@ internal class NewAnimationService(IContentFileManager fileManager, IGorgonSprit
                                                     && (IsSprite(item)))
                                             .ToArray();
 
-        using var newAnimationForm = new FormNewAnimation()
+        using FormNewAnimation newAnimationForm = new()
         {
             ImageCodec = _imageCodec,
             SpriteCodec = _spriteCodec,

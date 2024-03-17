@@ -240,7 +240,7 @@ public readonly struct GorgonInputElement
             throw new ArgumentEmptyException(nameof(context));
         }
 
-        var formatInfo = new GorgonFormatInfo(format);
+        GorgonFormatInfo formatInfo = new(format);
 
         if (formatInfo.BitDepth == 0)
         {

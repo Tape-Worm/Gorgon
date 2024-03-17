@@ -145,8 +145,8 @@ internal class ComboPatterns
         }
 
         e.Graphics.TextRenderingHint = TextRenderingHint.ClearTypeGridFit;
-        var textBounds = new Rectangle(26 + e.Bounds.Left, e.Bounds.Top, e.Bounds.Width, e.Bounds.Height);
-        var patternBounds = new Rectangle(e.Bounds.Left + 2, e.Bounds.Top + 2, 22, e.Bounds.Height - 4);
+        Rectangle textBounds = new(26 + e.Bounds.Left, e.Bounds.Top, e.Bounds.Width, e.Bounds.Height);
+        Rectangle patternBounds = new(e.Bounds.Left + 2, e.Bounds.Top + 2, 22, e.Bounds.Height - 4);
 
         using Brush brush = new HatchBrush(style, e.ForeColor, e.BackColor);
         TextRenderer.DrawText(e.Graphics, patternName, Font, textBounds, e.ForeColor, e.BackColor, flags);
@@ -160,7 +160,7 @@ internal class ComboPatterns
     public void RefreshPatterns()
     {
         string[] patterns = Enum.GetNames(typeof(HatchStyle));
-        var styles = (HatchStyle[])Enum.GetValues(typeof(HatchStyle));
+        HatchStyle[] styles = (HatchStyle[])Enum.GetValues(typeof(HatchStyle));
         Items.Clear();
         _patternList.Clear();
 

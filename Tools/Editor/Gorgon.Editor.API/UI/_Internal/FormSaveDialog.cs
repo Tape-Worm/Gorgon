@@ -247,7 +247,7 @@ internal partial class FormSaveDialog
                 continue;
             }
 
-            var fileEntries = (List<ContentFileExplorerFileEntry>)dirEntry.Files;
+            List<ContentFileExplorerFileEntry> fileEntries = (List<ContentFileExplorerFileEntry>)dirEntry.Files;
             ContentFileExplorerFileEntry contentFile = new(file, dirEntry);
             fileEntries.Add(contentFile);
         }

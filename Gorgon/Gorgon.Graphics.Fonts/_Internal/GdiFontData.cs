@@ -100,7 +100,7 @@ internal class GdiFontData
     /// <returns>A new <see cref="GdiFontData"/> object.</returns>
     public static GdiFontData GetFontData(System.Drawing.Graphics graphics, IGorgonFontInfo fontInfo, PrivateFontCollection externalFonts)
     {
-        var result = new GdiFontData();
+        GdiFontData result = new();
 
         CharacterRange[] range = [
                         new(0, 1)

@@ -228,7 +228,7 @@ internal partial class FormAtlasGen
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
     private void ButtonOk_Click(object sender, EventArgs e)
     {
-        var args = new CancelEventArgs(false);
+        CancelEventArgs args = new(false);
 
         if ((ViewModel?.CommitAtlasCommand is null) || (!ViewModel.CommitAtlasCommand.CanExecute(args)))
         {
@@ -468,7 +468,7 @@ internal partial class FormAtlasGen
         NumericTextureHeight.Maximum = graphicsContext.VideoAdapter.MaxTextureHeight;
         NumericArrayIndex.Maximum = graphicsContext.VideoAdapter.MaxTextureArrayCount;
 
-        var atlasRenderer = new Renderer(graphicsContext.Renderer2D, swapChain, ViewModel);
+        Renderer atlasRenderer = new(graphicsContext.Renderer2D, swapChain, ViewModel);
         AddRenderer(atlasRenderer.Name, atlasRenderer);
         SwitchRenderer(atlasRenderer.Name);
     }

@@ -201,7 +201,7 @@ public class GorgonFileSystem
 
         IGorgonFileSystemProvider provider = _providers.FirstOrDefault(item => item.Value.CanReadFileSystem(physicalPath)).Value ?? throw new IOException(string.Format(Resources.GORFS_ERR_CANNOT_READ_FILESYSTEM, physicalPath));
 
-        var mountPoint = new GorgonFileSystemMountPoint(provider, physicalPath, mountPath);
+        GorgonFileSystemMountPoint mountPoint = new(provider, physicalPath, mountPath);
 
         GetFileSystemObjects(mountPoint);
 
@@ -236,7 +236,7 @@ public class GorgonFileSystem
             throw new DirectoryNotFoundException(string.Format(Resources.GORFS_ERR_DIRECTORY_NOT_FOUND, physicalPath));
         }
 
-        var mountPoint = new GorgonFileSystemMountPoint(DefaultProvider, physicalPath, mountPath);
+        GorgonFileSystemMountPoint mountPoint = new(DefaultProvider, physicalPath, mountPath);
 
         GetFileSystemObjects(mountPoint);
 
@@ -261,7 +261,7 @@ public class GorgonFileSystem
     {
         IGorgonFileSystemProvider provider = _providers.FirstOrDefault(item => item.Value.CanReadFileSystem(location)).Value ?? throw new IOException(string.Format(Resources.GORFS_ERR_CANNOT_READ_FILESYSTEM, location));
 
-        var mountPoint = new GorgonFileSystemMountPoint(provider, location, mountDirectory, true);
+        GorgonFileSystemMountPoint mountPoint = new(provider, location, mountDirectory, true);
 
         GetFileSystemObjects(mountPoint);
 

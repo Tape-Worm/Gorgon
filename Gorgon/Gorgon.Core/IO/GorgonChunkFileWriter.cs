@@ -133,7 +133,7 @@ public sealed class GorgonChunkFileWriter
     /// </summary>
     protected override void OnOpen()
     {
-        using var writer = new GorgonBinaryWriter(Stream, true);
+        using GorgonBinaryWriter writer = new(Stream, true);
         writer.Write(FileFormatHeaderIDv0100);
         writer.Write(_appHeaderId);
 
@@ -159,7 +159,7 @@ public sealed class GorgonChunkFileWriter
         }
 
         // Write out the file footer and chunk table.
-        using (var writer = new GorgonBinaryWriter(Stream, true))
+        using (GorgonBinaryWriter writer = new(Stream, true))
         {
             long tableOffset = Stream.Position;
 
@@ -218,7 +218,7 @@ public sealed class GorgonChunkFileWriter
         // Size is 0 for now, we'll update it later.
         _activeChunk = new GorgonChunk(chunkId, 0, (ulong)(Stream.Position - _headerEnd + sizeof(long)));
 
-        using (var chunkIDWriter = new GorgonBinaryWriter(Stream, true))
+        using (GorgonBinaryWriter chunkIDWriter = new(Stream, true))
         {
             chunkIDWriter.Write(chunkId);
         }

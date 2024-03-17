@@ -98,10 +98,10 @@ public class Cube
         // Quaternion for rotation.
 
         // Convert degrees to radians.
-        var rotRads = new Vector3(xAngle.ToRadians(), yAngle.ToRadians(), zAngle.ToRadians());
+        Vector3 rotRads = new(xAngle.ToRadians(), yAngle.ToRadians(), zAngle.ToRadians());
 
         // Rotate and build a new rotation matrix.            
-        var quatRotation = Quaternion.CreateFromYawPitchRoll(rotRads.Y, rotRads.X, rotRads.Z);
+        Quaternion quatRotation = Quaternion.CreateFromYawPitchRoll(rotRads.Y, rotRads.X, rotRads.Z);
         _rotation = Matrix4x4.CreateFromQuaternion(quatRotation);
     }
 

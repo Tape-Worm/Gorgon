@@ -157,7 +157,7 @@ internal class GorgonSpriteImporter(IGorgonFileSystem projectFileSystem, IGorgon
 
         try
         {
-            var spriteCodec = new GorgonV3SpriteBinaryCodec(_renderer);
+            GorgonV3SpriteBinaryCodec spriteCodec = new(_renderer);
 
             _log.Print("Importing associated texture for sprite...", LoggingLevel.Simple);
 

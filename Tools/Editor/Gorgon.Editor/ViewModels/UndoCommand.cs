@@ -122,8 +122,8 @@ internal class UndoCommand<TU, TR>
         TU undoArgs = Interlocked.Exchange(ref _undoArgs, null);
         TR redoArgs = Interlocked.Exchange(ref _redoArgs, null);
 
-        var disposeUndo = undoArgs as IDisposable;
-        var disposeRedo = redoArgs as IDisposable;
+        IDisposable disposeUndo = undoArgs as IDisposable;
+        IDisposable disposeRedo = redoArgs as IDisposable;
 
         disposeUndo?.Dispose();
         disposeRedo?.Dispose();

@@ -103,7 +103,7 @@ static class Program
         for (int i = 0; i < 1024; ++i)
         {
             float brightness = GorgonRandom.RandomSingle(0.05f, 1.0f);
-            var pos = new Vector2(GorgonRandom.RandomSingle(0, _spaceBackground.Width), GorgonRandom.RandomSingle(0, _spaceBackground.Height));
+            Vector2 pos = new(GorgonRandom.RandomSingle(0, _spaceBackground.Width), GorgonRandom.RandomSingle(0, _spaceBackground.Height));
             _renderer.DrawFilledRectangle(new DX.RectangleF(pos.X, pos.Y, 1, 1), new GorgonColor(brightness, brightness, brightness));
         }
 

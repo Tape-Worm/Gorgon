@@ -242,7 +242,7 @@ internal class AnimationEditorPlugIn
     /// <returns>A list of tracks available for editing.</returns>
     private IReadOnlyDictionary<int, KeyValueMetadata> GetKeyMetadata(IReadOnlyList<GorgonTrackRegistration> tracks)
     {
-        var result = new Dictionary<int, KeyValueMetadata>();
+        Dictionary<int, KeyValueMetadata> result = [];
 
         // For this, we have to use property names because the metadata needs to be tailored to the property on the sprite.
         foreach (GorgonTrackRegistration reg in tracks)
@@ -253,7 +253,7 @@ internal class AnimationEditorPlugIn
                 continue;
             }
 
-            var metadata = new KeyValueMetadata();
+            KeyValueMetadata metadata = new();
 
             switch (reg.TrackName)
             {
@@ -499,7 +499,7 @@ internal class AnimationEditorPlugIn
             for (int i = 0; i < track.Value.KeyFrames.Count; i++)
             {
                 GorgonKeySingle key = track.Value.KeyFrames[i];
-                var keyFrame = new KeyFrame();
+                KeyFrame keyFrame = new();
                 keyFrame.Initialize(new KeyFrameParameters(key, HostContentServices));
                 keyFrames[GetKeyIndex(key)] = keyFrame;
             }
@@ -528,7 +528,7 @@ internal class AnimationEditorPlugIn
             for (int i = 0; i < track.Value.KeyFrames.Count; i++)
             {
                 GorgonKeyVector2 key = track.Value.KeyFrames[i];
-                var keyFrame = new KeyFrame();
+                KeyFrame keyFrame = new();
                 keyFrame.Initialize(new KeyFrameParameters(key, HostContentServices));
                 keyFrames[GetKeyIndex(key)] = keyFrame;
             }
@@ -557,7 +557,7 @@ internal class AnimationEditorPlugIn
             for (int i = 0; i < track.Value.KeyFrames.Count; i++)
             {
                 GorgonKeyVector3 key = track.Value.KeyFrames[i];
-                var keyFrame = new KeyFrame();
+                KeyFrame keyFrame = new();
                 keyFrame.Initialize(new KeyFrameParameters(key, HostContentServices));
                 keyFrames[GetKeyIndex(key)] = keyFrame;
             }
@@ -586,7 +586,7 @@ internal class AnimationEditorPlugIn
             for (int i = 0; i < track.Value.KeyFrames.Count; i++)
             {
                 GorgonKeyVector4 key = track.Value.KeyFrames[i];
-                var keyFrame = new KeyFrame();
+                KeyFrame keyFrame = new();
                 keyFrame.Initialize(new KeyFrameParameters(key, HostContentServices));
                 keyFrames[GetKeyIndex(key)] = keyFrame;
             }
@@ -615,7 +615,7 @@ internal class AnimationEditorPlugIn
             for (int i = 0; i < track.Value.KeyFrames.Count; i++)
             {
                 GorgonKeyRectangle key = track.Value.KeyFrames[i];
-                var keyFrame = new KeyFrame();
+                KeyFrame keyFrame = new();
                 keyFrame.Initialize(new KeyFrameParameters(key, HostContentServices));
                 keyFrames[GetKeyIndex(key)] = keyFrame;
             }
@@ -644,7 +644,7 @@ internal class AnimationEditorPlugIn
             for (int i = 0; i < track.Value.KeyFrames.Count; i++)
             {
                 GorgonKeyGorgonColor key = track.Value.KeyFrames[i];
-                var keyFrame = new KeyFrame();
+                KeyFrame keyFrame = new();
                 keyFrame.Initialize(new KeyFrameParameters(key, HostContentServices));
                 keyFrames[GetKeyIndex(key)] = keyFrame;
             }
@@ -692,7 +692,7 @@ internal class AnimationEditorPlugIn
                     continue;
                 }
 
-                var keyFrame = new KeyFrame();
+                KeyFrame keyFrame = new();
                 keyFrame.Initialize(new KeyFrameParameters(textureFile, key, HostContentServices));
                 keyFrames[index] = keyFrame;
             }
@@ -761,7 +761,7 @@ internal class AnimationEditorPlugIn
             bool excluded = _excludedTracks.Contains(registration);
             track.Value.IsEnabled = !excluded;
 
-            var newTrack = new Track();
+            Track newTrack = new();
             newTrack.Initialize(new TrackParameters(registration,
                                                     track.Value.InterpolationMode,
                                                     track.Value.SupportsInterpolation,
@@ -798,7 +798,7 @@ internal class AnimationEditorPlugIn
                                                                                                          .Concat(animation.RectangleTracks.Select(item => (item.Value.Name, item.Value.KeyFrameDataType)))
                                                                                                          .Concat(animation.ColorTracks.Select(item => (item.Value.Name, item.Value.KeyFrameDataType)))
                                                                                                          .Concat(animation.Texture2DTracks.Select(item => (item.Value.Name, item.Value.KeyFrameDataType)));
-        var unsupported = new List<string>();
+        List<string> unsupported = [];
 
         // Check for excluded tracks.
         foreach (GorgonTrackRegistration reg in _excludedTracks)
@@ -867,7 +867,7 @@ internal class AnimationEditorPlugIn
         // Creates an animation object and converts it to a byte array.
         RecyclableMemoryStream CreateAnimation(string name, float length, float fps, IContentFile primarySpriteFile, IContentFile bgTextureFile)
         {
-            var builder = new GorgonAnimationBuilder();
+            GorgonAnimationBuilder builder = new();
 
             metadata.Attributes[CodecAttr] = _defaultCodec.GetType().FullName;
             metadata.Attributes[CommonEditorConstants.IsNewAttr] = bool.TrueString;
@@ -910,7 +910,7 @@ internal class AnimationEditorPlugIn
 
             IGorgonAnimation animation = builder.Build(currentDirectory + name.FormatFileName(), fps, length);
 
-            var stream = CommonEditorResources.MemoryStreamManager.GetStream() as RecyclableMemoryStream;
+            RecyclableMemoryStream stream = CommonEditorResources.MemoryStreamManager.GetStream() as RecyclableMemoryStream;
             _defaultCodec.Save(animation, stream);
             return stream;
         }
@@ -928,7 +928,7 @@ internal class AnimationEditorPlugIn
     /// <returns>A new key frame view model with no data.</returns>
     IKeyFrame IViewModelFactory.CreateKeyFrame(float time, AnimationTrackKeyType dataType)
     {
-        var result = new KeyFrame();
+        KeyFrame result = new();
         result.Initialize(new KeyFrameParameters(time, dataType, Vector4.Zero, HostContentServices));
         return result;
     }
@@ -939,7 +939,7 @@ internal class AnimationEditorPlugIn
     /// <returns>A new key frame view model with the specified data.</returns>
     IKeyFrame IViewModelFactory.CreateKeyFrame(float time, ref TextureValue textureValue)
     {
-        var result = new KeyFrame();
+        KeyFrame result = new();
         result.Initialize(new KeyFrameParameters(time, ref textureValue, HostContentServices));
         return result;
     }
@@ -953,7 +953,7 @@ internal class AnimationEditorPlugIn
     /// <returns>A new key frame view model with the specified data.</returns>
     IKeyFrame IViewModelFactory.CreateKeyFrame(float time, AnimationTrackKeyType dataType, Vector4 floatValue)
     {
-        var result = new KeyFrame();
+        KeyFrame result = new();
         result.Initialize(new KeyFrameParameters(time, dataType, floatValue, HostContentServices));
         return result;
     }
@@ -986,7 +986,7 @@ internal class AnimationEditorPlugIn
 
         _keyMetadata.TryGetValue(trackRegistration.ID, out KeyValueMetadata metadata);
 
-        var track = new Track();
+        Track track = new();
         track.Initialize(new TrackParameters(trackRegistration,
                                              trackInterpolationMode,
                                              trackRegistration.SupportedInterpolation,
@@ -1013,7 +1013,7 @@ internal class AnimationEditorPlugIn
     /// <returns>A new <see cref="IKeyFrame"/> object.</returns>
     async Task<IKeyFrame> IViewModelFactory.CreateTextureKeyFrameAsync(float time, IContentFile spriteFile)
     {
-        var factory = (IViewModelFactory)this;
+        IViewModelFactory factory = (IViewModelFactory)this;
         TextureValue textureValue;
 
         if (!_ioService.IsContentSprite(spriteFile))
@@ -1055,14 +1055,14 @@ internal class AnimationEditorPlugIn
             return null;
         }
 
-        var factory = (IViewModelFactory)this;
+        IViewModelFactory factory = (IViewModelFactory)this;
         IKeyFrame[] keyFrames = null;
 
         try
         {
             keyFrames = ArrayPool<IKeyFrame>.Shared.Rent(frameCount);
 
-            var textureValue = new TextureValue(primarySprite.sprite.Texture, primarySprite.textureFile, primarySprite.sprite.TextureArrayIndex, primarySprite.sprite.TextureRegion);
+            TextureValue textureValue = new(primarySprite.sprite.Texture, primarySprite.textureFile, primarySprite.sprite.TextureArrayIndex, primarySprite.sprite.TextureRegion);
             keyFrames[0] = factory.CreateKeyFrame(0, ref textureValue);
 
             await _textureCache.AddTextureAsync(primarySprite.sprite.Texture);
@@ -1143,12 +1143,12 @@ internal class AnimationEditorPlugIn
     /// </remarks>
     protected async override Task<IEditorContent> OnOpenContentAsync(IContentFile file, IContentFileManager fileManager, IGorgonFileSystemWriter<Stream> scratchArea, IUndoService undoService)
     {
-        var content = new AnimationContent();
+        AnimationContent content = new();
         IGorgonAnimation animation;
         Stream stream = null;
         AnimationIOService.TextureDependencies textures = null;
         AnimationIOService.PrimarySpriteDependency primarySprite = null;
-        var controller = new GorgonSpriteAnimationController();
+        GorgonSpriteAnimationController controller = new();
         GorgonTexture2DView bgTexture = null;
         IContentFile bgTextureFile = null;
 
@@ -1162,8 +1162,8 @@ internal class AnimationEditorPlugIn
                                                 _defaultCodec,
                                                 _defaultSpriteCodec,
                                                 HostContentServices.Log);
-            var keyProcessor = new KeyProcessorService(_textureCache, HostContentServices.Log);
-            var contentServices = new ContentServices(_ioService, _textureCache, undoService, keyProcessor, _newAnimation, this);
+            KeyProcessorService keyProcessor = new(_textureCache, HostContentServices.Log);
+            ContentServices contentServices = new(_ioService, _textureCache, undoService, keyProcessor, _newAnimation, this);
 
             (textures, primarySprite) = await _ioService.LoadDependenciesAsync(file);
             (bgTexture, bgTextureFile) = await LoadBackgroundTextureAsync(_ioService, file.Metadata.DependsOn);
@@ -1189,8 +1189,8 @@ internal class AnimationEditorPlugIn
 
             _keyMetadata = GetKeyMetadata(controller.RegisteredTracks);
 
-            var tracks = new List<Track>();
-            var excluded = new List<Track>();
+            List<Track> tracks = [];
+            List<Track> excluded = [];
             BuildAnimationTrackViewModels(tracks, excluded, controller, maxKeyCount, animation.SingleTracks);
             BuildAnimationTrackViewModels(tracks, excluded, controller, maxKeyCount, animation.Vector2Tracks);
             BuildAnimationTrackViewModels(tracks, excluded, controller, maxKeyCount, animation.Vector3Tracks);
@@ -1209,25 +1209,25 @@ internal class AnimationEditorPlugIn
             }
 
             // Filter any tracks that we can't really represent in the editor.
-            var availableTracks = new ObservableCollection<GorgonTrackRegistration>(controller.RegisteredTracks.Where(item => !tracks.Any(trackItem => item.ID == trackItem.ID)
+            ObservableCollection<GorgonTrackRegistration> availableTracks = new(controller.RegisteredTracks.Where(item => !tracks.Any(trackItem => item.ID == trackItem.ID)
                                                                                                                 // Skip superfluous tracks and depth related tracks, we have no 
                                                                                                                 // good way to represent them at this time.
                                                                                                                 && (!_excludedTracks.Contains(item))));
 
             // Set up sub panel view models.
-            var newTrack = new AddTrack();
+            AddTrack newTrack = new();
             newTrack.Initialize(new AddTrackParameters(availableTracks, HostContentServices));
 
-            var animProperties = new AnimProperties();
+            AnimProperties animProperties = new();
             animProperties.Initialize(new PropertiesParameters(animation, HostContentServices));
 
-            var floatKeyEditor = new KeyValueEditor();
+            KeyValueEditor floatKeyEditor = new();
             floatKeyEditor.Initialize(new HostedPanelViewModelParameters(HostContentServices));
 
-            var colorKeyEditor = new ColorValueEditor();
+            ColorValueEditor colorKeyEditor = new();
             colorKeyEditor.Initialize(new HostedPanelViewModelParameters(HostContentServices));
 
-            var keyEditor = new KeyEditorContext();
+            KeyEditorContext keyEditor = new();
             keyEditor.Initialize(new KeyEditorContextParameters(content, fileManager, floatKeyEditor, colorKeyEditor, controller, contentServices, HostContentServices));
 
             content.Initialize(new AnimationContentParameters(file,

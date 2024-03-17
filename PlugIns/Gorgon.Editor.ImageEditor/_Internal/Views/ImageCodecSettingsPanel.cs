@@ -87,7 +87,7 @@ internal partial class ImageCodecSettingsPanel
 
             foreach (CodecSetting setting in dataContext.CodecPlugInPaths)
             {
-                var item = new ListViewItem
+                ListViewItem item = new()
                 {
                     Text = setting.Description,
                     Name = setting.Name,
@@ -171,7 +171,7 @@ internal partial class ImageCodecSettingsPanel
                 case NotifyCollectionChangedAction.Add:
                     foreach (CodecSetting setting in e.NewItems.OfType<CodecSetting>())
                     {
-                        var item = new ListViewItem
+                        ListViewItem item = new()
                         {
                             Text = setting.Description,
                             Name = setting.Name,

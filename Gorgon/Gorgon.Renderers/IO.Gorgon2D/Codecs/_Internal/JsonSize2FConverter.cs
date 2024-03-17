@@ -41,7 +41,7 @@ internal class JsonSize2FConverter
     /// <param name="serializer">The calling serializer.</param>
     public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
     {
-        var v2 = (DX.Size2F)value;
+        DX.Size2F v2 = (DX.Size2F)value;
         writer.WriteStartObject();
         writer.WritePropertyName("w");
         writer.WriteValue(v2.Width);

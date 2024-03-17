@@ -286,7 +286,7 @@ public class GorgonV1AnimationCodec
     /// <returns>A list of track times and vector2 values.</returns>
     private static IReadOnlyList<(float time, Vector2 value)> ReadVec2(GorgonBinaryReader reader, int keyCount)
     {
-        var keys = new (float, Vector2)[keyCount];
+        (float, Vector2)[] keys = new (float, Vector2)[keyCount];
 
         for (int i = 0; i < keyCount; ++i)
         {
@@ -307,7 +307,7 @@ public class GorgonV1AnimationCodec
     /// <returns>A list of track times and float values.</returns>
     private static IReadOnlyList<(float time, float value)> ReadFloat(GorgonBinaryReader reader, int keyCount)
     {
-        var keys = new (float, float)[keyCount];
+        (float, float)[] keys = new (float, float)[keyCount];
 
         for (int i = 0; i < keyCount; ++i)
         {
@@ -328,7 +328,7 @@ public class GorgonV1AnimationCodec
     /// <returns>A list of track times and int32 values.</returns>
     private static IReadOnlyList<(float time, int value)> ReadInt32(GorgonBinaryReader reader, int keyCount)
     {
-        var keys = new (float, int)[keyCount];
+        (float, int)[] keys = new (float, int)[keyCount];
 
         for (int i = 0; i < keyCount; ++i)
         {
@@ -349,7 +349,7 @@ public class GorgonV1AnimationCodec
     /// <returns>A list of track keys.</returns>
     private IReadOnlyList<(float time, GorgonTexture2DView texture, DX.RectangleF uv, string textureName)> ReadTexture(GorgonBinaryReader reader, int keyCount)
     {
-        var keys = new List<(float, GorgonTexture2DView, DX.RectangleF, string)>(keyCount);
+        List<(float, GorgonTexture2DView, DX.RectangleF, string)> keys = new(keyCount);
 
         for (int i = 0; i < keyCount; ++i)
         {
@@ -406,7 +406,7 @@ public class GorgonV1AnimationCodec
     /// <returns>The animations in the sprite data.</returns>>
     private IReadOnlyList<IGorgonAnimation> ReadLatestVersion(GorgonBinaryReader reader, GorgonAnimationBuilder builder, int count)
     {
-        var result = new IGorgonAnimation[count];
+        IGorgonAnimation[] result = new IGorgonAnimation[count];
 
         for (int i = 0; i < count; ++i)
         {
@@ -583,9 +583,9 @@ public class GorgonV1AnimationCodec
     /// <returns>A new <see cref="IGorgonAnimation"/>.</returns>
     private IReadOnlyList<IGorgonAnimation> OnReadMultipleFromStream(Stream stream, bool firstOnly)
     {
-        var builder = new GorgonAnimationBuilder();
+        GorgonAnimationBuilder builder = new();
 
-        using var reader = new GorgonBinaryReader(stream, true);
+        using GorgonBinaryReader reader = new(stream, true);
         string headerVersion = reader.ReadString();
         if ((!headerVersion.StartsWith("GORSPR", StringComparison.OrdinalIgnoreCase))
             || (headerVersion.Length < 7)
@@ -647,7 +647,7 @@ public class GorgonV1AnimationCodec
     /// <returns>The animations in the sprite data.</returns>>
     private IReadOnlyList<IGorgonAnimation> ReadV10AnimationData(GorgonBinaryReader reader, GorgonAnimationBuilder builder, int count)
     {
-        var result = new IGorgonAnimation[count];
+        IGorgonAnimation[] result = new IGorgonAnimation[count];
 
         for (int i = 0; i < count; ++i)
         {
@@ -717,7 +717,7 @@ public class GorgonV1AnimationCodec
                     interpSet = true;
                 }
 
-                var color = new GorgonColor(reader.ReadInt32());
+                GorgonColor color = new(reader.ReadInt32());
                 // We don't use alpha mask value.
                 reader.ReadInt32();
 
@@ -737,7 +737,7 @@ public class GorgonV1AnimationCodec
                 GorgonTexture2DView view = null;
                 Vector2 imageOffset = Vector2.Zero;
                 Vector2 imageSize = Vector2.One;
-                var texCoords = new DX.RectangleF(imageOffset.X, imageOffset.Y, imageSize.X, imageSize.Y);
+                DX.RectangleF texCoords = new(imageOffset.X, imageOffset.Y, imageSize.X, imageSize.Y);
 
                 if (!string.IsNullOrWhiteSpace(imageName))
                 {
@@ -812,7 +812,7 @@ public class GorgonV1AnimationCodec
 
         try
         {
-            var reader = new GorgonBinaryReader(stream, true);
+            GorgonBinaryReader reader = new(stream, true);
 
             // If we don't have at least 10 bytes, then this file is not valid.
             if ((stream.Length - stream.Position) < 16)
@@ -883,7 +883,7 @@ public class GorgonV1AnimationCodec
     /// <returns><b>true</b> if the data can be read, or <b>false</b> if not.</returns>
     protected override bool OnIsReadable(Stream stream)
     {
-        using var reader = new GorgonBinaryReader(stream, true);
+        using GorgonBinaryReader reader = new(stream, true);
         // If we don't have at least 10 bytes, then this file is not valid.
         if ((stream.Length - stream.Position) < 16)
         {

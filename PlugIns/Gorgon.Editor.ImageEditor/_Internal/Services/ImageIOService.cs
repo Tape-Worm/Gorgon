@@ -114,7 +114,7 @@ internal class ImageIOService(IGorgonImageCodec defaultCodec,
     /// <returns>The source file information, image data, the virtual file entry for the working file and the original pixel format of the file.</returns>
     public (FileInfo file, IGorgonImage image, IGorgonVirtualFile workingFile, BufferFormat originalFormat) ImportImage(IGorgonImageCodec codec, string filePath)
     {
-        var file = new FileInfo(filePath);
+        FileInfo file = new(filePath);
         IGorgonImageCodec importCodec = codec;
         IGorgonImageInfo metaData = null;
         IGorgonVirtualFile workFile = null;
@@ -147,7 +147,7 @@ internal class ImageIOService(IGorgonImageCodec defaultCodec,
 
 
             // We absolutely need to have an extension, or else the texconv tool will not work.
-            var codecExtension = new GorgonFileExtension(importCodec.CodecCommonExtensions[0]);
+            GorgonFileExtension codecExtension = new(importCodec.CodecCommonExtensions[0]);
             _log.Print($"Adding {codecExtension.Extension} extension to working file or else external tools may not be able to read it.", LoggingLevel.Verbose);
             workFilePath = $"{workFilePath}.{codecExtension.Extension}";
 
@@ -156,7 +156,7 @@ internal class ImageIOService(IGorgonImageCodec defaultCodec,
         }
 
         workFile = ScratchArea.FileSystem.GetFile(workFilePath);
-        var formatInfo = new GorgonFormatInfo(metaData.Format);
+        GorgonFormatInfo formatInfo = new(metaData.Format);
 
         // This is always in DDS format.
         if (formatInfo.IsCompressed)
@@ -229,7 +229,7 @@ internal class ImageIOService(IGorgonImageCodec defaultCodec,
 
         _busyState.SetBusy();
 
-        var result = new FileInfo(exportFilePath);
+        FileInfo result = new(exportFilePath);
 
         _log.Print($"Exporting '{file.Name}' to '{exportFilePath}' as {codec.CodecDescription}", LoggingLevel.Verbose);
 
@@ -261,7 +261,7 @@ internal class ImageIOService(IGorgonImageCodec defaultCodec,
         }
 
         IGorgonVirtualFile workFile = ScratchArea.FileSystem.GetFile(name);
-        var formatInfo = new GorgonFormatInfo(pixelFormat);
+        GorgonFormatInfo formatInfo = new(pixelFormat);
 
         // The file doesn't exist, so we need to create a dummy file.
         if (workFile is null)
@@ -474,7 +474,7 @@ internal class ImageIOService(IGorgonImageCodec defaultCodec,
 
         IGorgonImageInfo imageInfo = DefaultCodec.GetMetaData(file);
         originalFormat = imageInfo.Format;
-        var formatInfo = new GorgonFormatInfo(imageInfo.Format);
+        GorgonFormatInfo formatInfo = new(imageInfo.Format);
 
         // We absolutely need to have an extension, or else the texconv tool will not work.
         if ((DefaultCodec.CodecCommonExtensions.Count > 0)

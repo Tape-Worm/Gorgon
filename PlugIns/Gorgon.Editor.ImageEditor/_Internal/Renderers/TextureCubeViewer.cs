@@ -142,10 +142,10 @@ internal class TextureCubeViewer(Gorgon2D renderer, GorgonSwapChain swapChain, G
     /// <summary>Function to draw the texture.</summary>
     protected override void DrawTexture()
     {
-        var tileSize = new Vector2(DataContext.Width, DataContext.Height);
-        var bounds = new DX.RectangleF(-tileSize.X, -tileSize.Y * 0.5f, tileSize.X, tileSize.Y);
+        Vector2 tileSize = new(DataContext.Width, DataContext.Height);
+        DX.RectangleF bounds = new(-tileSize.X, -tileSize.Y * 0.5f, tileSize.X, tileSize.Y);
         Vector3 tileClient = Camera.Unproject(new Vector3(bounds.Location.X, bounds.Location.Y, 0));
-        var clientBounds = new DX.RectangleF(tileClient.X, tileClient.Y, tileSize.X * Camera.Zoom.X, tileSize.Y * Camera.Zoom.X);
+        DX.RectangleF clientBounds = new(tileClient.X, tileClient.Y, tileSize.X * Camera.Zoom.X, tileSize.Y * Camera.Zoom.X);
         int cubeGroup = DataContext.CurrentArrayIndex / 6;
 
         _cubeImageBounds[0] = new DX.RectangleF(bounds.Left + bounds.Width, bounds.Top, bounds.Width, bounds.Height);
@@ -188,9 +188,9 @@ internal class TextureCubeViewer(Gorgon2D renderer, GorgonSwapChain swapChain, G
         _selectionRect.Animate();
         _selectionRect.Draw(_cubeScreenBounds[selectedImage]);
 
-        var offset = new Vector2(0, "+X".MeasureLine(_axisFont, true).Height);
+        Vector2 offset = new(0, "+X".MeasureLine(_axisFont, true).Height);
 
-        var bottomLeft = new Vector2(_cubeScreenBounds[0].BottomLeft.X, _cubeScreenBounds[0].BottomLeft.Y);
+        Vector2 bottomLeft = new(_cubeScreenBounds[0].BottomLeft.X, _cubeScreenBounds[0].BottomLeft.Y);
         Renderer.DrawString("+X", bottomLeft - offset, _axisFont, new GorgonColor(GorgonColor.White, Opacity));
         bottomLeft = new Vector2(_cubeScreenBounds[1].BottomLeft.X, _cubeScreenBounds[1].BottomLeft.Y);
         Renderer.DrawString("-X", bottomLeft - offset, _axisFont, new GorgonColor(GorgonColor.White, Opacity));

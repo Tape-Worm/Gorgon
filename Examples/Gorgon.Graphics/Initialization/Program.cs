@@ -280,7 +280,7 @@ internal static class Program
                 // We should check, just in case.
                 if (output is not null)
                 {
-                    var mode = new GorgonVideoMode(_swap.Width, _swap.Height, _swap.Format);
+                    GorgonVideoMode mode = new(_swap.Width, _swap.Height, _swap.Format);
 
                     // Find the best video mode that matches the settings we've requested.
                     output.VideoModes.FindNearestVideoMode(output, in mode, out GorgonVideoMode actualMode);
@@ -328,7 +328,7 @@ internal static class Program
         }
 
         // Find an appropriate video mode.
-        var searchMode = new GorgonVideoMode(GorgonApplication.MainForm.ClientSize.Width,
+        GorgonVideoMode searchMode = new(GorgonApplication.MainForm.ClientSize.Width,
                                              GorgonApplication.MainForm.ClientSize.Height,
                                              BufferFormat.R8G8B8A8_UNorm);
         output.VideoModes.FindNearestVideoMode(output, in searchMode, out GorgonVideoMode nearestMode);

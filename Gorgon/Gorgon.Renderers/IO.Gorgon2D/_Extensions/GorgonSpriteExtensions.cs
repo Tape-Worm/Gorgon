@@ -62,7 +62,7 @@ public static class GorgonSpriteExtensions
             throw new ArgumentNullException(nameof(sprite));
         }
 
-        var serializer = new JsonSerializer
+        JsonSerializer serializer = new()
         {
             CheckAdditionalContent = false,
             Formatting = prettyFormat ? Formatting.Indented : Formatting.None
@@ -76,7 +76,7 @@ public static class GorgonSpriteExtensions
         serializer.Converters.Add(new JsonSamplerConverter(null));
         serializer.Converters.Add(new JsonTexture2DConverter(null, null));
 
-        var jsonObj = JObject.FromObject(sprite, serializer);
+        JObject jsonObj = JObject.FromObject(sprite, serializer);
         JToken firstProp = jsonObj.First;
         firstProp.AddBeforeSelf(new JProperty(JsonHeaderProp, GorgonSpriteCodecCommon.CurrentFileHeader));
         firstProp.AddBeforeSelf(new JProperty(JsonVersionProp, GorgonSpriteCodecCommon.CurrentVersion.ToString(2)));
@@ -99,7 +99,7 @@ public static class GorgonSpriteExtensions
             throw new ArgumentNullException(nameof(sprite));
         }
 
-        var serializer = new JsonSerializer
+        JsonSerializer serializer = new()
         {
             CheckAdditionalContent = false,
             Formatting = prettyFormat ? Formatting.Indented : Formatting.None
@@ -113,7 +113,7 @@ public static class GorgonSpriteExtensions
         serializer.Converters.Add(new JsonSamplerConverter(null));
         serializer.Converters.Add(new JsonTexture2DConverter(null, null));
 
-        var jsonObj = JObject.FromObject(sprite, serializer);
+        JObject jsonObj = JObject.FromObject(sprite, serializer);
         JToken firstProp = jsonObj.First;
         firstProp.AddBeforeSelf(new JProperty(JsonHeaderProp, GorgonPolySpriteCodecCommon.CurrentFileHeader));
         firstProp.AddBeforeSelf(new JProperty(JsonVersionProp, GorgonPolySpriteCodecCommon.CurrentVersion.ToString(2)));

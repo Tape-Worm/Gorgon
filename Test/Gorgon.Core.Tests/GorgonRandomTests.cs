@@ -21,7 +21,7 @@ public class GorgonRandomTests
     [TestMethod]
     public void SimplexNoise_Vector2Seed_ReturnsExpectedValue()
     {
-        Vector2 seed = new Vector2(0.5f, 0.5f);
+        Vector2 seed = new(0.5f, 0.5f);
         float result = GorgonRandom.SimplexNoise(seed);
         Assert.IsTrue(result >= -1.0f && result <= 1.0f);
     }
@@ -29,7 +29,7 @@ public class GorgonRandomTests
     [TestMethod]
     public void SimplexNoise_Vector3Seed_ReturnsExpectedValue()
     {
-        Vector3 seed = new Vector3(0.5f, 0.5f, 0.5f);
+        Vector3 seed = new(0.5f, 0.5f, 0.5f);
         float result = GorgonRandom.SimplexNoise(seed);
         Assert.IsTrue(result >= -1.0f && result <= 1.0f);
     }
@@ -56,7 +56,7 @@ public class GorgonRandomTests
     [TestMethod]
     public void SimplexNoise_Vector2Seed_ReturnsSameValueForSameSeed()
     {
-        Vector2 seed = new Vector2(0.3f, 0.7f);
+        Vector2 seed = new(0.3f, 0.7f);
         float result1 = GorgonRandom.SimplexNoise(seed);
         float result2 = GorgonRandom.SimplexNoise(seed);
         Assert.AreEqual(result1, result2);
@@ -65,8 +65,8 @@ public class GorgonRandomTests
     [TestMethod]
     public void SimplexNoise_Vector2Seed_ReturnsDifferentValueForDifferentSeed()
     {
-        Vector2 seed1 = new Vector2(0.3f, 0.7f);
-        Vector2 seed2 = new Vector2(0.4f, 0.8f);
+        Vector2 seed1 = new(0.3f, 0.7f);
+        Vector2 seed2 = new(0.4f, 0.8f);
         float result1 = GorgonRandom.SimplexNoise(seed1);
         float result2 = GorgonRandom.SimplexNoise(seed2);
         Assert.AreNotEqual(result1, result2);
@@ -75,7 +75,7 @@ public class GorgonRandomTests
     [TestMethod]
     public void SimplexNoise_Vector3Seed_ReturnsSameValueForSameSeed()
     {
-        Vector3 seed = new Vector3(0.1f, 0.2f, 0.3f);
+        Vector3 seed = new(0.1f, 0.2f, 0.3f);
         float result1 = GorgonRandom.SimplexNoise(seed);
         float result2 = GorgonRandom.SimplexNoise(seed);
         Assert.AreEqual(result1, result2);
@@ -84,8 +84,8 @@ public class GorgonRandomTests
     [TestMethod]
     public void SimplexNoise_Vector3Seed_ReturnsDifferentValueForDifferentSeed()
     {
-        Vector3 seed1 = new Vector3(0.1f, 0.2f, 0.3f);
-        Vector3 seed2 = new Vector3(0.4f, 0.5f, 0.6f);
+        Vector3 seed1 = new(0.1f, 0.2f, 0.3f);
+        Vector3 seed2 = new(0.4f, 0.5f, 0.6f);
         float result1 = GorgonRandom.SimplexNoise(seed1);
         float result2 = GorgonRandom.SimplexNoise(seed2);
         Assert.AreNotEqual(result1, result2);

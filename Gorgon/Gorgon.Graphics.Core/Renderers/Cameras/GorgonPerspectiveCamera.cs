@@ -208,10 +208,10 @@ public class GorgonPerspectiveCamera(GorgonGraphics graphics, DX.Size2F viewDime
     {
         Vector3 up = upVector ?? Vector3.UnitY;
 
-        var zaxis = Vector3.Normalize(target - PositionRef);
-        var xaxis = Vector3.Normalize(Vector3.Cross(up, zaxis));
-        var yaxis = Vector3.Cross(zaxis, xaxis);
-        var lookMatrix = default(Matrix4x4);
+        Vector3 zaxis = Vector3.Normalize(target - PositionRef);
+        Vector3 xaxis = Vector3.Normalize(Vector3.Cross(up, zaxis));
+        Vector3 yaxis = Vector3.Cross(zaxis, xaxis);
+        Matrix4x4 lookMatrix = default;
         lookMatrix.M11 = xaxis.X;
         lookMatrix.M12 = yaxis.X;
         lookMatrix.M13 = zaxis.X;

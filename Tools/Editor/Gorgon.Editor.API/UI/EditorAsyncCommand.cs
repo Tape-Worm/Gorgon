@@ -74,14 +74,14 @@ public class EditorAsyncCommand<T>
     /// <returns><b>true</b> if the command can be executed, <b>false</b> if not.</returns>
     public bool CanExecute(T args)
     {
-#pragma warning disable IDE0046 // Convert to conditional expression
+
         if ((_canExecute is null) && (_canExecuteNoArgs is null))
         {
             return true;
         }
 
         return _canExecute is not null ? _canExecute(args) : _canExecuteNoArgs();
-#pragma warning restore IDE0046 // Convert to conditional expression
+
     }
 
 

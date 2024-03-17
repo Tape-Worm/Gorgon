@@ -125,7 +125,7 @@ public static class GorgonResourceLocator
             throw new ArgumentNullException(nameof(graphics));
         }
 
-#pragma warning disable IDE0046 // Convert to conditional expression
+
         if (string.IsNullOrWhiteSpace(name))
         {
             return [];
@@ -145,7 +145,7 @@ public static class GorgonResourceLocator
                                    return !NameComparison(name, resource.Name, filterType, comparisonType) ? null : resource;
                                })
                        .Where(item => item is not null);
-#pragma warning restore IDE0046 // Convert to conditional expression
+
     }
 
     /// <summary>

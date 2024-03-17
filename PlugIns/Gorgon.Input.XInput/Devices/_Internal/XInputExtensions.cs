@@ -60,7 +60,7 @@ internal static class XInputExtensions
     /// <returns>The XInput user index.</returns>
     public static XI.UserIndex ToUserIndex(this Guid guid)
     {
-#pragma warning disable IDE0046 // Convert to conditional expression
+
         if (guid.Equals(_one))
         {
             return XI.UserIndex.One;
@@ -77,6 +77,6 @@ internal static class XInputExtensions
         }
 
         return guid.Equals(_four) ? XI.UserIndex.Four : XI.UserIndex.Any;
-#pragma warning restore IDE0046 // Convert to conditional expression
+
     }
 }

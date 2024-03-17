@@ -194,20 +194,20 @@ internal class IcoSphere
     /// <param name="indexList">List of indices.</param>
     private static void FixSeam(List<GorgonVertexPosNormUvTangent> vertexList, List<int> indexList)
     {
-        var newIndices = new List<int>();
-        var corrections = new Dictionary<int, int>();
+        List<int> newIndices = [];
+        Dictionary<int, int> corrections = [];
 
         for (int i = indexList.Count - 3; i >= 0; i -= 3)
         {
             // see if the texture coordinates appear in counter-clockwise order.
             // If so, the triangle needs to be rectified.
-            var v0 = new Vector3(vertexList[indexList[i + 0]].UV, 0);
-            var v1 = new Vector3(vertexList[indexList[i + 1]].UV, 0);
-            var v2 = new Vector3(vertexList[indexList[i + 2]].UV, 0);
+            Vector3 v0 = new(vertexList[indexList[i + 0]].UV, 0);
+            Vector3 v1 = new(vertexList[indexList[i + 1]].UV, 0);
+            Vector3 v2 = new(vertexList[indexList[i + 2]].UV, 0);
 
-            var diff1 = Vector3.Subtract(v0, v1);
-            var diff2 = Vector3.Subtract(v2, v1);
-            var cross = Vector3.Cross(diff1, diff2);
+            Vector3 diff1 = Vector3.Subtract(v0, v1);
+            Vector3 diff2 = Vector3.Subtract(v2, v1);
+            Vector3 cross = Vector3.Cross(diff1, diff2);
 
             if (cross.Z <= 0)
             {
@@ -264,7 +264,7 @@ internal class IcoSphere
 
         for (int i = 0; i < tesselation; ++i)
         {
-            var subIndices = new List<int[]>();
+            List<int[]> subIndices = [];
 
             foreach (int[] index in indices)
             {
@@ -311,8 +311,8 @@ internal class IcoSphere
         const float pi2Recip = 1.0f / (2.0f * (float)System.Math.PI);
 
         // Final list.
-        var vertexList = new List<GorgonVertexPosNormUvTangent>();
-        var indexList = new List<int>();
+        List<GorgonVertexPosNormUvTangent> vertexList = [];
+        List<int> indexList = [];
 
         foreach (Vector3 vector in _vertices)
         {
@@ -375,7 +375,7 @@ internal class IcoSphere
     /// <returns>The rectangle that represents a 2D axis aligned bounding box.</returns>
     public override DX.RectangleF GetAABB()
     {
-        var result = new DX.RectangleF(-Radius * 0.5f, -Radius * 0.5f, Radius, Radius);
+        DX.RectangleF result = new(-Radius * 0.5f, -Radius * 0.5f, Radius, Radius);
         result.Offset(Position.X, Position.Y);
 
         return result;
@@ -394,7 +394,7 @@ internal class IcoSphere
     {
         Radius = radius;
         PrimitiveType = PrimitiveType.TriangleList;
-        var orientation = Quaternion.CreateFromYawPitchRoll(angle.Y.ToRadians(), angle.X.ToRadians(), angle.Z.ToRadians());
+        Quaternion orientation = Quaternion.CreateFromYawPitchRoll(angle.Y.ToRadians(), angle.X.ToRadians(), angle.Z.ToRadians());
         _orientation = Matrix4x4.CreateFromQuaternion(orientation);
 
         BuildSphere(graphics, radius * 0.5f, subDivisions, textureCoordinates);

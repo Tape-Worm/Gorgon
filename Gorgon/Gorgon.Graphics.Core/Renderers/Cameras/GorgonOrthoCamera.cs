@@ -140,7 +140,7 @@ public class GorgonOrthoCamera(GorgonGraphics graphics, DX.Size2F viewDimensions
     /// <param name="projectionMatrix">The instance of the matrix to update.</param>
     protected override void UpdateProjectionMatrix(ref Matrix4x4 projectionMatrix)
     {
-        var anchor = new Vector2(Anchor.X * ViewDimensions.Width, Anchor.Y * ViewDimensions.Height);
+        Vector2 anchor = new(Anchor.X * ViewDimensions.Width, Anchor.Y * ViewDimensions.Height);
 
         float zRange = 1.0f / (MaximumDepth - MinimumDepth);
 
@@ -199,7 +199,7 @@ public class GorgonOrthoCamera(GorgonGraphics graphics, DX.Size2F viewDimensions
             Changes &= ~CameraChange.Position;
         }
 
-        var temp = Matrix4x4.Multiply(_rotation, _scale);
+        Matrix4x4 temp = Matrix4x4.Multiply(_rotation, _scale);
         viewMatrix = Matrix4x4.Multiply(_translate, temp);
     }
 

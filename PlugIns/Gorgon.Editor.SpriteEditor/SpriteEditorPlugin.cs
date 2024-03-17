@@ -358,7 +358,7 @@ internal class SpriteEditorPlugIn
                 return (null, null, _noImage.Clone());
             }
 
-            var texture = GorgonTexture2DView.FromStream(HostContentServices.GraphicsContext.Graphics, imgStream, _ddsCodec, options: new GorgonTexture2DLoadOptions
+            GorgonTexture2DView texture = GorgonTexture2DView.FromStream(HostContentServices.GraphicsContext.Graphics, imgStream, _ddsCodec, options: new GorgonTexture2DLoadOptions
             {
                 Binding = TextureBinding.ShaderResource,
                 Usage = ResourceUsage.Immutable,
@@ -466,7 +466,7 @@ internal class SpriteEditorPlugIn
     /// <param name="undoService">The undo service to use when correcting mistakes.</param>
     protected override void OnOpenInPlace(IContentFile file, IEditorContent current, IUndoService undoService)
     {
-        var content = current as SpriteContent;
+        SpriteContent content = current as SpriteContent;
 
         Debug.Assert(content is not null, "The content is not a sprite.");
 
@@ -499,7 +499,7 @@ internal class SpriteEditorPlugIn
     /// </remarks>
     protected async override Task<IEditorContent> OnOpenContentAsync(IContentFile file, IContentFileManager fileManager, IGorgonFileSystemWriter<Stream> scratchArea, IUndoService undoService)
     {
-        var content = new SpriteContent();
+        SpriteContent content = new();
         GorgonTexture2DView spriteImage = null;
         IContentFile imageFile;
         GorgonSprite sprite;
@@ -528,16 +528,16 @@ internal class SpriteEditorPlugIn
                 imageFile = null;
             }
 
-            var settings = new Settings();
+            Settings settings = new();
             settings.Initialize(new SettingsParameters(_settings, HostContentServices));
 
-            var spritePickMaskEditor = new SpritePickMaskEditor();
+            SpritePickMaskEditor spritePickMaskEditor = new();
             spritePickMaskEditor.Initialize(new SpritePickMaskEditorParameters(settings, HostContentServices));
 
-            var colorEditor = new SpriteColorEdit();
+            SpriteColorEdit colorEditor = new();
             colorEditor.Initialize(new HostedPanelViewModelParameters(HostContentServices));
 
-            var anchorEditor = new SpriteAnchorEdit();
+            SpriteAnchorEdit anchorEditor = new();
             anchorEditor.Initialize(new SpriteAnchorEditParameters(new DX.Rectangle
             {
                 Left = -HostContentServices.GraphicsContext.Graphics.VideoAdapter.MaxTextureWidth / 2,
@@ -546,16 +546,16 @@ internal class SpriteEditorPlugIn
                 Bottom = HostContentServices.GraphicsContext.Graphics.VideoAdapter.MaxTextureHeight / 2 - 1,
             }, HostContentServices));
 
-            var builder = new GorgonSamplerStateBuilder(HostContentServices.GraphicsContext.Graphics);
-            var wrapEditor = new SpriteTextureWrapEdit();
+            GorgonSamplerStateBuilder builder = new(HostContentServices.GraphicsContext.Graphics);
+            SpriteTextureWrapEdit wrapEditor = new();
             wrapEditor.Initialize(new SpriteTextureWrapEditParameters(builder, HostContentServices));
             wrapEditor.CurrentSampler = sprite.TextureSampler;
 
-            var spriteClipContext = new SpriteClipContext();
-            var spritePickContext = new SpritePickContext();
-            var spriteVertexEditContext = new SpriteVertexEditContext();
+            SpriteClipContext spriteClipContext = new();
+            SpritePickContext spritePickContext = new();
+            SpriteVertexEditContext spriteVertexEditContext = new();
 
-            var spriteContentServices = new SpriteContentServices(new NewSpriteService(fileManager, _ddsCodec),
+            SpriteContentServices spriteContentServices = new(new NewSpriteService(fileManager, _ddsCodec),
                                                                   textureService,
                                                                   undoService,
                                                                   builder);
@@ -666,7 +666,7 @@ internal class SpriteEditorPlugIn
         // Creates a sprite object and converts it to a byte array.
         RecyclableMemoryStream CreateSprite(DX.Size2F size, IContentFile textureFile)
         {
-            var sprite = new GorgonSprite
+            GorgonSprite sprite = new()
             {
                 Anchor = new Vector2(0.5f, 0.5f),
                 Size = size
@@ -693,7 +693,7 @@ internal class SpriteEditorPlugIn
 
             metadata.Attributes[CodecAttr] = _defaultCodec.GetType().FullName;
 
-            var stream = CommonEditorResources.MemoryStreamManager.GetStream() as RecyclableMemoryStream;
+            RecyclableMemoryStream stream = CommonEditorResources.MemoryStreamManager.GetStream() as RecyclableMemoryStream;
             _defaultCodec.Save(sprite, stream);
             // We don't need this now.
             sprite.Texture?.Dispose();
@@ -707,7 +707,7 @@ internal class SpriteEditorPlugIn
                                                     && (Is2DImage(item)))
                                             .ToArray();
 
-        using (var formName = new FormNewSprite
+        using (FormNewSprite formName = new()
         {
             ImageCodec = _ddsCodec,
             FileManager = ContentFileManager,

@@ -67,7 +67,7 @@ public class GorgonKeyStateCollection
     /// </summary>
     public void Reset()
     {
-        var keys = (Keys[])Enum.GetValues(typeof(Keys));
+        Keys[] keys = (Keys[])Enum.GetValues(typeof(Keys));
 
         foreach (Keys key in keys)
         {

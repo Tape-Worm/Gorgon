@@ -431,7 +431,7 @@ public class GorgonBinaryReader(Stream input, Encoding encoder, bool keepStreamO
     public T[] ReadRange<T>(int count)
         where T : unmanaged
     {
-        var array = new T[count];
+        T[] array = new T[count];
 
         ReadRange(array, 0, count);
 

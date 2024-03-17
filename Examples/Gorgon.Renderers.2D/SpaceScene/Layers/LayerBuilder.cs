@@ -48,7 +48,7 @@ internal static class LayerBuilder
     /// <returns>The background layer.</returns>
     public static BgStarLayer GetBackgroundLayer(Gorgon2D renderer, ResourceManagement resources)
     {
-        var backgroundLayer = new BgStarLayer(renderer)
+        BgStarLayer backgroundLayer = new(renderer)
         {
             PostProcessGroup = "Final Pass",					// These post process groups allow us to assign which sprite layers end up in post processing, and which are blitted immediately.
             StarsTexture = resources.Textures["/images/StarsNoAlpha"].GetShaderResourceView()
@@ -67,7 +67,7 @@ internal static class LayerBuilder
     public static SpritesLayer GetSunLayer(Gorgon2D renderer, ResourceManagement resources)
     {
         GorgonSprite sunSprite = resources.Sprites["/sprites/Star"];
-        var sunLayer = new SpritesLayer(renderer, resources.Effects)
+        SpritesLayer sunLayer = new(renderer, resources.Effects)
         {
             ParallaxLevel = 2980.0f,			// The sun is pretty far away the last I checked.
             Sprites =
@@ -107,7 +107,7 @@ internal static class LayerBuilder
     public static PlanetLayer GetPlanetLayer(GorgonGraphics graphics, ResourceManagement resources)
     {
         // Create our planet.
-        var planetLayer = new PlanetLayer(graphics, resources)
+        PlanetLayer planetLayer = new(graphics, resources)
         {
             ParallaxLevel = 50,		// Kinda far away.
             Planets =
@@ -159,7 +159,7 @@ internal static class LayerBuilder
     /// <returns>The sprite layer containing our ship.</returns>
     public static SpritesLayer GetShipLayer(Gorgon2D renderer, ResourceManagement resources)
     {
-        var ship = new SpritesLayer(renderer, resources.Effects)
+        SpritesLayer ship = new(renderer, resources.Effects)
         {
             DeferredLighter = resources.Effects["deferredLighting"] as Gorgon2DLightingEffect,
             GBuffer = resources.Effects["gbuffer"] as Gorgon2DGBuffer,

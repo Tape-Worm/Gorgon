@@ -281,7 +281,7 @@ public abstract class ContentPlugIn(string description)
 
         do
         {
-            var metadata = new ProjectItemMetadata
+            ProjectItemMetadata metadata = new()
             {
                 ContentMetadata = this as IContentPlugInMetadata,
                 PlugInName = Name,

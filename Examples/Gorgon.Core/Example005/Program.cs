@@ -75,12 +75,12 @@ internal static class Program
     private static void WriteRef(MemoryStream stream)
     {
         stream.Position = 0;
-        var writer = new GorgonBinaryWriter(stream, true);
-        var reader = new GorgonBinaryReader(stream, true);
+        GorgonBinaryWriter writer = new(stream, true);
+        GorgonBinaryReader reader = new(stream, true);
 
         try
         {
-            var data = new SomeTestData
+            SomeTestData data = new()
             {
                 Value1 = 1,
                 Value2 = 2.1,
@@ -118,12 +118,12 @@ internal static class Program
     private static void WriteByRefValueType(MemoryStream stream)
     {
         stream.Position = 0;
-        var writer = new GorgonBinaryWriter(stream, true);
-        var reader = new GorgonBinaryReader(stream, true);
+        GorgonBinaryWriter writer = new(stream, true);
+        GorgonBinaryReader reader = new(stream, true);
 
         try
         {
-            var data = new SomeTestData
+            SomeTestData data = new()
             {
                 Value1 = 1234,
                 Value2 = 3.1459,
@@ -161,12 +161,12 @@ internal static class Program
     {
         stream.Position = 0;
 
-        var writer = new GorgonBinaryWriter(stream, true);
-        var reader = new GorgonBinaryReader(stream, true);
+        GorgonBinaryWriter writer = new(stream, true);
+        GorgonBinaryReader reader = new(stream, true);
 
         try
         {
-            var expected = new SomeTestData[3];
+            SomeTestData[] expected = new SomeTestData[3];
 
             for (int i = 1; i < 4; ++i)
             {
@@ -186,7 +186,7 @@ internal static class Program
 
             stream.Position = 0;
 
-            var actual = new SomeTestData[4];
+            SomeTestData[] actual = new SomeTestData[4];
             reader.ReadRange(actual, 1);
 
             for (int i = 1; i < 4; ++i)
@@ -220,7 +220,7 @@ internal static class Program
     [STAThread]
     private static void Main()
     {
-        var stream = new MemoryStream();
+        MemoryStream stream = new();
 
         try
         {

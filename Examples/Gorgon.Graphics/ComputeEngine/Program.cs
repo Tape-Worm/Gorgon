@@ -212,7 +212,7 @@ internal class Program
     /// <returns>A list of errors if any were found, or an empty list if the operation was completely successful.</returns>
     private static IReadOnlyList<(int Index, OutputData Expected, OutputData Actual)> TestResults(OutputData[] results)
     {
-        var errors = new List<(int Index, OutputData Expected, OutputData Actual)>();
+        List<(int Index, OutputData Expected, OutputData Actual)> errors = [];
 
         // Compare the results.
         for (int i = 0; i < MaxValues; ++i)

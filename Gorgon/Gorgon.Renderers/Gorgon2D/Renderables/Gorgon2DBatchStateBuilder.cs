@@ -220,7 +220,7 @@ public class Gorgon2DBatchStateBuilder
     /// <returns>The object created or updated by this builder.</returns>
     public Gorgon2DBatchState Build()
     {
-        var result = new Gorgon2DBatchState
+        Gorgon2DBatchState result = new()
         {
             PixelShaderState = _worker.PixelShaderState,
             VertexShaderState = _worker.VertexShaderState,

@@ -305,7 +305,7 @@ public class GorgonSamplerState
     {
         Debug.Assert(Native is null, "Already have a native sampler state.");
 
-        var desc = new D3D11.SamplerStateDescription
+        D3D11.SamplerStateDescription desc = new()
         {
             BorderColor = BorderColor.ToRawColor4(),
             ComparisonFunction = (D3D11.Comparison)ComparisonFunction,

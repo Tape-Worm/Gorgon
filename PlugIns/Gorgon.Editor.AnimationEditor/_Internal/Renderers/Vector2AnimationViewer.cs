@@ -121,7 +121,7 @@ internal class Vector2AnimationViewer(Gorgon2D renderer, GorgonSwapChain swapCha
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
     private void AnchorEdit_AnchorChanged(object sender, EventArgs e)
     {
-        var offset = new Vector2((_anchorEdit.AnchorPosition.X + Sprite.ScaledSize.Width * 0.5f) / Sprite.ScaledSize.Width,
+        Vector2 offset = new((_anchorEdit.AnchorPosition.X + Sprite.ScaledSize.Width * 0.5f) / Sprite.ScaledSize.Width,
                                     (_anchorEdit.AnchorPosition.Y + Sprite.ScaledSize.Height * 0.5f) / Sprite.ScaledSize.Height);
 
         switch (SelectedTrackID)
@@ -210,7 +210,7 @@ internal class Vector2AnimationViewer(Gorgon2D renderer, GorgonSwapChain swapCha
                 Graphics.SetRenderTarget(MainRenderTarget);
             }
 
-            var halfRegion = new Vector2(RenderRegion.Width * 0.5f, RenderRegion.Height * 0.5f);
+            Vector2 halfRegion = new(RenderRegion.Width * 0.5f, RenderRegion.Height * 0.5f);
             vertices[0] = new Vector2(spriteVertices[0].Position.X - halfRegion.X, spriteVertices[0].Position.Y - halfRegion.Y);
             vertices[1] = new Vector2(spriteVertices[1].Position.X - halfRegion.X, spriteVertices[1].Position.Y - halfRegion.Y);
             vertices[2] = new Vector2(spriteVertices[3].Position.X - halfRegion.X, spriteVertices[3].Position.Y - halfRegion.Y);
@@ -295,7 +295,7 @@ internal class Vector2AnimationViewer(Gorgon2D renderer, GorgonSwapChain swapCha
             DisableEvents();
             try
             {
-                var spritePos = new Vector2(Sprite.Position.X - RenderRegion.Width * 0.5f, Sprite.Position.Y - RenderRegion.Height * 0.5f);
+                Vector2 spritePos = new(Sprite.Position.X - RenderRegion.Width * 0.5f, Sprite.Position.Y - RenderRegion.Height * 0.5f);
                 Vector2 anchorPos = Vector2.Zero;
 
                 switch (SelectedTrackID)
@@ -321,7 +321,7 @@ internal class Vector2AnimationViewer(Gorgon2D renderer, GorgonSwapChain swapCha
                         return;
                 }
 
-                var center = Vector2.Subtract(anchorPos, spritePos);
+                Vector2 center = Vector2.Subtract(anchorPos, spritePos);
 
                 _anchorEdit.AnchorPosition = anchorPos;
                 _anchorEdit.CenterPosition = center;

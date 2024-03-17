@@ -101,7 +101,7 @@ public partial class Form
 
             _picture.Image = null;
             _textDisplay.Text = string.Empty;
-            var file = (IGorgonVirtualFile)e.Node.Tag;
+            IGorgonVirtualFile file = (IGorgonVirtualFile)e.Node.Tag;
 
             // Here we load the image from the file system.
             // Note that we don't care if it's from the zip file
@@ -181,7 +181,7 @@ public partial class Form
     /// <param name="e">The <see cref="TreeViewCancelEventArgs" /> instance containing the event data.</param>
     private void TreeFileSystem_BeforeCollapse(object sender, TreeViewCancelEventArgs e)
     {
-        var directory = e.Node.Tag as IGorgonVirtualDirectory;
+        IGorgonVirtualDirectory directory = e.Node.Tag as IGorgonVirtualDirectory;
 
         try
         {
@@ -210,7 +210,7 @@ public partial class Form
         // plugin creates, even after the plugin is gone.
         _cache = new GorgonMefPlugInCache(Program.Log);
 
-        var providerFactory = new GorgonFileSystemProviderFactory(_cache, Program.Log);
+        GorgonFileSystemProviderFactory providerFactory = new(_cache, Program.Log);
         IGorgonFileSystemProvider provider = providerFactory.CreateProvider(Path.Combine(GorgonExample.GetPlugInPath().FullName, "Gorgon.FileSystem.Zip.DLL"), zipProviderPlugInName);
 
         _fileSystem = new GorgonFileSystem(provider, Program.Log);
@@ -275,7 +275,7 @@ public partial class Form
             // Get directories.
             foreach (IGorgonVirtualDirectory subDirectory in directories)
             {
-                var directoryNode = new TreeNode(subDirectory.Name)
+                TreeNode directoryNode = new(subDirectory.Name)
                 {
                     Name = subDirectory.FullPath,
                     Tag = subDirectory
@@ -312,7 +312,7 @@ public partial class Form
                     continue;
                 }
 
-                var fileNode = new TreeNode(file.Name)
+                TreeNode fileNode = new(file.Name)
                 {
                     Name = file.FullPath,
                     Tag = file

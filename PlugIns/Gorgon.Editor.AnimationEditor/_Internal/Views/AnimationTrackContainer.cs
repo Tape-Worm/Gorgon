@@ -132,7 +132,7 @@ internal partial class AnimationTrackContainer
     /// <param name="e">The <see cref="PropertyChangedEventArgs"/> instance containing the event data.</param>
     private void Track_PropertyChanged(object sender, PropertyChangedEventArgs e)
     {
-        var track = (ITrack)sender;
+        ITrack track = (ITrack)sender;
         DataGridViewRow row;
 
         DisableGridEvents();
@@ -182,8 +182,8 @@ internal partial class AnimationTrackContainer
     /// <param name="row">The row representing the track.</param>
     private void FillInterpolationCell(DataGridViewRow row)
     {
-        var cell = (DataGridViewComboBoxCell)row.Cells[0];
-        var track = (ITrack)row.Tag;
+        DataGridViewComboBoxCell cell = (DataGridViewComboBoxCell)row.Cells[0];
+        ITrack track = (ITrack)row.Tag;
 
         cell.Items.Clear();
 
@@ -211,7 +211,7 @@ internal partial class AnimationTrackContainer
 
         keyCount ??= dataContext.MaxKeyCount;
 
-        var columns = new DataGridViewColumn[keyCount.Value + 1];
+        DataGridViewColumn[] columns = new DataGridViewColumn[keyCount.Value + 1];
         float weight = 1.0f / columns.Length;
 
         columns[0] = new DataGridViewComboBoxColumn
@@ -272,7 +272,7 @@ internal partial class AnimationTrackContainer
             SetupGridColumns(ViewModel);
         }
 
-        var row = new DataGridViewRow
+        DataGridViewRow row = new()
         {
             Tag = track
         };
@@ -470,7 +470,7 @@ internal partial class AnimationTrackContainer
 
         List<int> keyIndices = null;
         int rowID = int.MinValue;
-        var result = new List<(int trackIndex, IReadOnlyList<int> keyIndices)>();
+        List<(int trackIndex, IReadOnlyList<int> keyIndices)> result = [];
         foreach (DataGridViewCell cell in GridTrackKeys.SelectedCells.OfType<DataGridViewCell>().OrderBy(c => c.RowIndex))
         {
             if (rowID != cell.RowIndex)
@@ -529,7 +529,7 @@ internal partial class AnimationTrackContainer
                 return;
             }
 
-            var track = GridTrackKeys.Rows[e.RowIndex].Tag as ITrack;
+            ITrack track = GridTrackKeys.Rows[e.RowIndex].Tag as ITrack;
             TrackInterpolationMode value = GridTrackKeys.Rows[e.RowIndex].Cells[0].EditedFormattedValue.IfNull(string.Empty).GetTrackInterpolationMode();
 
             if ((track?.SetInterpolationModeCommand is null) || (!track.SetInterpolationModeCommand.CanExecute(value)))
@@ -610,7 +610,7 @@ internal partial class AnimationTrackContainer
             return;
         }
 
-        var args = new GetTrackKeyArgs(e.ColumnIndex - 1, e.RowIndex);
+        GetTrackKeyArgs args = new(e.ColumnIndex - 1, e.RowIndex);
         if (!ViewModel.GetTrackKeyCommand.CanExecute(args))
         {
             return;
@@ -634,7 +634,7 @@ internal partial class AnimationTrackContainer
             return;
         }
 
-        var data = (KeyFrameCopyMoveData)e.Data.GetData(typeof(KeyFrameCopyMoveData));
+        KeyFrameCopyMoveData data = (KeyFrameCopyMoveData)e.Data.GetData(typeof(KeyFrameCopyMoveData));
 
         if (data?.KeyFrames is null)
         {
@@ -685,7 +685,7 @@ internal partial class AnimationTrackContainer
             return;
         }
 
-        var data = (KeyFrameCopyMoveData)e.Data.GetData(typeof(KeyFrameCopyMoveData));
+        KeyFrameCopyMoveData data = (KeyFrameCopyMoveData)e.Data.GetData(typeof(KeyFrameCopyMoveData));
 
         if (data?.KeyFrames is null)
         {
@@ -712,7 +712,7 @@ internal partial class AnimationTrackContainer
             return;
         }
 
-        var data = new DataObject();
+        DataObject data = new();
         _copyMoveData.Operation = ((ModifierKeys & Keys.Shift) == Keys.Shift) ? CopyMoveOperation.Copy : CopyMoveOperation.Move;
         _copyMoveData.KeyFrames = ViewModel.Selected;
         _copyMoveData.DestinationKeyIndex = -1;
@@ -765,10 +765,10 @@ internal partial class AnimationTrackContainer
         SetupGridColumns(dataContext);
 
         // Add any tracks that we've created previously.
-        var rows = new DataGridViewRow[dataContext.Tracks.Count];
+        DataGridViewRow[] rows = new DataGridViewRow[dataContext.Tracks.Count];
         for (int i = 0; i < rows.Length; ++i)
         {
-            var track = new DataGridViewRow
+            DataGridViewRow track = new()
             {
                 Tag = dataContext.Tracks[i]
             };
@@ -862,7 +862,7 @@ internal partial class AnimationTrackContainer
     {
         InitializeComponent();
 
-        var selected = GorgonColor.Lerp(Color.LimeGreen, GridTrackKeys.DefaultCellStyle.SelectionBackColor, 0.4f);
+        GorgonColor selected = GorgonColor.Lerp(Color.LimeGreen, GridTrackKeys.DefaultCellStyle.SelectionBackColor, 0.4f);
 
         _activeCellStyle = new DataGridViewCellStyle(GridTrackKeys.DefaultCellStyle)
         {

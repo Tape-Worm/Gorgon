@@ -81,9 +81,9 @@ internal class FileIOService(IContentFileManager fileSystem, IGorgonImageCodec i
     /// <returns>A list of sprites and their associated files.</returns>
     public IReadOnlyDictionary<IContentFile, GorgonSprite> LoadSprites(IEnumerable<IContentFile> files)
     {
-        var result = new Dictionary<IContentFile, GorgonSprite>();
+        Dictionary<IContentFile, GorgonSprite> result = [];
         Stream stream = null;
-        var textures = new Dictionary<string, GorgonTexture2DView>(StringComparer.OrdinalIgnoreCase);
+        Dictionary<string, GorgonTexture2DView> textures = new(StringComparer.OrdinalIgnoreCase);
 
         try
         {

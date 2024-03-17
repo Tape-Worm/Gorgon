@@ -84,7 +84,7 @@ internal class MessageFilterHook
             return UserApi.CallWindowProc(_defaultWndProc, hwnd, msg, wParam, lParam);
         }
 
-        var windowMessage = new Message
+        Message windowMessage = new()
         {
             HWnd = hwnd,
             Msg = msg,
@@ -172,7 +172,7 @@ internal class MessageFilterHook
             return;
         }
 
-        var filters = new List<RawInputMessageFilter>(_messageFilters);
+        List<RawInputMessageFilter> filters = new(_messageFilters);
         filters.Remove(filter);
 
         if (filters.Count == 0)

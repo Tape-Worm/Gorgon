@@ -124,7 +124,7 @@ internal partial class FontTextureBrushView
     /// <param name="e">The <see cref="EventArgs" /> instance containing the event data.</param>
     private void ComboWrapMode_SelectedIndexChanged(object sender, EventArgs e)
     {
-        var item = (WrapModeComboItem)ComboWrapMode.SelectedItem;
+        WrapModeComboItem item = (WrapModeComboItem)ComboWrapMode.SelectedItem;
 
         if ((ViewModel?.SetWrappingModeCommand is null) || (!ViewModel.SetWrappingModeCommand.CanExecute(item.WrapMode)))
         {

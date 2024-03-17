@@ -149,7 +149,7 @@ internal class LogConsoleProvider
                                                    (uint)FileMode.Open,
                                                    0,
                                                    IntPtr.Zero);
-            var handle = new SafeFileHandle(filePtr, true);
+            SafeFileHandle handle = new(filePtr, true);
             if (handle.IsInvalid)
             {
                 handle.Dispose();
@@ -158,8 +158,8 @@ internal class LogConsoleProvider
 
             KernelApi.SetStdHandle(KernelApi.StdOutputHandle, filePtr);
 
-            var stream = new FileStream(handle, FileAccess.Write);
-            var writer = new StreamWriter(stream, Encoding.Default)
+            FileStream stream = new(handle, FileAccess.Write);
+            StreamWriter writer = new(stream, Encoding.Default)
             {
                 AutoFlush = true
             };

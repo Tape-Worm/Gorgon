@@ -205,7 +205,7 @@ public partial class Form
         // Show our rendering statistics.
         if (_showStats)
         {
-            var rectPosition = new DX.RectangleF(0, 0, width, (_helpFont.FontHeight * 2.0f) + 2.0f);
+            DX.RectangleF rectPosition = new(0, 0, width, (_helpFont.FontHeight * 2.0f) + 2.0f);
             _renderer.DrawFilledRectangle(rectPosition, Color.FromArgb(192, Color.Black));
             _renderer.DrawLine(rectPosition.X, rectPosition.Bottom, rectPosition.Width, rectPosition.Bottom, Color.White);
             _renderer.DrawString($"FPS: {GorgonTiming.FPS:0.0}\nFrame Delta: {(GorgonTiming.Delta * 1000):0.0##} msec.",
@@ -248,7 +248,7 @@ public partial class Form
         GorgonExample.ResourceBaseDirectory = new DirectoryInfo(ExampleConfig.Default.ResourceLocation);
 
         // Resize and center the screen.
-        var screen = Screen.FromHandle(Handle);
+        Screen screen = Screen.FromHandle(Handle);
         ClientSize = new Size(ExampleConfig.Default.Resolution.Width, ExampleConfig.Default.Resolution.Height);
         Location = new Point(screen.Bounds.Left + (screen.WorkingArea.Width / 2) - (ClientSize.Width / 2),
                              screen.Bounds.Top + (screen.WorkingArea.Height / 2) - (ClientSize.Height / 2));

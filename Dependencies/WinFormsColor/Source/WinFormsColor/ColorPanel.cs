@@ -12,7 +12,6 @@ namespace Fetze.WinFormsColor;
 
 public class ColorPanel : UserControl
 {
-#pragma warning disable IDE0090 // Use 'new(...)'
     private Bitmap srcImage = null;
     private int pickerSize = 8;
     private PointF pickerPos = new PointF(0.5f, 0.5f);
@@ -431,6 +430,4 @@ public class ColorPanel : UserControl
     private bool ShouldSerializeTopRightColor() => designSerializeColor;
     private bool ShouldSerializeBottomLeftColor() => designSerializeColor;
     private bool ShouldSerializeBottomRightColor() => designSerializeColor;
-#pragma warning restore IDE0090 // Use 'new(...)'
-
 }

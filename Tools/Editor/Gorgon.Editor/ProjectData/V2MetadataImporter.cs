@@ -91,7 +91,7 @@ internal class V2MetadataImporter(string metadataFile, IGorgonLog log)
                 continue;
             }
 
-            var metadata = new ProjectItemMetadata()
+            ProjectItemMetadata metadata = new()
             {
                 PlugInName = null
             };
@@ -119,7 +119,7 @@ internal class V2MetadataImporter(string metadataFile, IGorgonLog log)
 
         _log.Print("Importing v2 Gorgon Editor file metadata...", LoggingLevel.Simple);
 
-        var document = XDocument.Load(_file);
+        XDocument document = XDocument.Load(_file);
 
         XElement rootNode = document.Element(RootNodeName);
 

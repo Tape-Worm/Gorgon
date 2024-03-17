@@ -88,13 +88,13 @@ public static class GorgonListViewExtensions
 
         nint columnHeader = UserApi.SendMessage(listView.Handle, LvmGetHeader, IntPtr.Zero, IntPtr.Zero);
         nint dc = UserApi.GetDC(columnHeader);
-        var g = Drawing.Graphics.FromHdc(dc);
+        Graphics g = Drawing.Graphics.FromHdc(dc);
 
         try
         {
             ColumnHeader header = listView.Columns[^1];
             Drawing.Rectangle bounds = GetHeaderBounds(listView);
-            var ncBounds = Drawing.Rectangle.FromLTRB(bounds.Right - header.Width, bounds.Top, bounds.Right, bounds.Height);
+            Rectangle ncBounds = Drawing.Rectangle.FromLTRB(bounds.Right - header.Width, bounds.Top, bounds.Right, bounds.Height);
             g.FillRectangle(brush, ncBounds);
         }
         finally
@@ -127,7 +127,7 @@ public static class GorgonListViewExtensions
         for (int columnNumber = 0; columnNumber < listViewControl.Columns.Count; columnNumber++)
         {
             nint columnPtr = columnNumber;
-            var item = new HDITEM
+            HDITEM item = new()
             {
                 mask = HeaderFormatMask
             };

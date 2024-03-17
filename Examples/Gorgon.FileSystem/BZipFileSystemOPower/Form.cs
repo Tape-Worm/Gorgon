@@ -117,7 +117,7 @@ public partial class Form
         _assemblyCache = new GorgonMefPlugInCache(GorgonApplication.Log);
         _assemblyCache.LoadPlugInAssemblies(GorgonExample.GetPlugInPath().FullName, gorPackDll);
 
-        var plugIns = new GorgonMefPlugInService(_assemblyCache);
+        GorgonMefPlugInService plugIns = new(_assemblyCache);
         return plugIns.GetPlugIn<GorgonFileSystemProvider>(gorPackPlugInName);
     }
 
@@ -266,7 +266,7 @@ public partial class Form
         GorgonExample.ResourceBaseDirectory = new DirectoryInfo(ExampleConfig.Default.ResourceLocation);
 
         // Resize and center the screen.
-        var screen = Screen.FromHandle(Handle);
+        Screen screen = Screen.FromHandle(Handle);
         ClientSize = new Size(ExampleConfig.Default.Resolution.Width, ExampleConfig.Default.Resolution.Height);
         Location = new Point(screen.Bounds.Left + (screen.WorkingArea.Width / 2) - (ClientSize.Width / 2),
                              screen.Bounds.Top + (screen.WorkingArea.Height / 2) - (ClientSize.Height / 2));

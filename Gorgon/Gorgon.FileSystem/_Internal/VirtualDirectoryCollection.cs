@@ -233,7 +233,7 @@ internal class VirtualDirectoryCollection(VirtualDirectory parent)
             }
             else
             {
-                var newDirectoryInfo = new VirtualDirectory(mountPoint, _parent.FileSystem, directory, item);
+                VirtualDirectory newDirectoryInfo = new(mountPoint, _parent.FileSystem, directory, item);
                 directory.Directories.Add(newDirectoryInfo);
                 directory = newDirectoryInfo;
             }

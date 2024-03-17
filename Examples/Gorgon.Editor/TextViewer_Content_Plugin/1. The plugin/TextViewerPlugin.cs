@@ -288,7 +288,7 @@ internal class TextViewerPlugin
         // example, so we'll use the default name provided by the editor.
 
         byte[] defaultText = Encoding.UTF8.GetBytes(Resources.DEFAULT_TEXT);
-        var stream = CommonEditorResources.MemoryStreamManager.GetStream(defaultText) as RecyclableMemoryStream;
+        RecyclableMemoryStream stream = CommonEditorResources.MemoryStreamManager.GetStream(defaultText) as RecyclableMemoryStream;
 
         return Task.FromResult<(string, RecyclableMemoryStream)>((generatedName, stream));
     }
@@ -310,7 +310,7 @@ internal class TextViewerPlugin
         // Even after creating a new piece of content, this method is still called.
         //
         // In here, we create and initialize our view model(s) for use with the content editor and read our content data into it.
-        var content = new TextContent();
+        TextContent content = new();
         StreamReader reader = null;
 
         try
@@ -337,12 +337,12 @@ internal class TextViewerPlugin
             //
             // To activate the panel, we merely have to set the CurrentPanel property on the main view model to an instance 
             // of the panel view model and the control will activate and the user can access the associated editor control.
-            var textColor = new TextColor();
+            TextColor textColor = new();
             textColor.Initialize(new HostedPanelViewModelParameters(HostContentServices));
 
             // This is a service that we can use to modify the text. It's here to show how to use a service as a means of 
             // keeping in-line with MVVM rules.
-            var textEditor = new TextEditorService();
+            TextEditorService textEditor = new();
 
             // Our concrete class for the view models will always have an Initialize method. This method is used to pass in services, 
             // data, etc... to the view model so we can perform operations and have access to functionality from the host application.

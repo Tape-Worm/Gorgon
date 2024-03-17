@@ -107,7 +107,7 @@ static class Program
         int fontWithGradient = GorgonRandom.RandomInt32(_glowIndex + 1, _glowIndex + 5);
         int fontWithTexture = GorgonRandom.RandomInt32(fontWithGradient + 1, fontWithGradient + 5).Min(_fontFamilies.Count - 1);
 
-        var pngCodec = new GorgonCodecPng();
+        GorgonCodecPng pngCodec = new();
         using IGorgonImage texture = pngCodec.FromFile(Path.Combine(GorgonExample.GetResourcePath(@"Textures\Fonts\").FullName, "Gradient.png"));
         for (int i = 0; i < _fontFamilies.Count; ++i)
         {
@@ -163,7 +163,7 @@ static class Program
 
             window.UpdateStatus($"Generating Font: {fontFamily}".Ellipses(50));
 
-            var fontInfo = new GorgonFontInfo(fontFamily,
+            GorgonFontInfo fontInfo = new(fontFamily,
                                               30.25f,
                                               GorgonFontHeightMode.Pixels)
             {
@@ -181,7 +181,7 @@ static class Program
             _font.Add(await GorgonExample.Fonts.GetFontAsync(fontInfo));
 
             // Texture brushes have to be disposed when we're done with them.
-            var disposableBrush = brush as IDisposable;
+            IDisposable disposableBrush = brush as IDisposable;
             disposableBrush?.Dispose();
         }
     }
@@ -197,7 +197,7 @@ static class Program
         DirectoryInfo dirInfo = GorgonExample.GetResourcePath("Fonts");
         FileInfo[] files = dirInfo.GetFiles("*.ttf", SearchOption.TopDirectoryOnly);
 
-        var fontFamilies = new List<Drawing.FontFamily>();
+        List<FontFamily> fontFamilies = [];
 
         return Task.Run(() =>
         {
@@ -213,7 +213,7 @@ static class Program
 
             // Load this font from our resources section.
             window.UpdateStatus($"Loading Resource Font...");
-            using (var stream = new MemoryStream(Resources.Achafexp))
+            using (MemoryStream stream = new(Resources.Achafexp))
             {
                 Drawing.FontFamily resFont = GorgonExample.Fonts.LoadTrueTypeFontFamily(stream);
                 _fontFamilies.Insert(0, resFont.Name);
@@ -244,7 +244,7 @@ static class Program
         _screen.RenderTargetView.Clear(_glowIndex != _fontIndex ? GorgonColor.CornFlowerBlue : new GorgonColor(0, 0, 0.2f));
 
         DX.Size2F textSize = _text.MeasureText(currentFont, false);
-        var position = new Vector2((int)((_screen.Width / 2.0f) - (textSize.Width / 2.0f)).Max(4.0f), (int)((_screen.Height / 2.0f) - (textSize.Height / 2.0f)).Max(100));
+        Vector2 position = new((int)((_screen.Width / 2.0f) - (textSize.Width / 2.0f)).Max(4.0f), (int)((_screen.Height / 2.0f) - (textSize.Height / 2.0f)).Max(100));
         _textSprite.Font = currentFont;
         _textSprite.Position = position;
 
@@ -360,14 +360,12 @@ static class Program
         // Use a callback so we can use async.
         static async void OnLoad(object sender, EventArgs e)
         {
-            var form = (FormMain)sender;
+            FormMain form = (FormMain)sender;
 
             // Create our fonts.
             try
             {
-#pragma warning disable IDE0007 // Use implicit type
                 IReadOnlyList<IGorgonVideoAdapterInfo> videoDevices = await Task.Run(() => GorgonGraphics.EnumerateAdapters(log: GorgonApplication.Log));
-#pragma warning restore IDE0007 // Use implicit type
 
                 if (videoDevices.Count == 0)
                 {

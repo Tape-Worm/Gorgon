@@ -186,7 +186,7 @@ internal class DefaultAnimationViewer(Gorgon2D renderer, GorgonSwapChain swapCha
         if ((Clipper is not null) && (!Clipper.IsDragging))
         {
             DX.RectangleF bounds = Renderer.MeasureSprite(Sprite);
-            var half = new Vector3(RenderRegion.Width * 0.5f, RenderRegion.Height * 0.5f, 0);
+            Vector3 half = new(RenderRegion.Width * 0.5f, RenderRegion.Height * 0.5f, 0);
             Vector3 upperLeft = new Vector3(bounds.Left, bounds.Top, 0) - half;
             Vector3 lowerRight = new Vector3(bounds.Right, bounds.Bottom, 0) - half;
 

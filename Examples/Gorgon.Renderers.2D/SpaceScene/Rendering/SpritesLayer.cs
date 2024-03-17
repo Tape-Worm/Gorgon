@@ -228,9 +228,9 @@ internal class SpritesLayer(Gorgon2D renderer, IReadOnlyDictionary<string, Gorgo
     /// <summary>Function used to load in resources required by the layer.</summary>
     public override void LoadResources()
     {
-        var builder = new Gorgon2DBatchStateBuilder();
+        Gorgon2DBatchStateBuilder builder = new();
 
-        var batchStates = new Dictionary<GorgonBlendState, Gorgon2DBatchState>
+        Dictionary<GorgonBlendState, Gorgon2DBatchState> batchStates = new()
         {
             { GorgonBlendState.Default, null }
         };

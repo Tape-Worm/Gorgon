@@ -142,11 +142,11 @@ internal class DirectInputDeviceInfo(DI.DeviceInstance devInstance)
         Capabilities = POVCount > 0 ? GamingDeviceCapabilityFlags.SupportsPOV : GamingDeviceCapabilityFlags.None;
 
         IList<DI.DeviceObjectInstance> axisInfo = joystick.GetObjects(DI.DeviceObjectTypeFlags.Axis);
-        var axisMappings = new Dictionary<GamingDeviceAxis, DI.DeviceObjectId>();
+        Dictionary<GamingDeviceAxis, DI.DeviceObjectId> axisMappings = [];
 
         foreach (DI.DeviceObjectInstance axis in axisInfo)
         {
-            var usage = (HIDUsage)axis.Usage;
+            HIDUsage usage = (HIDUsage)axis.Usage;
             DI.ObjectProperties properties = joystick.GetObjectPropertiesById(axis.ObjectId);
 
             // Skip this axis if retrieving the properties results in failure.

@@ -108,7 +108,7 @@ internal class PickSpriteViewer(Gorgon2D renderer, GorgonSwapChain swapChain, IS
     {
         GorgonRenderTargetView prevTarget = Graphics.RenderTargets[0];
         GorgonRange<float>? prevAlphaTest = Renderer.PrimitiveAlphaTestRange;
-        var clearRegion = _sprite.Texture.ToPixel(_sprite.TextureRegion).ToRectangleF();
+        DX.RectangleF clearRegion = _sprite.Texture.ToPixel(_sprite.TextureRegion).ToRectangleF();
 
         _spriteTarget.Clear(GorgonColor.BlackTransparent);
 
@@ -159,7 +159,7 @@ internal class PickSpriteViewer(Gorgon2D renderer, GorgonSwapChain swapChain, IS
             return;
         }
 
-        var position = new Vector2(args.CameraSpacePosition.X + RenderRegion.Width * 0.5f,
+        Vector2 position = new(args.CameraSpacePosition.X + RenderRegion.Width * 0.5f,
                                       args.CameraSpacePosition.Y + RenderRegion.Height * 0.5f);
 
         DX.RectangleF? newRect = _picker.Pick(position, DataContext.Settings.ClipMaskValue, DataContext.Settings.ClipMaskType);
@@ -181,7 +181,7 @@ internal class PickSpriteViewer(Gorgon2D renderer, GorgonSwapChain swapChain, IS
     {
         base.OnMouseMove(args);
 
-        var position = new Vector2(args.CameraSpacePosition.X + RenderRegion.Width * 0.5f,
+        Vector2 position = new(args.CameraSpacePosition.X + RenderRegion.Width * 0.5f,
                                       args.CameraSpacePosition.Y + RenderRegion.Height * 0.5f);
 
         if (RenderRegion.Contains(position.X, position.Y))
@@ -197,16 +197,16 @@ internal class PickSpriteViewer(Gorgon2D renderer, GorgonSwapChain swapChain, IS
     /// <summary>Function to draw the sprite.</summary>
     protected override void DrawSprite()
     {
-        var halfRegion = new Vector2(RenderRegion.Width * -0.5f, RenderRegion.Height * -0.5f);
+        Vector2 halfRegion = new(RenderRegion.Width * -0.5f, RenderRegion.Height * -0.5f);
 
         // We'll need to draw the marching ants rectangle in standard client space. 
         // So, we can just get the camera to tell us where that is.
-        var spriteTopLeft = new Vector3(_spriteRegion.Left, _spriteRegion.Top, 0);
-        var spriteBottomRight = new Vector3(_spriteRegion.Right, _spriteRegion.Bottom, 0);
+        Vector3 spriteTopLeft = new(_spriteRegion.Left, _spriteRegion.Top, 0);
+        Vector3 spriteBottomRight = new(_spriteRegion.Right, _spriteRegion.Bottom, 0);
         Camera.Unproject(in spriteTopLeft, out Vector3 transformedTopLeft);
         Camera.Unproject(in spriteBottomRight, out Vector3 transformedBottomRight);
 
-        var marchAntsRect = new DX.RectangleF
+        DX.RectangleF marchAntsRect = new()
         {
             Left = (int)transformedTopLeft.X,
             Top = (int)transformedTopLeft.Y,

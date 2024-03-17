@@ -227,7 +227,7 @@ public class GorgonDispatchCallBuilder
     /// </remarks>
     public GorgonDispatchCall Build(IGorgonAllocator<GorgonDispatchCall> allocator)
     {
-        var final = new GorgonDispatchCall();
+        GorgonDispatchCall final = new();
         final.Setup();
 
         // Copy over the available constants.

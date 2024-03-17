@@ -44,8 +44,8 @@ internal class SpriteTransformer
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static void BuildRenderable(BatchRenderable renderable)
     {
-        var vectorSize = new Vector2(renderable.Bounds.Width, renderable.Bounds.Height);
-        var axisOffset = Vector2.Multiply(renderable.Anchor, vectorSize);
+        Vector2 vectorSize = new(renderable.Bounds.Width, renderable.Bounds.Height);
+        Vector2 axisOffset = Vector2.Multiply(renderable.Anchor, vectorSize);
         renderable.Corners = new Vector4(-axisOffset.X, -axisOffset.Y, vectorSize.X - axisOffset.X, vectorSize.Y - axisOffset.Y);
     }
 
@@ -57,10 +57,10 @@ internal class SpriteTransformer
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static void UpdateTextureCoordinates(Gorgon2DVertex[] vertices, BatchRenderable renderable)
     {
-        var rightBottom = new Vector4(renderable.HorizontalFlip ? renderable.TextureRegion.Left : renderable.TextureRegion.Right,
+        Vector4 rightBottom = new(renderable.HorizontalFlip ? renderable.TextureRegion.Left : renderable.TextureRegion.Right,
                                              renderable.VerticalFlip ? renderable.TextureRegion.Top : renderable.TextureRegion.Bottom,
                                              renderable.TextureArrayIndex, 1.0f);
-        var leftTop = new Vector4(renderable.HorizontalFlip ? renderable.TextureRegion.Right : renderable.TextureRegion.Left,
+        Vector4 leftTop = new(renderable.HorizontalFlip ? renderable.TextureRegion.Right : renderable.TextureRegion.Left,
                                          renderable.VerticalFlip ? renderable.TextureRegion.Bottom : renderable.TextureRegion.Top,
                                          renderable.TextureArrayIndex, 1.0f);
 
@@ -93,10 +93,10 @@ internal class SpriteTransformer
     /// </remarks>
     private static void BuildPerspectiveModifier(Gorgon2DVertex[] vertices, ref Vector4 leftTop, ref Vector4 rightBottom, int arrayIndex)
     {
-        var v0 = new Vector2(vertices[0].Position.X, vertices[0].Position.Y);
-        var v1 = new Vector2(vertices[1].Position.X, vertices[1].Position.Y);
-        var v2 = new Vector2(vertices[2].Position.X, vertices[2].Position.Y);
-        var v3 = new Vector2(vertices[3].Position.X, vertices[3].Position.Y);
+        Vector2 v0 = new(vertices[0].Position.X, vertices[0].Position.Y);
+        Vector2 v1 = new(vertices[1].Position.X, vertices[1].Position.Y);
+        Vector2 v2 = new(vertices[2].Position.X, vertices[2].Position.Y);
+        Vector2 v3 = new(vertices[3].Position.X, vertices[3].Position.Y);
         ref Vector4 uv0 = ref vertices[0].UV;
         ref Vector4 uv1 = ref vertices[1].UV;
         ref Vector4 uv2 = ref vertices[2].UV;
@@ -105,8 +105,8 @@ internal class SpriteTransformer
         uv0.Z = uv1.Z = uv2.Z = uv3.Z = arrayIndex;
         uv0.W = uv1.W = uv2.W = uv3.W = 1.0f;
 
-        var va = Vector2.Subtract(v3, v0);
-        var vb = Vector2.Subtract(v2, v1);
+        Vector2 va = Vector2.Subtract(v3, v0);
+        Vector2 vb = Vector2.Subtract(v2, v1);
         float cross = va.X * vb.Y - va.Y * vb.X;
 
         if (cross == 0)
@@ -114,7 +114,7 @@ internal class SpriteTransformer
             return;
         }
 
-        var vc = Vector2.Subtract(v0, v1);
+        Vector2 vc = Vector2.Subtract(v0, v1);
         float u = (va.X * vc.Y - va.Y * vc.X) / cross;
         float v = (vb.X * vc.Y - vb.Y * vc.X) / cross;
 
@@ -156,10 +156,10 @@ internal class SpriteTransformer
                                           float angleSin,
                                           float angleCos)
     {
-        var upperLeft = new Vector2(renderable.Corners.X + renderable.UpperLeftOffset.X, renderable.Corners.Y + renderable.UpperLeftOffset.Y);
-        var upperRight = new Vector2(renderable.Corners.Z + renderable.UpperRightOffset.X, renderable.Corners.Y + renderable.UpperRightOffset.Y);
-        var lowerRight = new Vector2(renderable.Corners.Z + renderable.LowerRightOffset.X, renderable.Corners.W + renderable.LowerRightOffset.Y);
-        var lowerLeft = new Vector2(renderable.Corners.X + renderable.LowerLeftOffset.X, renderable.Corners.W + renderable.LowerLeftOffset.Y);
+        Vector2 upperLeft = new(renderable.Corners.X + renderable.UpperLeftOffset.X, renderable.Corners.Y + renderable.UpperLeftOffset.Y);
+        Vector2 upperRight = new(renderable.Corners.Z + renderable.UpperRightOffset.X, renderable.Corners.Y + renderable.UpperRightOffset.Y);
+        Vector2 lowerRight = new(renderable.Corners.Z + renderable.LowerRightOffset.X, renderable.Corners.W + renderable.LowerRightOffset.Y);
+        Vector2 lowerLeft = new(renderable.Corners.X + renderable.LowerLeftOffset.X, renderable.Corners.W + renderable.LowerLeftOffset.Y);
 
         ref Gorgon2DVertex v1 = ref renderable.Vertices[0];
         ref Gorgon2DVertex v2 = ref renderable.Vertices[1];

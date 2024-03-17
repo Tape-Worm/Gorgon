@@ -65,11 +65,11 @@ public partial class Form : System.Windows.Forms.Form
     {
         _swap.RenderTargetView.Clear(GorgonColor.White);
 
-        var windowSize = new DX.Size2F(ClientSize.Width, ClientSize.Height);
-        var imageSize = new DX.Size2F(_texture.Width, _texture.Height);
+        DX.Size2F windowSize = new(ClientSize.Width, ClientSize.Height);
+        DX.Size2F imageSize = new(_texture.Width, _texture.Height);
 
         // Calculate the scale between the images.
-        var scale = new DX.Size2F(windowSize.Width / imageSize.Width, windowSize.Height / imageSize.Height);
+        DX.Size2F scale = new(windowSize.Width / imageSize.Width, windowSize.Height / imageSize.Height);
 
         // Only scale on a single axis if we don't have a 1:1 aspect ratio.
         if (scale.Height > scale.Width)
@@ -82,10 +82,10 @@ public partial class Form : System.Windows.Forms.Form
         }
 
         // Scale the image.
-        var size = new DX.Size2((int)(scale.Width * imageSize.Width), (int)(scale.Height * imageSize.Height));
+        DX.Size2 size = new((int)(scale.Width * imageSize.Width), (int)(scale.Height * imageSize.Height));
 
         // Find the position.
-        var bounds = new DX.Rectangle((int)((windowSize.Width / 2) - (size.Width / 2)), (int)((windowSize.Height / 2) - (size.Height / 2)), size.Width, size.Height);
+        DX.Rectangle bounds = new((int)((windowSize.Width / 2) - (size.Width / 2)), (int)((windowSize.Height / 2) - (size.Height / 2)), size.Width, size.Height);
 
         GorgonExample.Blitter.Blit(_texture, bounds);
 

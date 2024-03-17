@@ -84,8 +84,8 @@ public class GorgonV3AnimationJsonCodec(Gorgon2D renderer)
     /// <returns>The data as a JSON.Net object.</returns>
     private static JsonReader GetJsonReader(Stream stream)
     {
-        var reader = new StreamReader(stream, Encoding.UTF8, true, 1024, true);
-        var jsonReader = new JsonTextReader(reader)
+        StreamReader reader = new(stream, Encoding.UTF8, true, 1024, true);
+        JsonTextReader jsonReader = new(reader)
         {
             CloseInput = true
         };
@@ -144,7 +144,7 @@ public class GorgonV3AnimationJsonCodec(Gorgon2D renderer)
     {
         List<GorgonKeyRectangle> ReadKeys()
         {
-            var keys = new List<GorgonKeyRectangle>();
+            List<GorgonKeyRectangle> keys = [];
             Type type = typeof(GorgonKeyRectangle);
 
             while ((reader.Read()) && (reader.TokenType != JsonToken.EndArray))
@@ -197,7 +197,7 @@ public class GorgonV3AnimationJsonCodec(Gorgon2D renderer)
     {
         List<GorgonKeyGorgonColor> ReadKeys()
         {
-            var keys = new List<GorgonKeyGorgonColor>();
+            List<GorgonKeyGorgonColor> keys = [];
             Type type = typeof(GorgonKeyGorgonColor);
 
             while ((reader.Read()) && (reader.TokenType != JsonToken.EndArray))
@@ -249,7 +249,7 @@ public class GorgonV3AnimationJsonCodec(Gorgon2D renderer)
     {
         List<GorgonKeyTexture2D> ReadKeys()
         {
-            var keys = new List<GorgonKeyTexture2D>();
+            List<GorgonKeyTexture2D> keys = [];
             Type type = typeof(GorgonKeyTexture2D);
 
             while ((reader.Read()) && (reader.TokenType != JsonToken.EndArray))
@@ -301,7 +301,7 @@ public class GorgonV3AnimationJsonCodec(Gorgon2D renderer)
     {
         List<GorgonKeySingle> ReadSingleKeys()
         {
-            var keys = new List<GorgonKeySingle>();
+            List<GorgonKeySingle> keys = [];
             Type vec3Type = typeof(GorgonKeyVector3);
 
             while ((reader.Read()) && (reader.TokenType != JsonToken.EndArray))
@@ -355,7 +355,7 @@ public class GorgonV3AnimationJsonCodec(Gorgon2D renderer)
     {
         List<GorgonKeyVector2> ReadVec3Keys()
         {
-            var keys = new List<GorgonKeyVector2>();
+            List<GorgonKeyVector2> keys = [];
             Type vec3Type = typeof(GorgonKeyVector3);
 
             while ((reader.Read()) && (reader.TokenType != JsonToken.EndArray))
@@ -406,7 +406,7 @@ public class GorgonV3AnimationJsonCodec(Gorgon2D renderer)
     {
         static IReadOnlyList<string> ReadTextureNames(JsonReader reader)
         {
-            var names = new List<string>();
+            List<string> names = [];
 
             while ((reader.Read()) && (reader.TokenType != JsonToken.EndArray))
             {
@@ -528,10 +528,10 @@ public class GorgonV3AnimationJsonCodec(Gorgon2D renderer)
         int loopCount = 0;
         bool isLooped = false;
 
-        var colorConvert = new JsonGorgonColorKeyConverter();
-        var textureConvert = new JsonTextureKeyConverter(renderer.Graphics);
-        var vec3Converter = new JsonVector3KeyConverter();
-        var rectConverter = new JsonRectKeyConverter();
+        JsonGorgonColorKeyConverter colorConvert = new();
+        JsonTextureKeyConverter textureConvert = new(renderer.Graphics);
+        JsonVector3KeyConverter vec3Converter = new();
+        JsonRectKeyConverter rectConverter = new();
 
         TrackInterpolationMode posInterp = TrackInterpolationMode.None;
         TrackInterpolationMode scaleInterp = TrackInterpolationMode.None;
@@ -548,8 +548,8 @@ public class GorgonV3AnimationJsonCodec(Gorgon2D renderer)
         List<GorgonKeyRectangle> bounds = null;
         List<GorgonKeyTexture2D> textures = null;
 
-        using (var baseReader = new StringReader(json))
-        using (var reader = new JsonTextReader(baseReader))
+        using (StringReader baseReader = new(json))
+        using (JsonTextReader reader = new(baseReader))
         {
             if (!IsReadableJObject(reader))
             {
@@ -610,7 +610,7 @@ public class GorgonV3AnimationJsonCodec(Gorgon2D renderer)
             throw new GorgonException(GorgonResult.CannotRead, Resources.GOR2DIO_ERR_JSON_NOT_ANIM);
         }
 
-        var builder = new GorgonAnimationBuilder();
+        GorgonAnimationBuilder builder = new();
 
         if ((positions is not null) && (positions.Count > 0))
         {
@@ -699,8 +699,8 @@ public class GorgonV3AnimationJsonCodec(Gorgon2D renderer)
             Graphics.Log.Print("WARNING: The texture overrides parameter is not supported for version 3 files. Textures will not be overridden.", Diagnostics.LoggingLevel.Intermediate);
         }
 
-        using var wrappedStream = new GorgonStreamWrapper(stream, stream.Position, byteCount, false);
-        using var reader = new StreamReader(wrappedStream, Encoding.UTF8, true, 80192, true);
+        using GorgonStreamWrapper wrappedStream = new(stream, stream.Position, byteCount, false);
+        using StreamReader reader = new(wrappedStream, Encoding.UTF8, true, 80192, true);
         string jsonString = reader.ReadToEnd();
         return FromJson(Renderer, jsonString);
     }

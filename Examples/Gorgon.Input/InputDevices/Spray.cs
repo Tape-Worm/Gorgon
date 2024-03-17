@@ -66,7 +66,7 @@ internal class Spray
             _graphics = null;
         }
 
-        var newBuffer = new Bitmap(newSize.Width, newSize.Height, PixelFormat.Format32bppArgb);
+        Bitmap newBuffer = new(newSize.Width, newSize.Height, PixelFormat.Format32bppArgb);
         _graphics = DrawingGraphics.FromImage(newBuffer);
 
         if (Surface is not null)
@@ -88,7 +88,7 @@ internal class Spray
     /// <param name="erase"><b>true</b> to erase, or <b>false</b> to draw with colors.</param>
     public void SprayPoint(Point point, bool erase)
     {
-        var randomArea = new Point(GorgonRandom.RandomInt32(-10, 10), GorgonRandom.RandomInt32(-10, 10));
+        Point randomArea = new(GorgonRandom.RandomInt32(-10, 10), GorgonRandom.RandomInt32(-10, 10));
         if (!erase)
         {
             _graphics.FillEllipse(_brushes[GorgonRandom.RandomInt32(0, _brushes.Length - 1)], new Rectangle(point.X + randomArea.X, point.Y + randomArea.Y, 10, 10));

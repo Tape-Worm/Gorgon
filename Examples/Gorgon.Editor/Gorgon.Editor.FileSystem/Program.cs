@@ -104,7 +104,7 @@ static class Program
 
         _screen.RenderTargetView.Clear(new GorgonColor(0.333333f, 0.752941f, 0.850980f));
 
-        var scale = new Vector2(_screen.Width / (float)ExampleConfig.Default.Resolution.Width,
+        Vector2 scale = new(_screen.Width / (float)ExampleConfig.Default.Resolution.Width,
                                    _screen.Height / (float)ExampleConfig.Default.Resolution.Height);
 
         _dudeBro.Position = new Vector2(_screen.Width * 0.5f, -139 + _backGround.Height * scale.Y * 0.5f);
@@ -152,7 +152,7 @@ static class Program
             _fileSystem.Mount(Path.Combine(GorgonExample.GetResourcePath("FileSystems").FullName, "Gorgon.Editor.FileSystem.gorPack"));
 
             window.UpdateStatus("Initializing graphics...");
-            var videoDevices = await Task.Run(() => GorgonGraphics.EnumerateAdapters(log: GorgonApplication.Log));
+            IReadOnlyList<IGorgonVideoAdapterInfo> videoDevices = await Task.Run(() => GorgonGraphics.EnumerateAdapters(log: GorgonApplication.Log));
 
             if (videoDevices.Count == 0)
             {

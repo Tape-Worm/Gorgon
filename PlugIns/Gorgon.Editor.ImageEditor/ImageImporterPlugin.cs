@@ -139,7 +139,7 @@ internal class ImageImporterPlugIn
         {
             return null;
         }
-        var extension = new GorgonFileExtension(fileExtension);
+        GorgonFileExtension extension = new(fileExtension);
 
         return codecs.CodecFileTypes.FirstOrDefault(item => item.extension == extension).codec;
     }

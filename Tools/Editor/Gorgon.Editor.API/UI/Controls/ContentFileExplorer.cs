@@ -320,8 +320,8 @@ public partial class ContentFileExplorer
 
         LabelNoFiles.Visible = false;
         GridFiles.Enabled = TextSearch.Enabled = true;
-        var rows = new List<DataGridViewRow>();
-        var selected = new List<DataGridViewRow>();
+        List<DataGridViewRow> rows = [];
+        List<DataGridViewRow> selected = [];
 
         foreach (ContentFileExplorerDirectoryEntry dirEntry in _entries)
         {
@@ -372,7 +372,7 @@ public partial class ContentFileExplorer
     /// <param name="e">The <see cref="PropertyChangedEventArgs"/> instance containing the event data.</param>
     private void DirEntry_PropertyChanged(object sender, PropertyChangedEventArgs e)
     {
-        var entry = (ContentFileExplorerDirectoryEntry)sender;
+        ContentFileExplorerDirectoryEntry entry = (ContentFileExplorerDirectoryEntry)sender;
 
         if (!_dirRowsXref.TryGetValue(entry, out DataGridViewRow row))
         {
@@ -401,7 +401,7 @@ public partial class ContentFileExplorer
     /// <param name="e">The <see cref="PropertyChangedEventArgs"/> instance containing the event data.</param>
     private void FileEntry_PropertyChanged(object sender, PropertyChangedEventArgs e)
     {
-        var entry = (ContentFileExplorerFileEntry)sender;
+        ContentFileExplorerFileEntry entry = (ContentFileExplorerFileEntry)sender;
 
         if (!_fileRowsXref.TryGetValue(entry, out DataGridViewRow row))
         {
@@ -498,7 +498,7 @@ public partial class ContentFileExplorer
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
     private void CheckboxHeader_Click(object sender, EventArgs e)
     {
-        var checkBox = (CheckBox)sender;
+        CheckBox checkBox = (CheckBox)sender;
 
         for (int i = 0; i < _entries.Count; ++i)
         {
@@ -536,8 +536,8 @@ public partial class ContentFileExplorer
             return;
         }
 
-        var fileList = new List<ContentFileExplorerFileEntry>();
-        var args = new ContentFileEntriesFocusedArgs(fileList);
+        List<ContentFileExplorerFileEntry> fileList = [];
+        ContentFileEntriesFocusedArgs args = new(fileList);
 
         foreach (DataGridViewRow row in GridFiles.SelectedRows.OfType<DataGridViewRow>().Reverse())
         {
@@ -852,7 +852,7 @@ public partial class ContentFileExplorer
     {
         e.Handled = true;
         Image image = dir.IsExpanded ? Resources.expanded_8x8 : Resources.collapsed_8x8;
-        var scaledSize = new SizeF(image.Width * dpiScaling, image.Height * dpiScaling);
+        SizeF scaledSize = new(image.Width * dpiScaling, image.Height * dpiScaling);
         e.PaintBackground(e.CellBounds, (e.State & DataGridViewElementStates.Selected) == DataGridViewElementStates.Selected);
         e.Graphics.DrawImage(image, new RectangleF(e.CellBounds.X + e.CellBounds.Width / 2 - scaledSize.Width / 2,
             e.CellBounds.Y + e.CellBounds.Height / 2 - scaledSize.Height / 2,
@@ -869,7 +869,7 @@ public partial class ContentFileExplorer
     private void DrawFileSelector(ContentFileExplorerFileEntry file, float dpiScaling, DataGridViewCellPaintingEventArgs e)
     {
         e.Handled = true;
-        var checkSize = new SizeF(Resources.check_8x8.Width * dpiScaling, Resources.check_8x8.Height * dpiScaling);
+        SizeF checkSize = new(Resources.check_8x8.Width * dpiScaling, Resources.check_8x8.Height * dpiScaling);
 
         Rectangle bounds = e.CellBounds;
         e.PaintBackground(e.CellBounds, (e.State & DataGridViewElementStates.Selected) == DataGridViewElementStates.Selected);
@@ -883,7 +883,7 @@ public partial class ContentFileExplorer
         bounds.X = e.CellBounds.X + e.CellBounds.Width / 2 - bounds.Width / 2;
         bounds.Y = e.CellBounds.Y + e.CellBounds.Height / 2 - bounds.Height / 2;
 
-        using (var p = new Pen(Color.White, 2))
+        using (Pen p = new(Color.White, 2))
         {
             e.Graphics.DrawRectangle(p, bounds);
         }
@@ -964,7 +964,7 @@ public partial class ContentFileExplorer
     /// <returns>The new grid row.</returns>
     private DataGridViewRow CreateRow(ContentFileExplorerDirectoryEntry entry)
     {
-        var newRow = new DataGridViewRow();
+        DataGridViewRow newRow = new();
         newRow.CreateCells(GridFiles, [
             entry.IsExpanded,
             entry.FullPath,
@@ -983,7 +983,7 @@ public partial class ContentFileExplorer
     /// <returns>The new grid row.</returns>
     private DataGridViewRow CreateRow(ContentFileExplorerFileEntry entry)
     {
-        var newRow = new DataGridViewRow();
+        DataGridViewRow newRow = new();
         newRow.CreateCells(GridFiles, [
             entry.IsSelected,
             entry.Parent.FullPath,

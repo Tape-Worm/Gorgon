@@ -215,9 +215,9 @@ internal static class Program
 
         Vector3 pos = _sphere.Position;
         Quaternion camRotationQ = _camera.Rotation;
-        var camRotation = Matrix4x4.CreateFromQuaternion(camRotationQ);
+        Matrix4x4 camRotation = Matrix4x4.CreateFromQuaternion(camRotationQ);
         Vector3 unitZ = Vector3.UnitZ;
-        var forward = Vector3.Transform(unitZ, camRotation);
+        Vector3 forward = Vector3.Transform(unitZ, camRotation);
         Vector3 right;
 
         if (!_lock)
@@ -229,7 +229,7 @@ internal static class Program
         {
             right = Vector3.Transform(pos, camRotation);
         }
-        var up = Vector3.Cross(forward, right);
+        Vector3 up = Vector3.Cross(forward, right);
 
         right = Vector3.Multiply(right, cameraDir.X);
         _camera.Position = Vector3.Add(_camera.Position, right);
@@ -465,9 +465,9 @@ internal static class Program
                                                                                     }).GetShaderResourceView();
 
         // The following images are DDS encoded and require an encoder to read them from the resources.
-        var dds = new GorgonCodecDds();
+        GorgonCodecDds dds = new();
 
-        using (var stream = new MemoryStream(Resources.Rain_Height_NRM))
+        using (MemoryStream stream = new(Resources.Rain_Height_NRM))
         using (IGorgonImage image = dds.FromStream(stream))
         {
             _renderer.TextureCache["Water_Normal"] = image.ToTexture2D(_graphics,
@@ -477,7 +477,7 @@ internal static class Program
                                                                        }).GetShaderResourceView();
         }
 
-        using (var stream = new MemoryStream(Resources.Rain_Height_SPEC))
+        using (MemoryStream stream = new(Resources.Rain_Height_SPEC))
         using (IGorgonImage image = dds.FromStream(stream))
         {
             _renderer.TextureCache["Water_Specular"] = image.ToTexture2D(_graphics,
@@ -487,7 +487,7 @@ internal static class Program
                                                                          }).GetShaderResourceView();
         }
 
-        using (var stream = new MemoryStream(Resources.earthbump1k_NRM))
+        using (MemoryStream stream = new(Resources.earthbump1k_NRM))
         using (IGorgonImage image = dds.FromStream(stream))
         {
             _renderer.TextureCache["Earth_Normal"] = image.ToTexture2D(_graphics,
@@ -503,9 +503,9 @@ internal static class Program
     /// </summary>
     private static void BuildMeshes()
     {
-        var fnU = new Vector3(0.5f, 1.0f, 0);
-        var fnV = new Vector3(1.0f, 1.0f, 0);
-        var faceNormal = Vector3.Cross(fnU, fnV);
+        Vector3 fnU = new(0.5f, 1.0f, 0);
+        Vector3 fnV = new(1.0f, 1.0f, 0);
+        Vector3 faceNormal = Vector3.Cross(fnU, fnV);
         faceNormal = Vector3.Normalize(faceNormal);
 
         _triangle = new Triangle(_graphics,

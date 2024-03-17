@@ -189,7 +189,7 @@ public sealed class GorgonChunkFileReader
     /// </exception>
     protected override void OnOpen()
     {
-        using var reader = new GorgonBinaryReader(Stream, true);
+        using GorgonBinaryReader reader = new(Stream, true);
         ulong headerID = reader.ReadUInt64();
 
         if (headerID != FileFormatHeaderIDv0100)

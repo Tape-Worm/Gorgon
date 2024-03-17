@@ -79,7 +79,7 @@ internal static class Program
 
         // Set up the assembly cache.
         // We'll need the assemblies loaded into this object in order to load our plugin types.
-        var pluginCache = new GorgonMefPlugInCache(_log);
+        GorgonMefPlugInCache pluginCache = new(_log);
 
         // Create our plugin service.
         // This takes the cache of assemblies we just created.

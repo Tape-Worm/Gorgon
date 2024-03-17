@@ -145,8 +145,8 @@ static class Program
 
         float speed = _ship.LayerController is not null ? _ship.Speed : _shipDeux.Speed;
         float maxSpeed = renderArea.Width * 0.12f * speed;
-        var speedRegion = new DX.RectangleF(renderArea.Left + 5, renderArea.Bottom - 30, renderArea.Width * 0.12f, 25);
-        var speedBar = new DX.RectangleF(speedRegion.X, speedRegion.Y, maxSpeed, speedRegion.Height);
+        DX.RectangleF speedRegion = new(renderArea.Left + 5, renderArea.Bottom - 30, renderArea.Width * 0.12f, 25);
+        DX.RectangleF speedBar = new(speedRegion.X, speedRegion.Y, maxSpeed, speedRegion.Height);
         _renderer.DrawFilledRectangle(speedRegion, new GorgonColor(GorgonColor.Black, 0.5f));
         _renderer.DrawFilledRectangle(speedBar, new GorgonColor(GorgonColor.GreenPure * 0.85f, 0.3f));
         _renderer.DrawString("Speed", new Vector2(speedRegion.Left, speedRegion.Top - _helpFont.LineHeight + 5), _helpFont, GorgonColor.White);
@@ -187,7 +187,7 @@ static class Program
             newWidth = (newHeight * _mainRtvAspect.X);
         }
 
-        var destRegion = new DX.RectangleF(_screen.Width * 0.5f - newWidth * 0.5f, _screen.Height * 0.5f - newHeight * 0.5f, newWidth, newHeight);
+        DX.RectangleF destRegion = new(_screen.Width * 0.5f - newWidth * 0.5f, _screen.Height * 0.5f - newHeight * 0.5f, newWidth, newHeight);
 
         _screen.RenderTargetView.Clear(GorgonColor.Black);
         _renderer.DrawFilledRectangle(destRegion,
@@ -210,7 +210,7 @@ static class Program
     {
         // This is our camera used to map our objects into relative space.
         // Because it's an Ortho camera, it doesn't really know how to handle aspect ratios, so we'll have to adjust for the current ratio.
-        var camera = new GorgonOrthoCamera(_graphics, new DX.Size2F(2, 2), 0.1f, 5000)
+        GorgonOrthoCamera camera = new(_graphics, new DX.Size2F(2, 2), 0.1f, 5000)
         {
             Anchor = new Vector2(0.5f, 0.5f),
             AllowUpdateOnResize = false    // Since we're using a custom coordinate set, we don't want to change it automatically when we resize the swap chain.
@@ -241,7 +241,7 @@ static class Program
         sunLayer.Lights[0].Layers.Add(planetLayer);
 
         // Here we'll set up the layer camera controller. This is what will give the illusion of movement across space by shifting the planet, sun, and other sprites.
-        var controller = new LayerCamera([bgLayer, sunLayer, planetLayer, shipLayerDeux, shipLayer]);
+        LayerCamera controller = new([bgLayer, sunLayer, planetLayer, shipLayerDeux, shipLayer]);
 
         // This is our renderer which is responsible the drawing the layers and applying any post processing effects.
         _sceneRenderer = new SceneRenderer(_renderer, _resources, _mainRtv, controller, camera);
@@ -293,7 +293,7 @@ static class Program
 
             // Retrieve the list of video adapters. We can do this on a background thread because there's no interaction between other threads and the 
             // underlying D3D backend yet.
-            var videoDevices = await Task.Run(() => GorgonGraphics.EnumerateAdapters(log: GorgonApplication.Log));
+            IReadOnlyList<IGorgonVideoAdapterInfo> videoDevices = await Task.Run(() => GorgonGraphics.EnumerateAdapters(log: GorgonApplication.Log));
 
             if (videoDevices.Count == 0)
             {

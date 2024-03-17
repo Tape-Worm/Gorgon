@@ -254,14 +254,14 @@ public abstract class ContentImportPlugIn
     /// <seealso cref="OnCanOpenContent(string)"/>
     public bool CanOpenContent(string filePath)
     {
-#pragma warning disable IDE0046 // Convert to conditional expression
+
         if (filePath is null)
         {
             throw new ArgumentNullException(nameof(filePath));
         }
 
         return string.IsNullOrWhiteSpace(filePath) ? throw new ArgumentEmptyException(nameof(filePath)) : OnCanOpenContent(filePath);
-#pragma warning restore IDE0046 // Convert to conditional expression
+
     }
 
 

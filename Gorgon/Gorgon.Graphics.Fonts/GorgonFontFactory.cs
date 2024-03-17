@@ -123,7 +123,7 @@ public sealed class GorgonFontFactory
     /// <returns>The font family for the font, or <b>null</b> if not found.</returns>
     private FontFamily GetExternalFontFamily(HashSet<string> currentFonts)
     {
-        var newFonts = new HashSet<string>(_externalFonts.Families.Select(item => item.Name), StringComparer.OrdinalIgnoreCase);
+        HashSet<string> newFonts = new(_externalFonts.Families.Select(item => item.Name), StringComparer.OrdinalIgnoreCase);
         newFonts.ExceptWith(currentFonts);
         string newFont = newFonts.FirstOrDefault();
 
@@ -302,7 +302,7 @@ public sealed class GorgonFontFactory
             throw new EndOfStreamException();
         }
 
-        var currentFonts = new HashSet<string>(_externalFonts.Families.Select(item => item.Name), StringComparer.OrdinalIgnoreCase);
+        HashSet<string> currentFonts = new(_externalFonts.Families.Select(item => item.Name), StringComparer.OrdinalIgnoreCase);
 
         byte[] data = null;
         ArrayPool<byte> pool = GorgonArrayPool<byte>.GetBestPool(size.Value);
@@ -352,7 +352,7 @@ public sealed class GorgonFontFactory
             throw new ArgumentEmptyException(nameof(path));
         }
 
-        var currentFonts = new HashSet<string>(_externalFonts.Families.Select(item => item.Name), StringComparer.OrdinalIgnoreCase);
+        HashSet<string> currentFonts = new(_externalFonts.Families.Select(item => item.Name), StringComparer.OrdinalIgnoreCase);
 
         _externalFonts.AddFontFile(path);
 
@@ -545,7 +545,7 @@ public sealed class GorgonFontFactory
         GorgonFont GenerateDefaultFont()
         {
             // Create the default font.
-            var result = new GorgonFont(this,
+            GorgonFont result = new(this,
                                         new GorgonFontInfo("Segoe UI", 9, GorgonFontHeightMode.Points)
                                         {
                                             Name = "Gorgon_Font_Default_SegoeUI_9pt",

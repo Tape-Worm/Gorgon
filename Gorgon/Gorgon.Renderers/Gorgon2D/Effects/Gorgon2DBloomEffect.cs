@@ -371,7 +371,7 @@ public class Gorgon2DBloomEffect
             (GorgonRenderTarget2DView up, GorgonRenderTarget2DView down) targets = (i == 0 ? _blurRtv : Graphics.TemporaryTargets.Rent(_targetInfo, $"UpSample_{i}", false),
                                                                                                         Graphics.TemporaryTargets.Rent(_targetInfo, $"DownSample_{i}", false));
 
-            var texelSize = new Vector2(1.0f / src.Width, 1.0f / src.Height);
+            Vector2 texelSize = new(1.0f / src.Width, 1.0f / src.Height);
             _textureSettingsBuffer.Buffer.SetData(in texelSize);
 
             Graphics.SetRenderTarget(targets.down);
@@ -419,7 +419,7 @@ public class Gorgon2DBloomEffect
         {
             (GorgonRenderTarget2DView up, GorgonRenderTarget2DView _) = _sampleTargets[i];
 
-            var texelSize = new Vector2(1.0f / src.Width, 1.0f / src.Height);
+            Vector2 texelSize = new(1.0f / src.Width, 1.0f / src.Height);
             _textureSettingsBuffer.Buffer.SetData(in texelSize);
 
             Graphics.SetRenderTarget(up);
@@ -621,7 +621,7 @@ public class Gorgon2DBloomEffect
                 Graphics.SetRenderTarget(_sceneRtv);
                 break;
             case 1:
-                var texelSize = new Vector2(1.0f / _blurRtv.Width, 1.0f / _blurRtv.Height);
+                Vector2 texelSize = new(1.0f / _blurRtv.Width, 1.0f / _blurRtv.Height);
                 _textureSettingsBuffer.Buffer.SetData(in texelSize);
 
                 Graphics.SetRenderTarget(output);

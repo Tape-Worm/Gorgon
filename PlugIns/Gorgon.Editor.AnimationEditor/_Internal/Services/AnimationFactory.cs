@@ -243,7 +243,7 @@ internal static class AnimationFactory
                 }
             }
 
-            var args = new SetKeyFramesArgs
+            SetKeyFramesArgs args = new()
             {
                 KeyFrames = newKeys,
                 MaxKeyFrameCount = newKeyCount

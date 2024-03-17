@@ -121,7 +121,7 @@ internal sealed class BatchRenderer
     private void CreateBuffers()
     {
         // We don't need to update the index buffer ever.  So we can set up the indices right now.            
-        using var indices = new GorgonNativeBuffer<int>(MaxSpriteCount * 6);
+        using GorgonNativeBuffer<int> indices = new(MaxSpriteCount * 6);
         int indexOffset = 0;
         ushort index = 0;
         for (int i = 0; i < MaxSpriteCount; ++i)

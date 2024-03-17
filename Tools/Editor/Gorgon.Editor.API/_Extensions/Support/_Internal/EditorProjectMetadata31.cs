@@ -63,7 +63,7 @@ internal class EditorProjectMetadata31
     {
         foreach (KeyValuePair<string, ProjectItemMetadata30> item in oldVersion.ProjectItems)
         {
-            var newItem = new ProjectItemMetadata(item.Value);
+            ProjectItemMetadata newItem = new(item.Value);
             ProjectItems[item.Key] = newItem;
         }
     }

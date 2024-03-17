@@ -164,7 +164,7 @@ internal class DefaultSpriteViewer(Gorgon2D renderer, GorgonSwapChain swapChain,
     {
         GorgonRenderTargetView prevTarget = Graphics.RenderTargets[0];
         GorgonRange<float>? prevAlphaTest = Renderer.PrimitiveAlphaTestRange;
-        var clearRegion = DataContext.Texture.ToPixel(_sprite.TextureRegion).ToRectangleF();
+        DX.RectangleF clearRegion = DataContext.Texture.ToPixel(_sprite.TextureRegion).ToRectangleF();
 
         _spriteTarget.Clear(GorgonColor.BlackTransparent);
 
@@ -226,17 +226,17 @@ internal class DefaultSpriteViewer(Gorgon2D renderer, GorgonSwapChain swapChain,
     /// <summary>Function to draw the sprite.</summary>
     protected override void DrawSprite()
     {
-        var halfRegion = new Vector2(RenderRegion.Width * -0.5f, RenderRegion.Height * -0.5f);
+        Vector2 halfRegion = new(RenderRegion.Width * -0.5f, RenderRegion.Height * -0.5f);
 
         // We'll need to draw the marching ants rectangle in standard client space. 
         // So, we can just get the camera to tell us where that is.
-        var spriteTopLeft = new Vector3(_spriteRegion.Left, _spriteRegion.Top, 0);
-        var spriteBottomRight = new Vector3(_spriteRegion.Right, _spriteRegion.Bottom, 0);
-        var spriteAnchor = new Vector3((DataContext.Anchor.X * DataContext.Size.Width) + _sprite.Position.X, _sprite.Position.Y + (DataContext.Anchor.Y * DataContext.Size.Height), 0);
+        Vector3 spriteTopLeft = new(_spriteRegion.Left, _spriteRegion.Top, 0);
+        Vector3 spriteBottomRight = new(_spriteRegion.Right, _spriteRegion.Bottom, 0);
+        Vector3 spriteAnchor = new((DataContext.Anchor.X * DataContext.Size.Width) + _sprite.Position.X, _sprite.Position.Y + (DataContext.Anchor.Y * DataContext.Size.Height), 0);
         Camera.Unproject(in spriteTopLeft, out Vector3 transformedTopLeft);
         Camera.Unproject(in spriteBottomRight, out Vector3 transformedBottomRight);
         Camera.Unproject(in spriteAnchor, out Vector3 transformedAnchor);
-        var marchAntsRect = new DX.RectangleF
+        DX.RectangleF marchAntsRect = new()
         {
             Left = (int)transformedTopLeft.X,
             Top = (int)transformedTopLeft.Y,

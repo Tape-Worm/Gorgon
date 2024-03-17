@@ -175,7 +175,7 @@ internal class TextRenderer(Gorgon2D renderer, GorgonSwapChain mainRenderTarget,
         // In this case, we want the background to zoom/pan along with our content, so we pass in the renderer Camera
         // to the renderer so that it can be affected by the camera movement.                         
         Renderer.Begin(camera: Camera);
-        var backgroundRegion = new DX.RectangleF(RenderRegion.Width * -0.5f + 10, RenderRegion.Height * -0.5f + 10, RenderRegion.Width, RenderRegion.Height);
+        DX.RectangleF backgroundRegion = new(RenderRegion.Width * -0.5f + 10, RenderRegion.Height * -0.5f + 10, RenderRegion.Width, RenderRegion.Height);
         Renderer.DrawFilledRectangle(backgroundRegion, GorgonColor.Black);
         backgroundRegion.Offset(-10, -10);
         Renderer.DrawFilledRectangle(backgroundRegion, GorgonColor.White);
@@ -199,8 +199,8 @@ internal class TextRenderer(Gorgon2D renderer, GorgonSwapChain mainRenderTarget,
         // (Region Width / 2, Region Height / 2), but this depends on the camera setup). After this we'll call a utility function in the 
         // renderer to convert camera space into client space (ToClient). This will then allow us to set the clipping rectangle based on 
         // our camera position and zoom.
-        var cameraSpaceRegion = new DX.RectangleF(RenderRegion.Width * -0.5f, RenderRegion.Height * -0.5f, RenderRegion.Width, RenderRegion.Height);
-        var clientSpaceRegion = ToClient(cameraSpaceRegion).ToRectangle(); // The scissor rectangle must be in integer coordinates, ToRectangle will give us this.
+        DX.RectangleF cameraSpaceRegion = new(RenderRegion.Width * -0.5f, RenderRegion.Height * -0.5f, RenderRegion.Width, RenderRegion.Height);
+        DX.Rectangle clientSpaceRegion = ToClient(cameraSpaceRegion).ToRectangle(); // The scissor rectangle must be in integer coordinates, ToRectangle will give us this.
 
         // Set the scissor rectangle. Ideally we'd be doing this when the camera moves/zooms or the client size changes instead of every 
         // frame (way more efficient), but for the purposes of our example, we'll just set it per frame.

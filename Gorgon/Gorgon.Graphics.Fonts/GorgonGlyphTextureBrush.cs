@@ -146,7 +146,7 @@ public class GorgonGlyphTextureBrush
 
         // Encode the texture brush as a PNG stream.
         long size = writer.BaseStream.Length;
-        var codec = new GorgonCodecPng();
+        GorgonCodecPng codec = new();
 
         using IGorgonImage image = ToGorgonImage();
         codec.Save(image, writer.BaseStream);
@@ -170,7 +170,7 @@ public class GorgonGlyphTextureBrush
         TextureRegion = reader.ReadValue<DX.RectangleF>();
         int imageSize = reader.ReadInt32();
 
-        var codec = new GorgonCodecPng();
+        GorgonCodecPng codec = new();
         using IGorgonImage image = codec.FromStream(reader.BaseStream, imageSize);
 
         if (image.Format != BufferFormat.R8G8B8A8_UNorm)
@@ -202,8 +202,8 @@ public class GorgonGlyphTextureBrush
             using IGorgonImage image = ToGorgonImage();
             brushBitmap = image.Buffers[0].ToBitmap();
 
-            var textureRect = new RectangleF(0, 0, image.Width, image.Height);
-            var imageRect = new RectangleF(TextureRegion.X * textureRect.Width,
+            RectangleF textureRect = new(0, 0, image.Width, image.Height);
+            RectangleF imageRect = new(TextureRegion.X * textureRect.Width,
                                            TextureRegion.Y * textureRect.Height,
                                            TextureRegion.Width * textureRect.Width,
                                            TextureRegion.Height * textureRect.Height);
@@ -270,7 +270,7 @@ public class GorgonGlyphTextureBrush
     /// </returns>
     public override bool Equals(GorgonGlyphBrush other)
     {
-        var brush = other as GorgonGlyphTextureBrush;
+        GorgonGlyphTextureBrush brush = other as GorgonGlyphTextureBrush;
 
         return ((brush == this) || ((brush is not null)
             && (brush.WrapMode == WrapMode)

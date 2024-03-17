@@ -292,7 +292,7 @@ internal partial class ProjectContainer
             return null;
         }
 
-        var rows = (GridRowsDragData)data.GetData(dataType);
+        GridRowsDragData rows = (GridRowsDragData)data.GetData(dataType);
 
         return rows.SourceFiles.Count != 1 ? null : rows.SourceFiles[0];
     }

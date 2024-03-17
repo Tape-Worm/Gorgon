@@ -716,7 +716,7 @@ internal class ProjectEditor
     /// <param name="args">The arguments for the command.</param>
     private async Task DoSaveProjectToPackFile(CancelEventArgs args)
     {
-        var cancelSource = new CancellationTokenSource();
+        CancellationTokenSource cancelSource = new();
         FileWriterPlugIn writer = null;
 
         try
@@ -724,7 +724,7 @@ internal class ProjectEditor
             // Function used to cancel the save operation.
             void CancelOperation() => cancelSource.Cancel();
 
-            var lastSaveDir = new DirectoryInfo(_settings.LastOpenSavePath);
+            DirectoryInfo lastSaveDir = new(_settings.LastOpenSavePath);
 
             if (!lastSaveDir.Exists)
             {
@@ -750,7 +750,7 @@ internal class ProjectEditor
             HostServices.Log.Print($"File writer plug in is: {writer.Name}.", LoggingLevel.Verbose);
             HostServices.Log.Print($"Saving to '{path}'...", LoggingLevel.Simple);
 
-            var panelUpdateArgs = new ProgressPanelUpdateArgs
+            ProgressPanelUpdateArgs panelUpdateArgs = new()
             {
                 Title = Resources.GOREDIT_TEXT_PLEASE_WAIT,
                 Message = string.Format(Resources.GOREDIT_TEXT_SAVING, ProjectTitle)

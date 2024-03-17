@@ -84,7 +84,7 @@ internal class FileSystemFolderBrowseService(IMain mainViewModel)
 
         initialDirectory ??= _mainViewModel.CurrentProject?.FileExplorer.Root;
 
-        using var browser = new FormFileSystemFolderBrowser()
+        using FormFileSystemFolderBrowser browser = new()
         {
             Text = caption,
             Description = description

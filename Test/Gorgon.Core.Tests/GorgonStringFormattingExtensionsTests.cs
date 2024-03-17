@@ -101,45 +101,4 @@ public class GorgonStringFormattingExtensionsTests
 
         Assert.AreEqual(24, actual);
     }
-
-    /// <summary>
-    /// Function to find the index of the control characters in a string builder.
-    /// </summary>
-    /// <param name="line">The line containing the text to evaluate.</param>
-    /// <param name="value">The string value to look for.</param>
-    /// <param name="startIndex">The starting index within the line to start searching from.</param>
-    /// <returns>The index of the control character, or -1 if not found.</returns>
-    private int IndexOfControlChars(StringBuilder line, string value, int startIndex)
-    {
-        if (line.Length < value.Length)
-        {
-            return -1;
-        }
-
-        int charCount = 0;
-
-        for (int i = 0; i < value.Length; ++i)
-        {
-            char c = value[i];
-
-            for (int j = startIndex; j < line.Length; ++j)
-            {
-                if (char.ToUpperInvariant(c) != char.ToUpperInvariant(line[j]))
-                {                    
-                    continue;
-                }
-
-                startIndex = j;
-                ++charCount;
-                break;
-            }
-
-            if (charCount == value.Length)
-            {
-                return (startIndex - charCount) + 1;
-            }
-        }
-
-        return -1;
-    }
 }

@@ -117,7 +117,7 @@ public abstract class GorgonImageCodecPlugIn(string description)
             throw new ArgumentNullException(nameof(codec));
         }
 
-#pragma warning disable IDE0046 // Convert to conditional expression
+
         if (string.IsNullOrWhiteSpace(codec))
         {
             throw new ArgumentEmptyException(nameof(codec));
@@ -126,7 +126,7 @@ public abstract class GorgonImageCodecPlugIn(string description)
         return !Codecs.Any(item => string.Equals(codec, item.Name, StringComparison.OrdinalIgnoreCase))
             ? throw new KeyNotFoundException(string.Format(Resources.GORIMG_ERR_CODEC_NOT_IN_PLUGIN, codec))
             : OnCreateCodecEncodingOptions(codec);
-#pragma warning restore IDE0046 // Convert to conditional expression
+
     }
 
     /// <summary>
@@ -149,7 +149,7 @@ public abstract class GorgonImageCodecPlugIn(string description)
             throw new ArgumentNullException(nameof(codec));
         }
 
-#pragma warning disable IDE0046 // Convert to conditional expression
+
         if (string.IsNullOrWhiteSpace(codec))
         {
             throw new ArgumentEmptyException(nameof(codec));
@@ -158,7 +158,7 @@ public abstract class GorgonImageCodecPlugIn(string description)
         return !Codecs.Any(item => string.Equals(codec, item.Name, StringComparison.OrdinalIgnoreCase))
             ? throw new KeyNotFoundException(string.Format(Resources.GORIMG_ERR_CODEC_NOT_IN_PLUGIN, codec))
             : OnCreateCodecDecodingOptions(codec);
-#pragma warning restore IDE0046 // Convert to conditional expression
+
     }
 
     /// <summary>

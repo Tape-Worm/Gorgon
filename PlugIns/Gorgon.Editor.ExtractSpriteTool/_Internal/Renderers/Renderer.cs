@@ -90,12 +90,12 @@ internal class Renderer
         string text = string.Format(Resources.GOREST_PROGRESS_SPR_GEN, prog.Current, prog.Total);
 
         DX.Size2F textSize = text.MeasureText(Renderer.DefaultFont, false);
-        var pos = new Vector2(MainRenderTarget.Width * 0.5f - textSize.Width * 0.5f, MainRenderTarget.Height * 0.5f - textSize.Height * 0.5f);
+        Vector2 pos = new(MainRenderTarget.Width * 0.5f - textSize.Width * 0.5f, MainRenderTarget.Height * 0.5f - textSize.Height * 0.5f);
 
         float percent = (float)prog.Current / prog.Total;
-        var barOutline = new DX.RectangleF(pos.X, MainRenderTarget.Height * 0.5f - (textSize.Height + 4) * 0.5f,
+        DX.RectangleF barOutline = new(pos.X, MainRenderTarget.Height * 0.5f - (textSize.Height + 4) * 0.5f,
                                         textSize.Width + 4, textSize.Height + 8);
-        var bar = new DX.RectangleF(barOutline.X + 1, barOutline.Y + 1, ((barOutline.Width - 2) * percent), barOutline.Height - 2);
+        DX.RectangleF bar = new(barOutline.X + 1, barOutline.Y + 1, ((barOutline.Width - 2) * percent), barOutline.Height - 2);
 
         Renderer.Begin();
         Renderer.DrawFilledRectangle(new DX.RectangleF(0, 0, MainRenderTarget.Width, MainRenderTarget.Height),
@@ -136,7 +136,7 @@ internal class Renderer
         Renderer.End();
 
         Renderer.Begin(_inverted, _camera);
-        var pos = new Vector2(_textureSprite.Position.X + (DataContext.GridOffset.X * scale), _textureSprite.Position.Y + (DataContext.GridOffset.Y * scale));
+        Vector2 pos = new(_textureSprite.Position.X + (DataContext.GridOffset.X * scale), _textureSprite.Position.Y + (DataContext.GridOffset.Y * scale));
 
         int maxWidth = (int)((DataContext.CellSize.Width * DataContext.GridSize.Width) * scale);
         int maxHeight = (int)((DataContext.CellSize.Height * DataContext.GridSize.Height) * scale);
@@ -146,16 +146,16 @@ internal class Renderer
 
         for (int x = 1; x < DataContext.GridSize.Width; ++x)
         {
-            var start = new Vector2((int)((x * DataContext.CellSize.Width) * scale) + pos.X, pos.Y);
-            var end = new Vector2((int)((x * DataContext.CellSize.Width) * scale) + pos.X, pos.Y + maxHeight);
+            Vector2 start = new((int)((x * DataContext.CellSize.Width) * scale) + pos.X, pos.Y);
+            Vector2 end = new((int)((x * DataContext.CellSize.Width) * scale) + pos.X, pos.Y + maxHeight);
 
             Renderer.DrawLine(start.X, start.Y, end.X, end.Y, GorgonColor.DeepPink);
         }
 
         for (int y = 1; y < DataContext.GridSize.Height; ++y)
         {
-            var start = new Vector2(pos.X, (int)((y * DataContext.CellSize.Height) * scale) + pos.Y);
-            var end = new Vector2(pos.X + maxWidth, (int)((y * DataContext.CellSize.Height) * scale) + pos.Y);
+            Vector2 start = new(pos.X, (int)((y * DataContext.CellSize.Height) * scale) + pos.Y);
+            Vector2 end = new(pos.X + maxWidth, (int)((y * DataContext.CellSize.Height) * scale) + pos.Y);
 
             Renderer.DrawLine(start.X, start.Y, end.X, end.Y, GorgonColor.DeepPink);
         }
@@ -182,7 +182,7 @@ internal class Renderer
             Anchor = new Vector2(0.5f, 0.5f)
         };
 
-        var builder = new Gorgon2DBatchStateBuilder();
+        Gorgon2DBatchStateBuilder builder = new();
         _inverted = builder.BlendState(GorgonBlendState.Inverted)
                             .Build();
 

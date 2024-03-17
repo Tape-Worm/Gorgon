@@ -256,7 +256,7 @@ internal class FileSystemClipboardHandler
 
         if (_supportedDataTypeFile.IsAssignableFrom(argsType))
         {
-            var fileData = (FileCopyMoveData)args;
+            FileCopyMoveData fileData = (FileCopyMoveData)args;
             return (fileData.SourceFiles is not null) && (fileData.SourceFiles.Count > 0);
         }
 
@@ -265,7 +265,7 @@ internal class FileSystemClipboardHandler
             return false;
         }
 
-        var dirData = (DirectoryCopyMoveData)args;
+        DirectoryCopyMoveData dirData = (DirectoryCopyMoveData)args;
 
         return ((dirData is not null) && (!string.IsNullOrWhiteSpace(dirData.SourceDirectory))
             && ((dirData.Operation != CopyMoveOperation.Move) || (!string.Equals(dirData.SourceDirectory, _fileExplorer.Root.ID, StringComparison.OrdinalIgnoreCase))));

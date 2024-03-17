@@ -88,12 +88,12 @@ internal partial class AnimationEditorView
         switch (e.Action)
         {
             case NotifyCollectionChangedAction.Add:
-                var newTrack = (ITrack)e.NewItems[0];
+                ITrack newTrack = (ITrack)e.NewItems[0];
                 _tracks.Add(newTrack);
                 newTrack.PropertyChanged += Track_PropertyChanged;
                 break;
             case NotifyCollectionChangedAction.Remove:
-                var oldTrack = (ITrack)e.OldItems[0];
+                ITrack oldTrack = (ITrack)e.OldItems[0];
                 _tracks.Remove(oldTrack);
                 oldTrack.PropertyChanged -= Track_PropertyChanged;
                 break;
@@ -315,7 +315,7 @@ internal partial class AnimationEditorView
     protected override void OnSwitchRenderer(IContentRenderer renderer, bool resetZoom)
     {
         base.OnSwitchRenderer(renderer, resetZoom);
-        var viewer = renderer as AnimationViewer;
+        AnimationViewer viewer = renderer as AnimationViewer;
         _ribbonForm.ContentRenderer = viewer;
 
         if (viewer is null)
@@ -364,10 +364,10 @@ internal partial class AnimationEditorView
         });
         _vertexEditorService = new VertexEditService(context.Renderer2D);
 
-        var noSprite = new NoPrimarySpriteViewer(context.Renderer2D, swapChain, context.FontFactory, ViewModel);
-        var defaultView = new DefaultAnimationViewer(context.Renderer2D, swapChain, ViewModel, _clipper);
-        var singleEditorView = new SingleAnimationViewer(context.Renderer2D, swapChain, ViewModel);
-        var vec2EditorView = new Vector2AnimationViewer(context.Renderer2D, swapChain, ViewModel, _clipper, _anchorService, _vertexEditorService);
+        NoPrimarySpriteViewer noSprite = new(context.Renderer2D, swapChain, context.FontFactory, ViewModel);
+        DefaultAnimationViewer defaultView = new(context.Renderer2D, swapChain, ViewModel, _clipper);
+        SingleAnimationViewer singleEditorView = new(context.Renderer2D, swapChain, ViewModel);
+        Vector2AnimationViewer vec2EditorView = new(context.Renderer2D, swapChain, ViewModel, _clipper, _anchorService, _vertexEditorService);
 
         noSprite.CreateResources();
         defaultView.CreateResources();

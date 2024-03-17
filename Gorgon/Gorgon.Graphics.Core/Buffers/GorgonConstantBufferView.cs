@@ -222,7 +222,7 @@ public sealed class GorgonConstantBufferView
             throw new ArgumentNullException(nameof(info));
         }
 
-        var buffer = new GorgonConstantBuffer(graphics, info);
+        GorgonConstantBuffer buffer = new(graphics, info);
         GorgonConstantBufferView view = buffer.GetView(startConstant, constantCount);
         view._ownsBuffer = true;
         return view;
@@ -275,7 +275,7 @@ public sealed class GorgonConstantBufferView
             throw new ArgumentNullException(nameof(graphics));
         }
 
-        var buffer = new GorgonConstantBuffer(graphics, new GorgonConstantBufferInfo(Unsafe.SizeOf<T>())
+        GorgonConstantBuffer buffer = new(graphics, new GorgonConstantBufferInfo(Unsafe.SizeOf<T>())
         {
             Name = name,
             Usage = usage
@@ -333,7 +333,7 @@ public sealed class GorgonConstantBufferView
             throw new ArgumentNullException(nameof(graphics));
         }
 
-        var buffer = new GorgonConstantBuffer(graphics, new GorgonConstantBufferInfo(Unsafe.SizeOf<T>() * value.Length)
+        GorgonConstantBuffer buffer = new(graphics, new GorgonConstantBufferInfo(Unsafe.SizeOf<T>() * value.Length)
         {
             Name = name,
             Usage = usage

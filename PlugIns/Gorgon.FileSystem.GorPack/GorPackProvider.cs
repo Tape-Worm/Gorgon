@@ -64,7 +64,7 @@ internal class GorPackProvider
     private RecyclableMemoryStream Decompress(byte[] data)
     {
         using MemoryStream sourceStream = MemoryStreamManager.GetStream(data);
-        var decompressedStream = MemoryStreamManager.GetStream() as RecyclableMemoryStream;
+        RecyclableMemoryStream decompressedStream = MemoryStreamManager.GetStream() as RecyclableMemoryStream;
         BZip2.Decompress(sourceStream, decompressedStream, false);
         return decompressedStream;
     }
@@ -77,7 +77,7 @@ internal class GorPackProvider
     /// <returns>A read only list of directory paths mapped to the virtual file system.</returns>
     private static IReadOnlyList<string> EnumerateDirectories(XDocument index, IGorgonVirtualDirectory mountPoint)
     {
-        var result = new List<string>();
+        List<string> result = [];
         IEnumerable<XElement> directories = index.Descendants("Path");
 
         foreach (XElement directoryNode in directories)
@@ -107,7 +107,7 @@ internal class GorPackProvider
     private static IReadOnlyList<IGorgonPhysicalFileInfo> EnumerateFiles(XDocument index, long offset, string physicalLocation, IGorgonVirtualDirectory mountPoint)
     {
         IEnumerable<XElement> files = index.Descendants("File");
-        var result = new List<IGorgonPhysicalFileInfo>();
+        List<IGorgonPhysicalFileInfo> result = [];
 
         foreach (XElement file in files)
         {
@@ -222,7 +222,7 @@ internal class GorPackProvider
     /// </remarks>
     protected override GorgonPhysicalFileSystemData OnEnumerate(string physicalLocation, IGorgonVirtualDirectory mountPoint)
     {
-        using var reader = new GorgonBinaryReader(File.Open(physicalLocation, FileMode.Open, FileAccess.Read, FileShare.Read));
+        using GorgonBinaryReader reader = new(File.Open(physicalLocation, FileMode.Open, FileAccess.Read, FileShare.Read));
         // Skip the header.
         reader.ReadString();
 
@@ -230,7 +230,7 @@ internal class GorPackProvider
 
         using RecyclableMemoryStream indexData = Decompress(reader.ReadBytes(indexLength));
         string xmlData = Encoding.UTF8.GetString(indexData.GetReadOnlySequence());
-        var index = XDocument.Parse(xmlData, LoadOptions.None);
+        XDocument index = XDocument.Parse(xmlData, LoadOptions.None);
 
         return new GorgonPhysicalFileSystemData(EnumerateDirectories(index, mountPoint),
                                                 EnumerateFiles(index, reader.BaseStream.Position, physicalLocation, mountPoint));
@@ -297,7 +297,7 @@ internal class GorPackProvider
     {
         string header;
 
-        using (var reader = new GorgonBinaryReader(File.Open(physicalPath, FileMode.Open, FileAccess.Read, FileShare.Read)))
+        using (GorgonBinaryReader reader = new(File.Open(physicalPath, FileMode.Open, FileAccess.Read, FileShare.Read)))
         {
             // If the length of the stream is less or equal to the header size, it's unlikely that we can read this file.
             if (reader.BaseStream.Length <= GorPackHeader.Length)

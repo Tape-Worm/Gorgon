@@ -90,8 +90,8 @@ public partial class Form : System.Windows.Forms.Form
     /// <param name="index">Index of the controller.</param>
     private void UpdateControllerLabels(IGorgonGamingDevice device, int index)
     {
-        var panel = (Panel)panelControllers.Controls["panelController" + index];
-        var label = (Label)panel.Controls["labelController" + index];
+        Panel panel = (Panel)panelControllers.Controls["panelController" + index];
+        Label label = (Label)panel.Controls["labelController" + index];
 
         // Update the label visibility for the controller.
         if (device.IsConnected)
@@ -178,10 +178,10 @@ public partial class Form : System.Windows.Forms.Form
         GorgonRange<int> xRange = controller.Info.AxisInfo[GamingDeviceAxis.LeftStickX].Range;
         GorgonRange<int> yRange = controller.Info.AxisInfo[GamingDeviceAxis.LeftStickY].Range;
         int playerColorValue = (int)(((uint)0xFF << (index * 8)) | 0xFF000000);                     // Get the color based on the controller index.			
-        var cursorSize = new Size(_surface.CursorSize.Width / 2, _surface.CursorSize.Height / 2);   // Get the cursor size with offset.
+        Size cursorSize = new(_surface.CursorSize.Width / 2, _surface.CursorSize.Height / 2);   // Get the cursor size with offset.
 
         // Transform the axis into a -1 .. 1 range.				
-        var moveVector = new PointF(controller.Axis[GamingDeviceAxis.LeftStickX].Value - (float)xRange.Minimum,
+        PointF moveVector = new(controller.Axis[GamingDeviceAxis.LeftStickX].Value - (float)xRange.Minimum,
                                         controller.Axis[GamingDeviceAxis.LeftStickY].Value - (float)yRange.Minimum);
 
         moveVector = new PointF((moveVector.X / (xRange.Range + 1) * 2.0f) - 1.0f,
@@ -189,7 +189,7 @@ public partial class Form : System.Windows.Forms.Form
 
         // Move at 100 units per second 
         float speed = panelDisplay.ClientSize.Width / 2.0f * GorgonTiming.Delta;
-        var position = new PointF((speed * moveVector.X) + _stickPosition[index].X,
+        PointF position = new((speed * moveVector.X) + _stickPosition[index].X,
                                     (speed * -moveVector.Y) + _stickPosition[index].Y);
 
 
@@ -353,7 +353,7 @@ public partial class Form : System.Windows.Forms.Form
             _assemblies = new GorgonMefPlugInCache(GorgonApplication.Log);
 
             // Create the gaming device driver factory.
-            var factory = new GorgonGamingDeviceDriverFactory(_assemblies, GorgonApplication.Log);
+            GorgonGamingDeviceDriverFactory factory = new(_assemblies, GorgonApplication.Log);
 
             // Create our factory.
             _driver = factory.LoadDriver(Path.Combine(GorgonExample.GetPlugInPath().FullName, "Gorgon.Input.XInput.dll"), "Gorgon.Input.XInput.GorgonXInputDriver");

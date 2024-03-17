@@ -111,7 +111,7 @@ internal class TextSpriteTransformer
             return;
         }
 
-        var anchorProjected = new Vector2(anchor.X * bounds.Width, anchor.Y * bounds.Height);
+        Vector2 anchorProjected = new(anchor.X * bounds.Width, anchor.Y * bounds.Height);
         corners = new Vector4(-anchorProjected.X, -anchorProjected.Y, bounds.Width, bounds.Height);
     }
 
@@ -222,7 +222,7 @@ internal class TextSpriteTransformer
                                   renderable.Depth,
                                   1.0f);
 
-        var cosSin = new Vector2(cos, sin);
+        Vector2 cosSin = new(cos, sin);
         v0.Angle =
         v1.Angle =
         v2.Angle =
@@ -367,7 +367,7 @@ internal class TextSpriteTransformer
                        ? new Vector2(glyph.OutlineCoordinates.Width, glyph.OutlineCoordinates.Height)
                        : new Vector2(glyph.GlyphCoordinates.Width, glyph.GlyphCoordinates.Height);
 
-        var upperLeft = new Vector2(glyphPosition.X + offset.X + renderable.Corners.X,
+        Vector2 upperLeft = new(glyphPosition.X + offset.X + renderable.Corners.X,
                                            glyphPosition.Y + offset.Y + renderable.Corners.Y);
         float rads = renderable.AngleDegs.ToRadians();
 
@@ -376,7 +376,7 @@ internal class TextSpriteTransformer
             GetTextAlignmentExtents(ref upperLeft, alignment, ref renderable.LayoutArea, lineMeasure, spriteBounds.Height);
         }
 
-        var glyphBounds = new DX.RectangleF(upperLeft.X, upperLeft.Y, size.X, size.Y);
+        DX.RectangleF glyphBounds = new(upperLeft.X, upperLeft.Y, size.X, size.Y);
 
         TransformVertices(renderable, ref glyphBounds, rads.FastSin(), rads.FastCos(), vertexOffset);
     }

@@ -117,7 +117,7 @@ internal partial class SetAlphaSettings
     /// <param name="e">The <see cref="PaintEventArgs"/> instance containing the event data.</param>
     private void ImageAlpha_Paint(object sender, PaintEventArgs e)
     {
-        using var brush = new SolidBrush(Color.FromArgb((255 - (int)NumericAlphaValue.Value).Max(0).Min(255), 255, 255, 255));
+        using SolidBrush brush = new(Color.FromArgb((255 - (int)NumericAlphaValue.Value).Max(0).Min(255), 255, 255, 255));
         e.Graphics.FillRectangle(brush, ImageAlpha.ClientRectangle);
     }
 

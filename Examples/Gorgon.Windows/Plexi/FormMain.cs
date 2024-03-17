@@ -73,7 +73,7 @@ public partial class FormMain
 
         bool isRunning = true;  // Normally you'd use a CancellationToken here, but that's overkill for this stupid example.
 
-        var progress = new GorgonProgressOverlay
+        GorgonProgressOverlay progress = new()
         {
             TransparencyPercent = 25,
             OverlayColor = GorgonColor.PurplePure
@@ -84,9 +84,9 @@ public partial class FormMain
         // Simulate work.
         await Task.Run(() =>
         {
-            var timer = new GorgonTimerQpc();
+            GorgonTimerQpc timer = new();
             int count = 0;
-            var wait = new SpinWait();
+            SpinWait wait = new();
 
             while ((isRunning) && (count < 10))
             {
@@ -148,7 +148,7 @@ public partial class FormMain
         // with default values. Notice that by passing a null value to the progress title, the progress 
         // window adjusts to remove the space for the title.
 
-        var progress = new GorgonProgressOverlay();
+        GorgonProgressOverlay progress = new();
         progress.Show(this, null, message: "This is a really long time just to set a date right?");
 
         await Task.Delay(10000);
@@ -164,7 +164,7 @@ public partial class FormMain
         // This shows a "please wait" panel with a spinning image (default) to indicate that the system 
         // is busy. It modifies the overlay to be 25% transparent, and gives it a blue tint.
 
-        var wait = new GorgonWaitOverlay
+        GorgonWaitOverlay wait = new()
         {
             TransparencyPercent = 25,
             OverlayColor = GorgonColor.BluePure
@@ -189,7 +189,7 @@ public partial class FormMain
             return;
         }
 
-        var wait = new GorgonWaitOverlay
+        GorgonWaitOverlay wait = new()
         {
             TransparencyPercent = 30,
             OverlayColor = GorgonColor.White

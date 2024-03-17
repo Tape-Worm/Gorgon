@@ -75,8 +75,8 @@ public static class IOExtensions
         int fileVersion = int.MaxValue;
 
         using (Stream stream = externalProjectData is null ? jsonMetaDataFile.OpenStream() : externalProjectData.Open(FileMode.Open, FileAccess.Read, FileShare.Read))
-        using (var reader = new StreamReader(stream, Encoding.UTF8))
-        using (var jsonReader = new JsonTextReader(reader))
+        using (StreamReader reader = new(stream, Encoding.UTF8))
+        using (JsonTextReader jsonReader = new(reader))
         {
             // First property must be the version #.
             if ((!jsonReader.Read()) || (!jsonReader.Read()))
@@ -103,7 +103,7 @@ public static class IOExtensions
         }
 
         using (Stream stream = externalProjectData is null ? jsonMetaDataFile.OpenStream() : externalProjectData.Open(FileMode.Open, FileAccess.Read, FileShare.Read))
-        using (var reader = new StreamReader(stream, Encoding.UTF8))
+        using (StreamReader reader = new(stream, Encoding.UTF8))
         {
             string jsonString = reader.ReadToEnd();
 
@@ -165,7 +165,7 @@ public static class IOExtensions
             return pathSeparator.ToString();
         }
 
-        var pathBuilder = new StringBuilder();
+        StringBuilder pathBuilder = new();
         pathBuilder.Append(pathSeparator);
         pathBuilder.Append(dirPath, rootDirPath.Length, dirPath.Length - rootDirPath.Length);
         if (pathSeparator != Path.DirectorySeparatorChar)
@@ -193,7 +193,7 @@ public static class IOExtensions
     /// </remarks>
     public static IReadOnlyList<IGorgonVirtualFile> GetContentItems(this IGorgonFileSystem fileSystem, string path, string contentType, string searchMask = "*", bool recursive = false)
     {
-        var result = new List<IGorgonVirtualFile>();
+        List<IGorgonVirtualFile> result = [];
 
         if (fileSystem is null)
         {

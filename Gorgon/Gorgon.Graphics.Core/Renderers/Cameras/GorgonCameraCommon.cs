@@ -156,7 +156,7 @@ public abstract class GorgonCameraCommon
     {
         get
         {
-#pragma warning disable IDE0046 // Convert to conditional expression
+
             if (GetTarget() is not null)
             {
                 return TargetWidth > TargetHeight
@@ -167,7 +167,7 @@ public abstract class GorgonCameraCommon
             return ViewDimensions.Width > ViewDimensions.Height
                         ? new Vector2(ViewDimensions.Width / ViewDimensions.Height, 1)
                         : new Vector2(1.0f, ViewDimensions.Height / ViewDimensions.Width);
-#pragma warning restore IDE0046 // Convert to conditional expression
+
         }
     }
 
@@ -387,7 +387,7 @@ public abstract class GorgonCameraCommon
 
         if (includeViewTransform)
         {
-            var viewProjection = Matrix4x4.Multiply(_viewMatrix, _projectionMatrix);
+            Matrix4x4 viewProjection = Matrix4x4.Multiply(_viewMatrix, _projectionMatrix);
             Matrix4x4.Invert(viewProjection, out transformMatrix);
         }
         else
@@ -396,7 +396,7 @@ public abstract class GorgonCameraCommon
         }
 
         // Calculate relative position of our screen position.
-        var relativePosition = new Vector3((2.0f * screenPosition.X / targetSize.Width) - 1.0f,
+        Vector3 relativePosition = new((2.0f * screenPosition.X / targetSize.Width) - 1.0f,
                                            1.0f - (screenPosition.Y / targetSize.Height * 2.0f), 0);
 
         // Transform our screen position by our inverse matrix.    
@@ -454,7 +454,7 @@ public abstract class GorgonCameraCommon
             transformMatrix = _viewMatrix;
         }
 
-        var transform = Vector3.Transform(worldSpacePosition, transformMatrix);
+        Vector3 transform = Vector3.Transform(worldSpacePosition, transformMatrix);
 
         result = new Vector3((transform.X + 1.0f) * 0.5f * targetSize.Width,
             (1.0f - transform.Y) * 0.5f * targetSize.Height, 0);

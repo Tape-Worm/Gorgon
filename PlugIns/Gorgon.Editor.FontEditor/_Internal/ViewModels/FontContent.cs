@@ -897,7 +897,7 @@ internal class FontContent
         }
 
         bool noRegular = false;
-        var localFamily = new Drawing.FontFamily(fontFamily);
+        FontFamily localFamily = new(fontFamily);
         Task UndoRedoActionAsync(GorgonFontInfo args, CancellationToken _) => SetFamilyAsync(args);
 
         try

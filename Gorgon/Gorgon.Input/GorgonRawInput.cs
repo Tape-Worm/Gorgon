@@ -390,7 +390,7 @@ public class GorgonRawInput
 
         lock (_syncLock)
         {
-            var key = new DeviceKey
+            DeviceKey key = new()
             {
                 DeviceType = device.DeviceType,
                 DeviceHandle = device.Handle
@@ -422,7 +422,7 @@ public class GorgonRawInput
 
         lock (_syncLock)
         {
-            var key = new DeviceKey
+            DeviceKey key = new()
             {
                 DeviceType = device.DeviceType,
                 DeviceHandle = device.Handle
@@ -454,7 +454,7 @@ public class GorgonRawInput
 
         lock (_syncLock)
         {
-            var key = new DeviceKey
+            DeviceKey key = new()
             {
                 DeviceType = device.DeviceType,
                 DeviceHandle = device.Handle
@@ -473,7 +473,7 @@ public class GorgonRawInput
     public IReadOnlyList<IGorgonMouseInfo> EnumerateMice()
     {
         RAWINPUTDEVICELIST[] devices = RawInputApi.EnumerateRawInputDevices(RawInputType.Mouse);
-        var result = new List<RawMouseInfo>();
+        List<RawMouseInfo> result = [];
 
         for (int i = 0; i < devices.Length; i++)
         {
@@ -500,7 +500,7 @@ public class GorgonRawInput
     public IReadOnlyList<IGorgonKeyboardInfo> EnumerateKeyboards()
     {
         RAWINPUTDEVICELIST[] devices = RawInputApi.EnumerateRawInputDevices(RawInputType.Keyboard);
-        var result = new List<RawKeyboardInfo>();
+        List<RawKeyboardInfo> result = [];
 
         for (int i = 0; i < devices.Length; i++)
         {
@@ -527,7 +527,7 @@ public class GorgonRawInput
     public IReadOnlyList<GorgonRawHIDInfo> EnumerateHumanInterfaceDevices()
     {
         RAWINPUTDEVICELIST[] devices = RawInputApi.EnumerateRawInputDevices(RawInputType.HID);
-        var result = new List<GorgonRawHIDInfo>();
+        List<GorgonRawHIDInfo> result = [];
 
         for (int i = 0; i < devices.Length; i++)
         {

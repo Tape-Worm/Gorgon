@@ -245,7 +245,7 @@ public class GorgonFileSystemWriter
             return fileName;
         }
 
-        var newPath = new StringBuilder(fileName);
+        StringBuilder newPath = new(fileName);
         string file = Path.GetFileNameWithoutExtension(fileName);
         string ext = Path.GetExtension(fileName);
         int counter = 1;
@@ -281,7 +281,7 @@ public class GorgonFileSystemWriter
             return fileName;
         }
 
-        var newPath = new StringBuilder(fileName);
+        StringBuilder newPath = new(fileName);
         string file = Path.GetFileNameWithoutExtension(fileName);
         string ext = Path.GetExtension(fileName);
         int counter = 1;
@@ -459,7 +459,7 @@ public class GorgonFileSystemWriter
             return WriteLocation;
         }
 
-        var physicalPath = new StringBuilder(WriteLocation);
+        StringBuilder physicalPath = new(WriteLocation);
 
         if (path.StartsWith("/", StringComparison.OrdinalIgnoreCase))
         {
@@ -689,9 +689,7 @@ public class GorgonFileSystemWriter
 
         // Build up a list of directories to delete.
         // We'll sort these by full path length since it is impossible to have a child directory with a longer name than its parent.
-        var directories = directory.Directories.Traverse(d => d.Directories)
-                                               .OrderByDescending(d => d.FullPath.Length)
-                                               .ToList();
+        List<IGorgonVirtualDirectory> directories = [.. directory.Directories.Traverse(d => d.Directories).OrderByDescending(d => d.FullPath.Length)];
 
         // If we've deleted a sub directory (i.e. not the root), then include it in the list as well.
         directories.Add(directory);
@@ -706,8 +704,8 @@ public class GorgonFileSystemWriter
         PrepareWriteArea();
 
         string physicalPath;
-        var deletedDirectories = new List<IGorgonVirtualDirectory>();
-        var deletedFiles = new List<IGorgonVirtualFile>();
+        List<IGorgonVirtualDirectory> deletedDirectories = [];
+        List<IGorgonVirtualFile> deletedFiles = [];
 
         // Function to trigger the event(s) upon operation completion.
         void OnDeleteComplete()
@@ -895,7 +893,7 @@ public class GorgonFileSystemWriter
             return;
         }
 
-        var deletedFiles = new List<IGorgonVirtualFile>();
+        List<IGorgonVirtualFile> deletedFiles = [];
         cancelToken ??= CancellationToken.None;
 
         for (int i = 0; i < files.Length; ++i)
@@ -1164,9 +1162,9 @@ public class GorgonFileSystemWriter
             PrepareWriteArea();
 
             _writeBuffer = GorgonArrayPool<byte>.SharedTiny.Rent(MaxBufferSize);
-            var pathBuffer = new StringBuilder(1024);
-            var dirsCopied = new List<(IGorgonVirtualDirectory src, IGorgonVirtualDirectory dest)>();
-            var filesCopied = new List<(IGorgonVirtualFile src, IGorgonVirtualFile dest)>();
+            StringBuilder pathBuffer = new(1024);
+            List<(IGorgonVirtualDirectory src, IGorgonVirtualDirectory dest)> dirsCopied = [];
+            List<(IGorgonVirtualFile src, IGorgonVirtualFile dest)> filesCopied = [];
             CancellationToken cancelToken = options?.CancelToken ?? CancellationToken.None;
             Action<string, double> progressCallback = options?.ProgressCallback;
             Func<string, string, FileConflictResolution> conflictCallback = options?.ConflictResolutionCallback;
@@ -1192,12 +1190,11 @@ public class GorgonFileSystemWriter
                 return;
             }
 
-            var dirsToCopy = new List<IGorgonVirtualDirectory>
-            {
-                srcDirectory
-            };
-            dirsToCopy.AddRange(srcDirectory.Directories.Traverse(d => d.Directories));
-            var filesToCopy = dirsToCopy.SelectMany(f => f.Files)
+            List<IGorgonVirtualDirectory> dirsToCopy =
+            [
+                srcDirectory, .. srcDirectory.Directories.Traverse(d => d.Directories)
+            ];
+            Dictionary<IGorgonVirtualDirectory, IEnumerable<IGorgonVirtualFile>> filesToCopy = dirsToCopy.SelectMany(f => f.Files)
                                         .GroupBy(f => f.Directory)
                                         .ToDictionary(d => d.Key, f => (IEnumerable<IGorgonVirtualFile>)f);
 
@@ -1376,9 +1373,9 @@ public class GorgonFileSystemWriter
             PrepareWriteArea();
 
             _writeBuffer = GorgonArrayPool<byte>.SharedTiny.Rent(MaxBufferSize);
-            var pathBuffer = new StringBuilder(1024);
-            var dirsCopied = new List<(IGorgonVirtualDirectory src, IGorgonVirtualDirectory dest)>();
-            var filesCopied = new List<(IGorgonVirtualFile src, IGorgonVirtualFile dest)>();
+            StringBuilder pathBuffer = new(1024);
+            List<(IGorgonVirtualDirectory src, IGorgonVirtualDirectory dest)> dirsCopied = [];
+            List<(IGorgonVirtualFile src, IGorgonVirtualFile dest)> filesCopied = [];
             CancellationToken cancelToken = options?.CancelToken ?? CancellationToken.None;
             Action<string, double> progressCallback = options?.ProgressCallback;
             Func<string, string, FileConflictResolution> conflictCallback = options?.ConflictResolutionCallback;
@@ -1404,12 +1401,11 @@ public class GorgonFileSystemWriter
                 return;
             }
 
-            var dirsToCopy = new List<IGorgonVirtualDirectory>
-            {
-                srcDirectory
-            };
-            dirsToCopy.AddRange(srcDirectory.Directories.Traverse(d => d.Directories));
-            var filesToCopy = dirsToCopy.SelectMany(f => f.Files)
+            List<IGorgonVirtualDirectory> dirsToCopy =
+            [
+                srcDirectory, .. srcDirectory.Directories.Traverse(d => d.Directories)
+            ];
+            Dictionary<IGorgonVirtualDirectory, IEnumerable<IGorgonVirtualFile>> filesToCopy = dirsToCopy.SelectMany(f => f.Files)
                                         .GroupBy(f => f.Directory)
                                         .ToDictionary(d => d.Key, f => (IEnumerable<IGorgonVirtualFile>)f);
 
@@ -1541,7 +1537,7 @@ public class GorgonFileSystemWriter
 
         IGorgonVirtualDirectory destDirectory = FileSystem.GetDirectory(destDirectoryPath) ?? throw new DirectoryNotFoundException(string.Format(Resources.GORFS_ERR_DIRECTORY_NOT_FOUND, destDirectoryPath));
 
-        var files = new List<IGorgonVirtualFile>();
+        List<IGorgonVirtualFile> files = [];
 
         foreach (string filePath in filePaths)
         {
@@ -1566,8 +1562,8 @@ public class GorgonFileSystemWriter
             PrepareWriteArea();
 
             _writeBuffer = GorgonArrayPool<byte>.SharedTiny.Rent(MaxBufferSize);
-            var pathBuffer = new StringBuilder(1024);
-            var filesCopied = new List<(IGorgonVirtualFile src, IGorgonVirtualFile dest)>();
+            StringBuilder pathBuffer = new(1024);
+            List<(IGorgonVirtualFile src, IGorgonVirtualFile dest)> filesCopied = [];
             CancellationToken cancelToken = options?.CancelToken ?? CancellationToken.None;
             Action<string, double> progressCallback = options?.ProgressCallback;
             Func<string, string, FileConflictResolution> conflictCallback = options?.ConflictResolutionCallback;
@@ -1696,7 +1692,7 @@ public class GorgonFileSystemWriter
 
         IGorgonVirtualDirectory destDirectory = FileSystem.GetDirectory(destDirectoryPath) ?? throw new DirectoryNotFoundException(string.Format(Resources.GORFS_ERR_DIRECTORY_NOT_FOUND, destDirectoryPath));
 
-        var files = new List<IGorgonVirtualFile>();
+        List<IGorgonVirtualFile> files = [];
 
         foreach (string filePath in filePaths)
         {
@@ -1715,8 +1711,8 @@ public class GorgonFileSystemWriter
             PrepareWriteArea();
 
             _writeBuffer = GorgonArrayPool<byte>.SharedTiny.Rent(MaxBufferSize);
-            var pathBuffer = new StringBuilder(1024);
-            var filesCopied = new List<(IGorgonVirtualFile src, IGorgonVirtualFile dest)>();
+            StringBuilder pathBuffer = new(1024);
+            List<(IGorgonVirtualFile src, IGorgonVirtualFile dest)> filesCopied = [];
             CancellationToken cancelToken = options?.CancelToken ?? CancellationToken.None;
             Action<string, double> progressCallback = options?.ProgressCallback;
             Func<string, string, FileConflictResolution> conflictCallback = options?.ConflictResolutionCallback;
@@ -1851,7 +1847,7 @@ public class GorgonFileSystemWriter
             throw new DirectoryNotFoundException(string.Format(Resources.GORFS_ERR_DIRECTORY_NOT_FOUND, destDirectoryPath));
         }
 
-        var files = new List<IGorgonVirtualFile>();
+        List<IGorgonVirtualFile> files = [];
 
         foreach (string filePath in filePaths)
         {
@@ -1868,7 +1864,7 @@ public class GorgonFileSystemWriter
         try
         {
             _writeBuffer = GorgonArrayPool<byte>.SharedTiny.Rent(MaxBufferSize);
-            var pathBuffer = new StringBuilder(1024);
+            StringBuilder pathBuffer = new(1024);
             CancellationToken cancelToken = options?.CancelToken ?? CancellationToken.None;
             Action<string, double> progressCallback = options?.ProgressCallback;
             Func<string, string, FileConflictResolution> conflictCallback = options?.ConflictResolutionCallback;
@@ -1980,7 +1976,7 @@ public class GorgonFileSystemWriter
         try
         {
             _writeBuffer = GorgonArrayPool<byte>.SharedTiny.Rent(MaxBufferSize);
-            var pathBuffer = new StringBuilder(1024);
+            StringBuilder pathBuffer = new(1024);
             CancellationToken cancelToken = options?.CancelToken ?? CancellationToken.None;
             Action<string, double> progressCallback = options?.ProgressCallback;
             Func<string, string, FileConflictResolution> conflictCallback = options?.ConflictResolutionCallback;
@@ -1993,12 +1989,11 @@ public class GorgonFileSystemWriter
                 return;
             }
 
-            var dirsToCopy = new List<IGorgonVirtualDirectory>
-            {
-                srcDirectory
-            };
-            dirsToCopy.AddRange(srcDirectory.Directories.Traverse(d => d.Directories));
-            var filesToCopy = dirsToCopy.SelectMany(f => f.Files)
+            List<IGorgonVirtualDirectory> dirsToCopy =
+            [
+                srcDirectory, .. srcDirectory.Directories.Traverse(d => d.Directories)
+            ];
+            Dictionary<IGorgonVirtualDirectory, IEnumerable<IGorgonVirtualFile>> filesToCopy = dirsToCopy.SelectMany(f => f.Files)
                                         .GroupBy(f => f.Directory)
                                         .ToDictionary(d => d.Key, f => (IEnumerable<IGorgonVirtualFile>)f);
 
@@ -2123,9 +2118,9 @@ public class GorgonFileSystemWriter
             PrepareWriteArea();
 
             _writeBuffer = GorgonArrayPool<byte>.SharedTiny.Rent(MaxBufferSize);
-            var pathBuffer = new StringBuilder(1024);
-            var dirsCopied = new List<IGorgonVirtualDirectory>();
-            var filesCopied = new List<IGorgonVirtualFile>();
+            StringBuilder pathBuffer = new(1024);
+            List<IGorgonVirtualDirectory> dirsCopied = [];
+            List<IGorgonVirtualFile> filesCopied = [];
             CancellationToken cancelToken = options?.CancelToken ?? CancellationToken.None;
             Action<string, double> progressCallback = options?.ProgressCallback;
             Func<string, string, FileConflictResolution> conflictCallback = options?.ConflictResolutionCallback;
@@ -2151,8 +2146,8 @@ public class GorgonFileSystemWriter
                 return;
             }
 
-            var dirsToCopy = new List<DirectoryInfo>();
-            var filesToCopy = new List<FileInfo>();
+            List<DirectoryInfo> dirsToCopy = [];
+            List<FileInfo> filesToCopy = [];
 
             foreach (string path in paths.OrderBy(p => p.Length))
             {
@@ -2178,7 +2173,7 @@ public class GorgonFileSystemWriter
             }
 
             DirectoryInfo importParent = dirsToCopy.Count == 0 ? filesToCopy[0].Directory : dirsToCopy[0].Parent;
-            var beforeArgs = new FileImportingArgs();
+            FileImportingArgs beforeArgs = new();
 
             // Copies the files from the import directory.
             bool CopyFiles(DirectoryInfo parent, IReadOnlyList<FileInfo> files, IGorgonVirtualDirectory destDir)

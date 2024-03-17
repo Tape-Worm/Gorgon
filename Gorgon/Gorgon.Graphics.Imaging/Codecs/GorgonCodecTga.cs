@@ -295,7 +295,7 @@ public sealed class GorgonCodecTga
                 throw new IOException(string.Format(Resources.GORIMG_ERR_FORMAT_NOT_SUPPORTED, header.ImageType));
         }
 
-        var settings = new GorgonImageInfo(ImageDataType.Image2D, pixelFormat)
+        GorgonImageInfo settings = new(ImageDataType.Image2D, pixelFormat)
         {
             MipCount = 1,
             ArrayCount = 1,
@@ -707,7 +707,7 @@ public sealed class GorgonCodecTga
         IGorgonImageBuffer buffer = image.Buffers[0];
 
         // Determine how large a row is, in bytes.
-        var formatInfo = new GorgonFormatInfo(image.Format);
+        GorgonFormatInfo formatInfo = new(image.Format);
 
         GorgonPitchLayout srcPitch = (conversionFlags & TGAConversionFlags.Expand) == TGAConversionFlags.Expand
                                          ? new GorgonPitchLayout(image.Width * 3, image.Width * 3 * image.Height)
@@ -819,7 +819,7 @@ public sealed class GorgonCodecTga
             throw new EndOfStreamException();
         }
 
-        using var reader = new GorgonBinaryReader(stream, true);
+        using GorgonBinaryReader reader = new(stream, true);
         GorgonImageInfo info = ReadHeader(reader, out TGAConversionFlags flags);
 
         IGorgonImage image = new GorgonImage(info);
@@ -859,7 +859,7 @@ public sealed class GorgonCodecTga
             throw new NotSupportedException(string.Format(Resources.GORIMG_ERR_FORMAT_NOT_SUPPORTED, imageData.Format));
         }
 
-        using var writer = new GorgonBinaryWriter(stream, true);
+        using GorgonBinaryWriter writer = new(stream, true);
         // Write the header for the file before we dump the file contents.
         TgaHeader header = GetHeader(imageData, out TGAConversionFlags conversionFlags);
 
@@ -871,7 +871,7 @@ public sealed class GorgonCodecTga
         }
         else
         {
-            var formatInfo = new GorgonFormatInfo(imageData.Format);
+            GorgonFormatInfo formatInfo = new(imageData.Format);
             destPitch = formatInfo.GetPitchForFormat(imageData.Width, imageData.Height);
         }
 
@@ -887,7 +887,7 @@ public sealed class GorgonCodecTga
 
         // Get the pointer to the first mip/array/depth level.
         GorgonPtr<byte> srcPointer = imageData.Buffers[0].Data;
-        var lineBuffer = new GorgonNativeBuffer<byte>(srcPitch.RowPitch);
+        GorgonNativeBuffer<byte> lineBuffer = new(srcPitch.RowPitch);
 
         try
         {
@@ -1025,7 +1025,7 @@ public sealed class GorgonCodecTga
         try
         {
             position = stream.Position;
-            var reader = new GorgonBinaryReader(stream, true);
+            GorgonBinaryReader reader = new(stream, true);
             header = reader.ReadValue<TgaHeader>();
         }
         finally

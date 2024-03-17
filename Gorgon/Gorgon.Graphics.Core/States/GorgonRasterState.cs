@@ -341,7 +341,7 @@ public class GorgonRasterState
     /// <returns>The D3D 11 rasterizer state object.</returns>
     internal D3D11.RasterizerState2 GetD3D11RasterState(D3D11.Device5 device)
     {
-        var desc = new D3D11.RasterizerStateDescription2
+        D3D11.RasterizerStateDescription2 desc = new()
         {
             CullMode = (D3D11.CullMode)CullMode,
             ConservativeRasterizationMode =

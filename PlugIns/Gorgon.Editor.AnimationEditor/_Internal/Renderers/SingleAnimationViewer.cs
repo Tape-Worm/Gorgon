@@ -68,7 +68,7 @@ internal class SingleAnimationViewer(Gorgon2D renderer, GorgonSwapChain swapChai
     /// <returns>The angle of rotation, relative to the sprite.</returns>
     private float CalcAngleFromMouse(Vector2 mousePos, float currentAngle)
     {
-        var pivotPos = new Vector2(Sprite.Position.X - RenderRegion.Width * Camera.Anchor.X, Sprite.Position.Y - RenderRegion.Height * Camera.Anchor.Y);
+        Vector2 pivotPos = new(Sprite.Position.X - RenderRegion.Width * Camera.Anchor.X, Sprite.Position.Y - RenderRegion.Height * Camera.Anchor.Y);
         pivotPos = ToClient(pivotPos, ClientSize);
 
         Vector2 dest = mousePos - pivotPos;
@@ -204,7 +204,7 @@ internal class SingleAnimationViewer(Gorgon2D renderer, GorgonSwapChain swapChai
         aabb.Offset(-RenderRegion.Width * Camera.Anchor.X, -RenderRegion.Height * Camera.Anchor.Y);
         aabb = ToClient(aabb);
 
-        var aabbCircle = new DX.RectangleF(aabb.Left, aabb.Top, aabb.Width > aabb.Height ? aabb.Width : aabb.Height, aabb.Height > aabb.Width ? aabb.Height : aabb.Width);
+        DX.RectangleF aabbCircle = new(aabb.Left, aabb.Top, aabb.Width > aabb.Height ? aabb.Width : aabb.Height, aabb.Height > aabb.Width ? aabb.Height : aabb.Width);
 
         aabbCircle.X -= (aabbCircle.Width * 0.5f) - (aabb.Width * 0.5f);
         aabbCircle.Y -= (aabbCircle.Height * 0.5f) - (aabb.Height * 0.5f);

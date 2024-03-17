@@ -307,7 +307,7 @@ internal class Ship(SpritesLayer layer)
 
         if (keys[Keys.Q] == KeyState.Down)
         {
-            var effect = (Gorgon2DBloomEffect)_layer.Effects["bloom"];
+            Gorgon2DBloomEffect effect = (Gorgon2DBloomEffect)_layer.Effects["bloom"];
             effect.LowQuality = !effect.LowQuality;
             Thread.Sleep(2000);
         }

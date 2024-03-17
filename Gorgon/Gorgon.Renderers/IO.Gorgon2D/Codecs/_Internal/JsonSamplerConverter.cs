@@ -141,7 +141,7 @@ internal class JsonSamplerConverter(GorgonGraphics graphics)
         TextureWrap? wrapV = null;
         TextureWrap? wrapW = null;
 
-        var builder = new GorgonSamplerStateBuilder(_graphics);
+        GorgonSamplerStateBuilder builder = new(_graphics);
 
         while ((reader.Read()) && (reader.TokenType != JsonToken.EndObject))
         {

@@ -77,7 +77,7 @@ internal class ShaderProcessor
     private static GorgonShaderInclude ParseIncludeLine(StringBuilder includeLine, bool checkFileExists)
     {
         int length = "#GorgonInclude".Length;
-        var line = new StringBuilder(includeLine.ToString(), length, includeLine.Length - length, includeLine.Length - length);
+        StringBuilder line = new(includeLine.ToString(), length, includeLine.Length - length, includeLine.Length - length);
 
         TrimLine(line);
 
@@ -140,7 +140,7 @@ internal class ShaderProcessor
 
         string includePath = Path.GetFullPath(line.ToString(1, endQuote - 1));
 
-#pragma warning disable IDE0046 // Convert to conditional expression
+
         if (includePath.Length == 0)
         {
             throw new GorgonException(GorgonResult.CannotRead, string.Format(Resources.GORGFX_ERR_SHADER_INCLUDE_PATH_INVALID, includeLine));
@@ -149,7 +149,7 @@ internal class ShaderProcessor
         return (checkFileExists) && (!File.Exists(includePath))
             ? throw new IOException(string.Format(Resources.GORGFX_ERR_FILE_NOT_FOUND, includeName))
             : new GorgonShaderInclude(includeName, includePath);
-#pragma warning restore IDE0046 // Convert to conditional expression
+
     }
 
     /// <summary>
@@ -159,10 +159,10 @@ internal class ShaderProcessor
     /// <returns>The processed shader source.</returns>
     public string Process(string sourceCode)
     {
-        var result = new StringBuilder();
+        StringBuilder result = new();
 
         // Replace carriage returns with new lines.
-        var code = new StringBuilder(sourceCode);
+        StringBuilder code = new(sourceCode);
         code.Replace("\r\n", "\n");
         code.Replace("\n\r", "\n");
         code.Replace("\r", "\n");

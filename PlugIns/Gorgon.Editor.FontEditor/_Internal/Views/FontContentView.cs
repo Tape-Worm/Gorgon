@@ -134,7 +134,7 @@ internal partial class FontContentView
             return;
         }
 
-        var args = new SetTextureArgs(contentData.FilePaths[0]);
+        SetTextureArgs args = new(contentData.FilePaths[0]);
 
         if ((ViewModel?.TextureEditor?.TextureBrush?.LoadTextureCommand is null) || (!ViewModel.TextureEditor.TextureBrush.LoadTextureCommand.CanExecute(args)))
         {
@@ -159,7 +159,7 @@ internal partial class FontContentView
     {
         IContentFileDragData contentData = GetContentFileDragDropData<IContentFileDragData>(e);
 
-        var args = new SetTextureArgs(contentData.FilePaths[0]);
+        SetTextureArgs args = new(contentData.FilePaths[0]);
 
         if ((ViewModel?.TextureEditor?.TextureBrush?.LoadTextureCommand is not null) && (ViewModel.TextureEditor.TextureBrush.LoadTextureCommand.CanExecute(args)))
         {

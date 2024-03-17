@@ -87,8 +87,8 @@ public partial class Form
 
             // Set up a random color.				
             paintColor = Color.FromArgb((byte)GorgonRandom.RandomInt32(128, 255), GorgonRandom.RandomInt32(64, 255), GorgonRandom.RandomInt32(64, 255), 0);
-            var startPosition = new Vector2(sin + _halfSize.Width, cos + _halfSize.Height);
-            var endPosition = new Vector2((cos * (GorgonRandom.RandomSingle(_halfSize.Width * 0.82f))) + startPosition.X, (sin * (GorgonRandom.RandomSingle(_halfSize.Height * 0.82f))) + startPosition.Y);
+            Vector2 startPosition = new(sin + _halfSize.Width, cos + _halfSize.Height);
+            Vector2 endPosition = new((cos * (GorgonRandom.RandomSingle(_halfSize.Width * 0.82f))) + startPosition.X, (sin * (GorgonRandom.RandomSingle(_halfSize.Height * 0.82f))) + startPosition.Y);
             _renderer.DrawLine(startPosition.X, startPosition.Y, endPosition.X, endPosition.Y, paintColor);
         }
 
@@ -102,7 +102,7 @@ public partial class Form
         {
             //float radius = GorgonRandom.RandomSingle(5.0f);
             float radius = 4;
-            var spotPosition = new Vector2((GorgonRandom.RandomSingle((_halfSize.Height / 2.0f)) + _halfSize.Width - (_halfSize.Height / 4.0f)),
+            Vector2 spotPosition = new((GorgonRandom.RandomSingle((_halfSize.Height / 2.0f)) + _halfSize.Width - (_halfSize.Height / 4.0f)),
                                                      (GorgonRandom.RandomSingle((_halfSize.Height / 2.0f)) + _halfSize.Height - (_halfSize.Height / 4.0f)));
             _renderer.DrawEllipse(new DX.RectangleF(spotPosition.X - (radius * 0.5f),
                                                     spotPosition.Y - (radius * 0.5f),

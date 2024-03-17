@@ -161,7 +161,7 @@ internal class ExtractSpriteToolPlugIn
             _extractData.SkipColor = new GorgonColor(settings.SkipColor);
             _extractData.CellSize = settings.GridCellSize;
 
-            var extractViewModel = new Extract();
+            Extract extractViewModel = new();
             extractViewModel.Initialize(new ExtractParameters(settings,
                                                               _extractData,
                                                               new SpriteExtractorService(HostToolServices.GraphicsContext.Renderer2D,

@@ -207,15 +207,15 @@ internal abstract class Model
         if (_isRotationChanged)
         {
             // Convert degrees to radians.
-            var rotRads = new Vector3(_rotation.X.ToRadians(), _rotation.Y.ToRadians(), _rotation.Z.ToRadians());
+            Vector3 rotRads = new(_rotation.X.ToRadians(), _rotation.Y.ToRadians(), _rotation.Z.ToRadians());
 
             // Quaternion for rotation.
-            var quatRotation = Quaternion.CreateFromYawPitchRoll(rotRads.Y, rotRads.X, rotRads.Z);
+            Quaternion quatRotation = Quaternion.CreateFromYawPitchRoll(rotRads.Y, rotRads.X, rotRads.Z);
             _rotationMatrix = Matrix4x4.CreateFromQuaternion(quatRotation);
         }
 
         // Build our world matrix.
-        var temp = Matrix4x4.Multiply(_scaleMatrix, _rotationMatrix);
+        Matrix4x4 temp = Matrix4x4.Multiply(_scaleMatrix, _rotationMatrix);
         _worldMatrix = Matrix4x4.Multiply(temp, _positionMatrix);
     }
 

@@ -64,7 +64,7 @@ internal static class FileSystemExtensions
 
         foreach (string filePath in files)
         {
-            var fileInfo = new System.IO.FileInfo(filePath);
+            FileInfo fileInfo = new(filePath);
             System.IO.FileAttributes attribs = fileInfo.Attributes;
 
             if (!IsValidFile(fileInfo))

@@ -623,7 +623,7 @@ public class GorgonPolySprite
             throw new GorgonException(GorgonResult.CannotCreate, Resources.GOR2D_ERR_POLY_SPRITE_NOT_ENOUGH_VERTS);
         }
 
-        var newSprite = new GorgonPolySprite();
+        GorgonPolySprite newSprite = new();
 
         // Send the vertices into the sprite.
         newSprite.RwVertices.AddRange(vertices);

@@ -156,7 +156,7 @@ internal partial class FontPatternBrushView
 
         using Brush brush = new HatchBrush(ComboHatch.Style, PickerForeground.SelectedColor, PickerBackground.SelectedColor);
         using Brush backBrush = new TextureBrush(Resources.Transparency_Pattern, WrapMode.Tile);
-        using var g = System.Drawing.Graphics.FromImage(_previewBitmap);
+        using System.Drawing.Graphics g = System.Drawing.Graphics.FromImage(_previewBitmap);
 
         g.FillRectangle(backBrush, PanelPreview.ClientRectangle);
         g.FillRectangle(brush, PanelPreview.ClientRectangle);

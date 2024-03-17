@@ -53,10 +53,10 @@ internal class ImageSplitToolPlugIn
     /// <returns>The flattened list of entries used for searching, the file system entry hierarchy and a list of image files and associated sprites.</returns>
     private (List<IContentFileExplorerSearchEntry> searchEntries, List<ContentFileExplorerDirectoryEntry> fileSystemEntries, IReadOnlyDictionary<IContentFile, IReadOnlyList<IContentFile>> imagesAndSprites) GetFileEntries()
     {
-        var searchEntries = new List<IContentFileExplorerSearchEntry>();
-        var fileSystemEntries = new List<ContentFileExplorerDirectoryEntry>();
+        List<IContentFileExplorerSearchEntry> searchEntries = [];
+        List<ContentFileExplorerDirectoryEntry> fileSystemEntries = [];
         ContentFileExplorerDirectoryEntry dirEntry = null;
-        var fileEntries = new List<ContentFileExplorerFileEntry>();
+        List<ContentFileExplorerFileEntry> fileEntries = [];
         IEnumerable<string> dirs = ContentFileManager.EnumerateDirectories("/", "*", true);
         IEnumerable<IContentFile> imageFiles = ContentFileManager.EnumerateContentFiles("/", "*")
                                             .Where(item => (item.Metadata.Attributes.TryGetValue(CommonEditorConstants.ContentTypeAttr, out string fileType))
@@ -67,7 +67,7 @@ internal class ImageSplitToolPlugIn
                                                         && (item.Metadata.ContentMetadata is not null)
                                                         && (string.Equals(fileType, CommonEditorContentTypes.SpriteType, StringComparison.OrdinalIgnoreCase)));
         IReadOnlyList<string> selectedFiles = ContentFileManager.GetSelectedFiles();
-        var imagesAndSprites = new Dictionary<IContentFile, IReadOnlyList<IContentFile>>();
+        Dictionary<IContentFile, IReadOnlyList<IContentFile>> imagesAndSprites = [];
 
         // Function to gather all sprite dependencies for the image files.
         void GatherSpriteDependencies()
@@ -114,7 +114,7 @@ internal class ImageSplitToolPlugIn
                 continue;
             }
 
-            var fileEntry = new ContentFileExplorerFileEntry(file, dirEntry);
+            ContentFileExplorerFileEntry fileEntry = new(file, dirEntry);
             if (selectedFiles.Any(item => string.Equals(item, file.Path, StringComparison.OrdinalIgnoreCase)))
             {
                 fileEntry.IsSelected = true;
@@ -148,7 +148,7 @@ internal class ImageSplitToolPlugIn
                     continue;
                 }
 
-                var fileEntry = new ContentFileExplorerFileEntry(file, dirEntry);
+                ContentFileExplorerFileEntry fileEntry = new(file, dirEntry);
                 if (selectedFiles.Any(item => string.Equals(item, file.Path, StringComparison.OrdinalIgnoreCase)))
                 {
                     fileEntry.IsSelected = true;
@@ -209,9 +209,9 @@ internal class ImageSplitToolPlugIn
 
             (List<IContentFileExplorerSearchEntry> searchEntries, List<ContentFileExplorerDirectoryEntry> entries, IReadOnlyDictionary<IContentFile, IReadOnlyList<IContentFile>> imagesAndSprites) = GetFileEntries();
 
-            var splitter = new ImageSelection();
+            ImageSelection splitter = new();
 
-            var textureSplitterService = new TextureAtlasSplitter(HostToolServices.GraphicsContext.Renderer2D,
+            TextureAtlasSplitter textureSplitterService = new(HostToolServices.GraphicsContext.Renderer2D,
                                                                   imagesAndSprites,
                                                                   ContentFileManager,
                                                                   new GorgonCodecDds(),

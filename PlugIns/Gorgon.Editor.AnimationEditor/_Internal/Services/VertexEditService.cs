@@ -219,7 +219,7 @@ internal class VertexEditService
         }
 
         Vector2 currentPosition = _vertices[vertexIndex];
-        var dragDelta = Vector2.Subtract(localMousePos, _localStartDrag);
+        Vector2 dragDelta = Vector2.Subtract(localMousePos, _localStartDrag);
         _vertices[vertexIndex] = (new Vector2(_dragHandlePos.X + dragDelta.X, _dragHandlePos.Y + dragDelta.Y)).Truncate();
         SetupHandles();
 
@@ -397,7 +397,7 @@ internal class VertexEditService
 
         if ((args.MouseButtons == MouseButtons.Left) && (vertexIndex != -1) && (!IsDragging))
         {
-            var delta = new Vector2(args.CameraSpacePosition.X - _localStartDrag.X, args.CameraSpacePosition.Y - _localStartDrag.Y);
+            Vector2 delta = new(args.CameraSpacePosition.X - _localStartDrag.X, args.CameraSpacePosition.Y - _localStartDrag.Y);
             ref Vector2 vertexPosition = ref _vertices[vertexIndex];
             _localStartDrag = args.CameraSpacePosition;
             _dragHandlePos = new Vector2(vertexPosition.X + delta.X, vertexPosition.Y + delta.Y);

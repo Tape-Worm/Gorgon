@@ -310,9 +310,9 @@ public class Gorgon2DLightingEffect(Gorgon2D renderer)
     /// <seealso cref="PassContinuationState"/>
     protected override PassContinuationState OnBeforeRenderPass(int passIndex, GorgonRenderTargetView output, GorgonCameraCommon camera)
     {
-        var size = new DX.Size2F(output.Width * 0.5f, output.Height * 0.5f);
+        DX.Size2F size = new(output.Width * 0.5f, output.Height * 0.5f);
         float specularZ = (size.Width > size.Height ? size.Width * 0.5f : size.Height * 0.5f).Max(128).Min(640);
-        var cameraPos = new Vector4(size.Width, size.Height, -specularZ, 0);
+        Vector4 cameraPos = new(size.Width, size.Height, -specularZ, 0);
 
         // If no custom camera is in use, we need to pass in our default viewing information which is normally the output width, and height (by half), and an arbitrary Z value so 
         // the camera position isn't intersecting with the drawing plane (+ height information). Otherwise, our specular hilight will look really messed up.

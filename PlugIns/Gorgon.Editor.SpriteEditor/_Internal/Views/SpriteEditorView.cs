@@ -204,9 +204,9 @@ internal partial class SpriteEditorView
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
     private void ManualVertexInput_ResizeEnd(object sender, EventArgs e)
     {
-        var form = (Form)sender;
+        Form form = (Form)sender;
         Point pos = RenderControl.PointToScreen(new Point(RenderControl.ClientSize.Width - 128, 0));
-        var snapRect = new Rectangle(pos.X, pos.Y, 128, 128);
+        Rectangle snapRect = new(pos.X, pos.Y, 128, 128);
 
         if ((form.DesktopBounds.Right >= snapRect.Left) && (form.DesktopBounds.Right <= snapRect.Right)
             && (form.DesktopBounds.Top >= snapRect.Top) && (form.DesktopBounds.Top <= snapRect.Bottom)
@@ -234,9 +234,9 @@ internal partial class SpriteEditorView
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
     private void ManualInput_ResizeEnd(object sender, EventArgs e)
     {
-        var form = (Form)sender;
+        Form form = (Form)sender;
         Point pos = RenderControl.PointToScreen(new Point(RenderControl.ClientSize.Width - 128, 0));
-        var snapRect = new Rectangle(pos.X, pos.Y, 128, 128);
+        Rectangle snapRect = new(pos.X, pos.Y, 128, 128);
 
         if ((form.DesktopBounds.Right >= snapRect.Left) && (form.DesktopBounds.Right <= snapRect.Right)
             && (form.DesktopBounds.Top >= snapRect.Top) && (form.DesktopBounds.Top <= snapRect.Bottom)
@@ -476,7 +476,7 @@ internal partial class SpriteEditorView
             return;
         }
 
-        var args = new SetTextureArgs(contentData.FilePaths[0]);
+        SetTextureArgs args = new(contentData.FilePaths[0]);
 
         if ((ViewModel?.SetTextureCommand is null) || (!ViewModel.SetTextureCommand.CanExecute(args)))
         {
@@ -501,7 +501,7 @@ internal partial class SpriteEditorView
     {
         IContentFileDragData contentData = GetContentFileDragDropData<IContentFileDragData>(e);
 
-        var args = new SetTextureArgs(contentData.FilePaths[0]);
+        SetTextureArgs args = new(contentData.FilePaths[0]);
 
         if ((ViewModel?.SetTextureCommand is not null) && (ViewModel.SetTextureCommand.CanExecute(args)))
         {
@@ -675,7 +675,7 @@ internal partial class SpriteEditorView
             return;
         }
 
-        var spriteViewer = (ISpriteViewer)renderer;
+        ISpriteViewer spriteViewer = (ISpriteViewer)renderer;
         spriteViewer.DefaultZoom();
 
         if (resetZoom)
@@ -720,12 +720,12 @@ internal partial class SpriteEditorView
 
         ISpriteViewer noTexture = new NoTextureViewer(context.Renderer2D, swapChain, ViewModel);
         ISpriteViewer defaultViewer = new DefaultSpriteViewer(context.Renderer2D, swapChain, ViewModel, _marchAnts);
-        var clipViewer = new ClipSpriteViewer(context.Renderer2D, swapChain, ViewModel, _clipperService);
-        var pickViewer = new PickSpriteViewer(context.Renderer2D, swapChain, ViewModel, _pickService, _marchAnts);
-        var colorEditViewer = new ColorEditViewer(context.Renderer2D, swapChain, ViewModel);
-        var vertexEditViewer = new VertexEditViewer(context.Renderer2D, swapChain, ViewModel, _vertexEditService);
-        var anchorEditViewer = new AnchorEditViewer(context.Renderer2D, swapChain, ViewModel, _anchorService);
-        var wrapEditViewer = new TextureWrapViewer(context.Renderer2D, swapChain, ViewModel);
+        ClipSpriteViewer clipViewer = new(context.Renderer2D, swapChain, ViewModel, _clipperService);
+        PickSpriteViewer pickViewer = new(context.Renderer2D, swapChain, ViewModel, _pickService, _marchAnts);
+        ColorEditViewer colorEditViewer = new(context.Renderer2D, swapChain, ViewModel);
+        VertexEditViewer vertexEditViewer = new(context.Renderer2D, swapChain, ViewModel, _vertexEditService);
+        AnchorEditViewer anchorEditViewer = new(context.Renderer2D, swapChain, ViewModel, _anchorService);
+        TextureWrapViewer wrapEditViewer = new(context.Renderer2D, swapChain, ViewModel);
         noTexture.CreateResources();
         defaultViewer.CreateResources();
         clipViewer.CreateResources();
@@ -807,7 +807,7 @@ internal partial class SpriteEditorView
                 return;
             }
 
-            var pt = new Point(prevPositioning.Value.X, prevPositioning.Value.Y);
+            Point pt = new(prevPositioning.Value.X, prevPositioning.Value.Y);
             if (!Screen.AllScreens.Any(item => item.WorkingArea.Contains(pt)))
             {
                 manualInput.Location = RenderControl.PointToScreen(new Point(RenderControl.ClientSize.Width - manualInput.Width, 0));

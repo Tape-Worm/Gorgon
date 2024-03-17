@@ -289,7 +289,7 @@ public class GorgonDepthStencilState
     /// <returns>The D3D11 depth/stencil state.</returns>
     internal D3D11.DepthStencilState GetD3D11DepthStencilState(D3D11.Device5 device)
     {
-        var desc = new D3D11.DepthStencilStateDescription
+        D3D11.DepthStencilStateDescription desc = new()
         {
             BackFace = new D3D11.DepthStencilOperationDescription
             {

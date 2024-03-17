@@ -98,7 +98,7 @@ internal class JsonRectangleFConverter
 
         float b = (float)(reader.ReadAsDouble() ?? 0);
 
-        var result = new DX.RectangleF
+        DX.RectangleF result = new()
         {
             Left = l,
             Top = t,

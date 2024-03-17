@@ -366,7 +366,7 @@ public sealed class GorgonTexture2D
     /// </summary>
     private void ValidateTextureSettings()
     {
-        var formatInfo = new GorgonFormatInfo(Format);
+        GorgonFormatInfo formatInfo = new(Format);
 
         if (Usage == ResourceUsage.Dynamic)
         {
@@ -530,7 +530,7 @@ public sealed class GorgonTexture2D
             options |= D3D11.ResourceOptionFlags.TextureCube;
         }
 
-        var tex2DDesc = new D3D11.Texture2DDescription1
+        D3D11.Texture2DDescription1 tex2DDesc = new()
         {
             Format = (DXGI.Format)Format,
             Width = Width,
@@ -1211,7 +1211,7 @@ public sealed class GorgonTexture2D
             throw new NotSupportedException(string.Format(Resources.GORGFX_ERR_TEXTURE_RESOLVE_DEST_NOT_DEFAULT, destination.Name));
         }
 
-        var resolveFormatInfo = new GorgonFormatInfo(resolveFormat);
+        GorgonFormatInfo resolveFormatInfo = new(resolveFormat);
 
         // If we have typed formats, and they're not the same, then that's an error according to the D3D docs.
         if ((!FormatInformation.IsTypeless) && (!destination.FormatInformation.IsTypeless))
@@ -1271,13 +1271,13 @@ public sealed class GorgonTexture2D
     /// </remarks>
     public GorgonTexture2D GetStagingTexture()
     {
-        var info = new GorgonTexture2DInfo(_info)
+        GorgonTexture2DInfo info = new(_info)
         {
             Name = $"{Name}_[Staging]",
             Usage = ResourceUsage.Staging,
             Binding = TextureBinding.None
         };
-        var staging = new GorgonTexture2D(Graphics, info);
+        GorgonTexture2D staging = new(Graphics, info);
 
         // Copy the data from this texture into the new staging texture.
         CopyTo(staging);
@@ -1407,10 +1407,10 @@ public sealed class GorgonTexture2D
 
         // Clip the destination rectangle against our texture size.
         DX.Rectangle destRect = destRectangle ?? new DX.Rectangle(0, 0, width, height);
-        var maxRect = new DX.Rectangle(0, 0, width, height);
+        DX.Rectangle maxRect = new(0, 0, width, height);
         DX.Rectangle.Intersect(ref destRect, ref maxRect, out DX.Rectangle destBounds);
 
-        var finalBounds = new DX.Rectangle(destBounds.X, destBounds.Y, imageBuffer.Width.Min(destBounds.Width), imageBuffer.Height.Min(destBounds.Height));
+        DX.Rectangle finalBounds = new(destBounds.X, destBounds.Y, imageBuffer.Width.Min(destBounds.Width), imageBuffer.Height.Min(destBounds.Height));
 
         unsafe
         {
@@ -1761,7 +1761,7 @@ public sealed class GorgonTexture2D
 
         arrayCount = (arrayCount.Min(ArrayCount - arrayIndex)).Max(1);
 
-        var key = new TextureViewKey(format, firstMipLevel, mipCount, arrayIndex, arrayCount);
+        TextureViewKey key = new(format, firstMipLevel, mipCount, arrayIndex, arrayCount);
 
         if ((_cachedSrvs.TryGetValue(key, out GorgonTexture2DView view))
             && (view.Native is not null))
@@ -1838,7 +1838,7 @@ public sealed class GorgonTexture2D
         }
 
         // Ensure the size of the data type fits the requested format.
-        var info = new GorgonFormatInfo(format);
+        GorgonFormatInfo info = new(format);
 
         if (info.IsTypeless)
         {
@@ -1863,7 +1863,7 @@ public sealed class GorgonTexture2D
 
         arrayCount = arrayCount.Min(ArrayCount - arrayIndex).Max(1);
 
-        var key = new TextureViewKey(format, firstMipLevel, _info.MipLevels, arrayIndex, arrayCount);
+        TextureViewKey key = new(format, firstMipLevel, _info.MipLevels, arrayIndex, arrayCount);
 
         if ((_cachedReadWriteViews.TryGetValue(key, out GorgonTexture2DReadWriteView view))
             && (view.Native is not null))
@@ -1962,7 +1962,7 @@ public sealed class GorgonTexture2D
         arrayCount = arrayCount.Min(_info.ArrayCount - arrayIndex).Max(1);
 
         // Since we don't use the mip count, we can repurpose it to store the flag settings.
-        var key = new TextureViewKey(format, firstMipLevel, (int)flags, arrayIndex, arrayCount);
+        TextureViewKey key = new(format, firstMipLevel, (int)flags, arrayIndex, arrayCount);
 
         if ((_cachedDsvs.TryGetValue(key, out GorgonDepthStencil2DView view))
             && (view.Native is not null))
@@ -2051,7 +2051,7 @@ public sealed class GorgonTexture2D
 
         arrayCount = arrayCount.Min(_info.ArrayCount - arrayIndex).Max(1);
 
-        var key = new TextureViewKey(format, firstMipLevel, 1, arrayIndex, arrayCount);
+        TextureViewKey key = new(format, firstMipLevel, 1, arrayIndex, arrayCount);
 
         if ((_cachedRtvs.TryGetValue(key, out GorgonRenderTarget2DView view))
             && (view.Native is not null))
@@ -2358,7 +2358,7 @@ public sealed class GorgonTexture2D
     {
         D3D11.Texture2DDescription desc;
 
-        using (var com = new DX.ComObject(surface))
+        using (DX.ComObject com = new(surface))
         {
             if (com is null)
             {

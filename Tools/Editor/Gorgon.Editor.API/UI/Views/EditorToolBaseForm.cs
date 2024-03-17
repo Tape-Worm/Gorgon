@@ -382,14 +382,14 @@ public partial class EditorToolBaseForm
     /// <returns><b>true</b> if the renderer is registered, <b>false</b> if not.</returns>
     protected bool HasRenderer(string name)
     {
-#pragma warning disable IDE0046 // Convert to conditional expression
+
         if (name is null)
         {
             throw new ArgumentNullException(nameof(name));
         }
 
         return string.IsNullOrWhiteSpace(name) ? throw new ArgumentEmptyException(nameof(name)) : _renderers.ContainsKey(name);
-#pragma warning restore IDE0046 // Convert to conditional expression
+
     }
 
     /// <summary>
@@ -538,7 +538,7 @@ public partial class EditorToolBaseForm
         Interlocked.Exchange(ref _closeState, 1);
         e.Cancel = true;
 
-        var args = new CloseToolArgs(true);
+        CloseToolArgs args = new(true);
 
         if ((_dataContext?.CloseToolCommand is not null) && (_dataContext.CloseToolCommand.CanExecute(args)))
         {

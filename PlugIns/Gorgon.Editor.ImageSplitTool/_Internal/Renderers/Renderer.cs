@@ -154,7 +154,7 @@ internal class Renderer(Gorgon2D renderer, GorgonSwapChain swapChain, ISplit dat
     {
         MainRenderTarget.Clear(DarkFormsRenderer.WindowBackground);
 
-        var renderRegion = GetRenderRegion().ToRectangleF();
+        DX.RectangleF renderRegion = GetRenderRegion().ToRectangleF();
 
         Renderer.Begin();
         Renderer.DrawFilledRectangle(renderRegion,
@@ -170,8 +170,8 @@ internal class Renderer(Gorgon2D renderer, GorgonSwapChain swapChain, ISplit dat
     {
         OnRenderBackground();
 
-        var renderRegion = GetRenderRegion().ToRectangleF();
-        var halfClient = new Vector2(renderRegion.Width * 0.5f, renderRegion.Height * 0.5f);
+        DX.RectangleF renderRegion = GetRenderRegion().ToRectangleF();
+        Vector2 halfClient = new(renderRegion.Width * 0.5f, renderRegion.Height * 0.5f);
 
         Renderer.Begin();
 

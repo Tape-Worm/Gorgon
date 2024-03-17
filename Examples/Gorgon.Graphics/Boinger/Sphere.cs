@@ -87,11 +87,11 @@ internal class Sphere
         {
             float angle = deltaRingAngle * ring;
             float ringSin = angle.Sin();
-            var position = new Vector3(0, angle.Cos() * radius, 0);
+            Vector3 position = new(0, angle.Cos() * radius, 0);
 
             for (int segment = 0; segment <= segmentCount; segment++)
             {
-                var textureDelta = new Vector2(1.0f - (segment / (float)segmentCount), 1.0f - (ring / (float)ringCount));
+                Vector2 textureDelta = new(1.0f - (segment / (float)segmentCount), 1.0f - (ring / (float)ringCount));
                 float segmentAngle = deltaSegAngle * segment;
 
                 position.X = ringSin * segmentAngle.Sin() * radius;

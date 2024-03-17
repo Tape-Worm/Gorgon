@@ -364,7 +364,7 @@ public class Gorgon2DOldFilmEffect
     {
         int textureSize = NoiseTextureSize.Min(128).Max(16);
 
-        using var image = new GorgonImage(new GorgonImageInfo(ImageDataType.Image2D, BufferFormat.R8_UNorm)
+        using GorgonImage image = new(new GorgonImageInfo(ImageDataType.Image2D, BufferFormat.R8_UNorm)
         {
             Width = textureSize,
             Height = textureSize
@@ -515,7 +515,7 @@ public class Gorgon2DOldFilmEffect
         for (int i = 0; i < DirtAmount; ++i)
         {
             float grayDust = GorgonRandom.RandomSingle(0.1f, 0.25f);
-            var dustColor = new GorgonColor(grayDust, grayDust, grayDust, GorgonRandom.RandomSingle(0.25f, 0.95f));
+            GorgonColor dustColor = new(grayDust, grayDust, grayDust, GorgonRandom.RandomSingle(0.25f, 0.95f));
 
             // Render dust points.
             Renderer.DrawFilledRectangle(new DX.RectangleF(GorgonRandom.RandomSingle(region.Left, region.Right),
@@ -530,7 +530,7 @@ public class Gorgon2DOldFilmEffect
             }
 
             // Render dirt/hair lines.
-            var dirtStart = new Vector2(GorgonRandom.RandomSingle(region.Left, region.Right),
+            Vector2 dirtStart = new(GorgonRandom.RandomSingle(region.Left, region.Right),
                                            GorgonRandom.RandomSingle(region.Top, region.Bottom));
 
             float dirtWidth = GorgonRandom.RandomSingle(1.0f, 3.0f);

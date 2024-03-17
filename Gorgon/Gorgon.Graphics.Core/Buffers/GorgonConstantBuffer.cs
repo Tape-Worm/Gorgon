@@ -165,7 +165,7 @@ public sealed class GorgonConstantBuffer
 
         Log.Print($"{Name} Constant Buffer: Creating D3D11 buffer. Size: {_info.SizeInBytes} bytes", LoggingLevel.Simple);
 
-        var desc = new D3D11.BufferDescription
+        D3D11.BufferDescription desc = new()
         {
             SizeInBytes = _info.SizeInBytes,
             Usage = (D3D11.ResourceUsage)_info.Usage,
@@ -249,7 +249,7 @@ public sealed class GorgonConstantBuffer
     /// </remarks>
     public GorgonConstantBufferView GetView(int firstElement = 0, int elementCount = 0)
     {
-        var result = new GorgonConstantBufferView(this, firstElement, elementCount);
+        GorgonConstantBufferView result = new(this, firstElement, elementCount);
         _cbvs.Add(result);
         return result;
     }
@@ -260,7 +260,7 @@ public sealed class GorgonConstantBuffer
     /// <returns>The staging buffer to retrieve.</returns>
     public GorgonConstantBuffer GetStaging()
     {
-        var buffer = new GorgonConstantBuffer(Graphics,
+        GorgonConstantBuffer buffer = new(Graphics,
                                                 new GorgonConstantBufferInfo(_info)
                                                 {
                                                     Name = $"{Name} Staging",

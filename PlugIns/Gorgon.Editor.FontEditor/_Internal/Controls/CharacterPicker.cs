@@ -203,7 +203,7 @@ public partial class CharacterPicker
     {
         try
         {
-            var item = (KeyValuePair<string, GorgonRange<int>>)ListCharacterRanges.SelectedItems[0].Tag;
+            KeyValuePair<string, GorgonRange<int>> item = (KeyValuePair<string, GorgonRange<int>>)ListCharacterRanges.SelectedItems[0].Tag;
 
             string newString = string.Empty;
 
@@ -288,7 +288,7 @@ public partial class CharacterPicker
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
     private void FontControl_MouseEnter(object sender, EventArgs e)
     {
-        var check = (CheckBox)sender;
+        CheckBox check = (CheckBox)sender;
 
         string name = Win32API.GetCodePointName(check.Text[0]);
 
@@ -310,7 +310,7 @@ public partial class CharacterPicker
         string chars = TextSelectedCharacters.Text;     // Characters.
 
         // Go through each character.
-        var fontControl = (CheckBox)sender;
+        CheckBox fontControl = (CheckBox)sender;
         int pos = chars.IndexOf(fontControl.Text, StringComparison.Ordinal);
 
         if (pos > -1)
@@ -348,7 +348,7 @@ public partial class CharacterPicker
         // Go through each character.            
         for (int i = 1; i <= 48; i++)
         {
-            var fontControl = (CheckBox)panelCharacters.Controls["checkBox" + i];       // Font character.
+            CheckBox fontControl = (CheckBox)panelCharacters.Controls["checkBox" + i];       // Font character.
 
             if (!fontControl.Enabled)
             {
@@ -486,7 +486,7 @@ public partial class CharacterPicker
             for (int i = 1; i <= 48; i++)
             {
                 string checkBoxName = "CheckBox" + i;
-                var fontControl = (CheckBox)panelCharacters.Controls[checkBoxName];                 // Font character.            
+                CheckBox fontControl = (CheckBox)panelCharacters.Controls[checkBoxName];                 // Font character.            
 
                 fontControl.MouseEnter -= FontControl_MouseEnter;
                 fontControl.CheckedChanged -= FontControl_CheckedChanged;
@@ -548,7 +548,7 @@ public partial class CharacterPicker
         IOrderedEnumerable<KeyValuePair<string, GorgonRange<int>>> sortedRanges = _characterRanges.OrderBy(item => item.Value.Minimum);
         foreach (KeyValuePair<string, GorgonRange<int>> range in sortedRanges)
         {
-            var item = new ListViewItem(((ushort)range.Value.Minimum).FormatHex() + ".." + ((ushort)range.Value.Maximum).FormatHex());
+            ListViewItem item = new(((ushort)range.Value.Minimum).FormatHex() + ".." + ((ushort)range.Value.Maximum).FormatHex());
             item.SubItems.Add(range.Key);
             item.Tag = range;
             ListCharacterRanges.Items.Add(item);

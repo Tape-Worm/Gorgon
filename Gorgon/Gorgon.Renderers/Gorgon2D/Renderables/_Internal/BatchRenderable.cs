@@ -191,7 +191,7 @@ internal class BatchRenderable
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool AreStatesSame(BatchRenderable left, BatchRenderable right)
     {
-#pragma warning disable IDE0046 // Convert to conditional expression
+
         if ((left == right) && (left.StateChanged))
         {
             return false;
@@ -201,6 +201,6 @@ internal class BatchRenderable
                && (left.Texture == right.Texture)
                && (left.TextureSampler == right.TextureSampler)
                && (AlphaTestData.Equals(in left.AlphaTestData, in right.AlphaTestData));
-#pragma warning restore IDE0046 // Convert to conditional expression
+
     }
 }

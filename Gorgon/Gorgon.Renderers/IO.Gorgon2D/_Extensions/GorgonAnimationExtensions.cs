@@ -62,7 +62,7 @@ public static class GorgonAnimationExtensions
             throw new ArgumentNullException(nameof(animation));
         }
 
-        var settings = new JsonSerializer
+        JsonSerializer settings = new()
         {
             Formatting = prettyFormat ? Formatting.Indented : Formatting.None,
             Converters =
@@ -77,7 +77,7 @@ public static class GorgonAnimationExtensions
                            }
         };
 
-        var jsonObj = JObject.FromObject(animation, settings);
+        JObject jsonObj = JObject.FromObject(animation, settings);
         JToken firstProp = jsonObj.First;
         firstProp.AddBeforeSelf(new JProperty(JsonHeaderProp, GorgonAnimationCodecCommon.CurrentFileHeader));
         firstProp.AddBeforeSelf(new JProperty(JsonVersionProp, GorgonAnimationCodecCommon.CurrentVersion.ToString(2)));

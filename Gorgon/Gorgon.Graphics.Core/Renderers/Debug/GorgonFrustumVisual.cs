@@ -71,7 +71,7 @@ public class GorgonFrustumVisual
     /// </summary>
     private void Initialize()
     {
-        var vertexBuffer = new GorgonVertexBuffer(Graphics, new GorgonVertexBufferInfo(_lineVertices.Length * Unsafe.SizeOf<Vector3>())
+        GorgonVertexBuffer vertexBuffer = new(Graphics, new GorgonVertexBufferInfo(_lineVertices.Length * Unsafe.SizeOf<Vector3>())
         {
             Name = "Frustum Visual VertexBuffer",
             Usage = ResourceUsage.Dynamic
@@ -93,7 +93,7 @@ public class GorgonFrustumVisual
             new GorgonInputElement("SV_POSITION", Gorgon.Graphics.BufferFormat.R32G32B32_Float, 0)
         ]);
 
-        var psoBuilder = new GorgonPipelineStateBuilder(Graphics);
+        GorgonPipelineStateBuilder psoBuilder = new(Graphics);
 
         _drawCall = _builder.ConstantBuffer(ShaderType.Vertex, _constantBuffer)
                             .VertexBuffer(_inputLayout, _vertexBuffer)
@@ -151,7 +151,7 @@ public class GorgonFrustumVisual
 
         _vertexBuffer.VertexBuffer.SetData<Vector3>(_lineVertices);
 
-        var viewProj = Matrix4x4.Multiply(projectionMatrix, viewMatrix);
+        Matrix4x4 viewProj = Matrix4x4.Multiply(projectionMatrix, viewMatrix);
         viewProj = Matrix4x4.Transpose(viewProj);
 
         _constantBuffer.Buffer.SetData(in viewProj);

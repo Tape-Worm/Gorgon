@@ -103,7 +103,7 @@ internal partial class StageRecent
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
     private void Button_DeleteItem(object sender, EventArgs e)
     {
-        var button = (RecentItemButton)sender;
+        RecentItemButton button = (RecentItemButton)sender;
 
         if ((ViewModel?.DeleteItemCommand is null) || (!ViewModel.DeleteItemCommand.CanExecute(button.RecentItem)))
         {
@@ -118,7 +118,7 @@ internal partial class StageRecent
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
     private void Button_Click(object sender, EventArgs e)
     {
-        var button = (RecentItemButton)sender;
+        RecentItemButton button = (RecentItemButton)sender;
 
         if ((ViewModel?.OpenProjectCommand is null) || (button.RecentItem is null))
         {
@@ -211,7 +211,7 @@ internal partial class StageRecent
     {
         while (PanelRecentItems.Controls.Count > 0)
         {
-            var button = (RecentItemButton)PanelRecentItems.Controls[0];
+            RecentItemButton button = (RecentItemButton)PanelRecentItems.Controls[0];
             button.Click -= Button_Click;
             button.DeleteItem -= Button_DeleteItem;
             button.Dispose();

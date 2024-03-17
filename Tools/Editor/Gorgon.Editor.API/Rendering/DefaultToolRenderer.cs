@@ -217,7 +217,7 @@ public class DefaultToolRenderer<T>
     /// <returns>The scaling factor to apply.</returns>
     protected float CalculateScaling(DX.Size2F size, DX.Size2F windowSize)
     {
-        var scaling = new Vector2(windowSize.Width / size.Width, windowSize.Height / size.Height);
+        Vector2 scaling = new(windowSize.Width / size.Width, windowSize.Height / size.Height);
 
         return scaling.X.Min(scaling.Y);
     }
@@ -328,7 +328,7 @@ public class DefaultToolRenderer<T>
     /// </remarks>
     protected virtual void OnRenderBackground()
     {
-        var textureSize = new DX.RectangleF(0, 0, ClientSize.Width / (float)BackgroundPattern.Width, ClientSize.Height / (float)BackgroundPattern.Height);
+        DX.RectangleF textureSize = new(0, 0, ClientSize.Width / (float)BackgroundPattern.Width, ClientSize.Height / (float)BackgroundPattern.Height);
 
         Renderer.Begin();
         Renderer.DrawFilledRectangle(new DX.RectangleF(0, 0, ClientSize.Width, ClientSize.Height), GorgonColor.White, BackgroundPattern, textureSize);

@@ -48,7 +48,7 @@ internal class TextEditorService
     /// <returns>The new text, or <b>null</b> if cancelled.</returns>
     public string GetText(string currentText)
     {
-        using var textEditor = new FormTextEditor();
+        using FormTextEditor textEditor = new();
         textEditor.ContentText = textEditor.OriginalText = currentText;
 
         return textEditor.ShowDialog(GorgonApplication.MainForm) == DialogResult.Cancel ? null : textEditor.ContentText;

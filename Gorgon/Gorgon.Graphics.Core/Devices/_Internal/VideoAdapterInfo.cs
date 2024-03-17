@@ -188,7 +188,7 @@ internal class VideoAdapterInfo
         // Put a reference to the adapter on the output.
         // This will be handy for backtracking later.  Also it allows us to validate the output so that we are certain it's applied on the correct 
         // video adapter, allowing mixing & matching will likely end in tears.
-        var finalOutputs = new Dictionary<string, IGorgonVideoOutputInfo>(StringComparer.OrdinalIgnoreCase);
+        Dictionary<string, IGorgonVideoOutputInfo> finalOutputs = new(StringComparer.OrdinalIgnoreCase);
         foreach (KeyValuePair<string, VideoOutputInfo> output in outputs)
         {
             output.Value.Adapter = this;

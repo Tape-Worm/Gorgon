@@ -89,7 +89,7 @@ internal static class SharedDataFactory
             throw new GorgonException(GorgonResult.CannotCreate);
         }
 
-        var result = new CodecRegistry(_plugInCache.Value, commonServices.Log);
+        CodecRegistry result = new(_plugInCache.Value, commonServices.Log);
         result.LoadFromSettings(_settingsFactory.Value);
         return result;
     }

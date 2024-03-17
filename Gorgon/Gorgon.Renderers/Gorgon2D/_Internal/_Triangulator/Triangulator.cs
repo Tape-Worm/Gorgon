@@ -132,7 +132,7 @@ internal class Triangulator(IGorgonLog log)
             }
         }
 
-        var minMax = new DX.RectangleF();
+        DX.RectangleF minMax = new();
 
         // Calculate bounds.
         for (int i = 0; i < inputVertices.Length; ++i)
@@ -178,7 +178,7 @@ internal class Triangulator(IGorgonLog log)
         Log("\nReversing winding order...");
 
 #if DEBUG
-        var vString = new StringBuilder();
+        StringBuilder vString = new();
         foreach (Gorgon2DVertex v in vertices)
         {
             vString.Append($"{v.Position}, ");
@@ -223,8 +223,8 @@ internal class Triangulator(IGorgonLog log)
             Vector4 p2 = vertices[i].Position;
             Vector4 p3 = vertices[(i + 1) % vertices.Length].Position;
 
-            var e1 = Vector4.Subtract(p1, p2);
-            var e2 = Vector4.Subtract(p3, p2);
+            Vector4 e1 = Vector4.Subtract(p1, p2);
+            Vector4 e2 = Vector4.Subtract(p3, p2);
 
             if ((e1.X * e2.Y) - (e1.Y * e2.X) >= 0)
             {
@@ -262,7 +262,7 @@ internal class Triangulator(IGorgonLog log)
 
         //write out the states of each of the lists
 #if DEBUG
-        var rString = new StringBuilder();
+        StringBuilder rString = new();
         foreach (Vertex v in _reflexVertices)
         {
             rString.Append($"{v.Index}, ");
@@ -270,7 +270,7 @@ internal class Triangulator(IGorgonLog log)
 
         Log("Reflex Vertices: {0}", rString);
 
-        var cString = new StringBuilder();
+        StringBuilder cString = new();
         foreach (Vertex v in _convexVertices)
         {
             cString.Append($"{v.Index}, ");
@@ -278,7 +278,7 @@ internal class Triangulator(IGorgonLog log)
 
         Log("Convex Vertices: {0}", cString);
 
-        var eString = new StringBuilder();
+        StringBuilder eString = new();
         foreach (Vertex v in _earVertices)
         {
             eString.Append($"{v.Index}, ");
@@ -396,9 +396,9 @@ internal class Triangulator(IGorgonLog log)
         Vertex p = _polygonVertices[_polygonVertices.IndexOf(c) - 1].Value;
         Vertex n = _polygonVertices[_polygonVertices.IndexOf(c) + 1].Value;
 
-        var d1 = Vector2.Normalize(c.Position - p.Position);
-        var d2 = Vector2.Normalize(n.Position - c.Position);
-        var n2 = new Vector2(-d2.Y, d2.X);
+        Vector2 d1 = Vector2.Normalize(c.Position - p.Position);
+        Vector2 d2 = Vector2.Normalize(n.Position - c.Position);
+        Vector2 n2 = new(-d2.Y, d2.X);
 
         return (Vector2.Dot(d1, n2) <= 0f);
     }

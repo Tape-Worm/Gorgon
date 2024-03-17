@@ -292,7 +292,7 @@ internal class AnimationIOService(IContentFileManager fileManager, ITextureCache
             dependencies = dependencies.Distinct(StringComparer.OrdinalIgnoreCase).ToList();
         }
 
-        var files = new List<IContentFile>(dependencies.Where(item => (!string.IsNullOrWhiteSpace(item)) && (_fileManager.FileExists(item)))
+        List<IContentFile> files = new(dependencies.Where(item => (!string.IsNullOrWhiteSpace(item)) && (_fileManager.FileExists(item)))
                                                        .Select(item => _fileManager.GetFile(item)));
 
         if (files.Count == 0)
@@ -301,7 +301,7 @@ internal class AnimationIOService(IContentFileManager fileManager, ITextureCache
             return new TextureDependencies([], []);
         }
 
-        var textures = new List<(GorgonTexture2DView texture, IContentFile file)>();
+        List<(GorgonTexture2DView texture, IContentFile file)> textures = [];
 
         foreach (IContentFile file in files)
         {
@@ -480,7 +480,7 @@ internal class AnimationIOService(IContentFileManager fileManager, ITextureCache
             if ((textureFiles is not null) && (textureFiles.Count > 0))
             {
 
-                var files = new List<string>();
+                List<string> files = [];
 
                 for (int i = 0; i < textureFiles.Count; ++i)
                 {

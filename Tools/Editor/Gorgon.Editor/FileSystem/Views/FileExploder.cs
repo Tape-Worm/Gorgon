@@ -366,7 +366,7 @@ internal partial class FileExploder
             if ((dataContext.SelectedDirectory is not null)
                 && ((dataContext.SelectedDirectory.AvailableActions & DirectoryActions.ExcludeFromPackedFile) == DirectoryActions.ExcludeFromPackedFile))
             {
-                var excludable = (IExcludable)ViewModel.SelectedDirectory;
+                IExcludable excludable = (IExcludable)ViewModel.SelectedDirectory;
                 MenuSepExclude.Available =
                 MenuItemExcludeFromPackfile.Available = true;
                 MenuItemExcludeFromPackfile.Checked = excludable.IsExcluded;
@@ -429,7 +429,7 @@ internal partial class FileExploder
 
         try
         {
-            var args = new DeleteArgs(null);
+            DeleteArgs args = new(null);
             if ((ViewModel?.DeleteFileCommand is null) || (!ViewModel.DeleteFileCommand.CanExecute(args)))
             {
                 return;
@@ -451,7 +451,7 @@ internal partial class FileExploder
     {
         try
         {
-            var args = new CreateDirectoryArgs();
+            CreateDirectoryArgs args = new();
             if ((ViewModel?.CreateDirectoryCommand is null) || (!ViewModel.CreateDirectoryCommand.CanExecute(args)))
             {
                 return;
@@ -718,7 +718,7 @@ internal partial class FileExploder
             return;
         }
 
-        var exclude = (IExcludable)ViewModel.SelectedDirectory;
+        IExcludable exclude = (IExcludable)ViewModel.SelectedDirectory;
         exclude.IsExcluded = MenuItemExcludeFromPackfile.Checked;
         ValidateMenuItems(ViewModel);
     }
@@ -806,7 +806,7 @@ internal partial class FileExploder
                         fileIcon = TreeNodeIcons.Images[file.ImageName];
                     }
 
-                    var row = new DataGridViewRow();
+                    DataGridViewRow row = new();
                     row.CreateCells(GridFiles, file.ID, file, fileIcon, file.Name, file.Type, file.SizeInBytes);
                     GridFiles.Rows.Add(row);
 
@@ -835,7 +835,7 @@ internal partial class FileExploder
 
                     for (int i = 0; i < GridFiles.Rows.Count; ++i)
                     {
-                        var removedFile = (IFile)GridFiles.Rows[i].Cells[ColumnFile.Index].Value;
+                        IFile removedFile = (IFile)GridFiles.Rows[i].Cells[ColumnFile.Index].Value;
                         removedFile.PropertyChanged -= File_PropertyChanged;
                     }
 
@@ -879,7 +879,7 @@ internal partial class FileExploder
                     break;
                 }
 
-                var newNode = new DirectoryTreeNode
+                DirectoryTreeNode newNode = new()
                 {
                     Text = directory.Name,
                     Name = directory.ID,
@@ -1134,7 +1134,7 @@ internal partial class FileExploder
     /// <param name="e">The <see cref="PropertyChangedEventArgs"/> instance containing the event data.</param>
     private void File_PropertyChanged(object sender, PropertyChangedEventArgs e)
     {
-        var file = (IFile)sender;
+        IFile file = (IFile)sender;
 
         // If we've no directory selected, or the currently selected directory is not the same as the directory for the file, then we have nothing to look up and refresh.
         if ((TreeDirectories.SelectedNode is not DirectoryTreeNode selectedDir) || (file.Parent != selectedDir.ViewModel))
@@ -1215,7 +1215,7 @@ internal partial class FileExploder
         for (int i = 0; i < GridFiles.Rows.Count; ++i)
         {
             DataGridViewRow row = GridFiles.Rows[i];
-            var gridFile = row.Cells[ColumnFile.Index].Value as IFile;
+            IFile gridFile = row.Cells[ColumnFile.Index].Value as IFile;
 
             if (gridFile == file)
             {
@@ -1239,7 +1239,7 @@ internal partial class FileExploder
 
         if ((TreeDirectories.SelectedNode is not null) && (TreeDirectories.SelectedNode != node))
         {
-            var currentNode = (DirectoryTreeNode)TreeDirectories.SelectedNode;
+            DirectoryTreeNode currentNode = (DirectoryTreeNode)TreeDirectories.SelectedNode;
             RemoveFileEvents(currentNode.ViewModel.Files);
         }
 
@@ -1589,8 +1589,8 @@ internal partial class FileExploder
             }
 
             string newName = e.FormattedValue?.ToString() ?? string.Empty;
-            var file = (IFile)GridFiles.Rows[e.RowIndex].Cells[ColumnFile.Index].Value;
-            var args = new RenameArgs(file.Name, newName);
+            IFile file = (IFile)GridFiles.Rows[e.RowIndex].Cells[ColumnFile.Index].Value;
+            RenameArgs args = new(file.Name, newName);
 
             if (!ViewModel.RenameFileCommand.CanExecute(args))
             {
@@ -1741,8 +1741,8 @@ internal partial class FileExploder
             return;
         }
 
-        var dragData = new GridRowsDragData(e.DraggedRows, ColumnFile.Index, e.MouseButtons == MouseButtons.Right ? (CopyMoveOperation.Copy | CopyMoveOperation.Move) : CopyMoveOperation.Move);
-        var data = new DataObject();
+        GridRowsDragData dragData = new(e.DraggedRows, ColumnFile.Index, e.MouseButtons == MouseButtons.Right ? (CopyMoveOperation.Copy | CopyMoveOperation.Move) : CopyMoveOperation.Move);
+        DataObject data = new();
         data.SetData(dragData);
         data.SetData(typeof(IContentFileDragData).FullName, true, dragData);
 
@@ -1790,7 +1790,7 @@ internal partial class FileExploder
 
         if (e.Data.GetDataPresent(typeof(GridRowsDragData)))
         {
-            var data = e.Data.GetData(typeof(GridRowsDragData)) as GridRowsDragData;
+            GridRowsDragData data = e.Data.GetData(typeof(GridRowsDragData)) as GridRowsDragData;
             data.TargetNode = (DirectoryTreeNode)TreeDirectories.SelectedNode;
             data.Operation = CopyMoveOperation.Copy;
             FileRows_DragDrop(data, e);
@@ -1864,10 +1864,10 @@ internal partial class FileExploder
 
         try
         {
-            var node = e.Node as DirectoryTreeNode;
+            DirectoryTreeNode node = e.Node as DirectoryTreeNode;
 
             string nodeID = node.Name;
-            var args = new RenameArgs(node.Text, e.Label);
+            RenameArgs args = new(node.Text, e.Label);
             ViewModel?.RenameDirectoryCommand.Execute(args);
 
             if (args.Cancel)
@@ -1892,9 +1892,9 @@ internal partial class FileExploder
 
         try
         {
-            var node = e.Node as DirectoryTreeNode;
+            DirectoryTreeNode node = e.Node as DirectoryTreeNode;
 
-            var args = new RenameArgs(e.Label, node.Text);
+            RenameArgs args = new(e.Label, node.Text);
             if ((ViewModel?.RenameDirectoryCommand is null) || (!ViewModel.RenameDirectoryCommand.CanExecute(args)))
             {
                 e.CancelEdit = true;
@@ -2051,9 +2051,9 @@ internal partial class FileExploder
             return;
         }
 
-        var dragData = new TreeNodeDragData(node, e.Button == MouseButtons.Right ? (CopyMoveOperation.Copy | CopyMoveOperation.Move) : CopyMoveOperation.Move);
+        TreeNodeDragData dragData = new(node, e.Button == MouseButtons.Right ? (CopyMoveOperation.Copy | CopyMoveOperation.Move) : CopyMoveOperation.Move);
         SelectNode(node);
-        var data = new DataObject();
+        DataObject data = new();
         data.SetData(dragData);
 
         TreeDirectories.DoDragDrop(data, DragDropEffects.Move | DragDropEffects.Copy);
@@ -2606,7 +2606,7 @@ internal partial class FileExploder
 
         try
         {
-            var args = new DeleteArgs(null);
+            DeleteArgs args = new(null);
             if (ViewModel?.DeleteDirectoryCommand is not null)
             {
                 if (!ViewModel.DeleteDirectoryCommand.CanExecute(args))
@@ -2654,7 +2654,7 @@ internal partial class FileExploder
     /// <param name="files">The files to populate to the grid.</param>
     private void FillFiles(IFileExplorer dataContext, IDirectory directory, IReadOnlyList<IFile> files)
     {
-        var selectedRows = new List<DataGridViewRow>();
+        List<DataGridViewRow> selectedRows = [];
         DisableGridEvents();
         try
         {
@@ -2668,7 +2668,7 @@ internal partial class FileExploder
                 return;
             }
 
-            var rows = new DataGridViewRow[files.Count];
+            DataGridViewRow[] rows = new DataGridViewRow[files.Count];
 
             RemoveFileEvents(files);
 
@@ -2683,7 +2683,7 @@ internal partial class FileExploder
                     fileIcon = TreeNodeIcons.Images[file.ImageName];
                 }
 
-                var row = new DataGridViewRow();
+                DataGridViewRow row = new();
                 row.CreateCells(GridFiles, file.ID, file, fileIcon, file.Name, file.Type, file.SizeInBytes, file.Parent.FullPath);
                 rows[i] = row;
 
@@ -2763,7 +2763,7 @@ internal partial class FileExploder
             // Finally, add directory nodes.
             foreach (IDirectory subDir in parentDirectory.Directories)
             {
-                var node = new DirectoryTreeNode
+                DirectoryTreeNode node = new()
                 {
                     Text = subDir.Name,
                     Name = subDir.ID,
@@ -3014,7 +3014,7 @@ internal partial class FileExploder
         {
             IClipboardHandler handler = ViewModel.Clipboard;
 
-            var directoryCopyData = new DirectoryCopyMoveData
+            DirectoryCopyMoveData directoryCopyData = new()
             {
                 Operation = operation,
                 SourceDirectory = selectedDirectory.ID
@@ -3051,7 +3051,7 @@ internal partial class FileExploder
         {
             IClipboardHandler handler = ViewModel.Clipboard;
 
-            var fileCopyData = new FileCopyMoveData
+            FileCopyMoveData fileCopyData = new()
             {
                 Operation = operation,
                 SourceFiles = selectedFiles.Select(item => item.ID).ToArray()

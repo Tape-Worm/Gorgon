@@ -173,10 +173,10 @@ internal class CodecRegistry(GorgonMefPlugInCache pluginCache, Gorgon2D renderer
     /// <returns>A list of codec plugs ins that were loaded.</returns>
     public IReadOnlyList<GorgonSpriteCodecPlugIn> AddCodecPlugIn(string path, out IReadOnlyList<string> errors)
     {
-        var localErrors = new List<string>();
+        List<string> localErrors = [];
         errors = localErrors;
 
-        var result = new List<GorgonSpriteCodecPlugIn>();
+        List<GorgonSpriteCodecPlugIn> result = [];
         _log.Print("Loading sprite codecs...", LoggingLevel.Intermediate);
 
         IReadOnlyList<PlugInAssemblyState> assemblies = _pluginCache.ValidateAndLoadAssemblies([path], _log);
@@ -200,7 +200,7 @@ internal class CodecRegistry(GorgonMefPlugInCache pluginCache, Gorgon2D renderer
 
         // Since we can't unload an assembly, we'll have to force a rescan of the plug ins. We may have unloaded one prior, and we might need to get it back.
         _pluginService.ScanPlugIns();
-        var assemblyName = AssemblyName.GetAssemblyName(path);
+        AssemblyName assemblyName = AssemblyName.GetAssemblyName(path);
         IReadOnlyList<GorgonSpriteCodecPlugIn> pluginList = _pluginService.GetPlugIns<GorgonSpriteCodecPlugIn>(assemblyName);
 
         if (pluginList.Count == 0)

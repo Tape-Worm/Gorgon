@@ -233,13 +233,13 @@ public class GorgonGlyphPathGradientBrush
     /// </returns>
     internal override Brush ToGDIBrush()
     {
-        var result = new PathGradientBrush(Points.Select(item => new PointF(item.X, item.Y)).ToArray(), (WrapMode)WrapMode);
+        PathGradientBrush result = new(Points.Select(item => new PointF(item.X, item.Y)).ToArray(), (WrapMode)WrapMode);
 
-        var blend = new Blend(BlendFactors.Count.Max(BlendPositions.Count).Max(1));
+        Blend blend = new(BlendFactors.Count.Max(BlendPositions.Count).Max(1));
 
         if (Interpolation.Count > 2)
         {
-            var interpolationColors = new ColorBlend(Interpolation.Count);
+            ColorBlend interpolationColors = new(Interpolation.Count);
 
             for (int i = 0; i < Interpolation.Count; i++)
             {
@@ -277,7 +277,7 @@ public class GorgonGlyphPathGradientBrush
     /// <returns>The cloned object.</returns>
     public override GorgonGlyphBrush Clone()
     {
-        var brush = new GorgonGlyphPathGradientBrush
+        GorgonGlyphPathGradientBrush brush = new()
         {
             WrapMode = WrapMode,
             CenterColor = CenterColor,
@@ -328,7 +328,7 @@ public class GorgonGlyphPathGradientBrush
     /// </returns>
     public override bool Equals(GorgonGlyphBrush other)
     {
-        var brush = other as GorgonGlyphPathGradientBrush;
+        GorgonGlyphPathGradientBrush brush = other as GorgonGlyphPathGradientBrush;
 
         return ((brush == this) || ((brush is not null)
             && (brush.WrapMode == WrapMode)

@@ -382,7 +382,7 @@ public sealed class GorgonTexture1DView
             throw new ArgumentNullException(nameof(info));
         }
 
-        var newInfo = new GorgonTexture1DInfo(info)
+        GorgonTexture1DInfo newInfo = new(info)
         {
             Usage = info.Usage == ResourceUsage.Staging ? ResourceUsage.Default : info.Usage,
             Binding = ((info.Binding & TextureBinding.ShaderResource) != TextureBinding.ShaderResource

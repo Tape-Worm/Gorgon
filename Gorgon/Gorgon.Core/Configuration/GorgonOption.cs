@@ -183,11 +183,11 @@ public class GorgonOption
                 break;
             case TypeCode.DateTime:
                 {
-                    var convertedValue = (DateTime)Convert.ChangeType(newValue, typeof(DateTime));
+                    DateTime convertedValue = (DateTime)Convert.ChangeType(newValue, typeof(DateTime));
 
                     if (_minValue is not null)
                     {
-                        var minValue = (DateTime)Convert.ChangeType(_minValue, typeof(DateTime));
+                        DateTime minValue = (DateTime)Convert.ChangeType(_minValue, typeof(DateTime));
 
                         if (convertedValue < minValue)
                         {
@@ -197,7 +197,7 @@ public class GorgonOption
 
                     if (_maxValue is not null)
                     {
-                        var maxValue = (DateTime)Convert.ChangeType(_maxValue, typeof(DateTime));
+                        DateTime maxValue = (DateTime)Convert.ChangeType(_maxValue, typeof(DateTime));
                         if (convertedValue > maxValue)
                         {
                             convertedValue = maxValue;

@@ -148,7 +148,7 @@ internal class TvImageCodec
         TvHeader header;
 
         // Load the header for the image.
-        using (var reader = new GorgonBinaryReader(stream, true))
+        using (GorgonBinaryReader reader = new(stream, true))
         {
             header = reader.ReadValue<TvHeader>();
         }
@@ -160,7 +160,6 @@ internal class TvImageCodec
         }
 
         // Ensure the width/height are valid.
-#pragma warning disable IDE0046 // Convert to conditional expression
         if ((header.Width < 0)
             || (header.Height < 0))
         {
@@ -172,7 +171,6 @@ internal class TvImageCodec
             Width = header.Width,
             Height = header.Height
         };
-#pragma warning restore IDE0046 // Convert to conditional expression
     }
 
     /// <summary>
@@ -201,9 +199,9 @@ internal class TvImageCodec
         }
 
         // Create our resulting image buffer.
-        var result = new GorgonImage(settings);
+        GorgonImage result = new(settings);
 
-        using (var reader = new GorgonBinaryReader(stream, true))
+        using (GorgonBinaryReader reader = new(stream, true))
         {
             // Write each scanline.
             for (int y = 0; y < settings.Height; ++y)
@@ -262,7 +260,7 @@ internal class TvImageCodec
         }
 
         // First, we'll need to set up our header metadata.
-        var header = new TvHeader
+        TvHeader header = new()
         {
             MagicValueData = MagicValue,
             Width = imageData.Width,
@@ -270,7 +268,7 @@ internal class TvImageCodec
         };
 
         // Write the metadata to the stream.
-        using var writer = new GorgonBinaryWriter(stream, true);
+        using GorgonBinaryWriter writer = new(stream, true);
         writer.WriteValue(header);
 
         // Now, we need to encode the image data as 1 byte for every other color component per pixel. 

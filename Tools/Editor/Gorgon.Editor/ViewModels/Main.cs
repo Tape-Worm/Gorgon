@@ -206,7 +206,7 @@ internal class Main
     {
         StreamWriter writer = null;
 #if DEBUG
-        var settingsFile = new FileInfo(Path.Combine(Program.ApplicationUserDirectory.FullName, $"Gorgon.Editor.Settings.DEBUG.json"));
+        FileInfo settingsFile = new(Path.Combine(Program.ApplicationUserDirectory.FullName, $"Gorgon.Editor.Settings.DEBUG.json"));
 #else
         var settingsFile = new FileInfo(Path.Combine(Program.ApplicationUserDirectory.FullName, $"Gorgon.Editor.Settings.json"));
 #endif
@@ -377,7 +377,7 @@ internal class Main
         path = Path.GetFullPath(path).FormatDirectory(Path.DirectorySeparatorChar);
 
         // Check for content/project changes.
-        var args = new CancelEventArgs();
+        CancelEventArgs args = new();
         if ((current?.BeforeCloseCommand is not null) && (current.BeforeCloseCommand.CanExecute(args)))
         {
             await current.BeforeCloseCommand.ExecuteAsync(args);
@@ -572,7 +572,7 @@ internal class Main
     /// <returns>The initial directory.</returns>
     private DirectoryInfo GetInitialProjectDirectory()
     {
-        var dir = new DirectoryInfo(string.IsNullOrEmpty(Settings.LastProjectWorkingDirectory) ? Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) : Settings.LastProjectWorkingDirectory);
+        DirectoryInfo dir = new(string.IsNullOrEmpty(Settings.LastProjectWorkingDirectory) ? Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) : Settings.LastProjectWorkingDirectory);
         dir.Refresh();
 
         if (!dir.Exists)
@@ -640,7 +640,7 @@ internal class Main
         try
         {
             // Check for content/project changes.
-            var args = new CancelEventArgs();
+            CancelEventArgs args = new();
             if ((current?.BeforeCloseCommand is not null) && (current.BeforeCloseCommand.CanExecute(args)))
             {
                 await current.BeforeCloseCommand.ExecuteAsync(args);

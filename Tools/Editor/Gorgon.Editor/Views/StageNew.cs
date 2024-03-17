@@ -150,7 +150,7 @@ internal partial class StageNew
                 return;
             }
 
-            var args = new SetProjectWorkspaceArgs(TextProjectPath.Text);
+            SetProjectWorkspaceArgs args = new(TextProjectPath.Text);
 
             if (!ViewModel.SetProjectWorkspaceCommand.CanExecute(args))
             {

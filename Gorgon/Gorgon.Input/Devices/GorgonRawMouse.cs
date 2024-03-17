@@ -436,7 +436,7 @@ public class GorgonRawMouse
             return button;
         }
 
-        var doubleClickArea = new DX.Rectangle(_doubleClickPosition.X - (DoubleClickSize.Width / 2),
+        DX.Rectangle doubleClickArea = new(_doubleClickPosition.X - (DoubleClickSize.Width / 2),
                                                   _doubleClickPosition.Y - (DoubleClickSize.Height / 2),
                                                   DoubleClickSize.Width,
                                                   DoubleClickSize.Height);
@@ -638,7 +638,7 @@ public class GorgonRawMouse
 
         if (upButtons != MouseButtons.None)
         {
-            var e = new GorgonMouseEventArgs(upButtons, Buttons, _position, _wheelPosition, RelativePositionOffset, RelativeWheelDelta, _clickCount, !rawInputData.IsRelative);
+            GorgonMouseEventArgs e = new(upButtons, Buttons, _position, _wheelPosition, RelativePositionOffset, RelativeWheelDelta, _clickCount, !rawInputData.IsRelative);
 
             MouseButtonUp?.Invoke(this, e);
 

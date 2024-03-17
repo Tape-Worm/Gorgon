@@ -82,12 +82,12 @@ internal class Sphere
 
             for (int segment = 0; segment <= segmentCount; segment++)
             {
-                var textureDelta = new Vector2(1.0f - (segment / (float)segmentCount), ring / (float)ringCount);
+                Vector2 textureDelta = new(1.0f - (segment / (float)segmentCount), ring / (float)ringCount);
                 float segmentAngle = deltaSegAngle * segment;
 
-                var position = new Vector3(radius * segmentAngle.Sin(), radiusY, radius * segmentAngle.Cos());
+                Vector3 position = new(radius * segmentAngle.Sin(), radiusY, radius * segmentAngle.Cos());
 
-                var normal = Vector3.Multiply(position, 2.0f);
+                Vector3 normal = Vector3.Multiply(position, 2.0f);
                 position = Vector3.Transform(position, _orientation);
                 normal = Vector3.Normalize(Vector3.Transform(normal, _orientation));
 
@@ -143,10 +143,10 @@ internal class Sphere
         IndexCount = 6 * ringCount * (segmentCount + 1);
         TriangleCount = IndexCount / 3;
 
-        var orientation = Quaternion.CreateFromYawPitchRoll(angle.Y.ToRadians(), angle.X.ToRadians(), angle.Z.ToRadians());
+        Quaternion orientation = Quaternion.CreateFromYawPitchRoll(angle.Y.ToRadians(), angle.X.ToRadians(), angle.Z.ToRadians());
         _orientation = Matrix4x4.CreateFromQuaternion(orientation);
 
-        var vertexData = new GorgonVertexPosNormUvTangent[VertexCount];
+        GorgonVertexPosNormUvTangent[] vertexData = new GorgonVertexPosNormUvTangent[VertexCount];
         int[] indexData = new int[IndexCount];
 
         GetVertices(vertexData,

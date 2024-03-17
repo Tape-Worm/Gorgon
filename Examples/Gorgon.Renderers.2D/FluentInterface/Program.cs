@@ -135,10 +135,10 @@ static class Program
                         return true;
                     }
 
-                    var position = new Vector2(star.X * _screen.Width, star.Y * _screen.Height);
+                    Vector2 position = new(star.X * _screen.Width, star.Y * _screen.Height);
 
                     float starColorValue = GorgonRandom.RandomSingle(0.35f, 1.0f);
-                    var starColor = new GorgonColor(starColorValue, starColorValue, starColorValue, 1.0f);
+                    GorgonColor starColor = new(starColorValue, starColorValue, starColorValue, 1.0f);
 
                     r.DrawFilledRectangle(new DX.RectangleF(position.X, position.Y, 1, 1), starColor);
 

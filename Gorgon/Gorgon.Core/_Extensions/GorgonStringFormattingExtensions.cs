@@ -124,7 +124,7 @@ public static class GorgonStringFormattingExtension
     {
         ArgumentNullException.ThrowIfNull(document);
 
-        StringBuilder serializedXML = new StringBuilder();
+        StringBuilder serializedXML = new();
 
         if (document.Declaration is not null)
         {

@@ -76,7 +76,7 @@ internal class GraphicsRenderer(GorgonGraphics graphics)
         }
 
         // Get aspect ratio.
-        var scale = new DX.Size2F((_swapChain.Width * 0.5f) / texture.Width, (float)_swapChain.Height / texture.Height);
+        DX.Size2F scale = new((_swapChain.Width * 0.5f) / texture.Width, (float)_swapChain.Height / texture.Height);
 
         // Only scale on a single axis if we don't have a 1:1 aspect ratio.
         if (scale.Height > scale.Width)
@@ -89,10 +89,10 @@ internal class GraphicsRenderer(GorgonGraphics graphics)
         }
 
         // Scale the image.
-        var size = new DX.Size2((int)(scale.Width * texture.Width), (int)(scale.Height * texture.Height));
+        DX.Size2 size = new((int)(scale.Width * texture.Width), (int)(scale.Height * texture.Height));
 
         // Find the position.
-        var bounds = new DX.Rectangle((_swapChain.Width / 4) - (size.Width / 2), ((_swapChain.Height / 2) - (size.Height / 2)), size.Width, size.Height);
+        DX.Rectangle bounds = new((_swapChain.Width / 4) - (size.Width / 2), ((_swapChain.Height / 2) - (size.Height / 2)), size.Width, size.Height);
 
         GorgonExample.Blitter.Blit(texture, bounds, blendState: GorgonBlendState.Default, samplerState: GorgonSamplerState.PointFiltering);
 

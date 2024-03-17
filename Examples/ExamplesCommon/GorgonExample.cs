@@ -187,7 +187,7 @@ public static class GorgonExample
             return;
         }
 
-        var logoRegion = new DX.Rectangle(currentRtv.Width - _logo.Width - 5, currentRtv.Height - _logo.Height - 2, _logo.Width, _logo.Height);
+        DX.Rectangle logoRegion = new(currentRtv.Width - _logo.Width - 5, currentRtv.Height - _logo.Height - 2, _logo.Width, _logo.Height);
         _blitter.Blit(_logo, logoRegion, blendState: GorgonBlendState.Default);
     }
 
@@ -229,8 +229,8 @@ public static class GorgonExample
         _statsText.AppendFormat("Average FPS: {0:0.0}\nFrame Delta: {1:0.00#} seconds\nDraw Call Count: {2} ({3} triangles)", GorgonTiming.AverageFPS, GorgonTiming.Delta, stats.DrawCallCount, stats.TriangleCount);
 
         DX.Size2F measure = _statsText.ToString().MeasureText(_statsFont, true);
-        var statsRegion = new DX.RectangleF(0, 0, currentRtv.Width, measure.Height + 4);
-        var logoRegion = new DX.RectangleF(currentRtv.Width - _logo.Width - 5, currentRtv.Height - _logo.Height - 2, _logo.Width, _logo.Height);
+        DX.RectangleF statsRegion = new(0, 0, currentRtv.Width, measure.Height + 4);
+        DX.RectangleF logoRegion = new(currentRtv.Width - _logo.Width - 5, currentRtv.Height - _logo.Height - 2, _logo.Width, _logo.Height);
 
         renderer
             .Begin()
@@ -271,8 +271,8 @@ public static class GorgonExample
         _statsText.AppendFormat("Average FPS: {0:0.0}\nFrame Delta: {1:0.00#} seconds\nDraw Call Count: {2} ({3} triangles)", GorgonTiming.AverageFPS, GorgonTiming.Delta, stats.DrawCallCount, stats.TriangleCount);
 
         DX.Size2F measure = _statsText.ToString().MeasureText(_statsFont, true);
-        var statsRegion = new DX.RectangleF(0, 0, currentRtv.Width, measure.Height + 4);
-        var logoRegion = new DX.RectangleF(currentRtv.Width - _logo.Width - 5, currentRtv.Height - _logo.Height - 2, _logo.Width, _logo.Height);
+        DX.RectangleF statsRegion = new(0, 0, currentRtv.Width, measure.Height + 4);
+        DX.RectangleF logoRegion = new(currentRtv.Width - _logo.Width - 5, currentRtv.Height - _logo.Height - 2, _logo.Width, _logo.Height);
 
         renderer.Begin();
 
@@ -336,8 +336,8 @@ public static class GorgonExample
             TextureHeight = 256
         });
 
-        using var stream = new MemoryStream(Resources.Gorgon_Logo_Small);
-        var ddsCodec = new GorgonCodecDds();
+        using MemoryStream stream = new(Resources.Gorgon_Logo_Small);
+        GorgonCodecDds ddsCodec = new();
         _logo = GorgonTexture2DView.FromStream(graphics, stream, ddsCodec, options: new GorgonTexture2DLoadOptions
         {
             Name = "Gorgon Logo Texture",

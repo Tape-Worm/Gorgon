@@ -170,7 +170,7 @@ public class DarkFormsRenderer
             }
         }
 
-        var item = e.Item as ToolStripMenuItem;
+        ToolStripMenuItem item = e.Item as ToolStripMenuItem;
         if ((item is not null) && (item.IsOnDropDown))
         {
             e.TextRectangle = new Rectangle(e.TextRectangle.X - 12,
@@ -197,7 +197,7 @@ public class DarkFormsRenderer
             return;
         }
 
-        var checkPos = new Point(item.Width - 34, (int)(item.Height * 0.5f - 6));
+        Point checkPos = new(item.Width - 34, (int)(item.Height * 0.5f - 6));
         Color color = item.Selected ? MenuHilightForeground : ForeColor;
 
         if (!item.Enabled)
@@ -205,7 +205,7 @@ public class DarkFormsRenderer
             color = DisabledColor;
         }
 
-        using var pen = new Pen(color);
+        using Pen pen = new(color);
         e.Graphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighQuality;
         e.Graphics.DrawRectangle(pen, new Rectangle(checkPos.X, checkPos.Y, 12, 12));
     }
@@ -222,7 +222,7 @@ public class DarkFormsRenderer
             return;
         }
 
-        var item = e.Item as ToolStripMenuItem;
+        ToolStripMenuItem item = e.Item as ToolStripMenuItem;
 
         if (item.Selected)
         {
@@ -240,7 +240,7 @@ public class DarkFormsRenderer
             return;
         }
 
-        using var pen = new Pen(BorderColor, 1.0f);
+        using Pen pen = new(BorderColor, 1.0f);
         e.Graphics.DrawLine(pen, new Point(0, 0), new Point(e.Item.Width - 1, 0));
         e.Graphics.DrawLine(pen, new Point(0, 0), new Point(0, e.Item.Height));
         e.Graphics.DrawLine(pen, new Point(e.Item.Width - 1, 0), new Point(e.Item.Width - 1, e.Item.Height));
@@ -282,14 +282,14 @@ public class DarkFormsRenderer
     /// <param name="e">A <see cref="ToolStripItemImageRenderEventArgs"/> that contains the event data.</param>
     protected override void OnRenderItemCheck(ToolStripItemImageRenderEventArgs e)
     {
-        var item = (ToolStripMenuItem)e.Item;
+        ToolStripMenuItem item = (ToolStripMenuItem)e.Item;
 
         if (!item.CheckOnClick)
         {
             return;
         }
 
-        var checkPos = new Point(item.Width - 34, (int)(item.Height * 0.5f - 6));
+        Point checkPos = new(item.Width - 34, (int)(item.Height * 0.5f - 6));
         Color color = item.Selected ? MenuHilightForeground : ForeColor;
 
         if (!item.Enabled)
@@ -297,13 +297,13 @@ public class DarkFormsRenderer
             color = DisabledColor;
         }
 
-        using var pen = new Pen(color);
+        using Pen pen = new(color);
         e.Graphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighQuality;
         e.Graphics.DrawRectangle(pen, new Rectangle(checkPos.X, checkPos.Y, 12, 12));
 
         checkPos = new Point(item.Width - 32, (int)(item.Height * 0.5f - 4));
 
-        using var brush = new SolidBrush(color);
+        using SolidBrush brush = new(color);
         e.Graphics.FillRectangle(brush, new Rectangle(checkPos.X, checkPos.Y, 8, 8));
     }
 
@@ -321,7 +321,7 @@ public class DarkFormsRenderer
             return;
         }
 
-        using (var borderPen = new Pen(BorderColor))
+        using (Pen borderPen = new(BorderColor))
         {
             e.Graphics.DrawRectangle(borderPen,
                                      new Rectangle(e.AffectedBounds.Left,
@@ -339,7 +339,7 @@ public class DarkFormsRenderer
     /// <param name="e">A <see cref="ToolStripSeparatorRenderEventArgs"/> that contains the event data.</param>
     protected override void OnRenderSeparator(ToolStripSeparatorRenderEventArgs e)
     {
-        using var pen = new Pen(BorderColor, 1.0f);
+        using Pen pen = new(BorderColor, 1.0f);
         if (!e.Vertical)
         {
             e.Graphics.DrawLine(pen,
@@ -360,7 +360,7 @@ public class DarkFormsRenderer
     /// <param name="e">A <see cref="ToolStripItemRenderEventArgs" /> that contains the event data.</param>
     protected override void OnRenderSplitButtonBackground(ToolStripItemRenderEventArgs e)
     {
-        var item = e.Item as ToolStripSplitButton;
+        ToolStripSplitButton item = e.Item as ToolStripSplitButton;
 
         Debug.Assert(item is not null, "Drop down button is NULL!");
 
@@ -379,7 +379,7 @@ public class DarkFormsRenderer
             }
         }
 
-        using var pen = new Pen(BorderColor, 1.0f);
+        using Pen pen = new(BorderColor, 1.0f);
         ArrowDirection direction = ArrowDirection.Down;
 
         switch (item.DropDownDirection)
@@ -418,7 +418,7 @@ public class DarkFormsRenderer
     /// <param name="e">A <see cref="ToolStripItemRenderEventArgs"/> that contains the event data.</param>
     protected override void OnRenderDropDownButtonBackground(ToolStripItemRenderEventArgs e)
     {
-        var item = e.Item as ToolStripDropDownButton;
+        ToolStripDropDownButton item = e.Item as ToolStripDropDownButton;
 
         Debug.Assert(item is not null, "Drop down button is NULL!");
 
@@ -433,7 +433,7 @@ public class DarkFormsRenderer
             return;
         }
 
-        using var pen = new Pen(BorderColor, 1.0f);
+        using Pen pen = new(BorderColor, 1.0f);
         e.Graphics.DrawLine(pen, new Point(0, 0), new Point(e.Item.Width - 1, 0));
         e.Graphics.DrawLine(pen, new Point(0, 0), new Point(0, e.Item.Height));
         e.Graphics.DrawLine(pen, new Point(e.Item.Width - 1, 0), new Point(e.Item.Width - 1, e.Item.Height));

@@ -301,7 +301,7 @@ public class GorgonV2SpriteCodec(Gorgon2D renderer)
     /// <returns>The sampler state.</returns>
     private static GorgonSamplerState CreateSamplerState(GorgonGraphics graphics, SampleFilter filter, GorgonColor borderColor, TextureWrap hWrap, TextureWrap vWrap)
     {
-        var builder = new GorgonSamplerStateBuilder(graphics);
+        GorgonSamplerStateBuilder builder = new(graphics);
 
         return filter switch
         {
@@ -324,7 +324,7 @@ public class GorgonV2SpriteCodec(Gorgon2D renderer)
     /// <returns>The sprite from the stream data.</returns>
     private static GorgonSprite LoadSprite(GorgonGraphics graphics, GorgonChunkReader reader, GorgonTexture2DView overrideTexture)
     {
-        var sprite = new GorgonSprite();
+        GorgonSprite sprite = new();
 
         if (!reader.HasChunk(FileHeader))
         {
@@ -424,7 +424,7 @@ public class GorgonV2SpriteCodec(Gorgon2D renderer)
     /// <returns><b>true</b> if the data can be read, or <b>false</b> if not.</returns>
     protected override bool OnIsReadable(Stream stream)
     {
-        using var reader = new GorgonBinaryReader(stream, true);
+        using GorgonBinaryReader reader = new(stream, true);
         if ((stream.Length - stream.Position) < sizeof(ulong) * 2)
         {
             return false;
@@ -445,7 +445,7 @@ public class GorgonV2SpriteCodec(Gorgon2D renderer)
     /// <returns>The name of the texture associated with the sprite, or <b>null</b> if no texture was found.</returns>
     protected override string OnGetAssociatedTextureName(Stream stream)
     {
-        using var reader = new GorgonChunkReader(stream);
+        using GorgonChunkReader reader = new(stream);
         if (!reader.HasChunk(FileHeader))
         {
             throw new GorgonException(GorgonResult.CannotRead, Resources.GOR2DIO_ERR_INVALID_HEADER);
@@ -480,7 +480,7 @@ public class GorgonV2SpriteCodec(Gorgon2D renderer)
     /// <returns>A new <see cref="GorgonSprite"/>.</returns>
     protected override GorgonSprite OnReadFromStream(Stream stream, int byteCount, GorgonTexture2DView overrideTexture)
     {
-        var reader = new GorgonChunkReader(stream);
+        GorgonChunkReader reader = new(stream);
 
         try
         {

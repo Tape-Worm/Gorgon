@@ -75,9 +75,9 @@ public static class GorgonNativeExtensions
             }
         }
 
-        var result = new GorgonNativeBuffer<T>(count.Value);
+        GorgonNativeBuffer<T> result = new(count.Value);
 
-        using (var reader = new GorgonBinaryReader(stream, true))
+        using (GorgonBinaryReader reader = new(stream, true))
         {
             for (int i = 0; i < count.Value; ++i)
             {
@@ -142,8 +142,8 @@ public static class GorgonNativeExtensions
             throw new ArgumentException(string.Format(Resources.GOR_ERR_DATABUFF_SIZE_OFFSET_TOO_LARGE, index, count));
         }
 
-        var result = new GorgonNativeBuffer<T>(count.Value);
-        using var reader = new GorgonBinaryReader(stream, true);
+        GorgonNativeBuffer<T> result = new(count.Value);
+        using GorgonBinaryReader reader = new(stream, true);
         for (int i = 0; i < count.Value; ++i)
         {
             reader.ReadValue(out result[i]);
@@ -320,7 +320,7 @@ public static class GorgonNativeExtensions
 
         GorgonNativeBuffer<T>.ValidateArrayParams(array, index, count.Value);
 
-        var result = new GorgonNativeBuffer<T>(count.Value);
+        GorgonNativeBuffer<T> result = new(count.Value);
 
         unsafe
         {
@@ -347,7 +347,7 @@ public static class GorgonNativeExtensions
             return null;
         }
 
-        var result = new GorgonNativeBuffer<T>(span.Length);
+        GorgonNativeBuffer<T> result = new(span.Length);
         span.CopyTo(result.Pointer);
 
         return result;
@@ -367,7 +367,7 @@ public static class GorgonNativeExtensions
             return null;
         }
 
-        var result = new GorgonNativeBuffer<T>(memory.Length);
+        GorgonNativeBuffer<T> result = new(memory.Length);
         memory.Span.CopyTo(result.Pointer);
 
         return result;

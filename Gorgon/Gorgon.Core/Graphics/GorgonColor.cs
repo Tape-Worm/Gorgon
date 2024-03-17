@@ -423,7 +423,7 @@ public readonly struct GorgonColor
     /// </remarks>
     public static GorgonColor Lerp(GorgonColor start, GorgonColor end, float weight)
     {
-        var outColor = new GorgonColor(
+        GorgonColor outColor = new(
             start.Red + ((end.Red - start.Red) * weight),
             start.Green + ((end.Green - start.Green) * weight),
             start.Blue + ((end.Blue - start.Blue) * weight),
@@ -628,8 +628,8 @@ public readonly struct GorgonColor
     [Pure]
     public GorgonColor ToLinear()
     {
-        var linearRGBLo = new GorgonColor(Red / 12.92f, Green / 12.92f, Blue / 12.92f, Alpha);
-        var linearRGBHi = new GorgonColor(((Red + 0.055f) / 1.055f).Pow(2.4f),
+        GorgonColor linearRGBLo = new(Red / 12.92f, Green / 12.92f, Blue / 12.92f, Alpha);
+        GorgonColor linearRGBHi = new(((Red + 0.055f) / 1.055f).Pow(2.4f),
                                         ((Green + 0.055f) / 1.055f).Pow(2.4f),
                                         ((Blue + 0.055f) / 1.055f).Pow(2.4f),
                                         Alpha);
@@ -645,8 +645,8 @@ public readonly struct GorgonColor
     {
         const float pow = 1.0f / 2.4f;
 
-        var sRGBLo = new GorgonColor(Red * 12.92f, Green * 12.92f, Blue * 12.92f, Alpha);
-        var sRGBHi = new GorgonColor((Red.Pow(pow) * 1.055f) - 0.055f,
+        GorgonColor sRGBLo = new(Red * 12.92f, Green * 12.92f, Blue * 12.92f, Alpha);
+        GorgonColor sRGBHi = new((Red.Pow(pow) * 1.055f) - 0.055f,
                                     (Green.Pow(pow) * 1.055f) - 0.055f,
                                     (Blue.Pow(pow) * 1.055f) - 0.055f,
                                     Alpha);

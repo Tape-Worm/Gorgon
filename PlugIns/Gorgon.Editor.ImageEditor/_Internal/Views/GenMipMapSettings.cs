@@ -234,7 +234,7 @@ internal partial class GenMipMapSettings
         InitializeComponent();
 
         // Populate the image filter drop down.
-        var filters = (ImageFilter[])Enum.GetValues(typeof(ImageFilter));
+        ImageFilter[] filters = (ImageFilter[])Enum.GetValues(typeof(ImageFilter));
 
         foreach (ImageFilter filter in filters)
         {

@@ -133,10 +133,10 @@ public partial class MainWindow : Window
 
         // Build our world/vi ew/projection matrix to send to
         // the shader.
-        var temp = Matrix4x4.Multiply(world, viewMatrix);
+        Matrix4x4 temp = Matrix4x4.Multiply(world, viewMatrix);
         // Direct 3D 11 requires that we transpose our matrix 
         // before sending it to the shader.
-        var wvp = Matrix4x4.Transpose(Matrix4x4.Multiply(temp, projMatrix));
+        Matrix4x4 wvp = Matrix4x4.Transpose(Matrix4x4.Multiply(temp, projMatrix));
 
         // Update the constant buffer.
         _wvpBuffer.Buffer.SetData(in wvp);
@@ -253,8 +253,8 @@ public partial class MainWindow : Window
         _cube = new Cube(_graphics, _inputLayout);
 
         // Set up the pipeline to draw the cube.
-        var drawCallBuilder = new GorgonDrawIndexCallBuilder();
-        var stateBuilder = new GorgonPipelineStateBuilder(_graphics);
+        GorgonDrawIndexCallBuilder drawCallBuilder = new();
+        GorgonPipelineStateBuilder stateBuilder = new(_graphics);
 
         // This draw call will use point filtering on the texture.
         _drawCall = _drawCallPixel = drawCallBuilder.VertexBuffer(_inputLayout, _cube.VertexBuffer[0])

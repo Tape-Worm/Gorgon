@@ -45,7 +45,7 @@ internal class BlendStateArray
     public D3D11.BlendState1 BuildD3D11BlendState(D3D11.Device5 device, bool isAlphaToCoverageEnabled, bool isIndependentBlendEnabled)
     {
         ref readonly (int start, int count) indices = ref GetDirtyItems();
-        var desc = new D3D11.BlendStateDescription1
+        D3D11.BlendStateDescription1 desc = new()
         {
             AlphaToCoverageEnable = isAlphaToCoverageEnabled,
             IndependentBlendEnable = isIndependentBlendEnabled

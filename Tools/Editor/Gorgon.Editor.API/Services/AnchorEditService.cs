@@ -206,7 +206,7 @@ public class AnchorEditService : IAnchorEditService
         }
 
         Vector2 mouse = args.CameraSpacePosition;
-        var dragDelta = Vector2.Subtract(mouse, _dragStart);
+        Vector2 dragDelta = Vector2.Subtract(mouse, _dragStart);
         AnchorPosition = (new Vector2(_dragStartPosition.X + dragDelta.X, _dragStartPosition.Y + dragDelta.Y)).Truncate();
 
         return true;
@@ -330,7 +330,7 @@ public class AnchorEditService : IAnchorEditService
         _anchorIcon = anchorSprite;
         _bounds = bounds;
 
-        var builder = new GorgonAnimationBuilder();
+        GorgonAnimationBuilder builder = new();
 
         _animation = builder.EditColor("Color")
             .SetKey(new GorgonKeyGorgonColor(0.0f, GorgonColor.White))

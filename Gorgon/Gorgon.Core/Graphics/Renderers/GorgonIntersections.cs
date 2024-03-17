@@ -296,7 +296,7 @@ public static class GorgonIntersections
         //Source: Real-Time Collision Detection by Christer Ericson
         //Reference: Page 130
 
-        var temp = Vector3.Max(point, box.Minimum);
+        Vector3 temp = Vector3.Max(point, box.Minimum);
         result = Vector3.Min(temp, box.Maximum);
     }
 
@@ -519,7 +519,7 @@ public static class GorgonIntersections
         //Source: RayIntersectsSphere
         //Reference: None
 
-        var m = Vector3.Subtract(ray.Position, point);
+        Vector3 m = Vector3.Subtract(ray.Position, point);
 
         //Same thing as RayIntersectsSphere except that the radius of the sphere (point)
         //is the epsilon for zero.
@@ -559,7 +559,7 @@ public static class GorgonIntersections
         //Source: Real-Time Rendering, Third Edition
         //Reference: Page 780
 
-        var cross = Vector3.Cross(ray1.Direction, ray2.Direction);
+        Vector3 cross = Vector3.Cross(ray1.Direction, ray2.Direction);
         float denominator = cross.Length();
 
         //Lines are parallel.
@@ -956,7 +956,7 @@ public static class GorgonIntersections
         //Source: Real-Time Collision Detection by Christer Ericson
         //Reference: Page 177
 
-        var m = Vector3.Subtract(ray.Position, sphere.Center);
+        Vector3 m = Vector3.Subtract(ray.Position, sphere.Center);
 
         float b = Vector3.Dot(m, ray.Direction);
         float c = Vector3.Dot(m, m) - (sphere.Radius * sphere.Radius);
@@ -1017,14 +1017,12 @@ public static class GorgonIntersections
         float distance = Vector3.Dot(plane.Normal, point);
         distance += plane.D;
 
-#pragma warning disable IDE0046 // Convert to conditional expression
         if (distance > 0f)
         {
             return PlaneIntersection.Front;
         }
 
         return distance < 0f ? PlaneIntersection.Back : PlaneIntersection.Intersecting;
-#pragma warning restore IDE0046 // Convert to conditional expression
     }
 
     /// <summary>
@@ -1036,7 +1034,7 @@ public static class GorgonIntersections
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool PlaneIntersectsPlane(in Plane plane1, in Plane plane2)
     {
-        var direction = Vector3.Cross(plane1.Normal, plane2.Normal);
+        Vector3 direction = Vector3.Cross(plane1.Normal, plane2.Normal);
 
         //If direction is the zero vector, the planes are parallel and possibly
         //coincident. It is not an intersection. The dot product will tell us.
@@ -1064,7 +1062,7 @@ public static class GorgonIntersections
         //Source: Real-Time Collision Detection by Christer Ericson
         //Reference: Page 207
 
-        var direction = Vector3.Cross(plane1.Normal, plane2.Normal);
+        Vector3 direction = Vector3.Cross(plane1.Normal, plane2.Normal);
 
         //If direction is the zero vector, the planes are parallel and possibly
         //coincident. It is not an intersection. The dot product will tell us.
@@ -1080,7 +1078,7 @@ public static class GorgonIntersections
         }
 
         Vector3 temp = plane1.D * plane2.Normal - plane2.D * plane1.Normal;
-        var point = Vector3.Cross(temp, direction);
+        Vector3 point = Vector3.Cross(temp, direction);
 
         line.Position = point;
         line.Direction = Vector3.Normalize(direction);
@@ -1106,7 +1104,6 @@ public static class GorgonIntersections
         PlaneIntersection test2 = PlaneIntersectsPoint(in plane, in vertex2);
         PlaneIntersection test3 = PlaneIntersectsPoint(in plane, in vertex3);
 
-#pragma warning disable IDE0046 // Convert to conditional expression
         if ((test1 == PlaneIntersection.Front) && (test2 == PlaneIntersection.Front) && (test3 == PlaneIntersection.Front))
         {
             return PlaneIntersection.Front;
@@ -1115,7 +1112,6 @@ public static class GorgonIntersections
         return (test1 == PlaneIntersection.Back) && (test2 == PlaneIntersection.Back) && (test3 == PlaneIntersection.Back)
             ? PlaneIntersection.Back
             : PlaneIntersection.Intersecting;
-#pragma warning restore IDE0046 // Convert to conditional expression
     }
 
     /// <summary>
@@ -1167,14 +1163,14 @@ public static class GorgonIntersections
         float distance = Vector3.Dot(plane.Normal, sphere.Center);
         distance += plane.D;
 
-#pragma warning disable IDE0046 // Convert to conditional expression
+
         if (distance > sphere.Radius)
         {
             return PlaneIntersection.Front;
         }
 
         return distance < -sphere.Radius ? PlaneIntersection.Back : PlaneIntersection.Intersecting;
-#pragma warning restore IDE0046 // Convert to conditional expression
+
     }
 
     /// <summary>
@@ -1191,14 +1187,14 @@ public static class GorgonIntersections
             return false;
         }
 
-#pragma warning disable IDE0046 // Convert to conditional expression
+
         if (box1.Minimum.Y > box2.Maximum.Y || box2.Minimum.Y > box1.Maximum.Y)
         {
             return false;
         }
 
         return box1.Minimum.Z <= box2.Maximum.Z && box2.Minimum.Z <= box1.Maximum.Z;
-#pragma warning restore IDE0046 // Convert to conditional expression
+
     }
 
     /// <summary>
@@ -1213,7 +1209,7 @@ public static class GorgonIntersections
         //Source: Real-Time Collision Detection by Christer Ericson
         //Reference: Page 166
 
-        var vector = Vector3.Clamp(sphere.Center, box.Minimum, box.Maximum);
+        Vector3 vector = Vector3.Clamp(sphere.Center, box.Minimum, box.Maximum);
         float distance = Vector3.DistanceSquared(sphere.Center, vector);
 
         return distance <= sphere.Radius * sphere.Radius;
@@ -1287,7 +1283,7 @@ public static class GorgonIntersections
             return Containment.Disjoint;
         }
 
-#pragma warning disable IDE0046 // Convert to conditional expression
+
         if (box1.Maximum.Z < box2.Minimum.Z || box1.Minimum.Z > box2.Maximum.Z)
         {
             return Containment.Disjoint;
@@ -1298,7 +1294,7 @@ public static class GorgonIntersections
             box1.Minimum.Z <= box2.Minimum.Z && box2.Maximum.Z <= box1.Maximum.Z
             ? Containment.Contains
             : Containment.Intersects;
-#pragma warning restore IDE0046 // Convert to conditional expression
+
     }
 
     /// <summary>
@@ -1310,7 +1306,7 @@ public static class GorgonIntersections
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static Containment BoxContainsSphere(in GorgonBoundingBox box, in GorgonBoundingSphere sphere)
     {
-        var vector = Vector3.Clamp(sphere.Center, box.Minimum, box.Maximum);
+        Vector3 vector = Vector3.Clamp(sphere.Center, box.Minimum, box.Maximum);
         float distance = Vector3.DistanceSquared(sphere.Center, vector);
 
         if (distance > sphere.Radius * sphere.Radius)
@@ -1318,7 +1314,7 @@ public static class GorgonIntersections
             return Containment.Disjoint;
         }
 
-#pragma warning disable IDE0046 // Convert to conditional expression
+
         if ((((box.Minimum.X + sphere.Radius <= sphere.Center.X) && (sphere.Center.X <= box.Maximum.X - sphere.Radius)) && ((box.Maximum.X - box.Minimum.X > sphere.Radius) &&
             (box.Minimum.Y + sphere.Radius <= sphere.Center.Y))) && (((sphere.Center.Y <= box.Maximum.Y - sphere.Radius) && (box.Maximum.Y - box.Minimum.Y > sphere.Radius)) &&
             (((box.Minimum.Z + sphere.Radius <= sphere.Center.Z) && (sphere.Center.Z <= box.Maximum.Z - sphere.Radius)) && (box.Maximum.Z - box.Minimum.Z > sphere.Radius))))
@@ -1327,7 +1323,7 @@ public static class GorgonIntersections
         }
 
         return Containment.Intersects;
-#pragma warning restore IDE0046 // Convert to conditional expression
+
     }
 
     /// <summary>
@@ -1357,14 +1353,14 @@ public static class GorgonIntersections
         Containment test2 = SphereContainsPoint(in sphere, in vertex2);
         Containment test3 = SphereContainsPoint(in sphere, in vertex3);
 
-#pragma warning disable IDE0046 // Convert to conditional expression
+
         if (test1 == Containment.Contains && test2 == Containment.Contains && test3 == Containment.Contains)
         {
             return Containment.Contains;
         }
 
         return SphereIntersectsTriangle(in sphere, in vertex1, in vertex2, in vertex3) ? Containment.Intersects : Containment.Disjoint;
-#pragma warning restore IDE0046 // Convert to conditional expression
+
     }
 
     /// <summary>
@@ -1463,14 +1459,14 @@ public static class GorgonIntersections
     {
         float distance = Vector3.Distance(sphere1.Center, sphere2.Center);
 
-#pragma warning disable IDE0046 // Convert to conditional expression
+
         if (sphere1.Radius + sphere2.Radius < distance)
         {
             return Containment.Disjoint;
         }
 
         return sphere1.Radius - sphere2.Radius < distance ? Containment.Intersects : Containment.Contains;
-#pragma warning restore IDE0046 // Convert to conditional expression
+
     }
 
     /// <summary>

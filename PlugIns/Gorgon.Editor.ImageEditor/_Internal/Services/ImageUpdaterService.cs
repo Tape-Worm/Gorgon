@@ -84,7 +84,7 @@ internal class ImageUpdaterService : IImageUpdaterService
 
         try
         {
-            var info = new GorgonImageInfo(image)
+            GorgonImageInfo info = new(image)
             {
                 ImageType = isCubeMap ? ImageDataType.ImageCube : ImageDataType.Image2D,
                 ArrayCount = image.ArrayCount,
@@ -406,7 +406,7 @@ internal class ImageUpdaterService : IImageUpdaterService
         int minMipCount = mipCount.Min(srcImage.MipCount);
         int minArrayCount = arrayCount.Min(srcImage.ArrayCount);
 
-        var size = new DX.Size2(srcImage.Width, srcImage.Height);
+        DX.Size2 size = new(srcImage.Width, srcImage.Height);
 
         for (int array = 0; array < minArrayCount; ++array)
         {
@@ -444,7 +444,7 @@ internal class ImageUpdaterService : IImageUpdaterService
 
                     int maxWidth = destBuffer.Width.Max(srcBuffer.Width);
                     int maxHeight = destBuffer.Height.Max(srcBuffer.Height);
-                    var copyRegion = new DX.Rectangle(0, 0, srcBuffer.Width, srcBuffer.Height);
+                    DX.Rectangle copyRegion = new(0, 0, srcBuffer.Width, srcBuffer.Height);
 
                     DX.Point startLoc = GetAnchorStart(new DX.Size2(maxWidth, maxHeight), ref size, alignment);
 

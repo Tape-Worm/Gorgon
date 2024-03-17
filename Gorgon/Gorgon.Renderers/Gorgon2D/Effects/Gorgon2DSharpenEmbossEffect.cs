@@ -179,7 +179,7 @@ public class Gorgon2DSharpenEmbossEffect
             return;
         }
 
-        var settings = new Vector3(1.0f / _textureSize.Width, 1.0f / _textureSize.Height, _amount);
+        Vector3 settings = new(1.0f / _textureSize.Width, 1.0f / _textureSize.Height, _amount);
 
         _sharpenEmbossBuffer.Buffer.SetData(in settings);
         _isUpdated = false;

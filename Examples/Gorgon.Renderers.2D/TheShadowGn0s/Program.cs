@@ -115,7 +115,7 @@ ESC - Quit.";
         shadowSprite.Position = _bgSprite.Position +
                                 (new Vector2(_bgSprite.Position.X - (_screen.Width / 2.0f), _bgSprite.Position.Y - (_screen.Height / 2.0f)) * _bgSprite.Scale * 0.075f);
 
-        var bgRegion = new DX.RectangleF(0, 0, _screen.Width, _screen.Height);
+        DX.RectangleF bgRegion = new(0, 0, _screen.Width, _screen.Height);
         _renderer.DrawFilledRectangle(bgRegion,
                                       GorgonColor.White,
                                       _backgroundTexture,
@@ -190,7 +190,7 @@ ESC - Quit.";
                                       new DX.RectangleF(0, 0, 1, 1));
 
         // Draw an ellipse to indicate our light source.
-        var lightPosition = new DX.RectangleF((_screen.Width / 2.0f) - 10, (_screen.Height / 2.0f) - 10, 20, 20);
+        DX.RectangleF lightPosition = new((_screen.Width / 2.0f) - 10, (_screen.Height / 2.0f) - 10, 20, 20);
         _renderer.DrawFilledEllipse(lightPosition, GorgonColor.White, 0.5f);
 
         // Draw the sprite and its corresponding shadow.
@@ -295,7 +295,7 @@ ESC - Quit.";
                                                               Usage = ResourceUsage.Immutable
                                                           });
 
-            var spriteCodec = new GorgonV2SpriteCodec(_renderer);
+            GorgonV2SpriteCodec spriteCodec = new(_renderer);
             _sprite1 = spriteCodec.FromFile(Path.Combine(GorgonExample.GetResourcePath(@"Sprites\TheShadowGn0s\").FullName, "Mother.gorSprite"));
             _sprite2 = spriteCodec.FromFile(Path.Combine(GorgonExample.GetResourcePath(@"Sprites\TheShadowGn0s\").FullName, "Mother2c.gorSprite"));
 
@@ -304,13 +304,13 @@ ESC - Quit.";
                 BlurRenderTargetsSize = new DX.Size2(_screen.Width / 2, _screen.Height / 2)
             };
 
-            var shadowBuilder = new ShadowBuilder(_renderer, _gaussBlur, _sprite1, _sprite2);
+            ShadowBuilder shadowBuilder = new(_renderer, _gaussBlur, _sprite1, _sprite2);
             (GorgonSprite[] shadowSprites, GorgonTexture2DView shadowTexture) = shadowBuilder.Build();
             _shadowSprites = shadowSprites;
             _shadowTexture = shadowTexture;
 
-            var batchStateBuilder = new Gorgon2DBatchStateBuilder();
-            var blendStateBuilder = new GorgonBlendStateBuilder();
+            Gorgon2DBatchStateBuilder batchStateBuilder = new();
+            GorgonBlendStateBuilder blendStateBuilder = new();
             _rtvBlendState = batchStateBuilder
                              .BlendState(blendStateBuilder
                                          .ResetTo(GorgonBlendState.Default)

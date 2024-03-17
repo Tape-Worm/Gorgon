@@ -333,7 +333,7 @@ public partial class MainForm
         }
 
         Color drawColor = Color.Black;      // Drawing color.
-        var mousePos = new Point(e.Position.X, e.Position.Y);
+        Point mousePos = new(e.Position.X, e.Position.Y);
         Point position = _useWinFormsInput ? mousePos : PointToClient(mousePos);
 
         if (e.Buttons == GorgonMouseButtons.None)
@@ -355,7 +355,7 @@ public partial class MainForm
         }
 
         // Draw the pen.
-        var penPosition = new DX.RectangleF(position.X - (_radius / 2.0f), position.Y - (_radius / 2.0f), _radius, _radius);
+        DX.RectangleF penPosition = new(position.X - (_radius / 2.0f), position.Y - (_radius / 2.0f), _radius, _radius);
         if (_radius > 3.0f)
         {
             _2D.DrawFilledEllipse(penPosition, drawColor);
@@ -409,7 +409,7 @@ public partial class MainForm
     {
         // Cursor position.
         Point mousePosition = PointToClient(!_useWinFormsInput ? new Point(_mouse.Position.X, _mouse.Position.Y) : Cursor.Position);
-        var cursorPosition = new Vector2(mousePosition.X, mousePosition.Y);
+        Vector2 cursorPosition = new(mousePosition.X, mousePosition.Y);
 
         if (!_useWinFormsInput)
         {
@@ -463,7 +463,7 @@ public partial class MainForm
         // If we have a joystick button down, then draw a black dot.
         if ((_joystick is not null) && (_joystick.Button[0] == GamingDeviceButtonState.Down))
         {
-            var penPosition = new DX.RectangleF(cursorPosition.X - (_radius / 2.0f), cursorPosition.Y - (_radius / 2.0f), _radius, _radius);
+            DX.RectangleF penPosition = new(cursorPosition.X - (_radius / 2.0f), cursorPosition.Y - (_radius / 2.0f), _radius, _radius);
             _graphics.SetRenderTarget(_backBuffer);
             _2D.Begin();
 
@@ -511,7 +511,7 @@ public partial class MainForm
     {
         base.OnResizeEnd(e);
 
-        var currentImageSize = new Size(_backBuffer.Width, _backBuffer.Height);
+        Size currentImageSize = new(_backBuffer.Width, _backBuffer.Height);
 
         // Copy the render target texture to a temporary buffer and resize the main buffer.
         // The copy the temporary buffer back to the main buffer.
@@ -610,7 +610,7 @@ public partial class MainForm
             IGorgonPlugInService plugInService = new GorgonMefPlugInService(_assemblyCache);
 
             // Create the factory to retrieve gaming device drivers.
-            var factory = new GorgonGamingDeviceDriverFactory(_assemblyCache);
+            GorgonGamingDeviceDriverFactory factory = new(_assemblyCache);
 
             // Create the raw input interface.
             _input = new GorgonRawInput(this, GorgonApplication.Log);
@@ -661,7 +661,7 @@ public partial class MainForm
             }
 
             // For the backup image. Used to make it as large as the monitor that we're on.
-            var currentScreen = Screen.FromHandle(Handle);
+            Screen currentScreen = Screen.FromHandle(Handle);
 
             // Relocate the window to the center of the screen.				
             Location = new Point(currentScreen.Bounds.Left + (currentScreen.WorkingArea.Width / 2) - (ClientSize.Width / 2),
@@ -730,7 +730,7 @@ public partial class MainForm
                                          .Build();
 
             // Set up blending states for our pen.
-            var blendStateBuilder = new GorgonBlendStateBuilder();
+            GorgonBlendStateBuilder blendStateBuilder = new();
             _currentBlend = _drawModulatedBlend = _blendBuilder.BlendState(blendStateBuilder
                                                                            .ResetTo(GorgonBlendState.Default)
                                                                            .DestinationBlend(alpha: Blend.One)

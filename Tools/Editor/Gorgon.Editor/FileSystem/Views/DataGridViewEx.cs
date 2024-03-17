@@ -168,8 +168,8 @@ internal class DataGridViewEx
         {
             _passThruEventArgs = e;
             float dpiScale = DeviceDpi / 96.0f;
-            var dragSize = new Size((int)(SystemInformation.DragSize.Width * dpiScale).FastCeiling() * 2, (int)(SystemInformation.DragSize.Height * dpiScale).FastCeiling() * 2);
-            var dragLocation = new Point((int)(e.Location.X - dragSize.Width / 2.0f).FastFloor(), (int)(e.Location.Y - dragSize.Height / 2.0f).FastFloor());
+            Size dragSize = new((int)(SystemInformation.DragSize.Width * dpiScale).FastCeiling() * 2, (int)(SystemInformation.DragSize.Height * dpiScale).FastCeiling() * 2);
+            Point dragLocation = new((int)(e.Location.X - dragSize.Width / 2.0f).FastFloor(), (int)(e.Location.Y - dragSize.Height / 2.0f).FastFloor());
             _dragRegion = new Rectangle(dragLocation, dragSize);
             return;
         }
@@ -226,9 +226,9 @@ internal class DataGridViewEx
 
         e.PaintBackground(new Rectangle(0, e.CellBounds.Y, ClientSize.Width - 1, e.CellBounds.Height), false);
 
-        using (var pen = new Pen(e.CellStyle.SelectionBackColor))
+        using (Pen pen = new(e.CellStyle.SelectionBackColor))
         {
-            var r = new Rectangle(e.ClipBounds.X, e.CellBounds.Y, e.ClipBounds.Width - 1, e.CellBounds.Height - 1);
+            Rectangle r = new(e.ClipBounds.X, e.CellBounds.Y, e.ClipBounds.Width - 1, e.CellBounds.Height - 1);
             pen.DashStyle = System.Drawing.Drawing2D.DashStyle.Dot;
             e.Graphics.DrawRectangle(pen, r);
         }

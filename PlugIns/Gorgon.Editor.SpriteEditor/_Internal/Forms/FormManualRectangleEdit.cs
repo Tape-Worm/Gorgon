@@ -64,7 +64,7 @@ internal partial class FormManualRectangleEdit
             return;
         }
 
-        var newRect = new DX.RectangleF
+        DX.RectangleF newRect = new()
         {
             Left = (float)NumericLeft.Value,
             Top = (float)NumericTop.Value,

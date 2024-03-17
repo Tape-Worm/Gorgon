@@ -288,8 +288,8 @@ internal static class Program
         ref readonly Matrix4x4 viewMatrix = ref _camera.GetViewMatrix();
         ref readonly Matrix4x4 projMatrix = ref _camera.GetProjectionMatrix();
 
-        var temp = Matrix4x4.Multiply(world, viewMatrix);
-        var wvp = Matrix4x4.Multiply(temp, projMatrix);
+        Matrix4x4 temp = Matrix4x4.Multiply(world, viewMatrix);
+        Matrix4x4 wvp = Matrix4x4.Multiply(temp, projMatrix);
 
         // Direct 3D 11 requires that we transpose our matrix 
         // before sending it to the shader.
@@ -415,7 +415,7 @@ internal static class Program
         if (!ExampleConfig.Default.IsWindowed)
         {
             // Get the output for the main window.
-            var currentScreen = Screen.FromControl(_mainForm);
+            Screen currentScreen = Screen.FromControl(_mainForm);
             IGorgonVideoOutputInfo output = _graphics.VideoAdapter.Outputs[currentScreen.DeviceName];
 
             // If we've asked for full screen mode, then locate the correct video mode and set us up.
@@ -484,8 +484,8 @@ internal static class Program
     /// </summary>
     private static void InitializeStates()
     {
-        var drawBuilder = new GorgonDrawIndexCallBuilder();
-        var stateBuilder = new GorgonPipelineStateBuilder(_graphics);
+        GorgonDrawIndexCallBuilder drawBuilder = new();
+        GorgonPipelineStateBuilder stateBuilder = new(_graphics);
         GorgonSamplerState sampler = new GorgonSamplerStateBuilder(_graphics)
                                      .Filter(SampleFilter.MinMagMipPoint)
                                      .Wrapping(TextureWrap.Wrap, TextureWrap.Wrap)
@@ -619,7 +619,7 @@ internal static class Program
         else
         {
             // Get the output for the main window.
-            var currentScreen = Screen.FromControl(_mainForm);
+            Screen currentScreen = Screen.FromControl(_mainForm);
             IGorgonVideoOutputInfo output = _graphics.VideoAdapter.Outputs[currentScreen.DeviceName];
 
             _swap.EnterFullScreen(in _selectedVideoMode, output);

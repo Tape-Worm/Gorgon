@@ -693,7 +693,7 @@ public sealed class GorgonTexture2DView
             }
         }
 
-        var newInfo = new GorgonTexture2DInfo(info)
+        GorgonTexture2DInfo newInfo = new(info)
         {
             Usage = info.Usage == ResourceUsage.Staging ? ResourceUsage.Default : info.Usage,
             Binding = (info.Binding & TextureBinding.ShaderResource) != TextureBinding.ShaderResource

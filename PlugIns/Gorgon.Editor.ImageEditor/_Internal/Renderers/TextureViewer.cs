@@ -142,7 +142,7 @@ internal abstract class TextureViewer
             return;
         }
 
-        var p = new TextureParams
+        TextureParams p = new()
         {
             DepthSlice = DataContext.DepthCount <= 1 ? 0 : ((float)(DataContext.CurrentDepthSlice) / (DataContext.DepthCount - 1)),
             MipLevel = DataContext.CurrentMipLevel
@@ -262,7 +262,7 @@ internal abstract class TextureViewer
         Array.Clear(_slots, 0, _slots.Length);
         _slots[_textureSlot] = ShaderView;
 
-        var shaderBuilder = new Gorgon2DShaderStateBuilder<GorgonPixelShader>();
+        Gorgon2DShaderStateBuilder<GorgonPixelShader> shaderBuilder = new();
         shaderBuilder
             .ResetTo(_batchShaderState)
             .ConstantBuffer(_textureParameters, 1)
@@ -273,7 +273,7 @@ internal abstract class TextureViewer
 
         _batchShaderState = shaderBuilder.Build();
 
-        var batchBuilder = new Gorgon2DBatchStateBuilder();
+        Gorgon2DBatchStateBuilder batchBuilder = new();
 
         BatchState = batchBuilder.ResetTo(BatchState)
                                   .PixelShaderState(_batchShaderState)

@@ -44,7 +44,7 @@ internal class Program
     /// </summary>
     private static void UpdateTime()
     {
-        var time = new TimeSpan(0, 0, (int)GorgonTiming.SecondsSinceStart);
+        TimeSpan time = new(0, 0, (int)GorgonTiming.SecondsSinceStart);
 
         // Get the time.
         string timeString = $"Application up time: {time.Hours}:{time.Minutes:00}:{time.Seconds:00}";

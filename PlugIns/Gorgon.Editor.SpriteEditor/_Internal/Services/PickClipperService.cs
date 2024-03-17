@@ -230,7 +230,7 @@ internal class PickClipperService
             return null;
         }
 
-        var imageBounds = new DX.RectangleF(0, 0, ImageData.Width, ImageData.Height);
+        DX.RectangleF imageBounds = new(0, 0, ImageData.Width, ImageData.Height);
 
         // If we clicked outside of the image, then there's nothing to click.
         if (!imageBounds.Contains(imagePosition.X, imagePosition.Y))
@@ -238,7 +238,7 @@ internal class PickClipperService
             return null;
         }
 
-        var imagePoint = imagePosition.ToPoint();
+        DX.Point imagePoint = imagePosition.ToPoint();
 
         // We clicked on an area that has the masking value under our cursor, so we can't build anything.
         // In this case, do not change the current rectangle.
@@ -247,8 +247,8 @@ internal class PickClipperService
             return null;
         }
 
-        var spanQueue = new Queue<ClipSpan>();
-        var clipRegion = new DX.RectangleF
+        Queue<ClipSpan> spanQueue = new();
+        DX.RectangleF clipRegion = new()
         {
             Left = imagePoint.X,
             Top = imagePoint.Y,
@@ -271,7 +271,7 @@ internal class PickClipperService
         {
             span = spanQueue.Dequeue();
 
-            var spanRegion = new DX.Rectangle
+            DX.Rectangle spanRegion = new()
             {
                 Left = span.Start,
                 Top = span.Y - 1,
@@ -283,8 +283,8 @@ internal class PickClipperService
             for (int x = spanRegion.Left; x <= spanRegion.Right; ++x)
             {
                 int pixelindex = ImageData.Width * spanRegion.Top + x;
-                var topSpan = new DX.Point(x, spanRegion.Top);
-                var bottomSpan = new DX.Point(x, spanRegion.Bottom);
+                DX.Point topSpan = new(x, spanRegion.Top);
+                DX.Point bottomSpan = new(x, spanRegion.Bottom);
                 ClipSpan vertSpan;
 
                 if ((span.Y > 0) && (!IsMaskValue(topSpan, clipMask, maskColor)) && (!_pixels[pixelindex]))

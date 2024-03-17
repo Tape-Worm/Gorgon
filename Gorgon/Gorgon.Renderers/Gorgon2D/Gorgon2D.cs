@@ -135,7 +135,7 @@ public sealed class Gorgon2D
             Viewport = new Vector4(view.X, view.Y, view.Width, view.Height);
             DepthTarget = new Vector4(view.MinDepth, view.MaxDepth, target?.Width ?? -1, target?.Height ?? -1);
 
-            var srv = batchState?.PixelShaderState?.RwSrvs?[0] as GorgonTexture2DView;
+            GorgonTexture2DView srv = batchState?.PixelShaderState?.RwSrvs?[0] as GorgonTexture2DView;
 
             Texture0 = new Vector2(srv?.Width ?? -1, srv?.Height ?? -1);
         }
@@ -546,7 +546,7 @@ public sealed class Gorgon2D
             return;
         }
 
-        var timingValues = new Vector4(GorgonTiming.Delta, GorgonTiming.SecondsSinceStart, GorgonTiming.FPS, GorgonTiming.FrameCount);
+        Vector4 timingValues = new(GorgonTiming.Delta, GorgonTiming.SecondsSinceStart, GorgonTiming.FPS, GorgonTiming.FrameCount);
         _timingValuesBuffer.Buffer.SetData(in timingValues);
         _currentTimingValues = timingValues;
         unchecked
@@ -569,7 +569,7 @@ public sealed class Gorgon2D
             return;
         }
 
-        var newMiscValues = new MiscValues(Graphics, _currentBatchState);
+        MiscValues newMiscValues = new(Graphics, _currentBatchState);
 
         if (newMiscValues.Equals(in _currentMiscValues))
         {
@@ -619,7 +619,7 @@ public sealed class Gorgon2D
     private void Initialize()
     {
         // Spin wait until we're fully initialized.
-        var wait = new SpinWait();
+        SpinWait wait = new();
 
         while (Interlocked.CompareExchange(ref _initialized, Initializing, Uninitialized) == Initializing)
         {
@@ -697,7 +697,7 @@ public sealed class Gorgon2D
             _cameraController = new CameraController(Graphics);
             _cameraController.UpdateCamera(_defaultCamera);
 
-            var polyData = new PolyVertexShaderData
+            PolyVertexShaderData polyData = new()
             {
                 World = Matrix4x4.Identity,
                 Color = GorgonColor.White,
@@ -1054,7 +1054,7 @@ public sealed class Gorgon2D
         }
 
         _polyTransformer.Transform(renderable, out float sinValue, out float cosValue);
-        var polyData = new PolyVertexShaderData
+        PolyVertexShaderData polyData = new()
         {
             World = renderable.WorldMatrix,
             Color = sprite.Color,
@@ -1214,7 +1214,7 @@ public sealed class Gorgon2D
 
                     if ((hasKerning) && (i < textLength - 1))
                     {
-                        var kernPair = new GorgonKerningPair(character, textLine[i + 1]);
+                        GorgonKerningPair kernPair = new(character, textLine[i + 1]);
                         kerningValues.TryGetValue(kernPair, out kernAmount);
                     }
 
@@ -1541,7 +1541,7 @@ public sealed class Gorgon2D
 
                         if ((hasKerning) && (i < textLength - 1))
                         {
-                            var kernPair = new GorgonKerningPair(character, textLine[i + 1]);
+                            GorgonKerningPair kernPair = new(character, textLine[i + 1]);
                             kerningValues.TryGetValue(kernPair, out kernAmount);
                         }
 
@@ -1790,7 +1790,7 @@ public sealed class Gorgon2D
         // If we supply our own texture coordinates, then ensure that the individual lines are mapped appropriately.
         if (texture is not null and not null)
         {
-            var innerRect = new DX.RectangleF(thickness, thickness, region.Width - (thickness * 2), region.Height - (thickness * 2));
+            DX.RectangleF innerRect = new(thickness, thickness, region.Width - (thickness * 2), region.Height - (thickness * 2));
 
             innerRect.Left = ((innerRect.Left / region.Width) * textureRegion.Value.Width) + textureRegion.Value.Left;
             innerRect.Top = ((innerRect.Top / region.Height) * textureRegion.Value.Height) + textureRegion.Value.Top;
@@ -1908,7 +1908,7 @@ public sealed class Gorgon2D
 
         textureSampler ??= GorgonSamplerState.Wrapping;
 
-        var bounds = new DX.RectangleF
+        DX.RectangleF bounds = new()
         {
             Left = x1,
             Top = y1,
@@ -1917,12 +1917,12 @@ public sealed class Gorgon2D
         };
 
         // Get cross products of start and end points.
-        var cross = Vector2.Multiply(Vector2.Normalize(new Vector2(bounds.Height, -bounds.Width)), thickness * 0.5f);
+        Vector2 cross = Vector2.Multiply(Vector2.Normalize(new Vector2(bounds.Height, -bounds.Width)), thickness * 0.5f);
 
-        var start1 = new Vector2((x1 + cross.X).FastCeiling(), (y1 + cross.Y).FastCeiling());
-        var end1 = new Vector2((x2 + cross.X).FastCeiling(), (y2 + cross.Y).FastCeiling());
-        var start2 = new Vector2((x1 - cross.X).FastCeiling(), (y1 - cross.Y).FastCeiling());
-        var end2 = new Vector2((x2 - cross.X).FastCeiling(), (y2 - cross.Y).FastCeiling());
+        Vector2 start1 = new((x1 + cross.X).FastCeiling(), (y1 + cross.Y).FastCeiling());
+        Vector2 end1 = new((x2 + cross.X).FastCeiling(), (y2 + cross.Y).FastCeiling());
+        Vector2 start2 = new((x1 - cross.X).FastCeiling(), (y1 - cross.Y).FastCeiling());
+        Vector2 end2 = new((x2 - cross.X).FastCeiling(), (y2 - cross.Y).FastCeiling());
 
         v0.Position = new Vector4(start1, startDepth, 1.0f);
         v1.Position = new Vector4(end1, endDepth, 1.0f);
@@ -2048,9 +2048,9 @@ public sealed class Gorgon2D
             _primitiveRenderable.Vertices = new Gorgon2DVertex[_primitiveRenderable.ActualVertexCount * 2];
         }
 
-        var centerPoint = new Vector2(region.Center.X, region.Center.Y);
+        Vector2 centerPoint = new(region.Center.X, region.Center.Y);
 
-        var radius = new Vector2(region.Width * 0.5f, region.Height * 0.5f);
+        Vector2 radius = new(region.Width * 0.5f, region.Height * 0.5f);
 
         Vector4 uvCenter = Vector4.UnitW;
 
@@ -2071,7 +2071,7 @@ public sealed class Gorgon2D
             float sin = angle.FastSin();
             float cos = angle.FastCos();
 
-            var point = new Vector2((sin * radius.X) + centerPoint.X, (cos * radius.Y) + centerPoint.Y);
+            Vector2 point = new((sin * radius.X) + centerPoint.X, (cos * radius.Y) + centerPoint.Y);
 
             Vector4 uv = Vector4.UnitW;
 
@@ -2161,10 +2161,10 @@ public sealed class Gorgon2D
             _primitiveRenderable.Vertices = new Gorgon2DVertex[_primitiveRenderable.ActualVertexCount * 2];
         }
 
-        var centerPoint = new Vector2(region.Center.X, region.Center.Y);
+        Vector2 centerPoint = new(region.Center.X, region.Center.Y);
 
-        var outerRadius = new Vector2((region.Width * 0.5f) + (thickness * 0.5f), (region.Height * 0.5f) + (thickness * 0.5f));
-        var innerRadius = new Vector2((region.Width * 0.5f) - (thickness * 0.5f), (region.Height * 0.5f) - (thickness * 0.5f));
+        Vector2 outerRadius = new((region.Width * 0.5f) + (thickness * 0.5f), (region.Height * 0.5f) + (thickness * 0.5f));
+        Vector2 innerRadius = new((region.Width * 0.5f) - (thickness * 0.5f), (region.Height * 0.5f) - (thickness * 0.5f));
 
 
         int vertexIndex = 0;
@@ -2174,8 +2174,8 @@ public sealed class Gorgon2D
             float sin = angle.FastSin();
             float cos = angle.FastCos();
 
-            var innerPoint = new Vector2((sin * innerRadius.X) + centerPoint.X, (cos * innerRadius.Y) + centerPoint.Y);
-            var outerPoint = new Vector2((sin * outerRadius.X) + centerPoint.X, (cos * outerRadius.Y) + centerPoint.Y);
+            Vector2 innerPoint = new((sin * innerRadius.X) + centerPoint.X, (cos * innerRadius.Y) + centerPoint.Y);
+            Vector2 outerPoint = new((sin * outerRadius.X) + centerPoint.X, (cos * outerRadius.Y) + centerPoint.Y);
 
             Vector4 uvInner = Vector4.UnitW;
             Vector4 uvOuter = Vector4.UnitW;
@@ -2278,9 +2278,9 @@ public sealed class Gorgon2D
             _primitiveRenderable.Vertices = new Gorgon2DVertex[_primitiveRenderable.ActualVertexCount * 2];
         }
 
-        var centerPoint = new Vector2(region.Center.X, region.Center.Y);
+        Vector2 centerPoint = new(region.Center.X, region.Center.Y);
 
-        var radius = new Vector2(region.Width * 0.5f, region.Height * 0.5f);
+        Vector2 radius = new(region.Width * 0.5f, region.Height * 0.5f);
 
         Vector4 uvCenter = Vector4.UnitW;
 
@@ -2301,7 +2301,7 @@ public sealed class Gorgon2D
             float sin = angle.FastSin();
             float cos = angle.FastCos();
 
-            var point = new Vector2((sin * radius.X) + centerPoint.X, (cos * radius.Y) + centerPoint.Y);
+            Vector2 point = new((sin * radius.X) + centerPoint.X, (cos * radius.Y) + centerPoint.Y);
 
             Vector4 uv = Vector4.UnitW;
 
@@ -2387,10 +2387,10 @@ public sealed class Gorgon2D
             _primitiveRenderable.Vertices = new Gorgon2DVertex[_primitiveRenderable.ActualVertexCount * 2];
         }
 
-        var centerPoint = new Vector2(region.Center.X, region.Center.Y);
+        Vector2 centerPoint = new(region.Center.X, region.Center.Y);
 
-        var outerRadius = new Vector2((region.Width * 0.5f) + (thickness * 0.5f), (region.Height * 0.5f) + (thickness * 0.5f));
-        var innerRadius = new Vector2((region.Width * 0.5f) - (thickness * 0.5f), (region.Height * 0.5f) - (thickness * 0.5f));
+        Vector2 outerRadius = new((region.Width * 0.5f) + (thickness * 0.5f), (region.Height * 0.5f) + (thickness * 0.5f));
+        Vector2 innerRadius = new((region.Width * 0.5f) - (thickness * 0.5f), (region.Height * 0.5f) - (thickness * 0.5f));
 
         int vertexIndex = 0;
         for (int i = 0; i <= quality; ++i)
@@ -2399,8 +2399,8 @@ public sealed class Gorgon2D
             float sin = angle.FastSin();
             float cos = angle.FastCos();
 
-            var innerPoint = new Vector2((sin * innerRadius.X) + centerPoint.X, (cos * innerRadius.Y) + centerPoint.Y);
-            var outerPoint = new Vector2((sin * outerRadius.X) + centerPoint.X, (cos * outerRadius.Y) + centerPoint.Y);
+            Vector2 innerPoint = new((sin * innerRadius.X) + centerPoint.X, (cos * innerRadius.Y) + centerPoint.Y);
+            Vector2 outerPoint = new((sin * outerRadius.X) + centerPoint.X, (cos * outerRadius.Y) + centerPoint.Y);
 
             Vector4 uvInner = Vector4.UnitW;
             Vector4 uvOuter = Vector4.UnitW;

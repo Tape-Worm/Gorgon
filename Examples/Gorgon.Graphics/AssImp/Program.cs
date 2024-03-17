@@ -139,8 +139,8 @@ internal static class Program
         ref readonly Matrix4x4 viewMatrix = ref _camera.GetViewMatrix();
         ref readonly Matrix4x4 projMatrix = ref _camera.GetProjectionMatrix();
 
-        var temp = Matrix4x4.Multiply(world, viewMatrix);
-        var wvp = Matrix4x4.Multiply(temp, projMatrix);
+        Matrix4x4 temp = Matrix4x4.Multiply(world, viewMatrix);
+        Matrix4x4 wvp = Matrix4x4.Multiply(temp, projMatrix);
 
         ref Matrix4x4 gpuWorld = ref _matrixGpu.WorldMatrix;
         ref Matrix4x4 gpuWvp = ref _matrixGpu.WvpMatrix;
@@ -229,8 +229,8 @@ internal static class Program
     /// </summary>
     private static void InitializeStates()
     {
-        var drawBuilder = new GorgonDrawIndexCallBuilder();
-        var stateBuilder = new GorgonPipelineStateBuilder(_graphics);
+        GorgonDrawIndexCallBuilder drawBuilder = new();
+        GorgonPipelineStateBuilder stateBuilder = new(_graphics);
 
         // This will initialize the 2D renderer early so we can get access to its default white texture.
         _renderer2d.Begin();

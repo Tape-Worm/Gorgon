@@ -70,7 +70,7 @@ internal class CameraController
     {
         if (camera.AllowUpdateOnResize)
         {
-            var viewportSize = new DX.Size2F(Graphics.Viewports[0].Width, Graphics.Viewports[0].Height);
+            DX.Size2F viewportSize = new(Graphics.Viewports[0].Width, Graphics.Viewports[0].Height);
 
             if (!camera.ViewDimensions.Equals(viewportSize))
             {

@@ -175,7 +175,7 @@ internal class SpriteClipContext
     {
         get
         {
-            var rect = SpriteRectangle.ToRectangle();
+            DX.Rectangle rect = SpriteRectangle.ToRectangle();
             return string.Format(Resources.GORSPR_TEXT_SPRITE_INFO, rect.Left, rect.Top, rect.Right, rect.Bottom, rect.Width, rect.Height);
         }
     }
@@ -255,7 +255,7 @@ internal class SpriteClipContext
             return false;
         }
 
-        var fullCoords = new DX.RectangleF(0, 0, _spriteContent.Texture.Width, _spriteContent.Texture.Height);
+        DX.RectangleF fullCoords = new(0, 0, _spriteContent.Texture.Width, _spriteContent.Texture.Height);
 
         return !SpriteRectangle.Equals(ref fullCoords);
     }

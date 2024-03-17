@@ -67,7 +67,7 @@ public static class GorgonIOExtensions
         try
         {
             int byteCount = stream.Read(readBuffer, 0, buffer.Length);
-            var readSpan = new ReadOnlySpan<byte>(readBuffer, 0, byteCount);
+            ReadOnlySpan<byte> readSpan = new(readBuffer, 0, byteCount);
 
             readSpan.CopyTo(buffer);
 
@@ -460,7 +460,7 @@ public static class GorgonIOExtensions
             return string.Empty;
         }
 
-        var output = new StringBuilder(path);
+        StringBuilder output = new(path);
 
         output = _illegalPathChars.Aggregate(output, (current, illegalChar) => current.Replace(illegalChar, '_'));
 
@@ -511,7 +511,7 @@ public static class GorgonIOExtensions
             directorySeparator = Path.DirectorySeparatorChar;
         }
         string pathRoot = Path.GetPathRoot(path) ?? string.Empty;
-        var output = new StringBuilder(path[pathRoot.Length..]);
+        StringBuilder output = new(path[pathRoot.Length..]);
 
         output = _illegalPathChars.Concat(_illegalFileChars)
                                   .Distinct()
@@ -582,7 +582,7 @@ public static class GorgonIOExtensions
         path = path.Replace(Path.DirectorySeparatorChar, '_');
         path = path.Replace(Path.AltDirectorySeparatorChar, '_');
 
-        var output = new StringBuilder(path);
+        StringBuilder output = new(path);
 
         output = _illegalPathChars.Aggregate(output, (current, illegalChar) => current.Replace(illegalChar, '_'));
 
@@ -652,10 +652,10 @@ public static class GorgonIOExtensions
         }
 
         // Filter out bad characters.
-        var output = new StringBuilder(path);
+        StringBuilder output = new(path);
         output = _illegalPathChars.Aggregate(output, (current, illegalChar) => current.Replace(illegalChar, '_'));
 
-        var filePath = new StringBuilder(FormatDirectory(Path.GetDirectoryName(output.ToString()), directorySeparator));
+        StringBuilder filePath = new(FormatDirectory(Path.GetDirectoryName(output.ToString()), directorySeparator));
 
         path = output.ToString();
 

@@ -81,8 +81,8 @@ internal class Validator
                 switch (firstTarget.Resource.ResourceType)
                 {
                     case GraphicsResourceType.Texture2D:
-                        var left2D = (GorgonRenderTarget2DView)firstTarget;
-                        var right2D = (GorgonRenderTarget2DView)rtv;
+                        GorgonRenderTarget2DView left2D = (GorgonRenderTarget2DView)firstTarget;
+                        GorgonRenderTarget2DView right2D = (GorgonRenderTarget2DView)rtv;
 
                         if ((left2D.Width != right2D.Width) && (left2D.Height != right2D.Height) && (left2D.ArrayCount != right2D.ArrayCount))
                         {
@@ -96,8 +96,8 @@ internal class Validator
 
                         break;
                     case GraphicsResourceType.Texture3D:
-                        var left3D = (GorgonRenderTarget3DView)firstTarget;
-                        var right3D = (GorgonRenderTarget3DView)rtv;
+                        GorgonRenderTarget3DView left3D = (GorgonRenderTarget3DView)firstTarget;
+                        GorgonRenderTarget3DView right3D = (GorgonRenderTarget3DView)rtv;
 
                         if ((left3D.Width != right3D.Width) && (left3D.Height != right3D.Height) && (left3D.Depth != right3D.Depth))
                         {
@@ -125,7 +125,7 @@ internal class Validator
                                       string.Format(Resources.GORGFX_ERR_RTV_DEPTHSTENCIL_TYPE_MISMATCH, dsv.Texture.ResourceType));
         }
 
-        var rtv2D = (GorgonRenderTarget2DView)firstTarget;
+        GorgonRenderTarget2DView rtv2D = (GorgonRenderTarget2DView)firstTarget;
 
         // Ensure the depth stencil array/depth counts match for all resources.
         if (dsv.ArrayCount != rtv2D.ArrayCount)

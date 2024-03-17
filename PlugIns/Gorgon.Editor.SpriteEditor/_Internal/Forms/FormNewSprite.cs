@@ -294,7 +294,7 @@ internal partial class FormNewSprite
     private void FillTextureList(IReadOnlyList<IContentFile> textures)
     {
         ContentFileExplorerFileEntry selectedTexture = null;
-        var dirs = new Dictionary<string, ContentFileExplorerDirectoryEntry>(StringComparer.OrdinalIgnoreCase);
+        Dictionary<string, ContentFileExplorerDirectoryEntry> dirs = new(StringComparer.OrdinalIgnoreCase);
 
         foreach (IContentFile texture in textures.OrderBy(item => item.Path))
         {
@@ -312,7 +312,7 @@ internal partial class FormNewSprite
                 fileEntries = (List<ContentFileExplorerFileEntry>)dirEntry.Files;
             }
 
-            var file = new ContentFileExplorerFileEntry(texture, dirEntry);
+            ContentFileExplorerFileEntry file = new(texture, dirEntry);
 
             if (TextureFile == texture)
             {

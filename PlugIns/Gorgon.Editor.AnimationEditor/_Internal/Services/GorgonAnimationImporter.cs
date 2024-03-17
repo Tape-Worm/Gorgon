@@ -116,7 +116,7 @@ internal class GorgonAnimationImporter(IGorgonFileSystem projectFileSystem, IGor
             return [];
         }
 
-        var textureForAnimation = new List<GorgonTexture2DView>();
+        List<GorgonTexture2DView> textureForAnimation = [];
 
         foreach (string textureName in textureNames)
         {
@@ -162,7 +162,7 @@ internal class GorgonAnimationImporter(IGorgonFileSystem projectFileSystem, IGor
 
         try
         {
-            var animationCodec = new GorgonV31AnimationBinaryCodec(_renderer);
+            GorgonV31AnimationBinaryCodec animationCodec = new(_renderer);
 
             _log.Print("Importing associated texture for animation...", LoggingLevel.Simple);
 

@@ -92,7 +92,7 @@ internal class Texture2DViewer(Gorgon2D renderer, GorgonSwapChain swapChain, IIm
     /// <remarks>This is the method that developers should override in order to draw their content to the view.</remarks>
     protected override void DrawTexture()
     {
-        var color = new GorgonColor(GorgonColor.White, Opacity);
+        GorgonColor color = new(GorgonColor.White, Opacity);
 
         Debug.Assert(_textureView is not null, "The texture is null.  Why?");
 

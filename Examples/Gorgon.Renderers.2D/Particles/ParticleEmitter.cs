@@ -372,8 +372,8 @@ public class ParticleEmitter
 
             if (particle.TerminalAge > 0.0f)
             {
-                var posDelta = Vector2.Subtract(_position, _previousPosition);
-                var posVar = Vector2.Multiply(posDelta, GorgonRandom.RandomSingle());
+                Vector2 posDelta = Vector2.Subtract(_position, _previousPosition);
+                Vector2 posVar = Vector2.Multiply(posDelta, GorgonRandom.RandomSingle());
                 particle.Position = Vector2.Add(_previousPosition, posVar);
                 particle.Position.X += GorgonRandom.RandomSingle(-2, 2);
                 particle.Position.Y += GorgonRandom.RandomSingle(-2, 2);
@@ -382,7 +382,7 @@ public class ParticleEmitter
                 float angle = Direction.ToRadians() - pi2 + GorgonRandom.RandomSingle(0, spreadRad) - spreadRad * 0.5f;
                 if (Relative)
                 {
-                    var diff = Vector2.Subtract(_previousPosition, _position);
+                    Vector2 diff = Vector2.Subtract(_previousPosition, _position);
                     angle += diff.Y.ATan(diff.X) + pi2;
                 }
 
@@ -426,9 +426,9 @@ public class ParticleEmitter
     /// <param name="y">Vertical position.</param>
     public void Move(float x, float y)
     {
-        var offset = new Vector2(x, y);
+        Vector2 offset = new(x, y);
 
-        var delta = Vector2.Subtract(offset, _position);
+        Vector2 delta = Vector2.Subtract(offset, _position);
 
         for (int i = 0; i < _aliveCount; i++)
         {
@@ -477,19 +477,19 @@ public class ParticleEmitter
                 continue;
             }
 
-            var acceleration = Vector2.Normalize(Vector2.Subtract(particle.Position, _position));
+            Vector2 acceleration = Vector2.Normalize(Vector2.Subtract(particle.Position, _position));
 
-            var crossAcceleration = new Vector2(-acceleration.Y, acceleration.X);
+            Vector2 crossAcceleration = new(-acceleration.Y, acceleration.X);
 
-            var radialAcceleration = Vector2.Multiply(acceleration, particle.RadialAcceleration);
-            var tangentAcceleration = Vector2.Multiply(crossAcceleration, particle.TangentialAcceleration);
+            Vector2 radialAcceleration = Vector2.Multiply(acceleration, particle.RadialAcceleration);
+            Vector2 tangentAcceleration = Vector2.Multiply(crossAcceleration, particle.TangentialAcceleration);
 
-            var totalAccel = Vector2.Add(radialAcceleration, tangentAcceleration);
-            var finalAccel = Vector2.Multiply(totalAccel, frameDelta);
+            Vector2 totalAccel = Vector2.Add(radialAcceleration, tangentAcceleration);
+            Vector2 finalAccel = Vector2.Multiply(totalAccel, frameDelta);
             particle.Velocity = Vector2.Add(particle.Velocity, finalAccel);
             particle.Velocity.Y += particle.Gravity * frameDelta;
 
-            var finalVel = Vector2.Multiply(particle.Velocity, frameDelta);
+            Vector2 finalVel = Vector2.Multiply(particle.Velocity, frameDelta);
             particle.Position = Vector2.Add(particle.Position, finalVel);
 
             particle.Spin += particle.SpinDelta * frameDelta;

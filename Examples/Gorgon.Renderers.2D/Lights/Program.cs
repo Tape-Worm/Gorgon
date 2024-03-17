@@ -319,7 +319,7 @@ static class Program
     /// <param name="e">The <see cref="KeyEventArgs" /> instance containing the event data.</param>
     private static void Window_KeyDown(object sender, KeyEventArgs e)
     {
-        var window = (Control)sender;
+        Control window = (Control)sender;
         System.Drawing.Point cursor = window.PointToClient(Cursor.Position);
 
         switch (e.KeyCode)

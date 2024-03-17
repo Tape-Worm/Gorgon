@@ -329,7 +329,7 @@ public static class GorgonReflectionExtensions
         }
 
         ParameterExpression paramExpr = Expression.Parameter(typeof(object[]), "args");
-        var argumentsExpr = new Expression[Params.Length];
+        Expression[] argumentsExpr = new Expression[Params.Length];
 
         //pick each arg from the params array 
         //and create a typed expression of them
@@ -357,7 +357,7 @@ public static class GorgonReflectionExtensions
             Expression.Lambda(typeof(ObjectActivator<T>), newExp, paramExpr);
 
         //compile it
-        var compiled = (ObjectActivator<T>)lambda.Compile();
+        ObjectActivator<T> compiled = (ObjectActivator<T>)lambda.Compile();
         return compiled;
     }
 
@@ -404,14 +404,12 @@ public static class GorgonReflectionExtensions
             return true;
         }
 
-#pragma warning disable IDE0046 // Convert to conditional expression
         if (!field.FieldType.IsValueType)
         {
             return false;
         }
 
         return field.FieldType.GetCustomAttribute<MarshalAsAttribute>() is null && field.FieldType.IsSafeForNative();
-#pragma warning restore IDE0046 // Convert to conditional expression
     }
 
     /// <summary>
@@ -504,7 +502,7 @@ public static class GorgonReflectionExtensions
     {
         ArgumentNullException.ThrowIfNull(type);
 
-        var result = new List<FieldInfo>();
+        List<FieldInfo> result = [];
         incompatibleFields = result;
 
         if ((type.StructLayoutAttribute is null) || (type.IsAutoLayout))

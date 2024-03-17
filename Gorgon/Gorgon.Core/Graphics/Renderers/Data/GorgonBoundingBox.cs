@@ -237,8 +237,8 @@ public readonly struct GorgonBoundingBox
             return;
         }
 
-        var min = new Vector3(float.MaxValue);
-        var max = new Vector3(float.MinValue);
+        Vector3 min = new(float.MaxValue);
+        Vector3 max = new(float.MinValue);
 
         for (int i = 0; i < points.Length; ++i)
         {
@@ -302,11 +302,11 @@ public readonly struct GorgonBoundingBox
     /// <param name="result">The new transformed axis aligned bounding box.</param>
     public static void Transform(in GorgonBoundingBox aabb, in Matrix4x4 worldMatrix, out GorgonBoundingBox result)
     {
-        var extent = Vector3.Subtract(aabb.Maximum, aabb.Center);
+        Vector3 extent = Vector3.Subtract(aabb.Maximum, aabb.Center);
         worldMatrix.Abs(out Matrix4x4 absMatrix);
 
-        var newCenter = Vector3.Transform(aabb.Center, worldMatrix);
-        var newExtent = Vector3.TransformNormal(extent, absMatrix);
+        Vector3 newCenter = Vector3.Transform(aabb.Center, worldMatrix);
+        Vector3 newExtent = Vector3.TransformNormal(extent, absMatrix);
 
         result = new GorgonBoundingBox(Vector3.Subtract(newCenter, newExtent), Vector3.Add(newCenter, newExtent));
     }

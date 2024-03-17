@@ -277,8 +277,8 @@ internal class SpriteVertexEditService
             return;
         }
 
-        var dragDelta = Vector2.Subtract(localMousePos, _localStartDrag);
-        var newPos = new Vector2(_dragHandlePos.X + dragDelta.X, _dragHandlePos.Y + dragDelta.Y);
+        Vector2 dragDelta = Vector2.Subtract(localMousePos, _localStartDrag);
+        Vector2 newPos = new(_dragHandlePos.X + dragDelta.X, _dragHandlePos.Y + dragDelta.Y);
         _vertices[SelectedVertexIndex] = newPos.Truncate();
         SetupHandles();
 
@@ -335,7 +335,7 @@ internal class SpriteVertexEditService
         // Convert to client space.
         if (Camera is not null)
         {
-            var half = new Vector3(SpriteBounds.Width * 0.5f, SpriteBounds.Height * 0.5f, 0);
+            Vector3 half = new(SpriteBounds.Width * 0.5f, SpriteBounds.Height * 0.5f, 0);
 
             for (int i = 0; i < _screenVertices.Length; ++i)
             {
@@ -351,7 +351,7 @@ internal class SpriteVertexEditService
             _screenVertices[3] = new Vector2(_vertices[3].X, _vertices[3].Y);
         }
 
-        var aabb = new DX.RectangleF
+        DX.RectangleF aabb = new()
         {
             Left = float.MaxValue,
             Top = float.MaxValue,
@@ -535,7 +535,7 @@ internal class SpriteVertexEditService
 
         if ((args.MouseButtons == MouseButtons.Left) && (_activeHandleIndex != -1) && (_activeHandleIndex != 4) && (!IsDragging))
         {
-            var delta = new Vector2(_localStartDrag.X - args.CameraSpacePosition.X, _localStartDrag.Y - args.CameraSpacePosition.Y);
+            Vector2 delta = new(_localStartDrag.X - args.CameraSpacePosition.X, _localStartDrag.Y - args.CameraSpacePosition.Y);
             ref Vector2 vertexPosition = ref _vertices[SelectedVertexIndex];
             vertexPosition = new Vector2(vertexPosition.X + delta.X, vertexPosition.Y + delta.Y);
             _localStartDrag = args.CameraSpacePosition;
@@ -707,7 +707,7 @@ internal class SpriteVertexEditService
     {
         _renderer = renderer;
 
-        var builder = new Gorgon2DBatchStateBuilder();
+        Gorgon2DBatchStateBuilder builder = new();
         _invertedState = builder.BlendState(GorgonBlendState.Inverted)
                                 .Build();
 

@@ -333,7 +333,7 @@ public sealed class GorgonCodecDds
             return DdsConversionFlags.RGB8332;
         }
 
-#pragma warning disable IDE0046 // Convert to conditional expression
+
         if ((flags & DdsConversionFlags.A4L4) == DdsConversionFlags.A4L4)
         {
             return DdsConversionFlags.A4L4;
@@ -342,7 +342,7 @@ public sealed class GorgonCodecDds
         return (flags & DdsConversionFlags.RGB4444) == DdsConversionFlags.RGB4444
                    ? DdsConversionFlags.RGB4444
                    : DdsConversionFlags.None;
-#pragma warning restore IDE0046 // Convert to conditional expression
+
     }
 
     /// <summary>
@@ -556,7 +556,7 @@ public sealed class GorgonCodecDds
             }
         }
 
-        var formatInfo = new GorgonFormatInfo(format);
+        GorgonFormatInfo formatInfo = new(format);
 
         if ((formatInfo.IsCompressed)
             && (((header.Width % 4) != 0) || ((header.Height % 4) != 0)))
@@ -818,9 +818,9 @@ public sealed class GorgonCodecDds
     /// <param name="flags">Legacy file format flags.</param>
     private void WriteHeader(IGorgonImageInfo settings, GorgonBinaryWriter writer, DdsLegacyFlags flags)
     {
-        var header = new DdsHeader();
+        DdsHeader header = new();
         DdsPixelFormat? format = null;
-        var formatInfo = new GorgonFormatInfo(settings.Format);
+        GorgonFormatInfo formatInfo = new(settings.Format);
 
         if ((settings.ArrayCount > 1) && ((settings.ArrayCount != 6) || (settings.ImageType != ImageDataType.Image2D) || (settings.ImageType != ImageDataType.ImageCube)))
         {
@@ -1064,7 +1064,7 @@ public sealed class GorgonCodecDds
     /// <param name="palette">Palette used in indexed conversion.</param>
     private void CopyImageData(GorgonBinaryReader reader, GorgonImage image, PitchFlags pitchFlags, DdsConversionFlags conversionFlags, uint[] palette)
     {
-        var formatInfo = new GorgonFormatInfo(image.Format);
+        GorgonFormatInfo formatInfo = new(image.Format);
 
         // Get copy flag bits per pixel if we have an expansion.
         if ((conversionFlags & DdsConversionFlags.Expand) == DdsConversionFlags.Expand)
@@ -1218,12 +1218,12 @@ public sealed class GorgonCodecDds
             throw new EndOfStreamException();
         }
 
-        var reader = new GorgonBinaryReader(stream, true);
+        GorgonBinaryReader reader = new(stream, true);
 
         // Read the header information.
         GorgonImageInfo settings = ReadHeader(reader, size, DecodingOptions?.LegacyFormatConversionFlags ?? DdsLegacyFlags.None, out DdsConversionFlags flags);
 
-        var imageData = new GorgonImage(settings);
+        GorgonImage imageData = new(settings);
 
         try
         {
@@ -1322,7 +1322,7 @@ public sealed class GorgonCodecDds
         }
 
         // Use a binary writer.
-        using var writer = new GorgonBinaryWriter(stream, true);
+        using GorgonBinaryWriter writer = new(stream, true);
         // Write the header for the file.
         WriteHeader(imageData, writer, DdsLegacyFlags.None);
 

@@ -203,7 +203,7 @@ internal partial class FontGradientBrushView
 
         Color outlineColor = ViewModel.SelectedNode == handle ? Color.Blue : Color.Black;
 
-        using var pen = new Pen(outlineColor);
+        using Pen pen = new(outlineColor);
         if (isInteractive)
         {
             g.DrawPolygon(pen, _trianglePoints);
@@ -230,7 +230,7 @@ internal partial class FontGradientBrushView
             return;
         }
 
-        using (var g = System.Drawing.Graphics.FromImage(_controlPanelImage))
+        using (System.Drawing.Graphics g = System.Drawing.Graphics.FromImage(_controlPanelImage))
         {
             g.Clear(PanelGradControls.BackColor);
 
@@ -274,9 +274,9 @@ internal partial class FontGradientBrushView
             return;
         }
 
-        var region = new Rectangle(0, 0, _gradDisplayImage.Width, _gradDisplayImage.Height);
+        Rectangle region = new(0, 0, _gradDisplayImage.Width, _gradDisplayImage.Height);
 
-        using (var gradLayer = System.Drawing.Graphics.FromImage(_gradientImage))
+        using (System.Drawing.Graphics gradLayer = System.Drawing.Graphics.FromImage(_gradientImage))
         {
             using Brush brush = UpdateBrush(PanelGradientDisplay.ClientRectangle, false);
 
@@ -294,7 +294,7 @@ internal partial class FontGradientBrushView
             }
         }
 
-        using (var g = System.Drawing.Graphics.FromImage(_gradDisplayImage))
+        using (System.Drawing.Graphics g = System.Drawing.Graphics.FromImage(_gradDisplayImage))
         {
             g.InterpolationMode = InterpolationMode.High;
             g.CompositingMode = CompositingMode.SourceOver;
@@ -339,7 +339,7 @@ internal partial class FontGradientBrushView
 
         Rectangle region = new(0, 0, _gradPreviewImage.Width, _gradPreviewImage.Height);
 
-        using (var g = System.Drawing.Graphics.FromImage(_gradPreviewImage))
+        using (System.Drawing.Graphics g = System.Drawing.Graphics.FromImage(_gradPreviewImage))
         {
             using Brush backBrush = new TextureBrush(Resources.Transparency_Pattern, WrapMode.Tile);
             using Brush brush = UpdateBrush(PanelPreview.ClientRectangle, true);
@@ -552,7 +552,7 @@ internal partial class FontGradientBrushView
         {
             float horizontalPosition = (region.Width - 1) * node.Weight;
 
-            var hitBox = new RectangleF(horizontalPosition - 8, 0, 16, region.Height);
+            RectangleF hitBox = new(horizontalPosition - 8, 0, 16, region.Height);
 
             return hitBox.Contains(mouseCursor);
         }
@@ -703,7 +703,7 @@ internal partial class FontGradientBrushView
             return null;
         }
 
-        var linearBrush = new LinearGradientBrush(destRect,
+        LinearGradientBrush linearBrush = new(destRect,
                                                   ViewModel.Nodes[0].Color,
                                                   ViewModel.Nodes[^1].Color,
                                                   rotate ? ViewModel.Angle : 0,
@@ -713,7 +713,7 @@ internal partial class FontGradientBrushView
             WrapMode = WrapMode.Tile
         };
 
-        var interpColors = new ColorBlend(ViewModel.Nodes.Count);
+        ColorBlend interpColors = new(ViewModel.Nodes.Count);
 
         int counter = 0;
         foreach (WeightHandle handle in ViewModel.Nodes)

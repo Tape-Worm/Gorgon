@@ -206,7 +206,7 @@ public sealed class GorgonRenderTarget3DView
     {
         Graphics.Log.Print($"Render Target 3D View '{Texture.Name}': Creating D3D11 render target view.", LoggingLevel.Simple);
 
-        var desc = new D3D11.RenderTargetViewDescription1
+        D3D11.RenderTargetViewDescription1 desc = new()
         {
             Format = (DXGI.Format)Format,
             Dimension = D3D11.RenderTargetViewDimension.Texture3D,
@@ -338,14 +338,14 @@ public sealed class GorgonRenderTarget3DView
             binding |= TextureBinding.ReadWriteView;
         }
 
-        var newInfo = new GorgonTexture3DInfo(info)
+        GorgonTexture3DInfo newInfo = new(info)
         {
             // Can't see a reason to use anything other than default for rtvs
             Usage = ResourceUsage.Default,
             Binding = binding
         };
 
-        var texture = new GorgonTexture3D(graphics, newInfo);
+        GorgonTexture3D texture = new(graphics, newInfo);
         GorgonRenderTarget3DView result = texture.GetRenderTargetView();
         result.OwnsResource = true;
 

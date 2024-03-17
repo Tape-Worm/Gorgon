@@ -178,7 +178,7 @@ public sealed class GorgonIndexBuffer
             bindFlags |= D3D11.BindFlags.UnorderedAccess;
         }
 
-        var desc = new D3D11.BufferDescription
+        D3D11.BufferDescription desc = new()
         {
             SizeInBytes = SizeInBytes,
             Usage = (D3D11.ResourceUsage)_info.Usage,
@@ -204,7 +204,7 @@ public sealed class GorgonIndexBuffer
     /// <returns>The staging buffer to retrieve.</returns>
     public GorgonIndexBuffer GetStaging()
     {
-        var buffer = new GorgonIndexBuffer(Graphics,
+        GorgonIndexBuffer buffer = new(Graphics,
                                                          new GorgonIndexBufferInfo(_info)
                                                          {
                                                              Name = $"{Name} Staging",
@@ -268,7 +268,7 @@ public sealed class GorgonIndexBuffer
         }
 
         // Ensure the size of the data type fits the requested format.
-        var info = new GorgonFormatInfo(format);
+        GorgonFormatInfo info = new(format);
 
         int totalElementCount = GetTotalElementCount(info);
 
@@ -281,7 +281,7 @@ public sealed class GorgonIndexBuffer
 
         elementCount = elementCount.Min(totalElementCount - startElement).Max(1);
 
-        var key = new BufferShaderViewKey(startElement, elementCount, format);
+        BufferShaderViewKey key = new(startElement, elementCount, format);
         GorgonIndexBufferReadWriteView result = GetReadWriteView<GorgonIndexBufferReadWriteView>(key);
 
         if (result is not null)

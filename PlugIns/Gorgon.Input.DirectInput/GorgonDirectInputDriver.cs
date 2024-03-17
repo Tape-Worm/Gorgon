@@ -100,9 +100,9 @@ internal sealed class GorgonDirectInputDriver
 
         DirectInputDeviceInfo CreateDeviceInfo(DI.DeviceInstance device)
         {
-            var info = new DirectInputDeviceInfo(device);
+            DirectInputDeviceInfo info = new(device);
 
-            using (var joystick = new DI.Joystick(_directInput.Value, info.DeviceID))
+            using (DI.Joystick joystick = new(_directInput.Value, info.DeviceID))
             {
                 _axisMappings[info] = info.GetDeviceCaps(joystick);
 

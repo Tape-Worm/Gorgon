@@ -294,7 +294,7 @@ public partial class ContentBaseControl
     private async void ButtonClose_Click(object sender, EventArgs e)
     {
         EventHandler handler = null;
-        var args = new CloseContentArgs(true);
+        CloseContentArgs args = new(true);
 
         if ((_dataContext?.CloseContentCommand is not null) && (_dataContext.CloseContentCommand.CanExecute(args)))
         {
@@ -758,7 +758,7 @@ public partial class ContentBaseControl
     protected T GetRegisteredPanel<T>(string id)
         where T : Control
     {
-#pragma warning disable IDE0046 // Convert to conditional expression
+
         if (id is null)
         {
             throw new ArgumentNullException(nameof(id));
@@ -770,7 +770,7 @@ public partial class ContentBaseControl
         }
 
         return (!_panelViews.TryGetValue(id, out Control result)) ? null : (T)result;
-#pragma warning restore IDE0046 // Convert to conditional expression
+
     }
 
     /// <summary>

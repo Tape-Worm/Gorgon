@@ -109,7 +109,7 @@ internal class RawInputMessageFilter
     /// <param name="rawData">Raw input data to translate.</param>
     private static void Dispatch(IGorgonRawInputDeviceData<GorgonRawHIDData> device, ref RAWINPUTHID rawData)
     {
-        var data = new GorgonRawHIDData(new GorgonPtr<byte>(rawData.Data, rawData.Size * rawData.Count), rawData.Size);
+        GorgonRawHIDData data = new(new GorgonPtr<byte>(rawData.Data, rawData.Size * rawData.Count), rawData.Size);
         device.ProcessData(in data);
     }
 
@@ -178,7 +178,7 @@ internal class RawInputMessageFilter
             state = MouseButtonState.Button5Up;
         }
 
-        var data = new GorgonRawMouseData(new DX.Point(rawData.LastX, rawData.LastY),
+        GorgonRawMouseData data = new(new DX.Point(rawData.LastX, rawData.LastY),
                                           wheelDelta,
                                           state,
                                           ((rawData.Flags & RawMouseFlags.MoveAbsolute) != RawMouseFlags.MoveAbsolute));
@@ -216,7 +216,7 @@ internal class RawInputMessageFilter
             flags |= rawData.MakeCode == 0x36 ? KeyboardDataFlags.RightKey : KeyboardDataFlags.LeftKey;
         }
 
-        var data = new GorgonRawKeyboardData(rawData.MakeCode, flags, (Keys)rawData.VirtualKey);
+        GorgonRawKeyboardData data = new(rawData.MakeCode, flags, (Keys)rawData.VirtualKey);
 
         device.ProcessData(in data);
     }
@@ -248,7 +248,7 @@ internal class RawInputMessageFilter
 
         RAWINPUT _rawInput = default;
         RawInputApi.GetRawInputData(m.LParam, ref _rawInput);
-        var key = new DeviceKey
+        DeviceKey key = new()
         {
             DeviceType = _rawInput.Header.Type,
             DeviceHandle = IntPtr.Zero

@@ -426,7 +426,7 @@ internal class ImagePicker
                            .EndUpdate();
             }
 
-            var newSize = new DX.Size2(MipWidth, MipHeight);
+            DX.Size2 newSize = new(MipWidth, MipHeight);
 
             NotifyPropertyChanging(nameof(ImageData));
 

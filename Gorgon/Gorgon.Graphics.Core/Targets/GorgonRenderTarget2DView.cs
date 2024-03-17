@@ -523,13 +523,13 @@ public sealed class GorgonRenderTarget2DView
             binding |= TextureBinding.ReadWriteView;
         }
 
-        var newInfo = new GorgonTexture2DInfo(info)
+        GorgonTexture2DInfo newInfo = new(info)
         {
             Usage = ResourceUsage.Default,
             Binding = binding
         };
 
-        var texture = new GorgonTexture2D(graphics, newInfo);
+        GorgonTexture2D texture = new(graphics, newInfo);
         GorgonRenderTarget2DView result = texture.GetRenderTargetView(arrayIndex: arrayIndex, arrayCount: arrayCount ?? 1);
         result.OwnsResource = true;
 
@@ -570,7 +570,7 @@ public sealed class GorgonRenderTarget2DView
             throw new ArgumentNullException(nameof(surface));
         }
 
-        var texture = new GorgonTexture2D(graphics, surface);
+        GorgonTexture2D texture = new(graphics, surface);
         texture.D3DResource.DebugName = name ?? $"WPF_Render_Target_{Guid.NewGuid():N}";
         GorgonRenderTarget2DView result = texture.GetRenderTargetView(0, 1);
         result.OwnsResource = true;

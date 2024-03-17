@@ -95,7 +95,7 @@ internal class ImportImageDialogService(ISettings settings, ICodecRegistry codec
     /// </summary>
     private void ConfigureDialog()
     {
-        var fileFilter = new StringBuilder();
+        StringBuilder fileFilter = new();
         foreach (IGorgonImageCodec codec in _codecs.Codecs)
         {
             IEnumerable<string> extensions = codec.CodecCommonExtensions.Distinct(StringComparer.CurrentCultureIgnoreCase).Select(item => $"*.{item}");
@@ -132,7 +132,7 @@ internal class ImportImageDialogService(ISettings settings, ICodecRegistry codec
             return null;
         }
 
-        var extension = new GorgonFileExtension(Path.GetExtension(filePath));
+        GorgonFileExtension extension = new(Path.GetExtension(filePath));
 
         SelectedCodec = null;
 

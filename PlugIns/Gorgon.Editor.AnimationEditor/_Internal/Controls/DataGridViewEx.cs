@@ -178,8 +178,8 @@ internal class DataGridViewEx
         {
             _passThruEventArgs = e;
             float dpiScale = DeviceDpi / 96.0f;
-            var dragSize = new Size((int)(SystemInformation.DragSize.Width * dpiScale).FastCeiling() * 2, (int)(SystemInformation.DragSize.Height * dpiScale).FastCeiling() * 2);
-            var dragLocation = new Point((int)(e.Location.X - dragSize.Width / 2.0f).FastFloor(), (int)(e.Location.Y - dragSize.Height / 2.0f).FastFloor());
+            Size dragSize = new((int)(SystemInformation.DragSize.Width * dpiScale).FastCeiling() * 2, (int)(SystemInformation.DragSize.Height * dpiScale).FastCeiling() * 2);
+            Point dragLocation = new((int)(e.Location.X - dragSize.Width / 2.0f).FastFloor(), (int)(e.Location.Y - dragSize.Height / 2.0f).FastFloor());
             _dragRegion = new Rectangle(dragLocation, dragSize);
             return;
         }
@@ -235,7 +235,7 @@ internal class DataGridViewEx
         }
 
         SizeF textSize = e.Graphics.MeasureString(NoDataMessage, Font, new SizeF(ClientSize.Width, ClientSize.Height));
-        var pos = new PointF(ClientSize.Width * 0.5f - textSize.Width * 0.5f, ClientSize.Height * 0.5f - textSize.Height * 0.5f);
+        PointF pos = new(ClientSize.Width * 0.5f - textSize.Width * 0.5f, ClientSize.Height * 0.5f - textSize.Height * 0.5f);
         using Brush brush = new SolidBrush(ForeColor);
         e.Graphics.DrawString(NoDataMessage, Font, brush, pos);
     }

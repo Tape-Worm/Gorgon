@@ -38,7 +38,7 @@ public class Aes256Encryption
         }
 
         using MemoryStream stream = _streamManager.GetStream(keyData);
-        using var reader = new BinaryReader(stream, Encoding.Default, false);
+        using BinaryReader reader = new(stream, Encoding.Default, false);
         int ivLength = reader.ReadInt32();
         int keyLength = reader.ReadInt32();
 
@@ -74,10 +74,10 @@ public class Aes256Encryption
             return [];
         }
 
-        using var aes = Aes.Create();
+        using Aes aes = Aes.Create();
         using ICryptoTransform transform = aes.CreateDecryptor(_ivKey.Key, _ivKey.IV);
         using RecyclableMemoryStream stream = _streamManager.GetStream();
-        using var writer = new CryptoStream(stream, transform, CryptoStreamMode.Write);
+        using CryptoStream writer = new(stream, transform, CryptoStreamMode.Write);
         writer.Write(data, 0, data.Length);
 
         if (!writer.HasFlushedFinalBlock)
@@ -106,10 +106,10 @@ public class Aes256Encryption
             return [];
         }
 
-        using var aes = Aes.Create();
+        using Aes aes = Aes.Create();
         using ICryptoTransform transform = aes.CreateEncryptor(_ivKey.Key, _ivKey.IV);
         using RecyclableMemoryStream stream = _streamManager.GetStream();
-        using var writer = new CryptoStream(stream, transform, CryptoStreamMode.Write);
+        using CryptoStream writer = new(stream, transform, CryptoStreamMode.Write);
         writer.Write(data, 0, data.Length);
         writer.FlushFinalBlock();
 
@@ -197,15 +197,15 @@ public class Aes256Encryption
     /// </remarks>
     public static (byte[] IV, byte[] Key) GenerateIvKey(string password, byte[] salt = null)
     {
-        using var rndGen = RandomNumberGenerator.Create();
+        using RandomNumberGenerator rndGen = RandomNumberGenerator.Create();
         if (salt is null)
         {
             salt = new byte[32];
             rndGen.GetBytes(salt);
         }
 
-        using var aes = Aes.Create();
-        using var hashGen = new Rfc2898DeriveBytes(password, salt, 100, HashAlgorithmName.SHA3_256);
+        using Aes aes = Aes.Create();
+        using Rfc2898DeriveBytes hashGen = new(password, salt, 100, HashAlgorithmName.SHA3_256);
         return (hashGen.GetBytes(aes.BlockSize / 8), hashGen.GetBytes(aes.KeySize / 8));
     }
 

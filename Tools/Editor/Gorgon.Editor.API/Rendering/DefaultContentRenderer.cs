@@ -438,7 +438,7 @@ public class DefaultContentRenderer<T>
     /// <param name="e">The mouse event parameters.</param>
     private void GetMouseArgs(MouseEventArgs e)
     {
-        var cameraMousePos = new Vector3(e.X, e.Y, 0);
+        Vector3 cameraMousePos = new(e.X, e.Y, 0);
 
         if (Camera is not null)
         {
@@ -515,7 +515,7 @@ public class DefaultContentRenderer<T>
 
         int regionWidth = (int)(RenderRegion.Width * 0.5f);
         int regionHeight = (int)(RenderRegion.Height * 0.5f);
-        var newOffset = new Vector2(_camera.Position.X, _camera.Position.Y);
+        Vector2 newOffset = new(_camera.Position.X, _camera.Position.Y);
         float horzAmount = (RenderRegion.Width * 0.0125f).Max(1);
         float vertAmount = (RenderRegion.Height * 0.0125f).Max(1);
 
@@ -564,13 +564,13 @@ public class DefaultContentRenderer<T>
             return;
         }
 
-        var camPos = new Vector2(_camDragStart.X, _camDragStart.Y);
+        Vector2 camPos = new(_camDragStart.X, _camDragStart.Y);
         Vector2 startDrag = _panDragStart.Value;
         Vector2 endDrag = new Vector2(_mouseArgs.ClientPosition.X, _mouseArgs.ClientPosition.Y) / _camera.Zoom.X;
-        var delta = Vector2.Subtract(startDrag, endDrag);
-        var newOffset = Vector2.Add(camPos, delta);
+        Vector2 delta = Vector2.Subtract(startDrag, endDrag);
+        Vector2 newOffset = Vector2.Add(camPos, delta);
 
-        var halfContentSize = new Vector2(RenderRegion.Width * 0.5f, RenderRegion.Height * 0.5f);
+        Vector2 halfContentSize = new(RenderRegion.Width * 0.5f, RenderRegion.Height * 0.5f);
 
         if ((!CanPanVertically) || (newOffset.Y < -halfContentSize.Y) || (newOffset.Y > halfContentSize.Y))
         {
@@ -660,7 +660,7 @@ public class DefaultContentRenderer<T>
     /// <returns>The scale value needed to fit within the content window.</returns>
     private float ZoomToWindow()
     {
-        var scaling = new Vector2(ClientSize.Width / RenderRegion.Width, ClientSize.Height / RenderRegion.Height);
+        Vector2 scaling = new(ClientSize.Width / RenderRegion.Width, ClientSize.Height / RenderRegion.Height);
 
         return scaling.X.Min(scaling.Y);
     }
@@ -813,7 +813,7 @@ public class DefaultContentRenderer<T>
             region = new DX.RectangleF(region.X, region.Y, 1, 1);
         }
 
-        var scaling = new Vector2(ClientSize.Width / region.Width, ClientSize.Height / region.Height);
+        Vector2 scaling = new(ClientSize.Width / region.Width, ClientSize.Height / region.Height);
         float scaleValue = scaling.X.Min(scaling.Y);
 
         return scaleValue.GetZoomLevel();
@@ -1022,7 +1022,7 @@ public class DefaultContentRenderer<T>
     /// </remarks>
     protected virtual void OnRenderBackground()
     {
-        var textureSize = new DX.RectangleF(0, 0, RenderRegion.Width / BackgroundPattern.Width * _camera.Zoom.X, RenderRegion.Height / BackgroundPattern.Height * _camera.Zoom.X);
+        DX.RectangleF textureSize = new(0, 0, RenderRegion.Width / BackgroundPattern.Width * _camera.Zoom.X, RenderRegion.Height / BackgroundPattern.Height * _camera.Zoom.X);
 
         Renderer.Begin(camera: Camera);
         Renderer.DrawFilledRectangle(new DX.RectangleF(RenderRegion.Width * -0.5f, RenderRegion.Height * -0.5f, RenderRegion.Width, RenderRegion.Height), GorgonColor.White, BackgroundPattern, textureSize);
@@ -1133,7 +1133,7 @@ public class DefaultContentRenderer<T>
 
         int regionWidth = (int)(RenderRegion.Width * zoom);
         int regionHeight = (int)(RenderRegion.Height * zoom);
-        var halfRegion = new Vector2(RenderRegion.Width * 0.5f, RenderRegion.Height * 0.5f);
+        Vector2 halfRegion = new(RenderRegion.Width * 0.5f, RenderRegion.Height * 0.5f);
 
         // If our target size is less than the current view size, then reset the target position to the center of the view.
         if ((!ignoreBoundaries) && (regionWidth <= ClientSize.Width))

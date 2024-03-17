@@ -124,7 +124,7 @@ public partial class GorgonAlignmentPicker
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
     private void Radio_Click(object sender, EventArgs e)
     {
-        var radio = (RadioButton)sender;
+        RadioButton radio = (RadioButton)sender;
         _alignment = (Alignment)radio.Tag;
 
         EventHandler handler = AlignmentChanged;

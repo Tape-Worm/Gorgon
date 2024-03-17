@@ -92,7 +92,7 @@ internal static partial class Win32API
                 continue;
             }
 
-            var range = new GorgonRange<int>(int.Parse(items[0][..items[0].IndexOf('.')], NumberStyles.HexNumber),
+            GorgonRange<int> range = new(int.Parse(items[0][..items[0].IndexOf('.')], NumberStyles.HexNumber),
                                         int.Parse(items[0][(items[0].LastIndexOf('.') + 1)..], NumberStyles.HexNumber));
 
             // Combine the first 2 latin categories into the one category.
@@ -187,7 +187,7 @@ internal static partial class Win32API
 
 
 
-            var value = new GorgonRange<int>(min, max + min - 1);
+            GorgonRange<int> value = new(min, max + min - 1);
 
             KeyValuePair<string, GorgonRange<int>> rangeName = (from unicodeRange in _ranges
                                                                 where unicodeRange.Value.Contains(value.Minimum) && unicodeRange.Value.Contains(value.Maximum)

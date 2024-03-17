@@ -121,8 +121,8 @@ internal class EditorFileSaveDialogService(EditorSettings settings, FileSystemPr
     /// <returns>The string containing the file dialog filter.</returns>
     private string GetWriterDialogFilterString(IReadOnlyList<(string desc, FileWriterPlugIn writer, IReadOnlyList<GorgonFileExtension> extensions)> extensions)
     {
-        var result = new StringBuilder();
-        var filter = new StringBuilder();
+        StringBuilder result = new();
+        StringBuilder filter = new();
 
         foreach ((string desc, FileWriterPlugIn _, IReadOnlyList<GorgonFileExtension> extensions) item in extensions)
         {
@@ -195,7 +195,7 @@ internal class EditorFileSaveDialogService(EditorSettings settings, FileSystemPr
         // Locate the previously selected file type by using the extension of the current file path.
         if (!string.IsNullOrWhiteSpace(InitialFilePath))
         {
-            var currentExtension = new GorgonFileExtension(Path.GetExtension(InitialFilePath));
+            GorgonFileExtension currentExtension = new(Path.GetExtension(InitialFilePath));
 
             for (int i = 0; i < extensions.Count; ++i)
             {

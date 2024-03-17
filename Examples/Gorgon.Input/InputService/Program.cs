@@ -82,7 +82,7 @@ internal static class Program
         _pluginCache = new GorgonMefPlugInCache(GorgonApplication.Log);
 
         // Create our input service factory.
-        var factory = new GorgonGamingDeviceDriverFactory(_pluginCache, GorgonApplication.Log);
+        GorgonGamingDeviceDriverFactory factory = new(_pluginCache, GorgonApplication.Log);
 
         // Retrieve the list of driver plug ins from the input service factory.
         return factory.LoadAllDrivers(Path.Combine(GorgonExample.GetPlugInPath().FullName, "Gorgon.Input.*.dll"));

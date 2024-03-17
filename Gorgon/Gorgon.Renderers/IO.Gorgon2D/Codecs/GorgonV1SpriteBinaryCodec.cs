@@ -110,7 +110,7 @@ public class GorgonV1SpriteBinaryCodec(Gorgon2D renderer)
     /// <returns>The sampler state.</returns>
     private static GorgonSamplerState CreateSamplerState(GorgonGraphics graphics, SampleFilter filter, GorgonColor borderColor, TextureWrap hWrap, TextureWrap vWrap)
     {
-        var builder = new GorgonSamplerStateBuilder(graphics);
+        GorgonSamplerStateBuilder builder = new(graphics);
 
         return filter switch
         {
@@ -143,7 +143,7 @@ public class GorgonV1SpriteBinaryCodec(Gorgon2D renderer)
             throw new GorgonException(GorgonResult.CannotRead, Resources.GOR2DIO_ERR_INVALID_HEADER);
         }
 
-        var sprite = new GorgonSprite();
+        GorgonSprite sprite = new();
         Version version = headerVersion.ToUpperInvariant() switch
         {
             "GORSPR1" => new Version(1, 0),
@@ -209,7 +209,7 @@ public class GorgonV1SpriteBinaryCodec(Gorgon2D renderer)
         // that the texture was loaded safely, so we'll have to defer it until later.
         // Also, older versions used the size the determine the area on the texture to cover.  So use the size to
         // get the texture bounds.
-        var textureOffset = new Vector2(reader.ReadSingle(), reader.ReadSingle());
+        Vector2 textureOffset = new(reader.ReadSingle(), reader.ReadSingle());
 
         // Read the anchor.
         // Gorgon v3 anchors are relative, so we need to convert them based on our sprite size.
@@ -402,7 +402,7 @@ public class GorgonV1SpriteBinaryCodec(Gorgon2D renderer)
     /// <returns><b>true</b> if the data can be read, or <b>false</b> if not.</returns>
     protected override bool OnIsReadable(Stream stream)
     {
-        using var reader = new GorgonBinaryReader(stream, true);
+        using GorgonBinaryReader reader = new(stream, true);
         // If we don't have at least 10 bytes, then this file is not valid.
         if ((stream.Length - stream.Position) < 16)
         {
@@ -432,7 +432,7 @@ public class GorgonV1SpriteBinaryCodec(Gorgon2D renderer)
     /// <returns>The name of the texture associated with the sprite, or <b>null</b> if no texture was found.</returns>
     protected override string OnGetAssociatedTextureName(Stream stream)
     {
-        using var reader = new GorgonBinaryReader(stream, true);
+        using GorgonBinaryReader reader = new(stream, true);
         string headerVersion = reader.ReadString();
         if ((!headerVersion.StartsWith("GORSPR", StringComparison.OrdinalIgnoreCase))
             || (headerVersion.Length < 7)
@@ -474,7 +474,7 @@ public class GorgonV1SpriteBinaryCodec(Gorgon2D renderer)
     /// <returns>A new <see cref="GorgonSprite"/>.</returns>
     protected override GorgonSprite OnReadFromStream(Stream stream, int byteCount, GorgonTexture2DView overrideTexture)
     {
-        using var reader = new GorgonBinaryReader(stream, true);
+        using GorgonBinaryReader reader = new(stream, true);
         // We don't need the byte count here.
         return LoadSprite(Graphics, reader, overrideTexture);
     }

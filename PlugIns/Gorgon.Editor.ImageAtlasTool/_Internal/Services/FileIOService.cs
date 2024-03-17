@@ -62,7 +62,7 @@ internal class FileIOService(IContentFileManager fileSystem, IGorgonImageCodec i
     public Task<IReadOnlyDictionary<IContentFile, IGorgonImage>> LoadImagesAsync(IEnumerable<IContentFile> files, Action<string> progress, CancellationToken cancelToken) =>
         Task.Run(() =>
         {
-            var result = new Dictionary<IContentFile, IGorgonImage>();
+            Dictionary<IContentFile, IGorgonImage> result = [];
             Stream stream = null;
 
             try

@@ -289,7 +289,7 @@ public sealed class GorgonNativeBuffer<T>
         ValidateArrayParams(array, index, count.Value);
 
         int typeSize = Unsafe.SizeOf<T>();
-        var handle = GCHandle.Alloc(array, GCHandleType.Pinned);
+        GCHandle handle = GCHandle.Alloc(array, GCHandleType.Pinned);
 
         return new GorgonNativeBuffer<T>(handle, index * typeSize, count.Value * typeSize);
     }
@@ -313,7 +313,7 @@ public sealed class GorgonNativeBuffer<T>
     public static GorgonNativeBuffer<byte> PinAsByteBuffer(ref T valueType)
     {
         int srcSize = Unsafe.SizeOf<T>();
-        var handle = GCHandle.Alloc(valueType, GCHandleType.Pinned);
+        GCHandle handle = GCHandle.Alloc(valueType, GCHandleType.Pinned);
 
         return new GorgonNativeBuffer<byte>(handle, 0, srcSize);
     }

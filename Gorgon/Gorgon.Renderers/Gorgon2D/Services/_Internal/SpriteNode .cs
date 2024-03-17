@@ -121,7 +121,7 @@ internal class SpriteNode(SpriteNode parentNode)
         Right = new SpriteNode(this);
 
         // Subdivide.
-        var delta = new DX.Size2(Region.Width - dimensions.Width, Region.Height - dimensions.Height);
+        DX.Size2 delta = new(Region.Width - dimensions.Width, Region.Height - dimensions.Height);
 
         if (delta.Height <= 0) //(delta.Width > delta.Height)
         {

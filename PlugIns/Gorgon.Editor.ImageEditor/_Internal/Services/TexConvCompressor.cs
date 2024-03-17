@@ -128,7 +128,7 @@ internal class TexConvCompressor(FileInfo texConvFile, IGorgonFileSystemWriter<S
         Process texConvProcess = null;
         IGorgonVirtualFile encodedFile = null;
 
-        var info = new ProcessStartInfo
+        ProcessStartInfo info = new()
         {
             Arguments = $"-f {format.ToString().ToUpper()} -y -m {mipCount} -fl 12.0 -ft DDS -o \"{directory}\" -nologo \"{imageFile.PhysicalFile.FullPath}\"",
             ErrorDialog = true,
@@ -195,7 +195,7 @@ internal class TexConvCompressor(FileInfo texConvFile, IGorgonFileSystemWriter<S
         Stream inStream = null;
         IGorgonVirtualFile decodedFile = null;
 
-        var info = new ProcessStartInfo
+        ProcessStartInfo info = new()
         {
             Arguments = $"-f {_d3dFormats[metadata.Format]} -y -m {metadata.MipCount} -fl 12.0 -ft DDS -o \"{directory}\" -nologo -px decoded \"{imageFile.PhysicalFile.FullPath}\"",
             ErrorDialog = true,

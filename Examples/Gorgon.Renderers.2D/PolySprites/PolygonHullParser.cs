@@ -82,7 +82,7 @@ public static class PolygonHullParser
     /// <returns>The polygon sprite from the polygon hull data.</returns>
     public static GorgonPolySprite ParsePolygonHullString(Gorgon2D renderer, string polygonHull)
     {
-        var builder = new GorgonPolySpriteBuilder(renderer);
+        GorgonPolySpriteBuilder builder = new(renderer);
 
         ParseString(polygonHull, builder);
 

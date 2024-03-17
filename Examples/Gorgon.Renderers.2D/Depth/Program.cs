@@ -241,7 +241,7 @@ static class Program
     /// <param name="sprites">The list of sprites loaded from the file system.</param>
     private static void BuildAnimations(IReadOnlyDictionary<string, GorgonSprite> sprites)
     {
-        var animBuilder = new GorgonAnimationBuilder();
+        GorgonAnimationBuilder animBuilder = new();
 
         // Extract the sprites that have the animation frames.
         // We'll use the name of the sprite to determine the type of animation and ordering.
@@ -254,7 +254,7 @@ static class Program
                                                        .Where(item => item.Key.StartsWith("Guy_Turn_", StringComparison.OrdinalIgnoreCase))
                                                        .Select(item => item.Value);
 
-        var walkLeftFrames = sprites.OrderBy(item => item.Key)
+        List<GorgonSprite> walkLeftFrames = sprites.OrderBy(item => item.Key)
                                                             .Where(item => item.Key.StartsWith("Guy_Left_", StringComparison.OrdinalIgnoreCase))
                                                             .Select(item => item.Value)
                                                             .ToList();
@@ -394,7 +394,7 @@ static class Program
         IGorgonContentLoader loader = fileSystem.CreateContentLoader(_renderer, _textureCache);
 
         // Load our sprite data (any associated textures will be loaded as well).
-        var sprites = new Dictionary<string, GorgonSprite>(StringComparer.OrdinalIgnoreCase);
+        Dictionary<string, GorgonSprite> sprites = new(StringComparer.OrdinalIgnoreCase);
 
         for (int i = 0; i < spriteFiles.Length; i++)
         {

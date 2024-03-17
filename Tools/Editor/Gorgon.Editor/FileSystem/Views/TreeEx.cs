@@ -269,7 +269,7 @@ internal class TreeEx
 
         if (!cancel)
         {
-            var args = new NodeLabelEditEventArgs(node, _renameBox.Text);
+            NodeLabelEditEventArgs args = new(node, _renameBox.Text);
             OnAfterLabelEdit(args);
 
             if (!args.CancelEdit)
@@ -356,7 +356,7 @@ internal class TreeEx
             if ((keyData == Keys.F2) && (SelectedNode is not null))
             {
                 TreeNode node = SelectedNode;
-                var args = new NodeLabelEditEventArgs(node);
+                NodeLabelEditEventArgs args = new(node);
                 OnBeforeLabelEdit(args);
 
                 if (args.CancelEdit)
@@ -474,21 +474,21 @@ internal class TreeEx
                 cb = cb * 0.5f + (e.Node.BackColor.B / 255.0f) * 0.5f;
             }
 
-            var combined = Color.FromArgb((int)(cr * 255), (int)(cg * 255), (int)(cb * 255));
+            Color combined = Color.FromArgb((int)(cr * 255), (int)(cg * 255), (int)(cb * 255));
 
             if (Focused)
             {
-                using var brush = new SolidBrush(combined);
+                using SolidBrush brush = new(combined);
                 e.Graphics.FillRectangle(brush, e.Bounds);
             }
             else
             {
-                using var pen = new Pen(SelectedNodeBackColor);
-                var r = new Rectangle(e.Bounds.X, e.Bounds.Y, e.Bounds.Width - 1, e.Bounds.Height);
+                using Pen pen = new(SelectedNodeBackColor);
+                Rectangle r = new(e.Bounds.X, e.Bounds.Y, e.Bounds.Width - 1, e.Bounds.Height);
 
                 if (e.Node.BackColor != Color.Empty)
                 {
-                    using var brush = new SolidBrush(combined);
+                    using SolidBrush brush = new(combined);
                     e.Graphics.FillRectangle(brush, r);
                 }
 
@@ -512,7 +512,7 @@ internal class TreeEx
         }
         else
         {
-            using var brush = new SolidBrush(e.Node.BackColor);
+            using SolidBrush brush = new(e.Node.BackColor);
             e.Graphics.FillRectangle(brush, e.Bounds);
         }
 

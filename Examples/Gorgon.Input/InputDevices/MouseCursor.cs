@@ -124,7 +124,7 @@ internal class MouseCursor
     /// <param name="e">The <see cref="EventArgs" /> instance containing the event data.</param>
     private void DisplayControl_Resize(object sender, EventArgs e)
     {
-        var displayControl = (Control)sender;
+        Control displayControl = (Control)sender;
         System.Windows.Forms.Form ownerForm = displayControl.FindForm();
 
         CleanUp();

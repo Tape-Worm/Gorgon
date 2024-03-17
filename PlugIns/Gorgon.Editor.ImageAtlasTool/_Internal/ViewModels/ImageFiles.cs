@@ -167,7 +167,7 @@ internal class ImageFiles
     /// <param name="e">The <see cref="PropertyChangedEventArgs"/> instance containing the event data.</param>
     private void File_PropertyChanged(object sender, PropertyChangedEventArgs e)
     {
-        var entry = (ContentFileExplorerFileEntry)sender;
+        ContentFileExplorerFileEntry entry = (ContentFileExplorerFileEntry)sender;
 
         switch (e.PropertyName)
         {

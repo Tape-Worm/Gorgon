@@ -309,7 +309,7 @@ public class RectClipperService
             return;
         }
 
-        var half = new Vector3(Bounds.Width * 0.5f, Bounds.Height * 0.5f, 0);
+        Vector3 half = new(Bounds.Width * 0.5f, Bounds.Height * 0.5f, 0);
         Vector3 spriteTopLeft = new Vector3(Rectangle.Left, Rectangle.Top, 0) - half;
         Vector3 spriteBottomRight = new Vector3(Rectangle.Right, Rectangle.Bottom, 0) - half;
         _camera.Unproject(in spriteTopLeft, out Vector3 transformedTopLeft);
@@ -336,7 +336,7 @@ public class RectClipperService
             : DX.RectangleF.Empty;
         _handles[9].Texture = _keyboardIcon.Value;
 
-        var keyBounds = new DX.RectangleF(_screenRect.Left + 8, _screenRect.Top + 8, _keyboardIcon.Value.Width, _keyboardIcon.Value.Height);
+        DX.RectangleF keyBounds = new(_screenRect.Left + 8, _screenRect.Top + 8, _keyboardIcon.Value.Width, _keyboardIcon.Value.Height);
         _handles[9].HandleBounds = (ShowManualInput)
             && ((_handles[8].HandleBounds.IsEmpty) || (!_handles[8].HandleBounds.Intersects(keyBounds)))
             && ((_screenRect.Width >= _keyboardIcon.Value.Width * 2) && (_screenRect.Height >= _keyboardIcon.Value.Height * 2)) ? keyBounds : DX.RectangleF.Empty;
@@ -349,7 +349,7 @@ public class RectClipperService
     /// </summary>
     private void DragHandles()
     {
-        var dragDelta = Vector2.Subtract(_localMousePosition, _startDrag);
+        Vector2 dragDelta = Vector2.Subtract(_localMousePosition, _startDrag);
         dragDelta = dragDelta.Ceiling();
 
         switch (_activeHandleIndex)
@@ -437,7 +437,7 @@ public class RectClipperService
             // Drag body.
             case 8:
                 DX.Size2F size = _clipRect.Size;
-                var moveRect = new DX.RectangleF
+                DX.RectangleF moveRect = new()
                 {
                     Left = _dragRect.Left + dragDelta.X,
                     Top = _dragRect.Top + dragDelta.Y,
@@ -672,7 +672,7 @@ public class RectClipperService
         DragHandles();
 
         DX.RectangleF handleRect = _handles[handle].HandleBounds;
-        var clientPos = new Vector2(handleRect.X + (handleRect.Width * 0.5f), handleRect.Y + (handleRect.Height * 0.5f));
+        Vector2 clientPos = new(handleRect.X + (handleRect.Width * 0.5f), handleRect.Y + (handleRect.Height * 0.5f));
         _mousePosition = clientPos;
 
         return true;
