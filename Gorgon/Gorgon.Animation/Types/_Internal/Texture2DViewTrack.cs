@@ -35,8 +35,13 @@ namespace Gorgon.Animation;
 /// A track that stores 2D texture values to apply to an object in an animation
 /// </summary>
 internal class Texture2DViewTrack
-    : GorgonNamedObject, IGorgonAnimationTrack<GorgonKeyTexture2D>
+    : IGorgonNamedObject, IGorgonAnimationTrack<GorgonKeyTexture2D>
 {
+    /// <inheritdoc/>
+    public string Name
+    {
+        get;
+    }
 
     /// <summary>Property to return the type of key frame data stored in this track.</summary>
     public AnimationTrackKeyType KeyFrameDataType => AnimationTrackKeyType.Texture2D;
@@ -81,8 +86,6 @@ internal class Texture2DViewTrack
         set;
     } = true;
 
-
-
     /// <summary>
     /// Function to retrieve the value at the specified time index.
     /// </summary>
@@ -117,14 +120,14 @@ internal class Texture2DViewTrack
         return new GorgonKeyTexture2D(timeIndex, view, texCoords, arrayIndex);
     }
 
-
-
     /// <summary>
     /// Initializes a new instance of the <see cref="Texture2DViewTrack"/> class.
     /// </summary>
     /// <param name="keyFrames">The list of key frames for the track.</param>
     /// <param name="name">The name of the track.</param>
     internal Texture2DViewTrack(IReadOnlyList<GorgonKeyTexture2D> keyFrames, string name)
-        : base(name) => KeyFrames = keyFrames;
-
+    {
+        Name = name;
+        KeyFrames = keyFrames;
+    }
 }

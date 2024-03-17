@@ -35,15 +35,18 @@ namespace Gorgon.Animation;
 /// A track that stores rectangular bounding values representing object 2D bounds in an animation
 /// </summary>
 internal class RectBoundsTrack
-    : GorgonNamedObject, IGorgonAnimationTrack<GorgonKeyRectangle>
+    : IGorgonNamedObject, IGorgonAnimationTrack<GorgonKeyRectangle>
 {
-
     // The interpolation mode for the track.
     private TrackInterpolationMode _interpolationMode = TrackInterpolationMode.Linear;
     // The spline controller for the track.
     private readonly GorgonCatmullRomSpline _splineController = new();
 
-
+    /// <inheritdoc/>
+    public string Name
+    {
+        get;
+    }
 
     /// <summary>Property to return the type of key frame data stored in this track.</summary>
     public AnimationTrackKeyType KeyFrameDataType => AnimationTrackKeyType.Rectangle;
@@ -93,8 +96,6 @@ internal class RectBoundsTrack
         set;
     } = true;
 
-
-
     /// <summary>
     /// Function to retrieve the value at the specified time index.
     /// </summary>
@@ -129,16 +130,14 @@ internal class RectBoundsTrack
         return new GorgonKeyRectangle(timeIndex, rect);
     }
 
-
-
     /// <summary>
     /// Initializes a new instance of the <see cref="RectBoundsTrack"/> class.
     /// </summary>
     /// <param name="keyFrames">The list of key frames for the track.</param>
     /// <param name="name">The name of the track.</param>
     internal RectBoundsTrack(IReadOnlyList<GorgonKeyRectangle> keyFrames, string name)
-        : base(name)
     {
+        Name = name;
         KeyFrames = keyFrames;
 
         // Build the spline for the track.
@@ -152,5 +151,4 @@ internal class RectBoundsTrack
 
         _splineController.UpdateTangents();
     }
-
 }

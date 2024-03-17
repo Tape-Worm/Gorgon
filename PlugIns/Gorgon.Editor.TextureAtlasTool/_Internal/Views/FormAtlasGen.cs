@@ -42,13 +42,10 @@ namespace Gorgon.Editor.TextureAtlasTool;
 internal partial class FormAtlasGen
     : EditorToolBaseForm, IDataContext<ITextureAtlas>
 {
-
     // The file selector for sprites.
     private FormSpriteSelector _spriteSelector;
     // Flag to indicate that the dialog should close when the file selector closes.
     private bool _closeOnFileSelectionClose = true;
-
-
 
     /// <summary>Property to return the data context assigned to this view.</summary>
     [Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
@@ -67,8 +64,6 @@ internal partial class FormAtlasGen
         get;
         private set;
     }
-
-
 
     /// <summary>
     /// Function to validate the controls on the form.
@@ -477,8 +472,6 @@ internal partial class FormAtlasGen
         AddRenderer(atlasRenderer.Name, atlasRenderer);
         SwitchRenderer(atlasRenderer.Name);
     }
-
-
 
     /// <summary>Initializes a new instance of the <see cref="FormAtlasGen"/> class.</summary>
     public FormAtlasGen() => InitializeComponent();

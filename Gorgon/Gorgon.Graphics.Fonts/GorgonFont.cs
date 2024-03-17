@@ -1,5 +1,4 @@
-﻿
-// 
+﻿// 
 // Gorgon
 // Copyright (C) 2012 Michael Winsor
 // 
@@ -49,13 +48,10 @@ namespace Gorgon.Graphics.Fonts;
 /// </para>
 /// </remarks>
 public sealed class GorgonFont
-    : GorgonNamedObject, IGorgonFontInfo, IDisposable
+    : IGorgonNamedObject, IGorgonFontInfo, IDisposable
 {
-
     // The information used to generate the font.
     private readonly GorgonFontInfo _info;
-
-
 
     /// <summary>
     /// Property to return the factory that registered this font.
@@ -64,6 +60,9 @@ public sealed class GorgonFont
     {
         get;
     }
+
+    /// <inheritdoc/>
+    public string Name => _info.Name;
 
     /// <summary>
     /// Property to return whether there is an outline for this font.
@@ -348,8 +347,6 @@ public sealed class GorgonFont
     /// </para>
     /// </remarks>
     public bool UseKerningPairs => _info.UseKerningPairs;
-
-
 
     /// <summary>
     /// Function to copy bitmap data to a texture.
@@ -850,26 +847,22 @@ public sealed class GorgonFont
         }
     }
 
-
-
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonFont"/> class.
     /// </summary>
-    /// <param name="name">The name of the font.</param>
     /// <param name="factory">The factory that created this font.</param>
     /// <param name="info">The information used to generate the font.</param>
-    internal GorgonFont(string name, GorgonFontFactory factory, IGorgonFontInfo info)
-        : base(name)
+    internal GorgonFont(GorgonFontFactory factory, IGorgonFontInfo info)
     {
         Factory = factory;
         Graphics = Factory.Graphics;
         _info = new GorgonFontInfo(info)
         {
+            Name = info.Name,
             Brush = info.Brush?.Clone()
         };
 
         Glyphs = [];
         KerningPairs = new Dictionary<GorgonKerningPair, int>();
     }
-
 }

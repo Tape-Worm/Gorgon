@@ -395,6 +395,11 @@ public sealed class GorgonFontFactory
             throw new ArgumentNullException(nameof(fontInfo));
         }
 
+        if (string.IsNullOrWhiteSpace(fontInfo.Name))
+        {
+            throw new ArgumentMissingException(nameof(fontInfo.Name), nameof(fontInfo));
+        }
+
         lock (_syncLock)
         {
             // Check the cache for a font with the same name.
@@ -429,7 +434,7 @@ public sealed class GorgonFontFactory
             }
 
             // If not found, then create a new font and cache it.
-            _fontCache[fontInfo.Name] = result = new GorgonFont(fontInfo.Name, this, fontInfo);
+            _fontCache[fontInfo.Name] = result = new GorgonFont(this, fontInfo);
             result.GenerateFont(_externalFonts);
 
             return result;
@@ -504,7 +509,7 @@ public sealed class GorgonFontFactory
         }
 
         // If not found, then create a new font and cache it.
-        _fontCache[fontInfo.Name] = result = new GorgonFont(fontInfo.Name, this, fontInfo);
+        _fontCache[fontInfo.Name] = result = new GorgonFont(this, fontInfo);
         await result.GenerateFontAsync(_externalFonts);
 
         return result;
@@ -540,10 +545,10 @@ public sealed class GorgonFontFactory
         GorgonFont GenerateDefaultFont()
         {
             // Create the default font.
-            var result = new GorgonFont("Gorgon_Font_Default_SegoeUI_9pt",
-                                        this,
+            var result = new GorgonFont(this,
                                         new GorgonFontInfo("Segoe UI", 9, GorgonFontHeightMode.Points)
                                         {
+                                            Name = "Gorgon_Font_Default_SegoeUI_9pt",
                                             AntiAliasingMode = GorgonFontAntiAliasMode.AntiAlias,
                                             FontStyle = GorgonFontStyle.Bold,
                                             OutlineSize = 0

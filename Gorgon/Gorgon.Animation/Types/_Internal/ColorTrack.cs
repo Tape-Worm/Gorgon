@@ -34,15 +34,18 @@ namespace Gorgon.Animation;
 /// A track that stores <see cref="GorgonColor"/> values representing color in an animation
 /// </summary>
 internal class ColorTrack
-    : GorgonNamedObject, IGorgonAnimationTrack<GorgonKeyGorgonColor>
+    : IGorgonNamedObject, IGorgonAnimationTrack<GorgonKeyGorgonColor>
 {
-
     // The interpolation mode for the track.
     private TrackInterpolationMode _interpolationMode = TrackInterpolationMode.Linear;
     // The spline controller for the track.
     private readonly GorgonCatmullRomSpline _splineController = new();
 
-
+    /// <inheritdoc/>
+    public string Name
+    {
+        get;
+    }
 
     /// <summary>Property to return the type of key frame data stored in this track.</summary>
     public AnimationTrackKeyType KeyFrameDataType => AnimationTrackKeyType.Color;
@@ -136,8 +139,8 @@ internal class ColorTrack
     /// <param name="keyFrames">The list of key frames for the track.</param>
     /// <param name="name">The name of the track.</param>
     internal ColorTrack(IReadOnlyList<GorgonKeyGorgonColor> keyFrames, string name)
-        : base(name)
     {
+        Name = name;
         KeyFrames = keyFrames;
 
         // Build the spline for the track.

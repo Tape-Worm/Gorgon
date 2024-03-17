@@ -1,5 +1,4 @@
-﻿
-// 
+﻿// 
 // Gorgon
 // Copyright (C) 2018 Michael Winsor
 // 
@@ -23,7 +22,6 @@
 // Created: August 15, 2018 11:01:36 PM
 // 
 
-
 using Gorgon.Core;
 using Gorgon.Graphics;
 using Gorgon.Math;
@@ -33,22 +31,17 @@ namespace Gorgon.Animation;
 /// <summary>
 /// A base class for a <see cref="IGorgonAnimation"/> implementation
 /// </summary>
-/// <remarks>
-/// Initializes a new instance of the <see cref="AnimationData" /> class
-/// </remarks>
-/// <param name="name">The name of the track.</param>
-/// <param name="fps">The frames per second for the animation.</param>
-/// <param name="length">The length of the animation, in seconds.</param>
-/// <exception cref="ArgumentNullException">Thrown when the <paramref name="name"/> parameter is <b>null</b>.</exception>
-/// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="name"/> parameter is empty.</exception>
-public class AnimationData(string name, float fps, float length)
-        : GorgonNamedObject(name), IGorgonAnimation
+public class AnimationData 
+    : IGorgonNamedObject, IGorgonAnimation
 {
-
     // Number of loops for the animation.
     private int _loopCount;
 
-
+    /// <inheritdoc/>
+    public string Name
+    {
+        get;
+    }
 
     /// <summary>
     /// Property to set or return the number of times to loop an animation.
@@ -75,7 +68,7 @@ public class AnimationData(string name, float fps, float length)
     public float Length
     {
         get;
-    } = length.Max(0);
+    }
 
     /// <summary>
     /// Property to set or return whether this animation should be looping or not.
@@ -148,9 +141,7 @@ public class AnimationData(string name, float fps, float length)
     public float Fps
     {
         get;
-    } = fps.Max(1);
-
-
+    }
 
     /// <summary>
     /// Function to retrieve the maximum number of key frames across all tracks.
@@ -168,7 +159,28 @@ public class AnimationData(string name, float fps, float length)
         return result.Max(Texture2DTracks.Select(item => item.Value).DefaultIfEmpty().Max(key => key?.KeyFrames.Count ?? 0));
     }
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="AnimationData" /> class
+    /// </summary>
+    /// <param name="name">The name of the track.</param>
+    /// <param name="fps">The frames per second for the animation.</param>
+    /// <param name="length">The length of the animation, in seconds.</param>
+    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="name"/> parameter is <b>null</b>.</exception>
+    /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="name"/> parameter is empty.</exception>
+    public AnimationData(string name, float fps, float length)
+    {
+        if (name is null)
+        {
+            throw new ArgumentNullException(nameof(name));
+        }
 
+        if (string.IsNullOrWhiteSpace(name))
+        {
+            throw new ArgumentEmptyException(nameof(name));
+        }
 
-
+        Name = name;
+        Length = length.Max(0);
+        Fps = fps.Max(1);
+    }
 }

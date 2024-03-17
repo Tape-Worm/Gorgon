@@ -56,16 +56,13 @@ namespace Gorgon.Editor.Rendering;
 /// <seealso cref="IEditorTool"/>
 /// <seealso cref="Gorgon2D"/>
 public class DefaultToolRenderer<T>
-    : GorgonNamedObject, IToolRenderer
+    : IGorgonNamedObject, IToolRenderer
     where T : class, IEditorTool
 {
-
     // Flag to indicate that the resources are loaded.
     private int _resourcesLoading;
     // The swap chain for the content view.
     private readonly GorgonSwapChain _swapChain;
-
-
 
     /// <summary>
     /// Property to return the default texture used to draw the background.
@@ -103,6 +100,12 @@ public class DefaultToolRenderer<T>
     /// </summary>
     protected BufferFormat PixelFormat => _swapChain.Format;
 
+    /// <inheritdoc/>
+    public string Name
+    {
+        get;
+    }
+
     /// <summary>
     /// Property to return the size of the view client area.
     /// </summary>
@@ -139,8 +142,6 @@ public class DefaultToolRenderer<T>
         get;
         private set;
     }
-
-
 
     /// <summary>Function to assign a data context to the view as a view model.</summary>
     /// <param name="dataContext">The data context to assign.</param>
@@ -421,21 +422,30 @@ public class DefaultToolRenderer<T>
         BackgroundPattern = null;
     }
 
-
-
     /// <summary>Initializes a new instance of the <see cref="DefaultToolRenderer{T}"/> class.</summary>
     /// <param name="name">The name of the renderer.</param>
     /// <param name="renderer">The main renderer for the content view.</param>
     /// <param name="swapChain">The swap chain for the content view.</param>
     /// <param name="dataContext">The view model to assign to the renderer.</param>
+    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="name"/> parameter is <b>null</b>.</exception>
+    /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="name"/> parameter is empty.</exception>
     protected internal DefaultToolRenderer(string name, Gorgon2D renderer, GorgonSwapChain swapChain, T dataContext)
-        : base(name)
     {
+        if (name is null)
+        {
+            throw new ArgumentNullException(nameof(name));
+        }
+
+        if (string.IsNullOrWhiteSpace(name))
+        {
+            throw new ArgumentEmptyException(nameof(name));
+        }
+
+        Name = name;
         Renderer = renderer;
         _swapChain = swapChain;
         ClientSize = new DX.Size2(swapChain.Width, swapChain.Height);
 
         SetDataContext(dataContext);
     }
-
 }

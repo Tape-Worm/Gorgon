@@ -34,15 +34,18 @@ namespace Gorgon.Animation;
 /// A track that stores 3D vectors representing various properties in an animation
 /// </summary>
 internal class Vector3Track
-    : GorgonNamedObject, IGorgonAnimationTrack<GorgonKeyVector3>
+    : IGorgonNamedObject, IGorgonAnimationTrack<GorgonKeyVector3>
 {
-
     // The interpolation mode for the track.
     private TrackInterpolationMode _interpolationMode = TrackInterpolationMode.Linear;
     // The spline controller for the track.
     private readonly GorgonCatmullRomSpline _splineController = new();
 
-
+    /// <inheritdoc/>
+    public string Name
+    {
+        get;
+    }
 
     /// <summary>Property to return the type of key frame data stored in this track.</summary>
     public AnimationTrackKeyType KeyFrameDataType => AnimationTrackKeyType.Vector3;
@@ -92,7 +95,6 @@ internal class Vector3Track
         set;
     } = true;
 
-
     /// <summary>
     /// Function to retrieve the value at the specified time index.
     /// </summary>
@@ -127,15 +129,14 @@ internal class Vector3Track
         return new GorgonKeyVector3(timeIndex, vec);
     }
 
-
     /// <summary>
     /// Initializes a new instance of the <see cref="Vector3Track"/> class.
     /// </summary>
     /// <param name="keyFrames">The list of key frames for the track.</param>
     /// <param name="name">The name of the track.</param>
     internal Vector3Track(IReadOnlyList<GorgonKeyVector3> keyFrames, string name)
-        : base(name)
     {
+        Name = name;
         KeyFrames = keyFrames;
 
         // Build the spline for the track.
@@ -146,5 +147,4 @@ internal class Vector3Track
 
         _splineController.UpdateTangents();
     }
-
 }

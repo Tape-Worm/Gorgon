@@ -1,5 +1,4 @@
-﻿
-// 
+﻿// 
 // Gorgon
 // Copyright (C) 2018 Michael Winsor
 // 
@@ -34,15 +33,14 @@ namespace Gorgon.Renderers;
 /// <summary>
 /// Defines the a composition pass for the <see cref="Gorgon2DCompositor"/>
 /// </summary>
-/// <remarks>
-/// Initializes a new instance of the <see cref="CompositionPass"/> class
-/// </remarks>
-/// <param name="name">The name of this object.</param>
-/// <exception cref="ArgumentNullException">Thrown when the <paramref name="name"/> is <b>null</b>.</exception>
-/// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="name"/> parameter is empty.</exception>
-internal class CompositionPass(string name)
-        : GorgonNamedObject(name), IGorgon2DCompositorPass
+internal class CompositionPass 
+    : IGorgonNamedObject, IGorgon2DCompositorPass
 {
+    /// <inheritdoc/>
+    public string Name
+    {
+        get;
+    }
 
     /// <summary>
     /// Property to set or return the method to call when rendering without an effect.
@@ -106,5 +104,24 @@ internal class CompositionPass(string name)
         set;
     } = true;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="CompositionPass"/> class
+    /// </summary>
+    /// <param name="name">The name of this composition pass.</param>
+    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="name"/> parameter is <b>null</b>.</exception>
+    /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="name"/> parameter is empty.</exception>
+    public CompositionPass(string name)
+    {
+        if (name is null)
+        {
+            throw new ArgumentNullException(nameof(name));
+        }
 
+        if (string.IsNullOrWhiteSpace(name))
+        {
+            throw new ArgumentEmptyException(nameof(name));
+        }
+
+        Name = name;
+    }
 }

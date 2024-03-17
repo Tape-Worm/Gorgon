@@ -1,5 +1,4 @@
-﻿
-// 
+﻿// 
 // Gorgon
 // Copyright (C) 2018 Michael Winsor
 // 
@@ -78,19 +77,9 @@ public enum PassContinuationState
 /// <seealso cref="Gorgon2D"/>
 /// <seealso cref="GorgonTexture2DView"/>
 /// <seealso cref="GorgonRenderTargetView"/>
-/// <remarks>
-/// Initializes a new instance of the <see cref="Gorgon2DEffect"/> class
-/// </remarks>
-/// <param name="renderer">The 2D renderer used to render the effect.</param>
-/// <param name="effectName">Name of the effect.</param>
-/// <param name="effectDescription">The effect description.</param>
-/// <param name="passCount">The number of passes required to render the effect.</param>
-/// <exception cref="ArgumentNullException">Thrown when the <paramref name="renderer"/>, or the <paramref name="effectName"/> parameter is <b>null</b>.</exception>
-/// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="effectName"/> parameter is empty.</exception>
-public abstract class Gorgon2DEffect(Gorgon2D renderer, string effectName, string effectDescription, int passCount)
-        : GorgonNamedObject(effectName), IDisposable, IGorgonGraphicsObject
+public abstract class Gorgon2DEffect 
+    : IGorgonNamedObject, IDisposable, IGorgonGraphicsObject
 {
-
     // Flag to indicate that the effect is initialized.
     private bool _isInitialized;
     // The previous size of the output.
@@ -110,9 +99,7 @@ public abstract class Gorgon2DEffect(Gorgon2D renderer, string effectName, strin
     // The state used to override the default depth/stencil state for the effect.
     private GorgonDepthStencilState _depthStencilStateOverride;
     // The state used to override the default raster state for the effect.
-    private GorgonRasterState _rasterStateOverride;
-
-
+    private GorgonRasterState _rasterStateOverride;        
 
     /// <summary>
     /// Property to return the allocator to use with batch states.
@@ -161,13 +148,19 @@ public abstract class Gorgon2DEffect(Gorgon2D renderer, string effectName, strin
         get;
     } = [];
 
+    /// <inheritdoc/>
+    public string Name
+    {
+        get;
+    }
+
     /// <summary>
     /// Property to return the renderer used to render the effect.
     /// </summary>
     public Gorgon2D Renderer
     {
         get;
-    } = renderer ?? throw new ArgumentNullException(nameof(renderer));
+    }
 
     /// <summary>
     /// Property to return the graphics object used for rendering.
@@ -183,7 +176,7 @@ public abstract class Gorgon2DEffect(Gorgon2D renderer, string effectName, strin
     public virtual int PassCount
     {
         get;
-    } = passCount.Max(1);
+    }
 
     /// <summary>
     /// Property to return a friendly description of the effect.
@@ -191,7 +184,7 @@ public abstract class Gorgon2DEffect(Gorgon2D renderer, string effectName, strin
     public string Description
     {
         get;
-    } = effectDescription ?? string.Empty;
+    }
 
 
 
@@ -643,5 +636,30 @@ public abstract class Gorgon2DEffect(Gorgon2D renderer, string effectName, strin
         GC.SuppressFinalize(this);
     }
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="Gorgon2DEffect"/> class
+    /// </summary>
+    /// <param name="renderer">The 2D renderer used to render the effect.</param>
+    /// <param name="effectName">Name of the effect.</param>
+    /// <param name="effectDescription">The effect description.</param>
+    /// <param name="passCount">The number of passes required to render the effect.</param>
+    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="renderer"/> or the <paramref name="effectName"/> parameter is <b>null</b>.</exception>
+    /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="effectName"/> parameter is empty.</exception>
+    protected Gorgon2DEffect(Gorgon2D renderer, string effectName, string effectDescription, int passCount)
+    {
+        if (effectName is null)
+        {
+            throw new ArgumentNullException(nameof(effectName));
+        }
 
+        if (string.IsNullOrWhiteSpace(effectName))
+        {
+            throw new ArgumentEmptyException(nameof(effectName));
+        }
+
+        Name = effectName;
+        Renderer = renderer ?? throw new ArgumentNullException(nameof(renderer));
+        PassCount = passCount.Max(1);
+        Description = effectDescription ?? string.Empty;
+    }
 }

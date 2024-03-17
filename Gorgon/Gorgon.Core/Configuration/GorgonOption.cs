@@ -32,7 +32,7 @@ namespace Gorgon.Configuration;
 /// An option to be stored in a <see cref="IGorgonOptionBag"/>
 /// </summary>
 public class GorgonOption
-    : GorgonNamedObject, IGorgonOption
+    : IGorgonNamedObject, IGorgonOption
 {
 
     // The value stored in this option.
@@ -43,8 +43,6 @@ public class GorgonOption
     private readonly object _minValue;
     // The maximum allowed value for this option.
     private readonly object _maxValue;
-
-
 
     /// <summary>
     /// Property to return the type of data stored in the option.
@@ -73,7 +71,11 @@ public class GorgonOption
         get;
     }
 
-
+    /// <inheritdoc/>
+    public string Name
+    {
+        get;
+    }
 
     /// <summary>
     /// Function to retrieve the default value for this option.
@@ -220,7 +222,7 @@ public class GorgonOption
     /// <param name="maxValue">[Optional] The maximum value for the option.</param>
     /// <returns>A new <see cref="IGorgonOption"/>.</returns>
     /// <exception cref="ArgumentNullException">Thrown when the <paramref name="name"/> parameter is <b>null</b>.</exception>
-    /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="name"/> is empty.</exception>
+    /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="name"/> parameter is empty.</exception>
     /// <remarks>
     /// <para>
     /// The <see cref="Text"/> for this option is derived from the <paramref name="description"/> by using the first line of text (ended by a new line character). If the <paramref name="description"/> 
@@ -257,7 +259,7 @@ public class GorgonOption
     /// <param name="maxValue">[Optional] The maximum value for the option.</param>
     /// <returns>A new <see cref="IGorgonOption"/>.</returns>
     /// <exception cref="ArgumentNullException">Thrown when the <paramref name="name"/> parameter is <b>null</b>.</exception>
-    /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="name"/> is empty.</exception>
+    /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="name"/> parameter is empty.</exception>
     /// <remarks>
     /// <para>
     /// The <see cref="Text"/> for this option is derived from the <paramref name="description"/> by using the first line of text (ended by a new line character). If the <paramref name="description"/> 
@@ -294,7 +296,7 @@ public class GorgonOption
     /// <param name="maxValue">[Optional] The maximum value for the option.</param>
     /// <returns>A new <see cref="IGorgonOption"/>.</returns>
     /// <exception cref="ArgumentNullException">Thrown when the <paramref name="name"/> parameter is <b>null</b>.</exception>
-    /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="name"/> is empty.</exception>
+    /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="name"/> parameter is empty.</exception>
     /// <remarks>
     /// <para>
     /// The <see cref="Text"/> for this option is derived from the <paramref name="description"/> by using the first line of text (ended by a new line character). If the <paramref name="description"/> 
@@ -331,7 +333,7 @@ public class GorgonOption
     /// <param name="maxValue">[Optional] The maximum value for the option.</param>
     /// <returns>A new <see cref="IGorgonOption"/>.</returns>
     /// <exception cref="ArgumentNullException">Thrown when the <paramref name="name"/> parameter is <b>null</b>.</exception>
-    /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="name"/> is empty.</exception>
+    /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="name"/> parameter is empty.</exception>
     /// <remarks>
     /// <para>
     /// The <see cref="Text"/> for this option is derived from the <paramref name="description"/> by using the first line of text (ended by a new line character). If the <paramref name="description"/> 
@@ -368,7 +370,7 @@ public class GorgonOption
     /// <param name="maxValue">[Optional] The maximum value for the option.</param>
     /// <returns>A new <see cref="IGorgonOption"/>.</returns>
     /// <exception cref="ArgumentNullException">Thrown when the <paramref name="name"/> parameter is <b>null</b>.</exception>
-    /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="name"/> is empty.</exception>
+    /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="name"/> parameter is empty.</exception>
     /// <remarks>
     /// <para>
     /// The <see cref="Text"/> for this option is derived from the <paramref name="description"/> by using the first line of text (ended by a new line character). If the <paramref name="description"/> 
@@ -405,7 +407,7 @@ public class GorgonOption
     /// <param name="maxValue">[Optional] The maximum value for the option.</param>
     /// <returns>A new <see cref="IGorgonOption"/>.</returns>
     /// <exception cref="ArgumentNullException">Thrown when the <paramref name="name"/> parameter is <b>null</b>.</exception>
-    /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="name"/> is empty.</exception>
+    /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="name"/> parameter is empty.</exception>
     /// <remarks>
     /// <para>
     /// The <see cref="Text"/> for this option is derived from the <paramref name="description"/> by using the first line of text (ended by a new line character). If the <paramref name="description"/> 
@@ -442,7 +444,7 @@ public class GorgonOption
     /// <param name="maxValue">[Optional] The maximum value for the option.</param>
     /// <returns>A new <see cref="IGorgonOption"/>.</returns>
     /// <exception cref="ArgumentNullException">Thrown when the <paramref name="name"/> parameter is <b>null</b>.</exception>
-    /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="name"/> is empty.</exception>
+    /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="name"/> parameter is empty.</exception>
     /// <remarks>
     /// <para>
     /// The <see cref="Text"/> for this option is derived from the <paramref name="description"/> by using the first line of text (ended by a new line character). If the <paramref name="description"/> 
@@ -479,7 +481,7 @@ public class GorgonOption
     /// <param name="maxValue">[Optional] The maximum value for the option.</param>
     /// <returns>A new <see cref="IGorgonOption"/>.</returns>
     /// <exception cref="ArgumentNullException">Thrown when the <paramref name="name"/> parameter is <b>null</b>.</exception>
-    /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="name"/> is empty.</exception>
+    /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="name"/> parameter is empty.</exception>
     /// <remarks>
     /// <para>
     /// The <see cref="Text"/> for this option is derived from the <paramref name="description"/> by using the first line of text (ended by a new line character). If the <paramref name="description"/> 
@@ -516,7 +518,7 @@ public class GorgonOption
     /// <param name="maxValue">[Optional] The maximum value for the option.</param>
     /// <returns>A new <see cref="IGorgonOption"/>.</returns>
     /// <exception cref="ArgumentNullException">Thrown when the <paramref name="name"/> parameter is <b>null</b>.</exception>
-    /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="name"/> is empty.</exception>
+    /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="name"/> parameter is empty.</exception>
     /// <remarks>
     /// <para>
     /// The <see cref="Text"/> for this option is derived from the <paramref name="description"/> by using the first line of text (ended by a new line character). If the <paramref name="description"/> 
@@ -548,7 +550,7 @@ public class GorgonOption
     /// <param name="maxValue">[Optional] The maximum value for the option.</param>
     /// <returns>A new <see cref="IGorgonOption"/>.</returns>
     /// <exception cref="ArgumentNullException">Thrown when the <paramref name="name"/> parameter is <b>null</b>.</exception>
-    /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="name"/> is empty.</exception>
+    /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="name"/> parameter is empty.</exception>
     /// <remarks>
     /// <para>
     /// The <see cref="Text"/> for this option is derived from the <paramref name="description"/> by using the first line of text (ended by a new line character). If the <paramref name="description"/> 
@@ -585,7 +587,7 @@ public class GorgonOption
     /// <param name="maxValue">[Optional] The maximum value for the option.</param>
     /// <returns>A new <see cref="IGorgonOption"/>.</returns>
     /// <exception cref="ArgumentNullException">Thrown when the <paramref name="name"/> parameter is <b>null</b>.</exception>
-    /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="name"/> is empty.</exception>
+    /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="name"/> parameter is empty.</exception>
     /// <remarks>
     /// <para>
     /// The <see cref="Text"/> for this option is derived from the <paramref name="description"/> by using the first line of text (ended by a new line character). If the <paramref name="description"/> 
@@ -622,7 +624,7 @@ public class GorgonOption
     /// <param name="description">[Optional] The friendly description for this option.</param>
     /// <returns>A new <see cref="IGorgonOption"/>.</returns>
     /// <exception cref="ArgumentNullException">Thrown when the <paramref name="name"/> parameter is <b>null</b>.</exception>
-    /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="name"/> is empty.</exception>
+    /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="name"/> parameter is empty.</exception>
     /// <remarks>
     /// <para>
     /// The <see cref="Text"/> for this option is derived from the <paramref name="description"/> by using the first line of text (ended by a new line character). If the <paramref name="description"/> 
@@ -653,7 +655,7 @@ public class GorgonOption
     /// <param name="description">[Optional] The friendly description for this option.</param>
     /// <returns>A new <see cref="IGorgonOption"/>.</returns>
     /// <exception cref="ArgumentNullException">Thrown when the <paramref name="name"/> parameter is <b>null</b>.</exception>
-    /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="name"/> is empty.</exception>
+    /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="name"/> parameter is empty.</exception>
     /// <remarks>
     /// <para>
     /// The <see cref="Text"/> for this option is derived from the <paramref name="description"/> by using the first line of text (ended by a new line character). If the <paramref name="description"/> 
@@ -675,7 +677,7 @@ public class GorgonOption
     /// <param name="description">[Optional] The friendly description for this option.</param>
     /// <returns>A new <see cref="IGorgonOption"/>.</returns>
     /// <exception cref="ArgumentNullException">Thrown when the <paramref name="name"/> parameter is <b>null</b>.</exception>
-    /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="name"/> is empty.</exception>
+    /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="name"/> parameter is empty.</exception>
     /// <remarks>
     /// <para>
     /// The <see cref="Text"/> for this option is derived from the <paramref name="description"/> by using the first line of text (ended by a new line character). If the <paramref name="description"/> 
@@ -690,7 +692,7 @@ public class GorgonOption
     }
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="GorgonNamedObject" /> class.
+    /// Initializes a new instance of the <see cref="GorgonOption" /> class.
     /// </summary>
     /// <param name="name">The name of this object.</param>
     /// <param name="type">The type of data for the value stored in this option.</param>
@@ -698,9 +700,21 @@ public class GorgonOption
     /// <param name="minValue">The minimum allowed value for this option.</param>
     /// <param name="maxValue">The maximum allowed value for this option.</param>
     /// <param name="description">The description for this option.</param>
+    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="name"/> parameter is <b>null</b>.</exception>
+    /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="name"/> parameter is empty.</exception>
     private GorgonOption(string name, Type type, object defaultValue, object minValue, object maxValue, string description)
-        : base(name)
     {
+        if (name is null)
+        {
+            throw new ArgumentNullException(nameof(name));
+        }
+
+        if (string.IsNullOrWhiteSpace(name))
+        {
+            throw new ArgumentEmptyException(nameof(name));
+        }
+
+        Name = name;
         Type = type;
         _defaultValue = defaultValue;
         _value = _defaultValue;
@@ -720,5 +734,4 @@ public class GorgonOption
             Text = Description;
         }
     }
-
 }

@@ -1,5 +1,4 @@
-﻿
-// 
+﻿// 
 // Gorgon
 // Copyright (C) 2020 Michael Winsor
 // 
@@ -72,10 +71,9 @@ namespace Gorgon.Editor.Rendering;
 /// <seealso cref="Gorgon2D"/>
 /// <seealso cref="GorgonOrthoCamera"/>
 public class DefaultContentRenderer<T>
-    : GorgonNamedObject, IContentRenderer
+    : IGorgonNamedObject, IContentRenderer
     where T : class, IVisualEditorContent
 {
-
     // The synchronization lock for events.
     private readonly object _zoomEventLock = new();
     private readonly object _offsetEventLock = new();
@@ -108,8 +106,6 @@ public class DefaultContentRenderer<T>
     private Vector3 _camDragStart;
     // Font factory a font factory for generating fonts to use with the renderer.
     private GorgonFontFactory _fontFactory;
-
-
 
     // The event triggered when the camera is zoomed.
     private EventHandler<ZoomScaleEventArgs> _zoomEvent;
@@ -212,8 +208,6 @@ public class DefaultContentRenderer<T>
         }
     }
 
-
-
     /// <summary>
     /// Property to return the default texture used to draw the background.
     /// </summary>
@@ -271,6 +265,14 @@ public class DefaultContentRenderer<T>
     /// Property to return the pixel format for the view.
     /// </summary>
     protected BufferFormat PixelFormat => _swapChain.Format;
+
+    /// <summary>
+    /// Property to return the name of the renderer.
+    /// </summary>
+    public string Name
+    {
+        get;
+    }
 
     /// <summary>
     /// Property to return the size of the view client area.
@@ -1377,9 +1379,21 @@ public class DefaultContentRenderer<T>
     /// <param name="renderer">The main renderer for the content view.</param>
     /// <param name="swapChain">The swap chain for the content view.</param>
     /// <param name="dataContext">The view model to assign to the renderer.</param>
+    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="name"/> parameter is <b>null</b>.</exception>
+    /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="name"/> parameter is empty.</exception>
     protected internal DefaultContentRenderer(string name, Gorgon2D renderer, GorgonSwapChain swapChain, T dataContext)
-        : base(name)
     {
+        if (name is null)
+        {
+            throw new ArgumentNullException(nameof(name));
+        }
+
+        if (string.IsNullOrWhiteSpace(name))
+        {
+            throw new ArgumentEmptyException(nameof(name));
+        }
+
+        Name = name;
         _camAnimController = new CameraAnimationController<T>(this);
         Renderer = renderer;
         _swapChain = swapChain;

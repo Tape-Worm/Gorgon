@@ -32,15 +32,18 @@ namespace Gorgon.Editor.PlugIns;
 /// Defines a button to display on the ribbon bar, in the tools area
 /// </summary>
 public class ToolPlugInRibbonButton
-    : GorgonNamedObject, IDisposable, IToolPlugInRibbonButton
+    : IGorgonNamedObject, IDisposable, IToolPlugInRibbonButton
 {
-
     // Flag to indicate that we own the large image and are repsonsible for its lifetime.
     private bool _ownsLargeImage;
     // Flag to indicate that we own the small image and are repsonsible for its lifetime.
     private bool _ownsSmallImage;
 
-
+    /// <inheritdoc/>
+    public string Name
+    {
+        get;
+    }
 
     /// <summary>
     /// Property to set or return the action to perform when the button is clicked.
@@ -121,8 +124,6 @@ public class ToolPlugInRibbonButton
         set;
     }
 
-
-
     /// <summary>
     /// Function to validate the button to ensure it'll be displayed correctly on the ribbon.
     /// </summary>
@@ -158,17 +159,14 @@ public class ToolPlugInRibbonButton
         }
     }
 
-
-
     /// <summary>Initializes a new instance of the <see cref="ToolPlugInRibbonButton"/> class.</summary>
     /// <param name="displayText">The display text.</param>
     /// <param name="largeIcon">The large icon.</param>
     /// <param name="smallIcon">The small icon.</param>
     /// <param name="groupName">Name of the group.</param>
-    /// <exception cref="ArgumentNullException">Thrown when any of the parameters are <b>null</b>.</exception>
+    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="displayText"/>, or the <paramref name="groupName"/> parameter is <b>null</b>.</exception>
     /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="displayText"/>, or the <paramref name="groupName"/> parameter is empty.</exception>
     public ToolPlugInRibbonButton(string displayText, Image largeIcon, Image smallIcon, string groupName)
-        : base(Guid.NewGuid().ToString("N"))
     {
         if (displayText is null)
         {
@@ -190,10 +188,10 @@ public class ToolPlugInRibbonButton
             throw new ArgumentEmptyException(nameof(groupName));
         }
 
+        Name = Guid.NewGuid().ToString("N");
         DisplayText = displayText;
         LargeIcon = largeIcon ?? throw new ArgumentNullException(nameof(largeIcon));
         SmallIcon = smallIcon ?? throw new ArgumentNullException(nameof(smallIcon));
         GroupName = groupName;
     }
-
 }

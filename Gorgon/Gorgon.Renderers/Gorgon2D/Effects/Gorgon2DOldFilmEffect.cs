@@ -47,13 +47,10 @@ namespace Gorgon.Renderers;
 public class Gorgon2DOldFilmEffect
     : Gorgon2DEffect, IGorgon2DCompositorEffect
 {
-
     /// <summary>
     /// The name of the shader include for Gorgon's <see cref="Gorgon2DOldFilmEffect"/>.
     /// </summary>
     public const string Gorgon2DFilmGrainIncludeName = "FilmGrainShaders";
-
-
 
     /// <summary>
     /// Settings for scratches.
@@ -104,8 +101,6 @@ public class Gorgon2DOldFilmEffect
         public float SepiaToneAmount;
     }
 
-
-
     // Texture used to hold random noise for the shader.
     private GorgonTexture2DView _randomTexture;
     // Flag to indicate whether the effect has updated parameters or not.
@@ -127,8 +122,6 @@ public class Gorgon2DOldFilmEffect
     private Gorgon2DShaderState<GorgonPixelShader> _filmState;
     // The batch state to use when rendering.
     private Gorgon2DBatchState _batchState;
-
-
 
     /// <summary>
     /// Property to set or return the noise frequency used in generating scratches in the film.
@@ -364,8 +357,6 @@ public class Gorgon2DOldFilmEffect
         set;
     }
 
-
-
     /// <summary>
     /// Funciton to generate random noise for the effect.
     /// </summary>
@@ -384,7 +375,7 @@ public class Gorgon2DOldFilmEffect
         {
             for (int x = 0; x < textureSize; ++x)
             {
-                float simplexNoise = GorgonRandom.SimplexNoise(x * (1.0f / _noiseFrequency), y * (1.0f / _noiseFrequency));
+                float simplexNoise = GorgonRandom.SimplexNoise(new Vector2(x * (1.0f / _noiseFrequency), y * (1.0f / _noiseFrequency)));
 
                 if (simplexNoise < -0.75f)
                 {

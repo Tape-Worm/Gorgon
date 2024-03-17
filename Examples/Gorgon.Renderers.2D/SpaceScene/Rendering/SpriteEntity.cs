@@ -37,10 +37,14 @@ namespace Gorgon.Examples;
 /// An entity for a sprite layer
 /// </summary>
 /// <remarks>Initializes a new instance of the <see cref="SpriteEntity"/> class.</remarks>
-/// <param name="name">The name of this object.</param>
-public class SpriteEntity(string name)
-        : GorgonNamedObject(name)
+public class SpriteEntity 
+    : IGorgonNamedObject
 {
+    /// <inheritdoc/>
+    public string Name
+    {
+        get;
+    }
 
     /// <summary>
     /// Property to set or return the sprite attached to this entity.
@@ -146,4 +150,25 @@ public class SpriteEntity(string name)
         get;
         set;
     } = true;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="SpriteEntity"/> class.
+    /// </summary>
+    /// <param name="name">The name of the entity.</param>
+    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="name"/> parameter is <b>null</b>.</exception>
+    /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="name"/> parameter is empty.</exception>
+    public SpriteEntity(string name)
+    {
+        if (name is null)
+        {
+            throw new ArgumentNullException(nameof(name));
+        }
+
+        if (string.IsNullOrWhiteSpace(name))
+        {
+            throw new ArgumentEmptyException(nameof(name));
+        }
+
+        Name = name;
+    }
 }

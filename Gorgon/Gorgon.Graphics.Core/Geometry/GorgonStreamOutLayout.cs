@@ -40,13 +40,10 @@ namespace Gorgon.Graphics.Core;
 /// </para>
 /// </remarks>
 public sealed class GorgonStreamOutLayout
-    : GorgonNamedObject
+    : IGorgonNamedObject
 {
-
     // Elements used to build the layout.
     private readonly GorgonStreamOutElement[] _elements;
-
-
 
     /// <summary>
     /// Property to return the native elements for the stream output.
@@ -61,7 +58,11 @@ public sealed class GorgonStreamOutLayout
     /// </summary>
     public IReadOnlyList<GorgonStreamOutElement> Elements => _elements;
 
-
+    /// <inheritdoc/>
+    public string Name
+    {
+        get;
+    }
 
     /// <summary>
     /// Function to determine if an element already exists with the same context, index and slot.
@@ -110,8 +111,6 @@ public sealed class GorgonStreamOutLayout
         return true;
     }
 
-
-
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonStreamOutLayout"/> class.
     /// </summary>
@@ -126,7 +125,6 @@ public sealed class GorgonStreamOutLayout
     /// </para>
     /// </remarks>
     public GorgonStreamOutLayout(string name, IEnumerable<GorgonStreamOutElement> elements)
-        : base(name)
     {
         if (name is null)
         {
