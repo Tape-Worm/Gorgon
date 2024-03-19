@@ -190,5 +190,5 @@ public struct GorgonRay(Vector3 position, Vector3 direction)
     /// <returns>
     ///   <b>true</b> if equal, <b>false</b> if not.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public readonly bool Equals(in GorgonRay other) => Position.Equals(other.Position) && Direction.Equals(other.Direction);
+    public readonly bool Equals(ref readonly GorgonRay other) => Position.Equals(other.Position) && Direction.Equals(other.Direction);
 }

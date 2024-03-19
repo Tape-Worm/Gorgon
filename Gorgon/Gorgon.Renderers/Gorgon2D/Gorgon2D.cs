@@ -116,7 +116,7 @@ public sealed class Gorgon2D
         /// <param name="other">The other instance to use for comparison.</param>
         /// <returns>
         ///   <b>true</b> if equal, <b>false</b> if not.</returns>
-        public bool Equals(in MiscValues other) => (Viewport.Equals(other.Viewport)) && (DepthTarget.Equals(other.DepthTarget)) && (Texture0.Equals(other.Texture0));
+        public bool Equals(ref readonly MiscValues other) => (Viewport.Equals(other.Viewport)) && (DepthTarget.Equals(other.DepthTarget)) && (Texture0.Equals(other.Texture0));
 
         /// <summary>Function to compare this instance with another.</summary>
         /// <param name="other">The other instance to use for comparison.</param>

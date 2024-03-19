@@ -351,9 +351,8 @@ public readonly struct GorgonColor
     /// <param name="left">Left color to compare.</param>
     /// <param name="right">Right color to compare.</param>
     /// <returns><b>true</b> if equal, <b>false</b> if not.</returns>
-    public static bool Equals(in GorgonColor left, in GorgonColor right) =>
-        // ReSharper disable CompareOfFloatsByEqualityOperator
-        left.Red == right.Red && left.Green == right.Green && left.Blue == right.Blue && left.Alpha == right.Alpha;// ReSharper restore CompareOfFloatsByEqualityOperator
+    public static bool Equals(ref readonly GorgonColor left, ref readonly GorgonColor right) =>        
+        left.Red.EqualsEpsilon(right.Red) && left.Green.EqualsEpsilon(right.Green) && left.Blue.EqualsEpsilon(right.Blue) && left.Alpha.EqualsEpsilon(right.Alpha);
 
     /// <summary>
     /// Returns a hash code for this instance.
@@ -387,7 +386,7 @@ public readonly struct GorgonColor
     /// <param name="color">The color to clamp.</param>
     /// <param name="result">The clamped color.</param>
     /// <returns>The clamped color.</returns>
-    public static void Clamp(in GorgonColor color, out GorgonColor result) => result = new GorgonColor(color.Red.Max(0).Min(1),
+    public static void Clamp(ref readonly GorgonColor color, out GorgonColor result) => result = new GorgonColor(color.Red.Max(0).Min(1),
                                  color.Green.Max(0).Min(1),
                                  color.Blue.Max(0).Min(1),
                                  color.Alpha.Max(0).Min(1));
@@ -399,7 +398,7 @@ public readonly struct GorgonColor
     /// <param name="alpha">The alpha value to set.</param>
     /// <param name="result">The resulting updated <see cref="GorgonColor"/>.</param>
     /// <returns>A new <see cref="GorgonColor"/> instance with the same <see cref="Red"/>, <see cref="Green"/>, and <see cref="Blue"/> values but with a modified <see cref="Alpha"/> component.</returns>
-    public static void SetAlpha(in GorgonColor color, float alpha, out GorgonColor result) => result = new GorgonColor(color, alpha);
+    public static void SetAlpha(ref readonly GorgonColor color, float alpha, out GorgonColor result) => result = new GorgonColor(color, alpha);
 
     /// <summary>
     /// Function to apply an alpha value to the specified <see cref="GorgonColor"/>.
@@ -444,7 +443,7 @@ public readonly struct GorgonColor
     /// <paramin name="start"/> is Red = 0, Green = 0, Blue = 0, and Alpha = 0, and the <paramin name="end"/> is Red = 1, Green = 0, Blue = 1, and Alpha 0.5f. Then, with a <paramin name="weight"/> of 
     /// 0.5f, the result will be Red = 0.5f, Green = 0, Blue = 0.5f, and an Alpha = 0.25f.
     /// </remarks>
-    public static void Lerp(in GorgonColor start, in GorgonColor end, float weight, out GorgonColor outColor) => outColor = new GorgonColor(start.Red.Lerp(end.Red, weight),
+    public static void Lerp(ref readonly GorgonColor start, ref readonly GorgonColor end, float weight, out GorgonColor outColor) => outColor = new GorgonColor(start.Red.Lerp(end.Red, weight),
             start.Green.Lerp(end.Green, weight),
             start.Blue.Lerp(end.Blue, weight),
             start.Alpha.Lerp(end.Alpha, weight));
@@ -458,7 +457,7 @@ public readonly struct GorgonColor
     /// <remarks>
     /// This method does not clamp its output. Values greater than 1 or less than 0 are possible.
     /// </remarks>
-    public static void Add(in GorgonColor left, in GorgonColor right, out GorgonColor outColor) => outColor = new GorgonColor(left.Red + right.Red,
+    public static void Add(ref readonly GorgonColor left, ref readonly GorgonColor right, out GorgonColor outColor) => outColor = new GorgonColor(left.Red + right.Red,
                                     left.Green + right.Green,
                                     left.Blue + right.Blue,
                                     left.Alpha + right.Alpha);
@@ -486,7 +485,7 @@ public readonly struct GorgonColor
     /// <remarks>
     /// This method does not clamp its output. Values greater than 1 or less than 0 are possible.
     /// </remarks>
-    public static void Subtract(in GorgonColor left, in GorgonColor right, out GorgonColor outColor) => outColor = new GorgonColor(left.Red - right.Red,
+    public static void Subtract(ref readonly GorgonColor left, ref readonly GorgonColor right, out GorgonColor outColor) => outColor = new GorgonColor(left.Red - right.Red,
                                     left.Green - right.Green,
                                     left.Blue - right.Blue,
                                     left.Alpha - right.Alpha);
@@ -511,7 +510,7 @@ public readonly struct GorgonColor
     /// <param name="left">The left color to multiply.</param>
     /// <param name="right">The right color to multiply.</param>
     /// <param name="outColor">Product of the two colors.</param>
-    public static void Multiply(in GorgonColor left, in GorgonColor right, out GorgonColor outColor) => outColor = new GorgonColor(left.Red * right.Red,
+    public static void Multiply(ref readonly GorgonColor left, ref readonly GorgonColor right, out GorgonColor outColor) => outColor = new GorgonColor(left.Red * right.Red,
                                     left.Green * right.Green,
                                     left.Blue * right.Blue,
                                     left.Alpha * right.Alpha);
@@ -533,7 +532,7 @@ public readonly struct GorgonColor
     /// <param name="color">The color to multiply.</param>
     /// <param name="value">The value to multiply.</param>
     /// <param name="outColor">Product of the <paramin name="color"/> and the <paramin name="value"/>.</param>
-    public static void Multiply(in GorgonColor color, float value, out GorgonColor outColor) => outColor = new GorgonColor(color.Red * value,
+    public static void Multiply(ref readonly GorgonColor color, float value, out GorgonColor outColor) => outColor = new GorgonColor(color.Red * value,
                                    color.Green * value,
                                    color.Blue * value,
                                    color.Alpha * value);
@@ -711,7 +710,7 @@ public readonly struct GorgonColor
     /// <returns>
     /// true if the current object is equal to the <paramin name="other"/> parameter; otherwise, false.
     /// </returns>
-    public bool Equals(in GorgonColor other) => Equals(in this, in other);
+    public bool Equals(ref readonly GorgonColor other) => Equals(in this, in other);
 
     /// <summary>
     /// Populates a <see cref="SerializationInfo" /> with the data needed to serialize the target object.

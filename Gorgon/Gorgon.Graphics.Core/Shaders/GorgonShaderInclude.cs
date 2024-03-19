@@ -65,7 +65,6 @@ namespace Gorgon.Graphics.Core;
 public readonly struct GorgonShaderInclude
     : IGorgonNamedObject, IEquatable<GorgonShaderInclude>
 {
-
     /// <summary>
     /// The name of the shader include file.
     /// </summary>
@@ -75,14 +74,10 @@ public readonly struct GorgonShaderInclude
     /// </summary>
     public readonly string SourceCodeFile;
 
-
-
     /// <summary>
     /// Property to return the name of the include file.
     /// </summary>
     string IGorgonNamedObject.Name => Name;
-
-
 
     /// <summary>
     /// Returns a <see cref="string" /> that represents this instance.
@@ -106,7 +101,7 @@ public readonly struct GorgonShaderInclude
     /// <param name="left">The left instance to compare.</param>
     /// <param name="right">The right instance to compare.</param>
     /// <returns><b>true</b> if equal, <b>false</b> if not.</returns>
-    public static bool Equals(in GorgonShaderInclude left, in GorgonShaderInclude right) => (string.Equals(left.Name, right.Name, StringComparison.OrdinalIgnoreCase));
+    public static bool Equals(ref readonly GorgonShaderInclude left, in GorgonShaderInclude right) => (string.Equals(left.Name, right.Name, StringComparison.OrdinalIgnoreCase));
 
     /// <summary>
     /// Determines whether the specified <see cref="object" /> is equal to this instance.
@@ -123,7 +118,7 @@ public readonly struct GorgonShaderInclude
     /// <param name="left">Left instance to compare.</param>
     /// <param name="right">Right instance to compare.</param>
     /// <returns><b>true</b> if equal, <b>false</b> if not.</returns>
-    public static bool operator ==(GorgonShaderInclude left, GorgonShaderInclude right) => Equals(left, right);
+    public static bool operator ==(GorgonShaderInclude left, GorgonShaderInclude right) => Equals(in left, in right);
 
     /// <summary>
     /// Inequality operator.
@@ -131,7 +126,7 @@ public readonly struct GorgonShaderInclude
     /// <param name="left">Left instance to compare.</param>
     /// <param name="right">Right instance to compare.</param>
     /// <returns><b>true</b> if not equal, <b>false</b> if equal.</returns>
-    public static bool operator !=(GorgonShaderInclude left, GorgonShaderInclude right) => !Equals(left, right);
+    public static bool operator !=(GorgonShaderInclude left, GorgonShaderInclude right) => !Equals(in left, in right);
 
     /// <summary>
     /// Indicates whether the current object is equal to another object of the same type.
@@ -140,9 +135,7 @@ public readonly struct GorgonShaderInclude
     /// <returns>
     /// true if the current object is equal to the <paramref name="other" /> parameter; otherwise, false.
     /// </returns>
-    public bool Equals(GorgonShaderInclude other) => Equals(this, other);
-
-
+    public bool Equals(GorgonShaderInclude other) => Equals(in this, in other);
 
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonShaderInclude"/> struct.
@@ -169,5 +162,4 @@ public readonly struct GorgonShaderInclude
         Name = includeName;
         SourceCodeFile = includeSourceFile;
     }
-
 }

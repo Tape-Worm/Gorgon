@@ -25,6 +25,7 @@
 
 
 using Gorgon.Core;
+using Gorgon.Patterns;
 
 namespace Gorgon.Graphics.Core;
 

@@ -92,7 +92,7 @@ public readonly struct GorgonReadWriteViewBinding
     /// <param name="left">The left instance to compare.</param>
     /// <param name="right">The right instance to compare.</param>
     /// <returns><b>true</b> if equal, <b>false</b> if not.</returns>
-    public static bool Equals(in GorgonReadWriteViewBinding left, in GorgonReadWriteViewBinding right) => (left.InitialCount == right.InitialCount) && (left.ReadWriteView == right.ReadWriteView);
+    public static bool Equals(ref readonly GorgonReadWriteViewBinding left, in GorgonReadWriteViewBinding right) => (left.InitialCount == right.InitialCount) && (left.ReadWriteView == right.ReadWriteView);
 
     /// <summary>Indicates whether this instance and a specified object are equal.</summary>
     /// <param name="obj">The object to compare with the current instance. </param>
@@ -105,7 +105,7 @@ public readonly struct GorgonReadWriteViewBinding
     /// </summary>
     /// <param name="other">The other instance to use for comparison.</param>
     /// <returns><b>true</b> if equal, <b>false</b> if not.</returns>
-    public bool Equals(in GorgonReadWriteViewBinding other) => Equals(in this, in other);
+    public bool Equals(ref readonly GorgonReadWriteViewBinding other) => Equals(in this, in other);
 
     /// <summary>
     /// Function to compare this instance with another.

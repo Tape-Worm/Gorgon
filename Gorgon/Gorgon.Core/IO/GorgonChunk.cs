@@ -83,7 +83,7 @@ public readonly struct GorgonChunk(ulong id, int size, ulong offset)
     /// <param name="left">The first object of type <see cref="GorgonChunk"/> to compare.</param>
     /// <param name="right">The second object of type <see cref="GorgonChunk"/> to compare.</param>
     /// <returns><b>true</b> if the specified objects are equal; otherwise, <b>false</b> if not.</returns>
-    public static bool Equals(in GorgonChunk left, in GorgonChunk right) => left.ID == right.ID;
+    public static bool Equals(ref readonly GorgonChunk left, in GorgonChunk right) => left.ID == right.ID;
 
     /// <summary>
     /// Function to compare two instances for equality.
@@ -104,7 +104,7 @@ public readonly struct GorgonChunk(ulong id, int size, ulong offset)
     /// </summary>
     /// <param name="other">The other instance to use for comparison.</param>
     /// <returns><b>true</b> if equal, <b>false</b> if not.</returns>
-    public bool Equals(in GorgonChunk other) => Equals(in this, in other);
+    public bool Equals(ref readonly GorgonChunk other) => Equals(in this, in other);
 
 
 

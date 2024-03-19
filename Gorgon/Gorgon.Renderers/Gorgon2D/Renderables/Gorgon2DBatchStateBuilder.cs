@@ -28,6 +28,7 @@ using Gorgon.Core;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Memory;
+using Gorgon.Patterns;
 
 namespace Gorgon.Renderers;
 

@@ -29,6 +29,7 @@ using Gorgon.Core;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Math;
+using Gorgon.Patterns;
 
 namespace Gorgon.Animation;
 

@@ -13,7 +13,6 @@
     <PackageLicenseFile>
     </PackageLicenseFile>
     <PackageProjectUrl>https://www.tape-worm.net</PackageProjectUrl>
-    <PackageIcon>g.png</PackageIcon>
     <RepositoryUrl>https://github.com/Tape-Worm/Gorgon</RepositoryUrl>
     <RepositoryType>Git</RepositoryType>
     <PackageTags>C#, .NET Framework, Direct 3D, SharpDX, Winforms</PackageTags>
@@ -52,11 +51,7 @@
     <None Remove="Properties\**" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\..\Gorgon\g.png">
-      <Pack>True</Pack>
-      <PackagePath>
-      </PackagePath>
-    </None>
+
     <None Include="..\..\app.manifest" Link="app.manifest" />
   </ItemGroup>
   <ItemGroup>

@@ -81,7 +81,7 @@ internal readonly struct TextureValue(GorgonTexture2DView texture, IContentFile 
     /// <param name="left">The left side value to compare.</param>
     /// <param name="right">The right side value to compare.</param>
     /// <returns><b>true</b> if the values are equal, <b>false</b> if not.</returns>
-    public static bool Equals(in TextureValue left, in TextureValue right) => (left.Texture == right.Texture)
+    public static bool Equals(ref readonly TextureValue left, in TextureValue right) => (left.Texture == right.Texture)
             && (left.ArrayIndex == right.ArrayIndex)
             && (left.TextureCoordinates.Left.EqualsEpsilon(right.TextureCoordinates.Left))
             && (left.TextureCoordinates.Top.EqualsEpsilon(right.TextureCoordinates.Top))
@@ -123,7 +123,7 @@ internal readonly struct TextureValue(GorgonTexture2DView texture, IContentFile 
     ///   <span class="nu">
     ///     <span class="keyword">true</span> (<span class="keyword">True</span> in Visual Basic)</span> if the current object is equal to the <paramref name="other" /> parameter; otherwise, <span class="keyword"><span class="languageSpecificText"><span class="cs">false</span><span class="vb">False</span><span class="cpp">false</span></span></span><span class="nu"><span class="keyword">false</span> (<span class="keyword">False</span> in Visual Basic)</span>.
     /// </returns>
-    public bool Equals(in TextureValue other) => Equals(in other, in this);
+    public bool Equals(ref readonly TextureValue other) => Equals(in other, in this);
 
 
 

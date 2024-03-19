@@ -66,7 +66,7 @@ public readonly struct GorgonTimestampDisjointResult
     /// <param name="other">The other instance to use for comparison.</param>
     /// <returns>
     ///   <b>true</b> if equal, <b>false</b> if not.</returns>
-    public bool Equals(in GorgonTimestampDisjointResult other) => (other.Frequency == Frequency) && (other.IsDisjoint == IsDisjoint);
+    public bool Equals(ref readonly GorgonTimestampDisjointResult other) => (other.Frequency == Frequency) && (other.IsDisjoint == IsDisjoint);
 
     /// <summary>Function to compare this instance with another.</summary>
     /// <param name="other">The other instance to use for comparison.</param>

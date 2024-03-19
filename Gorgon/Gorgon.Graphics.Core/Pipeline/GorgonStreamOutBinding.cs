@@ -97,7 +97,7 @@ public readonly struct GorgonStreamOutBinding
     /// </summary>
     /// <param name="other">The other instance.</param>
     /// <returns><b>true</b> if equal, <b>false</b> if not.</returns>
-    public bool Equals(in GorgonStreamOutBinding other) => Equals(in this, in other);
+    public bool Equals(ref readonly GorgonStreamOutBinding other) => Equals(in this, in other);
 
     /// <summary>
     /// Returns a <see cref="string"/> that represents this instance.
@@ -130,7 +130,7 @@ public readonly struct GorgonStreamOutBinding
     /// <param name="left">The left instance to compare.</param>
     /// <param name="right">The right instance to compare.</param>
     /// <returns><b>true</b> if equal, <b>false</b> if not.</returns>
-    public static bool Equals(in GorgonStreamOutBinding left, in GorgonStreamOutBinding right) => ((left.Buffer == right.Buffer) && (left.Offset == right.Offset));
+    public static bool Equals(ref readonly GorgonStreamOutBinding left, in GorgonStreamOutBinding right) => ((left.Buffer == right.Buffer) && (left.Offset == right.Offset));
 
     /// <summary>
     /// Implements the operator ==.

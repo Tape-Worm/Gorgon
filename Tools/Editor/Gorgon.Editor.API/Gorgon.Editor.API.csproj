@@ -46,11 +46,7 @@
     <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
   <ItemGroup>
-    <None Include="..\..\..\Gorgon\g.png">
-      <Pack>True</Pack>
-      <PackagePath>
-      </PackagePath>
-    </None>
+
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Krypton.Ribbon.Lite" Version="80.24.3.64" />

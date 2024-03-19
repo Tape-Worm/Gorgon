@@ -59,7 +59,7 @@ public readonly struct GorgonKerningPair(char leftChar, char rightChar)
     /// <param name="left">Left kerning pair to compare.</param>
     /// <param name="right">Right kerning pair to compare.</param>
     /// <returns><b>true</b> if the same, <b>false</b> if not.</returns>
-    public static bool Equals(in GorgonKerningPair left, in GorgonKerningPair right) => ((left.LeftCharacter == right.LeftCharacter) && (left.RightCharacter == right.RightCharacter));
+    public static bool Equals(ref readonly GorgonKerningPair left, in GorgonKerningPair right) => ((left.LeftCharacter == right.LeftCharacter) && (left.RightCharacter == right.RightCharacter));
 
     /// <summary>
     /// Determines whether the specified <see cref="object"/> is equal to this instance.
@@ -121,7 +121,7 @@ public readonly struct GorgonKerningPair(char leftChar, char rightChar)
     /// <param name="other">The other instance to use for comparison.</param>
     /// <returns>
     ///   <b>true</b> if equal, <b>false</b> if not.</returns>
-    public bool Equals(in GorgonKerningPair other) => Equals(in this, in other);
+    public bool Equals(ref readonly GorgonKerningPair other) => Equals(in this, in other);
 
 
 

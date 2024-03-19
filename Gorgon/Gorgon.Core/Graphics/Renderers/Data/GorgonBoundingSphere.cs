@@ -274,7 +274,7 @@ public readonly struct GorgonBoundingSphere(in Vector3 center, float radius)
     /// <param name="other">The other instance to use for comparison.</param>
     /// <returns>
     ///   <b>true</b> if equal, <b>false</b> if not.</returns>
-    public bool Equals(in GorgonBoundingSphere other) => (Center.Equals(other.Center)) && (Radius == other.Radius);
+    public bool Equals(ref readonly GorgonBoundingSphere other) => (Center.Equals(other.Center)) && (Radius == other.Radius);
 
 
     /// <summary>Deconstructs this instance.</summary>

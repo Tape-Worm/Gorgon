@@ -59,11 +59,7 @@
     </PackageReference>    
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\..\Gorgon\g.png">
-      <Pack>True</Pack>
-      <PackagePath>
-      </PackagePath>
-    </None>
+
     <None Include="..\..\..\Examples\app.manifest" Link="app.manifest" />
   </ItemGroup>
   <ItemGroup>

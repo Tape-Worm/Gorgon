@@ -1,5 +1,4 @@
-﻿
-// 
+﻿// 
 // Gorgon
 // Copyright (C) 2012 Michael Winsor
 // 
@@ -22,7 +21,6 @@
 // 
 // Created: Thursday, March 15, 2012 7:34:32 PM
 // 
-
 
 using Gorgon.Core;
 using Gorgon.Math;
@@ -167,7 +165,7 @@ public struct GorgonBox
     /// <param name="box1">First box to intersect.</param>
     /// <param name="box2">Second box to intersect.</param>
     /// <param name="result">The resulting intersected box.</param>
-    public static void Intersect(in GorgonBox box1, in GorgonBox box2, out GorgonBox result)
+    public static void Intersect(ref readonly GorgonBox box1, ref readonly GorgonBox box2, out GorgonBox result)
     {
         int left = box2.Left.Max(box1.Left);
         int top = box2.Top.Max(box1.Top);
@@ -219,7 +217,7 @@ public struct GorgonBox
     /// <param name="left">The left instance to compare.</param>
     /// <param name="right">The right instance to compare.</param>
     /// <returns><b>true</b> if equal, <b>false</b> if not.</returns>
-    public static bool Equals(in GorgonBox left, in GorgonBox right) => ((left.X == right.X) && (left.Y == right.Y) && (left.Z == right.Z)
+    public static bool Equals(ref readonly GorgonBox left, ref readonly GorgonBox right) => ((left.X == right.X) && (left.Y == right.Y) && (left.Z == right.Z)
             && (left.Width == right.Width) && (left.Height == right.Height) && (left.Depth == right.Depth));
 
     /// <summary>
@@ -271,6 +269,6 @@ public struct GorgonBox
     /// <returns>
     /// true if the current object is equal to the other parameter; otherwise, false.
     /// </returns>
-    public readonly bool Equals(in GorgonBox other) => Equals(in this, in other);
+    public readonly bool Equals(ref readonly GorgonBox other) => Equals(in this, in other);
 
 }

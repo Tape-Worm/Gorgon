@@ -130,7 +130,7 @@ public readonly struct GorgonVideoMode
     /// <param name="left">The left value to compare.</param>
     /// <param name="right">The right value to compare.</param>
     /// <returns><b>true</b> if the modes are equal, <b>false</b> if not.</returns>
-    public static bool Equals(in GorgonVideoMode left, in GorgonVideoMode right) => left.Width == right.Width
+    public static bool Equals(ref readonly GorgonVideoMode left, in GorgonVideoMode right) => left.Width == right.Width
                && left.Height == right.Height
                && left.Format == right.Format
                && left.RefreshRate.Equals(right.RefreshRate)
@@ -158,7 +158,7 @@ public readonly struct GorgonVideoMode
     /// </summary>
     /// <param name="other">The other instance to use for comparison.</param>
     /// <returns><b>true</b> if equal, <b>false</b> if not.</returns>
-    public bool Equals(in GorgonVideoMode other) => Equals(in this, in other);
+    public bool Equals(ref readonly GorgonVideoMode other) => Equals(in this, in other);
 
     /// <summary>Indicates whether the current object is equal to another object of the same type.</summary>
     /// <param name="other">An object to compare with this object.</param>

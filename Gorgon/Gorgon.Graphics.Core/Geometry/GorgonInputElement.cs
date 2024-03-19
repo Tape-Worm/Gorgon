@@ -159,7 +159,7 @@ public readonly struct GorgonInputElement
     /// <param name="left">The first instance to compare.</param>
     /// <param name="right">The second instance to compare.</param>
     /// <returns><b>true</b> if equal, <b>false</b> if not.</returns>
-    public static bool Equals(in GorgonInputElement left, in GorgonInputElement right) => (string.Equals(left.Context, right.Context, StringComparison.OrdinalIgnoreCase)) && (left.Format == right.Format) && (left.Index == right.Index) &&
+    public static bool Equals(ref readonly GorgonInputElement left, in GorgonInputElement right) => (string.Equals(left.Context, right.Context, StringComparison.OrdinalIgnoreCase)) && (left.Format == right.Format) && (left.Index == right.Index) &&
                (left.InstanceCount == right.InstanceCount) && (left.Instanced == right.Instanced) && (left.Offset == right.Offset) &&
                (left.SizeInBytes == right.SizeInBytes) && (left.Slot == right.Slot);
 
@@ -205,7 +205,7 @@ public readonly struct GorgonInputElement
     /// </summary>
     /// <param name="other">The other instance to use for comparison.</param>
     /// <returns><b>true</b> if equal, <b>false</b> if not.</returns>
-    public bool Equals(in GorgonInputElement other) => Equals(in this, in other);
+    public bool Equals(ref readonly GorgonInputElement other) => Equals(in this, in other);
 
 
 

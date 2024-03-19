@@ -40,7 +40,7 @@ public static class SharpDXRectExtensions
     /// <param name="thisView">The view being compared.</param>
     /// <param name="other">The other view being compared.</param>
     /// <returns><b>true</b> if the two instances are equal, <b>false</b> if not.</returns>
-    public static bool Equals(in this DX.ViewportF thisView, in DX.ViewportF other) => (thisView.X.EqualsEpsilon(other.X))
+    public static bool Equals(ref readonly this DX.ViewportF thisView, in DX.ViewportF other) => (thisView.X.EqualsEpsilon(other.X))
             && (thisView.Y.EqualsEpsilon(other.Y))
             && (thisView.Width.EqualsEpsilon(other.Width))
             && (thisView.Height.EqualsEpsilon(other.Height))
@@ -53,7 +53,7 @@ public static class SharpDXRectExtensions
     /// <param name="thisRect">The rectangle being compared.</param>
     /// <param name="other">The other view being compared.</param>
     /// <returns><b>true</b> if the two instances are equal, <b>false</b> if not.</returns>
-    public static bool Equals(in this DX.RectangleF thisRect, in DX.RectangleF other) => (thisRect.X.EqualsEpsilon(other.X))
+    public static bool Equals(ref readonly this DX.RectangleF thisRect, in DX.RectangleF other) => (thisRect.X.EqualsEpsilon(other.X))
             && (thisRect.Y.EqualsEpsilon(other.Y))
             && (thisRect.Width.EqualsEpsilon(other.Width))
             && (thisRect.Height.EqualsEpsilon(other.Height));
@@ -64,7 +64,7 @@ public static class SharpDXRectExtensions
     /// <param name="thisRect">The rectangle being compared.</param>
     /// <param name="other">The other view being compared.</param>
     /// <returns><b>true</b> if the two instances are equal, <b>false</b> if not.</returns>
-    public static bool Equals(in this DX.Rectangle thisRect, in DX.Rectangle other) => (thisRect.X == other.X)
+    public static bool Equals(ref readonly this DX.Rectangle thisRect, in DX.Rectangle other) => (thisRect.X == other.X)
             && (thisRect.Y == other.Y)
             && (thisRect.Width == other.Width)
             && (thisRect.Height == other.Height);

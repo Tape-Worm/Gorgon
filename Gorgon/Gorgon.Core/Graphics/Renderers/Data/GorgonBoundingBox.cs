@@ -407,7 +407,7 @@ public readonly struct GorgonBoundingBox
     /// <param name="other">The other instance to use for comparison.</param>
     /// <returns>
     ///   <b>true</b> if equal, <b>false</b> if not.</returns>
-    public bool Equals(in GorgonBoundingBox other) => Minimum.Equals(Maximum);
+    public bool Equals(ref readonly GorgonBoundingBox other) => Minimum.Equals(Maximum);
 
     /// <summary>Initializes a new instance of the <see cref="GorgonBoundingBox" /> struct.</summary>
     /// <param name="minX">The minimum x.</param>

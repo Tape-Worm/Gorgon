@@ -63,7 +63,7 @@ public readonly struct GorgonFileSystemMountPoint
     /// <param name="left">Left instance to compare.</param>
     /// <param name="right">Right instance to compare.</param>
     /// <returns><b>true</b> if equal, <b>false</b> if not.</returns>
-    public static bool Equals(in GorgonFileSystemMountPoint left, in GorgonFileSystemMountPoint right) => (left.Provider == right.Provider)
+    public static bool Equals(ref readonly GorgonFileSystemMountPoint left, in GorgonFileSystemMountPoint right) => (left.Provider == right.Provider)
                 && (left.IsFakeMount == right.IsFakeMount)
                 && (string.Equals(left.MountLocation, right.MountLocation, StringComparison.OrdinalIgnoreCase))
                 && (string.Equals(left.PhysicalPath, right.PhysicalPath, StringComparison.OrdinalIgnoreCase));
@@ -82,7 +82,7 @@ public readonly struct GorgonFileSystemMountPoint
     /// </summary>
     /// <param name="other">The other instance to compare.</param>
     /// <returns><b>true</b> if equal, <b>false</b> if not.</returns>
-    public bool Equals(in GorgonFileSystemMountPoint other) => Equals(in this, in other);
+    public bool Equals(ref readonly GorgonFileSystemMountPoint other) => Equals(in this, in other);
 
     /// <summary>
     /// Function to compare this instance with another.

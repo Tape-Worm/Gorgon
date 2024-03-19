@@ -122,7 +122,7 @@ public readonly struct GorgonStreamOutElement
     /// <param name="left">The first instance to compare.</param>
     /// <param name="right">The second instance to compare.</param>
     /// <returns><b>true</b> if equal, <b>false</b> if not.</returns>
-    public static bool Equals(in GorgonStreamOutElement left, in GorgonStreamOutElement right) => (string.Equals(left.Context, right.Context, StringComparison.OrdinalIgnoreCase)) && (left.Index == right.Index) &&
+    public static bool Equals(ref readonly GorgonStreamOutElement left, in GorgonStreamOutElement right) => (string.Equals(left.Context, right.Context, StringComparison.OrdinalIgnoreCase)) && (left.Index == right.Index) &&
                (left.StartComponent == right.StartComponent) && (left.ComponentCount == right.ComponentCount) && (left.StreamIndex == right.StreamIndex) &&
                (left.Slot == right.Slot);
 
@@ -168,7 +168,7 @@ public readonly struct GorgonStreamOutElement
     /// </summary>
     /// <param name="other">The other instance to use for comparison.</param>
     /// <returns><b>true</b> if equal, <b>false</b> if not.</returns>
-    public bool Equals(in GorgonStreamOutElement other) => Equals(in this, in other);
+    public bool Equals(ref readonly GorgonStreamOutElement other) => Equals(in this, in other);
 
 
 

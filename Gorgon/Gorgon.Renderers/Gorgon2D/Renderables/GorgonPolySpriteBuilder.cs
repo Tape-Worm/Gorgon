@@ -30,6 +30,7 @@ using Gorgon.Core;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Math;
+using Gorgon.Patterns;
 using Gorgon.Renderers.Geometry;
 using Gorgon.Renderers.Properties;
 using GorgonTriangulator;

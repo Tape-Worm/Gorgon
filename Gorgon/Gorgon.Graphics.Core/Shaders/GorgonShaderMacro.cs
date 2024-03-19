@@ -70,7 +70,7 @@ public readonly struct GorgonShaderMacro
     /// <param name="left">Left instance to compare.</param>
     /// <param name="right">Right instance to compare.</param>
     /// <returns><b>true</b> if equal, <b>false</b> if not.</returns>
-    public static bool Equals(in GorgonShaderMacro left, in GorgonShaderMacro right) => string.Equals(left.Name, right.Name, StringComparison.Ordinal);
+    public static bool Equals(ref readonly GorgonShaderMacro left, in GorgonShaderMacro right) => string.Equals(left.Name, right.Name, StringComparison.Ordinal);
 
     /// <summary>
     /// Determines whether the specified <see cref="object"/>, is equal to this instance.
@@ -95,7 +95,7 @@ public readonly struct GorgonShaderMacro
     /// <param name="left">Left instance to compare.</param>
     /// <param name="right">Right instance to compare.</param>
     /// <returns><b>true</b> if equal, <b>false</b> if not.</returns>
-    public static bool operator ==(GorgonShaderMacro left, GorgonShaderMacro right) => Equals(left, right);
+    public static bool operator ==(GorgonShaderMacro left, GorgonShaderMacro right) => Equals(in left, in right);
 
     /// <summary>
     /// Operator to compare two instances for inequality.
@@ -103,7 +103,7 @@ public readonly struct GorgonShaderMacro
     /// <param name="left">Left instance to compare.</param>
     /// <param name="right">Right instance to compare.</param>
     /// <returns><b>true</b> if not equal, <b>false</b> if equal.</returns>
-    public static bool operator !=(GorgonShaderMacro left, GorgonShaderMacro right) => !Equals(left, right);
+    public static bool operator !=(GorgonShaderMacro left, GorgonShaderMacro right) => !Equals(in left, in right);
 
     /// <summary>
     /// Indicates whether the current object is equal to another object of the same type.
@@ -112,7 +112,7 @@ public readonly struct GorgonShaderMacro
     /// <returns>
     /// true if the current object is equal to the <paramref name="other" /> parameter; otherwise, false.
     /// </returns>
-    public bool Equals(GorgonShaderMacro other) => Equals(this, other);
+    public bool Equals(GorgonShaderMacro other) => Equals(in this, in other);
 
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonShaderMacro"/> struct.

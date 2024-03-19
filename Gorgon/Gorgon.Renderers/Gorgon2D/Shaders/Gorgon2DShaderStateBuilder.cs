@@ -29,6 +29,7 @@ using Gorgon.Core;
 using Gorgon.Graphics.Core;
 using Gorgon.Math;
 using Gorgon.Memory;
+using Gorgon.Patterns;
 using Gorgon.Renderers.Cameras;
 using Gorgon.Renderers.Properties;
 

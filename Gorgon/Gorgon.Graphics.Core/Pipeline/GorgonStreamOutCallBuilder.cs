@@ -27,6 +27,7 @@
 using Gorgon.Core;
 using Gorgon.Graphics.Core.Properties;
 using Gorgon.Memory;
+using Gorgon.Patterns;
 using SharpDX.Direct3D11;
 
 namespace Gorgon.Graphics.Core;
