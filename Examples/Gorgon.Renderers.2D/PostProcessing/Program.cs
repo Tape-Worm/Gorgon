@@ -115,7 +115,7 @@ static class Program
     /// <returns><b>true</b> to continue executing, <b>false</b> to stop.</returns>
     private static bool Idle()
     {
-        _screen.RenderTargetView.Clear(GorgonColor.White);
+        _screen.RenderTargetView.Clear(GorgonColors.White);
 
         _compositor.Render(_images[_currentImage], _screen.RenderTargetView);
 
@@ -340,7 +340,7 @@ static class Program
         _compositor.RenderingPass("Rendering Pass", (renderer, texture, target) =>
                    {
                        renderer.DrawFilledRectangle(new DX.RectangleF(0, 0, target.Width, target.Height),
-                                                  GorgonColor.White,
+                                                  GorgonColors.White,
                                                   texture,
                                                   new DX.RectangleF(0, 0, 1, 1));
 
@@ -350,7 +350,7 @@ static class Program
                        {
                            DX.RectangleF region = new(midPoint.X - i * 0.5f, midPoint.Y - i * 0.5f, i, i);
 
-                           renderer.DrawFilledEllipse(region, GorgonColor.Lerp(GorgonColor.RedPure, GorgonColor.YellowPure, 1.0f - ((i - 100) / 60.0f)));
+                           renderer.DrawFilledEllipse(region, GorgonColor.Lerp(GorgonColors.Red, GorgonColors.Yellow, 1.0f - ((i - 100) / 60.0f)));
                        }
                    })
                    .EffectPass("1-Bit Color", _1BitEffect)
@@ -366,8 +366,8 @@ static class Program
                    .EffectPass("Olde Film", _oldFilmEffect)
                    .EffectPass("Chromatic Aberration", _chromatic)
                    .EffectPass("Invert", _invertEffect)
-                   .InitialClearColor(GorgonColor.White)
-                   .FinalClearColor(GorgonColor.White);
+                   .InitialClearColor(GorgonColors.White)
+                   .FinalClearColor(GorgonColors.White);
 
         foreach (IGorgon2DCompositorPass pass in _compositor)
         {

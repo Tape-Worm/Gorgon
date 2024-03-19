@@ -131,7 +131,7 @@ class ImageGallery
                 // a new value to it. 
                 //
                 // Do note that the position is a byte address, and not an int address (i.e. position = 1 is 1 byte, not 1 int).
-                sourceImage.Buffers[0].Data.AsRef<int>(position) = color.ToABGR();
+                sourceImage.Buffers[0].Data.AsRef<int>(position) = GorgonColor.ToABGR(color);
             }
         }
 

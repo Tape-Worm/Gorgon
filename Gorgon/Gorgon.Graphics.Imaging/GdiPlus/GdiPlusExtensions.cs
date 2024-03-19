@@ -62,9 +62,9 @@ public static class GdiPlusExtensions
                     // So, we must convert to ABGR even though the DXGI format is RGBA. The memory layout is from lowest 
                     // (R at byte 0) to the highest byte (A at byte 3).
                     // Thus, R is the lowest byte, and A is the highest: A(24), B(16), G(8), R(0).
-                    GorgonColor color = new(*offset);
+                    GorgonColor color = GorgonColor.FromARGB(*offset);
                     ref int destBuffer = ref buffer.Data.AsRef<int>(destOffset);
-                    destBuffer = color.ToABGR();
+                    destBuffer = GorgonColor.ToABGR(color);
                     offset++;
                     destOffset += 4;
                 }
@@ -102,7 +102,7 @@ public static class GdiPlusExtensions
 
                     GorgonColor color = new(r / 255.0f, g / 255.0f, b / 255.0f, 1.0f);
                     ref int destBuffer = ref buffer.Data.AsRef<int>(destOffset);
-                    destBuffer = color.ToABGR();
+                    destBuffer = GorgonColor.ToABGR(color);
                     destOffset += 4;
                 }
             }

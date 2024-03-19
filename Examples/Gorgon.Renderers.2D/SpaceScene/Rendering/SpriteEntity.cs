@@ -113,7 +113,7 @@ public class SpriteEntity
     {
         get;
         set;
-    } = GorgonColor.White;
+    } = GorgonColors.White;
 
     /// <summary>
     /// Property to set or return whether the sprite is lit by deferred lighting.

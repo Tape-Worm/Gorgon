@@ -297,7 +297,7 @@ public interface IGorgon2DDrawingFluent
     /// If the <paramref name="font"/> parameter is not specified, then the <see cref="Gorgon2D.DefaultFont"/> is used to render the text.
     /// </para>
     /// <para>
-    /// If the <paramref name="color"/> parameter is not specified, then the <see cref="GorgonColor.White"/> color is used.
+    /// If the <paramref name="color"/> parameter is not specified, then the <see cref="GorgonColors.White"/> color is used.
     /// </para>
     /// </remarks>
     IGorgon2DDrawingFluent DrawString(string text, Vector2 position, GorgonFont font = null, GorgonColor? color = null);

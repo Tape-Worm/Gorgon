@@ -235,8 +235,8 @@ internal partial class FontPatternBrushView
     private void ResetDataContext()
     {
         ComboHatch.Style = HatchStyle.BackwardDiagonal;
-        PickerForeground.SelectedColor = PickerForeground.OriginalColor = GorgonColor.Black;
-        PickerBackground.SelectedColor = PickerBackground.OriginalColor = GorgonColor.BlackTransparent;
+        PickerForeground.SelectedColor = PickerForeground.OriginalColor = GorgonColors.Black;
+        PickerBackground.SelectedColor = PickerBackground.OriginalColor = GorgonColors.BlackTransparent;
 
         DrawPreview();
     }

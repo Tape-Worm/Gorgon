@@ -58,7 +58,7 @@ public abstract class GorgonLightCommon
 {
 
     // The color for a light.
-    private GorgonColor _color = GorgonColor.White;
+    private GorgonColor _color = GorgonColors.White;
     // Flag to indicate whether the specular reflection is enabled.
     private bool _specularEnabled;
     // The specular power.

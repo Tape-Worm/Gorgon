@@ -56,7 +56,7 @@ public class Gorgon2DBatchStateBuilder
     /// This property is read/write on the <see cref="Gorgon2DBatchState"/>, so it can be changed at any time.
     /// </para>
     /// <para>
-    /// The default value is <see cref="GorgonColor.White"/>.
+    /// The default value is <see cref="GorgonColors.White"/>.
     /// </para>
     /// </remarks>
     public Gorgon2DBatchStateBuilder BlendFactor(GorgonColor factor)
@@ -247,7 +247,7 @@ public class Gorgon2DBatchStateBuilder
         _worker.BlendState = null;
         _worker.DepthStencilState = null;
         _worker.RasterState = null;
-        _worker.BlendFactor = GorgonColor.White;
+        _worker.BlendFactor = GorgonColors.White;
         _worker.BlendSampleMask = int.MinValue;
         _worker.StencilReference = 0;
         return this;

@@ -134,7 +134,7 @@ internal class PlanetLayer(GorgonGraphics graphics, ResourceManagement resources
         Vector3 cameraPos = _viewMatrix.GetTranslation();
         Material emptyMaterial = new()
         {
-            Albedo = GorgonColor.White,
+            Albedo = GorgonColors.White,
             SpecularPower = 1.0f,
             UVOffset = Vector2.Zero
         };

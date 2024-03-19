@@ -60,7 +60,7 @@ public class SelectionRectangle
     {
         get;
         set;
-    } = new GorgonColor(GorgonColor.BluePure, 0.5f);
+    } = new GorgonColor(GorgonColors.Blue, 0.5f);
 
     /// <summary>
     /// Property to set or return the color for the selection rectangle border.
@@ -69,7 +69,7 @@ public class SelectionRectangle
     {
         get;
         set;
-    } = GorgonColor.BluePure;
+    } = GorgonColors.Blue;
 
     /// <summary>
     /// Property to set or return the speed of the overlay animation.

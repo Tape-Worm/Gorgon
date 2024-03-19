@@ -1243,7 +1243,7 @@ public sealed class GorgonCodecDds
 
                     for (int i = 0; i < count; i++)
                     {
-                        palette[i] = (uint)DecodingOptions.Palette[i].ToARGB();
+                        palette[i] = (uint)GorgonColor.ToARGB(DecodingOptions.Palette[i]);
                     }
 
                     // Skip past palette data since we're not using it.

@@ -87,10 +87,10 @@ internal class SpriteContent
     // The default color for a sprite.
     private static readonly GorgonColor[] _defaultColor =
     [
-        GorgonColor.White,
-        GorgonColor.White,
-        GorgonColor.White,
-        GorgonColor.White
+        GorgonColors.White,
+        GorgonColors.White,
+        GorgonColors.White,
+        GorgonColors.White
     ];
 
     // The sprite content services.
@@ -244,7 +244,7 @@ internal class SpriteContent
             OnPropertyChanging();
             for (int i = 0; i < _sprite.CornerColors.Count; ++i)
             {
-                _sprite.CornerColors[i] = i >= value.Count ? GorgonColor.White : value[i];
+                _sprite.CornerColors[i] = i >= value.Count ? GorgonColors.White : value[i];
             }
             OnPropertyChanged();
         }

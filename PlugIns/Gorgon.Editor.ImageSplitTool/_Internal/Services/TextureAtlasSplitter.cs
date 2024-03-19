@@ -198,9 +198,9 @@ internal class TextureAtlasSplitter
         GorgonRenderTargetView currentTarget = _graphics.RenderTargets[0];
 
         _graphics.SetRenderTarget(target);
-        target.Clear(GorgonColor.BlackTransparent);
+        target.Clear(GorgonColors.BlackTransparent);
         _renderer.Begin();
-        _renderer.DrawFilledRectangle(new DX.RectangleF(0, 0, target.Width, target.Height), GorgonColor.White,
+        _renderer.DrawFilledRectangle(new DX.RectangleF(0, 0, target.Width, target.Height), GorgonColors.White,
                                       sprite.Texture,
                                       sprite.TextureRegion,
                                       sprite.TextureArrayIndex,

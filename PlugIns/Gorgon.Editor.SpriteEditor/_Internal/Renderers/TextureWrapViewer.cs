@@ -74,7 +74,7 @@ internal class TextureWrapViewer
                                                DataContext.Size.Width * 3,
                                                DataContext.Size.Height * 3).Truncate();
         Sprite.Position = Vector2.Zero;
-        Sprite.CornerColors.SetAll(GorgonColor.White);
+        Sprite.CornerColors.SetAll(GorgonColors.White);
         Sprite.CornerOffsets.SetAll(Vector3.Zero);
         Sprite.TextureSampler = DataContext.WrappingEditor.CurrentSampler == GorgonSamplerState.Default ? null : DataContext.WrappingEditor.CurrentSampler;
         Sprite.Size = rect.Size;

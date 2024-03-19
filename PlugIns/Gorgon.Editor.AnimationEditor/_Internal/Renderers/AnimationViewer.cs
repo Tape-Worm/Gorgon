@@ -156,11 +156,11 @@ internal abstract class AnimationViewer(string name, Gorgon2D renderer, GorgonSw
                                        RenderRegion.Width,
                                        RenderRegion.Height);
 
-        Renderer.DrawFilledRectangle(region, new GorgonColor(GorgonColor.SteelBlue, 0.25f));
+        Renderer.DrawFilledRectangle(region, new GorgonColor(GorgonColors.SteelBlue, 0.25f));
 
         if (DataContext?.BackgroundImage is not null)
         {
-            Renderer.DrawFilledRectangle(region, GorgonColor.White, DataContext.BackgroundImage, new DX.RectangleF(0, 0, 1, 1));
+            Renderer.DrawFilledRectangle(region, GorgonColors.White, DataContext.BackgroundImage, new DX.RectangleF(0, 0, 1, 1));
         }
     }
 
@@ -171,11 +171,11 @@ internal abstract class AnimationViewer(string name, Gorgon2D renderer, GorgonSw
     {
         _onionBefore = new GorgonSprite(DataContext.PrimarySprite)
         {
-            Color = new GorgonColor(GorgonColor.BluePure, 0.25f)
+            Color = new GorgonColor(GorgonColors.Blue, 0.25f)
         };
         _onionAfter = new GorgonSprite(_onionBefore)
         {
-            Color = new GorgonColor(GorgonColor.RedPure, 0.25f)
+            Color = new GorgonColor(GorgonColors.Red, 0.25f)
         };
 
         UpdateOnionSkin();
@@ -438,7 +438,7 @@ internal abstract class AnimationViewer(string name, Gorgon2D renderer, GorgonSw
 
         Renderer.Begin();
         Renderer.DrawFilledRectangle(new DX.RectangleF(0, 0, ClientSize.Width, ClientSize.Height),
-                                                       GorgonColor.White, BackgroundPattern, textureSize);
+                                                       GorgonColors.White, BackgroundPattern, textureSize);
         Renderer.End();
     }
 
@@ -450,8 +450,8 @@ internal abstract class AnimationViewer(string name, Gorgon2D renderer, GorgonSw
         Vector2 spriteAnchor = ToClient(new Vector2(Sprite.Position.X - RenderRegion.Width * 0.5f,
                                                           Sprite.Position.Y - RenderRegion.Height * 0.5f));
 
-        Renderer.DrawEllipse(new DX.RectangleF(spriteAnchor.X - 4, spriteAnchor.Y - 4, 8, 8), GorgonColor.Black);
-        Renderer.DrawEllipse(new DX.RectangleF(spriteAnchor.X - 3, spriteAnchor.Y - 3, 6, 6), GorgonColor.White);
+        Renderer.DrawEllipse(new DX.RectangleF(spriteAnchor.X - 4, spriteAnchor.Y - 4, 8, 8), GorgonColors.Black);
+        Renderer.DrawEllipse(new DX.RectangleF(spriteAnchor.X - 3, spriteAnchor.Y - 3, 6, 6), GorgonColors.White);
     }
 
     /// <summary>
@@ -503,7 +503,7 @@ internal abstract class AnimationViewer(string name, Gorgon2D renderer, GorgonSw
     {
         base.OnRenderContent();
 
-        _mainRtv.Clear(GorgonColor.BlackTransparent);
+        _mainRtv.Clear(GorgonColors.BlackTransparent);
         Graphics.SetRenderTarget(_mainRtv);
 
         UpdateOnionSkin();
@@ -531,7 +531,7 @@ internal abstract class AnimationViewer(string name, Gorgon2D renderer, GorgonSw
 
         Renderer.Begin(Gorgon2DBatchState.PremultipliedBlendAlphaOverwrite, Camera);
         Renderer.DrawFilledRectangle(new DX.RectangleF(RenderRegion.Width * -Camera.Anchor.X, RenderRegion.Height * -Camera.Anchor.Y, _main.Width, _main.Height),
-                                     GorgonColor.White,
+                                     GorgonColors.White,
                                      _main,
                                      new DX.RectangleF(0, 0, 1, 1),
                                      textureSampler: (DataContext.PrimarySprite is null ? GorgonSamplerState.PointFiltering : DataContext.PrimarySprite.TextureSampler));

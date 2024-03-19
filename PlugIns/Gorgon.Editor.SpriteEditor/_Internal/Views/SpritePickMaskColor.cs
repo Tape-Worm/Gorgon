@@ -185,7 +185,7 @@ internal partial class SpritePickMaskColor
         UnassignEvents();
         RadioAlpha.Checked = true;
         SliderAlpha.ValuePercentual = 0.0f;
-        Picker.OriginalColor = Picker.SelectedColor = GorgonColor.BlackTransparent;
+        Picker.OriginalColor = Picker.SelectedColor = GorgonColors.BlackTransparent;
     }
 
     /// <summary>

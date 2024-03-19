@@ -64,7 +64,7 @@ public class SpriteExtractionData
     {
         get;
         set;
-    } = GorgonColor.BlackTransparent;
+    } = GorgonColors.BlackTransparent;
 
     /// <summary>
     /// Property to set or return the texture that is to be rendered.

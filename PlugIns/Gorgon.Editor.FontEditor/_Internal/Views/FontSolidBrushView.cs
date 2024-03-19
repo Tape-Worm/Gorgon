@@ -164,7 +164,7 @@ internal partial class FontSolidBrushView
         UnassignEvents();
 
         PickerSolidBrush.OriginalColor =
-        PickerSolidBrush.SelectedColor = GorgonColor.BlackTransparent;
+        PickerSolidBrush.SelectedColor = GorgonColors.BlackTransparent;
     }
 
     /// <summary>

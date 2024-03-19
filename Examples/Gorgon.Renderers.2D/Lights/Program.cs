@@ -121,7 +121,7 @@ static class Program
         _light.SpecularPower = (1.0f - (_lightValue / 1.2f)) * 256;
 
         // Clear our buffers each frame.
-        _screen.RenderTargetView.Clear(GorgonColor.Black);
+        _screen.RenderTargetView.Clear(GorgonColors.Black);
         _gbuffer.ClearGBuffer();
 
         // Gorgon uses a G-Buffer, a collection of render targets used to facilitate lighting and other effects in order 
@@ -167,9 +167,9 @@ static class Program
         _renderer.DrawSprite(_torchSprite);
 
         _renderer.DrawString($"Specular Power: {_light.SpecularPower:0.0}\n" +
-                             $"Light [c #{GorgonColor.CornFlowerBlue.ToHex()}]Z/z[/c]: {_light.Position.Z:0}\n" +
-                             $"Camera Position: {_camera.Position.X:0}, {_camera.Position.Y:0} ([c #{GorgonColor.CornFlowerBlue.ToHex()}]W[/c], [c #{GorgonColor.CornFlowerBlue.ToHex()}]A[/c], [c #{GorgonColor.CornFlowerBlue.ToHex()}]S[/c], [c #{GorgonColor.CornFlowerBlue.ToHex()}]D[/c])\n" +
-                             $"[c #{GorgonColor.CornFlowerBlue.ToHex()}]R[/c]otation: {(_rotate ? "Yes" : "No")}",
+                             $"Light [c #{GorgonColors.CornFlowerBlue.ToHex()}]Z/z[/c]: {_light.Position.Z:0}\n" +
+                             $"Camera Position: {_camera.Position.X:0}, {_camera.Position.Y:0} ([c #{GorgonColors.CornFlowerBlue.ToHex()}]W[/c], [c #{GorgonColors.CornFlowerBlue.ToHex()}]A[/c], [c #{GorgonColors.CornFlowerBlue.ToHex()}]S[/c], [c #{GorgonColors.CornFlowerBlue.ToHex()}]D[/c])\n" +
+                             $"[c #{GorgonColors.CornFlowerBlue.ToHex()}]R[/c]otation: {(_rotate ? "Yes" : "No")}",
                              new Vector2(0, 64));
         _renderer.End();
 
@@ -270,7 +270,7 @@ static class Program
                 ConstantAttenuation = 0,
                 LinearAttenuation = 0.007f,
                 QuadraticAttenuation = 0.0002f,
-                Color = GorgonColor.White,
+                Color = GorgonColors.White,
                 SpecularEnabled = true,
                 SpecularPower = 6.0f,
                 Intensity = 2,

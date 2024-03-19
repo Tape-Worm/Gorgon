@@ -166,21 +166,21 @@ internal class DefaultSpriteViewer(Gorgon2D renderer, GorgonSwapChain swapChain,
         GorgonRange<float>? prevAlphaTest = Renderer.PrimitiveAlphaTestRange;
         DX.RectangleF clearRegion = DataContext.Texture.ToPixel(_sprite.TextureRegion).ToRectangleF();
 
-        _spriteTarget.Clear(GorgonColor.BlackTransparent);
+        _spriteTarget.Clear(GorgonColors.BlackTransparent);
 
         Graphics.SetRenderTarget(_spriteTarget);
         Renderer.PrimitiveAlphaTestRange = null;
         Renderer.Begin(Gorgon2DBatchState.ModulatedAlphaOverwrite);
 
         Renderer.DrawFilledRectangle(new DX.RectangleF(0, 0, DataContext.Texture.Width, DataContext.Texture.Height),
-                                     GorgonColor.White,
+                                     GorgonColors.White,
                                      DataContext.Texture,
                                      new DX.RectangleF(0, 0, 1, 1),
                                      DataContext.ArrayIndex,
                                      GorgonSamplerState.PointFiltering);
 
         // Remove the area where the sprite is located.
-        Renderer.DrawFilledRectangle(clearRegion, GorgonColor.BlackTransparent);
+        Renderer.DrawFilledRectangle(clearRegion, GorgonColors.BlackTransparent);
 
         Renderer.End();
         Renderer.PrimitiveAlphaTestRange = prevAlphaTest;
@@ -257,7 +257,7 @@ internal class DefaultSpriteViewer(Gorgon2D renderer, GorgonSwapChain swapChain,
                                                         halfRegion.Y,
                                                         RenderRegion.Width,
                                                         RenderRegion.Height),
-                                    new GorgonColor(GorgonColor.White, TextureOpacity),
+                                    new GorgonColor(GorgonColors.White, TextureOpacity),
                                     _spriteTexture,
                                     new DX.RectangleF(0, 0, 1, 1),
                                     textureSampler: GorgonSamplerState.PointFiltering);
@@ -268,8 +268,8 @@ internal class DefaultSpriteViewer(Gorgon2D renderer, GorgonSwapChain swapChain,
         // Draw in client space.
         Renderer.Begin();
 
-        Renderer.DrawEllipse(new DX.RectangleF(transformedAnchor.X - 4, transformedAnchor.Y - 4, 8, 8), GorgonColor.Black);
-        Renderer.DrawEllipse(new DX.RectangleF(transformedAnchor.X - 3, transformedAnchor.Y - 3, 6, 6), GorgonColor.White);
+        Renderer.DrawEllipse(new DX.RectangleF(transformedAnchor.X - 4, transformedAnchor.Y - 4, 8, 8), GorgonColors.Black);
+        Renderer.DrawEllipse(new DX.RectangleF(transformedAnchor.X - 3, transformedAnchor.Y - 3, 6, 6), GorgonColors.White);
 
         _marchAnts.Animate();
         _marchAnts.Draw(marchAntsRect);

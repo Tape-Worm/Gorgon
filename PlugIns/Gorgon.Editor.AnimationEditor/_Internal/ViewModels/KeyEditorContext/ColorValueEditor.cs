@@ -38,7 +38,7 @@ internal class ColorValueEditor
 {
 
     // The original color for the sprite.
-    private GorgonColor _originalColor = GorgonColor.White;
+    private GorgonColor _originalColor = GorgonColors.White;
 
 
 
@@ -52,7 +52,7 @@ internal class ColorValueEditor
     {
         get
         {
-            Vector4 values = WorkingSprite?.GetFloatValues(Track.Track.SpriteProperty) ?? GorgonColor.White;
+            Vector4 values = WorkingSprite?.GetFloatValues(Track.Track.SpriteProperty) ?? GorgonColors.White;
 
             return AlphaOnly ? new GorgonColor(0, 0, 0, values.X) : values;
         }
@@ -63,7 +63,7 @@ internal class ColorValueEditor
                 return;
             }
 
-            GorgonColor color = WorkingSprite?.GetFloatValues(Track.Track.SpriteProperty) ?? GorgonColor.White;
+            GorgonColor color = WorkingSprite?.GetFloatValues(Track.Track.SpriteProperty) ?? GorgonColors.White;
             if (color.Equals(value))
             {
                 return;

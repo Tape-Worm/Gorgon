@@ -43,8 +43,8 @@ internal class FontPatternBrush
     public static readonly GorgonGlyphHatchBrush DefaultBrush = new()
     {
         HatchStyle = GlyphBrushHatchStyle.BackwardDiagonal,
-        BackgroundColor = GorgonColor.BlackTransparent,
-        ForegroundColor = GorgonColor.Black
+        BackgroundColor = GorgonColors.BlackTransparent,
+        ForegroundColor = GorgonColors.Black
     };
 
     // The brush to edit.

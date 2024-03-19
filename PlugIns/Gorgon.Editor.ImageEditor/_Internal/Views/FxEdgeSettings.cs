@@ -161,7 +161,7 @@ internal partial class FxEdgeSettings
                 TrackThreshold.Value = ViewModel.Threshold;
                 break;
             case nameof(IFxEdgeDetect.LineColor):
-                ColorPreview.Color = ViewModel.LineColor.ToColor();
+                ColorPreview.Color = Graphics.GorgonColor.ToColor(ViewModel.LineColor);
                 LabelColorValue.Text = string.Format(Resources.GORIMG_TEXT_COLOR_VALUES, (int)(255 * ViewModel.LineColor.Red),
                                                                                          (int)(255 * ViewModel.LineColor.Green),
                                                                                          (int)(255 * ViewModel.LineColor.Blue),
@@ -205,7 +205,7 @@ internal partial class FxEdgeSettings
 
         TrackThreshold.Value = dataContext.Threshold;
         SliderAlpha.ValuePercentual = dataContext.LineColor.Alpha;
-        ColorPreview.Color = dataContext.LineColor.ToColor();
+        ColorPreview.Color = Graphics.GorgonColor.ToColor(dataContext.LineColor);
         LabelColorValue.Text = string.Format(Resources.GORIMG_TEXT_COLOR_VALUES, (int)(255 * dataContext.LineColor.Red),
                                                                                  (int)(255 * dataContext.LineColor.Green),
                                                                                  (int)(255 * dataContext.LineColor.Blue),

@@ -129,7 +129,7 @@ internal class ImageEditorPlugIn
                 Usage = ResourceUsage.Default
             });
             GorgonTexture2DView view = texture.GetShaderResourceView(mipCount: 1, arrayCount: 1);
-            rtv.Clear(GorgonColor.BlackTransparent);
+            rtv.Clear(GorgonColors.BlackTransparent);
             HostContentServices.GraphicsContext.Graphics.SetRenderTarget(rtv);
             HostContentServices.GraphicsContext.Blitter.Blit(view, new DX.Rectangle(0, 0, rtv.Width, rtv.Height), blendState: GorgonBlendState.Default, samplerState: GorgonSamplerState.Default);
             HostContentServices.GraphicsContext.Graphics.SetRenderTarget(null);

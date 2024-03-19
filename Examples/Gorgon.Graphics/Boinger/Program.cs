@@ -234,7 +234,7 @@ internal static class Program
         }
 
         // Render the ball.
-        _sphere.Material.Diffuse = GorgonColor.White;
+        _sphere.Material.Diffuse = GorgonColors.White;
         RenderModel(_sphere);
 
         // Remember the position and rotation so we can restore them later.
@@ -473,7 +473,7 @@ internal static class Program
                                                                             Name = "MaterialBuffer",
                                                                             Usage = ResourceUsage.Dynamic
                                                                         });
-        GorgonColor defaultMaterialColor = GorgonColor.White;
+        GorgonColor defaultMaterialColor = GorgonColors.White;
         _materialBuffer.Buffer.SetData(in defaultMaterialColor);
 
         GorgonExample.LoadResources(_graphics);
@@ -553,7 +553,7 @@ internal static class Program
                           {
                               Material = new Material
                                          {
-                                             Diffuse = GorgonColor.White, Texture = _texture
+                                             Diffuse = GorgonColors.White, Texture = _texture
                                          },
                               Position = new Vector3(0, 0, 3.0f)
                           },
@@ -561,7 +561,7 @@ internal static class Program
                           {
                               Material = new Material
                                          {
-                                             Diffuse = GorgonColor.White, Texture = _texture
+                                             Diffuse = GorgonColors.White, Texture = _texture
                                          },
                               Position = new Vector3(0, -3.5f, 3.5f),
                               Rotation = new Vector3(90.0f, 0, 0)
@@ -579,7 +579,7 @@ internal static class Program
                 Position = new Vector3(2.2f, 1.5f, 2.5f),
                 Material = new Material
                 {
-                    Diffuse = GorgonColor.White,
+                    Diffuse = GorgonColors.White,
                     Texture = _texture
                 }
             };

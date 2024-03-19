@@ -247,7 +247,7 @@ internal class SpriteEditorPlugIn
                     Name = $"SpriteEditor_Rtv_Preview_{Guid.NewGuid():N}",
                     Binding = TextureBinding.ShaderResource
                 });
-                rtv.Clear(GorgonColor.BlackTransparent);
+                rtv.Clear(GorgonColors.BlackTransparent);
 
                 float bgSize;
 
@@ -271,7 +271,7 @@ internal class SpriteEditorPlugIn
                 prevRtv = HostContentServices.GraphicsContext.Graphics.RenderTargets[0];
                 HostContentServices.GraphicsContext.Graphics.SetRenderTarget(rtv);
                 HostContentServices.GraphicsContext.Renderer2D.Begin();
-                HostContentServices.GraphicsContext.Renderer2D.DrawFilledRectangle(new DX.RectangleF(0, 0, bgSize, bgSize), GorgonColor.White, _bgPattern, new DX.RectangleF(0, 0, 1.0f, 1.0f));
+                HostContentServices.GraphicsContext.Renderer2D.DrawFilledRectangle(new DX.RectangleF(0, 0, bgSize, bgSize), GorgonColors.White, _bgPattern, new DX.RectangleF(0, 0, 1.0f, 1.0f));
                 HostContentServices.GraphicsContext.Renderer2D.DrawSprite(sprite);
                 HostContentServices.GraphicsContext.Renderer2D.End();
 

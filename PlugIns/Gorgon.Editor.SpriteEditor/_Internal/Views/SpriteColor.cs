@@ -149,7 +149,7 @@ internal partial class SpriteColor
     private void ResetDataContext()
     {
         UnassignEvents();
-        Picker.OriginalColor = Picker.SelectedColor = GorgonColor.BlackTransparent;
+        Picker.OriginalColor = Picker.SelectedColor = GorgonColors.BlackTransparent;
     }
 
     /// <summary>

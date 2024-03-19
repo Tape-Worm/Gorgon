@@ -239,13 +239,13 @@ public static class GorgonExample
                 // Draw translucent window.
                 r.DrawFilledRectangle(statsRegion, new GorgonColor(0, 0, 0, 0.5f));
                 // Draw lines for separators.
-                r.DrawLine(0, measure.Height + 3, currentRtv.Width, measure.Height + 3, GorgonColor.White);
-                r.DrawLine(0, measure.Height + 4, currentRtv.Width, measure.Height + 4, GorgonColor.Black);
+                r.DrawLine(0, measure.Height + 3, currentRtv.Width, measure.Height + 3, GorgonColors.White);
+                r.DrawLine(0, measure.Height + 4, currentRtv.Width, measure.Height + 4, GorgonColors.Black);
 
                 // Draw FPS text.
-                r.DrawString(_statsText.ToString(), Vector2.One, _statsFont, GorgonColor.White);
+                r.DrawString(_statsText.ToString(), Vector2.One, _statsFont, GorgonColors.White);
             })
-            .DrawFilledRectangle(logoRegion, GorgonColor.White, _logo, new DX.RectangleF(0, 0, 1, 1))
+            .DrawFilledRectangle(logoRegion, GorgonColors.White, _logo, new DX.RectangleF(0, 0, 1, 1))
             .End();
     }
 
@@ -281,15 +281,15 @@ public static class GorgonExample
             // Draw translucent window.
             renderer.DrawFilledRectangle(statsRegion, new GorgonColor(0, 0, 0, 0.5f));
             // Draw lines for separators.
-            renderer.DrawLine(0, measure.Height + 3, currentRtv.Width, measure.Height + 3, GorgonColor.White);
-            renderer.DrawLine(0, measure.Height + 4, currentRtv.Width, measure.Height + 4, GorgonColor.Black);
+            renderer.DrawLine(0, measure.Height + 3, currentRtv.Width, measure.Height + 3, GorgonColors.White);
+            renderer.DrawLine(0, measure.Height + 4, currentRtv.Width, measure.Height + 4, GorgonColors.Black);
 
             // Draw FPS text.
-            renderer.DrawString(_statsText.ToString(), Vector2.One, _statsFont, GorgonColor.White);
+            renderer.DrawString(_statsText.ToString(), Vector2.One, _statsFont, GorgonColors.White);
         }
 
         // Draw logo.
-        renderer.DrawFilledRectangle(logoRegion, GorgonColor.White, _logo, new DX.RectangleF(0, 0, 1, 1));
+        renderer.DrawFilledRectangle(logoRegion, GorgonColors.White, _logo, new DX.RectangleF(0, 0, 1, 1));
 
         renderer.End();
     }
@@ -329,8 +329,8 @@ public static class GorgonExample
             Name = "Segoe UI 9pt Bold Outlined",
             AntiAliasingMode = GorgonFontAntiAliasMode.AntiAlias,
             FontStyle = GorgonFontStyle.Bold,
-            OutlineColor1 = GorgonColor.Black,
-            OutlineColor2 = GorgonColor.Black,
+            OutlineColor1 = GorgonColors.Black,
+            OutlineColor2 = GorgonColors.Black,
             OutlineSize = 2,
             TextureWidth = 512,
             TextureHeight = 256

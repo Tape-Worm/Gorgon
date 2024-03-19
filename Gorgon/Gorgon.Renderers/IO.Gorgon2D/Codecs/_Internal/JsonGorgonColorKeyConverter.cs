@@ -52,7 +52,7 @@ class JsonGorgonColorKeyConverter
         writer.WritePropertyName("time");
         writer.WriteValue(value.Time);
         writer.WritePropertyName("argb");
-        writer.WriteValue(value.Value.ToARGB());
+        writer.WriteValue(GorgonColor.ToARGB(value.Value));
         writer.WriteEnd();
     }
 
@@ -88,6 +88,6 @@ class JsonGorgonColorKeyConverter
             }
         }
 
-        return new GorgonKeyGorgonColor(time, new GorgonColor(argb));
+        return new GorgonKeyGorgonColor(time, GorgonColor.FromARGB(argb));
     }
 }

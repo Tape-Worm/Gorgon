@@ -125,21 +125,21 @@ internal class ClipSpriteViewer
         GorgonRange<float>? prevAlphaTest = Renderer.PrimitiveAlphaTestRange;
         DX.RectangleF clearRegion = _sprite.Texture.ToPixel(_sprite.TextureRegion).ToRectangleF();
 
-        _spriteTarget.Clear(GorgonColor.BlackTransparent);
+        _spriteTarget.Clear(GorgonColors.BlackTransparent);
 
         Graphics.SetRenderTarget(_spriteTarget);
         Renderer.PrimitiveAlphaTestRange = null;
         Renderer.Begin();
 
         Renderer.DrawFilledRectangle(new DX.RectangleF(0, 0, _sprite.Texture.Width, _sprite.Texture.Height),
-                                     GorgonColor.White,
+                                     GorgonColors.White,
                                      _sprite.Texture,
                                      new DX.RectangleF(0, 0, 1, 1),
                                      DataContext.SpriteClipContext.ArrayIndex,
                                      GorgonSamplerState.PointFiltering);
 
         // Remove the area where the sprite is located.
-        Renderer.DrawFilledRectangle(clearRegion, GorgonColor.BlackTransparent);
+        Renderer.DrawFilledRectangle(clearRegion, GorgonColors.BlackTransparent);
 
         Renderer.End();
         Renderer.PrimitiveAlphaTestRange = prevAlphaTest;
@@ -321,7 +321,7 @@ internal class ClipSpriteViewer
         _clipper.RectChanged += Clipper_RectChanged;
         _clipper.Bounds = RenderRegion;
 
-        _sprite.Color = GorgonColor.White;
+        _sprite.Color = GorgonColors.White;
         _sprite.Texture = DataContext.Texture;
         _sprite.TextureArrayIndex = DataContext.ArrayIndex;
         _sprite.TextureSampler = GorgonSamplerState.PointFiltering;
@@ -358,7 +358,7 @@ internal class ClipSpriteViewer
                                                        halfRegion.Y,
                                                        RenderRegion.Width,
                                                        RenderRegion.Height),
-                                    new GorgonColor(GorgonColor.White, TextureOpacity),
+                                    new GorgonColor(GorgonColors.White, TextureOpacity),
                                     _spriteTexture,
                                     new DX.RectangleF(0, 0, 1, 1),
                                     textureSampler: GorgonSamplerState.PointFiltering);

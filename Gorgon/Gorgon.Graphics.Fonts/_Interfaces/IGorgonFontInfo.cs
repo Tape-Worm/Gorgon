@@ -243,7 +243,7 @@ public interface IGorgonFontInfo
     /// if the <see cref="OutlineSize"/> value is not greater than 0.
     /// </para> 
     /// <para>
-    /// The default value is <see cref="GorgonColor.Transparent"/> (A=1.0f, R=0.0f, G=0.0f, B=0.0f).
+    /// The default value is <see cref="GorgonColors.Transparent"/> (A=1.0f, R=0.0f, G=0.0f, B=0.0f).
     /// </para>
     /// </remarks>
     GorgonColor OutlineColor1
@@ -263,7 +263,7 @@ public interface IGorgonFontInfo
     /// if the <see cref="OutlineSize"/> value is not greater than 3.
     /// </para> 
     /// <para>
-    /// The default value is <see cref="GorgonColor.Transparent"/> (A=1.0f, R=0.0f, G=0.0f, B=0.0f).
+    /// The default value is <see cref="GorgonColors.Transparent"/> (A=1.0f, R=0.0f, G=0.0f, B=0.0f).
     /// </para>
     /// </remarks>
     GorgonColor OutlineColor2

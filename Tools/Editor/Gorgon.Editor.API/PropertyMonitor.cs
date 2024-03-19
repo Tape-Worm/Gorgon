@@ -73,8 +73,7 @@ public abstract class PropertyMonitor
 
     /// <summary>
     /// Function to retrieve all property names.
-    /// </summary>
-    [DebuggerStepThrough]
+    /// </summary>    
     private void GetProperties()
     {
         if (_properties is not null)
@@ -98,8 +97,6 @@ public abstract class PropertyMonitor
         // Get any explicitly implemented properties from interfaces.
         props = GetType().GetProperties(BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.DeclaredOnly);
 
-        StringBuilder name = new(128);
-
         foreach (PropertyInfo prop in props)
         {
             // We only care about the member name, not which interface owns it, so strip off the declaring part.
@@ -107,9 +104,9 @@ public abstract class PropertyMonitor
 
             int lastIndex = finalName.LastIndexOf('.');
 
-            if ((lastIndex != -1) && (lastIndex < name.Length - 1))
+            if ((lastIndex != -1) && (lastIndex < finalName.Length - 1))
             {
-                finalName = prop.Name[(lastIndex + 1)..^1];
+                finalName = prop.Name[(lastIndex + 1)..];
             }
 
             if (!_properties.Contains(finalName))
@@ -124,8 +121,7 @@ public abstract class PropertyMonitor
     /// <summary>
     /// Function to validate whether the specified property exists on this object.
     /// </summary>
-    /// <param name="propertyName">Name of the property to look up.</param>
-    [DebuggerStepThrough]
+    /// <param name="propertyName">Name of the property to look up.</param>    
     private void ValidatePropertyName(string propertyName)
     {
         GetProperties();
@@ -228,7 +224,7 @@ public abstract class PropertyMonitor
     /// </para>
     /// </note>
     /// </para>
-    /// </remarks>
+    /// </remarks>    
     [DebuggerStepThrough]
     public void NotifyPropertyChanging(string propertyName)
     {

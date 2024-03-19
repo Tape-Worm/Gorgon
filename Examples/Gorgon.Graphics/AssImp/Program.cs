@@ -173,7 +173,7 @@ internal static class Program
             _model.RotateY -= 360.0f;
         }
 
-        _screen.RenderTargetView.Clear(GorgonColor.CornFlowerBlue);
+        _screen.RenderTargetView.Clear(GorgonColors.CornFlowerBlue);
         _depthBuffer.Clear(1.0f, 0);
 
         _graphics.SetRenderTarget(_screen.RenderTargetView, _depthBuffer);

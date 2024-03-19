@@ -645,7 +645,7 @@ internal static class Program
         _renderer.Lights[1] = new GorgonPointLight
         {
             Position = new Vector3(-5.0f, 5.0f, 4.5f),
-            Color = Color.Yellow,
+            Color = GorgonColors.Yellow,
             SpecularPower = 1024.0f,
             ConstantAttenuation = 1.0f,
             LinearAttenuation = 0.09f,
@@ -656,7 +656,7 @@ internal static class Program
         _renderer.Lights[2] = new GorgonPointLight
         {
             Position = new Vector3(5.0f, 5.25f, 9.5f),
-            Color = Color.Red,
+            Color = GorgonColors.Red,
             SpecularPower = 0.0f,
             ConstantAttenuation = 0,
             QuadraticAttenuation = 0.25f
@@ -739,8 +739,8 @@ internal static class Program
             {
                 Name = "Segoe UI 14pt",
                 OutlineSize = 2,
-                OutlineColor1 = GorgonColor.Black,
-                OutlineColor2 = GorgonColor.Black
+                OutlineColor1 = GorgonColors.Black,
+                OutlineColor2 = GorgonColors.Black
             });
 
             _textSprite = new GorgonTextSprite(_font)

@@ -125,7 +125,7 @@ internal partial class TextColorView
     private void ResetDataContext()
     {
         UnassignEvents();
-        Picker.OriginalColor = Picker.SelectedColor = GorgonColor.Black;
+        Picker.OriginalColor = Picker.SelectedColor = GorgonColors.Black;
     }
 
     /// <summary>

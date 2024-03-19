@@ -246,7 +246,7 @@ internal class FxService(IGraphicsContext graphics)
         // Reset to the original texture.
         GorgonRenderTargetView originalRtv = _graphics.Graphics.RenderTargets[0];
 
-        _effectTargetPing.Clear(GorgonColor.BlackTransparent);
+        _effectTargetPing.Clear(GorgonColors.BlackTransparent);
 
         _edgeDetect.EdgeThreshold = (threshold / 100.0f);
         _edgeDetect.LineColor = color;
@@ -257,12 +257,12 @@ internal class FxService(IGraphicsContext graphics)
         if (overlay)
         {
             _graphics.Renderer2D.Begin();
-            _graphics.Renderer2D.DrawFilledRectangle(new DX.RectangleF(0, 0, _texture.Width, _texture.Height), GorgonColor.White, _texture, new DX.RectangleF(0, 0, 1, 1));
+            _graphics.Renderer2D.DrawFilledRectangle(new DX.RectangleF(0, 0, _texture.Width, _texture.Height), GorgonColors.White, _texture, new DX.RectangleF(0, 0, 1, 1));
             _graphics.Renderer2D.End();
         }
 
         _edgeDetect.Begin();
-        _graphics.Renderer2D.DrawFilledRectangle(new DX.RectangleF(0, 0, _texture.Width, _texture.Height), GorgonColor.White, _texture, new DX.RectangleF(0, 0, 1, 1));
+        _graphics.Renderer2D.DrawFilledRectangle(new DX.RectangleF(0, 0, _texture.Width, _texture.Height), GorgonColors.White, _texture, new DX.RectangleF(0, 0, 1, 1));
         _edgeDetect.End();
 
         PreviewTexture = _effectTexturePing;
@@ -283,8 +283,8 @@ internal class FxService(IGraphicsContext graphics)
 
         // Reset to the original texture.
         PreviewTexture = _texture;
-        _effectTargetPing.Clear(GorgonColor.BlackTransparent);
-        _effectTargetPong.Clear(GorgonColor.BlackTransparent);
+        _effectTargetPing.Clear(GorgonColors.BlackTransparent);
+        _effectTargetPong.Clear(GorgonColors.BlackTransparent);
         GorgonRenderTarget2DView outputTarget = _effectTargetPing;
 
         GorgonRenderTargetView originalRtv = _graphics.Graphics.RenderTargets[0];
@@ -298,7 +298,7 @@ internal class FxService(IGraphicsContext graphics)
 
             _blur.BlurRadius = (int)pow.FastCeiling();
 
-            outputTarget.Clear(GorgonColor.Transparent);
+            outputTarget.Clear(GorgonColors.Transparent);
 
             _blur.Render(PreviewTexture, outputTarget);
 
@@ -322,7 +322,7 @@ internal class FxService(IGraphicsContext graphics)
 
         GorgonRenderTargetView originalRtv = _graphics.Graphics.RenderTargets[0];
 
-        _effectTargetPing.Clear(GorgonColor.BlackTransparent);
+        _effectTargetPing.Clear(GorgonColors.BlackTransparent);
 
         _posterizeEffect.ColorCount = amount;
         _posterizeEffect.Render(_texture, _effectTargetPing);
@@ -346,7 +346,7 @@ internal class FxService(IGraphicsContext graphics)
         // Reset to the original texture.
         GorgonRenderTargetView originalRtv = _graphics.Graphics.RenderTargets[0];
 
-        _effectTargetPing.Clear(GorgonColor.BlackTransparent);
+        _effectTargetPing.Clear(GorgonColors.BlackTransparent);
 
         _sharpEmboss.UseEmbossing = emboss;
         _sharpEmboss.Amount = amount / 100.0f;
@@ -369,7 +369,7 @@ internal class FxService(IGraphicsContext graphics)
 
         GorgonRenderTargetView originalRtv = _graphics.Graphics.RenderTargets[0];
 
-        _effectTargetPing.Clear(GorgonColor.BlackTransparent);
+        _effectTargetPing.Clear(GorgonColors.BlackTransparent);
 
         _oneBitEffect.Threshold = range;
         _oneBitEffect.Invert = invert;
@@ -442,7 +442,7 @@ internal class FxService(IGraphicsContext graphics)
         {
             EdgeThreshold = 0.5f,
             LineThickness = 1.0f,
-            LineColor = GorgonColor.Black
+            LineColor = GorgonColors.Black
         };
         _blur = new Gorgon2DGaussBlurEffect(_graphics.Renderer2D, 9)
         {

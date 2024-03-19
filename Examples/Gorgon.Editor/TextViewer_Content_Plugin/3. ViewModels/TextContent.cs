@@ -60,7 +60,7 @@ internal class TextContent
     // The font used to draw the text.
     private FontFace _font = FontFace.Arial;
     // The color of the text.
-    private GorgonColor _color = GorgonColor.Black;
+    private GorgonColor _color = GorgonColors.Black;
     // The currently active panel.
     private IHostedPanelViewModel _currentPanel;
     // The editor used to modify text.
@@ -270,7 +270,7 @@ internal class TextContent
             // the file attributes. This allows us to extend the file data without storing the data in the file itself
             // and keep the file format as it should be.
             File.Metadata.Attributes["TextFont"] = FontFace.ToString();
-            File.Metadata.Attributes["TextColor"] = Color.ToARGB().ToString();
+            File.Metadata.Attributes["TextColor"] = GorgonColor.ToARGB(Color).ToString();
 
             // Before we write our data back to the file system we need to mark the content file as closed. If we don't 
             // do this an exception will be thrown. 
@@ -588,7 +588,7 @@ internal class TextContent
             colorValue = unchecked((int)0xFF000000);
         }
 
-        _color = new GorgonColor(colorValue);
+        _color = GorgonColor.FromARGB(colorValue);
     }
 
 

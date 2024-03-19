@@ -620,7 +620,7 @@ public sealed class GorgonGraphics
         threadGroupCountY.ValidateRange(nameof(threadGroupCountY), 0, GorgonComputeEngine.MaxThreadGroupCount);
         threadGroupCountZ.ValidateRange(nameof(threadGroupCountZ), 0, GorgonComputeEngine.MaxThreadGroupCount);
 
-        SetDrawStates(dispatchCall.D3DState, GorgonColor.White, int.MinValue, 0);
+        SetDrawStates(dispatchCall.D3DState, GorgonColors.White, int.MinValue, 0);
         D3DDeviceContext.Dispatch(threadGroupCountX, threadGroupCountY, threadGroupCountZ);
     }
 
@@ -636,7 +636,7 @@ public sealed class GorgonGraphics
         indirectArgs.ValidateObject(nameof(indirectArgs));
         threadGroupOffset.ValidateRange(nameof(threadGroupOffset), 0, int.MaxValue);
 
-        SetDrawStates(dispatchCall.D3DState, GorgonColor.White, int.MinValue, 0);
+        SetDrawStates(dispatchCall.D3DState, GorgonColors.White, int.MinValue, 0);
         D3DDeviceContext.DispatchIndirect(indirectArgs.Native, threadGroupOffset);
     }
 
@@ -1010,7 +1010,7 @@ public sealed class GorgonGraphics
     public void Submit(GorgonDrawCall drawCall, GorgonColor? blendFactor = null, int blendSampleMask = int.MinValue, int stencilReference = 0)
     {
         drawCall.ValidateObject(nameof(drawCall));
-        SetDrawStates(drawCall.D3DState, blendFactor ?? GorgonColor.White, blendSampleMask, stencilReference);
+        SetDrawStates(drawCall.D3DState, blendFactor ?? GorgonColors.White, blendSampleMask, stencilReference);
         D3DDeviceContext.Draw(drawCall.VertexCount, drawCall.VertexStartIndex);
         unchecked
         {
@@ -1032,7 +1032,7 @@ public sealed class GorgonGraphics
     public void SubmitInstance(GorgonDrawCall drawCall, int instanceCount, int startInstanceIndex = 0, GorgonColor? blendFactor = null, int blendSampleMask = int.MinValue, int stencilReference = 0)
     {
         drawCall.ValidateObject(nameof(drawCall));
-        SetDrawStates(drawCall.D3DState, blendFactor ?? GorgonColor.White, blendSampleMask, stencilReference);
+        SetDrawStates(drawCall.D3DState, blendFactor ?? GorgonColors.White, blendSampleMask, stencilReference);
         D3DDeviceContext.DrawInstanced(drawCall.VertexCount, instanceCount, drawCall.VertexStartIndex, startInstanceIndex);
         unchecked
         {
@@ -1055,7 +1055,7 @@ public sealed class GorgonGraphics
                        int stencilReference = 0)
     {
         drawIndexCall.ValidateObject(nameof(drawIndexCall));
-        SetDrawStates(drawIndexCall.D3DState, blendFactor ?? GorgonColor.White, blendSampleMask, stencilReference);
+        SetDrawStates(drawIndexCall.D3DState, blendFactor ?? GorgonColors.White, blendSampleMask, stencilReference);
         D3DDeviceContext.DrawIndexed(drawIndexCall.IndexCount, drawIndexCall.IndexStart, drawIndexCall.BaseVertexIndex);
         unchecked
         {
@@ -1077,7 +1077,7 @@ public sealed class GorgonGraphics
     public void SubmitInstance(GorgonDrawIndexCall drawIndexCall, int instanceCount, int startInstanceLocation = 0, GorgonColor? blendFactor = null, int blendSampleMask = int.MinValue, int stencilReference = 0)
     {
         drawIndexCall.ValidateObject(nameof(drawIndexCall));
-        SetDrawStates(drawIndexCall.D3DState, blendFactor ?? GorgonColor.White, blendSampleMask, stencilReference);
+        SetDrawStates(drawIndexCall.D3DState, blendFactor ?? GorgonColors.White, blendSampleMask, stencilReference);
         D3DDeviceContext.DrawIndexedInstanced(drawIndexCall.IndexCount,
                                               instanceCount,
                                               drawIndexCall.IndexStart,
@@ -1134,7 +1134,7 @@ public sealed class GorgonGraphics
         }
 #endif
 
-        SetDrawStates(drawCall.D3DState, GorgonColor.White, int.MinValue, 0);
+        SetDrawStates(drawCall.D3DState, GorgonColors.White, int.MinValue, 0);
         D3DDeviceContext.DrawIndexedInstancedIndirect(indirectArgs.Native, argumentOffset);
         unchecked
         {
@@ -1182,7 +1182,7 @@ public sealed class GorgonGraphics
         }
 #endif
 
-        SetDrawStates(drawCall.D3DState, blendFactor ?? GorgonColor.White, blendSampleMask, stencilReference);
+        SetDrawStates(drawCall.D3DState, blendFactor ?? GorgonColors.White, blendSampleMask, stencilReference);
         D3DDeviceContext.DrawAuto();
         unchecked
         {

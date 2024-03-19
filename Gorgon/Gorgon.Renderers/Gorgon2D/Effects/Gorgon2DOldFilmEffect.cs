@@ -639,7 +639,7 @@ public class Gorgon2DOldFilmEffect
         switch (BeginPass(0, output))
         {
             case PassContinuationState.Continue:
-                Renderer.DrawFilledRectangle(new DX.RectangleF(ShakeOffset.X, ShakeOffset.Y, output.Width, output.Height), GorgonColor.White, texture, new DX.RectangleF(0, 0, 1, 1));
+                Renderer.DrawFilledRectangle(new DX.RectangleF(ShakeOffset.X, ShakeOffset.Y, output.Width, output.Height), GorgonColors.White, texture, new DX.RectangleF(0, 0, 1, 1));
                 break;
             default:
                 EndRender(null);

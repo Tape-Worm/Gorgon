@@ -158,8 +158,8 @@ internal partial class ContentPreviewPanel
         {
             Name = "PreviewTitleFont",
             OutlineSize = 2,
-            OutlineColor1 = GorgonColor.Black,
-            OutlineColor2 = GorgonColor.Black,
+            OutlineColor1 = GorgonColors.Black,
+            OutlineColor2 = GorgonColors.Black,
             FontStyle = Graphics.Fonts.GorgonFontStyle.Bold
         });
 
@@ -256,7 +256,7 @@ internal partial class ContentPreviewPanel
         float x = halfClient.X - (width / 2.0f);
         float y = halfClient.Y - (height / 2.0f);
 
-        _renderer.DrawFilledRectangle(new DX.RectangleF(x, y, width, height), GorgonColor.White, image, new DX.RectangleF(0, 0, 1, 1));
+        _renderer.DrawFilledRectangle(new DX.RectangleF(x, y, width, height), GorgonColors.White, image, new DX.RectangleF(0, 0, 1, 1));
 
         _titleText.LayoutArea = new DX.Size2F(_swapChain.Width, _titleText.Size.Height * 1.5f);
         _titleText.Position = new Vector2(0, _swapChain.Height - (_titleText.Size.Height * 1.5f).Min(_swapChain.Height * 0.25f));// _swapChain.Height - _titleText.Size.Height);

@@ -123,22 +123,22 @@ static class Program
             bool isExternal = Drawing.FontFamily.Families.All(item => !string.Equals(item.Name, fontFamily, StringComparison.InvariantCultureIgnoreCase));
             string fontName;
             int outlineSize = 0;
-            GorgonColor outlineColor1 = GorgonColor.BlackTransparent;
-            GorgonColor outlineColor2 = GorgonColor.BlackTransparent;
+            GorgonColor outlineColor1 = GorgonColors.BlackTransparent;
+            GorgonColor outlineColor2 = GorgonColors.BlackTransparent;
             GorgonGlyphBrush brush = null;
 
             if (i == fontWithOutlineIndex)
             {
                 fontName = $"{fontFamily} 32px Outlined{(isExternal ? " External TTF" : string.Empty)}";
-                outlineColor1 = GorgonColor.Black;
-                outlineColor2 = GorgonColor.Black;
+                outlineColor1 = GorgonColors.Black;
+                outlineColor2 = GorgonColors.Black;
                 outlineSize = 3;
             }
             else if (i == _glowIndex)
             {
                 fontName = $"{fontFamily} 32px Outline as Glow{(isExternal ? " External TTF" : string.Empty)}";
-                outlineColor1 = new GorgonColor(GorgonColor.YellowPure, 1.0f);
-                outlineColor2 = new GorgonColor(GorgonColor.DarkRed, 0.0f);
+                outlineColor1 = new GorgonColor(GorgonColors.Yellow, 1.0f);
+                outlineColor2 = new GorgonColor(GorgonColors.DarkRed, 0.0f);
                 outlineSize = 16;
             }
             else if (i == fontWithGradient)
@@ -146,8 +146,8 @@ static class Program
                 fontName = $"{fontFamily} 32px Gradient{(isExternal ? " External TTF" : string.Empty)}";
                 brush = new GorgonGlyphLinearGradientBrush
                 {
-                    StartColor = GorgonColor.White,
-                    EndColor = GorgonColor.Black,
+                    StartColor = GorgonColors.White,
+                    EndColor = GorgonColors.Black,
                     Angle = 45.0f
                 };
             }
@@ -241,7 +241,7 @@ static class Program
             _startTime = GorgonTiming.SecondsSinceStart;
         }
 
-        _screen.RenderTargetView.Clear(_glowIndex != _fontIndex ? GorgonColor.CornFlowerBlue : new GorgonColor(0, 0, 0.2f));
+        _screen.RenderTargetView.Clear(_glowIndex != _fontIndex ? GorgonColors.CornFlowerBlue : new GorgonColor(0, 0, 0.2f));
 
         DX.Size2F textSize = _text.MeasureText(currentFont, false);
         Vector2 position = new((int)((_screen.Width / 2.0f) - (textSize.Width / 2.0f)).Max(4.0f), (int)((_screen.Height / 2.0f) - (textSize.Height / 2.0f)).Max(100));
@@ -258,8 +258,8 @@ static class Program
             _renderer.End();
         }
 
-        _textSprite.OutlineTint = GorgonColor.White;
-        _textSprite.Color = _glowIndex != _fontIndex ? GorgonColor.White : GorgonColor.Black;
+        _textSprite.OutlineTint = GorgonColors.White;
+        _textSprite.Color = _glowIndex != _fontIndex ? GorgonColors.White : GorgonColors.Black;
         _textSprite.DrawMode = ((_glowIndex == _fontIndex) || (!currentFont.HasOutline)) ? TextDrawMode.GlyphsOnly : TextDrawMode.OutlinedGlyphs;
 
         // Draw the font identification.

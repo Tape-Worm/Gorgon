@@ -110,12 +110,12 @@ static class Program
                    // Set up some colors...By changing the alpha, we can simulate a motion blur effect.
                    .EditColor("Color")
                    .SetInterpolationMode(TrackInterpolationMode.Spline)
-                   .SetKey(new GorgonKeyGorgonColor(0, GorgonColor.Black))
-                   .SetKey(new GorgonKeyGorgonColor(2, new GorgonColor(GorgonColor.RedPure, 0.25f)))
-                   .SetKey(new GorgonKeyGorgonColor(4, new GorgonColor(GorgonColor.GreenPure, 0.5f)))
-                   .SetKey(new GorgonKeyGorgonColor(6, new GorgonColor(GorgonColor.BluePure, 0.25f)))
-                   .SetKey(new GorgonKeyGorgonColor(8, new GorgonColor(GorgonColor.LightCyan, 0.25f)))
-                   .SetKey(new GorgonKeyGorgonColor(10, new GorgonColor(GorgonColor.Black, 1.0f)))
+                   .SetKey(new GorgonKeyGorgonColor(0, GorgonColors.Black))
+                   .SetKey(new GorgonKeyGorgonColor(2, new GorgonColor(GorgonColors.Red, 0.25f)))
+                   .SetKey(new GorgonKeyGorgonColor(4, new GorgonColor(GorgonColors.Green, 0.5f)))
+                   .SetKey(new GorgonKeyGorgonColor(6, new GorgonColor(GorgonColors.Blue, 0.25f)))
+                   .SetKey(new GorgonKeyGorgonColor(8, new GorgonColor(GorgonColors.LightCyan, 0.25f)))
+                   .SetKey(new GorgonKeyGorgonColor(10, new GorgonColor(GorgonColors.Black, 1.0f)))
                    .EndEdit()
                    // And finally, some MuchMusic/MTV style rotation... because.
                    .EditSingle("Angle")
@@ -214,7 +214,7 @@ static class Program
                 Binding = TextureBinding.ShaderResource
             });
             _targetView = _target.GetShaderResourceView();
-            _target.Clear(GorgonColor.CornFlowerBlue);
+            _target.Clear(GorgonColors.CornFlowerBlue);
 
             // Load our textures.
             GorgonCodecGif gif = new(decodingOptions: new GorgonGifDecodingOptions
@@ -295,7 +295,7 @@ static class Program
     private static bool Idle()
     {
         // Set the initial background color, we won't be clearing again...
-        _screen.RenderTargetView.Clear(GorgonColor.CornFlowerBlue);
+        _screen.RenderTargetView.Clear(GorgonColors.CornFlowerBlue);
 
         if (!_mp3Player.IsPlaying)
         {
@@ -315,7 +315,7 @@ static class Program
         _graphics.SetRenderTarget(_screen.RenderTargetView);
         _renderer.Begin();
         _renderer.DrawFilledRectangle(new DX.RectangleF(0, 0, _screen.Width, _screen.Height),
-                                      GorgonColor.White,
+                                      GorgonColors.White,
                                       _targetView,
                                       new DX.RectangleF(0, 0, 1, 1));
         _renderer.End();

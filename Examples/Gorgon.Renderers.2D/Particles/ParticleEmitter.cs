@@ -567,7 +567,7 @@ public class ParticleEmitter
         ParticleRotationRange = (0.0f, 0.0f);
         Spread = 360.0f;
         Direction = 0.0f;
-        ColorRange = (GorgonColor.LightYellow, new GorgonColor(GorgonColor.OrangeRed, 0.0f));
+        ColorRange = (GorgonColors.LightYellow, new GorgonColor(GorgonColors.OrangeRed, 0.0f));
 
         // Force particle creation (assume 60 FPS).
         CreateParticles(1 / 60.0f);

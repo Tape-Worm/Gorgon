@@ -337,19 +337,19 @@ internal class ColorEditViewer(Gorgon2D renderer, GorgonSwapChain swapChain, ISp
             // Hilight our active handle.
             if (_activeHandleIndex == i)
             {
-                Renderer.DrawFilledRectangle(handleBounds, new GorgonColor(GorgonColor.RedPure, 0.7f));
+                Renderer.DrawFilledRectangle(handleBounds, new GorgonColor(GorgonColors.Red, 0.7f));
             }
 
-            Renderer.DrawRectangle(handleBounds, GorgonColor.Black);
+            Renderer.DrawRectangle(handleBounds, GorgonColors.Black);
             DX.RectangleF inner = new(handleBounds.Left + 1, handleBounds.Top + 1, handleBounds.Width - 2, handleBounds.Height - 2);
-            Renderer.DrawRectangle(inner, GorgonColor.White);
+            Renderer.DrawRectangle(inner, GorgonColors.White);
 
             if ((i < 4) && (_selected[i]))
             {
                 inner = new DX.RectangleF(handleBounds.Left - 4, handleBounds.Top - 4, handleBounds.Width + 8, handleBounds.Height + 8);
-                Renderer.DrawEllipse(inner, GorgonColor.Black);
+                Renderer.DrawEllipse(inner, GorgonColors.Black);
                 inner.Inflate(-1, -1);
-                Renderer.DrawEllipse(inner, GorgonColor.White);
+                Renderer.DrawEllipse(inner, GorgonColors.White);
             }
         }
 

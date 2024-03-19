@@ -298,7 +298,7 @@ internal static class TrackKeyProcessor
         switch (track.KeyFrames.Count)
         {
             case 0:
-                result = GorgonColor.BlackTransparent;
+                result = GorgonColors.BlackTransparent;
                 return false;
             case 1:
                 result = track.KeyFrames[0].Value;

@@ -212,8 +212,8 @@ public partial class Form
             TextureHeight = 128,
             OutlineSize = 2,
             FontStyle = GorgonFontStyle.Bold,
-            OutlineColor1 = GorgonColor.Black,
-            OutlineColor2 = GorgonColor.Black
+            OutlineColor1 = GorgonColors.Black,
+            OutlineColor2 = GorgonColors.Black
         });
     }
 
@@ -241,31 +241,31 @@ public partial class Form
         _renderer.Begin();
         _torusLeft.Scale = Vector2.One;
 
-        _torusRight.Color = GorgonColor.RedPure;
+        _torusRight.Color = GorgonColors.Red;
         _torusRight.Position = new Vector2((_rightPanel.Width / 2.0f) - 64, (_rightPanel.Height / 2.0f) - 64);
         _renderer.DrawSprite(_torusRight);
 
-        _torusRight.Color = GorgonColor.GreenPure;
+        _torusRight.Color = GorgonColors.Green;
         _torusRight.Position = new Vector2((_rightPanel.Width / 2.0f) + 64, (_rightPanel.Height / 2.0f) - 64);
         _renderer.DrawSprite(_torusRight);
 
-        _torusRight.Color = GorgonColor.BluePure;
+        _torusRight.Color = GorgonColors.Blue;
         _torusRight.Position = new Vector2((_rightPanel.Width / 2.0f) - 64, (_rightPanel.Height / 2.0f) + 64);
         _renderer.DrawSprite(_torusRight);
 
-        _torusRight.Color = GorgonColor.White;
+        _torusRight.Color = GorgonColors.White;
         _torusRight.Position = new Vector2((_rightPanel.Width / 2.0f) + 64, (_rightPanel.Height / 2.0f) + 64);
         _renderer.DrawSprite(_torusRight);
 
-        _renderer.DrawString("\u2190Drag me!", new Vector2(0, _rightPanel.Height / 4.0f), _appFont, GorgonColor.White);
+        _renderer.DrawString("\u2190Drag me!", new Vector2(0, _rightPanel.Height / 4.0f), _appFont, GorgonColors.White);
 
         if (_controllerRight.State != AnimationState.Playing)
         {
-            _renderer.DrawString("Speed: Stopped", new Vector2(0, 64), _appFont, GorgonColor.White);
+            _renderer.DrawString("Speed: Stopped", new Vector2(0, 64), _appFont, GorgonColors.White);
         }
         else
         {
-            _renderer.DrawString($"Speed: {TrackSpeed.Value / 5.0f:0.0#}", new Vector2(0, 64), _appFont, GorgonColor.White);
+            _renderer.DrawString($"Speed: {TrackSpeed.Value / 5.0f:0.0#}", new Vector2(0, 64), _appFont, GorgonColors.White);
         }
 
         _renderer.End();

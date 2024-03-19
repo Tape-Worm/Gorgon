@@ -76,7 +76,7 @@ public partial class FormMain
         GorgonProgressOverlay progress = new()
         {
             TransparencyPercent = 25,
-            OverlayColor = GorgonColor.PurplePure
+            OverlayColor = GorgonColors.Purple
         };
         progress.Show(this, "Progress Meter", cancelAction: () => isRunning = false, meterStyle: ProgressBarStyle.Continuous);
         Text = "Plexi - Showing overlay for 10 seconds...";
@@ -167,7 +167,7 @@ public partial class FormMain
         GorgonWaitOverlay wait = new()
         {
             TransparencyPercent = 25,
-            OverlayColor = GorgonColor.BluePure
+            OverlayColor = GorgonColors.Blue
         };
         wait.Show(CheckList, string.Empty, "Really? This long? For a checkbox?");
 
@@ -192,7 +192,7 @@ public partial class FormMain
         GorgonWaitOverlay wait = new()
         {
             TransparencyPercent = 30,
-            OverlayColor = GorgonColor.White
+            OverlayColor = GorgonColors.White
         };
 
         wait.Show(LabelPlexi, "Updating...", "Sending text to label...");

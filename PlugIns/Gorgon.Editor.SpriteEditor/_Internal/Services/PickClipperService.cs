@@ -128,7 +128,7 @@ internal class PickClipperService
     /// <returns><b>true</b> if the pixel is a masked value, or <b>false</b> if not.</returns>
     private bool IsMaskValue(DX.Point position, ClipMask clipMask, GorgonColor clipColor)
     {
-        int color = clipMask == ClipMask.Alpha ? (int)(clipColor.Alpha * 255) : clipColor.ToABGR();
+        int color = clipMask == ClipMask.Alpha ? (int)(clipColor.Alpha * 255) : GorgonColor.ToABGR(clipColor);
 
         // The linear memory address.
         int location = (position.X * ImageData.FormatInformation.SizeInBytes) + (position.Y * ImageData.PitchInformation.RowPitch);

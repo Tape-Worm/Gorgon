@@ -122,8 +122,8 @@ internal class DefaultAnimationViewer(Gorgon2D renderer, GorgonSwapChain swapCha
             Name = "Segoe UI 18 pt",
             FontStyle = GorgonFontStyle.Bold,
             Characters = Resources.GORANM_TEXT_TEXTURE_KEY_ASSIGN.Distinct(),
-            OutlineColor1 = GorgonColor.Black,
-            OutlineColor2 = GorgonColor.Black,
+            OutlineColor1 = GorgonColors.Black,
+            OutlineColor2 = GorgonColors.Black,
             AntiAliasingMode = GorgonFontAntiAliasMode.AntiAlias,
             OutlineSize = 3
         });
@@ -262,7 +262,7 @@ internal class DefaultAnimationViewer(Gorgon2D renderer, GorgonSwapChain swapCha
         _instructions.Position = new Vector2(0, 0);
 
         Renderer.Begin();
-        Renderer.DrawFilledRectangle(new DX.RectangleF(0, ClientSize.Height - _textSize.Height, ClientSize.Width, _textSize.Height), new GorgonColor(GorgonColor.Black, 0.65f));
+        Renderer.DrawFilledRectangle(new DX.RectangleF(0, ClientSize.Height - _textSize.Height, ClientSize.Width, _textSize.Height), new GorgonColor(GorgonColors.Black, 0.65f));
         Renderer.DrawTextSprite(_instructions);
         Renderer.End();
     }

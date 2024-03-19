@@ -207,7 +207,7 @@ static class Program
 
         _tileSize = new DX.Size2((int)(_screen.Width / _snowTile.ScaledSize.Width), (int)(_screen.Height / _snowTile.ScaledSize.Height));
 
-        _screen.RenderTargetView.Clear(GorgonColor.White);
+        _screen.RenderTargetView.Clear(GorgonColors.White);
         _depthBuffer.Clear(1.0f, 0);
 
         // We have to pass in a state that allows depth writing and testing. Otherwise the depth buffer won't be used.

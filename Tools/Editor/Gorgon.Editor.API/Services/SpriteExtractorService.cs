@@ -73,7 +73,7 @@ public class SpriteExtractorService(Gorgon2D renderer, IContentFileManager fileM
     private bool IsEmpty(DX.Rectangle bounds, IGorgonImageBuffer imageData, GorgonColor skipMask)
     {
         int pixelSize = imageData.FormatInformation.SizeInBytes;
-        int color = skipMask.ToABGR();
+        int color = GorgonColor.ToABGR(skipMask);
 
         for (int y = bounds.Y; y < bounds.Bottom; ++y)
         {
@@ -137,11 +137,11 @@ public class SpriteExtractorService(Gorgon2D renderer, IContentFileManager fileM
 
             for (int i = 0; i < texture.ArrayCount; ++i)
             {
-                convertTarget.Clear(GorgonColor.BlackTransparent);
+                convertTarget.Clear(GorgonColors.BlackTransparent);
                 _graphics.SetRenderTarget(convertTarget);
                 _renderer.Begin();
                 _renderer.DrawFilledRectangle(new DX.RectangleF(0, 0, texture.Width, texture.Height),
-                    GorgonColor.White,
+                    GorgonColors.White,
                     texture,
                     new DX.RectangleF(0, 0, 1, 1),
                     i);

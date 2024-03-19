@@ -230,10 +230,10 @@ internal partial class FormNewFont
     /// if the <see cref="IGorgonFontInfo.OutlineSize" /> value is not greater than 0.
     /// </para>
     ///   <para>
-    /// The default value is <see cref="GorgonColor.Transparent" /> (A=1.0f, R=0.0f, G=0.0f, B=0.0f).
+    /// The default value is <see cref="GorgonColors.Transparent" /> (A=1.0f, R=0.0f, G=0.0f, B=0.0f).
     /// </para>
     /// </remarks>
-    GorgonColor IGorgonFontInfo.OutlineColor1 => GorgonColor.BlackTransparent;
+    GorgonColor IGorgonFontInfo.OutlineColor1 => GorgonColors.BlackTransparent;
 
     /// <summary>Property to return the ending color of the outline.</summary>
     /// <remarks>
@@ -245,10 +245,10 @@ internal partial class FormNewFont
     /// if the <see cref="IGorgonFontInfo.OutlineSize" /> value is not greater than 3.
     /// </para>
     ///   <para>
-    /// The default value is <see cref="GorgonColor.Transparent" /> (A=1.0f, R=0.0f, G=0.0f, B=0.0f).
+    /// The default value is <see cref="GorgonColors.Transparent" /> (A=1.0f, R=0.0f, G=0.0f, B=0.0f).
     /// </para>
     /// </remarks>
-    GorgonColor IGorgonFontInfo.OutlineColor2 => GorgonColor.BlackTransparent;
+    GorgonColor IGorgonFontInfo.OutlineColor2 => GorgonColors.BlackTransparent;
 
     /// <summary>Property to return whether premultiplied textures are used when generating the glyphs for the font.</summary>
     /// <remarks>

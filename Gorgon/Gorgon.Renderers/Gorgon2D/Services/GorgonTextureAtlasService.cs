@@ -486,7 +486,7 @@ public class GorgonTextureAtlasService
 
                 if (!rtvs.Contains(rtv))
                 {
-                    rtv.Clear(GorgonColor.BlackTransparent);
+                    rtv.Clear(GorgonColors.BlackTransparent);
                     rtvs.Add(rtv);
                 }
 
@@ -495,7 +495,7 @@ public class GorgonTextureAtlasService
                 _renderer.Begin(Gorgon2DBatchState.NoBlend);
 
                 _renderer.DrawFilledRectangle(region.Value.spriteRegion.ToRectangleF(),
-                                            GorgonColor.White,
+                                            GorgonColors.White,
                                             region.Key.Texture,
                                             region.Key.TextureRegion,
                                             region.Key.TextureArrayIndex,

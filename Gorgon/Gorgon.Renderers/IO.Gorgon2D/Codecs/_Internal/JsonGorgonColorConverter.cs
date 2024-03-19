@@ -39,7 +39,7 @@ internal class JsonGorgonColorConverter
     /// <param name="writer">The <see cref="JsonWriter" /> to write to.</param>
     /// <param name="value">The value.</param>
     /// <param name="serializer">The calling serializer.</param>
-    public override void WriteJson(JsonWriter writer, GorgonColor value, JsonSerializer serializer) => serializer.Serialize(writer, value.ToARGB());
+    public override void WriteJson(JsonWriter writer, GorgonColor value, JsonSerializer serializer) => serializer.Serialize(writer, GorgonColor.ToARGB(value));
 
     /// <summary>Reads the JSON representation of the object.</summary>
     /// <param name="reader">The <see cref="JsonReader" /> to read from.</param>
@@ -52,6 +52,6 @@ internal class JsonGorgonColorConverter
     {
         int argb = serializer.Deserialize<int>(reader);
 
-        return new GorgonColor(argb);
+        return GorgonColor.FromARGB(argb);
     }
 }

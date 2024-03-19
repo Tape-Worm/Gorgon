@@ -186,7 +186,7 @@ internal class AnchorEditViewer(Gorgon2D renderer, GorgonSwapChain swapChain, IS
         };
 
         Renderer.Begin();
-        Renderer.DrawRectangle(bounds, new GorgonColor(GorgonColor.Black, 0.30f), 4);
+        Renderer.DrawRectangle(bounds, new GorgonColor(GorgonColors.Black, 0.30f), 4);
         Renderer.End();
     }
 

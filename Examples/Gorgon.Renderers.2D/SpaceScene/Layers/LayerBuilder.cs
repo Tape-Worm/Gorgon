@@ -84,7 +84,7 @@ internal static class LayerBuilder
                 new Light(new GorgonPointLight
                 {
                     LinearAttenuation = 1.0f,
-                    Color = GorgonColor.White,
+                    Color = GorgonColors.White,
                     SpecularPower = 6.0f,
                     Intensity = 13.07f
                 })
@@ -133,7 +133,7 @@ internal static class LayerBuilder
         planetLayer.Lights.Add(new Light(new GorgonPointLight
         {
             LinearAttenuation = 1.0f,
-            Color = GorgonColor.White,
+            Color = GorgonColors.White,
             SpecularPower = 0.0f,
             Intensity = 0.37f
         })
@@ -168,7 +168,7 @@ internal static class LayerBuilder
                 new SpriteEntity("BigShip")
                 {
                     Sprite = resources.Sprites["/sprites/BigShip"],
-                    Color = GorgonColor.White,
+                    Color = GorgonColors.White,
                     Rotation = -95.0f,
                     IsLit = true,
                     Visible = false
@@ -176,7 +176,7 @@ internal static class LayerBuilder
                 new SpriteEntity("BigShip_Illum")
                 {
                     Sprite = resources.Sprites["/sprites/BigShip_Illum"],
-                    Color = GorgonColor.YellowPure * 0.7f,
+                    Color = GorgonColors.Yellow * 0.7f,
                     Rotation = -95.0f,
                     IsLit = false,
                     Visible = false,
@@ -185,7 +185,7 @@ internal static class LayerBuilder
                 new SpriteEntity("EngineGlow")
                 {
                     Sprite = resources.Sprites["/sprites/Fighter_Engine_F0"],
-                    Color = new GorgonColor(GorgonColor.CyanPure, 0),
+                    Color = new GorgonColor(GorgonColors.Cyan, 0),
                     Rotation = -45.0f,
                     Anchor = new Vector2(0.5f, -1.5f),
                     Animation = resources.Animations["EngineGlow"]
@@ -193,7 +193,7 @@ internal static class LayerBuilder
                 new SpriteEntity("Fighter")
                 {
                     Sprite = resources.Sprites["/sprites/Fighter"],
-                    Color = GorgonColor.White,
+                    Color = GorgonColors.White,
                     Rotation = -45.0f,
                     IsLit = true
                 }
@@ -208,7 +208,7 @@ internal static class LayerBuilder
                     LightDirection = new Vector3(1.0f, 0.0f, 0.7071068f),
                     SpecularEnabled = true,
                     SpecularPower = 512.0f,
-                    Color = GorgonColor.White,
+                    Color = GorgonColors.White,
                 })
             }
         };

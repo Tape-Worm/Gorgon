@@ -213,14 +213,14 @@ internal partial class FormSpriteSelector
             float x = renderRegion.X + halfClient.X - (width * 0.5f);
             float y = renderRegion.Y + halfClient.Y - (height * 0.5f);
 
-            _graphicsContext.Renderer2D.DrawFilledRectangle(new DX.RectangleF(x, y, width, height), GorgonColor.White, _previewImage, new DX.RectangleF(0, 0, 1, 1));
+            _graphicsContext.Renderer2D.DrawFilledRectangle(new DX.RectangleF(x, y, width, height), GorgonColors.White, _previewImage, new DX.RectangleF(0, 0, 1, 1));
         }
         else
         {
             DX.Size2F size = Resources.GORTAG_TEXT_SELECT_SPRITE.MeasureText(_graphicsContext.Renderer2D.DefaultFont, false);
             _graphicsContext.Renderer2D.DrawString(Resources.GORTAG_TEXT_SELECT_SPRITE,
                                                     new Vector2(renderRegion.X + halfClient.X - size.Width * 0.5f, renderRegion.Y + halfClient.Y - size.Height * 0.5f),
-                                                    color: GorgonColor.White);
+                                                    color: GorgonColors.White);
         }
         _graphicsContext.Renderer2D.End();
 

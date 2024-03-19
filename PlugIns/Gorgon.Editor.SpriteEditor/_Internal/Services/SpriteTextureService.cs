@@ -101,11 +101,11 @@ internal class SpriteTextureService(IGraphicsContext graphicsContext, IContentFi
 
             for (int i = 0; i < texture.ArrayCount; ++i)
             {
-                convertTarget.Clear(GorgonColor.BlackTransparent);
+                convertTarget.Clear(GorgonColors.BlackTransparent);
 
                 _renderer.Begin();
                 _renderer.DrawFilledRectangle(new DX.RectangleF(0, 0, texture.Width, texture.Height),
-                    GorgonColor.White,
+                    GorgonColors.White,
                     texture,
                     new DX.RectangleF(0, 0, 1, 1), i);
                 _renderer.End();

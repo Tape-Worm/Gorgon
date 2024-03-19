@@ -71,7 +71,7 @@ public class GorgonOverlay
     {
         get;
         set;
-    } = GorgonColor.Black;
+    } = GorgonColors.Black;
 
 
 
@@ -248,7 +248,7 @@ public class GorgonOverlay
         {
             Location = parent.PointToScreen(new Point(0, 0)),
             Size = parent.ClientSize,
-            BackColor = OverlayColor
+            BackColor = GorgonColor.ToColor(OverlayColor)
         };
 
         _parent = new WeakReference<Control>(parent);

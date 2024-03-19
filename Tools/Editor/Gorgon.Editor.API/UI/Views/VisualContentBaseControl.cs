@@ -640,7 +640,7 @@ public partial class VisualContentBaseControl
 
         foreach (IContentRenderer renderer in _renderers.Values)
         {
-            renderer.BackgroundColor = RenderControl?.BackColor ?? GorgonColor.White;
+            renderer.BackgroundColor = GorgonColor.FromColor(RenderControl?.BackColor ?? Color.FromKnownColor(KnownColor.White));
         }
 
         // If we didn't register any renderers, then do not switch to anything (nothing will be rendered).

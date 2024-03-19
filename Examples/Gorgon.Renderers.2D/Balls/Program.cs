@@ -160,7 +160,7 @@ static class Program
                 ScaleDelta = (GorgonRandom.RandomSingle() * 2.0f) - 1.0f,
                 Rotation = 0,
                 RotationDelta = (GorgonRandom.RandomSingle() * 360.0f) - 180.0f,
-                Color = Color.White,
+                Color = GorgonColors.White,
                 Opacity = 1.0f,
                 OpacityDelta = GorgonRandom.RandomSingle() - 0.5f,
                 Checkered = true
@@ -239,7 +239,7 @@ static class Program
 
             currentBall.Opacity = 0.0f;
             currentBall.Checkered = !currentBall.Checkered;
-            currentBall.Color = Color.FromArgb(255, GorgonRandom.RandomInt32(0, 255), GorgonRandom.RandomInt32(0, 255), GorgonRandom.RandomInt32(0, 255));
+            currentBall.Color = new GorgonColor(GorgonRandom.RandomSingle(), GorgonRandom.RandomSingle(), GorgonRandom.RandomSingle(), 1.0f);
             currentBall.OpacityDelta = GorgonRandom.RandomSingle() * 0.5f;
         }
     }
@@ -288,7 +288,7 @@ static class Program
     private static void DrawBlurred()
     {
         _graphics.SetRenderTarget(_ballTarget);
-        _ballTarget.Clear(GorgonColor.BlackTransparent);
+        _ballTarget.Clear(GorgonColors.BlackTransparent);
 
         // Set up the initial ball render target with an unblurred version of our ball scene.
         _2D.Begin(_blurBlend);
@@ -305,7 +305,7 @@ static class Program
         // Once we have the target blurred to our satisfaction, we need to send that target to our screen target.
         _graphics.SetRenderTarget(_mainScreen.RenderTargetView);
         _2D.Begin();
-        _2D.DrawFilledRectangle(new DX.RectangleF(0, 0, _ballTarget.Width, _ballTarget.Height), GorgonColor.White, _ballTargetView, new DX.RectangleF(0, 0, 1, 1));
+        _2D.DrawFilledRectangle(new DX.RectangleF(0, 0, _ballTarget.Width, _ballTarget.Height), GorgonColors.White, _ballTargetView, new DX.RectangleF(0, 0, 1, 1));
         _2D.End();
     }
 
@@ -323,7 +323,7 @@ static class Program
 
         _2D.Begin();
         _2D.DrawFilledRectangle(new DX.RectangleF(0, 0, _statsTexture.Width, _statsTexture.Height),
-                                GorgonColor.White,
+                                GorgonColors.White,
                                 _statsTexture,
                                 new DX.RectangleF(0, 0, 1, 1));
         _2D.DrawString(_fpsText.ToString(), new Vector2(3.0f, 0), _ballFont);
@@ -468,7 +468,7 @@ static class Program
                 Size = new DX.Size2F(63, 63),
                 Texture = _ballTexture,
                 TextureRegion = new DX.RectangleF(0, 0, 0.5f, 0.5f),
-                Color = GorgonColor.White
+                Color = GorgonColors.White
             };
 
             // Create the ball sprite.
@@ -555,8 +555,8 @@ static class Program
                 FontStyle = GorgonFontStyle.Bold,
                 Characters = " ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890()_.-+:\u2191\u2193",
                 OutlineSize = 1,
-                OutlineColor1 = GorgonColor.Black,
-                OutlineColor2 = GorgonColor.Black
+                OutlineColor1 = GorgonColors.Black,
+                OutlineColor2 = GorgonColors.Black
             });
 
             // Statistics text buffer.
@@ -589,7 +589,7 @@ static class Program
                                                                  _graphics.VideoAdapter.FeatureSet,
                                                                  _graphics.VideoAdapter.Memory.Video.FormatMemory()))
             {
-                Color = Color.Yellow,
+                Color = GorgonColors.Yellow,
                 Position = new Vector2(3, (_statsTexture.Height + 8.0f).FastFloor()),
                 DrawMode = TextDrawMode.OutlinedGlyphs
             };

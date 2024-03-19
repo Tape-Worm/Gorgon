@@ -238,7 +238,7 @@ public sealed class Gorgon2DBatchState
     {
         get;
         set;
-    } = GorgonColor.White;
+    } = GorgonColors.White;
 
     /// <summary>
     /// Property to set or return the mask used to define which samples get updated in the active render target(s).

@@ -37,13 +37,13 @@ internal class FontOutline
 {
 
     // The original color for the sprite.
-    private GorgonColor _originalStartColor = GorgonColor.Black;
+    private GorgonColor _originalStartColor = GorgonColors.Black;
     // The current color for the sprite.
-    private GorgonColor _startColor = GorgonColor.Black;
+    private GorgonColor _startColor = GorgonColors.Black;
     // The original color for the sprite.
-    private GorgonColor _originalEndColor = GorgonColor.Black;
+    private GorgonColor _originalEndColor = GorgonColors.Black;
     // The current color for the sprite.
-    private GorgonColor _endColor = GorgonColor.Black;
+    private GorgonColor _endColor = GorgonColors.Black;
     // The size of the outline.
     private int _outlineSize;
 

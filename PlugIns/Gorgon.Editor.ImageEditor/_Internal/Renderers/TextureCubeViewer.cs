@@ -169,7 +169,7 @@ internal class TextureCubeViewer(Gorgon2D renderer, GorgonSwapChain swapChain, G
         for (int i = 0; i < 6; ++i)
         {
             Renderer.DrawFilledRectangle(_cubeImageBounds[i],
-                new GorgonColor(GorgonColor.White, Opacity),
+                new GorgonColor(GorgonColors.White, Opacity),
                 _textureView,
                 new DX.RectangleF(0, 0, 1, 1),
                 (cubeGroup * 6) + i,
@@ -182,7 +182,7 @@ internal class TextureCubeViewer(Gorgon2D renderer, GorgonSwapChain swapChain, G
 
         for (int i = 0; i < _cubeScreenBounds.Length; ++i)
         {
-            Renderer.DrawRectangle(_cubeScreenBounds[i], new GorgonColor(GorgonColor.Black, Opacity * 0.88f), 1);
+            Renderer.DrawRectangle(_cubeScreenBounds[i], new GorgonColor(GorgonColors.Black, Opacity * 0.88f), 1);
         }
 
         _selectionRect.Animate();
@@ -191,17 +191,17 @@ internal class TextureCubeViewer(Gorgon2D renderer, GorgonSwapChain swapChain, G
         Vector2 offset = new(0, "+X".MeasureLine(_axisFont, true).Height);
 
         Vector2 bottomLeft = new(_cubeScreenBounds[0].BottomLeft.X, _cubeScreenBounds[0].BottomLeft.Y);
-        Renderer.DrawString("+X", bottomLeft - offset, _axisFont, new GorgonColor(GorgonColor.White, Opacity));
+        Renderer.DrawString("+X", bottomLeft - offset, _axisFont, new GorgonColor(GorgonColors.White, Opacity));
         bottomLeft = new Vector2(_cubeScreenBounds[1].BottomLeft.X, _cubeScreenBounds[1].BottomLeft.Y);
-        Renderer.DrawString("-X", bottomLeft - offset, _axisFont, new GorgonColor(GorgonColor.White, Opacity));
+        Renderer.DrawString("-X", bottomLeft - offset, _axisFont, new GorgonColor(GorgonColors.White, Opacity));
         bottomLeft = new Vector2(_cubeScreenBounds[2].BottomLeft.X, _cubeScreenBounds[2].BottomLeft.Y);
-        Renderer.DrawString("+Y", bottomLeft - offset, _axisFont, new GorgonColor(GorgonColor.White, Opacity));
+        Renderer.DrawString("+Y", bottomLeft - offset, _axisFont, new GorgonColor(GorgonColors.White, Opacity));
         bottomLeft = new Vector2(_cubeScreenBounds[3].BottomLeft.X, _cubeScreenBounds[3].BottomLeft.Y);
-        Renderer.DrawString("-Y", bottomLeft - offset, _axisFont, new GorgonColor(GorgonColor.White, Opacity));
+        Renderer.DrawString("-Y", bottomLeft - offset, _axisFont, new GorgonColor(GorgonColors.White, Opacity));
         bottomLeft = new Vector2(_cubeScreenBounds[4].BottomLeft.X, _cubeScreenBounds[4].BottomLeft.Y);
-        Renderer.DrawString("+Z", bottomLeft - offset, _axisFont, new GorgonColor(GorgonColor.White, Opacity));
+        Renderer.DrawString("+Z", bottomLeft - offset, _axisFont, new GorgonColor(GorgonColors.White, Opacity));
         bottomLeft = new Vector2(_cubeScreenBounds[5].BottomLeft.X, _cubeScreenBounds[5].BottomLeft.Y);
-        Renderer.DrawString("-Z", bottomLeft - offset, _axisFont, new GorgonColor(GorgonColor.White, Opacity));
+        Renderer.DrawString("-Z", bottomLeft - offset, _axisFont, new GorgonColor(GorgonColors.White, Opacity));
 
         Renderer.End();
     }
@@ -212,8 +212,8 @@ internal class TextureCubeViewer(Gorgon2D renderer, GorgonSwapChain swapChain, G
         _axisFont = _fontFactory.GetFont(new GorgonFontInfo("Segoe UI", 12, GorgonFontHeightMode.Points)
         {
             Name = "Segoe UI Bold 12pt - Axis Font",
-            OutlineColor1 = GorgonColor.Black,
-            OutlineColor2 = GorgonColor.Black,
+            OutlineColor1 = GorgonColors.Black,
+            OutlineColor2 = GorgonColors.Black,
             OutlineSize = 3,
             FontStyle = GorgonFontStyle.Bold
         });

@@ -244,7 +244,7 @@ internal class Extract
 
             OnPropertyChanging();
             _extractData.SkipColor = value;
-            _settings.SkipColor = value.ToARGB();
+            _settings.SkipColor = GorgonColor.ToARGB(value);
             OnPropertyChanged();
         }
     }

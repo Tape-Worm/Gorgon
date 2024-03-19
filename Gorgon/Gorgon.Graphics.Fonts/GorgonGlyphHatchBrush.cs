@@ -373,8 +373,8 @@ public class GorgonGlyphHatchBrush
     internal override void WriteBrushData(GorgonBinaryWriter writer)
     {
         writer.Write((int)HatchStyle);
-        writer.Write(ForegroundColor.ToARGB());
-        writer.Write(BackgroundColor.ToARGB());
+        writer.Write(GorgonColor.ToARGB(ForegroundColor));
+        writer.Write(GorgonColor.ToARGB(BackgroundColor));
     }
 
     /// <summary>Function to read back the specifics of the font brush data from a file reader.</summary>
@@ -382,8 +382,8 @@ public class GorgonGlyphHatchBrush
     internal override void ReadBrushData(GorgonBinaryReader reader)
     {
         HatchStyle = (GlyphBrushHatchStyle)reader.ReadInt32();
-        ForegroundColor = new GorgonColor(reader.ReadInt32());
-        BackgroundColor = new GorgonColor(reader.ReadInt32());
+        ForegroundColor = GorgonColor.FromARGB(reader.ReadInt32());
+        BackgroundColor = GorgonColor.FromARGB(reader.ReadInt32());
     }
 
     /// <summary>Function to clone an object.</summary>

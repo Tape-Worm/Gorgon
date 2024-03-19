@@ -66,7 +66,7 @@ internal class Settings
         get => GorgonColor.FromRGBA(_settings.ClipMaskValue);
         set
         {
-            int intValue = value.ToRGBA();
+            int intValue = GorgonColor.ToRGBA(value);
 
             if (intValue == _settings.ClipMaskValue)
             {

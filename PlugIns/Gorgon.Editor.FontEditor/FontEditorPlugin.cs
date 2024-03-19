@@ -479,17 +479,17 @@ internal class FontEditorPlugin
             Binding = TextureBinding.ShaderResource
         });
 
-        target.Clear(GorgonColor.White);
+        target.Clear(GorgonColors.White);
         graphics.SetRenderTarget(target);
         renderer.Begin(font.UsePremultipliedTextures ? Gorgon2DBatchState.PremultipliedBlend : null);
-        renderer.DrawRectangle(new DX.RectangleF(0, 0, target.Width, target.Height), GorgonColor.Black, 2);
+        renderer.DrawRectangle(new DX.RectangleF(0, 0, target.Width, target.Height), GorgonColors.Black, 2);
         if (!font.HasOutline)
         {
-            renderer.DrawString(string.Format(Resources.GORFNT_TEXT_PREVIEW, contentFile.Name), new Vector2(3, 3), font, GorgonColor.Black);
+            renderer.DrawString(string.Format(Resources.GORFNT_TEXT_PREVIEW, contentFile.Name), new Vector2(3, 3), font, GorgonColors.Black);
         }
         else
         {
-            renderer.DrawString(string.Format(Resources.GORFNT_TEXT_PREVIEW, contentFile.Name), new Vector2(3, 3), font, GorgonColor.White);
+            renderer.DrawString(string.Format(Resources.GORFNT_TEXT_PREVIEW, contentFile.Name), new Vector2(3, 3), font, GorgonColors.White);
         }
         renderer.End();
 

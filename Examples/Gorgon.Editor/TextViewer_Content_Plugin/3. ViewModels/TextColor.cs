@@ -37,9 +37,9 @@ internal class TextColor
 {
 
     // The original color for the sprite.
-    private GorgonColor _originalColor = GorgonColor.Black;
+    private GorgonColor _originalColor = GorgonColors.Black;
     // The current color for the sprite.
-    private GorgonColor _color = GorgonColor.Black;
+    private GorgonColor _color = GorgonColors.Black;
 
 
 

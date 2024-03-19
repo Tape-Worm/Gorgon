@@ -140,12 +140,12 @@ internal class SingleSpriteViewer
         DX.RectangleF textureSize = new(0, 0, RenderRegion.Width / BackgroundPattern.Width * Camera.Zoom.X, RenderRegion.Height / BackgroundPattern.Height * Camera.Zoom.X);
 
         Renderer.Begin(camera: Camera);
-        Renderer.DrawFilledRectangle(new DX.RectangleF(RenderRegion.Width * -0.5f, RenderRegion.Height * -0.5f, RenderRegion.Width, RenderRegion.Height), new GorgonColor(GorgonColor.White, TextureOpacity), BackgroundPattern, textureSize);
+        Renderer.DrawFilledRectangle(new DX.RectangleF(RenderRegion.Width * -0.5f, RenderRegion.Height * -0.5f, RenderRegion.Width, RenderRegion.Height), new GorgonColor(GorgonColors.White, TextureOpacity), BackgroundPattern, textureSize);
         Renderer.End();
 
         Renderer.Begin();
         textureSize = new DX.RectangleF(0, 0, ClientSize.Width / BackgroundPattern.Width, ClientSize.Height / BackgroundPattern.Height);
-        Renderer.DrawFilledRectangle(new DX.RectangleF(0, 0, ClientSize.Width, ClientSize.Height), new GorgonColor(GorgonColor.White, 1.0f - TextureOpacity), BackgroundPattern, textureSize);
+        Renderer.DrawFilledRectangle(new DX.RectangleF(0, 0, ClientSize.Width, ClientSize.Height), new GorgonColor(GorgonColors.White, 1.0f - TextureOpacity), BackgroundPattern, textureSize);
         Renderer.End();
     }
 
@@ -162,7 +162,7 @@ internal class SingleSpriteViewer
                                                        halfRegion.Y,
                                                        DataContext.Texture.Width,
                                                        DataContext.Texture.Height),
-                                    new GorgonColor(GorgonColor.White, TextureOpacity),
+                                    new GorgonColor(GorgonColors.White, TextureOpacity),
                                     Sprite.Texture,
                                     new DX.RectangleF(0, 0, 1, 1),
                                     textureSampler: GorgonSamplerState.PointFiltering);

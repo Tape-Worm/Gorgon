@@ -89,7 +89,7 @@ namespace Gorgon.Graphics.Wpf;
 ///         // We'll just clear the screen here.  Exciting
 ///         _graphics.SetRenderTarget(_target.RenderTargetView);
 ///         
-///         _target.RenderTargetView(GorgonColor.CornFlowerBlue);
+///         _target.RenderTargetView(GorgonColors.CornFlowerBlue);
 /// 
 ///         return true;
 ///     }

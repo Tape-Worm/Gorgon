@@ -205,7 +205,7 @@ internal partial class FontOutlineView
         ColorStart.OriginalColor =
         ColorStart.SelectedColor =
         ColorEnd.OriginalColor =
-        ColorEnd.SelectedColor = GorgonColor.BlackTransparent;
+        ColorEnd.SelectedColor = GorgonColors.BlackTransparent;
     }
 
     /// <summary>

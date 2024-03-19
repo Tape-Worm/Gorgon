@@ -263,7 +263,7 @@ internal class TextSpriteTransformer
             ref Gorgon2DVertex vertex = ref vertices[i];
 
             vertex.Position = new Vector4(Vector3.Zero, 1.0f);
-            vertex.Color = GorgonColor.White;
+            vertex.Color = GorgonColors.White;
             vertex.UV = Vector4.UnitW;
             vertex.Angle = Vector2.Zero;
         }

@@ -180,7 +180,7 @@ public partial class MainWindow
         }
 
         // Do nothing here.  When we need to update, we will.
-        _target.RenderTargetView.Clear(GorgonColor.BlackTransparent);
+        _target.RenderTargetView.Clear(GorgonColors.BlackTransparent);
 
         // In order to get our rendering to show up in WPF, we need to render to the render target view provided to us by the 
         // WPF render target.

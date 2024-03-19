@@ -67,7 +67,7 @@ internal class SceneRenderer
         _graphics.SetRenderTarget(_screen);
         _renderer.Begin();
         _renderer.DrawFilledRectangle(new DX.RectangleF(0, 0, _screen.Width, _screen.Height),
-                                    GorgonColor.White,
+                                    GorgonColors.White,
                                     src,
                                     new DX.RectangleF(0, 0, 1, 1),
                                     textureSampler: GorgonSamplerState.Default);
@@ -125,7 +125,7 @@ internal class SceneRenderer
 
         ApplyLightingToLayers();
 
-        _screen.Clear(GorgonColor.BlackTransparent);
+        _screen.Clear(GorgonColors.BlackTransparent);
 
         // If we have no post processing, then just blit to the screen target.
         if (_postProcessGroups.Count == 0)
@@ -149,7 +149,7 @@ internal class SceneRenderer
                     continue;
                 }
 
-                sceneBuffer.Clear(GorgonColor.BlackTransparent);
+                sceneBuffer.Clear(GorgonColors.BlackTransparent);
                 _graphics.SetRenderTarget(sceneBuffer);
 
                 // Render the data.

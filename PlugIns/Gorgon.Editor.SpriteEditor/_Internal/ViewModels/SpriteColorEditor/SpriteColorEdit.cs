@@ -43,7 +43,7 @@ internal class SpriteColorEdit
     // The currently selected vertex.
     private readonly bool[] _selectedVertex = new bool[4];
     // The currently selected color.
-    private GorgonColor _selectedColor = GorgonColor.BlackTransparent;
+    private GorgonColor _selectedColor = GorgonColors.BlackTransparent;
 
 
 
@@ -114,7 +114,7 @@ internal class SpriteColorEdit
             OnPropertyChanging();
             for (int i = 0; i < _color.Length; ++i)
             {
-                _color[i] = i < value.Count ? value[i] : GorgonColor.BlackTransparent;
+                _color[i] = i < value.Count ? value[i] : GorgonColors.BlackTransparent;
             }
             OnPropertyChanged();
         }
@@ -139,7 +139,7 @@ internal class SpriteColorEdit
             OnPropertyChanging();
             for (int i = 0; i < _originalColor.Length; ++i)
             {
-                _originalColor[i] = i < value.Count ? value[i] : GorgonColor.BlackTransparent;
+                _originalColor[i] = i < value.Count ? value[i] : GorgonColors.BlackTransparent;
             }
             OnPropertyChanged();
         }
@@ -168,7 +168,7 @@ internal class SpriteColorEdit
         for (int i = 0; i < 4; ++i)
         {
             _selectedVertex[i] = true;
-            _color[i] = _originalColor[i] = GorgonColor.BlackTransparent;
+            _color[i] = _originalColor[i] = GorgonColors.BlackTransparent;
         }
     }
 

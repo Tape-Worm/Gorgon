@@ -144,7 +144,7 @@ public class Gorgon2DGrayScaleEffect
         Begin(GorgonBlendState.Default, GorgonDepthStencilState.Default, GorgonRasterState.Default, null);
 
         Renderer.DrawFilledRectangle(new DX.RectangleF(0, 0, output.Width, output.Height),
-                                        GorgonColor.White,
+                                        GorgonColors.White,
                                         texture,
                                         new DX.RectangleF(0, 0, 1, 1));
         End();

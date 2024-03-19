@@ -197,7 +197,7 @@ internal partial class AnimationColorKeyEditor
     private void ResetDataContext()
     {
         UnassignEvents();
-        PickerColor.OriginalColor = PickerColor.SelectedColor = GorgonColor.BlackTransparent;
+        PickerColor.OriginalColor = PickerColor.SelectedColor = GorgonColors.BlackTransparent;
     }
 
     /// <summary>

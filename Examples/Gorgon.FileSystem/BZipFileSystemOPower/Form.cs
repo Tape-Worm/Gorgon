@@ -139,7 +139,7 @@ public partial class Form
 
         for (int i = 0; i < _blurredTarget.Length; ++i)
         {
-            _blurredTarget[i].Clear(GorgonColor.BlackTransparent);
+            _blurredTarget[i].Clear(GorgonColors.BlackTransparent);
             _graphics.SetRenderTarget(_blurredTarget[i]);
             _renderer.Begin();
             _renderer.DrawSprite(_sprites[2]);
@@ -221,7 +221,7 @@ public partial class Form
                                                         (height / 2) - (_blurredImage[0].Height / 2.0f),
                                                         _blurredImage[0].Width,
                                                         _blurredImage[0].Height),
-                                      GorgonColor.White,
+                                      GorgonColors.White,
                                       _blurredImage[index],
                                       new DX.RectangleF(0, 0, 1, 1));
 
@@ -356,13 +356,13 @@ public partial class Form
         _poetry = new GorgonTextSprite(_textFont, Encoding.UTF8.GetString(LoadFile("/SomeText.txt")))
         {
             Position = _textPosition,
-            Color = Color.Black
+            Color = GorgonColors.Black
         };
 
         // Set up help text.
         _helpText = new GorgonTextSprite(_helpFont, "F1 - Show/hide this help text.\nS - Show frame statistics.\nESC - Exit.")
         {
-            Color = Color.Blue,
+            Color = GorgonColors.Blue,
             Position = new Vector2(3, 3)
         };
 

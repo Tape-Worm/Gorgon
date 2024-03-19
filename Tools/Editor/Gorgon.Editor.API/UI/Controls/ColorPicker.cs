@@ -74,8 +74,8 @@ public partial class ColorPicker
     [Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public GorgonColor SelectedColor
     {
-        get => Picker.SelectedColor;
-        set => Picker.SelectedColor = value;
+        get => GorgonColor.FromColor(Picker.SelectedColor);
+        set => Picker.SelectedColor = GorgonColor.ToColor(value);
     }
 
     /// <summary>
@@ -84,8 +84,8 @@ public partial class ColorPicker
     [Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public GorgonColor OriginalColor
     {
-        get => Picker.OldColor;
-        set => Picker.OldColor = value;
+        get => GorgonColor.FromColor(Picker.OldColor);
+        set => Picker.OldColor = GorgonColor.ToColor(value);
     }
 
 

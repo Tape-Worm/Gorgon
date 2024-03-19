@@ -276,8 +276,8 @@ public class GorgonCodecBmFont
             AntiAliasingMode = ((aa.Length > 0) && (string.Equals(aa, "1", StringComparison.OrdinalIgnoreCase))) ? GorgonFontAntiAliasMode.AntiAlias : GorgonFontAntiAliasMode.None,
             DefaultCharacter = ' ',
             Brush = new GorgonGlyphSolidBrush(),
-            OutlineColor1 = outlineSize > 0 ? GorgonColor.Black : GorgonColor.BlackTransparent,
-            OutlineColor2 = outlineSize > 0 ? GorgonColor.Black : GorgonColor.BlackTransparent,
+            OutlineColor1 = outlineSize > 0 ? GorgonColors.Black : GorgonColors.BlackTransparent,
+            OutlineColor2 = outlineSize > 0 ? GorgonColors.Black : GorgonColors.BlackTransparent,
             OutlineSize = outlineSize
         };
 

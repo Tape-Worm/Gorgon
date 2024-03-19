@@ -63,7 +63,7 @@ internal abstract class Layer2D(Gorgon2D renderer)
     /// <param name="samplerState">[Optional] The sampler state to apply.</param>
     protected void Blit(GorgonTexture2DView texture, DX.RectangleF? textureCoordinates = null, GorgonSamplerState samplerState = null) =>
         Renderer.DrawFilledRectangle(new DX.RectangleF(0, 0, OutputSize.Width, OutputSize.Height),
-            GorgonColor.White,
+            GorgonColors.White,
             texture,
             textureCoordinates ?? new DX.RectangleF(0, 0, 1, 1),
             textureSampler: samplerState ?? GorgonSamplerState.Default,

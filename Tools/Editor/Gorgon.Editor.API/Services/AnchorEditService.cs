@@ -310,10 +310,10 @@ public class AnchorEditService : IAnchorEditService
         _anchorIcon.Position = (new Vector2(screenAnchor.X, screenAnchor.Y)).Truncate();
 
         _renderer.DrawSprite(_anchorIcon);
-        _renderer.DrawFilledRectangle(new DX.RectangleF(_anchorIcon.Position.X - 4, _anchorIcon.Position.Y - 1, 9, 3), GorgonColor.Black);
-        _renderer.DrawFilledRectangle(new DX.RectangleF(_anchorIcon.Position.X - 1, _anchorIcon.Position.Y - 4, 3, 9), GorgonColor.Black);
-        _renderer.DrawLine(_anchorIcon.Position.X - 3, _anchorIcon.Position.Y, _anchorIcon.Position.X + 4, _anchorIcon.Position.Y, GorgonColor.White);
-        _renderer.DrawLine(_anchorIcon.Position.X, _anchorIcon.Position.Y - 3, _anchorIcon.Position.X, _anchorIcon.Position.Y + 4, GorgonColor.White);
+        _renderer.DrawFilledRectangle(new DX.RectangleF(_anchorIcon.Position.X - 4, _anchorIcon.Position.Y - 1, 9, 3), GorgonColors.Black);
+        _renderer.DrawFilledRectangle(new DX.RectangleF(_anchorIcon.Position.X - 1, _anchorIcon.Position.Y - 4, 3, 9), GorgonColors.Black);
+        _renderer.DrawLine(_anchorIcon.Position.X - 3, _anchorIcon.Position.Y, _anchorIcon.Position.X + 4, _anchorIcon.Position.Y, GorgonColors.White);
+        _renderer.DrawLine(_anchorIcon.Position.X, _anchorIcon.Position.Y - 3, _anchorIcon.Position.X, _anchorIcon.Position.Y + 4, GorgonColors.White);
 
         _animController.Update();
     }
@@ -333,15 +333,15 @@ public class AnchorEditService : IAnchorEditService
         GorgonAnimationBuilder builder = new();
 
         _animation = builder.EditColor("Color")
-            .SetKey(new GorgonKeyGorgonColor(0.0f, GorgonColor.White))
-            .SetKey(new GorgonKeyGorgonColor(2.0f, new GorgonColor(GorgonColor.White, 0.3f)))
-            .SetKey(new GorgonKeyGorgonColor(4.0f, new GorgonColor(GorgonColor.LightRed, 0.6f)))
-            .SetKey(new GorgonKeyGorgonColor(6.0f, new GorgonColor(GorgonColor.LightRed, 0.3f)))
-            .SetKey(new GorgonKeyGorgonColor(8.0f, new GorgonColor(GorgonColor.LightGreen, 0.6f)))
-            .SetKey(new GorgonKeyGorgonColor(10.0f, new GorgonColor(GorgonColor.LightGreen, 0.3f)))
-            .SetKey(new GorgonKeyGorgonColor(12.0f, new GorgonColor(GorgonColor.LightBlue, 0.6f)))
-            .SetKey(new GorgonKeyGorgonColor(14.0f, new GorgonColor(GorgonColor.LightBlue, 0.3f)))
-            .SetKey(new GorgonKeyGorgonColor(16.0f, GorgonColor.White))
+            .SetKey(new GorgonKeyGorgonColor(0.0f, GorgonColors.White))
+            .SetKey(new GorgonKeyGorgonColor(2.0f, new GorgonColor(GorgonColors.White, 0.3f)))
+            .SetKey(new GorgonKeyGorgonColor(4.0f, new GorgonColor(GorgonColors.LightRed, 0.6f)))
+            .SetKey(new GorgonKeyGorgonColor(6.0f, new GorgonColor(GorgonColors.LightRed, 0.3f)))
+            .SetKey(new GorgonKeyGorgonColor(8.0f, new GorgonColor(GorgonColors.LightGreen, 0.6f)))
+            .SetKey(new GorgonKeyGorgonColor(10.0f, new GorgonColor(GorgonColors.LightGreen, 0.3f)))
+            .SetKey(new GorgonKeyGorgonColor(12.0f, new GorgonColor(GorgonColors.LightBlue, 0.6f)))
+            .SetKey(new GorgonKeyGorgonColor(14.0f, new GorgonColor(GorgonColors.LightBlue, 0.3f)))
+            .SetKey(new GorgonKeyGorgonColor(16.0f, GorgonColors.White))
             .EndEdit()
             .Build("Icon Opacity");
     }

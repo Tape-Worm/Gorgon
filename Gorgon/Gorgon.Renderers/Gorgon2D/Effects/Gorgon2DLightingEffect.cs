@@ -137,7 +137,7 @@ public class Gorgon2DLightingEffect(Gorgon2D renderer)
     // The data to pass to the effect.
     private GlobalEffectData _effectData = new()
     {
-        AmbientColor = GorgonColor.Black,
+        AmbientColor = GorgonColors.Black,
         ZCheck = 1
     };
 
@@ -204,7 +204,7 @@ public class Gorgon2DLightingEffect(Gorgon2D renderer)
             }
 
             Renderer.DrawFilledRectangle(new DX.RectangleF(0, 0, output.Width, output.Height),
-                                        GorgonColor.White,
+                                        GorgonColors.White,
                                         diffuse,
                                         new DX.RectangleF(0, 0, 1, 1),
                                         textureSampler: GorgonSamplerState.Default);

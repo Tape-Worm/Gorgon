@@ -517,7 +517,7 @@ public class GorgonSprite
     /// </summary>
     public GorgonSprite()
     {
-        CornerColors = new GorgonSpriteColors(GorgonColor.White, Renderable);
+        CornerColors = new GorgonSpriteColors(GorgonColors.White, Renderable);
         CornerOffsets = new GorgonRectangleOffsets(Renderable);
 
         for (int i = 0; i < Renderable.Vertices.Length; ++i)

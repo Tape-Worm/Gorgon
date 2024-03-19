@@ -102,7 +102,7 @@ internal class FontRenderer(Gorgon2D renderer, GorgonSwapChain mainRenderTarget,
         base.OnRenderBackground();
 
         Renderer.Begin(camera: Camera);
-        Renderer.DrawFilledRectangle(new DX.RectangleF(RenderRegion.Width * -0.5f, RenderRegion.Height * -0.5f, RenderRegion.Width, RenderRegion.Height), new GorgonColor(GorgonColor.Black, 0.35f));
+        Renderer.DrawFilledRectangle(new DX.RectangleF(RenderRegion.Width * -0.5f, RenderRegion.Height * -0.5f, RenderRegion.Width, RenderRegion.Height), new GorgonColor(GorgonColors.Black, 0.35f));
         Renderer.End();
     }
 
@@ -124,12 +124,12 @@ internal class FontRenderer(Gorgon2D renderer, GorgonSwapChain mainRenderTarget,
 
         _textSprite.Position = basePosition + ((DataContext.WorkingFont.OutlineSize == 0) ? new Vector2(2) : new Vector2((DataContext.WorkingFont.OutlineSize * 0.5f).Max(2)).Floor());
         _textSprite.OutlineTint =
-        _textSprite.Color = new GorgonColor(GorgonColor.Black * 0.25f, 0.25f);
+        _textSprite.Color = new GorgonColor(GorgonColors.Black * 0.25f, 0.25f);
         Renderer.DrawTextSprite(_textSprite);
 
         _textSprite.Position = basePosition;
         _textSprite.OutlineTint =
-        _textSprite.Color = GorgonColor.White;
+        _textSprite.Color = GorgonColors.White;
         Renderer.DrawTextSprite(_textSprite);
 
         Renderer.End();
@@ -158,7 +158,7 @@ internal class FontRenderer(Gorgon2D renderer, GorgonSwapChain mainRenderTarget,
     public void CreateResources()
         => _textSprite = new GorgonTextSprite(DataContext.WorkingFont)
         {
-            Color = GorgonColor.Black,
+            Color = GorgonColors.Black,
             Text = "Should not see me"
         };
 

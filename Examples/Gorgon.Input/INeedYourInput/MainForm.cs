@@ -169,7 +169,7 @@ public partial class MainForm
                 break;
             case Keys.C:
                 // Fill the back up image with white
-                _backBuffer.Clear(GorgonColor.White);
+                _backBuffer.Clear(GorgonColors.White);
                 _backBuffer.Texture.CopyTo(_backupImage);
                 break;
             case Keys.J:
@@ -418,7 +418,7 @@ public partial class MainForm
 
         // Dump to the screen.
         _2D.Begin(_noBlending);
-        _2D.DrawFilledRectangle(new DX.RectangleF(0, 0, _backBuffer.Width, _backBuffer.Height), GorgonColor.White, _backBufferView, new DX.RectangleF(0, 0, 1, 1));
+        _2D.DrawFilledRectangle(new DX.RectangleF(0, 0, _backBuffer.Width, _backBuffer.Height), GorgonColors.White, _backBufferView, new DX.RectangleF(0, 0, 1, 1));
         _2D.End();
 
         if (_joystick is not null)
@@ -683,7 +683,7 @@ public partial class MainForm
             // Create text sprite.
             _messageSprite = new GorgonTextSprite(_font, "Using mouse and keyboard (Windows Forms).")
             {
-                Color = Color.Black
+                Color = GorgonColors.Black
             };
 
             // Create a back buffer.
@@ -691,7 +691,7 @@ public partial class MainForm
             {
                 Name = "Backbuffer storage"
             });
-            _backBuffer.Clear(Color.White);
+            _backBuffer.Clear(GorgonColors.White);
             _backBufferView = _backBuffer.GetShaderResourceView();
 
             // Clear our backup image to white to match our primary screen.

@@ -63,7 +63,7 @@ public partial class Form : System.Windows.Forms.Form
     /// <returns><b>true</b> to continue execution, <b>false</b> to stop.</returns>
     private bool Idle()
     {
-        _swap.RenderTargetView.Clear(GorgonColor.White);
+        _swap.RenderTargetView.Clear(GorgonColors.White);
 
         DX.Size2F windowSize = new(ClientSize.Width, ClientSize.Height);
         DX.Size2F imageSize = new(_texture.Width, _texture.Height);

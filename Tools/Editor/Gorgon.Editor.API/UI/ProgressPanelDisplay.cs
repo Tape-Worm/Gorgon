@@ -133,7 +133,7 @@ public class ProgressPanelDisplay
         _appForm = appForm ?? throw new ArgumentNullException(nameof(appForm));
         _progressForm = new GorgonProgressOverlay
         {
-            OverlayColor = Graphics.GorgonColor.Black
+            OverlayColor = Graphics.GorgonColors.Black
         };
         _progressTimer = new GorgonTimerQpc();
     }

@@ -62,7 +62,7 @@ internal class TextCodeParser
 
         return !int.TryParse(_colorBuffer.ToString(), NumberStyles.AllowHexSpecifier, CultureInfo.CurrentCulture, out int color)
             ? null
-            : new GorgonColor(color);
+            : GorgonColor.FromARGB(color);
     }
 
     /// <summary>

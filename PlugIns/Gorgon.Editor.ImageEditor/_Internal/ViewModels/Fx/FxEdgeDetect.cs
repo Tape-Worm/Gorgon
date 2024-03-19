@@ -42,7 +42,7 @@ internal class FxEdgeDetect
     // The offset for the edge line width.
     private float _offset = 1.0f;
     // The color of the edge line.
-    private GorgonColor _lineColor = GorgonColor.Black;
+    private GorgonColor _lineColor = GorgonColors.Black;
     // Flag to indicate that the edges should be overlaid on top of the original image or not.
     private bool _overlay = true;
 

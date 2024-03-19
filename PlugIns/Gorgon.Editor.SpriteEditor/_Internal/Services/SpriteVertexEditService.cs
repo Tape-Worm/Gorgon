@@ -626,10 +626,10 @@ internal class SpriteVertexEditService
 
         _renderer.Begin(_invertedState);
 
-        _renderer.DrawLine(_screenVertices[0].X, _screenVertices[0].Y, _screenVertices[1].X - 1, _screenVertices[1].Y, GorgonColor.White);
-        _renderer.DrawLine(_screenVertices[1].X - 1, _screenVertices[1].Y, _screenVertices[2].X - 1, _screenVertices[2].Y - 1, GorgonColor.White);
-        _renderer.DrawLine(_screenVertices[2].X, _screenVertices[2].Y - 1, _screenVertices[3].X + 1, _screenVertices[3].Y - 1, GorgonColor.White);
-        _renderer.DrawLine(_screenVertices[3].X, _screenVertices[3].Y, _screenVertices[0].X, _screenVertices[0].Y + 1, GorgonColor.White);
+        _renderer.DrawLine(_screenVertices[0].X, _screenVertices[0].Y, _screenVertices[1].X - 1, _screenVertices[1].Y, GorgonColors.White);
+        _renderer.DrawLine(_screenVertices[1].X - 1, _screenVertices[1].Y, _screenVertices[2].X - 1, _screenVertices[2].Y - 1, GorgonColors.White);
+        _renderer.DrawLine(_screenVertices[2].X, _screenVertices[2].Y - 1, _screenVertices[3].X + 1, _screenVertices[3].Y - 1, GorgonColors.White);
+        _renderer.DrawLine(_screenVertices[3].X, _screenVertices[3].Y, _screenVertices[0].X, _screenVertices[0].Y + 1, GorgonColors.White);
 
         _renderer.End();
 
@@ -655,26 +655,26 @@ internal class SpriteVertexEditService
             // Hilight our active handle.
             if (_activeHandleIndex == i)
             {
-                _renderer.DrawFilledRectangle(handleBounds, new GorgonColor(GorgonColor.RedPure, 0.7f));
+                _renderer.DrawFilledRectangle(handleBounds, new GorgonColor(GorgonColors.Red, 0.7f));
             }
 
             if (texture is null)
             {
-                _renderer.DrawRectangle(handleBounds, GorgonColor.Black);
-                _renderer.DrawRectangle(new DX.RectangleF(handleBounds.X + 1, handleBounds.Y + 1, handleBounds.Width - 2, handleBounds.Height - 2), GorgonColor.White);
+                _renderer.DrawRectangle(handleBounds, GorgonColors.Black);
+                _renderer.DrawRectangle(new DX.RectangleF(handleBounds.X + 1, handleBounds.Y + 1, handleBounds.Width - 2, handleBounds.Height - 2), GorgonColors.White);
             }
             else
             {
-                _renderer.DrawFilledRectangle(handleBounds, GorgonColor.White, texture, new DX.RectangleF(0, 0, 1, 1));
+                _renderer.DrawFilledRectangle(handleBounds, GorgonColors.White, texture, new DX.RectangleF(0, 0, 1, 1));
             }
 
 
             if (SelectedVertexIndex == i)
             {
                 handleBounds.Inflate(4, 4);
-                _renderer.DrawEllipse(handleBounds, GorgonColor.Black, thickness: 2);
+                _renderer.DrawEllipse(handleBounds, GorgonColors.Black, thickness: 2);
                 handleBounds.Inflate(-1, -1);
-                _renderer.DrawEllipse(handleBounds, GorgonColor.White);
+                _renderer.DrawEllipse(handleBounds, GorgonColors.White);
             }
         }
     }

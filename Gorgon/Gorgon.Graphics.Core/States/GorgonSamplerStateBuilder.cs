@@ -159,7 +159,7 @@ public class GorgonSamplerStateBuilder(GorgonGraphics graphics)
         if ((wrapW is null) && (wrapU is null) && (wrapV is null) && (borderColor is null))
         {
             WorkingState.WrapU = WorkingState.WrapV = WorkingState.WrapW = TextureWrap.Clamp;
-            WorkingState.BorderColor = GorgonColor.Transparent;
+            WorkingState.BorderColor = GorgonColors.Transparent;
             return this;
         }
 

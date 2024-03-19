@@ -523,7 +523,7 @@ internal class GlyphDraw(IGorgonFontInfo fontInfo, GdiFontData fontData)
         System.Drawing.Graphics glyphGraphics = System.Drawing.Graphics.FromImage(glyphBitmap);
         GorgonGlyphBrush glyphBrush = _fontInfo.Brush ?? new GorgonGlyphSolidBrush
         {
-            Color = GorgonColor.White
+            Color = GorgonColors.White
         };
 
         try

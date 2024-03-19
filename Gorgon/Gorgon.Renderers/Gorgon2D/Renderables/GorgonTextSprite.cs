@@ -620,7 +620,7 @@ public class GorgonTextSprite
     {
         Font = font ?? throw new ArgumentNullException(nameof(font));
         Text = text ?? string.Empty;
-        GlyphCornerColors = new GorgonGlyphColors(GorgonColor.White, Renderable);
+        GlyphCornerColors = new GorgonGlyphColors(GorgonColors.White, Renderable);
     }
 
 }

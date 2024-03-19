@@ -717,17 +717,17 @@ public class RectClipperService
             // Hilight our active handle.
             if (_activeHandleIndex == i)
             {
-                _renderer.DrawFilledRectangle(handleBounds, new GorgonColor(GorgonColor.RedPure, 0.7f));
+                _renderer.DrawFilledRectangle(handleBounds, new GorgonColor(GorgonColors.Red, 0.7f));
             }
 
             if (texture is null)
             {
-                _renderer.DrawRectangle(handleBounds, GorgonColor.Black);
-                _renderer.DrawRectangle(new DX.RectangleF(handleBounds.X + 1, handleBounds.Y + 1, handleBounds.Width - 2, handleBounds.Height - 2), GorgonColor.White);
+                _renderer.DrawRectangle(handleBounds, GorgonColors.Black);
+                _renderer.DrawRectangle(new DX.RectangleF(handleBounds.X + 1, handleBounds.Y + 1, handleBounds.Width - 2, handleBounds.Height - 2), GorgonColors.White);
             }
             else if (AllowManualInput)
             {
-                _renderer.DrawFilledRectangle(handleBounds, GorgonColor.White, texture, new DX.RectangleF(0, 0, 1, 1));
+                _renderer.DrawFilledRectangle(handleBounds, GorgonColors.White, texture, new DX.RectangleF(0, 0, 1, 1));
             }
         }
     }

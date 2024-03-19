@@ -212,7 +212,7 @@ internal class RenderTargetFactory(GorgonGraphics graphics)
             {
                 if (clearOnRetrieve)
                 {
-                    rtv.Clear(GorgonColor.BlackTransparent);
+                    rtv.Clear(GorgonColors.BlackTransparent);
                 }
 
                 _renderTargets.Remove(rtv);
@@ -232,7 +232,7 @@ internal class RenderTargetFactory(GorgonGraphics graphics)
         _srvs.Add(newRtv.GetShaderResourceView());
         newRtv.OwnerFactory = this;
         _rented.Add(newRtv);
-        newRtv.Clear(GorgonColor.BlackTransparent);
+        newRtv.Clear(GorgonColors.BlackTransparent);
         return newRtv;
     }
 

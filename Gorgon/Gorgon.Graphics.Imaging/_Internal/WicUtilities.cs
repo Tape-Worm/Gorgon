@@ -430,11 +430,11 @@ class WicUtilities
             if (color.Alpha >= alpha)
             {
                 // We set the alpha to 1.0 because we only get opaque or transparent colors for 8 bit.
-                dxColors[i] = new GorgonColor(color, 1.0f);
+                dxColors[i] = new DX.Color(color.Red, color.Green, color.Blue, 1.0f);
             }
             else
             {
-                dxColors[i] = GorgonColor.BlackTransparent;
+                dxColors[i] = new DX.Color(0);
             }
         }
 
@@ -487,11 +487,11 @@ class WicUtilities
             if (color.Alpha >= alpha)
             {
                 // We set the alpha to 1.0 because we only get opaque or transparent colors for 8 bit.
-                dxColors[i] = new GorgonColor(color, 1.0f);
+                dxColors[i] = new DX.Color(color.Red, color.Green, color.Blue, 1.0f);
             }
             else
             {
-                dxColors[i] = GorgonColor.BlackTransparent;
+                dxColors[i] = new DX.Color(0);
             }
         }
 

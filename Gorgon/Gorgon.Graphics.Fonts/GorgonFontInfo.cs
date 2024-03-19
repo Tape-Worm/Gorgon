@@ -252,14 +252,14 @@ public record GorgonFontInfo(string FontFamilyName, float Size, GorgonFontHeight
     /// if the <see cref="OutlineSize"/> value is not greater than 0.
     /// </para> 
     /// <para>
-    /// The default value is <see cref="GorgonColor.BlackTransparent"/> (A=0.0f, R=0.0f, G=0.0f, B=0.0f).
+    /// The default value is <see cref="GorgonColors.BlackTransparent"/> (A=0.0f, R=0.0f, G=0.0f, B=0.0f).
     /// </para>
     /// </remarks>
     public GorgonColor OutlineColor1
     {
         get;
         init;
-    } = GorgonColor.BlackTransparent;
+    } = GorgonColors.BlackTransparent;
 
     /// <summary>
     /// Property to return the ending color of the outline.
@@ -273,14 +273,14 @@ public record GorgonFontInfo(string FontFamilyName, float Size, GorgonFontHeight
     /// if the <see cref="OutlineSize"/> value is not greater than 3.
     /// </para> 
     /// <para>
-    /// The default value is <see cref="GorgonColor.BlackTransparent"/> (A=0.0f, R=0.0f, G=0.0f, B=0.0f).
+    /// The default value is <see cref="GorgonColors.BlackTransparent"/> (A=0.0f, R=0.0f, G=0.0f, B=0.0f).
     /// </para>
     /// </remarks>
     public GorgonColor OutlineColor2
     {
         get;
         init;
-    } = GorgonColor.BlackTransparent;
+    } = GorgonColors.BlackTransparent;
 
     /// <summary>
     /// Property to return a <see cref="GorgonGlyphBrush"/> to use for special effects on the glyphs for the font.

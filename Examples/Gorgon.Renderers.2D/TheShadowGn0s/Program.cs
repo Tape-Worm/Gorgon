@@ -103,7 +103,7 @@ ESC - Quit.";
     {
         GorgonSprite shadowSprite = _bgSprite == _sprite2 ? _shadowSprites[1] : _shadowSprites[0];
 
-        _layer1Target.Clear(GorgonColor.BlackTransparent);
+        _layer1Target.Clear(GorgonColors.BlackTransparent);
         _graphics.SetRenderTarget(_layer1Target);
 
         _renderer.Begin(_rtvBlendState);
@@ -117,7 +117,7 @@ ESC - Quit.";
 
         DX.RectangleF bgRegion = new(0, 0, _screen.Width, _screen.Height);
         _renderer.DrawFilledRectangle(bgRegion,
-                                      GorgonColor.White,
+                                      GorgonColors.White,
                                       _backgroundTexture,
                                       new DX.RectangleF(0,
                                                         0,
@@ -142,7 +142,7 @@ ESC - Quit.";
         // Send the background layer to our blur target so we have an initial image to blur.
         _renderer.Begin();
         _renderer.DrawFilledRectangle(new DX.RectangleF(0, 0, _blurTexture.Width, _blurTexture.Height),
-                                      GorgonColor.White,
+                                      GorgonColors.White,
                                       _layer1Texture,
                                       new DX.RectangleF(0, 0, 1, 1));
         _renderer.End();
@@ -185,13 +185,13 @@ ESC - Quit.";
 
         // Draw our blurred (or not) background.
         _renderer.DrawFilledRectangle(new DX.RectangleF(0, 0, _screen.Width, _screen.Height),
-                                      GorgonColor.White,
+                                      GorgonColors.White,
                                       _blurTexture,
                                       new DX.RectangleF(0, 0, 1, 1));
 
         // Draw an ellipse to indicate our light source.
         DX.RectangleF lightPosition = new((_screen.Width / 2.0f) - 10, (_screen.Height / 2.0f) - 10, 20, 20);
-        _renderer.DrawFilledEllipse(lightPosition, GorgonColor.White, 0.5f);
+        _renderer.DrawFilledEllipse(lightPosition, GorgonColors.White, 0.5f);
 
         // Draw the sprite and its corresponding shadow.
         // We'll adjust the shadow position to be altered by our distance from the light source, and the quadrant of the screen that we're in.
@@ -202,7 +202,7 @@ ESC - Quit.";
 
         if (_showHelp)
         {
-            _renderer.DrawString(HelpText, new Vector2(2, 2), _helpFont, GorgonColor.White);
+            _renderer.DrawString(HelpText, new Vector2(2, 2), _helpFont, GorgonColors.White);
         }
 
         _renderer.End();
@@ -344,8 +344,8 @@ ESC - Quit.";
             {
                 Name = "Segoe UI 12pt Bold, Outlined",
                 FontStyle = GorgonFontStyle.Bold,
-                OutlineColor2 = GorgonColor.Black,
-                OutlineColor1 = GorgonColor.Black,
+                OutlineColor2 = GorgonColors.Black,
+                OutlineColor1 = GorgonColors.Black,
                 OutlineSize = 2,
                 TextureWidth = 512,
                 TextureHeight = 256

@@ -87,19 +87,19 @@ internal static class GorgonSpriteExtensions
                 sprite.Color = new Graphics.GorgonColor(sprite.Color, values.X);
                 break;
             case TrackSpriteProperty.UpperLeftColor:
-                sprite.CornerColors.UpperLeft = new Graphics.GorgonColor(values);
+                sprite.CornerColors.UpperLeft = Graphics.GorgonColor.FromVector4(values);
                 break;
             case TrackSpriteProperty.UpperRightColor:
-                sprite.CornerColors.UpperRight = new Graphics.GorgonColor(values);
+                sprite.CornerColors.UpperRight = Graphics.GorgonColor.FromVector4(values);
                 break;
             case TrackSpriteProperty.LowerLeftColor:
-                sprite.CornerColors.LowerLeft = new Graphics.GorgonColor(values);
+                sprite.CornerColors.LowerLeft = Graphics.GorgonColor.FromVector4(values);
                 break;
             case TrackSpriteProperty.LowerRightColor:
-                sprite.CornerColors.LowerRight = new Graphics.GorgonColor(values);
+                sprite.CornerColors.LowerRight = Graphics.GorgonColor.FromVector4(values);
                 break;
             case TrackSpriteProperty.Color:
-                sprite.Color = new Graphics.GorgonColor(values);
+                sprite.Color = Graphics.GorgonColor.FromVector4(values);
                 break;
             case TrackSpriteProperty.Anchor:
                 sprite.Anchor = new Vector2(values.X, values.Y);

@@ -67,9 +67,9 @@ public class Gorgon2DCompositor(Gorgon2D renderer)
     // The unique list of effects
     private readonly Dictionary<string, int> _passLookup = new(StringComparer.OrdinalIgnoreCase);
     // The color used to clear the initial render target.
-    private GorgonColor? _initialClear = GorgonColor.BlackTransparent;
+    private GorgonColor? _initialClear = GorgonColors.BlackTransparent;
     // The color used to clear the final render target.
-    private GorgonColor? _finalClear = GorgonColor.BlackTransparent;
+    private GorgonColor? _finalClear = GorgonColors.BlackTransparent;
 
 
 
@@ -179,7 +179,7 @@ public class Gorgon2DCompositor(Gorgon2D renderer)
         // Copy the composited output into the final render target specified by the user.
         Renderer.Begin(Gorgon2DBatchState.NoBlend);
         Renderer.DrawFilledRectangle(new DX.RectangleF(0, 0, lastTargetTexture.Width, lastTargetTexture.Height),
-                                     GorgonColor.White,
+                                     GorgonColors.White,
                                      lastTargetTexture,
                                      new DX.RectangleF(0, 0, 1, 1));
         Renderer.End();
@@ -246,7 +246,7 @@ public class Gorgon2DCompositor(Gorgon2D renderer)
     /// cleared at all.
     /// </para>
     /// <para>
-    /// The default value is <see cref="GorgonColor.BlackTransparent"/>.
+    /// The default value is <see cref="GorgonColors.BlackTransparent"/>.
     /// </para>
     /// </remarks>
     public Gorgon2DCompositor InitialClearColor(GorgonColor? value)
@@ -266,7 +266,7 @@ public class Gorgon2DCompositor(Gorgon2D renderer)
     /// specified. If the value is <b>null</b>, then the render target will not be cleared at all.
     /// </para>
     /// <para>
-    /// The default value is <see cref="GorgonColor.BlackTransparent"/>.
+    /// The default value is <see cref="GorgonColors.BlackTransparent"/>.
     /// </para>
     /// </remarks>
     public Gorgon2DCompositor FinalClearColor(GorgonColor? value)

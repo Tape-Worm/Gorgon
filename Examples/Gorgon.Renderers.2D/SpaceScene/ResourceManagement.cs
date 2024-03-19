@@ -243,8 +243,8 @@ internal class ResourceManagement(Gorgon2D renderer, GorgonMefPlugInCache plugIn
         Gorgon2DCompositor finalPostProcess = new(_renderer);
         finalPostProcess
             .Clear()
-            .InitialClearColor(GorgonColor.BlackTransparent)
-            .FinalClearColor(GorgonColor.BlackTransparent)
+            .InitialClearColor(GorgonColors.BlackTransparent)
+            .FinalClearColor(GorgonColors.BlackTransparent)
             .EffectPass("Bloom", bloom)
             .EffectPass("Chromatic Aberration", chromatic);
 

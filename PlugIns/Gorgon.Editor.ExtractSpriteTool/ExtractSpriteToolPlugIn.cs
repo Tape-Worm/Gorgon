@@ -158,7 +158,7 @@ internal class ExtractSpriteToolPlugIn
 
             _extractData.Texture = texture;
             _extractData.SkipEmpty = settings.AllowEmptySpriteSkip;
-            _extractData.SkipColor = new GorgonColor(settings.SkipColor);
+            _extractData.SkipColor = GorgonColor.FromARGB(settings.SkipColor);
             _extractData.CellSize = settings.GridCellSize;
 
             Extract extractViewModel = new();

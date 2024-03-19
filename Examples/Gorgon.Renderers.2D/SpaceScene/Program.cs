@@ -147,10 +147,10 @@ static class Program
         float maxSpeed = renderArea.Width * 0.12f * speed;
         DX.RectangleF speedRegion = new(renderArea.Left + 5, renderArea.Bottom - 30, renderArea.Width * 0.12f, 25);
         DX.RectangleF speedBar = new(speedRegion.X, speedRegion.Y, maxSpeed, speedRegion.Height);
-        _renderer.DrawFilledRectangle(speedRegion, new GorgonColor(GorgonColor.Black, 0.5f));
-        _renderer.DrawFilledRectangle(speedBar, new GorgonColor(GorgonColor.GreenPure * 0.85f, 0.3f));
-        _renderer.DrawString("Speed", new Vector2(speedRegion.Left, speedRegion.Top - _helpFont.LineHeight + 5), _helpFont, GorgonColor.White);
-        _renderer.DrawRectangle(speedRegion, new GorgonColor(GorgonColor.White, 0.3f));
+        _renderer.DrawFilledRectangle(speedRegion, new GorgonColor(GorgonColors.Black, 0.5f));
+        _renderer.DrawFilledRectangle(speedBar, new GorgonColor(GorgonColors.Green * 0.85f, 0.3f));
+        _renderer.DrawString("Speed", new Vector2(speedRegion.Left, speedRegion.Top - _helpFont.LineHeight + 5), _helpFont, GorgonColors.White);
+        _renderer.DrawRectangle(speedRegion, new GorgonColor(GorgonColors.White, 0.3f));
 
         _renderer.End();
 
@@ -189,9 +189,9 @@ static class Program
 
         DX.RectangleF destRegion = new(_screen.Width * 0.5f - newWidth * 0.5f, _screen.Height * 0.5f - newHeight * 0.5f, newWidth, newHeight);
 
-        _screen.RenderTargetView.Clear(GorgonColor.Black);
+        _screen.RenderTargetView.Clear(GorgonColors.Black);
         _renderer.DrawFilledRectangle(destRegion,
-            GorgonColor.White,
+            GorgonColors.White,
             _mainSrv,
             new DX.RectangleF(0, 0, 1, 1),
             textureSampler: GorgonSamplerState.Default);
@@ -353,15 +353,15 @@ static class Program
                 Characters = (Resources.Instructions + "yQHS:1234567890x").Distinct().ToArray(),
                 FontStyle = GorgonFontStyle.Bold,
                 AntiAliasingMode = GorgonFontAntiAliasMode.AntiAlias,
-                OutlineColor1 = GorgonColor.Black,
-                OutlineColor2 = GorgonColor.Black
+                OutlineColor1 = GorgonColors.Black,
+                OutlineColor2 = GorgonColors.Black
             });
 
             _textSprite = new GorgonTextSprite(_helpFont)
             {
                 Position = new Vector2(0, 64),
                 DrawMode = TextDrawMode.OutlinedGlyphs,
-                Color = GorgonColor.YellowPure
+                Color = GorgonColors.Yellow
             };
 
             GorgonExample.ShowStatistics = true;

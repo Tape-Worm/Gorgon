@@ -47,7 +47,7 @@ internal class SpriteTextureWrapEdit
     // Vertical wrapping state.
     private TextureWrap _vWrap = TextureWrap.Clamp;
     // The current color for the border.
-    private GorgonColor _border = GorgonColor.White;
+    private GorgonColor _border = GorgonColors.White;
 
 
 

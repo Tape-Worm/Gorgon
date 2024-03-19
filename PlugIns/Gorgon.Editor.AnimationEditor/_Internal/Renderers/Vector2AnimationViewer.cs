@@ -270,7 +270,7 @@ internal class Vector2AnimationViewer(Gorgon2D renderer, GorgonSwapChain swapCha
         {
             Sprite.CopyTo(_vertexEditSprite);
             _vertexEditSprite.Angle = 0;
-            _vertexEditSprite.Color = new GorgonColor(GorgonColor.Black, 0.85f);
+            _vertexEditSprite.Color = new GorgonColor(GorgonColors.Black, 0.85f);
             // Flip the scale to positive.
             _vertexEditSprite.Scale = new Vector2(Sprite.Scale.X.Abs(), Sprite.Scale.Y.Abs());
             return;

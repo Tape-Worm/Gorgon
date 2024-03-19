@@ -71,7 +71,7 @@ public class GorgonGlyphLinearGradientBrush
             // ReSharper disable once InvertIf
             if (Interpolation.Count == 0)
             {
-                return GorgonColor.BlackTransparent;
+                return GorgonColors.BlackTransparent;
             }
 
             return Interpolation[0].Color;
@@ -100,7 +100,7 @@ public class GorgonGlyphLinearGradientBrush
         {
             if (Interpolation.Count == 0)
             {
-                return GorgonColor.BlackTransparent;
+                return GorgonColors.BlackTransparent;
             }
 
             return Interpolation[^1].Color;
@@ -112,7 +112,7 @@ public class GorgonGlyphLinearGradientBrush
             switch (Interpolation.Count)
             {
                 case 0:
-                    Interpolation.Add(new GorgonGlyphBrushInterpolator(0, GorgonColor.Black));
+                    Interpolation.Add(new GorgonGlyphBrushInterpolator(0, GorgonColors.Black));
                     Interpolation.Add(newValue);
                     break;
                 case 1:
@@ -174,7 +174,7 @@ public class GorgonGlyphLinearGradientBrush
         {
             GorgonGlyphBrushInterpolator interp = Interpolation[i];
             writer.Write(interp.Weight);
-            writer.Write(interp.Color.ToARGB());
+            writer.Write(GorgonColor.ToARGB(interp.Color));
         }
     }
 
@@ -196,7 +196,7 @@ public class GorgonGlyphLinearGradientBrush
 
         for (int i = 0; i < interpCount; ++i)
         {
-            Interpolation.Add(new GorgonGlyphBrushInterpolator(reader.ReadSingle(), new GorgonColor(reader.ReadInt32())));
+            Interpolation.Add(new GorgonGlyphBrushInterpolator(reader.ReadSingle(), GorgonColor.FromARGB(reader.ReadInt32())));
         }
     }
 
@@ -281,8 +281,8 @@ public class GorgonGlyphLinearGradientBrush
     /// </summary>
     public GorgonGlyphLinearGradientBrush() => Interpolation =
                         [
-                            new(0, GorgonColor.Black),
-                            new(1, GorgonColor.White)
+                            new(0, GorgonColors.Black),
+                            new(1, GorgonColors.White)
                         ];
 
 }

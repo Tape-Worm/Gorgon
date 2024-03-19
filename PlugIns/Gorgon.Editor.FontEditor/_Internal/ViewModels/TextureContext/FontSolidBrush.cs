@@ -42,12 +42,12 @@ internal class FontSolidBrush
     /// </summary>
     public static readonly GorgonGlyphSolidBrush DefaultBrush = new()
     {
-        Color = GorgonColor.White
+        Color = GorgonColors.White
     };
 
     // The current brush for the font.
     private GorgonGlyphSolidBrush _brush = DefaultBrush;
-    private GorgonColor _original = GorgonColor.White;
+    private GorgonColor _original = GorgonColors.White;
 
 
 

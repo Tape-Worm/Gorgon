@@ -305,10 +305,10 @@ public class GorgonV2SpriteCodec(Gorgon2D renderer)
 
         return filter switch
         {
-            SampleFilter.MinMagMipLinear when (hWrap == TextureWrap.Clamp) && (vWrap == TextureWrap.Clamp) && (borderColor == GorgonColor.White) => null,
-            SampleFilter.MinMagMipPoint when (hWrap == TextureWrap.Clamp) && (vWrap == TextureWrap.Clamp) && (borderColor == GorgonColor.White) => GorgonSamplerState.PointFiltering,
-            SampleFilter.MinMagMipLinear when (hWrap == TextureWrap.Wrap) && (vWrap == TextureWrap.Wrap) && (borderColor == GorgonColor.White) => GorgonSamplerState.Wrapping,
-            SampleFilter.MinMagMipPoint when (hWrap == TextureWrap.Wrap) && (vWrap == TextureWrap.Wrap) && (borderColor == GorgonColor.White) => GorgonSamplerState.PointFilteringWrapping,
+            SampleFilter.MinMagMipLinear when (hWrap == TextureWrap.Clamp) && (vWrap == TextureWrap.Clamp) && (borderColor == GorgonColors.White) => null,
+            SampleFilter.MinMagMipPoint when (hWrap == TextureWrap.Clamp) && (vWrap == TextureWrap.Clamp) && (borderColor == GorgonColors.White) => GorgonSamplerState.PointFiltering,
+            SampleFilter.MinMagMipLinear when (hWrap == TextureWrap.Wrap) && (vWrap == TextureWrap.Wrap) && (borderColor == GorgonColors.White) => GorgonSamplerState.Wrapping,
+            SampleFilter.MinMagMipPoint when (hWrap == TextureWrap.Wrap) && (vWrap == TextureWrap.Wrap) && (borderColor == GorgonColors.White) => GorgonSamplerState.PointFilteringWrapping,
             _ => builder.Wrapping(hWrap, vWrap, borderColor: borderColor)
 .Filter(filter)
 .Build(),
@@ -402,9 +402,9 @@ public class GorgonV2SpriteCodec(Gorgon2D renderer)
         if (textureView is not null)
         {
             // V2 used black transparent by default, so convert it to our default so we can keep from creating unnecessary states.
-            if (borderColor == GorgonColor.BlackTransparent)
+            if (borderColor == GorgonColors.BlackTransparent)
             {
-                borderColor = GorgonColor.White;
+                borderColor = GorgonColors.White;
             }
 
             sprite.Texture = textureView;

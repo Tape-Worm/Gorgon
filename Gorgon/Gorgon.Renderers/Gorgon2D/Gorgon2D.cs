@@ -232,10 +232,10 @@ public sealed class Gorgon2D
     {
         Vertices =
         [
-            new(Vector2.Zero, GorgonColor.White, Vector4.Zero, new Vector2(1, 0)),
-            new(Vector2.Zero, GorgonColor.White, Vector4.Zero, new Vector2(1, 0)),
-            new(Vector2.Zero, GorgonColor.White, Vector4.Zero, new Vector2(1, 0)),
-            new(Vector2.Zero, GorgonColor.White, Vector4.Zero, new Vector2(1, 0)),
+            new(Vector2.Zero, GorgonColors.White, Vector4.Zero, new Vector2(1, 0)),
+            new(Vector2.Zero, GorgonColors.White, Vector4.Zero, new Vector2(1, 0)),
+            new(Vector2.Zero, GorgonColors.White, Vector4.Zero, new Vector2(1, 0)),
+            new(Vector2.Zero, GorgonColors.White, Vector4.Zero, new Vector2(1, 0)),
         ]
     };
     // The 2D camera used to render the data.
@@ -700,7 +700,7 @@ public sealed class Gorgon2D
             PolyVertexShaderData polyData = new()
             {
                 World = Matrix4x4.Identity,
-                Color = GorgonColor.White,
+                Color = GorgonColors.White,
                 TextureTransform = new Vector4(0, 0, 1, 1),
                 MiscInfo = new Vector4(0, 0, 1, 0)
             };
@@ -879,7 +879,7 @@ public sealed class Gorgon2D
         _currentBatchState.BlendState = batchState?.BlendState ?? GorgonBlendState.Default;
         _currentBatchState.RasterState = batchState?.RasterState ?? GorgonRasterState.Default;
         _currentBatchState.DepthStencilState = batchState?.DepthStencilState ?? GorgonDepthStencilState.Default;
-        _currentBatchState.BlendFactor = batchState?.BlendFactor ?? GorgonColor.White;
+        _currentBatchState.BlendFactor = batchState?.BlendFactor ?? GorgonColors.White;
         _currentBatchState.BlendSampleMask = batchState?.BlendSampleMask ?? int.MinValue;
         _currentBatchState.StencilReference = batchState?.StencilReference ?? 0;
 
@@ -1362,7 +1362,7 @@ public sealed class Gorgon2D
     /// If the <paramref name="font"/> parameter is not specified, then the <see cref="DefaultFont"/> is used to render the text.
     /// </para>
     /// <para>
-    /// If the <paramref name="color"/> parameter is not specified, then the <see cref="GorgonColor.White"/> color is used.
+    /// If the <paramref name="color"/> parameter is not specified, then the <see cref="GorgonColors.White"/> color is used.
     /// </para>
     /// </remarks>
     public IGorgon2DDrawingFluent DrawString(string text, Vector2 position, GorgonFont font = null, GorgonColor? color = null)
@@ -1377,7 +1377,7 @@ public sealed class Gorgon2D
         // then an error can occur because the font is no longer valid. By setting the font first, we are assured that we always have a valid font.
         _defaultTextSprite.Font = font ?? _defaultFontFactory.Value.DefaultFont;
         _defaultTextSprite.Text = text;
-        _defaultTextSprite.Color = color ?? GorgonColor.White;
+        _defaultTextSprite.Color = color ?? GorgonColors.White;
         _defaultTextSprite.Position = position;
         _defaultTextSprite.DrawMode = _defaultTextSprite.Font.HasOutline ? TextDrawMode.OutlinedGlyphs : TextDrawMode.GlyphsOnly;
         _defaultTextSprite.AllowColorCodes = (text.IndexOf("[c", StringComparison.CurrentCultureIgnoreCase) > -1)

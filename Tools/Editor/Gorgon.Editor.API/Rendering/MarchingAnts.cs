@@ -80,7 +80,7 @@ public class MarchingAnts
     /// Function to draw the marching ants rectangle.
     /// </summary>
     /// <param name="rect">The rectangular region to draw in.</param>
-    public void Draw(DX.RectangleF rect) => _renderer.DrawRectangle(rect, GorgonColor.White,
+    public void Draw(DX.RectangleF rect) => _renderer.DrawRectangle(rect, GorgonColors.White,
                                                                     texture: _marchAntsTexture.Value,
                                                                     textureRegion: _marchAntsTexture.Value.ToTexel(new DX.Rectangle((int)-_step, 0, (int)rect.Width, (int)rect.Height)),
                                                                     textureSampler: GorgonSamplerState.PointFilteringWrapping);

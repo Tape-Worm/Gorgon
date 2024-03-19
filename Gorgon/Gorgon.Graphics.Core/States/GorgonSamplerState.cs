@@ -247,7 +247,7 @@ public class GorgonSamplerState
     /// will draw a border in the color specified when the addressing exceeds 0.0f and 1.0f.
     /// </para>
     /// <para>
-    /// The default value is <see cref="GorgonColor.Transparent"/>.
+    /// The default value is <see cref="GorgonColors.Transparent"/>.
     /// </para>
     /// </remarks>
     public GorgonColor BorderColor
@@ -397,7 +397,7 @@ public class GorgonSamplerState
         WrapV = TextureWrap.Clamp;
         WrapW = TextureWrap.Clamp;
         MaxAnisotropy = 1;
-        BorderColor = GorgonColor.White;
+        BorderColor = GorgonColors.White;
         MinimumLevelOfDetail = float.MinValue;
         MaximumLevelOfDetail = float.MaxValue;
         ComparisonFunction = Comparison.Never;

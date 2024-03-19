@@ -175,7 +175,7 @@ internal static class AnimationFactory
 
             foreach (IKeyFrame keyFrame in track.KeyFrames.Where(item => item is not null))
             {
-                keyBuilder.SetKey(new GorgonKeyGorgonColor(keyFrame.Time, new GorgonColor(keyFrame.FloatValue)));
+                keyBuilder.SetKey(new GorgonKeyGorgonColor(keyFrame.Time, GorgonColor.FromVector4(keyFrame.FloatValue)));
             }
 
             keyBuilder.EndEdit();

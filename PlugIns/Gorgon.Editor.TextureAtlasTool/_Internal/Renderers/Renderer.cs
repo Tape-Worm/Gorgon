@@ -62,8 +62,8 @@ internal class Renderer(Gorgon2D renderer, GorgonSwapChain swapChain, ITextureAt
         DX.Size2F textSize = Resources.GORTAG_TEXT_NO_ATLAS.MeasureText(Renderer.DefaultFont, false);
 
         Renderer.Begin(camera: _camera);
-        Renderer.DrawFilledRectangle(new DX.RectangleF(-MainRenderTarget.Width * 0.5f, -MainRenderTarget.Height * 0.5f, MainRenderTarget.Width, MainRenderTarget.Height), new GorgonColor(GorgonColor.White, 0.75f));
-        Renderer.DrawString(Resources.GORTAG_TEXT_NO_ATLAS, new Vector2((int)(-textSize.Width * 0.5f), (int)(-textSize.Height * 0.5f)), color: GorgonColor.Black);
+        Renderer.DrawFilledRectangle(new DX.RectangleF(-MainRenderTarget.Width * 0.5f, -MainRenderTarget.Height * 0.5f, MainRenderTarget.Width, MainRenderTarget.Height), new GorgonColor(GorgonColors.White, 0.75f));
+        Renderer.DrawString(Resources.GORTAG_TEXT_NO_ATLAS, new Vector2((int)(-textSize.Width * 0.5f), (int)(-textSize.Height * 0.5f)), color: GorgonColors.Black);
         Renderer.End();
     }
 

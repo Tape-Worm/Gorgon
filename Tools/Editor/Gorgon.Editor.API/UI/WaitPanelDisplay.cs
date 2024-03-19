@@ -111,7 +111,7 @@ public class WaitPanelDisplay
         _appForm = appForm ?? throw new ArgumentNullException(nameof(appForm));
         _waitForm = new GorgonWaitOverlay
         {
-            OverlayColor = Graphics.GorgonColor.Black
+            OverlayColor = Graphics.GorgonColors.Black
         };
     }
 

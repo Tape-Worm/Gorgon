@@ -70,7 +70,7 @@ public static class PolygonHullParser
             float.TryParse(components[2], NumberStyles.Float, CultureInfo.InvariantCulture, out float u);
             float.TryParse(components[3], NumberStyles.Float, CultureInfo.InvariantCulture, out float v);
 
-            builder.AddVertex(new GorgonPolySpriteVertex(new Vector2(x, y), GorgonColor.White, new Vector2(u, v)));
+            builder.AddVertex(new GorgonPolySpriteVertex(new Vector2(x, y), GorgonColors.White, new Vector2(u, v)));
         }
     }
 

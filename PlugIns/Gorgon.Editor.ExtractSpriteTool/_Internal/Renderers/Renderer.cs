@@ -99,14 +99,14 @@ internal class Renderer
 
         Renderer.Begin();
         Renderer.DrawFilledRectangle(new DX.RectangleF(0, 0, MainRenderTarget.Width, MainRenderTarget.Height),
-                                    new GorgonColor(GorgonColor.White, 0.80f));
-        Renderer.DrawString(text, pos, color: GorgonColor.Black);
-        Renderer.DrawString(Resources.GOREST_TEXT_GEN_CANCEL_MSG, new Vector2(pos.X, bar.Bottom + 4), color: GorgonColor.Black);
-        Renderer.DrawRectangle(barOutline, GorgonColor.Black, 2);
+                                    new GorgonColor(GorgonColors.White, 0.80f));
+        Renderer.DrawString(text, pos, color: GorgonColors.Black);
+        Renderer.DrawString(Resources.GOREST_TEXT_GEN_CANCEL_MSG, new Vector2(pos.X, bar.Bottom + 4), color: GorgonColors.Black);
+        Renderer.DrawRectangle(barOutline, GorgonColors.Black, 2);
         Renderer.End();
 
         Renderer.Begin(_inverted);
-        Renderer.DrawFilledRectangle(bar, GorgonColor.White);
+        Renderer.DrawFilledRectangle(bar, GorgonColors.White);
         Renderer.End();
     }
 
@@ -142,14 +142,14 @@ internal class Renderer
         int maxHeight = (int)((DataContext.CellSize.Height * DataContext.GridSize.Height) * scale);
 
         Renderer.DrawRectangle(new DX.RectangleF(pos.X - 1, pos.Y - 1, maxWidth + 2, maxHeight + 2),
-                                GorgonColor.DeepPink);
+                                GorgonColors.DeepPink);
 
         for (int x = 1; x < DataContext.GridSize.Width; ++x)
         {
             Vector2 start = new((int)((x * DataContext.CellSize.Width) * scale) + pos.X, pos.Y);
             Vector2 end = new((int)((x * DataContext.CellSize.Width) * scale) + pos.X, pos.Y + maxHeight);
 
-            Renderer.DrawLine(start.X, start.Y, end.X, end.Y, GorgonColor.DeepPink);
+            Renderer.DrawLine(start.X, start.Y, end.X, end.Y, GorgonColors.DeepPink);
         }
 
         for (int y = 1; y < DataContext.GridSize.Height; ++y)
@@ -157,7 +157,7 @@ internal class Renderer
             Vector2 start = new(pos.X, (int)((y * DataContext.CellSize.Height) * scale) + pos.Y);
             Vector2 end = new(pos.X + maxWidth, (int)((y * DataContext.CellSize.Height) * scale) + pos.Y);
 
-            Renderer.DrawLine(start.X, start.Y, end.X, end.Y, GorgonColor.DeepPink);
+            Renderer.DrawLine(start.X, start.Y, end.X, end.Y, GorgonColors.DeepPink);
         }
 
         Renderer.End();

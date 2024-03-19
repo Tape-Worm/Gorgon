@@ -253,7 +253,7 @@ public sealed class GorgonFont
     /// if the <see cref="OutlineSize" /> value is not greater than 0.
     /// </para>
     ///   <para>
-    /// The default value is <see cref="GorgonColor.Transparent" /> (A=1.0f, R=0.0f, G=0.0f, B=0.0f).
+    /// The default value is <see cref="GorgonColors.Transparent" /> (A=1.0f, R=0.0f, G=0.0f, B=0.0f).
     /// </para>
     /// </remarks>
     public GorgonColor OutlineColor1 => _info.OutlineColor1;
@@ -268,7 +268,7 @@ public sealed class GorgonFont
     /// if the <see cref="OutlineSize" /> value is not greater than 3.
     /// </para>
     ///   <para>
-    /// The default value is <see cref="GorgonColor.Transparent" /> (A=1.0f, R=0.0f, G=0.0f, B=0.0f).
+    /// The default value is <see cref="GorgonColors.Transparent" /> (A=1.0f, R=0.0f, G=0.0f, B=0.0f).
     /// </para>
     /// </remarks>
     public GorgonColor OutlineColor2 => _info.OutlineColor2;
@@ -376,7 +376,7 @@ public sealed class GorgonFont
                     // So, we must convert to ABGR even though the DXGI format is RGBA. The memory layout is from lowest 
                     // (R at byte 0) to the highest byte (A at byte 3).
                     // Thus, R is the lowest byte, and A is the highest: A(24), B(16), G(8), R(0).
-                    GorgonColor color = new(srcColor);
+                    GorgonColor color = GorgonColor.FromARGB(srcColor);
 
                     if (_info.UsePremultipliedTextures)
                     {
@@ -384,7 +384,7 @@ public sealed class GorgonFont
                         color = new GorgonColor(color.Red * color.Alpha, color.Green * color.Alpha, color.Blue * color.Alpha, color.Alpha);
                     }
 
-                    destColor = color.ToABGR();
+                    destColor = GorgonColor.ToABGR(color);
                 }
             }
         }

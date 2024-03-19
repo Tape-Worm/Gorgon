@@ -110,8 +110,8 @@ public sealed class GorgonCodecGorFont
             DefaultCharacter = reader.ReadChar(),
             Characters = reader.ReadString(),
             AntiAliasingMode = reader.ReadValue<GorgonFontAntiAliasMode>(),
-            OutlineColor1 = new GorgonColor(reader.ReadInt32()),
-            OutlineColor2 = new GorgonColor(reader.ReadInt32()),
+            OutlineColor1 = GorgonColor.FromARGB(reader.ReadInt32()),
+            OutlineColor2 = GorgonColor.FromARGB(reader.ReadInt32()),
             OutlineSize = reader.ReadInt32(),
             UseKerningPairs = reader.ReadBoolean()
         };
@@ -166,8 +166,8 @@ public sealed class GorgonCodecGorFont
             writer.Write(fontInfo.DefaultCharacter);
             writer.Write(string.Join(string.Empty, fontInfo.Characters));
             writer.WriteValue(fontInfo.AntiAliasingMode);
-            writer.Write(fontInfo.OutlineColor1.ToARGB());
-            writer.Write(fontInfo.OutlineColor2.ToARGB());
+            writer.Write(GorgonColor.ToARGB(fontInfo.OutlineColor1));
+            writer.Write(GorgonColor.ToARGB(fontInfo.OutlineColor2));
             writer.Write(fontInfo.OutlineSize);
             writer.Write(fontInfo.UseKerningPairs);
             fontFile.CloseChunk();

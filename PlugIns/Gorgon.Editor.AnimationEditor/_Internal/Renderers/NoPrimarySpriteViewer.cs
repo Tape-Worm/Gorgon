@@ -162,7 +162,7 @@ internal class NoPrimarySpriteViewer
         Graphics.SetRenderTarget(_rtv);
 
         Renderer.Begin();
-        Renderer.DrawFilledRectangle(_rtv.Bounds.ToRectangleF(), GorgonColor.White, _noSprite, new DX.RectangleF(_stripX, 0, 1, 1));
+        Renderer.DrawFilledRectangle(_rtv.Bounds.ToRectangleF(), GorgonColors.White, _noSprite, new DX.RectangleF(_stripX, 0, 1, 1));
         Renderer.DrawTextSprite(_displayText);
         Renderer.End();
 
@@ -208,8 +208,8 @@ internal class NoPrimarySpriteViewer
         {
             Name = "No Preview Sprite Font",
             OutlineSize = 4,
-            OutlineColor1 = GorgonColor.Black,
-            OutlineColor2 = GorgonColor.Black,
+            OutlineColor1 = GorgonColors.Black,
+            OutlineColor2 = GorgonColors.Black,
             TextureHeight = 512,
             TextureWidth = 512,
             Characters = Resources.GORANM_TEXT_NO_SPRITE.Distinct(),
@@ -225,7 +225,7 @@ internal class NoPrimarySpriteViewer
         _displayText = new GorgonTextSprite(_font, Resources.GORANM_TEXT_NO_SPRITE.WordWrap(_font, RenderRegion.Width))
         {
             Alignment = Alignment.Center,
-            Color = GorgonColor.White,
+            Color = GorgonColors.White,
             LayoutArea = RenderRegion.Size,
             DrawMode = TextDrawMode.OutlinedGlyphs
         };

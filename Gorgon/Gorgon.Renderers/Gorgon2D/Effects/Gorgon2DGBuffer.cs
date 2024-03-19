@@ -311,10 +311,10 @@ public class Gorgon2DGBuffer
     public void ClearGBuffer()
     {
         const float normChanValue = 127.0f / 255.0f;
-        _target[0].Clear(GorgonColor.BlackTransparent);
+        _target[0].Clear(GorgonColors.BlackTransparent);
         _target[1].Clear(new GorgonColor(normChanValue, normChanValue, 1.0f, 0.0f));
-        _target[2].Clear(GorgonColor.BlackTransparent);
-        _target[3].Clear(GorgonColor.Black);
+        _target[2].Clear(GorgonColors.BlackTransparent);
+        _target[3].Clear(GorgonColors.Black);
     }
 
     /// <summary>

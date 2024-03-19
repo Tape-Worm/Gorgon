@@ -92,10 +92,10 @@ static class Program
         {
             Name = "Crawl Text Target"
         });
-        _crawlRtv.Clear(GorgonColor.BlackTransparent);
+        _crawlRtv.Clear(GorgonColors.BlackTransparent);
         _crawl = _crawlRtv.GetShaderResourceView();
 
-        _spaceBackgroundRtv.Clear(GorgonColor.Black);
+        _spaceBackgroundRtv.Clear(GorgonColors.Black);
 
         _graphics.SetRenderTarget(_spaceBackgroundRtv);
         _renderer.Begin();
@@ -120,8 +120,8 @@ static class Program
         };
         _crawlSprite.CornerOffsets.UpperLeft = new Vector3(_crawl.Width * 0.55f - 16, _crawl.Height * 0.5f - 64, 0);
         _crawlSprite.CornerOffsets.UpperRight = new Vector3(-_crawl.Width * 0.55f + 16, _crawl.Height * 0.5f - 64, 0);
-        _crawlSprite.CornerColors.UpperLeft = GorgonColor.BlackTransparent;
-        _crawlSprite.CornerColors.UpperRight = GorgonColor.BlackTransparent;
+        _crawlSprite.CornerColors.UpperLeft = GorgonColors.BlackTransparent;
+        _crawlSprite.CornerColors.UpperRight = GorgonColors.BlackTransparent;
 
         if (_crawlText is not null)
         {
@@ -146,7 +146,7 @@ static class Program
 
         // Render the text to the crawling render target.
         _graphics.SetRenderTarget(_crawlRtv);
-        _crawlRtv.Clear(GorgonColor.BlackTransparent);
+        _crawlRtv.Clear(GorgonColors.BlackTransparent);
         _renderer.Begin();
         _crawlText.Position = _crawlPosition;
         _renderer.DrawTextSprite(_crawlText);
@@ -155,9 +155,9 @@ static class Program
         // Compose the scene with our starry background and the skewed sprite.
         _graphics.SetRenderTarget(_screen.RenderTargetView);
         _renderer.Begin();
-        _renderer.DrawFilledRectangle(new DX.RectangleF(0, 0, _screen.Width, _screen.Height), GorgonColor.White, _spaceBackground);
+        _renderer.DrawFilledRectangle(new DX.RectangleF(0, 0, _screen.Width, _screen.Height), GorgonColors.White, _spaceBackground);
         // Uncomment this line to see the scrolling text without deformation.
-        //_renderer.DrawFilledRectangle(new DX.RectangleF(0, 64, _screen.Width * 0.25f, _screen.Height * 0.25f), GorgonColor.White, _crawl, new DX.RectangleF(0, 0, 1, 1));
+        //_renderer.DrawFilledRectangle(new DX.RectangleF(0, 64, _screen.Width * 0.25f, _screen.Height * 0.25f), GorgonColors.White, _crawl, new DX.RectangleF(0, 0, 1, 1));
         _renderer.DrawSprite(_crawlSprite);
         _renderer.End();
 
@@ -221,7 +221,7 @@ static class Program
             }))
             {
                 Alignment = Alignment.UpperCenter,
-                Color = GorgonColor.YellowPure,
+                Color = GorgonColors.Yellow,
                 LayoutArea = new DX.Size2F(_screen.Width, _screen.Height),
                 AllowColorCodes = true
             };

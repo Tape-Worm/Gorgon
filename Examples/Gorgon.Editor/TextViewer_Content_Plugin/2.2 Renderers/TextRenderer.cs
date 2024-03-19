@@ -84,7 +84,7 @@ internal class TextRenderer(Gorgon2D renderer, GorgonSwapChain mainRenderTarget,
                 {
                     // Reset to white if our outline color matches our text color.
                     // If we fail to do this, the text will be unreadable.
-                    _textSprite.Color = GorgonColor.White;
+                    _textSprite.Color = GorgonColors.White;
                 }
                 break;
             default:
@@ -157,7 +157,7 @@ internal class TextRenderer(Gorgon2D renderer, GorgonSwapChain mainRenderTarget,
                 {
                     // Reset to white if our outline color matches our text color.
                     // If we fail to do this, the text will be unreadable.
-                    _textSprite.Color = GorgonColor.White;
+                    _textSprite.Color = GorgonColors.White;
                 }
                 break;
         }
@@ -176,9 +176,9 @@ internal class TextRenderer(Gorgon2D renderer, GorgonSwapChain mainRenderTarget,
         // to the renderer so that it can be affected by the camera movement.                         
         Renderer.Begin(camera: Camera);
         DX.RectangleF backgroundRegion = new(RenderRegion.Width * -0.5f + 10, RenderRegion.Height * -0.5f + 10, RenderRegion.Width, RenderRegion.Height);
-        Renderer.DrawFilledRectangle(backgroundRegion, GorgonColor.Black);
+        Renderer.DrawFilledRectangle(backgroundRegion, GorgonColors.Black);
         backgroundRegion.Offset(-10, -10);
-        Renderer.DrawFilledRectangle(backgroundRegion, GorgonColor.White);
+        Renderer.DrawFilledRectangle(backgroundRegion, GorgonColors.White);
         Renderer.End();
     }
 
@@ -277,8 +277,8 @@ internal class TextRenderer(Gorgon2D renderer, GorgonSwapChain mainRenderTarget,
         _papyrus = _fontFactory.GetFont(new GorgonFontInfo("Papyrus", 20.0f, GorgonFontHeightMode.Points)
         {
             Name = "Papyrus 20pt",
-            OutlineColor1 = GorgonColor.Black,
-            OutlineColor2 = GorgonColor.Black,
+            OutlineColor1 = GorgonColors.Black,
+            OutlineColor2 = GorgonColors.Black,
             OutlineSize = 2
         });
 
@@ -287,7 +287,7 @@ internal class TextRenderer(Gorgon2D renderer, GorgonSwapChain mainRenderTarget,
             AllowColorCodes = true,
             Position = new Vector2(RenderRegion.Width * -0.5f, RenderRegion.Height * -0.5f),
             LayoutArea = RenderRegion.Size,
-            Color = GorgonColor.Black,
+            Color = GorgonColors.Black,
             TextureSampler = GorgonSamplerState.PointFiltering,
             DrawMode = TextDrawMode.OutlinedGlyphs
         };

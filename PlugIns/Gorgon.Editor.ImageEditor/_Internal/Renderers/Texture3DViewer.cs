@@ -99,7 +99,7 @@ internal class Texture3DViewer(Gorgon2D renderer, GorgonSwapChain swapChain, IIm
                                                        RenderRegion.Height * -0.5f,
                                                        RenderRegion.Width,
                                                        RenderRegion.Height),
-                                    new GorgonColor(GorgonColor.White, Opacity),
+                                    new GorgonColor(GorgonColors.White, Opacity),
                                     null,
                                     new DX.RectangleF(0, 0, 1, 1),
                                     0,
@@ -111,10 +111,10 @@ internal class Texture3DViewer(Gorgon2D renderer, GorgonSwapChain swapChain, IIm
         Renderer.Begin();
 
         DX.Size2F textArea = Resources.GORIMG_TEXT_3DVIEW.MeasureLine(Renderer.DefaultFont, false);
-        Renderer.DrawFilledRectangle(volRegion, new GorgonColor(GorgonColor.Black, 0.5f));
-        Renderer.DrawFilledRectangle(new DX.RectangleF(volRegion.Left - 1, volRegion.Bottom, volRegion.Width + 2, textArea.Height + 6), GorgonColor.White);
-        Renderer.DrawRectangle(new DX.RectangleF(volRegion.X - 1, volRegion.Y - 1, volRegion.Width + 2, volRegion.Height + 2), GorgonColor.White);
-        Renderer.DrawString("3D View", new Vector2((volRegion.Right + volRegion.Left) / 2.0f - (textArea.Width / 2.0f), volRegion.Bottom + 3), color: GorgonColor.Black);
+        Renderer.DrawFilledRectangle(volRegion, new GorgonColor(GorgonColors.Black, 0.5f));
+        Renderer.DrawFilledRectangle(new DX.RectangleF(volRegion.Left - 1, volRegion.Bottom, volRegion.Width + 2, textArea.Height + 6), GorgonColors.White);
+        Renderer.DrawRectangle(new DX.RectangleF(volRegion.X - 1, volRegion.Y - 1, volRegion.Width + 2, volRegion.Height + 2), GorgonColors.White);
+        Renderer.DrawString("3D View", new Vector2((volRegion.Right + volRegion.Left) / 2.0f - (textArea.Width / 2.0f), volRegion.Bottom + 3), color: GorgonColors.Black);
 
         Renderer.End();
 

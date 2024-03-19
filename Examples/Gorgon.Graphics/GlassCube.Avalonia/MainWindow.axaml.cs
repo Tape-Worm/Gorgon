@@ -162,7 +162,7 @@ public partial class MainWindow : Window
         }
 
         // Do nothing here.  When we need to update, we will.
-        rtv.Clear(GorgonColor.BlackTransparent);
+        rtv.Clear(GorgonColors.BlackTransparent);
 
         // Use a fixed step timing to animate the cube.
         _accumulator += GorgonTiming.Delta;

@@ -331,7 +331,7 @@ public class DefaultToolRenderer<T>
         DX.RectangleF textureSize = new(0, 0, ClientSize.Width / (float)BackgroundPattern.Width, ClientSize.Height / (float)BackgroundPattern.Height);
 
         Renderer.Begin();
-        Renderer.DrawFilledRectangle(new DX.RectangleF(0, 0, ClientSize.Width, ClientSize.Height), GorgonColor.White, BackgroundPattern, textureSize);
+        Renderer.DrawFilledRectangle(new DX.RectangleF(0, 0, ClientSize.Width, ClientSize.Height), GorgonColors.White, BackgroundPattern, textureSize);
         Renderer.End();
     }
 

@@ -78,7 +78,7 @@ internal class JsonSamplerConverter(GorgonGraphics graphics)
             switch (propName)
             {
                 case "borderColor":
-                    writer.WriteValue(value.BorderColor.ToARGB());
+                    writer.WriteValue(GorgonColor.ToARGB(value.BorderColor));
                     break;
                 case "compareFunc":
                     writer.WriteValue(value.ComparisonFunction);
@@ -153,7 +153,7 @@ internal class JsonSamplerConverter(GorgonGraphics graphics)
             switch (reader.Value.ToString())
             {
                 case "borderColor":
-                    borderColor = reader.ReadAsInt32();
+                    borderColor = GorgonColor.FromARGB(reader.ReadAsInt32() ?? 0);
                     break;
                 case "compareFunc":
                     compareFunction = (Comparison?)reader.ReadAsInt32();

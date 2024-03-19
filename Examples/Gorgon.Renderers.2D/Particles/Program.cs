@@ -117,7 +117,7 @@ static class Program
     {
         _emitter.Update();
 
-        _rtv.Clear(GorgonColor.Black);
+        _rtv.Clear(GorgonColors.Black);
 
         // Draw our particles into the render target.
         _graphics.SetRenderTarget(_rtv);
@@ -135,14 +135,14 @@ static class Program
             _graphics.SetRenderTarget(_screen.RenderTargetView);
 
             _renderer.Begin(Gorgon2DBatchState.NoBlend);
-            _renderer.DrawFilledRectangle(new DX.RectangleF(0, 0, _srv.Width, _srv.Height), GorgonColor.White, _srv, new DX.RectangleF(0, 0, 1, 1));
+            _renderer.DrawFilledRectangle(new DX.RectangleF(0, 0, _srv.Width, _srv.Height), GorgonColors.White, _srv, new DX.RectangleF(0, 0, 1, 1));
             _renderer.End();
         }
 
         if (_showHelp)
         {
             _renderer.Begin();
-            _renderer.DrawString("Example help:\nF1 - Show/hide help.\nF2 - Change emitter type.\nSpace - Pause/unpause.\nLeft Mouse Button - Restart emitter at mouse cursor.\nRight Mouse Button (while moving cursor) - Drag emitter.\nMiddle Mouse Button - Enable/Disable bloom effect.", new Vector2(0, 72), color: GorgonColor.YellowPure);
+            _renderer.DrawString("Example help:\nF1 - Show/hide help.\nF2 - Change emitter type.\nSpace - Pause/unpause.\nLeft Mouse Button - Restart emitter at mouse cursor.\nRight Mouse Button (while moving cursor) - Drag emitter.\nMiddle Mouse Button - Enable/Disable bloom effect.", new Vector2(0, 72), color: GorgonColors.Yellow);
             _renderer.End();
         }
 

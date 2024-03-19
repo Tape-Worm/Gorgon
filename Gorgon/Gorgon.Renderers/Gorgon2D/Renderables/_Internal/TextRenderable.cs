@@ -70,7 +70,7 @@ internal class TextRenderable
     /// <summary>
     /// The color used to tint the outline (if the font supports it and outlining is enabled).
     /// </summary>
-    public GorgonColor OutlineTint = GorgonColor.White;
+    public GorgonColor OutlineTint = GorgonColors.White;
 
     /// <summary>
     /// The number of spaces to use when rendering a tab control character.
@@ -85,22 +85,22 @@ internal class TextRenderable
     /// <summary>
     /// The color of the upper left corner of the renderable.
     /// </summary>
-    public GorgonColor UpperLeftColor = GorgonColor.White;
+    public GorgonColor UpperLeftColor = GorgonColors.White;
 
     /// <summary>
     /// The color of the upper right corner of the renderable.
     /// </summary>
-    public GorgonColor UpperRightColor = GorgonColor.White;
+    public GorgonColor UpperRightColor = GorgonColors.White;
 
     /// <summary>
     /// The color of the lower left corner of the renderable.
     /// </summary>
-    public GorgonColor LowerLeftColor = GorgonColor.White;
+    public GorgonColor LowerLeftColor = GorgonColors.White;
 
     /// <summary>
     /// The color of the lower right corner of the renderable.
     /// </summary>
-    public GorgonColor LowerRightColor = GorgonColor.White;
+    public GorgonColor LowerRightColor = GorgonColors.White;
 
     /// <summary>
     /// A flag to indicate whether the colors of the individual corners of the renderable have changed.

@@ -61,7 +61,7 @@ internal class TextureFxViewer
     // The offset for the edge detect lines.
     private float _edgeOffset = 1.0f;
     // The color for the lines in the edge detect effect.
-    private GorgonColor _edgeColor = GorgonColor.Black;
+    private GorgonColor _edgeColor = GorgonColors.Black;
     // Flag to indicate that the edge detection effect is overlaid on top of the original image.
     private bool _edgeOverlay = true;
     // The amount to posterize.
@@ -227,7 +227,7 @@ internal class TextureFxViewer
     {
         Graphics.SetRenderTarget(MainRenderTarget);
 
-        GorgonColor color = new(GorgonColor.White, Opacity);
+        GorgonColor color = new(GorgonColors.White, Opacity);
 
         Renderer.Begin(BatchState, Camera);
         Renderer.DrawFilledRectangle(new DX.RectangleF(RenderRegion.Width * -0.5f,

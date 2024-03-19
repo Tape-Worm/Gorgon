@@ -222,7 +222,7 @@ internal class TextureBrushRenderer(Gorgon2D renderer, GorgonSwapChain mainRende
             Vector2 pos = new((int)(halfClient.Width - size.Width * 0.5f), (int)(halfClient.Height - size.Height * 0.5f));
 
             Renderer.Begin();
-            Renderer.DrawFilledRectangle(new DX.RectangleF(pos.X, pos.Y, size.Width, size.Height), GorgonColor.White, _noImage, new DX.RectangleF(0, 0, 1, 1));
+            Renderer.DrawFilledRectangle(new DX.RectangleF(pos.X, pos.Y, size.Width, size.Height), GorgonColors.White, _noImage, new DX.RectangleF(0, 0, 1, 1));
             Renderer.End();
 
             return;
@@ -231,7 +231,7 @@ internal class TextureBrushRenderer(Gorgon2D renderer, GorgonSwapChain mainRende
         DX.RectangleF textureSize = new(0, 0, (float)ClientSize.Width / BackgroundPattern.Width, (float)ClientSize.Height / BackgroundPattern.Height);
 
         Renderer.Begin();
-        Renderer.DrawFilledRectangle(new DX.RectangleF(0, 0, ClientSize.Width, ClientSize.Height), GorgonColor.White, BackgroundPattern, textureSize, textureSampler: GorgonSamplerState.PointFilteringWrapping);
+        Renderer.DrawFilledRectangle(new DX.RectangleF(0, 0, ClientSize.Width, ClientSize.Height), GorgonColors.White, BackgroundPattern, textureSize, textureSampler: GorgonSamplerState.PointFilteringWrapping);
         Renderer.End();
     }
 
@@ -244,21 +244,21 @@ internal class TextureBrushRenderer(Gorgon2D renderer, GorgonSwapChain mainRende
         GorgonRange<float>? prevAlphaTest = Renderer.PrimitiveAlphaTestRange;
         DX.RectangleF clearRegion = _image.ToPixel(_context.Region).ToRectangleF();
 
-        _target.Clear(GorgonColor.BlackTransparent);
+        _target.Clear(GorgonColors.BlackTransparent);
 
         Graphics.SetRenderTarget(_target);
         Renderer.PrimitiveAlphaTestRange = null;
         Renderer.Begin();
 
         Renderer.DrawFilledRectangle(new DX.RectangleF(0, 0, _image.Width, _image.Height),
-                                     GorgonColor.White,
+                                     GorgonColors.White,
                                      _image,
                                      new DX.RectangleF(0, 0, 1, 1),
                                      0,
                                      GorgonSamplerState.PointFiltering);
 
         // Remove the area where the sprite is located.
-        Renderer.DrawFilledRectangle(clearRegion, GorgonColor.BlackTransparent);
+        Renderer.DrawFilledRectangle(clearRegion, GorgonColors.BlackTransparent);
 
         Renderer.End();
         Renderer.PrimitiveAlphaTestRange = prevAlphaTest;
@@ -283,7 +283,7 @@ internal class TextureBrushRenderer(Gorgon2D renderer, GorgonSwapChain mainRende
                                                        halfRegion.Y,
                                                        RenderRegion.Width,
                                                        RenderRegion.Height),
-                                    GorgonColor.White,
+                                    GorgonColors.White,
                                     _targetTexture,
                                     new DX.RectangleF(0, 0, 1, 1),
                                     textureSampler: GorgonSamplerState.PointFiltering);

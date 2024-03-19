@@ -116,7 +116,7 @@ static class Program
 
         _renderer.Begin();
         _renderer.DrawFilledRectangle(new DX.RectangleF(0, -167 * scale.Y, _backGround.Width * scale.X, _backGround.Height * scale.Y),
-                                      GorgonColor.White,
+                                      GorgonColors.White,
                                       _backGround,
                                       new DX.RectangleF(_pos / _backGround.Width, 0, 1, 1));
         _renderer.DrawSprite(_dudeBro);

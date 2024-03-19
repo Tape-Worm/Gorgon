@@ -228,10 +228,10 @@ internal class VolumeRenderer(GorgonGraphics graphics)
 
         // Draw the volume sections.
         _graphics.SetRenderTarget(_volumeRtSections[0]);
-        _volumeRtSections[0].Clear(GorgonColor.BlackTransparent);
+        _volumeRtSections[0].Clear(GorgonColors.BlackTransparent);
         _graphics.Submit(_cubePosDrawCull);
         _graphics.SetRenderTarget(_volumeRtSections[1]);
-        _volumeRtSections[1].Clear(GorgonColor.BlackTransparent);
+        _volumeRtSections[1].Clear(GorgonColors.BlackTransparent);
         _graphics.Submit(_cubePosDrawFrontCull);
         _graphics.SetRenderTarget(_volumeRtSections[2]);
 

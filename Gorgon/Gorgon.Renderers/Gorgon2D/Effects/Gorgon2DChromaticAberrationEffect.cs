@@ -226,9 +226,9 @@ public class Gorgon2DChromaticAberrationEffect(Gorgon2D renderer)
             Width = 3
         }))
         {
-            image.ImageData.AsRef<int>(0) = GorgonColor.RedPure.ToABGR();
-            image.ImageData.AsRef<int>(4) = GorgonColor.BluePure.ToABGR();
-            image.ImageData.AsRef<int>(8) = GorgonColor.GreenPure.ToABGR();
+            image.ImageData.AsRef<int>(0) = GorgonColor.ToABGR(GorgonColors.Red);
+            image.ImageData.AsRef<int>(4) = GorgonColor.ToABGR(GorgonColors.Blue);
+            image.ImageData.AsRef<int>(8) = GorgonColor.ToABGR(GorgonColors.Green);
 
             _defaultLut = GorgonTexture1DView.CreateTexture(Graphics, new GorgonTexture1DInfo(3, image.Format)
             {
@@ -270,7 +270,7 @@ public class Gorgon2DChromaticAberrationEffect(Gorgon2D renderer)
 
         BeginRender(output);
         BeginPass(0, output);
-        Renderer.DrawFilledRectangle(new DX.RectangleF(0, 0, output.Width, output.Height), GorgonColor.White, texture, new DX.RectangleF(0, 0, 1, 1));
+        Renderer.DrawFilledRectangle(new DX.RectangleF(0, 0, output.Width, output.Height), GorgonColors.White, texture, new DX.RectangleF(0, 0, 1, 1));
         EndPass(0, output);
         EndRender(output);
     }

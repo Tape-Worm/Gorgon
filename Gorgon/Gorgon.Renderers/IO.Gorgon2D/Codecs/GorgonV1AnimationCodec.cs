@@ -498,7 +498,7 @@ public class GorgonV1AnimationCodec
                         {
                             builder.EditColor("Color")
                                    .SetInterpolationMode(interpMode)
-                                   .SetKeys(colors.Select(item => new GorgonKeyGorgonColor(item.time, new GorgonColor(item.argb))))
+                                   .SetKeys(colors.Select(item => new GorgonKeyGorgonColor(item.time, GorgonColor.FromARGB(item.argb))))
                                    .EndEdit();
                         }
                         break;
@@ -717,7 +717,7 @@ public class GorgonV1AnimationCodec
                     interpSet = true;
                 }
 
-                GorgonColor color = new(reader.ReadInt32());
+                GorgonColor color = GorgonColor.FromARGB(reader.ReadInt32());
                 // We don't use alpha mask value.
                 reader.ReadInt32();
 

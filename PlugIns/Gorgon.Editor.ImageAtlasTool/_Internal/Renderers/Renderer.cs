@@ -87,8 +87,8 @@ internal class Renderer(Gorgon2D renderer, GorgonSwapChain swapChain, IImageAtla
         DX.Size2F textSize = Resources.GORIAG_TEXT_NO_ATLAS.MeasureText(Renderer.DefaultFont, false);
 
         Renderer.Begin(camera: _camera);
-        Renderer.DrawFilledRectangle(new DX.RectangleF(-MainRenderTarget.Width * 0.5f, -MainRenderTarget.Height * 0.5f, MainRenderTarget.Width, MainRenderTarget.Height), new GorgonColor(GorgonColor.White, 0.75f));
-        Renderer.DrawString(Resources.GORIAG_TEXT_NO_ATLAS, new Vector2((int)(-textSize.Width * 0.5f), (int)(-textSize.Height * 0.5f)), color: GorgonColor.Black);
+        Renderer.DrawFilledRectangle(new DX.RectangleF(-MainRenderTarget.Width * 0.5f, -MainRenderTarget.Height * 0.5f, MainRenderTarget.Width, MainRenderTarget.Height), new GorgonColor(GorgonColors.White, 0.75f));
+        Renderer.DrawString(Resources.GORIAG_TEXT_NO_ATLAS, new Vector2((int)(-textSize.Width * 0.5f), (int)(-textSize.Height * 0.5f)), color: GorgonColors.Black);
         Renderer.End();
     }
 
@@ -106,7 +106,7 @@ internal class Renderer(Gorgon2D renderer, GorgonSwapChain swapChain, IImageAtla
 
         Renderer.Begin(camera: _camera);
         Renderer.DrawFilledRectangle(new DX.RectangleF(position.X, position.Y, size.Width, size.Height),
-                                     GorgonColor.White,
+                                     GorgonColors.White,
                                      _texture,
                                      new DX.RectangleF(0, 0, 1, 1),
                                      textureSampler: GorgonSamplerState.PointFiltering);
@@ -114,8 +114,8 @@ internal class Renderer(Gorgon2D renderer, GorgonSwapChain swapChain, IImageAtla
 
         Renderer.Begin();
         Renderer.DrawFilledRectangle(new DX.RectangleF(0, ClientSize.Height - textSize.Height - 2, ClientSize.Width, textSize.Height + 4),
-                                     new GorgonColor(GorgonColor.Black, 0.80f));
-        Renderer.DrawString(text, new Vector2(ClientSize.Width * 0.5f - textSize.Width * 0.5f, ClientSize.Height - textSize.Height - 2), color: GorgonColor.White);
+                                     new GorgonColor(GorgonColors.Black, 0.80f));
+        Renderer.DrawString(text, new Vector2(ClientSize.Width * 0.5f - textSize.Width * 0.5f, ClientSize.Height - textSize.Height - 2), color: GorgonColors.White);
         Renderer.End();
     }
 

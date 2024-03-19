@@ -97,8 +97,8 @@ static class Program
     /// <returns><b>true</b> to continue processing, <b>false</b> to stop.</returns>
     private static bool Idle()
     {
-        _postTarget1.Clear(GorgonColor.BlackTransparent);
-        _postTarget2.Clear(GorgonColor.BlackTransparent);
+        _postTarget1.Clear(GorgonColors.BlackTransparent);
+        _postTarget2.Clear(GorgonColors.BlackTransparent);
 
         Vector2 textureSize = _background.Texture.ToTexel(new Vector2(_postTarget1.Width, _postTarget1.Height));
 
@@ -106,10 +106,10 @@ static class Program
         _graphics.SetRenderTarget(_postTarget1);
         _renderer.Begin();
         _renderer.DrawFilledRectangle(new DX.RectangleF(0, 0, _postTarget1.Width, _postTarget1.Height),
-                                      GorgonColor.White,
+                                      GorgonColors.White,
                                       _background,
                                       new DX.RectangleF(_backgroundOffset.X, _backgroundOffset.Y, textureSize.X, textureSize.Y));
-        _shipSprite.Color = new GorgonColor(GorgonColor.White, _cloakController.Opacity);
+        _shipSprite.Color = new GorgonColor(GorgonColors.White, _cloakController.Opacity);
         _renderer.DrawSprite(_shipSprite);
         _renderer.End();
 
@@ -118,7 +118,7 @@ static class Program
 
         if (strength > 0.0f)
         {
-            _shipSprite.Color = GorgonColor.White;
+            _shipSprite.Color = GorgonColors.White;
             _displacement.Strength = strength;
             _displacement.ChromaticAberrationScale = new Vector2(_shipSprite.Angle.ToRadians().Cos() * 0.5f + 1.0f, _shipSprite.Angle.ToRadians().Sin() * 0.5f + 1.0f);
 
@@ -128,7 +128,7 @@ static class Program
 
             _graphics.SetRenderTarget(_postTarget1);
             _renderer.Begin();
-            _renderer.DrawFilledRectangle(new DX.RectangleF(0, 0, _postTarget1.Width, _postTarget1.Height), GorgonColor.White, _postView2, new DX.RectangleF(0, 0, 1, 1));
+            _renderer.DrawFilledRectangle(new DX.RectangleF(0, 0, _postTarget1.Width, _postTarget1.Height), GorgonColors.White, _postView2, new DX.RectangleF(0, 0, 1, 1));
             _renderer.End();
         }
 
@@ -159,7 +159,7 @@ static class Program
         _oldFilm.Render(_postView2, _postTarget1);
 
         // Send to our screen.
-        _screen.RenderTargetView.Clear(GorgonColor.Black);
+        _screen.RenderTargetView.Clear(GorgonColors.Black);
         _graphics.SetRenderTarget(_screen.RenderTargetView);
 
         _renderer.Begin(Gorgon2DBatchState.NoBlend);

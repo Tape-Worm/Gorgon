@@ -158,7 +158,7 @@ internal class Renderer(Gorgon2D renderer, GorgonSwapChain swapChain, ISplit dat
 
         Renderer.Begin();
         Renderer.DrawFilledRectangle(renderRegion,
-                                     ((DataContext.PreviewImage is null) || (_loading)) ? DarkFormsRenderer.DarkBackground : GorgonColor.White,
+                                     ((DataContext.PreviewImage is null) || (_loading)) ? DarkFormsRenderer.DarkBackground : GorgonColors.White,
                                      _backgroundImage,
                                      new DX.RectangleF(0, 0, renderRegion.Width / _backgroundImage.Width, renderRegion.Height / _backgroundImage.Height));
         Renderer.End();
@@ -184,7 +184,7 @@ internal class Renderer(Gorgon2D renderer, GorgonSwapChain swapChain, ISplit dat
             float x = renderRegion.X + halfClient.X - (width * 0.5f);
             float y = renderRegion.Y + halfClient.Y - (height * 0.5f);
 
-            Renderer.DrawFilledRectangle(new DX.RectangleF(x, y, width, height), GorgonColor.White, _previewImage, new DX.RectangleF(0, 0, 1, 1));
+            Renderer.DrawFilledRectangle(new DX.RectangleF(x, y, width, height), GorgonColors.White, _previewImage, new DX.RectangleF(0, 0, 1, 1));
         }
         else
         {
@@ -193,14 +193,14 @@ internal class Renderer(Gorgon2D renderer, GorgonSwapChain swapChain, ISplit dat
                 DX.Size2F size = Resources.GORIST_TEXT_SELECT_IMAGE.MeasureText(Renderer.DefaultFont, false);
                 Renderer.DrawString(Resources.GORIST_TEXT_SELECT_IMAGE,
                                                         new Vector2(renderRegion.X + halfClient.X - size.Width * 0.5f, renderRegion.Y + halfClient.Y - size.Height * 0.5f),
-                                                        color: GorgonColor.White);
+                                                        color: GorgonColors.White);
             }
             else
             {
                 DX.Size2F size = Resources.GORIST_TEXT_LOADING.MeasureText(Renderer.DefaultFont, false);
                 Renderer.DrawString(Resources.GORIST_TEXT_LOADING,
                                                         new Vector2(renderRegion.X + halfClient.X - size.Width * 0.5f, renderRegion.Y + halfClient.Y - size.Height * 0.5f),
-                                                        color: GorgonColor.White);
+                                                        color: GorgonColors.White);
             }
         }
         Renderer.End();

@@ -425,11 +425,11 @@ public class Gorgon2DGaussBlurEffect
         switch (passIndex)
         {
             case 0:
-                Renderer.DrawFilledRectangle(new DX.RectangleF(0, 0, _hPassView.Width, _hPassView.Height), GorgonColor.White, texture, new DX.RectangleF(0, 0, 1, 1), textureSampler: GorgonSamplerState.Default);
+                Renderer.DrawFilledRectangle(new DX.RectangleF(0, 0, _hPassView.Width, _hPassView.Height), GorgonColors.White, texture, new DX.RectangleF(0, 0, 1, 1), textureSampler: GorgonSamplerState.Default);
                 ;
                 break;
             case 1:
-                Renderer.DrawFilledRectangle(new DX.RectangleF(0, 0, _vPassView.Width, _vPassView.Height), GorgonColor.White, _hPassView, new DX.RectangleF(0, 0, 1, 1), textureSampler: GorgonSamplerState.Default);
+                Renderer.DrawFilledRectangle(new DX.RectangleF(0, 0, _vPassView.Width, _vPassView.Height), GorgonColors.White, _hPassView, new DX.RectangleF(0, 0, 1, 1), textureSampler: GorgonSamplerState.Default);
                 break;
         }
     }
@@ -547,7 +547,7 @@ public class Gorgon2DGaussBlurEffect
         }
 
         Renderer.Begin(Gorgon2DBatchState.NoBlend);
-        Renderer.DrawFilledRectangle(new DX.RectangleF(0, 0, output.Width, output.Height), GorgonColor.White, _vPassView, new DX.RectangleF(0, 0, 1, 1));
+        Renderer.DrawFilledRectangle(new DX.RectangleF(0, 0, output.Width, output.Height), GorgonColors.White, _vPassView, new DX.RectangleF(0, 0, 1, 1));
         Renderer.End();
 
         FreeTargets();

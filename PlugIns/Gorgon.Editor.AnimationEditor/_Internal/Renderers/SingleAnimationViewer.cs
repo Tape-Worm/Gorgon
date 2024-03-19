@@ -210,7 +210,7 @@ internal class SingleAnimationViewer(Gorgon2D renderer, GorgonSwapChain swapChai
         aabbCircle.Y -= (aabbCircle.Height * 0.5f) - (aabb.Height * 0.5f);
 
         Renderer.Begin(Gorgon2DBatchState.InvertedBlend);
-        Renderer.DrawEllipse(aabbCircle, GorgonColor.GreenPure, thickness: 4);
+        Renderer.DrawEllipse(aabbCircle, GorgonColors.Green, thickness: 4);
         Renderer.End();
 
         Renderer.Begin();
@@ -222,7 +222,7 @@ internal class SingleAnimationViewer(Gorgon2D renderer, GorgonSwapChain swapChai
             return;
         }
 
-        Renderer.DrawFilledArc(aabbCircle, new GorgonColor(GorgonColor.SteelBlue, 0.3f), DataContext.KeyEditor.CurrentEditor.Value.X, 360.0f);
+        Renderer.DrawFilledArc(aabbCircle, new GorgonColor(GorgonColors.SteelBlue, 0.3f), DataContext.KeyEditor.CurrentEditor.Value.X, 360.0f);
         Renderer.End();
     }
 

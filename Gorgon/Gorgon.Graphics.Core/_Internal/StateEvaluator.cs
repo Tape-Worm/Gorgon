@@ -46,7 +46,7 @@ internal class StateEvaluator(GorgonGraphics graphics)
     // The previous blend sample mask.
     private int _blendSampleMask = int.MinValue;
     // The previous blend factor.
-    private GorgonColor _blendFactor = GorgonColor.White;
+    private GorgonColor _blendFactor = GorgonColors.White;
     // The log for debug messages.
     private readonly IGorgonLog _log = graphics.Log;
     // The device context.
@@ -824,7 +824,7 @@ internal class StateEvaluator(GorgonGraphics graphics)
         DepthStencil = null;
 
         _stencilReference = 0;
-        _blendFactor = GorgonColor.White;
+        _blendFactor = GorgonColors.White;
         _blendSampleMask = int.MinValue;
     }
 

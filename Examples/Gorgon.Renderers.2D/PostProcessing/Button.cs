@@ -74,7 +74,7 @@ public class Button(IGorgon2DCompositorPass pass)
     // The standard background color.
     private readonly GorgonColor _backColor = new(0, 0, 0, 0.85f);
     // The standard foreground color.
-    private readonly GorgonColor _foreColor = GorgonColor.White;
+    private readonly GorgonColor _foreColor = GorgonColors.White;
 
 
 

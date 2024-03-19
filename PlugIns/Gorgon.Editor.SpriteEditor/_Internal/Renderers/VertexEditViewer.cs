@@ -233,8 +233,8 @@ internal class VertexEditViewer(Gorgon2D renderer, GorgonSwapChain swapChain, IS
 
         Vector2 position = new(topLeft.X + ((bottomRight.X - topLeft.X) * 0.5f), topLeft.Y + ((bottomRight.Y - topLeft.Y) * 0.5f));
         Renderer.Begin();
-        Renderer.DrawLine(position.X, 0, position.X, ClientSize.Height, GorgonColor.Black);
-        Renderer.DrawLine(0, position.Y, ClientSize.Width, position.Y, GorgonColor.Black);
+        Renderer.DrawLine(position.X, 0, position.X, ClientSize.Height, GorgonColors.Black);
+        Renderer.DrawLine(0, position.Y, ClientSize.Width, position.Y, GorgonColors.Black);
         Renderer.End();
     }
 
@@ -267,7 +267,7 @@ internal class VertexEditViewer(Gorgon2D renderer, GorgonSwapChain swapChain, IS
         base.OnLoad();
 
         // We'll need to readjust the sprite for this specific scenario.
-        Sprite.Color = GorgonColor.White;
+        Sprite.Color = GorgonColors.White;
         Sprite.TextureSampler = GorgonSamplerState.PointFiltering;
         SpriteRegion = Renderer.MeasureSprite(Sprite);
 

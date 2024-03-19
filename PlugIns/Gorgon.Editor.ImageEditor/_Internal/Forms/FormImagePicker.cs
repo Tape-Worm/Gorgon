@@ -294,7 +294,7 @@ internal partial class FormImagePicker
         }
 
         DX.RectangleF clearRegion;
-        _previewSprite.Color = new GorgonColor(GorgonColor.White, 1.00f);
+        _previewSprite.Color = new GorgonColor(GorgonColors.White, 1.00f);
 
         DX.RectangleF importBounds = new(_previewSprite.Position.X - (_previewSprite.ScaledSize.Width * _previewSprite.Anchor.X),
                                              _previewSprite.Position.Y - (_previewSprite.ScaledSize.Height * _previewSprite.Anchor.Y),
@@ -313,7 +313,7 @@ internal partial class FormImagePicker
 
         GraphicsContext.Renderer2D.Begin(_batchPreviewState);
         GraphicsContext.Renderer2D.DrawFilledRectangle(importBounds,
-                                                       GorgonColor.White,
+                                                       GorgonColors.White,
                                                        _bgTextureView,
                                                        new DX.RectangleF(importBounds.X / _bgTextureView.Width,
                                                                          importBounds.Y / _bgTextureView.Height,
@@ -356,7 +356,7 @@ internal partial class FormImagePicker
         // Draw background layer.
         renderer.Begin();
         renderer.DrawFilledRectangle(new DX.RectangleF(0, 0, PanelArrayDepth.ClientSize.Width, PanelArrayDepth.ClientSize.Height),
-                                     GorgonColor.White,
+                                     GorgonColors.White,
                                      _bgTextureView,
                                      new DX.RectangleF(0, 0, (float)PanelArrayDepth.ClientSize.Width / _bgTextureView.Width, (float)PanelArrayDepth.ClientSize.Height / _bgTextureView.Height));
         renderer.End();
@@ -364,7 +364,7 @@ internal partial class FormImagePicker
         // Draw source image.
         renderer.Begin(image.ImageType == ImageDataType.Image3D ? _batchSource3DState : _batch2DState);
         renderer.DrawFilledRectangle(imageBounds,
-                                     GorgonColor.White,
+                                     GorgonColors.White,
                                      image.ImageType == ImageDataType.Image3D ? null : _sourceTexture2D,
                                      new DX.RectangleF(0, 0, 1, 1),
                                      image.ImageType == ImageDataType.Image3D ? 0 : ViewModel.SourcePicker.CurrentArrayIndexDepthSlice,
@@ -410,18 +410,18 @@ internal partial class FormImagePicker
         // Draw background layers.
         renderer.Begin();
         renderer.DrawFilledRectangle(new DX.RectangleF(0, 0, PanelArrayDepth.ClientSize.Width, PanelArrayDepth.ClientSize.Height),
-                                     GorgonColor.White,
+                                     GorgonColors.White,
                                      _bgTextureView,
                                      new DX.RectangleF(0, 0, (float)PanelArrayDepth.ClientSize.Width / _bgTextureView.Width, (float)PanelArrayDepth.ClientSize.Height / _bgTextureView.Height));
 
-        renderer.DrawRectangle(new DX.RectangleF((int)(x - 1), (int)(y - 1), (int)(width + 2), (int)(height + 2)), new GorgonColor(GorgonColor.Black, 0.8f), 2);
+        renderer.DrawRectangle(new DX.RectangleF((int)(x - 1), (int)(y - 1), (int)(width + 2), (int)(height + 2)), new GorgonColor(GorgonColors.Black, 0.8f), 2);
         renderer.End();
 
         // Draw the target texture.
         DX.RectangleF imageBounds = new((int)x, (int)y, (int)width, (int)height);
         renderer.Begin(image.ImageType == ImageDataType.Image3D ? _batch3DState : _batch2DState);
         renderer.DrawFilledRectangle(imageBounds,
-                                     GorgonColor.White,
+                                     GorgonColors.White,
                                      image.ImageType == ImageDataType.Image3D ? null : _imageTexture2D,
                                      new DX.RectangleF(0, 0, 1, 1),
                                      image.ImageType == ImageDataType.Image3D ? 0 : ViewModel.CurrentArrayIndexDepthSlice,

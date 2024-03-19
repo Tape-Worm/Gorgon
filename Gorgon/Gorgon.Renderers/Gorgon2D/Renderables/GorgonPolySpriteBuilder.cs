@@ -542,7 +542,7 @@ public class GorgonPolySpriteBuilder(Gorgon2D renderer)
         _workingSprite.Anchor = Vector2.Zero;
         _workingSprite.Angle = 0.0f;
         _workingSprite.Bounds = DX.RectangleF.Empty;
-        _workingSprite.Color = GorgonColor.White;
+        _workingSprite.Color = GorgonColors.White;
         _workingSprite.Depth = 0.0f;
         _workingSprite.HorizontalFlip = false;
         _workingSprite.VerticalFlip = false;

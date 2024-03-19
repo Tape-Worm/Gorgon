@@ -114,10 +114,10 @@ public class GorgonV1SpriteBinaryCodec(Gorgon2D renderer)
 
         return filter switch
         {
-            SampleFilter.MinMagMipLinear when (hWrap == TextureWrap.Clamp) && (vWrap == TextureWrap.Clamp) && (borderColor == GorgonColor.White) => null,
-            SampleFilter.MinMagMipPoint when (hWrap == TextureWrap.Clamp) && (vWrap == TextureWrap.Clamp) && (borderColor == GorgonColor.White) => GorgonSamplerState.PointFiltering,
-            SampleFilter.MinMagMipLinear when (hWrap == TextureWrap.Wrap) && (vWrap == TextureWrap.Wrap) && (borderColor == GorgonColor.White) => GorgonSamplerState.Wrapping,
-            SampleFilter.MinMagMipPoint when (hWrap == TextureWrap.Wrap) && (vWrap == TextureWrap.Wrap) && (borderColor == GorgonColor.White) => GorgonSamplerState.PointFilteringWrapping,
+            SampleFilter.MinMagMipLinear when (hWrap == TextureWrap.Clamp) && (vWrap == TextureWrap.Clamp) && (borderColor == GorgonColors.White) => null,
+            SampleFilter.MinMagMipPoint when (hWrap == TextureWrap.Clamp) && (vWrap == TextureWrap.Clamp) && (borderColor == GorgonColors.White) => GorgonSamplerState.PointFiltering,
+            SampleFilter.MinMagMipLinear when (hWrap == TextureWrap.Wrap) && (vWrap == TextureWrap.Wrap) && (borderColor == GorgonColors.White) => GorgonSamplerState.Wrapping,
+            SampleFilter.MinMagMipPoint when (hWrap == TextureWrap.Wrap) && (vWrap == TextureWrap.Wrap) && (borderColor == GorgonColors.White) => GorgonSamplerState.PointFilteringWrapping,
             _ => builder.Wrapping(hWrap, vWrap, borderColor: borderColor)
 .Filter(filter)
 .Build(),
@@ -222,10 +222,10 @@ public class GorgonV1SpriteBinaryCodec(Gorgon2D renderer)
         sprite.CornerOffsets.LowerLeft = new Vector3(reader.ReadSingle(), reader.ReadSingle(), 0);
 
         // Get vertex colors.
-        sprite.CornerColors.UpperLeft = new GorgonColor(reader.ReadInt32());
-        sprite.CornerColors.UpperRight = new GorgonColor(reader.ReadInt32());
-        sprite.CornerColors.LowerLeft = new GorgonColor(reader.ReadInt32());
-        sprite.CornerColors.LowerRight = new GorgonColor(reader.ReadInt32());
+        sprite.CornerColors.UpperLeft = GorgonColor.FromARGB(reader.ReadInt32());
+        sprite.CornerColors.UpperRight = GorgonColor.FromARGB(reader.ReadInt32());
+        sprite.CornerColors.LowerLeft = GorgonColor.FromARGB(reader.ReadInt32());
+        sprite.CornerColors.LowerRight = GorgonColor.FromARGB(reader.ReadInt32());
 
         // Skip shader information.  Version 1.0 had shader information attached to the sprite.
         if ((version.Major == 1) && (version.Minor < 1))
@@ -274,7 +274,7 @@ public class GorgonV1SpriteBinaryCodec(Gorgon2D renderer)
         TextureWrap hWrap = TextureWrap.Clamp;
         TextureWrap vWrap = TextureWrap.Clamp;
         SampleFilter filter = SampleFilter.MinMagMipLinear;
-        GorgonColor samplerBorder = GorgonColor.White;
+        GorgonColor samplerBorder = GorgonColors.White;
 
         // Get horizontal wrapping mode.
         if (!InheritHorizontalWrapping)
@@ -350,12 +350,12 @@ public class GorgonV1SpriteBinaryCodec(Gorgon2D renderer)
                 reader.ReadBoolean();
             }
 
-            samplerBorder = new GorgonColor(reader.ReadInt32());
+            samplerBorder = GorgonColor.FromARGB(reader.ReadInt32());
 
             // The border in the older version defaults to black.  To make it more performant, reverse this value to white.
-            if (samplerBorder == GorgonColor.Black)
+            if (samplerBorder == GorgonColors.Black)
             {
-                samplerBorder = GorgonColor.White;
+                samplerBorder = GorgonColors.White;
             }
         }
 

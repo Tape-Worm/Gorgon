@@ -183,7 +183,7 @@ internal partial class SpriteWrap
         UnassignEvents();
         RadioHClamp.Checked = true;
         RadioVClamp.Checked = true;
-        Picker.OriginalColor = Picker.SelectedColor = GorgonColor.White;
+        Picker.OriginalColor = Picker.SelectedColor = GorgonColors.White;
     }
 
     /// <summary>

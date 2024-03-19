@@ -83,10 +83,10 @@ public class ShadowBuilder(Gorgon2D renderer, Gorgon2DGaussBlurEffect effect, Go
             _renderer.Begin();
 
             _sprite1.Position = new Vector2(rtv.Width / 4.0f, rtv.Height / 2.0f);
-            _sprite1.Color = GorgonColor.Black;
+            _sprite1.Color = GorgonColors.Black;
 
             _sprite2.Position = new Vector2(rtv.Width - (rtv.Width / 4.0f), rtv.Height / 2.0f);
-            _sprite2.Color = GorgonColor.Black;
+            _sprite2.Color = GorgonColors.Black;
 
             _renderer.DrawSprite(_sprite1);
             _renderer.DrawSprite(_sprite2);
@@ -99,8 +99,8 @@ public class ShadowBuilder(Gorgon2D renderer, Gorgon2DGaussBlurEffect effect, Go
             }
 
             // Reset our colors.
-            _sprite1.Color = GorgonColor.White;
-            _sprite2.Color = GorgonColor.White;
+            _sprite1.Color = GorgonColors.White;
+            _sprite2.Color = GorgonColors.White;
         }
 
         GorgonSprite[] resultSprites =
@@ -109,7 +109,7 @@ public class ShadowBuilder(Gorgon2D renderer, Gorgon2DGaussBlurEffect effect, Go
             {
                 Texture = resultTexture,
                 Size = new DX.Size2F(6 + _sprite1.Size.Width, 6 + _sprite1.Size.Height),
-                Color = new GorgonColor(GorgonColor.White, 0.85f),
+                Color = new GorgonColor(GorgonColors.White, 0.85f),
                 Anchor = new Vector2(0.5f, 0.5f),
                 TextureRegion = resultTexture.ToTexel(new DX.Rectangle((int)(_sprite1.Position.X - (_sprite1.Size.Width / 2) - 10),
                                                                        (int)(_sprite1.Position.Y - (_sprite1.Size.Height / 2) - 10),
@@ -121,7 +121,7 @@ public class ShadowBuilder(Gorgon2D renderer, Gorgon2DGaussBlurEffect effect, Go
             {
                 Texture = resultTexture,
                 Size = new DX.Size2F(6 + _sprite2.Size.Width, 6 + _sprite2.Size.Height),
-                Color = new GorgonColor(GorgonColor.White, 0.85f),
+                Color = new GorgonColor(GorgonColors.White, 0.85f),
                 Anchor = new Vector2(0.5f, 0.5f),
                 TextureRegion = resultTexture.ToTexel(new DX.Rectangle((int)(_sprite2.Position.X - (_sprite2.Size.Width / 2) - 10),
                                                                        (int)(_sprite2.Position.Y - (_sprite2.Size.Height / 2) - 10),

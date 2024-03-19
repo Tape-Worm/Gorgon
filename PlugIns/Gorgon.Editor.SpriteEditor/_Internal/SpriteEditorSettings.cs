@@ -109,5 +109,5 @@ internal class SpriteEditorSettings
     {
         get;
         set;
-    } = new GorgonColor(1, 0, 1, 0).ToRGBA();
+    } = GorgonColor.ToRGBA(new GorgonColor(1, 0, 1, 0));
 }

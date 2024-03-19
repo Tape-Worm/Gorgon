@@ -96,7 +96,7 @@ internal partial class FontGradientBrushView
                 }
                 else
                 {
-                    PickerNodeColor.SelectedColor = PickerNodeColor.OriginalColor = GorgonColor.BlackTransparent;
+                    PickerNodeColor.SelectedColor = PickerNodeColor.OriginalColor = GorgonColors.BlackTransparent;
                     NumericSelectedWeight.Value = 0M;
                 }
                 break;
@@ -462,7 +462,7 @@ internal partial class FontGradientBrushView
 
         float weight = (float)e.X / (PanelGradientDisplay.ClientSize.Width - 1);
         // Get the color of the pixel at the selected point.
-        GorgonColor color = _gradientImage.GetPixel(e.X, PanelGradientDisplay.ClientSize.Height / 2);
+        GorgonColor color = GorgonColor.FromColor(_gradientImage.GetPixel(e.X, PanelGradientDisplay.ClientSize.Height / 2));
 
         if ((ViewModel.AddNodeCommand is not null) && (ViewModel.AddNodeCommand.CanExecute((weight, color))))
         {
@@ -704,8 +704,8 @@ internal partial class FontGradientBrushView
         }
 
         LinearGradientBrush linearBrush = new(destRect,
-                                                  ViewModel.Nodes[0].Color,
-                                                  ViewModel.Nodes[^1].Color,
+                                                  GorgonColor.ToColor(ViewModel.Nodes[0].Color),
+                                                  GorgonColor.ToColor(ViewModel.Nodes[^1].Color),
                                                   rotate ? ViewModel.Angle : 0,
                                                   ViewModel.ScaleAngle)
         {
@@ -718,7 +718,7 @@ internal partial class FontGradientBrushView
         int counter = 0;
         foreach (WeightHandle handle in ViewModel.Nodes)
         {
-            interpColors.Colors[counter] = handle.Color;
+            interpColors.Colors[counter] = GorgonColor.ToColor(handle.Color);
             interpColors.Positions[counter] = handle.Weight;
             ++counter;
         }

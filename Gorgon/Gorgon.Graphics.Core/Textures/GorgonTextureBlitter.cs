@@ -393,7 +393,7 @@ public class GorgonTextureBlitter
             Initialize();
         }
 
-        GorgonColor actualColor = color ?? GorgonColor.White;
+        GorgonColor actualColor = color ?? GorgonColors.White;
 
         if ((_graphics.RenderTargets[0] is null)
             || (actualColor.Alpha.EqualsEpsilon(0)))

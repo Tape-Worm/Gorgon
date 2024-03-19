@@ -90,7 +90,7 @@ internal class TextureRenderer
         DX.RectangleF textureSize = new(0, 0, (float)ClientSize.Width / BackgroundPattern.Width, (float)ClientSize.Height / BackgroundPattern.Height);
 
         Renderer.Begin();
-        Renderer.DrawFilledRectangle(new DX.RectangleF(0, 0, ClientSize.Width, ClientSize.Height), GorgonColor.White, BackgroundPattern, textureSize, textureSampler: GorgonSamplerState.PointFilteringWrapping);
+        Renderer.DrawFilledRectangle(new DX.RectangleF(0, 0, ClientSize.Width, ClientSize.Height), GorgonColors.White, BackgroundPattern, textureSize, textureSampler: GorgonSamplerState.PointFilteringWrapping);
         Renderer.End();
     }
 
@@ -126,8 +126,8 @@ internal class TextureRenderer
                     break;
                 }
 
-                Renderer.DrawFilledRectangle(textureRegion, new GorgonColor(GorgonColor.Black, 0.25f));
-                Renderer.DrawFilledRectangle(textureRegion, new GorgonColor(GorgonColor.White, 0.25f), texture, new DX.RectangleF(0, 0, 1, 1), a, GorgonSamplerState.PointFiltering);
+                Renderer.DrawFilledRectangle(textureRegion, new GorgonColor(GorgonColors.Black, 0.25f));
+                Renderer.DrawFilledRectangle(textureRegion, new GorgonColor(GorgonColors.White, 0.25f), texture, new DX.RectangleF(0, 0, 1, 1), a, GorgonSamplerState.PointFiltering);
             }
         }
 
@@ -148,16 +148,16 @@ internal class TextureRenderer
                     break;
                 }
 
-                Renderer.DrawFilledRectangle(textureRegion, new GorgonColor(GorgonColor.Black, 0.25f));
-                Renderer.DrawFilledRectangle(textureRegion, new GorgonColor(GorgonColor.White, 0.25f), texture, new DX.RectangleF(0, 0, 1, 1), a, GorgonSamplerState.PointFiltering);
+                Renderer.DrawFilledRectangle(textureRegion, new GorgonColor(GorgonColors.Black, 0.25f));
+                Renderer.DrawFilledRectangle(textureRegion, new GorgonColor(GorgonColors.White, 0.25f), texture, new DX.RectangleF(0, 0, 1, 1), a, GorgonSamplerState.PointFiltering);
             }
         }
 
         texture = _context.Textures[_context.SelectedTexture];
         textureSize = new(texture.Width, texture.Height);
         textureRegion = new DX.RectangleF(textureSize.Width * -0.5f, textureSize.Height * -0.5f, textureSize.Width, textureSize.Height).Truncate();
-        Renderer.DrawFilledRectangle(textureRegion, new GorgonColor(GorgonColor.Black, 0.75f));
-        Renderer.DrawFilledRectangle(textureRegion, GorgonColor.White, texture, new DX.RectangleF(0, 0, 1, 1), _context.SelectedArrayIndex, GorgonSamplerState.PointFiltering);
+        Renderer.DrawFilledRectangle(textureRegion, new GorgonColor(GorgonColors.Black, 0.75f));
+        Renderer.DrawFilledRectangle(textureRegion, GorgonColors.White, texture, new DX.RectangleF(0, 0, 1, 1), _context.SelectedArrayIndex, GorgonSamplerState.PointFiltering);
 
         Renderer.End();
     }

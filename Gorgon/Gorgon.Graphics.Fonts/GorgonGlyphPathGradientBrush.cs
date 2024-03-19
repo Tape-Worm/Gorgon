@@ -157,7 +157,7 @@ public class GorgonGlyphPathGradientBrush
             writer.Write(BlendPositions[i]);
         }
 
-        writer.Write(CenterColor.ToARGB());
+        writer.Write(GorgonColor.ToARGB(CenterColor));
         writer.WriteValue(CenterPoint);
         writer.WriteValue(FocusScales);
 
@@ -166,14 +166,14 @@ public class GorgonGlyphPathGradientBrush
         {
             GorgonGlyphBrushInterpolator interp = Interpolation[i];
             writer.Write(interp.Weight);
-            writer.Write(interp.Color.ToARGB());
+            writer.Write(GorgonColor.ToARGB(interp.Color));
         }
 
         writer.Write(SurroundColors.Count);
 
         for (int i = 0; i < SurroundColors.Count; ++i)
         {
-            writer.Write(SurroundColors[i].ToARGB());
+            writer.Write(GorgonColor.ToARGB(SurroundColors[i]));
         }
     }
 
@@ -204,7 +204,7 @@ public class GorgonGlyphPathGradientBrush
             BlendPositions.Add(reader.ReadSingle());
         }
 
-        CenterColor = new GorgonColor(reader.ReadInt32());
+        CenterColor = GorgonColor.FromARGB(reader.ReadInt32());
         CenterPoint = reader.ReadValue<Vector2>();
         FocusScales = reader.ReadValue<Vector2>();
 
@@ -213,7 +213,7 @@ public class GorgonGlyphPathGradientBrush
 
         for (int i = 0; i < count; ++i)
         {
-            Interpolation.Add(new GorgonGlyphBrushInterpolator(reader.ReadSingle(), new GorgonColor(reader.ReadInt32())));
+            Interpolation.Add(new GorgonGlyphBrushInterpolator(reader.ReadSingle(), GorgonColor.FromARGB(reader.ReadInt32())));
         }
 
         count = reader.ReadInt32();
@@ -221,7 +221,7 @@ public class GorgonGlyphPathGradientBrush
 
         for (int i = 0; i < count; ++i)
         {
-            SurroundColors.Add(new GorgonColor(reader.ReadInt32()));
+            SurroundColors.Add(GorgonColor.FromARGB(reader.ReadInt32()));
         }
     }
 
@@ -264,11 +264,11 @@ public class GorgonGlyphPathGradientBrush
         }
 
         result.Blend = blend;
-        result.CenterColor = CenterColor;
+        result.CenterColor = GorgonColor.ToColor(CenterColor);
         result.CenterPoint = new PointF(CenterPoint.X, CenterPoint.Y);
         result.FocusScales = new PointF(FocusScales.X, FocusScales.Y);
 
-        result.SurroundColors = SurroundColors.Select(item => item.ToColor()).ToArray();
+        result.SurroundColors = SurroundColors.Select(item => GorgonColor.ToColor(item)).ToArray();
 
         return result;
     }

@@ -77,7 +77,7 @@ internal class NoTextureViewer
         Vector2 pos = new((int)(halfClient.Width - size.Width * 0.5f), (int)(halfClient.Height - size.Height * 0.5f));
 
         Renderer.Begin();
-        Renderer.DrawFilledRectangle(new DX.RectangleF(pos.X, pos.Y, size.Width, size.Height), GorgonColor.White, _noImage, new DX.RectangleF(0, 0, 1, 1));
+        Renderer.DrawFilledRectangle(new DX.RectangleF(pos.X, pos.Y, size.Width, size.Height), GorgonColors.White, _noImage, new DX.RectangleF(0, 0, 1, 1));
         Renderer.End();
     }
 

@@ -141,7 +141,7 @@ public partial class Form : System.Windows.Forms.Form
         }
 
         // Do nothing here.  When we need to update, we will.
-        _swap.RenderTargetView.Clear(GorgonColor.White);
+        _swap.RenderTargetView.Clear(GorgonColors.White);
 
         // Use a fixed step timing to animate the cube.
         _accumulator += GorgonTiming.Delta;
