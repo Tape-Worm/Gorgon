@@ -1,7 +1,6 @@
-﻿
-// 
-// Gorgon
-// Copyright (C) 2015 Michael Winsor
+﻿// 
+// Gorgon.
+// Copyright (C) 2024 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -11,26 +10,26 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software
+// all copies or substantial portions of the Software.
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE
+// THE SOFTWARE.
 // 
 // Created: Wednesday, December 9, 2015 8:53:48 PM
 // 
 
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
+using Gorgon.Properties;
 
-using Gorgon.Core;
-using Gorgon.Graphics.Imaging.Properties;
-
-namespace Gorgon.Graphics.Imaging;
+namespace Gorgon.Graphics;
 
 /// <summary>
-/// Information about the pitch layout for buffer data
+/// Information about the pitch layout for buffer data.
 /// </summary>
 /// <remarks>
 /// <para>
@@ -44,17 +43,27 @@ namespace Gorgon.Graphics.Imaging;
 /// <para>
 /// In many cases, the "width" of an image is not necessarily the number of pixels across, it may also include extra padding information for alignment purposes. This information is returned in the 
 /// <see cref="RowPitch"/> for the pitch layout. This value is typically the number of <c>pixels * bytes per pixel + padding bytes</c>. Like a 2D image, a depth (3D) image must use this information to 
-/// determine where to start reading/writing data in the memory occupied by the image
+/// determine where to start reading/writing data in the memory occupied by the image.
 /// </para>
 /// <para>
 /// For depth (3D) images, there is a slice value. This indicates the total size of one element along the Z-axis and typically represents the <c>bytes in the width * height</c> of the image. The 
 /// <see cref="SlicePitch"/> returns the total size of a single slice. The slice is calculated by <c>bytes in the width * height * slice index (z element)</c>). For a 2D image, this value represents just 
-/// a single slice (i.e. <c>bytes in the width * height</c>)
+/// a single slice (i.e. <c>bytes in the width * height</c>).
 /// </para>
 /// </remarks>
+[StructLayout(LayoutKind.Sequential, Pack = 4)]
 public readonly struct GorgonPitchLayout
     : IEquatable<GorgonPitchLayout>
 {
+    /// <summary>
+    /// The size of the this value, in bytes.
+    /// </summary>
+    public static readonly int SizeInBytes = Unsafe.SizeOf<GorgonPitchLayout>();
+
+    /// <summary>
+    /// An empty pitch layout structure.
+    /// </summary>
+    public static readonly GorgonPitchLayout Empty = new(0, 0, 0, 0);
 
     /// <summary>
     /// The number of bytes per line of data.
@@ -91,8 +100,6 @@ public readonly struct GorgonPitchLayout
     /// </remarks>
     public readonly int VerticalBlockCount;
 
-
-
     /// <summary>
     /// Function to compare two instances for equality.
     /// </summary>
@@ -116,7 +123,7 @@ public readonly struct GorgonPitchLayout
     /// <returns>
     ///   <b>true</b> if the specified <see cref="object" /> is equal to this instance; otherwise, <b>false</b>.
     /// </returns>
-    public override bool Equals(object obj) => obj is GorgonPitchLayout pitchLayout ? pitchLayout.Equals(this) : base.Equals(obj);
+    public override bool Equals(object obj) => obj is GorgonPitchLayout pitchLayout ? Equals(this, pitchLayout) : base.Equals(obj);
 
     /// <summary>
     /// Returns a hash code for this instance.
@@ -133,8 +140,8 @@ public readonly struct GorgonPitchLayout
     /// A <see cref="string" /> that represents this instance.
     /// </returns>
     public override string ToString() => ((HorizontalBlockCount == 0) && (VerticalBlockCount == 0))
-                   ? string.Format(Resources.GORIMG_TOSTR_FMTPITCH, RowPitch, SlicePitch)
-                   : string.Format(Resources.GORIMG_TOSTR_FMTPITCH_COMPRESSED, RowPitch, SlicePitch, HorizontalBlockCount, VerticalBlockCount);
+                   ? string.Format(Resources.GOR_TOSTR_FMTPITCH, RowPitch, SlicePitch)
+                   : string.Format(Resources.GOR_TOSTR_FMTPITCH_COMPRESSED, RowPitch, SlicePitch, HorizontalBlockCount, VerticalBlockCount);
 
     /// <summary>
     /// Equality operator.
@@ -152,8 +159,6 @@ public readonly struct GorgonPitchLayout
     /// <returns><b>true</b> if not equal, <b>false</b> if they are.</returns>
     public static bool operator !=(GorgonPitchLayout left, GorgonPitchLayout right) => !Equals(left, right);
 
-
-
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonPitchLayout" /> struct.
     /// </summary>
@@ -161,7 +166,7 @@ public readonly struct GorgonPitchLayout
     /// <param name="slicePitch">The number of bytes between each slice in a depth (3D) image, or, for other image types, this indicates the total size of the image in bytes.</param>
     /// <param name="horizontalBlockCount">[Optional] The number of horizontal blocks in a block compressed format.</param>
     /// <param name="verticalBlockCount">[Optional] The number of vertical blocks in a block compressed format.</param>
-    /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="horizontalBlockCount"/> is greater than 0, and the <paramref name="verticalBlockCount"/> is 0, or the <paramref name="verticalBlockCount"/> is greater than 0, and the <paramref name="horizontalBlockCount"/> is 0.</exception>
+    /// <exception cref="ArgumentException">Thrown when the <paramref name="horizontalBlockCount"/> is greater than 0, and the <paramref name="verticalBlockCount"/> is 0, or the <paramref name="verticalBlockCount"/> is greater than 0, and the <paramref name="horizontalBlockCount"/> is 0.</exception>
     /// <remarks>
     /// <para>
     /// For a 2D image, the <paramref name="slicePitch"/> indicates the total size of the image, in bytes (typically <paramref name="rowPitch"/> * height). In a depth image (3D), this indicates the size, in 
@@ -179,16 +184,15 @@ public readonly struct GorgonPitchLayout
 
         if ((verticalBlockCount <= 0) && (horizontalBlockCount > 0))
         {
-            throw new ArgumentException(Resources.GORIMG_ERR_MISSING_BLOCK_COUNT, nameof(verticalBlockCount));
+            throw new ArgumentException(Resources.GOR_ERR_MISSING_BLOCK_COUNT, nameof(verticalBlockCount));
         }
 
         if ((horizontalBlockCount <= 0) && (verticalBlockCount > 0))
         {
-            throw new ArgumentException(Resources.GORIMG_ERR_MISSING_BLOCK_COUNT, nameof(horizontalBlockCount));
+            throw new ArgumentException(Resources.GOR_ERR_MISSING_BLOCK_COUNT, nameof(horizontalBlockCount));
         }
 
         HorizontalBlockCount = horizontalBlockCount;
         VerticalBlockCount = verticalBlockCount;
     }
-
 }

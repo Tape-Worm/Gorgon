@@ -286,6 +286,15 @@ namespace Gorgon.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The height given ({0}) is not a multiple of 2. The format [{1}] requires the height be a multiple of 2..
+        /// </summary>
+        internal static string GOR_ERR_HEIGHT_MUST_BE_MULTIPLE_OF_2 {
+            get {
+                return ResourceManager.GetString("GOR_ERR_HEIGHT_MUST_BE_MULTIPLE_OF_2", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The index is out of range.  The index value [{0}] must be be 0 or less than {1}..
         /// </summary>
         internal static string GOR_ERR_INDEX_OUT_OF_RANGE {
@@ -300,6 +309,15 @@ namespace Gorgon.Properties {
         internal static string GOR_ERR_KEY_NOT_FOUND {
             get {
                 return ResourceManager.GetString("GOR_ERR_KEY_NOT_FOUND", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The block count must be larger than 0..
+        /// </summary>
+        internal static string GOR_ERR_MISSING_BLOCK_COUNT {
+            get {
+                return ResourceManager.GetString("GOR_ERR_MISSING_BLOCK_COUNT", resourceCulture);
             }
         }
         
@@ -690,6 +708,24 @@ namespace Gorgon.Properties {
         internal static string GOR_TOSTR_FILE_EXTENSION {
             get {
                 return ResourceManager.GetString("GOR_TOSTR_FILE_EXTENSION", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Image pitch information.  Width={0} bytes, Size={1} bytes..
+        /// </summary>
+        internal static string GOR_TOSTR_FMTPITCH {
+            get {
+                return ResourceManager.GetString("GOR_TOSTR_FMTPITCH", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Image pitch information.  Width={0} bytes, Size={1} bytes.  Format is compressed. Block count width: {2}, Block count height: {3}.
+        /// </summary>
+        internal static string GOR_TOSTR_FMTPITCH_COMPRESSED {
+            get {
+                return ResourceManager.GetString("GOR_TOSTR_FMTPITCH_COMPRESSED", resourceCulture);
             }
         }
         

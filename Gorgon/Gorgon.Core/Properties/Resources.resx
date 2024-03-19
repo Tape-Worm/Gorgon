@@ -374,4 +374,16 @@ Code: 0x{2}</value>
   <data name="GOR_ERR_NOT_ENOUGH_CORNERS" xml:space="preserve">
     <value>A minimum of 8 elements must be available to retrieve the corners of the bounding box.</value>
   </data>
+  <data name="GOR_ERR_HEIGHT_MUST_BE_MULTIPLE_OF_2" xml:space="preserve">
+    <value>The height given ({0}) is not a multiple of 2. The format [{1}] requires the height be a multiple of 2.</value>
+  </data>
+  <data name="GOR_ERR_MISSING_BLOCK_COUNT" xml:space="preserve">
+    <value>The block count must be larger than 0.</value>
+  </data>
+  <data name="GOR_TOSTR_FMTPITCH" xml:space="preserve">
+    <value>Image pitch information.  Width={0} bytes, Size={1} bytes.</value>
+  </data>
+  <data name="GOR_TOSTR_FMTPITCH_COMPRESSED" xml:space="preserve">
+    <value>Image pitch information.  Width={0} bytes, Size={1} bytes.  Format is compressed. Block count width: {2}, Block count height: {3}</value>
+  </data>
 </root>
