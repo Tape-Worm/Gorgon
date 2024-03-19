@@ -26,7 +26,7 @@
 
 using System.Numerics;
 using Gorgon.Core;
-using Gorgon.Math;
+using Gorgon.Graphics;
 using DX = SharpDX;
 
 namespace Gorgon.Animation;
@@ -59,7 +59,7 @@ internal class RectBoundsTrack
     /// <summary>
     /// Property to return the spline controller (if applicable) for the track.
     /// </summary>
-    public IGorgonSplineCalculation SplineController => _splineController;
+    public IGorgonSpline SplineController => _splineController;
 
     /// <summary>
     /// Property to set or return the interpolation mode.

@@ -386,4 +386,7 @@ Code: 0x{2}</value>
   <data name="GOR_TOSTR_FMTPITCH_COMPRESSED" xml:space="preserve">
     <value>Image pitch information.  Width={0} bytes, Size={1} bytes.  Format is compressed. Block count width: {2}, Block count height: {3}</value>
   </data>
+  <data name="GOR_ERR_SPLINE_POINT_OUT_OF_RANGE" xml:space="preserve">
+    <value>The spline point index must be 0 or greater, or less than the number of points - 1.</value>
+  </data>
 </root>

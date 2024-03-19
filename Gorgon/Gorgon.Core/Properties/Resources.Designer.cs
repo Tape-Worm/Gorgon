@@ -406,6 +406,15 @@ namespace Gorgon.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The spline point index must be 0 or greater, or less than the number of points - 1..
+        /// </summary>
+        internal static string GOR_ERR_SPLINE_POINT_OUT_OF_RANGE {
+            get {
+                return ResourceManager.GetString("GOR_ERR_SPLINE_POINT_OUT_OF_RANGE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to This stream does not support asynchronous I/O on this method..
         /// </summary>
         internal static string GOR_ERR_STREAM_DOES_NOT_SUPPORT_ASYNC {

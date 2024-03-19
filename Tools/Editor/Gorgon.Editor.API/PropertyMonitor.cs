@@ -28,7 +28,6 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Reflection;
 using System.Runtime.CompilerServices;
-using System.Text;
 using Gorgon.Core;
 using Gorgon.Editor.Properties;
 

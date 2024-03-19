@@ -24,7 +24,6 @@
 // 
 
 
-using Gorgon.Core;
 using Gorgon.Graphics.Core.Properties;
 using Gorgon.Patterns;
 using D3D11 = SharpDX.Direct3D11;

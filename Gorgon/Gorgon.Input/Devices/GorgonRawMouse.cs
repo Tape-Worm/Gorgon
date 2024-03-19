@@ -25,7 +25,6 @@
 
 
 using Gorgon.Core;
-using Gorgon.Graphics;
 using Gorgon.Input.Properties;
 using Gorgon.Math;
 using Gorgon.Native;
@@ -441,7 +440,7 @@ public class GorgonRawMouse
                                                   DoubleClickSize.Width,
                                                   DoubleClickSize.Height);
 
-        if ((!doubleClickArea.Contains(Position)) || (_doubleClickButton != button) || (_doubleClickTimer.Milliseconds > DoubleClickDelay))
+        if ((!doubleClickArea.Contains(Position.X, Position.Y)) || (_doubleClickButton != button) || (_doubleClickTimer.Milliseconds > DoubleClickDelay))
         {
             _doubleClickTimer.Reset();
             _clickCount = 0;

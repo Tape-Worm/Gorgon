@@ -1,7 +1,7 @@
 ﻿
 // 
-// Gorgon
-// Copyright (C) 2021 Michael Winsor
+// Gorgon.
+// Copyright (C) 2024 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -11,25 +11,24 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software
+// all copies or substantial portions of the Software.
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE
+// THE SOFTWARE.
 // 
 // Created: February 12, 2021 1:07:51 AM
 // 
 
-
 using System.Numerics;
 
-namespace Gorgon.Math;
+namespace Gorgon.Graphics;
 
 /// <summary>
-/// Returns spline interpolated values across a set of points
+/// Returns spline interpolated values across a set of points.
 /// </summary>
 /// <remarks>
 /// <para>
@@ -38,7 +37,10 @@ namespace Gorgon.Math;
 /// <para>
 /// Because this class provides smoothing between the nodes on the a spline, the result is very different than that of a linear interpolation. A linear interpolation will go in a straight line until 
 /// the end point is reached. This can give a jagged looking effect when a point moves between several points that are in vastly different places. But the spline will smooth the transition for the 
-/// value travelling to the destination points, thus giving a curved appearance when a point traverses the spline
+/// value travelling to the destination points, thus giving a curved appearance when a point traverses the spline.
+/// </para>
+/// <para>
+/// When adding or removing <see cref="Points"/> from the spline, remember to call <see cref="UpdateTangents"/> to recalculate the tangents.
 /// </para>
 /// </remarks>
 /// <example>
@@ -64,16 +66,27 @@ namespace Gorgon.Math;
 ///		Vector4 result = spline.GetInterpolatedValue(currentTime);
 /// 
 ///		// Do something with the result... like plot a pixel:
-///		// e.g PutPixel(result.X, result.Y, Color.Blue); or something
-///		// and over 5 seconds, a curved series of points should be plotted
+///		// e.g PutPixel(result.X, result.Y, Color.Blue); or something.
+///		// and over 5 seconds, a curved series of points should be plotted.
 /// 
 ///		currentTime = GorgonTiming.SecondsSinceStart / (endTime - startTime);
 /// } 
 /// ]]>
 /// </code>
 /// </example>
-public interface IGorgonSplineCalculation
+public interface IGorgonSpline
 {
+    /// <summary>
+    /// Property to return the list of points for the spline.
+    /// </summary>
+    /// <remarks>
+    /// When adding or removing points> from the spline, a call to the <see cref="UpdateTangents"/> method is required to recalculate the tangents. Otherwise, the spline interpolation will be incorrect.
+    /// </remarks>
+    IList<Vector4> Points
+    {
+        get;
+    }
+
     /// <summary>
     /// Function to return an interpolated point from the spline.
     /// </summary>
@@ -104,71 +117,6 @@ public interface IGorgonSplineCalculation
     /// </para>
     /// </remarks>
     Vector4 GetInterpolatedValue(float delta);
-}
-
-/// <summary>
-/// Returns spline interpolated values across a set of points
-/// </summary>
-/// <remarks>
-/// <para>
-/// This allows spline interpolation when iterating between points over time. This allows for a nice smoothing effect as a value approaches a node point on the spline. 
-/// </para>
-/// <para>
-/// Because this class provides smoothing between the nodes on the a spline, the result is very different than that of a linear interpolation. A linear interpolation will go in a straight line until 
-/// the end point is reached. This can give a jagged looking effect when a point moves between several points that are in vastly different places. But the spline will smooth the transition for the 
-/// value travelling to the destination points, thus giving a curved appearance when a point traverses the spline
-/// </para>
-/// <para>
-/// When adding or removing <see cref="Points"/> from the spline, remember to call <see cref="UpdateTangents"/> to recalculate the tangents
-/// </para>
-/// </remarks>
-/// <example>
-/// An example on how to use the spline object:
-/// <code language="csharp">
-/// <![CDATA[
-/// IGorgonSpline spline = new GorgonCatmullRomSpline();
-/// 
-/// spline.Points.Add(new Vector2(0, 0));
-/// spline.Points.Add(new Vector2(1, 4.5f));
-/// spline.Points.Add(new Vector2(7, -2.3f));
-/// spline.Points.Add(new Vector2(10.2f, 0));
-/// 
-/// spline.UpdateTangents();
-/// 
-/// 
-/// float startTime = GorgonTiming.SecondsSinceStart;
-/// float endTime = GorgonTiming.SecondsSinceStart + 5;
-/// float currentTime = 0;
-/// 
-/// while (currentTime < 1.0f)
-/// {
-///		Vector4 result = spline.GetInterpolatedValue(currentTime);
-/// 
-///		// Do something with the result... like plot a pixel:
-///		// e.g PutPixel(result.X, result.Y, Color.Blue); or something
-///		// and over 5 seconds, a curved series of points should be plotted
-/// 
-///		currentTime = GorgonTiming.SecondsSinceStart / (endTime - startTime);
-/// } 
-/// ]]>
-/// </code>
-/// </example>
-public interface IGorgonSpline
-    : IGorgonSplineCalculation
-{
-
-    /// <summary>
-    /// Property to return the list of points for the spline.
-    /// </summary>
-    /// <remarks>
-    /// When adding or removing points> from the spline, a call to the <see cref="UpdateTangents"/> method is required to recalculate the tangents. Otherwise, the spline interpolation will be incorrect.
-    /// </remarks>
-    IList<Vector4> Points
-    {
-        get;
-    }
-
-
 
     /// <summary>
     /// Function to calculate the tangent vectors.
@@ -178,5 +126,4 @@ public interface IGorgonSpline
     /// it must be called whenever a change to the <see cref="Points"/> property is made.
     /// </remarks>
     void UpdateTangents();
-
 }

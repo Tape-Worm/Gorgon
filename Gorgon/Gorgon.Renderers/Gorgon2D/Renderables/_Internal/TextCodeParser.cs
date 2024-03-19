@@ -26,7 +26,6 @@
 
 using System.Globalization;
 using System.Text;
-using Gorgon.Core;
 using Gorgon.Graphics;
 
 namespace Gorgon.Renderers;

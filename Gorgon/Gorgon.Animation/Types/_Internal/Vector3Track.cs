@@ -26,7 +26,7 @@
 
 using System.Numerics;
 using Gorgon.Core;
-using Gorgon.Math;
+using Gorgon.Graphics;
 
 namespace Gorgon.Animation;
 
@@ -58,7 +58,7 @@ internal class Vector3Track
     /// <summary>
     /// Property to return the spline controller (if applicable) for the track.
     /// </summary>
-    public IGorgonSplineCalculation SplineController => _splineController;
+    public IGorgonSpline SplineController => _splineController;
 
     /// <summary>
     /// Property to set or return the interpolation mode.

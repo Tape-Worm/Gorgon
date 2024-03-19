@@ -24,7 +24,6 @@
 // 
 
 
-using Gorgon.Core;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Memory;

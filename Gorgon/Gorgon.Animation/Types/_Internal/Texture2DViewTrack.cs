@@ -25,8 +25,8 @@
 
 
 using Gorgon.Core;
+using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
-using Gorgon.Math;
 using DX = SharpDX;
 
 namespace Gorgon.Animation;
@@ -54,7 +54,7 @@ internal class Texture2DViewTrack
     /// <summary>
     /// Property to return the spline controller (if applicable) for the track.
     /// </summary>
-    public IGorgonSplineCalculation SplineController => null;
+    public IGorgonSpline SplineController => null;
 
     /// <summary>
     /// Property to set or return the interpolation mode.

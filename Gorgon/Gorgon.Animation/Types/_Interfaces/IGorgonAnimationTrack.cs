@@ -25,7 +25,7 @@
 
 
 using Gorgon.Core;
-using Gorgon.Math;
+using Gorgon.Graphics;
 using Newtonsoft.Json;
 
 namespace Gorgon.Animation;
@@ -69,7 +69,7 @@ public interface IGorgonAnimationTrack<out T>
     /// Property to return the spline controller (if applicable) for the track.
     /// </summary>
     [JsonIgnore]
-    IGorgonSplineCalculation SplineController
+    IGorgonSpline SplineController
     {
         get;
     }
