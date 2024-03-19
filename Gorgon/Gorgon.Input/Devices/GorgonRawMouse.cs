@@ -25,6 +25,7 @@
 
 
 using Gorgon.Core;
+using Gorgon.Graphics;
 using Gorgon.Input.Properties;
 using Gorgon.Math;
 using Gorgon.Native;
@@ -66,7 +67,7 @@ public class GorgonRawMouse
     // Range that a double click is valid within.
     private DX.Size2 _doubleClickSize;
     // Mouse horizontal and vertical position.
-    private DX.Point _position;
+    private GorgonPoint _position;
     // Mouse wheel position.
     private int _wheel;
     // Constraints for the pointing device position.
@@ -78,7 +79,7 @@ public class GorgonRawMouse
     // The number of times a button was fully clicked.
     private int _clickCount;
     // The recorded position for a double click.
-    private DX.Point _doubleClickPosition;
+    private GorgonPoint _doubleClickPosition;
     // The button used for a double click.
     private MouseButtons _doubleClickButton;
     // The timer used for a double click.
@@ -86,7 +87,7 @@ public class GorgonRawMouse
     // The absolute position of the wheel.
     private int _wheelPosition;
     // The last known position for the mouse.
-    private DX.Point? _lastPosition;
+    private GorgonPoint? _lastPosition;
     // A synchronization object for multiple threads.
     private static readonly object _syncLock = new();
     // The device handle.
@@ -150,7 +151,7 @@ public class GorgonRawMouse
     /// point of reference to derive the relative offset from. 
     /// </para>
     /// </remarks>
-    public DX.Point RelativePositionOffset
+    public GorgonPoint RelativePositionOffset
     {
         get;
         set;
@@ -291,7 +292,7 @@ public class GorgonRawMouse
 
     /// <summary>Property to set or return the position of the mouse.</summary>
     /// <remarks>This property is affected by the <see cref="PositionConstraint" /> value.</remarks>
-    public DX.Point Position
+    public GorgonPoint Position
     {
         get => _position;
         set => _position = ConstrainPositionData(value);
@@ -479,20 +480,20 @@ public class GorgonRawMouse
     /// <returns><b>true</b> if the mouse moved, <b>false</b> if not.</returns>
     private bool HandleMouseMove(int x, int y, bool relative)
     {
-        DX.Point newPosition;
+        GorgonPoint newPosition;
 
         if (relative)
         {
-            RelativePositionOffset = new DX.Point(x, y);
-            newPosition = new DX.Point(_position.X + x, _position.Y + y);
+            RelativePositionOffset = new GorgonPoint(x, y);
+            newPosition = new GorgonPoint(_position.X + x, _position.Y + y);
         }
         else
         {
-            newPosition = new DX.Point(x, y);
+            newPosition = new GorgonPoint(x, y);
 
             if (_lastPosition is not null)
             {
-                RelativePositionOffset = new DX.Point((newPosition.X - _lastPosition.Value.X), ((newPosition.Y - _lastPosition.Value.Y)));
+                RelativePositionOffset = new GorgonPoint((newPosition.X - _lastPosition.Value.X), ((newPosition.Y - _lastPosition.Value.Y)));
             }
         }
 
@@ -546,7 +547,7 @@ public class GorgonRawMouse
     /// </summary>
     /// <param name="position">The position to constrain.</param>
     /// <returns>The constrained position.</returns>
-    private DX.Point ConstrainPositionData(DX.Point position)
+    private GorgonPoint ConstrainPositionData(GorgonPoint position)
     {
         if (_positionConstraint.IsEmpty)
         {
@@ -556,19 +557,19 @@ public class GorgonRawMouse
         // Limit positioning.
         if (position.X < _positionConstraint.X)
         {
-            RelativePositionOffset = new DX.Point(0, RelativePositionOffset.Y);
+            RelativePositionOffset = new GorgonPoint(0, RelativePositionOffset.Y);
             position.X = _positionConstraint.X;
         }
 
         if (position.Y < _positionConstraint.Y)
         {
-            RelativePositionOffset = new DX.Point(RelativePositionOffset.X, 0);
+            RelativePositionOffset = new GorgonPoint(RelativePositionOffset.X, 0);
             position.Y = _positionConstraint.Y;
         }
 
         if (position.X > _positionConstraint.Right)
         {
-            RelativePositionOffset = new DX.Point(0, RelativePositionOffset.Y);
+            RelativePositionOffset = new GorgonPoint(0, RelativePositionOffset.Y);
             position.X = _positionConstraint.Right;
         }
 
@@ -577,7 +578,7 @@ public class GorgonRawMouse
             return position;
         }
 
-        RelativePositionOffset = new DX.Point(RelativePositionOffset.X, 0);
+        RelativePositionOffset = new GorgonPoint(RelativePositionOffset.X, 0);
         position.Y = _positionConstraint.Bottom;
 
         return position;

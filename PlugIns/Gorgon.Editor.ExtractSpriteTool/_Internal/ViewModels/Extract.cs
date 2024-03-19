@@ -170,7 +170,7 @@ internal class Extract
     /// <summary>
     /// Property to set or return the offset of the grid, in pixels.
     /// </summary>
-    public DX.Point GridOffset
+    public GorgonPoint GridOffset
     {
         get => _extractData.GridOffset;
         set
@@ -637,12 +637,12 @@ internal class Extract
 
         if (_extractData.GridOffset.X > _extractData.Texture.Width - _extractData.CellSize.Width)
         {
-            _extractData.GridOffset = new DX.Point(0, _extractData.GridOffset.Y);
+            _extractData.GridOffset = new GorgonPoint(0, _extractData.GridOffset.Y);
         }
 
         if (_extractData.GridOffset.Y > _extractData.Texture.Height - _extractData.CellSize.Height)
         {
-            _extractData.GridOffset = new DX.Point(_extractData.GridOffset.X, 0);
+            _extractData.GridOffset = new GorgonPoint(_extractData.GridOffset.X, 0);
         }
 
         _extractData.StartArrayIndex = _extractData.StartArrayIndex.Min(_extractData.Texture.ArrayCount - 1);

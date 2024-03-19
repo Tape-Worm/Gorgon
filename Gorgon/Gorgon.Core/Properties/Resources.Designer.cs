@@ -786,6 +786,15 @@ namespace Gorgon.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Point: {0}x{1}.
+        /// </summary>
+        internal static string GOR_TOSTR_POINT {
+            get {
+                return ResourceManager.GetString("GOR_TOSTR_POINT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Gorgon Pointer: {0}.
         /// </summary>
         internal static string GOR_TOSTR_POINTER {

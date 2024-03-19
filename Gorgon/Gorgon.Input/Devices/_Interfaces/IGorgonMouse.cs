@@ -25,6 +25,7 @@
 
 
 using Gorgon.Core;
+using Gorgon.Graphics;
 using DX = SharpDX;
 
 namespace Gorgon.Input;
@@ -118,7 +119,7 @@ public interface IGorgonMouse
     /// Users should reset this value when they are done with it. Otherwise, it will not be reset until the next <see cref="MouseWheelMove"/> event.
     /// </para>
     /// </remarks>
-    DX.Point RelativePositionOffset
+    GorgonPoint RelativePositionOffset
     {
         get;
         set;
@@ -221,7 +222,7 @@ public interface IGorgonMouse
     /// This property is affected by the <see cref="PositionConstraint"/> value.
     /// </para>
     /// </remarks>
-    DX.Point Position
+    GorgonPoint Position
     {
         get;
         set;

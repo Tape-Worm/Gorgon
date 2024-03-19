@@ -25,6 +25,7 @@
 
 
 using System.Numerics;
+using Gorgon.Graphics;
 using DX = SharpDX;
 
 namespace Gorgon.Editor.Rendering;
@@ -40,7 +41,7 @@ public class MouseArgs
     /// <remarks>
     /// This returns the location of the mouse in relation to the control.
     /// </remarks>
-    public DX.Point ClientPosition
+    public GorgonPoint ClientPosition
     {
         get;
         internal set;

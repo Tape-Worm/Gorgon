@@ -25,6 +25,7 @@
 
 
 using System.Runtime.CompilerServices;
+using Gorgon.Graphics;
 using Gorgon.Math;
 using DX = SharpDX;
 

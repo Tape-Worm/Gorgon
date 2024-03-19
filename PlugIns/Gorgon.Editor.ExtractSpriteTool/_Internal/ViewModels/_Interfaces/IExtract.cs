@@ -84,7 +84,7 @@ internal interface IExtract
     /// <summary>
     /// Property to set or return the offset of the grid, in pixels.
     /// </summary>
-    DX.Point GridOffset
+    GorgonPoint GridOffset
     {
         get;
         set;

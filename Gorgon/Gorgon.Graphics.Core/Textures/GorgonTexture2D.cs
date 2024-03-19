@@ -1618,14 +1618,14 @@ public sealed class GorgonTexture2D
     /// </summary>
     /// <param name="texelCoordinates">The texel coordinates to convert.</param>
     /// <returns>The pixel coordinates.</returns>
-    public DX.Point ToPixel(Vector2 texelCoordinates) => new((int)(texelCoordinates.X * Width), (int)(texelCoordinates.Y * Height));
+    public GorgonPoint ToPixel(Vector2 texelCoordinates) => new((int)(texelCoordinates.X * Width), (int)(texelCoordinates.Y * Height));
 
     /// <summary>
     /// Function to convert a pixel coordinate into a texel coordinate.
     /// </summary>
     /// <param name="pixelCoordinates">The pixel coordinate to convert.</param>
     /// <returns>The texel coordinates.</returns>
-    public Vector2 ToTexel(DX.Point pixelCoordinates) => new(pixelCoordinates.X / (float)Width, pixelCoordinates.Y / (float)Height);
+    public Vector2 ToTexel(GorgonPoint pixelCoordinates) => new(pixelCoordinates.X / (float)Width, pixelCoordinates.Y / (float)Height);
 
     /// <summary>
     /// Function to convert a pixel coordinate into a texel coordinate.

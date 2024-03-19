@@ -239,12 +239,12 @@ public sealed class GorgonRenderTarget3DView
     /// </summary>
     /// <param name="texelCoordinates">The texel coordinates to convert.</param>
     /// <returns>The pixel coordinates.</returns>
-    public (DX.Point, int) ToPixel(Vector3 texelCoordinates)
+    public (GorgonPoint, int) ToPixel(Vector3 texelCoordinates)
     {
         float width = Texture.Width;
         float height = Texture.Height;
 
-        return (new DX.Point((int)(texelCoordinates.X * width), (int)(texelCoordinates.Y * height)), (int)(texelCoordinates.Z * Depth));
+        return (new GorgonPoint((int)(texelCoordinates.X * width), (int)(texelCoordinates.Y * height)), (int)(texelCoordinates.Z * Depth));
     }
 
     /// <summary>
@@ -252,7 +252,7 @@ public sealed class GorgonRenderTarget3DView
     /// </summary>
     /// <param name="pixelCoordinates">The pixel coordinate to convert.</param>
     /// <returns>The texel coordinates.</returns>
-    public Vector3 ToTexel(DX.Point pixelCoordinates)
+    public Vector3 ToTexel(GorgonPoint pixelCoordinates)
     {
         float width = Texture.Width;
         float height = Texture.Height;

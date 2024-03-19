@@ -526,7 +526,7 @@ public class RectClipperService
     /// <returns><b>true</b> if the mouse event was handled, <b>false</b> if it was not.</returns>
     public bool MouseMove(MouseArgs mouseArgs)
     {
-        _mousePosition = mouseArgs.ClientPosition.ToVector2();
+        _mousePosition = mouseArgs.ClientPosition;
         _localMousePosition = mouseArgs.CameraSpacePosition;
 
         GetActiveHandle();
@@ -556,7 +556,7 @@ public class RectClipperService
     /// <returns><b>true</b> if the mouse event was handled, <b>false</b> if it was not.</returns>
     public bool MouseDown(MouseArgs mouseArgs)
     {
-        _mousePosition = mouseArgs.ClientPosition.ToVector2();
+        _mousePosition = mouseArgs.ClientPosition;
         _localMousePosition = mouseArgs.CameraSpacePosition;
         GetActiveHandle();
 
@@ -579,7 +579,7 @@ public class RectClipperService
     /// <returns><b>true</b> if the mouse event was handled, <b>false</b> if it was not.</returns>
     public bool MouseUp(MouseArgs mouseArgs)
     {
-        _mousePosition = mouseArgs.ClientPosition.ToVector2();
+        _mousePosition = mouseArgs.ClientPosition;
         _localMousePosition = mouseArgs.CameraSpacePosition;
         GetActiveHandle();
 

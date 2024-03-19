@@ -352,7 +352,7 @@ public class GorgonTextureBlitter
     /// <seealso cref="GorgonTexture2DView"/>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void Blit(GorgonTexture2DView texture,
-                            DX.Point destination,
+                            GorgonPoint destination,
                             GorgonColor? color = null,
                             GorgonBlendState blendState = null,
                             GorgonSamplerState samplerState = null,

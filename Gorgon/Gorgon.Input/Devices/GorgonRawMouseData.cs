@@ -24,6 +24,7 @@
 // 
 
 
+using Gorgon.Graphics;
 using DX = SharpDX;
 
 namespace Gorgon.Input;
@@ -101,7 +102,7 @@ public enum MouseButtonState
 /// <param name="mouseWheel">The mouse wheel delta value.</param>
 /// <param name="mouseButton">The mouse buttons that are held down.</param>
 /// <param name="relative"><b>true</b> if the positioning is relative, <b>false</b> if absolute.</param>
-public readonly struct GorgonRawMouseData(DX.Point position, short mouseWheel, MouseButtonState mouseButton, bool relative)
+public readonly struct GorgonRawMouseData(GorgonPoint position, short mouseWheel, MouseButtonState mouseButton, bool relative)
 {
     /// <summary>
     /// The current position of the mouse.
@@ -110,7 +111,7 @@ public readonly struct GorgonRawMouseData(DX.Point position, short mouseWheel, M
     /// If the <see cref="IsRelative"/> value is set to <b>true</b>, then this value will be a relative value based on the last known position of the mouse. Otherwise, this will return the absolute 
     /// position of the mouse.
     /// </remarks>
-    public readonly DX.Point Position = position;
+    public readonly GorgonPoint Position = position;
 
     /// <summary>
     /// The change in the mouse wheel since the last event.

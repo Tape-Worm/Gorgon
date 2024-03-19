@@ -219,20 +219,20 @@ public sealed class GorgonTexture3DView
     /// for the underlying <see cref="Texture"/> is used.
     /// </para>
     /// </remarks>
-    public (DX.Point, int) ToPixel(Vector3 texelCoordinates, int? mipLevel = null)
+    public (GorgonPoint, int) ToPixel(Vector3 texelCoordinates, int? mipLevel = null)
     {
         float width = Texture.Width;
         float height = Texture.Height;
 
         if (mipLevel is null)
         {
-            return (new DX.Point((int)(texelCoordinates.X * width), (int)(texelCoordinates.Y * height)), (int)(texelCoordinates.Z * Depth));
+            return (new GorgonPoint((int)(texelCoordinates.X * width), (int)(texelCoordinates.Y * height)), (int)(texelCoordinates.Z * Depth));
         }
 
         width = GetMipWidth(mipLevel.Value);
         height = GetMipHeight(mipLevel.Value);
 
-        return (new DX.Point((int)(texelCoordinates.X * width), (int)(texelCoordinates.Y * height)), (int)(texelCoordinates.Z * Depth));
+        return (new GorgonPoint((int)(texelCoordinates.X * width), (int)(texelCoordinates.Y * height)), (int)(texelCoordinates.Z * Depth));
     }
 
     /// <summary>
@@ -248,7 +248,7 @@ public sealed class GorgonTexture3DView
     /// for the underlying <see cref="Texture"/> is used.
     /// </para>
     /// </remarks>
-    public Vector3 ToTexel(DX.Point pixelCoordinates, int? mipLevel = null)
+    public Vector3 ToTexel(GorgonPoint pixelCoordinates, int? mipLevel = null)
     {
         float width = Texture.Width;
         float height = Texture.Height;

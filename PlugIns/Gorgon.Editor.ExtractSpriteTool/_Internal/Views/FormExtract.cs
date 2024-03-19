@@ -29,6 +29,7 @@ using Gorgon.Editor.ExtractSpriteTool.Properties;
 using Gorgon.Editor.Rendering;
 using Gorgon.Editor.UI;
 using Gorgon.Editor.UI.Views;
+using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Math;
 using DX = SharpDX;
@@ -135,7 +136,7 @@ internal partial class FormExtract
             return;
         }
 
-        ViewModel.GridOffset = new DX.Point((int)NumericOffsetX.Value, ViewModel.GridOffset.Y);
+        ViewModel.GridOffset = new GorgonPoint((int)NumericOffsetX.Value, ViewModel.GridOffset.Y);
     }
 
     /// <summary>Handles the ValueChanged event of the NumericOffsetY control.</summary>
@@ -148,7 +149,7 @@ internal partial class FormExtract
             return;
         }
 
-        ViewModel.GridOffset = new DX.Point(ViewModel.GridOffset.X, (int)NumericOffsetY.Value);
+        ViewModel.GridOffset = new GorgonPoint(ViewModel.GridOffset.X, (int)NumericOffsetY.Value);
     }
 
     /// <summary>Handles the ValueChanged event of the NumericColumnCount control.</summary>

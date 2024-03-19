@@ -299,7 +299,7 @@ public abstract class GorgonCodecWic<TWicEncOpt, TWicDecOpt>
     /// multiple frames, or the codec does not support multiple frames, then an empty list is returned.
     /// </para>
     /// </remarks>
-    public IReadOnlyList<DX.Point> GetFrameOffsets(string fileName)
+    public IReadOnlyList<GorgonPoint> GetFrameOffsets(string fileName)
     {
         if (fileName is null)
         {
@@ -332,7 +332,7 @@ public abstract class GorgonCodecWic<TWicEncOpt, TWicDecOpt>
     /// multiple frames, or the codec does not support multiple frames, then an empty list is returned.
     /// </para>
     /// </remarks>
-    public IReadOnlyList<DX.Point> GetFrameOffsets(Stream stream)
+    public IReadOnlyList<GorgonPoint> GetFrameOffsets(Stream stream)
     {
         if (!SupportsMultipleFrames)
         {
@@ -348,7 +348,7 @@ public abstract class GorgonCodecWic<TWicEncOpt, TWicDecOpt>
                 return [];
             }
 
-            IReadOnlyList<DX.Point> result = wic.GetFrameOffsetMetadata(stream, SupportedFileFormat, FrameOffsetMetadataNames);
+            IReadOnlyList<GorgonPoint> result = wic.GetFrameOffsetMetadata(stream, SupportedFileFormat, FrameOffsetMetadataNames);
 
             return result ?? throw new IOException(string.Format(Resources.GORIMG_ERR_FILE_FORMAT_NOT_CORRECT, Codec));
         }

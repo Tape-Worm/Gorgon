@@ -198,7 +198,7 @@ internal class DefaultAnimationViewer(Gorgon2D renderer, GorgonSwapChain swapCha
             bounds.Right = lowerRight.X;
             bounds.Bottom = lowerRight.Y;
 
-            if (bounds.Contains(args.ClientPosition))
+            if (bounds.Contains(args.ClientPosition.X, args.ClientPosition.Y))
             {
                 _allowMove = true;
             }

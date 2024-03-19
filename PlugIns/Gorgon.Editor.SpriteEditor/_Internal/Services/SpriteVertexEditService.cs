@@ -519,7 +519,7 @@ internal class SpriteVertexEditService
     /// <returns><b>true</b> if the event is handled, <b>false</b> if not.</returns>
     public bool MouseMove(MouseArgs args)
     {
-        _mousePos = args.ClientPosition.ToVector2();
+        _mousePos = args.ClientPosition;
         GetActiveHandle();
 
         if (SelectedVertexIndex == -1)
@@ -561,7 +561,7 @@ internal class SpriteVertexEditService
     /// <param name="args">The arguments for the mouse down event.</param>
     public bool MouseDown(MouseArgs args)
     {
-        _mousePos = args.ClientPosition.ToVector2();
+        _mousePos = args.ClientPosition;
         GetActiveHandle();
 
         if (_activeHandleIndex == 4)
@@ -587,7 +587,7 @@ internal class SpriteVertexEditService
     /// <returns><b>true</b> if the mouse event was handled, <b>false</b> if it was not.</returns>
     public bool MouseUp(MouseArgs args)
     {
-        _mousePos = args.ClientPosition.ToVector2();
+        _mousePos = args.ClientPosition;
         GetActiveHandle();
 
         if ((_activeHandleIndex == 4) && (!IsDragging))

@@ -163,7 +163,7 @@ public class AnchorEditService : IAnchorEditService
             _cursorHidden = false;
         }
 
-        _mousePosition = args.ClientPosition.ToVector2();
+        _mousePosition = args.ClientPosition;
         DX.RectangleF iconBounds = _renderer.MeasureSprite(_anchorIcon);
 
         if (!iconBounds.Contains(_mousePosition.X, _mousePosition.Y))
@@ -187,7 +187,7 @@ public class AnchorEditService : IAnchorEditService
     ///   <b>true</b> if the mouse event was handled, <b>false</b> if it was not.</returns>
     public bool MouseMove(MouseArgs args)
     {
-        _mousePosition = args.ClientPosition.ToVector2();
+        _mousePosition = args.ClientPosition;
         if (args.MouseButtons != MouseButtons.Left)
         {
             if (_cursorHidden)

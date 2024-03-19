@@ -80,14 +80,14 @@ public static class SharpDXSize2Extensions
     /// </summary>
     /// <param name="size">The size value to convert.</param>
     /// <returns>The point value.</returns>
-    public static DX.Point ToPoint(this DX.Size2 size) => new(size.Width, size.Height);
+    public static GorgonPoint ToPoint(this DX.Size2 size) => new(size.Width, size.Height);
 
     /// <summary>
     /// Function to convert an integer size to a point.
     /// </summary>
     /// <param name="point">The point value to convert.</param>
     /// <returns>The size value.</returns>
-    public static DX.Size2 ToSize2(this DX.Point point) => new(point.X, point.Y);
+    public static DX.Size2 ToSize2(this GorgonPoint point) => new(point.X, point.Y);
 
     /// <summary>
     /// Function to convert a size into an floating point size.

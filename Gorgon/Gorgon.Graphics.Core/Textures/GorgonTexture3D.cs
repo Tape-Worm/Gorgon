@@ -1345,7 +1345,7 @@ public sealed class GorgonTexture3D
     /// </summary>
     /// <param name="texelCoordinates">The texel coordinates to convert.</param>
     /// <returns>The pixel coordinates.</returns>
-    public (DX.Point, int) ToPixel(Vector3 texelCoordinates) => (new DX.Point((int)(texelCoordinates.X * Width), (int)(texelCoordinates.Y * Height)), (int)(texelCoordinates.Z * Depth));
+    public (GorgonPoint, int) ToPixel(Vector3 texelCoordinates) => (new GorgonPoint((int)(texelCoordinates.X * Width), (int)(texelCoordinates.Y * Height)), (int)(texelCoordinates.Z * Depth));
 
     /// <summary>
     /// Function to convert a pixel coordinate into a texel coordinate.
@@ -1353,7 +1353,7 @@ public sealed class GorgonTexture3D
     /// <param name="pixelCoordinates">The pixel coordinate to convert.</param>
     /// <param name="depthSlice">The depth slice to convert.</param>
     /// <returns>The texel coordinates.</returns>
-    public Vector3 ToTexel(DX.Point pixelCoordinates, int depthSlice) => new(pixelCoordinates.X / (float)Width, pixelCoordinates.Y / (float)Height, depthSlice / (float)Depth);
+    public Vector3 ToTexel(GorgonPoint pixelCoordinates, int depthSlice) => new(pixelCoordinates.X / (float)Width, pixelCoordinates.Y / (float)Height, depthSlice / (float)Depth);
 
     /// <summary>
     /// Function to convert a pixel coordinate into a texel coordinate.

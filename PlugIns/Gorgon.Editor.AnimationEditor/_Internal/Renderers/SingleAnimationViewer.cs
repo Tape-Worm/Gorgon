@@ -103,7 +103,7 @@ internal class SingleAnimationViewer(Gorgon2D renderer, GorgonSwapChain swapChai
             return;
         }
 
-        _startAngle = CalcAngleFromMouse(args.ClientPosition.ToVector2(), DataContext.KeyEditor.CurrentEditor.Value.X);
+        _startAngle = CalcAngleFromMouse(args.ClientPosition, DataContext.KeyEditor.CurrentEditor.Value.X);
         _dragAngle = true;
         args.Handled = true;
         base.OnMouseDown(args);
@@ -120,7 +120,7 @@ internal class SingleAnimationViewer(Gorgon2D renderer, GorgonSwapChain swapChai
             return;
         }
 
-        float angle = CalcAngleFromMouse(args.ClientPosition.ToVector2(), _startAngle);
+        float angle = CalcAngleFromMouse(args.ClientPosition, _startAngle);
         DataContext.KeyEditor.CurrentEditor.Value = new Vector4(angle, 0, 0, 0);
 
         args.Handled = true;

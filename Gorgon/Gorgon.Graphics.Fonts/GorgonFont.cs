@@ -579,7 +579,7 @@ public sealed class GorgonFont
             {
                 Glyphs.Add(new GorgonGlyph(glyph.Key, glyph.Value.Region.Width)
                 {
-                    Offset = DX.Point.Zero
+                    Offset = GorgonPoint.Zero
                 });
                 continue;
             }
@@ -587,7 +587,7 @@ public sealed class GorgonFont
             GorgonGlyph newGlyph = new(glyph.Key, advance)
             {
                 Offset = glyph.Value.Offset,
-                OutlineOffset = HasOutline ? glyph.Value.OutlineOffset : DX.Point.Zero
+                OutlineOffset = HasOutline ? glyph.Value.OutlineOffset : GorgonPoint.Zero
             };
 
             // Assign the texture to each glyph (and its outline if needed).

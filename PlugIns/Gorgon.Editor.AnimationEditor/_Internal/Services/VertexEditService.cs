@@ -381,7 +381,7 @@ internal class VertexEditService
     {
         int vertexIndex = GetIndex();
 
-        _mousePos = args.ClientPosition.ToVector2();
+        _mousePos = args.ClientPosition;
         GetActiveHandle();
 
         if (vertexIndex == -1)
@@ -424,7 +424,7 @@ internal class VertexEditService
     {
         int vertexIndex = GetIndex();
 
-        _mousePos = args.ClientPosition.ToVector2();
+        _mousePos = args.ClientPosition;
         GetActiveHandle();
 
         if (args.MouseButtons != MouseButtons.Left)
@@ -450,7 +450,7 @@ internal class VertexEditService
     {
         int vertexIndex = GetIndex();
 
-        _mousePos = args.ClientPosition.ToVector2();
+        _mousePos = args.ClientPosition;
         GetActiveHandle();
 
         if ((args.MouseButtons != MouseButtons.Left) || (vertexIndex == -1))

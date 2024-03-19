@@ -182,7 +182,7 @@ public partial class MainForm
                     Rectangle screenRect = Cursor.Clip = RectangleToScreen(ClientRectangle);
                     _mouse.PositionConstraint = new DX.Rectangle(screenRect.Left, screenRect.Top, screenRect.Width, screenRect.Height);
                     // Set the position to the current mouse position.
-                    _mouse.Position = new DX.Point(Cursor.Position.X, Cursor.Position.Y);
+                    _mouse.Position = new GorgonPoint(Cursor.Position.X, Cursor.Position.Y);
 
                     _input.RegisterDevice(_mouse);
                     _useWinFormsInput = false;
@@ -270,7 +270,7 @@ public partial class MainForm
             buttons |= GorgonMouseButtons.Right;
         }
 
-        MouseInput(this, new GorgonMouseEventArgs(buttons, GorgonMouseButtons.None, new DX.Point(e.Location.X, e.Location.Y), e.Delta, DX.Point.Zero, e.Delta, 0, false));
+        MouseInput(this, new GorgonMouseEventArgs(buttons, GorgonMouseButtons.None, new GorgonPoint(e.Location.X, e.Location.Y), e.Delta, GorgonPoint.Zero, e.Delta, 0, false));
     }
 
     /// <summary>
@@ -298,7 +298,7 @@ public partial class MainForm
             buttons |= GorgonMouseButtons.Right;
         }
 
-        MouseInput(this, new GorgonMouseEventArgs(buttons, GorgonMouseButtons.None, new DX.Point(e.Location.X, e.Location.Y), e.Delta, DX.Point.Zero, e.Delta, 0, false));
+        MouseInput(this, new GorgonMouseEventArgs(buttons, GorgonMouseButtons.None, new GorgonPoint(e.Location.X, e.Location.Y), e.Delta, GorgonPoint.Zero, e.Delta, 0, false));
     }
 
     /// <summary>
@@ -722,7 +722,7 @@ public partial class MainForm
             _mouse.MouseWheelMove += Mouse_MouseWheelMove;
 
             // Set the mouse position.
-            _mouse.Position = new DX.Point(ClientSize.Width / 2, ClientSize.Height / 2);
+            _mouse.Position = new GorgonPoint(ClientSize.Width / 2, ClientSize.Height / 2);
 
             _noBlending = _blendBuilder.BlendState(GorgonBlendState.NoBlending)
                                            .Build();

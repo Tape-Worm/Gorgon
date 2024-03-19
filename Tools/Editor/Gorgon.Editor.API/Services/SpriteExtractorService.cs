@@ -99,9 +99,9 @@ public class SpriteExtractorService(Gorgon2D renderer, IContentFileManager fileM
     /// <param name="offset">The offset of the grid from the upper left corner of the texture.</param>
     /// <param name="cellSize">The size of the cell, in pixels.</param>
     /// <returns>The pixel coordinates for the sprite.</returns>
-    private DX.Rectangle GetSpriteRect(int column, int row, DX.Point offset, DX.Size2 cellSize)
+    private DX.Rectangle GetSpriteRect(int column, int row, GorgonPoint offset, DX.Size2 cellSize)
     {
-        DX.Point upperLeft = new(column * cellSize.Width + offset.X, row * cellSize.Height + offset.Y);
+        GorgonPoint upperLeft = new(column * cellSize.Width + offset.X, row * cellSize.Height + offset.Y);
         return new DX.Rectangle(upperLeft.X, upperLeft.Y, cellSize.Width, cellSize.Height);
     }
 

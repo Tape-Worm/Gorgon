@@ -775,7 +775,7 @@ class WicUtilities
 
                 frame?.Dispose();
                 frame = decoder.GetFrame(i);
-                DX.Point offset = frameOffsetMetadataItems?.Count > 0 ? GetFrameOffsetMetadataItems(frame, frameOffsetMetadataItems) : new DX.Point(0, 0);
+                GorgonPoint offset = frameOffsetMetadataItems?.Count > 0 ? GetFrameOffsetMetadataItems(frame, frameOffsetMetadataItems) : new GorgonPoint(0, 0);
 
                 // Get the pointer to the buffer and adjust its offset to that of the current frame.
                 GorgonPtr<byte> bufferPtr = buffer.Data + (offset.Y * buffer.PitchInformation.RowPitch) + (offset.X * buffer.PitchInformation.RowPitch / buffer.Width);
@@ -930,7 +930,7 @@ class WicUtilities
     /// <param name="frame">The frame containing the metadata.</param>
     /// <param name="metadataNames">The names of the metadata items to read.</param>
     /// <returns>The offset for the frame.</returns>
-    private static DX.Point GetFrameOffsetMetadataItems(BitmapFrameDecode frame, IReadOnlyList<string> metadataNames)
+    private static GorgonPoint GetFrameOffsetMetadataItems(BitmapFrameDecode frame, IReadOnlyList<string> metadataNames)
     {
         using MetadataQueryReader reader = frame.MetadataQueryReader;
 
@@ -941,7 +941,7 @@ class WicUtilities
 
         yValue ??= 0;
 
-        return new DX.Point(Convert.ToInt32(xValue), Convert.ToInt32(yValue));
+        return new GorgonPoint(Convert.ToInt32(xValue), Convert.ToInt32(yValue));
     }
 
     /// <summary>
@@ -951,7 +951,7 @@ class WicUtilities
     /// <param name="fileFormat">The file format to use.</param>
     /// <param name="metadataNames">The names of the metadata items to read.</param>
     /// <returns>A list of frame offsets.</returns>
-    public IReadOnlyList<DX.Point> GetFrameOffsetMetadata(Stream stream, Guid fileFormat, IReadOnlyList<string> metadataNames)
+    public IReadOnlyList<GorgonPoint> GetFrameOffsetMetadata(Stream stream, Guid fileFormat, IReadOnlyList<string> metadataNames)
     {
         long oldPosition = stream.Position;
         GorgonStreamWrapper wrapper = new(stream, stream.Position);
@@ -976,7 +976,7 @@ class WicUtilities
                 return [];
             }
 
-            DX.Point[] result = new DX.Point[decoder.FrameCount];
+            GorgonPoint[] result = new GorgonPoint[decoder.FrameCount];
 
             for (int i = 0; i < result.Length; ++i)
             {

@@ -26,6 +26,7 @@
 
 using Gorgon.Core;
 using Gorgon.Examples.Properties;
+using Gorgon.Graphics;
 using Gorgon.Input;
 using Gorgon.Math;
 using Gorgon.Timing;
@@ -149,7 +150,7 @@ public partial class Form : System.Windows.Forms.Form
 
             // Reset the relative positioning here. Otherwise, this value will not be updated until the next 
             // mouse event, which would cause our cursor to drift.
-            _mouse.RelativePositionOffset = DX.Point.Zero;
+            _mouse.RelativePositionOffset = GorgonPoint.Zero;
         }
 
         // Display the mouse cursor.			
@@ -163,7 +164,7 @@ public partial class Form : System.Windows.Forms.Form
     /// </summary>
     /// <param name="relativePosition">The raw input relative position of the mouse since it was last moved.</param>
     /// <param name="button">The current button being held down.</param>
-    private void UpdateMousePointerDisplay(DX.Point relativePosition, GorgonMouseButtons button)
+    private void UpdateMousePointerDisplay(GorgonPoint relativePosition, GorgonMouseButtons button)
     {
         Cursor.Position = PointToScreen(DisplayHalfSize);
 
@@ -282,7 +283,7 @@ public partial class Form : System.Windows.Forms.Form
         // If we press "P", then switch between polling and events.
         if (e.Key == Keys.P)
         {
-            _mouse.RelativePositionOffset = DX.Point.Zero;
+            _mouse.RelativePositionOffset = GorgonPoint.Zero;
             _usePolling = !_usePolling;
             if (_usePolling)
             {

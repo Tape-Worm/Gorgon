@@ -87,7 +87,7 @@ public class SpriteExtractionData
     /// <summary>
     /// Property to set or return the offset of the grid, in pixels.
     /// </summary>
-    public DX.Point GridOffset
+    public GorgonPoint GridOffset
     {
         get;
         set;

@@ -440,7 +440,7 @@ internal class GlyphDraw(IGorgonFontInfo fontInfo, GdiFontData fontData)
             if (char.IsWhiteSpace(character))
             {
                 characters.Remove(character);
-                packedGlyphs[character] = new GlyphInfo(null, new DX.Rectangle(0, 0, charRect.Width + 1, charRect.Height + 1), DX.Point.Zero, DX.Rectangle.Empty, DX.Point.Zero);
+                packedGlyphs[character] = new GlyphInfo(null, new DX.Rectangle(0, 0, charRect.Width + 1, charRect.Height + 1), GorgonPoint.Zero, DX.Rectangle.Empty, GorgonPoint.Zero);
                 continue;
             }
 
@@ -501,9 +501,9 @@ internal class GlyphDraw(IGorgonFontInfo fontInfo, GdiFontData fontData)
 
             packedGlyphs[character] = new GlyphInfo(packedBitmap,
                                                     new DX.Rectangle(location.X, location.Y, size.Width, size.Height),
-                                                    new DX.Point(charRect.X, charRect.Y),
+                                                    new GorgonPoint(charRect.X, charRect.Y),
                                                     new DX.Rectangle(outlineLocation.X, outlineLocation.Y, outlineRect.Width + 1, outlineRect.Height + 1),
-                                                    new DX.Point(outlineRect.X, outlineRect.Y));
+                                                    new GorgonPoint(outlineRect.X, outlineRect.Y));
         }
     }
 

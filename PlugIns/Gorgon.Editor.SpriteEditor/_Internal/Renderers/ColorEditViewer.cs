@@ -190,7 +190,7 @@ internal class ColorEditViewer(Gorgon2D renderer, GorgonSwapChain swapChain, ISp
     {
         base.OnMouseUp(args);
 
-        GetActiveHandle(args.ClientPosition.ToVector2());
+        GetActiveHandle(args.ClientPosition);
 
         for (int i = 0; i < _selected.Length; ++i)
         {
@@ -240,7 +240,7 @@ internal class ColorEditViewer(Gorgon2D renderer, GorgonSwapChain swapChain, ISp
     protected override void OnMouseMove(MouseArgs args)
     {
         base.OnMouseMove(args);
-        GetActiveHandle(args.ClientPosition.ToVector2());
+        GetActiveHandle(args.ClientPosition);
     }
 
     /// <summary>Handles the PropertyChanged event of the ColorEditor control.</summary>

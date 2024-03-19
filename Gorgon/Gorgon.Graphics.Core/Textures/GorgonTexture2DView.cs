@@ -599,7 +599,7 @@ public sealed class GorgonTexture2DView
     /// for the underlying <see cref="Texture"/> is used.
     /// </para>
     /// </remarks>
-    public Vector2 ToTexel(DX.Point pixelPoint, int? mipLevel = null)
+    public Vector2 ToTexel(GorgonPoint pixelPoint, int? mipLevel = null)
     {
         float width = Texture.Width;
         float height = Texture.Height;

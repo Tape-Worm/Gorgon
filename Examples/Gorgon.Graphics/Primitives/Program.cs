@@ -359,7 +359,7 @@ internal static class Program
     /// <param name="e">The <see cref="GI.GorgonMouseEventArgs" /> instance containing the event data.</param>
     private static void RawMouse_MouseMove(object sender, GI.GorgonMouseEventArgs e)
     {
-        DX.Point delta = e.RelativePosition;
+        GorgonPoint delta = e.RelativePosition;
         _cameraRotation.X += delta.Y.Sign() * (_sensitivity);
         _cameraRotation.Y += delta.X.Sign() * (_sensitivity);
     }

@@ -132,7 +132,7 @@ public sealed class GorgonGlyph
     /// The offset of a glyph is the distance from the glyph black box (i.e. the bounds of the glyph pixels) to the actual starting point of the glyph.  For example, if 'g' has an offset of 
     /// 4, 6 and we change the offset to 3, 4 then the 'g' glyph will be shifted left by 1 pixel and up by 2 pixels when rendering.
     /// </remarks>
-    public DX.Point Offset
+    public GorgonPoint Offset
     {
         get;
         set;
@@ -150,7 +150,7 @@ public sealed class GorgonGlyph
     /// This property will only be assigned if a <see cref="GorgonFont"/> has an outline.
     /// </para>
     /// </remarks>
-    public DX.Point OutlineOffset
+    public GorgonPoint OutlineOffset
     {
         get;
         set;

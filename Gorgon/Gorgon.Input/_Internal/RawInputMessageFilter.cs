@@ -24,6 +24,7 @@
 // 
 
 
+using Gorgon.Graphics;
 using Gorgon.Input;
 using DX = SharpDX;
 
@@ -178,7 +179,7 @@ internal class RawInputMessageFilter
             state = MouseButtonState.Button5Up;
         }
 
-        GorgonRawMouseData data = new(new DX.Point(rawData.LastX, rawData.LastY),
+        GorgonRawMouseData data = new(new GorgonPoint(rawData.LastX, rawData.LastY),
                                           wheelDelta,
                                           state,
                                           ((rawData.Flags & RawMouseFlags.MoveAbsolute) != RawMouseFlags.MoveAbsolute));

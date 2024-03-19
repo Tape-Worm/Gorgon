@@ -24,6 +24,7 @@
 // 
 
 
+using Gorgon.Graphics;
 using DX = SharpDX;
 
 namespace Gorgon.Input;
@@ -42,7 +43,7 @@ namespace Gorgon.Input;
 /// <param name="wheelDelta">Relative position of the wheel.</param>
 /// <param name="clickCount">Number of clicks in a timed period.</param>
 /// <param name="isAbsolute"><b>true</b> to use absolute positioning, <b>false</b> to use relative.</param>
-public class GorgonMouseEventArgs(MouseButtons buttons, MouseButtons shiftButtons, DX.Point position, int wheelPosition, DX.Point relativePosition, int wheelDelta, int clickCount, bool isAbsolute)
+public class GorgonMouseEventArgs(MouseButtons buttons, MouseButtons shiftButtons, GorgonPoint position, int wheelPosition, GorgonPoint relativePosition, int wheelDelta, int clickCount, bool isAbsolute)
         : EventArgs
 {
 
@@ -65,7 +66,7 @@ public class GorgonMouseEventArgs(MouseButtons buttons, MouseButtons shiftButton
     /// <summary>
     /// Property to return the position of the mouse.
     /// </summary>
-    public DX.Point Position
+    public GorgonPoint Position
     {
         get;
     } = position;
@@ -84,7 +85,7 @@ public class GorgonMouseEventArgs(MouseButtons buttons, MouseButtons shiftButton
     /// <summary>
     /// Property to return the amount that the mouse has moved since the last <see cref="GorgonRawMouse"/> event.
     /// </summary>
-    public DX.Point RelativePosition
+    public GorgonPoint RelativePosition
     {
         get;
     } = relativePosition;

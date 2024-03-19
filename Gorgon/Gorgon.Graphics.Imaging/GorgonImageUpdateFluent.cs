@@ -529,33 +529,33 @@ public partial class GorgonImage
                 return;
             }
 
-            DX.Point position = DX.Point.Zero;
+            GorgonPoint position = GorgonPoint.Zero;
 
             switch (anchor)
             {
                 case ImageExpandAnchor.UpperMiddle:
-                    position = new DX.Point((newWidth / 2) - (Width / 2), 0);
+                    position = new GorgonPoint((newWidth / 2) - (Width / 2), 0);
                     break;
                 case ImageExpandAnchor.UpperRight:
-                    position = new DX.Point(newWidth - Width, 0);
+                    position = new GorgonPoint(newWidth - Width, 0);
                     break;
                 case ImageExpandAnchor.MiddleLeft:
-                    position = new DX.Point(0, (newHeight / 2) - (Height / 2));
+                    position = new GorgonPoint(0, (newHeight / 2) - (Height / 2));
                     break;
                 case ImageExpandAnchor.Center:
-                    position = new DX.Point((newWidth / 2) - (Width / 2), (newHeight / 2) - (Height / 2));
+                    position = new GorgonPoint((newWidth / 2) - (Width / 2), (newHeight / 2) - (Height / 2));
                     break;
                 case ImageExpandAnchor.MiddleRight:
-                    position = new DX.Point(newWidth - Width, (newHeight / 2) - (Height / 2));
+                    position = new GorgonPoint(newWidth - Width, (newHeight / 2) - (Height / 2));
                     break;
                 case ImageExpandAnchor.BottomLeft:
-                    position = new DX.Point(0, newHeight - Height);
+                    position = new GorgonPoint(0, newHeight - Height);
                     break;
                 case ImageExpandAnchor.BottomMiddle:
-                    position = new DX.Point((newWidth / 2) - (Width / 2), newHeight - Height);
+                    position = new GorgonPoint((newWidth / 2) - (Width / 2), newHeight - Height);
                     break;
                 case ImageExpandAnchor.BottomRight:
-                    position = new DX.Point(newWidth - Width, newHeight - Height);
+                    position = new GorgonPoint(newWidth - Width, newHeight - Height);
                     break;
             }
 

@@ -447,7 +447,7 @@ public class DefaultContentRenderer<T>
         }
 
         _mouseArgs.CameraSpacePosition = new Vector2(cameraMousePos.X, cameraMousePos.Y);
-        _mouseArgs.ClientPosition = new DX.Point(e.X, e.Y);
+        _mouseArgs.ClientPosition = new GorgonPoint(e.X, e.Y);
         _mouseArgs.MouseButtons = e.Button;
         _mouseArgs.MouseWheelDelta = e.Delta;
         _mouseArgs.Handled = false;
@@ -509,7 +509,7 @@ public class DefaultContentRenderer<T>
             float targetZoomSize = (_mouseArgs.MouseWheelDelta < 0 ? _camera.Zoom.X.GetPrevNearest()
                                                                    : _camera.Zoom.X.GetNextNearest()).GetScale();
 
-            MoveTo(_mouseArgs.ClientPosition.ToVector2(), targetZoomSize);
+            MoveTo(_mouseArgs.ClientPosition, targetZoomSize);
             return;
         }
 
