@@ -92,7 +92,6 @@ namespace Gorgon.Renderers.Data;
 public struct GorgonRay(Vector3 position, Vector3 direction)
         : IGorgonEquatableByRef<GorgonRay>
 {
-
     /// <summary>
     /// The position in three dimensional space where the ray starts.
     /// </summary>
@@ -102,8 +101,6 @@ public struct GorgonRay(Vector3 position, Vector3 direction)
     /// The normalized direction in which the ray points.
     /// </summary>
     public Vector3 Direction = direction;
-
-
 
     /// <summary>
     /// Calculates a world space <see cref="GorgonRay"/> from 2d screen coordinates.
@@ -158,13 +155,7 @@ public struct GorgonRay(Vector3 position, Vector3 direction)
     /// <returns>
     /// A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table. 
     /// </returns>
-    public override readonly int GetHashCode()
-    {
-        unchecked
-        {
-            return HashCode.Combine(Position, Direction);
-        }
-    }
+    public override readonly int GetHashCode() => HashCode.Combine(Position, Direction);
 
     /// <summary>
     /// Determines whether the specified <see cref="Vector4"/> is equal to this instance.
@@ -174,7 +165,15 @@ public struct GorgonRay(Vector3 position, Vector3 direction)
     /// <c>true</c> if the specified <see cref="Vector4"/> is equal to this instance; otherwise, <c>false</c>.
     /// </returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public readonly bool Equals(GorgonRay value) => Equals(in value);
+    readonly bool IEquatable<GorgonRay>.Equals(GorgonRay value) => Equals(in this, in value);
+
+    /// <summary>
+    /// Function to compare two values for equality.
+    /// </summary>
+    /// <param name="left">The left value to compare.</param>
+    /// <param name="right">The right value to compare.</param>
+    /// <returns><b>true</b> if equal, <b>false</b> if not.</returns>
+    public static bool Equals(in GorgonRay left, in GorgonRay right) => left.Position.Equals(right.Position) && left.Direction.Equals(right.Direction);  
 
     /// <summary>
     /// Determines whether the specified <see cref="object"/> is equal to this instance.
@@ -183,12 +182,12 @@ public struct GorgonRay(Vector3 position, Vector3 direction)
     /// <returns>
     /// <c>true</c> if the specified <see cref="object"/> is equal to this instance; otherwise, <c>false</c>.
     /// </returns>
-    public override readonly bool Equals(object value) => (value is GorgonRay ray) ? ray.Equals(in this) : base.Equals(value);
+    public override readonly bool Equals(object value) => (value is GorgonRay ray) ? Equals(in this, in ray) : base.Equals(value);
 
     /// <summary>Function to compare this instance with another.</summary>
     /// <param name="other">The other instance to use for comparison.</param>
     /// <returns>
     ///   <b>true</b> if equal, <b>false</b> if not.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public readonly bool Equals(ref readonly GorgonRay other) => Position.Equals(other.Position) && Direction.Equals(other.Direction);
+    public readonly bool Equals(ref readonly GorgonRay other) => Equals(in this, in other);
 }

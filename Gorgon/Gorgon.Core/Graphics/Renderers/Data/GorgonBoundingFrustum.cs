@@ -135,11 +135,8 @@ public class GorgonBoundingFrustum
     public class CornerList
         : IEnumerable<Vector3>
     {
-
         // The vectors indicating the corners of the frustum.
         private readonly Vector3[] _corners = new Vector3[8];
-
-
 
         /// <summary>
         /// Property to return the number of corners in the frustum.
@@ -149,14 +146,12 @@ public class GorgonBoundingFrustum
         /// <summary>
         /// Property to return a readonly reference to the plane.
         /// </summary>
-        public ref readonly Vector3 this[FrustumCorner plane] => ref _corners[(int)plane];
+        public Vector3 this[FrustumCorner plane] => _corners[(int)plane];
 
         /// <summary>
         /// Property to return a readonly reference to the plane by index.
         /// </summary>
-        public ref readonly Vector3 this[int index] => ref _corners[index];
-
-
+        public Vector3 this[int index] => _corners[index];
 
         /// <summary>
         /// Function to assign a corner.
@@ -193,11 +188,8 @@ public class GorgonBoundingFrustum
     public class PlaneList
         : IEnumerable<Plane>
     {
-
         // The list of planes for the frustum.
         private readonly Plane[] _planes = new Plane[6];
-
-
 
         /// <summary>
         /// Property to return the number of planes in the frustum.
@@ -207,21 +199,19 @@ public class GorgonBoundingFrustum
         /// <summary>
         /// Property to return a readonly reference to the plane.
         /// </summary>
-        public ref readonly Plane this[FrustumPlane plane] => ref _planes[(int)plane];
+        public Plane this[FrustumPlane plane] => _planes[(int)plane];
 
         /// <summary>
         /// Property to return a readonly reference to the plane by index.
         /// </summary>
-        public ref readonly Plane this[int index] => ref _planes[index];
-
-
+        public Plane this[int index] => _planes[index];
 
         /// <summary>
         /// Function to assign a plane.
         /// </summary>
         /// <param name="frustumPlane">The orientation of the plane to assign.</param>
         /// <param name="plane">The plane data.</param>
-        internal void Set(FrustumPlane frustumPlane, ref readonly Plane plane) => _planes[(int)frustumPlane] = plane;
+        internal void Set(FrustumPlane frustumPlane, Plane plane) => _planes[(int)frustumPlane] = plane;
 
         /// <summary>
         /// Function to retrieve the corners as a read only span.
@@ -242,10 +232,7 @@ public class GorgonBoundingFrustum
         /// <summary>Returns an enumerator that iterates through a collection.</summary>
         /// <returns>An <see cref="IEnumerator">IEnumerator</see> object that can be used to iterate through the collection.</returns>
         IEnumerator IEnumerable.GetEnumerator() => _planes.GetEnumerator();
-
     }
-
-
 
     /// <summary>
     /// Property to return the plane list for this frustum.
@@ -268,16 +255,14 @@ public class GorgonBoundingFrustum
     /// </summary>
     public bool IsOrthographic => (Planes[FrustumPlane.Left].Normal.Equals(-Planes[FrustumPlane.Right].Normal)) && ((-Planes[FrustumPlane.Top].Normal).Equals((-Planes[FrustumPlane.Bottom].Normal)));
 
-
-
     /// <summary>
     /// Function to create a plane based on 3 points.
     /// </summary>
     /// <param name="point1">The first point.</param>
     /// <param name="point2">The second point.</param>
     /// <param name="point3">The third point.</param>
-    /// <param name="plane">The new plane.</param>
-    private static void CreatePlaneFromPoints(ref readonly Vector3 point1, ref readonly Vector3 point2, ref readonly Vector3 point3, out Plane plane)
+    /// <returns>The new plane.</returns>
+    private static Plane CreatePlaneFromPoints(Vector3 point1, Vector3 point2, Vector3 point3)
     {
         float x1 = point2.X - point1.X;
         float y1 = point2.Y - point1.Y;
@@ -290,10 +275,13 @@ public class GorgonBoundingFrustum
         float xy = (x1 * y2) - (y1 * x2);
         float invPyth = 1.0f / ((yz * yz) + (xz * xz) + (xy * xy)).Sqrt();
 
-        plane.Normal.X = yz * invPyth;
-        plane.Normal.Y = xz * invPyth;
-        plane.Normal.Z = xy * invPyth;
+        Plane plane = new()
+        {
+            Normal = new Vector3(yz * invPyth, xz * invPyth, xy * invPyth),
+        };
         plane.D = -((plane.Normal.X * point1.X) + (plane.Normal.Y * point1.Y) + (plane.Normal.Z * point1.Z));
+
+        return plane;
     }
 
     /// <summary>
@@ -303,7 +291,7 @@ public class GorgonBoundingFrustum
     /// <param name="p2"></param>
     /// <param name="p3"></param>
     /// <returns></returns>
-    private static Vector3 Get3PlanesInterPoint(ref readonly Plane p1, ref readonly Plane p2, ref readonly Plane p3)
+    private static Vector3 Get3PlanesInterPoint(Plane p1, Plane p2, Plane p3)
     {
         //P = -d1 * N2xN3 / N1.N2xN3 - d2 * N3xN1 / N2.N3xN1 - d3 * N1xN2 / N3.N1xN2 
         Vector3 v =
@@ -350,18 +338,12 @@ public class GorgonBoundingFrustum
     public static GorgonBoundingFrustum CreateInverted(GorgonBoundingFrustum frustum)
     {
         GorgonBoundingFrustum result = new();
-        Plane plane = new(-frustum.Planes[FrustumPlane.Near].Normal, frustum.Planes[FrustumPlane.Near].D);
-        result.Planes.Set(FrustumPlane.Near, in plane);
-        Plane plane1 = new(-frustum.Planes[FrustumPlane.Far].Normal, frustum.Planes[FrustumPlane.Far].D);
-        result.Planes.Set(FrustumPlane.Far, in plane1);
-        Plane plane2 = new(-frustum.Planes[FrustumPlane.Left].Normal, frustum.Planes[FrustumPlane.Left].D);
-        result.Planes.Set(FrustumPlane.Left, in plane2);
-        Plane plane3 = new(-frustum.Planes[FrustumPlane.Right].Normal, frustum.Planes[FrustumPlane.Right].D);
-        result.Planes.Set(FrustumPlane.Right, in plane3);
-        Plane plane4 = new(-frustum.Planes[FrustumPlane.Top].Normal, frustum.Planes[FrustumPlane.Top].D);
-        result.Planes.Set(FrustumPlane.Top, in plane4);
-        Plane plane5 = new(-frustum.Planes[FrustumPlane.Bottom].Normal, frustum.Planes[FrustumPlane.Bottom].D);
-        result.Planes.Set(FrustumPlane.Bottom, in plane5);
+        result.Planes.Set(FrustumPlane.Near, new Plane(-frustum.Planes[FrustumPlane.Near].Normal, frustum.Planes[FrustumPlane.Near].D));
+        result.Planes.Set(FrustumPlane.Far, new Plane(-frustum.Planes[FrustumPlane.Far].Normal, frustum.Planes[FrustumPlane.Far].D));
+        result.Planes.Set(FrustumPlane.Left, new Plane(-frustum.Planes[FrustumPlane.Left].Normal, frustum.Planes[FrustumPlane.Left].D));
+        result.Planes.Set(FrustumPlane.Right, new Plane(-frustum.Planes[FrustumPlane.Right].Normal, frustum.Planes[FrustumPlane.Right].D));
+        result.Planes.Set(FrustumPlane.Top, new Plane(-frustum.Planes[FrustumPlane.Top].Normal, frustum.Planes[FrustumPlane.Top].D));
+        result.Planes.Set(FrustumPlane.Bottom, new Plane(-frustum.Planes[FrustumPlane.Bottom].Normal, frustum.Planes[FrustumPlane.Bottom].D));
         return result;
     }
 
@@ -401,24 +383,24 @@ public class GorgonBoundingFrustum
         Vector3 Far4 = farCenter - farHalfHeight * upDir - farHalfWidth * rightDir;
 
         GorgonBoundingFrustum result = new();
-        CreatePlaneFromPoints(in Near1, in Near2, in Near3, out Plane plane);
+        Plane plane = CreatePlaneFromPoints(Near1, Near2, Near3);
         plane = Plane.Normalize(plane);
-        result.Planes.Set(FrustumPlane.Near, in plane);
-        CreatePlaneFromPoints(in Far3, in Far2, in Far1, out plane);
+        result.Planes.Set(FrustumPlane.Near, plane);
+        plane = CreatePlaneFromPoints(Far3, Far2, Far1);
         plane = Plane.Normalize(plane);
-        result.Planes.Set(FrustumPlane.Far, in plane);
-        CreatePlaneFromPoints(in Near4, in Near3, in Far3, out plane);
+        result.Planes.Set(FrustumPlane.Far, plane);
+        plane = CreatePlaneFromPoints(Near4, Near3, Far3);
         plane = Plane.Normalize(plane);
-        result.Planes.Set(FrustumPlane.Left, in plane);
-        CreatePlaneFromPoints(in Far1, in Far2, in Near2, out plane);
+        result.Planes.Set(FrustumPlane.Left, plane);
+        plane = CreatePlaneFromPoints(Far1, Far2, Near2);
         plane = Plane.Normalize(plane);
-        result.Planes.Set(FrustumPlane.Right, in plane);
-        CreatePlaneFromPoints(in Near2, in Far2, in Far3, out plane);
+        result.Planes.Set(FrustumPlane.Right, plane);
+        plane = CreatePlaneFromPoints(Near2, Far2, Far3);
         plane = Plane.Normalize(plane);
-        result.Planes.Set(FrustumPlane.Top, in plane);
-        CreatePlaneFromPoints(in Far4, in Far1, in Near1, out plane);
+        result.Planes.Set(FrustumPlane.Top, plane);
+        plane = CreatePlaneFromPoints(Far4, Far1, Near1);
         plane = Plane.Normalize(plane);
-        result.Planes.Set(FrustumPlane.Bottom, in plane);
+        result.Planes.Set(FrustumPlane.Bottom, plane);
 
         return result;
     }
@@ -440,7 +422,7 @@ public class GorgonBoundingFrustum
         d = viewProjection.M44 + viewProjection.M41;
 
         plane = Plane.Normalize(new Plane(normal, d));
-        Planes.Set(FrustumPlane.Left, in plane);
+        Planes.Set(FrustumPlane.Left, plane);
 
         // Right plane
         normal.X = viewProjection.M14 - viewProjection.M11;
@@ -449,7 +431,7 @@ public class GorgonBoundingFrustum
         d = viewProjection.M44 - viewProjection.M41;
 
         plane = Plane.Normalize(new Plane(normal, d));
-        Planes.Set(FrustumPlane.Right, in plane);
+        Planes.Set(FrustumPlane.Right, plane);
 
         // Top plane
         normal.X = viewProjection.M14 - viewProjection.M12;
@@ -458,7 +440,7 @@ public class GorgonBoundingFrustum
         d = viewProjection.M44 - viewProjection.M42;
 
         plane = Plane.Normalize(new Plane(normal, d));
-        Planes.Set(FrustumPlane.Top, in plane);
+        Planes.Set(FrustumPlane.Top, plane);
 
         // Bottom plane
         normal.X = viewProjection.M14 + viewProjection.M12;
@@ -467,7 +449,7 @@ public class GorgonBoundingFrustum
         d = viewProjection.M44 + viewProjection.M42;
 
         plane = Plane.Normalize(new Plane(normal, d));
-        Planes.Set(FrustumPlane.Bottom, in plane);
+        Planes.Set(FrustumPlane.Bottom, plane);
 
         // Near plane
         normal.X = viewProjection.M13;
@@ -476,7 +458,7 @@ public class GorgonBoundingFrustum
         d = viewProjection.M43;
 
         plane = Plane.Normalize(new Plane(normal, d));
-        Planes.Set(FrustumPlane.Near, in plane);
+        Planes.Set(FrustumPlane.Near, plane);
 
         // Far plane
         normal.X = viewProjection.M14 - viewProjection.M13;
@@ -485,17 +467,17 @@ public class GorgonBoundingFrustum
         d = viewProjection.M44 - viewProjection.M43;
 
         plane = Plane.Normalize(new Plane(normal, d));
-        Planes.Set(FrustumPlane.Far, in plane);
+        Planes.Set(FrustumPlane.Far, plane);
 
-        Corners.Set(FrustumCorner.BottomRightNear, Get3PlanesInterPoint(in Planes[FrustumPlane.Near], in Planes[FrustumPlane.Bottom], in Planes[FrustumPlane.Right]));
-        Corners.Set(FrustumCorner.TopRightNear, Get3PlanesInterPoint(in Planes[FrustumPlane.Near], in Planes[FrustumPlane.Top], in Planes[FrustumPlane.Right]));
-        Corners.Set(FrustumCorner.TopLeftNear, Get3PlanesInterPoint(in Planes[FrustumPlane.Near], in Planes[FrustumPlane.Top], in Planes[FrustumPlane.Left]));
-        Corners.Set(FrustumCorner.BottomLeftNear, Get3PlanesInterPoint(in Planes[FrustumPlane.Near], in Planes[FrustumPlane.Bottom], in Planes[FrustumPlane.Left]));
+        Corners.Set(FrustumCorner.BottomRightNear, Get3PlanesInterPoint(Planes[FrustumPlane.Near], Planes[FrustumPlane.Bottom], Planes[FrustumPlane.Right]));
+        Corners.Set(FrustumCorner.TopRightNear, Get3PlanesInterPoint(Planes[FrustumPlane.Near], Planes[FrustumPlane.Top], Planes[FrustumPlane.Right]));
+        Corners.Set(FrustumCorner.TopLeftNear, Get3PlanesInterPoint(Planes[FrustumPlane.Near], Planes[FrustumPlane.Top], Planes[FrustumPlane.Left]));
+        Corners.Set(FrustumCorner.BottomLeftNear, Get3PlanesInterPoint(Planes[FrustumPlane.Near], Planes[FrustumPlane.Bottom], Planes[FrustumPlane.Left]));
 
-        Corners.Set(FrustumCorner.BottomRightFar, Get3PlanesInterPoint(in Planes[FrustumPlane.Far], in Planes[FrustumPlane.Bottom], in Planes[FrustumPlane.Right]));
-        Corners.Set(FrustumCorner.TopRightFar, Get3PlanesInterPoint(in Planes[FrustumPlane.Far], in Planes[FrustumPlane.Top], in Planes[FrustumPlane.Right]));
-        Corners.Set(FrustumCorner.TopLeftFar, Get3PlanesInterPoint(in Planes[FrustumPlane.Far], in Planes[FrustumPlane.Top], in Planes[FrustumPlane.Left]));
-        Corners.Set(FrustumCorner.BottomLeftFar, Get3PlanesInterPoint(in Planes[FrustumPlane.Far], in Planes[FrustumPlane.Bottom], in Planes[FrustumPlane.Left]));
+        Corners.Set(FrustumCorner.BottomRightFar, Get3PlanesInterPoint(Planes[FrustumPlane.Far], Planes[FrustumPlane.Bottom], Planes[FrustumPlane.Right]));
+        Corners.Set(FrustumCorner.TopRightFar, Get3PlanesInterPoint(Planes[FrustumPlane.Far], Planes[FrustumPlane.Top], Planes[FrustumPlane.Right]));
+        Corners.Set(FrustumCorner.TopLeftFar, Get3PlanesInterPoint(Planes[FrustumPlane.Far], Planes[FrustumPlane.Top], Planes[FrustumPlane.Left]));
+        Corners.Set(FrustumCorner.BottomLeftFar, Get3PlanesInterPoint(Planes[FrustumPlane.Far], Planes[FrustumPlane.Bottom], Planes[FrustumPlane.Left]));
     }
 
     /// <summary>
@@ -555,10 +537,10 @@ public class GorgonBoundingFrustum
         float maxPointDist = float.MinValue;
         for (int i = 0; i < points.Length; i++)
         {
-            float pointDist = GorgonIntersections.DistancePlanePoint(in ioFrustrum.Planes[FrustumPlane.Top], in points[i]);
-            pointDist = pointDist.Max(GorgonIntersections.DistancePlanePoint(in ioFrustrum.Planes[FrustumPlane.Bottom], in points[i]));
-            pointDist = pointDist.Max(GorgonIntersections.DistancePlanePoint(in ioFrustrum.Planes[FrustumPlane.Left], in points[i]) * horizontalToVerticalMapping);
-            pointDist = pointDist.Max(GorgonIntersections.DistancePlanePoint(in ioFrustrum.Planes[FrustumPlane.Right], in points[i]) * horizontalToVerticalMapping);
+            float pointDist = GorgonIntersections.DistancePlanePoint(ioFrustrum.Planes[FrustumPlane.Top], points[i]);
+            pointDist = pointDist.Max(GorgonIntersections.DistancePlanePoint(ioFrustrum.Planes[FrustumPlane.Bottom], points[i]));
+            pointDist = pointDist.Max(GorgonIntersections.DistancePlanePoint(ioFrustrum.Planes[FrustumPlane.Left], points[i]) * horizontalToVerticalMapping);
+            pointDist = pointDist.Max(GorgonIntersections.DistancePlanePoint(ioFrustrum.Planes[FrustumPlane.Right], points[i]) * horizontalToVerticalMapping);
 
             maxPointDist = maxPointDist.Max(pointDist);
         }

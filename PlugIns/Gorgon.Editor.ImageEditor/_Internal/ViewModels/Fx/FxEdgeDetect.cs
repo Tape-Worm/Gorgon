@@ -91,7 +91,7 @@ internal class FxEdgeDetect
         get => _lineColor;
         set
         {
-            if (GorgonColor.Equals(in _lineColor, in value))
+            if (GorgonColor.Equals(_lineColor, value))
             {
                 return;
             }

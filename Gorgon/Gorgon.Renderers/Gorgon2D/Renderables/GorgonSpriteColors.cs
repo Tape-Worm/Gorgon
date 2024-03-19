@@ -91,7 +91,7 @@ public class GorgonSpriteColors
         {
             ref GorgonColor color = ref _renderable.Vertices[0].Color;
 
-            if (GorgonColor.Equals(in value, in color))
+            if (GorgonColor.Equals(value, color))
             {
                 return;
             }
@@ -110,7 +110,7 @@ public class GorgonSpriteColors
         {
             ref GorgonColor color = ref _renderable.Vertices[1].Color;
 
-            if (GorgonColor.Equals(in value, in color))
+            if (GorgonColor.Equals(value, color))
             {
                 return;
             }
@@ -129,7 +129,7 @@ public class GorgonSpriteColors
         {
             ref GorgonColor color = ref _renderable.Vertices[2].Color;
 
-            if (GorgonColor.Equals(in value, in color))
+            if (GorgonColor.Equals(value, color))
             {
                 return;
             }
@@ -148,7 +148,7 @@ public class GorgonSpriteColors
         {
             ref GorgonColor color = ref _renderable.Vertices[3].Color;
 
-            if (GorgonColor.Equals(in value, in color))
+            if (GorgonColor.Equals(value, color))
             {
                 return;
             }
@@ -174,10 +174,10 @@ public class GorgonSpriteColors
         ref GorgonColor ulColor = ref _renderable.Vertices[0].Color;
         ref GorgonColor urColor = ref _renderable.Vertices[1].Color;
 
-        if ((GorgonColor.Equals(in color, in llColor))
-            && (GorgonColor.Equals(in color, in lrColor))
-            && (GorgonColor.Equals(in color, in ulColor))
-            && (GorgonColor.Equals(in color, in urColor)))
+        if ((GorgonColor.Equals(color, llColor))
+            && (GorgonColor.Equals(color, lrColor))
+            && (GorgonColor.Equals(color, ulColor))
+            && (GorgonColor.Equals(color, urColor)))
         {
             return;
         }

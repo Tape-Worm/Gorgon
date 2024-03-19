@@ -44,14 +44,11 @@ public class GorgonArray<T>
     : IList<T>, IGorgonReadOnlyArray<T>
     where T : IEquatable<T>
 {
-
     // The indices that are dirty.
     private long _dirtyIndices;
 
     // The last set of dirty items.
     private (int Start, int Count) _dirtyItems;
-
-
 
     /// <summary>
     /// Property to return the backing store to objects that need it.
@@ -101,8 +98,6 @@ public class GorgonArray<T>
             _dirtyIndices |= 1L << index;
         }
     }
-
-
 
     /// <summary>
     /// Function called when a dirty item is assigned.

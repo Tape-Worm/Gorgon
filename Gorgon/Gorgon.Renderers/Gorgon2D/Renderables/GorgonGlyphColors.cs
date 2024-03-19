@@ -89,7 +89,7 @@ public class GorgonGlyphColors
         get => _renderable.UpperLeftColor;
         set
         {
-            if (GorgonColor.Equals(in value, in _renderable.UpperLeftColor))
+            if (GorgonColor.Equals(value, _renderable.UpperLeftColor))
             {
                 return;
             }
@@ -107,7 +107,7 @@ public class GorgonGlyphColors
         get => _renderable.UpperRightColor;
         set
         {
-            if (GorgonColor.Equals(in value, in _renderable.UpperRightColor))
+            if (GorgonColor.Equals(value, _renderable.UpperRightColor))
             {
                 return;
             }
@@ -125,7 +125,7 @@ public class GorgonGlyphColors
         get => _renderable.LowerLeftColor;
         set
         {
-            if (GorgonColor.Equals(in value, in _renderable.LowerLeftColor))
+            if (GorgonColor.Equals(value, _renderable.LowerLeftColor))
             {
                 return;
             }
@@ -143,7 +143,7 @@ public class GorgonGlyphColors
         get => _renderable.LowerRightColor;
         set
         {
-            if (GorgonColor.Equals(in value, in _renderable.LowerRightColor))
+            if (GorgonColor.Equals(value, _renderable.LowerRightColor))
             {
                 return;
             }
@@ -165,10 +165,10 @@ public class GorgonGlyphColors
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void SetAll(GorgonColor color)
     {
-        if ((GorgonColor.Equals(in _renderable.LowerLeftColor, in color))
-            && (GorgonColor.Equals(in _renderable.LowerRightColor, in color))
-            && (GorgonColor.Equals(in _renderable.UpperLeftColor, in color))
-            && (GorgonColor.Equals(in _renderable.UpperRightColor, in color)))
+        if ((GorgonColor.Equals(_renderable.LowerLeftColor, color))
+            && (GorgonColor.Equals(_renderable.LowerRightColor, color))
+            && (GorgonColor.Equals(_renderable.UpperLeftColor, color))
+            && (GorgonColor.Equals(_renderable.UpperRightColor, color)))
         {
             return;
         }

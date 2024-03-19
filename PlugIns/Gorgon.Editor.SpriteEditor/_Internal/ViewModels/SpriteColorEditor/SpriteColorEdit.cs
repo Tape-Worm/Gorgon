@@ -55,7 +55,7 @@ internal class SpriteColorEdit
         get => _selectedColor;
         set
         {
-            if (_selectedColor.Equals(in value))
+            if (_selectedColor.Equals(value))
             {
                 return;
             }

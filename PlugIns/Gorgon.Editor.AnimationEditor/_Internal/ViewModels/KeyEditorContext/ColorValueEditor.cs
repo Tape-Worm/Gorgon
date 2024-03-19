@@ -64,7 +64,7 @@ internal class ColorValueEditor
             }
 
             GorgonColor color = WorkingSprite?.GetFloatValues(Track.Track.SpriteProperty) ?? GorgonColor.White;
-            if (color.Equals(in value))
+            if (color.Equals(value))
             {
                 return;
             }

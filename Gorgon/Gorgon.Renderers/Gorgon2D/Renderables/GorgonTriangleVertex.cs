@@ -86,7 +86,7 @@ public readonly struct GorgonTriangleVertex(Vector2 position, GorgonColor color,
     /// <param name="left">The left point to compare.</param>
     /// <param name="right">The right point to compare.</param>
     /// <returns><b>true</b> if the points are equal, <b>false</b> if not.</returns>
-    public static bool Equals(ref readonly GorgonTriangleVertex left, ref readonly GorgonTriangleVertex right) => GorgonColor.Equals(in left.Color, in right.Color)
+    public static bool Equals(ref readonly GorgonTriangleVertex left, ref readonly GorgonTriangleVertex right) => GorgonColor.Equals(left.Color, right.Color)
                && left.TextureArrayIndex == right.TextureArrayIndex
                && left.TextureCoordinate.X.EqualsEpsilon(right.TextureCoordinate.X)
                && left.TextureCoordinate.Y.EqualsEpsilon(right.TextureCoordinate.Y)

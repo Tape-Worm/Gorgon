@@ -96,7 +96,7 @@ internal class SpriteTextureWrapEdit
         get => _border;
         set
         {
-            if (_border.Equals(in value))
+            if (_border.Equals(value))
             {
                 return;
             }

@@ -279,7 +279,7 @@ public class Gorgon2DOldFilmEffect
         get => _sepiaSettings.SepiaLightColor;
         set
         {
-            if (GorgonColor.Equals(in _sepiaSettings.SepiaLightColor, in value))
+            if (GorgonColor.Equals(_sepiaSettings.SepiaLightColor, value))
             {
                 return;
             }
@@ -297,7 +297,7 @@ public class Gorgon2DOldFilmEffect
         get => _sepiaSettings.SepiaDarkColor;
         set
         {
-            if (GorgonColor.Equals(in _sepiaSettings.SepiaDarkColor, in value))
+            if (GorgonColor.Equals(_sepiaSettings.SepiaDarkColor, value))
             {
                 return;
             }

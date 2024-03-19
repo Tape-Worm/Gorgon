@@ -74,7 +74,7 @@ internal class FontOutline
         get => _startColor;
         set
         {
-            if (_startColor.Equals(in value))
+            if (_startColor.Equals(value))
             {
                 return;
             }
@@ -93,7 +93,7 @@ internal class FontOutline
         get => _originalStartColor;
         set
         {
-            if (_originalStartColor.Equals(in value))
+            if (_originalStartColor.Equals(value))
             {
                 return;
             }
@@ -112,7 +112,7 @@ internal class FontOutline
         get => _originalEndColor;
         set
         {
-            if (_originalEndColor.Equals(in value))
+            if (_originalEndColor.Equals(value))
             {
                 return;
             }
@@ -131,7 +131,7 @@ internal class FontOutline
         get => _outlineSize < 3 ? _startColor : _endColor;
         set
         {
-            if (_endColor.Equals(in value))
+            if (_endColor.Equals(value))
             {
                 return;
             }

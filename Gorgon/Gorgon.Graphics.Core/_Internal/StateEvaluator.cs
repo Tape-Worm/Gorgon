@@ -634,7 +634,7 @@ internal class StateEvaluator(GorgonGraphics graphics)
             newState.CopyTo(_prevPipelineState);
         }
 
-        if (!blendFactor.Equals(in _blendFactor))
+        if (!blendFactor.Equals(_blendFactor))
         {
             _blendFactor = blendFactor;
             changes |= PipelineStateChanges.BlendFactor;

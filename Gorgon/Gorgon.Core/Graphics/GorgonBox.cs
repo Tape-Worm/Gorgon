@@ -39,7 +39,6 @@ namespace Gorgon.Graphics;
 public struct GorgonBox
     : IGorgonEquatableByRef<GorgonBox>
 {
-
     /// <summary>
     /// An empty box.
     /// </summary>
@@ -77,8 +76,6 @@ public struct GorgonBox
     /// Depth of the box.
     /// </summary>
     public int Depth;
-
-
 
     /// <summary>
     /// Property to determine if the box is empty.
@@ -126,9 +123,6 @@ public struct GorgonBox
     /// Property to return the back value of the box.
     /// </summary>
     public readonly int Back => Z + Depth;
-
-
-
 
     /// <summary>
     /// Returns a <see cref="string" /> that represents this instance.
@@ -185,37 +179,22 @@ public struct GorgonBox
     }
 
     /// <summary>
-    /// Function to determine the intersection between 2 boxes.
-    /// </summary>
-    /// <param name="box1">First box to intersect.</param>
-    /// <param name="box2">Second box to intersect.</param>
-    /// <returns>The intersected box.</returns>
-    public static GorgonBox Intersect(GorgonBox box1, GorgonBox box2)
-    {
-
-        Intersect(in box1, in box2, out GorgonBox result);
-
-        return result;
-    }
-
-    /// <summary>
     /// Funciton to determine the intersection between this and another box.
     /// </summary>
     /// <param name="box">Box to intersect.</param>
     /// <returns>The intersection between this box and the other box.</returns>
     public readonly GorgonBox Intersect(GorgonBox box)
     {
-
         Intersect(in this, in box, out GorgonBox result);
 
         return result;
     }
 
     /// <summary>
-    /// Function to return whether two instances are equal or not.
+    /// Function to compare two values for equality.
     /// </summary>
-    /// <param name="left">The left instance to compare.</param>
-    /// <param name="right">The right instance to compare.</param>
+    /// <param name="left">The left value to compare.</param>
+    /// <param name="right">The right value to compare.</param>
     /// <returns><b>true</b> if equal, <b>false</b> if not.</returns>
     public static bool Equals(ref readonly GorgonBox left, ref readonly GorgonBox right) => ((left.X == right.X) && (left.Y == right.Y) && (left.Z == right.Z)
             && (left.Width == right.Width) && (left.Height == right.Height) && (left.Depth == right.Depth));
@@ -270,5 +249,4 @@ public struct GorgonBox
     /// true if the current object is equal to the other parameter; otherwise, false.
     /// </returns>
     public readonly bool Equals(ref readonly GorgonBox other) => Equals(in this, in other);
-
 }

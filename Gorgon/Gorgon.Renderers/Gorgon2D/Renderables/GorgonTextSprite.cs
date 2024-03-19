@@ -347,7 +347,7 @@ public class GorgonTextSprite
         get => Renderable.OutlineTint;
         set
         {
-            if (GorgonColor.Equals(in Renderable.OutlineTint, in value))
+            if (GorgonColor.Equals(Renderable.OutlineTint, value))
             {
                 return;
             }

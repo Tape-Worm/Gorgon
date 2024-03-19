@@ -91,9 +91,8 @@ namespace Gorgon.Renderers.Data;
 /// <param name="radius">The radius of the sphere.</param>
 [StructLayout(LayoutKind.Sequential, Pack = 4)]
 public readonly struct GorgonBoundingSphere(Vector3 center, float radius)
-        : IGorgonEquatableByRef<GorgonBoundingSphere>
+        : IEquatable<GorgonBoundingSphere>
 {
-
     /// <summary>
     /// A default, empty, bounding sphere.
     /// </summary>
@@ -109,26 +108,21 @@ public readonly struct GorgonBoundingSphere(Vector3 center, float radius)
     /// </summary>
     public readonly float Radius = radius;
 
-
-
     /// <summary>
     /// Property to return whether this bounding sphere is empty or not.
     /// </summary>
     public bool IsEmpty => Radius.EqualsEpsilon(0);
 
-
-
     /// <summary>
     /// Constructs a <see cref="GorgonBoundingSphere" /> that fully contains the given points.
     /// </summary>
     /// <param name="points">The points that will be contained by the sphere.</param>
-    /// <param name="result">When the method completes, contains the newly constructed bounding sphere.</param>
-    public static void FromPoints(Span<Vector3> points, out GorgonBoundingSphere result)
+    /// <returns>When the method completes, contains the newly constructed bounding sphere.</returns>
+    public static GorgonBoundingSphere FromPoints(Span<Vector3> points)
     {
         if (points.IsEmpty)
         {
-            result = default;
-            return;
+            return default;
         }
 
         //Find the center of all points.
@@ -156,15 +150,15 @@ public readonly struct GorgonBoundingSphere(Vector3 center, float radius)
         }
 
         //Construct the sphere.
-        result = new GorgonBoundingSphere(center, radius.Sqrt());
+        return new(center, radius.Sqrt());
     }
 
     /// <summary>
     /// Constructs a <see cref="GorgonBoundingSphere"/> from a given box.
     /// </summary>
     /// <param name="box">The box that will designate the extents of the sphere.</param>
-    /// <param name="result">When the method completes, the newly constructed bounding sphere.</param>
-    public static void FromBox(ref readonly GorgonBoundingBox box, out GorgonBoundingSphere result)
+    /// <returns>When the method completes, the newly constructed bounding sphere.</returns>
+    public static GorgonBoundingSphere FromBox(ref readonly GorgonBoundingBox box)
     {
         Vector3 center = Vector3.Lerp(box.Minimum, box.Maximum, 0.5f);
 
@@ -172,7 +166,7 @@ public readonly struct GorgonBoundingSphere(Vector3 center, float radius)
         float y = box.Minimum.Y - box.Maximum.Y;
         float z = box.Minimum.Z - box.Maximum.Z;
 
-        result = new GorgonBoundingSphere(center, ((x * x) + (y * y) + (z * z)).Sqrt() * 0.5f);
+        return new(center, ((x * x) + (y * y) + (z * z)).Sqrt() * 0.5f);
     }
 
     /// <summary>
@@ -180,8 +174,8 @@ public readonly struct GorgonBoundingSphere(Vector3 center, float radius)
     /// </summary>
     /// <param name="value1">The first sphere to merge.</param>
     /// <param name="value2">The second sphere to merge.</param>
-    /// <param name="result">When the method completes, contains the newly constructed bounding sphere.</param>
-    public static void Merge(ref readonly GorgonBoundingSphere value1, ref readonly GorgonBoundingSphere value2, out GorgonBoundingSphere result)
+    /// <returns>When the method completes, contains the newly constructed bounding sphere.</returns>
+    public static GorgonBoundingSphere Merge(GorgonBoundingSphere value1, GorgonBoundingSphere value2)
     {
         Vector3 difference = value2.Center - value1.Center;
 
@@ -193,14 +187,12 @@ public readonly struct GorgonBoundingSphere(Vector3 center, float radius)
         {
             if (radius - radius2 >= length)
             {
-                result = value1;
-                return;
+                return value1;
             }
 
             if (radius2 - radius >= length)
             {
-                result = value2;
-                return;
+                return value2;
             }
         }
 
@@ -208,7 +200,7 @@ public readonly struct GorgonBoundingSphere(Vector3 center, float radius)
         float min = -radius.Min(length - radius2);
         float max = (radius.Max(length + radius2) - min) * 0.5f;
 
-        result = new GorgonBoundingSphere(value1.Center + vector * (max + min), max);
+        return new(value1.Center + vector * (max + min), max);
     }
 
     /// <summary>
@@ -218,7 +210,7 @@ public readonly struct GorgonBoundingSphere(Vector3 center, float radius)
     /// <param name="right">The second value to compare.</param>
     /// <returns><c>true</c> if <paramref name="left"/> has the same value as <paramref name="right"/>; otherwise, <c>false</c>.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool operator ==(GorgonBoundingSphere left, GorgonBoundingSphere right) => left.Equals(in right);
+    public static bool operator ==(GorgonBoundingSphere left, GorgonBoundingSphere right) => left.Equals(right);
 
     /// <summary>
     /// Tests for inequality between two objects.
@@ -227,7 +219,7 @@ public readonly struct GorgonBoundingSphere(Vector3 center, float radius)
     /// <param name="right">The second value to compare.</param>
     /// <returns><c>true</c> if <paramref name="left"/> has a different value than <paramref name="right"/>; otherwise, <c>false</c>.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool operator !=(GorgonBoundingSphere left, GorgonBoundingSphere right) => !left.Equals(in right);
+    public static bool operator !=(GorgonBoundingSphere left, GorgonBoundingSphere right) => !left.Equals(right);
 
     /// <summary>
     /// Returns a <see cref="string"/> that represents this instance.
@@ -243,13 +235,15 @@ public readonly struct GorgonBoundingSphere(Vector3 center, float radius)
     /// <returns>
     /// A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table. 
     /// </returns>
-    public override int GetHashCode()
-    {
-        unchecked
-        {
-            return HashCode.Combine(Center, Radius);
-        }
-    }
+    public override int GetHashCode() => HashCode.Combine(Center, Radius);
+
+    /// <summary>
+    /// Function to compare two values for equality.
+    /// </summary>
+    /// <param name="left">The left value to compare.</param>
+    /// <param name="right">The right value to compare.</param>
+    /// <returns><b>true</b> if equal, <b>false</b> if not.</returns>
+    public static bool Equals(GorgonBoundingSphere left, GorgonBoundingSphere right) => (left.Center.Equals(right.Center)) && (left.Radius.EqualsEpsilon(right.Radius));
 
     /// <summary>
     /// Determines whether the specified <see cref="Vector4"/> is equal to this instance.
@@ -259,7 +253,7 @@ public readonly struct GorgonBoundingSphere(Vector3 center, float radius)
     /// <c>true</c> if the specified <see cref="Vector4"/> is equal to this instance; otherwise, <c>false</c>.
     /// </returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public bool Equals(GorgonBoundingSphere value) => Equals(in value);
+    public bool Equals(GorgonBoundingSphere value) => Equals(this, value);
 
     /// <summary>
     /// Determines whether the specified <see cref="object"/> is equal to this instance.
@@ -268,14 +262,7 @@ public readonly struct GorgonBoundingSphere(Vector3 center, float radius)
     /// <returns>
     /// <c>true</c> if the specified <see cref="object"/> is equal to this instance; otherwise, <c>false</c>.
     /// </returns>
-    public override bool Equals(object value) => (value is GorgonBoundingSphere sphere) ? this.Equals(in sphere) : base.Equals(value);
-
-    /// <summary>Function to compare this instance with another.</summary>
-    /// <param name="other">The other instance to use for comparison.</param>
-    /// <returns>
-    ///   <b>true</b> if equal, <b>false</b> if not.</returns>
-    public bool Equals(ref readonly GorgonBoundingSphere other) => (Center.Equals(other.Center)) && (Radius == other.Radius);
-
+    public override bool Equals(object value) => (value is GorgonBoundingSphere sphere) ? Equals(this, sphere) : base.Equals(value);
 
     /// <summary>Deconstructs this instance.</summary>
     /// <param name="center">The center of the sphere.</param>

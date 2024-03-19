@@ -334,9 +334,7 @@ internal class GlyphDraw(IGorgonFontInfo fontInfo, GdiFontData fontData)
                 {
                     float delta = ((float)(i - 1) / (_fontInfo.OutlineSize - 1));
 
-                    GorgonColor.Lerp(in start, in end, delta, out GorgonColor penColor);
-
-                    using Pen outlinePen = new(penColor, i);
+                    using Pen outlinePen = new(GorgonColor.Lerp(start, end, delta), i);
                     outlinePen.LineJoin = LineJoin.Round;
                     glyphGraphics.DrawPath(outlinePen, outlineRenderer);
                 }

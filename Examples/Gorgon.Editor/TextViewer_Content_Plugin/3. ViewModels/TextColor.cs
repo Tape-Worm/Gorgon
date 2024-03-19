@@ -49,7 +49,7 @@ internal class TextColor
         get => _color;
         set
         {
-            if (_color.Equals(in value))
+            if (_color.Equals(value))
             {
                 return;
             }
@@ -65,7 +65,7 @@ internal class TextColor
         get => _originalColor;
         set
         {
-            if (_originalColor.Equals(in value))
+            if (_originalColor.Equals(value))
             {
                 return;
             }

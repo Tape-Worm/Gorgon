@@ -88,7 +88,6 @@ namespace Gorgon.Renderers.Data;
 public readonly struct GorgonBoundingBox
     : IGorgonEquatableByRef<GorgonBoundingBox>
 {
-
     /// <summary>
     /// A default, empty, bounding box.
     /// </summary>
@@ -103,8 +102,6 @@ public readonly struct GorgonBoundingBox
     /// The maximum point of the box.
     /// </summary>
     public readonly Vector3 Maximum;
-
-
 
     /// <summary>
     /// Returns the width of the bounding box
@@ -222,8 +219,6 @@ public readonly struct GorgonBoundingBox
         _ => new Vector3(float.NaN),
     };
 
-
-
     /// <summary>
     /// Constructs a <see cref="GorgonBoundingBox"/> that fully contains the given points.
     /// </summary>
@@ -254,10 +249,9 @@ public readonly struct GorgonBoundingBox
     /// </summary>
     /// <param name="sphere">The sphere that will designate the extents of the box.</param>
     /// <param name="result">When the method completes, contains the newly constructed bounding box.</param>
-    public static void FromSphere(ref readonly GorgonBoundingSphere sphere, out GorgonBoundingBox result)
+    public static void FromSphere(GorgonBoundingSphere sphere, out GorgonBoundingBox result)
                            => result = new GorgonBoundingBox(new Vector3(sphere.Center.X - sphere.Radius, sphere.Center.Y - sphere.Radius, sphere.Center.Z - sphere.Radius),
                                        new Vector3(sphere.Center.X + sphere.Radius, sphere.Center.Y + sphere.Radius, sphere.Center.Z + sphere.Radius));
-
 
     /// <summary>
     /// Constructs a <see cref="GorgonBoundingBox"/> that is as large as the total combined area of the two specified boxes.
@@ -343,13 +337,7 @@ public readonly struct GorgonBoundingBox
     /// <returns>
     /// A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table. 
     /// </returns>
-    public override int GetHashCode()
-    {
-        unchecked
-        {
-            return HashCode.Combine(Minimum, Maximum);
-        }
-    }
+    public override int GetHashCode() => HashCode.Combine(Minimum, Maximum);
 
     /// <summary>
     /// Determines whether the specified <see cref="Vector4"/> is equal to this instance.
@@ -359,7 +347,7 @@ public readonly struct GorgonBoundingBox
     /// <c>true</c> if the specified <see cref="Vector4"/> is equal to this instance; otherwise, <c>false</c>.
     /// </returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public bool Equals(GorgonBoundingBox value) => Equals(in value);
+    bool IEquatable<GorgonBoundingBox>.Equals(GorgonBoundingBox value) => Equals(in this, in value);
 
     /// <summary>
     /// Determines whether the specified <see cref="object"/> is equal to this instance.
@@ -368,7 +356,8 @@ public readonly struct GorgonBoundingBox
     /// <returns>
     /// <c>true</c> if the specified <see cref="object"/> is equal to this instance; otherwise, <c>false</c>.
     /// </returns>
-    public override bool Equals(object value) => (value is GorgonBoundingBox bbox) ? Equals(in bbox) : base.Equals(value);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public override bool Equals(object value) => (value is GorgonBoundingBox bbox) ? Equals(in this, in bbox) : base.Equals(value);
 
     /// <summary>Deconstructs this instance.</summary>
     /// <param name="min">The minimum extent.</param>
@@ -403,11 +392,20 @@ public readonly struct GorgonBoundingBox
         bottomRightBack = BottomRightBack;
     }
 
+    /// <summary>
+    /// Function to compare two values for equality.
+    /// </summary>
+    /// <param name="left">The left value to compare.</param>
+    /// <param name="right">The right value to compare.</param>
+    /// <returns><b>true</b> if equal, <b>false</b> if not.</returns>
+    public static bool Equals(ref readonly GorgonBoundingBox left, ref readonly GorgonBoundingBox right) => left.Minimum.Equals(right.Minimum) && left.Maximum.Equals(right.Maximum);
+
     /// <summary>Function to compare this instance with another.</summary>
     /// <param name="other">The other instance to use for comparison.</param>
     /// <returns>
     ///   <b>true</b> if equal, <b>false</b> if not.</returns>
-    public bool Equals(ref readonly GorgonBoundingBox other) => Minimum.Equals(Maximum);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public bool Equals(ref readonly GorgonBoundingBox other) => Equals(in this, in other);
 
     /// <summary>Initializes a new instance of the <see cref="GorgonBoundingBox" /> struct.</summary>
     /// <param name="minX">The minimum x.</param>

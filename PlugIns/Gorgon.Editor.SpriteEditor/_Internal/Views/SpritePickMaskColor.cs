@@ -255,7 +255,7 @@ internal partial class SpritePickMaskColor
             color = Picker.OriginalColor;
         }
 
-        return (ViewModel is not null) && ((_originalMask != ViewModel.ClipMaskType) || (!ViewModel.ClipMaskValue.Equals(in color)));
+        return (ViewModel is not null) && ((_originalMask != ViewModel.ClipMaskType) || (!ViewModel.ClipMaskValue.Equals(color)));
     }
 
     /// <summary>Raises the <see cref="E:System.Windows.Forms.UserControl.Load"/> event.</summary>

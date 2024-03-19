@@ -322,19 +322,12 @@ internal static class TrackKeyProcessor
 
         (GorgonKeyGorgonColor prev, GorgonKeyGorgonColor next, int prevKeyIndex, float deltaTime) = TweenKey.GetNearestKeys(track, time, lastKey.Time);
 
-        switch (track.InterpolationMode)
+        result = track.InterpolationMode switch
         {
-            case TrackInterpolationMode.Linear:
-                GorgonColor.Lerp(in prev.Value, in next.Value, deltaTime, out result);
-                break;
-            case TrackInterpolationMode.Spline:
-                result = track.SplineController.GetInterpolatedValue(prevKeyIndex, deltaTime);
-                break;
-            default:
-                result = prev.Value;
-                break;
-        }
-
+            TrackInterpolationMode.Linear => GorgonColor.Lerp(prev.Value, next.Value, deltaTime),
+            TrackInterpolationMode.Spline => (GorgonColor)track.SplineController.GetInterpolatedValue(prevKeyIndex, deltaTime),
+            _ => prev.Value,
+        };
         return true;
     }
 

@@ -51,7 +51,7 @@ namespace Gorgon.Graphics;
 [Serializable]
 [StructLayout(LayoutKind.Sequential, Pack = 4)]
 public readonly struct GorgonColor
-    : IGorgonEquatableByRef<GorgonColor>, ISerializable
+    : IEquatable<GorgonColor>, ISerializable
 {
 
     /// <summary>
@@ -351,7 +351,7 @@ public readonly struct GorgonColor
     /// <param name="left">Left color to compare.</param>
     /// <param name="right">Right color to compare.</param>
     /// <returns><b>true</b> if equal, <b>false</b> if not.</returns>
-    public static bool Equals(ref readonly GorgonColor left, ref readonly GorgonColor right) =>        
+    public static bool Equals(GorgonColor left, GorgonColor right) =>        
         left.Red.EqualsEpsilon(right.Red) && left.Green.EqualsEpsilon(right.Green) && left.Blue.EqualsEpsilon(right.Blue) && left.Alpha.EqualsEpsilon(right.Alpha);
 
     /// <summary>
@@ -379,26 +379,6 @@ public readonly struct GorgonColor
                            color.Green.Max(0).Min(1),
                            color.Blue.Max(0).Min(1),
                            color.Alpha.Max(0).Min(1));
-
-    /// <summary>
-    /// Function to clamp the color ranges from 0 to 1.
-    /// </summary>
-    /// <param name="color">The color to clamp.</param>
-    /// <param name="result">The clamped color.</param>
-    /// <returns>The clamped color.</returns>
-    public static void Clamp(ref readonly GorgonColor color, out GorgonColor result) => result = new GorgonColor(color.Red.Max(0).Min(1),
-                                 color.Green.Max(0).Min(1),
-                                 color.Blue.Max(0).Min(1),
-                                 color.Alpha.Max(0).Min(1));
-
-    /// <summary>
-    /// Function to apply an alpha value to the specified <see cref="GorgonColor"/>.
-    /// </summary>
-    /// <param name="color">The <see cref="GorgonColor"/> to update.</param>
-    /// <param name="alpha">The alpha value to set.</param>
-    /// <param name="result">The resulting updated <see cref="GorgonColor"/>.</param>
-    /// <returns>A new <see cref="GorgonColor"/> instance with the same <see cref="Red"/>, <see cref="Green"/>, and <see cref="Blue"/> values but with a modified <see cref="Alpha"/> component.</returns>
-    public static void SetAlpha(ref readonly GorgonColor color, float alpha, out GorgonColor result) => result = new GorgonColor(color, alpha);
 
     /// <summary>
     /// Function to apply an alpha value to the specified <see cref="GorgonColor"/>.
@@ -432,37 +412,6 @@ public readonly struct GorgonColor
     }
 
     /// <summary>
-    /// Function to perform linear interpolation between two <see cref="GorgonColor"/> values.
-    /// </summary>
-    /// <param name="start">The starting <see cref="GorgonColor"/>.</param>
-    /// <param name="end">The ending <see cref="GorgonColor"/>.</param>
-    /// <param name="weight">Value between 0 and 1.0f to indicate weighting between start and end.</param>
-    /// <param name="outColor">The new <see cref="GorgonColor"/> representing a color between the <paramin name="start"/> and <paramin name="end"/> values.</param>
-    /// <remarks>
-    /// This will compute a new <see cref="GorgonColor"/> from the <paramin name="start"/> and <paramin name="end"/> parameters based on the <paramin name="weight"/> passed in. For example, if the 
-    /// <paramin name="start"/> is Red = 0, Green = 0, Blue = 0, and Alpha = 0, and the <paramin name="end"/> is Red = 1, Green = 0, Blue = 1, and Alpha 0.5f. Then, with a <paramin name="weight"/> of 
-    /// 0.5f, the result will be Red = 0.5f, Green = 0, Blue = 0.5f, and an Alpha = 0.25f.
-    /// </remarks>
-    public static void Lerp(ref readonly GorgonColor start, ref readonly GorgonColor end, float weight, out GorgonColor outColor) => outColor = new GorgonColor(start.Red.Lerp(end.Red, weight),
-            start.Green.Lerp(end.Green, weight),
-            start.Blue.Lerp(end.Blue, weight),
-            start.Alpha.Lerp(end.Alpha, weight));
-
-    /// <summary>
-    /// Function to add two <see cref="GorgonColor"/> values together.
-    /// </summary>
-    /// <param name="left">The left color to add.</param>
-    /// <param name="right">The right color to add.</param>
-    /// <param name="outColor">The total of the two colors.</param>
-    /// <remarks>
-    /// This method does not clamp its output. Values greater than 1 or less than 0 are possible.
-    /// </remarks>
-    public static void Add(ref readonly GorgonColor left, ref readonly GorgonColor right, out GorgonColor outColor) => outColor = new GorgonColor(left.Red + right.Red,
-                                    left.Green + right.Green,
-                                    left.Blue + right.Blue,
-                                    left.Alpha + right.Alpha);
-
-    /// <summary>
     /// Function to add two <see cref="GorgonColor"/> values together.
     /// </summary>
     /// <param name="left">The left color to add.</param>
@@ -475,20 +424,6 @@ public readonly struct GorgonColor
                                left.Green + right.Green,
                                left.Blue + right.Blue,
                                left.Alpha + right.Alpha);
-
-    /// <summary>
-    /// Function to subtract two <see cref="GorgonColor"/> values from each other.
-    /// </summary>
-    /// <param name="left">The left color to subtract.</param>
-    /// <param name="right">The right color to subtract.</param>
-    /// <param name="outColor">The difference between the two colors.</param>
-    /// <remarks>
-    /// This method does not clamp its output. Values greater than 1 or less than 0 are possible.
-    /// </remarks>
-    public static void Subtract(ref readonly GorgonColor left, ref readonly GorgonColor right, out GorgonColor outColor) => outColor = new GorgonColor(left.Red - right.Red,
-                                    left.Green - right.Green,
-                                    left.Blue - right.Blue,
-                                    left.Alpha - right.Alpha);
 
     /// <summary>
     /// Function to subtract two <see cref="GorgonColor"/> values from each other.
@@ -509,33 +444,11 @@ public readonly struct GorgonColor
     /// </summary>
     /// <param name="left">The left color to multiply.</param>
     /// <param name="right">The right color to multiply.</param>
-    /// <param name="outColor">Product of the two colors.</param>
-    public static void Multiply(ref readonly GorgonColor left, ref readonly GorgonColor right, out GorgonColor outColor) => outColor = new GorgonColor(left.Red * right.Red,
-                                    left.Green * right.Green,
-                                    left.Blue * right.Blue,
-                                    left.Alpha * right.Alpha);
-
-    /// <summary>
-    /// Function to multiply two <see cref="GorgonColor"/> values together.
-    /// </summary>
-    /// <param name="left">The left color to multiply.</param>
-    /// <param name="right">The right color to multiply.</param>
     /// <returns>Product of the two colors.</returns>
     public static GorgonColor Multiply(GorgonColor left, GorgonColor right) => new(left.Red * right.Red,
                                left.Green * right.Green,
                                left.Blue * right.Blue,
                                left.Alpha * right.Alpha);
-
-    /// <summary>
-    /// Function to multiply a <see cref="GorgonColor"/> by a value.
-    /// </summary>
-    /// <param name="color">The color to multiply.</param>
-    /// <param name="value">The value to multiply.</param>
-    /// <param name="outColor">Product of the <paramin name="color"/> and the <paramin name="value"/>.</param>
-    public static void Multiply(ref readonly GorgonColor color, float value, out GorgonColor outColor) => outColor = new GorgonColor(color.Red * value,
-                                   color.Green * value,
-                                   color.Blue * value,
-                                   color.Alpha * value);
 
     /// <summary>
     /// Function to multiply a <see cref="GorgonColor"/> by a value.
@@ -701,16 +614,7 @@ public readonly struct GorgonColor
     /// <returns>
     /// true if the current object is equal to the <paramin name="other"/> parameter; otherwise, false.
     /// </returns>
-    public bool Equals(GorgonColor other) => Equals(in this, in other);
-
-    /// <summary>
-    /// Indicates whether the current object is equal to another object of the same type by reference.
-    /// </summary>
-    /// <param name="other">An object to compare with this object.</param>
-    /// <returns>
-    /// true if the current object is equal to the <paramin name="other"/> parameter; otherwise, false.
-    /// </returns>
-    public bool Equals(ref readonly GorgonColor other) => Equals(in this, in other);
+    public bool Equals(GorgonColor other) => Equals(this, other);
 
     /// <summary>
     /// Populates a <see cref="SerializationInfo" /> with the data needed to serialize the target object.
@@ -728,13 +632,7 @@ public readonly struct GorgonColor
     /// <remarks>
     /// This method does not clamp its output. Values greater than 1 or less than 0 are possible.
     /// </remarks>
-    public static GorgonColor operator +(GorgonColor left, GorgonColor right)
-    {
-
-        Add(in left, in right, out GorgonColor result);
-
-        return result;
-    }
+    public static GorgonColor operator +(GorgonColor left, GorgonColor right) => Add(left, right);
 
     /// <summary>
     /// An operator to subtract two <see cref="GorgonColor"/> values from each other.
@@ -745,12 +643,7 @@ public readonly struct GorgonColor
     /// <remarks>
     /// This method does not clamp its output. Values greater than 1 or less than 0 are possible.
     /// </remarks>
-    public static GorgonColor operator -(GorgonColor left, GorgonColor right)
-    {
-        Subtract(in left, in right, out GorgonColor result);
-
-        return result;
-    }
+    public static GorgonColor operator -(GorgonColor left, GorgonColor right) => Subtract(left, right);
 
     /// <summary>
     /// An operator to multiply two <see cref="GorgonColor"/> values together.
@@ -758,13 +651,7 @@ public readonly struct GorgonColor
     /// <param name="left">The left value.</param>
     /// <param name="right">The right value.</param>
     /// <returns>The result of the operator.</returns>
-    public static GorgonColor operator *(GorgonColor left, GorgonColor right)
-    {
-
-        Multiply(in left, in right, out GorgonColor result);
-
-        return result;
-    }
+    public static GorgonColor operator *(GorgonColor left, GorgonColor right) => Multiply(left, right);
 
     /// <summary>
     /// An operator to multiply a <see cref="GorgonColor"/> and a <see cref="float"/> value.
@@ -772,13 +659,7 @@ public readonly struct GorgonColor
     /// <param name="color">The color to multiply.</param>
     /// <param name="value">The value to multiply by.</param>
     /// <returns>The result of the operator.</returns>
-    public static GorgonColor operator *(GorgonColor color, float value)
-    {
-
-        Multiply(in color, value, out GorgonColor result);
-
-        return result;
-    }
+    public static GorgonColor operator *(GorgonColor color, float value) => Multiply(color, value);
 
     /// <summary>
     /// An operator to determine if two instances are equal.
@@ -786,7 +667,7 @@ public readonly struct GorgonColor
     /// <param name="left">The left value.</param>
     /// <param name="right">The right value.</param>
     /// <returns><b>true</b> if equal, <b>false</b> if not.</returns>
-    public static bool operator ==(GorgonColor left, GorgonColor right) => Equals(in left, in right);
+    public static bool operator ==(GorgonColor left, GorgonColor right) => Equals(left, right);
 
     /// <summary>
     /// An operator to determine if two instances are not equal.
@@ -794,7 +675,7 @@ public readonly struct GorgonColor
     /// <param name="left">The left value.</param>
     /// <param name="right">The right value.</param>
     /// <returns><b>true</b> if not equal, <b>false</b> if equal.</returns>
-    public static bool operator !=(GorgonColor left, GorgonColor right) => !Equals(in left, in right);
+    public static bool operator !=(GorgonColor left, GorgonColor right) => !Equals(left, right);
 
     /// <summary>
     /// Performs an implicit conversion from <see cref="GorgonColor"/> to <see cref="Color"/>.
