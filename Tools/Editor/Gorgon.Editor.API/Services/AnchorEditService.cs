@@ -304,9 +304,9 @@ public class AnchorEditService : IAnchorEditService
 
         UpdateCursor();
 
-        Vector2 position = AnchorPosition - CenterPosition;
+        Vector3 position = new(AnchorPosition - CenterPosition, 0);
         Vector3 screenAnchor = default;
-        Camera?.Unproject(new Vector3(position.X, position.Y, 0), out screenAnchor);
+        Camera?.Unproject(position, out screenAnchor);
         _anchorIcon.Position = (new Vector2(screenAnchor.X, screenAnchor.Y)).Truncate();
 
         _renderer.DrawSprite(_anchorIcon);

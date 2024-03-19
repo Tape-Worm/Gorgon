@@ -312,7 +312,7 @@ public sealed class Gorgon2D
     /// <seealso cref="DrawRectangle(DX.RectangleF, GorgonColor, float, GorgonTexture2DView, DX.RectangleF?, int, GorgonSamplerState, float)"/>
     /// <seealso cref="DrawEllipse(DX.RectangleF, GorgonColor, float, float, GorgonTexture2DView, DX.RectangleF?, int, GorgonSamplerState, float)"/>
     /// <seealso cref="DrawArc(DX.RectangleF, GorgonColor, float, float, float, float, GorgonTexture2DView, DX.RectangleF?, int, GorgonSamplerState, float)"/>        
-    /// <seealso cref="DrawTriangle(in GorgonTriangleVertex, in GorgonTriangleVertex, in GorgonTriangleVertex, GorgonTexture2DView, DX.RectangleF?, int, GorgonSamplerState, float)"/>
+    /// <seealso cref="DrawTriangle(ref readonly GorgonTriangleVertex, ref readonly GorgonTriangleVertex, ref readonly GorgonTriangleVertex, GorgonTexture2DView, DX.RectangleF?, int, GorgonSamplerState, float)"/>
     /// <seealso cref="DrawFilledRectangle(DX.RectangleF, GorgonColor, GorgonTexture2DView, DX.RectangleF?, int, GorgonSamplerState, float)"/>
     /// <seealso cref="DrawFilledEllipse(DX.RectangleF, GorgonColor, float, GorgonTexture2DView, DX.RectangleF?, int, GorgonSamplerState, float)"/>
     /// <seealso cref="DrawFilledArc(DX.RectangleF, GorgonColor, float, float, float, GorgonTexture2DView, DX.RectangleF?, int, GorgonSamplerState, float)"/>
@@ -491,7 +491,7 @@ public sealed class Gorgon2D
     /// <param name="textureSampler">The texture sampler to compare for changes.</param>
     /// <param name="alphaTestData">The alpha testing data to compare for changes.</param>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private void CheckPrimitiveStateChange(GorgonTexture2DView texture, GorgonSamplerState textureSampler, in AlphaTestData alphaTestData)
+    private void CheckPrimitiveStateChange(GorgonTexture2DView texture, GorgonSamplerState textureSampler, ref readonly AlphaTestData alphaTestData)
     {
         // The state has already been marked as changed, so we don't need to test further.
         if (_primitiveRenderable.StateChanged)
@@ -501,7 +501,7 @@ public sealed class Gorgon2D
 
         _primitiveRenderable.StateChanged = (texture != _primitiveRenderable.Texture)
                                             || (textureSampler != _primitiveRenderable.TextureSampler)
-                                            || (!AlphaTestData.Equals(in alphaTestData, in _primitiveRenderable.AlphaTestData));
+                                            || (!AlphaTestData.Equals(alphaTestData, _primitiveRenderable.AlphaTestData));
     }
 
     /// <summary>
@@ -510,7 +510,7 @@ public sealed class Gorgon2D
     /// <param name="currentData">The data to write into the buffer.</param>
     private void UpdateAlphaTest(ref AlphaTestData currentData)
     {
-        if (AlphaTestData.Equals(in currentData, in _alphaTestData))
+        if (AlphaTestData.Equals(currentData, _alphaTestData))
         {
             return;
         }
@@ -1694,7 +1694,7 @@ public sealed class Gorgon2D
     /// <param name="depth">[Optional] The depth value for the rectangle.</param>
     /// <returns>The fluent drawing interface.</returns>
     /// <exception cref="InvalidOperationException">Thrown if this method was called without having called <see cref="Begin"/> first.</exception>
-    public IGorgon2DDrawingFluent DrawTriangle(in GorgonTriangleVertex point1, in GorgonTriangleVertex point2, in GorgonTriangleVertex point3, GorgonTexture2DView texture = null, DX.RectangleF? textureRegion = null, int textureArrayIndex = 0, GorgonSamplerState textureSampler = null, float depth = 0)
+    public IGorgon2DDrawingFluent DrawTriangle(ref readonly GorgonTriangleVertex point1, ref readonly GorgonTriangleVertex point2, ref readonly GorgonTriangleVertex point3, GorgonTexture2DView texture = null, DX.RectangleF? textureRegion = null, int textureArrayIndex = 0, GorgonSamplerState textureSampler = null, float depth = 0)
     {
 #if DEBUG
         if (_beginCalled == 0)

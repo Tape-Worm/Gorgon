@@ -191,9 +191,10 @@ internal class Program
     private static OutputData[] Execute()
     {
         // The first step is to provide the compute shader with the information it needs to do its job.
+        GorgonReadWriteViewBinding resourceView = new (_outputBuffer.GetStructuredReadWriteView());
         GorgonDispatchCall dispatch = _dispatchBuilder.ShaderResource(_intBuffer.GetShaderResourceView(BufferFormat.R32_SInt))
                                                       .ShaderResource(_floatBuffer.GetShaderResourceView(BufferFormat.R32_Float), 1)
-                                                      .ReadWriteView(new GorgonReadWriteViewBinding(_outputBuffer.GetStructuredReadWriteView()))
+                                                      .ReadWriteView(in resourceView)
                                                       .ComputeShader(_computeShader)
                                                       .Build();
 

@@ -43,7 +43,7 @@ namespace Gorgon.Input;
 /// <remarks>Initializes a new instance of the <see cref="GorgonRawHIDData" /> struct.</remarks>
 /// <param name="data">The device data received from raw input.</param>
 /// <param name="size">The size of a single HID value within the data.</param>
-public readonly struct GorgonRawHIDData(in GorgonPtr<byte> data, int size)
+public readonly struct GorgonRawHIDData(GorgonPtr<byte> data, int size)
 {
 
     /// <summary>

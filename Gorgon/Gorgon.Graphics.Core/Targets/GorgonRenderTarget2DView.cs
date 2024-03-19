@@ -432,7 +432,7 @@ public sealed class GorgonRenderTarget2DView
     /// If the <paramref name="rectangles"/> parameter is <b>null</b>, or has a zero length, the entirety of the view is cleared.
     /// </para>
     /// </remarks>
-    public void Clear(in GorgonColor color, ReadOnlySpan<DX.Rectangle> rectangles)
+    public void Clear(GorgonColor color, ReadOnlySpan<DX.Rectangle> rectangles)
     {
         if (rectangles.IsEmpty)
         {

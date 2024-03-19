@@ -66,7 +66,7 @@ internal readonly struct AlphaTestData(bool isEnabled, GorgonRange<float> alphaR
     /// <param name="left">The left value to compare.</param>
     /// <param name="right">The right value to compare.</param>
     /// <returns><b>true</b> if equal, <b>false</b> if not.</returns>
-    public static bool Equals(ref readonly AlphaTestData left, ref readonly AlphaTestData right) =>
+    public static bool Equals(AlphaTestData left, AlphaTestData right) =>
                 (left.IsEnabled == right.IsEnabled)
                 && (left.UpperAlpha.EqualsEpsilon(right.UpperAlpha))
                 && (left.LowerAlpha.EqualsEpsilon(right.LowerAlpha));
@@ -96,5 +96,5 @@ internal readonly struct AlphaTestData(bool isEnabled, GorgonRange<float> alphaR
     /// <returns>
     /// true if the current object is equal to the <paramref name="other" /> parameter; otherwise, false.
     /// </returns>
-    public bool Equals(AlphaTestData other) => Equals(in this, in other);
+    public bool Equals(AlphaTestData other) => Equals(this, other);
 }

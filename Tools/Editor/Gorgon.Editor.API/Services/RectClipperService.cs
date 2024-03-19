@@ -312,8 +312,8 @@ public class RectClipperService
         Vector3 half = new(Bounds.Width * 0.5f, Bounds.Height * 0.5f, 0);
         Vector3 spriteTopLeft = new Vector3(Rectangle.Left, Rectangle.Top, 0) - half;
         Vector3 spriteBottomRight = new Vector3(Rectangle.Right, Rectangle.Bottom, 0) - half;
-        _camera.Unproject(in spriteTopLeft, out Vector3 transformedTopLeft);
-        _camera.Unproject(in spriteBottomRight, out Vector3 transformedBottomRight);
+        _camera.Unproject(spriteTopLeft, out Vector3 transformedTopLeft);
+        _camera.Unproject(spriteBottomRight, out Vector3 transformedBottomRight);
 
         _screenRect = new DX.RectangleF
         {

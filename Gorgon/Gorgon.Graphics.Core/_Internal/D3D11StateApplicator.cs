@@ -250,7 +250,7 @@ internal class D3D11StateApplicator(GorgonGraphics graphics, GorgonRenderTargetV
     /// </summary>
     /// <param name="streamOutBindings">The bindings to bind to the pipeline.</param>
     /// <param name="indices">The indices that were modified.</param>
-    private void BindStreamOutBuffers(GorgonStreamOutBindings streamOutBindings, in (int Start, int Count) indices)
+    private void BindStreamOutBuffers(GorgonStreamOutBindings streamOutBindings, ref readonly (int Start, int Count) indices)
     {
         if ((indices.Count <= 0) || (_setStreamOutTargets is null))
         {
@@ -278,7 +278,7 @@ internal class D3D11StateApplicator(GorgonGraphics graphics, GorgonRenderTargetV
     /// </summary>
     /// <param name="uavs">The unordered access views to bind.</param>
     /// <param name="indices">The indices that were modified.</param>
-    private void BindCsUavs(GorgonReadWriteViewBindings uavs, in (int Start, int Count) indices)
+    private void BindCsUavs(GorgonReadWriteViewBindings uavs, ref readonly (int Start, int Count) indices)
     {
         if ((uavs is null) || (indices.Count == 0))
         {
@@ -310,7 +310,7 @@ internal class D3D11StateApplicator(GorgonGraphics graphics, GorgonRenderTargetV
     /// </summary>
     /// <param name="uavs">The unordered access views to bind.</param>
     /// <param name="indices">The indices that were modified.</param>
-    private void BindUavs(GorgonReadWriteViewBindings uavs, in (int Start, int Count) indices)
+    private void BindUavs(GorgonReadWriteViewBindings uavs, ref readonly (int Start, int Count) indices)
     {
         if ((uavs is null) || (indices.Count == 0) || (_setUavs is null))
         {
@@ -345,7 +345,7 @@ internal class D3D11StateApplicator(GorgonGraphics graphics, GorgonRenderTargetV
     /// </summary>
     /// <param name="vertexBufferBindings">The bindings to bind to the pipeline.</param>
     /// <param name="indices">The indices that were modified.</param>
-    private void BindVertexBuffers(GorgonVertexBufferBindings vertexBufferBindings, in (int Start, int Count) indices)
+    private void BindVertexBuffers(GorgonVertexBufferBindings vertexBufferBindings, ref readonly (int Start, int Count) indices)
     {
         if (indices.Count <= 0)
         {
@@ -377,7 +377,7 @@ internal class D3D11StateApplicator(GorgonGraphics graphics, GorgonRenderTargetV
     /// <param name="samplers">The samplers to apply.</param>
     /// <param name="indices">The indices in the resource array that have been updated.</param>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static void BindSamplers(D3D11.CommonShaderStage shaderStage, GorgonSamplerStates samplers, in (int Start, int Count) indices)
+    private static void BindSamplers(D3D11.CommonShaderStage shaderStage, GorgonSamplerStates samplers, ref readonly (int Start, int Count) indices)
     {
         if ((samplers is null) || (indices.Count == 0))
         {
@@ -396,7 +396,7 @@ internal class D3D11StateApplicator(GorgonGraphics graphics, GorgonRenderTargetV
     /// <param name="shaderType">The shader stage.</param>
     /// <param name="constantBuffers">The constant buffers to bind.</param>
     /// <param name="indices">The indices in the resource array that have been updated.</param>
-    private void BindConstantBuffers(ShaderType shaderType, GorgonConstantBuffers constantBuffers, in (int Start, int Count) indices)
+    private void BindConstantBuffers(ShaderType shaderType, GorgonConstantBuffers constantBuffers, ref readonly (int Start, int Count) indices)
     {
         if ((constantBuffers is null) || (indices.Count == 0))
         {
@@ -474,7 +474,7 @@ internal class D3D11StateApplicator(GorgonGraphics graphics, GorgonRenderTargetV
     /// <param name="srvs">The shader resource views to bind.</param>
     /// <param name="indices">The indices in the resource array that have been updated.</param>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private void BindSrvs(D3D11.CommonShaderStage shaderStage, GorgonShaderResourceViews srvs, in (int Start, int Count) indices)
+    private void BindSrvs(D3D11.CommonShaderStage shaderStage, GorgonShaderResourceViews srvs, ref readonly (int Start, int Count) indices)
     {
         if ((srvs is null) || (indices.Count == 0))
         {
@@ -634,7 +634,7 @@ internal class D3D11StateApplicator(GorgonGraphics graphics, GorgonRenderTargetV
     /// <param name="renderTargets">The render targets to bind.</param>
     /// <param name="depthStencil">The depth stencil to bind.</param>
     /// <param name="changes">Flags to indicate which items have changed.</param>
-    public void BindRenderTargets(ReadOnlySpan<GorgonRenderTargetView> renderTargets, GorgonDepthStencil2DView depthStencil, in (bool RtvsChanged, bool DsvChanged) changes)
+    public void BindRenderTargets(ReadOnlySpan<GorgonRenderTargetView> renderTargets, GorgonDepthStencil2DView depthStencil, ref readonly (bool RtvsChanged, bool DsvChanged) changes)
     {
         if ((!changes.RtvsChanged) && (!changes.DsvChanged))
         {
@@ -692,7 +692,7 @@ internal class D3D11StateApplicator(GorgonGraphics graphics, GorgonRenderTargetV
     /// <param name="blendFactor">The factor used to modulate the pixel shader, render target or both.</param>
     /// <param name="blendSampleMask">The mask used to define which samples get updated in the active render targets.</param>
     /// <param name="stencilRef">The stencil reference value used when performing a stencil test.</param>
-    public void ApplyPipelineState(GorgonPipelineState state, PipelineStateChanges changes, in GorgonColor blendFactor, int blendSampleMask, int stencilRef)
+    public void ApplyPipelineState(GorgonPipelineState state, PipelineStateChanges changes, GorgonColor blendFactor, int blendSampleMask, int stencilRef)
     {
         if (changes == PipelineStateChanges.None)
         {

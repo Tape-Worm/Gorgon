@@ -122,7 +122,7 @@ public readonly struct GorgonStreamOutElement
     /// <param name="left">The first instance to compare.</param>
     /// <param name="right">The second instance to compare.</param>
     /// <returns><b>true</b> if equal, <b>false</b> if not.</returns>
-    public static bool Equals(ref readonly GorgonStreamOutElement left, in GorgonStreamOutElement right) => (string.Equals(left.Context, right.Context, StringComparison.OrdinalIgnoreCase)) && (left.Index == right.Index) &&
+    public static bool Equals(ref readonly GorgonStreamOutElement left, ref readonly GorgonStreamOutElement right) => (string.Equals(left.Context, right.Context, StringComparison.OrdinalIgnoreCase)) && (left.Index == right.Index) &&
                (left.StartComponent == right.StartComponent) && (left.ComponentCount == right.ComponentCount) && (left.StreamIndex == right.StreamIndex) &&
                (left.Slot == right.Slot);
 
@@ -134,7 +134,7 @@ public readonly struct GorgonStreamOutElement
     /// <returns>
     /// The result of the operator.
     /// </returns>
-    public static bool operator ==(in GorgonStreamOutElement left, in GorgonStreamOutElement right) => Equals(in left, in right);
+    public static bool operator ==(GorgonStreamOutElement left, GorgonStreamOutElement right) => Equals(in left, in right);
 
     /// <summary>
     /// Implements the operator !=.
@@ -144,7 +144,7 @@ public readonly struct GorgonStreamOutElement
     /// <returns>
     /// The result of the operator.
     /// </returns>
-    public static bool operator !=(in GorgonStreamOutElement left, in GorgonStreamOutElement right) => !Equals(in left, in right);
+    public static bool operator !=(GorgonStreamOutElement left, GorgonStreamOutElement right) => !Equals(in left, in right);
 
     /// <summary>
     /// Returns a hash code for this instance.

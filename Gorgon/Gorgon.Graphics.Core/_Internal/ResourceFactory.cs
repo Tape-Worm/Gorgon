@@ -42,7 +42,7 @@ internal static class ResourceFactory
     /// <param name="name">The name of the query.</param>
     /// <param name="desc">The description of the query.</param>
     /// <returns>A new Direct 3D query.</returns>
-    public static D3D11.Query CreateQuery(D3D11.Device5 device, string name, in D3D11.QueryDescription desc) => new(device, desc)
+    public static D3D11.Query CreateQuery(D3D11.Device5 device, string name, ref readonly D3D11.QueryDescription desc) => new(device, desc)
     {
         DebugName = name
     };
@@ -55,7 +55,7 @@ internal static class ResourceFactory
     /// <param name="desc">The description of the buffer.</param>
     /// <param name="initialData">A span containing the initial data for the buffer.</param>
     /// <returns>A new Direct 3D buffer.</returns>
-    public static D3D11.Buffer Create<T>(D3D11.Device5 device, string name, in D3D11.BufferDescription desc, ReadOnlySpan<T> initialData)
+    public static D3D11.Buffer Create<T>(D3D11.Device5 device, string name, ref readonly D3D11.BufferDescription desc, ReadOnlySpan<T> initialData)
         where T : unmanaged
     {
         D3D11.Buffer result = null;
@@ -93,7 +93,7 @@ internal static class ResourceFactory
     /// <param name="desc">The descriptor for the descriptor.</param>
     /// <param name="image">Image data used to initialize the texture.</param>
     /// <returns>A new texture.</returns>
-    public static D3D11.Texture3D1 Create(D3D11.Device5 device, string name, long id, in D3D11.Texture3DDescription1 desc, IGorgonImage image)
+    public static D3D11.Texture3D1 Create(D3D11.Device5 device, string name, long id, ref readonly D3D11.Texture3DDescription1 desc, IGorgonImage image)
     {
         if (image is null)
         {
@@ -139,7 +139,7 @@ internal static class ResourceFactory
     /// <param name="desc">The descriptor for the descriptor.</param>
     /// <param name="image">Image data used to initialize the texture.</param>
     /// <returns>A new texture.</returns>
-    public static D3D11.Texture2D1 Create(D3D11.Device5 device, string name, long id, in D3D11.Texture2DDescription1 desc, IGorgonImage image)
+    public static D3D11.Texture2D1 Create(D3D11.Device5 device, string name, long id, ref readonly D3D11.Texture2DDescription1 desc, IGorgonImage image)
     {
         if (image is null)
         {
@@ -177,7 +177,7 @@ internal static class ResourceFactory
     /// <param name="desc">The descriptor for the descriptor.</param>
     /// <param name="image">Image data used to initialize the texture.</param>
     /// <returns>A new texture.</returns>
-    public static D3D11.Texture1D Create(D3D11.Device5 device, string name, long id, in D3D11.Texture1DDescription desc, IGorgonImage image)
+    public static D3D11.Texture1D Create(D3D11.Device5 device, string name, long id, ref readonly D3D11.Texture1DDescription desc, IGorgonImage image)
     {
         if (image is null)
         {

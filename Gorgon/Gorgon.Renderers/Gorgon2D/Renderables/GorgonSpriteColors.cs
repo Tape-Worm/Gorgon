@@ -167,7 +167,7 @@ public class GorgonSpriteColors
     /// </summary>
     /// <param name="color">The color to assign.</param>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void SetAll(in GorgonColor color)
+    public void SetAll(GorgonColor color)
     {
         ref GorgonColor llColor = ref _renderable.Vertices[2].Color;
         ref GorgonColor lrColor = ref _renderable.Vertices[3].Color;

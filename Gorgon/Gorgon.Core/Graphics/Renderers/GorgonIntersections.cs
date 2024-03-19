@@ -151,7 +151,7 @@ public static class GorgonIntersections
     /// <param name="planeNormal"></param>
     /// <param name="p"></param>
     /// <param name="n"></param>
-    private static void GetBoxToPlanePVertexNVertex(in GorgonBoundingBox box, in Vector3 planeNormal, out Vector3 p, out Vector3 n)
+    private static void GetBoxToPlanePVertexNVertex(ref readonly GorgonBoundingBox box, ref readonly Vector3 planeNormal, out Vector3 p, out Vector3 n)
     {
         p = box.Minimum;
         if (planeNormal.X >= 0)
@@ -194,7 +194,7 @@ public static class GorgonIntersections
     /// <param name="vertex2">The second vertex to test.</param>
     /// <param name="vertex3">The third vertex to test.</param>
     /// <param name="result">When the method completes, contains the closest point between the two objects.</param>
-    public static void ClosestPointPointTriangle(in Vector3 point, in Vector3 vertex1, in Vector3 vertex2, in Vector3 vertex3, out Vector3 result)
+    public static void ClosestPointPointTriangle(ref readonly Vector3 point, ref readonly Vector3 vertex1, ref readonly Vector3 vertex2, ref readonly Vector3 vertex3, out Vector3 result)
     {
         //Source: Real-Time Collision Detection by Christer Ericson
         //Reference: Page 136
@@ -273,7 +273,7 @@ public static class GorgonIntersections
     /// <param name="point">The point to test.</param>
     /// <param name="result">When the method completes, contains the closest point between the two objects.</param>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static void ClosestPointPlanePoint(in Plane plane, in Vector3 point, out Vector3 result)
+    public static void ClosestPointPlanePoint(ref readonly Plane plane, ref readonly Vector3 point, out Vector3 result)
     {
         //Source: Real-Time Collision Detection by Christer Ericson
         //Reference: Page 126
@@ -291,7 +291,7 @@ public static class GorgonIntersections
     /// <param name="point">The point to test.</param>
     /// <param name="result">When the method completes, contains the closest point between the two objects.</param>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static void ClosestPointBoxPoint(in GorgonBoundingBox box, in Vector3 point, out Vector3 result)
+    public static void ClosestPointBoxPoint(ref readonly GorgonBoundingBox box, ref readonly Vector3 point, out Vector3 result)
     {
         //Source: Real-Time Collision Detection by Christer Ericson
         //Reference: Page 130
@@ -308,7 +308,7 @@ public static class GorgonIntersections
     /// <param name="result">When the method completes, contains the closest point between the two objects;
     /// or, if the point is directly in the center of the sphere, contains <see cref="Vector3.Zero"/>.</param>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static void ClosestPointSpherePoint(in GorgonBoundingSphere sphere, in Vector3 point, out Vector3 result)
+    public static void ClosestPointSpherePoint(ref readonly GorgonBoundingSphere sphere, ref readonly Vector3 point, out Vector3 result)
     {
         //Source: Jorgy343
         //Reference: None
@@ -338,7 +338,7 @@ public static class GorgonIntersections
     /// intersection.
     /// </remarks>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static void ClosestPointSphereSphere(ref GorgonBoundingSphere sphere1, ref GorgonBoundingSphere sphere2, out Vector3 result)
+    public static void ClosestPointSphereSphere(ref readonly GorgonBoundingSphere sphere1, ref readonly GorgonBoundingSphere sphere2, out Vector3 result)
     {
         //Source: Jorgy343
         //Reference: None
@@ -362,7 +362,7 @@ public static class GorgonIntersections
     /// <param name="point">The point to test.</param>
     /// <returns>The distance between the two objects.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static float DistancePlanePoint(in Plane plane, in Vector3 point)
+    public static float DistancePlanePoint(ref readonly Plane plane, ref readonly Vector3 point)
     {
         //Source: Real-Time Collision Detection by Christer Ericson
         //Reference: Page 127
@@ -378,7 +378,7 @@ public static class GorgonIntersections
     /// <param name="point">The point to test.</param>
     /// <returns>The distance between the two objects.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static float DistanceBoxPoint(in GorgonBoundingBox box, in Vector3 point)
+    public static float DistanceBoxPoint(ref readonly GorgonBoundingBox box, ref readonly Vector3 point)
     {
         //Source: Real-Time Collision Detection by Christer Ericson
         //Reference: Page 131
@@ -425,7 +425,7 @@ public static class GorgonIntersections
     /// <param name="box2">The second box to test.</param>
     /// <returns>The distance between the two objects.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static float DistanceBoxBox(in GorgonBoundingBox box1, in GorgonBoundingBox box2)
+    public static float DistanceBoxBox(ref readonly GorgonBoundingBox box1, ref readonly GorgonBoundingBox box2)
     {
         //Source:
         //Reference:
@@ -478,7 +478,7 @@ public static class GorgonIntersections
     /// <param name="point">The point to test.</param>
     /// <returns>The distance between the two objects.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static float DistanceSpherePoint(in GorgonBoundingSphere sphere, in Vector3 point)
+    public static float DistanceSpherePoint(ref readonly GorgonBoundingSphere sphere, ref readonly Vector3 point)
     {
         //Source: Jorgy343
         //Reference: None
@@ -496,7 +496,7 @@ public static class GorgonIntersections
     /// <param name="sphere2">The second sphere to test.</param>
     /// <returns>The distance between the two objects.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static float DistanceSphereSphere(in GorgonBoundingSphere sphere1, in GorgonBoundingSphere sphere2)
+    public static float DistanceSphereSphere(ref readonly GorgonBoundingSphere sphere1, ref readonly GorgonBoundingSphere sphere2)
     {
         //Source: Jorgy343
         //Reference: None
@@ -514,7 +514,7 @@ public static class GorgonIntersections
     /// <param name="point">The point to test.</param>
     /// <returns>Whether the two objects intersect.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool RayIntersectsPoint(in GorgonRay ray, in Vector3 point)
+    public static bool RayIntersectsPoint(ref readonly GorgonRay ray, ref readonly Vector3 point)
     {
         //Source: RayIntersectsSphere
         //Reference: None
@@ -554,7 +554,7 @@ public static class GorgonIntersections
     /// of the second ray, det denotes the determinant of a matrix, x denotes the cross
     /// product, [ ] denotes a matrix, and || || denotes the length or magnitude of a vector.
     /// </remarks>
-    public static bool RayIntersectsRay(in GorgonRay ray1, in GorgonRay ray2, out Vector3 point)
+    public static bool RayIntersectsRay(ref readonly GorgonRay ray1, ref readonly GorgonRay ray2, out Vector3 point)
     {
         //Source: Real-Time Rendering, Third Edition
         //Reference: Page 780
@@ -640,7 +640,7 @@ public static class GorgonIntersections
     /// <param name="distance">When the method completes, contains the distance of the intersection,
     /// or 0 if there was no intersection.</param>
     /// <returns>Whether the two objects intersect.</returns>
-    public static bool RayIntersectsPlane(in GorgonRay ray, in Plane plane, out float distance)
+    public static bool RayIntersectsPlane(ref readonly GorgonRay ray, ref readonly Plane plane, out float distance)
     {
         //Source: Real-Time Collision Detection by Christer Ericson
         //Reference: Page 175
@@ -673,7 +673,7 @@ public static class GorgonIntersections
     /// <param name="point">When the method completes, contains the point of intersection,
     /// or <see cref="Vector3.Zero"/> if there was no intersection.</param>
     /// <returns>Whether the two objects intersected.</returns>
-    public static bool RayIntersectsPlane(in GorgonRay ray, in Plane plane, out Vector3 point)
+    public static bool RayIntersectsPlane(ref readonly GorgonRay ray, ref readonly Plane plane, out Vector3 point)
     {
         //Source: Real-Time Collision Detection by Christer Ericson
         //Reference: Page 175
@@ -705,7 +705,7 @@ public static class GorgonIntersections
     /// the ray, no intersection is assumed to have happened. In both cases of assumptions,
     /// this method returns false.
     /// </remarks>
-    public static bool RayIntersectsTriangle(in GorgonRay ray, in Vector3 vertex1, in Vector3 vertex2, in Vector3 vertex3, out float distance)
+    public static bool RayIntersectsTriangle(ref readonly GorgonRay ray, ref readonly Vector3 vertex1, ref readonly Vector3 vertex2, ref readonly Vector3 vertex3, out float distance)
     {
         //Source: Fast Minimum Storage Ray / Triangle Intersection
         //Reference: http://www.cs.virginia.edu/~gfx/Courses/2003/ImageSynthesis/papers/Acceleration/Fast%20MinimumStorage%20RayTriangle%20Intersection.pdf
@@ -805,7 +805,7 @@ public static class GorgonIntersections
     /// <param name="point">When the method completes, contains the point of intersection,
     /// or <see cref="Vector3.Zero"/> if there was no intersection.</param>
     /// <returns>Whether the two objects intersected.</returns>
-    public static bool RayIntersectsTriangle(in GorgonRay ray, in Vector3 vertex1, in Vector3 vertex2, in Vector3 vertex3, out Vector3 point)
+    public static bool RayIntersectsTriangle(ref readonly GorgonRay ray, ref readonly Vector3 vertex1, ref readonly Vector3 vertex2, ref readonly Vector3 vertex3, out Vector3 point)
     {
         if (!RayIntersectsTriangle(in ray, in vertex1, in vertex2, in vertex3, out float distance))
         {
@@ -825,7 +825,7 @@ public static class GorgonIntersections
     /// <param name="distance">When the method completes, contains the distance of the intersection,
     /// or 0 if there was no intersection.</param>
     /// <returns>Whether the two objects intersected.</returns>
-    public static bool RayIntersectsBox(in GorgonRay ray, in GorgonBoundingBox box, out float distance)
+    public static bool RayIntersectsBox(ref readonly GorgonRay ray, ref readonly GorgonBoundingBox box, out float distance)
     {
         //Source: Real-Time Collision Detection by Christer Ericson
         //Reference: Page 179
@@ -931,7 +931,7 @@ public static class GorgonIntersections
     /// <param name="point">When the method completes, contains the point of intersection,
     /// or <see cref="Vector3.Zero"/> if there was no intersection.</param>
     /// <returns>Whether the two objects intersected.</returns>
-    public static bool RayIntersectsBox(in GorgonRay ray, in GorgonBoundingBox box, out Vector3 point)
+    public static bool RayIntersectsBox(ref readonly GorgonRay ray, ref readonly GorgonBoundingBox box, out Vector3 point)
     {
         if (!RayIntersectsBox(in ray, in box, out float distance))
         {
@@ -951,7 +951,7 @@ public static class GorgonIntersections
     /// <param name="distance">When the method completes, contains the distance of the intersection,
     /// or 0 if there was no intersection.</param>
     /// <returns>Whether the two objects intersected.</returns>
-    public static bool RayIntersectsSphere(in GorgonRay ray, in GorgonBoundingSphere sphere, out float distance)
+    public static bool RayIntersectsSphere(ref readonly GorgonRay ray, ref readonly GorgonBoundingSphere sphere, out float distance)
     {
         //Source: Real-Time Collision Detection by Christer Ericson
         //Reference: Page 177
@@ -993,7 +993,7 @@ public static class GorgonIntersections
     /// <param name="point">When the method completes, contains the point of intersection,
     /// or <see cref="Vector3.Zero"/> if there was no intersection.</param>
     /// <returns>Whether the two objects intersected.</returns>
-    public static bool RayIntersectsSphere(in GorgonRay ray, ref GorgonBoundingSphere sphere, out Vector3 point)
+    public static bool RayIntersectsSphere(ref readonly GorgonRay ray, ref GorgonBoundingSphere sphere, out Vector3 point)
     {
         if (!RayIntersectsSphere(in ray, in sphere, out float distance))
         {
@@ -1012,7 +1012,7 @@ public static class GorgonIntersections
     /// <param name="point">The point to test.</param>
     /// <returns>Whether the two objects intersected.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static PlaneIntersection PlaneIntersectsPoint(in Plane plane, in Vector3 point)
+    public static PlaneIntersection PlaneIntersectsPoint(ref readonly Plane plane, ref readonly Vector3 point)
     {
         float distance = Vector3.Dot(plane.Normal, point);
         distance += plane.D;
@@ -1032,7 +1032,7 @@ public static class GorgonIntersections
     /// <param name="plane2">The second plane to test.</param>
     /// <returns>Whether the two objects intersected.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool PlaneIntersectsPlane(in Plane plane1, in Plane plane2)
+    public static bool PlaneIntersectsPlane(ref readonly Plane plane1, ref readonly Plane plane2)
     {
         Vector3 direction = Vector3.Cross(plane1.Normal, plane2.Normal);
 
@@ -1057,7 +1057,7 @@ public static class GorgonIntersections
     /// both the positive direction is used and when the negative direction is used.
     /// </remarks>        
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool PlaneIntersectsPlane(in Plane plane1, in Plane plane2, out GorgonRay line)
+    public static bool PlaneIntersectsPlane(ref readonly Plane plane1, ref readonly Plane plane2, out GorgonRay line)
     {
         //Source: Real-Time Collision Detection by Christer Ericson
         //Reference: Page 207
@@ -1095,7 +1095,7 @@ public static class GorgonIntersections
     /// <param name="vertex3">The third vertex of the triangle to test.</param>
     /// <returns>Whether the two objects intersected.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static PlaneIntersection PlaneIntersectsTriangle(in Plane plane, in Vector3 vertex1, in Vector3 vertex2, in Vector3 vertex3)
+    public static PlaneIntersection PlaneIntersectsTriangle(ref readonly Plane plane, ref readonly Vector3 vertex1, ref readonly Vector3 vertex2, ref readonly Vector3 vertex3)
     {
         //Source: Real-Time Collision Detection by Christer Ericson
         //Reference: Page 207
@@ -1121,7 +1121,7 @@ public static class GorgonIntersections
     /// <param name="box">The box to test.</param>
     /// <returns>Whether the two objects intersected.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static PlaneIntersection PlaneIntersectsBox(in Plane plane, in GorgonBoundingBox box)
+    public static PlaneIntersection PlaneIntersectsBox(ref readonly Plane plane, ref readonly GorgonBoundingBox box)
     {
         //Source: Real-Time Collision Detection by Christer Ericson
         //Reference: Page 161
@@ -1155,7 +1155,7 @@ public static class GorgonIntersections
     /// <param name="sphere">The sphere to test.</param>
     /// <returns>Whether the two objects intersected.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static PlaneIntersection PlaneIntersectsSphere(in Plane plane, in GorgonBoundingSphere sphere)
+    public static PlaneIntersection PlaneIntersectsSphere(ref readonly Plane plane, ref readonly GorgonBoundingSphere sphere)
     {
         //Source: Real-Time Collision Detection by Christer Ericson
         //Reference: Page 160
@@ -1204,7 +1204,7 @@ public static class GorgonIntersections
     /// <param name="sphere">The sphere to test.</param>
     /// <returns>Whether the two objects intersected.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool BoxIntersectsSphere(in GorgonBoundingBox box, in GorgonBoundingSphere sphere)
+    public static bool BoxIntersectsSphere(ref readonly GorgonBoundingBox box, ref readonly GorgonBoundingSphere sphere)
     {
         //Source: Real-Time Collision Detection by Christer Ericson
         //Reference: Page 166
@@ -1224,7 +1224,7 @@ public static class GorgonIntersections
     /// <param name="vertex3">The third vertex of the triangle to test.</param>
     /// <returns>Whether the two objects intersected.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool SphereIntersectsTriangle(in GorgonBoundingSphere sphere, in Vector3 vertex1, in Vector3 vertex2, in Vector3 vertex3)
+    public static bool SphereIntersectsTriangle(ref readonly GorgonBoundingSphere sphere, ref readonly Vector3 vertex1, ref readonly Vector3 vertex2, ref readonly Vector3 vertex3)
     {
         //Source: Real-Time Collision Detection by Christer Ericson
         //Reference: Page 167
@@ -1244,7 +1244,7 @@ public static class GorgonIntersections
     /// <param name="sphere2">Second sphere to test.</param>
     /// <returns>Whether the two objects intersected.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool SphereIntersectsSphere(in GorgonBoundingSphere sphere1, in GorgonBoundingSphere sphere2)
+    public static bool SphereIntersectsSphere(ref readonly GorgonBoundingSphere sphere1, ref readonly GorgonBoundingSphere sphere2)
     {
         float radiisum = sphere1.Radius + sphere2.Radius;
         return Vector3.DistanceSquared(sphere1.Center, sphere2.Center) <= radiisum * radiisum;
@@ -1257,7 +1257,7 @@ public static class GorgonIntersections
     /// <param name="point">The point to test.</param>
     /// <returns>The type of containment the two objects have.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static Containment BoxContainsPoint(in GorgonBoundingBox box, in Vector3 point)
+    public static Containment BoxContainsPoint(ref readonly GorgonBoundingBox box, ref readonly Vector3 point)
         => ((box.Minimum.X <= point.X) && (box.Maximum.X >= point.X) &&
             (box.Minimum.Y <= point.Y) && (box.Maximum.Y >= point.Y) &&
             (box.Minimum.Z <= point.Z) && (box.Maximum.Z >= point.Z))
@@ -1271,7 +1271,7 @@ public static class GorgonIntersections
     /// <param name="box2">The second box to test.</param>
     /// <returns>The type of containment the two objects have.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static Containment BoxContainsBox(in GorgonBoundingBox box1, in GorgonBoundingBox box2)
+    public static Containment BoxContainsBox(ref readonly GorgonBoundingBox box1, ref readonly GorgonBoundingBox box2)
     {
         if (box1.Maximum.X < box2.Minimum.X || box1.Minimum.X > box2.Maximum.X)
         {
@@ -1304,7 +1304,7 @@ public static class GorgonIntersections
     /// <param name="sphere">The sphere to test.</param>
     /// <returns>The type of containment the two objects have.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static Containment BoxContainsSphere(in GorgonBoundingBox box, in GorgonBoundingSphere sphere)
+    public static Containment BoxContainsSphere(ref readonly GorgonBoundingBox box, ref readonly GorgonBoundingSphere sphere)
     {
         Vector3 vector = Vector3.Clamp(sphere.Center, box.Minimum, box.Maximum);
         float distance = Vector3.DistanceSquared(sphere.Center, vector);
@@ -1333,7 +1333,7 @@ public static class GorgonIntersections
     /// <param name="point">The point to test.</param>
     /// <returns>The type of containment the two objects have.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static Containment SphereContainsPoint(in GorgonBoundingSphere sphere, in Vector3 point) => Vector3.DistanceSquared(point, sphere.Center) <= sphere.Radius * sphere.Radius ? Containment.Contains : Containment.Disjoint;
+    public static Containment SphereContainsPoint(ref readonly GorgonBoundingSphere sphere, ref readonly Vector3 point) => Vector3.DistanceSquared(point, sphere.Center) <= sphere.Radius * sphere.Radius ? Containment.Contains : Containment.Disjoint;
 
     /// <summary>
     /// Determines whether a <see cref="GorgonBoundingSphere"/> contains a triangle.
@@ -1344,7 +1344,7 @@ public static class GorgonIntersections
     /// <param name="vertex3">The third vertex of the triangle to test.</param>
     /// <returns>The type of containment the two objects have.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static Containment SphereContainsTriangle(in GorgonBoundingSphere sphere, in Vector3 vertex1, in Vector3 vertex2, in Vector3 vertex3)
+    public static Containment SphereContainsTriangle(ref readonly GorgonBoundingSphere sphere, ref readonly Vector3 vertex1, ref readonly Vector3 vertex2, ref readonly Vector3 vertex3)
     {
         //Source: Jorgy343
         //Reference: None
@@ -1369,7 +1369,7 @@ public static class GorgonIntersections
     /// <param name="sphere">The sphere to test.</param>
     /// <param name="box">The box to test.</param>
     /// <returns>The type of containment the two objects have.</returns>
-    public static Containment SphereContainsBox(in GorgonBoundingSphere sphere, in GorgonBoundingBox box)
+    public static Containment SphereContainsBox(ref readonly GorgonBoundingSphere sphere, ref readonly GorgonBoundingBox box)
     {
         Vector3 vector;
 
@@ -1455,7 +1455,7 @@ public static class GorgonIntersections
     /// <param name="sphere1">The first sphere to test.</param>
     /// <param name="sphere2">The second sphere to test.</param>
     /// <returns>The type of containment the two objects have.</returns>
-    public static Containment SphereContainsSphere(in GorgonBoundingSphere sphere1, in GorgonBoundingSphere sphere2)
+    public static Containment SphereContainsSphere(ref readonly GorgonBoundingSphere sphere1, ref readonly GorgonBoundingSphere sphere2)
     {
         float distance = Vector3.Distance(sphere1.Center, sphere2.Center);
 
@@ -1475,7 +1475,7 @@ public static class GorgonIntersections
     /// <param name="frustum">The frustum to evaluate.</param>
     /// <param name="point">The point to evaluate.</param>
     /// <returns>Type of the containment.</returns>
-    public static Containment FrustumContainsPoint(GorgonBoundingFrustum frustum, in Vector3 point)
+    public static Containment FrustumContainsPoint(GorgonBoundingFrustum frustum, ref readonly Vector3 point)
     {
         PlaneIntersection result = PlaneIntersection.Front;
 
@@ -1506,7 +1506,7 @@ public static class GorgonIntersections
     /// <param name="frustum">The frustum to evalate.</param>
     /// <param name="box">The bounding box to evaluate.</param>
     /// <returns>Type of the containment</returns>
-    public static Containment FrustumContainsBox(GorgonBoundingFrustum frustum, in GorgonBoundingBox box)
+    public static Containment FrustumContainsBox(GorgonBoundingFrustum frustum, ref readonly GorgonBoundingBox box)
     {
         Containment result = Containment.Contains;
 
@@ -1535,7 +1535,7 @@ public static class GorgonIntersections
     /// <param name="frustum">The frustum to evaluate.</param>
     /// <param name="sphere">The sphere to evaluate.</param>
     /// <returns>Type of the containment</returns>
-    public static Containment FrustumContainsSphere(GorgonBoundingFrustum frustum, in GorgonBoundingSphere sphere)
+    public static Containment FrustumContainsSphere(GorgonBoundingFrustum frustum, ref readonly GorgonBoundingSphere sphere)
     {
         PlaneIntersection result = PlaneIntersection.Front;
 
@@ -1563,7 +1563,7 @@ public static class GorgonIntersections
     /// <param name="plane">The plane.</param>
     /// <returns><b>true</b> if the frustum and plane intersect, <b>false</b> if not.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool FrustumIntersectsPlane(GorgonBoundingFrustum frustum, in Plane plane)
+    public static bool FrustumIntersectsPlane(GorgonBoundingFrustum frustum, ref readonly Plane plane)
     {
         FrustumIntersectsPlane(frustum, in plane, out PlaneIntersection result);
         return result == PlaneIntersection.Intersecting;
@@ -1575,7 +1575,7 @@ public static class GorgonIntersections
     /// <param name="frustum">The frustum to evaluate.</param>
     /// <param name="box">The bounding box to evaluate.</param>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool FrustumIntersectsBox(GorgonBoundingFrustum frustum, in GorgonBoundingBox box) => FrustumContainsBox(frustum, in box) != Containment.Disjoint;
+    public static bool FrustumIntersectsBox(GorgonBoundingFrustum frustum, ref readonly GorgonBoundingBox box) => FrustumContainsBox(frustum, in box) != Containment.Disjoint;
 
     /// <summary>
     /// Checks whether the current BoundingFrustum intersects the specified Plane.
@@ -1584,7 +1584,7 @@ public static class GorgonIntersections
     /// <param name="plane">The plane.</param>
     /// <param name="result">Plane intersection type.</param>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static void FrustumIntersectsPlane(GorgonBoundingFrustum frustum, in Plane plane, out PlaneIntersection result)
+    public static void FrustumIntersectsPlane(GorgonBoundingFrustum frustum, ref readonly Plane plane, out PlaneIntersection result)
     {
         result = PlaneIntersectsPoint(in plane, in frustum.Corners[0]);
 
@@ -1606,7 +1606,7 @@ public static class GorgonIntersections
     /// <param name="inDistance">The distance at which the ray enters the frustum if there is an intersection and the ray starts outside the frustum.</param>
     /// <param name="outDistance">The distance at which the ray exits the frustum if there is an intersection.</param>
     /// <returns><c>true</c> if the current BoundingFrustum intersects the specified Ray.</returns>
-    public static bool FrustumIntersectsRay(GorgonBoundingFrustum frustum, in GorgonRay ray, out float? inDistance, out float? outDistance)
+    public static bool FrustumIntersectsRay(GorgonBoundingFrustum frustum, ref readonly GorgonRay ray, out float? inDistance, out float? outDistance)
     {
         if (FrustumContainsPoint(frustum, in ray.Position) != Containment.Disjoint)
         {

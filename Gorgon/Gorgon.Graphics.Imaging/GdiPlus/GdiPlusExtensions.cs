@@ -357,7 +357,7 @@ public static class GdiPlusExtensions
                     continue;
                 }
 
-                ImageUtilities.SwizzleScanline(in src, buffer.PitchInformation.RowPitch, in dest, destData.Stride, buffer.Format, ImageBitFlags.None);
+                ImageUtilities.SwizzleScanline(src, buffer.PitchInformation.RowPitch, dest, destData.Stride, buffer.Format, ImageBitFlags.None);
             }
         }
         finally
@@ -472,7 +472,7 @@ public static class GdiPlusExtensions
                     continue;
                 }
 
-                ImageUtilities.SwizzleScanline(in srcPtr, buffer.PitchInformation.RowPitch, in destPtr, srcData.Stride, buffer.Format, ImageBitFlags.None);
+                ImageUtilities.SwizzleScanline(srcPtr, buffer.PitchInformation.RowPitch, destPtr, srcData.Stride, buffer.Format, ImageBitFlags.None);
             }
         }
         finally

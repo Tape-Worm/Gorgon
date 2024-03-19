@@ -47,7 +47,7 @@ internal struct DeviceKey
     /// <param name="left">Left instance to compare.</param>
     /// <param name="right">Right instance to compare.</param>
     /// <returns>true if equal, false if not.</returns>
-    public static bool Equals(ref DeviceKey left, ref DeviceKey right) => left.DeviceType == right.DeviceType && left.DeviceHandle == right.DeviceHandle;
+    public static bool Equals(DeviceKey left, DeviceKey right) => left.DeviceType == right.DeviceType && left.DeviceHandle == right.DeviceHandle;
 
     /// <summary>
     /// Indicates whether this instance and a specified object are equal.
@@ -74,5 +74,5 @@ internal struct DeviceKey
     /// true if the current object is equal to the <paramref name="other"/> parameter; otherwise, false.
     /// </returns>
     /// <param name="other">An object to compare with this object.</param>
-    public bool Equals(DeviceKey other) => Equals(ref this, ref other);
+    public readonly bool Equals(DeviceKey other) => Equals(this, other);
 }

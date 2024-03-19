@@ -90,7 +90,7 @@ namespace Gorgon.Renderers.Data;
 /// <param name="center">The center of the sphere in three dimensional space.</param>
 /// <param name="radius">The radius of the sphere.</param>
 [StructLayout(LayoutKind.Sequential, Pack = 4)]
-public readonly struct GorgonBoundingSphere(in Vector3 center, float radius)
+public readonly struct GorgonBoundingSphere(Vector3 center, float radius)
         : IGorgonEquatableByRef<GorgonBoundingSphere>
 {
 
@@ -164,7 +164,7 @@ public readonly struct GorgonBoundingSphere(in Vector3 center, float radius)
     /// </summary>
     /// <param name="box">The box that will designate the extents of the sphere.</param>
     /// <param name="result">When the method completes, the newly constructed bounding sphere.</param>
-    public static void FromBox(in GorgonBoundingBox box, out GorgonBoundingSphere result)
+    public static void FromBox(ref readonly GorgonBoundingBox box, out GorgonBoundingSphere result)
     {
         Vector3 center = Vector3.Lerp(box.Minimum, box.Maximum, 0.5f);
 
@@ -181,7 +181,7 @@ public readonly struct GorgonBoundingSphere(in Vector3 center, float radius)
     /// <param name="value1">The first sphere to merge.</param>
     /// <param name="value2">The second sphere to merge.</param>
     /// <param name="result">When the method completes, contains the newly constructed bounding sphere.</param>
-    public static void Merge(in GorgonBoundingSphere value1, in GorgonBoundingSphere value2, out GorgonBoundingSphere result)
+    public static void Merge(ref readonly GorgonBoundingSphere value1, ref readonly GorgonBoundingSphere value2, out GorgonBoundingSphere result)
     {
         Vector3 difference = value2.Center - value1.Center;
 
@@ -218,7 +218,7 @@ public readonly struct GorgonBoundingSphere(in Vector3 center, float radius)
     /// <param name="right">The second value to compare.</param>
     /// <returns><c>true</c> if <paramref name="left"/> has the same value as <paramref name="right"/>; otherwise, <c>false</c>.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool operator ==(in GorgonBoundingSphere left, in GorgonBoundingSphere right) => left.Equals(in right);
+    public static bool operator ==(GorgonBoundingSphere left, GorgonBoundingSphere right) => left.Equals(in right);
 
     /// <summary>
     /// Tests for inequality between two objects.
@@ -227,7 +227,7 @@ public readonly struct GorgonBoundingSphere(in Vector3 center, float radius)
     /// <param name="right">The second value to compare.</param>
     /// <returns><c>true</c> if <paramref name="left"/> has a different value than <paramref name="right"/>; otherwise, <c>false</c>.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool operator !=(in GorgonBoundingSphere left, in GorgonBoundingSphere right) => !left.Equals(in right);
+    public static bool operator !=(GorgonBoundingSphere left, GorgonBoundingSphere right) => !left.Equals(in right);
 
     /// <summary>
     /// Returns a <see cref="string"/> that represents this instance.

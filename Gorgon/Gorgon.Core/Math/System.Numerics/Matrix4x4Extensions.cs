@@ -42,7 +42,7 @@ public static class Matrix4x4Extensions
     /// </summary>
     /// <param name="matrix">The matrix to read.</param>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static Vector3 GetUpVector(this in Matrix4x4 matrix) => new(matrix.M21, matrix.M22, matrix.M23);
+    public static Vector3 GetUpVector(this ref readonly Matrix4x4 matrix) => new(matrix.M21, matrix.M22, matrix.M23);
 
     /// <summary>
     /// Function to set the up <see cref="Vector3"/> of the matrix; that is M21, M22, and M23.
@@ -62,7 +62,7 @@ public static class Matrix4x4Extensions
     /// </summary>
     /// <param name="matrix">The matrix to read.</param>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static Vector3 GetRightVector(this in Matrix4x4 matrix) => new(matrix.M11, matrix.M12, matrix.M13);
+    public static Vector3 GetRightVector(this ref readonly Matrix4x4 matrix) => new(matrix.M11, matrix.M12, matrix.M13);
 
     /// <summary>
     /// Function to set the right <see cref="Vector3"/> of the matrix; that is M11, M12, and M13.
@@ -82,7 +82,7 @@ public static class Matrix4x4Extensions
     /// </summary>
     /// <param name="matrix">The matrix to read.</param>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static Vector3 GetForwardVector(this in Matrix4x4 matrix) => new(-matrix.M31, -matrix.M32, -matrix.M33);
+    public static Vector3 GetForwardVector(this ref readonly Matrix4x4 matrix) => new(-matrix.M31, -matrix.M32, -matrix.M33);
 
     /// <summary>
     /// Function to set the forward <see cref="Vector3"/> of the matrix; that is -M31, -M32, and -M33.
@@ -114,7 +114,7 @@ public static class Matrix4x4Extensions
     /// </summary>
     /// <param name="matrix">The matrix to read.</param>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static Vector3 GetTranslation(this in Matrix4x4 matrix) => new(matrix.M41, matrix.M42, matrix.M43);
+    public static Vector3 GetTranslation(this ref readonly Matrix4x4 matrix) => new(matrix.M41, matrix.M42, matrix.M43);
 
     /// <summary>
     /// Function to set the scale vector on the matrix.
@@ -134,7 +134,7 @@ public static class Matrix4x4Extensions
     /// </summary>
     /// <param name="matrix">The matrix to read.</param>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static Vector3 GetScale(this in Matrix4x4 matrix) => new(matrix.M41, matrix.M42, matrix.M43);
+    public static Vector3 GetScale(this ref readonly Matrix4x4 matrix) => new(matrix.M41, matrix.M42, matrix.M43);
 
     /// <summary>
     /// Function to retrieve a row for the matrix as a 4D vector.
@@ -143,7 +143,7 @@ public static class Matrix4x4Extensions
     /// <param name="rowIndex">The index of the row to retrieve (0 - 3).</param>
     /// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="rowIndex"/> is less than 0, or greater than 3.</exception>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static Vector4 GetRow(this in Matrix4x4 matrix, int rowIndex) => rowIndex switch
+    public static Vector4 GetRow(this ref readonly Matrix4x4 matrix, int rowIndex) => rowIndex switch
     {
         0 => new Vector4(matrix.M11, matrix.M12, matrix.M13, matrix.M14),
         1 => new Vector4(matrix.M21, matrix.M22, matrix.M23, matrix.M24),
@@ -200,7 +200,7 @@ public static class Matrix4x4Extensions
     /// <param name="columnIndex">The index of the column to retrieve (0 - 3).</param>
     /// <exception cref="ArgumentOutOfRangeException">Thcolumnn when the <paramref name="columnIndex"/> is less than 0, or greater than 3.</exception>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static Vector4 GetColumn(this in Matrix4x4 matrix, int columnIndex) => columnIndex switch
+    public static Vector4 GetColumn(this ref readonly Matrix4x4 matrix, int columnIndex) => columnIndex switch
     {
         0 => new Vector4(matrix.M11, matrix.M21, matrix.M31, matrix.M41),
         1 => new Vector4(matrix.M12, matrix.M22, matrix.M32, matrix.M42),
@@ -256,7 +256,7 @@ public static class Matrix4x4Extensions
     /// <param name="matrix">The matrix to evaluate.</param>
     /// <param name="absMatrix">The matrix with absolute values.</param>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static void Abs(this in Matrix4x4 matrix, out Matrix4x4 absMatrix)
+    public static void Abs(this ref readonly Matrix4x4 matrix, out Matrix4x4 absMatrix)
     {
         absMatrix = default;
         absMatrix.M11 = matrix.M11.Abs();

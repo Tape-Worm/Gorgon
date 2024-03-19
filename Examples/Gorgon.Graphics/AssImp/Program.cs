@@ -132,7 +132,7 @@ internal static class Program
     /// model and project them into 2D space on your render target.
     /// </para>
     /// </remarks>
-    private static void UpdateWVP(in Matrix4x4 world)
+    private static void UpdateWVP(ref readonly Matrix4x4 world)
     {
         // Build our world/view/projection matrix to send to
         // the shader.

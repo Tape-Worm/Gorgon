@@ -113,7 +113,7 @@ public struct GorgonRay(Vector3 position, Vector3 direction)
     /// <param name="viewport">The viewport to use.</param>
     /// <param name="worldViewProjection">The world, view, projection matrix.</param>
     /// <returns>Resulting <see cref="GorgonRay"/>.</returns>
-    public static GorgonRay GetPickRay(int x, int y, in DX.ViewportF viewport, in Matrix4x4 worldViewProjection)
+    public static GorgonRay GetPickRay(int x, int y, ref readonly DX.ViewportF viewport, ref readonly Matrix4x4 worldViewProjection)
     {
         Vector3 nearPoint = new(x, y, 0);
         Vector3 farPoint = new(x, y, 1);
@@ -133,7 +133,7 @@ public struct GorgonRay(Vector3 position, Vector3 direction)
     /// <param name="right">The second value to compare.</param>
     /// <returns><c>true</c> if <paramref name="left"/> has the same value as <paramref name="right"/>; otherwise, <c>false</c>.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool operator ==(in GorgonRay left, in GorgonRay right) => left.Equals(in right);
+    public static bool operator ==(GorgonRay left, GorgonRay right) => left.Equals(in right);
 
     /// <summary>
     /// Tests for inequality between two objects.
@@ -142,7 +142,7 @@ public struct GorgonRay(Vector3 position, Vector3 direction)
     /// <param name="right">The second value to compare.</param>
     /// <returns><c>true</c> if <paramref name="left"/> has a different value than <paramref name="right"/>; otherwise, <c>false</c>.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool operator !=(in GorgonRay left, in GorgonRay right) => !left.Equals(in right);
+    public static bool operator !=(GorgonRay left, GorgonRay right) => !left.Equals(in right);
 
     /// <summary>
     /// Returns a <see cref="string"/> that represents this instance.

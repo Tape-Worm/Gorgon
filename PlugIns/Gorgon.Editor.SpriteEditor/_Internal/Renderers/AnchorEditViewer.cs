@@ -174,8 +174,8 @@ internal class AnchorEditViewer(Gorgon2D renderer, GorgonSwapChain swapChain, IS
 
         Vector3 spriteTopLeft = new(SpriteRegion.TopLeft.X, SpriteRegion.TopLeft.Y, 0);
         Vector3 spriteBottomRight = new(SpriteRegion.BottomRight.X, SpriteRegion.BottomRight.Y, 0);
-        Camera.Unproject(in spriteTopLeft, out Vector3 transformedTopLeft);
-        Camera.Unproject(in spriteBottomRight, out Vector3 transformedBottomRight);
+        Camera.Unproject(spriteTopLeft, out Vector3 transformedTopLeft);
+        Camera.Unproject(spriteBottomRight, out Vector3 transformedBottomRight);
 
         DX.RectangleF bounds = new()
         {

@@ -163,7 +163,7 @@ public class GorgonGlyphColors
     /// </summary>
     /// <param name="color">The color to assign.</param>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void SetAll(in GorgonColor color)
+    public void SetAll(GorgonColor color)
     {
         if ((GorgonColor.Equals(in _renderable.LowerLeftColor, in color))
             && (GorgonColor.Equals(in _renderable.LowerRightColor, in color))

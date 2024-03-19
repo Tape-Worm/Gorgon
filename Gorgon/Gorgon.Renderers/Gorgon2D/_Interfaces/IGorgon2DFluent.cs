@@ -352,9 +352,9 @@ public interface IGorgon2DDrawingFluent
     /// <param name="textureSampler">[Optional] The texture sampler to apply to the texture.</param>
     /// <param name="depth">[Optional] The depth value for the rectangle.</param>
     /// <returns>The fluent interface for drawing.</returns>
-    IGorgon2DDrawingFluent DrawTriangle(in GorgonTriangleVertex point1,
-                                        in GorgonTriangleVertex point2,
-                                        in GorgonTriangleVertex point3,
+    IGorgon2DDrawingFluent DrawTriangle(ref readonly GorgonTriangleVertex point1,
+                                        ref readonly GorgonTriangleVertex point2,
+                                        ref readonly GorgonTriangleVertex point3,
                                         GorgonTexture2DView texture = null,
                                         DX.RectangleF? textureRegion = null,
                                         int textureArrayIndex = 0,

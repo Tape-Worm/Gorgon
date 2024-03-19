@@ -407,9 +407,9 @@ public sealed class GorgonSwapChain
     /// Property to return whether the swap chain is in windowed mode or not.
     /// </summary>
     /// <remarks>
-    /// To enter or exit full screen mode on a swap chain, call the <see cref="EnterFullScreen(in GorgonVideoMode, IGorgonVideoOutputInfo)"/> or <see cref="ExitFullScreen"/> methods.
+    /// To enter or exit full screen mode on a swap chain, call the <see cref="EnterFullScreen(ref readonly GorgonVideoMode, IGorgonVideoOutputInfo)"/> or <see cref="ExitFullScreen"/> methods.
     /// </remarks>
-    /// <seealso cref="EnterFullScreen(in GorgonVideoMode, IGorgonVideoOutputInfo)"/>
+    /// <seealso cref="EnterFullScreen(ref readonly GorgonVideoMode, IGorgonVideoOutputInfo)"/>
     /// <seealso cref="EnterFullScreen(BufferFormat)"/>
     /// <seealso cref="ExitFullScreen"/>
     public bool IsWindowed => FullscreenOutput is null || _fullScreenVideoMode is null;
@@ -793,10 +793,10 @@ public sealed class GorgonSwapChain
     /// decoration on the form is also removed.
     /// </para>
     /// <para>
-    /// If full screen exclusive mode is required, users can call the <see cref="EnterFullScreen(in GorgonVideoMode, IGorgonVideoOutputInfo)"/> overload instead.
+    /// If full screen exclusive mode is required, users can call the <see cref="EnterFullScreen(ref readonly GorgonVideoMode, IGorgonVideoOutputInfo)"/> overload instead.
     /// </para>
     /// </remarks>
-    /// <seealso cref="EnterFullScreen(in GorgonVideoMode, IGorgonVideoOutputInfo)"/>
+    /// <seealso cref="EnterFullScreen(ref readonly GorgonVideoMode, IGorgonVideoOutputInfo)"/>
     public void EnterFullScreen(BufferFormat backbufferFormat = BufferFormat.R8G8B8A8_UNorm)
     {
         if (ParentForm != Window)
@@ -926,7 +926,7 @@ public sealed class GorgonSwapChain
     /// </remarks>
     /// <seealso cref="EnterFullScreen(BufferFormat)"/>
     /// <seealso cref="ExitFullScreen"/>
-    public void EnterFullScreen(in GorgonVideoMode desiredMode, IGorgonVideoOutputInfo output)
+    public void EnterFullScreen(ref readonly GorgonVideoMode desiredMode, IGorgonVideoOutputInfo output)
     {
         if (output is null)
         {
@@ -1047,7 +1047,7 @@ public sealed class GorgonSwapChain
     /// When the swap chain is already in windowed mode, then this method will do nothing.
     /// </para>
     /// </remarks>
-    /// <seealso cref="EnterFullScreen(in GorgonVideoMode, IGorgonVideoOutputInfo)"/>
+    /// <seealso cref="EnterFullScreen(ref readonly GorgonVideoMode, IGorgonVideoOutputInfo)"/>
     public void ExitFullScreen()
     {
         if ((IsWindowed)

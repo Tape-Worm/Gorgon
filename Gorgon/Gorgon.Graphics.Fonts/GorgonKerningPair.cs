@@ -59,7 +59,7 @@ public readonly struct GorgonKerningPair(char leftChar, char rightChar)
     /// <param name="left">Left kerning pair to compare.</param>
     /// <param name="right">Right kerning pair to compare.</param>
     /// <returns><b>true</b> if the same, <b>false</b> if not.</returns>
-    public static bool Equals(ref readonly GorgonKerningPair left, in GorgonKerningPair right) => ((left.LeftCharacter == right.LeftCharacter) && (left.RightCharacter == right.RightCharacter));
+    public static bool Equals(ref readonly GorgonKerningPair left, ref readonly GorgonKerningPair right) => ((left.LeftCharacter == right.LeftCharacter) && (left.RightCharacter == right.RightCharacter));
 
     /// <summary>
     /// Determines whether the specified <see cref="object"/> is equal to this instance.
@@ -94,7 +94,7 @@ public readonly struct GorgonKerningPair(char leftChar, char rightChar)
     /// <returns>
     /// The result of the operator.
     /// </returns>
-    public static bool operator ==(in GorgonKerningPair left, in GorgonKerningPair right) => Equals(in left, in right);
+    public static bool operator ==(GorgonKerningPair left, GorgonKerningPair right) => Equals(in left, in right);
 
     /// <summary>
     /// Implements the operator !=.
@@ -104,7 +104,7 @@ public readonly struct GorgonKerningPair(char leftChar, char rightChar)
     /// <returns>
     /// The result of the operator.
     /// </returns>
-    public static bool operator !=(in GorgonKerningPair left, in GorgonKerningPair right) => !Equals(in left, in right);
+    public static bool operator !=(GorgonKerningPair left, GorgonKerningPair right) => !Equals(in left, in right);
 
     /// <summary>
     /// Indicates whether the current object is equal to another object of the same type.

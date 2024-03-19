@@ -167,7 +167,7 @@ public class GorgonDispatchCallBuilder
     /// <param name="slot">[Optional] The slot used to asign the view.</param>
     /// <returns>The fluent builder interface.</returns>
     /// <exception cref="ArgumentNullException">Thrown when the <paramref name="slot"/> is less than 0, or greater than/equal to <see cref="GorgonShaderResourceViews.MaximumShaderResourceViewCount"/>.</exception>
-    public GorgonDispatchCallBuilder ReadWriteView(in GorgonReadWriteViewBinding resourceView, int slot = 0)
+    public GorgonDispatchCallBuilder ReadWriteView(ref readonly GorgonReadWriteViewBinding resourceView, int slot = 0)
     {
         if (slot is < 0 or >= GorgonShaderResourceViews.MaximumShaderResourceViewCount)
         {

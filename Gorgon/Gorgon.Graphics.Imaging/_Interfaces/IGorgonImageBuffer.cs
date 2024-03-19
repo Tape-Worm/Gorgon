@@ -166,7 +166,7 @@ public interface IGorgonImageBuffer
     /// The destination buffer must be the same format as the source buffer.  If it is not, then an exception will be thrown.
     /// </para>
     /// </remarks>
-    void CopyTo(IGorgonImageBuffer buffer, in DX.Rectangle? sourceRegion = null, int destX = 0, int destY = 0);
+    void CopyTo(IGorgonImageBuffer buffer, DX.Rectangle? sourceRegion = null, int destX = 0, int destY = 0);
 
     /// <summary>
     /// Function to create a sub region from the current image data contained within this buffer.
@@ -196,7 +196,7 @@ public interface IGorgonImageBuffer
     /// </para> 
     /// </remarks>
     /// <seealso cref="IGorgonImage"/>
-    IGorgonImageBuffer GetRegion(in DX.Rectangle clipRegion);
+    IGorgonImageBuffer GetRegion(DX.Rectangle clipRegion);
 
     /// <summary>
     /// Function to fill the entire buffer with the specified byte value.

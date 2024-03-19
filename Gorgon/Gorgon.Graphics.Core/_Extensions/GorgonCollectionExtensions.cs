@@ -75,7 +75,7 @@ public static class GorgonCollectionExtensions
     /// </note>
     /// </para>
     /// </remarks>
-    public static void FindNearestVideoMode(this IReadOnlyList<GorgonVideoMode> videoModes, IGorgonVideoOutputInfo output, in GorgonVideoMode videoMode, out GorgonVideoMode suggestedMode)
+    public static void FindNearestVideoMode(this IReadOnlyList<GorgonVideoMode> videoModes, IGorgonVideoOutputInfo output, ref readonly GorgonVideoMode videoMode, out GorgonVideoMode suggestedMode)
     {
         ref readonly GorgonVideoMode result = ref _invalidMode;
 

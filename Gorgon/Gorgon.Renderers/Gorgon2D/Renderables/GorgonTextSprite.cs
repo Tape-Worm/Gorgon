@@ -331,7 +331,7 @@ public class GorgonTextSprite
     public GorgonColor Color
     {
         get => GlyphCornerColors.UpperLeft;
-        set => GlyphCornerColors.SetAll(in value);
+        set => GlyphCornerColors.SetAll(value);
     }
 
     /// <summary>

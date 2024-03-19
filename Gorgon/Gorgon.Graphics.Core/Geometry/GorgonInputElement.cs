@@ -159,7 +159,7 @@ public readonly struct GorgonInputElement
     /// <param name="left">The first instance to compare.</param>
     /// <param name="right">The second instance to compare.</param>
     /// <returns><b>true</b> if equal, <b>false</b> if not.</returns>
-    public static bool Equals(ref readonly GorgonInputElement left, in GorgonInputElement right) => (string.Equals(left.Context, right.Context, StringComparison.OrdinalIgnoreCase)) && (left.Format == right.Format) && (left.Index == right.Index) &&
+    public static bool Equals(ref readonly GorgonInputElement left, ref readonly GorgonInputElement right) => (string.Equals(left.Context, right.Context, StringComparison.OrdinalIgnoreCase)) && (left.Format == right.Format) && (left.Index == right.Index) &&
                (left.InstanceCount == right.InstanceCount) && (left.Instanced == right.Instanced) && (left.Offset == right.Offset) &&
                (left.SizeInBytes == right.SizeInBytes) && (left.Slot == right.Slot);
 
@@ -171,7 +171,7 @@ public readonly struct GorgonInputElement
     /// <returns>
     /// The result of the operator.
     /// </returns>
-    public static bool operator ==(in GorgonInputElement left, in GorgonInputElement right) => Equals(in left, in right);
+    public static bool operator ==(GorgonInputElement left, GorgonInputElement right) => Equals(in left, in right);
 
     /// <summary>
     /// Implements the operator !=.
@@ -181,7 +181,7 @@ public readonly struct GorgonInputElement
     /// <returns>
     /// The result of the operator.
     /// </returns>
-    public static bool operator !=(in GorgonInputElement left, in GorgonInputElement right) => !Equals(in left, in right);
+    public static bool operator !=(GorgonInputElement left, GorgonInputElement right) => !Equals(in left, in right);
 
     /// <summary>
     /// Returns a hash code for this instance.

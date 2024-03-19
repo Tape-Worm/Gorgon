@@ -165,7 +165,7 @@ public readonly struct GorgonVertexBufferBinding(GorgonVertexBuffer buffer, int 
     /// <param name="left">The left instance to compare.</param>
     /// <param name="right">The right instance to compare.</param>
     /// <returns><b>true</b> if equal, <b>false</b> if not.</returns>
-    public static bool Equals(ref readonly GorgonVertexBufferBinding left, in GorgonVertexBufferBinding right) => ((left.VertexBuffer == right.VertexBuffer) && (left.Offset == right.Offset) &&
+    public static bool Equals(ref readonly GorgonVertexBufferBinding left, ref readonly GorgonVertexBufferBinding right) => ((left.VertexBuffer == right.VertexBuffer) && (left.Offset == right.Offset) &&
                 (left.Stride == right.Stride));
 
     /// <summary>
@@ -181,7 +181,7 @@ public readonly struct GorgonVertexBufferBinding(GorgonVertexBuffer buffer, int 
     /// <param name="left">The left.</param>
     /// <param name="right">The right.</param>
     /// <returns>The result of the operator.</returns>
-    public static bool operator ==(in GorgonVertexBufferBinding left, in GorgonVertexBufferBinding right) => Equals(in left, in right);
+    public static bool operator ==(GorgonVertexBufferBinding left, GorgonVertexBufferBinding right) => Equals(in left, in right);
 
     /// <summary>
     /// Implements the operator ==.
@@ -189,7 +189,7 @@ public readonly struct GorgonVertexBufferBinding(GorgonVertexBuffer buffer, int 
     /// <param name="left">The left.</param>
     /// <param name="right">The right.</param>
     /// <returns>The result of the operator.</returns>
-    public static bool operator !=(in GorgonVertexBufferBinding left, in GorgonVertexBufferBinding right) => !Equals(in left, in right);
+    public static bool operator !=(GorgonVertexBufferBinding left, GorgonVertexBufferBinding right) => !Equals(in left, in right);
 
 
 

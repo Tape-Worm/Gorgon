@@ -362,7 +362,7 @@ public sealed class GorgonTexture1DReadWriteView
     /// If this method is called with a 3D texture bound to the view, and with regions specified, then the regions are ignored.
     /// </para>
     /// </remarks>
-    public void Clear(in GorgonColor color, ReadOnlySpan<DX.Rectangle> rectangles)
+    public void Clear(GorgonColor color, ReadOnlySpan<DX.Rectangle> rectangles)
     {
         if (rectangles.IsEmpty)
         {

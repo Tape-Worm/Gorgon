@@ -570,7 +570,7 @@ public sealed class GorgonGraphics
     /// <param name="blendSampleMask">The blend sample mask.</param>
     /// <param name="stencilReference">The stencil reference.</param>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private void SetDrawStates(D3DState state, in GorgonColor factor, int blendSampleMask, int stencilReference)
+    private void SetDrawStates(D3DState state, GorgonColor factor, int blendSampleMask, int stencilReference)
     {
         // Before we draw, flush any expired render targets that are cached in the system.
         if ((_rtExpireTimer.Seconds > 30) && (_rtvFactory.AvailableCount > 0))
@@ -579,8 +579,8 @@ public sealed class GorgonGraphics
             _rtExpireTimer.Reset();
         }
 
-        PipelineStateChanges stateChanges = _stateEvaluator.GetPipelineStateChanges(state.PipelineState, in factor, blendSampleMask, stencilReference);
-        _stateApplicator.ApplyPipelineState(state.PipelineState, stateChanges, in factor, blendSampleMask, stencilReference);
+        PipelineStateChanges stateChanges = _stateEvaluator.GetPipelineStateChanges(state.PipelineState, factor, blendSampleMask, stencilReference);
+        _stateApplicator.ApplyPipelineState(state.PipelineState, stateChanges, factor, blendSampleMask, stencilReference);
 
         ResourceRanges resourceChanges = _stateEvaluator.GetResourceStateChanges(state, stateChanges);
         _stateApplicator.BindResourceState(resourceChanges, state);
@@ -1007,7 +1007,7 @@ public sealed class GorgonGraphics
     /// <param name="blendSampleMask">[Optional] The mask used to define which samples get updated in the active render targets.</param>
     /// <param name="stencilReference">[Optional] The stencil reference value used when performing a stencil test.</param>
     /// <exception cref="ArgumentNullException">Thrown when the <paramref name="drawCall"/> parameter is <b>null</b>.</exception>
-    public void Submit(GorgonDrawCall drawCall, in GorgonColor? blendFactor = null, int blendSampleMask = int.MinValue, int stencilReference = 0)
+    public void Submit(GorgonDrawCall drawCall, GorgonColor? blendFactor = null, int blendSampleMask = int.MinValue, int stencilReference = 0)
     {
         drawCall.ValidateObject(nameof(drawCall));
         SetDrawStates(drawCall.D3DState, blendFactor ?? GorgonColor.White, blendSampleMask, stencilReference);
@@ -1029,7 +1029,7 @@ public sealed class GorgonGraphics
     /// <param name="blendSampleMask">[Optional] The mask used to define which samples get updated in the active render targets.</param>
     /// <param name="stencilReference">[Optional] The stencil reference value used when performing a stencil test.</param>
     /// <exception cref="ArgumentNullException">Thrown when the <paramref name="drawCall"/> parameter is <b>null</b>.</exception>
-    public void SubmitInstance(GorgonDrawCall drawCall, int instanceCount, int startInstanceIndex = 0, in GorgonColor? blendFactor = null, int blendSampleMask = int.MinValue, int stencilReference = 0)
+    public void SubmitInstance(GorgonDrawCall drawCall, int instanceCount, int startInstanceIndex = 0, GorgonColor? blendFactor = null, int blendSampleMask = int.MinValue, int stencilReference = 0)
     {
         drawCall.ValidateObject(nameof(drawCall));
         SetDrawStates(drawCall.D3DState, blendFactor ?? GorgonColor.White, blendSampleMask, stencilReference);
@@ -1050,7 +1050,7 @@ public sealed class GorgonGraphics
     /// <param name="stencilReference">[Optional] The stencil reference value used when performing a stencil test.</param>
     /// <exception cref="ArgumentNullException">Thrown when the <paramref name="drawIndexCall"/> parameter is <b>null</b>.</exception>
     public void Submit(GorgonDrawIndexCall drawIndexCall,
-                       in GorgonColor? blendFactor = null,
+                       GorgonColor? blendFactor = null,
                        int blendSampleMask = int.MinValue,
                        int stencilReference = 0)
     {
@@ -1074,7 +1074,7 @@ public sealed class GorgonGraphics
     /// <param name="blendSampleMask">[Optional] The mask used to define which samples get updated in the active render targets.</param>
     /// <param name="stencilReference">[Optional] The stencil reference value used when performing a stencil test.</param>
     /// <exception cref="ArgumentNullException">Thrown when the <paramref name="drawIndexCall"/> parameter is <b>null</b>.</exception>
-    public void SubmitInstance(GorgonDrawIndexCall drawIndexCall, int instanceCount, int startInstanceLocation = 0, in GorgonColor? blendFactor = null, int blendSampleMask = int.MinValue, int stencilReference = 0)
+    public void SubmitInstance(GorgonDrawIndexCall drawIndexCall, int instanceCount, int startInstanceLocation = 0, GorgonColor? blendFactor = null, int blendSampleMask = int.MinValue, int stencilReference = 0)
     {
         drawIndexCall.ValidateObject(nameof(drawIndexCall));
         SetDrawStates(drawIndexCall.D3DState, blendFactor ?? GorgonColor.White, blendSampleMask, stencilReference);
@@ -1152,7 +1152,7 @@ public sealed class GorgonGraphics
     /// <exception cref="ArgumentNullException">Thrown when the <paramref name="drawCall"/> parameter is <b>null</b>.</exception>
     /// <remarks>
     /// <para>
-    /// This method sends a series of state changes and resource bindings to the GPU. However, unlike the <see cref="Submit(GorgonDrawIndexCall, in GorgonColor?, int, int)"/> command, this command uses 
+    /// This method sends a series of state changes and resource bindings to the GPU. However, unlike the <see cref="Submit(GorgonDrawIndexCall, GorgonColor?, int, int)"/> command, this command uses 
     /// pre-processed data from the vertex and stream out stages. This means that the <see cref="GorgonVertexBuffer"/> attached to the draw call must have been assigned to the  previous
     /// <see cref="GorgonDrawCallCommon.StreamOutBufferBindings"/> and had data deposited into it from the stream out stage. After that, it should be be assigned to a <see cref="GorgonStreamOutCall"/>
     /// passed to this method.
@@ -1169,7 +1169,7 @@ public sealed class GorgonGraphics
     /// </para>
     /// </remarks>
     public void SubmitStreamOut(GorgonStreamOutCall drawCall,
-                                in GorgonColor? blendFactor = null,
+                                GorgonColor? blendFactor = null,
                                 int blendSampleMask = int.MinValue,
                                 int stencilReference = 0)
     {

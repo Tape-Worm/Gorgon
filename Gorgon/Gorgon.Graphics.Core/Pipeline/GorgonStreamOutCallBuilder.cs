@@ -41,7 +41,7 @@ namespace Gorgon.Graphics.Core;
 /// </para>
 /// <para>
 /// A draw call is an immutable object that contains all of the state required to render mesh information. For each mesh an application needs to render, an single draw call should be issued via the
-/// <see cref="GorgonGraphics.SubmitStreamOut(GorgonStreamOutCall, in GorgonColor?, int, int)"/> method.  
+/// <see cref="GorgonGraphics.SubmitStreamOut(GorgonStreamOutCall, GorgonColor?, int, int)"/> method.  
 /// </para>
 /// <para>
 /// State management is handled internally by Gorgon so that duplicate states are not set and thus, performance is not impacted by redundant states
@@ -149,7 +149,7 @@ public sealed class GorgonStreamOutCallBuilder
     /// <param name="binding">The vertex buffer binding to set.</param>
     /// <returns>The fluent builder interface.</returns>
     /// <exception cref="ArgumentNullException">Thrown when the <paramref name="layout"/> parameter is <b>null</b>.</exception>
-    public GorgonStreamOutCallBuilder VertexBuffer(GorgonInputLayout layout, in GorgonVertexBufferBinding binding)
+    public GorgonStreamOutCallBuilder VertexBuffer(GorgonInputLayout layout, ref readonly GorgonVertexBufferBinding binding)
     {
         if (_workerCall.D3DState.VertexBuffers is null)
         {
@@ -241,7 +241,7 @@ public sealed class GorgonStreamOutCallBuilder
     /// <param name="slot">[Optional] The slot used to asign the view.</param>
     /// <returns>The fluent builder interface.</returns>
     /// <exception cref="ArgumentNullException">Thrown when the <paramref name="slot"/> is less than 0, or greater than/equal to <see cref="GorgonShaderResourceViews.MaximumShaderResourceViewCount"/>.</exception>
-    public GorgonStreamOutCallBuilder ReadWriteView(in GorgonReadWriteViewBinding resourceView, int slot = 0)
+    public GorgonStreamOutCallBuilder ReadWriteView(ref readonly GorgonReadWriteViewBinding resourceView, int slot = 0)
     {
         if (slot is < 0 or >= GorgonShaderResourceViews.MaximumShaderResourceViewCount)
         {
@@ -341,7 +341,8 @@ public sealed class GorgonStreamOutCallBuilder
             return Clear();
         }
 
-        VertexBuffer(drawCall.InputLayout, drawCall.VertexBufferBinding);
+        GorgonVertexBufferBinding vertexBufferBinding = drawCall.VertexBufferBinding;
+        VertexBuffer(drawCall.InputLayout, in vertexBufferBinding);
 
         // Copy over the available constants.
         ConstantBuffers(drawCall.D3DState.PsConstantBuffers);

@@ -118,7 +118,7 @@ public class GorgonAABBVisual
     /// Function to build the AABB visual.
     /// </summary>
     /// <param name="aabb">The axis aligned bounding box to visualize.</param>
-    private void BuildBox(in GorgonBoundingBox aabb)
+    private void BuildBox(ref readonly GorgonBoundingBox aabb)
     {
         // Left
         _lineVertices[0] = aabb.BottomLeftBack;
@@ -154,7 +154,7 @@ public class GorgonAABBVisual
     /// <param name="viewMatrix">The current view matrix.</param>
     /// <param name="projectionMatrix">The current projection matrix.</param>
     /// <param name="depthStencilState">[Optional] The depth/stencil state to apply when drawing.</param>
-    public void Draw(in GorgonBoundingBox aabb, in Matrix4x4 viewMatrix, in Matrix4x4 projectionMatrix, GorgonDepthStencilState depthStencilState = null)
+    public void Draw(ref readonly GorgonBoundingBox aabb, ref readonly Matrix4x4 viewMatrix, ref readonly Matrix4x4 projectionMatrix, GorgonDepthStencilState depthStencilState = null)
     {
         if ((_drawCall is not null) && (_drawCall.PipelineState.DepthStencilState != depthStencilState))
         {

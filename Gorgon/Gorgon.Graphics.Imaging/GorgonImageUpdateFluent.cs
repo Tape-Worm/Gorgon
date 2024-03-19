@@ -723,7 +723,7 @@ public partial class GorgonImage
 
                     for (int y = 0; y < buffer.Height; ++y)
                     {
-                        ImageUtilities.RemovePremultipliedScanline(in ptr, rowPitch, in ptr, rowPitch, buffer.Format);
+                        ImageUtilities.RemovePremultipliedScanline(ptr, rowPitch, ptr, rowPitch, buffer.Format);
                         ptr += rowPitch;
                     }
                 }
@@ -773,7 +773,7 @@ public partial class GorgonImage
 
                     for (int y = 0; y < buffer.Height; ++y)
                     {
-                        ImageUtilities.SetPremultipliedScanline(in ptr, rowPitch, in ptr, rowPitch, buffer.Format);
+                        ImageUtilities.SetPremultipliedScanline(ptr, rowPitch, ptr, rowPitch, buffer.Format);
                         ptr += rowPitch;
                     }
                 }

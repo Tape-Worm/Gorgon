@@ -254,7 +254,7 @@ public readonly struct GorgonBoundingBox
     /// </summary>
     /// <param name="sphere">The sphere that will designate the extents of the box.</param>
     /// <param name="result">When the method completes, contains the newly constructed bounding box.</param>
-    public static void FromSphere(in GorgonBoundingSphere sphere, out GorgonBoundingBox result)
+    public static void FromSphere(ref readonly GorgonBoundingSphere sphere, out GorgonBoundingBox result)
                            => result = new GorgonBoundingBox(new Vector3(sphere.Center.X - sphere.Radius, sphere.Center.Y - sphere.Radius, sphere.Center.Z - sphere.Radius),
                                        new Vector3(sphere.Center.X + sphere.Radius, sphere.Center.Y + sphere.Radius, sphere.Center.Z + sphere.Radius));
 
@@ -266,7 +266,7 @@ public readonly struct GorgonBoundingBox
     /// <param name="value2">The second box to merge.</param>
     /// <param name="result">When the method completes, contains the newly constructed bounding box.</param>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static void Merge(in GorgonBoundingBox value1, in GorgonBoundingBox value2, out GorgonBoundingBox result)
+    public static void Merge(ref readonly GorgonBoundingBox value1, ref readonly GorgonBoundingBox value2, out GorgonBoundingBox result)
         => result = new GorgonBoundingBox(value1.Minimum.Min(value2.Minimum), value1.Maximum.Max(value2.Maximum));
 
     /// <summary>
@@ -275,7 +275,7 @@ public readonly struct GorgonBoundingBox
     /// <param name="aabb1">The first axis aligned bounding box.</param>
     /// <param name="aabb2">The second axis aligned bounding box.</param>
     /// <param name="result">The intersection of both bounding boxes.</param>
-    public static void Intersect(in GorgonBoundingBox aabb1, in GorgonBoundingBox aabb2, out GorgonBoundingBox result)
+    public static void Intersect(ref readonly GorgonBoundingBox aabb1, ref readonly GorgonBoundingBox aabb2, out GorgonBoundingBox result)
     {
         float left = aabb2.Minimum.X.Max(aabb1.Minimum.X);
         float top = aabb2.Minimum.Y.Max(aabb1.Minimum.Y);
@@ -300,7 +300,7 @@ public readonly struct GorgonBoundingBox
     /// <param name="aabb">The axis aligned bounding box to transform.</param>
     /// <param name="worldMatrix">The world matrix to multiply by.</param>
     /// <param name="result">The new transformed axis aligned bounding box.</param>
-    public static void Transform(in GorgonBoundingBox aabb, in Matrix4x4 worldMatrix, out GorgonBoundingBox result)
+    public static void Transform(ref readonly GorgonBoundingBox aabb, ref readonly Matrix4x4 worldMatrix, out GorgonBoundingBox result)
     {
         Vector3 extent = Vector3.Subtract(aabb.Maximum, aabb.Center);
         worldMatrix.Abs(out Matrix4x4 absMatrix);
@@ -318,7 +318,7 @@ public readonly struct GorgonBoundingBox
     /// <param name="right">The second value to compare.</param>
     /// <returns><c>true</c> if <paramref name="left"/> has the same value as <paramref name="right"/>; otherwise, <c>false</c>.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool operator ==(in GorgonBoundingBox left, in GorgonBoundingBox right) => left.Equals(in right);
+    public static bool operator ==(GorgonBoundingBox left, GorgonBoundingBox right) => left.Equals(in right);
 
     /// <summary>
     /// Tests for inequality between two objects.
@@ -327,7 +327,7 @@ public readonly struct GorgonBoundingBox
     /// <param name="right">The second value to compare.</param>
     /// <returns><c>true</c> if <paramref name="left"/> has a different value than <paramref name="right"/>; otherwise, <c>false</c>.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool operator !=(in GorgonBoundingBox left, in GorgonBoundingBox right) => !left.Equals(in right);
+    public static bool operator !=(GorgonBoundingBox left, GorgonBoundingBox right) => !left.Equals(in right);
 
     /// <summary>
     /// Returns a <see cref="string"/> that represents this instance.

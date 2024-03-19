@@ -634,7 +634,7 @@ public sealed class GorgonCodecDds
     /// <param name="destFormat">The destination format.</param>
     /// <param name="bitFlags">Image bit conversion control flags.</param>
     /// <param name="palette">Palette to assigned to indexed images.</param>
-    private static void ExpandLegacyScanline(in GorgonPtr<byte> src, int srcPitch, DdsConversionFlags srcFormat, in GorgonPtr<byte> dest, int destPitch, BufferFormat destFormat, ImageBitFlags bitFlags, uint[] palette)
+    private static void ExpandLegacyScanline(GorgonPtr<byte> src, int srcPitch, DdsConversionFlags srcFormat, GorgonPtr<byte> dest, int destPitch, BufferFormat destFormat, ImageBitFlags bitFlags, uint[] palette)
     {
         if (((srcFormat == DdsConversionFlags.RGB332) && (destFormat != BufferFormat.B5G6R5_UNorm))
             || ((srcFormat != DdsConversionFlags.RGB332) && (destFormat != BufferFormat.R8G8B8A8_UNorm)))
@@ -1020,7 +1020,7 @@ public sealed class GorgonCodecDds
     /// <param name="flags">Conversion flags used to determine how to expand the scanline.</param>
     /// <param name="imageBitFlags">Bit depth conversion flags.</param>
     /// <param name="palette">A palette, used to expand indexed 8 bpp image data.</param>
-    private static void ExpandScanline(in GorgonPtr<byte> srcData, in GorgonPtr<byte> destData, int srcRowPitch, int destRowPitch, BufferFormat format, DdsConversionFlags flags, ImageBitFlags imageBitFlags, uint[] palette)
+    private static void ExpandScanline(GorgonPtr<byte> srcData, GorgonPtr<byte> destData, int srcRowPitch, int destRowPitch, BufferFormat format, DdsConversionFlags flags, ImageBitFlags imageBitFlags, uint[] palette)
     {
         // Perform expansion.
         if (((flags & DdsConversionFlags.RGB565) == DdsConversionFlags.RGB565)
@@ -1038,7 +1038,7 @@ public sealed class GorgonCodecDds
                 expandFormat = BufferFormat.B4G4R4A4_UNorm;
             }
 
-            ImageUtilities.Expand16BPPScanline(in srcData, srcRowPitch, expandFormat, in destData, destRowPitch, imageBitFlags);
+            ImageUtilities.Expand16BPPScanline(srcData, srcRowPitch, expandFormat, destData, destRowPitch, imageBitFlags);
 
             return;
         }
@@ -1051,7 +1051,7 @@ public sealed class GorgonCodecDds
             throw new IOException(string.Format(Resources.GORIMG_ERR_FORMAT_NOT_SUPPORTED, expandLegacyFormat));
         }
 
-        ExpandLegacyScanline(in srcData, srcRowPitch, expandLegacyFormat, in destData, destRowPitch, format, imageBitFlags, palette);
+        ExpandLegacyScanline(srcData, srcRowPitch, expandLegacyFormat, destData, destRowPitch, format, imageBitFlags, palette);
     }
 
     /// <summary>
@@ -1151,12 +1151,10 @@ public sealed class GorgonCodecDds
 
                             reader.ReadRange<byte>(lineBuffer, count: pitchInfo.RowPitch);
 
-                            ref readonly GorgonPtr<byte> srcPointer = ref lineBuffer.Pointer;
-
                             if ((conversionFlags & DdsConversionFlags.Expand) == DdsConversionFlags.Expand)
                             {
-                                ExpandScanline(in srcPointer,
-                                               in destPointer,
+                                ExpandScanline(lineBuffer.Pointer,
+                                               destPointer,
                                                pitchInfo.RowPitch,
                                                destBuffer.PitchInformation.RowPitch,
                                                image.Format,
@@ -1167,12 +1165,12 @@ public sealed class GorgonCodecDds
                             else if ((conversionFlags & DdsConversionFlags.Swizzle) == DdsConversionFlags.Swizzle)
                             {
                                 // Perform swizzle.
-                                ImageUtilities.SwizzleScanline(in srcPointer, pitchInfo.RowPitch, in destPointer, destBuffer.PitchInformation.RowPitch, image.Format, expFlags);
+                                ImageUtilities.SwizzleScanline(lineBuffer.Pointer, pitchInfo.RowPitch, destPointer, destBuffer.PitchInformation.RowPitch, image.Format, expFlags);
                             }
                             else
                             {
                                 // Copy and set constant alpha (if necessary).
-                                ImageUtilities.CopyScanline(in srcPointer, pitchInfo.RowPitch, in destPointer, destBuffer.PitchInformation.RowPitch, image.Format, expFlags);
+                                ImageUtilities.CopyScanline(lineBuffer.Pointer, pitchInfo.RowPitch, destPointer, destBuffer.PitchInformation.RowPitch, image.Format, expFlags);
                             }
 
                             // Increment our pointer data by one line.

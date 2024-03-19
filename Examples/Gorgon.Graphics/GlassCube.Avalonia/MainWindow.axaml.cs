@@ -124,7 +124,7 @@ public partial class MainWindow : Window
     /// model and project them into 2D space on your render target.
     /// </para>
     /// </remarks>
-    private void UpdateWVP(in Matrix4x4 world)
+    private void UpdateWVP(ref readonly Matrix4x4 world)
     {
         // Get the view and projection from the camera.
         // These values are cached and returned as read only references for performance.

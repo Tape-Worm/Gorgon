@@ -351,7 +351,7 @@ public unsafe readonly struct GorgonPtr<T>
     /// </para>
     /// </remarks>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static GorgonPtr<T> operator +(in GorgonPtr<T> ptr, int indexOffset) => Add(in ptr, indexOffset);
+    public static GorgonPtr<T> operator +(GorgonPtr<T> ptr, int indexOffset) => Add(in ptr, indexOffset);
 
     /// <summary>
     /// Function to subtract two pointers to return the number of bytes between them.
@@ -360,7 +360,7 @@ public unsafe readonly struct GorgonPtr<T>
     /// <param name="right">The right pointer to subtract.</param>
     /// <returns>The difference in bytes between the two pointers.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static long operator -(in GorgonPtr<T> left, in GorgonPtr<T> right) => Subtract(in left, in right);
+    public static long operator -(GorgonPtr<T> left, GorgonPtr<T> right) => Subtract(in left, in right);
 
     /// <summary>
     /// Operator to decrement the pointer by the given index offset.
@@ -375,7 +375,7 @@ public unsafe readonly struct GorgonPtr<T>
     /// </para>
     /// </remarks>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static GorgonPtr<T> operator -(in GorgonPtr<T> ptr, int indexOffset) => Add(in ptr, -indexOffset);
+    public static GorgonPtr<T> operator -(GorgonPtr<T> ptr, int indexOffset) => Add(in ptr, -indexOffset);
 
     /// <summary>
     /// Operator to increment the pointer by one index.
@@ -389,7 +389,7 @@ public unsafe readonly struct GorgonPtr<T>
     /// </para>
     /// </remarks>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static GorgonPtr<T> operator ++(in GorgonPtr<T> ptr)
+    public static GorgonPtr<T> operator ++(GorgonPtr<T> ptr)
     {
         if (ptr == NullPtr)
         {
@@ -415,7 +415,7 @@ public unsafe readonly struct GorgonPtr<T>
     /// </para>
     /// </remarks>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static GorgonPtr<T> operator --(in GorgonPtr<T> ptr)
+    public static GorgonPtr<T> operator --(GorgonPtr<T> ptr)
     {
         if (ptr == NullPtr)
         {
@@ -435,7 +435,7 @@ public unsafe readonly struct GorgonPtr<T>
     /// <param name="left">The left pointer to subtract.</param>
     /// <param name="right">The right pointer to subtract.</param>
     /// <returns>The difference in bytes between the two pointers.</returns>
-    public static long Subtract(in GorgonPtr<T> left, in GorgonPtr<T> right) => ((byte*)left._ptr) - ((byte*)right._ptr);
+    public static long Subtract(ref readonly GorgonPtr<T> left, ref readonly GorgonPtr<T> right) => ((byte*)left._ptr) - ((byte*)right._ptr);
 
     /// <summary>
     /// Function to increment the pointer by the given index offset.
@@ -450,7 +450,7 @@ public unsafe readonly struct GorgonPtr<T>
     /// </para>
     /// </remarks>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static GorgonPtr<T> Add(in GorgonPtr<T> ptr, int indexOffset)
+    public static GorgonPtr<T> Add(ref readonly GorgonPtr<T> ptr, int indexOffset)
     {
         if (ptr == NullPtr)
         {
@@ -479,7 +479,7 @@ public unsafe readonly struct GorgonPtr<T>
     /// </para>
     /// </remarks>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static GorgonPtr<T> Subtract(in GorgonPtr<T> ptr, int indexOffset) => Add(ptr, -indexOffset);
+    public static GorgonPtr<T> Subtract(ref readonly GorgonPtr<T> ptr, int indexOffset) => Add(in ptr, -indexOffset);
 
     /// <summary>
     /// Function to return the pointer as a reference value.
@@ -558,7 +558,7 @@ public unsafe readonly struct GorgonPtr<T>
     /// <paramref name="destination"/> memory block to accomodate the amount of data required.
     /// </para>
     /// </remarks>
-    public void CopyTo(in GorgonPtr<T> destination, int sourceIndex = 0, int? count = null, int destIndex = 0)
+    public void CopyTo(GorgonPtr<T> destination, int sourceIndex = 0, int? count = null, int destIndex = 0)
     {
         if (_ptr == null)
         {

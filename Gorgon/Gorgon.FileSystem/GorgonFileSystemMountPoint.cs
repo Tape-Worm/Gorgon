@@ -63,7 +63,7 @@ public readonly struct GorgonFileSystemMountPoint
     /// <param name="left">Left instance to compare.</param>
     /// <param name="right">Right instance to compare.</param>
     /// <returns><b>true</b> if equal, <b>false</b> if not.</returns>
-    public static bool Equals(ref readonly GorgonFileSystemMountPoint left, in GorgonFileSystemMountPoint right) => (left.Provider == right.Provider)
+    public static bool Equals(ref readonly GorgonFileSystemMountPoint left, ref readonly GorgonFileSystemMountPoint right) => (left.Provider == right.Provider)
                 && (left.IsFakeMount == right.IsFakeMount)
                 && (string.Equals(left.MountLocation, right.MountLocation, StringComparison.OrdinalIgnoreCase))
                 && (string.Equals(left.PhysicalPath, right.PhysicalPath, StringComparison.OrdinalIgnoreCase));
@@ -114,7 +114,7 @@ public readonly struct GorgonFileSystemMountPoint
     /// <param name="left">Left instance to compare.</param>
     /// <param name="right">Right instance to compare.</param>
     /// <returns><b>true</b> if equal, <b>false</b> if not.</returns>
-    public static bool operator ==(in GorgonFileSystemMountPoint left, in GorgonFileSystemMountPoint right) => Equals(in left, in right);
+    public static bool operator ==(GorgonFileSystemMountPoint left, GorgonFileSystemMountPoint right) => Equals(in left, in right);
 
     /// <summary>
     /// Inequality operator.
@@ -122,7 +122,7 @@ public readonly struct GorgonFileSystemMountPoint
     /// <param name="left">Left instance to compare.</param>
     /// <param name="right">Right instance to compare.</param>
     /// <returns><b>true</b> if not equal, <b>false</b> if equal.</returns>
-    public static bool operator !=(in GorgonFileSystemMountPoint left, in GorgonFileSystemMountPoint right) => !Equals(in left, in right);
+    public static bool operator !=(GorgonFileSystemMountPoint left, GorgonFileSystemMountPoint right) => !Equals(in left, in right);
 
 
 

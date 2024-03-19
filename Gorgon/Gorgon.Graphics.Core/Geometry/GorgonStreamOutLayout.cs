@@ -71,7 +71,7 @@ public sealed class GorgonStreamOutLayout
     /// <param name="element">The element to search for.</param>
     /// <param name="index">The index of the current element.</param>
     /// <param name="parameterName">The name of the parameter being validated.</param>
-    private static void FindDuplicateElements(IList<GorgonStreamOutElement> elements, in GorgonStreamOutElement element, int index, string parameterName)
+    private static void FindDuplicateElements(IList<GorgonStreamOutElement> elements, ref readonly GorgonStreamOutElement element, int index, string parameterName)
     {
         for (int i = 0; i < elements.Count; ++i)
         {
@@ -149,7 +149,7 @@ public sealed class GorgonStreamOutLayout
         // Check for duplicated elements.
         for (int i = 0; i < _elements.Length; ++i)
         {
-            FindDuplicateElements(_elements, _elements[i], i, nameof(elements));
+            FindDuplicateElements(_elements, in _elements[i], i, nameof(elements));
         }
 
         Native = new D3D11.StreamOutputElement[_elements.Length];

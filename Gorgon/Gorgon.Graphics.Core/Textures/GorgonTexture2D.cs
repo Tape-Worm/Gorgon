@@ -566,7 +566,7 @@ public sealed class GorgonTexture2D
     /// <remarks>
     /// <para>
     /// This method copies the contents of this texture into the texture specified by the <paramref name="destTexture"/> parameter. If a sub resource for the <paramref name="destTexture"/> must be 
-    /// copied, use the <see cref="CopyTo(GorgonTexture2D, in DX.Rectangle?, int, int, int, int, int, int, CopyMode)"/> method.
+    /// copied, use the <see cref="CopyTo(GorgonTexture2D, DX.Rectangle?, int, int, int, int, int, int, CopyMode)"/> method.
     /// </para>
     /// <para>
     /// This method does not perform stretching, filtering or clipping.
@@ -881,7 +881,7 @@ public sealed class GorgonTexture2D
     /// </note>
     /// </para>
     /// </remarks>
-    public void CopyTo(GorgonTexture2D destinationTexture, in DX.Rectangle? sourceRectangle = null, int sourceArrayIndex = 0, int sourceMipLevel = 0, int destX = 0, int destY = 0, int destArrayIndex = 0, int destMipLevel = 0, CopyMode copyMode = CopyMode.None)
+    public void CopyTo(GorgonTexture2D destinationTexture, DX.Rectangle? sourceRectangle = null, int sourceArrayIndex = 0, int sourceMipLevel = 0, int destX = 0, int destY = 0, int destArrayIndex = 0, int destMipLevel = 0, CopyMode copyMode = CopyMode.None)
     {
         destinationTexture.ValidateObject(nameof(destinationTexture));
 
@@ -1047,7 +1047,7 @@ public sealed class GorgonTexture2D
     /// </note>
     /// </para>
     /// </remarks>
-    public void CopyTo(GorgonTexture3D destinationTexture, in DX.Rectangle? sourceRectangle = null, int sourceArrayIndex = 0, int sourceMipLevel = 0, int destX = 0, int destY = 0, int destZ = 0, int destMipLevel = 0, CopyMode copyMode = CopyMode.None)
+    public void CopyTo(GorgonTexture3D destinationTexture, DX.Rectangle? sourceRectangle = null, int sourceArrayIndex = 0, int sourceMipLevel = 0, int destX = 0, int destY = 0, int destZ = 0, int destMipLevel = 0, CopyMode copyMode = CopyMode.None)
     {
         destinationTexture.ValidateObject(nameof(destinationTexture));
 
@@ -1372,7 +1372,7 @@ public sealed class GorgonTexture2D
     /// ]]>
     /// </code>
     /// </example>
-    public void SetData(IGorgonImageBuffer imageBuffer, in DX.Rectangle? destRectangle = null, int destArrayIndex = 0, int destMipLevel = 0, CopyMode copyMode = CopyMode.None)
+    public void SetData(IGorgonImageBuffer imageBuffer, DX.Rectangle? destRectangle = null, int destArrayIndex = 0, int destMipLevel = 0, CopyMode copyMode = CopyMode.None)
     {
 #if DEBUG
         if (Usage == ResourceUsage.Immutable)

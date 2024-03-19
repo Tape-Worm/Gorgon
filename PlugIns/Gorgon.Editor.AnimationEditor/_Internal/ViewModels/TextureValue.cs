@@ -81,7 +81,7 @@ internal readonly struct TextureValue(GorgonTexture2DView texture, IContentFile 
     /// <param name="left">The left side value to compare.</param>
     /// <param name="right">The right side value to compare.</param>
     /// <returns><b>true</b> if the values are equal, <b>false</b> if not.</returns>
-    public static bool Equals(ref readonly TextureValue left, in TextureValue right) => (left.Texture == right.Texture)
+    public static bool Equals(ref readonly TextureValue left, ref readonly TextureValue right) => (left.Texture == right.Texture)
             && (left.ArrayIndex == right.ArrayIndex)
             && (left.TextureCoordinates.Left.EqualsEpsilon(right.TextureCoordinates.Left))
             && (left.TextureCoordinates.Top.EqualsEpsilon(right.TextureCoordinates.Top))

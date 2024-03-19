@@ -233,9 +233,9 @@ internal class DefaultSpriteViewer(Gorgon2D renderer, GorgonSwapChain swapChain,
         Vector3 spriteTopLeft = new(_spriteRegion.Left, _spriteRegion.Top, 0);
         Vector3 spriteBottomRight = new(_spriteRegion.Right, _spriteRegion.Bottom, 0);
         Vector3 spriteAnchor = new((DataContext.Anchor.X * DataContext.Size.Width) + _sprite.Position.X, _sprite.Position.Y + (DataContext.Anchor.Y * DataContext.Size.Height), 0);
-        Camera.Unproject(in spriteTopLeft, out Vector3 transformedTopLeft);
-        Camera.Unproject(in spriteBottomRight, out Vector3 transformedBottomRight);
-        Camera.Unproject(in spriteAnchor, out Vector3 transformedAnchor);
+        Camera.Unproject(spriteTopLeft, out Vector3 transformedTopLeft);
+        Camera.Unproject(spriteBottomRight, out Vector3 transformedBottomRight);
+        Camera.Unproject(spriteAnchor, out Vector3 transformedAnchor);
         DX.RectangleF marchAntsRect = new()
         {
             Left = (int)transformedTopLeft.X,

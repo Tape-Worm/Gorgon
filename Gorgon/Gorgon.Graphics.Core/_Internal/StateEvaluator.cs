@@ -111,7 +111,7 @@ internal class StateEvaluator(GorgonGraphics graphics)
     /// <param name="streamOut">The current list of stream out buffers.</param>
     private void CheckIndexBufferStreamOut(D3DState state, GorgonStreamOutBindings streamOut)
     {
-        void ScanStreamOut(GorgonStreamOutBindings bindings, in (int Start, int Count) streamOutIndices)
+        void ScanStreamOut(GorgonStreamOutBindings bindings, ref readonly (int Start, int Count) streamOutIndices)
         {
             for (int s = streamOutIndices.Start; s < streamOutIndices.Count + streamOutIndices.Start; ++s)
             {
@@ -163,7 +163,7 @@ internal class StateEvaluator(GorgonGraphics graphics)
     /// <param name="streamOut">The current list of stream out buffers.</param>
     private void CheckVertexBufferStreamOut(GorgonVertexBufferBindings vertexBuffers, GorgonStreamOutBindings streamOut)
     {
-        void ScanVertexBuffers(GorgonBufferCommon soBuffer, in (int Start, int Count) vBufferIndices)
+        void ScanVertexBuffers(GorgonBufferCommon soBuffer, ref readonly (int Start, int Count) vBufferIndices)
         {
             for (int v = vBufferIndices.Start; v < vBufferIndices.Count + vBufferIndices.Start; ++v)
             {
@@ -615,7 +615,7 @@ internal class StateEvaluator(GorgonGraphics graphics)
     /// <param name="blendSampleMask">The mask used to define which samples get updated in the active render targets.</param>
     /// <param name="stencilReference">The stencil reference value used when performing a stencil test.</param>
     /// <returns>The changed individual states as a combined set of flags.</returns>
-    public PipelineStateChanges GetPipelineStateChanges(GorgonPipelineState newState, in GorgonColor blendFactor, int blendSampleMask, int stencilReference)
+    public PipelineStateChanges GetPipelineStateChanges(GorgonPipelineState newState, GorgonColor blendFactor, int blendSampleMask, int stencilReference)
     {
         PipelineStateChanges changes = PipelineStateChanges.None;
 

@@ -350,7 +350,7 @@ internal class PlanetLayer(GorgonGraphics graphics, ResourceManagement resources
     /// "interesting" issues.  But since we're not making a complex scene here, just set it as-is.
     /// </para>
     /// </remarks>
-    private void SetView(in Matrix4x4 view)
+    private void SetView(ref readonly Matrix4x4 view)
     {
         _viewMatrix = view;
         _viewProjection = Matrix4x4.Transpose(Matrix4x4.Multiply(_viewMatrix, _projectionMatrix));
@@ -376,7 +376,7 @@ internal class PlanetLayer(GorgonGraphics graphics, ResourceManagement resources
     /// "interesting" issues.  But since we're not making a complex scene here, just set it as-is.
     /// </para>
     /// </remarks>
-    private void SetProjection(in Matrix4x4 projection)
+    private void SetProjection(ref readonly Matrix4x4 projection)
     {
         _projectionMatrix = projection;
         _viewProjectionBuffer?.Buffer.SetData(in _viewProjection);

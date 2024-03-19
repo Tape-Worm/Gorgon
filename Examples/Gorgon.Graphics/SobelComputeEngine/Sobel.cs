@@ -66,7 +66,8 @@ internal class Sobel
 
         if ((_dispatch is null) || (_dispatch.ShaderResources[0] != texture) || (_dispatch.ReadWriteViews[0].ReadWriteView != outputTexture))
         {
-            _dispatch = _dispatchBuilder.ReadWriteView(new GorgonReadWriteViewBinding(outputTexture))
+            GorgonReadWriteViewBinding resourceView = new(outputTexture);
+            _dispatch = _dispatchBuilder.ReadWriteView(in resourceView)
                                         .ShaderResource(texture)
                                         .Build();
         }

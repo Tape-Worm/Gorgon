@@ -130,7 +130,7 @@ public readonly struct GorgonVideoMode
     /// <param name="left">The left value to compare.</param>
     /// <param name="right">The right value to compare.</param>
     /// <returns><b>true</b> if the modes are equal, <b>false</b> if not.</returns>
-    public static bool Equals(ref readonly GorgonVideoMode left, in GorgonVideoMode right) => left.Width == right.Width
+    public static bool Equals(ref readonly GorgonVideoMode left, ref readonly GorgonVideoMode right) => left.Width == right.Width
                && left.Height == right.Height
                && left.Format == right.Format
                && left.RefreshRate.Equals(right.RefreshRate)
@@ -170,7 +170,7 @@ public readonly struct GorgonVideoMode
     /// <param name="left">The left instance to compare.</param>
     /// <param name="right">The right instance to compare.</param>
     /// <returns>A value that indicates the relative order of the objects being compared. The return value has these meanings: Value Meaning Less than zero the left instance precedes the right in the sort order.  Zero the left instance occurs in the same position in the sort order as the right. Greater than zero the left instance follows the right in the sort order. </returns>
-    public static int CompareTo(in GorgonVideoMode left, in GorgonVideoMode right) => Equals(in left, in right)
+    public static int CompareTo(ref readonly GorgonVideoMode left, ref readonly GorgonVideoMode right) => Equals(in left, in right)
             ? 0
             : ((left.Width < right.Width)
             || (left.Height < right.Height)

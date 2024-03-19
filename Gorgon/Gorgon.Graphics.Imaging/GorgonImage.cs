@@ -179,7 +179,7 @@ public partial class GorgonImage
         }
 
         _imageBuffers = new ImageBufferList(this);
-        _imageBuffers.CreateBuffers(in _imagePtr);
+        _imageBuffers.CreateBuffers(_imagePtr);
     }
 
     /// <summary>
@@ -482,7 +482,7 @@ public partial class GorgonImage
         image.ImageData.CopyTo(ptr);
 
         ImageBufferList buffers = new(info);
-        buffers.CreateBuffers(in ptr);
+        buffers.CreateBuffers(ptr);
 
         _imageData.Dispose();
         _imageData = data;

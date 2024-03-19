@@ -107,7 +107,7 @@ class ImageBufferList
     /// Function to create a list of buffers to use.
     /// </summary>
     /// <param name="data">Data to copy/reference.</param>
-    internal void CreateBuffers(in GorgonPtr<byte> data)
+    internal void CreateBuffers(GorgonPtr<byte> data)
     {
         int bufferIndex = 0;
         GorgonFormatInfo formatInfo = new(_imageInfo.Format);   // Format information.

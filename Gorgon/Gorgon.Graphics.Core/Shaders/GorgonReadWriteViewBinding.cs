@@ -92,7 +92,7 @@ public readonly struct GorgonReadWriteViewBinding
     /// <param name="left">The left instance to compare.</param>
     /// <param name="right">The right instance to compare.</param>
     /// <returns><b>true</b> if equal, <b>false</b> if not.</returns>
-    public static bool Equals(ref readonly GorgonReadWriteViewBinding left, in GorgonReadWriteViewBinding right) => (left.InitialCount == right.InitialCount) && (left.ReadWriteView == right.ReadWriteView);
+    public static bool Equals(ref readonly GorgonReadWriteViewBinding left, ref readonly GorgonReadWriteViewBinding right) => (left.InitialCount == right.InitialCount) && (left.ReadWriteView == right.ReadWriteView);
 
     /// <summary>Indicates whether this instance and a specified object are equal.</summary>
     /// <param name="obj">The object to compare with the current instance. </param>
@@ -120,7 +120,7 @@ public readonly struct GorgonReadWriteViewBinding
     /// <param name="left">The left instance to compare.</param>
     /// <param name="right">The right instance to compare.</param>
     /// <returns><b>true</b> if equal, <b>false</b> if not.</returns>
-    public static bool operator ==(in GorgonReadWriteViewBinding left, in GorgonReadWriteViewBinding right) => Equals(in left, in right);
+    public static bool operator ==(GorgonReadWriteViewBinding left, GorgonReadWriteViewBinding right) => Equals(in left, in right);
 
     /// <summary>
     /// Operator to determine inequality between two instances.
@@ -128,7 +128,7 @@ public readonly struct GorgonReadWriteViewBinding
     /// <param name="left">The left instance to compare.</param>
     /// <param name="right">The right instance to compare.</param>
     /// <returns><b>true</b> if not equal, <b>false</b> if equal.</returns>
-    public static bool operator !=(in GorgonReadWriteViewBinding left, in GorgonReadWriteViewBinding right) => !Equals(in left, in right);
+    public static bool operator !=(GorgonReadWriteViewBinding left, GorgonReadWriteViewBinding right) => !Equals(in left, in right);
 
 
 

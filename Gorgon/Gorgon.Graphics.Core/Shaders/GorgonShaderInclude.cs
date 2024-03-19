@@ -101,7 +101,7 @@ public readonly struct GorgonShaderInclude
     /// <param name="left">The left instance to compare.</param>
     /// <param name="right">The right instance to compare.</param>
     /// <returns><b>true</b> if equal, <b>false</b> if not.</returns>
-    public static bool Equals(ref readonly GorgonShaderInclude left, in GorgonShaderInclude right) => (string.Equals(left.Name, right.Name, StringComparison.OrdinalIgnoreCase));
+    public static bool Equals(ref readonly GorgonShaderInclude left, ref readonly GorgonShaderInclude right) => (string.Equals(left.Name, right.Name, StringComparison.OrdinalIgnoreCase));
 
     /// <summary>
     /// Determines whether the specified <see cref="object" /> is equal to this instance.

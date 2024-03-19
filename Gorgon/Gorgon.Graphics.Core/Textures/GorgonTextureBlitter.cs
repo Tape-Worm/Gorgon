@@ -353,7 +353,7 @@ public class GorgonTextureBlitter
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void Blit(GorgonTexture2DView texture,
                             DX.Point destination,
-                            in GorgonColor? color = null,
+                            GorgonColor? color = null,
                             GorgonBlendState blendState = null,
                             GorgonSamplerState samplerState = null,
                             GorgonPixelShader pixelShader = null,
@@ -380,8 +380,8 @@ public class GorgonTextureBlitter
     /// <param name="pixelShaderConstants">The pixel shader constant buffers to use.</param>
     public void Blit(GorgonTexture2DView texture,
                      DX.Rectangle destRect,
-                     in DX.Rectangle? sourceRegion = null,
-                     in GorgonColor? color = null,
+                     DX.Rectangle? sourceRegion = null,
+                     GorgonColor? color = null,
                      GorgonBlendState blendState = null,
                      GorgonSamplerState samplerState = null,
                      GorgonPixelShader pixelShader = null,

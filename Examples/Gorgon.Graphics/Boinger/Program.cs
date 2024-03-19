@@ -281,7 +281,7 @@ internal static class Program
     /// model and project them into 2D space on your render target.
     /// </para>
     /// </remarks>
-    private static void UpdateWVP(in Matrix4x4 world)
+    private static void UpdateWVP(ref readonly Matrix4x4 world)
     {
         // Build our world/view/projection matrix to send to
         // the shader.
@@ -510,7 +510,7 @@ internal static class Program
         }
 
         // For our sphere, we can just reuse the builder(s) since only a small part of the resources have changed.
-        _sphere.Material.TextureSampler = sampler;
+        _sphere.Material.TextureSampler = sampler;        
         _drawCalls[2] = drawBuilder.VertexBuffer(_inputLayout, _sphere.VertexBufferBindings[0])
                                    .ShaderResource(ShaderType.Pixel, _sphere.Material.Texture)
                                    .IndexBuffer(_sphere.IndexBuffer, 0, _sphere.IndexBuffer.IndexCount)

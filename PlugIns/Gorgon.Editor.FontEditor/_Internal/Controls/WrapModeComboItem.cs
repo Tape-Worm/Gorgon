@@ -37,7 +37,7 @@ namespace Gorgon.Editor.FontEditor;
 /// </remarks>
 /// <param name="wrapMode">The wrap mode.</param>
 /// <param name="text">The text.</param>
-internal struct WrapModeComboItem(GlyphBrushWrapMode wrapMode, string text)
+internal readonly struct  WrapModeComboItem(GlyphBrushWrapMode wrapMode, string text)
         : IEquatable<WrapModeComboItem>
 {
 
@@ -57,7 +57,7 @@ internal struct WrapModeComboItem(GlyphBrushWrapMode wrapMode, string text)
     /// <param name="left">Left instance to compare.</param>
     /// <param name="right">Right instance to compare.</param>
     /// <returns>TRUE if equal, FALSE if not.</returns>
-    public static bool operator ==(WrapModeComboItem left, WrapModeComboItem right) => Equals(ref left, ref right);
+    public static bool operator ==(WrapModeComboItem left, WrapModeComboItem right) => Equals(left, right);
 
     /// <summary>
     /// Operator to determine if two instances are not equal.
@@ -65,7 +65,7 @@ internal struct WrapModeComboItem(GlyphBrushWrapMode wrapMode, string text)
     /// <param name="left">Left instance to compare.</param>
     /// <param name="right">Right instance to compare.</param>
     /// <returns>TRUE if not equal, FALSE if equal.</returns>
-    public static bool operator !=(WrapModeComboItem left, WrapModeComboItem right) => !Equals(ref left, ref right);
+    public static bool operator !=(WrapModeComboItem left, WrapModeComboItem right) => !Equals(left, right);
 
     /// <summary>
     /// Function to determine if two instances are equal.
@@ -73,7 +73,7 @@ internal struct WrapModeComboItem(GlyphBrushWrapMode wrapMode, string text)
     /// <param name="left">Left instance to compare.</param>
     /// <param name="right">Right instance to compare.</param>
     /// <returns>TRUE if equal, FALSE if not.</returns>
-    public static bool Equals(ref WrapModeComboItem left, ref WrapModeComboItem right) => left.WrapMode == right.WrapMode;
+    public static bool Equals(WrapModeComboItem left, WrapModeComboItem right) => left.WrapMode == right.WrapMode;
 
     /// <summary>
     /// Function to perform an explicit conversion between a Drawing wrap mode and this wrap mode item.
@@ -133,6 +133,6 @@ internal struct WrapModeComboItem(GlyphBrushWrapMode wrapMode, string text)
     /// <returns>
     /// true if the current object is equal to the <paramref name="other" /> parameter; otherwise, false.
     /// </returns>
-    public bool Equals(WrapModeComboItem other) => Equals(ref this, ref other);
+    public bool Equals(WrapModeComboItem other) => Equals(this, other);
 
 }

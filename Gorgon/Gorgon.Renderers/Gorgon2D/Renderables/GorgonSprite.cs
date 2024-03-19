@@ -78,7 +78,7 @@ public class GorgonSprite
     public GorgonColor Color
     {
         get => Renderable.Vertices[0].Color;
-        set => CornerColors.SetAll(in value);
+        set => CornerColors.SetAll(value);
     }
 
     /// <summary>

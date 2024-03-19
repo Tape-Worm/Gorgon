@@ -86,7 +86,7 @@ public readonly struct GorgonTriangleVertex(Vector2 position, GorgonColor color,
     /// <param name="left">The left point to compare.</param>
     /// <param name="right">The right point to compare.</param>
     /// <returns><b>true</b> if the points are equal, <b>false</b> if not.</returns>
-    public static bool Equals(ref readonly GorgonTriangleVertex left, in GorgonTriangleVertex right) => GorgonColor.Equals(in left.Color, in right.Color)
+    public static bool Equals(ref readonly GorgonTriangleVertex left, ref readonly GorgonTriangleVertex right) => GorgonColor.Equals(in left.Color, in right.Color)
                && left.TextureArrayIndex == right.TextureArrayIndex
                && left.TextureCoordinate.X.EqualsEpsilon(right.TextureCoordinate.X)
                && left.TextureCoordinate.Y.EqualsEpsilon(right.TextureCoordinate.Y)
@@ -112,7 +112,7 @@ public readonly struct GorgonTriangleVertex(Vector2 position, GorgonColor color,
     /// <param name="left">The left instance to compare.</param>
     /// <param name="right">The right instance to compare.</param>
     /// <returns><b>true</b> if both instances are equal, <b>false</b> if not.</returns>
-    public static bool operator ==(in GorgonTriangleVertex left, in GorgonTriangleVertex right) => Equals(in left, in right);
+    public static bool operator ==(GorgonTriangleVertex left, GorgonTriangleVertex right) => Equals(in left, in right);
 
     /// <summary>
     /// Operator to determine if two instances are not equal.
@@ -120,7 +120,7 @@ public readonly struct GorgonTriangleVertex(Vector2 position, GorgonColor color,
     /// <param name="left">The left instance to compare.</param>
     /// <param name="right">The right instance to compare.</param>
     /// <returns><b>true</b> if both instances are not equal, <b>false</b> if equal.</returns>
-    public static bool operator !=(in GorgonTriangleVertex left, in GorgonTriangleVertex right) => !Equals(in left, in right);
+    public static bool operator !=(GorgonTriangleVertex left, GorgonTriangleVertex right) => !Equals(in left, in right);
 
 
 

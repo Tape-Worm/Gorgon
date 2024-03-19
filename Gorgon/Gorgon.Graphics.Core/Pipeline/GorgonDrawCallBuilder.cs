@@ -38,7 +38,7 @@ namespace Gorgon.Graphics.Core;
 /// </para>
 /// <para>
 /// A draw call is an immutable object that contains all of the state required to render mesh information. For each mesh an application needs to render, an single draw call should be issued via the
-/// <see cref="GorgonGraphics.Submit(GorgonDrawCall, in GorgonColor?, int, int)"/> methods.  
+/// <see cref="GorgonGraphics.Submit(GorgonDrawIndexCall, Gorgon.Graphics.GorgonColor?, int, int)"/> methods.  
 /// </para>
 /// <para>
 /// State management is handled internally by Gorgon so that duplicate states are not set and thus, performance is not impacted by redundant states

@@ -268,8 +268,8 @@ internal class ColorEditViewer(Gorgon2D renderer, GorgonSwapChain swapChain, ISp
 
         Vector3 spriteTopLeft = new(SpriteRegion.Left, SpriteRegion.Top, 0);
         Vector3 spriteBottomRight = new(SpriteRegion.Right, SpriteRegion.Bottom, 0);
-        Camera.Unproject(in spriteTopLeft, out Vector3 transformedTopLeft);
-        Camera.Unproject(in spriteBottomRight, out Vector3 transformedBottomRight);
+        Camera.Unproject(spriteTopLeft, out Vector3 transformedTopLeft);
+        Camera.Unproject(spriteBottomRight, out Vector3 transformedBottomRight);
 
         DX.RectangleF screenRect = new()
         {

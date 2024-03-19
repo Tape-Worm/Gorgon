@@ -40,5 +40,5 @@ public interface IGorgonRawInputDeviceData<T>
     /// Function to process the Gorgon raw input data into device state data and appropriate events.
     /// </summary>
     /// <param name="rawInputData">The data to process.</param>
-    void ProcessData(in T rawInputData);
+    void ProcessData(ref readonly T rawInputData);
 }

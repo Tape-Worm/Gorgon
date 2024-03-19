@@ -299,7 +299,7 @@ public class GorgonRawKeyboard
     /// Function to process the Gorgon raw input data into device state data and appropriate events.
     /// </summary>
     /// <param name="rawInputData">The data to process.</param>
-    void IGorgonRawInputDeviceData<GorgonRawKeyboardData>.ProcessData(in GorgonRawKeyboardData rawInputData)
+    void IGorgonRawInputDeviceData<GorgonRawKeyboardData>.ProcessData(ref readonly GorgonRawKeyboardData rawInputData)
     {
         // Get the key code.
         Keys keyCode = rawInputData.Key;

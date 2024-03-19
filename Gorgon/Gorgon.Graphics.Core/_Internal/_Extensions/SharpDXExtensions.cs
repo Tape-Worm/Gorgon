@@ -168,7 +168,7 @@ internal static class SharpDXExtensions
     /// </summary>
     /// <param name="binding">The binding to convert.</param>
     /// <returns>The D3D11 vertex buffer binding.</returns>
-    public static D3D11.VertexBufferBinding ToVertexBufferBinding(this in GorgonVertexBufferBinding binding) => new(binding.VertexBuffer?.Native, binding.Stride, binding.Offset);
+    public static D3D11.VertexBufferBinding ToVertexBufferBinding(this ref readonly GorgonVertexBufferBinding binding) => new(binding.VertexBuffer?.Native, binding.Stride, binding.Offset);
 
     /// <summary>
     /// Function to convert a <see cref="GorgonMultisampleInfo"/> to a DXGI multi sample description.

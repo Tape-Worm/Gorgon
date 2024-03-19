@@ -240,7 +240,7 @@ public static class VectorExtensions
     /// <param name="worldViewProjection">The combined world-view-projection matrix.</param>
     /// <returns>The vector in object space</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static Vector3 Unproject(this Vector3 vector, float x, float y, float width, float height, float minZ, float maxZ, in Matrix4x4 worldViewProjection)
+    public static Vector3 Unproject(this Vector3 vector, float x, float y, float width, float height, float minZ, float maxZ, ref readonly Matrix4x4 worldViewProjection)
     {
         Vector3 v = new();
         Matrix4x4.Invert(worldViewProjection, out Matrix4x4 matrix);

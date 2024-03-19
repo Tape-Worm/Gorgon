@@ -188,7 +188,7 @@ public class GorgonPerspectiveCamera(GorgonGraphics graphics, DX.Size2F viewDime
     /// Function to set the camera rotation using a rotation matrix.
     /// </summary>
     /// <param name="rotation">The matrix used for rotation.</param>
-    public void AssignRotationMatrix(in Matrix4x4 rotation)
+    public void AssignRotationMatrix(ref readonly Matrix4x4 rotation)
     {
         _rotationQuat = Quaternion.Conjugate(Quaternion.CreateFromRotationMatrix(rotation));
         Changes |= CameraChange.View | CameraChange.Rotation;

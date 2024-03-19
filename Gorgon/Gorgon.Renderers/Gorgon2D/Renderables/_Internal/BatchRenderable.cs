@@ -200,7 +200,7 @@ internal class BatchRenderable
         return (left.PrimitiveType == right.PrimitiveType)
                && (left.Texture == right.Texture)
                && (left.TextureSampler == right.TextureSampler)
-               && (AlphaTestData.Equals(in left.AlphaTestData, in right.AlphaTestData));
+               && (AlphaTestData.Equals(left.AlphaTestData, right.AlphaTestData));
 
     }
 }

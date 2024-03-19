@@ -186,7 +186,7 @@ public class GorgonImageBuffer
             }
 
             GorgonPtr<byte> horzPtr = src + (region.Value.Left.Max(0) * FormatInformation.SizeInBytes);
-            ImageUtilities.SetAlphaScanline(in horzPtr, PitchInformation.RowPitch, in horzPtr, PitchInformation.RowPitch, Format, alpha, min, max);
+            ImageUtilities.SetAlphaScanline(horzPtr, PitchInformation.RowPitch, horzPtr, PitchInformation.RowPitch, Format, alpha, min, max);
             src += PitchInformation.RowPitch;
         }
     }
@@ -220,7 +220,7 @@ public class GorgonImageBuffer
     /// The destination buffer must be the same format as the source buffer.  If it is not, then an exception will be thrown.
     /// </para>
     /// </remarks>
-    public void CopyTo(IGorgonImageBuffer buffer, in DX.Rectangle? sourceRegion = null, int destX = 0, int destY = 0)
+    public void CopyTo(IGorgonImageBuffer buffer, DX.Rectangle? sourceRegion = null, int destX = 0, int destY = 0)
     {
         // We don't support compressed formats.
         if (FormatInformation.IsCompressed)
@@ -360,7 +360,7 @@ public class GorgonImageBuffer
     /// </para> 
     /// </remarks>
     /// <seealso cref="IGorgonImage"/>
-    public IGorgonImageBuffer GetRegion(in DX.Rectangle clipRegion)
+    public IGorgonImageBuffer GetRegion(DX.Rectangle clipRegion)
     {
         // We don't support compressed formats.
         if (FormatInformation.IsCompressed)

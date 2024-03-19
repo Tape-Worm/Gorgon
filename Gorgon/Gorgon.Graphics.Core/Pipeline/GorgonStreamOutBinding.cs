@@ -130,7 +130,7 @@ public readonly struct GorgonStreamOutBinding
     /// <param name="left">The left instance to compare.</param>
     /// <param name="right">The right instance to compare.</param>
     /// <returns><b>true</b> if equal, <b>false</b> if not.</returns>
-    public static bool Equals(ref readonly GorgonStreamOutBinding left, in GorgonStreamOutBinding right) => ((left.Buffer == right.Buffer) && (left.Offset == right.Offset));
+    public static bool Equals(ref readonly GorgonStreamOutBinding left, ref readonly GorgonStreamOutBinding right) => ((left.Buffer == right.Buffer) && (left.Offset == right.Offset));
 
     /// <summary>
     /// Implements the operator ==.
@@ -138,7 +138,7 @@ public readonly struct GorgonStreamOutBinding
     /// <param name="left">The left.</param>
     /// <param name="right">The right.</param>
     /// <returns>The result of the operator.</returns>
-    public static bool operator ==(in GorgonStreamOutBinding left, in GorgonStreamOutBinding right) => Equals(in left, in right);
+    public static bool operator ==(GorgonStreamOutBinding left, GorgonStreamOutBinding right) => Equals(in left, in right);
 
     /// <summary>
     /// Implements the operator ==.
@@ -146,7 +146,7 @@ public readonly struct GorgonStreamOutBinding
     /// <param name="left">The left.</param>
     /// <param name="right">The right.</param>
     /// <returns>The result of the operator.</returns>
-    public static bool operator !=(in GorgonStreamOutBinding left, in GorgonStreamOutBinding right) => !Equals(in left, in right);
+    public static bool operator !=(GorgonStreamOutBinding left, GorgonStreamOutBinding right) => !Equals(in left, in right);
 
 
 

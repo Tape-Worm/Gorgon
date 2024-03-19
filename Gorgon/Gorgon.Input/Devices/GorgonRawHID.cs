@@ -137,7 +137,7 @@ public class GorgonRawHID(GorgonRawHIDInfo hidInfo)
     /// Function to process the Gorgon raw input data into device state data and appropriate events.
     /// </summary>
     /// <param name="rawInputData">The data to process.</param>
-    void IGorgonRawInputDeviceData<GorgonRawHIDData>.ProcessData(in GorgonRawHIDData rawInputData)
+    void IGorgonRawInputDeviceData<GorgonRawHIDData>.ProcessData(ref readonly GorgonRawHIDData rawInputData)
     {
         Data = rawInputData.HidData;
         HIDSize = rawInputData.HIDDataSize;

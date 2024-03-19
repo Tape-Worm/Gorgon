@@ -145,7 +145,7 @@ public class GorgonFrustumVisual
     /// <param name="frustum">The frustum to visualize.</param>
     /// <param name="viewMatrix">The current view matrix.</param>
     /// <param name="projectionMatrix">The current projection matrix.</param>
-    public void Draw(GorgonBoundingFrustum frustum, in Matrix4x4 viewMatrix, in Matrix4x4 projectionMatrix)
+    public void Draw(GorgonBoundingFrustum frustum, ref readonly Matrix4x4 viewMatrix, ref readonly Matrix4x4 projectionMatrix)
     {
         BuildBox(frustum);
 

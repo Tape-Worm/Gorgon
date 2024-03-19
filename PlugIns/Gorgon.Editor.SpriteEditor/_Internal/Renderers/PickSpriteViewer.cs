@@ -203,8 +203,8 @@ internal class PickSpriteViewer(Gorgon2D renderer, GorgonSwapChain swapChain, IS
         // So, we can just get the camera to tell us where that is.
         Vector3 spriteTopLeft = new(_spriteRegion.Left, _spriteRegion.Top, 0);
         Vector3 spriteBottomRight = new(_spriteRegion.Right, _spriteRegion.Bottom, 0);
-        Camera.Unproject(in spriteTopLeft, out Vector3 transformedTopLeft);
-        Camera.Unproject(in spriteBottomRight, out Vector3 transformedBottomRight);
+        Camera.Unproject(spriteTopLeft, out Vector3 transformedTopLeft);
+        Camera.Unproject(spriteBottomRight, out Vector3 transformedBottomRight);
 
         DX.RectangleF marchAntsRect = new()
         {

@@ -610,7 +610,7 @@ public class GorgonRawMouse
     /// Function to process the Gorgon raw input data into device state data and appropriate events.
     /// </summary>
     /// <param name="rawInputData">The data to process.</param>
-    void IGorgonRawInputDeviceData<GorgonRawMouseData>.ProcessData(in GorgonRawMouseData rawInputData)
+    void IGorgonRawInputDeviceData<GorgonRawMouseData>.ProcessData(ref readonly GorgonRawMouseData rawInputData)
     {
         // Gather the event information.
         MouseButtons downButtons = MouseButtons.None;

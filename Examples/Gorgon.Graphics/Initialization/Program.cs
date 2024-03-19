@@ -286,7 +286,7 @@ internal static class Program
                     output.VideoModes.FindNearestVideoMode(output, in mode, out GorgonVideoMode actualMode);
 
                     // Go into full screen mode now.
-                    _swap.EnterFullScreen(actualMode, output);
+                    _swap.EnterFullScreen(in actualMode, output);
                 }
             }
 
