@@ -27,7 +27,6 @@
 using System.Numerics;
 using Gorgon.Graphics.Core;
 using Gorgon.Renderers.Cameras;
-using DX = SharpDX;
 
 namespace Gorgon.Renderers;
 
@@ -70,7 +69,7 @@ internal class CameraController
     {
         if (camera.AllowUpdateOnResize)
         {
-            DX.Size2F viewportSize = new(Graphics.Viewports[0].Width, Graphics.Viewports[0].Height);
+            Vector2 viewportSize = new(Graphics.Viewports[0].Width, Graphics.Viewports[0].Height);
 
             if (!camera.ViewDimensions.Equals(viewportSize))
             {

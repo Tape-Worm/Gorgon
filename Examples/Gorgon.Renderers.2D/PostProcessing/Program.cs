@@ -34,8 +34,6 @@ using Gorgon.Math;
 using Gorgon.Renderers;
 using Gorgon.Timing;
 using Gorgon.UI;
-using Drawing = System.Drawing;
-using DX = SharpDX;
 
 namespace Gorgon.Examples;
 
@@ -149,9 +147,9 @@ static class Program
         // Always draw the dragging button on top.
         if (_dragButton is not null)
         {
-            Drawing.Point cursorPosition = _screen.Window.PointToClient(Cursor.Position);
+            Point cursorPosition = _screen.Window.PointToClient(Cursor.Position);
 
-            DX.RectangleF pos = new(cursorPosition.X - _dragOffset.X, cursorPosition.Y - _dragOffset.Y, _dragButton.Bounds.Width, _dragButton.Bounds.Height);
+            GorgonRectangleF pos = new(cursorPosition.X - _dragOffset.X, cursorPosition.Y - _dragOffset.Y, _dragButton.Bounds.Width, _dragButton.Bounds.Height);
             _renderer.DrawFilledRectangle(pos, _dragButton.BackColor);
             _renderer.DrawString(_dragButton.Text, new Vector2(pos.Left, pos.Top), color: _dragButton.ForeColor);
         }
@@ -225,16 +223,16 @@ static class Program
             }
 
             _buttons[i] = new Button(_compositor[i]);
-            DX.Size2F size = _buttons[i].Text.MeasureText(_renderer.DefaultFont, false);
-            maxWidth = maxWidth.Max(size.Width);
-            _buttons[i].Bounds = new DX.RectangleF(0, position.Y, 0, size.Height);
-            position = new Vector2(0, position.Y + size.Height + 2);
+            Vector2 size = _buttons[i].Text.MeasureText(_renderer.DefaultFont, false);
+            maxWidth = maxWidth.Max(size.X);
+            _buttons[i].Bounds = new GorgonRectangleF(0, position.Y, 0, size.Y);
+            position = new Vector2(0, position.Y + size.Y + 2);
         }
 
         for (int i = 0; i < _buttons.Length; ++i)
         {
             Button button = _buttons[i];
-            button.Bounds = new DX.RectangleF(button.Bounds.Left, button.Bounds.Top, maxWidth, button.Bounds.Height);
+            button.Bounds = new GorgonRectangleF(button.Bounds.Left, button.Bounds.Top, maxWidth, button.Bounds.Height);
             button.Click += Button_Click;
         }
     }
@@ -339,16 +337,16 @@ static class Program
         // And, we can also define how existing effects are rendered for things like animation and such.
         _compositor.RenderingPass("Rendering Pass", (renderer, texture, target) =>
                    {
-                       renderer.DrawFilledRectangle(new DX.RectangleF(0, 0, target.Width, target.Height),
+                       renderer.DrawFilledRectangle(new GorgonRectangleF(0, 0, target.Width, target.Height),
                                                   GorgonColors.White,
                                                   texture,
-                                                  new DX.RectangleF(0, 0, 1, 1));
+                                                  new GorgonRectangleF(0, 0, 1, 1));
 
                        Vector2 midPoint = new(target.Width * 0.5f, target.Height * 0.5f);
 
                        for (int i = 160; i >= 100; --i)
                        {
-                           DX.RectangleF region = new(midPoint.X - i * 0.5f, midPoint.Y - i * 0.5f, i, i);
+                           GorgonRectangleF region = new(midPoint.X - i * 0.5f, midPoint.Y - i * 0.5f, i, i);
 
                            renderer.DrawFilledEllipse(region, GorgonColor.Lerp(GorgonColors.Red, GorgonColors.Yellow, 1.0f - ((i - 100) / 60.0f)));
                        }
@@ -383,7 +381,7 @@ static class Program
     private static FormMain Initialize()
     {
         GorgonExample.ResourceBaseDirectory = new DirectoryInfo(ExampleConfig.Default.ResourceLocation);
-        FormMain window = GorgonExample.Initialize(new DX.Size2(ExampleConfig.Default.Resolution.Width, ExampleConfig.Default.Resolution.Height), "Post Processing");
+        FormMain window = GorgonExample.Initialize(new GorgonPoint(ExampleConfig.Default.Resolution.X, ExampleConfig.Default.Resolution.Y), "Post Processing");
 
         try
         {
@@ -400,7 +398,7 @@ static class Program
 
             _screen = new GorgonSwapChain(_graphics,
                                           window,
-                                          new GorgonSwapChainInfo(ExampleConfig.Default.Resolution.Width, ExampleConfig.Default.Resolution.Height, BufferFormat.R8G8B8A8_UNorm)
+                                          new GorgonSwapChainInfo(ExampleConfig.Default.Resolution.X, ExampleConfig.Default.Resolution.Y, BufferFormat.R8G8B8A8_UNorm)
                                           {
                                               Name = "Gorgon2D Effects Example Swap Chain"
                                           });
@@ -482,9 +480,9 @@ static class Program
 
             if (_dragButton is not null)
             {
-                DX.RectangleF dragPosition = new(e.X - _dragOffset.X, e.Y - _dragOffset.Y, _dragButton.Bounds.Width, _dragButton.Bounds.Height);
+                GorgonRectangleF dragPosition = new(e.X - _dragOffset.X, e.Y - _dragOffset.Y, _dragButton.Bounds.Width, _dragButton.Bounds.Height);
 
-                if ((!button.Bounds.Intersects(dragPosition)) || (targetAcquired))
+                if ((!button.Bounds.IntersectsWith(dragPosition)) || (targetAcquired))
                 {
                     continue;
                 }
@@ -526,13 +524,13 @@ static class Program
 
         if (_dragButton is not null)
         {
-            DX.RectangleF dragPosition = new(e.X - _dragOffset.X, e.Y - _dragOffset.Y, _dragButton.Bounds.Width, _dragButton.Bounds.Height);
+            GorgonRectangleF dragPosition = new(e.X - _dragOffset.X, e.Y - _dragOffset.Y, _dragButton.Bounds.Width, _dragButton.Bounds.Height);
             int index = -1;
             for (int i = 0; i < _buttons.Length; ++i)
             {
                 Button overButton = _buttons[i];
 
-                if (!overButton.Bounds.Intersects(dragPosition))
+                if (!overButton.Bounds.IntersectsWith(dragPosition))
                 {
                     continue;
                 }

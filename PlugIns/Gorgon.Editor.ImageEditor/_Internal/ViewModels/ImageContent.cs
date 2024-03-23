@@ -45,7 +45,6 @@ using Gorgon.IO;
 using Gorgon.Math;
 using Gorgon.UI;
 using Drawing = System.Drawing;
-using DX = SharpDX;
 
 namespace Gorgon.Editor.ImageEditor.ViewModels;
 
@@ -772,7 +771,7 @@ internal class ImageContent
                 int startArrayOrDepth = ImageType == ImageDataType.Image3D ? CurrentDepthSlice : CurrentArrayIndex;
                 int width = ImageData.Buffers[CurrentMipLevel, startArrayOrDepth].Width;
                 int height = ImageData.Buffers[CurrentMipLevel, startArrayOrDepth].Height;
-                DX.Size2 newSize = new(width, height);
+                GorgonPoint newSize = new(width, height);
 
                 NotifyPropertyChanging(nameof(ImageData));
 
@@ -930,7 +929,7 @@ internal class ImageContent
         CropOrResizeSettings.ImportFile = imageFileName;
         // Take a copy of the image here because we'll need to destroy it later.
         CropOrResizeSettings.ImportImage = importImage.Clone();
-        CropOrResizeSettings.TargetImageSize = new DX.Size2(width, height);
+        CropOrResizeSettings.TargetImageSize = new GorgonPoint(width, height);
         CurrentPanel = CropOrResizeSettings;
 
         return true;
@@ -1636,12 +1635,12 @@ internal class ImageContent
                         if ((DimensionSettings.Width <= ImageData.Width)
                             || (DimensionSettings.Height <= ImageData.Height))
                         {
-                            _imageUpdater.CropTo(ImageData, new DX.Size2(DimensionSettings.Width, DimensionSettings.Height), DimensionSettings.CropAlignment);
+                            _imageUpdater.CropTo(ImageData, new GorgonPoint(DimensionSettings.Width, DimensionSettings.Height), DimensionSettings.CropAlignment);
                         }
                     }
                     else
                     {
-                        _imageUpdater.Resize(ImageData, new DX.Size2(DimensionSettings.Width, DimensionSettings.Height), DimensionSettings.ImageFilter, false);
+                        _imageUpdater.Resize(ImageData, new GorgonPoint(DimensionSettings.Width, DimensionSettings.Height), DimensionSettings.ImageFilter, false);
                     }
 
                     // Handle depth slices/array indices.

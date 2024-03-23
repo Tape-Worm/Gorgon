@@ -25,9 +25,9 @@
 
 
 using System.Numerics;
+using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Math;
-using DX = SharpDX;
 
 namespace Gorgon.Examples;
 
@@ -41,7 +41,6 @@ namespace Gorgon.Examples;
 internal abstract class MoveableMesh(GorgonGraphics graphics)
         : Mesh(graphics)
 {
-
     // Position of the triangle.
     private Vector3 _position = Vector3.Zero;
 
@@ -69,8 +68,6 @@ internal abstract class MoveableMesh(GorgonGraphics graphics)
     private bool _needsSclTransform;
     private bool _needsRotTransform;
     private bool _needsWorldUpdate;
-
-
 
     /// <summary>
     /// Property to set or return the current position of the triangle.
@@ -151,11 +148,9 @@ internal abstract class MoveableMesh(GorgonGraphics graphics)
         }
     }
 
-
-
     /// <summary>
     /// Function to retrieve the 2D axis aligned bounding box for the mesh.
     /// </summary>
     /// <returns>The rectangle that represents a 2D axis aligned bounding box.</returns>
-    public virtual DX.RectangleF GetAABB() => DX.RectangleF.Empty;
+    public virtual GorgonRectangleF GetAABB() => GorgonRectangleF.Empty;
 }

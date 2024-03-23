@@ -33,7 +33,6 @@ using Gorgon.Editor.Services;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Renderers;
-using DX = SharpDX;
 
 namespace Gorgon.Editor.SpriteEditor;
 
@@ -177,7 +176,7 @@ internal class AnchorEditViewer(Gorgon2D renderer, GorgonSwapChain swapChain, IS
         Camera.Unproject(spriteTopLeft, out Vector3 transformedTopLeft);
         Camera.Unproject(spriteBottomRight, out Vector3 transformedBottomRight);
 
-        DX.RectangleF bounds = new()
+        GorgonRectangleF bounds = new()
         {
             Left = transformedTopLeft.X,
             Top = transformedTopLeft.Y,
@@ -193,9 +192,9 @@ internal class AnchorEditViewer(Gorgon2D renderer, GorgonSwapChain swapChain, IS
     /// <summary>Function to draw the sprite.</summary>
     protected override void DrawSprite()
     {
-        Vector2 halfSize = new(Sprite.Size.Width * 0.5f, Sprite.Size.Height * 0.5f);
-        Sprite.Anchor = new Vector2((DataContext.AnchorEditor.Anchor.X + halfSize.X) / DataContext.Size.Width,
-                                       (DataContext.AnchorEditor.Anchor.Y + halfSize.Y) / DataContext.Size.Height);
+        Vector2 halfSize = new(Sprite.Size.X * 0.5f, Sprite.Size.Y * 0.5f);
+        Sprite.Anchor = new Vector2((DataContext.AnchorEditor.Anchor.X + halfSize.X) / DataContext.Size.X,
+                                       (DataContext.AnchorEditor.Anchor.Y + halfSize.Y) / DataContext.Size.Y);
         Sprite.Position = DataContext.AnchorEditor.Anchor;
 
         base.DrawSprite();
@@ -214,7 +213,7 @@ internal class AnchorEditViewer(Gorgon2D renderer, GorgonSwapChain swapChain, IS
 
         _anchorService.Camera = Camera;
         RenderRegion = SpriteRegion;
-        Vector2 halfSize = new(Sprite.Size.Width * 0.5f, Sprite.Size.Height * 0.5f);
+        Vector2 halfSize = new(Sprite.Size.X * 0.5f, Sprite.Size.Y * 0.5f);
         Vector2[] vertices = ArrayPool<Vector2>.Shared.Rent(4);
         vertices[0] = new Vector2(Sprite.CornerOffsets.UpperLeft.X - halfSize.X, Sprite.CornerOffsets.UpperLeft.Y - halfSize.Y).Truncate();
         vertices[1] = new Vector2(Sprite.CornerOffsets.UpperRight.X + halfSize.X, Sprite.CornerOffsets.UpperRight.Y - halfSize.Y).Truncate();
@@ -223,8 +222,8 @@ internal class AnchorEditViewer(Gorgon2D renderer, GorgonSwapChain swapChain, IS
         DataContext.AnchorEditor.SpriteBounds = vertices;
         ArrayPool<Vector2>.Shared.Return(vertices, true);
 
-        DataContext.AnchorEditor.Anchor = _anchorService.AnchorPosition = new Vector2(DataContext.Size.Width * DataContext.Anchor.X - halfSize.X,
-                                                                                         DataContext.Size.Height * DataContext.Anchor.Y - halfSize.Y);
+        DataContext.AnchorEditor.Anchor = _anchorService.AnchorPosition = new Vector2(DataContext.Size.X * DataContext.Anchor.X - halfSize.X,
+                                                                                         DataContext.Size.Y * DataContext.Anchor.Y - halfSize.Y);
 
         GorgonAnimationBuilder builder = new();
         _scaleRotateAnim = builder.EditVector2(GorgonSpriteAnimationController.ScaleTrack.TrackName)

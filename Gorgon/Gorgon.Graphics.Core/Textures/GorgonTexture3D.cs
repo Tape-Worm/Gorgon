@@ -589,16 +589,16 @@ public sealed class GorgonTexture3D
             return;
         }
 
-        DX.Rectangle rect;
+        GorgonRectangle rect;
 
         // If we didn't specify a box to copy from, then create one.
         if (sourceRange is null)
         {
-            rect = new DX.Rectangle(0, sourceY, Width.Min(destinationTexture.Width).Max(1), 1);
+            rect = new GorgonRectangle(0, sourceY, Width.Min(destinationTexture.Width).Max(1), 1);
         }
         else
         {
-            rect = new DX.Rectangle((sourceRange.Value.Minimum.Min(destinationTexture.Width - 1).Max(0)).Min(Width - 1), sourceY,
+            rect = new GorgonRectangle((sourceRange.Value.Minimum.Min(destinationTexture.Width - 1).Max(0)).Min(Width - 1), sourceY,
                                    (sourceRange.Value.Maximum.Min(destinationTexture.Width).Max(1)).Min(Width), 1);
         }
 
@@ -636,7 +636,7 @@ public sealed class GorgonTexture3D
         int left = rect.Left.Min(destinationTexture.Width - 1).Max(0);
         int right = rect.Right.Min(destinationTexture.Width + left).Max(1);
 
-        rect = new DX.Rectangle
+        rect = new GorgonRectangle
         {
             Left = left,
             Top = sourceY,
@@ -718,7 +718,7 @@ public sealed class GorgonTexture3D
     /// </note>
     /// </para>
     /// </remarks>
-    public void CopyTo(GorgonTexture2D destinationTexture, DX.Rectangle? sourceRectangle = null, int sourceDepthSlice = 0, int sourceMipLevel = 0, int destX = 0, int destY = 0, int destArrayIndex = 0, int destMipLevel = 0, CopyMode copyMode = CopyMode.None)
+    public void CopyTo(GorgonTexture2D destinationTexture, GorgonRectangle? sourceRectangle = null, int sourceDepthSlice = 0, int sourceMipLevel = 0, int destX = 0, int destY = 0, int destArrayIndex = 0, int destMipLevel = 0, CopyMode copyMode = CopyMode.None)
     {
         destinationTexture.ValidateObject(nameof(destinationTexture));
 
@@ -731,16 +731,16 @@ public sealed class GorgonTexture3D
             return;
         }
 
-        DX.Rectangle rect;
+        GorgonRectangle rect;
 
         // If we didn't specify a box to copy from, then create one.
         if (sourceRectangle is null)
         {
-            rect = new DX.Rectangle(0, 0, Width.Min(destinationTexture.Width).Max(1), Height.Min(destinationTexture.Height).Max(1));
+            rect = new GorgonRectangle(0, 0, Width.Min(destinationTexture.Width).Max(1), Height.Min(destinationTexture.Height).Max(1));
         }
         else
         {
-            rect = new DX.Rectangle((sourceRectangle.Value.Left.Min(destinationTexture.Width - 1).Max(0)).Min(Width - 1),
+            rect = new GorgonRectangle((sourceRectangle.Value.Left.Min(destinationTexture.Width - 1).Max(0)).Min(Width - 1),
                                    (sourceRectangle.Value.Top.Min(destinationTexture.Height - 1).Max(0)).Min(Height - 1),
                                    (sourceRectangle.Value.Width.Min(destinationTexture.Width).Max(1)).Min(Width),
                                    (sourceRectangle.Value.Height.Min(destinationTexture.Height).Max(1)).Min(Height));
@@ -788,7 +788,7 @@ public sealed class GorgonTexture3D
         int right = rect.Right.Min(Width + left).Max(1);
         int bottom = rect.Bottom.Min(Height + top).Max(1);
 
-        rect = new DX.Rectangle
+        rect = new GorgonRectangle
         {
             Left = left,
             Top = top,
@@ -870,7 +870,7 @@ public sealed class GorgonTexture3D
     /// </note>
     /// </para>
     /// </remarks>
-    public void CopyTo(GorgonTexture3D destinationTexture, DX.Rectangle? sourceRectangle = null, GorgonRange<int>? sourceDepthSliceRange = null, int sourceMipLevel = 0, int destX = 0, int destY = 0, int destZ = 0, int destMipLevel = 0, CopyMode copyMode = CopyMode.None)
+    public void CopyTo(GorgonTexture3D destinationTexture, GorgonRectangle? sourceRectangle = null, GorgonRange<int>? sourceDepthSliceRange = null, int sourceMipLevel = 0, int destX = 0, int destY = 0, int destZ = 0, int destMipLevel = 0, CopyMode copyMode = CopyMode.None)
     {
         destinationTexture.ValidateObject(nameof(destinationTexture));
 
@@ -893,16 +893,16 @@ public sealed class GorgonTexture3D
             return;
         }
 
-        DX.Rectangle rect;
+        GorgonRectangle rect;
 
         // If we didn't specify a box to copy from, then create one.
         if (sourceRectangle is null)
         {
-            rect = new DX.Rectangle(0, 0, Width.Min(destinationTexture.Width).Max(1), Height.Min(destinationTexture.Height).Max(1));
+            rect = new GorgonRectangle(0, 0, Width.Min(destinationTexture.Width).Max(1), Height.Min(destinationTexture.Height).Max(1));
         }
         else
         {
-            rect = new DX.Rectangle((sourceRectangle.Value.Left.Min(destinationTexture.Width - 1).Max(0)).Min(Width - 1),
+            rect = new GorgonRectangle((sourceRectangle.Value.Left.Min(destinationTexture.Width - 1).Max(0)).Min(Width - 1),
                                    (sourceRectangle.Value.Top.Min(destinationTexture.Height - 1).Max(0)).Min(Height - 1),
                                    (sourceRectangle.Value.Width.Min(destinationTexture.Width).Max(1)).Min(Width),
                                    (sourceRectangle.Value.Height.Min(destinationTexture.Height).Max(1)).Min(Height));
@@ -966,7 +966,7 @@ public sealed class GorgonTexture3D
         int right = rect.Right.Min(Width + left).Max(1);
         int bottom = rect.Bottom.Min(Height + top).Max(1);
 
-        rect = new DX.Rectangle
+        rect = new GorgonRectangle
         {
             Left = left,
             Top = top,
@@ -1107,14 +1107,14 @@ public sealed class GorgonTexture3D
     ///
     /// // Set the image to the 4th depth slice, and 2nd mip level, at position 10x10 on the texture, with a width and height of 50x50.
     /// // Also, set it so that we're copying to another
-    /// texture.SetData(image.Buffers[0], new DX.Rectangle(10, 10, 50, 50), 3, 2, copyMode: CopyMode.NoOverwrite);
+    /// texture.SetData(image.Buffers[0], new GorgonRectangle(10, 10, 50, 50), 3, 2, copyMode: CopyMode.NoOverwrite);
     /// 
     /// // Set a portion of the source image.
-    /// texture.SetData(image.Buffers[0].GetRegion(new DX.Rectangle(10, 10, 50, 50));
+    /// texture.SetData(image.Buffers[0].GetRegion(new GorgonRectangle(10, 10, 50, 50));
     /// ]]>
     /// </code>
     /// </example>
-    public void SetData(IGorgonImageBuffer imageBuffer, DX.Rectangle? destRectangle = null, int destSlice = 0, int destMipLevel = 0, CopyMode copyMode = CopyMode.None)
+    public void SetData(IGorgonImageBuffer imageBuffer, GorgonRectangle? destRectangle = null, int destSlice = 0, int destMipLevel = 0, CopyMode copyMode = CopyMode.None)
     {
 #if DEBUG
         if (Usage == ResourceUsage.Immutable)
@@ -1143,11 +1143,11 @@ public sealed class GorgonTexture3D
         int height = (Height >> destMipLevel).Max(1);
 
         // Clip the destination rectangle against our texture size.
-        DX.Rectangle destRect = destRectangle ?? new DX.Rectangle(0, 0, width, height);
-        DX.Rectangle maxRect = new(0, 0, width, height);
-        DX.Rectangle.Intersect(ref destRect, ref maxRect, out DX.Rectangle destBounds);
+        GorgonRectangle destRect = destRectangle ?? new GorgonRectangle(0, 0, width, height);
+        GorgonRectangle maxRect = new(0, 0, width, height);
+        GorgonRectangle destBounds = GorgonRectangle.Intersect(destRect, maxRect);
 
-        DX.Rectangle finalBounds = new(destBounds.X, destBounds.Y, imageBuffer.Width.Min(destBounds.Width), imageBuffer.Height.Min(destBounds.Height));
+        GorgonRectangle finalBounds = new(destBounds.X, destBounds.Y, imageBuffer.Width.Min(destBounds.Width), imageBuffer.Height.Min(destBounds.Height));
 
         unsafe
         {
@@ -1345,7 +1345,7 @@ public sealed class GorgonTexture3D
     /// </summary>
     /// <param name="texelCoordinates">The texel coordinates to convert.</param>
     /// <returns>The pixel coordinates.</returns>
-    public (GorgonPoint, int) ToPixel(Vector3 texelCoordinates) => (new GorgonPoint((int)(texelCoordinates.X * Width), (int)(texelCoordinates.Y * Height)), (int)(texelCoordinates.Z * Depth));
+    public (GorgonPoint Position, int Depth) ToPixel(Vector3 texelCoordinates) => (new GorgonPoint((int)(texelCoordinates.X * Width), (int)(texelCoordinates.Y * Height)), (int)(texelCoordinates.Z * Depth));
 
     /// <summary>
     /// Function to convert a pixel coordinate into a texel coordinate.
@@ -1354,27 +1354,6 @@ public sealed class GorgonTexture3D
     /// <param name="depthSlice">The depth slice to convert.</param>
     /// <returns>The texel coordinates.</returns>
     public Vector3 ToTexel(GorgonPoint pixelCoordinates, int depthSlice) => new(pixelCoordinates.X / (float)Width, pixelCoordinates.Y / (float)Height, depthSlice / (float)Depth);
-
-    /// <summary>
-    /// Function to convert a pixel coordinate into a texel coordinate.
-    /// </summary>
-    /// <param name="pixelCoordinates">The pixel coordinate to convert.</param>
-    /// <returns>The texel coordinates.</returns>
-    public Vector3 ToTexel(Vector3 pixelCoordinates) => new(pixelCoordinates.X / Width, pixelCoordinates.Y / Height, pixelCoordinates.Z / Depth);
-
-    /// <summary>
-    /// Function to convert a texel size into a pixel size.
-    /// </summary>
-    /// <param name="texelCoordinates">The texel size to convert.</param>
-    /// <returns>The pixel size.</returns>
-    public DX.Size2 ToPixel(DX.Size2F texelCoordinates) => new((int)(texelCoordinates.Width * Width), (int)(texelCoordinates.Height * Height));
-
-    /// <summary>
-    /// Function to convert a pixel size into a texel size.
-    /// </summary>
-    /// <param name="pixelCoordinates">The pixel size to convert.</param>
-    /// <returns>The texel size.</returns>
-    public DX.Size2F ToTexel(DX.Size2 pixelCoordinates) => new(pixelCoordinates.Width / (float)Width, pixelCoordinates.Height / (float)Height);
 
     /// <summary>
     /// Function to create a new <see cref="GorgonTexture3DView"/> for this texture.

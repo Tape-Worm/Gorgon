@@ -30,7 +30,6 @@ using Gorgon.Graphics.Core.Properties;
 using Gorgon.Math;
 using Gorgon.Renderers.Cameras;
 using Gorgon.Renderers.Geometry;
-using DX = SharpDX;
 
 namespace Gorgon.Graphics.Core;
 
@@ -40,7 +39,6 @@ namespace Gorgon.Graphics.Core;
 public class GorgonTextureBlitter
     : IDisposable
 {
-
     // The graphics interface that owns this instance.
     private readonly GorgonGraphics _graphics;
     // The vertices used to blit the texture.
@@ -85,8 +83,6 @@ public class GorgonTextureBlitter
     private GorgonTexture2DView _defaultTexture;
     // The camera space for blitting the texture.
     private readonly GorgonOrthoCamera _camera;
-
-
 
     /// <summary>
     /// Function to initialize the blitter.
@@ -206,7 +202,7 @@ public class GorgonTextureBlitter
             return;
         }
 
-        DX.Size2F targetSize = new(_graphics.RenderTargets[0].Width, _graphics.RenderTargets[0].Height);
+        Vector2 targetSize = new(_graphics.RenderTargets[0].Width, _graphics.RenderTargets[0].Height);
 
         if ((_camera.Changes == CameraChange.None) && (targetSize.Equals(_camera.ViewDimensions)))
         {
@@ -359,7 +355,7 @@ public class GorgonTextureBlitter
                             GorgonPixelShader pixelShader = null,
                             GorgonConstantBuffers psConstantBuffers = null)
         => Blit(texture,
-                new DX.Rectangle(destination.X, destination.Y, texture?.Width ?? 1, texture?.Height ?? 1),
+                new GorgonRectangle(destination.X, destination.Y, texture?.Width ?? 1, texture?.Height ?? 1),
                 null,
                 color,
                 blendState,
@@ -379,8 +375,8 @@ public class GorgonTextureBlitter
     /// <param name="pixelShader">The pixel shader used to override the default pixel shader.</param>
     /// <param name="pixelShaderConstants">The pixel shader constant buffers to use.</param>
     public void Blit(GorgonTexture2DView texture,
-                     DX.Rectangle destRect,
-                     DX.Rectangle? sourceRegion = null,
+                     GorgonRectangle destRect,
+                     GorgonRectangle? sourceRegion = null,
                      GorgonColor? color = null,
                      GorgonBlendState blendState = null,
                      GorgonSamplerState samplerState = null,
@@ -417,7 +413,7 @@ public class GorgonTextureBlitter
         GetDrawCall(texture, blendState, samplerState, pixelShader, pixelShaderConstants);
 
         // Calculate position on the texture.
-        DX.RectangleF region = texture.Texture.ToTexel(sourceRegion ?? new DX.Rectangle(0, 0, texture.Width, texture.Height));
+        GorgonRectangleF region = texture.Texture.ToTexel(sourceRegion ?? new GorgonRectangle(0, 0, texture.Width, texture.Height));
 
         // Update the vertices.
         _vertices[0] = new GorgonVertexPosColorUv
@@ -468,8 +464,6 @@ public class GorgonTextureBlitter
         _blitPixelShader?.Dispose();
     }
 
-
-
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonTextureBlitter"/> class.
     /// </summary>
@@ -480,7 +474,6 @@ public class GorgonTextureBlitter
         _graphics = graphics ?? throw new ArgumentNullException(nameof(graphics));
         _blitPsoBuilder = new GorgonPipelineStateBuilder(_graphics);
         _fsPsoBuilder = new GorgonPipelineStateBuilder(_graphics);
-        _camera = new GorgonOrthoCamera(_graphics, DX.Size2F.Empty, name: "Blitter camera");
+        _camera = new GorgonOrthoCamera(_graphics, Vector2.Zero, name: "Blitter camera");
     }
-
 }

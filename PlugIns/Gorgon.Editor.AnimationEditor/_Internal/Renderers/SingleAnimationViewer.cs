@@ -31,7 +31,6 @@ using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Math;
 using Gorgon.Renderers;
-using DX = SharpDX;
 
 namespace Gorgon.Editor.AnimationEditor;
 
@@ -200,11 +199,12 @@ internal class SingleAnimationViewer(Gorgon2D renderer, GorgonSwapChain swapChai
             return;
         }
 
-        DX.RectangleF aabb = Renderer.MeasureSprite(Sprite);
-        aabb.Offset(-RenderRegion.Width * Camera.Anchor.X, -RenderRegion.Height * Camera.Anchor.Y);
+        GorgonRectangleF aabb = Renderer.MeasureSprite(Sprite);
+        aabb.X -= RenderRegion.Width * Camera.Anchor.X;
+        aabb.Y -= RenderRegion.Height * Camera.Anchor.Y;
         aabb = ToClient(aabb);
 
-        DX.RectangleF aabbCircle = new(aabb.Left, aabb.Top, aabb.Width > aabb.Height ? aabb.Width : aabb.Height, aabb.Height > aabb.Width ? aabb.Height : aabb.Width);
+        GorgonRectangleF aabbCircle = new(aabb.Left, aabb.Top, aabb.Width > aabb.Height ? aabb.Width : aabb.Height, aabb.Height > aabb.Width ? aabb.Height : aabb.Width);
 
         aabbCircle.X -= (aabbCircle.Width * 0.5f) - (aabb.Width * 0.5f);
         aabbCircle.Y -= (aabbCircle.Height * 0.5f) - (aabb.Height * 0.5f);

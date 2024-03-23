@@ -35,7 +35,6 @@ using Gorgon.PlugIns;
 using Gorgon.Renderers;
 using Gorgon.Timing;
 using Gorgon.UI;
-using DX = SharpDX;
 
 namespace Gorgon.Examples;
 
@@ -75,7 +74,7 @@ static class Program
     // The list of textures for the sprite.
     private static readonly List<GorgonTexture2D> _textures = [];
     // The size of the tiled screen.
-    private static DX.Size2 _tileSize;
+    private static GorgonPoint _tileSize;
     // The tile used for the snow layer.
     private static GorgonSprite _snowTile;
     // The sprite for the guy.
@@ -102,11 +101,11 @@ static class Program
     /// </summary>
     private static void DrawBackground()
     {
-        for (int y = 0; y < _tileSize.Height + 1; y++)
+        for (int y = 0; y < _tileSize.Y + 1; y++)
         {
-            for (int x = 0; x < _tileSize.Width + 1; x++)
+            for (int x = 0; x < _tileSize.X + 1; x++)
             {
-                _snowTile.Position = new Vector2(x * _snowTile.ScaledSize.Width, y * _snowTile.ScaledSize.Height);
+                _snowTile.Position = new Vector2(x * _snowTile.ScaledSize.X, y * _snowTile.ScaledSize.Y);
                 _renderer.DrawSprite(_snowTile);
             }
         }
@@ -117,7 +116,7 @@ static class Program
     /// </summary>
     private static void DrawIcicle()
     {
-        _icicle.Position = new Vector2(((_tileSize.Width - 2) / 2) * _snowTile.ScaledSize.Width, ((_tileSize.Height - 2) / 2) * _snowTile.ScaledSize.Height);
+        _icicle.Position = new Vector2(((_tileSize.X - 2) / 2) * _snowTile.ScaledSize.X, ((_tileSize.Y - 2) / 2) * _snowTile.ScaledSize.Y);
         _renderer.DrawSprite(_icicle);
     }
 
@@ -143,7 +142,7 @@ static class Program
                 {
                     _controller.Play(_guySprite, _animations[_current]);
                 }
-                _guyPosition.Y -= (_guySprite.ScaledSize.Height / 4.0f) * GorgonTiming.Delta;
+                _guyPosition.Y -= (_guySprite.ScaledSize.Y / 4.0f) * GorgonTiming.Delta;
 
                 if (_guySprite.Position.Y < _icicle.Position.Y + 16)
                 {
@@ -168,22 +167,22 @@ static class Program
                 {
                     _controller.Play(_guySprite, _animations[_current]);
                 }
-                _guyPosition.X -= (_guySprite.ScaledSize.Width / 2.25f) * GorgonTiming.Delta;
+                _guyPosition.X -= (_guySprite.ScaledSize.X / 2.25f) * GorgonTiming.Delta;
 
-                if (_guySprite.Position.X < -_guySprite.ScaledSize.Width * 1.25f)
+                if (_guySprite.Position.X < -_guySprite.ScaledSize.X * 1.25f)
                 {
                     _controller.Stop();
 
                     // If we reach the extreme left of the screen (and we're off screen), then move to the right side and continue this animation.						
-                    if (_guyPosition.Y < _icicle.Position.Y + _snowTile.ScaledSize.Height)
+                    if (_guyPosition.Y < _icicle.Position.Y + _snowTile.ScaledSize.Y)
                     {
-                        _guyPosition = new Vector2(_screen.Width + _guySprite.ScaledSize.Width * 1.25f, _icicle.Position.Y + _icicle.ScaledSize.Height / 2.0f);
+                        _guyPosition = new Vector2(_screen.Width + _guySprite.ScaledSize.X * 1.25f, _icicle.Position.Y + _icicle.ScaledSize.Y / 2.0f);
                     }
                     else
                     {
                         // Otherwise, reset and start over.
                         _current = AnimationName.WalkUp;
-                        _guyPosition = new Vector2(_screen.Width / 2 + _guySprite.ScaledSize.Width * 1.25f, _screen.Height + _snowTile.ScaledSize.Height);
+                        _guyPosition = new Vector2(_screen.Width / 2 + _guySprite.ScaledSize.X * 1.25f, _screen.Height + _snowTile.ScaledSize.Y);
                     }
 
                     // Ensure that the guy's depth value is less than the icicle so he'll appear in front of it.
@@ -205,7 +204,7 @@ static class Program
             return true;
         }
 
-        _tileSize = new DX.Size2((int)(_screen.Width / _snowTile.ScaledSize.Width), (int)(_screen.Height / _snowTile.ScaledSize.Height));
+        _tileSize = new GorgonPoint((int)(_screen.Width / _snowTile.ScaledSize.X), (int)(_screen.Height / _snowTile.ScaledSize.Y));
 
         _screen.RenderTargetView.Clear(GorgonColors.White);
         _depthBuffer.Clear(1.0f, 0);
@@ -347,8 +346,8 @@ static class Program
 
         _screen = new GorgonSwapChain(_graphics,
                                         window,
-                                        new GorgonSwapChainInfo(ExampleConfig.Default.Resolution.Width,
-                                                                     ExampleConfig.Default.Resolution.Height,
+                                        new GorgonSwapChainInfo(ExampleConfig.Default.Resolution.X,
+                                                                     ExampleConfig.Default.Resolution.Y,
                                                                      BufferFormat.R8G8B8A8_UNorm)
                                         {
                                             Name = "Gorgon2D Depth Buffer Example"
@@ -414,7 +413,7 @@ static class Program
 
         _guySprite = sprites["Guy_Up_0"];
         _guySprite.Depth = 0.1f;
-        _guyPosition = new Vector2(_screen.Width / 2 + _guySprite.ScaledSize.Width * 1.25f, _screen.Height / 2 + _guySprite.ScaledSize.Height);
+        _guyPosition = new Vector2(_screen.Width / 2 + _guySprite.ScaledSize.X * 1.25f, _screen.Height / 2 + _guySprite.ScaledSize.Y);
 
         BuildAnimations(sprites);
 
@@ -439,7 +438,7 @@ static class Program
             WindowsFormsSynchronizationContext.AutoInstall = false;
             SynchronizationContext.SetSynchronizationContext(new WindowsFormsSynchronizationContext());
 
-            FormMain window = GorgonExample.Initialize(new DX.Size2(ExampleConfig.Default.Resolution.Width, ExampleConfig.Default.Resolution.Height), "Depth",
+            FormMain window = GorgonExample.Initialize(new GorgonPoint(ExampleConfig.Default.Resolution.X, ExampleConfig.Default.Resolution.Y), "Depth",
                                                        async (o, _) => await InitializeAsync((FormMain)o));
 
             GorgonApplication.Run(window, Idle);

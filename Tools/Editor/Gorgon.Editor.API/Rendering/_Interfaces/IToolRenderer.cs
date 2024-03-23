@@ -26,7 +26,6 @@
 
 using Gorgon.Core;
 using Gorgon.Graphics;
-using DX = SharpDX;
 
 namespace Gorgon.Editor.Rendering;
 
@@ -46,7 +45,7 @@ public interface IToolRenderer
     /// <summary>
     /// Property to return the size of the view client area.
     /// </summary>
-    DX.Size2 ClientSize
+    GorgonPoint ClientSize
     {
         get;
     }

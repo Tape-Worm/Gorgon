@@ -33,7 +33,6 @@ using Gorgon.Graphics.Imaging.Codecs;
 using Gorgon.IO;
 using Gorgon.Renderers;
 using Gorgon.UI;
-using DX = SharpDX;
 
 
 namespace Gorgon.Examples;
@@ -115,11 +114,11 @@ ESC - Quit.";
         shadowSprite.Position = _bgSprite.Position +
                                 (new Vector2(_bgSprite.Position.X - (_screen.Width / 2.0f), _bgSprite.Position.Y - (_screen.Height / 2.0f)) * _bgSprite.Scale * 0.075f);
 
-        DX.RectangleF bgRegion = new(0, 0, _screen.Width, _screen.Height);
+        GorgonRectangleF bgRegion = new(0, 0, _screen.Width, _screen.Height);
         _renderer.DrawFilledRectangle(bgRegion,
                                       GorgonColors.White,
                                       _backgroundTexture,
-                                      new DX.RectangleF(0,
+                                      new GorgonRectangleF(0,
                                                         0,
                                                         (float)_screen.Width / _backgroundTexture.Width,
                                                         (float)_screen.Height / _backgroundTexture.Height),
@@ -141,10 +140,10 @@ ESC - Quit.";
 
         // Send the background layer to our blur target so we have an initial image to blur.
         _renderer.Begin();
-        _renderer.DrawFilledRectangle(new DX.RectangleF(0, 0, _blurTexture.Width, _blurTexture.Height),
+        _renderer.DrawFilledRectangle(new GorgonRectangleF(0, 0, _blurTexture.Width, _blurTexture.Height),
                                       GorgonColors.White,
                                       _layer1Texture,
-                                      new DX.RectangleF(0, 0, 1, 1));
+                                      new GorgonRectangleF(0, 0, 1, 1));
         _renderer.End();
 
         // If we have no blurring, then we are done.
@@ -184,13 +183,13 @@ ESC - Quit.";
         _renderer.Begin();
 
         // Draw our blurred (or not) background.
-        _renderer.DrawFilledRectangle(new DX.RectangleF(0, 0, _screen.Width, _screen.Height),
+        _renderer.DrawFilledRectangle(new GorgonRectangleF(0, 0, _screen.Width, _screen.Height),
                                       GorgonColors.White,
                                       _blurTexture,
-                                      new DX.RectangleF(0, 0, 1, 1));
+                                      new GorgonRectangleF(0, 0, 1, 1));
 
         // Draw an ellipse to indicate our light source.
-        DX.RectangleF lightPosition = new((_screen.Width / 2.0f) - 10, (_screen.Height / 2.0f) - 10, 20, 20);
+        GorgonRectangleF lightPosition = new((_screen.Width / 2.0f) - 10, (_screen.Height / 2.0f) - 10, 20, 20);
         _renderer.DrawFilledEllipse(lightPosition, GorgonColors.White, 0.5f);
 
         // Draw the sprite and its corresponding shadow.
@@ -218,10 +217,10 @@ ESC - Quit.";
     /// Function to build our render targets and textures.
     /// </summary>
     /// <param name="size">The size of the render targets.</param>
-    private static void BuildRenderTargets(DX.Size2 size)
+    private static void BuildRenderTargets(GorgonPoint size)
     {
         _layer1Target = GorgonRenderTarget2DView.CreateRenderTarget(_graphics,
-                                                                    new GorgonTexture2DInfo(size.Width, size.Height, BufferFormat.R8G8B8A8_UNorm)
+                                                                    new GorgonTexture2DInfo(size.X, size.Y, BufferFormat.R8G8B8A8_UNorm)
                                                                     {
                                                                         Name = "Layer 1",
                                                                         Binding = TextureBinding.ShaderResource,
@@ -245,7 +244,7 @@ ESC - Quit.";
         GorgonExample.ResourceBaseDirectory = new DirectoryInfo(ExampleConfig.Default.ResourceLocation);
         GorgonExample.ShowStatistics = false;
 
-        FormMain window = GorgonExample.Initialize(new DX.Size2(ExampleConfig.Default.Resolution.Width, ExampleConfig.Default.Resolution.Height), "The Shadow Gn0s");
+        FormMain window = GorgonExample.Initialize(new GorgonPoint(ExampleConfig.Default.Resolution.X, ExampleConfig.Default.Resolution.Y), "The Shadow Gn0s");
 
         try
         {
@@ -260,14 +259,14 @@ ESC - Quit.";
             _graphics = new GorgonGraphics(adapters[0], log: GorgonApplication.Log);
 
             // Create our "screen".
-            _screen = new GorgonSwapChain(_graphics, window, new GorgonSwapChainInfo(ExampleConfig.Default.Resolution.Width,
-                                                                                          ExampleConfig.Default.Resolution.Height,
+            _screen = new GorgonSwapChain(_graphics, window, new GorgonSwapChainInfo(ExampleConfig.Default.Resolution.X,
+                                                                                          ExampleConfig.Default.Resolution.Y,
                                                                                           BufferFormat.R8G8B8A8_UNorm)
             {
                 Name = "TheShadowGn0s Screen Swap chain"
             });
 
-            BuildRenderTargets(new DX.Size2(_screen.Width, _screen.Height));
+            BuildRenderTargets(new GorgonPoint(_screen.Width, _screen.Height));
 
 
             _backgroundTexture = GorgonTexture2DView.FromFile(_graphics,
@@ -301,7 +300,7 @@ ESC - Quit.";
 
             _gaussBlur = new Gorgon2DGaussBlurEffect(_renderer, 9)
             {
-                BlurRenderTargetsSize = new DX.Size2(_screen.Width / 2, _screen.Height / 2)
+                BlurRenderTargetsSize = new GorgonPoint(_screen.Width / 2, _screen.Height / 2)
             };
 
             ShadowBuilder shadowBuilder = new(_renderer, _gaussBlur, _sprite1, _sprite2);

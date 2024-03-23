@@ -37,7 +37,6 @@ using Gorgon.Math;
 using Gorgon.Renderers;
 using Gorgon.Timing;
 using Gorgon.UI;
-using DX = SharpDX;
 
 
 namespace Gorgon.Examples;
@@ -153,7 +152,7 @@ static class Program
         {
             Ball ball = new()
             {
-                Position = new Vector2(halfWidth - (_ball.Size.Width * 0.5f), halfHeight - (_ball.Size.Height * 0.5f)),
+                Position = new Vector2(halfWidth - (_ball.Size.X * 0.5f), halfHeight - (_ball.Size.Y * 0.5f)),
                 PositionDelta = new Vector2((GorgonRandom.RandomSingle() * _mainScreen.Width) - (halfWidth),
                                                (GorgonRandom.RandomSingle() * _mainScreen.Height) - (halfHeight)),
                 Scale = 1.0f,
@@ -250,9 +249,9 @@ static class Program
     private static void DrawBackground()
     {
         // Draw background.
-        for (int y = 0; y < _mainScreen.Height; y += (int)_wall.Size.Height)
+        for (int y = 0; y < _mainScreen.Height; y += (int)_wall.Size.Y)
         {
-            for (int x = 0; x < _mainScreen.Width; x += (int)_wall.Size.Width)
+            for (int x = 0; x < _mainScreen.Width; x += (int)_wall.Size.X)
             {
                 _wall.Position = new Vector2(x, y);
                 _2D.DrawSprite(_wall);
@@ -276,7 +275,7 @@ static class Program
             _ball.Scale = new Vector2(ball.Scale, ball.Scale);
 
             Vector2 offset = ball.Checkered ? new Vector2(0.5f, 0) : new Vector2(0, 0.5f);
-            _ball.TextureRegion = new DX.RectangleF(offset.X, offset.Y, _ball.TextureRegion.Width, _ball.TextureRegion.Height);
+            _ball.TextureRegion = new GorgonRectangleF(offset.X, offset.Y, _ball.TextureRegion.Width, _ball.TextureRegion.Height);
 
             _2D.DrawSprite(_ball);
         }
@@ -305,7 +304,7 @@ static class Program
         // Once we have the target blurred to our satisfaction, we need to send that target to our screen target.
         _graphics.SetRenderTarget(_mainScreen.RenderTargetView);
         _2D.Begin();
-        _2D.DrawFilledRectangle(new DX.RectangleF(0, 0, _ballTarget.Width, _ballTarget.Height), GorgonColors.White, _ballTargetView, new DX.RectangleF(0, 0, 1, 1));
+        _2D.DrawFilledRectangle(new GorgonRectangleF(0, 0, _ballTarget.Width, _ballTarget.Height), GorgonColors.White, _ballTargetView, new GorgonRectangleF(0, 0, 1, 1));
         _2D.End();
     }
 
@@ -322,10 +321,10 @@ static class Program
         _fpsText.AppendFormat(Resources.FPSLine, GorgonTiming.AverageFPS, GorgonTiming.AverageDelta * 1000.0f, _ballCount, stats.DrawCallCount);
 
         _2D.Begin();
-        _2D.DrawFilledRectangle(new DX.RectangleF(0, 0, _statsTexture.Width, _statsTexture.Height),
+        _2D.DrawFilledRectangle(new GorgonRectangleF(0, 0, _statsTexture.Width, _statsTexture.Height),
                                 GorgonColors.White,
                                 _statsTexture,
-                                new DX.RectangleF(0, 0, 1, 1));
+                                new GorgonRectangleF(0, 0, 1, 1));
         _2D.DrawString(_fpsText.ToString(), new Vector2(3.0f, 0), _ballFont);
         _2D.End();
     }
@@ -396,7 +395,7 @@ static class Program
     {
         GorgonExample.ShowStatistics = false;
 
-        _window = GorgonExample.Initialize(new DX.Size2(ExampleConfig.Default.Resolution.Width, ExampleConfig.Default.Resolution.Height), "Balls");
+        _window = GorgonExample.Initialize(new GorgonPoint(ExampleConfig.Default.Resolution.X, ExampleConfig.Default.Resolution.Y), "Balls");
 
         try
         {
@@ -415,8 +414,8 @@ static class Program
             // Create the primary swap chain.
             _mainScreen = new GorgonSwapChain(_graphics,
                                               _window,
-                                              new GorgonSwapChainInfo(ExampleConfig.Default.Resolution.Width,
-                                                                           ExampleConfig.Default.Resolution.Height,
+                                              new GorgonSwapChainInfo(ExampleConfig.Default.Resolution.X,
+                                                                           ExampleConfig.Default.Resolution.Y,
                                                                            BufferFormat.R8G8B8A8_UNorm)
                                               {
                                                   Name = "Main Screen"
@@ -465,25 +464,25 @@ static class Program
             // Create the wall sprite.
             _wall = new GorgonSprite
             {
-                Size = new DX.Size2F(63, 63),
+                Size = new Vector2(63, 63),
                 Texture = _ballTexture,
-                TextureRegion = new DX.RectangleF(0, 0, 0.5f, 0.5f),
+                TextureRegion = new GorgonRectangleF(0, 0, 0.5f, 0.5f),
                 Color = GorgonColors.White
             };
 
             // Create the ball sprite.
             _ball = new GorgonSprite
             {
-                Size = new DX.Size2F(64, 64),
+                Size = new Vector2(64, 64),
                 Texture = _ballTexture,
-                TextureRegion = new DX.RectangleF(0, 0, 0.5f, 0.5f),
+                TextureRegion = new GorgonRectangleF(0, 0, 0.5f, 0.5f),
                 Anchor = new Vector2(0.5f, 0.5f)
             };
 
             // Create the ball render target.
             _ballTarget = GorgonRenderTarget2DView.CreateRenderTarget(_graphics,
-                                                                      new GorgonTexture2DInfo(ExampleConfig.Default.Resolution.Width,
-                                                                                                   ExampleConfig.Default.Resolution.Height,
+                                                                      new GorgonTexture2DInfo(ExampleConfig.Default.Resolution.X,
+                                                                                                   ExampleConfig.Default.Resolution.Y,
                                                                                                    BufferFormat.R8G8B8A8_UNorm)
                                                                       {
                                                                           Name = "Ball Target"
@@ -493,7 +492,7 @@ static class Program
             // Create our blur effect.
             _blur = new Gorgon2DGaussBlurEffect(_2D, 15)
             {
-                BlurRenderTargetsSize = new DX.Size2(512, 512),
+                BlurRenderTargetsSize = new GorgonPoint(512, 512),
                 BlurRadius = 0
             };
             _blur.Precache();
@@ -510,24 +509,24 @@ static class Program
                                                      // Fix any objects caught outside of the main target.
                                                      for (int i = 0; i < _ballCount; i++)
                                                      {
-                                                         _ballList[i].Position.X = _ballList[i].Position.X.Max(0).Min(args.Size.Width);
-                                                         _ballList[i].Position.Y = _ballList[i].Position.Y.Max(0).Min(args.Size.Height);
+                                                         _ballList[i].Position.X = _ballList[i].Position.X.Max(0).Min(args.Size.X);
+                                                         _ballList[i].Position.Y = _ballList[i].Position.Y.Max(0).Min(args.Size.Y);
                                                      }
 
                                                      _ballTarget = GorgonRenderTarget2DView.CreateRenderTarget(_graphics,
-                                                                                                               new GorgonTexture2DInfo(args.Size.Width,
-                                                                                                                                            args.Size.Height,
+                                                                                                               new GorgonTexture2DInfo(args.Size.X,
+                                                                                                                                            args.Size.Y,
                                                                                                                                             BufferFormat.R8G8B8A8_UNorm)
                                                                                                                {
                                                                                                                    Name = "Ball Target"
                                                                                                                });
                                                      _ballTargetView = _ballTarget.GetShaderResourceView();
 
-                                                     DX.Size2 newTargetSize;
-                                                     newTargetSize.Width =
-                                                         (int)((512.0f * (args.Size.Width / (float)ExampleConfig.Default.Resolution.Width)).Min(512));
-                                                     newTargetSize.Height =
-                                                         (int)((512.0f * (args.Size.Height / (float)ExampleConfig.Default.Resolution.Height)).Min(512));
+                                                     GorgonPoint newTargetSize;
+                                                     newTargetSize.X =
+                                                         (int)((512.0f * (args.Size.X / (float)ExampleConfig.Default.Resolution.X)).Min(512));
+                                                     newTargetSize.Y =
+                                                         (int)((512.0f * (args.Size.Y / (float)ExampleConfig.Default.Resolution.Y)).Min(512));
 
                                                      _blur.BlurRenderTargetsSize = newTargetSize;
                                                  };
@@ -565,7 +564,7 @@ static class Program
             // Create statistics render target.
             _statsTexture = GorgonTexture2DView.CreateTexture(_graphics,
                                                               new GorgonTexture2DInfo((int)string.Format(Resources.FPSLine, 999999, 999999.999, _ballCount, 9999)
-                                                                                     .MeasureText(_ballFont, true).Width,
+                                                                                     .MeasureText(_ballFont, true).X,
                                                                                      (int)((_ballFont.FontHeight * 4) + _ballFont.Descent),
                                                                                      BufferFormat.R8G8B8A8_UNorm)
                                                               {
@@ -579,7 +578,7 @@ static class Program
                 rtv.Clear(new GorgonColor(0, 0, 0, 0.5f));
                 _graphics.SetRenderTarget(rtv);
                 _2D.Begin();
-                _2D.DrawRectangle(new DX.RectangleF(0, 0, rtv.Width, rtv.Height), new GorgonColor(0.86667f, 0.84314f, 0.7451f, 1.0f));
+                _2D.DrawRectangle(new GorgonRectangleF(0, 0, rtv.Width, rtv.Height), new GorgonColor(0.86667f, 0.84314f, 0.7451f, 1.0f));
                 _2D.End();
             }
 

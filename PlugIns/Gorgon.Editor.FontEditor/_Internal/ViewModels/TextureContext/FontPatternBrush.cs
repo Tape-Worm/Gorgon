@@ -111,7 +111,7 @@ internal class FontPatternBrush
     protected override void OnUnload()
     {
         _brush = DefaultBrush;
-        base.Unload();
+        Unload();
     }
 
 }

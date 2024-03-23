@@ -24,7 +24,6 @@
 // 
 
 using Gorgon.Graphics.Core;
-using DX = SharpDX;
 
 namespace Gorgon.Graphics.Fonts;
 
@@ -39,7 +38,7 @@ namespace Gorgon.Graphics.Fonts;
 /// <param name="offset">The offset.</param>
 /// <param name="outlineRegion">The outline region.</param>
 /// <param name="outlineOffset">The outline offset.</param>
-internal class GlyphInfo(Bitmap glyphBitmap, DX.Rectangle region, GorgonPoint offset, DX.Rectangle outlineRegion, GorgonPoint outlineOffset)
+internal class GlyphInfo(Bitmap glyphBitmap, GorgonRectangle region, GorgonPoint offset, GorgonRectangle outlineRegion, GorgonPoint outlineOffset)
 {
 
     /// <summary>
@@ -53,7 +52,7 @@ internal class GlyphInfo(Bitmap glyphBitmap, DX.Rectangle region, GorgonPoint of
     /// <summary>
     /// Property to return the region for the glyph.
     /// </summary>
-    public DX.Rectangle Region
+    public GorgonRectangle Region
     {
         get;
     } = region;
@@ -61,7 +60,7 @@ internal class GlyphInfo(Bitmap glyphBitmap, DX.Rectangle region, GorgonPoint of
     /// <summary>
     /// Property to return the region for the glyph outline (if applicable).
     /// </summary>
-    public DX.Rectangle OutlineRegion
+    public GorgonRectangle OutlineRegion
     {
         get;
     } = outlineRegion;

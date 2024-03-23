@@ -33,7 +33,6 @@ using Gorgon.Graphics.Core;
 using Gorgon.IO.Properties;
 using Gorgon.Math;
 using Gorgon.Renderers;
-using DX = SharpDX;
 
 namespace Gorgon.IO;
 
@@ -254,6 +253,8 @@ public class GorgonV31AnimationBinaryCodec(Gorgon2D renderer)
                     }
                 }
 
+                // SharpDX rectangle data was stored as LTRB, so we need to convert it to keep compatibility.
+                GorgonRectangleF tempRect = new(key.TextureCoordinates.Left, key.TextureCoordinates.Top, key.TextureCoordinates.Right, key.TextureCoordinates.Bottom);
                 binWriter.WriteValue(ref key.TextureCoordinates);
                 binWriter.Write(key.TextureArrayIndex);
             }
@@ -345,13 +346,15 @@ public class GorgonV31AnimationBinaryCodec(Gorgon2D renderer)
                     }
                 }
 
+                // SharpDX rectangle data was stored as LTRB, so we need to convert it to keep compatibility.
+                GorgonRectangleF tempRect = binReader.ReadValue<GorgonRectangleF>();
                 if ((texture is null) && (hasTexture is not 0))
                 {
-                    trackBuilder.SetKey(new GorgonKeyTexture2D(time, textureName, binReader.ReadValue<DX.RectangleF>(), binReader.ReadInt32()));
+                    trackBuilder.SetKey(new GorgonKeyTexture2D(time, textureName, GorgonRectangleF.FromLTRB(tempRect.X, tempRect.Y, tempRect.Width, tempRect.Height), binReader.ReadInt32()));
                 }
                 else
                 {
-                    trackBuilder.SetKey(new GorgonKeyTexture2D(time, texture, binReader.ReadValue<DX.RectangleF>(), binReader.ReadInt32()));
+                    trackBuilder.SetKey(new GorgonKeyTexture2D(time, texture, GorgonRectangleF.FromLTRB(tempRect.X, tempRect.Y, tempRect.Width, tempRect.Height), binReader.ReadInt32()));
                 }
             }
 
@@ -436,7 +439,8 @@ public class GorgonV31AnimationBinaryCodec(Gorgon2D renderer)
             WriteTrackValues(writer, Vector3Data, animation.Vector3Tracks, k => k.Value);
             WriteTrackValues(writer, Vector4Data, animation.Vector4Tracks, k => k.Value);
             WriteTrackValues(writer, QuaternionData, animation.QuaternionTracks, k => k.Value);
-            WriteTrackValues(writer, RectData, animation.RectangleTracks, k => k.Value);
+            // SharpDX rectangle data was stored as LTRB, so we need to convert it to keep compatibility.
+            WriteTrackValues(writer, RectData, animation.RectangleTracks, k => new GorgonRectangleF(k.Value.Left, k.Value.Top, k.Value.Right, k.Value.Bottom));
             WriteTrackValues(writer, ColorData, animation.ColorTracks, k => k.Value);
 
             // Write out texture data.
@@ -497,7 +501,7 @@ public class GorgonV31AnimationBinaryCodec(Gorgon2D renderer)
                         binReader.BaseStream.Position += (sizeof(int) * 8) + (sizeof(BufferFormat) * 2);
                     }
 
-                    binReader.BaseStream.Position += Unsafe.SizeOf<DX.RectangleF>() + sizeof(int);
+                    binReader.BaseStream.Position += Unsafe.SizeOf<GorgonRectangleF>() + sizeof(int);
                 }
             }
 
@@ -549,7 +553,7 @@ public class GorgonV31AnimationBinaryCodec(Gorgon2D renderer)
             ReadTrackValues<GorgonKeyVector3, Vector3>(reader, Vector3Data, builder.EditVector3, (t, v) => new GorgonKeyVector3(t, v));
             ReadTrackValues<GorgonKeyVector4, Vector4>(reader, Vector4Data, builder.EditVector4, (t, v) => new GorgonKeyVector4(t, v));
             ReadTrackValues<GorgonKeyQuaternion, Quaternion>(reader, QuaternionData, builder.EditQuaternion, (t, v) => new GorgonKeyQuaternion(t, v));
-            ReadTrackValues<GorgonKeyRectangle, DX.RectangleF>(reader, RectData, builder.EditRectangle, (t, v) => new GorgonKeyRectangle(t, v));
+            ReadTrackValues<GorgonKeyRectangle, GorgonRectangleF>(reader, RectData, builder.EditRectangle, (t, v) => new GorgonKeyRectangle(t, v));
             ReadTrackValues<GorgonKeyGorgonColor, GorgonColor>(reader, ColorData, builder.EditColor, (t, v) => new GorgonKeyGorgonColor(t, v));
             ReadTextureTrackValues(reader, TextureData, builder, textureOverrides);
 

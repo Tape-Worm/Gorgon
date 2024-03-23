@@ -26,7 +26,6 @@
 
 using System.Numerics;
 using Gorgon.Graphics;
-using DX = SharpDX;
 
 namespace Gorgon.Editor.Rendering;
 
@@ -58,5 +57,5 @@ public interface ISelectionRectangle
     /// Function to draw the selection region.
     /// </summary>
     /// <param name="region">The region to draw.</param>
-    void Draw(DX.RectangleF region);
+    void Draw(GorgonRectangleF region);
 }

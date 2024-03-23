@@ -30,7 +30,6 @@ using Gorgon.Editor.Rendering;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Renderers;
-using DX = SharpDX;
 
 namespace Gorgon.Editor.SpriteEditor;
 
@@ -46,7 +45,7 @@ internal class ColorEditViewer(Gorgon2D renderer, GorgonSwapChain swapChain, ISp
 {
 
     // The handles for corner selection.
-    private readonly DX.RectangleF[] _handles = new DX.RectangleF[5];
+    private readonly GorgonRectangleF[] _handles = new GorgonRectangleF[5];
     // The handles that are selected.
     private readonly bool[] _selected = new bool[4];
     // The currently active handle.
@@ -82,7 +81,7 @@ internal class ColorEditViewer(Gorgon2D renderer, GorgonSwapChain swapChain, ISp
 
         for (int i = 0; i < _handles.Length; ++i)
         {
-            DX.RectangleF handle = _handles[i];
+            GorgonRectangleF handle = _handles[i];
 
             if (handle.IsEmpty)
             {
@@ -271,7 +270,7 @@ internal class ColorEditViewer(Gorgon2D renderer, GorgonSwapChain swapChain, ISp
         Camera.Unproject(spriteTopLeft, out Vector3 transformedTopLeft);
         Camera.Unproject(spriteBottomRight, out Vector3 transformedBottomRight);
 
-        DX.RectangleF screenRect = new()
+        GorgonRectangleF screenRect = new()
         {
             Left = transformedTopLeft.X,
             Top = transformedTopLeft.Y,
@@ -279,18 +278,18 @@ internal class ColorEditViewer(Gorgon2D renderer, GorgonSwapChain swapChain, ISp
             Bottom = transformedBottomRight.Y
         };
 
-        _handles[0] = new DX.RectangleF(screenRect.Left - 8, screenRect.Top - 8, 8, 8);
-        _handles[1] = new DX.RectangleF(screenRect.Right, screenRect.Top - 8, 8, 8);
-        _handles[2] = new DX.RectangleF(screenRect.Right, screenRect.Bottom, 8, 8);
-        _handles[3] = new DX.RectangleF(screenRect.Left - 8, screenRect.Bottom, 8, 8);
+        _handles[0] = new GorgonRectangleF(screenRect.Left - 8, screenRect.Top - 8, 8, 8);
+        _handles[1] = new GorgonRectangleF(screenRect.Right, screenRect.Top - 8, 8, 8);
+        _handles[2] = new GorgonRectangleF(screenRect.Right, screenRect.Bottom, 8, 8);
+        _handles[3] = new GorgonRectangleF(screenRect.Left - 8, screenRect.Bottom, 8, 8);
 
         if ((screenRect.Width >= 48) && (screenRect.Height >= 48))
         {
-            _handles[4] = new DX.RectangleF((screenRect.Left - 16) + screenRect.Width * 0.5f, (screenRect.Top - 16) + screenRect.Height * 0.5f, 32, 32);
+            _handles[4] = new GorgonRectangleF((screenRect.Left - 16) + screenRect.Width * 0.5f, (screenRect.Top - 16) + screenRect.Height * 0.5f, 32, 32);
         }
         else
         {
-            _handles[4] = DX.RectangleF.Empty;
+            _handles[4] = GorgonRectangleF.Empty;
         }
     }
 
@@ -327,7 +326,7 @@ internal class ColorEditViewer(Gorgon2D renderer, GorgonSwapChain swapChain, ISp
 
         for (int i = 0; i < _handles.Length; ++i)
         {
-            DX.RectangleF handleBounds = _handles[i];
+            GorgonRectangleF handleBounds = _handles[i];
 
             if (handleBounds.IsEmpty)
             {
@@ -341,14 +340,14 @@ internal class ColorEditViewer(Gorgon2D renderer, GorgonSwapChain swapChain, ISp
             }
 
             Renderer.DrawRectangle(handleBounds, GorgonColors.Black);
-            DX.RectangleF inner = new(handleBounds.Left + 1, handleBounds.Top + 1, handleBounds.Width - 2, handleBounds.Height - 2);
+            GorgonRectangleF inner = new(handleBounds.Left + 1, handleBounds.Top + 1, handleBounds.Width - 2, handleBounds.Height - 2);
             Renderer.DrawRectangle(inner, GorgonColors.White);
 
             if ((i < 4) && (_selected[i]))
             {
-                inner = new DX.RectangleF(handleBounds.Left - 4, handleBounds.Top - 4, handleBounds.Width + 8, handleBounds.Height + 8);
+                inner = new GorgonRectangleF(handleBounds.Left - 4, handleBounds.Top - 4, handleBounds.Width + 8, handleBounds.Height + 8);
                 Renderer.DrawEllipse(inner, GorgonColors.Black);
-                inner.Inflate(-1, -1);
+                inner = GorgonRectangleF.Expand(inner, -1);
                 Renderer.DrawEllipse(inner, GorgonColors.White);
             }
         }

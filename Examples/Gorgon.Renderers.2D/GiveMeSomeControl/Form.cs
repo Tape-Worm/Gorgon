@@ -33,7 +33,6 @@ using Gorgon.Graphics.Fonts;
 using Gorgon.Graphics.Imaging.Codecs;
 using Gorgon.Renderers;
 using Gorgon.UI;
-using DX = SharpDX;
 
 
 namespace Gorgon.Examples;
@@ -122,7 +121,7 @@ public partial class Form
         {
             for (int x = 0; x < _torusTexture.Width && frameCount < 60; x += 64, frameCount++)
             {
-                DX.RectangleF texCoords = _torusTexture.ToTexel(new DX.Rectangle(x, y, 64, 64));
+                GorgonRectangleF texCoords = _torusTexture.ToTexel(new GorgonRectangle(x, y, 64, 64));
 
                 track.SetKey(new GorgonKeyTexture2D(time, _torusTexture, texCoords, 0));
 
@@ -190,13 +189,13 @@ public partial class Form
         _torusLeft = new GorgonSprite
         {
             Anchor = new Vector2(0.5f, 0.5f),
-            Size = new DX.Size2F(64, 64),
+            Size = new Vector2(64, 64),
             TextureSampler = GorgonSamplerState.PointFiltering
         };
         _torusRight = new GorgonSprite
         {
             Anchor = new Vector2(0.5f, 0.5f),
-            Size = new DX.Size2F(64, 64),
+            Size = new Vector2(64, 64),
             TextureSampler = GorgonSamplerState.PointFiltering
         };
 

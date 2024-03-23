@@ -25,8 +25,8 @@
 
 
 using Gorgon.Animation;
+using Gorgon.Graphics;
 using Newtonsoft.Json;
-using DX = SharpDX;
 
 namespace Gorgon.IO;
 
@@ -107,7 +107,7 @@ class JsonRectKeyConverter
         }
 
         return new GorgonKeyRectangle(time,
-                                      new DX.RectangleF
+                                      new GorgonRectangleF
                                       {
                                           Left = left,
                                           Top = top,

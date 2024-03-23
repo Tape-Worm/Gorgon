@@ -22,6 +22,7 @@
 // Created: Sunday, March 10, 2013 11:07:01 PM
 // 
 
+using System.Buffers;
 using System.Globalization;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
@@ -70,8 +71,8 @@ internal static partial class Win32API
     /// <param name="pgi"></param>
     /// <param name="fl"></param>
     /// <returns></returns>
-    [LibraryImport("gdi32.dll", EntryPoint = "GetGlyphIndicesW")]
-    private static partial uint GetGlyphIndices(IntPtr hdc, [MarshalAs(UnmanagedType.LPTStr)] string lpsz, int c, [Out] ushort[] pgi, uint fl);
+    [LibraryImport("gdi32.dll", EntryPoint = "GetGlyphIndicesW", StringMarshalling = StringMarshalling.Utf16)]
+    private static partial uint GetGlyphIndices(IntPtr hdc, string lpsz, int c, [Out] ushort[] pgi, uint fl);
 
     /// <summary>
     /// Function to build a list of unicode ranges.
@@ -118,11 +119,18 @@ internal static partial class Win32API
     /// <returns>TRUE if supported, FALSE if not.</returns>
     public static bool IsGlyphSupported(char c, IntPtr hDc)
     {
-        ushort[] indices = new ushort[1];
+        ushort[] indices = ArrayPool<ushort>.Shared.Rent(1);
 
-        GetGlyphIndices(hDc, c.ToString(), 1, indices, 0x01);
+        try
+        {
+            GetGlyphIndices(hDc, c.ToString(), 1, indices, 0x01);
 
-        return indices[0] != 0xffff;
+            return indices[0] != 0xffff;
+        }
+        finally
+        {
+            ArrayPool<ushort>.Shared.Return(indices);
+        }
     }
 
     /// <summary>

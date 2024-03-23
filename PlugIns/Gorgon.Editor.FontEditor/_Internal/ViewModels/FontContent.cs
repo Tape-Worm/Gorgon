@@ -33,7 +33,6 @@ using Gorgon.Editor.UI;
 using Gorgon.Graphics.Fonts;
 using Gorgon.IO;
 using Gorgon.Math;
-using Drawing = System.Drawing;
 
 
 namespace Gorgon.Editor.FontEditor;
@@ -58,7 +57,7 @@ internal class FontContent
     // Flag to indicate that the font should be italicized.
     private bool _isItalic;
     // The selected font family.
-    private Drawing.FontFamily _fontFamily;
+    private FontFamily _fontFamily;
 
 
 
@@ -436,8 +435,8 @@ internal class FontContent
             case nameof(ITextureEditorContext.TextureSize):
                 _info = _info with
                 {
-                    TextureHeight = TextureEditor.TextureSize.Height,
-                    TextureWidth = TextureEditor.TextureSize.Width
+                    TextureHeight = TextureEditor.TextureSize.Y,
+                    TextureWidth = TextureEditor.TextureSize.X
                 };
                 ContentState = ContentState.Modified;
                 break;
@@ -557,7 +556,7 @@ internal class FontContent
             return false;
         }
 
-        return _fontFamily.IsStyleAvailable(Drawing.FontStyle.Italic);
+        return _fontFamily.IsStyleAvailable(FontStyle.Italic);
     }
 
     /// <summary>
@@ -625,7 +624,7 @@ internal class FontContent
             return false;
         }
 
-        return _fontFamily.IsStyleAvailable(Drawing.FontStyle.Bold);
+        return _fontFamily.IsStyleAvailable(FontStyle.Bold);
     }
 
     /// <summary>
@@ -907,7 +906,7 @@ internal class FontContent
             bool isItalic = _info.FontStyle is GorgonFontStyle.Italics or GorgonFontStyle.BoldItalics;
 
 
-            if ((!localFamily.IsStyleAvailable(Drawing.FontStyle.Regular)) && (_info.FontStyle == GorgonFontStyle.Normal))
+            if ((!localFamily.IsStyleAvailable(FontStyle.Regular)) && (_info.FontStyle == GorgonFontStyle.Normal))
             {
                 // Try to set the bold or italic version.
                 isBold = true;
@@ -915,12 +914,12 @@ internal class FontContent
                 noRegular = true;
             }
 
-            if ((isBold) && (!localFamily.IsStyleAvailable(Drawing.FontStyle.Bold)))
+            if ((isBold) && (!localFamily.IsStyleAvailable(FontStyle.Bold)))
             {
                 isBold = false;
             }
 
-            if ((isItalic) && (!localFamily.IsStyleAvailable(Drawing.FontStyle.Italic)))
+            if ((isItalic) && (!localFamily.IsStyleAvailable(FontStyle.Italic)))
             {
                 isItalic = false;
             }
@@ -1311,7 +1310,7 @@ internal class FontContent
         _isBold = _info.FontStyle is GorgonFontStyle.Bold or GorgonFontStyle.BoldItalics;
         _isItalic = _info.FontStyle is GorgonFontStyle.Italics or GorgonFontStyle.BoldItalics;
 
-        _fontFamily = new Drawing.FontFamily(_info.FontFamilyName);
+        _fontFamily = new FontFamily(_info.FontFamilyName);
     }
 
     /// <summary>
@@ -1353,7 +1352,7 @@ internal class FontContent
         TextureEditor.WaitPanelActivated -= Panel_WaitPanelActivated;
         TextureEditor.WaitPanelDeactivated -= Panel_WaitPanelDeactivated;
 
-        Drawing.FontFamily family = Interlocked.Exchange(ref _fontFamily, null);
+        FontFamily family = Interlocked.Exchange(ref _fontFamily, null);
         family?.Dispose();
 
         _fontService?.Dispose();

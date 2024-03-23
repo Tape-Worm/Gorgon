@@ -129,7 +129,7 @@ public static class VectorExtensions
     /// <param name="vec">The vector to convert.</param>
     /// <returns>The equivalent size value.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static DX.Size2F ToSize2F(this Vector2 vec) => new(vec.X, vec.Y);
+    public static Vector2 ToSize2F(this Vector2 vec) => new(vec.X, vec.Y);
 
     /// <summary>
     /// Function to convert a vector into a size.
@@ -137,7 +137,7 @@ public static class VectorExtensions
     /// <param name="vec">The vector to convert.</param>
     /// <returns>The equivalent size value.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static DX.Size2 ToSize2(this Vector2 vec) => new((int)vec.X, (int)vec.Y);
+    public static GorgonPoint ToSize2(this Vector2 vec) => new((int)vec.X, (int)vec.Y);
 
     /// <summary>
     /// Function to convert a vector into a point.

@@ -32,7 +32,6 @@ using Gorgon.Editor.UI.Views;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Math;
-using DX = SharpDX;
 
 namespace Gorgon.Editor.ExtractSpriteTool;
 
@@ -110,7 +109,7 @@ internal partial class FormExtract
             return;
         }
 
-        ViewModel.CellSize = new DX.Size2((int)NumericCellWidth.Value, ViewModel.CellSize.Height);
+        ViewModel.CellSize = new GorgonPoint((int)NumericCellWidth.Value, ViewModel.CellSize.Y);
     }
 
     /// <summary>Handles the ValueChanged event of the NumericCellHeight control.</summary>
@@ -123,7 +122,7 @@ internal partial class FormExtract
             return;
         }
 
-        ViewModel.CellSize = new DX.Size2(ViewModel.CellSize.Width, (int)NumericCellHeight.Value);
+        ViewModel.CellSize = new GorgonPoint(ViewModel.CellSize.X, (int)NumericCellHeight.Value);
     }
 
     /// <summary>Handles the ValueChanged event of the NumericOffsetX control.</summary>
@@ -162,7 +161,7 @@ internal partial class FormExtract
             return;
         }
 
-        ViewModel.GridSize = new DX.Size2((int)NumericColumnCount.Value, ViewModel.GridSize.Height);
+        ViewModel.GridSize = new GorgonPoint((int)NumericColumnCount.Value, ViewModel.GridSize.Y);
     }
 
     /// <summary>Handles the ValueChanged event of the NumericRowCount control.</summary>
@@ -175,7 +174,7 @@ internal partial class FormExtract
             return;
         }
 
-        ViewModel.GridSize = new DX.Size2(ViewModel.GridSize.Width, (int)NumericRowCount.Value);
+        ViewModel.GridSize = new GorgonPoint(ViewModel.GridSize.X, (int)NumericRowCount.Value);
     }
 
     /// <summary>Handles the ValueChanged event of the NumericArrayIndex control.</summary>
@@ -458,12 +457,12 @@ internal partial class FormExtract
                 NumericCellHeight.Maximum = ViewModel.Texture.Height - ViewModel.GridOffset.Y;
                 break;
             case nameof(IExtract.CellSize):
-                NumericOffsetX.Maximum = ViewModel.Texture.Width - ViewModel.CellSize.Width;
-                NumericOffsetY.Maximum = ViewModel.Texture.Height - ViewModel.CellSize.Height;
+                NumericOffsetX.Maximum = ViewModel.Texture.Width - ViewModel.CellSize.X;
+                NumericOffsetY.Maximum = ViewModel.Texture.Height - ViewModel.CellSize.Y;
                 break;
             case nameof(IExtract.MaxGridSize):
-                NumericColumnCount.Maximum = ViewModel.MaxGridSize.Width;
-                NumericRowCount.Maximum = ViewModel.MaxGridSize.Height;
+                NumericColumnCount.Maximum = ViewModel.MaxGridSize.X;
+                NumericRowCount.Maximum = ViewModel.MaxGridSize.Y;
                 break;
             case nameof(IExtract.MaxArrayCount):
                 NumericArrayCount.Maximum = ViewModel.MaxArrayCount;
@@ -493,19 +492,19 @@ internal partial class FormExtract
 
         SkipColor.Color = dataContext.SkipMaskColor;
         CheckSkipEmpty.Checked = dataContext.SkipEmpty;
-        NumericOffsetX.Maximum = (dataContext.Texture.Width - dataContext.CellSize.Width).Max(0);
-        NumericOffsetY.Maximum = (dataContext.Texture.Height - dataContext.CellSize.Height).Max(0);
+        NumericOffsetX.Maximum = (dataContext.Texture.Width - dataContext.CellSize.X).Max(0);
+        NumericOffsetY.Maximum = (dataContext.Texture.Height - dataContext.CellSize.Y).Max(0);
         NumericCellWidth.Maximum = (dataContext.Texture.Width - dataContext.GridOffset.X).Max(1);
         NumericCellHeight.Maximum = (dataContext.Texture.Height - dataContext.GridOffset.Y).Max(1);
         NumericArrayCount.Maximum = dataContext.MaxArrayCount.Max(1);
         NumericArrayIndex.Maximum = dataContext.MaxArrayIndex.Max(0);
-        NumericColumnCount.Maximum = dataContext.MaxGridSize.Width;
-        NumericRowCount.Maximum = dataContext.MaxGridSize.Height;
+        NumericColumnCount.Maximum = dataContext.MaxGridSize.X;
+        NumericRowCount.Maximum = dataContext.MaxGridSize.Y;
 
-        NumericCellWidth.Value = dataContext.CellSize.Width.Min((int)NumericCellWidth.Maximum).Max(1);
-        NumericCellHeight.Value = dataContext.CellSize.Height.Min((int)NumericCellHeight.Maximum).Max(1);
-        NumericColumnCount.Value = dataContext.GridSize.Width.Min((int)NumericColumnCount.Maximum).Max(1);
-        NumericRowCount.Value = dataContext.GridSize.Height.Min((int)NumericRowCount.Maximum).Max(1);
+        NumericCellWidth.Value = dataContext.CellSize.X.Min((int)NumericCellWidth.Maximum).Max(1);
+        NumericCellHeight.Value = dataContext.CellSize.Y.Min((int)NumericCellHeight.Maximum).Max(1);
+        NumericColumnCount.Value = dataContext.GridSize.X.Min((int)NumericColumnCount.Maximum).Max(1);
+        NumericRowCount.Value = dataContext.GridSize.Y.Min((int)NumericRowCount.Maximum).Max(1);
         NumericOffsetX.Value = dataContext.GridOffset.X.Min((int)NumericOffsetX.Maximum).Max(0);
         NumericOffsetY.Value = dataContext.GridOffset.Y.Min((int)NumericOffsetY.Maximum).Max(0);
         NumericArrayCount.Value = dataContext.ArrayCount.Min((int)NumericArrayCount.Maximum).Max(1);

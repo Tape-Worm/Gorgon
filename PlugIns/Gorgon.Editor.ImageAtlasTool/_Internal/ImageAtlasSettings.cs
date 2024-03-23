@@ -24,8 +24,8 @@
 // 
 
 
+using Gorgon.Graphics;
 using Newtonsoft.Json;
-using DX = SharpDX;
 
 namespace Gorgon.Editor.ImageAtlasTool;
 
@@ -58,11 +58,11 @@ internal class TextureAtlasSettings
     /// Property to set or return the maximum texture size.
     /// </summary>
     [JsonProperty]
-    public DX.Size2 MaxTextureSize
+    public GorgonPoint MaxTextureSize
     {
         get;
         set;
-    } = new DX.Size2(1024, 1024);
+    } = new GorgonPoint(1024, 1024);
 
     /// <summary>
     /// Property to set or return the maximum array count.

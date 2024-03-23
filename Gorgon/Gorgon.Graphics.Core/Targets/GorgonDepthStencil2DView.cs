@@ -258,7 +258,7 @@ public sealed class GorgonDepthStencil2DView
     /// <remarks>
     /// This value is the full bounding rectangle of the first mip map level for the texture associated with the render target.
     /// </remarks>
-    public DX.Rectangle Bounds
+    public GorgonRectangle Bounds
     {
         get;
     }
@@ -419,12 +419,12 @@ public sealed class GorgonDepthStencil2DView
     /// </summary>
     /// <param name="texelCoordinates">The texel coordinates to convert.</param>
     /// <returns>A rectangle containing the pixel space coordinates.</returns>
-    public DX.Rectangle ToPixel(DX.RectangleF texelCoordinates)
+    public GorgonRectangle ToPixel(GorgonRectangleF texelCoordinates)
     {
         float width = Texture.Width;
         float height = Texture.Height;
 
-        return new DX.Rectangle((int)(texelCoordinates.X * width),
+        return new GorgonRectangle((int)(texelCoordinates.X * width),
                                  (int)(texelCoordinates.Y * height),
                                  (int)(texelCoordinates.Width * width),
                                  (int)(texelCoordinates.Height * height));
@@ -435,12 +435,12 @@ public sealed class GorgonDepthStencil2DView
     /// </summary>
     /// <param name="pixelCoordinates">The pixel coordinates to convert.</param>
     /// <returns>A rectangle containing the texel space coordinates.</returns>
-    public DX.RectangleF ToTexel(DX.Rectangle pixelCoordinates)
+    public GorgonRectangleF ToTexel(GorgonRectangle pixelCoordinates)
     {
         float width = Texture.Width;
         float height = Texture.Height;
 
-        return new DX.RectangleF(pixelCoordinates.X / width, pixelCoordinates.Y / height, pixelCoordinates.Width / width, pixelCoordinates.Height / height);
+        return new GorgonRectangleF(pixelCoordinates.X / width, pixelCoordinates.Y / height, pixelCoordinates.Width / width, pixelCoordinates.Height / height);
     }
 
     /// <summary>
@@ -448,12 +448,12 @@ public sealed class GorgonDepthStencil2DView
     /// </summary>
     /// <param name="pixelSize">The pixel size to convert.</param>
     /// <returns>A size value containing the texel space coordinates.</returns>
-    public DX.Size2F ToTexel(DX.Size2 pixelSize)
+    public Vector2 ToTexel(GorgonPoint pixelSize)
     {
         float width = Texture.Width;
         float height = Texture.Height;
 
-        return new DX.Size2F(pixelSize.Width / width, pixelSize.Height / height);
+        return new Vector2(pixelSize.X / width, pixelSize.Y / height);
     }
 
     /// <summary>
@@ -461,38 +461,12 @@ public sealed class GorgonDepthStencil2DView
     /// </summary>
     /// <param name="texelSize">The texel size to convert.</param>
     /// <returns>A size value containing the texel space coordinates.</returns>
-    public DX.Size2 ToPixel(DX.Size2F texelSize)
+    public GorgonPoint ToPixel(Vector2 texelSize)
     {
         float width = Texture.Width;
         float height = Texture.Height;
 
-        return new DX.Size2((int)(texelSize.Width * width), (int)(texelSize.Height * height));
-    }
-
-    /// <summary>
-    /// Function to convert a 2D vector value from pixel coordinates to texel space.
-    /// </summary>
-    /// <param name="pixelVector">The pixel size to convert.</param>
-    /// <returns>A 2D vector containing the texel space coordinates.</returns>
-    public Vector2 ToTexel(Vector2 pixelVector)
-    {
-        float width = Texture.Width;
-        float height = Texture.Height;
-
-        return new Vector2(pixelVector.X / width, pixelVector.Y / height);
-    }
-
-    /// <summary>
-    /// Function to convert a 2D vector value from texel coordinates to pixel space.
-    /// </summary>
-    /// <param name="texelVector">The texel size to convert.</param>
-    /// <returns>A 2D vector containing the pixel space coordinates.</returns>
-    public Vector2 ToPixel(Vector2 texelVector)
-    {
-        float width = Texture.Width;
-        float height = Texture.Height;
-
-        return new Vector2(texelVector.X * width, texelVector.Y * height);
+        return new GorgonPoint((int)(texelSize.X * width), (int)(texelSize.Y * height));
     }
 
     /// <summary>
@@ -598,7 +572,7 @@ public sealed class GorgonDepthStencil2DView
     /// ignored.
     /// </para>
     /// </remarks>
-    public void Clear(float depthValue, ReadOnlySpan<DX.Rectangle> rectangles)
+    public void Clear(float depthValue, ReadOnlySpan<GorgonRectangle> rectangles)
     {
         if ((rectangles.IsEmpty) || (FormatInformation.HasStencil))
         {
@@ -613,7 +587,7 @@ public sealed class GorgonDepthStencil2DView
         {
             for (int i = 0; i < rectangles.Length; ++i)
             {
-                clearRects[i] = rectangles[i];
+                clearRects[i] = rectangles[i].ToSharpDXRawRectangle();
             }
 
             Texture.Graphics.D3DDeviceContext.ClearView(Native, new DX.Color4(depthValue), clearRects, rectangles.Length);
@@ -767,7 +741,7 @@ public sealed class GorgonDepthStencil2DView
         MipWidth = (Width >> MipSlice).Max(1);
         MipHeight = (Height >> MipSlice).Max(1);
 
-        Bounds = new DX.Rectangle(0, 0, Width, Height);
+        Bounds = new GorgonRectangle(0, 0, Width, Height);
     }
 
 }

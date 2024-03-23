@@ -32,7 +32,6 @@ using Gorgon.Graphics.Imaging.Codecs;
 using Gorgon.Renderers;
 using Gorgon.Timing;
 using Gorgon.UI;
-using DX = SharpDX;
 
 namespace Gorgon.Examples;
 
@@ -132,7 +131,7 @@ static class Program
             float starColorValue = GorgonRandom.RandomSingle(0.35f, 1.0f);
             GorgonColor starColor = new(starColorValue, starColorValue, starColorValue, 1.0f);
 
-            _renderer.DrawFilledRectangle(new DX.RectangleF(position.X, position.Y, 1, 1), starColor);
+            _renderer.DrawFilledRectangle(new GorgonRectangleF(position.X, position.Y, 1, 1), starColor);
         }
         _renderer.End();
 
@@ -176,7 +175,7 @@ static class Program
         GorgonExample.ResourceBaseDirectory = new DirectoryInfo(ExampleConfig.Default.ResourceLocation);
 
         // Create the window, and size it to our resolution.
-        FormMain window = GorgonExample.Initialize(new DX.Size2(ExampleConfig.Default.Resolution.Width, ExampleConfig.Default.Resolution.Height), "Sprites");
+        FormMain window = GorgonExample.Initialize(new GorgonPoint(ExampleConfig.Default.Resolution.X, ExampleConfig.Default.Resolution.Y), "Sprites");
 
         try
         {
@@ -193,8 +192,8 @@ static class Program
 
             _screen = new GorgonSwapChain(_graphics,
                                           window,
-                                          new GorgonSwapChainInfo(ExampleConfig.Default.Resolution.Width,
-                                                                       ExampleConfig.Default.Resolution.Height,
+                                          new GorgonSwapChainInfo(ExampleConfig.Default.Resolution.X,
+                                                                       ExampleConfig.Default.Resolution.Y,
                                                                        BufferFormat.R8G8B8A8_UNorm)
                                           {
                                               Name = "Gorgon2D Sprites Example Swap Chain"
@@ -226,40 +225,40 @@ static class Program
 
             _ship = new GorgonSprite
             {
-                Bounds = new DX.RectangleF(0, 0, 206, 369),
+                Bounds = new GorgonRectangleF(0, 0, 206, 369),
                 Texture = _shipTexture,
                 // Calculate the ship texture coordinates.
-                TextureRegion = _shipTexture.Texture.ToTexel(new DX.Rectangle(34, 10, 206, 369)),
+                TextureRegion = _shipTexture.Texture.ToTexel(new GorgonRectangle(34, 10, 206, 369)),
                 Anchor = new Vector2(0.5f, 1.0f)
             };
             _engineGlow[0] = new GorgonSprite
             {
-                Bounds = new DX.RectangleF(0, 0, 250, 85),
+                Bounds = new GorgonRectangleF(0, 0, 250, 85),
                 Texture = _shipTexture,
-                TextureRegion = _shipTexture.Texture.ToTexel(new DX.Rectangle(512, 11, 250, 85))
+                TextureRegion = _shipTexture.Texture.ToTexel(new GorgonRectangle(512, 11, 250, 85))
             };
             _engineGlow[1] = new GorgonSprite
             {
-                Bounds = new DX.RectangleF(0, 0, 250, 85),
+                Bounds = new GorgonRectangleF(0, 0, 250, 85),
                 Texture = _shipTexture,
-                TextureRegion = _shipTexture.Texture.ToTexel(new DX.Rectangle(512, 114, 250, 85))
+                TextureRegion = _shipTexture.Texture.ToTexel(new GorgonRectangle(512, 114, 250, 85))
             };
             _engineGlow[2] = new GorgonSprite
             {
-                Bounds = new DX.RectangleF(0, 0, 250, 85),
+                Bounds = new GorgonRectangleF(0, 0, 250, 85),
                 Texture = _shipTexture,
-                TextureRegion = _shipTexture.Texture.ToTexel(new DX.Rectangle(512, 207, 250, 85))
+                TextureRegion = _shipTexture.Texture.ToTexel(new GorgonRectangle(512, 207, 250, 85))
             };
 
             // Space background sprite texture positioning.
             _background = new GorgonSprite
             {
                 Texture = _spaceBackground,
-                Bounds = new DX.RectangleF(_screen.Width / 2,
+                Bounds = new GorgonRectangleF(_screen.Width / 2,
                                                          _screen.Height,
                                                          _spaceBackground.Width,
                                                          _spaceBackground.Height),
-                TextureRegion = new DX.RectangleF(0, 0, 1, 1),
+                TextureRegion = new GorgonRectangleF(0, 0, 1, 1),
                 Anchor = new Vector2(0.5f, 1.0f)
             };
 
@@ -289,7 +288,7 @@ static class Program
     /// <param name="e">The <see cref="SwapChainResizedEventArgs"/> instance containing the event data.</param>
     private static void Screen_AfterSwapChainResized(object sender, SwapChainResizedEventArgs e) =>
         // We'll need to readjust the background scroller.
-        _background.Position = new Vector2(_background.Position.X, e.Size.Height + (_background.Position.Y - e.OldSize.Height));
+        _background.Position = new Vector2(_background.Position.X, e.Size.Y + (_background.Position.Y - e.OldSize.Y));
 
     /// <summary>
     /// The main entry point for the application.

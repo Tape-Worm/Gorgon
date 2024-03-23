@@ -31,7 +31,6 @@ using Gorgon.Editor.Rendering;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Renderers;
-using DX = SharpDX;
 
 namespace Gorgon.Editor.SpriteEditor;
 
@@ -91,9 +90,9 @@ internal class VertexEditViewer(Gorgon2D renderer, GorgonSwapChain swapChain, IS
         // Transform the vertex offsets into sprite local space.
         Vector2[] vertices = ArrayPool<Vector2>.Shared.Rent(Sprite.CornerOffsets.Count);
         vertices[0] = DataContext.SpriteVertexEditContext.Vertices[0];
-        vertices[1] = new Vector2(Sprite.Size.Width + DataContext.SpriteVertexEditContext.Vertices[1].X, DataContext.SpriteVertexEditContext.Vertices[1].Y);
-        vertices[2] = new Vector2(Sprite.Size.Width + DataContext.SpriteVertexEditContext.Vertices[2].X, Sprite.Size.Height + DataContext.SpriteVertexEditContext.Vertices[2].Y);
-        vertices[3] = new Vector2(DataContext.SpriteVertexEditContext.Vertices[3].X, Sprite.Size.Height + DataContext.SpriteVertexEditContext.Vertices[3].Y);
+        vertices[1] = new Vector2(Sprite.Size.X + DataContext.SpriteVertexEditContext.Vertices[1].X, DataContext.SpriteVertexEditContext.Vertices[1].Y);
+        vertices[2] = new Vector2(Sprite.Size.X + DataContext.SpriteVertexEditContext.Vertices[2].X, Sprite.Size.Y + DataContext.SpriteVertexEditContext.Vertices[2].Y);
+        vertices[3] = new Vector2(DataContext.SpriteVertexEditContext.Vertices[3].X, Sprite.Size.Y + DataContext.SpriteVertexEditContext.Vertices[3].Y);
         _vertexEditor.Vertices = vertices;
         ArrayPool<Vector2>.Shared.Return(vertices, true);
     }
@@ -132,9 +131,9 @@ internal class VertexEditViewer(Gorgon2D renderer, GorgonSwapChain swapChain, IS
         Vector2[] verts = ArrayPool<Vector2>.Shared.Rent(_vertexEditor.Vertices.Count);
 
         verts[0] = _vertexEditor.Vertices[0];
-        verts[1] = new Vector2(_vertexEditor.Vertices[1].X - Sprite.Size.Width, _vertexEditor.Vertices[1].Y);
-        verts[2] = new Vector2(_vertexEditor.Vertices[2].X - Sprite.Size.Width, _vertexEditor.Vertices[2].Y - Sprite.Size.Height);
-        verts[3] = new Vector2(_vertexEditor.Vertices[3].X, _vertexEditor.Vertices[3].Y - Sprite.Size.Height);
+        verts[1] = new Vector2(_vertexEditor.Vertices[1].X - Sprite.Size.X, _vertexEditor.Vertices[1].Y);
+        verts[2] = new Vector2(_vertexEditor.Vertices[2].X - Sprite.Size.X, _vertexEditor.Vertices[2].Y - Sprite.Size.Y);
+        verts[3] = new Vector2(_vertexEditor.Vertices[3].X, _vertexEditor.Vertices[3].Y - Sprite.Size.Y);
 
         DataContext.SpriteVertexEditContext.Vertices = verts;
         DataContext.SpriteVertexEditContext.Offset = DataContext.SpriteVertexEditContext.Vertices[DataContext.SpriteVertexEditContext.SelectedVertexIndex];
@@ -226,15 +225,15 @@ internal class VertexEditViewer(Gorgon2D renderer, GorgonSwapChain swapChain, IS
     {
         base.OnRenderBackground();
 
-        DX.RectangleF spriteRegion = Renderer.MeasureSprite(Sprite);
+        GorgonRectangleF spriteRegion = Renderer.MeasureSprite(Sprite);
 
         Vector3 topLeft = Camera.Unproject(new Vector3(spriteRegion.Left, spriteRegion.Top, 0));
         Vector3 bottomRight = Camera.Unproject(new Vector3(spriteRegion.Right, spriteRegion.Bottom, 0));
 
         Vector2 position = new(topLeft.X + ((bottomRight.X - topLeft.X) * 0.5f), topLeft.Y + ((bottomRight.Y - topLeft.Y) * 0.5f));
         Renderer.Begin();
-        Renderer.DrawLine(position.X, 0, position.X, ClientSize.Height, GorgonColors.Black);
-        Renderer.DrawLine(0, position.Y, ClientSize.Width, position.Y, GorgonColors.Black);
+        Renderer.DrawLine(position.X, 0, position.X, ClientSize.Y, GorgonColors.Black);
+        Renderer.DrawLine(0, position.Y, ClientSize.X, position.Y, GorgonColors.Black);
         Renderer.End();
     }
 
@@ -248,7 +247,7 @@ internal class VertexEditViewer(Gorgon2D renderer, GorgonSwapChain swapChain, IS
         Camera.Unproject(spriteTopLeft, out Vector3 transformedTopLeft);
         Camera.Unproject(spriteBottomRight, out Vector3 transformedBottomRight);
 
-        _vertexEditor.SpriteBounds = new DX.RectangleF
+        _vertexEditor.SpriteBounds = new GorgonRectangleF
         {
             Left = transformedTopLeft.X,
             Top = transformedTopLeft.Y,

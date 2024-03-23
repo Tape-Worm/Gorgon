@@ -32,7 +32,6 @@ using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Math;
 using Gorgon.Renderers.Cameras;
-using DX = SharpDX;
 
 namespace Gorgon.Renderers;
 
@@ -178,10 +177,10 @@ public class Gorgon2DCompositor(Gorgon2D renderer)
 
         // Copy the composited output into the final render target specified by the user.
         Renderer.Begin(Gorgon2DBatchState.NoBlend);
-        Renderer.DrawFilledRectangle(new DX.RectangleF(0, 0, lastTargetTexture.Width, lastTargetTexture.Height),
+        Renderer.DrawFilledRectangle(new GorgonRectangleF(0, 0, lastTargetTexture.Width, lastTargetTexture.Height),
                                      GorgonColors.White,
                                      lastTargetTexture,
-                                     new DX.RectangleF(0, 0, 1, 1));
+                                     new GorgonRectangleF(0, 0, 1, 1));
         Renderer.End();
     }
 

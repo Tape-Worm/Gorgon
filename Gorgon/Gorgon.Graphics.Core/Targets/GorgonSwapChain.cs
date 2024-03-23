@@ -106,11 +106,8 @@ public sealed class GorgonSwapChain
     /// </summary>
     private class ResizeState
     {
-
         // Previous video mode.
         private GorgonVideoMode? _prevVideoMode;
-
-
 
         /// <summary>
         /// Property to set or return the format to use when entering fullscreen mode.
@@ -154,14 +151,10 @@ public sealed class GorgonSwapChain
         public ref GorgonVideoMode? PreviousVideoMode => ref _prevVideoMode;
     }
 
-
-
     /// <summary>
     /// The prefix to assign to a default name.
     /// </summary>
     internal const string NamePrefix = nameof(GorgonSwapChain);
-
-
 
     // The DXGI swap chain that this object will wrap.
     private DXGI.SwapChain4 _swapChain;
@@ -184,9 +177,7 @@ public sealed class GorgonSwapChain
     // Flag to indicate that tearing support is enabled (for flip mode).
     private readonly int _supportsTearing = 0;
     // The original size of the window prior to the resize event.
-    private DX.Size2 _originalSize;
-
-
+    private GorgonPoint _originalSize;
 
     // Event called before the swap chain has been resized.
     private event EventHandler<SwapChainResizingEventArgs> SwapChainResizingEvent;
@@ -529,7 +520,7 @@ public sealed class GorgonSwapChain
     {
         try
         {
-            DX.Size2 newSize = new(ParentForm.ClientSize.Width, ParentForm.ClientSize.Height);
+            GorgonPoint newSize = new(ParentForm.ClientSize.Width, ParentForm.ClientSize.Height);
 
             // If the actual size didn't change, then don't trigger a resize of the swap chain.
             if (newSize.Equals(_originalSize))
@@ -565,7 +556,7 @@ public sealed class GorgonSwapChain
 
         // Capture the original size. If we don't, the swapchain will act as though it's being resized when we move the window. This can cause 
         // a lot of weirdness if the swap chain size doesn't match the client size of the bound window.
-        _originalSize = new DX.Size2(ParentForm.ClientSize.Width, ParentForm.ClientSize.Height);
+        _originalSize = new GorgonPoint(ParentForm.ClientSize.Width, ParentForm.ClientSize.Height);
     }
 
     /// <summary>Handles the Layout event of the Window control.</summary>
@@ -1138,7 +1129,7 @@ public sealed class GorgonSwapChain
         Graphics.Log.Print($"SwapChain '{Name}': Resizing back buffers.", LoggingLevel.Verbose);
 
         // Tell the application that this swap chain is going to be resized.
-        SwapChainResizingEvent?.Invoke(this, new SwapChainResizingEventArgs(new DX.Size2(_info.Width, _info.Height), new DX.Size2(newWidth, newHeight)));
+        SwapChainResizingEvent?.Invoke(this, new SwapChainResizingEventArgs(new GorgonPoint(_info.Width, _info.Height), new GorgonPoint(newWidth, newHeight)));
 
         int rtvIndex = DestroyResources(false);
 
@@ -1151,7 +1142,7 @@ public sealed class GorgonSwapChain
 
         DXGISwapChain.ResizeBuffers((IsWindowed || _isFullScreenBorderless) ? 2 : 3, newWidth, newHeight, _resizeState.ResizeFormat, flags);
 
-        DX.Size2 oldSize = new(_info.Width, _info.Height);
+        GorgonPoint oldSize = new(_info.Width, _info.Height);
 
         _info = _info with
         {
@@ -1161,7 +1152,7 @@ public sealed class GorgonSwapChain
 
         CreateResources(rtvIndex);
 
-        SwapChainResizedEvent?.Invoke(this, new SwapChainResizedEventArgs(new DX.Size2(newWidth, newHeight), oldSize));
+        SwapChainResizedEvent?.Invoke(this, new SwapChainResizedEventArgs(new GorgonPoint(newWidth, newHeight), oldSize));
 
         Graphics.Log.Print($"SwapChain '{Name}': Back buffers resized.", LoggingLevel.Verbose);
     }
@@ -1436,7 +1427,5 @@ public sealed class GorgonSwapChain
         // Use these events to restore full screen or windowed state when the application regains or loses focus.
         ParentForm.Activated += ParentForm_Activated;
         ParentForm.Deactivate += ParentForm_Deactivated;
-
     }
-
 }

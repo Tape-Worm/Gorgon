@@ -53,7 +53,6 @@ namespace Gorgon.Graphics.Core;
 public abstract class GorgonRenderTargetView(GorgonGraphicsResource resource, BufferFormat format, GorgonFormatInfo formatInfo)
                 : GorgonResourceView(resource)
 {
-
     /// <summary>
     /// Property to return the native D3D depth/stencil view.
     /// </summary>
@@ -103,8 +102,6 @@ public abstract class GorgonRenderTargetView(GorgonGraphicsResource resource, Bu
         get;
     }
 
-
-
     /// <summary>
     /// Function to clear the contents of the render target for this view.
     /// </summary>
@@ -124,8 +121,4 @@ public abstract class GorgonRenderTargetView(GorgonGraphicsResource resource, Bu
             ++stats._clearCount;
         }
     }
-
-
-
-
 }

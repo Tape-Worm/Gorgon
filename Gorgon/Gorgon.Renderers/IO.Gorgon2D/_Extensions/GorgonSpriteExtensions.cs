@@ -25,6 +25,7 @@
 
 
 using Gorgon.IO;
+using Gorgon.Json;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -35,7 +36,6 @@ namespace Gorgon.Renderers;
 /// </summary>
 public static class GorgonSpriteExtensions
 {
-
     /// <summary>
     /// The property name for the header value.
     /// </summary>
@@ -44,8 +44,6 @@ public static class GorgonSpriteExtensions
     /// The property name for the header value.
     /// </summary>
     internal const string JsonVersionProp = "version";
-
-
 
     /// <summary>
     /// Function to convert a sprite into a JSON formatted string.
@@ -68,11 +66,10 @@ public static class GorgonSpriteExtensions
             Formatting = prettyFormat ? Formatting.Indented : Formatting.None
         };
 
-        serializer.Converters.Add(new JsonVector2Converter());
-        serializer.Converters.Add(new JsonVector3Converter());
-        serializer.Converters.Add(new JsonSize2FConverter());
-        serializer.Converters.Add(new JsonGorgonColorConverter());
-        serializer.Converters.Add(new JsonRectangleFConverter());
+        serializer.Converters.Add(new Vector2JsonConverter());
+        serializer.Converters.Add(new Vector3JsonConverter());
+        serializer.Converters.Add(new GorgonColorJsonConverter());
+        serializer.Converters.Add(new GorgonRectangleFJsonConverter());
         serializer.Converters.Add(new JsonSamplerConverter(null));
         serializer.Converters.Add(new JsonTexture2DConverter(null, null));
 
@@ -105,11 +102,10 @@ public static class GorgonSpriteExtensions
             Formatting = prettyFormat ? Formatting.Indented : Formatting.None
         };
 
-        serializer.Converters.Add(new JsonVector2Converter());
-        serializer.Converters.Add(new JsonVector3Converter());
-        serializer.Converters.Add(new JsonSize2FConverter());
-        serializer.Converters.Add(new JsonGorgonColorConverter());
-        serializer.Converters.Add(new JsonRectangleFConverter());
+        serializer.Converters.Add(new Vector2JsonConverter());
+        serializer.Converters.Add(new Vector3JsonConverter());
+        serializer.Converters.Add(new GorgonColorJsonConverter());
+        serializer.Converters.Add(new GorgonRectangleFJsonConverter());
         serializer.Converters.Add(new JsonSamplerConverter(null));
         serializer.Converters.Add(new JsonTexture2DConverter(null, null));
 
@@ -120,5 +116,4 @@ public static class GorgonSpriteExtensions
 
         return jsonObj.ToString(prettyFormat ? Formatting.Indented : Formatting.None);
     }
-
 }

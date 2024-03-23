@@ -33,7 +33,6 @@ using Gorgon.Graphics.Core;
 using Gorgon.Math;
 using Krypton.Ribbon;
 using Krypton.Toolkit;
-using DX = SharpDX;
 
 namespace Gorgon.Editor.SpriteEditor;
 
@@ -198,9 +197,9 @@ internal partial class FormRibbon
             case nameof(ISpriteClipContext.FixedSize):
                 if (ViewModel.SpriteClipContext.FixedSize is not null)
                 {
-                    DX.Size2F size = ViewModel.SpriteClipContext.FixedSize.Value;
-                    NumericFixedWidth.Value = ((decimal)size.Width).Min(NumericFixedWidth.Maximum).Max(NumericFixedWidth.Minimum);
-                    NumericFixedHeight.Value = ((decimal)size.Height).Min(NumericFixedHeight.Maximum).Max(NumericFixedHeight.Minimum);
+                    Vector2 size = ViewModel.SpriteClipContext.FixedSize.Value;
+                    NumericFixedWidth.Value = ((decimal)size.X).Min(NumericFixedWidth.Maximum).Max(NumericFixedWidth.Minimum);
+                    NumericFixedHeight.Value = ((decimal)size.Y).Min(NumericFixedHeight.Maximum).Max(NumericFixedHeight.Minimum);
                 }
                 break;
         }
@@ -279,7 +278,7 @@ internal partial class FormRibbon
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
     private void NumericFixed_ValueChanged(object sender, EventArgs e)
     {
-        DX.Size2F size = new((float)NumericFixedWidth.Value, (float)NumericFixedHeight.Value);
+        Vector2 size = new((float)NumericFixedWidth.Value, (float)NumericFixedHeight.Value);
 
         if ((!ButtonFixedSize.Checked)
             || (ViewModel?.SpriteClipContext?.FixedSizeCommand is null)
@@ -297,7 +296,7 @@ internal partial class FormRibbon
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
     private void ButtonFixedSize_Click(object sender, EventArgs e)
     {
-        DX.Size2F? size = ButtonFixedSize.Checked ? new DX.Size2F((float)NumericFixedWidth.Value, (float)NumericFixedHeight.Value) : null;
+        Vector2? size = ButtonFixedSize.Checked ? new Vector2((float)NumericFixedWidth.Value, (float)NumericFixedHeight.Value) : null;
 
         if ((ViewModel?.SpriteClipContext?.FixedSizeCommand is null) || (!ViewModel.SpriteClipContext.FixedSizeCommand.CanExecute(size)))
         {
@@ -746,7 +745,7 @@ internal partial class FormRibbon
         _zoomLevel = zoom;
         UpdateZoomMenu();
 
-        ContentRenderer?.MoveTo(new Vector2(ContentRenderer.ClientSize.Width * 0.5f, ContentRenderer.ClientSize.Height * 0.5f),
+        ContentRenderer?.MoveTo(new Vector2(ContentRenderer.ClientSize.X * 0.5f, ContentRenderer.ClientSize.Y * 0.5f),
                                 _zoomLevel.GetScale());
     }
 
@@ -812,9 +811,9 @@ internal partial class FormRibbon
             NumericFixedWidth.Maximum = dataContext?.Texture?.Width ?? 16384;
             NumericFixedHeight.Maximum = dataContext?.Texture?.Height ?? 16384;
 
-            DX.Size2F size = dataContext.SpriteClipContext.FixedSize ?? new DX.Size2F(32, 32);
-            NumericFixedWidth.Value = ((decimal)size.Width).Min(NumericFixedWidth.Maximum).Max(NumericFixedWidth.Minimum);
-            NumericFixedHeight.Value = ((decimal)size.Height).Min(NumericFixedHeight.Maximum).Max(NumericFixedHeight.Minimum);
+            Vector2 size = dataContext.SpriteClipContext.FixedSize ?? new Vector2(32, 32);
+            NumericFixedWidth.Value = ((decimal)size.X).Min(NumericFixedWidth.Maximum).Max(NumericFixedWidth.Minimum);
+            NumericFixedHeight.Value = ((decimal)size.Y).Min(NumericFixedHeight.Maximum).Max(NumericFixedHeight.Minimum);
         }
 
         MenuItemSmooth.Checked = !dataContext.IsPixellated;
@@ -910,7 +909,7 @@ internal partial class FormRibbon
 
         if (ViewModel.SpriteClipContext is not null)
         {
-            DX.Size2F? fixedSize = ButtonFixedSize.Enabled ? new DX.Size2F((float)NumericFixedWidth.Value, (float)NumericFixedHeight.Value)
+            Vector2? fixedSize = ButtonFixedSize.Enabled ? new Vector2((float)NumericFixedWidth.Value, (float)NumericFixedHeight.Value)
                                                            : null;
 
             ButtonSpriteClipApply.Enabled = ViewModel.SpriteClipContext.ApplyCommand?.CanExecute(null) ?? false;

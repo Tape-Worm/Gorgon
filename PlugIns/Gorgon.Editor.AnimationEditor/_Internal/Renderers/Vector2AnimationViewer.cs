@@ -34,7 +34,6 @@ using Gorgon.Graphics.Core;
 using Gorgon.Math;
 using Gorgon.Renderers;
 using Gorgon.Renderers.Geometry;
-using DX = SharpDX;
 
 namespace Gorgon.Editor.AnimationEditor;
 
@@ -121,14 +120,14 @@ internal class Vector2AnimationViewer(Gorgon2D renderer, GorgonSwapChain swapCha
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
     private void AnchorEdit_AnchorChanged(object sender, EventArgs e)
     {
-        Vector2 offset = new((_anchorEdit.AnchorPosition.X + Sprite.ScaledSize.Width * 0.5f) / Sprite.ScaledSize.Width,
-                                    (_anchorEdit.AnchorPosition.Y + Sprite.ScaledSize.Height * 0.5f) / Sprite.ScaledSize.Height);
+        Vector2 offset = new((_anchorEdit.AnchorPosition.X + Sprite.ScaledSize.X * 0.5f) / Sprite.ScaledSize.X,
+                                    (_anchorEdit.AnchorPosition.Y + Sprite.ScaledSize.Y * 0.5f) / Sprite.ScaledSize.Y);
 
         switch (SelectedTrackID)
         {
             case TrackSpriteProperty.AnchorAbsolute:
-                DataContext.KeyEditor.CurrentEditor.Value = new Vector4(offset.X * Sprite.Size.Width * 0.5f,
-                                                                           offset.Y * Sprite.Size.Height * 0.5f, 0, 0);
+                DataContext.KeyEditor.CurrentEditor.Value = new Vector4(offset.X * Sprite.Size.X * 0.5f,
+                                                                           offset.Y * Sprite.Size.Y * 0.5f, 0, 0);
                 break;
             case TrackSpriteProperty.Anchor:
                 DataContext.KeyEditor.CurrentEditor.Value = new Vector4(offset, 0, 0);
@@ -168,14 +167,14 @@ internal class Vector2AnimationViewer(Gorgon2D renderer, GorgonSwapChain swapCha
         {
             if (oldTarget == MainRenderTarget)
             {
-                Clipper.Rectangle = Renderer.MeasureSprite(Sprite).Truncate();
+                Clipper.Rectangle = GorgonRectangleF.Truncate(Renderer.MeasureSprite(Sprite));
                 return;
             }
 
             // The camera relies on the target size of our swap chain for its projection, so we have to switch to our main 
             // render target temporarily.
             Graphics.SetRenderTarget(MainRenderTarget);
-            Clipper.Rectangle = Renderer.MeasureSprite(Sprite).Truncate();
+            Clipper.Rectangle = GorgonRectangleF.Truncate(Renderer.MeasureSprite(Sprite));
             Graphics.SetRenderTarget(oldTarget);
         }
         finally
@@ -201,7 +200,7 @@ internal class Vector2AnimationViewer(Gorgon2D renderer, GorgonSwapChain swapCha
         {
             _vertexEditor.SpriteCorner = SelectedTrackID;
 
-            DX.RectangleF bounds = Renderer.MeasureSprite(_vertexEditSprite);
+            GorgonRectangleF bounds = Renderer.MeasureSprite(_vertexEditSprite);
             ref readonly Gorgon2DVertex[] spriteVertices = ref Renderer.GetVertices(_vertexEditSprite);
             vertices = ArrayPool<Vector2>.Shared.Rent(4);
 
@@ -301,12 +300,12 @@ internal class Vector2AnimationViewer(Gorgon2D renderer, GorgonSwapChain swapCha
                 switch (SelectedTrackID)
                 {
                     case TrackSpriteProperty.Anchor:
-                        anchorPos = new Vector2(DataContext.KeyEditor.CurrentEditor.Value.X * Sprite.Size.Width - Sprite.Size.Width * 0.5f,
-                                                   DataContext.KeyEditor.CurrentEditor.Value.Y * Sprite.Size.Height - Sprite.Size.Height * 0.5f);
+                        anchorPos = new Vector2(DataContext.KeyEditor.CurrentEditor.Value.X * Sprite.Size.X - Sprite.Size.X * 0.5f,
+                                                   DataContext.KeyEditor.CurrentEditor.Value.Y * Sprite.Size.Y - Sprite.Size.Y * 0.5f);
                         break;
                     case TrackSpriteProperty.AnchorAbsolute:
-                        anchorPos = new Vector2(DataContext.KeyEditor.CurrentEditor.Value.X - Sprite.Size.Width * 0.5f,
-                                                   DataContext.KeyEditor.CurrentEditor.Value.Y - Sprite.Size.Height * 0.5f);
+                        anchorPos = new Vector2(DataContext.KeyEditor.CurrentEditor.Value.X - Sprite.Size.X * 0.5f,
+                                                   DataContext.KeyEditor.CurrentEditor.Value.Y - Sprite.Size.Y * 0.5f);
                         break;
                     case TrackSpriteProperty.UpperLeft:
                     case TrackSpriteProperty.UpperRight:

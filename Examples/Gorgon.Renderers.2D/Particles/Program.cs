@@ -31,7 +31,6 @@ using Gorgon.Graphics.Core;
 using Gorgon.Graphics.Imaging.Codecs;
 using Gorgon.Renderers;
 using Gorgon.UI;
-using DX = SharpDX;
 
 namespace Gorgon.Examples;
 
@@ -135,7 +134,7 @@ static class Program
             _graphics.SetRenderTarget(_screen.RenderTargetView);
 
             _renderer.Begin(Gorgon2DBatchState.NoBlend);
-            _renderer.DrawFilledRectangle(new DX.RectangleF(0, 0, _srv.Width, _srv.Height), GorgonColors.White, _srv, new DX.RectangleF(0, 0, 1, 1));
+            _renderer.DrawFilledRectangle(new GorgonRectangleF(0, 0, _srv.Width, _srv.Height), GorgonColors.White, _srv, new GorgonRectangleF(0, 0, 1, 1));
             _renderer.End();
         }
 
@@ -162,7 +161,7 @@ static class Program
         GorgonExample.ResourceBaseDirectory = new DirectoryInfo(ExampleConfig.Default.ResourceLocation);
 
         // Create the window, and size it to our resolution.
-        FormMain window = GorgonExample.Initialize(new DX.Size2(ExampleConfig.Default.Resolution.Width, ExampleConfig.Default.Resolution.Height), "Particles");
+        FormMain window = GorgonExample.Initialize(new GorgonPoint(ExampleConfig.Default.Resolution.X, ExampleConfig.Default.Resolution.Y), "Particles");
 
         try
         {
@@ -179,8 +178,8 @@ static class Program
 
             _screen = new GorgonSwapChain(_graphics,
                                           window,
-                                          new GorgonSwapChainInfo(ExampleConfig.Default.Resolution.Width,
-                                                                       ExampleConfig.Default.Resolution.Height,
+                                          new GorgonSwapChainInfo(ExampleConfig.Default.Resolution.X,
+                                                                       ExampleConfig.Default.Resolution.Y,
                                                                        BufferFormat.R8G8B8A8_UNorm)
                                           {
                                               Name = "Gorgon2D Sprites Example Swap Chain"
@@ -207,10 +206,10 @@ static class Program
             // This is the sprite we'll use for each particle.
             _particleSprite = new GorgonSprite
             {
-                Bounds = new DX.RectangleF(0, 0, _circleTexture.Width, _circleTexture.Height),
+                Bounds = new GorgonRectangleF(0, 0, _circleTexture.Width, _circleTexture.Height),
                 Texture = _circleTexture,
                 // Calculate the ship texture coordinates.
-                TextureRegion = new DX.RectangleF(0, 0, 1, 1),
+                TextureRegion = new GorgonRectangleF(0, 0, 1, 1),
                 Anchor = new Vector2(0.5f, 0.5f)
             };
 

@@ -27,9 +27,9 @@
 using Gorgon.Core;
 using Gorgon.Editor.AnimationEditor.Properties;
 using Gorgon.Editor.Content;
+using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Math;
-using DX = SharpDX;
 
 namespace Gorgon.Editor.AnimationEditor;
 
@@ -41,7 +41,7 @@ namespace Gorgon.Editor.AnimationEditor;
 /// <param name="textureFile">The file for the texture.</param>
 /// <param name="arrayIndex">The array index to use on the texture.</param>
 /// <param name="textureCoordinates">The texture coordinates to use.</param>
-internal readonly struct TextureValue(GorgonTexture2DView texture, IContentFile textureFile, int arrayIndex, DX.RectangleF textureCoordinates)
+internal readonly struct TextureValue(GorgonTexture2DView texture, IContentFile textureFile, int arrayIndex, GorgonRectangleF textureCoordinates)
         : IGorgonEquatableByRef<TextureValue>
 {
 
@@ -58,7 +58,7 @@ internal readonly struct TextureValue(GorgonTexture2DView texture, IContentFile 
     /// <summary>
     /// The texture coordinates to use.
     /// </summary>
-    public readonly DX.RectangleF TextureCoordinates = textureCoordinates;
+    public readonly GorgonRectangleF TextureCoordinates = textureCoordinates;
 
     /// <summary>
     /// The file for the texture.

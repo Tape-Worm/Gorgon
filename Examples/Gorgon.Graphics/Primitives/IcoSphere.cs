@@ -23,12 +23,11 @@
 // Created: Sunday, December 30, 2012 10:25:22 AM
 // 
 
-
 using System.Numerics;
+using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Math;
 using Gorgon.Renderers.Geometry;
-using DX = SharpDX;
 
 namespace Gorgon.Examples;
 
@@ -38,15 +37,12 @@ namespace Gorgon.Examples;
 internal class IcoSphere
     : MoveableMesh
 {
-
     // Initial orientation.
     private Matrix4x4 _orientation;
     // A list of previously performed splits.
     private readonly Dictionary<long, int> _cachedSplits = [];
     private readonly List<Vector3> _vertices = [];
     private int _index;
-
-
 
     /// <summary>
     /// Property to return the radius of the sphere.
@@ -55,8 +51,6 @@ internal class IcoSphere
     {
         get;
     }
-
-
 
     /// <summary>
     /// Function to add a vertex to the list.
@@ -257,7 +251,7 @@ internal class IcoSphere
     /// <param name="radius">Radius of the sphere.</param>
     /// <param name="tesselation">Tessellation factor for the sphere.</param>
     /// <param name="textureCoordinates">Texture coordinate offset and scale.</param>
-    private void BuildSphere(GorgonGraphics graphics, float radius, int tesselation, DX.RectangleF textureCoordinates)
+    private void BuildSphere(GorgonGraphics graphics, float radius, int tesselation, GorgonRectangleF textureCoordinates)
     {
         GetBaseVertices();
         List<int[]> indices = GetBaseIndices();
@@ -373,13 +367,7 @@ internal class IcoSphere
 
     /// <summary>Function to retrieve the 2D axis aligned bounding box for the mesh.</summary>
     /// <returns>The rectangle that represents a 2D axis aligned bounding box.</returns>
-    public override DX.RectangleF GetAABB()
-    {
-        DX.RectangleF result = new(-Radius * 0.5f, -Radius * 0.5f, Radius, Radius);
-        result.Offset(Position.X, Position.Y);
-
-        return result;
-    }
+    public override GorgonRectangleF GetAABB() => new(-Radius * 0.5f + Position.X, -Radius * 0.5f + Position.Y, Radius, Radius);
 
     /// <summary>
     /// Initializes a new instance of the <see cref="Sphere" /> class.
@@ -389,7 +377,7 @@ internal class IcoSphere
     /// <param name="textureCoordinates">The texture coordinates to apply to the sphere.</param>
     /// <param name="angle">The angle of rotation, in degrees.</param>
     /// <param name="subDivisions">The tessellation level for the sphere.</param>
-    public IcoSphere(GorgonGraphics graphics, float radius, DX.RectangleF textureCoordinates, Vector3 angle, int subDivisions = 2)
+    public IcoSphere(GorgonGraphics graphics, float radius, GorgonRectangleF textureCoordinates, Vector3 angle, int subDivisions = 2)
         : base(graphics)
     {
         Radius = radius;

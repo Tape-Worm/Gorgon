@@ -15,7 +15,7 @@ namespace Gorgon.Editor.UI;
 /// </para>
 /// <para>
 /// To use a hosted panel the plug in must define the panel by inheriting from this view model, and passing in parameters that inherit from <see cref="HostedPanelViewModelParameters"/>. A view must be 
-/// registered with the <see cref="ContentBaseControl"/>.<see cref="ContentBaseControl.RegisterChildPanel(string, System.Windows.Forms.Control)"/> method
+/// registered with the <see cref="ContentBaseControl"/>.<see cref="ContentBaseControl.RegisterChildPanel(string, Control)"/> method
 /// </para>
 /// </remarks>
 public abstract class HostedPanelViewModelBase<T>

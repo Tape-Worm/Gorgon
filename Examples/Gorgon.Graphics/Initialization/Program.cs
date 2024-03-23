@@ -28,7 +28,6 @@ using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Timing;
 using Gorgon.UI;
-using DX = SharpDX;
 
 namespace Gorgon.Examples;
 
@@ -104,7 +103,7 @@ internal static class Program
     // Indicates how to cycle through the available channels (1 = Incrementing from R -> G -> B, -1 = B -> G -> R).
     private static int _channelDirection = 1;
     // Defines which regions on the swap chain to clear.
-    private static readonly DX.Rectangle[] _clearRegions = new DX.Rectangle[2];
+    private static readonly GorgonRectangle[] _clearRegions = new GorgonRectangle[2];
     // Clearing pattern values (0 = full swap chain, 1 upper left/lower right only, 2 upper right, lower left only)
     private static int _clearPattern;
 
@@ -124,13 +123,13 @@ internal static class Program
         switch (_clearPattern)
         {
             case 1:
-                _clearRegions[0] = new DX.Rectangle(0, 0, _swap.Width / 2, _swap.Height / 2);
-                _clearRegions[1] = new DX.Rectangle(_swap.Width / 2, _swap.Height / 2, _swap.Width / 2, _swap.Height / 2);
+                _clearRegions[0] = new GorgonRectangle(0, 0, _swap.Width / 2, _swap.Height / 2);
+                _clearRegions[1] = new GorgonRectangle(_swap.Width / 2, _swap.Height / 2, _swap.Width / 2, _swap.Height / 2);
                 _swap.RenderTargetView.Clear(_clearColor, _clearRegions);
                 break;
             case 2:
-                _clearRegions[0] = new DX.Rectangle(_swap.Width / 2, 0, _swap.Width / 2, _swap.Height / 2);
-                _clearRegions[1] = new DX.Rectangle(0, _swap.Height / 2, _swap.Width / 2, _swap.Height / 2);
+                _clearRegions[0] = new GorgonRectangle(_swap.Width / 2, 0, _swap.Width / 2, _swap.Height / 2);
+                _clearRegions[1] = new GorgonRectangle(0, _swap.Height / 2, _swap.Width / 2, _swap.Height / 2);
                 _swap.RenderTargetView.Clear(_clearColor, _clearRegions);
                 break;
             default:
@@ -216,7 +215,7 @@ internal static class Program
     private static FormMain Initialize()
     {
         // First, create our form.
-        FormMain result = GorgonExample.Initialize(new DX.Size2(640, 480), "Initialization");
+        FormMain result = GorgonExample.Initialize(new GorgonPoint(640, 480), "Initialization");
 
         try
         {

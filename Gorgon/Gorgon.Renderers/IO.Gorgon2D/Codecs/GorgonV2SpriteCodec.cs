@@ -32,7 +32,6 @@ using Gorgon.Graphics.Core;
 using Gorgon.IO.Properties;
 using Gorgon.Renderers;
 using GorgonLibrary.IO;
-using DX = SharpDX;
 
 namespace Gorgon.IO;
 
@@ -335,8 +334,8 @@ public class GorgonV2SpriteCodec(Gorgon2D renderer)
         reader.Begin(SpriteDataChunk);
 
         sprite.Anchor = reader.Read<Vector2>();
-        sprite.Size = reader.Read<DX.Size2F>();
-        sprite.Anchor = new Vector2(sprite.Anchor.X / sprite.Size.Width, sprite.Anchor.Y / sprite.Size.Height);
+        sprite.Size = reader.Read<Vector2>();
+        sprite.Anchor = new Vector2(sprite.Anchor.X / sprite.Size.X, sprite.Anchor.Y / sprite.Size.Y);
 
         sprite.HorizontalFlip = reader.ReadBoolean();
         sprite.VerticalFlip = reader.ReadBoolean();
@@ -454,7 +453,7 @@ public class GorgonV2SpriteCodec(Gorgon2D renderer)
         reader.Begin(FileHeader);
         reader.Begin(SpriteDataChunk);
         reader.SkipBytes(Unsafe.SizeOf<Vector2>()
-                         + Unsafe.SizeOf<DX.Size2F>()
+                         + Unsafe.SizeOf<Vector2>()
                          + (sizeof(bool) * 2)
                          + (GorgonColor.SizeInBytes * 4)
                          + (Unsafe.SizeOf<Vector2>() * 4));

@@ -106,7 +106,7 @@ internal class VolumeRenderer(GorgonGraphics graphics)
     /// <summary>
     /// Property to return the region on the screen to render the volume.
     /// </summary>
-    public DX.RectangleF VolumeRegion
+    public GorgonRectangleF VolumeRegion
     {
         get;
         private set;
@@ -172,14 +172,14 @@ internal class VolumeRenderer(GorgonGraphics graphics)
     /// Function to resize the rendering region.
     /// </summary>
     /// <param name="clienSize">The size of the client area for the content view.</param>
-    public void ResizeRenderRegion(DX.Size2 clientSize)
+    public void ResizeRenderRegion(GorgonPoint clientSize)
     {
-        float newWidth = (clientSize.Width / 5.0f).Max(64).Min(640);
-        float aspect = (float)clientSize.Height / clientSize.Width;
-        DX.Size2F cubeRegionSize = new(newWidth, newWidth * aspect);
+        float newWidth = (clientSize.X / 5.0f).Max(64).Min(640);
+        float aspect = (float)clientSize.Y / clientSize.X;
+        Vector2 cubeRegionSize = new(newWidth, newWidth * aspect);
 
-        VolumeRegion = new DX.RectangleF(clientSize.Width - cubeRegionSize.Width - 1, 1, cubeRegionSize.Width, cubeRegionSize.Height);
-        _projection = Matrix4x4.CreatePerspectiveFieldOfView(60.0f.ToRadians(), (float)clientSize.Width / clientSize.Height, 0.1f, 1000.0f);
+        VolumeRegion = new GorgonRectangleF(clientSize.X - cubeRegionSize.X - 1, 1, cubeRegionSize.X, cubeRegionSize.Y);
+        _projection = Matrix4x4.CreatePerspectiveFieldOfView(60.0f.ToRadians(), (float)clientSize.X / clientSize.Y, 0.1f, 1000.0f);
         _cubeView = new DX.ViewportF(VolumeRegion.Left, VolumeRegion.Top, VolumeRegion.Width, VolumeRegion.Height, 0, 1);
 
         if (_textureView is null)
@@ -246,7 +246,7 @@ internal class VolumeRenderer(GorgonGraphics graphics)
     /// Function used to build the resources required by the volume renderer.
     /// </summary>
     /// <param name="clientSize">The size of the content client area.</param>
-    public void CreateResources(DX.Size2 clientSize)
+    public void CreateResources(GorgonPoint clientSize)
     {
         _cubeVs = GorgonShaderFactory.Compile<GorgonVertexShader>(_graphics, Resources.VolumeRenderShaders, "VolumeVS", true);
         _cubePosShader = GorgonShaderFactory.Compile<GorgonPixelShader>(_graphics, Resources.VolumeRenderShaders, "VolumePositionPS", true);
@@ -259,7 +259,7 @@ internal class VolumeRenderer(GorgonGraphics graphics)
         _volumeScaleFactor = new GorgonConstantBuffer(_graphics, new GorgonConstantBufferInfo(Unsafe.SizeOf<Matrix4x4>()));
 
         // Our camera is never changing, so we only need to define it here.
-        _view = Matrix4x4.CreateTranslation(0, 0, 1.5f);
+        _view = Matrix4x4.CreateTranslation(0, 0, -1.5f);
         ResizeRenderRegion(clientSize);
 
         UpdateCubeTransform();
@@ -281,7 +281,7 @@ internal class VolumeRenderer(GorgonGraphics graphics)
             .Build();
 
         pipelineBuilder
-            .RasterState(GorgonRasterState.CullFrontFace);
+            .RasterState(GorgonRasterState.NoCulling);
 
         _cubePosDrawFrontCull = drawBuilder
             .PipelineState(pipelineBuilder)
@@ -290,7 +290,7 @@ internal class VolumeRenderer(GorgonGraphics graphics)
         // Raycasting draw call.
         pipelineBuilder
             .PixelShader(_cubeDirShader)
-            .RasterState(GorgonRasterState.Default);
+            .RasterState(GorgonRasterState.NoCulling);
 
         _cubeDirDrawCall = drawBuilder
             .ConstantBuffer(ShaderType.Pixel, _volumeRayParams.GetView(), 0)

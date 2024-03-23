@@ -29,7 +29,6 @@ using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Renderers;
 using Gorgon.Renderers.Cameras;
-using DX = SharpDX;
 
 namespace Gorgon.Examples;
 
@@ -66,10 +65,10 @@ internal class SceneRenderer
     {
         _graphics.SetRenderTarget(_screen);
         _renderer.Begin();
-        _renderer.DrawFilledRectangle(new DX.RectangleF(0, 0, _screen.Width, _screen.Height),
+        _renderer.DrawFilledRectangle(new GorgonRectangleF(0, 0, _screen.Width, _screen.Height),
                                     GorgonColors.White,
                                     src,
-                                    new DX.RectangleF(0, 0, 1, 1),
+                                    new GorgonRectangleF(0, 0, 1, 1),
                                     textureSampler: GorgonSamplerState.Default);
 
         _renderer.End();
@@ -197,8 +196,8 @@ internal class SceneRenderer
 
         // Adjust the viewable area to match our aspect ratio.
         // This will give our view a range of -1x-1 - 1x1.
-        //_camera.ViewDimensions = new DX.Size2F(2 * aspect.X, 2 * aspect.Y);
-        _camera.ViewDimensions = new DX.Size2F(2 * aspect.X, 2 * aspect.Y);
+        //_camera.ViewDimensions = new Vector2(2 * aspect.X, 2 * aspect.Y);
+        _camera.ViewDimensions = new Vector2(2 * aspect.X, 2 * aspect.Y);
 
         // All of our sprites are in pixel size, in order to bring them into resolution independent space, we need to adjust their sizes
         // (else they'll be massive).
@@ -206,17 +205,17 @@ internal class SceneRenderer
         {
             // Since we're altering the size of the sprites, we'll need to get the original width/height from another place.
             // This can be extracted from the sprite texture region (assuming the region is 1:1 with pixel space, scaling the texture coordinates will mess this up).
-            DX.Size2F size = sprite.Texture.ToPixel(sprite.TextureRegion.Size).ToSize2F();
+            Vector2 size = sprite.Texture.ToPixel(sprite.TextureRegion.Size);
 
             // Scale the size of the sprite to match our base resolution of 1920x1080.
-            DX.Size2F newSize = new(size.Width / screen.Width * _camera.ViewDimensions.Width * 0.75f, size.Height / screen.Height * _camera.ViewDimensions.Height * 0.75f);
+            Vector2 newSize = new(size.X / screen.Width * _camera.ViewDimensions.X * 0.75f, size.Y / screen.Height * _camera.ViewDimensions.Y * 0.75f);
 
             sprite.Size = newSize;
         }
 
         foreach (Layer layer in _layers)
         {
-            layer.OnResize(new DX.Size2(screen.Width, screen.Height));
+            layer.OnResize(new GorgonPoint(screen.Width, screen.Height));
         }
     }
 
@@ -259,8 +258,6 @@ internal class SceneRenderer
             layer.Dispose();
         }
     }
-
-
 
     /// <summary>Initializes a new instance of the <see cref="Examples.Renderer"/> class.</summary>
     /// <param name="renderer">The renderer.</param>

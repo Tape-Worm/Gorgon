@@ -36,7 +36,6 @@ using Gorgon.Graphics.Imaging;
 using Gorgon.IO;
 using Gorgon.Math;
 using Gorgon.Renderers;
-using DX = SharpDX;
 
 namespace Gorgon.Editor.SpriteEditor;
 
@@ -55,7 +54,7 @@ internal class SpriteContent
         /// <summary>
         /// The sprite texture coordinates, in pixel space.
         /// </summary>
-        public DX.RectangleF TextureCoordinates;
+        public GorgonRectangleF TextureCoordinates;
         /// <summary>
         /// The path to the current texture file associated with the sprite.
         /// </summary>
@@ -158,12 +157,12 @@ internal class SpriteContent
     /// <summary>
     /// Property to set or return the texture coordinates used by the sprite.
     /// </summary>
-    public DX.RectangleF TextureCoordinates
+    public GorgonRectangleF TextureCoordinates
     {
         get => _sprite.TextureRegion;
         private set
         {
-            if (_sprite.TextureRegion.Equals(ref value))
+            if (_sprite.TextureRegion.Equals(value))
             {
                 return;
             }
@@ -302,7 +301,7 @@ internal class SpriteContent
     /// <summary>
     /// Property to set or return the size of the sprite.
     /// </summary>
-    public DX.Size2F Size
+    public Vector2 Size
     {
         get => _sprite.Size;
         private set
@@ -466,7 +465,7 @@ internal class SpriteContent
                 return string.Empty;
             }
 
-            DX.Rectangle rect = Texture.ToPixel(TextureCoordinates);
+            GorgonRectangle rect = Texture.ToPixel(TextureCoordinates);
             return string.Format(Resources.GORSPR_TEXT_SPRITE_INFO, rect.Left, rect.Top, rect.Right, rect.Bottom, rect.Width, rect.Height);
         }
     }
@@ -616,8 +615,8 @@ internal class SpriteContent
         ArrayIndex = arrayIndex;
 
         // Adjust the texture coordinates so that they appear in the correct place on the texture.
-        TextureCoordinates = texture.ToTexel(new DX.Rectangle((int)(TextureCoordinates.X * texture.Width), (int)(TextureCoordinates.Y * texture.Height),
-                                                              (int)Size.Width, (int)Size.Height));
+        TextureCoordinates = texture.ToTexel(new GorgonRectangle((int)(TextureCoordinates.X * texture.Width), (int)(TextureCoordinates.Y * texture.Height),
+                                                              (int)Size.X, (int)Size.Y));
 
         return true;
     }
@@ -773,7 +772,7 @@ internal class SpriteContent
                 }
             }
 
-            (string newName, IContentFile textureFile, DX.Size2F size) = _contentServices.NewSpriteService.GetNewSpriteName(File, _textureFile, _sprite.Size);
+            (string newName, IContentFile textureFile, Vector2 size) = _contentServices.NewSpriteService.GetNewSpriteName(File, _textureFile, _sprite.Size);
 
             if (newName is null)
             {
@@ -828,7 +827,7 @@ internal class SpriteContent
             if (Size != size)
             {
                 Size = size;
-                TextureCoordinates = new DX.RectangleF(TextureCoordinates.X, TextureCoordinates.Y, size.Width / _sprite.Texture.Width, size.Height / _sprite.Texture.Height);
+                TextureCoordinates = new GorgonRectangleF(TextureCoordinates.X, TextureCoordinates.Y, size.X / _sprite.Texture.Width, size.Y / _sprite.Texture.Height);
                 ContentState = ContentState.Modified;
             }
 
@@ -1062,9 +1061,9 @@ internal class SpriteContent
             return false;
         }
 
-        DX.RectangleF texCoords = Texture.ToTexel(SpritePickContext.SpriteRectangle.ToRectangle());
+        GorgonRectangleF texCoords = Texture.ToTexel((GorgonRectangle)SpritePickContext.SpriteRectangle);
 
-        return ((!_sprite.TextureRegion.Equals(ref texCoords)) || (_sprite.TextureArrayIndex != SpritePickContext.ArrayIndex));
+        return ((!_sprite.TextureRegion.Equals(texCoords)) || (_sprite.TextureArrayIndex != SpritePickContext.ArrayIndex));
     }
 
     /// <summary>
@@ -1072,14 +1071,14 @@ internal class SpriteContent
     /// </summary>
     private void DoApplyPick()
     {
-        bool SetTextureCoordinates(DX.RectangleF coordinates, int index, IReadOnlyList<Vector3> vertexOffsets)
+        bool SetTextureCoordinates(GorgonRectangleF coordinates, int index, IReadOnlyList<Vector3> vertexOffsets)
         {
             try
             {
-                DX.Rectangle textureRect = coordinates.ToRectangle();
-                textureRect.Inflate(SpritePickContext.Padding, SpritePickContext.Padding);
+                GorgonRectangle textureRect = (GorgonRectangle)coordinates;
+                textureRect = GorgonRectangle.Expand(textureRect, SpritePickContext.Padding);
                 TextureCoordinates = Texture.ToTexel(textureRect);
-                Size = new DX.Size2F((int)coordinates.Size.Width, (int)coordinates.Size.Height);
+                Size = new Vector2((int)coordinates.Size.Y, (int)coordinates.Size.Y);
                 ArrayIndex = index;
                 VertexOffsets = vertexOffsets;
 
@@ -1109,7 +1108,7 @@ internal class SpriteContent
 
         SpriteUndoArgs texCoordUndoArgs = new()
         {
-            TextureCoordinates = Texture.ToPixel(TextureCoordinates).ToRectangleF(),
+            TextureCoordinates = Texture.ToPixel(TextureCoordinates),
             ArrayIndex = ArrayIndex,
             VertexOffset = [.. _sprite.CornerOffsets]
         };
@@ -1140,9 +1139,9 @@ internal class SpriteContent
             return false;
         }
 
-        DX.RectangleF texCoords = Texture.ToTexel(SpriteClipContext.SpriteRectangle.ToRectangle());
+        GorgonRectangleF texCoords = Texture.ToTexel((GorgonRectangle)SpriteClipContext.SpriteRectangle);
 
-        return ((!_sprite.TextureRegion.Equals(ref texCoords)) || (_sprite.TextureArrayIndex != SpriteClipContext.ArrayIndex));
+        return ((!_sprite.TextureRegion.Equals(texCoords)) || (_sprite.TextureArrayIndex != SpriteClipContext.ArrayIndex));
     }
 
     /// <summary>
@@ -1150,12 +1149,12 @@ internal class SpriteContent
     /// </summary>
     private void DoApplyClip()
     {
-        bool SetTextureCoordinates(DX.RectangleF coordinates, int index, IReadOnlyList<Vector3> vertexOffsets)
+        bool SetTextureCoordinates(GorgonRectangleF coordinates, int index, IReadOnlyList<Vector3> vertexOffsets)
         {
             try
             {
-                TextureCoordinates = Texture.ToTexel(coordinates.ToRectangle());
-                Size = new DX.Size2F((int)coordinates.Size.Width, (int)coordinates.Size.Height);
+                TextureCoordinates = Texture.ToTexel((GorgonRectangle)coordinates);
+                Size = new Vector2((int)coordinates.Size.X, (int)coordinates.Size.Y);
                 ArrayIndex = index;
                 VertexOffsets = vertexOffsets;
 
@@ -1185,7 +1184,7 @@ internal class SpriteContent
 
         SpriteUndoArgs texCoordUndoArgs = new()
         {
-            TextureCoordinates = Texture.ToPixel(TextureCoordinates).ToRectangleF(),
+            TextureCoordinates = Texture.ToPixel(TextureCoordinates),
             ArrayIndex = ArrayIndex,
             VertexOffset = [.. _sprite.CornerOffsets]
         };
@@ -1446,9 +1445,9 @@ internal class SpriteContent
             return false;
         }
 
-        Vector2 halfSprite = new(Size.Width * 0.5f, Size.Height * 0.5f);
-        Vector2 anchorPosition = new Vector2(_sprite.Anchor.X * Size.Width - halfSprite.X,
-                                                   _sprite.Anchor.Y * Size.Height - halfSprite.Y).Truncate();
+        Vector2 halfSprite = new(Size.X * 0.5f, Size.Y * 0.5f);
+        Vector2 anchorPosition = new Vector2(_sprite.Anchor.X * Size.X - halfSprite.X,
+                                                   _sprite.Anchor.Y * Size.Y - halfSprite.Y).Truncate();
         return (!AnchorEditor.Anchor.Equals(anchorPosition));
     }
 
@@ -1457,7 +1456,7 @@ internal class SpriteContent
     /// </summary>
     private void DoCommitAnchorChange()
     {
-        Vector2 halfSprite = new(Size.Width * 0.5f, Size.Height * 0.5f);
+        Vector2 halfSprite = new(Size.X * 0.5f, Size.Y * 0.5f);
 
         bool SetAnchor(Vector2 anchor)
         {
@@ -1496,8 +1495,8 @@ internal class SpriteContent
 
         SpriteUndoArgs anchorRedoArgs = new()
         {
-            Anchor = new Vector2((AnchorEditor.Anchor.X + halfSprite.X) / Size.Width,
-                                    (AnchorEditor.Anchor.Y + halfSprite.Y) / Size.Height)
+            Anchor = new Vector2((AnchorEditor.Anchor.X + halfSprite.X) / Size.X,
+                                    (AnchorEditor.Anchor.Y + halfSprite.Y) / Size.Y)
         };
 
         if (!SetAnchor(anchorRedoArgs.Anchor))

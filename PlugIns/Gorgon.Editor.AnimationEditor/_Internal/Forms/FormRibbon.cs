@@ -727,7 +727,7 @@ internal partial class FormRibbon
         _zoomLevel = zoom;
         UpdateZoomMenu();
 
-        ContentRenderer?.MoveTo(new Vector2(ContentRenderer.ClientSize.Width * 0.5f, ContentRenderer.ClientSize.Height * 0.5f),
+        ContentRenderer?.MoveTo(new Vector2(ContentRenderer.ClientSize.X * 0.5f, ContentRenderer.ClientSize.Y * 0.5f),
                                 _zoomLevel.GetScale());
     }
 

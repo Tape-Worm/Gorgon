@@ -22,7 +22,7 @@
 // Created: Tuesday, September 07, 2015 2:27:10 PM
 // 
 
-using System.Runtime.InteropServices;
+using System.Buffers;
 using Gorgon.Input.Properties;
 using Gorgon.Native;
 
@@ -39,7 +39,6 @@ namespace Gorgon.Input;
 public class GorgonRawKeyboard
     : IGorgonKeyboard
 {
-
     /// <summary>
     /// Event fired when a key is pressed on the keyboard.
     /// </summary>
@@ -50,16 +49,10 @@ public class GorgonRawKeyboard
     /// </summary>
     public event EventHandler<GorgonKeyboardEventArgs> KeyUp;
 
-
-
-    // The character buffer to hold the characters represented by a key press.
-    private static readonly char[] _characterBuffer = new char[1];
     // The state values for the keys on the keyboard when translating a key press to a character.
-    private static readonly byte[] _charStates = new byte[256];
+    private readonly byte[] _charStates = new byte[256];
     // The device handle.
     private readonly nint _deviceHandle;
-
-
 
     /// <summary>
     /// Property to return the handle for the device.
@@ -275,22 +268,21 @@ public class GorgonRawKeyboard
 
         unsafe
         {
-            nint ptr = Marshal.AllocHGlobal(sizeof(char) * _characterBuffer.Length);
+            char[] characterBuffer = ArrayPool<char>.Shared.Rent(1);
 
             try
             {
-                int result = UserApi.ToUnicode((uint)key, 0, _charStates, ptr, _characterBuffer.Length, 0);
+                int result = UserApi.ToUnicode((uint)key, 0, _charStates, characterBuffer, 1, 0);
 
                 return result switch
                 {
-                    -1 or 0 => string.Empty,
-                    1 => new string((char*)ptr, 0, 1),
+                    1 => new string(characterBuffer, 0, 1),
                     _ => string.Empty,
                 };
             }
             finally
             {
-                Marshal.FreeHGlobal(ptr);
+                ArrayPool<char>.Shared.Return(characterBuffer);
             }
         }
     }

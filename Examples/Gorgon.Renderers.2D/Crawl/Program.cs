@@ -33,7 +33,6 @@ using Gorgon.Graphics.Fonts;
 using Gorgon.Renderers;
 using Gorgon.Timing;
 using Gorgon.UI;
-using DX = SharpDX;
 
 
 namespace Gorgon.Examples;
@@ -104,7 +103,7 @@ static class Program
         {
             float brightness = GorgonRandom.RandomSingle(0.05f, 1.0f);
             Vector2 pos = new(GorgonRandom.RandomSingle(0, _spaceBackground.Width), GorgonRandom.RandomSingle(0, _spaceBackground.Height));
-            _renderer.DrawFilledRectangle(new DX.RectangleF(pos.X, pos.Y, 1, 1), new GorgonColor(brightness, brightness, brightness));
+            _renderer.DrawFilledRectangle(new GorgonRectangleF(pos.X, pos.Y, 1, 1), new GorgonColor(brightness, brightness, brightness));
         }
 
         _renderer.End();
@@ -114,8 +113,8 @@ static class Program
         _crawlSprite = new GorgonSprite
         {
             Texture = _crawl,
-            TextureRegion = new DX.RectangleF(0, 0, 1, 1),
-            Size = new DX.Size2F(_crawl.Width * 1.25f, _crawl.Height),
+            TextureRegion = new GorgonRectangleF(0, 0, 1, 1),
+            Size = new Vector2(_crawl.Width * 1.25f, _crawl.Height),
             Position = new Vector2(-_crawl.Width * 0.125f, 0)
         };
         _crawlSprite.CornerOffsets.UpperLeft = new Vector3(_crawl.Width * 0.55f - 16, _crawl.Height * 0.5f - 64, 0);
@@ -125,7 +124,7 @@ static class Program
 
         if (_crawlText is not null)
         {
-            _crawlText.LayoutArea = new DX.Size2F(_crawlRtv.Width, _crawlRtv.Height);
+            _crawlText.LayoutArea = new Vector2(_crawlRtv.Width, _crawlRtv.Height);
             _crawlText.Text = Resources.CrawlText.WordWrap(_crawlText.Font, _crawlRtv.Width - 50);
         }
     }
@@ -139,7 +138,7 @@ static class Program
         _crawlPosition = new Vector2(0, _crawlPosition.Y - (_crawlRtv.Height * 0.025f * GorgonTiming.Delta));
 
         // Once the bottom of the text is past the 0 alpha point, flip it back to start over.
-        if ((_crawlText.Size.Height + _crawlText.Position.Y) < _crawlRtv.Height * 0.35f)
+        if ((_crawlText.Size.Y + _crawlText.Position.Y) < _crawlRtv.Height * 0.35f)
         {
             _crawlPosition = new Vector2(0, _crawlRtv.Height);
         }
@@ -155,9 +154,9 @@ static class Program
         // Compose the scene with our starry background and the skewed sprite.
         _graphics.SetRenderTarget(_screen.RenderTargetView);
         _renderer.Begin();
-        _renderer.DrawFilledRectangle(new DX.RectangleF(0, 0, _screen.Width, _screen.Height), GorgonColors.White, _spaceBackground);
+        _renderer.DrawFilledRectangle(new GorgonRectangleF(0, 0, _screen.Width, _screen.Height), GorgonColors.White, _spaceBackground);
         // Uncomment this line to see the scrolling text without deformation.
-        //_renderer.DrawFilledRectangle(new DX.RectangleF(0, 64, _screen.Width * 0.25f, _screen.Height * 0.25f), GorgonColors.White, _crawl, new DX.RectangleF(0, 0, 1, 1));
+        //_renderer.DrawFilledRectangle(new GorgonRectangleF(0, 64, _screen.Width * 0.25f, _screen.Height * 0.25f), GorgonColors.White, _crawl, new GorgonRectangleF(0, 0, 1, 1));
         _renderer.DrawSprite(_crawlSprite);
         _renderer.End();
 
@@ -177,7 +176,7 @@ static class Program
         GorgonExample.ResourceBaseDirectory = new DirectoryInfo(ExampleConfig.Default.ResourceLocation);
 
         // Create the window, and size it to our resolution.
-        FormMain window = GorgonExample.Initialize(new DX.Size2(ExampleConfig.Default.Resolution.Width, ExampleConfig.Default.Resolution.Height), "Opening Crawl");
+        FormMain window = GorgonExample.Initialize(new GorgonPoint(ExampleConfig.Default.Resolution.X, ExampleConfig.Default.Resolution.Y), "Opening Crawl");
 
         try
         {
@@ -194,8 +193,8 @@ static class Program
 
             _screen = new GorgonSwapChain(_graphics,
                                           window,
-                                          new GorgonSwapChainInfo(ExampleConfig.Default.Resolution.Width,
-                                                                       ExampleConfig.Default.Resolution.Height,
+                                          new GorgonSwapChainInfo(ExampleConfig.Default.Resolution.X,
+                                                                       ExampleConfig.Default.Resolution.Y,
                                                                        BufferFormat.R8G8B8A8_UNorm)
                                           {
                                               Name = "Gorgon2D Sprites Example Swap Chain"
@@ -222,7 +221,7 @@ static class Program
             {
                 Alignment = Alignment.UpperCenter,
                 Color = GorgonColors.Yellow,
-                LayoutArea = new DX.Size2F(_screen.Width, _screen.Height),
+                LayoutArea = new Vector2(_screen.Width, _screen.Height),
                 AllowColorCodes = true
             };
 

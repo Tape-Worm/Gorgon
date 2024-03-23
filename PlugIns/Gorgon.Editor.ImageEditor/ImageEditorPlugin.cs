@@ -42,7 +42,6 @@ using Gorgon.Graphics.Imaging.GdiPlus;
 using Gorgon.IO;
 using Gorgon.Math;
 using Drawing = System.Drawing;
-using DX = SharpDX;
 
 namespace Gorgon.Editor.ImageEditor;
 
@@ -131,7 +130,7 @@ internal class ImageEditorPlugIn
             GorgonTexture2DView view = texture.GetShaderResourceView(mipCount: 1, arrayCount: 1);
             rtv.Clear(GorgonColors.BlackTransparent);
             HostContentServices.GraphicsContext.Graphics.SetRenderTarget(rtv);
-            HostContentServices.GraphicsContext.Blitter.Blit(view, new DX.Rectangle(0, 0, rtv.Width, rtv.Height), blendState: GorgonBlendState.Default, samplerState: GorgonSamplerState.Default);
+            HostContentServices.GraphicsContext.Blitter.Blit(view, new GorgonRectangle(0, 0, rtv.Width, rtv.Height), blendState: GorgonBlendState.Default, samplerState: GorgonSamplerState.Default);
             HostContentServices.GraphicsContext.Graphics.SetRenderTarget(null);
 
             image?.Dispose();

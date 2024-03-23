@@ -25,9 +25,9 @@
 
 
 using System.Numerics;
+using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Renderers;
-using DX = SharpDX;
 
 namespace Gorgon.Examples;
 
@@ -101,9 +101,9 @@ internal class SpritesLayer(Gorgon2D renderer, IReadOnlyDictionary<string, Gorgo
         sprite.Scale = new Vector2(entity.Scale);
         sprite.Anchor = entity.Anchor;
 
-        DX.RectangleF bounds = Renderer.MeasureSprite(sprite);
+        GorgonRectangleF bounds = Renderer.MeasureSprite(sprite);
 
-        if ((Camera.ViewableRegion.Intersects(bounds))
+        if ((Camera.ViewableRegion.IntersectsWith(bounds))
             && (entity.Visible))
         {
             _drawList.Add((index, entity));

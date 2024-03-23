@@ -33,7 +33,6 @@ using Gorgon.Memory;
 using SharpDX.DXGI;
 using SharpDX.Mathematics.Interop;
 using D3D11 = SharpDX.Direct3D11;
-using DX = SharpDX;
 
 namespace Gorgon.Graphics.Core;
 
@@ -362,7 +361,7 @@ public sealed class GorgonTexture1DReadWriteView
     /// If this method is called with a 3D texture bound to the view, and with regions specified, then the regions are ignored.
     /// </para>
     /// </remarks>
-    public void Clear(GorgonColor color, ReadOnlySpan<DX.Rectangle> rectangles)
+    public void Clear(GorgonColor color, ReadOnlySpan<GorgonRectangle> rectangles)
     {
         if (rectangles.IsEmpty)
         {
@@ -376,7 +375,7 @@ public sealed class GorgonTexture1DReadWriteView
         {
             for (int i = 0; i < rectangles.Length; ++i)
             {
-                clearRects[i] = rectangles[i];
+                clearRects[i] = rectangles[i].ToSharpDXRawRectangle();
             }
 
             Resource.Graphics.D3DDeviceContext.ClearView(Native, color.ToRawColor4(), clearRects, rectangles.Length);

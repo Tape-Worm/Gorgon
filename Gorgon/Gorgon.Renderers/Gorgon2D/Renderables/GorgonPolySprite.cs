@@ -34,7 +34,6 @@ using Gorgon.Native;
 using Gorgon.Renderers.Geometry;
 using Gorgon.Renderers.Properties;
 using Newtonsoft.Json;
-using DX = SharpDX;
 
 namespace Gorgon.Renderers;
 
@@ -199,12 +198,12 @@ public class GorgonPolySprite
     /// Property to return the boundaries of the sprite.
     /// </summary>
     [JsonIgnore]
-    public DX.RectangleF Bounds
+    public GorgonRectangleF Bounds
     {
         get => Renderable.Bounds;
         internal set
         {
-            ref DX.RectangleF bounds = ref Renderable.Bounds;
+            ref GorgonRectangleF bounds = ref Renderable.Bounds;
 
             if ((bounds.Left == value.Left)
                 && (bounds.Right == value.Right)
@@ -227,7 +226,7 @@ public class GorgonPolySprite
         get => new(Renderable.Bounds.Left, Renderable.Bounds.Top);
         set
         {
-            ref DX.RectangleF bounds = ref Renderable.Bounds;
+            ref GorgonRectangleF bounds = ref Renderable.Bounds;
             if ((bounds.X == value.X)
                 && (bounds.Y == value.Y))
             {
@@ -287,7 +286,7 @@ public class GorgonPolySprite
     /// Property to return the size of the sprite.
     /// </summary>
     [JsonIgnore]
-    public DX.Size2F Size => Bounds.Size;
+    public Vector2 Size => Bounds.Size;
 
     /// <summary>
     /// Property to set or return the size of the renderable after scaling has been applied.
@@ -297,19 +296,19 @@ public class GorgonPolySprite
     /// multiplied by the scale.  When assigning a value, the scale be set on value derived from the current size of the renderable.
     /// </remarks>
     [JsonIgnore]
-    public DX.Size2F ScaledSize
+    public Vector2 ScaledSize
     {
         get
         {
-            ref DX.RectangleF bounds = ref Renderable.Bounds;
+            ref GorgonRectangleF bounds = ref Renderable.Bounds;
             ref Vector2 scale = ref Renderable.Scale;
-            return new DX.Size2F(scale.X * bounds.Width, scale.Y * bounds.Height);
+            return new Vector2(scale.X * bounds.Width, scale.Y * bounds.Height);
         }
         set
         {
-            ref DX.RectangleF bounds = ref Renderable.Bounds;
+            ref GorgonRectangleF bounds = ref Renderable.Bounds;
             ref Vector2 scale = ref Renderable.Scale;
-            scale = new Vector2(value.Width / bounds.Width, value.Height / bounds.Height);
+            scale = new Vector2(value.X / bounds.Width, value.Y / bounds.Height);
             Renderable.HasTransformChanges = true;
         }
     }
@@ -644,7 +643,7 @@ public class GorgonPolySprite
             maxY = maxY.Max(vertex.Position.Y);
         }
 
-        newSprite.Bounds = new DX.RectangleF(0, 0, maxX - minX, maxY - minY);
+        newSprite.Bounds = new GorgonRectangleF(0, 0, maxX - minX, maxY - minY);
 
         // Split the polygon hull into triangles.            
         newSprite.Renderable.IndexBuffer = new GorgonIndexBuffer(graphics, new GorgonIndexBufferInfo(newSprite.RwIndices.Length)

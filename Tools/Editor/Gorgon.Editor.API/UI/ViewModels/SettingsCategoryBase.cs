@@ -40,7 +40,7 @@ namespace Gorgon.Editor.UI;
 /// </para>
 /// <para>
 /// To register a settings panel, the developer must inherit this view model type, and create a settings view model for the plug in settings they wish to update. A view must be registered to the 
-/// the view model by using the <see cref="ViewFactory"/>.<see cref="ViewFactory.Register{T}(Func{System.Windows.Forms.Control})"/> method
+/// the view model by using the <see cref="ViewFactory"/>.<see cref="ViewFactory.Register{T}(Func{Control})"/> method
 /// </para>
 /// <para>
 /// Any parameters for this view model must inherit from the <see cref="SettingsCategoryViewModelParameters"/> class

@@ -36,7 +36,6 @@ using Gorgon.Graphics.Fonts;
 using Gorgon.Graphics.Imaging;
 using Gorgon.Math;
 using Gorgon.UI;
-using DX = SharpDX;
 
 namespace Gorgon.Editor.TextureAtlasTool;
 
@@ -46,7 +45,6 @@ namespace Gorgon.Editor.TextureAtlasTool;
 internal partial class FormSpriteSelector
     : Form, IDataContext<ISpriteFiles>
 {
-
     // Flag to indicate that the form is being designed in the IDE.
     private readonly bool _isDesignTime;
     // The graphics context for the application.
@@ -58,8 +56,6 @@ internal partial class FormSpriteSelector
     // The previous idle function.
     private Func<bool> _oldIdle;
 
-
-
     /// <summary>Property to return the data context assigned to this view.</summary>
     [Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public ISpriteFiles ViewModel
@@ -67,8 +63,6 @@ internal partial class FormSpriteSelector
         get;
         private set;
     }
-
-
 
     /// <summary>
     /// Function to validate the controls on the form.
@@ -170,7 +164,7 @@ internal partial class FormSpriteSelector
     /// Function to retrieve the rectangular region for rendering.
     /// </summary>
     /// <returns>The render area.</returns>
-    private DX.Rectangle GetRenderRegion()
+    private GorgonRectangle GetRenderRegion()
     {
         int size;
 
@@ -186,7 +180,7 @@ internal partial class FormSpriteSelector
         int top = (_swapChain.Height / 2) - (size / 2);
         int left = (_swapChain.Width / 2) - (size / 2);
 
-        return new DX.Rectangle(left, top, size, size);
+        return new GorgonRectangle(left, top, size, size);
     }
 
     /// <summary>
@@ -198,7 +192,7 @@ internal partial class FormSpriteSelector
         _graphicsContext.Graphics.SetRenderTarget(_swapChain.RenderTargetView);
         _swapChain.RenderTargetView.Clear(PanelPreviewRender.BackColor);
 
-        DX.RectangleF renderRegion = GetRenderRegion().ToRectangleF();
+        GorgonRectangleF renderRegion = GetRenderRegion();
         Vector2 halfClient = new(renderRegion.Width * 0.5f, renderRegion.Height * 0.5f);
 
         _graphicsContext.Renderer2D.Begin();
@@ -213,13 +207,13 @@ internal partial class FormSpriteSelector
             float x = renderRegion.X + halfClient.X - (width * 0.5f);
             float y = renderRegion.Y + halfClient.Y - (height * 0.5f);
 
-            _graphicsContext.Renderer2D.DrawFilledRectangle(new DX.RectangleF(x, y, width, height), GorgonColors.White, _previewImage, new DX.RectangleF(0, 0, 1, 1));
+            _graphicsContext.Renderer2D.DrawFilledRectangle(new GorgonRectangleF(x, y, width, height), GorgonColors.White, _previewImage, new GorgonRectangleF(0, 0, 1, 1));
         }
         else
         {
-            DX.Size2F size = Resources.GORTAG_TEXT_SELECT_SPRITE.MeasureText(_graphicsContext.Renderer2D.DefaultFont, false);
+            Vector2 size = Resources.GORTAG_TEXT_SELECT_SPRITE.MeasureText(_graphicsContext.Renderer2D.DefaultFont, false);
             _graphicsContext.Renderer2D.DrawString(Resources.GORTAG_TEXT_SELECT_SPRITE,
-                                                    new Vector2(renderRegion.X + halfClient.X - size.Width * 0.5f, renderRegion.Y + halfClient.Y - size.Height * 0.5f),
+                                                    new Vector2(renderRegion.X + halfClient.X - size.X * 0.5f, renderRegion.Y + halfClient.Y - size.Y * 0.5f),
                                                     color: GorgonColors.White);
         }
         _graphicsContext.Renderer2D.End();
@@ -359,13 +353,10 @@ internal partial class FormSpriteSelector
         ViewModel.PropertyChanged += DataContext_PropertyChanged;
     }
 
-
-
     /// <summary>Initializes a new instance of the <see cref="FormSpriteSelector"/> class.</summary>
     public FormSpriteSelector()
     {
         _isDesignTime = LicenseManager.UsageMode == LicenseUsageMode.Designtime;
         InitializeComponent();
     }
-
 }

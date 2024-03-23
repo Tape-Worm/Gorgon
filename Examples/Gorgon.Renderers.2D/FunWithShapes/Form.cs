@@ -31,7 +31,6 @@ using Gorgon.Graphics.Core;
 using Gorgon.Math;
 using Gorgon.Renderers;
 using Gorgon.UI;
-using DX = SharpDX;
 
 namespace Gorgon.Examples;
 
@@ -43,7 +42,7 @@ public partial class Form
 {
 
     // Half the width and height of the "screen".
-    private DX.Size2F _halfSize;
+    private Vector2 _halfSize;
     // Our core graphics interface.
     private GorgonGraphics _graphics;
     // The swap chain that represents our "screen".
@@ -76,7 +75,7 @@ public partial class Form
             // Get the star color.
             paintColor = Color.FromArgb(colorSwitch, colorSwitch, colorSwitch);
 
-            _renderer.DrawFilledRectangle(new DX.RectangleF(GorgonRandom.RandomSingle(_screen.Width), GorgonRandom.RandomSingle(_screen.Height), 1, 1), paintColor);
+            _renderer.DrawFilledRectangle(new GorgonRectangleF(GorgonRandom.RandomSingle(_screen.Width), GorgonRandom.RandomSingle(_screen.Height), 1, 1), paintColor);
         }
 
         // Draw lines.
@@ -87,24 +86,24 @@ public partial class Form
 
             // Set up a random color.				
             paintColor = Color.FromArgb((byte)GorgonRandom.RandomInt32(128, 255), GorgonRandom.RandomInt32(64, 255), GorgonRandom.RandomInt32(64, 255), 0);
-            Vector2 startPosition = new(sin + _halfSize.Width, cos + _halfSize.Height);
-            Vector2 endPosition = new((cos * (GorgonRandom.RandomSingle(_halfSize.Width * 0.82f))) + startPosition.X, (sin * (GorgonRandom.RandomSingle(_halfSize.Height * 0.82f))) + startPosition.Y);
+            Vector2 startPosition = new(sin + _halfSize.X, cos + _halfSize.Y);
+            Vector2 endPosition = new((cos * (GorgonRandom.RandomSingle(_halfSize.X * 0.82f))) + startPosition.X, (sin * (GorgonRandom.RandomSingle(_halfSize.Y * 0.82f))) + startPosition.Y);
             _renderer.DrawLine(startPosition.X, startPosition.Y, endPosition.X, endPosition.Y, paintColor);
         }
 
         // Draw a filled circle.
-        float size = (_halfSize.Width / 2.0f) + (GorgonRandom.RandomInt32(10) - 8);
+        float size = (_halfSize.X / 2.0f) + (GorgonRandom.RandomInt32(10) - 8);
         float half = size / 2.0f;
-        _renderer.DrawFilledEllipse(new DX.RectangleF(_halfSize.Width - half, _halfSize.Height - half, size, size), Color.Yellow);
+        _renderer.DrawFilledEllipse(new GorgonRectangleF(_halfSize.X - half, _halfSize.Y - half, size, size), Color.Yellow);
 
         // Draw some circles in the filled circle (sunspots). 
         for (int x = 0; x < 25; x++)
         {
             //float radius = GorgonRandom.RandomSingle(5.0f);
             float radius = 4;
-            Vector2 spotPosition = new((GorgonRandom.RandomSingle((_halfSize.Height / 2.0f)) + _halfSize.Width - (_halfSize.Height / 4.0f)),
-                                                     (GorgonRandom.RandomSingle((_halfSize.Height / 2.0f)) + _halfSize.Height - (_halfSize.Height / 4.0f)));
-            _renderer.DrawEllipse(new DX.RectangleF(spotPosition.X - (radius * 0.5f),
+            Vector2 spotPosition = new((GorgonRandom.RandomSingle((_halfSize.Y / 2.0f)) + _halfSize.X - (_halfSize.Y / 4.0f)),
+                                                     (GorgonRandom.RandomSingle((_halfSize.Y / 2.0f)) + _halfSize.Y - (_halfSize.Y / 4.0f)));
+            _renderer.DrawEllipse(new GorgonRectangleF(spotPosition.X - (radius * 0.5f),
                                                     spotPosition.Y - (radius * 0.5f),
                                                     radius,
                                                     radius),
@@ -112,8 +111,8 @@ public partial class Form
         }
 
         // Draw some black bars.
-        _renderer.DrawFilledRectangle(new DX.RectangleF(0, 0, _screen.Width, _screen.Height / 6.0f), Color.Black);
-        _renderer.DrawFilledRectangle(new DX.RectangleF(0, _screen.Height - (_screen.Height / 6.0f), _screen.Width, _screen.Height / 6.0f), Color.Black);
+        _renderer.DrawFilledRectangle(new GorgonRectangleF(0, 0, _screen.Width, _screen.Height / 6.0f), Color.Black);
+        _renderer.DrawFilledRectangle(new GorgonRectangleF(0, _screen.Height - (_screen.Height / 6.0f), _screen.Width, _screen.Height / 6.0f), Color.Black);
 
         // Tell the renderer that we're done drawing so we can actually render the shapes.            
         _renderer.End();
@@ -212,7 +211,7 @@ public partial class Form
                                           });
             _screen.SwapChainResized += Screen_AfterSwapChainResized;
             _graphics.SetRenderTarget(_screen.RenderTargetView);
-            _halfSize = new DX.Size2F(_screen.Width / 2.0f, _screen.Height / 2.0f);
+            _halfSize = new Vector2(_screen.Width / 2.0f, _screen.Height / 2.0f);
 
             // Create our 2D renderer so we can draw stuff.
             _renderer = new Gorgon2D(_graphics);
@@ -242,7 +241,7 @@ public partial class Form
     /// <param name="e">The <see cref="SwapChainResizedEventArgs"/> instance containing the event data.</param>
     private void Screen_AfterSwapChainResized(object sender, SwapChainResizedEventArgs e)
     {
-        _halfSize = new DX.Size2F(e.Size.Width / 2.0f, e.Size.Height / 2.0f);
+        _halfSize = new Vector2(e.Size.X / 2.0f, e.Size.Y / 2.0f);
 
         // Update the image.
         DrawAPrettyPicture();

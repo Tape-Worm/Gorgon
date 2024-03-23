@@ -911,8 +911,8 @@ class WicUtilities
     private void CropBitmapData(BitmapSource bitmap, IGorgonImageBuffer buffer, int offsetX, int offsetY, int width, int height)
     {
         using BitmapClipper clipper = new(_factory);
-        DX.Rectangle rect = DX.Rectangle.Intersect(new DX.Rectangle(0, 0, bitmap.Size.Width, bitmap.Size.Height),
-                                                   new DX.Rectangle(offsetX, offsetY, width, height));
+        GorgonRectangle rect = GorgonRectangle.Intersect(new GorgonRectangle(0, 0, bitmap.Size.Width, bitmap.Size.Height),
+                                                         new GorgonRectangle(offsetX, offsetY, width, height));
 
         if (rect.IsEmpty)
         {
@@ -920,7 +920,7 @@ class WicUtilities
         }
 
         // Intersect our clipping rectangle with the buffer size.
-        clipper.Initialize(bitmap, rect);
+        clipper.Initialize(bitmap, new DX.Mathematics.Interop.RawBox(rect.X, rect.Y, rect.Width, rect.Height));
         clipper.CopyPixels(buffer.PitchInformation.RowPitch, buffer.Data, buffer.PitchInformation.SlicePitch);
     }
 

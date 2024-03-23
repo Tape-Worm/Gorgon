@@ -24,6 +24,7 @@
 // 
 
 
+using System.Numerics;
 using Gorgon.Core;
 using Gorgon.Editor.Rendering;
 using Gorgon.Graphics;
@@ -31,7 +32,6 @@ using Gorgon.Graphics.Core;
 using Gorgon.Graphics.Imaging;
 using Gorgon.Math;
 using Gorgon.Renderers;
-using DX = SharpDX;
 
 namespace Gorgon.Editor.ImageEditor;
 
@@ -113,7 +113,7 @@ internal class FxService(IGraphicsContext graphics)
         tv?.Dispose();
 
         PreviewTexture = null;
-        _blur.BlurRenderTargetsSize = new DX.Size2(256, 256);
+        _blur.BlurRenderTargetsSize = new GorgonPoint(256, 256);
     }
 
     /// <summary>
@@ -152,7 +152,7 @@ internal class FxService(IGraphicsContext graphics)
 
         int size = ((_texture.Width > _texture.Height) ? _texture.Width : _texture.Height);
         _blur.BlurTargetFormat = _texture.Format;
-        _blur.BlurRenderTargetsSize = new DX.Size2(size, size);
+        _blur.BlurRenderTargetsSize = new GorgonPoint(size, size);
     }
 
     /// <summary>
@@ -257,12 +257,12 @@ internal class FxService(IGraphicsContext graphics)
         if (overlay)
         {
             _graphics.Renderer2D.Begin();
-            _graphics.Renderer2D.DrawFilledRectangle(new DX.RectangleF(0, 0, _texture.Width, _texture.Height), GorgonColors.White, _texture, new DX.RectangleF(0, 0, 1, 1));
+            _graphics.Renderer2D.DrawFilledRectangle(new GorgonRectangleF(0, 0, _texture.Width, _texture.Height), GorgonColors.White, _texture, new GorgonRectangleF(0, 0, 1, 1));
             _graphics.Renderer2D.End();
         }
 
         _edgeDetect.Begin();
-        _graphics.Renderer2D.DrawFilledRectangle(new DX.RectangleF(0, 0, _texture.Width, _texture.Height), GorgonColors.White, _texture, new DX.RectangleF(0, 0, 1, 1));
+        _graphics.Renderer2D.DrawFilledRectangle(new GorgonRectangleF(0, 0, _texture.Width, _texture.Height), GorgonColors.White, _texture, new GorgonRectangleF(0, 0, 1, 1));
         _edgeDetect.End();
 
         PreviewTexture = _effectTexturePing;
@@ -418,7 +418,7 @@ internal class FxService(IGraphicsContext graphics)
             srcBuffer.CopyTo(_workingImage.Buffers[0]);
         }
 
-        _edgeDetect.TextureSize = _sharpEmboss.TextureSize = new DX.Size2F(_workingImage.Width, _workingImage.Height);
+        _edgeDetect.TextureSize = _sharpEmboss.TextureSize = new Vector2(_workingImage.Width, _workingImage.Height);
 
         CreateTexture();
     }

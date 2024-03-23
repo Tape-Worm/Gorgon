@@ -27,7 +27,6 @@
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Math;
-using DX = SharpDX;
 
 namespace Gorgon.Editor.Services;
 
@@ -96,16 +95,16 @@ public class SpriteExtractionData
     /// <summary>
     /// Property to set or return the size of a grid cell.
     /// </summary>
-    public DX.Size2 CellSize
+    public GorgonPoint CellSize
     {
         get;
         set;
-    } = new DX.Size2(32, 32);
+    } = new GorgonPoint(32, 32);
 
     /// <summary>
     /// Property to set or return the number of columns/rows in the grid.
     /// </summary>
-    public DX.Size2 GridSize
+    public GorgonPoint GridSize
     {
         get;
         set;
@@ -132,14 +131,14 @@ public class SpriteExtractionData
     /// <summary>
     /// Property to return the maximum columns and rows allowed in the grid.
     /// </summary>
-    public DX.Size2 MaxGridSize => ((!_textureRef.TryGetTarget(out GorgonTexture2DView texture))
-                || (CellSize.Width == 0) || (CellSize.Height == 0))
-                ? new DX.Size2(1, 1)
-                : new DX.Size2((texture.Width - GridOffset.X) / CellSize.Width, (texture.Height - GridOffset.Y) / CellSize.Height);
+    public GorgonPoint MaxGridSize => ((!_textureRef.TryGetTarget(out GorgonTexture2DView texture))
+                || (CellSize.X == 0) || (CellSize.Y == 0))
+                ? new GorgonPoint(1, 1)
+                : new GorgonPoint((texture.Width - GridOffset.X) / CellSize.X, (texture.Height - GridOffset.Y) / CellSize.Y);
 
     /// <summary>
     /// Property to return the number of sprites that will be extracted.
     /// </summary>
-    public int SpriteCount => _textureRef is null ? 0 : (GridSize.Width.Min(MaxGridSize.Width).Max(1) * GridSize.Height.Min(MaxGridSize.Height).Max(1)) * ArrayCount;
+    public int SpriteCount => _textureRef is null ? 0 : (GridSize.X.Min(MaxGridSize.X).Max(1) * GridSize.Y.Min(MaxGridSize.Y).Max(1)) * ArrayCount;
 
 }

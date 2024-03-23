@@ -46,9 +46,6 @@
     <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
   <ItemGroup>
-
-  </ItemGroup>
-  <ItemGroup>
     <PackageReference Include="Krypton.Ribbon.Lite" Version="80.24.3.64" />
     <PackageReference Include="Microsoft.SourceLink.GitHub">
       <Version>8.0.0</Version>      

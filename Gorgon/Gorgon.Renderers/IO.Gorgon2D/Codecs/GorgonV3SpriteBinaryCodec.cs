@@ -30,7 +30,6 @@ using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.IO.Properties;
 using Gorgon.Renderers;
-using DX = SharpDX;
 
 namespace Gorgon.IO;
 
@@ -88,11 +87,11 @@ public class GorgonV3SpriteBinaryCodec(Gorgon2D renderer)
     /// <param name="textureRegion">The texture coordinates.</param>
     /// <param name="textureArrayIndex">The texture array index.</param>
     /// <returns>The texture attached to the sprite.</returns>
-    private GorgonTexture2DView LoadTexture(GorgonBinaryReader reader, GorgonTexture2DView overrideTexture, out DX.RectangleF textureRegion, out int textureArrayIndex)
+    private GorgonTexture2DView LoadTexture(GorgonBinaryReader reader, GorgonTexture2DView overrideTexture, out GorgonRectangleF textureRegion, out int textureArrayIndex)
     {
         // Write out as much info about the texture as we can so we can look it up based on these values when loading.
         string textureName = reader.ReadString();
-        textureRegion = DX.RectangleF.Empty;
+        textureRegion = GorgonRectangleF.Empty;
         textureArrayIndex = 0;
 
         if (string.IsNullOrWhiteSpace(textureName))
@@ -101,6 +100,8 @@ public class GorgonV3SpriteBinaryCodec(Gorgon2D renderer)
         }
 
         reader.ReadValue(out textureRegion);
+        // The SharpDX rectangle stored LTRB, we need to convert it to x, y, width and height.
+        textureRegion = GorgonRectangleF.FromLTRB(textureRegion.Left, textureRegion.Top, textureRegion.Width, textureRegion.Height);
         reader.ReadValue(out textureArrayIndex);
 
         reader.ReadValue(out int textureWidth);
@@ -150,7 +151,7 @@ public class GorgonV3SpriteBinaryCodec(Gorgon2D renderer)
         {
             reader.Open();
             binReader = reader.OpenChunk(SpriteData);
-            sprite.Size = binReader.ReadValue<DX.Size2F>();
+            sprite.Size = binReader.ReadValue<Vector2>();
             sprite.Anchor = binReader.ReadValue<Vector2>();
 
             // If we do not have alpha test information, then skip writing its data.
@@ -175,7 +176,7 @@ public class GorgonV3SpriteBinaryCodec(Gorgon2D renderer)
             if (reader.Chunks.Contains(TextureData))
             {
                 binReader = reader.OpenChunk(TextureData);
-                sprite.Texture = LoadTexture(binReader, overrideTexture, out DX.RectangleF textureCoordinates, out int textureArrayIndex);
+                sprite.Texture = LoadTexture(binReader, overrideTexture, out GorgonRectangleF textureCoordinates, out int textureArrayIndex);
                 sprite.TextureRegion = textureCoordinates;
                 sprite.TextureArrayIndex = textureArrayIndex;
                 reader.CloseChunk();
@@ -266,7 +267,9 @@ public class GorgonV3SpriteBinaryCodec(Gorgon2D renderer)
                 binWriter = writer.OpenChunk(TextureData);
                 // Write out as much info about the texture as we can so we can look it up based on these values when loading.
                 binWriter.Write(sprite.Texture.Texture.Name);
-                binWriter.WriteValue(sprite.TextureRegion);
+                // We need to convert our data to LTRB to keep compatibility.
+                GorgonRectangleF ltrb = new(sprite.TextureRegion.X, sprite.TextureRegion.Y, sprite.TextureRegion.Right, sprite.TextureRegion.Bottom);
+                binWriter.WriteValue(ltrb);
                 binWriter.WriteValue(sprite.TextureArrayIndex);
                 binWriter.Write(sprite.Texture.Texture.Width);
                 binWriter.Write(sprite.Texture.Texture.Height);

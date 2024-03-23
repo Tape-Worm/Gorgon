@@ -1,5 +1,4 @@
-﻿
-// 
+﻿// 
 // Gorgon
 // Copyright (C) 2020 Michael Winsor
 // 
@@ -22,9 +21,6 @@
 // 
 // Created: December 27, 2020 4:23:52 PM
 // 
-
-
-using DX = SharpDX;
 
 namespace Gorgon.Graphics.Imaging;
 
@@ -64,7 +60,7 @@ public interface IGorgonImageUpdateFluent
     /// of the original image, then no changes will be made.
     /// </para>
     /// </remarks>
-    IGorgonImageUpdateFluent Crop(DX.Rectangle cropRect, int? newDepth = null);
+    IGorgonImageUpdateFluent Crop(GorgonRectangle cropRect, int? newDepth = null);
 
     /// <summary>
     /// Function to expand an image width, height, and/or depth.

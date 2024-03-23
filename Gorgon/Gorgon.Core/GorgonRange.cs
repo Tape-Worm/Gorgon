@@ -198,7 +198,7 @@ public readonly struct GorgonRange<T>
     {
         if (!left.Intersects(right))
         {
-            result = GorgonRange<T>.Empty;
+            result = Empty;
             return;
         }
 

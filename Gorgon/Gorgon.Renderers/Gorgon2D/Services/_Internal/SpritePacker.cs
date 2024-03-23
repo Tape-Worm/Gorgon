@@ -23,8 +23,7 @@
 // Created: Saturday, April 14, 2012 10:56:23 AM
 // 
 
-
-using DX = SharpDX;
+using Gorgon.Graphics;
 
 namespace Gorgon.Renderers.Services;
 
@@ -33,7 +32,6 @@ namespace Gorgon.Renderers.Services;
 /// </summary>
 internal static class SpritePacker
 {
-
     /// <summary>
     /// Property to return the root node.
     /// </summary>
@@ -43,8 +41,6 @@ internal static class SpritePacker
         private set;
     }
 
-
-
     /// <summary>
     /// Function to create the root node.
     /// </summary>
@@ -52,7 +48,7 @@ internal static class SpritePacker
     /// <param name="textureHeight">The height of the texture.</param>
     public static void CreateRoot(int textureWidth, int textureHeight) => Root = new SpriteNode(null)
     {
-        Region = new DX.Rectangle(0, 0, textureWidth, textureHeight)
+        Region = new GorgonRectangle(0, 0, textureWidth, textureHeight)
     };
 
     /// <summary>
@@ -60,22 +56,21 @@ internal static class SpritePacker
     /// </summary>
     /// <param name="dimensions">The sprite dimensions.</param>
     /// <returns>A rectangle for the area on the image that the sprite will be located at, or <b>null</b> if there's no room.</returns>
-    public static DX.Rectangle? Add(DX.Size2 dimensions)
+    public static GorgonRectangle? Add(GorgonPoint dimensions)
     {
-        if ((dimensions.Width > Root.Region.Width) || (dimensions.Height > Root.Region.Height))
+        if ((dimensions.X > Root.Region.Width) || (dimensions.Y > Root.Region.Height))
         {
             return null;
         }
 
         // Do nothing here.
-        if ((dimensions.Width == 0) || (dimensions.Height == 0))
+        if ((dimensions.X == 0) || (dimensions.Y == 0))
         {
-            return DX.Rectangle.Empty;
+            return GorgonRectangle.Empty;
         }
 
         SpriteNode newNode = Root.AddNode(dimensions);
 
         return newNode?.Region;
     }
-
 }

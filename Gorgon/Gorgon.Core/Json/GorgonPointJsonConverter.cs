@@ -64,12 +64,13 @@ public class GorgonPointJsonConverter
     /// <returns>The object value.</returns>
     public override GorgonPoint? ReadJson(JsonReader reader, Type objectType, GorgonPoint? existingValue, bool hasExistingValue, JsonSerializer serializer)
     {
-        if (reader.TokenType == JsonToken.Null)
+        if ((reader.TokenType == JsonToken.Null)
+            || (!reader.Read()))
         {
             return hasExistingValue ? existingValue : null;
         }
 
-        if (reader.TokenType != JsonToken.StartObject)
+        if (reader.TokenType != JsonToken.PropertyName)
         {
             throw new GorgonException(GorgonResult.CannotRead);
         }
@@ -77,7 +78,7 @@ public class GorgonPointJsonConverter
         int x = 0;
         int y = 0;
 
-        while ((reader.Read()) && (reader.TokenType == JsonToken.PropertyName))
+        do
         {
             string propName = reader.Value?.ToString() ?? string.Empty;
 
@@ -90,7 +91,7 @@ public class GorgonPointJsonConverter
                     y = reader.ReadAsInt32() ?? 0;
                     break;
             }
-        }
+        } while ((reader.Read()) && (reader.TokenType == JsonToken.PropertyName));
 
         return new GorgonPoint(x, y);
     }

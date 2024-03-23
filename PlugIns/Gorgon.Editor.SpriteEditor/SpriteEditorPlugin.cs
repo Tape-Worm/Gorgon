@@ -29,7 +29,6 @@ using System.Numerics;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
 using Gorgon.Editor.Content;
-using Gorgon.Editor.Converters;
 using Gorgon.Editor.Metadata;
 using Gorgon.Editor.PlugIns;
 using Gorgon.Editor.Services;
@@ -41,11 +40,11 @@ using Gorgon.Graphics.Imaging;
 using Gorgon.Graphics.Imaging.Codecs;
 using Gorgon.Graphics.Imaging.GdiPlus;
 using Gorgon.IO;
+using Gorgon.Json;
 using Gorgon.Math;
 using Gorgon.Renderers;
 using Gorgon.UI;
 using Microsoft.IO;
-using DX = SharpDX;
 
 namespace Gorgon.Editor.SpriteEditor;
 
@@ -231,7 +230,7 @@ internal class SpriteEditorPlugIn
     /// <param name="scale">The scale to apply.</param>
     /// <param name="bounds">The actual size of the sprite (AABB).</param>
     /// <returns>The image containing the rendered sprite.</returns>
-    private void RenderThumbnail(ref IGorgonImage image, GorgonSprite sprite, float scale, DX.RectangleF bounds)
+    private void RenderThumbnail(ref IGorgonImage image, GorgonSprite sprite, float scale, GorgonRectangleF bounds)
     {
         GorgonRenderTarget2DView rtv = null;
         GorgonRenderTargetView prevRtv = null;
@@ -264,14 +263,14 @@ internal class SpriteEditorPlugIn
 
                 // If our bounding box is not the same width/height as the sprite definition, then we've likely changed the offsets of the vertices.
                 // To display this accurately, we need to find the anchor point for the center of the AABB.
-                sprite.Anchor = new Vector2((bounds.Left + bounds.Width * 0.5f) / sprite.Size.Width,
-                                               (bounds.Top + bounds.Height * 0.5f) / sprite.Size.Height);
+                sprite.Anchor = new Vector2((bounds.Left + bounds.Width * 0.5f) / sprite.Size.X,
+                                               (bounds.Top + bounds.Height * 0.5f) / sprite.Size.Y);
                 sprite.Position = new Vector2(rtv.Width * 0.5f, rtv.Height * 0.5f);
 
                 prevRtv = HostContentServices.GraphicsContext.Graphics.RenderTargets[0];
                 HostContentServices.GraphicsContext.Graphics.SetRenderTarget(rtv);
                 HostContentServices.GraphicsContext.Renderer2D.Begin();
-                HostContentServices.GraphicsContext.Renderer2D.DrawFilledRectangle(new DX.RectangleF(0, 0, bgSize, bgSize), GorgonColors.White, _bgPattern, new DX.RectangleF(0, 0, 1.0f, 1.0f));
+                HostContentServices.GraphicsContext.Renderer2D.DrawFilledRectangle(new GorgonRectangleF(0, 0, bgSize, bgSize), GorgonColors.White, _bgPattern, new GorgonRectangleF(0, 0, 1.0f, 1.0f));
                 HostContentServices.GraphicsContext.Renderer2D.DrawSprite(sprite);
                 HostContentServices.GraphicsContext.Renderer2D.End();
 
@@ -538,7 +537,7 @@ internal class SpriteEditorPlugIn
             colorEditor.Initialize(new HostedPanelViewModelParameters(HostContentServices));
 
             SpriteAnchorEdit anchorEditor = new();
-            anchorEditor.Initialize(new SpriteAnchorEditParameters(new DX.Rectangle
+            anchorEditor.Initialize(new SpriteAnchorEditParameters(new GorgonRectangle
             {
                 Left = -HostContentServices.GraphicsContext.Graphics.VideoAdapter.MaxTextureWidth / 2,
                 Top = -HostContentServices.GraphicsContext.Graphics.VideoAdapter.MaxTextureHeight / 2,
@@ -606,7 +605,7 @@ internal class SpriteEditorPlugIn
             if (_settings is not null)
             {
                 // Persist any settings.
-                HostContentServices.ContentPlugInService.WriteContentSettings(SettingsFilename, _settings, new JsonSharpDxRectConverter());
+                HostContentServices.ContentPlugInService.WriteContentSettings(SettingsFilename, _settings, new GorgonRectangleJsonConverter());
             }
         }
         catch (Exception ex)
@@ -640,7 +639,7 @@ internal class SpriteEditorPlugIn
         using MemoryStream noImageStream = CommonEditorResources.MemoryStreamManager.GetStream(Resources.NoImage_256x256);
         _noImage = _ddsCodec.FromStream(noImageStream);
 
-        SpriteEditorSettings settings = HostContentServices.ContentPlugInService.ReadContentSettings<SpriteEditorSettings>(SettingsFilename, new JsonSharpDxRectConverter());
+        SpriteEditorSettings settings = HostContentServices.ContentPlugInService.ReadContentSettings<SpriteEditorSettings>(SettingsFilename, new GorgonRectangleJsonConverter());
         if (settings is not null)
         {
             _settings = settings;
@@ -664,7 +663,7 @@ internal class SpriteEditorPlugIn
     protected override Task<(string name, RecyclableMemoryStream data)> OnGetDefaultContentAsync(string generatedName, ProjectItemMetadata metadata)
     {
         // Creates a sprite object and converts it to a byte array.
-        RecyclableMemoryStream CreateSprite(DX.Size2F size, IContentFile textureFile)
+        RecyclableMemoryStream CreateSprite(Vector2 size, IContentFile textureFile)
         {
             GorgonSprite sprite = new()
             {
@@ -687,7 +686,7 @@ internal class SpriteEditorPlugIn
                                                                     });
                 }
 
-                sprite.TextureRegion = sprite.Texture.ToTexel(new DX.Rectangle(0, 0, (int)size.Width, (int)size.Height));
+                sprite.TextureRegion = sprite.Texture.ToTexel(new GorgonRectangle(0, 0, (int)size.X, (int)size.Y));
                 metadata.DependsOn.Add(CommonEditorContentTypes.ImageType, [textureFile.Path]);
             }
 
@@ -789,7 +788,7 @@ internal class SpriteEditorPlugIn
 
             // Get rid of the anchor prior to retrieving the AABB, we'll be recalculating it anyway.
             sprite.Anchor = Vector2.Zero;
-            DX.RectangleF bounds = HostContentServices.GraphicsContext.Renderer2D.MeasureSprite(sprite);
+            GorgonRectangleF bounds = HostContentServices.GraphicsContext.Renderer2D.MeasureSprite(sprite);
             float scale = (maxSize / bounds.Width).Min(maxSize / bounds.Height);
             RenderThumbnail(ref thumbnailImage, sprite, scale, bounds);
 

@@ -26,7 +26,6 @@
 
 using Gorgon.Core;
 using Gorgon.Graphics;
-using DX = SharpDX;
 
 namespace Gorgon.Input;
 
@@ -171,7 +170,7 @@ public interface IGorgonMouse
     /// Passing <c>Rectangle.Empty</c> to this property will remove the constraint on the position.
     /// </para>
     /// </remarks>
-    DX.Rectangle PositionConstraint
+    GorgonRectangle PositionConstraint
     {
         get;
         set;
@@ -208,7 +207,7 @@ public interface IGorgonMouse
     /// Passing <c>Size.Empty</c> to this property will disable double clicking.
     /// </para>
     /// </remarks>
-    DX.Size2 DoubleClickSize
+    GorgonPoint DoubleClickSize
     {
         get;
         set;

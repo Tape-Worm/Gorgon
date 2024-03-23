@@ -25,7 +25,7 @@
 
 
 using System.ComponentModel;
-using DX = SharpDX;
+using Gorgon.Graphics;
 
 namespace Gorgon.Editor.ViewModels;
 
@@ -35,13 +35,13 @@ namespace Gorgon.Editor.ViewModels;
 /// <remarks>Initializes a new instance of the AppCloseArgs class.</remarks>
 /// <param name="windowDimensions">  The size of the window at shutdown.</param>
 /// <param name="windowState">  The current state of the window (e.g. maximized, normal, etc...)</param>
-internal class AppCloseArgs(DX.Rectangle windowDimensions, int windowState)
+internal class AppCloseArgs(GorgonRectangle windowDimensions, int windowState)
         : CancelEventArgs
 {
     /// <summary>
     /// Property to return the dimensions for the window when closing.
     /// </summary>
-    public DX.Rectangle WindowDimensions
+    public GorgonRectangle WindowDimensions
     {
         get;
     } = windowDimensions;

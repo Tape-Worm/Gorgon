@@ -30,7 +30,6 @@ using Gorgon.Editor.UI;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Renderers;
-using DX = SharpDX;
 
 namespace Gorgon.Editor.SpriteEditor;
 
@@ -40,7 +39,6 @@ namespace Gorgon.Editor.SpriteEditor;
 internal class TextureWrapViewer
     : SingleSpriteViewer
 {
-
     /// <summary>Handles the PropertyChanged event of the WrappingEditor control.</summary>
     /// <param name="sender">The source of the event.</param>
     /// <param name="e">The <see cref="PropertyChangedEventArgs"/> instance containing the event data.</param>
@@ -69,22 +67,22 @@ internal class TextureWrapViewer
     {
         base.OnLoad();
 
-        DX.RectangleF rect = new DX.RectangleF(-DataContext.Size.Width - (DataContext.Size.Width * 0.5f),
-                                               -DataContext.Size.Height - (DataContext.Size.Height * 0.5f),
-                                               DataContext.Size.Width * 3,
-                                               DataContext.Size.Height * 3).Truncate();
+        GorgonRectangleF rect = GorgonRectangleF.Truncate(new GorgonRectangleF(-DataContext.Size.X - (DataContext.Size.X * 0.5f),
+                                               -DataContext.Size.Y - (DataContext.Size.Y * 0.5f),
+                                               DataContext.Size.X * 3,
+                                               DataContext.Size.Y * 3));
         Sprite.Position = Vector2.Zero;
         Sprite.CornerColors.SetAll(GorgonColors.White);
         Sprite.CornerOffsets.SetAll(Vector3.Zero);
         Sprite.TextureSampler = DataContext.WrappingEditor.CurrentSampler == GorgonSamplerState.Default ? null : DataContext.WrappingEditor.CurrentSampler;
         Sprite.Size = rect.Size;
         Sprite.Anchor = new Vector2(0.5f, 0.5f);
-        Sprite.TextureRegion = new DX.RectangleF
+        Sprite.TextureRegion = new GorgonRectangleF
         {
-            Left = Sprite.TextureRegion.Left - Sprite.TextureRegion.Width,
-            Top = Sprite.TextureRegion.Top - Sprite.TextureRegion.Height,
-            Right = Sprite.TextureRegion.Right + Sprite.TextureRegion.Width,
-            Bottom = Sprite.TextureRegion.Bottom + Sprite.TextureRegion.Height
+            Left = Sprite.TextureRegion.Left - Sprite.TextureRegion.X,
+            Top = Sprite.TextureRegion.Top - Sprite.TextureRegion.Y,
+            Right = Sprite.TextureRegion.Right + Sprite.TextureRegion.X,
+            Bottom = Sprite.TextureRegion.Bottom + Sprite.TextureRegion.Y
         };
         RenderRegion = rect;
 
@@ -99,19 +97,17 @@ internal class TextureWrapViewer
             return;
         }
 
-        DX.RectangleF zoomRect = new DX.RectangleF(-DataContext.Size.Width - (DataContext.Size.Width * 0.5f),
-                                                   -DataContext.Size.Height - (DataContext.Size.Height * 0.5f),
-                                                   DataContext.Size.Width * 3,
-                                                   DataContext.Size.Height * 3).Truncate();
+        GorgonRectangleF zoomRect = GorgonRectangleF.Truncate(new GorgonRectangleF(-DataContext.Size.X - (DataContext.Size.X * 0.5f),
+                                                   -DataContext.Size.Y - (DataContext.Size.Y * 0.5f),
+                                                   DataContext.Size.X * 3,
+                                                   DataContext.Size.Y * 3));
 
         ZoomLevels spriteZoomLevel = GetNearestZoomFromRectangle(RenderRegion);
 
-        Vector3 spritePosition = Camera.Unproject(new Vector3(zoomRect.X + zoomRect.Width * 0.5f, zoomRect.Y + zoomRect.Height * 0.5f, 0));
+        Vector3 spritePosition = Camera.Unproject(new Vector3(zoomRect.X + zoomRect.X * 0.5f, zoomRect.Y + zoomRect.Y * 0.5f, 0));
 
         ForceMoveTo(new Vector2(spritePosition.X, spritePosition.Y), spriteZoomLevel.GetScale(), true);
     }
-
-
 
     /// <summary>Initializes a new instance of the <see cref="TextureWrapViewer"/> class.</summary>
     /// <param name="renderer">The 2D renderer for the application.</param>

@@ -28,10 +28,10 @@ using System.ComponentModel;
 using Gorgon.Editor.FontEditor.Properties;
 using Gorgon.Editor.UI;
 using Gorgon.Editor.UI.Controls;
+using Gorgon.Graphics;
 using Gorgon.Graphics.Fonts;
 using Gorgon.Graphics.Imaging;
 using Gorgon.Math;
-using DX = SharpDX;
 
 namespace Gorgon.Editor.FontEditor;
 
@@ -100,7 +100,7 @@ internal partial class FontTextureBrushView
     /// <param name="e">The event parameters.</param>
     private void Numeric_ValueChanged(object sender, EventArgs e)
     {
-        DX.RectangleF rect = new()
+        GorgonRectangleF rect = new()
         {
             Left = (float)NumericLeft.Value,
             Top = (float)NumericTop.Value,
@@ -170,7 +170,7 @@ internal partial class FontTextureBrushView
     /// </summary>
     /// <param name="image">The image to base the upper bounds on.</param>
     /// <param name="region">The current region.</param>
-    private void SetNumericMaxValues(IGorgonImage image, DX.RectangleF region)
+    private void SetNumericMaxValues(IGorgonImage image, GorgonRectangleF region)
     {
         if (image is null)
         {
@@ -227,7 +227,7 @@ internal partial class FontTextureBrushView
     private void ResetDataContext()
     {
         UnassignEvents();
-        SetNumericMaxValues(null, new DX.RectangleF(0, 0, 1, 1));
+        SetNumericMaxValues(null, new GorgonRectangleF(0, 0, 1, 1));
         ComboWrapMode.SelectedIndex = 0;
     }
 
@@ -282,7 +282,7 @@ internal partial class FontTextureBrushView
         ViewModel.OkCommand.Execute(null);
     }
 
-    /// <summary>Raises the <see cref="System.Windows.Forms.UserControl.Load"/> event.</summary>
+    /// <summary>Raises the <see cref="UserControl.Load"/> event.</summary>
     /// <param name="e">An <see cref="EventArgs"/> that contains the event data.</param>
     protected override void OnLoad(EventArgs e)
     {

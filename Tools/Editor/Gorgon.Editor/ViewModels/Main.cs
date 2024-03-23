@@ -29,7 +29,6 @@ using System.Diagnostics;
 using System.Text;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
-using Gorgon.Editor.Converters;
 using Gorgon.Editor.PlugIns;
 using Gorgon.Editor.ProjectData;
 using Gorgon.Editor.Properties;
@@ -37,6 +36,7 @@ using Gorgon.Editor.Services;
 using Gorgon.Editor.UI;
 using Gorgon.Editor.Views;
 using Gorgon.IO;
+using Gorgon.Json;
 using Newtonsoft.Json;
 
 namespace Gorgon.Editor.ViewModels;
@@ -214,7 +214,7 @@ internal class Main
         try
         {
             writer = new StreamWriter(settingsFile.FullName, false, Encoding.UTF8);
-            writer.Write(JsonConvert.SerializeObject(Settings, new JsonSharpDxRectConverter()));
+            writer.Write(JsonConvert.SerializeObject(Settings, new GorgonRectangleJsonConverter()));
         }
         catch (Exception ex)
         {

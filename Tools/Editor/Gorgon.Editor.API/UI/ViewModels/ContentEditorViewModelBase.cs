@@ -51,7 +51,7 @@ namespace Gorgon.Editor.UI;
 /// </para>
 /// <para>
 /// Views that are associated with view models derived from this type must inherit from the <see cref="ContentBaseControl"/>. And developers must register their content views using the 
-/// <see cref="ViewFactory"/>.<see cref="ViewFactory.Register{T}(Func{System.Windows.Forms.Control})"/> method so that the host editor application can present the UI to the end user. 
+/// <see cref="ViewFactory"/>.<see cref="ViewFactory.Register{T}(Func{Control})"/> method so that the host editor application can present the UI to the end user. 
 /// </para>
 /// </remarks>
 /// <seealso cref="ViewFactory"/>

@@ -31,7 +31,6 @@ using Gorgon.Graphics.Core;
 using Gorgon.Math;
 using Gorgon.Renderers.Geometry;
 using Newtonsoft.Json;
-using DX = SharpDX;
 
 namespace Gorgon.Renderers;
 
@@ -129,12 +128,12 @@ public class GorgonSprite
     /// Property to set or return the boundaries of the sprite.
     /// </summary>
     [JsonIgnore]
-    public DX.RectangleF Bounds
+    public GorgonRectangleF Bounds
     {
         get => Renderable.Bounds;
         set
         {
-            ref DX.RectangleF bounds = ref Renderable.Bounds;
+            ref GorgonRectangleF bounds = ref Renderable.Bounds;
 
             if ((bounds.Left == value.Left)
                 && (bounds.Right == value.Right)
@@ -158,14 +157,14 @@ public class GorgonSprite
         get => new(Renderable.Bounds.Left, Renderable.Bounds.Top);
         set
         {
-            ref DX.RectangleF bounds = ref Renderable.Bounds;
+            ref GorgonRectangleF bounds = ref Renderable.Bounds;
             if ((bounds.Left == value.X)
                 && (bounds.Top == value.Y))
             {
                 return;
             }
 
-            bounds = new DX.RectangleF(value.X, value.Y, bounds.Width, bounds.Height);
+            bounds = new GorgonRectangleF(value.X, value.Y, bounds.Width, bounds.Height);
             Renderable.HasTransformChanges = true;
         }
     }
@@ -208,7 +207,7 @@ public class GorgonSprite
             }
 
             ref Vector2 absAnchor = ref _absoluteAnchor;
-            ref DX.RectangleF bounds = ref Renderable.Bounds;
+            ref GorgonRectangleF bounds = ref Renderable.Bounds;
 
             anchor = value;
 
@@ -238,7 +237,7 @@ public class GorgonSprite
             }
 
             ref Vector2 anchor = ref Renderable.Anchor;
-            ref DX.RectangleF bounds = ref Renderable.Bounds;
+            ref GorgonRectangleF bounds = ref Renderable.Bounds;
 
             absAnchor = value;
 
@@ -251,19 +250,19 @@ public class GorgonSprite
     /// <summary>
     /// Property to set or return the size of the sprite.
     /// </summary>
-    public DX.Size2F Size
+    public Vector2 Size
     {
         get => Bounds.Size;
         set
         {
-            ref DX.RectangleF bounds = ref Renderable.Bounds;
-            if ((bounds.Width == value.Width)
-                && (bounds.Height == value.Height))
+            ref GorgonRectangleF bounds = ref Renderable.Bounds;
+            if ((bounds.Width.EqualsEpsilon(value.X))
+                && (bounds.Height.EqualsEpsilon(value.Y)))
             {
                 return;
             }
 
-            bounds = new DX.RectangleF(bounds.Left, bounds.Top, value.Width, value.Height);
+            bounds = new GorgonRectangleF(bounds.Left, bounds.Top, value.X, value.Y);
             Renderable.HasVertexChanges = true;
         }
     }
@@ -274,12 +273,12 @@ public class GorgonSprite
     /// <remarks>
     /// These values are in texel coordinates.
     /// </remarks>
-    public DX.RectangleF TextureRegion
+    public GorgonRectangleF TextureRegion
     {
         get => Renderable.TextureRegion;
         set
         {
-            ref DX.RectangleF region = ref Renderable.TextureRegion;
+            ref GorgonRectangleF region = ref Renderable.TextureRegion;
             if ((region.Left == value.Left)
                 && (region.Top == value.Top)
                 && (region.Right == value.Right)
@@ -319,19 +318,19 @@ public class GorgonSprite
     /// multiplied by the scale.  When assigning a value, the scale be set on value derived from the current size of the renderable.
     /// </remarks>
     [JsonIgnore]
-    public DX.Size2F ScaledSize
+    public Vector2 ScaledSize
     {
         get
         {
-            ref DX.RectangleF bounds = ref Renderable.Bounds;
+            ref GorgonRectangleF bounds = ref Renderable.Bounds;
             ref Vector2 scale = ref Renderable.Scale;
-            return new DX.Size2F(scale.X * bounds.Width, scale.Y * bounds.Height);
+            return new Vector2(scale.X * bounds.Width, scale.Y * bounds.Height);
         }
         set
         {
-            ref DX.RectangleF bounds = ref Renderable.Bounds;
+            ref GorgonRectangleF bounds = ref Renderable.Bounds;
             ref Vector2 scale = ref Renderable.Scale;
-            scale = new Vector2(value.Width / bounds.Width, value.Height / bounds.Height);
+            scale = new Vector2(value.X / bounds.Width, value.Y / bounds.Height);
             Renderable.HasTransformChanges = true;
         }
     }

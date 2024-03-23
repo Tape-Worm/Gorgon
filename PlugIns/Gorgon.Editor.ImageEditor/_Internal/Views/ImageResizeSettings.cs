@@ -213,11 +213,11 @@ internal partial class ImageResizeSettings
         LabelDesc.Text = string.Format(Resources.GORIMG_RESIZE_CROP_DESC, dataContext.ImportFile);
         LabelImportImageName.Text = string.Format(Resources.GORIMG_TEXT_RESIZE_CROP_IMPORT_NAME, dataContext.ImportFile);
         LabelImportImageDimensions.Text = string.Format(Resources.GORIMG_TEXT_RESIZE_CROP_IMPORT_SIZE, dataContext.ImportImage?.Width ?? 0, dataContext.ImportImage?.Height ?? 0);
-        LabelTargetImageDimensions.Text = string.Format(Resources.GORIMG_TEXT_RESIZE_CROP_IMAGE_SIZE, dataContext.TargetImageSize.Width, dataContext.TargetImageSize.Height);
+        LabelTargetImageDimensions.Text = string.Format(Resources.GORIMG_TEXT_RESIZE_CROP_IMAGE_SIZE, dataContext.TargetImageSize.X, dataContext.TargetImageSize.Y);
         RadioCrop.Text = ((dataContext.AllowedModes & CropResizeMode.Crop) == CropResizeMode.Crop) ?
-            string.Format(Resources.GORIMG_TEXT_CROP_TO, dataContext.TargetImageSize.Width, dataContext.TargetImageSize.Height)
+            string.Format(Resources.GORIMG_TEXT_CROP_TO, dataContext.TargetImageSize.X, dataContext.TargetImageSize.Y)
             : Resources.GORIMG_TEXT_ALIGN_TO;
-        RadioResize.Text = string.Format(Resources.GORIMG_TEXT_RESIZE_TO, dataContext.TargetImageSize.Width, dataContext.TargetImageSize.Height);
+        RadioResize.Text = string.Format(Resources.GORIMG_TEXT_RESIZE_TO, dataContext.TargetImageSize.X, dataContext.TargetImageSize.Y);
     }
 
     /// <summary>

@@ -35,7 +35,7 @@ namespace Gorgon.Examples;
 /// mip maps, image cubes and depth images.  It also supports many different image pixel layout formats like R8, R8G8B8A8_*, etc... 
 /// 
 /// The image manipulation functionality is built on a fluent interface, so that you can chain operations together like this:
-/// image.Resize(160, 100, 1).Crop(new SharpDX.Rectangle(120, 80, 40, 40), 1)
+/// image.Resize(160, 100, 1).Crop(new SharpGorgonRectangle(120, 80, 40, 40), 1)
 /// 
 /// Users can create their own image and modify the image data directly (provided they know the format of data in the image) by manipulating the buffers 
 /// of the image. These buffers are indexed by mip level, and array (or depth) level, and have their own size (in the case of mip maps). By accessing the 

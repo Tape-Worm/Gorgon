@@ -38,7 +38,6 @@ using Gorgon.Graphics.Imaging;
 using Gorgon.Graphics.Imaging.Codecs;
 using Gorgon.Math;
 using Gorgon.Renderers;
-using DX = SharpDX;
 
 namespace Gorgon.Editor.Views;
 
@@ -160,14 +159,14 @@ internal partial class ContentPreviewPanel
             OutlineSize = 2,
             OutlineColor1 = GorgonColors.Black,
             OutlineColor2 = GorgonColors.Black,
-            FontStyle = Graphics.Fonts.GorgonFontStyle.Bold
+            FontStyle = GorgonFontStyle.Bold
         });
 
         _titleText = new GorgonTextSprite(_titleFont)
         {
             DrawMode = TextDrawMode.OutlinedGlyphs,
             Alignment = Gorgon.UI.Alignment.Center,
-            LayoutArea = new DX.Size2F(_swapChain.Width, _swapChain.Height)
+            LayoutArea = new Vector2(_swapChain.Width, _swapChain.Height)
         };
 
         using MemoryStream stream = CommonEditorResources.MemoryStreamManager.GetStream(Resources.no_thumbnail_256x256);
@@ -256,12 +255,12 @@ internal partial class ContentPreviewPanel
         float x = halfClient.X - (width / 2.0f);
         float y = halfClient.Y - (height / 2.0f);
 
-        _renderer.DrawFilledRectangle(new DX.RectangleF(x, y, width, height), GorgonColors.White, image, new DX.RectangleF(0, 0, 1, 1));
+        _renderer.DrawFilledRectangle(new GorgonRectangleF(x, y, width, height), GorgonColors.White, image, new GorgonRectangleF(0, 0, 1, 1));
 
-        _titleText.LayoutArea = new DX.Size2F(_swapChain.Width, _titleText.Size.Height * 1.5f);
-        _titleText.Position = new Vector2(0, _swapChain.Height - (_titleText.Size.Height * 1.5f).Min(_swapChain.Height * 0.25f));// _swapChain.Height - _titleText.Size.Height);
+        _titleText.LayoutArea = new Vector2(_swapChain.Width, _titleText.Size.Y * 1.5f);
+        _titleText.Position = new Vector2(0, _swapChain.Height - (_titleText.Size.Y * 1.5f).Min(_swapChain.Height * 0.25f));
 
-        _renderer.DrawFilledRectangle(new DX.RectangleF(0, _titleText.Position.Y, _swapChain.Width, _titleText.LayoutArea.Value.Height), new GorgonColor(0, 0, 0, 0.5f));
+        _renderer.DrawFilledRectangle(new GorgonRectangleF(0, _titleText.Position.Y, _swapChain.Width, _titleText.LayoutArea.Value.Y), new GorgonColor(0, 0, 0, 0.5f));
 
         _renderer.DrawTextSprite(_titleText);
         _renderer.End();

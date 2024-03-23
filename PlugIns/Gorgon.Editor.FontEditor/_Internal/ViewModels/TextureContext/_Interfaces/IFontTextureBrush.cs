@@ -25,9 +25,9 @@
 
 
 using Gorgon.Editor.UI;
+using Gorgon.Graphics;
 using Gorgon.Graphics.Fonts;
 using Gorgon.Graphics.Imaging;
-using DX = SharpDX;
 
 namespace Gorgon.Editor.FontEditor;
 
@@ -57,7 +57,7 @@ internal interface IFontTextureBrush
     /// <summary>
     /// Property to return the region on the texture.
     /// </summary>
-    DX.RectangleF Region
+    GorgonRectangleF Region
     {
         get;
     }
@@ -73,7 +73,7 @@ internal interface IFontTextureBrush
     /// <summary>
     /// Property to return the command used to assign the boundaries for the texture.
     /// </summary>
-    IEditorCommand<DX.RectangleF> SetRegionCommand
+    IEditorCommand<GorgonRectangleF> SetRegionCommand
     {
         get;
     }

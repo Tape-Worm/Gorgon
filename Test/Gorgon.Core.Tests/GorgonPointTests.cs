@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Gorgon.Graphics;
+using Newtonsoft.Json;
 
 namespace Gorgon.Core.Tests;
 
@@ -438,5 +439,20 @@ public class GorgonPointTests
 
         // Assert
         Assert.IsFalse(result);
+    }
+
+    [TestMethod]
+    public void Serialization()
+    {
+        string expectedString = "{\"x\":10,\"y\":20}";
+        GorgonPoint point = new(10, 20);
+
+        string actualString = JsonConvert.SerializeObject(point);
+
+        Assert.AreEqual(expectedString, actualString);
+
+        GorgonPoint deserializedPoint = JsonConvert.DeserializeObject<GorgonPoint>(actualString);
+
+        Assert.AreEqual(point, deserializedPoint);
     }
 }

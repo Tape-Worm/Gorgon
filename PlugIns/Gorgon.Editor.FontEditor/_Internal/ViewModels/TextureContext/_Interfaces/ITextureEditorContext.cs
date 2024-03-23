@@ -25,9 +25,9 @@
 
 
 using Gorgon.Editor.UI;
+using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Graphics.Fonts;
-using DX = SharpDX;
 
 namespace Gorgon.Editor.FontEditor;
 
@@ -140,7 +140,7 @@ internal interface ITextureEditorContext
     /// <summary>
     /// Property to return the size of the font textures.
     /// </summary>
-    DX.Size2 TextureSize
+    GorgonPoint TextureSize
     {
         get;
     }

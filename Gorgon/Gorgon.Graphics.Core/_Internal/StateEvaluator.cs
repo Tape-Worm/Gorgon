@@ -94,7 +94,7 @@ internal class StateEvaluator(GorgonGraphics graphics)
     public DX.ViewportF[] Viewports = new DX.ViewportF[16];
 
     // The rectangles used to define the clipping area.
-    public DX.Rectangle[] Scissors = new DX.Rectangle[16];
+    public GorgonRectangle[] Scissors = new GorgonRectangle[16];
 
     // The currently bound render targets.
     public GorgonRenderTargetView[] RenderTargets = new GorgonRenderTargetView[D3D11.OutputMergerStage.SimultaneousRenderTargetCount];
@@ -736,14 +736,14 @@ internal class StateEvaluator(GorgonGraphics graphics)
     /// </summary>
     /// <param name="scissors">The new scissor rectangles to evaluate.</param>
     /// <returns><b>true</b> if the scissor rectangles have changed, <b>false</b> if not.</returns>
-    public bool GetScissorRectChange(ReadOnlySpan<DX.Rectangle> scissors)
+    public bool GetScissorRectChange(ReadOnlySpan<GorgonRectangle> scissors)
     {
         int length = scissors.Length.Min(Scissors.Length);
         bool hasChanges = false;
 
         for (int i = 0; i < Scissors.Length; ++i)
         {
-            ref DX.Rectangle scissor = ref Scissors[i];
+            ref GorgonRectangle scissor = ref Scissors[i];
 
             if (i >= length)
             {
@@ -751,9 +751,9 @@ internal class StateEvaluator(GorgonGraphics graphics)
                 continue;
             }
 
-            DX.Rectangle newScissor = scissors[i];
+            GorgonRectangle newScissor = scissors[i];
 
-            if (newScissor.Equals(ref scissor))
+            if (newScissor.Equals(scissor))
             {
                 continue;
             }

@@ -822,6 +822,15 @@ namespace Gorgon.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Gorgon Rectangle: {0}x{1}-{2}x{3} (Width: {4}, Height: {5}).
+        /// </summary>
+        internal static string GOR_TOSTR_RECTANGLE {
+            get {
+                return ResourceManager.GetString("GOR_TOSTR_RECTANGLE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to bytes.
         /// </summary>
         internal static string GOR_UNIT_MEM_BYTES {

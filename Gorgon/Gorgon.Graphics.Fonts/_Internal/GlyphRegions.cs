@@ -1,5 +1,4 @@
-﻿
-// 
+﻿// 
 // Gorgon
 // Copyright (C) 2017 Michael Winsor
 // 
@@ -23,9 +22,6 @@
 // Created: February 14, 2017 6:33:41 PM
 // 
 
-
-using DX = SharpDX;
-
 namespace Gorgon.Graphics.Fonts;
 
 /// <summary>
@@ -36,7 +32,7 @@ internal class GlyphRegions
     /// <summary>
     /// Property to set or return the region that encompasses the character.
     /// </summary>
-    public DX.Rectangle CharacterRegion
+    public GorgonRectangle CharacterRegion
     {
         get;
         set;
@@ -45,7 +41,7 @@ internal class GlyphRegions
     /// <summary>
     /// Property to set or return the region that encompasses the character outline.
     /// </summary>
-    public DX.Rectangle OutlineRegion
+    public GorgonRectangle OutlineRegion
     {
         get;
         set;

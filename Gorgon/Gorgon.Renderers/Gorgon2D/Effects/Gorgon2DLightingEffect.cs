@@ -36,7 +36,6 @@ using Gorgon.Renderers.Data;
 using Gorgon.Renderers.Lights;
 using Gorgon.Renderers.Properties;
 using Gorgon.Renderers.Techniques;
-using DX = SharpDX;
 
 namespace Gorgon.Renderers;
 
@@ -186,10 +185,10 @@ public class Gorgon2DLightingEffect(Gorgon2D renderer)
         // Draw our diffuse pass first, so we can get our ambient.
         Graphics.SetRenderTarget(output, Graphics.DepthStencilView);
         Renderer.Begin(Gorgon2DBatchState.NoBlend, camera);
-        Renderer.DrawFilledRectangle(new DX.RectangleF(0, 0, output.Width, output.Height),
+        Renderer.DrawFilledRectangle(new GorgonRectangleF(0, 0, output.Width, output.Height),
                                     AmbientColor,
                                     diffuse,
-                                    new DX.RectangleF(0, 0, 1, 1),
+                                    new GorgonRectangleF(0, 0, 1, 1),
                                     textureSampler: GorgonSamplerState.Default);
         Renderer.End();
 
@@ -203,10 +202,10 @@ public class Gorgon2DLightingEffect(Gorgon2D renderer)
                 break;
             }
 
-            Renderer.DrawFilledRectangle(new DX.RectangleF(0, 0, output.Width, output.Height),
+            Renderer.DrawFilledRectangle(new GorgonRectangleF(0, 0, output.Width, output.Height),
                                         GorgonColors.White,
                                         diffuse,
-                                        new DX.RectangleF(0, 0, 1, 1),
+                                        new GorgonRectangleF(0, 0, 1, 1),
                                         textureSampler: GorgonSamplerState.Default);
 
             EndPass(i, output);
@@ -310,9 +309,9 @@ public class Gorgon2DLightingEffect(Gorgon2D renderer)
     /// <seealso cref="PassContinuationState"/>
     protected override PassContinuationState OnBeforeRenderPass(int passIndex, GorgonRenderTargetView output, GorgonCameraCommon camera)
     {
-        DX.Size2F size = new(output.Width * 0.5f, output.Height * 0.5f);
-        float specularZ = (size.Width > size.Height ? size.Width * 0.5f : size.Height * 0.5f).Max(128).Min(640);
-        Vector4 cameraPos = new(size.Width, size.Height, -specularZ, 0);
+        Vector2 size = new(output.Width * 0.5f, output.Height * 0.5f);
+        float specularZ = (size.X > size.Y ? size.X * 0.5f : size.Y * 0.5f).Max(128).Min(640);
+        Vector4 cameraPos = new(size.X, size.Y, -specularZ, 0);
 
         // If no custom camera is in use, we need to pass in our default viewing information which is normally the output width, and height (by half), and an arbitrary Z value so 
         // the camera position isn't intersecting with the drawing plane (+ height information). Otherwise, our specular hilight will look really messed up.

@@ -32,7 +32,6 @@ using Gorgon.Graphics.Core;
 using Gorgon.Math;
 using Gorgon.Renderers.Data;
 using Gorgon.Renderers.Geometry;
-using DX = SharpDX;
 
 namespace Gorgon.Examples;
 
@@ -204,7 +203,7 @@ internal class PlanetLayer(GorgonGraphics graphics, ResourceManagement resources
             Planet planet = Planets[i];
             planet.Update();
 
-            DX.RectangleF aabb = DX.RectangleF.Empty;
+            GorgonRectangleF aabb = GorgonRectangleF.Empty;
             for (int j = 0; j < planet.Layers.Count; ++j)
             {
                 PlanetaryLayer layer = planet.Layers[j];
@@ -212,7 +211,7 @@ internal class PlanetLayer(GorgonGraphics graphics, ResourceManagement resources
 
                 UpdateMeshWorldMatrix(layer.Mesh);
 
-                DX.RectangleF meshAabb = layer.Mesh.GetAABB();
+                GorgonRectangleF meshAabb = layer.Mesh.GetAABB();
 
                 if (!meshAabb.IsEmpty)
                 {
@@ -222,7 +221,7 @@ internal class PlanetLayer(GorgonGraphics graphics, ResourceManagement resources
                     }
                     else
                     {
-                        aabb = DX.RectangleF.Union(meshAabb, aabb);
+                        aabb = GorgonRectangleF.Union(meshAabb, aabb);
                     }
                 }
 
@@ -230,7 +229,7 @@ internal class PlanetLayer(GorgonGraphics graphics, ResourceManagement resources
             }
 
             // Cull the planet if it's outside of our view.
-            if (Camera.ViewableRegion.Intersects(aabb))
+            if (Camera.ViewableRegion.IntersectsWith(aabb))
             {
                 _drawPlanets.Add(planet);
             }

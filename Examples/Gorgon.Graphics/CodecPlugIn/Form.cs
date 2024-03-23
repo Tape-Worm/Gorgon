@@ -24,6 +24,7 @@
 // 
 
 
+using System.Numerics;
 using Gorgon.Examples;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
@@ -32,7 +33,6 @@ using Gorgon.Graphics.Imaging.Codecs;
 using Gorgon.IO;
 using Gorgon.PlugIns;
 using Gorgon.UI;
-using DX = SharpDX;
 
 namespace Graphics.Examples;
 
@@ -65,27 +65,27 @@ public partial class Form : System.Windows.Forms.Form
     {
         _swap.RenderTargetView.Clear(GorgonColors.White);
 
-        DX.Size2F windowSize = new(ClientSize.Width, ClientSize.Height);
-        DX.Size2F imageSize = new(_texture.Width, _texture.Height);
+        Vector2 windowSize = new(ClientSize.Width, ClientSize.Height);
+        Vector2 imageSize = new(_texture.Width, _texture.Height);
 
         // Calculate the scale between the images.
-        DX.Size2F scale = new(windowSize.Width / imageSize.Width, windowSize.Height / imageSize.Height);
+        Vector2 scale = new(windowSize.X / imageSize.X, windowSize.Y / imageSize.Y);
 
         // Only scale on a single axis if we don't have a 1:1 aspect ratio.
-        if (scale.Height > scale.Width)
+        if (scale.Y > scale.X)
         {
-            scale.Height = scale.Width;
+            scale.Y = scale.X;
         }
         else
         {
-            scale.Width = scale.Height;
+            scale.X = scale.Y;
         }
 
         // Scale the image.
-        DX.Size2 size = new((int)(scale.Width * imageSize.Width), (int)(scale.Height * imageSize.Height));
+        GorgonPoint size = new((int)(scale.X * imageSize.X), (int)(scale.Y * imageSize.Y));
 
         // Find the position.
-        DX.Rectangle bounds = new((int)((windowSize.Width / 2) - (size.Width / 2)), (int)((windowSize.Height / 2) - (size.Height / 2)), size.Width, size.Height);
+        GorgonRectangle bounds = new((int)((windowSize.X / 2) - (size.X / 2)), (int)((windowSize.Y / 2) - (size.Y / 2)), size.X, size.Y);
 
         GorgonExample.Blitter.Blit(_texture, bounds);
 

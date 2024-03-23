@@ -857,9 +857,9 @@ public sealed class GorgonGraphics
     /// </remarks>
     /// <seealso cref="GorgonRasterState"/>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void SetScissorRect(DX.Rectangle rect)
+    public void SetScissorRect(GorgonRectangle rect)
     {
-        DX.Rectangle[] rects = GorgonArrayPool<DX.Rectangle>.SharedTiny.Rent(1);
+        GorgonRectangle[] rects = GorgonArrayPool<GorgonRectangle>.SharedTiny.Rent(1);
 
         try
         {
@@ -868,7 +868,7 @@ public sealed class GorgonGraphics
         }
         finally
         {
-            GorgonArrayPool<DX.Rectangle>.SharedTiny.Return(rects, true);
+            GorgonArrayPool<GorgonRectangle>.SharedTiny.Return(rects, true);
         }
     }
 
@@ -892,7 +892,7 @@ public sealed class GorgonGraphics
     /// </remarks>
     /// <seealso cref="GorgonRasterState"/>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void SetScissorRects(ReadOnlySpan<DX.Rectangle> rects)
+    public void SetScissorRects(ReadOnlySpan<GorgonRectangle> rects)
     {
         if (!_stateEvaluator.GetScissorRectChange(rects))
         {

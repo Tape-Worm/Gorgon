@@ -31,7 +31,6 @@ using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.IO.Properties;
 using Gorgon.Renderers;
-using DX = SharpDX;
 
 namespace Gorgon.IO;
 
@@ -202,7 +201,7 @@ public class GorgonV1SpriteBinaryCodec(Gorgon2D renderer)
         }
 
         // Get the size of the sprite.
-        sprite.Size = new DX.Size2F(reader.ReadSingle(), reader.ReadSingle());
+        sprite.Size = new Vector2(reader.ReadSingle(), reader.ReadSingle());
 
         // Older versions of the sprite object used pixel space for their texture coordinates.  We will have to 
         // fix up these coordinates into texture space once we have a texture loaded.  At this point, there's no guarantee 
@@ -213,7 +212,7 @@ public class GorgonV1SpriteBinaryCodec(Gorgon2D renderer)
 
         // Read the anchor.
         // Gorgon v3 anchors are relative, so we need to convert them based on our sprite size.
-        sprite.Anchor = new Vector2(reader.ReadSingle() / sprite.Size.Width, reader.ReadSingle() / sprite.Size.Height);
+        sprite.Anchor = new Vector2(reader.ReadSingle() / sprite.Size.X, reader.ReadSingle() / sprite.Size.Y);
 
         // Get vertex offsets.
         sprite.CornerOffsets.UpperLeft = new Vector3(reader.ReadSingle(), reader.ReadSingle(), 0);
@@ -379,14 +378,14 @@ public class GorgonV1SpriteBinaryCodec(Gorgon2D renderer)
         // If we cannot load the image, then fall back to the standard coordinates.            
         if (textureView is null)
         {
-            sprite.TextureRegion = new DX.RectangleF(0, 0, 1, 1);
+            sprite.TextureRegion = new GorgonRectangleF(0, 0, 1, 1);
         }
         else
         {
-            sprite.TextureRegion = new DX.RectangleF(textureOffset.X / textureView.Width,
+            sprite.TextureRegion = new GorgonRectangleF(textureOffset.X / textureView.Width,
                                                      textureOffset.Y / textureView.Height,
-                                                     sprite.Size.Width / textureView.Width,
-                                                     sprite.Size.Height / textureView.Height);
+                                                     sprite.Size.X / textureView.Width,
+                                                     sprite.Size.Y / textureView.Height);
             sprite.TextureSampler = CreateSamplerState(graphics, filter, samplerBorder, hWrap, vWrap);
         }
 

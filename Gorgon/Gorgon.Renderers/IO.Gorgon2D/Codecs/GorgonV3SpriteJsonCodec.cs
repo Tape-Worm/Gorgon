@@ -1,5 +1,4 @@
-﻿
-// 
+﻿// 
 // Gorgon
 // Copyright (C) 2018 Michael Winsor
 // 
@@ -23,12 +22,12 @@
 // Created: August 11, 2018 3:43:13 PM
 // 
 
-
 using System.Buffers;
 using System.Text;
 using Gorgon.Core;
 using Gorgon.Graphics.Core;
 using Gorgon.IO.Properties;
+using Gorgon.Json;
 using Gorgon.Renderers;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
@@ -47,7 +46,6 @@ namespace Gorgon.IO;
 public class GorgonV3SpriteJsonCodec(Gorgon2D renderer)
         : GorgonSpriteCodecCommon(renderer, Resources.GOR2DIO_V3_JSON_CODEC, Resources.GOR2DIO_V3_JSON_CODEC_DESCRIPTION)
 {
-
     /// <summary>
     /// Property to return whether or not the codec can decode sprite data.
     /// </summary>
@@ -62,8 +60,6 @@ public class GorgonV3SpriteJsonCodec(Gorgon2D renderer)
     /// Property to return the version of sprite data that the codec supports.
     /// </summary>
     public override Version Version => CurrentVersion;
-
-
 
     /// <summary>
     /// Function to retrieve the stream as JSON.Net object.
@@ -266,11 +262,10 @@ public class GorgonV3SpriteJsonCodec(Gorgon2D renderer)
             CheckAdditionalContent = false
         };
 
-        serializer.Converters.Add(new JsonVector2Converter());
-        serializer.Converters.Add(new JsonVector3Converter());
-        serializer.Converters.Add(new JsonSize2FConverter());
-        serializer.Converters.Add(new JsonGorgonColorConverter());
-        serializer.Converters.Add(new JsonRectangleFConverter());
+        serializer.Converters.Add(new Vector2JsonConverter());
+        serializer.Converters.Add(new Vector3JsonConverter());
+        serializer.Converters.Add(new GorgonColorJsonConverter());
+        serializer.Converters.Add(new GorgonRectangleFJsonConverter());
         serializer.Converters.Add(new JsonSamplerConverter(renderer.Graphics));
         serializer.Converters.Add(new JsonTexture2DConverter(renderer.Graphics, overrideTexture));
         serializer.Converters.Add(new VersionConverter());
@@ -279,7 +274,6 @@ public class GorgonV3SpriteJsonCodec(Gorgon2D renderer)
         JObject jobj = JObject.Parse(json);
         ulong jsonID = jobj[GorgonSpriteExtensions.JsonHeaderProp].Value<ulong>();
         Version jsonVersion = jobj[GorgonSpriteExtensions.JsonVersionProp].ToObject<Version>(serializer);
-
 
         if (jsonID != CurrentFileHeader)
         {
@@ -291,6 +285,4 @@ public class GorgonV3SpriteJsonCodec(Gorgon2D renderer)
             : jobj.ToObject<GorgonSprite>(serializer);
 
     }
-
-
 }

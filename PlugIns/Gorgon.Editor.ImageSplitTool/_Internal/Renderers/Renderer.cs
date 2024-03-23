@@ -35,7 +35,6 @@ using Gorgon.Graphics.Imaging;
 using Gorgon.Graphics.Imaging.GdiPlus;
 using Gorgon.Math;
 using Gorgon.Renderers;
-using DX = SharpDX;
 
 namespace Gorgon.Editor.ImageSplitTool;
 
@@ -88,7 +87,7 @@ internal class Renderer(Gorgon2D renderer, GorgonSwapChain swapChain, ISplit dat
     /// Function to retrieve the rectangular region for rendering.
     /// </summary>
     /// <returns>The render area.</returns>
-    private DX.Rectangle GetRenderRegion()
+    private GorgonRectangle GetRenderRegion()
     {
         int size;
 
@@ -104,7 +103,7 @@ internal class Renderer(Gorgon2D renderer, GorgonSwapChain swapChain, ISplit dat
         int top = (MainRenderTarget.Height / 2) - (size / 2);
         int left = (MainRenderTarget.Width / 2) - (size / 2);
 
-        return new DX.Rectangle(left, top, size, size);
+        return new GorgonRectangle(left, top, size, size);
     }
 
     /// <summary>Releases unmanaged and - optionally - managed resources.</summary>
@@ -154,13 +153,13 @@ internal class Renderer(Gorgon2D renderer, GorgonSwapChain swapChain, ISplit dat
     {
         MainRenderTarget.Clear(DarkFormsRenderer.WindowBackground);
 
-        DX.RectangleF renderRegion = GetRenderRegion().ToRectangleF();
+        GorgonRectangleF renderRegion = GetRenderRegion();
 
         Renderer.Begin();
         Renderer.DrawFilledRectangle(renderRegion,
                                      ((DataContext.PreviewImage is null) || (_loading)) ? DarkFormsRenderer.DarkBackground : GorgonColors.White,
                                      _backgroundImage,
-                                     new DX.RectangleF(0, 0, renderRegion.Width / _backgroundImage.Width, renderRegion.Height / _backgroundImage.Height));
+                                     new GorgonRectangleF(0, 0, renderRegion.Width / _backgroundImage.Width, renderRegion.Height / _backgroundImage.Height));
         Renderer.End();
     }
 
@@ -170,7 +169,7 @@ internal class Renderer(Gorgon2D renderer, GorgonSwapChain swapChain, ISplit dat
     {
         OnRenderBackground();
 
-        DX.RectangleF renderRegion = GetRenderRegion().ToRectangleF();
+        GorgonRectangleF renderRegion = GetRenderRegion();
         Vector2 halfClient = new(renderRegion.Width * 0.5f, renderRegion.Height * 0.5f);
 
         Renderer.Begin();
@@ -184,22 +183,22 @@ internal class Renderer(Gorgon2D renderer, GorgonSwapChain swapChain, ISplit dat
             float x = renderRegion.X + halfClient.X - (width * 0.5f);
             float y = renderRegion.Y + halfClient.Y - (height * 0.5f);
 
-            Renderer.DrawFilledRectangle(new DX.RectangleF(x, y, width, height), GorgonColors.White, _previewImage, new DX.RectangleF(0, 0, 1, 1));
+            Renderer.DrawFilledRectangle(new GorgonRectangleF(x, y, width, height), GorgonColors.White, _previewImage, new GorgonRectangleF(0, 0, 1, 1));
         }
         else
         {
             if (!_loading)
             {
-                DX.Size2F size = Resources.GORIST_TEXT_SELECT_IMAGE.MeasureText(Renderer.DefaultFont, false);
+                Vector2 size = Resources.GORIST_TEXT_SELECT_IMAGE.MeasureText(Renderer.DefaultFont, false);
                 Renderer.DrawString(Resources.GORIST_TEXT_SELECT_IMAGE,
-                                                        new Vector2(renderRegion.X + halfClient.X - size.Width * 0.5f, renderRegion.Y + halfClient.Y - size.Height * 0.5f),
+                                                        new Vector2(renderRegion.X + halfClient.X - size.X * 0.5f, renderRegion.Y + halfClient.Y - size.Y * 0.5f),
                                                         color: GorgonColors.White);
             }
             else
             {
-                DX.Size2F size = Resources.GORIST_TEXT_LOADING.MeasureText(Renderer.DefaultFont, false);
+                Vector2 size = Resources.GORIST_TEXT_LOADING.MeasureText(Renderer.DefaultFont, false);
                 Renderer.DrawString(Resources.GORIST_TEXT_LOADING,
-                                                        new Vector2(renderRegion.X + halfClient.X - size.Width * 0.5f, renderRegion.Y + halfClient.Y - size.Height * 0.5f),
+                                                        new Vector2(renderRegion.X + halfClient.X - size.X * 0.5f, renderRegion.Y + halfClient.Y - size.Y * 0.5f),
                                                         color: GorgonColors.White);
             }
         }

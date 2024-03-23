@@ -35,7 +35,6 @@ using Gorgon.Renderers.Cameras;
 using Gorgon.Renderers.Geometry;
 using Gorgon.Timing;
 using Gorgon.UI;
-using DX = SharpDX;
 
 namespace Gorgon.Examples;
 
@@ -93,7 +92,7 @@ public partial class Form : System.Windows.Forms.Form
             return;
         }
 
-        _camera.ViewDimensions = e.Size.ToSize2F();
+        _camera.ViewDimensions = e.Size;
     }
 
     /// <summary>
@@ -222,7 +221,7 @@ public partial class Form : System.Windows.Forms.Form
         });
 
         // Pull the camera back 1.5 units on the Z axis. Otherwise, we'd end up inside of the cube.
-        _camera = new GorgonPerspectiveCamera(_graphics, new DX.Size2F(ClientSize.Width, ClientSize.Height), 0.1f, 10.0f, "GlassCube Camera")
+        _camera = new GorgonPerspectiveCamera(_graphics, new Vector2(ClientSize.Width, ClientSize.Height), 0.1f, 10.0f, "GlassCube Camera")
         {
             Fov = 60.0f,
             Position = new Vector3(0.0f, 0.0f, -1.5f)

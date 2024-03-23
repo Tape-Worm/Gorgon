@@ -25,9 +25,9 @@
 
 
 using Gorgon.Editor.UI;
+using Gorgon.Graphics;
 using Gorgon.Graphics.Imaging;
 using Gorgon.UI;
-using DX = SharpDX;
 
 namespace Gorgon.Editor.ImageEditor;
 
@@ -87,7 +87,7 @@ internal interface ICropResizeSettings
     /// <summary>
     /// Property to set or return the width/height of the target image.
     /// </summary>
-    DX.Size2 TargetImageSize
+    GorgonPoint TargetImageSize
     {
         get;
         set;

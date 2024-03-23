@@ -34,7 +34,6 @@ using Gorgon.Graphics.Core;
 using Gorgon.Graphics.Imaging;
 using Gorgon.Math;
 using Gorgon.Renderers;
-using DX = SharpDX;
 
 namespace Gorgon.Editor.ExtractSpriteTool;
 
@@ -146,7 +145,7 @@ internal class Extract
     /// <summary>
     /// Property to set or return the number of columns/rows in the grid.
     /// </summary>
-    public DX.Size2 GridSize
+    public GorgonPoint GridSize
     {
         get => _extractData.GridSize;
         set
@@ -165,7 +164,7 @@ internal class Extract
     /// <summary>
     /// Property to return the maximum columns and rows allowed in the grid.
     /// </summary>
-    public DX.Size2 MaxGridSize => _extractData.MaxGridSize;
+    public GorgonPoint MaxGridSize => _extractData.MaxGridSize;
 
     /// <summary>
     /// Property to set or return the offset of the grid, in pixels.
@@ -192,7 +191,7 @@ internal class Extract
     /// <summary>
     /// Property to set or return the size of a grid cell.
     /// </summary>
-    public DX.Size2 CellSize
+    public GorgonPoint CellSize
     {
         get => _extractData.CellSize;
         set
@@ -635,12 +634,12 @@ internal class Extract
         _extractor = injectionParameters.Extractor;
         _textureFile = injectionParameters.TextureFile;
 
-        if (_extractData.GridOffset.X > _extractData.Texture.Width - _extractData.CellSize.Width)
+        if (_extractData.GridOffset.X > _extractData.Texture.Width - _extractData.CellSize.X)
         {
             _extractData.GridOffset = new GorgonPoint(0, _extractData.GridOffset.Y);
         }
 
-        if (_extractData.GridOffset.Y > _extractData.Texture.Height - _extractData.CellSize.Height)
+        if (_extractData.GridOffset.Y > _extractData.Texture.Height - _extractData.CellSize.Y)
         {
             _extractData.GridOffset = new GorgonPoint(_extractData.GridOffset.X, 0);
         }
@@ -648,13 +647,13 @@ internal class Extract
         _extractData.StartArrayIndex = _extractData.StartArrayIndex.Min(_extractData.Texture.ArrayCount - 1);
         _extractData.ArrayCount = _extractData.ArrayCount.Min(_extractData.Texture.ArrayCount - _extractData.StartArrayIndex);
 
-        if ((_extractData.GridSize.Width == 0) || (_extractData.GridSize.Height == 0))
+        if ((_extractData.GridSize.X == 0) || (_extractData.GridSize.Y == 0))
         {
             _extractData.GridSize = MaxGridSize;
         }
         else
         {
-            _extractData.GridSize = new DX.Size2(_extractData.GridSize.Width.Min(MaxGridSize.Width), _extractData.GridSize.Height.Min(MaxGridSize.Height));
+            _extractData.GridSize = new GorgonPoint(_extractData.GridSize.X.Min(MaxGridSize.X), _extractData.GridSize.Y.Min(MaxGridSize.Y));
         }
     }
 
@@ -663,7 +662,7 @@ internal class Extract
     protected override void OnUnload()
     {
         _cancelSource?.Dispose();
-        base.Unload();
+        Unload();
     }
 
 

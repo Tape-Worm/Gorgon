@@ -39,6 +39,7 @@ using Gorgon.Editor.PlugIns;
 using Gorgon.Editor.Rendering;
 using Gorgon.Editor.Services;
 using Gorgon.Editor.UI;
+using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Graphics.Imaging;
 using Gorgon.Graphics.Imaging.Codecs;
@@ -46,7 +47,6 @@ using Gorgon.IO;
 using Gorgon.Math;
 using Gorgon.Renderers;
 using Microsoft.IO;
-using DX = SharpDX;
 
 namespace Gorgon.Editor.AnimationEditor;
 
@@ -1113,11 +1113,11 @@ internal class AnimationEditorPlugIn
     /// <summary>Function to retrieve the icon used for new content creation.</summary>
     /// <returns>An image for the icon.</returns>
     /// <remarks>This method is never called when <see cref="CanCreateContent"/> is <b>false</b>.</remarks>
-    public System.Drawing.Image GetNewIcon() => Resources.animation_editor_24x24;
+    public Image GetNewIcon() => Resources.animation_editor_24x24;
 
     /// <summary>Function to retrieve the small icon for the content plug in.</summary>
     /// <returns>An image for the small icon.</returns>
-    public System.Drawing.Image GetSmallIcon() => Resources.animation_editor_16x16;
+    public Image GetSmallIcon() => Resources.animation_editor_16x16;
 
     /// <summary>get thumbnail as an asynchronous operation.</summary>
     /// <param name="contentFile">The content file used to retrieve the data to build the thumbnail with.</param>
@@ -1168,11 +1168,11 @@ internal class AnimationEditorPlugIn
             (textures, primarySprite) = await _ioService.LoadDependenciesAsync(file);
             (bgTexture, bgTextureFile) = await LoadBackgroundTextureAsync(_ioService, file.Metadata.DependsOn);
 
-            DX.Size2 size = bgTexture is not null ? new DX.Size2(bgTexture.Width, bgTexture.Height) : _settings.DefaultResolution;
+            GorgonPoint size = bgTexture is not null ? new GorgonPoint(bgTexture.Width, bgTexture.Height) : _settings.DefaultResolution;
 
             if (primarySprite?.PrimarySprite is not null)
             {
-                primarySprite.PrimarySprite.Position = new Vector2((int)(size.Width * 0.5f), (int)(size.Height * 0.5f));
+                primarySprite.PrimarySprite.Position = new Vector2((int)(size.X * 0.5f), (int)(size.Y * 0.5f));
             }
 
             // Load the sprite now. 

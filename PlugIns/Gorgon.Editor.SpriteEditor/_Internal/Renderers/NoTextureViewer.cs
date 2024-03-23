@@ -31,7 +31,6 @@ using Gorgon.Graphics.Core;
 using Gorgon.Graphics.Imaging.Codecs;
 using Gorgon.Math;
 using Gorgon.Renderers;
-using DX = SharpDX;
 
 namespace Gorgon.Editor.SpriteEditor;
 
@@ -72,12 +71,12 @@ internal class NoTextureViewer
     protected sealed override void OnRenderBackground()
     {
         float newSize = RenderRegion.Width < RenderRegion.Height ? RenderRegion.Width : RenderRegion.Height;
-        DX.Size2F size = new(newSize.Min(_noImage.Width), newSize.Min(_noImage.Width));
-        DX.Size2F halfClient = new(RenderRegion.Width * 0.5f, RenderRegion.Height * 0.5f);
-        Vector2 pos = new((int)(halfClient.Width - size.Width * 0.5f), (int)(halfClient.Height - size.Height * 0.5f));
+        Vector2 size = new(newSize.Min(_noImage.Width), newSize.Min(_noImage.Width));
+        Vector2 halfClient = new(RenderRegion.Width * 0.5f, RenderRegion.Height * 0.5f);
+        Vector2 pos = new((int)(halfClient.X - size.X * 0.5f), (int)(halfClient.Y - size.Y * 0.5f));
 
         Renderer.Begin();
-        Renderer.DrawFilledRectangle(new DX.RectangleF(pos.X, pos.Y, size.Width, size.Height), GorgonColors.White, _noImage, new DX.RectangleF(0, 0, 1, 1));
+        Renderer.DrawFilledRectangle(new GorgonRectangleF(pos.X, pos.Y, size.X, size.Y), GorgonColors.White, _noImage, new GorgonRectangleF(0, 0, 1, 1));
         Renderer.End();
     }
 

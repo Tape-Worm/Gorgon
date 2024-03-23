@@ -6,27 +6,12 @@
 //
 
 using System.Diagnostics;
-
-/* Unmerged change from project 'Gorgon.Renderers.Gorgon2D (net5.0-windows)'
-Before:
-using System.Text;
-After:
-using System.Numerics;
-using System.Text;
-*/
 using System.Numerics;
 using System.Text;
 using Gorgon.Diagnostics;
+using Gorgon.Graphics;
 using Gorgon.Math;
-using Gorgon.Renderers
-/* Unmerged change from project 'Gorgon.Renderers.Gorgon2D (net5.0-windows)'
-Before:
-using System.Numerics;
-After:
 using Gorgon.Renderers.Geometry;
-*/
-.Geometry;
-using DX = SharpDX;
 
 namespace GorgonTriangulator;
 
@@ -64,7 +49,7 @@ internal class Triangulator(IGorgonLog log)
     /// <param name="inputVertices">The polygon vertices in counter-clockwise winding order.</param>
     /// <param name="desiredWindingOrder">The desired output winding order.</param>
     /// <returns>A tuple containing a list of vertices, indices and bounds.</returns>
-    public (int[] indices, DX.RectangleF bounds) Triangulate(Gorgon2DVertex[] inputVertices, WindingOrder desiredWindingOrder)
+    public (int[] indices, GorgonRectangleF bounds) Triangulate(Gorgon2DVertex[] inputVertices, WindingOrder desiredWindingOrder)
     {
         Log("\nBeginning triangulation...");
 
@@ -132,7 +117,7 @@ internal class Triangulator(IGorgonLog log)
             }
         }
 
-        DX.RectangleF minMax = new();
+        GorgonRectangleF minMax = new();
 
         // Calculate bounds.
         for (int i = 0; i < inputVertices.Length; ++i)
@@ -413,8 +398,6 @@ internal class Triangulator(IGorgonLog log)
 
         _log?.Print(format, LoggingLevel.Verbose, parameters);
     }
-
-
 }
 
 /// <summary>

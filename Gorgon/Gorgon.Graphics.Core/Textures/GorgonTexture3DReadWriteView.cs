@@ -31,7 +31,6 @@ using Gorgon.Graphics.Imaging;
 using Gorgon.Graphics.Imaging.Codecs;
 using Gorgon.Math;
 using D3D11 = SharpDX.Direct3D11;
-using DX = SharpDX;
 using DXGI = SharpDX.DXGI;
 
 namespace Gorgon.Graphics.Core;
@@ -62,7 +61,6 @@ namespace Gorgon.Graphics.Core;
 public sealed class GorgonTexture3DReadWriteView
     : GorgonReadWriteView, IGorgonTexture3DInfo, IGorgonImageInfo
 {
-
     /// <summary>
     /// Property to return the type of image data.
     /// </summary>
@@ -165,7 +163,7 @@ public sealed class GorgonTexture3DReadWriteView
     /// <remarks>
     /// This value is the full bounding rectangle of the first mip map level for the texture associated with the view.
     /// </remarks>
-    public DX.Rectangle Bounds
+    public GorgonRectangle Bounds
     {
         get;
     }
@@ -206,8 +204,6 @@ public sealed class GorgonTexture3DReadWriteView
     /// </summary>
     public TextureBinding Binding => Texture?.Binding ?? TextureBinding.None;
 
-
-
     /// <summary>Function to retrieve the necessary parameters to create the native view.</summary>
     /// <returns>The D3D11 UAV descriptor.</returns>
     private protected override ref readonly D3D11.UnorderedAccessViewDescription1 OnGetUavParams()
@@ -240,7 +236,7 @@ public sealed class GorgonTexture3DReadWriteView
     /// for the underlying <see cref="Texture"/> is used.
     /// </para>
     /// </remarks>
-    public (GorgonPoint, int) ToPixel(Vector3 texelCoordinates, int? mipLevel = null)
+    public (GorgonPoint Position, int Depth) ToPixel(Vector3 texelCoordinates, int? mipLevel = null)
     {
         float width = Texture.Width;
         float height = Texture.Height;
@@ -307,47 +303,19 @@ public sealed class GorgonTexture3DReadWriteView
     /// for the underlying <see cref="Texture"/> is used.
     /// </para>
     /// </remarks>
-    public DX.Size2 ToPixel(DX.Size2F texelCoordinates, int? mipLevel = null)
+    public GorgonPoint ToPixel(Vector2 texelCoordinates, int? mipLevel = null)
     {
         float width = Texture.Width;
         float height = Texture.Height;
 
         if (mipLevel is null)
         {
-            return new DX.Size2((int)(texelCoordinates.Width * width), (int)(texelCoordinates.Height * height));
+            return new GorgonPoint((int)(texelCoordinates.X * width), (int)(texelCoordinates.Y * height));
         }
 
         width = GetMipWidth(mipLevel.Value);
         height = GetMipHeight(mipLevel.Value);
-        return new DX.Size2((int)(texelCoordinates.Width * width), (int)(texelCoordinates.Height * height));
-    }
-
-    /// <summary>
-    /// Function to convert a pixel size into a texel size.
-    /// </summary>
-    /// <param name="pixelCoordinates">The pixel size to convert.</param>
-    /// <param name="mipLevel">[Optional] The mip level to use.</param>
-    /// <returns>The texel size.</returns>
-    /// <remarks>
-    /// <para>
-    /// If specified, the <paramref name="mipLevel"/> only applies to the <see cref="MipSlice"/> for this view, it will be constrained if it falls outside of that range.
-    /// Because of this, the coordinates returned may not be the exact size of the texture bound to the view at mip level 0. If the <paramref name="mipLevel"/> is omitted, then the first mip level
-    /// for the underlying <see cref="Texture"/> is used.
-    /// </para>
-    /// </remarks>
-    public DX.Size2F ToTexel(DX.Size2 pixelCoordinates, int? mipLevel = null)
-    {
-        float width = Texture.Width;
-        float height = Texture.Height;
-
-        if (mipLevel is null)
-        {
-            return new DX.Size2F(pixelCoordinates.Width / width, pixelCoordinates.Height / height);
-        }
-
-        width = GetMipWidth(mipLevel.Value);
-        height = GetMipHeight(mipLevel.Value);
-        return new DX.Size2F(pixelCoordinates.Width / width, pixelCoordinates.Height / height);
+        return new GorgonPoint((int)(texelCoordinates.X * width), (int)(texelCoordinates.Y * height));
     }
 
     /// <summary>
@@ -454,7 +422,7 @@ public sealed class GorgonTexture3DReadWriteView
                 || (initialData.Depth < info.Depth))
             {
                 initialData = initialData.BeginUpdate()
-                                         .Crop(new DX.Rectangle(0, 0, info.Width, info.Height), info.Depth)
+                                         .Crop(new GorgonRectangle(0, 0, info.Width, info.Height), info.Depth)
                                          .EndUpdate();
             }
         }
@@ -634,8 +602,6 @@ public sealed class GorgonTexture3DReadWriteView
         return view;
     }
 
-
-
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonTexture3DReadWriteView"/> class.
     /// </summary>
@@ -657,10 +623,9 @@ public sealed class GorgonTexture3DReadWriteView
         FormatInformation = formatInfo ?? throw new ArgumentNullException(nameof(formatInfo));
         Format = format;
         Texture = texture;
-        Bounds = new DX.Rectangle(0, 0, Width, Height);
+        Bounds = new GorgonRectangle(0, 0, Width, Height);
         MipSlice = firstMipLevel;
         StartDepthSlice = startDepthSlice;
         DepthSliceCount = depthSliceCount;
     }
-
 }

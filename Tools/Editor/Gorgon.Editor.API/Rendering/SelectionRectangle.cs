@@ -33,7 +33,6 @@ using Gorgon.Graphics.Imaging.Codecs;
 using Gorgon.Math;
 using Gorgon.Renderers;
 using Gorgon.Timing;
-using DX = SharpDX;
 
 namespace Gorgon.Editor.Rendering;
 
@@ -99,7 +98,7 @@ public class SelectionRectangle
     /// Function to draw the selection region.
     /// </summary>
     /// <param name="region">The region to draw.</param>
-    public void Draw(DX.RectangleF region)
+    public void Draw(GorgonRectangleF region)
     {
         GorgonTexture2DView texture = _selectionTexture.Value;
 
@@ -108,7 +107,7 @@ public class SelectionRectangle
         _renderer.DrawFilledRectangle(region,
             Color,
             texture,
-            texture.ToTexel(new DX.Rectangle((int)_selectionTextureOffset.X,
+            texture.ToTexel(new GorgonRectangle((int)_selectionTextureOffset.X,
             (int)_selectionTextureOffset.Y,
             (int)region.Width, (int)region.Height)));
 

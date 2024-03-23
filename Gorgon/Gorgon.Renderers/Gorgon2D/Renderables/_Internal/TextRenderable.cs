@@ -24,10 +24,10 @@
 // 
 
 
+using System.Numerics;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Fonts;
 using Gorgon.UI;
-using DX = SharpDX;
 
 namespace Gorgon.Renderers;
 
@@ -50,7 +50,7 @@ internal class TextRenderable
     /// <summary>
     /// The area in which text can be laid out.
     /// </summary>
-    public DX.Size2F LayoutArea;
+    public Vector2 LayoutArea;
 
     /// <summary>
     /// A multiplier used to define the amount of space between each line of text.

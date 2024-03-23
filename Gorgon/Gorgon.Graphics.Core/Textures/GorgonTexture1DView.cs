@@ -32,7 +32,6 @@ using Gorgon.Math;
 using SharpDX.DXGI;
 using D3D = SharpDX.Direct3D;
 using D3D11 = SharpDX.Direct3D11;
-using DX = SharpDX;
 
 namespace Gorgon.Graphics.Core;
 
@@ -402,7 +401,7 @@ public sealed class GorgonTexture1DView
             if (initialData.Width > info.Width)
             {
                 initialData = initialData.BeginUpdate()
-                                         .Crop(new DX.Rectangle(0, 0, info.Width, 1), 1)
+                                         .Crop(new GorgonRectangle(0, 0, info.Width, 1), 1)
                                          .EndUpdate();
             }
         }

@@ -31,10 +31,10 @@ using Gorgon.Editor.Content;
 using Gorgon.Editor.ImageEditor.Properties;
 using Gorgon.Editor.PlugIns;
 using Gorgon.Editor.UI;
+using Gorgon.Graphics;
 using Gorgon.Graphics.Imaging;
 using Gorgon.Math;
 using Gorgon.UI;
-using DX = SharpDX;
 
 namespace Gorgon.Editor.ImageEditor;
 
@@ -203,7 +203,7 @@ internal class ImagePicker
             NotifyPropertyChanged(nameof(ArrayCount));
             NotifyPropertyChanged(nameof(MipCount));
 
-            CropResizeSettings.TargetImageSize = new DX.Size2(_targetImage?.Width ?? 0, _targetImage?.Height ?? 0);
+            CropResizeSettings.TargetImageSize = new GorgonPoint(_targetImage?.Width ?? 0, _targetImage?.Height ?? 0);
         }
     }
 
@@ -379,7 +379,7 @@ internal class ImagePicker
         }
 
         CropResizeSettings.ImportFile = string.IsNullOrWhiteSpace(_selectedFile?.OriginalFilePath) ? string.Empty : Path.GetFileName(_selectedFile.OriginalFilePath);
-        CropResizeSettings.TargetImageSize = new DX.Size2(_targetImage.Width, _targetImage.Height);
+        CropResizeSettings.TargetImageSize = new GorgonPoint(_targetImage.Width, _targetImage.Height);
         CropResizeSettings.ImportImage = importImage;
         NeedsTransformation = true;
 
@@ -426,7 +426,7 @@ internal class ImagePicker
                            .EndUpdate();
             }
 
-            DX.Size2 newSize = new(MipWidth, MipHeight);
+            GorgonPoint newSize = new(MipWidth, MipHeight);
 
             NotifyPropertyChanging(nameof(ImageData));
 
@@ -666,7 +666,7 @@ internal class ImagePicker
                 }
 
                 CropResizeSettings.ImportFile = string.IsNullOrWhiteSpace(_selectedFile?.OriginalFilePath) ? string.Empty : Path.GetFileName(_selectedFile.OriginalFilePath);
-                CropResizeSettings.TargetImageSize = new DX.Size2(_targetImage.Width, _targetImage.Height);
+                CropResizeSettings.TargetImageSize = new GorgonPoint(_targetImage.Width, _targetImage.Height);
                 CropResizeSettings.ImportImage = imageToImport;                    
 
                 PreviewImage = imageToImport;

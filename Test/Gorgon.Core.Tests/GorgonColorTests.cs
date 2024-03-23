@@ -314,14 +314,18 @@ public class GorgonColorTests
     }
 
     [TestMethod]
-    public void JsonConvert()
+    public void Serialization()
     {
         JsonData data = new()
         {
             Color = GorgonColors.Purple
         };
 
+        string expected = "{\"Id\":\""+ data.Id +"\",\"Color\":-65281,\"NullableColor\":null}";
         string json = Newtonsoft.Json.JsonConvert.SerializeObject(data);
+
+        Assert.AreEqual(expected, json);
+
         JsonData? actual = Newtonsoft.Json.JsonConvert.DeserializeObject<JsonData>(json);
 
         Assert.IsNotNull(actual);
@@ -330,7 +334,11 @@ public class GorgonColorTests
 
         data.NullableColor = GorgonColors.Blue;
 
+        expected = "{\"Id\":\"" + data.Id + "\",\"Color\":-65281,\"NullableColor\":-16776961}";
         json = Newtonsoft.Json.JsonConvert.SerializeObject(data);
+
+        Assert.AreEqual(expected, json);
+
         actual = Newtonsoft.Json.JsonConvert.DeserializeObject<JsonData>(json);
 
         Assert.IsNotNull(actual);
@@ -339,11 +347,16 @@ public class GorgonColorTests
 
         data.NullableColor = null;
 
+        expected = "{\"Id\":\"" + data.Id + "\",\"Color\":{\"r\":255,\"g\":0,\"b\":255,\"a\":255},\"NullableColor\":null}";
         json = Newtonsoft.Json.JsonConvert.SerializeObject(data, new JsonSerializerSettings
         {
             ContractResolver = new GorgonColorContractResolver(),
             Converters = new[] { new GorgonColorComponentsJsonConverter() }
         });
+
+        Assert.AreEqual(expected, json);
+
+
         actual = Newtonsoft.Json.JsonConvert.DeserializeObject<JsonData>(json, new JsonSerializerSettings
         {
             ContractResolver = new GorgonColorContractResolver(),
@@ -355,11 +368,15 @@ public class GorgonColorTests
 
         data.NullableColor = GorgonColors.Red;
 
+        expected = "{\"Id\":\"" + data.Id + "\",\"Color\":{\"r\":255,\"g\":0,\"b\":255,\"a\":255},\"NullableColor\":{\"r\":255,\"g\":0,\"b\":0,\"a\":255}}";
         json = Newtonsoft.Json.JsonConvert.SerializeObject(data, new JsonSerializerSettings
         {
             ContractResolver = new GorgonColorContractResolver(),
             Converters = new[] { new GorgonColorComponentsJsonConverter() }
         });
+
+        Assert.AreEqual(expected, json);
+
         actual = Newtonsoft.Json.JsonConvert.DeserializeObject<JsonData>(json, new JsonSerializerSettings
         {
             ContractResolver = new GorgonColorContractResolver(),

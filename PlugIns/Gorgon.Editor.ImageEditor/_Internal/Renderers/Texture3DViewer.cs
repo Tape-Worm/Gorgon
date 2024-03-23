@@ -32,7 +32,6 @@ using Gorgon.Graphics.Core;
 using Gorgon.Graphics.Fonts;
 using Gorgon.Graphics.Imaging;
 using Gorgon.Renderers;
-using DX = SharpDX;
 
 namespace Gorgon.Editor.ImageEditor;
 
@@ -71,11 +70,11 @@ internal class Texture3DViewer(Gorgon2D renderer, GorgonSwapChain swapChain, IIm
     {
         if ((DataContext?.ImageData is null) || (DataContext.ImageType != ImageDataType.Image3D))
         {
-            RenderRegion = DX.RectangleF.Empty;
+            RenderRegion = GorgonRectangleF.Empty;
             return;
         }
 
-        RenderRegion = new DX.RectangleF(0, 0, DataContext.ImageData.Width, DataContext.ImageData.Height);
+        RenderRegion = new GorgonRectangleF(0, 0, DataContext.ImageData.Width, DataContext.ImageData.Height);
 
         _texture = DataContext.ImageData.ToTexture3D(Graphics, new GorgonTextureLoadOptions
         {
@@ -95,26 +94,26 @@ internal class Texture3DViewer(Gorgon2D renderer, GorgonSwapChain swapChain, IIm
     {
         Renderer.Begin(BatchState, Camera);
         // We can use this for 3D textures because the texture is in slot 1, and slot 0, where the 2D texture is usually located is vacant and not used by the pixel shader.
-        Renderer.DrawFilledRectangle(new DX.RectangleF(RenderRegion.Width * -0.5f,
+        Renderer.DrawFilledRectangle(new GorgonRectangleF(RenderRegion.Width * -0.5f,
                                                        RenderRegion.Height * -0.5f,
                                                        RenderRegion.Width,
                                                        RenderRegion.Height),
                                     new GorgonColor(GorgonColors.White, Opacity),
                                     null,
-                                    new DX.RectangleF(0, 0, 1, 1),
+                                    new GorgonRectangleF(0, 0, 1, 1),
                                     0,
                                     textureSampler: GorgonSamplerState.PointFiltering);
         Renderer.End();
 
         // Draw a frame around the volume rendering area.
-        DX.RectangleF volRegion = _volRenderer.VolumeRegion;
+        GorgonRectangleF volRegion = _volRenderer.VolumeRegion;
         Renderer.Begin();
 
-        DX.Size2F textArea = Resources.GORIMG_TEXT_3DVIEW.MeasureLine(Renderer.DefaultFont, false);
+        Vector2 textArea = Resources.GORIMG_TEXT_3DVIEW.MeasureLine(Renderer.DefaultFont, false);
         Renderer.DrawFilledRectangle(volRegion, new GorgonColor(GorgonColors.Black, 0.5f));
-        Renderer.DrawFilledRectangle(new DX.RectangleF(volRegion.Left - 1, volRegion.Bottom, volRegion.Width + 2, textArea.Height + 6), GorgonColors.White);
-        Renderer.DrawRectangle(new DX.RectangleF(volRegion.X - 1, volRegion.Y - 1, volRegion.Width + 2, volRegion.Height + 2), GorgonColors.White);
-        Renderer.DrawString("3D View", new Vector2((volRegion.Right + volRegion.Left) / 2.0f - (textArea.Width / 2.0f), volRegion.Bottom + 3), color: GorgonColors.Black);
+        Renderer.DrawFilledRectangle(new GorgonRectangleF(volRegion.Left - 1, volRegion.Bottom, volRegion.Width + 2, textArea.Y + 6), GorgonColors.White);
+        Renderer.DrawRectangle(new GorgonRectangleF(volRegion.X - 1, volRegion.Y - 1, volRegion.Width + 2, volRegion.Height + 2), GorgonColors.White);
+        Renderer.DrawString("3D View", new Vector2((volRegion.Right + volRegion.Left) / 2.0f - (textArea.X / 2.0f), volRegion.Bottom + 3), color: GorgonColors.Black);
 
         Renderer.End();
 

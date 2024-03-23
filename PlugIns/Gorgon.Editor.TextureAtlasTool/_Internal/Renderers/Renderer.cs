@@ -32,7 +32,6 @@ using Gorgon.Graphics.Core;
 using Gorgon.Graphics.Fonts;
 using Gorgon.Renderers;
 using Gorgon.Renderers.Cameras;
-using DX = SharpDX;
 
 namespace Gorgon.Editor.TextureAtlasTool;
 
@@ -59,11 +58,11 @@ internal class Renderer(Gorgon2D renderer, GorgonSwapChain swapChain, ITextureAt
     /// </summary>
     private void DrawMessage()
     {
-        DX.Size2F textSize = Resources.GORTAG_TEXT_NO_ATLAS.MeasureText(Renderer.DefaultFont, false);
+        Vector2 textSize = Resources.GORTAG_TEXT_NO_ATLAS.MeasureText(Renderer.DefaultFont, false);
 
         Renderer.Begin(camera: _camera);
-        Renderer.DrawFilledRectangle(new DX.RectangleF(-MainRenderTarget.Width * 0.5f, -MainRenderTarget.Height * 0.5f, MainRenderTarget.Width, MainRenderTarget.Height), new GorgonColor(GorgonColors.White, 0.75f));
-        Renderer.DrawString(Resources.GORTAG_TEXT_NO_ATLAS, new Vector2((int)(-textSize.Width * 0.5f), (int)(-textSize.Height * 0.5f)), color: GorgonColors.Black);
+        Renderer.DrawFilledRectangle(new GorgonRectangleF(-MainRenderTarget.Width * 0.5f, -MainRenderTarget.Height * 0.5f, MainRenderTarget.Width, MainRenderTarget.Height), new GorgonColor(GorgonColors.White, 0.75f));
+        Renderer.DrawString(Resources.GORTAG_TEXT_NO_ATLAS, new Vector2((int)(-textSize.X * 0.5f), (int)(-textSize.Y * 0.5f)), color: GorgonColors.Black);
         Renderer.End();
     }
 
@@ -81,9 +80,9 @@ internal class Renderer(Gorgon2D renderer, GorgonSwapChain swapChain, ITextureAt
 
         GorgonTexture2DView texture = _textureSprite.Texture = DataContext.Atlas.Textures[DataContext.PreviewTextureIndex];
 
-        float scale = CalculateScaling(new DX.Size2F(texture.Width + 8, texture.Height + 8), new DX.Size2F(MainRenderTarget.Width, MainRenderTarget.Height));
-        _textureSprite.Size = new DX.Size2F(scale * texture.Width, scale * texture.Height).Truncate();
-        _textureSprite.Position = new Vector2(-_textureSprite.Size.Width * 0.5f, -_textureSprite.Size.Height * 0.5f).Truncate();
+        float scale = CalculateScaling(new Vector2(texture.Width + 8, texture.Height + 8), new Vector2(MainRenderTarget.Width, MainRenderTarget.Height));
+        _textureSprite.Size = new Vector2(scale * texture.Width, scale * texture.Height).Truncate();
+        _textureSprite.Position = new Vector2(-_textureSprite.Size.X * 0.5f, -_textureSprite.Size.Y * 0.5f).Truncate();
 
         Renderer.Begin(camera: _camera);
         _textureSprite.TextureArrayIndex = DataContext.PreviewArrayIndex;
@@ -101,7 +100,7 @@ internal class Renderer(Gorgon2D renderer, GorgonSwapChain swapChain, ITextureAt
     {
         base.OnLoad();
 
-        _camera = new GorgonOrthoCamera(Graphics, new DX.Size2F(MainRenderTarget.Width, MainRenderTarget.Height))
+        _camera = new GorgonOrthoCamera(Graphics, new Vector2(MainRenderTarget.Width, MainRenderTarget.Height))
         {
             Anchor = new Vector2(0.5f, 0.5f)
         };
@@ -111,8 +110,8 @@ internal class Renderer(Gorgon2D renderer, GorgonSwapChain swapChain, ITextureAt
         _textureSprite = new GorgonSprite
         {
             Texture = texture,
-            TextureRegion = new DX.RectangleF(0, 0, 1, 1),
-            Size = new DX.Size2F(texture is not null ? texture.Width : 1, texture is not null ? texture.Height : 1),
+            TextureRegion = new GorgonRectangleF(0, 0, 1, 1),
+            Size = new Vector2(texture is not null ? texture.Width : 1, texture is not null ? texture.Height : 1),
             TextureSampler = GorgonSamplerState.PointFiltering
         };
     }

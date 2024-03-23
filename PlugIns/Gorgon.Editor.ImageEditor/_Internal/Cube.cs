@@ -23,7 +23,6 @@
 // Created: March 4, 2017 10:22:08 AM
 // 
 
-
 using System.Numerics;
 using Gorgon.Graphics.Core;
 using Gorgon.Math;
@@ -132,15 +131,15 @@ internal class Cube
     {
         CubeVertex[] vertices =
         [
-            new(new Vector3(-0.5f, 0.5f, -0.5f), new Vector3(0, 0, 0)),
-            new(new Vector3(0.5f, 0.5f, -0.5f), new Vector3(1.0f, 1.0f, 0)),
-            new(new Vector3(0.5f, -0.5f, -0.5f), new Vector3(0.0f, 1.0f, 0)),
-            new(new Vector3(-0.5f, -0.5f, -0.5f), new Vector3(1.0f, 0.0f, 0)),
-
             new(new Vector3(-0.5f, 0.5f, 0.5f), new Vector3(0, 0, 0)),
             new(new Vector3(0.5f, 0.5f, 0.5f), new Vector3(1.0f, 1.0f, 0)),
             new(new Vector3(0.5f, -0.5f, 0.5f), new Vector3(0.0f, 1.0f, 0)),
             new(new Vector3(-0.5f, -0.5f, 0.5f), new Vector3(1.0f, 0.0f, 0)),
+
+            new(new Vector3(-0.5f, 0.5f, -0.5f), new Vector3(0, 0, 0)),
+            new(new Vector3(0.5f, 0.5f, -0.5f), new Vector3(1.0f, 1.0f, 0)),
+            new(new Vector3(0.5f, -0.5f, -0.5f), new Vector3(0.0f, 1.0f, 0)),
+            new(new Vector3(-0.5f, -0.5f, -0.5f), new Vector3(1.0f, 0.0f, 0)),
         ];
 
         ushort[] indices =

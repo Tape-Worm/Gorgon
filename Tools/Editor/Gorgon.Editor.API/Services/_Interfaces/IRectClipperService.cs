@@ -25,8 +25,8 @@
 
 
 using Gorgon.Editor.Rendering;
+using Gorgon.Graphics;
 using Gorgon.Renderers.Cameras;
-using DX = SharpDX;
 
 namespace Gorgon.Editor.Services;
 
@@ -36,7 +36,6 @@ namespace Gorgon.Editor.Services;
 public interface IRectClipperService
     : IDisposable
 {
-
     /// <summary>
     /// Event triggered when the keyboard icon is clicked.
     /// </summary>
@@ -46,8 +45,6 @@ public interface IRectClipperService
     /// Event triggered when the rectangle coordinates have been altered.
     /// </summary>
     event EventHandler RectChanged;
-
-
 
     /// <summary>
     /// Property to set or return the camera being used.
@@ -87,7 +84,7 @@ public interface IRectClipperService
     /// <summary>
     /// Property to set or return the rectangular region marked for clipping.
     /// </summary>
-    DX.RectangleF Rectangle
+    GorgonRectangleF Rectangle
     {
         get;
         set;
@@ -96,7 +93,7 @@ public interface IRectClipperService
     /// <summary>
     /// Property to set or return the boundaries for the clipping rectangle.
     /// </summary>
-    DX.RectangleF Bounds
+    GorgonRectangleF Bounds
     {
         get;
         set;
@@ -119,8 +116,6 @@ public interface IRectClipperService
         get;
         set;
     }
-
-
 
     /// <summary>
     /// Function to force a refresh of the service.
@@ -160,5 +155,4 @@ public interface IRectClipperService
     /// <param name="modifiers">The modifier keys held down with the <paramref name="key"/>.</param>
     /// <returns><b>true</b> if the key was handled, <b>false</b> if it was not.</returns>
     bool KeyDown(Keys key, Keys modifiers);
-
 }

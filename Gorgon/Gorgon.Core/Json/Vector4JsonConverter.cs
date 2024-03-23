@@ -68,12 +68,13 @@ public class Vector4JsonConverter
     /// <returns>The object value.</returns>
     public override Vector4? ReadJson(JsonReader reader, Type objectType, Vector4? existingValue, bool hasExistingValue, JsonSerializer serializer)
     {
-        if (reader.TokenType == JsonToken.Null)
+        if ((reader.TokenType == JsonToken.Null)
+            || (!reader.Read()))
         {
             return hasExistingValue ? existingValue : null;
         }
 
-        if (reader.TokenType != JsonToken.StartObject)
+        if (reader.TokenType != JsonToken.PropertyName)
         {
             throw new GorgonException(GorgonResult.CannotRead);
         }
@@ -83,7 +84,7 @@ public class Vector4JsonConverter
         float z = 0;
         float w = 0;
 
-        while ((reader.Read()) && (reader.TokenType == JsonToken.PropertyName))
+        do
         {
             string propName = reader.Value?.ToString() ?? string.Empty;
 
@@ -102,7 +103,7 @@ public class Vector4JsonConverter
                     w = (float)(reader.ReadAsDouble() ?? 0);
                     break;
             }
-        }
+        } while ((reader.Read()) && (reader.TokenType == JsonToken.PropertyName));
 
         return new Vector4(x, y, z, w);
     }

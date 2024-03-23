@@ -31,7 +31,6 @@ using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.IO.Properties;
 using Gorgon.Renderers;
-using DX = SharpDX;
 
 namespace Gorgon.IO;
 
@@ -237,7 +236,7 @@ public class GorgonV3AnimationBinaryCodec(Gorgon2D renderer)
     {
         if ((textureOverrides is not null) && (textureOverrides.Any()))
         {
-            Graphics.Log.Print("WARNING: The texture overrides parameter is not supported for version 3 files. Textures will not be overridden.", Diagnostics.LoggingLevel.Intermediate);
+            Graphics.Log.Print("WARNING: The texture overrides parameter is not supported for version 3 files. Textures will not be overridden.", LoggingLevel.Intermediate);
         }
 
         GorgonAnimationBuilder builder = new();
@@ -337,7 +336,9 @@ public class GorgonV3AnimationBinaryCodec(Gorgon2D renderer)
                                                                           .SetInterpolationMode(interpolation);
                 for (int i = 0; i < keyCount; ++i)
                 {
-                    track.SetKey(new GorgonKeyRectangle(binReader.ReadSingle(), binReader.ReadValue<DX.RectangleF>()));
+                    // SharpDX rectangle data was stored as LTRB, so we need to convert it to keep compatibility.
+                    GorgonRectangleF tempRect = binReader.ReadValue<GorgonRectangleF>();
+                    track.SetKey(new GorgonKeyRectangle(binReader.ReadSingle(), GorgonRectangleF.FromLTRB(tempRect.X, tempRect.Y ,tempRect.Width, tempRect.Height)));
                 }
                 track.EndEdit();
                 reader.CloseChunk();
@@ -391,13 +392,15 @@ public class GorgonV3AnimationBinaryCodec(Gorgon2D renderer)
                     }
                 }
 
+                // SharpDX rectangle data was stored as LTRB, so we need to convert it to keep compatibility.
+                GorgonRectangleF tempRect = binReader.ReadValue<GorgonRectangleF>();
                 if ((texture is null) && (hasTexture is not 0))
                 {
-                    textureTrack.SetKey(new GorgonKeyTexture2D(time, textureName, binReader.ReadValue<DX.RectangleF>(), binReader.ReadInt32()));
+                    textureTrack.SetKey(new GorgonKeyTexture2D(time, textureName, GorgonRectangleF.FromLTRB(tempRect.X, tempRect.Y, tempRect.Width, tempRect.Height), binReader.ReadInt32()));
                 }
                 else
                 {
-                    textureTrack.SetKey(new GorgonKeyTexture2D(time, texture, binReader.ReadValue<DX.RectangleF>(), binReader.ReadInt32()));
+                    textureTrack.SetKey(new GorgonKeyTexture2D(time, texture, GorgonRectangleF.FromLTRB(tempRect.X, tempRect.Y, tempRect.Width, tempRect.Height), binReader.ReadInt32()));
                 }
             }
             textureTrack.EndEdit();

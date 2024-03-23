@@ -33,7 +33,6 @@ using Gorgon.Math;
 using SharpDX.DXGI;
 using D3D = SharpDX.Direct3D;
 using D3D11 = SharpDX.Direct3D11;
-using DX = SharpDX;
 
 namespace Gorgon.Graphics.Core;
 
@@ -187,7 +186,7 @@ public sealed class GorgonTexture2DView
     /// <remarks>
     /// This value is the full bounding rectangle of the first mip map level for the texture associated with the view.
     /// </remarks>
-    public DX.Rectangle Bounds
+    public GorgonRectangle Bounds
     {
         get;
     }
@@ -380,14 +379,14 @@ public sealed class GorgonTexture2DView
     /// for the underlying <see cref="Texture"/> is used.
     /// </para>
     /// </remarks>
-    public DX.Rectangle ToPixel(DX.RectangleF texelCoordinates, int? mipLevel = null)
+    public GorgonRectangle ToPixel(GorgonRectangleF texelCoordinates, int? mipLevel = null)
     {
         float width = Texture.Width;
         float height = Texture.Height;
 
         if (mipLevel is null)
         {
-            return new DX.Rectangle
+            return new GorgonRectangle
             {
                 Left = (int)(texelCoordinates.X * width),
                 Top = (int)(texelCoordinates.Y * height),
@@ -399,7 +398,7 @@ public sealed class GorgonTexture2DView
         width = GetMipWidth(mipLevel.Value);
         height = GetMipHeight(mipLevel.Value);
 
-        return new DX.Rectangle
+        return new GorgonRectangle
         {
             Left = (int)(texelCoordinates.X * width),
             Top = (int)(texelCoordinates.Y * height),
@@ -421,14 +420,14 @@ public sealed class GorgonTexture2DView
     /// for the underlying <see cref="Texture"/> is used.
     /// </para>
     /// </remarks>
-    public DX.RectangleF ToTexel(DX.Rectangle pixelCoordinates, int? mipLevel = null)
+    public GorgonRectangleF ToTexel(GorgonRectangle pixelCoordinates, int? mipLevel = null)
     {
         float width = Texture.Width;
         float height = Texture.Height;
 
         if (mipLevel is null)
         {
-            return new DX.RectangleF
+            return new GorgonRectangleF
             {
                 Left = pixelCoordinates.Left / width,
                 Top = pixelCoordinates.Top / height,
@@ -440,7 +439,7 @@ public sealed class GorgonTexture2DView
         width = GetMipWidth(mipLevel.Value);
         height = GetMipHeight(mipLevel.Value);
 
-        return new DX.RectangleF
+        return new GorgonRectangleF
         {
             Left = pixelCoordinates.Left / width,
             Top = pixelCoordinates.Top / height,
@@ -462,20 +461,20 @@ public sealed class GorgonTexture2DView
     /// for the underlying <see cref="Texture"/> is used.
     /// </para>
     /// </remarks>
-    public DX.Size2F ToTexel(DX.Size2 pixelSize, int? mipLevel = null)
+    public Vector2 ToTexel(GorgonPoint pixelSize, int? mipLevel = null)
     {
         float width = Texture.Width;
         float height = Texture.Height;
 
         if (mipLevel is null)
         {
-            return new DX.Size2F(pixelSize.Width / width, pixelSize.Height / height);
+            return new Vector2(pixelSize.X / width, pixelSize.Y / height);
         }
 
         width = GetMipWidth(mipLevel.Value);
         height = GetMipHeight(mipLevel.Value);
 
-        return new DX.Size2F(pixelSize.Width / width, pixelSize.Height / height);
+        return new Vector2(pixelSize.X / width, pixelSize.Y / height);
     }
 
     /// <summary>
@@ -491,78 +490,20 @@ public sealed class GorgonTexture2DView
     /// for the underlying <see cref="Texture"/> is used.
     /// </para>
     /// </remarks>
-    public DX.Size2 ToPixel(DX.Size2F texelSize, int? mipLevel = null)
+    public GorgonPoint ToPixel(Vector2 texelSize, int? mipLevel = null)
     {
         float width = Texture.Width;
         float height = Texture.Height;
 
         if (mipLevel is null)
         {
-            return new DX.Size2((int)(texelSize.Width * width), (int)(texelSize.Height * height));
+            return new GorgonPoint((int)(texelSize.X * width), (int)(texelSize.Y * height));
         }
 
         width = GetMipWidth(mipLevel.Value);
         height = GetMipHeight(mipLevel.Value);
 
-        return new DX.Size2((int)(texelSize.Width * width), (int)(texelSize.Height * height));
-    }
-
-    /// <summary>
-    /// Function to convert a 2D vector value from pixel coordinates to texel space.
-    /// </summary>
-    /// <param name="pixelVector">The pixel size to convert.</param>
-    /// <param name="mipLevel">[Optional] The mip level to use.</param>
-    /// <returns>A 2D vector containing the texel space coordinates.</returns>
-    /// <remarks>
-    /// <para>
-    /// If specified, the <paramref name="mipLevel"/> only applies to the <see cref="MipSlice"/> and <see cref="MipCount"/> for this view, it will be constrained if it falls outside of that range.
-    /// Because of this, the coordinates returned may not be the exact size of the texture bound to the view at mip level 0. If the <paramref name="mipLevel"/> is omitted, then the first mip level
-    /// for the underlying <see cref="Texture"/> is used.
-    /// </para>
-    /// </remarks>
-    public Vector2 ToTexel(Vector2 pixelVector, int? mipLevel = null)
-    {
-        float width = Texture.Width;
-        float height = Texture.Height;
-
-        if (mipLevel is null)
-        {
-            return new Vector2(pixelVector.X / width, pixelVector.Y / height);
-        }
-
-        width = GetMipWidth(mipLevel.Value);
-        height = GetMipHeight(mipLevel.Value);
-
-        return new Vector2(pixelVector.X / width, pixelVector.Y / height);
-    }
-
-    /// <summary>
-    /// Function to convert a 2D vector value from texel coordinates to pixel space.
-    /// </summary>
-    /// <param name="texelVector">The texel size to convert.</param>
-    /// <param name="mipLevel">[Optional] The mip level to use.</param>
-    /// <returns>A 2D vector containing the pixel space coordinates.</returns>
-    /// <remarks>
-    /// <para>
-    /// If specified, the <paramref name="mipLevel"/> only applies to the <see cref="MipSlice"/> and <see cref="MipCount"/> for this view, it will be constrained if it falls outside of that range.
-    /// Because of this, the coordinates returned may not be the exact size of the texture bound to the view at mip level 0. If the <paramref name="mipLevel"/> is omitted, then the first mip level
-    /// for the underlying <see cref="Texture"/> is used.
-    /// </para>
-    /// </remarks>
-    public Vector2 ToPixel(Vector2 texelVector, int? mipLevel = null)
-    {
-        float width = Texture.Width;
-        float height = Texture.Height;
-
-        if (mipLevel is null)
-        {
-            return new Vector2(texelVector.X * width, texelVector.Y * height);
-        }
-
-        width = GetMipWidth(mipLevel.Value);
-        height = GetMipHeight(mipLevel.Value);
-
-        return new Vector2(texelVector.X * width, texelVector.Y * height);
+        return new GorgonPoint((int)(texelSize.X * width), (int)(texelSize.Y * height));
     }
 
     /// <summary>
@@ -585,35 +526,6 @@ public sealed class GorgonTexture2DView
     /// </para>
     /// </remarks>
     public GorgonRenderTarget2DView GetRenderTargetView(BufferFormat format = BufferFormat.Unknown) => Texture.GetRenderTargetView(format, MipSlice, ArrayIndex, ArrayCount);
-
-    /// <summary>
-    /// Function to convert a 2D point value from pixel coordinates to texel space.
-    /// </summary>
-    /// <param name="pixelPoint">The pixel size to convert.</param>
-    /// <param name="mipLevel">[Optional] The mip level to use.</param>
-    /// <returns>A 2D vector containing the texel space coordinates.</returns>
-    /// <remarks>
-    /// <para>
-    /// If specified, the <paramref name="mipLevel"/> only applies to the <see cref="MipSlice"/> and <see cref="MipCount"/> for this view, it will be constrained if it falls outside of that range.
-    /// Because of this, the coordinates returned may not be the exact size of the texture bound to the view at mip level 0. If the <paramref name="mipLevel"/> is omitted, then the first mip level
-    /// for the underlying <see cref="Texture"/> is used.
-    /// </para>
-    /// </remarks>
-    public Vector2 ToTexel(GorgonPoint pixelPoint, int? mipLevel = null)
-    {
-        float width = Texture.Width;
-        float height = Texture.Height;
-
-        if (mipLevel is null)
-        {
-            return new Vector2(pixelPoint.X / width, pixelPoint.Y / height);
-        }
-
-        width = GetMipWidth(mipLevel.Value);
-        height = GetMipHeight(mipLevel.Value);
-
-        return new Vector2(pixelPoint.X / width, pixelPoint.Y / height);
-    }
 
     /// <summary>
     /// Function to return the width of the texture at the current <see cref="MipSlice"/> in pixels.
@@ -688,7 +600,7 @@ public sealed class GorgonTexture2DView
                 || (initialData.Height > info.Height))
             {
                 initialData.BeginUpdate()
-                           .Crop(new DX.Rectangle(0, 0, info.Width, info.Height), 1)
+                           .Crop(new GorgonRectangle(0, 0, info.Width, info.Height), 1)
                            .EndUpdate();
             }
         }
@@ -906,7 +818,7 @@ public sealed class GorgonTexture2DView
         FormatInformation = formatInfo ?? throw new ArgumentNullException(nameof(formatInfo));
         Format = format;
         Texture = texture;
-        Bounds = new DX.Rectangle(0, 0, Width, Height);
+        Bounds = new GorgonRectangle(0, 0, Width, Height);
         MipSlice = firstMipLevel;
         MipCount = mipCount;
         ArrayIndex = arrayIndex;

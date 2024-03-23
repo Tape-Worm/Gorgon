@@ -396,7 +396,7 @@ internal class RibbonMerger(KryptonRibbon targetRibbon)
         {
             foreach (KryptonRibbonGroup grp in tab.Groups)
             {
-                Drawing.Size size = TextRenderer.MeasureText(g, grp.TextLine1 + (string.IsNullOrWhiteSpace(grp.TextLine2) ? " " + grp.TextLine2 : string.Empty), TargetRibbon.Parent.Font);
+                Size size = TextRenderer.MeasureText(g, grp.TextLine1 + (string.IsNullOrWhiteSpace(grp.TextLine2) ? " " + grp.TextLine2 : string.Empty), TargetRibbon.Parent.Font);
                 grp.MinimumWidth = size.Width + (int)(8 * dpi);
             }
         }

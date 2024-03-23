@@ -45,7 +45,6 @@ using Gorgon.Renderers;
 using Gorgon.UI;
 using Microsoft.IO;
 using Drawing = System.Drawing;
-using DX = SharpDX;
 
 namespace Gorgon.Editor.FontEditor;
 
@@ -153,17 +152,17 @@ internal class FontEditorPlugin
                 continue;
             }
 
-            if (family.IsStyleAvailable(Drawing.FontStyle.Regular))
+            if (family.IsStyleAvailable(FontStyle.Regular))
             {
-                newFont = new Font(family, 16.0f, Drawing.FontStyle.Regular, GraphicsUnit.Pixel);
+                newFont = new Font(family, 16.0f, FontStyle.Regular, GraphicsUnit.Pixel);
             }
-            else if (family.IsStyleAvailable(Drawing.FontStyle.Bold))
+            else if (family.IsStyleAvailable(FontStyle.Bold))
             {
-                newFont = new Font(family, 16.0f, Drawing.FontStyle.Bold, GraphicsUnit.Pixel);
+                newFont = new Font(family, 16.0f, FontStyle.Bold, GraphicsUnit.Pixel);
             }
-            else if (family.IsStyleAvailable(Drawing.FontStyle.Italic))
+            else if (family.IsStyleAvailable(FontStyle.Italic))
             {
-                newFont = new Font(family, 16.0f, Drawing.FontStyle.Italic, GraphicsUnit.Pixel);
+                newFont = new Font(family, 16.0f, FontStyle.Italic, GraphicsUnit.Pixel);
             }
 
             // Only add if we could use the regular, bold or italic style.
@@ -471,10 +470,10 @@ internal class FontEditorPlugin
 
         using Drawing.Graphics gDpi = Drawing.Graphics.FromHwnd(GorgonApplication.MainForm.Handle);
         float dpiScale = gDpi.DpiX / 96.0f;
-        DX.Size2 targetSize = new DX.Size2F(256 * dpiScale, 256 * dpiScale).ToSize2();
+        GorgonPoint targetSize = new Vector2(256 * dpiScale, 256 * dpiScale).ToSize2();
 
         using GorgonFont font = await _previewerCodec.FromStreamAsync(fileStream, filePath);
-        using GorgonRenderTarget2DView target = GorgonRenderTarget2DView.CreateRenderTarget(HostContentServices.GraphicsContext.Graphics, new GorgonTexture2DInfo(targetSize.Width, targetSize.Height, BufferFormat.R8G8B8A8_UNorm)
+        using GorgonRenderTarget2DView target = GorgonRenderTarget2DView.CreateRenderTarget(HostContentServices.GraphicsContext.Graphics, new GorgonTexture2DInfo(targetSize.X, targetSize.Y, BufferFormat.R8G8B8A8_UNorm)
         {
             Binding = TextureBinding.ShaderResource
         });
@@ -482,7 +481,7 @@ internal class FontEditorPlugin
         target.Clear(GorgonColors.White);
         graphics.SetRenderTarget(target);
         renderer.Begin(font.UsePremultipliedTextures ? Gorgon2DBatchState.PremultipliedBlend : null);
-        renderer.DrawRectangle(new DX.RectangleF(0, 0, target.Width, target.Height), GorgonColors.Black, 2);
+        renderer.DrawRectangle(new GorgonRectangleF(0, 0, target.Width, target.Height), GorgonColors.Black, 2);
         if (!font.HasOutline)
         {
             renderer.DrawString(string.Format(Resources.GORFNT_TEXT_PREVIEW, contentFile.Name), new Vector2(3, 3), font, GorgonColors.Black);

@@ -25,9 +25,9 @@
 
 
 using System.Numerics;
+using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Renderers.Geometry;
-using DX = SharpDX;
 
 namespace Gorgon.Examples;
 
@@ -53,7 +53,7 @@ internal class Plane
     /// <param name="inputLayout">The input layout for the vertices in this mesh.</param>
     /// <param name="size">The width and height of the plane.</param>
     /// <param name="textureCoordinates">Texture coordinates.</param>
-    public Plane(GorgonGraphics graphics, GorgonInputLayout inputLayout, Vector2 size, DX.RectangleF textureCoordinates)
+    public Plane(GorgonGraphics graphics, GorgonInputLayout inputLayout, Vector2 size, GorgonRectangleF textureCoordinates)
         : base(inputLayout)
     {
         Size = size;

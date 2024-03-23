@@ -166,11 +166,11 @@ internal static partial class UserApi
     /// <remarks>
     /// See <a href="https://msdn.microsoft.com/en-us/library/windows/desktop/ms646320(v=vs.85).aspx"/> for more info.
     /// </remarks>
-    [LibraryImport("user32.dll")]
+    [LibraryImport("user32.dll",StringMarshalling = StringMarshalling.Utf16)]
     public static partial int ToUnicode(uint keyCode,
                                         uint scanCode,
                                         [In] byte[] keyboardState,
-                                        nint buffer,
+                                        [Out] char[] buffer,
                                         int bufferSize,
                                         uint flags);
 

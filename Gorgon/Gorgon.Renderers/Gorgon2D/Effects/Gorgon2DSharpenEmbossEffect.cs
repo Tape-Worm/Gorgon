@@ -29,7 +29,6 @@ using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Renderers.Cameras;
 using Gorgon.Renderers.Properties;
-using DX = SharpDX;
 
 namespace Gorgon.Renderers;
 
@@ -57,14 +56,14 @@ public class Gorgon2DSharpenEmbossEffect
     // Flag to indicate that the parameters were updated.
     private bool _isUpdated = true;
     // The texture size used to calculate the emboss/sharpen edges.
-    private DX.Size2F _textureSize = new(512.0f, 512.0f);
+    private Vector2 _textureSize = new(512.0f, 512.0f);
 
 
 
     /// <summary>
     /// Property to set or return the offset of the shapren/embossing edges.
     /// </summary>
-    public DX.Size2F TextureSize
+    public Vector2 TextureSize
     {
         get => _textureSize;
         set
@@ -179,7 +178,7 @@ public class Gorgon2DSharpenEmbossEffect
             return;
         }
 
-        Vector3 settings = new(1.0f / _textureSize.Width, 1.0f / _textureSize.Height, _amount);
+        Vector3 settings = new(1.0f / _textureSize.X, 1.0f / _textureSize.Y, _amount);
 
         _sharpenEmbossBuffer.Buffer.SetData(in settings);
         _isUpdated = false;
@@ -252,10 +251,10 @@ public class Gorgon2DSharpenEmbossEffect
 
         Begin(GorgonBlendState.Default, GorgonDepthStencilState.Default, GorgonRasterState.Default, null);
 
-        Renderer.DrawFilledRectangle(new DX.RectangleF(0, 0, output.Width, output.Height),
+        Renderer.DrawFilledRectangle(new GorgonRectangleF(0, 0, output.Width, output.Height),
                                         GorgonColors.White,
                                         texture,
-                                        new DX.RectangleF(0, 0, 1, 1));
+                                        new GorgonRectangleF(0, 0, 1, 1));
         End();
     }
 

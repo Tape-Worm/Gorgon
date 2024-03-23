@@ -32,7 +32,6 @@ using Gorgon.Graphics.Core;
 using Gorgon.Graphics.Imaging;
 using Gorgon.Math;
 using Gorgon.Renderers.Properties;
-using DX = SharpDX;
 
 namespace Gorgon.Renderers;
 
@@ -342,7 +341,7 @@ public class Gorgon2DOldFilmEffect
     /// <remarks>
     /// If this value is <b>null</b>, then the entire output render target region is used to draw the dirt/hair.
     /// </remarks>
-    public DX.RectangleF? DirtRegion
+    public GorgonRectangleF? DirtRegion
     {
         get;
         set;
@@ -501,7 +500,7 @@ public class Gorgon2DOldFilmEffect
             Graphics.SetRenderTarget(output, Graphics.DepthStencilView);
         }
 
-        DX.RectangleF region = DirtRegion ?? new DX.RectangleF(0, 0, output.Width, output.Height);
+        GorgonRectangleF region = DirtRegion ?? new GorgonRectangleF(0, 0, output.Width, output.Height);
 
         // If we've specified no region, then don't draw anything.
         if ((region.Width.EqualsEpsilon(0))
@@ -518,7 +517,7 @@ public class Gorgon2DOldFilmEffect
             GorgonColor dustColor = new(grayDust, grayDust, grayDust, GorgonRandom.RandomSingle(0.25f, 0.95f));
 
             // Render dust points.
-            Renderer.DrawFilledRectangle(new DX.RectangleF(GorgonRandom.RandomSingle(region.Left, region.Right),
+            Renderer.DrawFilledRectangle(new GorgonRectangleF(GorgonRandom.RandomSingle(region.Left, region.Right),
                                                            GorgonRandom.RandomSingle(region.Top, region.Bottom),
                                                            1,
                                                            1),
@@ -542,8 +541,8 @@ public class Gorgon2DOldFilmEffect
 
             for (int j = 0; j < GorgonRandom.RandomInt32(4, (int)(region.Width * 0.10f).Min(4)); j++)
             {
-                DX.Size2F size = isHair ? new DX.Size2F(1, 1) : new DX.Size2F(dirtWidth, dirtWidth);
-                Renderer.DrawFilledRectangle(new DX.RectangleF(dirtStart.X, dirtStart.Y, size.Width, size.Height), dustColor);
+                Vector2 size = isHair ? new Vector2(1, 1) : new Vector2(dirtWidth, dirtWidth);
+                Renderer.DrawFilledRectangle(new GorgonRectangleF(dirtStart.X, dirtStart.Y, size.X, size.Y), dustColor);
 
                 if ((!isHair) || (isHairVertical))
                 {
@@ -639,7 +638,7 @@ public class Gorgon2DOldFilmEffect
         switch (BeginPass(0, output))
         {
             case PassContinuationState.Continue:
-                Renderer.DrawFilledRectangle(new DX.RectangleF(ShakeOffset.X, ShakeOffset.Y, output.Width, output.Height), GorgonColors.White, texture, new DX.RectangleF(0, 0, 1, 1));
+                Renderer.DrawFilledRectangle(new GorgonRectangleF(ShakeOffset.X, ShakeOffset.Y, output.Width, output.Height), GorgonColors.White, texture, new GorgonRectangleF(0, 0, 1, 1));
                 break;
             default:
                 EndRender(null);

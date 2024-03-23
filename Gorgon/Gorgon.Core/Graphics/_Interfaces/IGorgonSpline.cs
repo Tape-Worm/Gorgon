@@ -102,7 +102,7 @@ public interface IGorgonSpline
     /// If the <paramref name="delta"/> is less than 0, or greater than 1, the value will be wrapped to fit within the 0..1 range.
     /// </para>
     /// </remarks>
-    /// <exception cref="ArgumentOutOfRangeException"><c>[Debug only]</c> Thrown when the <paramref name="startPointIndex"/> is less than 0, or greater than/equal to the number of points - 1 in the <see cref="IGorgonSpline.Points"/> parameter.</exception>
+    /// <exception cref="ArgumentOutOfRangeException"><c>[Debug only]</c> Thrown when the <paramref name="startPointIndex"/> is less than 0, or greater than/equal to the number of points - 1 in the <see cref="Points"/> parameter.</exception>
     Vector4 GetInterpolatedValue(int startPointIndex, float delta);
 
     /// <summary>

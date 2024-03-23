@@ -26,7 +26,6 @@
 
 using Gorgon.Graphics;
 using Gorgon.Renderers;
-using DX = SharpDX;
 
 namespace Gorgon.Examples;
 
@@ -125,7 +124,7 @@ public class Button(IGorgon2DCompositorPass pass)
     /// <summary>
     /// Property to set or return the boundaries for the button.
     /// </summary>
-    public DX.RectangleF Bounds
+    public GorgonRectangleF Bounds
     {
         get;
         set;

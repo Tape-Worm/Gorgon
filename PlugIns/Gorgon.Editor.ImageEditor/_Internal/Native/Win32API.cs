@@ -24,6 +24,7 @@
 // 
 
 
+using System.Buffers;
 using System.Runtime.InteropServices;
 using System.Security;
 
@@ -215,12 +216,12 @@ internal static partial class Win32API
     /// <param name="result">The value for the string being queried.</param>
     /// <param name="size">The size of the result string buffer.</param>
     /// <returns>A value to indicate success or failure.</returns>
-    [LibraryImport("Shlwapi.dll", EntryPoint = "AssocQueryStringW")]
+    [LibraryImport("Shlwapi.dll", EntryPoint = "AssocQueryStringW", StringMarshalling = StringMarshalling.Utf16)]
     private static partial int AssocQueryString(AssociationFlags flags,
                                                 AssociationStringType stringType,
-                                                [MarshalAs(UnmanagedType.LPWStr)] string filePath,
-                                                [MarshalAs(UnmanagedType.LPWStr)] string extra,
-                                                nint result,
+                                                string filePath,
+                                                string extra,
+                                                [Out] char[] result,
                                                 ref int size);
 
     /// <summary>
@@ -230,20 +231,21 @@ internal static partial class Win32API
     /// <returns>A string containing the friendly name, or an empty string if no friendly name is found.</returns>
     public static string GetFriendlyExeName(string filePath)
     {
+        char[] result = null;
         int size = 0;
-        _ = AssocQueryString(AssociationFlags.Verify | AssociationFlags.OpenByExeName,
-                         AssociationStringType.FriendlyApplicationName,
-                         filePath,
-                         null,
-                         nint.Zero,
-                         ref size);
+        int hresult = AssocQueryString(AssociationFlags.Verify | AssociationFlags.OpenByExeName,
+                                       AssociationStringType.FriendlyApplicationName,
+                                       filePath,
+                                     null,
+                                       result,
+                                       ref size);
 
-        if (size <= 0)
+        if ((size <= 0) || (hresult != 1))
         {
             return string.Empty;
         }
 
-        nint ptr = Marshal.AllocCoTaskMem(size);
+        result = ArrayPool<char>.Shared.Rent(size);
 
         try
         {
@@ -251,19 +253,19 @@ internal static partial class Win32API
                                     AssociationStringType.FriendlyApplicationName,
                                     filePath,
                                     null,
-                                    ptr,
+                                    result,
                                     ref size) != 0)
             {
                 return string.Empty;
             }
 
-            string result = Marshal.PtrToStringUni(ptr);
+            int nullCharPos = result.Length - Array.IndexOf(result, '\0');
 
-            return result;
+            return new string(result, 0, result.Length - nullCharPos);
         }
         finally
         {
-            Marshal.FreeCoTaskMem(ptr);
+            ArrayPool<char>.Shared.Return(result, true);
         }
     }
 
@@ -274,8 +276,9 @@ internal static partial class Win32API
     /// <returns>The path to the associated executable file, or an empty string if no executable is associated with the file.</returns>
     public static string GetAssociatedExecutable(string filePath)
     {
+        char[] result = null;
         int size = 0;
-        int hresult = AssocQueryString(AssociationFlags.DontRemapCLSID | AssociationFlags.RemapRunDLL, AssociationStringType.Executable, filePath, null, nint.Zero, ref size);
+        int hresult = AssocQueryString(AssociationFlags.DontRemapCLSID | AssociationFlags.RemapRunDLL, AssociationStringType.Executable, filePath, null, result, ref size);
 
         // WARNING: That shitty fucking photo UWP app steals the registration of some image files.  When this happens, we can't get the path info.  UWP is ABSOLUTE GARBAGE.
         if ((size <= 0) || (hresult != 1))
@@ -283,28 +286,27 @@ internal static partial class Win32API
             return string.Empty;
         }
 
-        nint ptr = Marshal.AllocCoTaskMem(size);
+        result = ArrayPool<char>.Shared.Rent(size);
 
         try
         {
-
             if (AssocQueryString(AssociationFlags.DontRemapCLSID | AssociationFlags.RemapRunDLL,
                             AssociationStringType.Executable,
                             filePath,
                             null,
-                            ptr,
+                            result,
                             ref size) != 0)
             {
                 return string.Empty;
             }
 
-            string result = Marshal.PtrToStringUni(ptr);
+            int nullCharPos = result.Length - Array.IndexOf(result, '\0');
 
-            return result;
+            return new(result, 0, result.Length - nullCharPos);
         }
         finally
         {
-            Marshal.FreeCoTaskMem(ptr);
+            ArrayPool<char>.Shared.Return(result, true);
         }
     }
 }

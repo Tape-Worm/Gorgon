@@ -31,7 +31,6 @@ using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Math;
 using Gorgon.Renderers;
-using DX = SharpDX;
 
 namespace Gorgon.Editor.SpriteEditor;
 
@@ -57,7 +56,7 @@ internal class SingleSpriteViewer
     /// <summary>
     /// Property to return the boundaries of the sprite.
     /// </summary>
-    protected DX.RectangleF SpriteRegion
+    protected GorgonRectangleF SpriteRegion
     {
         get;
         set;
@@ -137,15 +136,15 @@ internal class SingleSpriteViewer
     /// <remarks>Developers can override this method to render a custom background.</remarks>
     protected override void OnRenderBackground()
     {
-        DX.RectangleF textureSize = new(0, 0, RenderRegion.Width / BackgroundPattern.Width * Camera.Zoom.X, RenderRegion.Height / BackgroundPattern.Height * Camera.Zoom.X);
+        GorgonRectangleF textureSize = new(0, 0, RenderRegion.Width / BackgroundPattern.Width * Camera.Zoom.X, RenderRegion.Height / BackgroundPattern.Height * Camera.Zoom.X);
 
         Renderer.Begin(camera: Camera);
-        Renderer.DrawFilledRectangle(new DX.RectangleF(RenderRegion.Width * -0.5f, RenderRegion.Height * -0.5f, RenderRegion.Width, RenderRegion.Height), new GorgonColor(GorgonColors.White, TextureOpacity), BackgroundPattern, textureSize);
+        Renderer.DrawFilledRectangle(new GorgonRectangleF(RenderRegion.Width * -0.5f, RenderRegion.Height * -0.5f, RenderRegion.Width, RenderRegion.Height), new GorgonColor(GorgonColors.White, TextureOpacity), BackgroundPattern, textureSize);
         Renderer.End();
 
         Renderer.Begin();
-        textureSize = new DX.RectangleF(0, 0, ClientSize.Width / BackgroundPattern.Width, ClientSize.Height / BackgroundPattern.Height);
-        Renderer.DrawFilledRectangle(new DX.RectangleF(0, 0, ClientSize.Width, ClientSize.Height), new GorgonColor(GorgonColors.White, 1.0f - TextureOpacity), BackgroundPattern, textureSize);
+        textureSize = new GorgonRectangleF(0, 0, ClientSize.X / BackgroundPattern.Width, ClientSize.Y / BackgroundPattern.Height);
+        Renderer.DrawFilledRectangle(new GorgonRectangleF(0, 0, ClientSize.X, ClientSize.Y), new GorgonColor(GorgonColors.White, 1.0f - TextureOpacity), BackgroundPattern, textureSize);
         Renderer.End();
     }
 
@@ -158,13 +157,13 @@ internal class SingleSpriteViewer
 
 
         Renderer.Begin(camera: Camera);
-        Renderer.DrawFilledRectangle(new DX.RectangleF(halfRegion.X,
+        Renderer.DrawFilledRectangle(new GorgonRectangleF(halfRegion.X,
                                                        halfRegion.Y,
                                                        DataContext.Texture.Width,
                                                        DataContext.Texture.Height),
                                     new GorgonColor(GorgonColors.White, TextureOpacity),
                                     Sprite.Texture,
-                                    new DX.RectangleF(0, 0, 1, 1),
+                                    new GorgonRectangleF(0, 0, 1, 1),
                                     textureSampler: GorgonSamplerState.PointFiltering);
 
         Renderer.DrawSprite(Sprite);
@@ -187,7 +186,7 @@ internal class SingleSpriteViewer
 
         base.OnLoad();
 
-        RenderRegion = new DX.RectangleF(0, 0, DataContext.Texture.Width, DataContext.Texture.Height);
+        RenderRegion = new GorgonRectangleF(0, 0, DataContext.Texture.Width, DataContext.Texture.Height);
 
         UpdateSprite();
     }
@@ -200,8 +199,8 @@ internal class SingleSpriteViewer
             return;
         }
 
-        DX.RectangleF zoomRect = SpriteRegion;
-        zoomRect.Inflate(zoomRect.Width * 0.25f, zoomRect.Height * 0.25f);
+        GorgonRectangleF zoomRect = SpriteRegion;
+        zoomRect = new GorgonRectangleF(zoomRect.TopLeft, new Vector2(zoomRect.Width * 0.25f, zoomRect.Height * 0.25f));
 
         ZoomLevels spriteZoomLevel = GetNearestZoomFromRectangle(zoomRect);
 

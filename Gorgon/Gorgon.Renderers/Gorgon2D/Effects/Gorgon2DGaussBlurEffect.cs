@@ -32,7 +32,6 @@ using Gorgon.Math;
 using Gorgon.Native;
 using Gorgon.Renderers.Cameras;
 using Gorgon.Renderers.Properties;
-using DX = SharpDX;
 
 namespace Gorgon.Renderers;
 
@@ -66,7 +65,7 @@ public class Gorgon2DGaussBlurEffect
     // Radius for the blur.
     private int _blurRadius;
     // The size of the render targets used to blur.
-    private DX.Size2 _renderTargetSize = new(256, 256);
+    private GorgonPoint _renderTargetSize = new(256, 256);
 
     // Flag to indicate that the kernel data needs updating.
     private bool _needKernelUpdate = true;
@@ -240,7 +239,7 @@ public class Gorgon2DGaussBlurEffect
     /// </note>
     /// </para>
     /// </remarks>
-    public DX.Size2 BlurRenderTargetsSize
+    public GorgonPoint BlurRenderTargetsSize
     {
         get => _renderTargetSize;
         set
@@ -251,15 +250,15 @@ public class Gorgon2DGaussBlurEffect
             }
 
             // Constrain the size.
-            value.Width = value.Width.Max(3).Min(Graphics.VideoAdapter.MaxTextureWidth);
-            value.Height = value.Height.Max(3).Min(Graphics.VideoAdapter.MaxTextureHeight);
+            value.X = value.X.Max(3).Min(Graphics.VideoAdapter.MaxTextureWidth);
+            value.Y = value.Y.Max(3).Min(Graphics.VideoAdapter.MaxTextureHeight);
 
             if (_blurRtvInfo is not null)
             {
                 _blurRtvInfo = _blurRtvInfo with
                 {
-                    Width = value.Width,
-                    Height = value.Height
+                    Width = value.X,
+                    Height = value.Y
                 };
             }
 
@@ -293,7 +292,7 @@ public class Gorgon2DGaussBlurEffect
     private void UpdateOffsets()
     {
         // This adjusts just how far from the texel the blurring can occur.
-        Vector2 unitSize = new(1.0f / BlurRenderTargetsSize.Width, 1.0f / BlurRenderTargetsSize.Height);
+        Vector2 unitSize = new(1.0f / BlurRenderTargetsSize.X, 1.0f / BlurRenderTargetsSize.Y);
 
         int pointerOffset = 0;
         int yOffset = (((_blurRadius) * 2) + 1);
@@ -425,11 +424,11 @@ public class Gorgon2DGaussBlurEffect
         switch (passIndex)
         {
             case 0:
-                Renderer.DrawFilledRectangle(new DX.RectangleF(0, 0, _hPassView.Width, _hPassView.Height), GorgonColors.White, texture, new DX.RectangleF(0, 0, 1, 1), textureSampler: GorgonSamplerState.Default);
+                Renderer.DrawFilledRectangle(new GorgonRectangleF(0, 0, _hPassView.Width, _hPassView.Height), GorgonColors.White, texture, new GorgonRectangleF(0, 0, 1, 1), textureSampler: GorgonSamplerState.Default);
                 ;
                 break;
             case 1:
-                Renderer.DrawFilledRectangle(new DX.RectangleF(0, 0, _vPassView.Width, _vPassView.Height), GorgonColors.White, _hPassView, new DX.RectangleF(0, 0, 1, 1), textureSampler: GorgonSamplerState.Default);
+                Renderer.DrawFilledRectangle(new GorgonRectangleF(0, 0, _vPassView.Width, _vPassView.Height), GorgonColors.White, _hPassView, new GorgonRectangleF(0, 0, 1, 1), textureSampler: GorgonSamplerState.Default);
                 break;
         }
     }
@@ -462,7 +461,7 @@ public class Gorgon2DGaussBlurEffect
 
         _blurShaderNoAlpha = CompileShader<GorgonPixelShader>(Resources.BasicSprite, "GorgonPixelShaderGaussBlurNoAlpha");
 
-        _blurRtvInfo = new(_renderTargetSize.Width, _renderTargetSize.Height, BlurTargetFormat);
+        _blurRtvInfo = new(_renderTargetSize.X, _renderTargetSize.Y, BlurTargetFormat);
 
         UpdateKernelWeights();
         UpdateOffsets();
@@ -547,7 +546,7 @@ public class Gorgon2DGaussBlurEffect
         }
 
         Renderer.Begin(Gorgon2DBatchState.NoBlend);
-        Renderer.DrawFilledRectangle(new DX.RectangleF(0, 0, output.Width, output.Height), GorgonColors.White, _vPassView, new DX.RectangleF(0, 0, 1, 1));
+        Renderer.DrawFilledRectangle(new GorgonRectangleF(0, 0, output.Width, output.Height), GorgonColors.White, _vPassView, new GorgonRectangleF(0, 0, 1, 1));
         Renderer.End();
 
         FreeTargets();
@@ -663,5 +662,4 @@ public class Gorgon2DGaussBlurEffect
         Macros.Add(new GorgonShaderMacro("GAUSS_BLUR_EFFECT"));
         Macros.Add(new GorgonShaderMacro("MAX_KERNEL_SIZE", KernelSize.ToString(CultureInfo.InvariantCulture)));
     }
-
 }

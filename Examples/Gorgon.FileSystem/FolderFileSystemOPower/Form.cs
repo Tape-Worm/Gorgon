@@ -37,7 +37,6 @@ using Gorgon.Math;
 using Gorgon.Renderers;
 using Gorgon.Timing;
 using Gorgon.UI;
-using DX = SharpDX;
 
 
 namespace Gorgon.Examples;
@@ -105,8 +104,8 @@ public partial class Form
         //
         // See http://tape-worm.net/?page_id=277 for more info.
 
-        _sprites[2].Position = new Vector2(((_blurredImage[0].Width / 2.0f) - (_sprites[2].Size.Width / 2.0f)).FastFloor(),
-                                              ((_blurredImage[0].Height / 2.0f) - (_sprites[2].Size.Height / 2.0f)).FastFloor());
+        _sprites[2].Position = new Vector2(((_blurredImage[0].Width / 2.0f) - (_sprites[2].Size.X / 2.0f)).FastFloor(),
+                                              ((_blurredImage[0].Height / 2.0f) - (_sprites[2].Size.Y / 2.0f)).FastFloor());
 
         for (int i = 0; i < _blurredTarget.Length; ++i)
         {
@@ -130,7 +129,7 @@ public partial class Form
         _screen.RenderTargetView.Clear(Color.FromArgb(250, 245, 220));
 
         // Reset the text position.
-        if (_poetry.Position.Y < -_poetry.Size.Height)
+        if (_poetry.Position.Y < -_poetry.Size.Y)
         {
             _textPosition = new Vector2(0, height + _textFont.LineHeight);
         }
@@ -188,13 +187,13 @@ public partial class Form
         _renderer.DrawSprite(_sprites[1]);
 
         // Draw our blurred image (we could have used a sprite here as well, but this works just as well).
-        _renderer.DrawFilledRectangle(new DX.RectangleF((width / 2) - (_blurredImage[0].Width / 2.0f),
+        _renderer.DrawFilledRectangle(new GorgonRectangleF((width / 2) - (_blurredImage[0].Width / 2.0f),
                                                         (height / 2) - (_blurredImage[0].Height / 2.0f),
                                                         _blurredImage[0].Width,
                                                         _blurredImage[0].Height),
                                       GorgonColors.White,
                                       _blurredImage[index],
-                                      new DX.RectangleF(0, 0, 1, 1));
+                                      new GorgonRectangleF(0, 0, 1, 1));
 
         // Draw help text.
         if (_showHelp)
@@ -205,7 +204,7 @@ public partial class Form
         // Show our rendering statistics.
         if (_showStats)
         {
-            DX.RectangleF rectPosition = new(0, 0, width, (_helpFont.FontHeight * 2.0f) + 2.0f);
+            GorgonRectangleF rectPosition = new(0, 0, width, (_helpFont.FontHeight * 2.0f) + 2.0f);
             _renderer.DrawFilledRectangle(rectPosition, Color.FromArgb(192, Color.Black));
             _renderer.DrawLine(rectPosition.X, rectPosition.Bottom, rectPosition.Width, rectPosition.Bottom, Color.White);
             _renderer.DrawString($"FPS: {GorgonTiming.FPS:0.0}\nFrame Delta: {(GorgonTiming.Delta * 1000):0.0##} msec.",
@@ -249,7 +248,7 @@ public partial class Form
 
         // Resize and center the screen.
         Screen screen = Screen.FromHandle(Handle);
-        ClientSize = new Size(ExampleConfig.Default.Resolution.Width, ExampleConfig.Default.Resolution.Height);
+        ClientSize = new Size(ExampleConfig.Default.Resolution.X, ExampleConfig.Default.Resolution.Y);
         Location = new Point(screen.Bounds.Left + (screen.WorkingArea.Width / 2) - (ClientSize.Width / 2),
                              screen.Bounds.Top + (screen.WorkingArea.Height / 2) - (ClientSize.Height / 2));
 
@@ -348,13 +347,13 @@ public partial class Form
         // Unlike the old example, we'll blend to render targets, ping-ponging back and forth, for a much better quality image and smoother transition.
         _blurEffect = new Gorgon2DGaussBlurEffect(_renderer, 3)
         {
-            BlurRenderTargetsSize = new DX.Size2((int)_sprites[2].Size.Width * 2, (int)_sprites[2].Size.Height * 2),
+            BlurRenderTargetsSize = new GorgonPoint((int)_sprites[2].Size.X * 2, (int)_sprites[2].Size.Y * 2),
             PreserveAlpha = false
         };
         _blurEffect.Precache();
 
-        _blurredTarget[0] = GorgonRenderTarget2DView.CreateRenderTarget(_graphics, new GorgonTexture2DInfo(_blurEffect.BlurRenderTargetsSize.Width,
-                                                                                                                _blurEffect.BlurRenderTargetsSize.Height,
+        _blurredTarget[0] = GorgonRenderTarget2DView.CreateRenderTarget(_graphics, new GorgonTexture2DInfo(_blurEffect.BlurRenderTargetsSize.X,
+                                                                                                                _blurEffect.BlurRenderTargetsSize.Y,
                                                                                                                 BufferFormat.R8G8B8A8_UNorm)
         {
             Name = "Blurred RTV",

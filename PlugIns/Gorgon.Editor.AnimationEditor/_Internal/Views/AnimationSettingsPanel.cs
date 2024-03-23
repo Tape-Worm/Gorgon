@@ -27,7 +27,7 @@
 using System.ComponentModel;
 using Gorgon.Editor.UI;
 using Gorgon.Editor.UI.Views;
-using DX = SharpDX;
+using Gorgon.Graphics;
 
 namespace Gorgon.Editor.AnimationEditor;
 
@@ -114,7 +114,7 @@ internal partial class AnimationSettingsPanel
             return;
         }
 
-        ViewModel.DefaultResolution = new DX.Size2((int)NumericXRes.Value, (int)NumericYRes.Value);
+        ViewModel.DefaultResolution = new GorgonPoint((int)NumericXRes.Value, (int)NumericYRes.Value);
     }
 
     /// <summary>
@@ -146,8 +146,8 @@ internal partial class AnimationSettingsPanel
         CheckOnionSkin.Checked = dataContext.UseOnionSkinning;
         CheckAddTextureTrack.Checked = dataContext.AddTextureTrackForPrimarySprite;
         CheckUnsupported.Checked = dataContext.WarnUnsupportedTracks;
-        NumericXRes.Value = dataContext.DefaultResolution.Width;
-        NumericYRes.Value = dataContext.DefaultResolution.Height;
+        NumericXRes.Value = dataContext.DefaultResolution.X;
+        NumericYRes.Value = dataContext.DefaultResolution.Y;
     }
 
     /// <summary>Function to assign a data context to the view as a view model.</summary>

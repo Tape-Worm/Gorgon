@@ -30,9 +30,9 @@ using Gorgon.Editor.ImageAtlasTool.Properties;
 using Gorgon.Editor.Rendering;
 using Gorgon.Editor.UI;
 using Gorgon.Editor.UI.Views;
+using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Math;
-using DX = SharpDX;
 
 namespace Gorgon.Editor.ImageAtlasTool;
 
@@ -205,7 +205,7 @@ internal partial class FormAtlasGen
             return;
         }
 
-        ViewModel.MaxTextureSize = new DX.Size2((int)NumericTextureWidth.Value, ViewModel.MaxTextureSize.Height);
+        ViewModel.MaxTextureSize = new GorgonPoint((int)NumericTextureWidth.Value, ViewModel.MaxTextureSize.Y);
     }
 
     /// <summary>Handles the ValueChanged event of the NumericTextureHeight control.</summary>
@@ -218,7 +218,7 @@ internal partial class FormAtlasGen
             return;
         }
 
-        ViewModel.MaxTextureSize = new DX.Size2(ViewModel.MaxTextureSize.Width, (int)NumericTextureHeight.Value);
+        ViewModel.MaxTextureSize = new GorgonPoint(ViewModel.MaxTextureSize.X, (int)NumericTextureHeight.Value);
     }
 
     /// <summary>Handles the ValueChanged event of the NumericArrayIndex control.</summary>
@@ -335,8 +335,8 @@ internal partial class FormAtlasGen
                 }
                 break;
             case nameof(IImageAtlas.MaxTextureSize):
-                decimal w = ViewModel.MaxTextureSize.Width.Min((int)NumericTextureWidth.Maximum).Max((int)NumericTextureWidth.Minimum);
-                decimal h = ViewModel.MaxTextureSize.Height.Min((int)NumericTextureHeight.Maximum).Max((int)NumericTextureHeight.Minimum);
+                decimal w = ViewModel.MaxTextureSize.X.Min((int)NumericTextureWidth.Maximum).Max((int)NumericTextureWidth.Minimum);
+                decimal h = ViewModel.MaxTextureSize.Y.Min((int)NumericTextureHeight.Maximum).Max((int)NumericTextureHeight.Minimum);
 
                 if (NumericTextureWidth.Value != w)
                 {
@@ -402,8 +402,8 @@ internal partial class FormAtlasGen
         LabelSpriteCount.Text = string.Format(dataContext.LoadedImageCount == 0 ? Resources.GORIAG_TEXT_NO_IMAGES : Resources.GORIAG_TEXT_IMAGE_COUNT, dataContext.LoadedImageCount);
         TextOutputFolder.Text = dataContext.OutputPath;
         NumericPadding.Value = dataContext.Padding.Min((int)NumericPadding.Maximum).Max((int)NumericPadding.Minimum);
-        NumericTextureWidth.Value = dataContext.MaxTextureSize.Width.Min((int)NumericTextureWidth.Maximum).Max((int)NumericTextureWidth.Minimum);
-        NumericTextureHeight.Value = dataContext.MaxTextureSize.Height.Min((int)NumericTextureHeight.Maximum).Max((int)NumericTextureHeight.Minimum);
+        NumericTextureWidth.Value = dataContext.MaxTextureSize.X.Min((int)NumericTextureWidth.Maximum).Max((int)NumericTextureWidth.Minimum);
+        NumericTextureHeight.Value = dataContext.MaxTextureSize.Y.Min((int)NumericTextureHeight.Maximum).Max((int)NumericTextureHeight.Minimum);
         NumericArrayIndex.Value = dataContext.MaxArrayCount.Min((int)NumericArrayIndex.Maximum).Max((int)NumericArrayIndex.Minimum);
         TextBaseTextureName.Text = dataContext.BaseTextureName;
         CheckCreateSprites.Checked = dataContext.GenerateSprites;

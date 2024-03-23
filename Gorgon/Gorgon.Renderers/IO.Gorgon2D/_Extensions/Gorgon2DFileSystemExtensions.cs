@@ -26,6 +26,7 @@
 
 using Gorgon.Animation;
 using Gorgon.Core;
+using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Graphics.Imaging.Codecs;
 using Gorgon.IO.Properties;
@@ -699,7 +700,7 @@ public static class Gorgon2DFileSystemExtensions
 
                     if ((needsCoordinateFix) && (textureKey.Value is not null))
                     {
-                        textureKey.TextureCoordinates = new DX.RectangleF(textureKey.TextureCoordinates.X / textureKey.Value.Width,
+                        textureKey.TextureCoordinates = new GorgonRectangleF(textureKey.TextureCoordinates.X / textureKey.Value.Width,
                                                                           textureKey.TextureCoordinates.Y / textureKey.Value.Height,
                                                                           textureKey.TextureCoordinates.Width / textureKey.Value.Width,
                                                                           textureKey.TextureCoordinates.Height / textureKey.Value.Height);

@@ -24,8 +24,8 @@
 // 
 
 
+using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
-using DX = SharpDX;
 
 namespace Gorgon.Editor.Services;
 
@@ -37,7 +37,7 @@ public class RectHandle
     /// <summary>
     /// Property to return the boundaries for the handle.
     /// </summary>
-    public DX.RectangleF HandleBounds
+    public GorgonRectangleF HandleBounds
     {
         get;
         set;

@@ -112,7 +112,7 @@ internal class AddTrack
     protected override void OnUnload()
     {
         _selectedTracks.Clear();
-        base.Unload();
+        Unload();
     }
 
 

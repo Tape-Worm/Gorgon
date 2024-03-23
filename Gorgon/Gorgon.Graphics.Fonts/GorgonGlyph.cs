@@ -29,7 +29,6 @@ using Gorgon.Core;
 using Gorgon.Graphics.Core;
 using Gorgon.Graphics.Fonts.Properties;
 using Gorgon.Math;
-using DX = SharpDX;
 
 namespace Gorgon.Graphics.Fonts;
 
@@ -65,7 +64,7 @@ public sealed class GorgonGlyph
     /// <summary>
     /// Property to return the coordinates, in pixel space, of the glyph.
     /// </summary>
-    public DX.Rectangle GlyphCoordinates
+    public GorgonRectangle GlyphCoordinates
     {
         get;
         private set;
@@ -77,7 +76,7 @@ public sealed class GorgonGlyph
     /// <remarks>
     /// This property will only be assigned if a <see cref="GorgonFont"/> has an outline.
     /// </remarks>
-    public DX.Rectangle OutlineCoordinates
+    public GorgonRectangle OutlineCoordinates
     {
         get;
         private set;
@@ -86,7 +85,7 @@ public sealed class GorgonGlyph
     /// <summary>
     /// Property to return the texture coordinates for the glyph.
     /// </summary>
-    public DX.RectangleF TextureCoordinates
+    public GorgonRectangleF TextureCoordinates
     {
         get;
         private set;
@@ -98,7 +97,7 @@ public sealed class GorgonGlyph
     /// <remarks>
     /// This property will only be assigned if a <see cref="GorgonFont"/> has an outline.
     /// </remarks>
-    public DX.RectangleF OutlineTextureCoordinates
+    public GorgonRectangleF OutlineTextureCoordinates
     {
         get;
         private set;
@@ -183,7 +182,7 @@ public sealed class GorgonGlyph
     /// If the <see cref="GorgonFont"/> for this glyph does not have an outline, then the <paramref name="outlineCoordinates"/> should be set to empty.
     /// </para>
     /// </remarks>
-    public void UpdateTexture(GorgonTexture2D texture, DX.Rectangle glyphCoordinates, DX.Rectangle outlineCoordinates, int textureArrayIndex)
+    public void UpdateTexture(GorgonTexture2D texture, GorgonRectangle glyphCoordinates, GorgonRectangle outlineCoordinates, int textureArrayIndex)
     {
         if (texture is null)
         {

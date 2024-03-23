@@ -24,10 +24,11 @@
 // 
 
 
+using Gorgon.Json;
 using Gorgon.Animation;
 using Gorgon.Graphics.Core;
 using Newtonsoft.Json;
-using DX = SharpDX;
+using Gorgon.Graphics;
 
 namespace Gorgon.IO;
 
@@ -45,7 +46,7 @@ class JsonTextureKeyConverter(GorgonGraphics graphics, IEnumerable<GorgonTexture
     // The texture converter to serialize the texture.
     private readonly JsonTexture2DConverter _textureConverter = new(graphics, null);
     // The texture converter to serialize a rectangle.
-    private readonly JsonRectangleFConverter _rectConverter = new();
+    private readonly GorgonRectangleFJsonConverter _rectConverter = new();
     // The texture overrides.
     private readonly IEnumerable<GorgonTexture2DView> _overrides = overrides;
 
@@ -84,7 +85,7 @@ class JsonTextureKeyConverter(GorgonGraphics graphics, IEnumerable<GorgonTexture
     {
         float time = 0;
         int arrayIndex = 0;
-        DX.RectangleF uv = DX.RectangleF.Empty;
+        GorgonRectangleF uv = GorgonRectangleF.Empty;
         GorgonTexture2DView texture = null;
         string textureName = string.Empty;
 
@@ -107,7 +108,7 @@ class JsonTextureKeyConverter(GorgonGraphics graphics, IEnumerable<GorgonTexture
                     break;
                 case "UV":
                     reader.Read();
-                    uv = _rectConverter.ReadJson(reader, typeof(DX.RectangleF), DX.RectangleF.Empty, false, serializer);
+                    uv = _rectConverter.ReadJson(reader, typeof(GorgonRectangleF), GorgonRectangleF.Empty, false, serializer) ?? GorgonRectangleF.Empty;
                     break;
                 case "TEXTURE":
                     reader.Read();

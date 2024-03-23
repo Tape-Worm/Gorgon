@@ -26,7 +26,7 @@
 
 using Gorgon.Editor.AnimationEditor.Properties;
 using Gorgon.Editor.UI;
-using DX = SharpDX;
+using Gorgon.Graphics;
 
 namespace Gorgon.Editor.AnimationEditor;
 
@@ -36,11 +36,8 @@ namespace Gorgon.Editor.AnimationEditor;
 internal class Settings
     : SettingsCategoryBase<SettingsParameters>, ISettings
 {
-
     // The plug in settings.
     private AnimationEditorSettings _settings;
-
-
 
     /// <summary>
     /// Property to set or return whether a warning will be shown when an animation with unsupported tracks is loaded.
@@ -64,7 +61,7 @@ internal class Settings
     /// <summary>
     /// Property to set or return the default screen resolution for the animation.
     /// </summary>
-    public DX.Size2 DefaultResolution
+    public GorgonPoint DefaultResolution
     {
         get => _settings.DefaultResolution;
         set

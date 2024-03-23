@@ -34,7 +34,6 @@ using Gorgon.Renderers.Cameras;
 using Gorgon.Renderers.Lights;
 using Gorgon.Timing;
 using Gorgon.UI;
-using DX = SharpDX;
 
 namespace Gorgon.Examples;
 
@@ -99,7 +98,7 @@ static class Program
         if (_torchFrameTime.Milliseconds > 175)
         {
             _torchSprite.TextureRegion =
-                _torchTexture.Texture.ToTexel(new DX.Rectangle(_torchSprite.TextureRegion.Left == 0 ? 56 : 0, 0, 55, _torchTexture.Height));
+                _torchTexture.Texture.ToTexel(new GorgonRectangle(_torchSprite.TextureRegion.Left == 0 ? 56 : 0, 0, 55, _torchTexture.Height));
             _torchFrameTime.Reset();
 
             _lightValue = _torchSprite.TextureRegion.Left == 0 ? _lightMinMax.Maximum : _lightMinMax.Minimum;
@@ -187,7 +186,7 @@ static class Program
     {
         GorgonExample.ResourceBaseDirectory = new DirectoryInfo(ExampleConfig.Default.ResourceLocation);
 
-        FormMain window = GorgonExample.Initialize(new DX.Size2(ExampleConfig.Default.Resolution.Width, ExampleConfig.Default.Resolution.Height), "Lights");
+        FormMain window = GorgonExample.Initialize(new GorgonPoint(ExampleConfig.Default.Resolution.X, ExampleConfig.Default.Resolution.Y), "Lights");
 
         try
         {
@@ -204,8 +203,8 @@ static class Program
 
             _screen = new GorgonSwapChain(_graphics,
                                           window,
-                                          new GorgonSwapChainInfo(ExampleConfig.Default.Resolution.Width,
-                                                                       ExampleConfig.Default.Resolution.Height,
+                                          new GorgonSwapChainInfo(ExampleConfig.Default.Resolution.X,
+                                                                       ExampleConfig.Default.Resolution.Y,
                                                                        BufferFormat.R8G8B8A8_UNorm)
                                           {
                                               Name = "Gorgon2D Effects Example Swap Chain"
@@ -213,7 +212,7 @@ static class Program
 
             _screen.SwapChainResized += Screen_SwapChainResized;
 
-            _camera = new GorgonOrthoCamera(_graphics, new DX.Size2F(_screen.Width, _screen.Height))
+            _camera = new GorgonOrthoCamera(_graphics, new Vector2(_screen.Width, _screen.Height))
             {
                 Anchor = new Vector2(0.5f, 0.5f),
                 Position = new Vector3(0, 0, -70),
@@ -252,16 +251,16 @@ static class Program
             _logoSprite = new GorgonSprite
             {
                 Texture = _backgroundLogoTexture,
-                Bounds = new DX.RectangleF(0, 0, _backgroundLogoTexture.Width, _backgroundLogoTexture.Height),
-                TextureRegion = new DX.RectangleF(0, 0, 1, 1),
+                Bounds = new GorgonRectangleF(0, 0, _backgroundLogoTexture.Width, _backgroundLogoTexture.Height),
+                TextureRegion = new GorgonRectangleF(0, 0, 1, 1),
                 Anchor = new Vector2(0.5f, 0.5f)
             };
 
             _torchSprite = new GorgonSprite
             {
                 Texture = _torchTexture,
-                Bounds = new DX.RectangleF(0, 0, 55, _torchTexture.Height),
-                TextureRegion = _torchTexture.Texture.ToTexel(new DX.Rectangle(0, 0, 55, _torchTexture.Height)),
+                Bounds = new GorgonRectangleF(0, 0, 55, _torchTexture.Height),
+                TextureRegion = _torchTexture.Texture.ToTexel(new GorgonRectangle(0, 0, 55, _torchTexture.Height)),
             };
 
             // This is the light we'll control with the mouse.
@@ -308,8 +307,8 @@ static class Program
     /// <param name="e">The <see cref="SwapChainResizedEventArgs" /> instance containing the event data.</param>
     private static void Screen_SwapChainResized(object sender, SwapChainResizedEventArgs e)
     {
-        _gbuffer.Resize(e.Size.Width, e.Size.Height);
-        _camera.ViewDimensions = e.Size.ToSize2F();
+        _gbuffer.Resize(e.Size.X, e.Size.Y);
+        _camera.ViewDimensions = e.Size;
     }
 
     /// <summary>
@@ -320,7 +319,7 @@ static class Program
     private static void Window_KeyDown(object sender, KeyEventArgs e)
     {
         Control window = (Control)sender;
-        System.Drawing.Point cursor = window.PointToClient(Cursor.Position);
+        Point cursor = window.PointToClient(Cursor.Position);
 
         switch (e.KeyCode)
         {

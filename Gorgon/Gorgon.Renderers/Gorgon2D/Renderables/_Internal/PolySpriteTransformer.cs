@@ -25,8 +25,8 @@
 
 
 using System.Numerics;
+using Gorgon.Graphics;
 using Gorgon.Math;
-using DX = SharpDX;
 
 namespace Gorgon.Renderers;
 
@@ -47,7 +47,7 @@ internal class PolySpriteTransformer
     /// <param name="depth">The depth value for the renderable.</param>
     /// <param name="worldMatrix">The world matrix.</param>
     private static void TransformVertices(ref Vector2 anchor,
-                                          ref DX.RectangleF bounds,
+                                          ref GorgonRectangleF bounds,
                                           ref Vector2 scale,
                                           bool hasRotation,
                                           float angleSin,

@@ -30,7 +30,6 @@ using Gorgon.Editor.Services;
 using Gorgon.Graphics;
 using Gorgon.Renderers;
 using Gorgon.Renderers.Cameras;
-using DX = SharpDX;
 
 namespace Gorgon.Editor.AnimationEditor;
 
@@ -246,7 +245,7 @@ internal class VertexEditService
             return;
         }
 
-        DX.RectangleF handleBounds = _handles[vertexIndex].HandleBounds;
+        GorgonRectangleF handleBounds = _handles[vertexIndex].HandleBounds;
 
         if ((handleBounds.IsEmpty) || (!handleBounds.Contains(_mousePos.X, _mousePos.Y)))
         {
@@ -291,10 +290,10 @@ internal class VertexEditService
             _screenVertices[3] = new Vector2(_vertices[3].X, _vertices[3].Y);
         }
 
-        _handles[0].HandleBounds = new DX.RectangleF(_screenVertices[0].X - 8, _screenVertices[0].Y - 8, 8, 8);
-        _handles[1].HandleBounds = new DX.RectangleF(_screenVertices[1].X, _screenVertices[1].Y - 8, 8, 8);
-        _handles[2].HandleBounds = new DX.RectangleF(_screenVertices[2].X, _screenVertices[2].Y, 8, 8);
-        _handles[3].HandleBounds = new DX.RectangleF(_screenVertices[3].X - 8, _screenVertices[3].Y, 8, 8);
+        _handles[0].HandleBounds = new GorgonRectangleF(_screenVertices[0].X - 8, _screenVertices[0].Y - 8, 8, 8);
+        _handles[1].HandleBounds = new GorgonRectangleF(_screenVertices[1].X, _screenVertices[1].Y - 8, 8, 8);
+        _handles[2].HandleBounds = new GorgonRectangleF(_screenVertices[2].X, _screenVertices[2].Y, 8, 8);
+        _handles[3].HandleBounds = new GorgonRectangleF(_screenVertices[3].X - 8, _screenVertices[3].Y, 8, 8);
 
         GetActiveHandle();
     }
@@ -491,7 +490,7 @@ internal class VertexEditService
 
         if (vertexIndex != -1)
         {
-            DX.RectangleF handleBounds = _handles[vertexIndex].HandleBounds;
+            GorgonRectangleF handleBounds = _handles[vertexIndex].HandleBounds;
 
             if (handleBounds.IsEmpty)
             {
@@ -505,7 +504,7 @@ internal class VertexEditService
             }
 
             _renderer.DrawRectangle(handleBounds, GorgonColors.Black);
-            _renderer.DrawRectangle(new DX.RectangleF(handleBounds.X + 1, handleBounds.Y + 1, handleBounds.Width - 2, handleBounds.Height - 2), GorgonColors.White);
+            _renderer.DrawRectangle(new GorgonRectangleF(handleBounds.X + 1, handleBounds.Y + 1, handleBounds.Width - 2, handleBounds.Height - 2), GorgonColors.White);
         }
     }
 

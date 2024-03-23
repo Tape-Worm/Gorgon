@@ -68,12 +68,13 @@ public class GorgonColorComponentsJsonConverter
     /// <returns>The object value.</returns>
     public override GorgonColor? ReadJson(JsonReader reader, Type objectType, GorgonColor? existingValue, bool hasExistingValue, JsonSerializer serializer)
     {
-        if (reader.TokenType == JsonToken.Null)
+        if ((reader.TokenType == JsonToken.Null)
+            || (!reader.Read()))
         {
             return hasExistingValue ? existingValue : null;
         }
 
-        if (reader.TokenType != JsonToken.StartObject)
+        if (reader.TokenType != JsonToken.PropertyName)
         {
             throw new GorgonException(GorgonResult.CannotRead);
         }
@@ -83,14 +84,14 @@ public class GorgonColorComponentsJsonConverter
         float b = 0;
         float a = 0;
 
-        while ((reader.Read()) && (reader.TokenType == JsonToken.PropertyName))
+        do
         {
             string propName = reader.Value?.ToString() ?? string.Empty;
 
             switch (propName)
             {
                 case "r":
-                    r = (reader.ReadAsInt32() ?? 0) / 255.0f;                    
+                    r = (reader.ReadAsInt32() ?? 0) / 255.0f;
                     break;
                 case "g":
                     g = (reader.ReadAsInt32() ?? 0) / 255.0f;
@@ -102,7 +103,7 @@ public class GorgonColorComponentsJsonConverter
                     a = (reader.ReadAsInt32() ?? 0) / 255.0f;
                     break;
             }
-        }
+        } while ((reader.Read()) && (reader.TokenType == JsonToken.PropertyName));
 
         return new GorgonColor(r, g, b, a);
     }

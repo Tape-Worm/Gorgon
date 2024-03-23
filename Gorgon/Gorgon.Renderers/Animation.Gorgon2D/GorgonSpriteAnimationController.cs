@@ -29,7 +29,6 @@ using Gorgon.Animation.Properties;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Renderers;
-using DX = SharpDX;
 
 namespace Gorgon.Animation;
 
@@ -276,7 +275,7 @@ public class GorgonSpriteAnimationController
 
         if (track.ID == SizeTrack.ID)
         {
-            animObject.Size = new DX.Size2F(value.X, value.Y);
+            animObject.Size = new Vector2(value.X, value.Y);
             return;
         }
 
@@ -288,7 +287,7 @@ public class GorgonSpriteAnimationController
 
         if (track.ID == ScaledSizeTrack.ID)
         {
-            animObject.ScaledSize = new DX.Size2F(value.X, value.Y);
+            animObject.ScaledSize = new Vector2(value.X, value.Y);
             return;
         }
 
@@ -370,7 +369,7 @@ public class GorgonSpriteAnimationController
     /// <param name="track">The track currently being processed.</param>
     /// <param name="animObject">The object to update.</param>
     /// <param name="value">The value to apply.</param>
-    protected override void OnRectangleUpdate(GorgonTrackRegistration track, GorgonSprite animObject, DX.RectangleF value)
+    protected override void OnRectangleUpdate(GorgonTrackRegistration track, GorgonSprite animObject, GorgonRectangleF value)
     {
         if (track.ID == BoundsTrack.ID)
         {
@@ -430,7 +429,7 @@ public class GorgonSpriteAnimationController
     /// <param name="texture">The texture to switch to.</param>
     /// <param name="textureCoordinates">The new texture coordinates to apply.</param>
     /// <param name="textureArrayIndex">The texture array index.</param>
-    protected override void OnTexture2DUpdate(GorgonTrackRegistration track, GorgonSprite animObject, GorgonTexture2DView texture, DX.RectangleF textureCoordinates, int textureArrayIndex)
+    protected override void OnTexture2DUpdate(GorgonTrackRegistration track, GorgonSprite animObject, GorgonTexture2DView texture, GorgonRectangleF textureCoordinates, int textureArrayIndex)
     {
         if (track.ID != TextureTrack.ID)
         {

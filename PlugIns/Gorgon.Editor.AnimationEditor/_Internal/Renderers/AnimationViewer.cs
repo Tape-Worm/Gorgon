@@ -33,7 +33,6 @@ using Gorgon.Editor.UI;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Renderers;
-using DX = SharpDX;
 
 namespace Gorgon.Editor.AnimationEditor;
 
@@ -137,11 +136,11 @@ internal abstract class AnimationViewer(string name, Gorgon2D renderer, GorgonSw
     {
         if (DataContext.BackgroundImage is null)
         {
-            RenderRegion = new DX.RectangleF(0, 0, DataContext.Settings.DefaultResolution.Width, DataContext.Settings.DefaultResolution.Height);
+            RenderRegion = new GorgonRectangleF(0, 0, DataContext.Settings.DefaultResolution.X, DataContext.Settings.DefaultResolution.Y);
         }
         else
         {
-            RenderRegion = new DX.RectangleF(0, 0, DataContext.BackgroundImage.Width, DataContext.BackgroundImage.Height);
+            RenderRegion = new GorgonRectangleF(0, 0, DataContext.BackgroundImage.Width, DataContext.BackgroundImage.Height);
         }
 
         CreateRtv();
@@ -151,7 +150,7 @@ internal abstract class AnimationViewer(string name, Gorgon2D renderer, GorgonSw
     /// <remarks>Developers can override this method to render a custom background.</remarks>
     private void DrawBackgroundImage()
     {
-        DX.RectangleF region = new(RenderRegion.Width * -Camera.Anchor.X,
+        GorgonRectangleF region = new(RenderRegion.Width * -Camera.Anchor.X,
                                        RenderRegion.Height * -Camera.Anchor.Y,
                                        RenderRegion.Width,
                                        RenderRegion.Height);
@@ -160,7 +159,7 @@ internal abstract class AnimationViewer(string name, Gorgon2D renderer, GorgonSw
 
         if (DataContext?.BackgroundImage is not null)
         {
-            Renderer.DrawFilledRectangle(region, GorgonColors.White, DataContext.BackgroundImage, new DX.RectangleF(0, 0, 1, 1));
+            Renderer.DrawFilledRectangle(region, GorgonColors.White, DataContext.BackgroundImage, new GorgonRectangleF(0, 0, 1, 1));
         }
     }
 
@@ -434,10 +433,10 @@ internal abstract class AnimationViewer(string name, Gorgon2D renderer, GorgonSw
     /// <remarks>Developers can override this method to render a custom background.</remarks>
     protected sealed override void OnRenderBackground()
     {
-        DX.RectangleF textureSize = new(0, 0, (float)ClientSize.Width / BackgroundPattern.Width, (float)ClientSize.Height / BackgroundPattern.Height);
+        GorgonRectangleF textureSize = new(0, 0, (float)ClientSize.X / BackgroundPattern.Width, (float)ClientSize.Y / BackgroundPattern.Height);
 
         Renderer.Begin();
-        Renderer.DrawFilledRectangle(new DX.RectangleF(0, 0, ClientSize.Width, ClientSize.Height),
+        Renderer.DrawFilledRectangle(new GorgonRectangleF(0, 0, ClientSize.X, ClientSize.Y),
                                                        GorgonColors.White, BackgroundPattern, textureSize);
         Renderer.End();
     }
@@ -450,8 +449,8 @@ internal abstract class AnimationViewer(string name, Gorgon2D renderer, GorgonSw
         Vector2 spriteAnchor = ToClient(new Vector2(Sprite.Position.X - RenderRegion.Width * 0.5f,
                                                           Sprite.Position.Y - RenderRegion.Height * 0.5f));
 
-        Renderer.DrawEllipse(new DX.RectangleF(spriteAnchor.X - 4, spriteAnchor.Y - 4, 8, 8), GorgonColors.Black);
-        Renderer.DrawEllipse(new DX.RectangleF(spriteAnchor.X - 3, spriteAnchor.Y - 3, 6, 6), GorgonColors.White);
+        Renderer.DrawEllipse(new GorgonRectangleF(spriteAnchor.X - 4, spriteAnchor.Y - 4, 8, 8), GorgonColors.Black);
+        Renderer.DrawEllipse(new GorgonRectangleF(spriteAnchor.X - 3, spriteAnchor.Y - 3, 6, 6), GorgonColors.White);
     }
 
     /// <summary>
@@ -530,10 +529,10 @@ internal abstract class AnimationViewer(string name, Gorgon2D renderer, GorgonSw
         Renderer.End();
 
         Renderer.Begin(Gorgon2DBatchState.PremultipliedBlendAlphaOverwrite, Camera);
-        Renderer.DrawFilledRectangle(new DX.RectangleF(RenderRegion.Width * -Camera.Anchor.X, RenderRegion.Height * -Camera.Anchor.Y, _main.Width, _main.Height),
+        Renderer.DrawFilledRectangle(new GorgonRectangleF(RenderRegion.Width * -Camera.Anchor.X, RenderRegion.Height * -Camera.Anchor.Y, _main.Width, _main.Height),
                                      GorgonColors.White,
                                      _main,
-                                     new DX.RectangleF(0, 0, 1, 1),
+                                     new GorgonRectangleF(0, 0, 1, 1),
                                      textureSampler: (DataContext.PrimarySprite is null ? GorgonSamplerState.PointFiltering : DataContext.PrimarySprite.TextureSampler));
         Renderer.End();
         DrawGizmos();
@@ -621,9 +620,9 @@ internal abstract class AnimationViewer(string name, Gorgon2D renderer, GorgonSw
             return;
         }
 
-        DX.RectangleF spriteRegion = Renderer.MeasureSprite(sprite);
-        spriteRegion.Inflate(spriteRegion.Width * 0.5f, spriteRegion.Height * 0.5f);
-        DX.RectangleF originalRegion = spriteRegion;
+        GorgonRectangleF spriteRegion = Renderer.MeasureSprite(sprite);
+        spriteRegion = GorgonRectangleF.Expand(spriteRegion, spriteRegion.Width * 0.5f);
+        GorgonRectangleF originalRegion = spriteRegion;
 
         if (spriteRegion.Width > spriteRegion.Height)
         {

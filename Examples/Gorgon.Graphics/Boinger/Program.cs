@@ -37,7 +37,6 @@ using Gorgon.Renderers.Cameras;
 using Gorgon.Renderers.Geometry;
 using Gorgon.Timing;
 using Gorgon.UI;
-using DX = SharpDX;
 
 namespace Gorgon.Examples;
 
@@ -333,7 +332,7 @@ internal static class Program
         int selectedDeviceIndex = 0;
         IGorgonVideoAdapterInfo selectedDevice = null;
 
-        _selectedVideoMode = new GorgonVideoMode(ExampleConfig.Default.Resolution.Width, ExampleConfig.Default.Resolution.Height, BufferFormat.R8G8B8A8_UNorm);
+        _selectedVideoMode = new GorgonVideoMode(ExampleConfig.Default.Resolution.X, ExampleConfig.Default.Resolution.Y, BufferFormat.R8G8B8A8_UNorm);
 
         while (selectedDeviceIndex < deviceList.Count)
         {
@@ -401,8 +400,8 @@ internal static class Program
         // We can modify the resolution in the config file for the application, but like other Gorgon examples, the default is 1280x800.
         _swap = new GorgonSwapChain(_graphics,
                                     _mainForm,
-                                    new GorgonSwapChainInfo(ExampleConfig.Default.Resolution.Width,
-                                                                 ExampleConfig.Default.Resolution.Height,
+                                    new GorgonSwapChainInfo(ExampleConfig.Default.Resolution.X,
+                                                                 ExampleConfig.Default.Resolution.Y,
                                                                  BufferFormat.R8G8B8A8_UNorm)
                                     {
                                         Name = "Main"
@@ -419,7 +418,7 @@ internal static class Program
             IGorgonVideoOutputInfo output = _graphics.VideoAdapter.Outputs[currentScreen.DeviceName];
 
             // If we've asked for full screen mode, then locate the correct video mode and set us up.
-            _selectedVideoMode = new GorgonVideoMode(ExampleConfig.Default.Resolution.Width, ExampleConfig.Default.Resolution.Height, BufferFormat.R8G8B8A8_UNorm);
+            _selectedVideoMode = new GorgonVideoMode(ExampleConfig.Default.Resolution.X, ExampleConfig.Default.Resolution.Y, BufferFormat.R8G8B8A8_UNorm);
             _swap.EnterFullScreen(in _selectedVideoMode, output);
         }
 
@@ -517,7 +516,7 @@ internal static class Program
                                    .Build();
 
         // Set up our camera.
-        _camera = new GorgonPerspectiveCamera(_graphics, new DX.Size2F(_swap.Width, _swap.Height), 500.0f, 0.125f)
+        _camera = new GorgonPerspectiveCamera(_graphics, new Vector2(_swap.Width, _swap.Height), 500.0f, 0.125f)
         {
             Fov = 75,
             Position = new Vector3(0, 0, -2.2f)
@@ -532,7 +531,7 @@ internal static class Program
         try
         {
             // Create our form.
-            _mainForm = GorgonExample.Initialize(new DX.Size2(ExampleConfig.Default.Resolution.Width, ExampleConfig.Default.Resolution.Height), "Boinger");
+            _mainForm = GorgonExample.Initialize(new GorgonPoint(ExampleConfig.Default.Resolution.X, ExampleConfig.Default.Resolution.Y), "Boinger");
 
             // Add a keybinding to switch to full screen or windowed.
             _mainForm.KeyDown += MainForm_KeyDown;
@@ -544,12 +543,12 @@ internal static class Program
             // Here's where we create the 2 planes for our rear wall and floor.  We set the texture size to texel units because that's how the video card expects 
             // them.  However, it's a little hard to eyeball 0.67798223f by looking at the texture image display, so we use the ToTexel function to determine our 
             // texel size.
-            DX.Size2F textureSize = _texture.ToTexel(new DX.Size2(511, 511));
+            Vector2 textureSize = _texture.ToTexel(new GorgonPoint(511, 511));
 
             // And here we set up the planes with a material, and initial positioning.
             _planes =
                       [
-                          new Plane(_graphics, _inputLayout, new Vector2(3.5f), new DX.RectangleF(0, 0, textureSize.Width, textureSize.Height))
+                          new Plane(_graphics, _inputLayout, new Vector2(3.5f), new GorgonRectangleF(0, 0, textureSize.X, textureSize.Y))
                           {
                               Material = new Material
                                          {
@@ -557,7 +556,7 @@ internal static class Program
                                          },
                               Position = new Vector3(0, 0, 3.0f)
                           },
-                          new Plane(_graphics, _inputLayout, new Vector2(3.5f), new DX.RectangleF(0, 0, textureSize.Width, textureSize.Height))
+                          new Plane(_graphics, _inputLayout, new Vector2(3.5f), new GorgonRectangleF(0, 0, textureSize.X, textureSize.Y))
                           {
                               Material = new Material
                                          {
@@ -570,9 +569,9 @@ internal static class Program
 
             // Create our sphere.
             // Again, here we're using texels to align the texture coordinates to the other image packed into the texture (atlasing).  
-            Vector2 textureOffset = _texture.ToTexel(new Vector2(516, 0));
+            Vector2 textureOffset = _texture.ToTexel(new GorgonPoint(516, 0));
             // This is to scale our texture coordinates because the actual image is much smaller (255x255) than the full texture (1024x512).
-            textureSize = _texture.ToTexel(new DX.Size2(255, 255));
+            textureSize = _texture.ToTexel(new GorgonPoint(255, 255));
             // Give the sphere a place to live.
             _sphere = new Sphere(_graphics, _inputLayout, 1.0f, textureOffset, textureSize)
             {
@@ -647,8 +646,8 @@ internal static class Program
         // This is also the place to re-apply any custom viewports, or scissor rectangles.
 
         // Reset our projection matrix to match our new size.
-        _camera.ViewDimensions = new DX.Size2F(e.Size.Width, e.Size.Height);
-        BuildDepthBuffer(e.Size.Width, e.Size.Height);
+        _camera.ViewDimensions = new Vector2(e.Size.X, e.Size.Y);
+        BuildDepthBuffer(e.Size.X, e.Size.Y);
         _graphics.SetDepthStencil(_depthBuffer);
     }
 

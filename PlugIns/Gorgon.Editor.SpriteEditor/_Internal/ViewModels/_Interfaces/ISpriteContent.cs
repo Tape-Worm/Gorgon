@@ -28,7 +28,6 @@ using System.Numerics;
 using Gorgon.Editor.UI;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
-using DX = SharpDX;
 
 namespace Gorgon.Editor.SpriteEditor;
 
@@ -106,7 +105,7 @@ internal interface ISpriteContent
     /// <summary>
     /// Property to set or return the texture coordinates used by the sprite.
     /// </summary>
-    DX.RectangleF TextureCoordinates
+    GorgonRectangleF TextureCoordinates
     {
         get;
     }
@@ -114,7 +113,7 @@ internal interface ISpriteContent
     /// <summary>
     /// Property to return the size of the sprite.
     /// </summary>
-    DX.Size2F Size
+    Vector2 Size
     {
         get;
     }

@@ -27,7 +27,6 @@
 using Gorgon.Core;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
-using DX = SharpDX;
 
 namespace Gorgon.Animation;
 
@@ -115,7 +114,7 @@ internal class Texture2DViewTrack
             return result;
         }
 
-        TrackKeyProcessor.TryUpdateTexture2D(this, timeIndex, out GorgonTexture2DView view, out DX.RectangleF texCoords, out int arrayIndex);
+        TrackKeyProcessor.TryUpdateTexture2D(this, timeIndex, out GorgonTexture2DView view, out GorgonRectangleF texCoords, out int arrayIndex);
 
         return new GorgonKeyTexture2D(timeIndex, view, texCoords, arrayIndex);
     }

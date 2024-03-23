@@ -27,8 +27,8 @@
 using System.ComponentModel;
 using Gorgon.Editor.Tools;
 using Gorgon.Editor.UI;
+using Gorgon.Graphics;
 using Gorgon.Renderers.Services;
-using DX = SharpDX;
 
 namespace Gorgon.Editor.TextureAtlasTool;
 
@@ -61,7 +61,7 @@ internal interface ITextureAtlas
     }
 
     /// <summary>Property to set or return the maximum size for the atlas texture.</summary>
-    DX.Size2 MaxTextureSize
+    GorgonPoint MaxTextureSize
     {
         get;
         set;

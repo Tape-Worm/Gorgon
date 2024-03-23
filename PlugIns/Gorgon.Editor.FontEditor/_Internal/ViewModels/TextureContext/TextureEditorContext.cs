@@ -3,10 +3,10 @@ using Gorgon.Diagnostics;
 using Gorgon.Editor.FontEditor.Properties;
 using Gorgon.Editor.Services;
 using Gorgon.Editor.UI;
+using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Graphics.Fonts;
 using Gorgon.Math;
-using DX = SharpDX;
 
 namespace Gorgon.Editor.FontEditor;
 
@@ -220,7 +220,7 @@ internal class TextureEditorContext
     /// <summary>
     /// Property to return the size of the font textures.
     /// </summary>
-    public DX.Size2 TextureSize => new(_fontService?.WorkerFont?.TextureWidth ?? 0, _fontService?.WorkerFont?.TextureHeight ?? 0);
+    public GorgonPoint TextureSize => new(_fontService?.WorkerFont?.TextureWidth ?? 0, _fontService?.WorkerFont?.TextureHeight ?? 0);
 
     /// <summary>
     /// Property to return the padding around the glyphs on the textures, in pixels.

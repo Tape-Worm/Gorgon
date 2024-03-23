@@ -25,9 +25,9 @@
 
 
 using Gorgon.Editor.UI;
+using Gorgon.Graphics;
 using Gorgon.Graphics.Imaging;
 using Gorgon.UI;
-using DX = SharpDX;
 
 namespace Gorgon.Editor.ImageEditor.ViewModels;
 
@@ -43,7 +43,7 @@ internal class CropResizeSettings
     // The imported image.
     private IGorgonImage _importImage;
     // The size of the target image.
-    private DX.Size2 _targetImageSize;
+    private GorgonPoint _targetImageSize;
     // Flag to indicate which modes are allowed.
     private CropResizeMode _allowedModes = CropResizeMode.Crop | CropResizeMode.Resize;
     // Flag to indicate that resizing is allowed.
@@ -157,7 +157,7 @@ internal class CropResizeSettings
     }
 
     /// <summary>Property to set or return the width/height of the target image.</summary>
-    public DX.Size2 TargetImageSize
+    public GorgonPoint TargetImageSize
     {
         get => _targetImageSize;
         set

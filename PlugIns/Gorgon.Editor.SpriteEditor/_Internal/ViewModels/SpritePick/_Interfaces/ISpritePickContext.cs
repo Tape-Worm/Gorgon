@@ -24,9 +24,9 @@
 // 
 
 
-using Gorgon.Editor.UI;
+using Gorgon.Graphics;
 using Gorgon.Graphics.Imaging;
-using DX = SharpDX;
+using Gorgon.Editor.UI;
 
 namespace Gorgon.Editor.SpriteEditor;
 
@@ -39,7 +39,7 @@ internal interface ISpritePickContext
     /// <summary>
     /// Property to set or return the rectangle representing the sprite.
     /// </summary>
-    DX.RectangleF SpriteRectangle
+    GorgonRectangleF SpriteRectangle
     {
         get;
         set;

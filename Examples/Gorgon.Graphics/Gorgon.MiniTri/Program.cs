@@ -30,7 +30,6 @@ using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Renderers.Cameras;
 using Gorgon.UI;
-using DX = SharpDX;
 
 namespace Gorgon.Examples;
 
@@ -154,7 +153,7 @@ internal static class Program
         // Note that we depth a depth range from 0.125f up to 1000.0f.  This provides a near and far plane for clipping.  
         // These clipping values must have the world transformed vertex data inside of it or else it will not render. Note that the near/far plane is not a 
         // linear range and Z accuracy can get worse the further from the near plane that you get (particularly with depth buffers).
-        GorgonPerspectiveCamera camera = new(_graphics, new DX.Size2F(_swap.Width, _swap.Height), 0.125f, 1000.0f)
+        GorgonPerspectiveCamera camera = new(_graphics, new Vector2(_swap.Width, _swap.Height), 0.125f, 1000.0f)
         {
             Fov = 65.0f
         };
@@ -172,7 +171,7 @@ internal static class Program
     private static FormMain Initialize()
     {
         // Create our form and center on the primary monitor.
-        FormMain window = GorgonExample.Initialize(new DX.Size2(1280, 800), "Gorgon MiniTri");
+        FormMain window = GorgonExample.Initialize(new GorgonPoint(1280, 800), "Gorgon MiniTri");
 
         try
         {

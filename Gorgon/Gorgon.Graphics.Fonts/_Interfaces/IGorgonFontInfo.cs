@@ -127,7 +127,7 @@ public interface IGorgonFontInfo
     /// This sets the height of the font.
     /// </para>
     /// <para>
-    /// This is affected by the <see cref="Fonts.GorgonFontHeightMode"/>. If the <see cref="FontHeightMode"/> is set to <see cref="GorgonFontHeightMode.Points"/>, then this unit is the height 
+    /// This is affected by the <see cref="GorgonFontHeightMode"/>. If the <see cref="FontHeightMode"/> is set to <see cref="GorgonFontHeightMode.Points"/>, then this unit is the height 
     /// size height for the font. Otherwise, this represents the font height in <see cref="GorgonFontHeightMode.Pixels"/>.
     /// </para>
     /// </remarks>

@@ -26,7 +26,6 @@
 
 using Gorgon.Core;
 using SharpDX.DXGI;
-using DX = SharpDX;
 
 namespace Gorgon.Graphics.Core;
 
@@ -96,7 +95,7 @@ public interface IGorgonVideoOutputInfo
     /// <remarks>
     /// The desktop coordinates depend on the dots per inch (DPI) of the desktop. For more information about writing DPI-aware Win32 applications, see <a target="_blank" href="https://msdn.microsoft.com/en-us/library/bb173068.aspx">High DPI</a>.
     /// </remarks>
-    DX.Rectangle DesktopBounds
+    GorgonRectangle DesktopBounds
     {
         get;
     }

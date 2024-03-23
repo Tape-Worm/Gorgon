@@ -24,12 +24,12 @@
 // 
 
 
+using System.Numerics;
 using Gorgon.Diagnostics;
 using Gorgon.Editor.PlugIns;
 using Gorgon.Editor.SpriteEditor.Properties;
 using Gorgon.Editor.UI;
 using Gorgon.Graphics;
-using DX = SharpDX;
 
 namespace Gorgon.Editor.SpriteEditor;
 
@@ -52,11 +52,11 @@ internal class SpriteClipContext
     // The services from the host application.
     private IHostContentServices _hostServices;
     // The rectangle for the sprite.
-    private DX.RectangleF _rect;
+    private GorgonRectangleF _rect;
     // The current array index for the sprite texture.
     private int _arrayIndex;
     // The size for the fixed width/height sprite clipping.
-    private DX.Size2F? _fixedSize;
+    private Vector2? _fixedSize;
 
 
 
@@ -82,7 +82,7 @@ internal class SpriteClipContext
     }
 
     /// <summary>Property to set or return the rectangle representing the sprite.</summary>
-    public DX.RectangleF SpriteRectangle
+    public GorgonRectangleF SpriteRectangle
     {
         get => _rect;
         set
@@ -104,7 +104,7 @@ internal class SpriteClipContext
     /// <summary>
     /// Property to return the size of the fixed width and height for sprite clipping.
     /// </summary>
-    public DX.Size2F? FixedSize
+    public Vector2? FixedSize
     {
         get => _fixedSize;
         private set
@@ -159,7 +159,7 @@ internal class SpriteClipContext
     /// <summary>
     /// Property to return the command used to enable or disable fixed size clipping.
     /// </summary>
-    public IEditorCommand<DX.Size2F?> FixedSizeCommand
+    public IEditorCommand<Vector2?> FixedSizeCommand
     {
         get;
     }
@@ -175,7 +175,7 @@ internal class SpriteClipContext
     {
         get
         {
-            DX.Rectangle rect = SpriteRectangle.ToRectangle();
+            GorgonRectangle rect = (GorgonRectangle)SpriteRectangle;
             return string.Format(Resources.GORSPR_TEXT_SPRITE_INFO, rect.Left, rect.Top, rect.Right, rect.Bottom, rect.Width, rect.Height);
         }
     }
@@ -255,9 +255,9 @@ internal class SpriteClipContext
             return false;
         }
 
-        DX.RectangleF fullCoords = new(0, 0, _spriteContent.Texture.Width, _spriteContent.Texture.Height);
+        GorgonRectangleF fullCoords = new(0, 0, _spriteContent.Texture.Width, _spriteContent.Texture.Height);
 
-        return !SpriteRectangle.Equals(ref fullCoords);
+        return SpriteRectangle != fullCoords;
     }
 
     /// <summary>
@@ -269,7 +269,7 @@ internal class SpriteClipContext
 
         try
         {
-            SpriteRectangle = new DX.RectangleF(0, 0, _spriteContent.Texture.Width, _spriteContent.Texture.Height);
+            SpriteRectangle = new GorgonRectangleF(0, 0, _spriteContent.Texture.Width, _spriteContent.Texture.Height);
         }
         catch (Exception ex)
         {
@@ -286,13 +286,13 @@ internal class SpriteClipContext
     /// </summary>
     /// <param name="size">The size of the fixed clip area.</param>
     /// <returns><b>true</b> if fixed clipping is available, <b>false</b> if not.</returns>
-    private bool CanUseFixedSize(DX.Size2F? size) => ((_spriteContent.Texture is not null) && (_spriteContent.CurrentPanel is null));
+    private bool CanUseFixedSize(Vector2? size) => ((_spriteContent.Texture is not null) && (_spriteContent.CurrentPanel is null));
 
     /// <summary>
     /// Function to enable or disable fixed size clipping.
     /// </summary>
     /// <param name="size">The size to use, or <b>null</b> to disable.</param>
-    private void DoUseFixedSize(DX.Size2F? size)
+    private void DoUseFixedSize(Vector2? size)
     {
         try
         {
@@ -320,7 +320,7 @@ internal class SpriteClipContext
         _spriteContent = injectionParameters.SpriteContent;
 
         _arrayIndex = _spriteContent.ArrayIndex;
-        _rect = _spriteContent.Texture?.ToPixel(_spriteContent.TextureCoordinates).ToRectangleF() ?? DX.RectangleF.Empty;
+        _rect = _spriteContent.Texture?.ToPixel(_spriteContent.TextureCoordinates) ?? GorgonRectangleF.Empty;
     }
 
 
@@ -330,7 +330,7 @@ internal class SpriteClipContext
     {
         UpdateArrayIndexCommand = new EditorCommand<int>(DoUpdateArrayIndex, CanUpdateArrayIndex);
         FullSizeCommand = new EditorCommand<object>(DoFullSize, CanFullSize);
-        FixedSizeCommand = new EditorCommand<DX.Size2F?>(DoUseFixedSize, CanUseFixedSize);
+        FixedSizeCommand = new EditorCommand<Vector2?>(DoUseFixedSize, CanUseFixedSize);
         CancelCommand = new EditorCommand<object>(DoCancel, CanCancel);
     }
 

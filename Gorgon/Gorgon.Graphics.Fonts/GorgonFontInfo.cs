@@ -25,7 +25,6 @@
 
 
 using Gorgon.Graphics.Core;
-using DX = SharpDX;
 
 namespace Gorgon.Graphics.Fonts;
 
@@ -69,7 +68,7 @@ public record GorgonFontInfo(string FontFamilyName, float Size, GorgonFontHeight
     }
 
     // Texture size.
-    private DX.Size2 _textureSize = new(256, 256);
+    private GorgonPoint _textureSize = new(256, 256);
     // The list of characters supported by the font.
     private char[] _characters = Enumerable.Range(32, 224).Select(Convert.ToChar).Where(c => !char.IsControl(c)).ToArray();
     // Packing spacing.
@@ -92,7 +91,7 @@ public record GorgonFontInfo(string FontFamilyName, float Size, GorgonFontHeight
     /// </remarks>
     public int TextureWidth
     {
-        get => _textureSize.Width;
+        get => _textureSize.X;
         init
         {
             if (value < 256)
@@ -104,7 +103,7 @@ public record GorgonFontInfo(string FontFamilyName, float Size, GorgonFontHeight
                 value = 256;
             }
 
-            _textureSize = new DX.Size2(value, _textureSize.Height);
+            _textureSize = new GorgonPoint(value, _textureSize.Y);
         }
     }
 
@@ -125,7 +124,7 @@ public record GorgonFontInfo(string FontFamilyName, float Size, GorgonFontHeight
     /// </remarks>
     public int TextureHeight
     {
-        get => _textureSize.Height;
+        get => _textureSize.Y;
         init
         {
             if (value < 256)
@@ -137,7 +136,7 @@ public record GorgonFontInfo(string FontFamilyName, float Size, GorgonFontHeight
                 value = 256;
             }
 
-            _textureSize = new DX.Size2(_textureSize.Width, value);
+            _textureSize = new GorgonPoint(_textureSize.X, value);
         }
     }
 

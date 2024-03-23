@@ -143,7 +143,7 @@ internal partial class FontCharacterSelectionView
         ViewModel.OkCommand.Execute(null);
     }
 
-    /// <summary>Raises the <see cref="System.Windows.Forms.UserControl.Load"/> event.</summary>
+    /// <summary>Raises the <see cref="UserControl.Load"/> event.</summary>
     /// <param name="e">An <see cref="EventArgs"/> that contains the event data.</param>
     protected override void OnLoad(EventArgs e)
     {

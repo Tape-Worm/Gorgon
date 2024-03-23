@@ -24,9 +24,9 @@
 // 
 
 
+using System.Numerics;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
-using DX = SharpDX;
 
 namespace Gorgon.Examples;
 
@@ -76,27 +76,27 @@ internal class GraphicsRenderer(GorgonGraphics graphics)
         }
 
         // Get aspect ratio.
-        DX.Size2F scale = new((_swapChain.Width * 0.5f) / texture.Width, (float)_swapChain.Height / texture.Height);
+        Vector2 scale = new((_swapChain.Width * 0.5f) / texture.Width, (float)_swapChain.Height / texture.Height);
 
         // Only scale on a single axis if we don't have a 1:1 aspect ratio.
-        if (scale.Height > scale.Width)
+        if (scale.Y > scale.X)
         {
-            scale.Height = scale.Width;
+            scale.Y = scale.X;
         }
         else
         {
-            scale.Width = scale.Height;
+            scale.X = scale.Y;
         }
 
         // Scale the image.
-        DX.Size2 size = new((int)(scale.Width * texture.Width), (int)(scale.Height * texture.Height));
+        GorgonPoint size = new((int)(scale.X * texture.Width), (int)(scale.Y * texture.Height));
 
         // Find the position.
-        DX.Rectangle bounds = new((_swapChain.Width / 4) - (size.Width / 2), ((_swapChain.Height / 2) - (size.Height / 2)), size.Width, size.Height);
+        GorgonRectangle bounds = new((_swapChain.Width / 4) - (size.X / 2), ((_swapChain.Height / 2) - (size.Y / 2)), size.X, size.Y);
 
         GorgonExample.Blitter.Blit(texture, bounds, blendState: GorgonBlendState.Default, samplerState: GorgonSamplerState.PointFiltering);
 
-        bounds = new DX.Rectangle((_swapChain.Width - (_swapChain.Width / 4)) - (size.Width / 2), ((_swapChain.Height / 2) - (size.Height / 2)), size.Width, size.Height);
+        bounds = new GorgonRectangle((_swapChain.Width - (_swapChain.Width / 4)) - (size.X / 2), ((_swapChain.Height / 2) - (size.Y / 2)), size.X, size.Y);
         GorgonExample.Blitter.Blit(outputTexture, bounds, blendState: GorgonBlendState.Default, samplerState: GorgonSamplerState.PointFiltering);
 
         _swapChain.Present(1);

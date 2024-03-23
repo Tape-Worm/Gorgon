@@ -32,7 +32,6 @@ using Gorgon.Graphics.Core;
 using Gorgon.Math;
 using Gorgon.Renderers;
 using Gorgon.Renderers.Cameras;
-using DX = SharpDX;
 
 namespace Gorgon.Editor.SpriteEditor;
 
@@ -56,7 +55,7 @@ internal class SpriteVertexEditService
         new()
     ];
     // The sprite boundaries, in texture space (but in pixels).
-    private DX.RectangleF _spriteBounds;
+    private GorgonRectangleF _spriteBounds;
     // The state used to draw inverted items.
     private readonly Gorgon2DBatchState _invertedState;
     // The vertex positions, in screen space.
@@ -216,14 +215,14 @@ internal class SpriteVertexEditService
     }
 
     /// <summary>Property to set or return the rectangular boundaries for the sprite.</summary>
-    public DX.RectangleF SpriteBounds
+    public GorgonRectangleF SpriteBounds
     {
         get => _spriteBounds;
         set
         {
-            value = value.Truncate();
+            value = GorgonRectangleF.Truncate(value);
 
-            if (_spriteBounds.Equals(ref value))
+            if (_spriteBounds.Equals(value))
             {
                 return;
             }
@@ -301,7 +300,7 @@ internal class SpriteVertexEditService
 
         for (int i = 0; i < _handles.Length; ++i)
         {
-            DX.RectangleF handleBounds = _handles[i].HandleBounds;
+            GorgonRectangleF handleBounds = _handles[i].HandleBounds;
 
             if (handleBounds.IsEmpty)
             {
@@ -351,7 +350,7 @@ internal class SpriteVertexEditService
             _screenVertices[3] = new Vector2(_vertices[3].X, _vertices[3].Y);
         }
 
-        DX.RectangleF aabb = new()
+        GorgonRectangleF aabb = new()
         {
             Left = float.MaxValue,
             Top = float.MaxValue,
@@ -361,7 +360,7 @@ internal class SpriteVertexEditService
 
         for (int i = 0; i < _screenVertices.Length; ++i)
         {
-            aabb = new DX.RectangleF
+            aabb = new GorgonRectangleF
             {
                 Left = aabb.Left.Min(_screenVertices[i].X),
                 Top = aabb.Top.Min(_screenVertices[i].Y),
@@ -370,20 +369,20 @@ internal class SpriteVertexEditService
             };
         }
 
-        _handles[0].HandleBounds = new DX.RectangleF(_screenVertices[0].X - 8, _screenVertices[0].Y - 8, 8, 8);
-        _handles[1].HandleBounds = new DX.RectangleF(_screenVertices[1].X, _screenVertices[1].Y - 8, 8, 8);
-        _handles[2].HandleBounds = new DX.RectangleF(_screenVertices[2].X, _screenVertices[2].Y, 8, 8);
-        _handles[3].HandleBounds = new DX.RectangleF(_screenVertices[3].X - 8, _screenVertices[3].Y, 8, 8);
+        _handles[0].HandleBounds = new GorgonRectangleF(_screenVertices[0].X - 8, _screenVertices[0].Y - 8, 8, 8);
+        _handles[1].HandleBounds = new GorgonRectangleF(_screenVertices[1].X, _screenVertices[1].Y - 8, 8, 8);
+        _handles[2].HandleBounds = new GorgonRectangleF(_screenVertices[2].X, _screenVertices[2].Y, 8, 8);
+        _handles[3].HandleBounds = new GorgonRectangleF(_screenVertices[3].X - 8, _screenVertices[3].Y, 8, 8);
         if ((aabb.Width >= _keyboardIcon.Value.Width * 2) && (aabb.Height >= _keyboardIcon.Value.Height * 2) && (SelectedVertexIndex != -1))
         {
             Vector2 keyPos = new Vector2(_screenVertices[SelectedVertexIndex].X + 8, _screenVertices[SelectedVertexIndex].Y + 8).Truncate();
 
-            _handles[4].HandleBounds = new DX.RectangleF(keyPos.X, keyPos.Y, _keyboardIcon.Value.Width, _keyboardIcon.Value.Height);
+            _handles[4].HandleBounds = new GorgonRectangleF(keyPos.X, keyPos.Y, _keyboardIcon.Value.Width, _keyboardIcon.Value.Height);
             _handles[4].Texture = _keyboardIcon.Value;
         }
         else
         {
-            _handles[4].HandleBounds = DX.RectangleF.Empty;
+            _handles[4].HandleBounds = GorgonRectangleF.Empty;
         }
 
         GetActiveHandle();
@@ -639,7 +638,7 @@ internal class SpriteVertexEditService
         for (int i = 0; i < _handles.Length; ++i)
         {
             GorgonTexture2DView texture = _handles[i].Texture;
-            DX.RectangleF handleBounds = _handles[i].HandleBounds;
+            GorgonRectangleF handleBounds = _handles[i].HandleBounds;
 
             if (handleBounds.IsEmpty)
             {
@@ -661,19 +660,18 @@ internal class SpriteVertexEditService
             if (texture is null)
             {
                 _renderer.DrawRectangle(handleBounds, GorgonColors.Black);
-                _renderer.DrawRectangle(new DX.RectangleF(handleBounds.X + 1, handleBounds.Y + 1, handleBounds.Width - 2, handleBounds.Height - 2), GorgonColors.White);
+                _renderer.DrawRectangle(new GorgonRectangleF(handleBounds.X + 1, handleBounds.Y + 1, handleBounds.Width - 2, handleBounds.Height - 2), GorgonColors.White);
             }
             else
             {
-                _renderer.DrawFilledRectangle(handleBounds, GorgonColors.White, texture, new DX.RectangleF(0, 0, 1, 1));
+                _renderer.DrawFilledRectangle(handleBounds, GorgonColors.White, texture, new GorgonRectangleF(0, 0, 1, 1));
             }
-
 
             if (SelectedVertexIndex == i)
             {
-                handleBounds.Inflate(4, 4);
+                handleBounds = GorgonRectangleF.Expand(handleBounds, 4);
                 _renderer.DrawEllipse(handleBounds, GorgonColors.Black, thickness: 2);
-                handleBounds.Inflate(-1, -1);
+                handleBounds = GorgonRectangleF.Expand(handleBounds, -1);
                 _renderer.DrawEllipse(handleBounds, GorgonColors.White);
             }
         }

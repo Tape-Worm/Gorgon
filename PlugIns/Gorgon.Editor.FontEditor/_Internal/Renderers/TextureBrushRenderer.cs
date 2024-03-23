@@ -35,7 +35,6 @@ using Gorgon.Graphics.Core;
 using Gorgon.Graphics.Imaging.Codecs;
 using Gorgon.Math;
 using Gorgon.Renderers;
-using DX = SharpDX;
 
 namespace Gorgon.Editor.FontEditor;
 
@@ -100,11 +99,11 @@ internal class TextureBrushRenderer(Gorgon2D renderer, GorgonSwapChain mainRende
                         Usage = ResourceUsage.Immutable
                     });
 
-                    RenderRegion = new DX.RectangleF(0, 0, _image.Width + 32, _image.Height + 32);
+                    RenderRegion = new GorgonRectangleF(0, 0, _image.Width + 32, _image.Height + 32);
                 }
                 else
                 {
-                    RenderRegion = new DX.RectangleF(0, 0, ClientSize.Width, ClientSize.Height);
+                    RenderRegion = new GorgonRectangleF(0, 0, ClientSize.X, ClientSize.Y);
                 }
 
                 _clipper.Bounds = RenderRegion;
@@ -217,21 +216,21 @@ internal class TextureBrushRenderer(Gorgon2D renderer, GorgonSwapChain mainRende
         if (_context.Texture is null)
         {
             float newSize = RenderRegion.Width < RenderRegion.Height ? RenderRegion.Width : RenderRegion.Height;
-            DX.Size2F size = new(newSize.Min(_noImage.Width), newSize.Min(_noImage.Width));
-            DX.Size2F halfClient = new(RenderRegion.Width * 0.5f, RenderRegion.Height * 0.5f);
-            Vector2 pos = new((int)(halfClient.Width - size.Width * 0.5f), (int)(halfClient.Height - size.Height * 0.5f));
+            Vector2 size = new(newSize.Min(_noImage.Width), newSize.Min(_noImage.Width));
+            Vector2 halfClient = new(RenderRegion.Width * 0.5f, RenderRegion.Height * 0.5f);
+            Vector2 pos = new((int)(halfClient.X - size.X * 0.5f), (int)(halfClient.Y - size.Y * 0.5f));
 
             Renderer.Begin();
-            Renderer.DrawFilledRectangle(new DX.RectangleF(pos.X, pos.Y, size.Width, size.Height), GorgonColors.White, _noImage, new DX.RectangleF(0, 0, 1, 1));
+            Renderer.DrawFilledRectangle(new GorgonRectangleF(pos.X, pos.Y, size.X, size.Y), GorgonColors.White, _noImage, new GorgonRectangleF(0, 0, 1, 1));
             Renderer.End();
 
             return;
         }
 
-        DX.RectangleF textureSize = new(0, 0, (float)ClientSize.Width / BackgroundPattern.Width, (float)ClientSize.Height / BackgroundPattern.Height);
+        GorgonRectangleF textureSize = new(0, 0, (float)ClientSize.X / BackgroundPattern.Width, (float)ClientSize.Y / BackgroundPattern.Height);
 
         Renderer.Begin();
-        Renderer.DrawFilledRectangle(new DX.RectangleF(0, 0, ClientSize.Width, ClientSize.Height), GorgonColors.White, BackgroundPattern, textureSize, textureSampler: GorgonSamplerState.PointFilteringWrapping);
+        Renderer.DrawFilledRectangle(new GorgonRectangleF(0, 0, ClientSize.X, ClientSize.Y), GorgonColors.White, BackgroundPattern, textureSize, textureSampler: GorgonSamplerState.PointFilteringWrapping);
         Renderer.End();
     }
 
@@ -242,7 +241,7 @@ internal class TextureBrushRenderer(Gorgon2D renderer, GorgonSwapChain mainRende
     {
         GorgonRenderTargetView prevTarget = Graphics.RenderTargets[0];
         GorgonRange<float>? prevAlphaTest = Renderer.PrimitiveAlphaTestRange;
-        DX.RectangleF clearRegion = _image.ToPixel(_context.Region).ToRectangleF();
+        GorgonRectangleF clearRegion = _image.ToPixel(_context.Region);
 
         _target.Clear(GorgonColors.BlackTransparent);
 
@@ -250,10 +249,10 @@ internal class TextureBrushRenderer(Gorgon2D renderer, GorgonSwapChain mainRende
         Renderer.PrimitiveAlphaTestRange = null;
         Renderer.Begin();
 
-        Renderer.DrawFilledRectangle(new DX.RectangleF(0, 0, _image.Width, _image.Height),
+        Renderer.DrawFilledRectangle(new GorgonRectangleF(0, 0, _image.Width, _image.Height),
                                      GorgonColors.White,
                                      _image,
-                                     new DX.RectangleF(0, 0, 1, 1),
+                                     new GorgonRectangleF(0, 0, 1, 1),
                                      0,
                                      GorgonSamplerState.PointFiltering);
 
@@ -279,13 +278,13 @@ internal class TextureBrushRenderer(Gorgon2D renderer, GorgonSwapChain mainRende
         RenderTexture();
 
         Renderer.Begin(camera: Camera);
-        Renderer.DrawFilledRectangle(new DX.RectangleF(halfRegion.X,
+        Renderer.DrawFilledRectangle(new GorgonRectangleF(halfRegion.X,
                                                        halfRegion.Y,
                                                        RenderRegion.Width,
                                                        RenderRegion.Height),
                                     GorgonColors.White,
                                     _targetTexture,
-                                    new DX.RectangleF(0, 0, 1, 1),
+                                    new GorgonRectangleF(0, 0, 1, 1),
                                     textureSampler: GorgonSamplerState.PointFiltering);
         Renderer.End();
 
@@ -301,7 +300,7 @@ internal class TextureBrushRenderer(Gorgon2D renderer, GorgonSwapChain mainRende
     /// </remarks>
     protected override void OnLoad()
     {
-        RenderRegion = new DX.RectangleF(0, 0, _context.Texture?.Width ?? ClientSize.Width, _context.Texture?.Height ?? ClientSize.Height);
+        RenderRegion = new GorgonRectangleF(0, 0, _context.Texture?.Width ?? ClientSize.X, _context.Texture?.Height ?? ClientSize.Y);
 
         if (_context.Texture is not null)
         {
@@ -310,7 +309,7 @@ internal class TextureBrushRenderer(Gorgon2D renderer, GorgonSwapChain mainRende
                 Binding = TextureBinding.ShaderResource,
                 Usage = ResourceUsage.Immutable
             });
-            RenderRegion.Inflate(32, 32);
+            RenderRegion = GorgonRectangleF.Expand(RenderRegion, 32);
 
             CreateTarget();
         }

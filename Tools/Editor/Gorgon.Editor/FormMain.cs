@@ -32,9 +32,9 @@ using Gorgon.Editor.Rendering;
 using Gorgon.Editor.UI;
 using Gorgon.Editor.ViewModels;
 using Gorgon.Editor.Views;
+using Gorgon.Graphics;
 using Krypton.Ribbon;
 using Krypton.Toolkit;
-using DX = SharpDX;
 
 namespace Gorgon.Editor;
 
@@ -1272,7 +1272,7 @@ internal partial class FormMain
             return;
         }
 
-        ViewModel.Settings.WindowBounds = new DX.Rectangle(DesktopBounds.X, DesktopBounds.Y, DesktopBounds.Width, DesktopBounds.Height);
+        ViewModel.Settings.WindowBounds = new GorgonRectangle(DesktopBounds.X, DesktopBounds.Y, DesktopBounds.Width, DesktopBounds.Height);
     }
 
     /// <summary>Raises the <see cref="E:System.Windows.Forms.Form.Load" /> event.</summary>
@@ -1315,17 +1315,17 @@ internal partial class FormMain
                 _closeFlag = CloseStates.Closing;
                 e.Cancel = true;
 
-                DX.Rectangle windowDimensions;
+                GorgonRectangle windowDimensions;
                 int windowState;
                 switch (WindowState)
                 {
                     case FormWindowState.Normal:
                     case FormWindowState.Maximized:
-                        windowDimensions = new DX.Rectangle(Location.X, Location.Y, Size.Width, Size.Height);
+                        windowDimensions = new GorgonRectangle(Location.X, Location.Y, Size.Width, Size.Height);
                         windowState = (int)WindowState;
                         break;
                     default:
-                        windowDimensions = new DX.Rectangle(RestoreBounds.X, RestoreBounds.Y, RestoreBounds.Width, RestoreBounds.Height);
+                        windowDimensions = new GorgonRectangle(RestoreBounds.X, RestoreBounds.Y, RestoreBounds.Width, RestoreBounds.Height);
                         windowState = (int)FormWindowState.Normal;
                         break;
                 }

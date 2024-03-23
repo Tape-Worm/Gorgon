@@ -24,8 +24,10 @@
 // 
 
 
+using System.Runtime.CompilerServices;
 using Gorgon.Math;
 using SharpDX.DXGI;
+using SharpDX.Mathematics.Interop;
 using D3D11 = SharpDX.Direct3D11;
 
 namespace Gorgon.Graphics.Core;
@@ -162,6 +164,22 @@ internal static class SharpDXExtensions
         RefreshRate = mode.RefreshRate,
         Stereo = false
     };
+
+    /// <summary>
+    /// Function to convert a SharpDX raw rectangle to a <see cref="GorgonRectangle"/>.
+    /// </summary>
+    /// <param name="rectangle">The rectangle to convert.</param>
+    /// <returns>The converted rectangle.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static GorgonRectangle ToGorgonRectangle(this RawRectangle rectangle) => GorgonRectangle.FromLTRB(rectangle.Left, rectangle.Top, rectangle.Right, rectangle.Bottom);
+
+    /// <summary>
+    /// Function to convert a <see cref="GorgonRectangle"/> to a SharpDX raw rectangle.
+    /// </summary>
+    /// <param name="rectangle">The rectangle to convert.</param>
+    /// <returns>The converted rectangle.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static RawRectangle ToSharpDXRawRectangle(this GorgonRectangle rectangle) => new(rectangle.Left, rectangle.Top, rectangle.Right, rectangle.Bottom);
 
     /// <summary>
     /// Function to convert a GorgonVertexBufferBinding to a D3D11 vertex buffer binding.

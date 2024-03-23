@@ -28,7 +28,6 @@ using System.Numerics;
 using Gorgon.Editor.UI;
 using Gorgon.Graphics;
 using Gorgon.Math;
-using DX = SharpDX;
 
 namespace Gorgon.Editor.SpriteEditor;
 
@@ -42,7 +41,7 @@ internal class SpriteAnchorEdit
     // The anchor point.
     private Vector2 _anchor;
     // The boundaries for the anchor.
-    private DX.Rectangle _bounds;
+    private GorgonRectangle _bounds;
     // The boundaries of the sprite vertices.
     private readonly Vector2[] _spriteBounds = new Vector2[4];
     // The mid point of the sprite.
@@ -96,12 +95,12 @@ internal class SpriteAnchorEdit
     }
 
     /// <summary>Property to return the boundaries for the anchor point.</summary>
-    public DX.Rectangle Bounds
+    public GorgonRectangle Bounds
     {
         get => _bounds;
         set
         {
-            if (_bounds.Equals(ref value))
+            if (_bounds.Equals(value))
             {
                 return;
             }
@@ -165,7 +164,7 @@ internal class SpriteAnchorEdit
             }
 
             OnPropertyChanging();
-            DX.RectangleF range = new()
+            GorgonRectangleF range = new()
             {
                 Left = float.MaxValue,
                 Top = float.MaxValue,

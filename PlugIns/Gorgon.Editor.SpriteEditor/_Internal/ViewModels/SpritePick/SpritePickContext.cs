@@ -31,7 +31,6 @@ using Gorgon.Editor.UI;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Imaging;
 using Gorgon.Math;
-using DX = SharpDX;
 
 namespace Gorgon.Editor.SpriteEditor;
 
@@ -47,7 +46,7 @@ internal class SpritePickContext
     // The services from the host application.
     private IHostContentServices _hostServices;
     // The rectangle for the sprite.
-    private DX.RectangleF _rect;
+    private GorgonRectangleF _rect;
     // The current array index for the sprite texture.
     private int _arrayIndex;
     // The sprite texture service.
@@ -114,7 +113,7 @@ internal class SpritePickContext
     }
 
     /// <summary>Property to set or return the rectangle representing the sprite.</summary>
-    public DX.RectangleF SpriteRectangle
+    public GorgonRectangleF SpriteRectangle
     {
         get => _rect;
         set
@@ -206,12 +205,10 @@ internal class SpritePickContext
     {
         get
         {
-            DX.Rectangle rect = SpriteRectangle.ToRectangle();
+            GorgonRectangle rect = (GorgonRectangle)SpriteRectangle;
             return string.Format(Resources.GORSPR_TEXT_SPRITE_INFO, rect.Left, rect.Top, rect.Right, rect.Bottom, rect.Width, rect.Height);
         }
     }
-
-
 
     /// <summary>
     /// Function to determine whether the array index for the sprite can be updated.
@@ -347,7 +344,7 @@ internal class SpritePickContext
         SpritePickMaskEditor = injectionParameters.SpritePickMaskEditor;
 
         _arrayIndex = _spriteContent.ArrayIndex;
-        _rect = _spriteContent.Texture?.ToPixel(_spriteContent.TextureCoordinates).ToRectangleF() ?? DX.RectangleF.Empty;
+        _rect = _spriteContent.Texture?.ToPixel(_spriteContent.TextureCoordinates) ?? GorgonRectangleF.Empty;
     }
 
     /// <summary>Function called when the associated view is loaded.</summary>

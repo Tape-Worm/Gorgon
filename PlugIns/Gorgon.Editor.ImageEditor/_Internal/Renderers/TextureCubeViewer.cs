@@ -32,7 +32,6 @@ using Gorgon.Graphics.Core;
 using Gorgon.Graphics.Fonts;
 using Gorgon.Graphics.Imaging;
 using Gorgon.Renderers;
-using DX = SharpDX;
 
 
 namespace Gorgon.Editor.ImageEditor;
@@ -54,8 +53,8 @@ internal class TextureCubeViewer(Gorgon2D renderer, GorgonSwapChain swapChain, G
     // The view for the texture.
     private GorgonTexture2DView _textureView;
     // Bounds for each cube image.
-    private readonly DX.RectangleF[] _cubeImageBounds = new DX.RectangleF[6];
-    private readonly DX.RectangleF[] _cubeScreenBounds = new DX.RectangleF[6];
+    private readonly GorgonRectangleF[] _cubeImageBounds = new GorgonRectangleF[6];
+    private readonly GorgonRectangleF[] _cubeScreenBounds = new GorgonRectangleF[6];
     // The font used to print each axis.
     private GorgonFont _axisFont;
     // The selection rectangle.
@@ -95,11 +94,11 @@ internal class TextureCubeViewer(Gorgon2D renderer, GorgonSwapChain swapChain, G
     {
         if ((DataContext?.ImageData is null) || (DataContext.ImageType != ImageDataType.ImageCube))
         {
-            RenderRegion = DX.RectangleF.Empty;
+            RenderRegion = GorgonRectangleF.Empty;
             return;
         }
 
-        RenderRegion = new DX.RectangleF(0, 0, DataContext.ImageData.Width * 4, DataContext.ImageData.Height * 3);
+        RenderRegion = new GorgonRectangleF(0, 0, DataContext.ImageData.Width * 4, DataContext.ImageData.Height * 3);
 
         _texture = DataContext.ImageData.ToTexture2D(Graphics, new GorgonTexture2DLoadOptions
         {
@@ -143,24 +142,24 @@ internal class TextureCubeViewer(Gorgon2D renderer, GorgonSwapChain swapChain, G
     protected override void DrawTexture()
     {
         Vector2 tileSize = new(DataContext.Width, DataContext.Height);
-        DX.RectangleF bounds = new(-tileSize.X, -tileSize.Y * 0.5f, tileSize.X, tileSize.Y);
+        GorgonRectangleF bounds = new(-tileSize.X, -tileSize.Y * 0.5f, tileSize.X, tileSize.Y);
         Vector3 tileClient = Camera.Unproject(new Vector3(bounds.Location.X, bounds.Location.Y, 0));
-        DX.RectangleF clientBounds = new(tileClient.X, tileClient.Y, tileSize.X * Camera.Zoom.X, tileSize.Y * Camera.Zoom.X);
+        GorgonRectangleF clientBounds = new(tileClient.X, tileClient.Y, tileSize.X * Camera.Zoom.X, tileSize.Y * Camera.Zoom.X);
         int cubeGroup = DataContext.CurrentArrayIndex / 6;
 
-        _cubeImageBounds[0] = new DX.RectangleF(bounds.Left + bounds.Width, bounds.Top, bounds.Width, bounds.Height);
-        _cubeImageBounds[1] = new DX.RectangleF(bounds.Left - bounds.Width, bounds.Top, bounds.Width, bounds.Height);
-        _cubeImageBounds[2] = new DX.RectangleF(bounds.Left, bounds.Top - bounds.Height, bounds.Width, bounds.Height);
-        _cubeImageBounds[3] = new DX.RectangleF(bounds.Left, bounds.Top + bounds.Height, bounds.Width, bounds.Height);
+        _cubeImageBounds[0] = new GorgonRectangleF(bounds.Left + bounds.Width, bounds.Top, bounds.Width, bounds.Height);
+        _cubeImageBounds[1] = new GorgonRectangleF(bounds.Left - bounds.Width, bounds.Top, bounds.Width, bounds.Height);
+        _cubeImageBounds[2] = new GorgonRectangleF(bounds.Left, bounds.Top - bounds.Height, bounds.Width, bounds.Height);
+        _cubeImageBounds[3] = new GorgonRectangleF(bounds.Left, bounds.Top + bounds.Height, bounds.Width, bounds.Height);
         _cubeImageBounds[4] = bounds;
-        _cubeImageBounds[5] = new DX.RectangleF(bounds.Left + (bounds.Width * 2), bounds.Top, bounds.Width, bounds.Height);
+        _cubeImageBounds[5] = new GorgonRectangleF(bounds.Left + (bounds.Width * 2), bounds.Top, bounds.Width, bounds.Height);
 
-        _cubeScreenBounds[0] = new DX.RectangleF(clientBounds.Left + clientBounds.Width, clientBounds.Top, clientBounds.Width, clientBounds.Height);
-        _cubeScreenBounds[1] = new DX.RectangleF(clientBounds.Left - clientBounds.Width, clientBounds.Top, clientBounds.Width, clientBounds.Height);
-        _cubeScreenBounds[2] = new DX.RectangleF(clientBounds.Left, clientBounds.Top - clientBounds.Height, clientBounds.Width, clientBounds.Height);
-        _cubeScreenBounds[3] = new DX.RectangleF(clientBounds.Left, clientBounds.Top + clientBounds.Height, clientBounds.Width, clientBounds.Height);
+        _cubeScreenBounds[0] = new GorgonRectangleF(clientBounds.Left + clientBounds.Width, clientBounds.Top, clientBounds.Width, clientBounds.Height);
+        _cubeScreenBounds[1] = new GorgonRectangleF(clientBounds.Left - clientBounds.Width, clientBounds.Top, clientBounds.Width, clientBounds.Height);
+        _cubeScreenBounds[2] = new GorgonRectangleF(clientBounds.Left, clientBounds.Top - clientBounds.Height, clientBounds.Width, clientBounds.Height);
+        _cubeScreenBounds[3] = new GorgonRectangleF(clientBounds.Left, clientBounds.Top + clientBounds.Height, clientBounds.Width, clientBounds.Height);
         _cubeScreenBounds[4] = clientBounds;
-        _cubeScreenBounds[5] = new DX.RectangleF(clientBounds.Left + (clientBounds.Width * 2), clientBounds.Top, clientBounds.Width, clientBounds.Height);
+        _cubeScreenBounds[5] = new GorgonRectangleF(clientBounds.Left + (clientBounds.Width * 2), clientBounds.Top, clientBounds.Width, clientBounds.Height);
 
         int selectedImage = DataContext.CurrentArrayIndex % 6;
 
@@ -171,7 +170,7 @@ internal class TextureCubeViewer(Gorgon2D renderer, GorgonSwapChain swapChain, G
             Renderer.DrawFilledRectangle(_cubeImageBounds[i],
                 new GorgonColor(GorgonColors.White, Opacity),
                 _textureView,
-                new DX.RectangleF(0, 0, 1, 1),
+                new GorgonRectangleF(0, 0, 1, 1),
                 (cubeGroup * 6) + i,
                 textureSampler: GorgonSamplerState.PointFiltering);
         }
@@ -188,7 +187,7 @@ internal class TextureCubeViewer(Gorgon2D renderer, GorgonSwapChain swapChain, G
         _selectionRect.Animate();
         _selectionRect.Draw(_cubeScreenBounds[selectedImage]);
 
-        Vector2 offset = new(0, "+X".MeasureLine(_axisFont, true).Height);
+        Vector2 offset = new(0, "+X".MeasureLine(_axisFont, true).Y);
 
         Vector2 bottomLeft = new(_cubeScreenBounds[0].BottomLeft.X, _cubeScreenBounds[0].BottomLeft.Y);
         Renderer.DrawString("+X", bottomLeft - offset, _axisFont, new GorgonColor(GorgonColors.White, Opacity));

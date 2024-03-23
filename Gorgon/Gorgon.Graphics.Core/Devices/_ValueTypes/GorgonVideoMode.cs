@@ -28,7 +28,6 @@ using Gorgon.Core;
 using Gorgon.Graphics.Core.Properties;
 using Gorgon.Math;
 using SharpDX.DXGI;
-using DX = SharpDX;
 
 namespace Gorgon.Graphics.Core;
 
@@ -120,7 +119,7 @@ public readonly struct GorgonVideoMode
     /// <summary>
     /// Property to return the size for the video mode.
     /// </summary>
-    public DX.Size2 Size => new(Width, Height);
+    public GorgonPoint Size => new(Width, Height);
 
 
 

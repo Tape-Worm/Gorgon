@@ -41,7 +41,7 @@ internal partial class FormNewFont
 {
 
     // Font used for preview.
-    private Drawing.Font _font;
+    private Font _font;
 
 
 
@@ -337,7 +337,7 @@ internal partial class FormNewFont
         }
         else
         {
-            Drawing.FontFamily family = Drawing.FontFamily.Families.SingleOrDefault(item => string.Equals(item.Name, ComboFontFamilies.Text, StringComparison.OrdinalIgnoreCase));
+            FontFamily family = FontFamily.Families.SingleOrDefault(item => string.Equals(item.Name, ComboFontFamilies.Text, StringComparison.OrdinalIgnoreCase));
 
             ButtonCharacters.Enabled = true;
 
@@ -370,7 +370,7 @@ internal partial class FormNewFont
     /// </summary>
     private void UpdatePreview()
     {
-        Drawing.FontStyle style = Drawing.FontStyle.Regular;
+        FontStyle style = Drawing.FontStyle.Regular;
 
         labelPreview.Font = Font;
         _font?.Dispose();
@@ -386,7 +386,7 @@ internal partial class FormNewFont
             style |= Drawing.FontStyle.Italic;
         }
 
-        _font = new Drawing.Font(ComboFontFamilies.Text, FontSize, style, FontHeightMode == GorgonFontHeightMode.Pixels ? Drawing.GraphicsUnit.Pixel : Drawing.GraphicsUnit.Point);
+        _font = new Font(ComboFontFamilies.Text, FontSize, style, FontHeightMode == GorgonFontHeightMode.Pixels ? GraphicsUnit.Pixel : GraphicsUnit.Point);
         labelPreview.Font = _font;
     }
 
@@ -414,12 +414,12 @@ internal partial class FormNewFont
     /// <param name="e">The <see cref="EventArgs">EventArgs</see> instance containing the event data.</param>
     private void ButtonCharacters_Click(object sender, EventArgs e)
     {
-        Drawing.Font currentFont = null;
+        Font currentFont = null;
         FormCharacterPicker picker = null;
 
         try
         {
-            currentFont = new Drawing.Font(ComboFontFamilies.Text, 16.0f, Drawing.GraphicsUnit.Pixel);
+            currentFont = new Font(ComboFontFamilies.Text, 16.0f, GraphicsUnit.Pixel);
 
             picker = new FormCharacterPicker
             {

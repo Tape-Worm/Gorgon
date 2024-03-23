@@ -31,7 +31,6 @@ using Gorgon.Input;
 using Gorgon.Math;
 using Gorgon.Timing;
 using Gorgon.UI;
-using DX = SharpDX;
 using GorgonMouseButtons = Gorgon.Input.MouseButtons;
 // ReSharper disable All
 

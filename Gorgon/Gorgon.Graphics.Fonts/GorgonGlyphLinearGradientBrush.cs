@@ -27,7 +27,6 @@
 using System.Drawing.Drawing2D;
 using Gorgon.IO;
 using Gorgon.Math;
-using DX = SharpDX;
 
 namespace Gorgon.Graphics.Fonts;
 
@@ -50,7 +49,7 @@ public class GorgonGlyphLinearGradientBrush
     /// <summary>
     /// Property to set or return the region for the gradient.
     /// </summary>
-    internal DX.Rectangle GradientRegion
+    internal GorgonRectangle GradientRegion
     {
         get;
         set;

@@ -33,7 +33,6 @@ using Gorgon.Graphics.Imaging.Codecs;
 using Gorgon.Math;
 using Gorgon.Renderers;
 using Gorgon.UI;
-using DX = SharpDX;
 
 namespace Gorgon.Examples;
 
@@ -132,42 +131,42 @@ static class Program
         // Now, add the animation frames from our GIF.
         for (int i = 0; i < _metal.ArrayCount; ++i)
         {
-            trackBuilder.SetKey(new GorgonKeyTexture2D(time, _metal, new DX.RectangleF(0, 0, 1, 1), i));
+            trackBuilder.SetKey(new GorgonKeyTexture2D(time, _metal, new GorgonRectangleF(0, 0, 1, 1), i));
             time += _frameDelays[i];
         }
 
         float delay = (10.0f - time).Max(0) / 15.0f;
 
         // Now add in a texture switch with coordinate update... because.
-        trackBuilder.SetKey(new GorgonKeyTexture2D(time, _trooper, new DX.RectangleF(0.25f, 0.25f, 0.5f, 0.5f), 0));
+        trackBuilder.SetKey(new GorgonKeyTexture2D(time, _trooper, new GorgonRectangleF(0.25f, 0.25f, 0.5f, 0.5f), 0));
         time += delay;
-        trackBuilder.SetKey(new GorgonKeyTexture2D(time, _trooper, new DX.RectangleF(0.125f, 0.125f, 0.75f, 0.75f), 0));
+        trackBuilder.SetKey(new GorgonKeyTexture2D(time, _trooper, new GorgonRectangleF(0.125f, 0.125f, 0.75f, 0.75f), 0));
         time += delay;
-        trackBuilder.SetKey(new GorgonKeyTexture2D(time, _trooper, new DX.RectangleF(0, 0, 1, 1), 0));
+        trackBuilder.SetKey(new GorgonKeyTexture2D(time, _trooper, new GorgonRectangleF(0, 0, 1, 1), 0));
         time += delay;
-        trackBuilder.SetKey(new GorgonKeyTexture2D(time, _trooper, new DX.RectangleF(0.125f, 0.125f, 0.75f, 0.75f), 0));
+        trackBuilder.SetKey(new GorgonKeyTexture2D(time, _trooper, new GorgonRectangleF(0.125f, 0.125f, 0.75f, 0.75f), 0));
         time += delay;
-        trackBuilder.SetKey(new GorgonKeyTexture2D(time, _trooper, new DX.RectangleF(0.25f, 0.25f, 0.5f, 0.5f), 0));
+        trackBuilder.SetKey(new GorgonKeyTexture2D(time, _trooper, new GorgonRectangleF(0.25f, 0.25f, 0.5f, 0.5f), 0));
         time += delay;
-        trackBuilder.SetKey(new GorgonKeyTexture2D(time, _trooper, new DX.RectangleF(0.125f, 0.125f, 0.75f, 0.75f), 0));
+        trackBuilder.SetKey(new GorgonKeyTexture2D(time, _trooper, new GorgonRectangleF(0.125f, 0.125f, 0.75f, 0.75f), 0));
         time += delay;
-        trackBuilder.SetKey(new GorgonKeyTexture2D(time, _trooper, new DX.RectangleF(0, 0, 1, 1), 0));
+        trackBuilder.SetKey(new GorgonKeyTexture2D(time, _trooper, new GorgonRectangleF(0, 0, 1, 1), 0));
         time += delay;
-        trackBuilder.SetKey(new GorgonKeyTexture2D(time, _trooper, new DX.RectangleF(0.125f, 0.125f, 0.75f, 0.75f), 0));
+        trackBuilder.SetKey(new GorgonKeyTexture2D(time, _trooper, new GorgonRectangleF(0.125f, 0.125f, 0.75f, 0.75f), 0));
         time += delay;
-        trackBuilder.SetKey(new GorgonKeyTexture2D(time, _trooper, new DX.RectangleF(0.25f, 0.25f, 0.5f, 0.5f), 0));
+        trackBuilder.SetKey(new GorgonKeyTexture2D(time, _trooper, new GorgonRectangleF(0.25f, 0.25f, 0.5f, 0.5f), 0));
         time += delay;
-        trackBuilder.SetKey(new GorgonKeyTexture2D(time, _trooper, new DX.RectangleF(0.125f, 0.125f, 0.75f, 0.75f), 0));
+        trackBuilder.SetKey(new GorgonKeyTexture2D(time, _trooper, new GorgonRectangleF(0.125f, 0.125f, 0.75f, 0.75f), 0));
         time += delay;
-        trackBuilder.SetKey(new GorgonKeyTexture2D(time, _trooper, new DX.RectangleF(0, 0, 1, 1), 0));
+        trackBuilder.SetKey(new GorgonKeyTexture2D(time, _trooper, new GorgonRectangleF(0, 0, 1, 1), 0));
         time += delay;
-        trackBuilder.SetKey(new GorgonKeyTexture2D(time, _trooper, new DX.RectangleF(0.125f, 0.125f, 0.75f, 0.75f), 0));
+        trackBuilder.SetKey(new GorgonKeyTexture2D(time, _trooper, new GorgonRectangleF(0.125f, 0.125f, 0.75f, 0.75f), 0));
         time += delay;
-        trackBuilder.SetKey(new GorgonKeyTexture2D(time, _trooper, new DX.RectangleF(0.25f, 0.25f, 0.5f, 0.5f), 0));
+        trackBuilder.SetKey(new GorgonKeyTexture2D(time, _trooper, new GorgonRectangleF(0.25f, 0.25f, 0.5f, 0.5f), 0));
         time += delay;
-        trackBuilder.SetKey(new GorgonKeyTexture2D(time, _trooper, new DX.RectangleF(0.125f, 0.125f, 0.75f, 0.75f), 0));
+        trackBuilder.SetKey(new GorgonKeyTexture2D(time, _trooper, new GorgonRectangleF(0.125f, 0.125f, 0.75f, 0.75f), 0));
         time += delay;
-        trackBuilder.SetKey(new GorgonKeyTexture2D(time, _trooper, new DX.RectangleF(0, 0, 1, 1), 0));
+        trackBuilder.SetKey(new GorgonKeyTexture2D(time, _trooper, new GorgonRectangleF(0, 0, 1, 1), 0));
 
         trackBuilder.EndEdit();
 
@@ -184,7 +183,7 @@ static class Program
     private static FormMain Initialize()
     {
         GorgonExample.ResourceBaseDirectory = new DirectoryInfo(ExampleConfig.Default.ResourceLocation);
-        FormMain window = GorgonExample.Initialize(new DX.Size2(ExampleConfig.Default.Resolution.Width, ExampleConfig.Default.Resolution.Height), "Animation");
+        FormMain window = GorgonExample.Initialize(new GorgonPoint(ExampleConfig.Default.Resolution.X, ExampleConfig.Default.Resolution.Y), "Animation");
 
         try
         {
@@ -201,8 +200,8 @@ static class Program
 
             _screen = new GorgonSwapChain(_graphics,
                                           window,
-                                          new GorgonSwapChainInfo(ExampleConfig.Default.Resolution.Width,
-                                                                       ExampleConfig.Default.Resolution.Height,
+                                          new GorgonSwapChainInfo(ExampleConfig.Default.Resolution.X,
+                                                                       ExampleConfig.Default.Resolution.Y,
                                                                        BufferFormat.R8G8B8A8_UNorm)
                                           {
                                               Name = "Gorgon2D Animation Example Swap Chain"
@@ -252,7 +251,7 @@ static class Program
             _animatedSprite = new GorgonSprite
             {
                 Position = new Vector2(_screen.Width / 2, _screen.Height / 2),
-                Size = new DX.Size2F(_metal.Width, _metal.Height),
+                Size = new Vector2(_metal.Width, _metal.Height),
                 Anchor = new Vector2(0.5f, 0.5f)
             };
 
@@ -314,10 +313,10 @@ static class Program
 
         _graphics.SetRenderTarget(_screen.RenderTargetView);
         _renderer.Begin();
-        _renderer.DrawFilledRectangle(new DX.RectangleF(0, 0, _screen.Width, _screen.Height),
+        _renderer.DrawFilledRectangle(new GorgonRectangleF(0, 0, _screen.Width, _screen.Height),
                                       GorgonColors.White,
                                       _targetView,
-                                      new DX.RectangleF(0, 0, 1, 1));
+                                      new GorgonRectangleF(0, 0, 1, 1));
         _renderer.End();
 
         GorgonExample.DrawStatsAndLogo(_renderer);

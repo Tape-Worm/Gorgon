@@ -24,9 +24,9 @@
 // 
 
 
+using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Renderers;
-using DX = SharpDX;
 
 namespace Gorgon.Examples;
 
@@ -61,7 +61,7 @@ internal class BgStarLayer(Gorgon2D renderer)
     {
         Renderer.Begin(Gorgon2DBatchState.NoBlend);
         Blit(StarsTexture,
-            new DX.RectangleF(0, 0, OutputSize.Width / (float)StarsTexture.Width, OutputSize.Height / (float)StarsTexture.Height),
+            new GorgonRectangleF(0, 0, OutputSize.X / (float)StarsTexture.Width, OutputSize.Y / (float)StarsTexture.Height),
             GorgonSamplerState.Wrapping);
         Renderer.End();
     }

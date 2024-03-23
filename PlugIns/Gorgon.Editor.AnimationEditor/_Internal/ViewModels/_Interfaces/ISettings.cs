@@ -25,7 +25,7 @@
 
 
 using Gorgon.Editor.UI;
-using DX = SharpDX;
+using Gorgon.Graphics;
 
 namespace Gorgon.Editor.AnimationEditor;
 
@@ -74,7 +74,7 @@ internal interface ISettings
     /// <summary>
     /// Property to set or return the default screen resolution for the animation.
     /// </summary>
-    DX.Size2 DefaultResolution
+    GorgonPoint DefaultResolution
     {
         get;
         set;

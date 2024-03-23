@@ -28,7 +28,6 @@ using System.Numerics;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Renderers;
-using DX = SharpDX;
 
 namespace Gorgon.Examples;
 
@@ -68,8 +67,8 @@ public class ShadowBuilder(Gorgon2D renderer, Gorgon2DGaussBlurEffect effect, Go
         // Once that is done, we can create new sprites from our render target texture that point to the blurred image.
 
         GorgonTexture2DView resultTexture = GorgonTexture2DView.CreateTexture(_renderer.Graphics,
-                                                                              new GorgonTexture2DInfo((int)(_sprite1.Size.Width + _sprite2.Size.Width) * 2,
-                                                                                                           (int)(_sprite1.Size.Height + _sprite2.Size.Height) * 2,
+                                                                              new GorgonTexture2DInfo((int)(_sprite1.Size.X + _sprite2.Size.X) * 2,
+                                                                                                           (int)(_sprite1.Size.Y + _sprite2.Size.Y) * 2,
                                                                                                            BufferFormat.R8G8B8A8_UNorm)
                                                                               {
                                                                                   Name = "Shadow Texture",
@@ -108,26 +107,24 @@ public class ShadowBuilder(Gorgon2D renderer, Gorgon2DGaussBlurEffect effect, Go
             new GorgonSprite
             {
                 Texture = resultTexture,
-                Size = new DX.Size2F(6 + _sprite1.Size.Width, 6 + _sprite1.Size.Height),
+                Size = new Vector2(6 + _sprite1.Size.X, 6 + _sprite1.Size.Y),
                 Color = new GorgonColor(GorgonColors.White, 0.85f),
                 Anchor = new Vector2(0.5f, 0.5f),
-                TextureRegion = resultTexture.ToTexel(new DX.Rectangle((int)(_sprite1.Position.X - (_sprite1.Size.Width / 2) - 10),
-                                                                       (int)(_sprite1.Position.Y - (_sprite1.Size.Height / 2) - 10),
-                                                                       (int)_sprite1.Size.Width + 20,
-                                                                       (int)_sprite1.Size.Height + 20)),
-
+                TextureRegion = resultTexture.ToTexel(new GorgonRectangle((int)(_sprite1.Position.X - (_sprite1.Size.X / 2) - 10),
+                                                                       (int)(_sprite1.Position.Y - (_sprite1.Size.Y / 2) - 10),
+                                                                       (int)_sprite1.Size.X + 20,
+                                                                       (int)_sprite1.Size.Y + 20))
             },
             new GorgonSprite
             {
                 Texture = resultTexture,
-                Size = new DX.Size2F(6 + _sprite2.Size.Width, 6 + _sprite2.Size.Height),
+                Size = new Vector2(6 + _sprite2.Size.X, 6 + _sprite2.Size.Y),
                 Color = new GorgonColor(GorgonColors.White, 0.85f),
                 Anchor = new Vector2(0.5f, 0.5f),
-                TextureRegion = resultTexture.ToTexel(new DX.Rectangle((int)(_sprite2.Position.X - (_sprite2.Size.Width / 2) - 10),
-                                                                       (int)(_sprite2.Position.Y - (_sprite2.Size.Height / 2) - 10),
-                                                                       (int)_sprite2.Size.Width + 20,
-                                                                       (int)_sprite2.Size.Height + 20)),
-
+                TextureRegion = resultTexture.ToTexel(new GorgonRectangle((int)(_sprite2.Position.X - (_sprite2.Size.X / 2) - 10),
+                                                                       (int)(_sprite2.Position.Y - (_sprite2.Size.Y / 2) - 10),
+                                                                       (int)_sprite2.Size.X + 20,
+                                                                       (int)_sprite2.Size.Y + 20))
             }
         ];
 

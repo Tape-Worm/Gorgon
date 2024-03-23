@@ -30,7 +30,6 @@ using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Graphics.Fonts;
 using Gorgon.Renderers;
-using DX = SharpDX;
 
 
 namespace Gorgon.Examples;
@@ -175,9 +174,10 @@ internal class TextRenderer(Gorgon2D renderer, GorgonSwapChain mainRenderTarget,
         // In this case, we want the background to zoom/pan along with our content, so we pass in the renderer Camera
         // to the renderer so that it can be affected by the camera movement.                         
         Renderer.Begin(camera: Camera);
-        DX.RectangleF backgroundRegion = new(RenderRegion.Width * -0.5f + 10, RenderRegion.Height * -0.5f + 10, RenderRegion.Width, RenderRegion.Height);
+        GorgonRectangleF backgroundRegion = new(RenderRegion.Width * -0.5f + 10, RenderRegion.Height * -0.5f + 10, RenderRegion.Width, RenderRegion.Height);
         Renderer.DrawFilledRectangle(backgroundRegion, GorgonColors.Black);
-        backgroundRegion.Offset(-10, -10);
+        backgroundRegion.X -= 10;
+        backgroundRegion.Y -= 10;        
         Renderer.DrawFilledRectangle(backgroundRegion, GorgonColors.White);
         Renderer.End();
     }
@@ -199,8 +199,8 @@ internal class TextRenderer(Gorgon2D renderer, GorgonSwapChain mainRenderTarget,
         // (Region Width / 2, Region Height / 2), but this depends on the camera setup). After this we'll call a utility function in the 
         // renderer to convert camera space into client space (ToClient). This will then allow us to set the clipping rectangle based on 
         // our camera position and zoom.
-        DX.RectangleF cameraSpaceRegion = new(RenderRegion.Width * -0.5f, RenderRegion.Height * -0.5f, RenderRegion.Width, RenderRegion.Height);
-        DX.Rectangle clientSpaceRegion = ToClient(cameraSpaceRegion).ToRectangle(); // The scissor rectangle must be in integer coordinates, ToRectangle will give us this.
+        GorgonRectangleF cameraSpaceRegion = new(RenderRegion.Width * -0.5f, RenderRegion.Height * -0.5f, RenderRegion.Width, RenderRegion.Height);
+        GorgonRectangle clientSpaceRegion = (GorgonRectangle)ToClient(cameraSpaceRegion); // The scissor rectangle must be in integer coordinates, ToRectangle will give us this.
 
         // Set the scissor rectangle. Ideally we'd be doing this when the camera moves/zooms or the client size changes instead of every 
         // frame (way more efficient), but for the purposes of our example, we'll just set it per frame.
@@ -212,7 +212,7 @@ internal class TextRenderer(Gorgon2D renderer, GorgonSwapChain mainRenderTarget,
         Renderer.End();
 
         // Turn off clipping so we don't affect anything else.
-        Graphics.SetScissorRect(DX.Rectangle.Empty);
+        Graphics.SetScissorRect(GorgonRectangle.Empty);
     }
 
     /// <summary>Function called when the renderer needs to load any resource data.</summary>
@@ -234,7 +234,7 @@ internal class TextRenderer(Gorgon2D renderer, GorgonSwapChain mainRenderTarget,
         // This is also the ideal place to set your rendering region.  This region defines where the limits of the content 
         // display will be. Here, we've set it to the same size as the client (minus 32 pixels on either side). 
         // By default it is set to the entire client area size of the view.
-        RenderRegion = new DX.RectangleF(0, 0, ClientSize.Width - 64, ClientSize.Height - 64);
+        RenderRegion = new GorgonRectangleF(0, 0, ClientSize.X - 64, ClientSize.Y - 64);
 
         // We deal in camera space for our content (so we can zoom and pan). The base renderer sets up a camera for this 
         // purpose, which is automatically updated for zooming and panning our content. The camera space view area can be 

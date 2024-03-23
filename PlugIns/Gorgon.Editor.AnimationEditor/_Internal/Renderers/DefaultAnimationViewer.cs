@@ -1,5 +1,4 @@
-﻿
-// 
+﻿// 
 // Gorgon
 // Copyright (C) 2020 Michael Winsor
 // 
@@ -23,7 +22,6 @@
 // Created: June 10, 2020 6:38:49 AM
 // 
 
-
 using System.Numerics;
 using Gorgon.Editor.AnimationEditor.Properties;
 using Gorgon.Editor.Rendering;
@@ -32,7 +30,6 @@ using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Graphics.Fonts;
 using Gorgon.Renderers;
-using DX = SharpDX;
 
 
 namespace Gorgon.Editor.AnimationEditor;
@@ -48,24 +45,19 @@ namespace Gorgon.Editor.AnimationEditor;
 internal class DefaultAnimationViewer(Gorgon2D renderer, GorgonSwapChain swapChain, IAnimationContent dataContext, IRectClipperService clipper)
         : AnimationViewer(ViewerName, renderer, swapChain, dataContext, clipper, false)
 {
-
     /// <summary>
     /// The name of the viewer.
     /// </summary>
     public const string ViewerName = "AnimationDefaultRenderer";
-
-
 
     // The font used to rendering instructional text.
     private GorgonFont _font;
     // The set key frame instructions.
     private GorgonTextSprite _instructions;
     // The size of the text sprite.
-    private DX.Size2F _textSize;
+    private Vector2 _textSize;
     // Flag to indicate that we'll allow movement of the sprite.
     private bool _allowMove;
-
-
 
     /// <summary>Function called when the camera is panned.</summary>
     /// <remarks>Developers can override this method to implement a custom action when the camera is panned around the view.</remarks>
@@ -132,10 +124,10 @@ internal class DefaultAnimationViewer(Gorgon2D renderer, GorgonSwapChain swapCha
         {
             Alignment = Gorgon.UI.Alignment.LowerCenter,
             DrawMode = TextDrawMode.OutlinedGlyphs,
-            LayoutArea = new DX.Size2F(ClientSize.Width, ClientSize.Height),
-            Text = Resources.GORANM_TEXT_TEXTURE_KEY_ASSIGN.WordWrap(_font, ClientSize.Width)
+            LayoutArea = new Vector2(ClientSize.X, ClientSize.Y),
+            Text = Resources.GORANM_TEXT_TEXTURE_KEY_ASSIGN.WordWrap(_font, ClientSize.X)
         };
-        _textSize = _instructions.Text.MeasureText(_font, true, wordWrapWidth: ClientSize.Width);
+        _textSize = _instructions.Text.MeasureText(_font, true, wordWrapWidth: ClientSize.X);
 
         if (Clipper is not null)
         {
@@ -145,7 +137,7 @@ internal class DefaultAnimationViewer(Gorgon2D renderer, GorgonSwapChain swapCha
             Clipper.AllowMove = true;
             Clipper.ClipAgainstBoundaries = false;
             Clipper.Bounds = RenderRegion;
-            Clipper.Rectangle = Renderer.MeasureSprite(Sprite).Truncate();
+            Clipper.Rectangle = GorgonRectangleF.Truncate(Renderer.MeasureSprite(Sprite));
             Clipper.RectChanged += Clipper_RectChanged;
         }
     }
@@ -153,7 +145,7 @@ internal class DefaultAnimationViewer(Gorgon2D renderer, GorgonSwapChain swapCha
     /// <summary>Handles the RectChanged event of the Clipper control.</summary>
     /// <param name="sender">The source of the event.</param>
     /// <param name="e">The <see cref="T:System.EventArgs">EventArgs</see> instance containing the event data.</param>
-    private void Clipper_RectChanged(object sender, System.EventArgs e)
+    private void Clipper_RectChanged(object sender, EventArgs e)
     {
         if (!_allowMove)
         {
@@ -168,10 +160,10 @@ internal class DefaultAnimationViewer(Gorgon2D renderer, GorgonSwapChain swapCha
     /// <remarks>Developers can override this method to handle cases where the view window is resized and the content has size dependent data (e.g. render targets).</remarks>
     protected override void OnResizeEnd()
     {
-        _instructions.LayoutArea = new DX.Size2F(ClientSize.Width, ClientSize.Height);
+        _instructions.LayoutArea = new Vector2(ClientSize.X, ClientSize.Y);
 
-        _instructions.Text = Resources.GORANM_TEXT_TEXTURE_KEY_ASSIGN.WordWrap(_font, ClientSize.Width);
-        _textSize = _instructions.Text.MeasureText(_font, true, wordWrapWidth: ClientSize.Width);
+        _instructions.Text = Resources.GORANM_TEXT_TEXTURE_KEY_ASSIGN.WordWrap(_font, ClientSize.X);
+        _textSize = _instructions.Text.MeasureText(_font, true, wordWrapWidth: ClientSize.X);
 
         Clipper?.Refresh();
 
@@ -185,7 +177,7 @@ internal class DefaultAnimationViewer(Gorgon2D renderer, GorgonSwapChain swapCha
     {
         if ((Clipper is not null) && (!Clipper.IsDragging))
         {
-            DX.RectangleF bounds = Renderer.MeasureSprite(Sprite);
+            GorgonRectangleF bounds = Renderer.MeasureSprite(Sprite);
             Vector3 half = new(RenderRegion.Width * 0.5f, RenderRegion.Height * 0.5f, 0);
             Vector3 upperLeft = new Vector3(bounds.Left, bounds.Top, 0) - half;
             Vector3 lowerRight = new Vector3(bounds.Right, bounds.Bottom, 0) - half;
@@ -262,7 +254,7 @@ internal class DefaultAnimationViewer(Gorgon2D renderer, GorgonSwapChain swapCha
         _instructions.Position = new Vector2(0, 0);
 
         Renderer.Begin();
-        Renderer.DrawFilledRectangle(new DX.RectangleF(0, ClientSize.Height - _textSize.Height, ClientSize.Width, _textSize.Height), new GorgonColor(GorgonColors.Black, 0.65f));
+        Renderer.DrawFilledRectangle(new GorgonRectangleF(0, ClientSize.Y - _textSize.Y, ClientSize.X, _textSize.Y), new GorgonColor(GorgonColors.Black, 0.65f));
         Renderer.DrawTextSprite(_instructions);
         Renderer.End();
     }
@@ -292,6 +284,4 @@ internal class DefaultAnimationViewer(Gorgon2D renderer, GorgonSwapChain swapCha
 
         ZoomToSprite(Sprite);
     }
-
-
 }

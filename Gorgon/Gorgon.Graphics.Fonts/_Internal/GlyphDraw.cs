@@ -28,7 +28,6 @@ using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
 using System.Globalization;
 using Gorgon.Math;
-using DX = SharpDX;
 
 namespace Gorgon.Graphics.Fonts;
 
@@ -42,13 +41,10 @@ namespace Gorgon.Graphics.Fonts;
 /// <param name="fontData">The font data for the glyphs.</param>
 internal class GlyphDraw(IGorgonFontInfo fontInfo, GdiFontData fontData)
 {
-
     // Data used to generate the font glyphs.
     private readonly GdiFontData _fontData = fontData;
     // Information about the font to create.
     private readonly IGorgonFontInfo _fontInfo = fontInfo;
-
-
 
     /// <summary>
     /// Function to determine if a bitmap is empty.
@@ -184,7 +180,7 @@ internal class GlyphDraw(IGorgonFontInfo fontInfo, GdiFontData fontData)
     /// <param name="glyphGraphics">The graphics context for the glyph bitmap.</param>
     /// <param name="drawOutline"><b>true</b> to draw the outline for measurement, or <b>false</b> to draw the actual glyph for measurement.</param>
     /// <returns>The bounding rectangle for the glyph.</returns>
-    private DX.Rectangle CropGlyphRegion(char character, RectangleF glyphBounds, Bitmap glyphBitmap, System.Drawing.Graphics glyphGraphics, bool drawOutline)
+    private GorgonRectangle CropGlyphRegion(char character, RectangleF glyphBounds, Bitmap glyphBitmap, System.Drawing.Graphics glyphGraphics, bool drawOutline)
     {
         BitmapData pixels = null;
         Point cropTopLeft = new(0, 0);
@@ -248,7 +244,7 @@ internal class GlyphDraw(IGorgonFontInfo fontInfo, GdiFontData fontData)
             }
             // ReSharper restore InvertIf
 
-            return new DX.Rectangle
+            return new GorgonRectangle
             {
                 Left = cropTopLeft.X,
                 Top = cropTopLeft.Y,
@@ -385,17 +381,17 @@ internal class GlyphDraw(IGorgonFontInfo fontInfo, GdiFontData fontData)
     /// <param name="glyphBounds">The list of glyph boundaries.</param>
     /// <param name="hasOutline"><b>true</b> if the font is using an outline, <b>false</b> if not.</param>
     /// <returns>The size of the largest glyph.</returns>
-    private static DX.Size2 GetMaxGlyphSize(Dictionary<char, GlyphRegions> glyphBounds, bool hasOutline)
+    private static GorgonPoint GetMaxGlyphSize(Dictionary<char, GlyphRegions> glyphBounds, bool hasOutline)
     {
-        DX.Size2 result = new(int.MinValue, int.MinValue);
+        GorgonPoint result = new(int.MinValue, int.MinValue);
         foreach (KeyValuePair<char, GlyphRegions> glyphBound in glyphBounds)
         {
             result = !hasOutline
-                         ? new DX.Size2(glyphBound.Value.CharacterRegion.Right.Max(result.Width), glyphBound.Value.CharacterRegion.Bottom.Max(result.Height))
-                         : new DX.Size2(glyphBound.Value.OutlineRegion.Right.Max(result.Width), glyphBound.Value.OutlineRegion.Bottom.Max(result.Height));
+                         ? new GorgonPoint(glyphBound.Value.CharacterRegion.Right.Max(result.X), glyphBound.Value.CharacterRegion.Bottom.Max(result.Y))
+                         : new GorgonPoint(glyphBound.Value.OutlineRegion.Right.Max(result.X), glyphBound.Value.OutlineRegion.Bottom.Max(result.Y));
         }
 
-        return new DX.Size2(result.Width, result.Height);
+        return new GorgonPoint(result.X, result.Y);
     }
 
     /// <summary>
@@ -434,19 +430,19 @@ internal class GlyphDraw(IGorgonFontInfo fontInfo, GdiFontData fontData)
                 continue;
             }
 
-            DX.Rectangle charRect = glyphBounds[character].CharacterRegion;
+            GorgonRectangle charRect = glyphBounds[character].CharacterRegion;
 
             // Skip whitespace characters. These won't be drawn, just measured.
             if (char.IsWhiteSpace(character))
             {
                 characters.Remove(character);
-                packedGlyphs[character] = new GlyphInfo(null, new DX.Rectangle(0, 0, charRect.Width + 1, charRect.Height + 1), GorgonPoint.Zero, DX.Rectangle.Empty, GorgonPoint.Zero);
+                packedGlyphs[character] = new GlyphInfo(null, new GorgonRectangle(0, 0, charRect.Width + 1, charRect.Height + 1), GorgonPoint.Zero, GorgonRectangle.Empty, GorgonPoint.Zero);
                 continue;
             }
 
-            DX.Rectangle outlineRect = glyphBounds[character].OutlineRegion;
+            GorgonRectangle outlineRect = glyphBounds[character].OutlineRegion;
 
-            DX.Size2 size = new(charRect.Width + 1, charRect.Height + 1);
+            GorgonPoint size = new(charRect.Width + 1, charRect.Height + 1);
 
             Rectangle? placement = GlyphPacker.Add(new Size(charRect.Width + packingSpace, charRect.Height + packingSpace));
             Rectangle? outlinePlacement = null;
@@ -474,7 +470,7 @@ internal class GlyphDraw(IGorgonFontInfo fontInfo, GdiFontData fontData)
             // If we're using a linear gradient, then we have to define the bounds for that gradient.
             if (brush.BrushType == GlyphBrushType.LinearGradient)
             {
-                ((GorgonGlyphLinearGradientBrush)brush).GradientRegion = new DX.Rectangle(charRect.Left, charRect.Top, charRect.Width, charRect.Height);
+                ((GorgonGlyphLinearGradientBrush)brush).GradientRegion = new GorgonRectangle(charRect.Left, charRect.Top, charRect.Width, charRect.Height);
             }
 
             using Brush gdiBrush = brush.ToGDIBrush();
@@ -482,8 +478,8 @@ internal class GlyphDraw(IGorgonFontInfo fontInfo, GdiFontData fontData)
             DrawGlyphCharacter(character, glyphBitmap, glyphGraphics, gdiBrush);
 
             packedGraphics.DrawImage(glyphBitmap,
-                                     new Rectangle(location.X, location.Y, size.Width, size.Height),
-                                     new Rectangle(charRect.X, charRect.Y, size.Width, size.Height),
+                                     new Rectangle(location.X, location.Y, size.X, size.Y),
+                                     new Rectangle(charRect.X, charRect.Y, size.X, size.Y),
                                      GraphicsUnit.Pixel);
 
             // Draw the outline for the character glyph.
@@ -500,9 +496,9 @@ internal class GlyphDraw(IGorgonFontInfo fontInfo, GdiFontData fontData)
             }
 
             packedGlyphs[character] = new GlyphInfo(packedBitmap,
-                                                    new DX.Rectangle(location.X, location.Y, size.Width, size.Height),
+                                                    new GorgonRectangle(location.X, location.Y, size.X, size.Y),
                                                     new GorgonPoint(charRect.X, charRect.Y),
-                                                    new DX.Rectangle(outlineLocation.X, outlineLocation.Y, outlineRect.Width + 1, outlineRect.Height + 1),
+                                                    new GorgonRectangle(outlineLocation.X, outlineLocation.Y, outlineRect.Width + 1, outlineRect.Height + 1),
                                                     new GorgonPoint(outlineRect.X, outlineRect.Y));
         }
     }
@@ -518,8 +514,8 @@ internal class GlyphDraw(IGorgonFontInfo fontInfo, GdiFontData fontData)
     {
         Dictionary<char, GlyphInfo> result = [];
         System.Drawing.Graphics packedGraphics = null;
-        DX.Size2 maxGlyphSize = GetMaxGlyphSize(glyphBounds, hasOutline);
-        Bitmap glyphBitmap = new(maxGlyphSize.Width + 10, maxGlyphSize.Height + 10, PixelFormat.Format32bppArgb);
+        GorgonPoint maxGlyphSize = GetMaxGlyphSize(glyphBounds, hasOutline);
+        Bitmap glyphBitmap = new(maxGlyphSize.X + 10, maxGlyphSize.Y + 10, PixelFormat.Format32bppArgb);
         System.Drawing.Graphics glyphGraphics = System.Drawing.Graphics.FromImage(glyphBitmap);
         GorgonGlyphBrush glyphBrush = _fontInfo.Brush ?? new GorgonGlyphSolidBrush
         {
@@ -558,10 +554,10 @@ internal class GlyphDraw(IGorgonFontInfo fontInfo, GdiFontData fontData)
                 // Sort by size.
                 characters.Sort((left, right) =>
                                 {
-                                    DX.Size2 leftSize = new(glyphBounds[left].CharacterRegion.Width, glyphBounds[left].CharacterRegion.Height);
-                                    DX.Size2 rightSize = new(glyphBounds[right].CharacterRegion.Width, glyphBounds[right].CharacterRegion.Height);
+                                    GorgonPoint leftSize = new(glyphBounds[left].CharacterRegion.Width, glyphBounds[left].CharacterRegion.Height);
+                                    GorgonPoint rightSize = new(glyphBounds[right].CharacterRegion.Width, glyphBounds[right].CharacterRegion.Height);
 
-                                    return leftSize.Height == rightSize.Height ? left.CompareTo(right) : leftSize.Height < rightSize.Height ? 1 : -1;
+                                    return leftSize.Y == rightSize.Y ? left.CompareTo(right) : leftSize.Y < rightSize.Y ? 1 : -1;
                                 });
 
                 GlyphPacker.CreateRoot(_fontInfo.TextureWidth - _fontInfo.PackingSpacing, _fontInfo.TextureHeight - _fontInfo.PackingSpacing);
@@ -627,14 +623,14 @@ internal class GlyphDraw(IGorgonFontInfo fontInfo, GdiFontData fontData)
                 // Ensure that the bitmap that will receive the glyph is large enough.
                 GetGlyphBitmap(ref glyphBitmap, ref glyphBitmapGraphics, characterRange);
 
-                DX.Rectangle glyphRectangle = CropGlyphRegion(updatedChar, characterRange, glyphBitmap, glyphBitmapGraphics, false);
+                GorgonRectangle glyphRectangle = CropGlyphRegion(updatedChar, characterRange, glyphBitmap, glyphBitmapGraphics, false);
 
                 if (glyphRectangle.IsEmpty)
                 {
                     continue;
                 }
 
-                DX.Rectangle outlineRect = DX.Rectangle.Empty;
+                GorgonRectangle outlineRect = GorgonRectangle.Empty;
 
                 // Now measure the outline as a separate image so we can draw it under the character.
                 if ((hasOutline) && (!char.IsWhiteSpace(updatedChar)))

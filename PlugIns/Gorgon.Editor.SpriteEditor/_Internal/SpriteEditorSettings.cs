@@ -26,7 +26,6 @@
 
 using Gorgon.Graphics;
 using Newtonsoft.Json;
-using DX = SharpDX;
 
 namespace Gorgon.Editor.SpriteEditor;
 
@@ -65,7 +64,7 @@ internal class SpriteEditorSettings
     /// Property to set or return the position of the manual rectangle editor window.
     /// </summary>
     [JsonProperty]
-    public DX.Rectangle? ManualRectangleEditorBounds
+    public GorgonRectangle? ManualRectangleEditorBounds
     {
         get;
         set;
@@ -75,7 +74,7 @@ internal class SpriteEditorSettings
     /// Property to set or return the position of the manual vertex editor window.
     /// </summary>
     [JsonProperty]
-    public DX.Rectangle? ManualVertexEditorBounds
+    public GorgonRectangle? ManualVertexEditorBounds
     {
         get;
         set;

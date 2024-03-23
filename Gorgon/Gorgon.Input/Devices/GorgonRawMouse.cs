@@ -30,7 +30,6 @@ using Gorgon.Input.Properties;
 using Gorgon.Math;
 using Gorgon.Native;
 using Gorgon.Timing;
-using DX = SharpDX;
 
 namespace Gorgon.Input;
 
@@ -65,13 +64,13 @@ public class GorgonRawMouse
     : IGorgonMouse
 {
     // Range that a double click is valid within.
-    private DX.Size2 _doubleClickSize;
+    private GorgonPoint _doubleClickSize;
     // Mouse horizontal and vertical position.
     private GorgonPoint _position;
     // Mouse wheel position.
     private int _wheel;
     // Constraints for the pointing device position.
-    private DX.Rectangle _positionConstraint;
+    private GorgonRectangle _positionConstraint;
     // Constraints for the pointing device wheel.
     private GorgonRange<int> _wheelConstraint;
     // The delay, in milliseconds, between clicks for a double click event.
@@ -241,7 +240,7 @@ public class GorgonRawMouse
     /// </para>
     /// </note>
     /// </remarks>
-    public DX.Rectangle PositionConstraint
+    public GorgonRectangle PositionConstraint
     {
         get => _positionConstraint;
         set
@@ -284,10 +283,10 @@ public class GorgonRawMouse
     /// Passing <c>Size.Empty</c> to this property will disable double clicking.
     /// </para>
     /// </remarks>
-    public DX.Size2 DoubleClickSize
+    public GorgonPoint DoubleClickSize
     {
         get => _doubleClickSize;
-        set => _doubleClickSize = new DX.Size2(value.Width.Abs(), value.Height.Abs());
+        set => _doubleClickSize = new GorgonPoint(value.X.Abs(), value.Y.Abs());
     }
 
     /// <summary>Property to set or return the position of the mouse.</summary>
@@ -436,10 +435,10 @@ public class GorgonRawMouse
             return button;
         }
 
-        DX.Rectangle doubleClickArea = new(_doubleClickPosition.X - (DoubleClickSize.Width / 2),
-                                                  _doubleClickPosition.Y - (DoubleClickSize.Height / 2),
-                                                  DoubleClickSize.Width,
-                                                  DoubleClickSize.Height);
+        GorgonRectangle doubleClickArea = new(_doubleClickPosition.X - (DoubleClickSize.X / 2),
+                                                  _doubleClickPosition.Y - (DoubleClickSize.Y / 2),
+                                                  DoubleClickSize.X,
+                                                  DoubleClickSize.Y);
 
         if ((!doubleClickArea.Contains(Position.X, Position.Y)) || (_doubleClickButton != button) || (_doubleClickTimer.Milliseconds > DoubleClickDelay))
         {

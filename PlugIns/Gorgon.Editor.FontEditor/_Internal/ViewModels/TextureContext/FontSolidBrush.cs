@@ -115,7 +115,7 @@ internal class FontSolidBrush
     protected override void OnUnload()
     {
         _brush = DefaultBrush;
-        base.Unload();
+        Unload();
     }
 
 }

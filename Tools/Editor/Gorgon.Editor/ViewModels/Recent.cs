@@ -185,7 +185,7 @@ internal class Recent
     /// <summary>Function called when the associated view is unloaded.</summary>
     protected override void OnUnload()
     {
-        base.Unload();
+        Unload();
         Files.CollectionChanged -= Files_CollectionChanged;
     }
 

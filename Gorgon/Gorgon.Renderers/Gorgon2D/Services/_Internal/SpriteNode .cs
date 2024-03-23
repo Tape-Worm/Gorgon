@@ -1,5 +1,4 @@
-﻿
-// 
+﻿// 
 // Gorgon
 // Copyright (C) 2017 Michael Winsor
 // 
@@ -23,8 +22,7 @@
 // Created: February 23, 2017 9:49:20 PM
 // 
 
-
-using DX = SharpDX;
+using Gorgon.Graphics;
 
 namespace Gorgon.Renderers.Services;
 
@@ -37,20 +35,17 @@ namespace Gorgon.Renderers.Services;
 /// <param name="parentNode">The parent node.</param>
 internal class SpriteNode(SpriteNode parentNode)
 {
-
     // Flag to indicate that we have no more space.
     private bool _noMoreRoom;
-
-
 
     /// <summary>
     /// Property to set or return the region that this node occupies on the image.
     /// </summary>
-    public DX.Rectangle Region
+    public GorgonRectangle Region
     {
         get;
         set;
-    } = DX.Rectangle.Empty;
+    } = GorgonRectangle.Empty;
 
     /// <summary>
     /// Property to return the parent node for this node.
@@ -83,13 +78,11 @@ internal class SpriteNode(SpriteNode parentNode)
     /// </summary>
     public bool IsLeaf => ((Left is null) && (Right is null));
 
-
-
     /// <summary>
     /// Function to add a node as a child to this node.
     /// </summary>
     /// <param name="dimensions">Dimensions that the node will occupy.</param>
-    public SpriteNode AddNode(DX.Size2 dimensions)
+    public SpriteNode AddNode(GorgonPoint dimensions)
     {
         if (!IsLeaf)
         {
@@ -104,13 +97,13 @@ internal class SpriteNode(SpriteNode parentNode)
         }
 
         // Ensure we can fit this node.
-        if ((dimensions.Width > Region.Width) || (dimensions.Height > Region.Height))
+        if ((dimensions.X > Region.X) || (dimensions.Y > Region.Y))
         {
             return null;
         }
 
         // We have an exact fit, so there will be no more room for other nodes.
-        if ((dimensions.Width == Region.Width) && (dimensions.Height == Region.Height))
+        if ((dimensions.X == Region.X) && (dimensions.Y == Region.Y))
         {
             _noMoreRoom = true;
             return this;
@@ -121,23 +114,19 @@ internal class SpriteNode(SpriteNode parentNode)
         Right = new SpriteNode(this);
 
         // Subdivide.
-        DX.Size2 delta = new(Region.Width - dimensions.Width, Region.Height - dimensions.Height);
+        GorgonPoint delta = new(Region.X - dimensions.X, Region.Y - dimensions.Y);
 
-        if (delta.Height <= 0) //(delta.Width > delta.Height)
+        if (delta.Y <= 0)
         {
-            Left.Region = new DX.Rectangle(Region.Left, Region.Top, dimensions.Width, Region.Height);
-            Right.Region = new DX.Rectangle(Region.Left + dimensions.Width, Region.Top, delta.Width, Region.Height);
+            Left.Region = new GorgonRectangle(Region.Left, Region.Top, dimensions.X, Region.Y);
+            Right.Region = new GorgonRectangle(Region.Left + dimensions.X, Region.Top, delta.X, Region.Y);
         }
         else
         {
-            Left.Region = new DX.Rectangle(Region.Left, Region.Top, Region.Width, dimensions.Height);
-            Right.Region = new DX.Rectangle(Region.Left, Region.Top + dimensions.Height, Region.Width, delta.Height);
+            Left.Region = new GorgonRectangle(Region.Left, Region.Top, Region.X, dimensions.Y);
+            Right.Region = new GorgonRectangle(Region.Left, Region.Top + dimensions.Y, Region.X, delta.Y);
         }
 
         return Left.AddNode(dimensions) ?? Right.AddNode(dimensions);
     }
-
-
-
-
 }

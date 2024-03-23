@@ -26,7 +26,6 @@
 
 using Gorgon.Core;
 using Gorgon.Native;
-using DX = SharpDX;
 
 namespace Gorgon.Graphics.Imaging;
 
@@ -137,7 +136,7 @@ public interface IGorgonImageBuffer
     /// If the <paramref name="region"/> is not specified, then the entire buffer is updated, otherwise only the values within the <paramref name="region"/> are updated. 
     /// </para>
     /// </remarks>
-    void SetAlpha(float alphaValue, GorgonRange<float>? updateAlphaRange = null, DX.Rectangle? region = null);
+    void SetAlpha(float alphaValue, GorgonRange<float>? updateAlphaRange = null, GorgonRectangle? region = null);
 
     /// <summary>
     /// Function to copy the image buffer data from this buffer into another.
@@ -166,7 +165,7 @@ public interface IGorgonImageBuffer
     /// The destination buffer must be the same format as the source buffer.  If it is not, then an exception will be thrown.
     /// </para>
     /// </remarks>
-    void CopyTo(IGorgonImageBuffer buffer, DX.Rectangle? sourceRegion = null, int destX = 0, int destY = 0);
+    void CopyTo(IGorgonImageBuffer buffer, GorgonRectangle? sourceRegion = null, int destX = 0, int destY = 0);
 
     /// <summary>
     /// Function to create a sub region from the current image data contained within this buffer.
@@ -196,7 +195,7 @@ public interface IGorgonImageBuffer
     /// </para> 
     /// </remarks>
     /// <seealso cref="IGorgonImage"/>
-    IGorgonImageBuffer GetRegion(DX.Rectangle clipRegion);
+    IGorgonImageBuffer GetRegion(GorgonRectangle clipRegion);
 
     /// <summary>
     /// Function to fill the entire buffer with the specified byte value.

@@ -31,7 +31,6 @@ using Gorgon.Graphics.Imaging;
 using Gorgon.Graphics.Imaging.Codecs;
 using Gorgon.Graphics.Imaging.GdiPlus;
 using Gorgon.IO;
-using DX = SharpDX;
 
 namespace Gorgon.Graphics.Fonts;
 
@@ -120,7 +119,7 @@ public class GorgonGlyphTextureBrush
     /// <remarks>
     /// This value is in relative texture coordinates.
     /// </remarks>
-    public DX.RectangleF TextureRegion
+    public GorgonRectangleF TextureRegion
     {
         get;
         set;
@@ -167,7 +166,7 @@ public class GorgonGlyphTextureBrush
     internal override void ReadBrushData(GorgonBinaryReader reader)
     {
         WrapMode = (GlyphBrushWrapMode)reader.ReadInt32();
-        TextureRegion = reader.ReadValue<DX.RectangleF>();
+        TextureRegion = reader.ReadValue<GorgonRectangleF>();
         int imageSize = reader.ReadInt32();
 
         GorgonCodecPng codec = new();
@@ -281,7 +280,7 @@ public class GorgonGlyphTextureBrush
 
 
     /// <summary>Initializes a new instance of the <see cref="GorgonGlyphTextureBrush"/> class.</summary>
-    internal GorgonGlyphTextureBrush() => TextureRegion = new DX.RectangleF(0, 0, 1, 1);
+    internal GorgonGlyphTextureBrush() => TextureRegion = new GorgonRectangleF(0, 0, 1, 1);
 
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonGlyphPathGradientBrush"/> class.
@@ -302,7 +301,7 @@ public class GorgonGlyphTextureBrush
         if (textureImage is null)
         {
             _imageData = [];
-            TextureRegion = new DX.RectangleF(0, 0, 1, 1);
+            TextureRegion = new GorgonRectangleF(0, 0, 1, 1);
             WrapMode = GlyphBrushWrapMode.Clamp;
             return;
         }
@@ -338,7 +337,7 @@ public class GorgonGlyphTextureBrush
 
         _imageData = new byte[tempImage.Buffers[0].PitchInformation.SlicePitch];
         tempImage.Buffers[0].Data.CopyTo(_imageData.AsSpan());
-        TextureRegion = new DX.RectangleF(0, 0, 1, 1);
+        TextureRegion = new GorgonRectangleF(0, 0, 1, 1);
     }
 
 }

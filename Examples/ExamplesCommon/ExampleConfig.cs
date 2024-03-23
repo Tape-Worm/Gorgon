@@ -24,8 +24,8 @@
 // 
 
 
+using Gorgon.Graphics;
 using Microsoft.Extensions.Configuration;
-using DX = SharpDX;
 
 namespace Gorgon.Examples;
 
@@ -96,11 +96,11 @@ public class ExampleConfig
     /// <summary>
     /// Property to set or return the desired window resolution.
     /// </summary>
-    public DX.Size2 Resolution
+    public GorgonPoint Resolution
     {
         get;
         set;
-    } = new DX.Size2(1280, 800);
+    } = new GorgonPoint(1280, 800);
 
     /// <summary>
     /// Property to set or return whether the example runs in windowed mode, or full screen mode.

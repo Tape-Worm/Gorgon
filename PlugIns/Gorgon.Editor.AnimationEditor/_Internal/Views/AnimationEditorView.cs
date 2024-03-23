@@ -32,10 +32,10 @@ using Gorgon.Editor.Rendering;
 using Gorgon.Editor.Services;
 using Gorgon.Editor.UI;
 using Gorgon.Editor.UI.Views;
+using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Graphics.Imaging.Codecs;
 using Gorgon.Renderers;
-using DX = SharpDX;
 
 namespace Gorgon.Editor.AnimationEditor;
 
@@ -352,10 +352,10 @@ internal partial class AnimationEditorView
         _anchorService = new AnchorEditService(context.Renderer2D, new GorgonSprite
         {
             Texture = _anchorTexture,
-            Size = new DX.Size2F(_anchorTexture.Width, _anchorTexture.Height),
+            Size = new Vector2(_anchorTexture.Width, _anchorTexture.Height),
             // Place the hotspot on rope hole at the top of the handle.
             Anchor = new Vector2(0.5f, 0.125f)
-        }, new DX.Rectangle
+        }, new GorgonRectangle
         {
             Left = -context.Graphics.VideoAdapter.MaxTextureWidth / 2,
             Top = -context.Graphics.VideoAdapter.MaxTextureHeight / 2,

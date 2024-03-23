@@ -31,7 +31,6 @@ using Gorgon.Graphics;
 using Gorgon.Math;
 using Gorgon.Renderers;
 using Gorgon.Renderers.Cameras;
-using DX = SharpDX;
 
 namespace Gorgon.Editor.Services;
 
@@ -58,7 +57,7 @@ public class AnchorEditService : IAnchorEditService
     // The current mouse position.
     private Vector2 _mousePosition;
     // The boundaries for the anchor point.
-    private DX.Rectangle _bounds;
+    private GorgonRectangle _bounds;
     // Flag to indicate that the mouse cursor is hidden.
     private bool _cursorHidden;
 
@@ -136,7 +135,7 @@ public class AnchorEditService : IAnchorEditService
             return;
         }
 
-        DX.RectangleF iconBounds = _renderer.MeasureSprite(_anchorIcon);
+        GorgonRectangleF iconBounds = _renderer.MeasureSprite(_anchorIcon);
         Cursor cursor = Cursors.Default;
 
         if (iconBounds.Contains(_mousePosition.X, _mousePosition.Y))
@@ -164,7 +163,7 @@ public class AnchorEditService : IAnchorEditService
         }
 
         _mousePosition = args.ClientPosition;
-        DX.RectangleF iconBounds = _renderer.MeasureSprite(_anchorIcon);
+        GorgonRectangleF iconBounds = _renderer.MeasureSprite(_anchorIcon);
 
         if (!iconBounds.Contains(_mousePosition.X, _mousePosition.Y))
         {
@@ -310,8 +309,8 @@ public class AnchorEditService : IAnchorEditService
         _anchorIcon.Position = (new Vector2(screenAnchor.X, screenAnchor.Y)).Truncate();
 
         _renderer.DrawSprite(_anchorIcon);
-        _renderer.DrawFilledRectangle(new DX.RectangleF(_anchorIcon.Position.X - 4, _anchorIcon.Position.Y - 1, 9, 3), GorgonColors.Black);
-        _renderer.DrawFilledRectangle(new DX.RectangleF(_anchorIcon.Position.X - 1, _anchorIcon.Position.Y - 4, 3, 9), GorgonColors.Black);
+        _renderer.DrawFilledRectangle(new GorgonRectangleF(_anchorIcon.Position.X - 4, _anchorIcon.Position.Y - 1, 9, 3), GorgonColors.Black);
+        _renderer.DrawFilledRectangle(new GorgonRectangleF(_anchorIcon.Position.X - 1, _anchorIcon.Position.Y - 4, 3, 9), GorgonColors.Black);
         _renderer.DrawLine(_anchorIcon.Position.X - 3, _anchorIcon.Position.Y, _anchorIcon.Position.X + 4, _anchorIcon.Position.Y, GorgonColors.White);
         _renderer.DrawLine(_anchorIcon.Position.X, _anchorIcon.Position.Y - 3, _anchorIcon.Position.X, _anchorIcon.Position.Y + 4, GorgonColors.White);
 
@@ -324,7 +323,7 @@ public class AnchorEditService : IAnchorEditService
     /// <param name="renderer">The 2D renderer for the application.</param>
     /// <param name="anchorSprite">The sprite representing the anchor icon.</param>
     /// <param name="bounds">The boundaries for the anchor point.</param>
-    public AnchorEditService(Gorgon2D renderer, GorgonSprite anchorSprite, DX.Rectangle bounds)
+    public AnchorEditService(Gorgon2D renderer, GorgonSprite anchorSprite, GorgonRectangle bounds)
     {
         _renderer = renderer;
         _anchorIcon = anchorSprite;

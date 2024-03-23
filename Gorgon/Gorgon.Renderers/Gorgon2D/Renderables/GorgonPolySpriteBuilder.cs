@@ -34,7 +34,6 @@ using Gorgon.Patterns;
 using Gorgon.Renderers.Geometry;
 using Gorgon.Renderers.Properties;
 using GorgonTriangulator;
-using DX = SharpDX;
 
 namespace Gorgon.Renderers;
 
@@ -506,7 +505,7 @@ public class GorgonPolySpriteBuilder(Gorgon2D renderer)
         _triangulator.EnsureWindingOrder(newSprite.Renderable.Vertices, WindingOrder.CounterClockwise);
 
         // Split the polygon hull into triangles.
-        (int[] indices, DX.RectangleF bounds) = _triangulator.Triangulate(newSprite.Renderable.Vertices, WindingOrder.CounterClockwise);
+        (int[] indices, GorgonRectangleF bounds) = _triangulator.Triangulate(newSprite.Renderable.Vertices, WindingOrder.CounterClockwise);
 
         newSprite.RwIndices = indices;
 
@@ -523,7 +522,7 @@ public class GorgonPolySpriteBuilder(Gorgon2D renderer)
         }, newSprite.Renderable.Vertices);
         newSprite.Renderable.ActualVertexCount = newSprite.RwVertices.Count;
         newSprite.Renderable.IndexCount = indices.Length;
-        newSprite.Bounds = new DX.RectangleF(newSprite.Position.X, newSprite.Position.Y, bounds.Width, bounds.Height);
+        newSprite.Bounds = new GorgonRectangleF(newSprite.Position.X, newSprite.Position.Y, bounds.Width, bounds.Height);
 
         return newSprite;
     }
@@ -541,7 +540,7 @@ public class GorgonPolySpriteBuilder(Gorgon2D renderer)
         _workingSprite.AlphaTest = GorgonRange<float>.Empty;
         _workingSprite.Anchor = Vector2.Zero;
         _workingSprite.Angle = 0.0f;
-        _workingSprite.Bounds = DX.RectangleF.Empty;
+        _workingSprite.Bounds = GorgonRectangleF.Empty;
         _workingSprite.Color = GorgonColors.White;
         _workingSprite.Depth = 0.0f;
         _workingSprite.HorizontalFlip = false;

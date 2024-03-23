@@ -1,5 +1,4 @@
-﻿
-// 
+﻿// 
 // Gorgon
 // Copyright (C) 2017 Michael Winsor
 // 
@@ -23,9 +22,6 @@
 // Created: July 9, 2017 4:32:41 PM
 // 
 
-
-using DX = SharpDX;
-
 namespace Gorgon.Graphics.Core;
 
 /// <summary>
@@ -36,14 +32,14 @@ namespace Gorgon.Graphics.Core;
 /// </remarks>
 /// <param name="oldSize">The old size.</param>
 /// <param name="newSize">The new size.</param>
-public class SwapChainResizingEventArgs(DX.Size2 oldSize, DX.Size2 newSize)
+public class SwapChainResizingEventArgs(GorgonPoint oldSize, GorgonPoint newSize)
         : EventArgs
 {
 
     /// <summary>
     /// Property to return the old size of the swap chain backbuffers.
     /// </summary>
-    public DX.Size2 OldSize
+    public GorgonPoint OldSize
     {
         get;
     } = oldSize;
@@ -51,7 +47,7 @@ public class SwapChainResizingEventArgs(DX.Size2 oldSize, DX.Size2 newSize)
     /// <summary>
     /// Property to return the new size of the swap chain backbuffers.
     /// </summary>
-    public DX.Size2 NewSize
+    public GorgonPoint NewSize
     {
         get;
     } = newSize;

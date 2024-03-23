@@ -25,7 +25,7 @@
 
 
 using Gorgon.Editor.ProjectData;
-using DX = SharpDX;
+using Gorgon.Graphics;
 
 namespace Gorgon.Editor;
 
@@ -37,7 +37,7 @@ internal class EditorSettings
     /// <summary>
     /// Property to set or return the window boundaries.
     /// </summary>
-    public DX.Rectangle? WindowBounds
+    public GorgonRectangle? WindowBounds
     {
         get;
         set;

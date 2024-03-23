@@ -27,7 +27,6 @@
 using System.Numerics;
 using Gorgon.Core;
 using Gorgon.Graphics;
-using DX = SharpDX;
 
 namespace Gorgon.Animation;
 
@@ -125,7 +124,7 @@ internal class RectBoundsTrack
             return result;
         }
 
-        TrackKeyProcessor.TryUpdateRectBounds(this, timeIndex, out DX.RectangleF rect);
+        TrackKeyProcessor.TryUpdateRectBounds(this, timeIndex, out GorgonRectangleF rect);
 
         return new GorgonKeyRectangle(timeIndex, rect);
     }

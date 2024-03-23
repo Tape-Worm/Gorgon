@@ -95,7 +95,7 @@ internal class SpriteImporterPlugIn
     /// the base <see cref="ISettingsCategoryViewModel"/> type.
     /// </para>
     ///   <para>
-    /// Plug ins must register the view associated with their settings panel via the <see cref="ViewFactory.Register{T}(Func{System.Windows.Forms.Control})"/> method in the
+    /// Plug ins must register the view associated with their settings panel via the <see cref="ViewFactory.Register{T}(Func{Control})"/> method in the
     /// <see cref="OnInitialize()"/> method or the settings will not display.
     /// </para>
     /// </remarks>

@@ -32,7 +32,6 @@ using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.IO.Properties;
 using Gorgon.Renderers;
-using DX = SharpDX;
 
 namespace Gorgon.IO;
 
@@ -347,9 +346,9 @@ public class GorgonV1AnimationCodec
     /// <param name="reader">The reader containing the track data.</param>
     /// <param name="keyCount">The number of keys to read.</param>
     /// <returns>A list of track keys.</returns>
-    private IReadOnlyList<(float time, GorgonTexture2DView texture, DX.RectangleF uv, string textureName)> ReadTexture(GorgonBinaryReader reader, int keyCount)
+    private IReadOnlyList<(float time, GorgonTexture2DView texture, GorgonRectangleF uv, string textureName)> ReadTexture(GorgonBinaryReader reader, int keyCount)
     {
-        List<(float, GorgonTexture2DView, DX.RectangleF, string)> keys = new(keyCount);
+        List<(float, GorgonTexture2DView, GorgonRectangleF, string)> keys = new(keyCount);
 
         for (int i = 0; i < keyCount; ++i)
         {
@@ -370,11 +369,11 @@ public class GorgonV1AnimationCodec
                 continue;
             }
 
-            DX.RectangleF uv;
+            GorgonRectangleF uv;
 
             if (view is not null)
             {
-                uv = new DX.RectangleF(uvOffset.X / texture.Width,
+                uv = new GorgonRectangleF(uvOffset.X / texture.Width,
                                        uvOffset.Y / texture.Height,
                                        uvSize.X / texture.Width,
                                        uvSize.Y / texture.Height);
@@ -385,7 +384,7 @@ public class GorgonV1AnimationCodec
             {
                 Graphics.Log.Print($"The animation has texture keys, but the texture '{name}' was not found. A deferred texture key will be returned, but note that the texture coordinates will be incorrect until manually updated.",
                                    LoggingLevel.Verbose);
-                uv = new DX.RectangleF(uvOffset.X,
+                uv = new GorgonRectangleF(uvOffset.X,
                                        uvOffset.Y,
                                        uvSize.X,
                                        uvSize.Y);
@@ -515,7 +514,7 @@ public class GorgonV1AnimationCodec
                         break;
                     case "IMAGE":
                         reader.ReadInt32(); // We don't support interpolation.
-                        IReadOnlyList<(float time, GorgonTexture2DView texture, DX.RectangleF uv, string name)> textures = ReadTexture(reader, keyCount);
+                        IReadOnlyList<(float time, GorgonTexture2DView texture, GorgonRectangleF uv, string name)> textures = ReadTexture(reader, keyCount);
                         if (textures.Count > 0)
                         {
                             builder.Edit2DTexture("Texture")
@@ -737,7 +736,7 @@ public class GorgonV1AnimationCodec
                 GorgonTexture2DView view = null;
                 Vector2 imageOffset = Vector2.Zero;
                 Vector2 imageSize = Vector2.One;
-                DX.RectangleF texCoords = new(imageOffset.X, imageOffset.Y, imageSize.X, imageSize.Y);
+                GorgonRectangleF texCoords = new(imageOffset.X, imageOffset.Y, imageSize.X, imageSize.Y);
 
                 if (!string.IsNullOrWhiteSpace(imageName))
                 {
@@ -756,7 +755,7 @@ public class GorgonV1AnimationCodec
                 }
                 else
                 {
-                    texCoords = new DX.RectangleF(imageOffset.X / view.Width, imageOffset.Y / view.Height, imageSize.X / view.Width, imageSize.Y / view.Height);
+                    texCoords = new GorgonRectangleF(imageOffset.X / view.Width, imageOffset.Y / view.Height, imageSize.X / view.Width, imageSize.Y / view.Height);
                 }
 
                 builder.Edit2DTexture("Texture")

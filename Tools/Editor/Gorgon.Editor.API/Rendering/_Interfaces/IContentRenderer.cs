@@ -28,7 +28,6 @@ using System.Numerics;
 using Gorgon.Core;
 using Gorgon.Editor.UI;
 using Gorgon.Graphics;
-using DX = SharpDX;
 
 namespace Gorgon.Editor.Rendering;
 
@@ -79,7 +78,7 @@ public interface IContentRenderer
     /// <summary>
     /// Property to return the size of the view client area.
     /// </summary>
-    DX.Size2 ClientSize
+    GorgonPoint ClientSize
     {
         get;
     }
@@ -87,7 +86,7 @@ public interface IContentRenderer
     /// <summary>
     /// Property to return the size of the content in camera space.
     /// </summary>
-    DX.Size2F ContentSize
+    Vector2 ContentSize
     {
         get;
     }
@@ -95,7 +94,7 @@ public interface IContentRenderer
     /// <summary>
     /// Property to return the region to render into.
     /// </summary>
-    DX.RectangleF RenderRegion
+    GorgonRectangleF RenderRegion
     {
         get;
     }

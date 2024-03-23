@@ -27,9 +27,9 @@
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using Gorgon.Core;
+using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Renderers.Geometry;
-using DX = SharpDX;
 
 namespace Gorgon.Renderers;
 
@@ -83,7 +83,7 @@ internal class BatchRenderable
     /// <summary>
     /// Property to set or return the rectangle bounds for this renderable item.
     /// </summary>
-    public DX.RectangleF Bounds;
+    public GorgonRectangleF Bounds;
 
     /// <summary>
     /// Property to set or return the depth value for this sprite.
@@ -104,7 +104,7 @@ internal class BatchRenderable
     /// <remarks>
     /// These values are in texel coordinates.
     /// </remarks>
-    public DX.RectangleF TextureRegion = new(0, 0, 1, 1);
+    public GorgonRectangleF TextureRegion = new(0, 0, 1, 1);
 
     /// <summary>
     /// Property to set or return the scale factor to apply to the sprite.

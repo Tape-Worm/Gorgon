@@ -31,7 +31,6 @@ using Gorgon.Graphics.Fonts;
 using Gorgon.Math;
 using Gorgon.Renderers.Geometry;
 using Gorgon.UI;
-using DX = SharpDX;
 
 namespace Gorgon.Renderers;
 
@@ -48,50 +47,50 @@ internal class TextSpriteTransformer
     /// <param name="layoutSize">The layout region size.</param>
     /// <param name="lineLength">Length of the line, in pixels.</param>
     /// <param name="textHeight">The height of the text block being rendered.</param>
-    private static void GetTextAlignmentExtents(ref Vector2 leftTop, Alignment alignment, ref DX.Size2F layoutSize, float lineLength, float textHeight)
+    private static void GetTextAlignmentExtents(ref Vector2 leftTop, Alignment alignment, ref Vector2 layoutSize, float lineLength, float textHeight)
     {
         int calc;
 
         switch (alignment)
         {
             case Alignment.UpperCenter:
-                calc = (int)((layoutSize.Width / 2.0f) - (lineLength / 2.0f));
+                calc = (int)((layoutSize.X / 2.0f) - (lineLength / 2.0f));
                 leftTop.X += calc;
                 break;
             case Alignment.UpperRight:
-                calc = (int)(layoutSize.Width - lineLength);
+                calc = (int)(layoutSize.X - lineLength);
                 leftTop.X += calc;
                 break;
             case Alignment.CenterLeft:
-                calc = (int)((layoutSize.Height / 2.0f) - (textHeight / 2.0f));
+                calc = (int)((layoutSize.Y / 2.0f) - (textHeight / 2.0f));
                 leftTop.Y += calc;
                 break;
             case Alignment.Center:
-                calc = (int)((layoutSize.Width / 2.0f) - (lineLength / 2.0f));
+                calc = (int)((layoutSize.X / 2.0f) - (lineLength / 2.0f));
                 leftTop.X += calc;
-                calc = (int)((layoutSize.Height / 2.0f) - (textHeight / 2.0f));
+                calc = (int)((layoutSize.Y / 2.0f) - (textHeight / 2.0f));
                 leftTop.Y += calc;
                 break;
             case Alignment.CenterRight:
-                calc = (int)(layoutSize.Width - lineLength);
+                calc = (int)(layoutSize.X - lineLength);
                 leftTop.X += calc;
-                calc = (int)((layoutSize.Height / 2.0f) - (textHeight / 2.0f));
+                calc = (int)((layoutSize.Y / 2.0f) - (textHeight / 2.0f));
                 leftTop.Y += calc;
                 break;
             case Alignment.LowerLeft:
-                calc = (int)(layoutSize.Height - textHeight);
+                calc = (int)(layoutSize.Y - textHeight);
                 leftTop.Y += calc;
                 break;
             case Alignment.LowerCenter:
-                calc = (int)((layoutSize.Width / 2.0f) - (lineLength / 2.0f));
+                calc = (int)((layoutSize.X / 2.0f) - (lineLength / 2.0f));
                 leftTop.X += calc;
-                calc = (int)(layoutSize.Height - textHeight);
+                calc = (int)(layoutSize.Y - textHeight);
                 leftTop.Y += calc;
                 break;
             case Alignment.LowerRight:
-                calc = (int)(layoutSize.Width - lineLength);
+                calc = (int)(layoutSize.X - lineLength);
                 leftTop.X += calc;
-                calc = (int)(layoutSize.Height - textHeight);
+                calc = (int)(layoutSize.Y - textHeight);
                 leftTop.Y += calc;
                 break;
         }
@@ -104,7 +103,7 @@ internal class TextSpriteTransformer
     /// <param name="anchor">The anchor point for the renderable.</param>
     /// <param name="corners">The corners of the sprite.</param>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static void BuildRenderable(ref DX.RectangleF bounds, ref Vector2 anchor, ref Vector4 corners)
+    private static void BuildRenderable(ref GorgonRectangleF bounds, ref Vector2 anchor, ref Vector4 corners)
     {
         if (anchor.Equals(Vector2.Zero))
         {
@@ -162,7 +161,7 @@ internal class TextSpriteTransformer
     /// <param name="vertexOffset">The offset into the vertex array.</param>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static void UpdateTextureCoordinates(Gorgon2DVertex[] vertices,
-                                                 ref DX.RectangleF textureRegion,
+                                                 ref GorgonRectangleF textureRegion,
                                                  int textureArrayIndex,
                                                  int vertexOffset)
     {
@@ -187,12 +186,12 @@ internal class TextSpriteTransformer
     /// <param name="vertexOffset">The offset into the vertex array.</param>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static void TransformVertices(BatchRenderable renderable,
-                                          ref DX.RectangleF glyphBounds,
+                                          ref GorgonRectangleF glyphBounds,
                                           float sin,
                                           float cos,
                                           int vertexOffset)
     {
-        glyphBounds = new DX.RectangleF(glyphBounds.Left * renderable.Scale.X,
+        glyphBounds = new GorgonRectangleF(glyphBounds.Left * renderable.Scale.X,
                                         glyphBounds.Top * renderable.Scale.Y,
                                         glyphBounds.Width * renderable.Scale.X,
                                         glyphBounds.Height * renderable.Scale.Y);
@@ -304,7 +303,7 @@ internal class TextSpriteTransformer
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void Transform(TextRenderable renderable, GorgonGlyph glyph, GorgonColor? blockColor, ref readonly Vector2 glyphPosition, int vertexOffset, bool isOutlinePass, float lineMeasure)
     {
-        ref DX.RectangleF spriteBounds = ref renderable.Bounds;
+        ref GorgonRectangleF spriteBounds = ref renderable.Bounds;
         Alignment alignment = renderable.Alignment;
         ref GorgonColor outlineTint = ref renderable.OutlineTint;
 
@@ -353,7 +352,7 @@ internal class TextSpriteTransformer
 
         if (renderable.HasTextureChanges)
         {
-            DX.RectangleF textureCoordinates = isOutlinePass ? glyph.OutlineTextureCoordinates : glyph.TextureCoordinates;
+            GorgonRectangleF textureCoordinates = isOutlinePass ? glyph.OutlineTextureCoordinates : glyph.TextureCoordinates;
             UpdateTextureCoordinates(renderable.Vertices, ref textureCoordinates, glyph.TextureIndex, vertexOffset);
         }
 
@@ -376,7 +375,7 @@ internal class TextSpriteTransformer
             GetTextAlignmentExtents(ref upperLeft, alignment, ref renderable.LayoutArea, lineMeasure, spriteBounds.Height);
         }
 
-        DX.RectangleF glyphBounds = new(upperLeft.X, upperLeft.Y, size.X, size.Y);
+        GorgonRectangleF glyphBounds = new(upperLeft.X, upperLeft.Y, size.X, size.Y);
 
         TransformVertices(renderable, ref glyphBounds, rads.FastSin(), rads.FastCos(), vertexOffset);
     }

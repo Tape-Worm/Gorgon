@@ -31,7 +31,6 @@ using Gorgon.Math;
 using Gorgon.Native;
 using Gorgon.UI;
 using BCnEncode = Gorgon.BCnEncoder.Encoder;
-using DX = SharpDX;
 
 namespace Gorgon.Graphics.Imaging;
 
@@ -427,7 +426,7 @@ public partial class GorgonImage
     /// of the original image, then no changes will be made.
     /// </para>
     /// </remarks>
-    IGorgonImageUpdateFluent IGorgonImageUpdateFluent.Crop(DX.Rectangle cropRect, int? newDepth)
+    IGorgonImageUpdateFluent IGorgonImageUpdateFluent.Crop(GorgonRectangle cropRect, int? newDepth)
     {
         newDepth ??= Depth.Max(1);
 
@@ -451,10 +450,10 @@ public partial class GorgonImage
             }
 
             // If the intersection of the crop rectangle and the source buffer are the same (and the depth is the same), then we don't need to crop.
-            DX.Rectangle bufferRect = new(0, 0, Width, Height);
-            DX.Rectangle clipRect = DX.Rectangle.Intersect(cropRect, bufferRect);
+            GorgonRectangle bufferRect = new(0, 0, Width, Height);
+            GorgonRectangle clipRect = GorgonRectangle.Intersect(cropRect, bufferRect);
 
-            if ((bufferRect.Equals(ref clipRect)) && (newDepth == Depth))
+            if ((bufferRect.Equals(clipRect)) && (newDepth == Depth))
             {
                 return;
             }

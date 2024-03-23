@@ -29,6 +29,7 @@ using System.Text;
 using Gorgon.Core;
 using Gorgon.Graphics.Core;
 using Gorgon.IO.Properties;
+using Gorgon.Json;
 using Gorgon.Math;
 using Gorgon.Renderers;
 using Newtonsoft.Json;
@@ -239,11 +240,10 @@ public class GorgonV3PolySpriteJsonCodec(Gorgon2D renderer)
             CheckAdditionalContent = false
         };
 
-        serializer.Converters.Add(new JsonVector2Converter());
-        serializer.Converters.Add(new JsonVector3Converter());
-        serializer.Converters.Add(new JsonSize2FConverter());
-        serializer.Converters.Add(new JsonGorgonColorConverter());
-        serializer.Converters.Add(new JsonRectangleFConverter());
+        serializer.Converters.Add(new Vector2JsonConverter());
+        serializer.Converters.Add(new Vector3JsonConverter());
+        serializer.Converters.Add(new GorgonColorJsonConverter());
+        serializer.Converters.Add(new GorgonRectangleFJsonConverter());
         serializer.Converters.Add(new JsonSamplerConverter(renderer.Graphics));
         serializer.Converters.Add(new JsonTexture2DConverter(renderer.Graphics, overrideTexture));
         serializer.Converters.Add(new VersionConverter());

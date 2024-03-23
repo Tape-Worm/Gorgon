@@ -32,7 +32,6 @@ using Gorgon.Graphics.Core;
 using Gorgon.Graphics.Fonts;
 using Gorgon.Math;
 using Gorgon.Renderers;
-using DX = SharpDX;
 
 namespace Gorgon.Editor.FontEditor;
 
@@ -86,11 +85,11 @@ internal class FontRenderer(Gorgon2D renderer, GorgonSwapChain mainRenderTarget,
                 _textSprite.TextureSampler = DataContext.FontUnits == GorgonFontHeightMode.Points ? GorgonSamplerState.AnisotropicFiltering : GorgonSamplerState.PointFiltering;
                 break;
             case nameof(IFontContent.WorkingFont):
-                DX.Size2F regionSize = Resources.GORFNT_TEXT_DEFAULT_MAIN_PREVIEW.MeasureText(DataContext.WorkingFont, DataContext.WorkingFont.HasOutline, wordWrapWidth: ClientSize.Width).Floor();
-                RenderRegion = new DX.RectangleF(0, 0, regionSize.Width + 32, regionSize.Height + 32);
+                Vector2 regionSize = Resources.GORFNT_TEXT_DEFAULT_MAIN_PREVIEW.MeasureText(DataContext.WorkingFont, DataContext.WorkingFont.HasOutline, wordWrapWidth: ClientSize.X).Floor();
+                RenderRegion = new GorgonRectangleF(0, 0, regionSize.X + 32, regionSize.Y + 32);
 
                 _textSprite.Font = DataContext.WorkingFont;
-                _textSprite.Text = Resources.GORFNT_TEXT_DEFAULT_MAIN_PREVIEW.WordWrap(DataContext.WorkingFont, ClientSize.Width);
+                _textSprite.Text = Resources.GORFNT_TEXT_DEFAULT_MAIN_PREVIEW.WordWrap(DataContext.WorkingFont, ClientSize.X);
                 break;
         }
     }
@@ -102,7 +101,7 @@ internal class FontRenderer(Gorgon2D renderer, GorgonSwapChain mainRenderTarget,
         base.OnRenderBackground();
 
         Renderer.Begin(camera: Camera);
-        Renderer.DrawFilledRectangle(new DX.RectangleF(RenderRegion.Width * -0.5f, RenderRegion.Height * -0.5f, RenderRegion.Width, RenderRegion.Height), new GorgonColor(GorgonColors.Black, 0.35f));
+        Renderer.DrawFilledRectangle(new GorgonRectangleF(RenderRegion.Width * -0.5f, RenderRegion.Height * -0.5f, RenderRegion.Width, RenderRegion.Height), new GorgonColor(GorgonColors.Black, 0.35f));
         Renderer.End();
     }
 
@@ -120,7 +119,7 @@ internal class FontRenderer(Gorgon2D renderer, GorgonSwapChain mainRenderTarget,
         Renderer.Begin(GetBatch(), Camera);
 
         // Draw a fake shadow.
-        Vector2 basePosition = new Vector2(-(RenderRegion.Size.Width - 32) * 0.5f, -(RenderRegion.Size.Height - 32) * 0.5f).Floor();
+        Vector2 basePosition = new Vector2(-(RenderRegion.Size.X - 32) * 0.5f, -(RenderRegion.Size.Y - 32) * 0.5f).Floor();
 
         _textSprite.Position = basePosition + ((DataContext.WorkingFont.OutlineSize == 0) ? new Vector2(2) : new Vector2((DataContext.WorkingFont.OutlineSize * 0.5f).Max(2)).Floor());
         _textSprite.OutlineTint =
@@ -147,10 +146,10 @@ internal class FontRenderer(Gorgon2D renderer, GorgonSwapChain mainRenderTarget,
             return;
         }
 
-        DX.Size2F regionSize = Resources.GORFNT_TEXT_DEFAULT_MAIN_PREVIEW.MeasureText(DataContext.WorkingFont, DataContext.WorkingFont.HasOutline, wordWrapWidth: ClientSize.Width);
-        RenderRegion = new DX.RectangleF(0, 0, regionSize.Width + 32, regionSize.Height + 32);
+        Vector2 regionSize = Resources.GORFNT_TEXT_DEFAULT_MAIN_PREVIEW.MeasureText(DataContext.WorkingFont, DataContext.WorkingFont.HasOutline, wordWrapWidth: ClientSize.X);
+        RenderRegion = new GorgonRectangleF(0, 0, regionSize.X + 32, regionSize.Y + 32);
         _textSprite.Font = DataContext.WorkingFont;
-        _textSprite.Text = Resources.GORFNT_TEXT_DEFAULT_MAIN_PREVIEW.WordWrap(DataContext.WorkingFont, ClientSize.Width);
+        _textSprite.Text = Resources.GORFNT_TEXT_DEFAULT_MAIN_PREVIEW.WordWrap(DataContext.WorkingFont, ClientSize.X);
         _textSprite.TextureSampler = DataContext.FontUnits == GorgonFontHeightMode.Points ? GorgonSamplerState.AnisotropicFiltering : GorgonSamplerState.PointFiltering;
     }
 

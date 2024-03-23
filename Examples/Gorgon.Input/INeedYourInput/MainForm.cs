@@ -37,7 +37,6 @@ using Gorgon.Math;
 using Gorgon.PlugIns;
 using Gorgon.Renderers;
 using Gorgon.UI;
-using DX = SharpDX;
 
 using GorgonMouseButtons = Gorgon.Input.MouseButtons;
 
@@ -180,7 +179,7 @@ public partial class MainForm
                 {
                     // Clip the mouse cursor to our client area.
                     Rectangle screenRect = Cursor.Clip = RectangleToScreen(ClientRectangle);
-                    _mouse.PositionConstraint = new DX.Rectangle(screenRect.Left, screenRect.Top, screenRect.Width, screenRect.Height);
+                    _mouse.PositionConstraint = new GorgonRectangle(screenRect.Left, screenRect.Top, screenRect.Width, screenRect.Height);
                     // Set the position to the current mouse position.
                     _mouse.Position = new GorgonPoint(Cursor.Position.X, Cursor.Position.Y);
 
@@ -355,7 +354,7 @@ public partial class MainForm
         }
 
         // Draw the pen.
-        DX.RectangleF penPosition = new(position.X - (_radius / 2.0f), position.Y - (_radius / 2.0f), _radius, _radius);
+        GorgonRectangleF penPosition = new(position.X - (_radius / 2.0f), position.Y - (_radius / 2.0f), _radius, _radius);
         if (_radius > 3.0f)
         {
             _2D.DrawFilledEllipse(penPosition, drawColor);
@@ -382,7 +381,7 @@ public partial class MainForm
                                                                       Name = "Backbuffer"
                                                                   });
         _backBuffer.Clear(Color.White);
-        _backupImage.CopyTo(_backBuffer.Texture, new DX.Rectangle(0, 0, _backBuffer.Width, _backBuffer.Height));
+        _backupImage.CopyTo(_backBuffer.Texture, new GorgonRectangle(0, 0, _backBuffer.Width, _backBuffer.Height));
 
         _backBufferView = _backBuffer.GetShaderResourceView();
     }
@@ -396,7 +395,7 @@ public partial class MainForm
     {
         // Copy the render target texture to a temporary buffer and resize the main buffer.
         // The copy the temporary buffer back to the main buffer.
-        _backBuffer.Texture.CopyTo(_backupImage, new DX.Rectangle(0, 0, e.NewSize.Width, e.NewSize.Height));
+        _backBuffer.Texture.CopyTo(_backupImage, new GorgonRectangle(0, 0, e.NewSize.X, e.NewSize.Y));
         _backBufferView.Dispose();
         _backBuffer.Dispose();
     }
@@ -418,7 +417,7 @@ public partial class MainForm
 
         // Dump to the screen.
         _2D.Begin(_noBlending);
-        _2D.DrawFilledRectangle(new DX.RectangleF(0, 0, _backBuffer.Width, _backBuffer.Height), GorgonColors.White, _backBufferView, new DX.RectangleF(0, 0, 1, 1));
+        _2D.DrawFilledRectangle(new GorgonRectangleF(0, 0, _backBuffer.Width, _backBuffer.Height), GorgonColors.White, _backBufferView, new GorgonRectangleF(0, 0, 1, 1));
         _2D.End();
 
         if (_joystick is not null)
@@ -452,18 +451,18 @@ public partial class MainForm
         _2D.Begin(_inverted);
         if (_radius > 3.0f)
         {
-            _2D.DrawFilledEllipse(new DX.RectangleF(cursorPosition.X - (_radius / 2.0f), cursorPosition.Y - (_radius / 2.0f), _radius, _radius), Color.White);
+            _2D.DrawFilledEllipse(new GorgonRectangleF(cursorPosition.X - (_radius / 2.0f), cursorPosition.Y - (_radius / 2.0f), _radius, _radius), Color.White);
         }
         else
         {
-            _2D.DrawFilledRectangle(new DX.RectangleF(cursorPosition.X - (_radius / 2.0f), cursorPosition.Y - (_radius / 2.0f), _radius, _radius), Color.White);
+            _2D.DrawFilledRectangle(new GorgonRectangleF(cursorPosition.X - (_radius / 2.0f), cursorPosition.Y - (_radius / 2.0f), _radius, _radius), Color.White);
         }
         _2D.End();
 
         // If we have a joystick button down, then draw a black dot.
         if ((_joystick is not null) && (_joystick.Button[0] == GamingDeviceButtonState.Down))
         {
-            DX.RectangleF penPosition = new(cursorPosition.X - (_radius / 2.0f), cursorPosition.Y - (_radius / 2.0f), _radius, _radius);
+            GorgonRectangleF penPosition = new(cursorPosition.X - (_radius / 2.0f), cursorPosition.Y - (_radius / 2.0f), _radius, _radius);
             _graphics.SetRenderTarget(_backBuffer);
             _2D.Begin();
 
@@ -515,7 +514,7 @@ public partial class MainForm
 
         // Copy the render target texture to a temporary buffer and resize the main buffer.
         // The copy the temporary buffer back to the main buffer.
-        _backBuffer.Texture.CopyTo(_backupImage, new DX.Rectangle(0, 0, currentImageSize.Width, currentImageSize.Height));
+        _backBuffer.Texture.CopyTo(_backupImage, new GorgonRectangle(0, 0, currentImageSize.Width, currentImageSize.Height));
         _backBufferView.Dispose();
         _backBuffer.Dispose();
         _backBuffer = GorgonRenderTarget2DView.CreateRenderTarget(_graphics,
@@ -524,7 +523,7 @@ public partial class MainForm
                                                                       Name = "Backbuffer"
                                                                   });
         _backBuffer.Clear(Color.White);
-        _backupImage.CopyTo(_backBuffer.Texture, new DX.Rectangle(0, 0, _backBuffer.Width, _backBuffer.Height));
+        _backupImage.CopyTo(_backBuffer.Texture, new GorgonRectangle(0, 0, _backBuffer.Width, _backBuffer.Height));
 
         _backBufferView = _backBuffer.GetShaderResourceView();
     }
@@ -643,12 +642,12 @@ public partial class MainForm
             _mouse = new GorgonRawMouse();
 
             // Create the graphics interface.
-            ClientSize = new Size(ExampleConfig.Default.Resolution.Width, ExampleConfig.Default.Resolution.Height);
+            ClientSize = new Size(ExampleConfig.Default.Resolution.X, ExampleConfig.Default.Resolution.Y);
 
             IReadOnlyList<IGorgonVideoAdapterInfo> adapters = GorgonGraphics.EnumerateAdapters();
             _graphics = new GorgonGraphics(adapters[0], log: GorgonApplication.Log);
-            _screen = new GorgonSwapChain(_graphics, this, new GorgonSwapChainInfo(ExampleConfig.Default.Resolution.Width,
-                                                                                        ExampleConfig.Default.Resolution.Height,
+            _screen = new GorgonSwapChain(_graphics, this, new GorgonSwapChainInfo(ExampleConfig.Default.Resolution.X,
+                                                                                        ExampleConfig.Default.Resolution.Y,
                                                                                         BufferFormat.R8G8B8A8_UNorm)
             {
                 Name = "INeedYourInput Swapchain"

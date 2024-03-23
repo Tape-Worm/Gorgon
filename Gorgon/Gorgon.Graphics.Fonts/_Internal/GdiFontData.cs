@@ -106,20 +106,13 @@ internal class GdiFontData
                         new(0, 1)
                     ];
 
-        System.Drawing.FontStyle style = System.Drawing.FontStyle.Regular;
-
-        switch (fontInfo.FontStyle)
+        FontStyle style = fontInfo.FontStyle switch
         {
-            case GorgonFontStyle.Bold:
-                style = System.Drawing.FontStyle.Bold;
-                break;
-            case GorgonFontStyle.Italics:
-                style = System.Drawing.FontStyle.Italic;
-                break;
-            case GorgonFontStyle.BoldItalics:
-                style = System.Drawing.FontStyle.Bold | System.Drawing.FontStyle.Italic;
-                break;
-        }
+            GorgonFontStyle.Bold => FontStyle.Bold,
+            GorgonFontStyle.Italics => FontStyle.Italic,
+            GorgonFontStyle.BoldItalics => FontStyle.Bold | FontStyle.Italic,
+            _ => FontStyle.Regular
+        };
 
         FontFamily fontFamily = (externalFonts is not null ? externalFonts.Families.Concat(FontFamily.Families) : FontFamily.Families)
                                 .FirstOrDefault(item => string.Equals(fontInfo.FontFamilyName, item.Name, StringComparison.InvariantCultureIgnoreCase));

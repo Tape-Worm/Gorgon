@@ -29,7 +29,6 @@ using Gorgon.Animation.Properties;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Renderers;
-using DX = SharpDX;
 
 namespace Gorgon.Animation;
 
@@ -197,7 +196,7 @@ public class GorgonPolySpriteAnimationController
             return;
         }
 
-        animObject.ScaledSize = new DX.Size2F(value.X, value.Y);
+        animObject.ScaledSize = new Vector2(value.X, value.Y);
     }
 
     /// <summary>Function called when a texture needs to be updated on the object.</summary>
@@ -206,7 +205,7 @@ public class GorgonPolySpriteAnimationController
     /// <param name="texture">The texture to switch to.</param>
     /// <param name="textureCoordinates">The new texture coordinates to apply.</param>
     /// <param name="textureArrayIndex">The texture array index.</param>
-    protected override void OnTexture2DUpdate(GorgonTrackRegistration track, GorgonPolySprite animObject, GorgonTexture2DView texture, DX.RectangleF textureCoordinates, int textureArrayIndex)
+    protected override void OnTexture2DUpdate(GorgonTrackRegistration track, GorgonPolySprite animObject, GorgonTexture2DView texture, GorgonRectangleF textureCoordinates, int textureArrayIndex)
     {
         if (track.ID != TextureTrack.ID)
         {
@@ -261,7 +260,7 @@ public class GorgonPolySpriteAnimationController
     /// <param name="track">The track currently being processed.</param>
     /// <param name="animObject">The object to update.</param>
     /// <param name="value">The value to apply.</param>
-    protected override void OnRectangleUpdate(GorgonTrackRegistration track, GorgonPolySprite animObject, DX.RectangleF value)
+    protected override void OnRectangleUpdate(GorgonTrackRegistration track, GorgonPolySprite animObject, GorgonRectangleF value)
     {
         // Not needed for sprites.
     }

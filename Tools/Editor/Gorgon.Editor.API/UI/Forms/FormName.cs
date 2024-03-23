@@ -39,7 +39,7 @@ namespace Gorgon.Editor.UI.Forms;
 /// Plug in developers can use this to present a dialog that will prompt the user for a name
 /// </para>
 /// <para>
-/// An ideal place to use this form would be in the <see cref="ContentPlugIn"/>.<see cref="ContentPlugIn.GetDefaultContentAsync(string, System.Collections.Generic.HashSet{string})"/> method so that users 
+/// An ideal place to use this form would be in the <see cref="ContentPlugIn"/>.<see cref="ContentPlugIn.GetDefaultContentAsync(string, HashSet{string})"/> method so that users 
 /// could be given a chance to name their objects prior to creation
 /// </para>
 /// </remarks>

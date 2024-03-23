@@ -36,7 +36,6 @@ using Gorgon.Graphics.Fonts;
 using Gorgon.Graphics.Imaging;
 using Gorgon.Math;
 using Gorgon.UI;
-using DX = SharpDX;
 
 namespace Gorgon.Editor.ImageAtlasTool;
 
@@ -186,7 +185,7 @@ internal partial class FormImageSelector
     /// Function to retrieve the rectangular region for rendering.
     /// </summary>
     /// <returns>The render area.</returns>
-    private DX.Rectangle GetRenderRegion()
+    private GorgonRectangle GetRenderRegion()
     {
         int size;
 
@@ -202,7 +201,7 @@ internal partial class FormImageSelector
         int top = (_swapChain.Height / 2) - (size / 2);
         int left = (_swapChain.Width / 2) - (size / 2);
 
-        return new DX.Rectangle(left, top, size, size);
+        return new GorgonRectangle(left, top, size, size);
     }
 
     /// <summary>
@@ -214,7 +213,7 @@ internal partial class FormImageSelector
         _graphicsContext.Graphics.SetRenderTarget(_swapChain.RenderTargetView);
         _swapChain.RenderTargetView.Clear(PanelPreviewRender.BackColor);
 
-        DX.RectangleF renderRegion = GetRenderRegion().ToRectangleF();
+        GorgonRectangleF renderRegion = GetRenderRegion();
         Vector2 halfClient = new(renderRegion.Width * 0.5f, renderRegion.Height * 0.5f);
 
         _graphicsContext.Renderer2D.Begin();
@@ -229,13 +228,13 @@ internal partial class FormImageSelector
             float x = renderRegion.X + halfClient.X - (width * 0.5f);
             float y = renderRegion.Y + halfClient.Y - (height * 0.5f);
 
-            _graphicsContext.Renderer2D.DrawFilledRectangle(new DX.RectangleF(x, y, width, height), GorgonColors.White, _previewImage, new DX.RectangleF(0, 0, 1, 1));
+            _graphicsContext.Renderer2D.DrawFilledRectangle(new GorgonRectangleF(x, y, width, height), GorgonColors.White, _previewImage, new GorgonRectangleF(0, 0, 1, 1));
         }
         else
         {
-            DX.Size2F size = Resources.GORIAG_TEXT_SELECT_IMAGE.MeasureText(_graphicsContext.Renderer2D.DefaultFont, false);
+            Vector2 size = Resources.GORIAG_TEXT_SELECT_IMAGE.MeasureText(_graphicsContext.Renderer2D.DefaultFont, false);
             _graphicsContext.Renderer2D.DrawString(Resources.GORIAG_TEXT_SELECT_IMAGE,
-                                                    new Vector2(renderRegion.X + halfClient.X - size.Width * 0.5f, renderRegion.Y + halfClient.Y - size.Height * 0.5f),
+                                                    new Vector2(renderRegion.X + halfClient.X - size.X * 0.5f, renderRegion.Y + halfClient.Y - size.Y * 0.5f),
                                                     color: GorgonColors.White);
         }
         _graphicsContext.Renderer2D.End();

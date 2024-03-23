@@ -24,13 +24,13 @@
 // 
 
 
+using System.Numerics;
 using Gorgon.Editor.Content;
 using Gorgon.Editor.SpriteEditor.Properties;
 using Gorgon.Graphics.Imaging;
 using Gorgon.Graphics.Imaging.Codecs;
 using Gorgon.IO;
 using Gorgon.UI;
-using DX = SharpDX;
 
 namespace Gorgon.Editor.SpriteEditor;
 
@@ -70,7 +70,7 @@ internal class NewSpriteService(IContentFileManager fileManager, IGorgonImageCod
     /// <param name="currentTexture">The current sprite texture.</param>
     /// <param name="currentSize">The size of the current sprite.</param>
     /// <returns>A tuple containing the new sprite name, the associated sprite texture file, and the initial size of the sprite.</returns>
-    public (string spriteName, IContentFile textureFile, DX.Size2F spriteSize) GetNewSpriteName(IContentFile currentSprite, IContentFile currentTexture, DX.Size2F currentSize)
+    public (string spriteName, IContentFile textureFile, Vector2 spriteSize) GetNewSpriteName(IContentFile currentSprite, IContentFile currentTexture, Vector2 currentSize)
     {
         if (currentSprite is null)
         {
@@ -110,7 +110,7 @@ internal class NewSpriteService(IContentFileManager fileManager, IGorgonImageCod
 
         return newSpriteForm.ShowDialog(GorgonApplication.MainForm) == DialogResult.OK
             ? (newSpriteForm.ObjectName, newSpriteForm.TextureFile, newSpriteForm.SpriteSize)
-            : (null, null, DX.Size2F.Zero);
+            : (null, null, Vector2.Zero);
     }
 
 

@@ -41,13 +41,13 @@ internal static class FileSystemExtensions
     /// Only hidden and system files are excluded from the editor file system.
     /// </para>
     /// </remarks>
-    public static bool IsValidFile(this System.IO.FileInfo file)
+    public static bool IsValidFile(this FileInfo file)
     {
-        System.IO.FileAttributes attribs = file.Attributes;
+        FileAttributes attribs = file.Attributes;
 
-        return (((attribs & System.IO.FileAttributes.Hidden) != System.IO.FileAttributes.Hidden)
-            && ((attribs & System.IO.FileAttributes.System) != System.IO.FileAttributes.System)
-            && ((attribs & System.IO.FileAttributes.Directory) != System.IO.FileAttributes.Directory));
+        return (((attribs & FileAttributes.Hidden) != FileAttributes.Hidden)
+            && ((attribs & FileAttributes.System) != FileAttributes.System)
+            && ((attribs & FileAttributes.Directory) != FileAttributes.Directory));
     }
 
     /// <summary>
@@ -60,12 +60,12 @@ internal static class FileSystemExtensions
     {
         long result = 0;
         IEnumerable<string> files = System.IO.Directory.EnumerateFiles(directory.PhysicalPath, "*",
-            recursive ? System.IO.SearchOption.AllDirectories : System.IO.SearchOption.TopDirectoryOnly);
+            recursive ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly);
 
         foreach (string filePath in files)
         {
             FileInfo fileInfo = new(filePath);
-            System.IO.FileAttributes attribs = fileInfo.Attributes;
+            FileAttributes attribs = fileInfo.Attributes;
 
             if (!IsValidFile(fileInfo))
             {

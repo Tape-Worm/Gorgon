@@ -26,7 +26,6 @@
 
 using System.Numerics;
 using Gorgon.Graphics;
-using DX = SharpDX;
 
 namespace Gorgon.Editor.Rendering;
 

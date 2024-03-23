@@ -506,16 +506,16 @@ public sealed class GorgonTexture1D
             return;
         }
 
-        DX.Rectangle rect;
+        GorgonRectangle rect;
 
         // If we didn't specify a box to copy from, then create one.
         if (sourceRange is null)
         {
-            rect = new DX.Rectangle(0, 0, Width.Min(destinationTexture.Width).Max(1), 1);
+            rect = new GorgonRectangle(0, 0, Width.Min(destinationTexture.Width).Max(1), 1);
         }
         else
         {
-            rect = new DX.Rectangle((sourceRange.Value.Minimum.Min(destinationTexture.Width - 1).Max(0)).Min(Width - 1), 0,
+            rect = new GorgonRectangle((sourceRange.Value.Minimum.Min(destinationTexture.Width - 1).Max(0)).Min(Width - 1), 0,
                                    (sourceRange.Value.Maximum.Min(destinationTexture.Width).Max(1)).Min(Width), 1);
         }
 
@@ -558,7 +558,7 @@ public sealed class GorgonTexture1D
         int left = rect.Left.Min(destinationTexture.Width - 1).Max(0);
         int right = rect.Right.Min(destinationTexture.Width + left).Max(1);
 
-        rect = new DX.Rectangle
+        rect = new GorgonRectangle
         {
             Left = left,
             Top = 0,
@@ -646,16 +646,16 @@ public sealed class GorgonTexture1D
             return;
         }
 
-        DX.Rectangle rect;
+        GorgonRectangle rect;
 
         // If we didn't specify a box to copy from, then create one.
         if (sourceRange is null)
         {
-            rect = new DX.Rectangle(0, 0, Width.Min(destinationTexture.Width).Max(1), 1);
+            rect = new GorgonRectangle(0, 0, Width.Min(destinationTexture.Width).Max(1), 1);
         }
         else
         {
-            rect = new DX.Rectangle((sourceRange.Value.Minimum.Min(destinationTexture.Width - 1).Max(0)).Min(Width - 1),
+            rect = new GorgonRectangle((sourceRange.Value.Minimum.Min(destinationTexture.Width - 1).Max(0)).Min(Width - 1),
                                     0,
                                     (sourceRange.Value.Maximum.Min(destinationTexture.Width).Max(1)).Min(Width),
                                     1);
@@ -701,7 +701,7 @@ public sealed class GorgonTexture1D
         int left = rect.Left.Min(Width - 1).Max(0);
         int right = rect.Right.Min(Width + left).Max(1);
 
-        rect = new DX.Rectangle
+        rect = new GorgonRectangle
         {
             Left = left,
             Top = 0,
@@ -788,16 +788,16 @@ public sealed class GorgonTexture1D
             return;
         }
 
-        DX.Rectangle rect;
+        GorgonRectangle rect;
 
         // If we didn't specify a box to copy from, then create one.
         if (sourceRange is null)
         {
-            rect = new DX.Rectangle(0, 0, Width.Min(destinationTexture.Width).Max(1), 1);
+            rect = new GorgonRectangle(0, 0, Width.Min(destinationTexture.Width).Max(1), 1);
         }
         else
         {
-            rect = new DX.Rectangle((sourceRange.Value.Minimum.Min(destinationTexture.Width - 1).Max(0)).Min(Width - 1),
+            rect = new GorgonRectangle((sourceRange.Value.Minimum.Min(destinationTexture.Width - 1).Max(0)).Min(Width - 1),
                                    0,
                                    (sourceRange.Value.Maximum.Min(destinationTexture.Width).Max(1)).Min(Width),
                                    1);
@@ -843,7 +843,7 @@ public sealed class GorgonTexture1D
         int left = rect.Left.Min(Width - 1).Max(0);
         int right = rect.Right.Min(Width + left).Max(1);
 
-        rect = new DX.Rectangle
+        rect = new GorgonRectangle
         {
             Left = left,
             Top = 0,
@@ -985,7 +985,7 @@ public sealed class GorgonTexture1D
     /// texture.SetData(image.Buffers[0], new GorgonRange(10, 50), 2, 2, copyMode: CopyMode.NoOverwrite);
     /// 
     /// // Set a portion of the source image.
-    /// texture.SetData(image.Buffers[0].GetRegion(new DX.Rectangle(10, 10, 50, 1));
+    /// texture.SetData(image.Buffers[0].GetRegion(new GorgonRectangle(10, 10, 50, 1));
     /// ]]>
     /// </code>
     /// </example>
@@ -1012,11 +1012,11 @@ public sealed class GorgonTexture1D
         int width = (Width >> destMipLevel).Max(1);
 
         // Clip the destination rectangle against our texture size.
-        DX.Rectangle destRange = destinationRange is null ? new DX.Rectangle(0, 0, width, 1) : new DX.Rectangle(destinationRange.Value.Minimum, 0, destinationRange.Value.Maximum, 1);
-        DX.Rectangle maxRect = new(0, 0, width, 1);
-        DX.Rectangle.Intersect(ref destRange, ref maxRect, out DX.Rectangle destBounds);
+        GorgonRectangle destRange = destinationRange is null ? new GorgonRectangle(0, 0, width, 1) : new GorgonRectangle(destinationRange.Value.Minimum, 0, destinationRange.Value.Maximum, 1);
+        GorgonRectangle maxRect = new(0, 0, width, 1);
+        GorgonRectangle destBounds = GorgonRectangle.Intersect(destRange, maxRect);
 
-        DX.Rectangle finalBounds = new(destBounds.X, 0, imageBuffer.Width.Min(destBounds.Width), 1);
+        GorgonRectangle finalBounds = new(destBounds.X, 0, imageBuffer.Width.Min(destBounds.Width), 1);
 
         unsafe
         {

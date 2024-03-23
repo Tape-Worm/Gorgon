@@ -33,7 +33,6 @@ using Gorgon.Graphics.Core;
 using Gorgon.Graphics.Fonts;
 using Gorgon.Renderers;
 using Gorgon.Renderers.Cameras;
-using DX = SharpDX;
 
 namespace Gorgon.Editor.ExtractSpriteTool;
 
@@ -62,7 +61,7 @@ internal class Renderer
     private void UpdatePreviewSprite(float scale)
     {
         GorgonSprite currentSprite = DataContext.Sprites[DataContext.CurrentPreviewSprite];
-        _previewSprite.Size = new DX.Size2F(currentSprite.Size.Width * scale, currentSprite.Size.Height * scale);
+        _previewSprite.Size = new Vector2(currentSprite.Size.X * scale, currentSprite.Size.Y * scale);
         _previewSprite.TextureRegion = currentSprite.TextureRegion;
         _previewSprite.TextureArrayIndex = currentSprite.TextureArrayIndex;
     }
@@ -73,7 +72,7 @@ internal class Renderer
     private void DrawPreview()
     {
         GorgonSprite sprite = DataContext.Sprites[DataContext.CurrentPreviewSprite];
-        float scale = CalculateScaling(new DX.Size2F(sprite.Size.Width + 8, sprite.Size.Height + 8), new DX.Size2F(MainRenderTarget.Width, MainRenderTarget.Height));
+        float scale = CalculateScaling(new Vector2(sprite.Size.X + 8, sprite.Size.Y + 8), new Vector2(MainRenderTarget.Width, MainRenderTarget.Height));
         UpdatePreviewSprite(scale);
 
         Renderer.Begin(camera: _camera);
@@ -89,16 +88,16 @@ internal class Renderer
         ref readonly ProgressData prog = ref DataContext.ExtractTaskProgress;
         string text = string.Format(Resources.GOREST_PROGRESS_SPR_GEN, prog.Current, prog.Total);
 
-        DX.Size2F textSize = text.MeasureText(Renderer.DefaultFont, false);
-        Vector2 pos = new(MainRenderTarget.Width * 0.5f - textSize.Width * 0.5f, MainRenderTarget.Height * 0.5f - textSize.Height * 0.5f);
+        Vector2 textSize = text.MeasureText(Renderer.DefaultFont, false);
+        Vector2 pos = new(MainRenderTarget.Width * 0.5f - textSize.X * 0.5f, MainRenderTarget.Height * 0.5f - textSize.Y * 0.5f);
 
         float percent = (float)prog.Current / prog.Total;
-        DX.RectangleF barOutline = new(pos.X, MainRenderTarget.Height * 0.5f - (textSize.Height + 4) * 0.5f,
-                                        textSize.Width + 4, textSize.Height + 8);
-        DX.RectangleF bar = new(barOutline.X + 1, barOutline.Y + 1, ((barOutline.Width - 2) * percent), barOutline.Height - 2);
+        GorgonRectangleF barOutline = new(pos.X, MainRenderTarget.Height * 0.5f - (textSize.Y + 4) * 0.5f,
+                                        textSize.X + 4, textSize.Y + 8);
+        GorgonRectangleF bar = new(barOutline.X + 1, barOutline.Y + 1, ((barOutline.X - 2) * percent), barOutline.Y - 2);
 
         Renderer.Begin();
-        Renderer.DrawFilledRectangle(new DX.RectangleF(0, 0, MainRenderTarget.Width, MainRenderTarget.Height),
+        Renderer.DrawFilledRectangle(new GorgonRectangleF(0, 0, MainRenderTarget.Width, MainRenderTarget.Height),
                                     new GorgonColor(GorgonColors.White, 0.80f));
         Renderer.DrawString(text, pos, color: GorgonColors.Black);
         Renderer.DrawString(Resources.GOREST_TEXT_GEN_CANCEL_MSG, new Vector2(pos.X, bar.Bottom + 4), color: GorgonColors.Black);
@@ -124,9 +123,9 @@ internal class Renderer
             return;
         }
 
-        float scale = CalculateScaling(new DX.Size2F(DataContext.Texture.Width + 8, DataContext.Texture.Height + 8), new DX.Size2F(MainRenderTarget.Width, MainRenderTarget.Height));
-        _textureSprite.Size = new DX.Size2F(scale * DataContext.Texture.Width, scale * DataContext.Texture.Height).Truncate();
-        _textureSprite.Position = new Vector2(-_textureSprite.Size.Width * 0.5f, -_textureSprite.Size.Height * 0.5f).Truncate();
+        float scale = CalculateScaling(new Vector2(DataContext.Texture.Width + 8, DataContext.Texture.Height + 8), new Vector2(MainRenderTarget.Width, MainRenderTarget.Height));
+        _textureSprite.Size = new Vector2(scale * DataContext.Texture.Width, scale * DataContext.Texture.Height).Truncate();
+        _textureSprite.Position = new Vector2(-_textureSprite.Size.X * 0.5f, -_textureSprite.Size.Y * 0.5f).Truncate();
 
         Renderer.Begin(camera: _camera);
 
@@ -138,24 +137,24 @@ internal class Renderer
         Renderer.Begin(_inverted, _camera);
         Vector2 pos = new(_textureSprite.Position.X + (DataContext.GridOffset.X * scale), _textureSprite.Position.Y + (DataContext.GridOffset.Y * scale));
 
-        int maxWidth = (int)((DataContext.CellSize.Width * DataContext.GridSize.Width) * scale);
-        int maxHeight = (int)((DataContext.CellSize.Height * DataContext.GridSize.Height) * scale);
+        int maxWidth = (int)((DataContext.CellSize.X * DataContext.GridSize.X) * scale);
+        int maxHeight = (int)((DataContext.CellSize.Y * DataContext.GridSize.Y) * scale);
 
-        Renderer.DrawRectangle(new DX.RectangleF(pos.X - 1, pos.Y - 1, maxWidth + 2, maxHeight + 2),
+        Renderer.DrawRectangle(new GorgonRectangleF(pos.X - 1, pos.Y - 1, maxWidth + 2, maxHeight + 2),
                                 GorgonColors.DeepPink);
 
-        for (int x = 1; x < DataContext.GridSize.Width; ++x)
+        for (int x = 1; x < DataContext.GridSize.X; ++x)
         {
-            Vector2 start = new((int)((x * DataContext.CellSize.Width) * scale) + pos.X, pos.Y);
-            Vector2 end = new((int)((x * DataContext.CellSize.Width) * scale) + pos.X, pos.Y + maxHeight);
+            Vector2 start = new((int)((x * DataContext.CellSize.X) * scale) + pos.X, pos.Y);
+            Vector2 end = new((int)((x * DataContext.CellSize.X) * scale) + pos.X, pos.Y + maxHeight);
 
             Renderer.DrawLine(start.X, start.Y, end.X, end.Y, GorgonColors.DeepPink);
         }
 
-        for (int y = 1; y < DataContext.GridSize.Height; ++y)
+        for (int y = 1; y < DataContext.GridSize.Y; ++y)
         {
-            Vector2 start = new(pos.X, (int)((y * DataContext.CellSize.Height) * scale) + pos.Y);
-            Vector2 end = new(pos.X + maxWidth, (int)((y * DataContext.CellSize.Height) * scale) + pos.Y);
+            Vector2 start = new(pos.X, (int)((y * DataContext.CellSize.Y) * scale) + pos.Y);
+            Vector2 end = new(pos.X + maxWidth, (int)((y * DataContext.CellSize.Y) * scale) + pos.Y);
 
             Renderer.DrawLine(start.X, start.Y, end.X, end.Y, GorgonColors.DeepPink);
         }
@@ -177,7 +176,7 @@ internal class Renderer
     {
         base.OnLoad();
 
-        _camera = new GorgonOrthoCamera(Graphics, new DX.Size2F(MainRenderTarget.Width, MainRenderTarget.Height))
+        _camera = new GorgonOrthoCamera(Graphics, new Vector2(MainRenderTarget.Width, MainRenderTarget.Height))
         {
             Anchor = new Vector2(0.5f, 0.5f)
         };
@@ -189,8 +188,8 @@ internal class Renderer
         _textureSprite = new GorgonSprite
         {
             Texture = DataContext.Texture,
-            TextureRegion = new DX.RectangleF(0, 0, 1, 1),
-            Size = new DX.Size2F(DataContext.Texture.Width, DataContext.Texture.Height),
+            TextureRegion = new GorgonRectangleF(0, 0, 1, 1),
+            Size = new Vector2(DataContext.Texture.Width, DataContext.Texture.Height),
             TextureSampler = GorgonSamplerState.PointFiltering
         };
 

@@ -34,7 +34,6 @@ using Gorgon.Graphics.Fonts;
 using Gorgon.Math;
 using Gorgon.Renderers;
 using Gorgon.Renderers.Cameras;
-using DX = SharpDX;
 
 namespace Gorgon.Editor.Rendering;
 
@@ -85,7 +84,7 @@ public class DefaultContentRenderer<T>
     // The camera for our content.
     private GorgonOrthoCamera _camera;
     // The region to render the content and background into.
-    private DX.RectangleF _renderRegion = DX.RectangleF.Empty;
+    private GorgonRectangleF _renderRegion = GorgonRectangleF.Empty;
     // The arguments for mouse events.
     private readonly MouseArgs _mouseArgs = new();
     // The argumments for zoom events.
@@ -277,7 +276,7 @@ public class DefaultContentRenderer<T>
     /// <summary>
     /// Property to return the size of the view client area.
     /// </summary>
-    public DX.Size2 ClientSize
+    public GorgonPoint ClientSize
     {
         get;
         private set;
@@ -288,7 +287,7 @@ public class DefaultContentRenderer<T>
     /// </summary>
     public bool CanPanHorizontally
     {
-        get => (Camera is not null) && (_panHorzEnabled) && (ContentSize.Width > ClientSize.Width);
+        get => (Camera is not null) && (_panHorzEnabled) && (ContentSize.X > ClientSize.X);
         set => _panHorzEnabled = value;
     }
 
@@ -297,7 +296,7 @@ public class DefaultContentRenderer<T>
     /// </summary>
     public bool CanPanVertically
     {
-        get => (Camera is not null) && (_panVertEnabled) && (ContentSize.Height > ClientSize.Height);
+        get => (Camera is not null) && (_panVertEnabled) && (ContentSize.Y > ClientSize.Y);
         set => _panVertEnabled = value;
     }
 
@@ -313,12 +312,12 @@ public class DefaultContentRenderer<T>
     /// If an empty rectangle is passed to this property, then the full client area of the view is used.
     /// </para>
     /// </remarks>
-    public DX.RectangleF RenderRegion
+    public GorgonRectangleF RenderRegion
     {
-        get => _renderRegion.IsEmpty ? new DX.RectangleF(0, 0, ClientSize.Width, ClientSize.Height) : _renderRegion;
+        get => _renderRegion.IsEmpty ? new GorgonRectangleF(0, 0, ClientSize.X, ClientSize.Y) : _renderRegion;
         protected set
         {
-            if (value.Equals(ref _renderRegion))
+            if (value.Equals(_renderRegion))
             {
                 return;
             }
@@ -327,7 +326,7 @@ public class DefaultContentRenderer<T>
 
             if (Camera is not null)
             {
-                _camera.ViewDimensions = new DX.Size2F(_renderRegion.Width, _renderRegion.Height);
+                _camera.ViewDimensions = new Vector2(_renderRegion.Width, _renderRegion.Height);
             }
 
             _renderRegionChangedEvent?.Invoke(this, EventArgs.Empty);
@@ -367,9 +366,9 @@ public class DefaultContentRenderer<T>
     /// <summary>
     /// Property to return the size of the content in camera space.
     /// </summary>
-    public DX.Size2F ContentSize => Camera is null
-                                        ? new DX.Size2F((int)RenderRegion.Width, (int)RenderRegion.Height)
-                                        : new DX.Size2F((int)(RenderRegion.Width * _camera.Zoom.X), (int)(RenderRegion.Height * _camera.Zoom.X));
+    public Vector2 ContentSize => Camera is null
+                                        ? new Vector2((int)RenderRegion.Width, (int)RenderRegion.Height)
+                                        : new Vector2((int)(RenderRegion.Width * _camera.Zoom.X), (int)(RenderRegion.Height * _camera.Zoom.X));
 
     /// <summary>Property to return the data context assigned to this view.</summary>
     public T DataContext
@@ -406,7 +405,7 @@ public class DefaultContentRenderer<T>
     {
         if (ZoomLevel == ZoomLevels.ToWindow)
         {
-            MoveTo(new Vector2(ClientSize.Width * 0.5f, ClientSize.Height * 0.5f), -1);
+            MoveTo(new Vector2(ClientSize.X * 0.5f, ClientSize.Y * 0.5f), -1);
         }
     }
 
@@ -636,11 +635,11 @@ public class DefaultContentRenderer<T>
 
         if (RenderRegion.IsEmpty)
         {
-            _camera.ViewDimensions = new DX.Size2F(e.Size.Width, e.Size.Height);
+            _camera.ViewDimensions = new Vector2(e.Size.X, e.Size.Y);
         }
         else
         {
-            _camera.ViewDimensions = new DX.Size2F(RenderRegion.Width, RenderRegion.Height);
+            _camera.ViewDimensions = new Vector2(RenderRegion.Width, RenderRegion.Height);
         }
 
         ClientSize = e.Size;
@@ -660,7 +659,7 @@ public class DefaultContentRenderer<T>
     /// <returns>The scale value needed to fit within the content window.</returns>
     private float ZoomToWindow()
     {
-        Vector2 scaling = new(ClientSize.Width / RenderRegion.Width, ClientSize.Height / RenderRegion.Height);
+        Vector2 scaling = new(ClientSize.X / RenderRegion.Width, ClientSize.Y / RenderRegion.Height);
 
         return scaling.X.Min(scaling.Y);
     }
@@ -676,11 +675,11 @@ public class DefaultContentRenderer<T>
     /// If the <paramref name="targetSize"/> is omitted, then the current render target at slot 0 in <see cref="GorgonGraphics.RenderTargets"/> will be used.
     /// </para>
     /// </remarks>
-    protected DX.RectangleF ToCamera(DX.RectangleF rect, DX.Size2? targetSize = null)
+    protected GorgonRectangleF ToCamera(GorgonRectangleF rect, GorgonPoint? targetSize = null)
     {
         Vector3 topLeft = targetSize is null ? _camera.Project(new Vector3(rect.TopLeft.X, rect.TopLeft.Y, 0)) : _camera.Project(new Vector3(rect.TopLeft.X, rect.TopLeft.Y, 0), targetSize.Value);
         Vector3 bottomRight = targetSize is null ? _camera.Project(new Vector3(rect.BottomRight.X, rect.BottomRight.Y, 0)) : _camera.Project(new Vector3(rect.BottomRight.X, rect.BottomRight.Y, 0), targetSize.Value);
-        return new DX.RectangleF
+        return new GorgonRectangleF
         {
             Left = topLeft.X,
             Top = topLeft.Y,
@@ -700,7 +699,7 @@ public class DefaultContentRenderer<T>
     /// If the <paramref name="targetSize"/> is omitted, then the current render target at slot 0 in <see cref="GorgonGraphics.RenderTargets"/> will be used.
     /// </para>
     /// </remarks>
-    protected Vector2 ToCamera(Vector2 vector, DX.Size2? targetSize = null)
+    protected Vector2 ToCamera(Vector2 vector, GorgonPoint? targetSize = null)
     {
         Vector3 projected;
 
@@ -717,23 +716,6 @@ public class DefaultContentRenderer<T>
     }
 
     /// <summary>
-    /// Function to convert a size into camera space from client space.
-    /// </summary>
-    /// <param name="size">The client space size.</param>
-    /// <param name="targetSize">The size of the render target.</param>
-    /// <returns>The camera space size.</returns>
-    /// <remarks>
-    /// <para>
-    /// If the <paramref name="targetSize"/> is omitted, then the current render target at slot 0 in <see cref="GorgonGraphics.RenderTargets"/> will be used.
-    /// </para>
-    /// </remarks>
-    protected DX.Size2F ToCamera(DX.Size2F size, DX.Size2? targetSize = null)
-    {
-        Vector3 result = targetSize is null ? _camera.Project(new Vector3(size.Width, size.Height, 0)) : _camera.Project(new Vector3(size.Width, size.Height, 0), targetSize.Value);
-        return new DX.Size2F(result.X, result.Y);
-    }
-
-    /// <summary>
     /// Function to convert a rectangle into client space from camera space.
     /// </summary>
     /// <param name="rect">The camera space rectangle</param>
@@ -744,11 +726,11 @@ public class DefaultContentRenderer<T>
     /// If the <paramref name="targetSize"/> is omitted, then the current render target at slot 0 in <see cref="GorgonGraphics.RenderTargets"/> will be used.
     /// </para>
     /// </remarks>
-    protected DX.RectangleF ToClient(DX.RectangleF rect, DX.Size2? targetSize = null)
+    protected GorgonRectangleF ToClient(GorgonRectangleF rect, GorgonPoint? targetSize = null)
     {
         Vector3 topLeft = targetSize is null ? _camera.Unproject(new Vector3(rect.TopLeft.X, rect.TopLeft.Y, 0)) : _camera.Unproject(new Vector3(rect.TopLeft.X, rect.TopLeft.Y, 0), targetSize.Value);
         Vector3 bottomRight = targetSize is null ? _camera.Unproject(new Vector3(rect.BottomRight.X, rect.BottomRight.Y, 0)) : _camera.Unproject(new Vector3(rect.BottomRight.X, rect.BottomRight.Y, 0), targetSize.Value);
-        return new DX.RectangleF
+        return new GorgonRectangleF
         {
             Left = topLeft.X,
             Top = topLeft.Y,
@@ -768,7 +750,7 @@ public class DefaultContentRenderer<T>
     /// If the <paramref name="targetSize"/> is omitted, then the current render target at slot 0 in <see cref="GorgonGraphics.RenderTargets"/> will be used.
     /// </para>
     /// </remarks>
-    protected Vector2 ToClient(Vector2 vector, DX.Size2? targetSize = null)
+    protected Vector2 ToClient(Vector2 vector, GorgonPoint? targetSize = null)
     {
         Vector3 unprojected;
 
@@ -785,35 +767,18 @@ public class DefaultContentRenderer<T>
     }
 
     /// <summary>
-    /// Function to convert a size into client space from camera space.
-    /// </summary>
-    /// <param name="size">The camera space size.</param>
-    /// <param name="targetSize">The size of the render target.</param>
-    /// <returns>The client space size.</returns>
-    /// <remarks>
-    /// <para>
-    /// If the <paramref name="targetSize"/> is omitted, then the current render target at slot 0 in <see cref="GorgonGraphics.RenderTargets"/> will be used.
-    /// </para>
-    /// </remarks>
-    protected DX.Size2F ToClient(DX.Size2F size, DX.Size2? targetSize = null)
-    {
-        Vector3 result = targetSize is null ? _camera.Unproject(new Vector3(size.Width, size.Height, 0)) : _camera.Unproject(new Vector3(size.Width, size.Height, 0), targetSize.Value);
-        return new DX.Size2F(result.X, result.Y);
-    }
-
-    /// <summary>
     /// Function to retrieve the nearest zoom level that fits within the specified rectangle.
     /// </summary>
     /// <param name="region">The region to zoom in on.</param>
     /// <returns>The zoom level value needed to fit within the content window.</returns>
-    protected ZoomLevels GetNearestZoomFromRectangle(DX.RectangleF region)
+    protected ZoomLevels GetNearestZoomFromRectangle(GorgonRectangleF region)
     {
         if ((region.Width < 1) || (region.Height < 1))
         {
-            region = new DX.RectangleF(region.X, region.Y, 1, 1);
+            region = new GorgonRectangleF(region.X, region.Y, 1, 1);
         }
 
-        Vector2 scaling = new(ClientSize.Width / region.Width, ClientSize.Height / region.Height);
+        Vector2 scaling = new(ClientSize.X / region.Width, ClientSize.Y / region.Height);
         float scaleValue = scaling.X.Min(scaling.Y);
 
         return scaleValue.GetZoomLevel();
@@ -1022,10 +987,10 @@ public class DefaultContentRenderer<T>
     /// </remarks>
     protected virtual void OnRenderBackground()
     {
-        DX.RectangleF textureSize = new(0, 0, RenderRegion.Width / BackgroundPattern.Width * _camera.Zoom.X, RenderRegion.Height / BackgroundPattern.Height * _camera.Zoom.X);
+        GorgonRectangleF textureSize = new(0, 0, RenderRegion.Width / BackgroundPattern.Width * _camera.Zoom.X, RenderRegion.Height / BackgroundPattern.Height * _camera.Zoom.X);
 
         Renderer.Begin(camera: Camera);
-        Renderer.DrawFilledRectangle(new DX.RectangleF(RenderRegion.Width * -0.5f, RenderRegion.Height * -0.5f, RenderRegion.Width, RenderRegion.Height), GorgonColors.White, BackgroundPattern, textureSize);
+        Renderer.DrawFilledRectangle(new GorgonRectangleF(RenderRegion.Width * -0.5f, RenderRegion.Height * -0.5f, RenderRegion.Width, RenderRegion.Height), GorgonColors.White, BackgroundPattern, textureSize);
         Renderer.End();
     }
 
@@ -1136,12 +1101,12 @@ public class DefaultContentRenderer<T>
         Vector2 halfRegion = new(RenderRegion.Width * 0.5f, RenderRegion.Height * 0.5f);
 
         // If our target size is less than the current view size, then reset the target position to the center of the view.
-        if ((!ignoreBoundaries) && (regionWidth <= ClientSize.Width))
+        if ((!ignoreBoundaries) && (regionWidth <= ClientSize.X))
         {
             targetPos.X = 0;
         }
 
-        if ((!ignoreBoundaries) && (regionHeight <= ClientSize.Height))
+        if ((!ignoreBoundaries) && (regionHeight <= ClientSize.Y))
         {
             targetPos.Y = 0;
         }
@@ -1235,7 +1200,7 @@ public class DefaultContentRenderer<T>
             Usage = ResourceUsage.Immutable
         }, CommonEditorResources.CheckerBoardPatternImage);
 
-        ClientSize = new DX.Size2(_swapChain.Width, _swapChain.Height);
+        ClientSize = new GorgonPoint(_swapChain.Width, _swapChain.Height);
 
         _swapChain.SwapChainResizing += SwapChain_BeforeSwapChainResized;
         _swapChain.SwapChainResized += SwapChain_AfterSwapChainResized;
@@ -1248,7 +1213,7 @@ public class DefaultContentRenderer<T>
         _swapChain.Window.KeyUp += Window_KeyUp;
         _swapChain.Window.PreviewKeyDown += Window_PreviewKeyDown;
 
-        _camera = new GorgonOrthoCamera(Graphics, new DX.Size2F(RenderRegion.Width, RenderRegion.Height))
+        _camera = new GorgonOrthoCamera(Graphics, new Vector2(RenderRegion.Width, RenderRegion.Height))
         {
             Anchor = new Vector2(0.5f, 0.5f)
         };
@@ -1397,7 +1362,7 @@ public class DefaultContentRenderer<T>
         _camAnimController = new CameraAnimationController<T>(this);
         Renderer = renderer;
         _swapChain = swapChain;
-        ClientSize = new DX.Size2(swapChain.Width, swapChain.Height);
+        ClientSize = new GorgonPoint(swapChain.Width, swapChain.Height);
         _fontFactory = new GorgonFontFactory(renderer.Graphics);
 
         SetDataContext(dataContext);

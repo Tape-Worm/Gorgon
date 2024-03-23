@@ -32,7 +32,6 @@ using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Math;
 using Gorgon.Renderers;
-using DX = SharpDX;
 
 namespace Gorgon.Editor.Rendering;
 
@@ -109,7 +108,7 @@ public class DefaultToolRenderer<T>
     /// <summary>
     /// Property to return the size of the view client area.
     /// </summary>
-    public DX.Size2 ClientSize
+    public GorgonPoint ClientSize
     {
         get;
         private set;
@@ -215,9 +214,9 @@ public class DefaultToolRenderer<T>
     /// <param name="size">The size of the area to zoom into.</param>
     /// <param name="windowSize">The size of the window.</param>
     /// <returns>The scaling factor to apply.</returns>
-    protected float CalculateScaling(DX.Size2F size, DX.Size2F windowSize)
+    protected float CalculateScaling(Vector2 size, Vector2 windowSize)
     {
-        Vector2 scaling = new(windowSize.Width / size.Width, windowSize.Height / size.Height);
+        Vector2 scaling = new(windowSize.X / size.X, windowSize.Y / size.Y);
 
         return scaling.X.Min(scaling.Y);
     }
@@ -328,10 +327,10 @@ public class DefaultToolRenderer<T>
     /// </remarks>
     protected virtual void OnRenderBackground()
     {
-        DX.RectangleF textureSize = new(0, 0, ClientSize.Width / (float)BackgroundPattern.Width, ClientSize.Height / (float)BackgroundPattern.Height);
+        GorgonRectangleF textureSize = new(0, 0, ClientSize.X / (float)BackgroundPattern.Width, ClientSize.Y / (float)BackgroundPattern.Height);
 
         Renderer.Begin();
-        Renderer.DrawFilledRectangle(new DX.RectangleF(0, 0, ClientSize.Width, ClientSize.Height), GorgonColors.White, BackgroundPattern, textureSize);
+        Renderer.DrawFilledRectangle(new GorgonRectangleF(0, 0, ClientSize.X, ClientSize.Y), GorgonColors.White, BackgroundPattern, textureSize);
         Renderer.End();
     }
 
@@ -376,7 +375,7 @@ public class DefaultToolRenderer<T>
             Usage = ResourceUsage.Immutable
         }, CommonEditorResources.CheckerBoardPatternImage);
 
-        ClientSize = new DX.Size2(_swapChain.Width, _swapChain.Height);
+        ClientSize = new GorgonPoint(_swapChain.Width, _swapChain.Height);
 
         _swapChain.SwapChainResizing += SwapChain_BeforeSwapChainResized;
         _swapChain.SwapChainResized += SwapChain_AfterSwapChainResized;
@@ -444,7 +443,7 @@ public class DefaultToolRenderer<T>
         Name = name;
         Renderer = renderer;
         _swapChain = swapChain;
-        ClientSize = new DX.Size2(swapChain.Width, swapChain.Height);
+        ClientSize = new GorgonPoint(swapChain.Width, swapChain.Height);
 
         SetDataContext(dataContext);
     }

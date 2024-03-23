@@ -23,8 +23,7 @@
 // Created: May 2, 2019 10:46:41 AM
 // 
 
-
-using DX = SharpDX;
+using Gorgon.Graphics;
 
 namespace Gorgon.Renderers.Services;
 
@@ -34,12 +33,12 @@ namespace Gorgon.Renderers.Services;
 /// <remarks>Initializes a new instance of the <see cref="TextureRects"/> class.</remarks>
 /// <param name="textureBounds">The texture bounds.</param>
 /// <param name="arrayIndex">Index of the texture array to use.</param>
-internal class TextureRects(DX.Rectangle textureBounds, int arrayIndex)
+internal class TextureRects(GorgonRectangle textureBounds, int arrayIndex)
 {
     /// <summary>
     /// Property to return the boundaries of the texture.
     /// </summary>
-    public DX.Rectangle Bounds
+    public GorgonRectangle Bounds
     {
         get;
     } = textureBounds;
@@ -47,7 +46,7 @@ internal class TextureRects(DX.Rectangle textureBounds, int arrayIndex)
     /// <summary>
     /// Property to return the list of occupied sprite regions on this texture.
     /// </summary>
-    public Dictionary<GorgonSprite, DX.Rectangle> SpriteRegion
+    public Dictionary<GorgonSprite, GorgonRectangle> SpriteRegion
     {
         get;
     } = [];

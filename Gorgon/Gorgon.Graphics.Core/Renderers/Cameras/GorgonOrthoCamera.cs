@@ -25,9 +25,9 @@
 
 
 using System.Numerics;
+using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Math;
-using DX = SharpDX;
 
 namespace Gorgon.Renderers.Cameras;
 
@@ -49,10 +49,9 @@ namespace Gorgon.Renderers.Cameras;
 /// <param name="maximumDepth">[Optional] The maximum depth value.</param>
 /// <param name="name">[Optional] The name of the camera.</param>
 /// <exception cref="ArgumentNullException">Thrown when the <paramref name="graphics"/> parameter is <b>null</b>.</exception>
-public class GorgonOrthoCamera(GorgonGraphics graphics, DX.Size2F viewDimensions, float minDepth = 0.0f, float maximumDepth = 1.0f, string name = null)
+public class GorgonOrthoCamera(GorgonGraphics graphics, Vector2 viewDimensions, float minDepth = 0.0f, float maximumDepth = 1.0f, string name = null)
         : GorgonCameraCommon(graphics, viewDimensions, minDepth, maximumDepth, name)
 {
-
     // The rotation matrix.
     private Matrix4x4 _rotation = Matrix4x4.Identity;
     // The scaling matrix.
@@ -132,21 +131,19 @@ public class GorgonOrthoCamera(GorgonGraphics graphics, DX.Size2F viewDimensions
     /// This represents the boundaries of viewable space for the camera using its coordinate system. The upper left of the region corresponds with the upper left of the active render target at minimum 
     /// Z depth, and the lower right of the region corresponds with the lower right of the active render target at minimum Z depth.
     /// </remarks>
-    public override DX.RectangleF ViewableRegion => new(-ViewDimensions.Width * _anchor.X, -ViewDimensions.Height * _anchor.Y, ViewDimensions.Width, ViewDimensions.Height);
-
-
+    public override GorgonRectangleF ViewableRegion => new(-ViewDimensions.X * _anchor.X, -ViewDimensions.Y * _anchor.Y, ViewDimensions.X, ViewDimensions.Y);
 
     /// <summary>Function to update the projection matrix.</summary>
     /// <param name="projectionMatrix">The instance of the matrix to update.</param>
     protected override void UpdateProjectionMatrix(ref Matrix4x4 projectionMatrix)
     {
-        Vector2 anchor = new(Anchor.X * ViewDimensions.Width, Anchor.Y * ViewDimensions.Height);
+        Vector2 anchor = new(Anchor.X * ViewDimensions.X, Anchor.Y * ViewDimensions.Y);
 
         float zRange = 1.0f / (MaximumDepth - MinimumDepth);
 
         float left = -anchor.X;
-        float right = (ViewDimensions.Width - anchor.X);
-        float bottom = (ViewDimensions.Height - anchor.Y);
+        float right = (ViewDimensions.X - anchor.X);
+        float bottom = (ViewDimensions.Y - anchor.Y);
         float top = -anchor.Y;
 
         projectionMatrix = Matrix4x4.Identity;
@@ -202,8 +199,4 @@ public class GorgonOrthoCamera(GorgonGraphics graphics, DX.Size2F viewDimensions
         Matrix4x4 temp = Matrix4x4.Multiply(_rotation, _scale);
         viewMatrix = Matrix4x4.Multiply(_translate, temp);
     }
-
-
-
-
 }

@@ -30,7 +30,6 @@ using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Renderers.Cameras;
 using Gorgon.Renderers.Properties;
-using DX = SharpDX;
 
 namespace Gorgon.Renderers;
 
@@ -88,14 +87,14 @@ public class Gorgon2DSobelEdgeDetectEffect
     // The thickness of the lines.
     private float _lineThickness = 1.0f;
     // The texture size used to calculate the line thickness.
-    private DX.Size2F _textureSize = new(512.0f, 512.0f);
+    private Vector2 _textureSize = new(512.0f, 512.0f);
 
 
 
     /// <summary>
     /// Property to set or return the offset of the shapren/embossing edges.
     /// </summary>
-    public DX.Size2F TextureSize
+    public Vector2 TextureSize
     {
         get => _textureSize;
         set
@@ -234,7 +233,7 @@ public class Gorgon2DSobelEdgeDetectEffect
             return;
         }
 
-        _settings = new Settings(_settings.LineColor, new Vector2((1.0f / _textureSize.Width) * LineThickness, (1.0f / _textureSize.Height) * LineThickness), _settings.Threshold);
+        _settings = new Settings(_settings.LineColor, new Vector2((1.0f / _textureSize.X) * LineThickness, (1.0f / _textureSize.Y) * LineThickness), _settings.Threshold);
         _sobelBuffer.Buffer.SetData(in _settings);
         _isUpdated = false;
     }
@@ -304,10 +303,10 @@ public class Gorgon2DSobelEdgeDetectEffect
 
         Begin(GorgonBlendState.Default, GorgonDepthStencilState.Default, GorgonRasterState.Default, null);
 
-        Renderer.DrawFilledRectangle(new DX.RectangleF(0, 0, output.Width, output.Height),
+        Renderer.DrawFilledRectangle(new GorgonRectangleF(0, 0, output.Width, output.Height),
                                         GorgonColors.White,
                                         texture,
-                                        new DX.RectangleF(0, 0, 1, 1));
+                                        new GorgonRectangleF(0, 0, 1, 1));
         End();
     }
 

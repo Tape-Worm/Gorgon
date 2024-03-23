@@ -24,8 +24,9 @@
 // 
 
 
+using System.Numerics;
+using Gorgon.Graphics;
 using Gorgon.Editor.UI;
-using DX = SharpDX;
 
 namespace Gorgon.Editor.SpriteEditor;
 
@@ -38,7 +39,7 @@ internal interface ISpriteClipContext
     /// <summary>
     /// Property to set or return the rectangle representing the sprite.
     /// </summary>
-    DX.RectangleF SpriteRectangle
+    GorgonRectangleF SpriteRectangle
     {
         get;
         set;
@@ -47,7 +48,7 @@ internal interface ISpriteClipContext
     /// <summary>
     /// Property to return the size of the fixed width and height for sprite clipping.
     /// </summary>
-    DX.Size2F? FixedSize
+    Vector2? FixedSize
     {
         get;
     }
@@ -63,7 +64,7 @@ internal interface ISpriteClipContext
     /// <summary>
     /// Property to return the command used to enable or disable fixed size clipping.
     /// </summary>
-    IEditorCommand<DX.Size2F?> FixedSizeCommand
+    IEditorCommand<Vector2?> FixedSizeCommand
     {
         get;
     }

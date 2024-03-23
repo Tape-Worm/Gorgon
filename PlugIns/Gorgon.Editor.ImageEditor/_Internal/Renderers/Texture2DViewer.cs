@@ -30,7 +30,6 @@ using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Graphics.Imaging;
 using Gorgon.Renderers;
-using DX = SharpDX;
 
 namespace Gorgon.Editor.ImageEditor;
 
@@ -70,11 +69,11 @@ internal class Texture2DViewer(Gorgon2D renderer, GorgonSwapChain swapChain, IIm
     {
         if ((DataContext?.ImageData is null) || (DataContext.ImageType != ImageDataType.Image2D))
         {
-            RenderRegion = DX.RectangleF.Empty;
+            RenderRegion = GorgonRectangleF.Empty;
             return;
         }
 
-        RenderRegion = new DX.RectangleF(0, 0, DataContext.ImageData.Width, DataContext.ImageData.Height);
+        RenderRegion = new GorgonRectangleF(0, 0, DataContext.ImageData.Width, DataContext.ImageData.Height);
 
         _texture = DataContext.ImageData.ToTexture2D(Graphics, new GorgonTexture2DLoadOptions
         {
@@ -97,13 +96,13 @@ internal class Texture2DViewer(Gorgon2D renderer, GorgonSwapChain swapChain, IIm
         Debug.Assert(_textureView is not null, "The texture is null.  Why?");
 
         Renderer.Begin(BatchState, Camera);
-        Renderer.DrawFilledRectangle(new DX.RectangleF(RenderRegion.Width * -0.5f,
+        Renderer.DrawFilledRectangle(new GorgonRectangleF(RenderRegion.Width * -0.5f,
                                                        RenderRegion.Height * -0.5f,
                                                        RenderRegion.Width,
                                                        RenderRegion.Height),
                                     color,
                                     _textureView,
-                                    new DX.RectangleF(0, 0, 1, 1),
+                                    new GorgonRectangleF(0, 0, 1, 1),
                                     DataContext.CurrentArrayIndex,
                                     textureSampler: GorgonSamplerState.PointFiltering);
         Renderer.End();

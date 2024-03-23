@@ -36,7 +36,6 @@ using Gorgon.IO.Providers;
 using Gorgon.PlugIns;
 using Gorgon.Renderers;
 using Gorgon.UI;
-using DX = SharpDX;
 
 namespace Gorgon.Examples;
 
@@ -273,7 +272,7 @@ internal class ResourceManagement(Gorgon2D renderer, GorgonMefPlugInCache plugIn
         // The 3D model for the earth. It has a diffuse/albedo map, a normal map and a specular map.
         IcoSphere earthSphere = new(_graphics,
                                         3.0f,
-                                        new DX.RectangleF(0, 0, 1, 1),
+                                        new GorgonRectangleF(0, 0, 1, 1),
                                         Vector3.Zero,
                                         3)
         {
@@ -297,7 +296,7 @@ internal class ResourceManagement(Gorgon2D renderer, GorgonMefPlugInCache plugIn
         // This will be additively blended with the land sphere above and use another pixel shader that has a slight emissive effect.
         IcoSphere earthCloudSphere = new(_graphics,
                                              3.01f,
-                                             new DX.RectangleF(0, 0, 1, 1),
+                                             new GorgonRectangleF(0, 0, 1, 1),
                                              Vector3.Zero,
                                              3)
         {

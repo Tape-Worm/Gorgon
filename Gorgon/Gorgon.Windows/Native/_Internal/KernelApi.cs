@@ -134,7 +134,7 @@ internal static partial class KernelApi
     /// <param name="hTemplateFile"></param>
     /// <returns></returns>
     [LibraryImport("kernel32.dll", EntryPoint = "CreateFileW", SetLastError = true, StringMarshalling = StringMarshalling.Utf16)]
-    [UnmanagedCallConv(CallConvs = new System.Type[] { typeof(System.Runtime.CompilerServices.CallConvStdcall) })]
+    [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvStdcall) })]
     public static partial nint CreateFileW(
         string lpFileName,
         uint dwDesiredAccess,
@@ -213,7 +213,7 @@ internal static partial class KernelApi
     /// <remarks>See the MSDN documentation for a detailed description.</remarks>
     /// <param name="performanceFrequency">Frequency of timer.</param>
     /// <returns><b>true</b> if system supports high precision timing, <b>false</b> if not.</returns>
-    [LibraryImport("kernel32")]
+    [LibraryImport("kernel32.dll")]
     [return: MarshalAs(UnmanagedType.Bool)]
     public static partial bool QueryPerformanceFrequency(out long performanceFrequency);
 
@@ -223,7 +223,7 @@ internal static partial class KernelApi
     /// <remarks>See the MSDN documentation for a detailed description.</remarks>
     /// <param name="performanceCount">Time from the timer.</param>
     /// <returns><b>true</b> if system supports high precision timing, <b>false</b> if not.</returns>
-    [LibraryImport("kernel32")]
+    [LibraryImport("kernel32.dll")]
     [return: MarshalAs(UnmanagedType.Bool)]
     public static partial bool QueryPerformanceCounter(out long performanceCount);
 

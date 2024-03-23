@@ -28,7 +28,6 @@ using System.Numerics;
 using Gorgon.Animation;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
-using DX = SharpDX;
 
 namespace Gorgon.Editor.SpriteEditor;
 
@@ -99,7 +98,7 @@ internal class ImageAnimationController
     /// <param name="track">The track currently being processed.</param>
     /// <param name="animObject">The object to update.</param>
     /// <param name="value">The value to apply.</param>
-    protected override void OnRectangleUpdate(GorgonTrackRegistration track, ISpriteViewer animObject, DX.RectangleF value)
+    protected override void OnRectangleUpdate(GorgonTrackRegistration track, ISpriteViewer animObject, GorgonRectangleF value)
     {
     }
 
@@ -109,7 +108,7 @@ internal class ImageAnimationController
     /// <param name="texture">The texture to switch to.</param>
     /// <param name="textureCoordinates">The new texture coordinates to apply.</param>
     /// <param name="textureArrayIndex">The texture array index.</param>
-    protected override void OnTexture2DUpdate(GorgonTrackRegistration track, ISpriteViewer animObject, GorgonTexture2DView texture, DX.RectangleF textureCoordinates, int textureArrayIndex)
+    protected override void OnTexture2DUpdate(GorgonTrackRegistration track, ISpriteViewer animObject, GorgonTexture2DView texture, GorgonRectangleF textureCoordinates, int textureArrayIndex)
     {
     }
 

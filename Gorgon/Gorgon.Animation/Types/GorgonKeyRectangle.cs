@@ -1,5 +1,4 @@
-﻿
-// 
+﻿// 
 // Gorgon
 // Copyright (C) 2018 Michael Winsor
 // 
@@ -23,8 +22,8 @@
 // Created: August 18, 2018 8:13:55 PM
 // 
 
-
-using DX = SharpDX;
+using System.Numerics;
+using Gorgon.Graphics;
 
 namespace Gorgon.Animation;
 
@@ -44,16 +43,14 @@ namespace Gorgon.Animation;
 public class GorgonKeyRectangle
     : IGorgonKeyFrame
 {
-
-    // The value for the key.
-    private DX.RectangleF _value;
-
-
-
     /// <summary>
     /// Property to return the value for the key frame.
     /// </summary>
-    public ref DX.RectangleF Value => ref _value;
+    public GorgonRectangleF Value
+    {
+        get;
+        set;
+    }
 
     /// <summary>
     /// Property to return the time for the key frame in the animation.
@@ -70,17 +67,13 @@ public class GorgonKeyRectangle
     public Type DataType
     {
         get;
-    } = typeof(DX.RectangleF);
-
-
+    } = typeof(GorgonRectangleF);
 
     /// <summary>
     /// Function to clone an object.
     /// </summary>
     /// <returns>The cloned object.</returns>
     public IGorgonKeyFrame Clone() => new GorgonKeyRectangle(this);
-
-
 
     /// <summary>Initializes a new instance of the <see cref="GorgonKeyRectangle"/> class.</summary>
     /// <param name="key">The key to copy.</param>
@@ -96,10 +89,10 @@ public class GorgonKeyRectangle
     /// </summary>
     /// <param name="time">The time.</param>
     /// <param name="value">The value.</param>
-    public GorgonKeyRectangle(float time, DX.Size2F value)
+    public GorgonKeyRectangle(float time, Vector2 value)
     {
         Time = time;
-        Value = new DX.RectangleF(0, 0, value.Width, value.Height);
+        Value = new GorgonRectangleF(0, 0, value.X, value.Y);
     }
 
     /// <summary>
@@ -107,10 +100,9 @@ public class GorgonKeyRectangle
     /// </summary>
     /// <param name="time">The time.</param>
     /// <param name="value">The value.</param>
-    public GorgonKeyRectangle(float time, DX.RectangleF value)
+    public GorgonKeyRectangle(float time, GorgonRectangleF value)
     {
         Time = time;
         Value = value;
     }
-
 }

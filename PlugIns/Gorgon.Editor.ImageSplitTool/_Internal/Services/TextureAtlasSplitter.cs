@@ -35,7 +35,6 @@ using Gorgon.Graphics.Imaging.Codecs;
 using Gorgon.IO;
 using Gorgon.Renderers;
 using Gorgon.UI;
-using DX = SharpDX;
 
 namespace Gorgon.Editor.ImageSplitTool;
 
@@ -189,8 +188,8 @@ internal class TextureAtlasSplitter
             format = sprite.Texture.Format;
         }
 
-        using GorgonRenderTarget2DView target = GorgonRenderTarget2DView.CreateRenderTarget(_graphics, new GorgonTexture2DInfo((int)sprite.Size.Width,
-                                                                                                                                   (int)sprite.Size.Height,
+        using GorgonRenderTarget2DView target = GorgonRenderTarget2DView.CreateRenderTarget(_graphics, new GorgonTexture2DInfo((int)sprite.Size.X,
+                                                                                                                                   (int)sprite.Size.Y,
                                                                                                                                    format)
         {
             Binding = TextureBinding.RenderTarget
@@ -200,7 +199,7 @@ internal class TextureAtlasSplitter
         _graphics.SetRenderTarget(target);
         target.Clear(GorgonColors.BlackTransparent);
         _renderer.Begin();
-        _renderer.DrawFilledRectangle(new DX.RectangleF(0, 0, target.Width, target.Height), GorgonColors.White,
+        _renderer.DrawFilledRectangle(new GorgonRectangleF(0, 0, target.Width, target.Height), GorgonColors.White,
                                       sprite.Texture,
                                       sprite.TextureRegion,
                                       sprite.TextureArrayIndex,
@@ -271,7 +270,7 @@ internal class TextureAtlasSplitter
             }, newImage);
 
             sprite.TextureArrayIndex = 0;
-            sprite.TextureRegion = new DX.RectangleF(0, 0, 1, 1);
+            sprite.TextureRegion = new GorgonRectangleF(0, 0, 1, 1);
         }
 
         return result;

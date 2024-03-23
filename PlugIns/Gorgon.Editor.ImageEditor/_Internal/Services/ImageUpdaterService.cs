@@ -29,7 +29,6 @@ using Gorgon.Graphics;
 using Gorgon.Graphics.Imaging;
 using Gorgon.Math;
 using Gorgon.UI;
-using DX = SharpDX;
 
 namespace Gorgon.Editor.ImageEditor;
 
@@ -46,29 +45,29 @@ internal class ImageUpdaterService : IImageUpdaterService
     /// <param name="destSize">The new size for the image.</param>
     /// <param name="alignment">The alignment of the image for the operation.</param>
     /// <returns></returns>
-    private GorgonPoint GetAnchorStart(DX.Size2 srcSize, ref DX.Size2 destSize, Alignment alignment)
+    private GorgonPoint GetAnchorStart(GorgonPoint srcSize, ref GorgonPoint destSize, Alignment alignment)
     {
         // Limit the extents if the destination is larger in one direction than the source.
-        if (srcSize.Height < destSize.Height)
+        if (srcSize.Y < destSize.Y)
         {
-            destSize.Height = srcSize.Height;
+            destSize.Y = srcSize.Y;
         }
 
-        if (srcSize.Width < destSize.Width)
+        if (srcSize.X < destSize.X)
         {
-            destSize.Width = srcSize.Width;
+            destSize.X = srcSize.X;
         }
 
         return alignment switch
         {
-            Alignment.UpperCenter => new GorgonPoint(srcSize.Width / 2 - destSize.Width / 2, 0),
-            Alignment.UpperRight => new GorgonPoint(srcSize.Width - destSize.Width, 0),
-            Alignment.CenterLeft => new GorgonPoint(0, srcSize.Height / 2 - destSize.Height / 2),
-            Alignment.Center => new GorgonPoint(srcSize.Width / 2 - destSize.Width / 2, srcSize.Height / 2 - destSize.Height / 2),
-            Alignment.CenterRight => new GorgonPoint(srcSize.Width - destSize.Width, srcSize.Height / 2 - destSize.Height / 2),
-            Alignment.LowerLeft => new GorgonPoint(0, srcSize.Height - destSize.Height),
-            Alignment.LowerCenter => new GorgonPoint(srcSize.Width / 2 - destSize.Width / 2, srcSize.Height - destSize.Height),
-            Alignment.LowerRight => new GorgonPoint(srcSize.Width - destSize.Width, srcSize.Height - destSize.Height),
+            Alignment.UpperCenter => new GorgonPoint(srcSize.X / 2 - destSize.X / 2, 0),
+            Alignment.UpperRight => new GorgonPoint(srcSize.X - destSize.X, 0),
+            Alignment.CenterLeft => new GorgonPoint(0, srcSize.Y / 2 - destSize.Y / 2),
+            Alignment.Center => new GorgonPoint(srcSize.X / 2 - destSize.X / 2, srcSize.Y / 2 - destSize.Y / 2),
+            Alignment.CenterRight => new GorgonPoint(srcSize.X - destSize.X, srcSize.Y / 2 - destSize.Y / 2),
+            Alignment.LowerLeft => new GorgonPoint(0, srcSize.Y - destSize.Y),
+            Alignment.LowerCenter => new GorgonPoint(srcSize.X / 2 - destSize.X / 2, srcSize.Y - destSize.Y),
+            Alignment.LowerRight => new GorgonPoint(srcSize.X - destSize.X, srcSize.Y - destSize.Y),
             _ => GorgonPoint.Zero,
         };
     }
@@ -164,11 +163,11 @@ internal class ImageUpdaterService : IImageUpdaterService
     /// <param name="cropImage">The image to crop.</param>
     /// <param name="destSize">The new size of the image.</param>
     /// <param name="alignment">The location to start cropping from.</param>
-    public void CropTo(IGorgonImage cropImage, DX.Size2 destSize, Alignment alignment)
+    public void CropTo(IGorgonImage cropImage, GorgonPoint destSize, Alignment alignment)
     {
-        GorgonPoint startLoc = GetAnchorStart(new DX.Size2(cropImage.Width, cropImage.Height), ref destSize, alignment);
+        GorgonPoint startLoc = GetAnchorStart(new GorgonPoint(cropImage.Width, cropImage.Height), ref destSize, alignment);
         cropImage.BeginUpdate()
-                 .Crop(new DX.Rectangle(startLoc.X, startLoc.Y, destSize.Width, destSize.Height), cropImage.Depth)
+                 .Crop(new GorgonRectangle(startLoc.X, startLoc.Y, destSize.X, destSize.Y), cropImage.Depth)
                  .EndUpdate();
     }
 
@@ -177,16 +176,16 @@ internal class ImageUpdaterService : IImageUpdaterService
     /// <param name="newSize">The new size for the image.</param>
     /// <param name="filter">The filter to apply when resizing.</param>
     /// <param name="preserveAspect"><b>true</b> to preserve the aspect ratio of the image, <b>false</b> to ignore it.</param>
-    public void Resize(IGorgonImage resizeImage, DX.Size2 newSize, ImageFilter filter, bool preserveAspect)
+    public void Resize(IGorgonImage resizeImage, GorgonPoint newSize, ImageFilter filter, bool preserveAspect)
     {
         if (preserveAspect)
         {
-            float imageScale = ((float)newSize.Width / resizeImage.Width).Min((float)newSize.Height / resizeImage.Height);
-            newSize = new DX.Size2((int)(resizeImage.Width * imageScale), (int)(resizeImage.Height * imageScale));
+            float imageScale = ((float)newSize.X / resizeImage.Width).Min((float)newSize.Y / resizeImage.Height);
+            newSize = new GorgonPoint((int)(resizeImage.Width * imageScale), (int)(resizeImage.Height * imageScale));
         }
 
         resizeImage.BeginUpdate()
-                   .Resize(newSize.Width, newSize.Height, resizeImage.Depth, filter)
+                   .Resize(newSize.X, newSize.Y, resizeImage.Depth, filter)
                    .EndUpdate();
     }
 
@@ -407,7 +406,7 @@ internal class ImageUpdaterService : IImageUpdaterService
         int minMipCount = mipCount.Min(srcImage.MipCount);
         int minArrayCount = arrayCount.Min(srcImage.ArrayCount);
 
-        DX.Size2 size = new(srcImage.Width, srcImage.Height);
+        GorgonPoint size = new(srcImage.Width, srcImage.Height);
 
         for (int array = 0; array < minArrayCount; ++array)
         {
@@ -445,9 +444,9 @@ internal class ImageUpdaterService : IImageUpdaterService
 
                     int maxWidth = destBuffer.Width.Max(srcBuffer.Width);
                     int maxHeight = destBuffer.Height.Max(srcBuffer.Height);
-                    DX.Rectangle copyRegion = new(0, 0, srcBuffer.Width, srcBuffer.Height);
+                    GorgonRectangle copyRegion = new(0, 0, srcBuffer.Width, srcBuffer.Height);
 
-                    GorgonPoint startLoc = GetAnchorStart(new DX.Size2(maxWidth, maxHeight), ref size, alignment);
+                    GorgonPoint startLoc = GetAnchorStart(new GorgonPoint(maxWidth, maxHeight), ref size, alignment);
 
                     srcBuffer.CopyTo(destBuffer, copyRegion, startLoc.X, startLoc.Y);
                 }

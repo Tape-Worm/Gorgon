@@ -30,7 +30,6 @@ using Gorgon.Diagnostics;
 using Gorgon.Graphics.Imaging;
 using Gorgon.Math;
 using D3D11 = SharpDX.Direct3D11;
-using DX = SharpDX;
 using DXGI = SharpDX.DXGI;
 
 namespace Gorgon.Graphics.Core;
@@ -175,7 +174,7 @@ public sealed class GorgonRenderTarget3DView
     /// <remarks>
     /// This value is the full bounding rectangle of the first mip map level for the texture associated with the render target.
     /// </remarks>
-    public DX.Rectangle Bounds
+    public GorgonRectangle Bounds
     {
         get;
         private set;
@@ -221,7 +220,7 @@ public sealed class GorgonRenderTarget3DView
         MipWidth = (Width >> MipSlice).Max(1);
         MipHeight = (Height >> MipSlice).Max(1);
 
-        Bounds = new DX.Rectangle(0, 0, Width, Height);
+        Bounds = new GorgonRectangle(0, 0, Width, Height);
 
         Graphics.Log.Print($"Render Target 3D View '{Texture.Name}': {Texture.ResourceType} -> Mip slice: {MipSlice}, Starting depth slide: {StartDepthSlice}, Depth slice count: {DepthSliceCount}",
                            LoggingLevel.Verbose);
@@ -239,12 +238,13 @@ public sealed class GorgonRenderTarget3DView
     /// </summary>
     /// <param name="texelCoordinates">The texel coordinates to convert.</param>
     /// <returns>The pixel coordinates.</returns>
-    public (GorgonPoint, int) ToPixel(Vector3 texelCoordinates)
+    public (GorgonPoint Position, int Depth) ToPixel(Vector3 texelCoordinates)
     {
         float width = Texture.Width;
         float height = Texture.Height;
+        float depth = DepthSliceCount;
 
-        return (new GorgonPoint((int)(texelCoordinates.X * width), (int)(texelCoordinates.Y * height)), (int)(texelCoordinates.Z * Depth));
+        return (new GorgonPoint((int)(texelCoordinates.X * width), (int)(texelCoordinates.Y * height)), (int)(texelCoordinates.Z * depth));
     }
 
     /// <summary>
@@ -256,34 +256,9 @@ public sealed class GorgonRenderTarget3DView
     {
         float width = Texture.Width;
         float height = Texture.Height;
+        float depth = DepthSliceCount;
 
-        return new Vector3(pixelCoordinates.X / width, pixelCoordinates.Y / height, Depth / (float)Depth);
-    }
-
-    /// <summary>
-    /// Function to convert a texel size into a pixel size.
-    /// </summary>
-    /// <param name="texelCoordinates">The texel size to convert.</param>
-    /// <returns>The pixel size.</returns>
-    public DX.Size2 ToPixel(DX.Size2F texelCoordinates)
-    {
-        float width = Texture.Width;
-        float height = Texture.Height;
-
-        return new DX.Size2((int)(texelCoordinates.Width * width), (int)(texelCoordinates.Height * height));
-    }
-
-    /// <summary>
-    /// Function to convert a pixel size into a texel size.
-    /// </summary>
-    /// <param name="pixelCoordinates">The pixel size to convert.</param>
-    /// <returns>The texel size.</returns>
-    public DX.Size2F ToTexel(DX.Size2 pixelCoordinates)
-    {
-        float width = Texture.Width;
-        float height = Texture.Height;
-
-        return new DX.Size2F(pixelCoordinates.Width / width, pixelCoordinates.Height / height);
+        return new Vector3(pixelCoordinates.X / width, pixelCoordinates.Y / height, Depth / depth);
     }
 
     /// <summary>
@@ -372,7 +347,7 @@ public sealed class GorgonRenderTarget3DView
         DepthSliceCount = depthSliceCount;
         MipWidth = (Width >> MipSlice).Max(1);
         MipHeight = (Height >> MipSlice).Max(1);
-        Bounds = new DX.Rectangle(0, 0, Width, Height);
+        Bounds = new GorgonRectangle(0, 0, Width, Height);
     }
 
 }

@@ -28,7 +28,6 @@ using System.Numerics;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Math;
-using DX = SharpDX;
 
 namespace Gorgon.Animation;
 
@@ -338,12 +337,12 @@ internal static class TrackKeyProcessor
     /// <param name="time">The current time for the animation.</param>
     /// <param name="result">The result value to apply to the object bounds.</param>
     /// <returns><b>true</b> if there's a value to update, <b>false</b> if not.</returns>
-    public static bool TryUpdateRectBounds(IGorgonAnimationTrack<GorgonKeyRectangle> track, float time, out DX.RectangleF result)
+    public static bool TryUpdateRectBounds(IGorgonAnimationTrack<GorgonKeyRectangle> track, float time, out GorgonRectangleF result)
     {
         switch (track.KeyFrames.Count)
         {
             case 0:
-                result = DX.RectangleF.Empty;
+                result = GorgonRectangleF.Empty;
                 return false;
             case 1:
                 result = track.KeyFrames[0].Value;
@@ -370,14 +369,14 @@ internal static class TrackKeyProcessor
         switch (track.InterpolationMode)
         {
             case TrackInterpolationMode.Linear:
-                result = new DX.RectangleF(prev.Value.X.Lerp(next.Value.X, deltaTime),
+                result = new GorgonRectangleF(prev.Value.X.Lerp(next.Value.X, deltaTime),
                                            prev.Value.Y.Lerp(next.Value.Y, deltaTime),
                                            prev.Value.Width.Lerp(next.Value.Width, deltaTime),
                                            prev.Value.Height.Lerp(next.Value.Height, deltaTime));
                 break;
             case TrackInterpolationMode.Spline:
                 Vector4 splineResult = track.SplineController.GetInterpolatedValue(prevKeyIndex, deltaTime);
-                result = new DX.RectangleF(splineResult.X, splineResult.Y, splineResult.Z, splineResult.W);
+                result = new GorgonRectangleF(splineResult.X, splineResult.Y, splineResult.Z, splineResult.W);
                 break;
             default:
                 result = prev.Value;
@@ -396,13 +395,13 @@ internal static class TrackKeyProcessor
     /// <param name="texCoordinates">The texture coordinates to use.</param>
     /// <param name="textureArrayIndex">The current texture array index to use.</param>
     /// <returns><b>true</b> if there's a value to update, <b>false</b> if not.</returns>
-    public static bool TryUpdateTexture2D(IGorgonAnimationTrack<GorgonKeyTexture2D> track, float time, out GorgonTexture2DView texture, out DX.RectangleF texCoordinates, out int textureArrayIndex)
+    public static bool TryUpdateTexture2D(IGorgonAnimationTrack<GorgonKeyTexture2D> track, float time, out GorgonTexture2DView texture, out GorgonRectangleF texCoordinates, out int textureArrayIndex)
     {
         switch (track.KeyFrames.Count)
         {
             case 0:
                 texture = null;
-                texCoordinates = DX.RectangleF.Empty;
+                texCoordinates = GorgonRectangleF.Empty;
                 textureArrayIndex = 0;
                 return false;
             case 1:

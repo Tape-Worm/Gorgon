@@ -30,7 +30,6 @@ using Gorgon.Editor.UI;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Renderers;
-using DX = SharpDX;
 
 namespace Gorgon.Editor.ExtractSpriteTool;
 
@@ -67,7 +66,7 @@ internal interface IExtract
     /// <summary>
     /// Property to set or return the number of columns/rows in the grid.
     /// </summary>
-    DX.Size2 GridSize
+    GorgonPoint GridSize
     {
         get;
         set;
@@ -76,7 +75,7 @@ internal interface IExtract
     /// <summary>
     /// Property to return the maximum columns and rows allowed in the grid.
     /// </summary>
-    DX.Size2 MaxGridSize
+    GorgonPoint MaxGridSize
     {
         get;
     }
@@ -93,7 +92,7 @@ internal interface IExtract
     /// <summary>
     /// Property to set or return the size of a grid cell.
     /// </summary>
-    DX.Size2 CellSize
+    GorgonPoint CellSize
     {
         get;
         set;

@@ -31,11 +31,11 @@ using Gorgon.Editor.Services;
 using Gorgon.Editor.SpriteEditor.Properties;
 using Gorgon.Editor.UI;
 using Gorgon.Editor.UI.Views;
+using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Graphics.Imaging.Codecs;
 using Gorgon.Renderers;
 using Gorgon.UI;
-using DX = SharpDX;
 
 namespace Gorgon.Editor.SpriteEditor;
 
@@ -223,7 +223,7 @@ internal partial class SpriteEditorView
             return;
         }
 
-        ViewModel.Settings.ManualVertexEditorBounds = new DX.Rectangle(form.DesktopBounds.Left,
+        ViewModel.Settings.ManualVertexEditorBounds = new GorgonRectangle(form.DesktopBounds.Left,
                                                                             form.DesktopBounds.Top,
                                                                             form.DesktopBounds.Width,
                                                                             form.DesktopBounds.Height);
@@ -253,7 +253,7 @@ internal partial class SpriteEditorView
             return;
         }
 
-        ViewModel.Settings.ManualRectangleEditorBounds = new DX.Rectangle(form.DesktopBounds.Left,
+        ViewModel.Settings.ManualRectangleEditorBounds = new GorgonRectangle(form.DesktopBounds.Left,
                                                                             form.DesktopBounds.Top,
                                                                             form.DesktopBounds.Width,
                                                                             form.DesktopBounds.Height);
@@ -707,10 +707,10 @@ internal partial class SpriteEditorView
         _anchorService = new AnchorEditService(context.Renderer2D, new GorgonSprite
         {
             Texture = _anchorTexture,
-            Size = new DX.Size2F(_anchorTexture.Width, _anchorTexture.Height),
+            Size = new Vector2(_anchorTexture.Width, _anchorTexture.Height),
             // Place the hotspot on rope hole at the top of the handle.
             Anchor = new Vector2(0.5f, 0.125f)
-        }, ViewModel?.AnchorEditor?.Bounds ?? new DX.Rectangle
+        }, ViewModel?.AnchorEditor?.Bounds ?? new GorgonRectangle
         {
             Left = -context.Graphics.VideoAdapter.MaxTextureWidth / 2,
             Top = -context.Graphics.VideoAdapter.MaxTextureHeight / 2,
@@ -791,7 +791,7 @@ internal partial class SpriteEditorView
     /// </summary>
     /// <param name="manualInput">The form being positioned.</param>
     /// <param name="prevPositioning">The previous position of the window.</param>
-    private void ManualInputWindowPositioning(Form manualInput, DX.Rectangle? prevPositioning)
+    private void ManualInputWindowPositioning(Form manualInput, GorgonRectangle? prevPositioning)
     {
         if ((manualInput is null) || (!manualInput.Visible))
         {

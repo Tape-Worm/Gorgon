@@ -28,7 +28,6 @@ using Gorgon.Core;
 using Gorgon.Graphics.Imaging.Properties;
 using Gorgon.Math;
 using Gorgon.Native;
-using DX = SharpDX;
 
 namespace Gorgon.Graphics.Imaging;
 
@@ -141,7 +140,7 @@ public class GorgonImageBuffer
     /// If the <paramref name="region"/> is not specified, then the entire buffer is updated, otherwise only the values within the <paramref name="region"/> are updated. 
     /// </para>
     /// </remarks>
-    public void SetAlpha(float alphaValue, GorgonRange<float>? updateAlphaRange = null, DX.Rectangle? region = null)
+    public void SetAlpha(float alphaValue, GorgonRange<float>? updateAlphaRange = null, GorgonRectangle? region = null)
     {
         // If we don't have an alpha channel, then don't do anything.
         if (!FormatInformation.HasAlpha)
@@ -157,7 +156,7 @@ public class GorgonImageBuffer
 
         updateAlphaRange ??= new GorgonRange<float>(0, 1);
 
-        DX.Rectangle fullRect = new(0, 0, Width - 1, Height - 1);
+        GorgonRectangle fullRect = new(0, 0, Width - 1, Height - 1);
 
         if (region is null)
         {
@@ -165,7 +164,7 @@ public class GorgonImageBuffer
         }
         else
         {
-            region = DX.Rectangle.Intersect(region.Value, fullRect);
+            region = GorgonRectangle.Intersect(region.Value, fullRect);
         }
 
         if ((region.Value.Width <= 0) || (region.Value.Height <= 0))
@@ -220,7 +219,7 @@ public class GorgonImageBuffer
     /// The destination buffer must be the same format as the source buffer.  If it is not, then an exception will be thrown.
     /// </para>
     /// </remarks>
-    public void CopyTo(IGorgonImageBuffer buffer, DX.Rectangle? sourceRegion = null, int destX = 0, int destY = 0)
+    public void CopyTo(IGorgonImageBuffer buffer, GorgonRectangle? sourceRegion = null, int destX = 0, int destY = 0)
     {
         // We don't support compressed formats.
         if (FormatInformation.IsCompressed)
@@ -228,7 +227,7 @@ public class GorgonImageBuffer
             throw new NotSupportedException(string.Format(Resources.GORIMG_ERR_FORMAT_NOT_SUPPORTED, Format));
         }
 
-        DX.Rectangle sourceBufferDims = new()
+        GorgonRectangle sourceBufferDims = new()
         {
             Left = 0,
             Top = 0,
@@ -258,7 +257,7 @@ public class GorgonImageBuffer
             return;
         }
 
-        DX.Rectangle srcRegion;
+        GorgonRectangle srcRegion;
 
         if (sourceRegion is null)
         {
@@ -267,7 +266,7 @@ public class GorgonImageBuffer
         else
         {
             // Clip the rectangle to the buffer size.
-            srcRegion = DX.Rectangle.Intersect(sourceRegion.Value, sourceBufferDims);
+            srcRegion = GorgonRectangle.Intersect(sourceRegion.Value, sourceBufferDims);
         }
 
         // If we've nothing to copy, then leave.
@@ -285,8 +284,8 @@ public class GorgonImageBuffer
         }
 
         // Ensure that the regions actually fit within their respective buffers.
-        DX.Rectangle dstRegion = DX.Rectangle.Intersect(new DX.Rectangle(destX, destY, srcRegion.Width, srcRegion.Height),
-                                                new DX.Rectangle(0, 0, buffer.Width, buffer.Height));
+        GorgonRectangle dstRegion = GorgonRectangle.Intersect(new GorgonRectangle(destX, destY, srcRegion.Width, srcRegion.Height),
+                                                new GorgonRectangle(0, 0, buffer.Width, buffer.Height));
 
         // If the source/dest region is empty, then we have nothing to copy.
         if ((srcRegion.IsEmpty)
@@ -300,7 +299,7 @@ public class GorgonImageBuffer
         // If the buffers are identical in dimensions and have no offset, then just do a straight copy.
         if ((buffer.Width == Width)
             && (buffer.Height == Height)
-            && (srcRegion.Equals(ref dstRegion)))
+            && (srcRegion.Equals(dstRegion)))
         {
             Data.CopyTo(buffer.Data);
             return;
@@ -360,7 +359,7 @@ public class GorgonImageBuffer
     /// </para> 
     /// </remarks>
     /// <seealso cref="IGorgonImage"/>
-    public IGorgonImageBuffer GetRegion(DX.Rectangle clipRegion)
+    public IGorgonImageBuffer GetRegion(GorgonRectangle clipRegion)
     {
         // We don't support compressed formats.
         if (FormatInformation.IsCompressed)
@@ -368,7 +367,7 @@ public class GorgonImageBuffer
             throw new NotSupportedException(string.Format(Resources.GORIMG_ERR_FORMAT_NOT_SUPPORTED, Format));
         }
 
-        DX.Rectangle finalRegion = DX.Rectangle.Intersect(clipRegion, new DX.Rectangle(0, 0, Width, Height));
+        GorgonRectangle finalRegion = GorgonRectangle.Intersect(clipRegion, new GorgonRectangle(0, 0, Width, Height));
 
         if ((finalRegion.Width <= 0)
             || (finalRegion.Height <= 0))

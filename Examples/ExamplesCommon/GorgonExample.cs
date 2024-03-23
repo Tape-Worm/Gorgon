@@ -37,8 +37,6 @@ using Gorgon.IO;
 using Gorgon.Renderers;
 using Gorgon.Timing;
 using Gorgon.UI;
-using Drawing = System.Drawing;
-using DX = SharpDX;
 
 
 namespace Gorgon.Examples;
@@ -187,7 +185,7 @@ public static class GorgonExample
             return;
         }
 
-        DX.Rectangle logoRegion = new(currentRtv.Width - _logo.Width - 5, currentRtv.Height - _logo.Height - 2, _logo.Width, _logo.Height);
+        GorgonRectangle logoRegion = new(currentRtv.Width - _logo.Width - 5, currentRtv.Height - _logo.Height - 2, _logo.Width, _logo.Height);
         _blitter.Blit(_logo, logoRegion, blendState: GorgonBlendState.Default);
     }
 
@@ -228,9 +226,9 @@ public static class GorgonExample
         _statsText.Length = 0;
         _statsText.AppendFormat("Average FPS: {0:0.0}\nFrame Delta: {1:0.00#} seconds\nDraw Call Count: {2} ({3} triangles)", GorgonTiming.AverageFPS, GorgonTiming.Delta, stats.DrawCallCount, stats.TriangleCount);
 
-        DX.Size2F measure = _statsText.ToString().MeasureText(_statsFont, true);
-        DX.RectangleF statsRegion = new(0, 0, currentRtv.Width, measure.Height + 4);
-        DX.RectangleF logoRegion = new(currentRtv.Width - _logo.Width - 5, currentRtv.Height - _logo.Height - 2, _logo.Width, _logo.Height);
+        Vector2 measure = _statsText.ToString().MeasureText(_statsFont, true);
+        GorgonRectangleF statsRegion = new(0, 0, currentRtv.Width, measure.Y + 4);
+        GorgonRectangleF logoRegion = new(currentRtv.Width - _logo.Width - 5, currentRtv.Height - _logo.Height - 2, _logo.Width, _logo.Height);
 
         renderer
             .Begin()
@@ -239,13 +237,13 @@ public static class GorgonExample
                 // Draw translucent window.
                 r.DrawFilledRectangle(statsRegion, new GorgonColor(0, 0, 0, 0.5f));
                 // Draw lines for separators.
-                r.DrawLine(0, measure.Height + 3, currentRtv.Width, measure.Height + 3, GorgonColors.White);
-                r.DrawLine(0, measure.Height + 4, currentRtv.Width, measure.Height + 4, GorgonColors.Black);
+                r.DrawLine(0, measure.Y + 3, currentRtv.Width, measure.Y + 3, GorgonColors.White);
+                r.DrawLine(0, measure.Y + 4, currentRtv.Width, measure.Y + 4, GorgonColors.Black);
 
                 // Draw FPS text.
                 r.DrawString(_statsText.ToString(), Vector2.One, _statsFont, GorgonColors.White);
             })
-            .DrawFilledRectangle(logoRegion, GorgonColors.White, _logo, new DX.RectangleF(0, 0, 1, 1))
+            .DrawFilledRectangle(logoRegion, GorgonColors.White, _logo, new GorgonRectangleF(0, 0, 1, 1))
             .End();
     }
 
@@ -270,9 +268,9 @@ public static class GorgonExample
         _statsText.Length = 0;
         _statsText.AppendFormat("Average FPS: {0:0.0}\nFrame Delta: {1:0.00#} seconds\nDraw Call Count: {2} ({3} triangles)", GorgonTiming.AverageFPS, GorgonTiming.Delta, stats.DrawCallCount, stats.TriangleCount);
 
-        DX.Size2F measure = _statsText.ToString().MeasureText(_statsFont, true);
-        DX.RectangleF statsRegion = new(0, 0, currentRtv.Width, measure.Height + 4);
-        DX.RectangleF logoRegion = new(currentRtv.Width - _logo.Width - 5, currentRtv.Height - _logo.Height - 2, _logo.Width, _logo.Height);
+        Vector2 measure = _statsText.ToString().MeasureText(_statsFont, true);
+        GorgonRectangleF statsRegion = new(0, 0, currentRtv.Width, measure.Y + 4);
+        GorgonRectangleF logoRegion = new(currentRtv.Width - _logo.Width - 5, currentRtv.Height - _logo.Height - 2, _logo.Width, _logo.Height);
 
         renderer.Begin();
 
@@ -281,15 +279,15 @@ public static class GorgonExample
             // Draw translucent window.
             renderer.DrawFilledRectangle(statsRegion, new GorgonColor(0, 0, 0, 0.5f));
             // Draw lines for separators.
-            renderer.DrawLine(0, measure.Height + 3, currentRtv.Width, measure.Height + 3, GorgonColors.White);
-            renderer.DrawLine(0, measure.Height + 4, currentRtv.Width, measure.Height + 4, GorgonColors.Black);
+            renderer.DrawLine(0, measure.Y + 3, currentRtv.Width, measure.Y + 3, GorgonColors.White);
+            renderer.DrawLine(0, measure.Y + 4, currentRtv.Width, measure.Y + 4, GorgonColors.Black);
 
             // Draw FPS text.
             renderer.DrawString(_statsText.ToString(), Vector2.One, _statsFont, GorgonColors.White);
         }
 
         // Draw logo.
-        renderer.DrawFilledRectangle(logoRegion, GorgonColors.White, _logo, new DX.RectangleF(0, 0, 1, 1));
+        renderer.DrawFilledRectangle(logoRegion, GorgonColors.White, _logo, new GorgonRectangleF(0, 0, 1, 1));
 
         renderer.End();
     }
@@ -353,12 +351,12 @@ public static class GorgonExample
     /// <param name="appTitle">The title for the application.</param>
     /// <param name="formLoad">The method to execute when the form load event is triggered.</param>
     /// <returns>The newly created form.</returns>
-    public static FormMain Initialize(DX.Size2 resolution, string appTitle, EventHandler formLoad = null)
+    public static FormMain Initialize(GorgonPoint resolution, string appTitle, EventHandler formLoad = null)
     {
         _mainForm = new FormMain
         {
             Text = appTitle,
-            ClientSize = new Drawing.Size(resolution.Width, resolution.Height)
+            ClientSize = new Size(resolution.X, resolution.Y)
         };
 
         if (formLoad is not null)

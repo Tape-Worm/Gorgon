@@ -31,10 +31,10 @@ using Gorgon.Editor.ImageEditor.ViewModels;
 using Gorgon.Editor.Rendering;
 using Gorgon.Editor.UI;
 using Gorgon.Editor.UI.Views;
+using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Graphics.Imaging;
 using Gorgon.Math;
-using DX = SharpDX;
 
 namespace Gorgon.Editor.ImageEditor;
 
@@ -203,9 +203,9 @@ internal partial class ImageEditorView
             return;
         }
 
-        DX.Size2 size = new((dataContext.Width >> dataContext.CurrentMipLevel).Max(1), (dataContext.Height >> dataContext.CurrentMipLevel).Max(1));
+        GorgonPoint size = new((dataContext.Width >> dataContext.CurrentMipLevel).Max(1), (dataContext.Height >> dataContext.CurrentMipLevel).Max(1));
 
-        LabelMipDetails.Text = string.Format(Resources.GORIMG_TEXT_MIP_DETAILS, dataContext.CurrentMipLevel + 1, dataContext.MipCount, size.Width, size.Height);
+        LabelMipDetails.Text = string.Format(Resources.GORIMG_TEXT_MIP_DETAILS, dataContext.CurrentMipLevel + 1, dataContext.MipCount, size.X, size.Y);
     }
 
 

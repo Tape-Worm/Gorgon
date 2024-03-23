@@ -32,7 +32,6 @@ using Gorgon.Graphics.Core;
 using Gorgon.Graphics.Fonts;
 using Gorgon.Math;
 using Gorgon.UI;
-using DX = SharpDX;
 
 
 namespace Gorgon.Renderers;
@@ -78,7 +77,7 @@ public class GorgonTextSprite
     // The formatted text.
     private readonly StringBuilder _formattedText = new(256);
     // The area for used for text layout.
-    private DX.Size2F? _layoutArea;
+    private Vector2? _layoutArea;
     // Flag to allow or disallow control codes in the text.
     private bool _allowCodes;
     // The parser used to parse out the codes from text assigned to this object.
@@ -175,7 +174,7 @@ public class GorgonTextSprite
     /// but, when this property is defined, the layout region can be larger or smaller than the sprite <see cref="Bounds"/>.
     /// </para>
     /// </remarks>
-    public DX.Size2F? LayoutArea
+    public Vector2? LayoutArea
     {
         get => _layoutArea;
         set
@@ -405,7 +404,7 @@ public class GorgonTextSprite
     /// <summary>
     /// Property to return the boundaries of the sprite.
     /// </summary>
-    public DX.RectangleF Bounds => Renderable.Bounds;
+    public GorgonRectangleF Bounds => Renderable.Bounds;
 
     /// <summary>
     /// Property to set or return the position of the sprite.
@@ -415,7 +414,7 @@ public class GorgonTextSprite
         get => new(Renderable.Bounds.Left, Renderable.Bounds.Top);
         set
         {
-            ref DX.RectangleF bounds = ref Renderable.Bounds;
+            ref GorgonRectangleF bounds = ref Renderable.Bounds;
 
             if ((bounds.Left == value.X)
                 && (bounds.Top == value.Y))
@@ -423,7 +422,7 @@ public class GorgonTextSprite
                 return;
             }
 
-            bounds = new DX.RectangleF(value.X, value.Y, bounds.Width, bounds.Height);
+            bounds = new GorgonRectangleF(value.X, value.Y, bounds.Width, bounds.Height);
             Renderable.HasTransformChanges = true;
         }
     }
@@ -472,7 +471,7 @@ public class GorgonTextSprite
     /// <summary>
     /// Property to return the size of the sprite.
     /// </summary>
-    public DX.Size2F Size => Renderable.Bounds.Size;
+    public Vector2 Size => Renderable.Bounds.Size;
 
     /// <summary>
     /// Property to set or return the size of the renderable after scaling has been applied.
@@ -481,19 +480,19 @@ public class GorgonTextSprite
     /// This property will set or return the actual size of the renderable.  This means that if a <see cref="Scale"/> has been set, then this property will return the size of the renderable with
     /// multiplied by the scale.  When assigning a value, the scale be set on value derived from the current size of the renderable.
     /// </remarks>
-    public DX.Size2F ScaledSize
+    public Vector2 ScaledSize
     {
         get
         {
-            ref DX.RectangleF bounds = ref Renderable.Bounds;
+            ref GorgonRectangleF bounds = ref Renderable.Bounds;
             ref Vector2 scale = ref Renderable.Scale;
-            return new DX.Size2F(scale.X * bounds.Width, scale.Y * bounds.Height);
+            return new Vector2(scale.X * bounds.Width, scale.Y * bounds.Height);
         }
         set
         {
-            ref DX.RectangleF bounds = ref Renderable.Bounds;
+            ref GorgonRectangleF bounds = ref Renderable.Bounds;
             ref Vector2 scale = ref Renderable.Scale;
-            scale = new Vector2(value.Width / bounds.Width, value.Height / bounds.Height);
+            scale = new Vector2(value.X / bounds.Width, value.Y / bounds.Height);
             Renderable.HasTransformChanges = true;
         }
     }
@@ -581,12 +580,12 @@ public class GorgonTextSprite
     /// </summary>
     private void UpdateBounds()
     {
-        DX.Size2F size = _formattedText.ToString().MeasureText(Renderable.Font,
+        Vector2 size = _formattedText.ToString().MeasureText(Renderable.Font,
                                                      DrawMode != TextDrawMode.GlyphsOnly,
                                                      Renderable.TabSpaceCount,
                                                      Renderable.LineSpaceMultiplier);
 
-        Renderable.Bounds = new DX.RectangleF(Renderable.Bounds.Left, Renderable.Bounds.Top, size.Width, size.Height);
+        Renderable.Bounds = new GorgonRectangleF(Renderable.Bounds.Left, Renderable.Bounds.Top, size.X, size.Y);
         Renderable.LayoutArea = _layoutArea ?? size;
     }
 

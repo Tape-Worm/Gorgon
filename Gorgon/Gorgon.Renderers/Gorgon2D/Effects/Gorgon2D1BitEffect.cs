@@ -30,7 +30,6 @@ using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Renderers.Cameras;
 using Gorgon.Renderers.Properties;
-using DX = SharpDX;
 
 namespace Gorgon.Renderers;
 
@@ -308,10 +307,10 @@ public class Gorgon2D1BitEffect
 
         Begin(GorgonBlendState.Default, GorgonDepthStencilState.Default, GorgonRasterState.Default, null);
 
-        Renderer.DrawFilledRectangle(new DX.RectangleF(0, 0, output.Width, output.Height),
+        Renderer.DrawFilledRectangle(new GorgonRectangleF(0, 0, output.Width, output.Height),
                                         GorgonColors.White,
                                         texture,
-                                        new DX.RectangleF(0, 0, 1, 1));
+                                        new GorgonRectangleF(0, 0, 1, 1));
         End();
     }
 

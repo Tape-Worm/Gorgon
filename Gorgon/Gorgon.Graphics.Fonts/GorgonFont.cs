@@ -31,7 +31,6 @@ using Gorgon.Graphics.Fonts.Properties;
 using Gorgon.Graphics.Imaging;
 using Gorgon.Math;
 using Gorgon.Native;
-using DX = SharpDX;
 
 namespace Gorgon.Graphics.Fonts;
 
@@ -167,7 +166,7 @@ public sealed class GorgonFont
     /// This sets the height of the font.
     /// </para>
     ///   <para>
-    /// This is affected by the <see cref="Fonts.GorgonFontHeightMode" />. If the <see cref="FontHeightMode" /> is set to <see cref="GorgonFontHeightMode.Points" />, then this unit is the height
+    /// This is affected by the <see cref="GorgonFontHeightMode" />. If the <see cref="FontHeightMode" /> is set to <see cref="GorgonFontHeightMode.Points" />, then this unit is the height
     /// size height for the font. Otherwise, this represents the font height in <see cref="GorgonFontHeightMode.Pixels" />.
     /// </para>
     /// </remarks>
@@ -301,7 +300,7 @@ public sealed class GorgonFont
     public GorgonGlyphBrush Brush => _info.Brush;
 
     /// <summary>Property to return the style for the font.</summary>
-    /// <remarks>The default value is <see cref="System.Drawing.FontStyle.Regular" />.</remarks>
+    /// <remarks>The default value is <see cref="FontStyle.Regular" />.</remarks>
     public GorgonFontStyle FontStyle => _info.FontStyle;
 
     /// <summary>Property to return a default character to use in place of a character that cannot be found in the font.</summary>
@@ -591,7 +590,7 @@ public sealed class GorgonFont
             };
 
             // Assign the texture to each glyph (and its outline if needed).
-            newGlyph.UpdateTexture(glyph.Value.Texture, glyph.Value.Region, HasOutline ? glyph.Value.OutlineRegion : DX.Rectangle.Empty, glyph.Value.TextureArrayIndex);
+            newGlyph.UpdateTexture(glyph.Value.Texture, glyph.Value.Region, HasOutline ? glyph.Value.OutlineRegion : GorgonRectangle.Empty, glyph.Value.TextureArrayIndex);
 
             Glyphs.Add(newGlyph);
         }

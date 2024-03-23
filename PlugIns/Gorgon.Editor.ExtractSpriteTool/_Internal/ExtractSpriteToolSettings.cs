@@ -24,8 +24,8 @@
 // 
 
 
+using Gorgon.Graphics;
 using Newtonsoft.Json;
-using DX = SharpDX;
 
 namespace Gorgon.Editor.ExtractSpriteTool;
 
@@ -78,9 +78,9 @@ internal class ExtractSpriteToolSettings
     /// Property to set or return the size, in pixels, of a single cell in the grid.
     /// </summary>
     [JsonProperty]
-    public DX.Size2 GridCellSize
+    public GorgonPoint GridCellSize
     {
         get;
         set;
-    } = new DX.Size2(32, 32);
+    } = new GorgonPoint(32, 32);
 }

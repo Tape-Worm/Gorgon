@@ -32,7 +32,6 @@ using Gorgon.Graphics.Core;
 using Gorgon.Graphics.Imaging;
 using Gorgon.IO;
 using Gorgon.Renderers;
-using DX = SharpDX;
 
 namespace Gorgon.Editor.Services;
 
@@ -70,7 +69,7 @@ public class SpriteExtractorService(Gorgon2D renderer, IContentFileManager fileM
     /// <param name="imageData">The system memory representation of the texture.</param>
     /// <param name="skipMask">The color used to mask which pixels are considered empty.</param>
     /// <returns><b>true</b> if sprite is empty, <b>false</b> if not.</returns>
-    private bool IsEmpty(DX.Rectangle bounds, IGorgonImageBuffer imageData, GorgonColor skipMask)
+    private bool IsEmpty(GorgonRectangle bounds, IGorgonImageBuffer imageData, GorgonColor skipMask)
     {
         int pixelSize = imageData.FormatInformation.SizeInBytes;
         int color = GorgonColor.ToABGR(skipMask);
@@ -99,10 +98,10 @@ public class SpriteExtractorService(Gorgon2D renderer, IContentFileManager fileM
     /// <param name="offset">The offset of the grid from the upper left corner of the texture.</param>
     /// <param name="cellSize">The size of the cell, in pixels.</param>
     /// <returns>The pixel coordinates for the sprite.</returns>
-    private DX.Rectangle GetSpriteRect(int column, int row, GorgonPoint offset, DX.Size2 cellSize)
+    private GorgonRectangle GetSpriteRect(int column, int row, GorgonPoint offset, GorgonPoint cellSize)
     {
-        GorgonPoint upperLeft = new(column * cellSize.Width + offset.X, row * cellSize.Height + offset.Y);
-        return new DX.Rectangle(upperLeft.X, upperLeft.Y, cellSize.Width, cellSize.Height);
+        GorgonPoint upperLeft = new(column * cellSize.X + offset.X, row * cellSize.Y + offset.Y);
+        return new GorgonRectangle(upperLeft.X, upperLeft.Y, cellSize.X, cellSize.Y);
     }
 
     /// <summary>
@@ -140,10 +139,10 @@ public class SpriteExtractorService(Gorgon2D renderer, IContentFileManager fileM
                 convertTarget.Clear(GorgonColors.BlackTransparent);
                 _graphics.SetRenderTarget(convertTarget);
                 _renderer.Begin();
-                _renderer.DrawFilledRectangle(new DX.RectangleF(0, 0, texture.Width, texture.Height),
+                _renderer.DrawFilledRectangle(new GorgonRectangleF(0, 0, texture.Width, texture.Height),
                     GorgonColors.White,
                     texture,
-                    new DX.RectangleF(0, 0, 1, 1),
+                    new GorgonRectangleF(0, 0, 1, 1),
                     i);
                 _renderer.End();
 
@@ -214,21 +213,21 @@ public class SpriteExtractorService(Gorgon2D renderer, IContentFileManager fileM
                 return [];
             }
 
-            for (int y = 0; y < data.GridSize.Height; ++y)
+            for (int y = 0; y < data.GridSize.Y; ++y)
             {
                 if (cancelToken.IsCancellationRequested)
                 {
                     return [];
                 }
 
-                for (int x = 0; x < data.GridSize.Width; ++x)
+                for (int x = 0; x < data.GridSize.X; ++x)
                 {
                     if (cancelToken.IsCancellationRequested)
                     {
                         return [];
                     }
 
-                    DX.Rectangle spriteRect = GetSpriteRect(x, y, data.GridOffset, data.CellSize);
+                    GorgonRectangle spriteRect = GetSpriteRect(x, y, data.GridOffset, data.CellSize);
 
                     if ((data.SkipEmpty) && (IsEmpty(spriteRect, imageData.Buffers[0, array + data.StartArrayIndex], data.SkipColor)))
                     {
@@ -240,7 +239,7 @@ public class SpriteExtractorService(Gorgon2D renderer, IContentFileManager fileM
                         TextureArrayIndex = array + data.StartArrayIndex,
                         Texture = data.Texture,
                         Anchor = Vector2.Zero,
-                        Size = new DX.Size2F(data.CellSize.Width, data.CellSize.Height),
+                        Size = new Vector2(data.CellSize.X, data.CellSize.Y),
                         TextureRegion = data.Texture.ToTexel(spriteRect),
                         TextureSampler = GorgonSamplerState.PointFiltering
                     });

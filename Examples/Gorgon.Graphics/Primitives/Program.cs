@@ -38,7 +38,6 @@ using Gorgon.Renderers.Geometry;
 using Gorgon.Renderers.Lights;
 using Gorgon.Timing;
 using Gorgon.UI;
-using DX = SharpDX;
 using GI = Gorgon.Input;
 
 namespace Gorgon.Examples;
@@ -594,7 +593,7 @@ internal static class Program
         };
         _renderer.Meshes.Add(_sphere);
 
-        _icoSphere = new IcoSphere(_graphics, 5.0f, new DX.RectangleF(0, 0, 1, 1), Vector3.Zero, 3)
+        _icoSphere = new IcoSphere(_graphics, 5.0f, new GorgonRectangleF(0, 0, 1, 1), Vector3.Zero, 3)
         {
             Rotation = new Vector3(0, -45.0f, 0),
             Position = new Vector3(10, 2, 9.5f),
@@ -669,7 +668,7 @@ internal static class Program
     private static void Initialize()
     {
         GorgonExample.ShowStatistics = false;
-        _window = GorgonExample.Initialize(new DX.Size2(ExampleConfig.Default.Resolution.Width, ExampleConfig.Default.Resolution.Height), "Primitives");
+        _window = GorgonExample.Initialize(new GorgonPoint(ExampleConfig.Default.Resolution.X, ExampleConfig.Default.Resolution.Y), "Primitives");
 
         try
         {
@@ -704,7 +703,7 @@ internal static class Program
 
             BuildMeshes();
 
-            _renderer.Camera = _camera = new GorgonPerspectiveCamera(_graphics, new DX.Size2F(_swapChain.Width, _swapChain.Height))
+            _renderer.Camera = _camera = new GorgonPerspectiveCamera(_graphics, new Vector2(_swapChain.Width, _swapChain.Height))
             {
                 Fov = 75.0f
             };
@@ -723,9 +722,9 @@ internal static class Program
             // When we resize, update the projection and viewport to match our client size.
             _swapChain.SwapChainResized += (sender, args) =>
                                                 {
-                                                    _camera.ViewDimensions = args.Size.ToSize2F();
+                                                    _camera.ViewDimensions = args.Size;
 
-                                                    BuildDepthBuffer(args.Size.Width, args.Size.Height);
+                                                    BuildDepthBuffer(args.Size.X, args.Size.Y);
 
                                                     _graphics.SetDepthStencil(_depthBuffer);
                                                 };

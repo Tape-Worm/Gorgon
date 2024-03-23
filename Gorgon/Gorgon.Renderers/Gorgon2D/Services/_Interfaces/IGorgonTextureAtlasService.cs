@@ -26,7 +26,6 @@
 
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
-using DX = SharpDX;
 
 namespace Gorgon.Renderers.Services;
 
@@ -64,7 +63,7 @@ public interface IGorgonTextureAtlasService
     /// The maximum texture size is limited to the <see cref="IGorgonVideoAdapterInfo.MaxTextureWidth"/>, and <see cref="IGorgonVideoAdapterInfo.MaxTextureHeight"/> supported by the video adapter, and 
     /// the minimum is 256x256.
     /// </remarks>
-    DX.Size2 TextureSize
+    GorgonPoint TextureSize
     {
         get;
         set;
@@ -117,7 +116,7 @@ public interface IGorgonTextureAtlasService
     /// </remarks>
     /// <seealso cref="GetSpriteRegions(IEnumerable{GorgonSprite})"/>
     /// <seealso cref="GorgonTextureAtlas"/>
-    GorgonTextureAtlas GenerateAtlas(IReadOnlyDictionary<GorgonSprite, (int textureIndex, DX.Rectangle region, int arrayIndex)> regions, BufferFormat textureFormat);
+    GorgonTextureAtlas GenerateAtlas(IReadOnlyDictionary<GorgonSprite, (int textureIndex, GorgonRectangle region, int arrayIndex)> regions, BufferFormat textureFormat);
 
     /// <summary>
     /// Function to retrieve a list of all the regions occupied by the provided sprites on the texture.
@@ -145,7 +144,7 @@ public interface IGorgonTextureAtlasService
     /// </para>
     /// </remarks>
     /// <seealso cref="GetBestFit"/>
-    IReadOnlyDictionary<GorgonSprite, (int textureIndex, DX.Rectangle region, int arrayIndex)> GetSpriteRegions(IEnumerable<GorgonSprite> sprites);
+    IReadOnlyDictionary<GorgonSprite, (int textureIndex, GorgonRectangle region, int arrayIndex)> GetSpriteRegions(IEnumerable<GorgonSprite> sprites);
 
     /// <summary>
     /// Function to determine the best texture size and array count for the texture atlas based on the sprites passed in.
@@ -170,6 +169,6 @@ public interface IGorgonTextureAtlasService
     /// the array count will be 0.
     /// </para>
     /// </remarks>
-    (DX.Size2 textureSize, int arrayCount) GetBestFit(IEnumerable<GorgonSprite> sprites, DX.Size2 minTextureSize, int minArrayCount);
+    (GorgonPoint textureSize, int arrayCount) GetBestFit(IEnumerable<GorgonSprite> sprites, GorgonPoint minTextureSize, int minArrayCount);
 
 }

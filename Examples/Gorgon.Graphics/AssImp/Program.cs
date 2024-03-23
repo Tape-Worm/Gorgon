@@ -9,7 +9,6 @@ using Gorgon.Renderers.Cameras;
 using Gorgon.Renderers.Geometry;
 using Gorgon.Timing;
 using Gorgon.UI;
-using DX = SharpDX;
 
 namespace Gorgon.Examples;
 
@@ -101,8 +100,8 @@ internal static class Program
     private static void Screen_SwapChainResized(object sender, SwapChainResizedEventArgs e)
     {
         // If we resize the window, ensure that the depth buffer is resized as well.
-        BuildDepthBuffer(e.Size.Width, e.Size.Height);
-        _camera.ViewDimensions = new DX.Size2F(e.Size.Width, e.Size.Height);
+        BuildDepthBuffer(e.Size.X, e.Size.X);
+        _camera.ViewDimensions = e.Size;
     }
 
     /// <summary>
@@ -253,7 +252,7 @@ internal static class Program
         }
 
         // Set up our camera.
-        _camera = new GorgonPerspectiveCamera(_graphics, new DX.Size2F(_screen.Width, _screen.Height), 0.125f, 500.0f)
+        _camera = new GorgonPerspectiveCamera(_graphics, new Vector2(_screen.Width, _screen.Height), 0.125f, 500.0f)
         {
             Fov = 75,
             // Position the camera to center on the model using its AABB.
@@ -271,7 +270,7 @@ internal static class Program
         try
         {
             // Create our form.
-            _mainForm = GorgonExample.Initialize(new DX.Size2(ExampleConfig.Default.Resolution.Width, ExampleConfig.Default.Resolution.Height), "Asset Importer");
+            _mainForm = GorgonExample.Initialize(new GorgonPoint(ExampleConfig.Default.Resolution.X, ExampleConfig.Default.Resolution.Y), "Asset Importer");
 
             // Find out which devices we have installed in the system.
             IReadOnlyList<IGorgonVideoAdapterInfo> deviceList = GorgonGraphics.EnumerateAdapters();
@@ -289,8 +288,8 @@ internal static class Program
             // We can modify the resolution in the config file for the application, but like other Gorgon examples, the default is 1280x800.
             _screen = new GorgonSwapChain(_graphics,
                                           _mainForm,
-                                          new GorgonSwapChainInfo(ExampleConfig.Default.Resolution.Width,
-                                                                     ExampleConfig.Default.Resolution.Height,
+                                          new GorgonSwapChainInfo(ExampleConfig.Default.Resolution.X,
+                                                                     ExampleConfig.Default.Resolution.Y,
                                                                      BufferFormat.R8G8B8A8_UNorm)
                                           {
                                               Name = "Main"

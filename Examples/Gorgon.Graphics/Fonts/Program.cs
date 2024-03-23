@@ -36,8 +36,6 @@ using Gorgon.Math;
 using Gorgon.Renderers;
 using Gorgon.Timing;
 using Gorgon.UI;
-using Drawing = System.Drawing;
-using DX = SharpDX;
 
 namespace Gorgon.Examples;
 
@@ -99,7 +97,7 @@ static class Program
     /// </summary>
     /// <param name="fontFamilies">The list of TrueType font families to use.</param>
     /// <param name="window">The window that contains the loading message.</param>
-    private static async Task GenerateGorgonFontsAsync(IReadOnlyList<Drawing.FontFamily> fontFamilies, FormMain window)
+    private static async Task GenerateGorgonFontsAsync(IReadOnlyList<FontFamily> fontFamilies, FormMain window)
     {
         // Pick a font to use with outlines.
         int fontWithOutlineIndex = GorgonRandom.RandomInt32(1, 5);
@@ -120,7 +118,7 @@ static class Program
                 continue;
             }
 
-            bool isExternal = Drawing.FontFamily.Families.All(item => !string.Equals(item.Name, fontFamily, StringComparison.InvariantCultureIgnoreCase));
+            bool isExternal = FontFamily.Families.All(item => !string.Equals(item.Name, fontFamily, StringComparison.InvariantCultureIgnoreCase));
             string fontName;
             int outlineSize = 0;
             GorgonColor outlineColor1 = GorgonColors.BlackTransparent;
@@ -191,7 +189,7 @@ static class Program
     /// </summary>
     /// <param name="window">The window containing the loading message.</param>
     /// <returns>The font families to use when building the bitmap fonts.</returns>
-    private static Task<IReadOnlyList<Drawing.FontFamily>> LoadTrueTypeFontsAsync(FormMain window)
+    private static Task<IReadOnlyList<FontFamily>> LoadTrueTypeFontsAsync(FormMain window)
     {
         // Load in a bunch of true type fonts.
         DirectoryInfo dirInfo = GorgonExample.GetResourcePath("Fonts");
@@ -206,7 +204,7 @@ static class Program
             foreach (FileInfo file in files)
             {
                 window.UpdateStatus($"Loading Font: {file.FullName}".Ellipses(50));
-                Drawing.FontFamily externFont = GorgonExample.Fonts.LoadTrueTypeFontFamily(file.FullName);
+                FontFamily externFont = GorgonExample.Fonts.LoadTrueTypeFontFamily(file.FullName);
                 _fontFamilies.Insert(0, externFont.Name);
                 fontFamilies.Add(externFont);
             }
@@ -215,16 +213,16 @@ static class Program
             window.UpdateStatus($"Loading Resource Font...");
             using (MemoryStream stream = new(Resources.Achafexp))
             {
-                Drawing.FontFamily resFont = GorgonExample.Fonts.LoadTrueTypeFontFamily(stream);
+                FontFamily resFont = GorgonExample.Fonts.LoadTrueTypeFontFamily(stream);
                 _fontFamilies.Insert(0, resFont.Name);
                 fontFamilies.Add(resFont);
             }
 
             window.UpdateStatus(null);
 
-            fontFamilies.AddRange(Drawing.FontFamily.Families);
+            fontFamilies.AddRange(FontFamily.Families);
 
-            return (IReadOnlyList<Drawing.FontFamily>)fontFamilies;
+            return (IReadOnlyList<FontFamily>)fontFamilies;
         });
     }
 
@@ -243,8 +241,8 @@ static class Program
 
         _screen.RenderTargetView.Clear(_glowIndex != _fontIndex ? GorgonColors.CornFlowerBlue : new GorgonColor(0, 0, 0.2f));
 
-        DX.Size2F textSize = _text.MeasureText(currentFont, false);
-        Vector2 position = new((int)((_screen.Width / 2.0f) - (textSize.Width / 2.0f)).Max(4.0f), (int)((_screen.Height / 2.0f) - (textSize.Height / 2.0f)).Max(100));
+        Vector2 textSize = _text.MeasureText(currentFont, false);
+        Vector2 position = new((int)((_screen.Width / 2.0f) - (textSize.X / 2.0f)).Max(4.0f), (int)((_screen.Height / 2.0f) - (textSize.Y / 2.0f)).Max(100));
         _textSprite.Font = currentFont;
         _textSprite.Position = position;
 
@@ -378,8 +376,8 @@ static class Program
 
                 _screen = new GorgonSwapChain(_graphics,
                                                 form,
-                                                new GorgonSwapChainInfo(ExampleConfig.Default.Resolution.Width,
-                                                                             ExampleConfig.Default.Resolution.Height,
+                                                new GorgonSwapChainInfo(ExampleConfig.Default.Resolution.X,
+                                                                             ExampleConfig.Default.Resolution.Y,
                                                                              BufferFormat.R8G8B8A8_UNorm)
                                                 {
                                                     Name = "Gorgon2D Effects Example Swap Chain"
@@ -394,7 +392,7 @@ static class Program
                 // Load our logo.
                 GorgonExample.LoadResources(_graphics);
 
-                IReadOnlyList<Drawing.FontFamily> fonts = await LoadTrueTypeFontsAsync(form);
+                IReadOnlyList<FontFamily> fonts = await LoadTrueTypeFontsAsync(form);
                 await GenerateGorgonFontsAsync(fonts, form);
 
                 // Build our text sprite.
@@ -416,7 +414,7 @@ static class Program
             }
         }
 
-        return GorgonExample.Initialize(new DX.Size2(ExampleConfig.Default.Resolution.Width, ExampleConfig.Default.Resolution.Height), "Fonts", OnLoad);
+        return GorgonExample.Initialize(new GorgonPoint(ExampleConfig.Default.Resolution.X, ExampleConfig.Default.Resolution.Y), "Fonts", OnLoad);
     }
 
     /// <summary>

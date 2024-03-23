@@ -24,8 +24,8 @@
 // 
 
 
+using Gorgon.Graphics;
 using Newtonsoft.Json;
-using DX = SharpDX;
 
 namespace Gorgon.Editor.AnimationEditor;
 
@@ -94,7 +94,7 @@ internal class AnimationEditorSettings
     /// Property to set or return the default screen resolution for the animation.
     /// </summary>
     [JsonProperty]
-    public DX.Size2 DefaultResolution
+    public GorgonPoint DefaultResolution
     {
         get;
         set;
@@ -120,5 +120,5 @@ internal class AnimationEditorSettings
     } = true;
 
     /// <summary>Initializes a new instance of the <see cref="AnimationEditorSettings"/> class.</summary>
-    public AnimationEditorSettings() => DefaultResolution = new DX.Size2(Screen.PrimaryScreen.Bounds.Width, Screen.PrimaryScreen.Bounds.Height);
+    public AnimationEditorSettings() => DefaultResolution = new GorgonPoint(Screen.PrimaryScreen.Bounds.Width, Screen.PrimaryScreen.Bounds.Height);
 }

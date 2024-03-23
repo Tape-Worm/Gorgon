@@ -25,7 +25,6 @@
 
 
 using Gorgon.Editor.UI;
-using Drawing = System.Drawing;
 
 namespace Gorgon.Editor.FontEditor;
 
@@ -47,7 +46,7 @@ internal interface IFontCharacterSelection
     /// <summary>
     /// Property to return the current font.
     /// </summary>
-    Drawing.Font CurrentFont
+    Font CurrentFont
     {
         get;
     }

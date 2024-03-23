@@ -127,7 +127,7 @@ public abstract class EditorPlugIn(string description)
     /// the base <see cref="ISettingsCategory"/> type. Returning <b>null</b> will mean that the plug in does not have settings that can be managed externally.
     /// </para>
     /// <para>
-    /// Plug ins must register the view associated with their settings panel via the <see cref="ViewFactory.Register{T}(Func{System.Windows.Forms.Control})"/> method when the plug in first loaded, 
+    /// Plug ins must register the view associated with their settings panel via the <see cref="ViewFactory.Register{T}(Func{Control})"/> method when the plug in first loaded, 
     /// or else the panel will not show in the main settings area.
     /// </para>
     /// </remarks>

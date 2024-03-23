@@ -35,7 +35,6 @@ using Gorgon.Graphics.Imaging.Codecs;
 using Gorgon.Renderers;
 using Gorgon.Timing;
 using Gorgon.UI;
-using DX = SharpDX;
 
 namespace Gorgon.Editor.AnimationEditor;
 
@@ -155,14 +154,14 @@ internal class NoPrimarySpriteViewer
         }
         else
         {
-            _oldFilm.DirtRegion = DX.RectangleF.Empty;
+            _oldFilm.DirtRegion = GorgonRectangleF.Empty;
             _stripX = 0;
         }
 
         Graphics.SetRenderTarget(_rtv);
 
         Renderer.Begin();
-        Renderer.DrawFilledRectangle(_rtv.Bounds.ToRectangleF(), GorgonColors.White, _noSprite, new DX.RectangleF(_stripX, 0, 1, 1));
+        Renderer.DrawFilledRectangle(_rtv.Bounds, GorgonColors.White, _noSprite, new GorgonRectangleF(_stripX, 0, 1, 1));
         Renderer.DrawTextSprite(_displayText);
         Renderer.End();
 

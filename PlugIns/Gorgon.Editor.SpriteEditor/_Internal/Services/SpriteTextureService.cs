@@ -36,7 +36,6 @@ using Gorgon.Graphics.Imaging;
 using Gorgon.Graphics.Imaging.Codecs;
 using Gorgon.IO;
 using Gorgon.Renderers;
-using DX = SharpDX;
 
 namespace Gorgon.Editor.SpriteEditor;
 
@@ -104,10 +103,10 @@ internal class SpriteTextureService(IGraphicsContext graphicsContext, IContentFi
                 convertTarget.Clear(GorgonColors.BlackTransparent);
 
                 _renderer.Begin();
-                _renderer.DrawFilledRectangle(new DX.RectangleF(0, 0, texture.Width, texture.Height),
+                _renderer.DrawFilledRectangle(new GorgonRectangleF(0, 0, texture.Width, texture.Height),
                     GorgonColors.White,
                     texture,
-                    new DX.RectangleF(0, 0, 1, 1), i);
+                    new GorgonRectangleF(0, 0, 1, 1), i);
                 _renderer.End();
 
                 tempImage?.Dispose();

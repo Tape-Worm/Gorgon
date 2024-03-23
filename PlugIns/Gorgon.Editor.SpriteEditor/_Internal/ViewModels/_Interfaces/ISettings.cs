@@ -26,7 +26,6 @@
 
 using Gorgon.Editor.UI;
 using Gorgon.Graphics;
-using DX = SharpDX;
 
 namespace Gorgon.Editor.SpriteEditor;
 
@@ -57,7 +56,7 @@ internal interface ISettings
     /// <summary>
     /// Property to set or return the position of the manual rectangle editor window.
     /// </summary>
-    DX.Rectangle? ManualRectangleEditorBounds
+    GorgonRectangle? ManualRectangleEditorBounds
     {
         get;
         set;
@@ -66,7 +65,7 @@ internal interface ISettings
     /// <summary>
     /// property to set or return the position of the manual vertex editor window.
     /// </summary>
-    DX.Rectangle? ManualVertexEditorBounds
+    GorgonRectangle? ManualVertexEditorBounds
     {
         get;
         set;

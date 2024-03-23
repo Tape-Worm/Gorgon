@@ -32,7 +32,6 @@ using Gorgon.Graphics.Core;
 using Gorgon.Math;
 using Gorgon.Renderers.Cameras;
 using Gorgon.Renderers.Properties;
-using DX = SharpDX;
 
 namespace Gorgon.Renderers;
 
@@ -85,7 +84,7 @@ namespace Gorgon.Renderers;
 /// The PowerPoint presentation is <a target="_blank" href="http://www.iryoku.com/downloads/Next-Generation-Post-Processing-in-Call-of-Duty-Advanced-Warfare-v18.pptx">here</a> (it's a big'un)
 /// </para>
 /// </remarks>
-/// <seealso cref="Gorgon2D.DrawFilledRectangle(DX.RectangleF, GorgonColor, GorgonTexture2DView, DX.RectangleF?, int, GorgonSamplerState, float)"/>
+/// <seealso cref="Gorgon2D.DrawFilledRectangle(GorgonRectangleF, GorgonColor, GorgonTexture2DView, GorgonRectangleF?, int, GorgonSamplerState, float)"/>
 /// <seealso cref="Gorgon2D.DrawSprite"/>
 /// <seealso cref="BufferFormat"/>
 /// <seealso cref="Threshold"/>
@@ -309,12 +308,12 @@ public class Gorgon2DBloomEffect
     /// Function to set up for the filtering/blurring pass.
     /// </summary>
     /// <param name="outputSize">The width and height of the final output.</param>
-    private void SetupFilterAndBlur(DX.Size2 outputSize)
+    private void SetupFilterAndBlur(GorgonPoint outputSize)
     {
         ref BloomSettings settings = ref _settings;
 
         float linearThreshold = Threshold.Pow(2.2f);
-        int maxSize = (outputSize.Width / 2).Max(outputSize.Height / 2);
+        int maxSize = (outputSize.X / 2).Max(outputSize.Y / 2);
 
         float logSize = ((float)maxSize).Log(2) + BlurAmount - 10;
         float floorLog = logSize.FastFloor();
@@ -328,7 +327,7 @@ public class Gorgon2DBloomEffect
 
         GorgonTexture2DView dirtTexture = DirtTexture ?? Renderer.EmptyBlackTexture;
 
-        float screenAspect = outputSize.Width / (float)outputSize.Height;
+        float screenAspect = outputSize.X / (float)outputSize.Y;
         float dirtAspect = dirtTexture.Width / (float)dirtTexture.Height;
         ref Vector4 dirtTransform = ref _settings.DirtTransform;
         dirtTransform = new Vector4(0, 0, 1, 1);
@@ -377,10 +376,10 @@ public class Gorgon2DBloomEffect
             Graphics.SetRenderTarget(targets.down);
 
             Renderer.Begin(i == 0 ? _filterBatchState : _downSampleBatchState);
-            Renderer.DrawFilledRectangle(new DX.RectangleF(0, 0, targets.down.Width, targets.down.Height),
+            Renderer.DrawFilledRectangle(new GorgonRectangleF(0, 0, targets.down.Width, targets.down.Height),
                                         GorgonColors.White,
                                         src,
-                                        new DX.RectangleF(0, 0, 1, 1),
+                                        new GorgonRectangleF(0, 0, 1, 1),
                                         textureSampler: GorgonSamplerState.Default);
             Renderer.End();
 
@@ -425,10 +424,10 @@ public class Gorgon2DBloomEffect
             Graphics.SetRenderTarget(up);
 
             Renderer.Begin(_sampleTargetStates[i]);
-            Renderer.DrawFilledRectangle(new DX.RectangleF(0, 0, up.Width, up.Height),
+            Renderer.DrawFilledRectangle(new GorgonRectangleF(0, 0, up.Width, up.Height),
                 GorgonColors.White,
                 src,
-                new DX.RectangleF(0, 0, 1, 1),
+                new GorgonRectangleF(0, 0, 1, 1),
                 textureSampler: GorgonSamplerState.Default);
             Renderer.End();
 
@@ -643,10 +642,10 @@ public class Gorgon2DBloomEffect
         // Filter down and up prior to sending out the effect.
         if (BeginPass(0, _sceneRtv) == PassContinuationState.Continue)
         {
-            Renderer.DrawFilledRectangle(new DX.RectangleF(0, 0, _sceneRtv.Width, _sceneRtv.Height),
+            Renderer.DrawFilledRectangle(new GorgonRectangleF(0, 0, _sceneRtv.Width, _sceneRtv.Height),
                                          GorgonColors.White,
                                          texture,
-                                         new DX.RectangleF(0, 0, 1, 1));
+                                         new GorgonRectangleF(0, 0, 1, 1));
             EndPass(0, _sceneRtv);
         }
         else
@@ -655,17 +654,17 @@ public class Gorgon2DBloomEffect
             return;
         }
 
-        SetupFilterAndBlur(new DX.Size2(output.Width, output.Height));
+        SetupFilterAndBlur(new GorgonPoint(output.Width, output.Height));
         FilterAndDownSample();
         UpSample();
         ReturnSampleTargets();
 
         if (BeginPass(1, output) == PassContinuationState.Continue)
         {
-            Renderer.DrawFilledRectangle(new DX.RectangleF(0, 0, output.Width, output.Height),
+            Renderer.DrawFilledRectangle(new GorgonRectangleF(0, 0, output.Width, output.Height),
                                          GorgonColors.White,
                                          _sceneSrv,
-                                         new DX.RectangleF(0, 0, 1, 1),
+                                         new GorgonRectangleF(0, 0, 1, 1),
                                          textureSampler: GorgonSamplerState.Default);
             EndPass(1, output);
             EndRender(output);

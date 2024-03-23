@@ -28,7 +28,6 @@ using System.Numerics;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Imaging;
 using Gorgon.Math;
-using DX = SharpDX;
 
 namespace Gorgon.Editor.SpriteEditor;
 
@@ -223,14 +222,14 @@ internal class PickClipperService
     /// If the position is not contained within this region, <b>null</b> will be returned signifying that no rectangular region could be found.
     /// </para>
     /// </remarks>
-    public DX.RectangleF? Pick(Vector2 imagePosition, GorgonColor maskColor, ClipMask clipMask = ClipMask.Alpha)
+    public GorgonRectangleF? Pick(Vector2 imagePosition, GorgonColor maskColor, ClipMask clipMask = ClipMask.Alpha)
     {
         if (ImageData is null)
         {
             return null;
         }
 
-        DX.RectangleF imageBounds = new(0, 0, ImageData.Width, ImageData.Height);
+        GorgonRectangleF imageBounds = new(0, 0, ImageData.Width, ImageData.Height);
 
         // If we clicked outside of the image, then there's nothing to click.
         if (!imageBounds.Contains(imagePosition.X, imagePosition.Y))
@@ -248,7 +247,7 @@ internal class PickClipperService
         }
 
         Queue<ClipSpan> spanQueue = new();
-        DX.RectangleF clipRegion = new()
+        GorgonRectangleF clipRegion = new()
         {
             Left = imagePoint.X,
             Top = imagePoint.Y,
@@ -260,7 +259,7 @@ internal class PickClipperService
         ClipSpan span = GetSpan(new GorgonPoint((int)clipRegion.Left, (int)clipRegion.Top), clipMask, maskColor);
 
         // If we have an empty span, then leave.
-        if (span.Start >= span.End)
+        if (((span.End - span.Start) + 1) <= 0)
         {
             return null;
         }
@@ -271,7 +270,7 @@ internal class PickClipperService
         {
             span = spanQueue.Dequeue();
 
-            DX.Rectangle spanRegion = new()
+            GorgonRectangle spanRegion = new()
             {
                 Left = span.Start,
                 Top = span.Y - 1,
@@ -287,13 +286,13 @@ internal class PickClipperService
                 GorgonPoint bottomSpan = new(x, spanRegion.Bottom);
                 ClipSpan vertSpan;
 
-                if ((span.Y > 0) && (!IsMaskValue(topSpan, clipMask, maskColor)) && (!_pixels[pixelindex]))
+                if ((span.Y >= 0) && (!IsMaskValue(topSpan, clipMask, maskColor)) && (!_pixels[pixelindex]))
                 {
                     vertSpan = GetSpan(topSpan, clipMask, maskColor);
 
-                    if (vertSpan.Start >= vertSpan.End)
+                    if (((vertSpan.End - vertSpan.Start) + 1) <= 0)
                     {
-                        continue;
+                        return null;
                     }
 
                     spanQueue.Enqueue(vertSpan);
@@ -308,22 +307,20 @@ internal class PickClipperService
 
                 vertSpan = GetSpan(bottomSpan, clipMask, maskColor);
 
-                if (vertSpan.Start >= vertSpan.End)
+                if (((vertSpan.End - vertSpan.Start) + 1) <= 0)
                 {
-                    continue;
+                    return null;
                 }
 
                 spanQueue.Enqueue(vertSpan);
             }
 
             // Update the boundaries.
-            clipRegion.Left = spanRegion.Left.Min((int)clipRegion.Left);
-            clipRegion.Right = (spanRegion.Right + 1).Max((int)clipRegion.Right);
-            clipRegion.Top = (spanRegion.Top + 1).Min((int)clipRegion.Top);
-            clipRegion.Bottom = spanRegion.Bottom.Max((int)clipRegion.Bottom);
+            clipRegion = GorgonRectangleF.FromLTRB(spanRegion.Left.Min((int)clipRegion.Left), (spanRegion.Top + 1).Min((int)clipRegion.Top), 
+                                                   (spanRegion.Right + 1).Max((int)clipRegion.Right), spanRegion.Bottom.Max((int)clipRegion.Bottom));
         }
 
-        clipRegion.Inflate(Padding, Padding);
+        clipRegion = GorgonRectangleF.Expand(clipRegion, Padding);
 
         if (clipRegion.Left < 0)
         {

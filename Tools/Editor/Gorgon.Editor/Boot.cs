@@ -27,7 +27,6 @@
 using System.Reflection;
 using System.Text;
 using Gorgon.Diagnostics;
-using Gorgon.Editor.Converters;
 using Gorgon.Editor.PlugIns;
 using Gorgon.Editor.ProjectData;
 using Gorgon.Editor.Properties;
@@ -35,12 +34,12 @@ using Gorgon.Editor.Rendering;
 using Gorgon.Editor.Services;
 using Gorgon.Editor.UI;
 using Gorgon.Editor.ViewModels;
+using Gorgon.Graphics;
 using Gorgon.IO;
 using Gorgon.Math;
 using Gorgon.PlugIns;
 using Gorgon.UI;
 using Newtonsoft.Json;
-using DX = SharpDX;
 
 namespace Gorgon.Editor;
 
@@ -193,10 +192,10 @@ internal class Boot
 
         EditorSettings CreateEditorSettings() => new()
         {
-            WindowBounds = new DX.Rectangle(defaultLocation.X,
-                                                       defaultLocation.Y,
-                                                       defaultSize.Width,
-                                                       defaultSize.Height),
+            WindowBounds = new GorgonRectangle(defaultLocation.X,
+                                               defaultLocation.Y,
+                                               defaultSize.Width,
+                                               defaultSize.Height),
             WindowState = (int)FormWindowState.Maximized,
             LastOpenSavePath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments).FormatDirectory(Path.DirectorySeparatorChar),
             LastProjectWorkingDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments).FormatDirectory(Path.DirectorySeparatorChar)
@@ -214,13 +213,14 @@ internal class Boot
             {
                 Program.Log.Print($"Loading application settings from '{settingsFile.FullName}'", LoggingLevel.Intermediate);
                 reader = new StreamReader(settingsFile.FullName, Encoding.UTF8, true);
-                JsonSerializerSettings settings = new();
-                settings.Converters.Add(new JsonSharpDxRectConverter());
-                settings.Error = (o, e) =>
+                JsonSerializerSettings settings = new()
                 {
-                    Program.Log.Print("ERROR: Could not read the settings data.", LoggingLevel.Simple);
-                    Program.Log.LogException(e.ErrorContext.Error);
-                    e.ErrorContext.Handled = true;
+                    Error = (o, e) =>
+                    {
+                        Program.Log.Print("ERROR: Could not read the settings data.", LoggingLevel.Simple);
+                        Program.Log.LogException(e.ErrorContext.Error);
+                        e.ErrorContext.Handled = true;
+                    }
                 };
                 result = JsonConvert.DeserializeObject<EditorSettings>(reader.ReadToEnd(), settings);
                 Program.Log.Print("Application settings loaded.", LoggingLevel.Intermediate);
@@ -277,7 +277,7 @@ internal class Boot
             rect.Inflate(-50, -50);
             if ((onScreen == Screen.PrimaryScreen) && (!onScreen.WorkingArea.IntersectsWith(rect)))
             {
-                result.WindowBounds = new DX.Rectangle(defaultLocation.X,
+                result.WindowBounds = new GorgonRectangle(defaultLocation.X,
                                                        defaultLocation.Y,
                                                        defaultSize.Width,
                                                        defaultSize.Height);
@@ -285,7 +285,7 @@ internal class Boot
         }
         else
         {
-            result.WindowBounds = new DX.Rectangle(defaultLocation.X,
+            result.WindowBounds = new GorgonRectangle(defaultLocation.X,
                                                    defaultLocation.Y,
                                                    defaultSize.Width,
                                                    defaultSize.Height);

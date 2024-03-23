@@ -26,7 +26,6 @@
 
 using Gorgon.Graphics;
 using Gorgon.Input;
-using DX = SharpDX;
 
 
 namespace Gorgon.Native;

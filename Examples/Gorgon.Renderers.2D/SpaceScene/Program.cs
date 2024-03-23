@@ -126,7 +126,7 @@ static class Program
     /// The render area is our view into the rendered region on the window.  We wish to place our GUI into this area, so in order to do so, we'll need to adjust our drawing by the region.
     /// </para>
     /// </remarks>
-    private static void RenderGui(DX.RectangleF renderArea)
+    private static void RenderGui(GorgonRectangleF renderArea)
     {
         _renderer.Begin();
         if (_showInstructions)
@@ -145,8 +145,8 @@ static class Program
 
         float speed = _ship.LayerController is not null ? _ship.Speed : _shipDeux.Speed;
         float maxSpeed = renderArea.Width * 0.12f * speed;
-        DX.RectangleF speedRegion = new(renderArea.Left + 5, renderArea.Bottom - 30, renderArea.Width * 0.12f, 25);
-        DX.RectangleF speedBar = new(speedRegion.X, speedRegion.Y, maxSpeed, speedRegion.Height);
+        GorgonRectangleF speedRegion = new(renderArea.Left + 5, renderArea.Bottom - 30, renderArea.Width * 0.12f, 25);
+        GorgonRectangleF speedBar = new(speedRegion.X, speedRegion.Y, maxSpeed, speedRegion.Height);
         _renderer.DrawFilledRectangle(speedRegion, new GorgonColor(GorgonColors.Black, 0.5f));
         _renderer.DrawFilledRectangle(speedBar, new GorgonColor(GorgonColors.Green * 0.85f, 0.3f));
         _renderer.DrawString("Speed", new Vector2(speedRegion.Left, speedRegion.Top - _helpFont.LineHeight + 5), _helpFont, GorgonColors.White);
@@ -187,13 +187,13 @@ static class Program
             newWidth = (newHeight * _mainRtvAspect.X);
         }
 
-        DX.RectangleF destRegion = new(_screen.Width * 0.5f - newWidth * 0.5f, _screen.Height * 0.5f - newHeight * 0.5f, newWidth, newHeight);
+        GorgonRectangleF destRegion = new(_screen.Width * 0.5f - newWidth * 0.5f, _screen.Height * 0.5f - newHeight * 0.5f, newWidth, newHeight);
 
         _screen.RenderTargetView.Clear(GorgonColors.Black);
         _renderer.DrawFilledRectangle(destRegion,
             GorgonColors.White,
             _mainSrv,
-            new DX.RectangleF(0, 0, 1, 1),
+            new GorgonRectangleF(0, 0, 1, 1),
             textureSampler: GorgonSamplerState.Default);
         _renderer.End();
 
@@ -210,7 +210,7 @@ static class Program
     {
         // This is our camera used to map our objects into relative space.
         // Because it's an Ortho camera, it doesn't really know how to handle aspect ratios, so we'll have to adjust for the current ratio.
-        GorgonOrthoCamera camera = new(_graphics, new DX.Size2F(2, 2), 0.1f, 5000)
+        GorgonOrthoCamera camera = new(_graphics, new Vector2(2, 2), 0.1f, 5000)
         {
             Anchor = new Vector2(0.5f, 0.5f),
             AllowUpdateOnResize = false    // Since we're using a custom coordinate set, we don't want to change it automatically when we resize the swap chain.
@@ -306,8 +306,8 @@ static class Program
 
             _screen = new GorgonSwapChain(_graphics,
                                           window,
-                                          new GorgonSwapChainInfo(ExampleConfig.Default.Resolution.Width,
-                                                                       ExampleConfig.Default.Resolution.Height,
+                                          new GorgonSwapChainInfo(ExampleConfig.Default.Resolution.X,
+                                                                       ExampleConfig.Default.Resolution.Y,
                                                                        BufferFormat.R8G8B8A8_UNorm)
                                           {
                                               Name = "Gorgon2D Space Scene Example"
@@ -393,7 +393,7 @@ static class Program
             WindowsFormsSynchronizationContext.AutoInstall = false;
             SynchronizationContext.SetSynchronizationContext(new WindowsFormsSynchronizationContext());
 
-            FormMain window = GorgonExample.Initialize(new DX.Size2(ExampleConfig.Default.Resolution.Width, ExampleConfig.Default.Resolution.Height), "Space Scene",
+            FormMain window = GorgonExample.Initialize(new GorgonPoint(ExampleConfig.Default.Resolution.X, ExampleConfig.Default.Resolution.Y), "Space Scene",
                 async (sender, _) => await InitializeAsync(sender as FormMain));
 
             GorgonApplication.Run(window);

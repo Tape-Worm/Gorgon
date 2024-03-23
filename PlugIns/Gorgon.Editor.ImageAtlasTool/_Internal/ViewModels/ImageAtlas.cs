@@ -26,6 +26,7 @@
 
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Numerics;
 using Gorgon.Editor.Content;
 using Gorgon.Editor.ImageAtlasTool.Properties;
 using Gorgon.Editor.Services;
@@ -36,7 +37,6 @@ using Gorgon.Graphics.Imaging;
 using Gorgon.IO;
 using Gorgon.Renderers;
 using Gorgon.Renderers.Services;
-using DX = SharpDX;
 
 namespace Gorgon.Editor.ImageAtlasTool;
 
@@ -155,7 +155,7 @@ internal class ImageAtlas
     }
 
     /// <summary>Property to set or return the maximum size for the atlas texture.</summary>
-    public DX.Size2 MaxTextureSize
+    public GorgonPoint MaxTextureSize
     {
         get => _settings.MaxTextureSize;
         set
@@ -475,8 +475,8 @@ internal class ImageAtlas
             GorgonSprite sprite = new()
             {
                 Texture = spriteTexture,
-                TextureRegion = new DX.RectangleF(0, 0, 1, 1),
-                Size = new DX.Size2F(spriteTexture.Width, spriteTexture.Height)
+                TextureRegion = new GorgonRectangleF(0, 0, 1, 1),
+                Size = new Vector2(spriteTexture.Width, spriteTexture.Height)
             };
 
             result[image.Key] = sprite;
@@ -514,9 +514,9 @@ internal class ImageAtlas
         {
             _atlasSpriteList = GetSprites();
 
-            (DX.Size2 textureSize, int arrayCount) = _atlasService.GetBestFit(_atlasSpriteList.Values, new DX.Size2(256, 256), MaxArrayCount);
+            (GorgonPoint textureSize, int arrayCount) = _atlasService.GetBestFit(_atlasSpriteList.Values, new GorgonPoint(256, 256), MaxArrayCount);
 
-            if ((textureSize.Width == 0) || (textureSize.Height == 0) || (arrayCount == 0))
+            if ((textureSize.X == 0) || (textureSize.Y == 0) || (arrayCount == 0))
             {
                 HostServices.MessageDisplay.ShowError(Resources.GORIAG_ERR_CALC_TOO_LARGE);
                 return;
@@ -560,7 +560,7 @@ internal class ImageAtlas
         _atlasService.TextureSize = _settings.MaxTextureSize;
         _atlasService.BaseTextureName = $"{_settings.LastOutputDir}{_baseTextureName.FormatFileName()}";
 
-        IReadOnlyDictionary<GorgonSprite, (int textureIndex, DX.Rectangle region, int arrayIndex)> regions = _atlasService.GetSpriteRegions(sprites);
+        IReadOnlyDictionary<GorgonSprite, (int textureIndex, GorgonRectangle region, int arrayIndex)> regions = _atlasService.GetSpriteRegions(sprites);
 
         if ((regions is null) || (regions.Count == 0))
         {

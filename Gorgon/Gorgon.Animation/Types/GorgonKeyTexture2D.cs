@@ -25,9 +25,9 @@
 
 
 using Gorgon.Core;
+using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Newtonsoft.Json;
-using DX = SharpDX;
 
 namespace Gorgon.Animation;
 
@@ -50,15 +50,12 @@ namespace Gorgon.Animation;
 public class GorgonKeyTexture2D
     : IGorgonKeyFrame
 {
-
     // The texture coordinates.
-    private DX.RectangleF _textureCoordinates;
+    private GorgonRectangleF _textureCoordinates;
     // The texture array index.
     private int _textureArrayIndex;
     // Texture to display.
     private GorgonTexture2DView _value;
-
-
 
     /// <summary>
     /// Property to set or return the texture view to use.
@@ -90,7 +87,7 @@ public class GorgonKeyTexture2D
     /// <summary>
     /// Property to set or return the texture coordinates.
     /// </summary>
-    public ref DX.RectangleF TextureCoordinates => ref _textureCoordinates;
+    public ref GorgonRectangleF TextureCoordinates => ref _textureCoordinates;
 
     /// <summary>
     /// Property to return the time at which the key frame is stored.
@@ -119,15 +116,11 @@ public class GorgonKeyTexture2D
         get;
     } = typeof(GorgonTexture2DView);
 
-
-
     /// <summary>
     /// Function to clone the key.
     /// </summary>
     /// <returns>The cloned key.</returns>
     public IGorgonKeyFrame Clone() => new GorgonKeyTexture2D(this);
-
-
 
     /// <summary>Initializes a new instance of the <see cref="GorgonKeyTexture2D"/> class.</summary>
     /// <param name="key">The key to copy.</param>
@@ -155,7 +148,7 @@ public class GorgonKeyTexture2D
     /// This overload is used to build a key frame that references a texture, but without having that texture loaded into memory. This is useful for serialization scenarios. 
     /// </para>
     /// </remarks>
-    public GorgonKeyTexture2D(float time, string textureName, DX.RectangleF textureCoordinates, int textureArrayIndex)
+    public GorgonKeyTexture2D(float time, string textureName, GorgonRectangleF textureCoordinates, int textureArrayIndex)
     {
         if (textureName is null)
         {
@@ -181,7 +174,7 @@ public class GorgonKeyTexture2D
     /// <param name="value">The value to apply to the key frame.</param>
     /// <param name="textureCoordinates">Region on the texture to update.</param>
     /// <param name="textureArrayIndex">The texture array index to use with a texture array.</param>
-    public GorgonKeyTexture2D(float time, GorgonTexture2DView value, DX.RectangleF textureCoordinates, int textureArrayIndex)
+    public GorgonKeyTexture2D(float time, GorgonTexture2DView value, GorgonRectangleF textureCoordinates, int textureArrayIndex)
     {
         Time = time;
         Value = value;
@@ -189,5 +182,4 @@ public class GorgonKeyTexture2D
         _textureCoordinates = textureCoordinates;
         _textureArrayIndex = textureArrayIndex;
     }
-
 }

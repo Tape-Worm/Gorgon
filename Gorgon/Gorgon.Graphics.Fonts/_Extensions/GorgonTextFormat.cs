@@ -24,11 +24,11 @@
 // 
 
 
+using System.Numerics;
 using System.Text;
 using Gorgon.Core;
 using Gorgon.Graphics.Fonts.Properties;
 using Gorgon.Math;
-using DX = SharpDX;
 
 namespace Gorgon.Graphics.Fonts;
 
@@ -306,7 +306,7 @@ public static class GorgonTextFormat
     /// </para>
     /// </remarks>
     /// <seealso cref="MeasureText"/>
-    public static DX.Size2F MeasureLine(this string text, GorgonFont font, bool useOutline = false, float lineSpacing = 1.0f)
+    public static Vector2 MeasureLine(this string text, GorgonFont font, bool useOutline = false, float lineSpacing = 1.0f)
     {
         if (font is null)
         {
@@ -315,7 +315,7 @@ public static class GorgonTextFormat
 
         if (string.IsNullOrEmpty(text))
         {
-            return DX.Size2F.Zero;
+            return Vector2.Zero;
         }
 
         float lineWidth = GetLineWidth(font, text, useOutline);
@@ -325,7 +325,7 @@ public static class GorgonTextFormat
             lineWidth += font.OutlineSize;
         }
 
-        return new DX.Size2F(lineWidth, font.FontHeight.FastFloor() * lineSpacing);
+        return new Vector2(lineWidth, font.FontHeight.FastFloor() * lineSpacing);
     }
 
     /// <summary>
@@ -361,7 +361,7 @@ public static class GorgonTextFormat
     /// </para>
     /// </remarks>
     /// <seealso cref="MeasureLine"/>
-    public static DX.Size2F MeasureText(this string text, GorgonFont font, bool useOutline = false, int tabSpaceCount = 4, float lineSpacing = 1.0f, float? wordWrapWidth = null)
+    public static Vector2 MeasureText(this string text, GorgonFont font, bool useOutline = false, int tabSpaceCount = 4, float lineSpacing = 1.0f, float? wordWrapWidth = null)
     {
         if (font is null)
         {
@@ -370,17 +370,17 @@ public static class GorgonTextFormat
 
         if (string.IsNullOrEmpty(text))
         {
-            return DX.Size2F.Zero;
+            return Vector2.Zero;
         }
 
         string formattedText = FormatStringForRendering(text, tabSpaceCount);
 
         if (string.IsNullOrEmpty(formattedText))
         {
-            return DX.Size2F.Zero;
+            return Vector2.Zero;
         }
 
-        DX.Size2F result = DX.Size2F.Zero;
+        Vector2 result = Vector2.Zero;
 
         if (wordWrapWidth is not null)
         {
@@ -397,17 +397,17 @@ public static class GorgonTextFormat
 
         if (lineSpacing.EqualsEpsilon(1.0f))
         {
-            result.Height = lines.Length * fontHeight;
+            result.Y = lines.Length * fontHeight;
         }
         else
         {
             // For a modified line spacing, we have to adjust for the last line not being affected by the line spacing.
-            result.Height = ((lines.Length - 1) * (fontHeight * lineSpacing)) + fontHeight;
+            result.Y = ((lines.Length - 1) * (fontHeight * lineSpacing)) + fontHeight;
         }
 
         if ((font.HasOutline) && (useOutline))
         {
-            result.Height += font.OutlineSize * 0.5f;
+            result.Y += font.OutlineSize * 0.5f;
         }
 
         // Get width.
@@ -421,7 +421,7 @@ public static class GorgonTextFormat
                 lineWidth += font.OutlineSize;
             }
 
-            result.Width = result.Width.Max(lineWidth);
+            result.X = result.X.Max(lineWidth);
         }
 
         return result;

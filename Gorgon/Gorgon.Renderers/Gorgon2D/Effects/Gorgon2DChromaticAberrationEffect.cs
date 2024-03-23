@@ -31,7 +31,6 @@ using Gorgon.Graphics.Core;
 using Gorgon.Graphics.Imaging;
 using Gorgon.Renderers.Cameras;
 using Gorgon.Renderers.Properties;
-using DX = SharpDX;
 
 namespace Gorgon.Renderers;
 
@@ -270,7 +269,7 @@ public class Gorgon2DChromaticAberrationEffect(Gorgon2D renderer)
 
         BeginRender(output);
         BeginPass(0, output);
-        Renderer.DrawFilledRectangle(new DX.RectangleF(0, 0, output.Width, output.Height), GorgonColors.White, texture, new DX.RectangleF(0, 0, 1, 1));
+        Renderer.DrawFilledRectangle(new GorgonRectangleF(0, 0, output.Width, output.Height), GorgonColors.White, texture, new GorgonRectangleF(0, 0, 1, 1));
         EndPass(0, output);
         EndRender(output);
     }

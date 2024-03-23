@@ -32,7 +32,6 @@ using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Math;
 using Gorgon.Renderers;
-using DX = SharpDX;
 
 namespace Gorgon.Editor.SpriteEditor;
 
@@ -64,7 +63,7 @@ internal class DefaultSpriteViewer(Gorgon2D renderer, GorgonSwapChain swapChain,
     // The sprite to render.
     private readonly GorgonSprite _sprite = new();
     // The region where the sprite is located on the texture.
-    private DX.RectangleF _spriteRegion;
+    private GorgonRectangleF _spriteRegion;
 
 
 
@@ -118,7 +117,7 @@ internal class DefaultSpriteViewer(Gorgon2D renderer, GorgonSwapChain swapChain,
         _sprite.TextureArrayIndex = DataContext.ArrayIndex;
         _sprite.TextureSampler = DataContext.IsPixellated ? GorgonSamplerState.PointFiltering : GorgonSamplerState.Default;
 
-        DX.Rectangle spriteTextureLocation = DataContext.Texture.ToPixel(DataContext.TextureCoordinates);
+        GorgonRectangle spriteTextureLocation = DataContext.Texture.ToPixel(DataContext.TextureCoordinates);
 
         _sprite.Position = new Vector2(spriteTextureLocation.X + (int)(RenderRegion.Width * -0.5f),
                                           spriteTextureLocation.Y + (int)(RenderRegion.Height * -0.5f));
@@ -164,7 +163,7 @@ internal class DefaultSpriteViewer(Gorgon2D renderer, GorgonSwapChain swapChain,
     {
         GorgonRenderTargetView prevTarget = Graphics.RenderTargets[0];
         GorgonRange<float>? prevAlphaTest = Renderer.PrimitiveAlphaTestRange;
-        DX.RectangleF clearRegion = DataContext.Texture.ToPixel(_sprite.TextureRegion).ToRectangleF();
+        GorgonRectangleF clearRegion = DataContext.Texture.ToPixel(_sprite.TextureRegion);
 
         _spriteTarget.Clear(GorgonColors.BlackTransparent);
 
@@ -172,10 +171,10 @@ internal class DefaultSpriteViewer(Gorgon2D renderer, GorgonSwapChain swapChain,
         Renderer.PrimitiveAlphaTestRange = null;
         Renderer.Begin(Gorgon2DBatchState.ModulatedAlphaOverwrite);
 
-        Renderer.DrawFilledRectangle(new DX.RectangleF(0, 0, DataContext.Texture.Width, DataContext.Texture.Height),
+        Renderer.DrawFilledRectangle(new GorgonRectangleF(0, 0, DataContext.Texture.Width, DataContext.Texture.Height),
                                      GorgonColors.White,
                                      DataContext.Texture,
-                                     new DX.RectangleF(0, 0, 1, 1),
+                                     new GorgonRectangleF(0, 0, 1, 1),
                                      DataContext.ArrayIndex,
                                      GorgonSamplerState.PointFiltering);
 
@@ -209,7 +208,7 @@ internal class DefaultSpriteViewer(Gorgon2D renderer, GorgonSwapChain swapChain,
     {
         base.OnLoad();
 
-        RenderRegion = new DX.RectangleF(0, 0, DataContext.Texture.Width, DataContext.Texture.Height);
+        RenderRegion = new GorgonRectangleF(0, 0, DataContext.Texture.Width, DataContext.Texture.Height);
 
         CreateSpriteTexture();
         UpdateSprite();
@@ -232,11 +231,11 @@ internal class DefaultSpriteViewer(Gorgon2D renderer, GorgonSwapChain swapChain,
         // So, we can just get the camera to tell us where that is.
         Vector3 spriteTopLeft = new(_spriteRegion.Left, _spriteRegion.Top, 0);
         Vector3 spriteBottomRight = new(_spriteRegion.Right, _spriteRegion.Bottom, 0);
-        Vector3 spriteAnchor = new((DataContext.Anchor.X * DataContext.Size.Width) + _sprite.Position.X, _sprite.Position.Y + (DataContext.Anchor.Y * DataContext.Size.Height), 0);
+        Vector3 spriteAnchor = new((DataContext.Anchor.X * DataContext.Size.X) + _sprite.Position.X, _sprite.Position.Y + (DataContext.Anchor.Y * DataContext.Size.Y), 0);
         Camera.Unproject(spriteTopLeft, out Vector3 transformedTopLeft);
         Camera.Unproject(spriteBottomRight, out Vector3 transformedBottomRight);
         Camera.Unproject(spriteAnchor, out Vector3 transformedAnchor);
-        DX.RectangleF marchAntsRect = new()
+        GorgonRectangleF marchAntsRect = new()
         {
             Left = (int)transformedTopLeft.X,
             Top = (int)transformedTopLeft.Y,
@@ -253,13 +252,13 @@ internal class DefaultSpriteViewer(Gorgon2D renderer, GorgonSwapChain swapChain,
 
         Renderer.Begin(camera: Camera);
 
-        Renderer.DrawFilledRectangle(new DX.RectangleF(halfRegion.X,
+        Renderer.DrawFilledRectangle(new GorgonRectangleF(halfRegion.X,
                                                         halfRegion.Y,
                                                         RenderRegion.Width,
                                                         RenderRegion.Height),
                                     new GorgonColor(GorgonColors.White, TextureOpacity),
                                     _spriteTexture,
-                                    new DX.RectangleF(0, 0, 1, 1),
+                                    new GorgonRectangleF(0, 0, 1, 1),
                                     textureSampler: GorgonSamplerState.PointFiltering);
 
         Renderer.DrawSprite(_sprite);
@@ -268,8 +267,8 @@ internal class DefaultSpriteViewer(Gorgon2D renderer, GorgonSwapChain swapChain,
         // Draw in client space.
         Renderer.Begin();
 
-        Renderer.DrawEllipse(new DX.RectangleF(transformedAnchor.X - 4, transformedAnchor.Y - 4, 8, 8), GorgonColors.Black);
-        Renderer.DrawEllipse(new DX.RectangleF(transformedAnchor.X - 3, transformedAnchor.Y - 3, 6, 6), GorgonColors.White);
+        Renderer.DrawEllipse(new GorgonRectangleF(transformedAnchor.X - 4, transformedAnchor.Y - 4, 8, 8), GorgonColors.Black);
+        Renderer.DrawEllipse(new GorgonRectangleF(transformedAnchor.X - 3, transformedAnchor.Y - 3, 6, 6), GorgonColors.White);
 
         _marchAnts.Animate();
         _marchAnts.Draw(marchAntsRect);

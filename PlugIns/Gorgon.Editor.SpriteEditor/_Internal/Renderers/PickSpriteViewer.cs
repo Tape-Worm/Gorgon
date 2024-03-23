@@ -32,7 +32,6 @@ using Gorgon.Editor.UI;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Renderers;
-using DX = SharpDX;
 
 namespace Gorgon.Editor.SpriteEditor;
 
@@ -48,13 +47,10 @@ namespace Gorgon.Editor.SpriteEditor;
 internal class PickSpriteViewer(Gorgon2D renderer, GorgonSwapChain swapChain, ISpriteContent dataContext, PickClipperService picker, IMarchingAnts selectionRect)
         : SpriteViewer(ViewerName, renderer, swapChain, dataContext)
 {
-
     /// <summary>
     /// The name of the viewer.
     /// </summary>
     public const string ViewerName = "ContextSpritePick";
-
-
 
     // Marching ants rectangle.
     private readonly IMarchingAnts _marchAnts = selectionRect;
@@ -67,9 +63,7 @@ internal class PickSpriteViewer(Gorgon2D renderer, GorgonSwapChain swapChain, IS
     // The sprite to render.
     private readonly GorgonSprite _sprite = new();
     // The region for the sprite.
-    private DX.RectangleF _spriteRegion;
-
-
+    private GorgonRectangleF _spriteRegion;
 
     /// <summary>
     /// Function to release the texture resources.
@@ -108,7 +102,7 @@ internal class PickSpriteViewer(Gorgon2D renderer, GorgonSwapChain swapChain, IS
     {
         GorgonRenderTargetView prevTarget = Graphics.RenderTargets[0];
         GorgonRange<float>? prevAlphaTest = Renderer.PrimitiveAlphaTestRange;
-        DX.RectangleF clearRegion = _sprite.Texture.ToPixel(_sprite.TextureRegion).ToRectangleF();
+        GorgonRectangleF clearRegion = _sprite.Texture.ToPixel(_sprite.TextureRegion);
 
         _spriteTarget.Clear(GorgonColors.BlackTransparent);
 
@@ -116,10 +110,10 @@ internal class PickSpriteViewer(Gorgon2D renderer, GorgonSwapChain swapChain, IS
         Renderer.PrimitiveAlphaTestRange = null;
         Renderer.Begin();
 
-        Renderer.DrawFilledRectangle(new DX.RectangleF(0, 0, _sprite.Texture.Width, _sprite.Texture.Height),
+        Renderer.DrawFilledRectangle(new GorgonRectangleF(0, 0, _sprite.Texture.Width, _sprite.Texture.Height),
                                      GorgonColors.White,
                                      _sprite.Texture,
-                                     new DX.RectangleF(0, 0, 1, 1),
+                                     new GorgonRectangleF(0, 0, 1, 1),
                                      DataContext.SpritePickContext.ArrayIndex,
                                      GorgonSamplerState.PointFiltering);
 
@@ -138,7 +132,7 @@ internal class PickSpriteViewer(Gorgon2D renderer, GorgonSwapChain swapChain, IS
     {
         //_clipper.Rectangle = DataContext.SpriteClipContext.SpriteRectangle;
         _sprite.TextureArrayIndex = DataContext.SpritePickContext.ArrayIndex;
-        _sprite.TextureRegion = _sprite.Texture.ToTexel(DataContext.SpritePickContext.SpriteRectangle.ToRectangle());
+        _sprite.TextureRegion = _sprite.Texture.ToTexel((GorgonRectangle)DataContext.SpritePickContext.SpriteRectangle);
         _sprite.Size = DataContext.SpritePickContext.SpriteRectangle.Size.Truncate();
         _sprite.Position = new Vector2(DataContext.SpritePickContext.SpriteRectangle.X - (RenderRegion.Width * 0.5f),
                                           DataContext.SpritePickContext.SpriteRectangle.Y - (RenderRegion.Height * 0.5f))
@@ -162,7 +156,7 @@ internal class PickSpriteViewer(Gorgon2D renderer, GorgonSwapChain swapChain, IS
         Vector2 position = new(args.CameraSpacePosition.X + RenderRegion.Width * 0.5f,
                                       args.CameraSpacePosition.Y + RenderRegion.Height * 0.5f);
 
-        DX.RectangleF? newRect = _picker.Pick(position, DataContext.Settings.ClipMaskValue, DataContext.Settings.ClipMaskType);
+        GorgonRectangleF? newRect = _picker.Pick(position, DataContext.Settings.ClipMaskValue, DataContext.Settings.ClipMaskType);
 
         if (newRect is null)
         {
@@ -206,7 +200,7 @@ internal class PickSpriteViewer(Gorgon2D renderer, GorgonSwapChain swapChain, IS
         Camera.Unproject(spriteTopLeft, out Vector3 transformedTopLeft);
         Camera.Unproject(spriteBottomRight, out Vector3 transformedBottomRight);
 
-        DX.RectangleF marchAntsRect = new()
+        GorgonRectangleF marchAntsRect = new()
         {
             Left = (int)transformedTopLeft.X,
             Top = (int)transformedTopLeft.Y,
@@ -217,13 +211,13 @@ internal class PickSpriteViewer(Gorgon2D renderer, GorgonSwapChain swapChain, IS
         RenderSpriteTexture();
 
         Renderer.Begin(camera: Camera);
-        Renderer.DrawFilledRectangle(new DX.RectangleF(halfRegion.X,
+        Renderer.DrawFilledRectangle(new GorgonRectangleF(halfRegion.X,
                                                        halfRegion.Y,
                                                        RenderRegion.Width,
                                                        RenderRegion.Height),
                                     new GorgonColor(GorgonColors.White, TextureOpacity),
                                     _spriteTexture,
-                                    new DX.RectangleF(0, 0, 1, 1),
+                                    new GorgonRectangleF(0, 0, 1, 1),
                                     textureSampler: GorgonSamplerState.PointFiltering);
 
         Renderer.DrawSprite(_sprite);
@@ -245,7 +239,7 @@ internal class PickSpriteViewer(Gorgon2D renderer, GorgonSwapChain swapChain, IS
 
         base.OnLoad();
 
-        RenderRegion = new DX.RectangleF(0, 0, DataContext.Texture.Width, DataContext.Texture.Height);
+        RenderRegion = new GorgonRectangleF(0, 0, DataContext.Texture.Width, DataContext.Texture.Height);
 
         CreateSpriteTexture();
 
@@ -257,7 +251,7 @@ internal class PickSpriteViewer(Gorgon2D renderer, GorgonSwapChain swapChain, IS
         _sprite.TextureArrayIndex = DataContext.ArrayIndex;
         _sprite.TextureSampler = GorgonSamplerState.PointFiltering;
 
-        DataContext.SpritePickContext.SpriteRectangle = DataContext.Texture.ToPixel(DataContext.TextureCoordinates).ToRectangleF();
+        DataContext.SpritePickContext.SpriteRectangle = DataContext.Texture.ToPixel(DataContext.TextureCoordinates);
 
         UpdateWorkingSprite();
 
@@ -328,6 +322,4 @@ internal class PickSpriteViewer(Gorgon2D renderer, GorgonSwapChain swapChain, IS
 
     /// <summary>Function to set the default zoom/offset for the viewer.</summary>
     public override void DefaultZoom() => MoveTo(Vector2.Zero, ZoomLevels.ToWindow.GetScale());
-
-
 }

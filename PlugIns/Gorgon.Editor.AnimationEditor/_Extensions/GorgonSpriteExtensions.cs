@@ -26,7 +26,6 @@
 
 using System.Numerics;
 using Gorgon.Renderers;
-using DX = SharpDX;
 
 namespace Gorgon.Editor.AnimationEditor;
 
@@ -59,9 +58,9 @@ internal static class GorgonSpriteExtensions
                 TrackSpriteProperty.LowerLeft => new Vector4(sprite.CornerOffsets.LowerLeft, 0),
                 TrackSpriteProperty.LowerRight => new Vector4(sprite.CornerOffsets.LowerRight, 0),
                 TrackSpriteProperty.Position => new Vector4(sprite.Position, 0, 0),
-                TrackSpriteProperty.Size => new Vector4(sprite.Size.Width, sprite.Size.Height, 0, 0),
+                TrackSpriteProperty.Size => new Vector4(sprite.Size.X, sprite.Size.Y, 0, 0),
                 TrackSpriteProperty.Scale => new Vector4(sprite.Scale, 0, 0),
-                TrackSpriteProperty.ScaledSize => new Vector4(sprite.ScaledSize.Width, sprite.ScaledSize.Height, 0, 0),
+                TrackSpriteProperty.ScaledSize => new Vector4(sprite.ScaledSize.X, sprite.ScaledSize.Y, 0, 0),
                 _ => Vector4.Zero,
             };
 
@@ -123,13 +122,13 @@ internal static class GorgonSpriteExtensions
                 sprite.Position = new Vector2(values.X, values.Y);
                 break;
             case TrackSpriteProperty.Size:
-                sprite.Size = new DX.Size2F(values.X, values.Y);
+                sprite.Size = new Vector2(values.X, values.Y);
                 break;
             case TrackSpriteProperty.Scale:
                 sprite.Scale = new Vector2(values.X, values.Y);
                 break;
             case TrackSpriteProperty.ScaledSize:
-                sprite.ScaledSize = new DX.Size2F(values.X, values.Y);
+                sprite.ScaledSize = new Vector2(values.X, values.Y);
                 break;
         }
     }

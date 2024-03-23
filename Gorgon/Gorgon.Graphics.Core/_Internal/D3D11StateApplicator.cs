@@ -45,7 +45,6 @@ namespace Gorgon.Graphics.Core;
 /// <param name="targets">The list of active render targets.</param>
 internal class D3D11StateApplicator(GorgonGraphics graphics, GorgonRenderTargetView[] targets)
 {
-
     // An empty UAV count to get around an idiotic design decision (no count exposed on the method) for UAVs on compute shaders
     private static readonly int[] _emptyUavCounts = new int[GorgonReadWriteViewBindings.MaximumReadWriteViewCount];
     // An empty UAV to get around an idiotic design decision (no count exposed on the method) for UAVs on compute shaders
@@ -77,8 +76,6 @@ internal class D3D11StateApplicator(GorgonGraphics graphics, GorgonRenderTargetV
 
     // The device context used for applying state and resource information.
     private readonly GorgonGraphics _graphics = graphics;
-
-
 
     /// <summary>
     /// Function to retrieve the internal set scissor rectangle method that allows us to assign scissor rectangles via a pointer rather than a params array.
@@ -791,7 +788,7 @@ internal class D3D11StateApplicator(GorgonGraphics graphics, GorgonRenderTargetV
     /// Function to bind scissor rectangles to the pipeline.
     /// </summary>
     /// <param name="scissors">The list of scissor rectangles to bind.</param>
-    public void BindScissorRectangles(ReadOnlySpan<DX.Rectangle> scissors)
+    public void BindScissorRectangles(ReadOnlySpan<GorgonRectangle> scissors)
     {
         if (scissors.IsEmpty)
         {
@@ -807,15 +804,12 @@ internal class D3D11StateApplicator(GorgonGraphics graphics, GorgonRenderTargetV
 
             for (int i = 0; i < length; ++i)
             {
-                scissor[i] = scissors[i];
+                scissor[i] = scissors[i].ToSharpDXRawRectangle();
             }
 
             _setScissorRects?.Invoke(_graphics.D3DDeviceContext.Rasterizer, length, (nint)scissor);
         }
     }
-
-
-
 
     /// <summary>
     /// Static constructor.
@@ -828,5 +822,4 @@ internal class D3D11StateApplicator(GorgonGraphics graphics, GorgonRenderTargetV
         FixSetRenderTargets();
         FixSetScissorRects();
     }
-
 }

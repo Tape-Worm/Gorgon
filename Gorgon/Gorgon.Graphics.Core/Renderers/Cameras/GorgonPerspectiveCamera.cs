@@ -25,9 +25,9 @@
 
 
 using System.Numerics;
+using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Math;
-using DX = SharpDX;
 
 namespace Gorgon.Renderers.Cameras;
 
@@ -53,10 +53,9 @@ namespace Gorgon.Renderers.Cameras;
 /// <param name="maximumDepth">[Optional] The maximum depth value.</param>
 /// <param name="name">[Optional] The name of the camera.</param>
 /// <exception cref="ArgumentNullException">Thrown when the <paramref name="graphics"/> parameter is <b>null</b>.</exception>
-public class GorgonPerspectiveCamera(GorgonGraphics graphics, DX.Size2F viewDimensions, float minDepth = 0.1f, float maximumDepth = 1000.0f, string name = null)
+public class GorgonPerspectiveCamera(GorgonGraphics graphics, Vector2 viewDimensions, float minDepth = 0.1f, float maximumDepth = 1000.0f, string name = null)
         : GorgonCameraCommon(graphics, viewDimensions, minDepth, maximumDepth, name)
 {
-
     // The rotation matrix.
     private Matrix4x4 _rotation = Matrix4x4.Identity;
     // The translation matrix.
@@ -65,8 +64,6 @@ public class GorgonPerspectiveCamera(GorgonGraphics graphics, DX.Size2F viewDime
     private Quaternion _rotationQuat;
     // The field of view for the camera.
     private float _fov = 75.0f;
-
-
 
     /// <summary>
     /// Property to set or return the field of view, in degrees, for the camera.
@@ -109,9 +106,7 @@ public class GorgonPerspectiveCamera(GorgonGraphics graphics, DX.Size2F viewDime
     /// This represents the boundaries of viewable space for the camera using its coordinate system. The upper left of the region corresponds with the upper left of the active render target at minimum
     /// Z depth, and the lower right of the region corresponds with the lower right of the active render target at minimum Z depth.
     /// </remarks>
-    public override DX.RectangleF ViewableRegion => new(-1, -1, 2, 2);
-
-
+    public override GorgonRectangleF ViewableRegion => new(-1, -1, 2, 2);
 
     /// <summary>
     /// Function to update the view matrix.
@@ -229,8 +224,4 @@ public class GorgonPerspectiveCamera(GorgonGraphics graphics, DX.Size2F viewDime
         _rotationQuat = Quaternion.Conjugate(Quaternion.CreateFromRotationMatrix(lookMatrix));
         Changes |= CameraChange.View | CameraChange.Rotation;
     }
-
-
-
-
 }

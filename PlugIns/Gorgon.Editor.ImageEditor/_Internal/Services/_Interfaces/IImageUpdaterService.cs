@@ -25,9 +25,9 @@
 
 
 using Gorgon.Core;
+using Gorgon.Graphics;
 using Gorgon.Graphics.Imaging;
 using Gorgon.UI;
-using DX = SharpDX;
 
 namespace Gorgon.Editor.ImageEditor;
 
@@ -54,7 +54,7 @@ internal interface IImageUpdaterService
     /// <param name="newSize">The new size for the image.</param>
     /// <param name="filter">The filter to apply when resizing.</param>
     /// <param name="preserveAspect"><b>true</b> to preserve the aspect ratio of the image, <b>false</b> to ignore it.</param>
-    void Resize(IGorgonImage resizeImage, DX.Size2 newSize, ImageFilter filter, bool preserveAspect);
+    void Resize(IGorgonImage resizeImage, GorgonPoint newSize, ImageFilter filter, bool preserveAspect);
 
     /// <summary>
     /// Function to crop an image.
@@ -62,7 +62,7 @@ internal interface IImageUpdaterService
     /// <param name="cropImage">The image to crop.</param>
     /// <param name="destSize">The new size of the image.</param>
     /// <param name="alignment">The location to start cropping from.</param>
-    void CropTo(IGorgonImage cropImage, DX.Size2 destSize, Alignment alignment);
+    void CropTo(IGorgonImage cropImage, GorgonPoint destSize, Alignment alignment);
 
     /// <summary>
     /// Function to update the number of mip levels on an image.

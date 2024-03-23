@@ -25,11 +25,11 @@
 
 using Gorgon.Core;
 using Gorgon.Diagnostics;
+using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Math;
 using Gorgon.Renderers.Cameras;
 using Gorgon.Renderers.Properties;
-using DX = SharpDX;
 
 namespace Gorgon.Renderers;
 
@@ -83,7 +83,7 @@ public abstract class Gorgon2DEffect
     // Flag to indicate that the effect is initialized.
     private bool _isInitialized;
     // The previous size of the output.
-    private DX.Size2 _prevOutputSize;
+    private GorgonPoint _prevOutputSize;
     // The builders used to manage state for the effect.
     private readonly EffectBuilders _effectBuilders = new();
     // Flag to indicate that the batch state for the effect pass needs updating.
@@ -405,10 +405,10 @@ public abstract class Gorgon2DEffect
         _currentEffect = Name;
         bool outputSizeChanged = false;
 
-        if ((_prevOutputSize.Width != output.Width)
-            || (_prevOutputSize.Height != output.Height))
+        if ((_prevOutputSize.X != output.Width)
+            || (_prevOutputSize.Y != output.Height))
         {
-            _prevOutputSize = new DX.Size2(output.Width, output.Height);
+            _prevOutputSize = new GorgonPoint(output.Width, output.Height);
             outputSizeChanged = true;
         }
 

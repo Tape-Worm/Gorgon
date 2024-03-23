@@ -28,7 +28,6 @@ using System.Numerics;
 using Gorgon.Graphics.Core;
 using Gorgon.Math;
 using Gorgon.Renderers.Geometry;
-using DX = SharpDX;
 
 namespace Gorgon.Examples;
 
@@ -61,7 +60,7 @@ internal class Sphere
                   GorgonInputLayout inputLayout,
                   float radius,
                   Vector2 textureOffset,
-                  DX.Size2F textureScale,
+                  Vector2 textureScale,
                   int ringCount = 8,
                   int segmentCount = 16)
         : base(inputLayout)
@@ -98,8 +97,8 @@ internal class Sphere
                 position.Z = ringSin * segmentAngle.Cos() * radius;
 
                 // Create the vertex.
-                textureDelta.X *= textureScale.Width;
-                textureDelta.Y *= textureScale.Height;
+                textureDelta.X *= textureScale.X;
+                textureDelta.Y *= textureScale.Y;
                 textureDelta.X += textureOffset.X;
                 textureDelta.Y += textureOffset.Y;
 

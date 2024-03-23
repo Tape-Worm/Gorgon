@@ -36,7 +36,6 @@ using Gorgon.PlugIns;
 using Gorgon.Renderers;
 using Gorgon.Timing;
 using Gorgon.UI;
-using DX = SharpDX;
 
 namespace Gorgon.Examples;
 
@@ -104,21 +103,21 @@ static class Program
 
         _screen.RenderTargetView.Clear(new GorgonColor(0.333333f, 0.752941f, 0.850980f));
 
-        Vector2 scale = new(_screen.Width / (float)ExampleConfig.Default.Resolution.Width,
-                                   _screen.Height / (float)ExampleConfig.Default.Resolution.Height);
+        Vector2 scale = new(_screen.Width / (float)ExampleConfig.Default.Resolution.X,
+                                   _screen.Height / (float)ExampleConfig.Default.Resolution.Y);
 
         _dudeBro.Position = new Vector2(_screen.Width * 0.5f, -139 + _backGround.Height * scale.Y * 0.5f);
-        _dudeBroReflect.Position = new Vector2(_dudeBro.Position.X, _dudeBro.Position.Y + _dudeBro.ScaledSize.Height + 3);
+        _dudeBroReflect.Position = new Vector2(_dudeBro.Position.X, _dudeBro.Position.Y + _dudeBro.ScaledSize.Y + 3);
 
         // Copy the texture coordinates from the animated sprite, this way we can mirror the animation in our reflection without
         // having to set up a separate controller.
         _dudeBroReflect.TextureRegion = _dudeBro.TextureRegion;
 
         _renderer.Begin();
-        _renderer.DrawFilledRectangle(new DX.RectangleF(0, -167 * scale.Y, _backGround.Width * scale.X, _backGround.Height * scale.Y),
+        _renderer.DrawFilledRectangle(new GorgonRectangleF(0, -167 * scale.Y, _backGround.Width * scale.X, _backGround.Height * scale.Y),
                                       GorgonColors.White,
                                       _backGround,
-                                      new DX.RectangleF(_pos / _backGround.Width, 0, 1, 1));
+                                      new GorgonRectangleF(_pos / _backGround.Width, 0, 1, 1));
         _renderer.DrawSprite(_dudeBro);
         _renderer.DrawSprite(_dudeBroReflect);
         _renderer.End();
@@ -126,7 +125,7 @@ static class Program
         _screen.Present(1);
 
         _animController.Update();
-        _pos -= ((1288 / _dudeBro.ScaledSize.Width) * 6.5f) * GorgonTiming.Delta;
+        _pos -= ((1288 / _dudeBro.ScaledSize.X) * 6.5f) * GorgonTiming.Delta;
 
         return true;
     }
@@ -165,8 +164,8 @@ static class Program
 
             _screen = new GorgonSwapChain(_graphics,
                                           window,
-                                          new GorgonSwapChainInfo(ExampleConfig.Default.Resolution.Width,
-                                                                       ExampleConfig.Default.Resolution.Height,
+                                          new GorgonSwapChainInfo(ExampleConfig.Default.Resolution.X,
+                                                                       ExampleConfig.Default.Resolution.Y,
                                                                        BufferFormat.R8G8B8A8_UNorm)
                                           {
                                               Name = "Gorgon2D Gorgon.Editor Example Swap Chain"
@@ -250,7 +249,7 @@ static class Program
             SynchronizationContext.SetSynchronizationContext(new WindowsFormsSynchronizationContext());
 
             // Create the window, and size it to our resolution.
-            FormMain window = GorgonExample.Initialize(new DX.Size2(ExampleConfig.Default.Resolution.Width, ExampleConfig.Default.Resolution.Height),
+            FormMain window = GorgonExample.Initialize(new GorgonPoint(ExampleConfig.Default.Resolution.X, ExampleConfig.Default.Resolution.Y),
                                                        "Gorgon.Editor.FileSystem - Loading content from an editor file system example.",
                                                        async (sender, _) => await InitializeAsync(sender as FormMain));
 

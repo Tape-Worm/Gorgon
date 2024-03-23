@@ -25,7 +25,6 @@
 
 
 using Gorgon.Editor.UI;
-using Drawing = System.Drawing;
 
 namespace Gorgon.Editor.FontEditor;
 
@@ -41,7 +40,7 @@ internal class FontCharacterSelection
     // The font generation service.
     private FontService _fontService;
     // The current font.
-    private Drawing.Font _currentFont;
+    private Font _currentFont;
 
 
 
@@ -67,7 +66,7 @@ internal class FontCharacterSelection
     /// <summary>
     /// Property to return the current font.
     /// </summary>
-    public Drawing.Font CurrentFont
+    public Font CurrentFont
     {
         get => _currentFont;
         private set
@@ -106,7 +105,7 @@ internal class FontCharacterSelection
     {
         base.OnLoad();
 
-        CurrentFont ??= new Drawing.Font(_fontService.WorkerFont.FontFamilyName, 16.0f, Drawing.GraphicsUnit.Pixel);
+        CurrentFont ??= new Font(_fontService.WorkerFont.FontFamilyName, 16.0f, GraphicsUnit.Pixel);
     }
 
     /// <summary>Function called when the associated view is unloaded.</summary>

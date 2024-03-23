@@ -25,8 +25,8 @@
 
 
 using System.Numerics;
+using Gorgon.Graphics;
 using Gorgon.Renderers.Cameras;
-using DX = SharpDX;
 
 namespace Gorgon.Examples;
 
@@ -35,11 +35,8 @@ namespace Gorgon.Examples;
 /// </summary>
 internal abstract class Layer
 {
-
     // The list of active lights for the layer.
     private readonly List<Light> _activeLights = [];
-
-
 
     /// <summary>
     /// Property to return the list of lights that are used to light this layer.
@@ -49,7 +46,7 @@ internal abstract class Layer
     /// <summary>
     /// Property to return the size of the target that this layer will be rendered into.
     /// </summary>
-    protected DX.Size2 OutputSize
+    protected GorgonPoint OutputSize
     {
         get;
         private set;
@@ -167,7 +164,7 @@ internal abstract class Layer
     /// Function called when our layer needs resizing.
     /// </summary>
     /// <param name="newSize">The new size.</param>
-    public void OnResize(DX.Size2 newSize)
+    public void OnResize(GorgonPoint newSize)
     {
         OutputSize = newSize;
         OnResized();
@@ -194,5 +191,4 @@ internal abstract class Layer
     /// Function used to render data into the layer.
     /// </summary>
     public abstract void Render();
-
 }

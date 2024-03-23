@@ -38,7 +38,6 @@ using Gorgon.Graphics.Imaging.GdiPlus;
 using Gorgon.Math;
 using Gorgon.Renderers;
 using Gorgon.UI;
-using DX = SharpDX;
 
 namespace Gorgon.Editor.ImageEditor;
 
@@ -219,7 +218,7 @@ internal partial class FormImagePicker
     /// <param name="height">The height of the image bounds after transformation.</param>
     /// <param name="scale">The scale applied to the drawing.</param>
     /// <param name="imageBounds">The bounds of the target image.</param>
-    private void DrawPreview(float x, float y, float width, float height, float scale, DX.RectangleF imageBounds)
+    private void DrawPreview(float x, float y, float width, float height, float scale, GorgonRectangleF imageBounds)
     {
 
         switch (ViewModel.CropResizeSettings.CurrentAlignment)
@@ -288,34 +287,34 @@ internal partial class FormImagePicker
                     _previewSprite.Position = new Vector2((int)x, (int)y);
                     _previewSprite.Anchor = Vector2.Zero;
                 }
-                _previewSprite.ScaledSize = new DX.Size2F((int)width, (int)height);
+                _previewSprite.ScaledSize = new Vector2((int)width, (int)height);
                 _previewSprite.TextureSampler = ViewModel.CropResizeSettings.ImageFilter == ImageFilter.Point ? GorgonSamplerState.PointFiltering : GorgonSamplerState.Default;
                 break;
         }
 
-        DX.RectangleF clearRegion;
+        GorgonRectangleF clearRegion;
         _previewSprite.Color = new GorgonColor(GorgonColors.White, 1.00f);
 
-        DX.RectangleF importBounds = new(_previewSprite.Position.X - (_previewSprite.ScaledSize.Width * _previewSprite.Anchor.X),
-                                             _previewSprite.Position.Y - (_previewSprite.ScaledSize.Height * _previewSprite.Anchor.Y),
-                                             _previewSprite.ScaledSize.Width, _previewSprite.ScaledSize.Height);
+        GorgonRectangleF importBounds = new(_previewSprite.Position.X - (_previewSprite.ScaledSize.X * _previewSprite.Anchor.X),
+                                             _previewSprite.Position.Y - (_previewSprite.ScaledSize.Y * _previewSprite.Anchor.Y),
+                                             _previewSprite.ScaledSize.X, _previewSprite.ScaledSize.Y);
 
         if (ViewModel.CropResizeSettings.CurrentMode == CropResizeMode.Crop)
         {
-            DX.RectangleF.Intersect(ref imageBounds, ref importBounds, out clearRegion);
+            clearRegion = GorgonRectangleF.Intersect(imageBounds, importBounds);
         }
         else
         {
             clearRegion = importBounds;
         }
 
-        GraphicsContext.Graphics.SetScissorRect(clearRegion.ToRectangle());
+        GraphicsContext.Graphics.SetScissorRect((GorgonRectangle)clearRegion);
 
         GraphicsContext.Renderer2D.Begin(_batchPreviewState);
         GraphicsContext.Renderer2D.DrawFilledRectangle(importBounds,
                                                        GorgonColors.White,
                                                        _bgTextureView,
-                                                       new DX.RectangleF(importBounds.X / _bgTextureView.Width,
+                                                       new GorgonRectangleF(importBounds.X / _bgTextureView.Width,
                                                                          importBounds.Y / _bgTextureView.Height,
                                                                          importBounds.Width / _bgTextureView.Width,
                                                                          importBounds.Height / _bgTextureView.Height));
@@ -341,7 +340,7 @@ internal partial class FormImagePicker
         float height = ViewModel.SourcePicker.MipHeight * scale;
         float x = halfClient.X - (width * 0.5f) + 2;
         float y = halfClient.Y - (height * 0.5f) + 2;
-        DX.RectangleF imageBounds = new(x, y, width, height);
+        GorgonRectangleF imageBounds = new(x, y, width, height);
 
         // Update the shader to display the correct depth slice/mip level.
         TextureViewer.TextureParams tParams = new()
@@ -355,10 +354,10 @@ internal partial class FormImagePicker
 
         // Draw background layer.
         renderer.Begin();
-        renderer.DrawFilledRectangle(new DX.RectangleF(0, 0, PanelArrayDepth.ClientSize.Width, PanelArrayDepth.ClientSize.Height),
+        renderer.DrawFilledRectangle(new GorgonRectangleF(0, 0, PanelArrayDepth.ClientSize.Width, PanelArrayDepth.ClientSize.Height),
                                      GorgonColors.White,
                                      _bgTextureView,
-                                     new DX.RectangleF(0, 0, (float)PanelArrayDepth.ClientSize.Width / _bgTextureView.Width, (float)PanelArrayDepth.ClientSize.Height / _bgTextureView.Height));
+                                     new GorgonRectangleF(0, 0, (float)PanelArrayDepth.ClientSize.Width / _bgTextureView.Width, (float)PanelArrayDepth.ClientSize.Height / _bgTextureView.Height));
         renderer.End();
 
         // Draw source image.
@@ -366,7 +365,7 @@ internal partial class FormImagePicker
         renderer.DrawFilledRectangle(imageBounds,
                                      GorgonColors.White,
                                      image.ImageType == ImageDataType.Image3D ? null : _sourceTexture2D,
-                                     new DX.RectangleF(0, 0, 1, 1),
+                                     new GorgonRectangleF(0, 0, 1, 1),
                                      image.ImageType == ImageDataType.Image3D ? 0 : ViewModel.SourcePicker.CurrentArrayIndexDepthSlice,
                                      textureSampler: GorgonSamplerState.PointFiltering);
         renderer.End();
@@ -409,21 +408,21 @@ internal partial class FormImagePicker
 
         // Draw background layers.
         renderer.Begin();
-        renderer.DrawFilledRectangle(new DX.RectangleF(0, 0, PanelArrayDepth.ClientSize.Width, PanelArrayDepth.ClientSize.Height),
+        renderer.DrawFilledRectangle(new GorgonRectangleF(0, 0, PanelArrayDepth.ClientSize.Width, PanelArrayDepth.ClientSize.Height),
                                      GorgonColors.White,
                                      _bgTextureView,
-                                     new DX.RectangleF(0, 0, (float)PanelArrayDepth.ClientSize.Width / _bgTextureView.Width, (float)PanelArrayDepth.ClientSize.Height / _bgTextureView.Height));
+                                     new GorgonRectangleF(0, 0, (float)PanelArrayDepth.ClientSize.Width / _bgTextureView.Width, (float)PanelArrayDepth.ClientSize.Height / _bgTextureView.Height));
 
-        renderer.DrawRectangle(new DX.RectangleF((int)(x - 1), (int)(y - 1), (int)(width + 2), (int)(height + 2)), new GorgonColor(GorgonColors.Black, 0.8f), 2);
+        renderer.DrawRectangle(new GorgonRectangleF((int)(x - 1), (int)(y - 1), (int)(width + 2), (int)(height + 2)), new GorgonColor(GorgonColors.Black, 0.8f), 2);
         renderer.End();
 
         // Draw the target texture.
-        DX.RectangleF imageBounds = new((int)x, (int)y, (int)width, (int)height);
+        GorgonRectangleF imageBounds = new((int)x, (int)y, (int)width, (int)height);
         renderer.Begin(image.ImageType == ImageDataType.Image3D ? _batch3DState : _batch2DState);
         renderer.DrawFilledRectangle(imageBounds,
                                      GorgonColors.White,
                                      image.ImageType == ImageDataType.Image3D ? null : _imageTexture2D,
-                                     new DX.RectangleF(0, 0, 1, 1),
+                                     new GorgonRectangleF(0, 0, 1, 1),
                                      image.ImageType == ImageDataType.Image3D ? 0 : ViewModel.CurrentArrayIndexDepthSlice,
                                      textureSampler: GorgonSamplerState.PointFiltering);
         renderer.End();
@@ -1125,8 +1124,8 @@ internal partial class FormImagePicker
                 _previewSprite = new GorgonSprite
                 {
                     Texture = _previewCropResize,
-                    TextureRegion = new DX.RectangleF(0, 0, 1, 1),
-                    Size = new DX.Size2F(_previewCropResize.Width, _previewCropResize.Height)
+                    TextureRegion = new GorgonRectangleF(0, 0, 1, 1),
+                    Size = new Vector2(_previewCropResize.Width, _previewCropResize.Height)
                 };
                 break;
         }

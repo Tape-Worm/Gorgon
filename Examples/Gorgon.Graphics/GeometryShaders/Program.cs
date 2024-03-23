@@ -35,7 +35,6 @@ using Gorgon.Math;
 using Gorgon.Renderers.Cameras;
 using Gorgon.Timing;
 using Gorgon.UI;
-using DX = SharpDX;
 
 namespace Gorgon.Examples;
 
@@ -123,7 +122,7 @@ static class Program
         _graphics.SetDepthStencil(_depthStencil);
 
         // When we resize, the projection matrix will go out of date, so we need to update our constant buffer with an updated projection.
-        _camera.ViewDimensions = e.Size.ToSize2F();
+        _camera.ViewDimensions = e.Size;
         ref readonly Matrix4x4 projection = ref _camera.GetProjectionMatrix();
         _vsConstants.Buffer.SetData(in projection);
     }
@@ -197,7 +196,7 @@ static class Program
         GorgonExample.ResourceBaseDirectory = new DirectoryInfo(ExampleConfig.Default.ResourceLocation);
 
         // Build the form so we can actually show something.
-        _mainForm = GorgonExample.Initialize(new DX.Size2(1280, 800), "Geometry Shaders");
+        _mainForm = GorgonExample.Initialize(new GorgonPoint(1280, 800), "Geometry Shaders");
 
         try
         {
@@ -281,7 +280,7 @@ static class Program
             _graphics.SetRenderTarget(_swap.RenderTargetView, _depthStencil);
 
             // Create a constant buffer so we can adjust the positioning of the data.
-            _camera = new GorgonPerspectiveCamera(_graphics, new DX.Size2F(_swap.Width, _swap.Height), 0.125f, 1000.0f)
+            _camera = new GorgonPerspectiveCamera(_graphics, new Vector2(_swap.Width, _swap.Height), 0.125f, 1000.0f)
             {
                 Fov = 65.0f
             };

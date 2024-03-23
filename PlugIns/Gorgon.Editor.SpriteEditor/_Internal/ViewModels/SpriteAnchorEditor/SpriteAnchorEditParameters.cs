@@ -26,7 +26,7 @@
 
 using Gorgon.Editor.PlugIns;
 using Gorgon.Editor.UI;
-using DX = SharpDX;
+using Gorgon.Graphics;
 
 namespace Gorgon.Editor.SpriteEditor;
 
@@ -37,13 +37,13 @@ namespace Gorgon.Editor.SpriteEditor;
 /// <param name="bounds">The boundaries for the anchor point.</param>
 /// <param name="hostServices">The common services from the host application.</param>
 /// <exception cref="ArgumentNullException">Thrown when any of the parameters are <b>null</b>.</exception>
-internal class SpriteAnchorEditParameters(DX.Rectangle bounds, IHostContentServices hostServices)
+internal class SpriteAnchorEditParameters(GorgonRectangle bounds, IHostContentServices hostServices)
         : HostedPanelViewModelParameters(hostServices)
 {
     /// <summary>
     /// Property to return the boundaries for the anchor point.
     /// </summary>
-    public DX.Rectangle Bounds
+    public GorgonRectangle Bounds
     {
         get;
     } = bounds;

@@ -32,7 +32,6 @@ using Gorgon.Editor.Rendering;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Renderers;
-using DX = SharpDX;
 
 namespace Gorgon.Editor.ImageEditor;
 
@@ -230,13 +229,13 @@ internal class TextureFxViewer
         GorgonColor color = new(GorgonColors.White, Opacity);
 
         Renderer.Begin(BatchState, Camera);
-        Renderer.DrawFilledRectangle(new DX.RectangleF(RenderRegion.Width * -0.5f,
+        Renderer.DrawFilledRectangle(new GorgonRectangleF(RenderRegion.Width * -0.5f,
                                                        RenderRegion.Height * -0.5f,
                                                        RenderRegion.Width,
                                                        RenderRegion.Height),
                                     color,
                                     DataContext.CurrentPanel is null ? _fxPreviewer.OriginalTexture : _fxPreviewer.PreviewTexture,
-                                    new DX.RectangleF(0, 0, 1, 1),
+                                    new GorgonRectangleF(0, 0, 1, 1),
                                     DataContext.CurrentArrayIndex,
                                     textureSampler: GorgonSamplerState.PointFiltering);
         Renderer.End();
@@ -250,7 +249,7 @@ internal class TextureFxViewer
             return;
         }
 
-        RenderRegion = new DX.RectangleF(0, 0, _fxPreviewer.PreviewTexture.Width, _fxPreviewer.PreviewTexture.Height);
+        RenderRegion = new GorgonRectangleF(0, 0, _fxPreviewer.PreviewTexture.Width, _fxPreviewer.PreviewTexture.Height);
 
         // Render previews.
         RenderFx();

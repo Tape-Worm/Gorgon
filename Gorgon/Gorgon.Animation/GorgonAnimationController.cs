@@ -31,7 +31,6 @@ using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Math;
 using Gorgon.Timing;
-using DX = SharpDX;
 
 namespace Gorgon.Animation;
 
@@ -372,7 +371,7 @@ where T : class
                     if ((CurrentAnimation.RectangleTracks.TryGetValue(registration.TrackName, out IGorgonAnimationTrack<GorgonKeyRectangle> rectTrack))
                         && (rectTrack.IsEnabled)
                         && (rectTrack.KeyFrames.Count > 0)
-                        && (TrackKeyProcessor.TryUpdateRectBounds(rectTrack, _time, out DX.RectangleF rectValue)))
+                        && (TrackKeyProcessor.TryUpdateRectBounds(rectTrack, _time, out GorgonRectangleF rectValue)))
                     {
                         OnRectangleUpdate(registration, _animatedObject, rectValue);
                     }
@@ -390,7 +389,7 @@ where T : class
                     if ((CurrentAnimation.Texture2DTracks.TryGetValue(registration.TrackName, out IGorgonAnimationTrack<GorgonKeyTexture2D> textureTrack))
                         && (textureTrack.IsEnabled)
                         && (textureTrack.KeyFrames.Count > 0)
-                        && (TrackKeyProcessor.TryUpdateTexture2D(textureTrack, _time, out GorgonTexture2DView texture, out DX.RectangleF texCoords, out int texArray)))
+                        && (TrackKeyProcessor.TryUpdateTexture2D(textureTrack, _time, out GorgonTexture2DView texture, out GorgonRectangleF texCoords, out int texArray)))
                     {
                         OnTexture2DUpdate(registration, _animatedObject, texture, texCoords, texArray);
                     }
@@ -453,7 +452,7 @@ where T : class
     /// <param name="track">The track currently being processed.</param>
     /// <param name="animObject">The object to update.</param>
     /// <param name="value">The value to apply.</param>
-    protected abstract void OnRectangleUpdate(GorgonTrackRegistration track, T animObject, DX.RectangleF value);
+    protected abstract void OnRectangleUpdate(GorgonTrackRegistration track, T animObject, GorgonRectangleF value);
 
     /// <summary>
     /// Function called when a texture needs to be updated on the object.
@@ -463,7 +462,7 @@ where T : class
     /// <param name="texture">The texture to switch to.</param>
     /// <param name="textureCoordinates">The new texture coordinates to apply.</param>
     /// <param name="textureArrayIndex">The texture array index.</param>
-    protected abstract void OnTexture2DUpdate(GorgonTrackRegistration track, T animObject, GorgonTexture2DView texture, DX.RectangleF textureCoordinates, int textureArrayIndex);
+    protected abstract void OnTexture2DUpdate(GorgonTrackRegistration track, T animObject, GorgonTexture2DView texture, GorgonRectangleF textureCoordinates, int textureArrayIndex);
 
     /// <summary>
     /// Function to register a track with the controller.

@@ -23,10 +23,9 @@
 // Created: May 19, 2020 12:51:31 PM
 // 
 
-
 using System.Numerics;
 using Gorgon.Editor.UI;
-using DX = SharpDX;
+using Gorgon.Graphics;
 
 namespace Gorgon.Editor.SpriteEditor;
 
@@ -58,7 +57,7 @@ internal interface ISpriteAnchorEdit
     /// <summary>
     /// Property to return the boundaries for the anchor point.
     /// </summary>
-    DX.Rectangle Bounds
+    GorgonRectangle Bounds
     {
         get;
     }
@@ -88,5 +87,4 @@ internal interface ISpriteAnchorEdit
         get;
         set;
     }
-
 }

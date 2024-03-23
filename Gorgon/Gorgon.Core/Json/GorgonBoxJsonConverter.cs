@@ -81,7 +81,7 @@ public class GorgonBoxJsonConverter
             return hasExistingValue ? existingValue : null;
         }
 
-        if (reader.TokenType != JsonToken.StartObject)
+        if (reader.TokenType != JsonToken.PropertyName)
         {
             throw new GorgonException(GorgonResult.CannotRead);
         }
@@ -91,9 +91,9 @@ public class GorgonBoxJsonConverter
         int z = 0;
         int w = 0;
         int h = 0;
-        int d = 0;        
+        int d = 0;
 
-        while ((reader.Read()) && (reader.TokenType == JsonToken.PropertyName))
+        do
         {
             string propName = reader.Value?.ToString() ?? string.Empty;
 
@@ -117,8 +117,8 @@ public class GorgonBoxJsonConverter
                 case "depth":
                     d = reader.ReadAsInt32() ?? 0;
                     break;
-            }            
-        }
+            }
+        } while ((reader.Read()) && (reader.TokenType == JsonToken.PropertyName));
 
         return new GorgonBox
         {

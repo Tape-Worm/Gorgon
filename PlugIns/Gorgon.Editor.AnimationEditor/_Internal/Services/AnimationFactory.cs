@@ -29,7 +29,6 @@ using System.Numerics;
 using Gorgon.Animation;
 using Gorgon.Graphics;
 using Gorgon.Math;
-using DX = SharpDX;
 
 namespace Gorgon.Editor.AnimationEditor;
 
@@ -147,7 +146,7 @@ internal static class AnimationFactory
 
             foreach (IKeyFrame keyFrame in track.KeyFrames.Where(item => item is not null))
             {
-                keyBuilder.SetKey(new GorgonKeyRectangle(keyFrame.Time, new DX.RectangleF
+                keyBuilder.SetKey(new GorgonKeyRectangle(keyFrame.Time, new GorgonRectangleF
                 {
                     Left = keyFrame.FloatValue.X,
                     Top = keyFrame.FloatValue.Y,

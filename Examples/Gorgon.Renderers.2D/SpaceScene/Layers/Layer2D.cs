@@ -27,7 +27,6 @@
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Renderers;
-using DX = SharpDX;
 
 namespace Gorgon.Examples;
 
@@ -61,11 +60,11 @@ internal abstract class Layer2D(Gorgon2D renderer)
     /// <param name="texture">The texture to blit.</param>
     /// <param name="textureCoordinates">[Optional] The texture coordinates to use on the source texture.</param>
     /// <param name="samplerState">[Optional] The sampler state to apply.</param>
-    protected void Blit(GorgonTexture2DView texture, DX.RectangleF? textureCoordinates = null, GorgonSamplerState samplerState = null) =>
-        Renderer.DrawFilledRectangle(new DX.RectangleF(0, 0, OutputSize.Width, OutputSize.Height),
+    protected void Blit(GorgonTexture2DView texture, GorgonRectangleF? textureCoordinates = null, GorgonSamplerState samplerState = null) =>
+        Renderer.DrawFilledRectangle(new GorgonRectangleF(0, 0, OutputSize.X, OutputSize.Y),
             GorgonColors.White,
             texture,
-            textureCoordinates ?? new DX.RectangleF(0, 0, 1, 1),
+            textureCoordinates ?? new GorgonRectangleF(0, 0, 1, 1),
             textureSampler: samplerState ?? GorgonSamplerState.Default,
             depth: 0.1f);
 

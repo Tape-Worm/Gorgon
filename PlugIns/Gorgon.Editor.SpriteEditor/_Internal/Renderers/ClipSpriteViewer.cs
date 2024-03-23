@@ -33,7 +33,6 @@ using Gorgon.Editor.UI;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Renderers;
-using DX = SharpDX;
 
 namespace Gorgon.Editor.SpriteEditor;
 
@@ -123,7 +122,7 @@ internal class ClipSpriteViewer
     {
         GorgonRenderTargetView prevTarget = Graphics.RenderTargets[0];
         GorgonRange<float>? prevAlphaTest = Renderer.PrimitiveAlphaTestRange;
-        DX.RectangleF clearRegion = _sprite.Texture.ToPixel(_sprite.TextureRegion).ToRectangleF();
+        GorgonRectangleF clearRegion = _sprite.Texture.ToPixel(_sprite.TextureRegion);
 
         _spriteTarget.Clear(GorgonColors.BlackTransparent);
 
@@ -131,10 +130,10 @@ internal class ClipSpriteViewer
         Renderer.PrimitiveAlphaTestRange = null;
         Renderer.Begin();
 
-        Renderer.DrawFilledRectangle(new DX.RectangleF(0, 0, _sprite.Texture.Width, _sprite.Texture.Height),
+        Renderer.DrawFilledRectangle(new GorgonRectangleF(0, 0, _sprite.Texture.Width, _sprite.Texture.Height),
                                      GorgonColors.White,
                                      _sprite.Texture,
-                                     new DX.RectangleF(0, 0, 1, 1),
+                                     new GorgonRectangleF(0, 0, 1, 1),
                                      DataContext.SpriteClipContext.ArrayIndex,
                                      GorgonSamplerState.PointFiltering);
 
@@ -159,7 +158,7 @@ internal class ClipSpriteViewer
         switch (e.PropertyName)
         {
             case nameof(ISpriteClipContext.FixedSize):
-                DX.Size2F? size = DataContext.SpriteClipContext.FixedSize;
+                Vector2? size = DataContext.SpriteClipContext.FixedSize;
 
                 _clipper.AllowResize = size is null;
 
@@ -168,10 +167,10 @@ internal class ClipSpriteViewer
                     break;
                 }
 
-                DX.RectangleF rect = new(DataContext.SpriteClipContext.SpriteRectangle.Left,
+                GorgonRectangleF rect = new(DataContext.SpriteClipContext.SpriteRectangle.Left,
                                              DataContext.SpriteClipContext.SpriteRectangle.Top,
-                                             size.Value.Width,
-                                             size.Value.Height);
+                                             size.Value.X,
+                                             size.Value.Y);
 
                 // Ensure our fixed area doesn't exceed the bounds of the texture.
                 if (rect.Right > _clipper.Bounds.Right)
@@ -212,7 +211,7 @@ internal class ClipSpriteViewer
     {
         _clipper.Rectangle = DataContext.SpriteClipContext.SpriteRectangle;
         _sprite.TextureArrayIndex = DataContext.SpriteClipContext.ArrayIndex;
-        _sprite.TextureRegion = _sprite.Texture.ToTexel(_clipper.Rectangle.ToRectangle());
+        _sprite.TextureRegion = _sprite.Texture.ToTexel((GorgonRectangle)_clipper.Rectangle);
         _sprite.Size = _clipper.Rectangle.Size.Truncate();
         _sprite.Position = new Vector2(_clipper.Rectangle.X - (RenderRegion.Width * 0.5f),
                                           _clipper.Rectangle.Y - (RenderRegion.Height * 0.5f))
@@ -313,7 +312,7 @@ internal class ClipSpriteViewer
 
         base.OnLoad();
 
-        RenderRegion = new DX.RectangleF(0, 0, DataContext.Texture.Width, DataContext.Texture.Height);
+        RenderRegion = new GorgonRectangleF(0, 0, DataContext.Texture.Width, DataContext.Texture.Height);
 
         CreateSpriteTexture();
 
@@ -326,7 +325,7 @@ internal class ClipSpriteViewer
         _sprite.TextureArrayIndex = DataContext.ArrayIndex;
         _sprite.TextureSampler = GorgonSamplerState.PointFiltering;
 
-        DataContext.SpriteClipContext.SpriteRectangle = DataContext.Texture.ToPixel(DataContext.TextureCoordinates).ToRectangleF();
+        DataContext.SpriteClipContext.SpriteRectangle = DataContext.Texture.ToPixel(DataContext.TextureCoordinates);
 
         UpdateWorkingSprite();
 
@@ -354,13 +353,13 @@ internal class ClipSpriteViewer
         RenderSpriteTexture();
 
         Renderer.Begin(camera: Camera);
-        Renderer.DrawFilledRectangle(new DX.RectangleF(halfRegion.X,
+        Renderer.DrawFilledRectangle(new GorgonRectangleF(halfRegion.X,
                                                        halfRegion.Y,
                                                        RenderRegion.Width,
                                                        RenderRegion.Height),
                                     new GorgonColor(GorgonColors.White, TextureOpacity),
                                     _spriteTexture,
-                                    new DX.RectangleF(0, 0, 1, 1),
+                                    new GorgonRectangleF(0, 0, 1, 1),
                                     textureSampler: GorgonSamplerState.PointFiltering);
 
         Renderer.DrawSprite(_sprite);
@@ -380,8 +379,7 @@ internal class ClipSpriteViewer
             return;
         }
 
-        DX.RectangleF region = _sprite.Bounds;
-        region.Inflate(32, 32);
+        GorgonRectangleF region = GorgonRectangleF.Expand(_sprite.Bounds, 32);
         ZoomLevels spriteZoomLevel = GetNearestZoomFromRectangle(region);
 
         Vector3 spritePosition = Camera.Unproject(new Vector3(region.X + region.Width * 0.5f, region.Y + region.Height * 0.5f, 0));

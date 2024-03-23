@@ -25,6 +25,7 @@
 
 
 using System.ComponentModel;
+using System.Numerics;
 using Gorgon.Editor.Content;
 using Gorgon.Editor.SpriteEditor.Properties;
 using Gorgon.Editor.UI;
@@ -35,7 +36,6 @@ using Gorgon.Graphics.Imaging.Codecs;
 using Gorgon.Graphics.Imaging.GdiPlus;
 using Gorgon.IO;
 using Gorgon.Math;
-using DX = SharpDX;
 
 namespace Gorgon.Editor.SpriteEditor;
 
@@ -45,7 +45,6 @@ namespace Gorgon.Editor.SpriteEditor;
 internal partial class FormNewSprite
     : Form
 {
-
     // The list of textures.
     private IReadOnlyList<IContentFile> _textures = [];
     // The preview image for the selected texture.
@@ -55,11 +54,9 @@ internal partial class FormNewSprite
     // The task used to load the preview image.
     private Task<IGorgonImage> _previewTask;
     // The original size for the sprite.
-    private DX.Size2F? _originalSize;
+    private Vector2? _originalSize;
     // The path to the preview directory.
     private static readonly string _previewDirPath = $"/Thumbnails/";
-
-
 
     /// <summary>
     /// Property to set or return the image codec for sprites.
@@ -104,7 +101,7 @@ internal partial class FormNewSprite
     /// <summary>
     /// Property to return the width and height for the sprite.
     /// </summary>
-    public DX.Size2F SpriteSize => new((float)NumericWidth.Value, (float)NumericHeight.Value);
+    public Vector2 SpriteSize => new((float)NumericWidth.Value, (float)NumericHeight.Value);
 
     /// <summary>
     /// Property to return the selected texture file.
@@ -359,20 +356,17 @@ internal partial class FormNewSprite
     /// Function to assign the original size for the sprite.
     /// </summary>
     /// <param name="size">The size to assign, or <b>null</b> to automatically size.</param>
-    public void SetOriginalSize(DX.Size2F? size)
+    public void SetOriginalSize(Vector2? size)
     {
         _originalSize = size;
 
         if (_originalSize is not null)
         {
-            NumericWidth.Value = (int)_originalSize.Value.Width.Max(1).Min((int)NumericWidth.Maximum);
-            NumericHeight.Value = (int)_originalSize.Value.Height.Max(1).Min((int)NumericHeight.Maximum);
+            NumericWidth.Value = (int)_originalSize.Value.X.Max(1).Min((int)NumericWidth.Maximum);
+            NumericHeight.Value = (int)_originalSize.Value.Y.Max(1).Min((int)NumericHeight.Maximum);
         }
     }
 
-
-
     /// <summary>Initializes a new instance of the <see cref="FormNewSprite"/> class.</summary>
     public FormNewSprite() => InitializeComponent();
-
 }

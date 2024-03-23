@@ -26,8 +26,8 @@
 
 using System.ComponentModel;
 using Gorgon.Editor.UI;
+using Gorgon.Graphics;
 using Gorgon.Math;
-using DX = SharpDX;
 
 namespace Gorgon.Editor.SpriteEditor;
 
@@ -37,11 +37,8 @@ namespace Gorgon.Editor.SpriteEditor;
 internal partial class FormManualRectangleEdit
     : Form, IDataContext<ISpriteClipContext>
 {
-
     // Flag to indicate that the value changed event for the numeric controls should not fire.
     private bool _noValueEvent;
-
-
 
     /// <summary>Property to return the data context assigned to this view.</summary>
     /// <value>The data context.</value>
@@ -51,8 +48,6 @@ internal partial class FormManualRectangleEdit
         get;
         private set;
     }
-
-
 
     /// <summary>Handles the ValueChanged event of the NumericLeft control.</summary>
     /// <param name="sender">The source of the event.</param>
@@ -64,7 +59,7 @@ internal partial class FormManualRectangleEdit
             return;
         }
 
-        DX.RectangleF newRect = new()
+        GorgonRectangleF newRect = new()
         {
             Left = (float)NumericLeft.Value,
             Top = (float)NumericTop.Value,
@@ -159,7 +154,7 @@ internal partial class FormManualRectangleEdit
         SetRectangleInputs(dataContext);
     }
 
-    /// <summary>Raises the <see cref="E:System.Windows.Forms.Form.ResizeBegin"/> event.</summary>
+    /// <summary>Raises the <see cref="Form.ResizeBegin"/> event.</summary>
     /// <param name="e">A <see cref="EventArgs"/> that contains the event data.</param>
     protected override void OnResizeBegin(EventArgs e)
     {
@@ -173,7 +168,7 @@ internal partial class FormManualRectangleEdit
         //DataContext.IsMoving = true;
     }
 
-    /// <summary>Raises the <see cref="E:System.Windows.Forms.Form.ResizeEnd"/> event.</summary>
+    /// <summary>Raises the <see cref="Form.ResizeEnd"/> event.</summary>
     /// <param name="e">A <see cref="EventArgs"/> that contains the event data.</param>
     protected override void OnResizeEnd(EventArgs e)
     {
@@ -187,7 +182,7 @@ internal partial class FormManualRectangleEdit
         //DataContext.IsMoving = false;
     }
 
-    /// <summary>Raises the <see cref="E:System.Windows.Forms.UserControl.Load"/> event.</summary>
+    /// <summary>Raises the <see cref="UserControl.Load"/> event.</summary>
     /// <param name="e">An <see cref="EventArgs"/> that contains the event data.</param>
     protected override void OnLoad(EventArgs e)
     {
@@ -219,9 +214,6 @@ internal partial class FormManualRectangleEdit
         ViewModel.PropertyChanged += DataContext_PropertyChanged;
     }
 
-
-
     /// <summary>Initializes a new instance of the <see cref="FormManualRectangleEdit"/> class.</summary>
     public FormManualRectangleEdit() => InitializeComponent();
-
 }

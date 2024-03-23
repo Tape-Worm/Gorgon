@@ -25,6 +25,7 @@
 
 
 using System.Text;
+using Gorgon.Graphics;
 using Gorgon.IO;
 
 namespace GorgonLibrary.IO;
@@ -425,14 +426,10 @@ internal class GorgonChunkReader(Stream stream)
     /// </summary>
     /// <returns>The rectangle in the stream.</returns>
     /// <exception cref="IOException">Thrown when the stream is write-only.</exception>
-    public SharpDX.RectangleF ReadRectangleF()
+    public GorgonRectangleF ReadRectangleF()
     {
         ValidateAccess(false);
 
-        return new SharpDX.RectangleF(Reader.ReadSingle(), Reader.ReadSingle(), Reader.ReadSingle(), Reader.ReadSingle());
+        return new GorgonRectangleF(Reader.ReadSingle(), Reader.ReadSingle(), Reader.ReadSingle(), Reader.ReadSingle());
     }
-
-
-
-
 }
