@@ -244,7 +244,7 @@ internal class SprayCan
                                     Controller.Axis[GamingDeviceAxis.RightStickY].Value - Controller.Info.AxisInfo[GamingDeviceAxis.RightStickY].Range.Minimum);
 
         sprayVector = new PointF(((sprayVector.X / (Controller.Info.AxisInfo[GamingDeviceAxis.RightStickX].Range.Range + 1)) * 2.0f) - 1.0f,
-                                 -(((sprayVector.Y / (Controller.Info.AxisInfo[GamingDeviceAxis.RightStickY].Range.Range + 1)) * 2.0f) - 1.0f));
+                                 (((sprayVector.Y / (Controller.Info.AxisInfo[GamingDeviceAxis.RightStickY].Range.Range + 1)) * 2.0f) - 1.0f));
 
         // Calculate angle without magnitude.
         PointF sprayVectorDelta = new(sprayVector.X, sprayVector.Y);

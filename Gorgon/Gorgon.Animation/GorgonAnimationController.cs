@@ -169,22 +169,26 @@ where T : class
                 return;
             }
 
-            if ((CurrentAnimation.IsLooped) && (value > CurrentAnimation.Length))
+            if (CurrentAnimation.IsLooped)
             {
                 // Loop the animation.
-                if ((CurrentAnimation.LoopCount != 0) && (_loopCount == CurrentAnimation.LoopCount))
+                if ((CurrentAnimation.LoopCount > 0) && (_loopCount == CurrentAnimation.LoopCount))
                 {
                     return;
                 }
 
                 _loopCount++;
 
-                _time = 0;
-
-                if (CurrentAnimation.Speed < 0)
+                if (value > CurrentAnimation.Length)
                 {
-                    _time = CurrentAnimation.Length;
+                    value = 0;
                 }
+                else if (value < 0)
+                {
+                    value = CurrentAnimation.Length;
+                }
+
+                _time = value;
 
                 NotifyAnimation();
                 return;

@@ -26,7 +26,6 @@
 using System.Runtime.CompilerServices;
 using Gorgon.Graphics;
 using Gorgon.Math;
-using DX = SharpDX;
 
 namespace System.Numerics;
 
@@ -121,38 +120,6 @@ public static class VectorExtensions
     /// <returns>The truncated vector.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static Vector2 Ceiling(this Vector2 vec) => new(vec.X.FastCeiling(), vec.Y.FastCeiling());
-
-    /// <summary>
-    /// Function to convert a vector into a size.
-    /// </summary>
-    /// <param name="vec">The vector to convert.</param>
-    /// <returns>The equivalent size value.</returns>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static Vector2 ToSize2F(this Vector2 vec) => new(vec.X, vec.Y);
-
-    /// <summary>
-    /// Function to convert a vector into a size.
-    /// </summary>
-    /// <param name="vec">The vector to convert.</param>
-    /// <returns>The equivalent size value.</returns>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static GorgonPoint ToSize2(this Vector2 vec) => new((int)vec.X, (int)vec.Y);
-
-    /// <summary>
-    /// Function to convert a vector into a point.
-    /// </summary>
-    /// <param name="vec">The vector to convert.</param>
-    /// <returns>The equivalent point value.</returns>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static DX.Point ToPoint(this Vector2 vec) => new((int)vec.X, (int)vec.Y);
-
-    /// <summary>
-    /// Function to convert a point to a 2D vector.
-    /// </summary>
-    /// <param name="pt">The point to convert.</param>
-    /// <returns>The equivalent 2D vector value.</returns>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static Vector2 ToVector2(this DX.Point pt) => new(pt.X, pt.Y);
 
     /// <summary>
     /// Returns a vector containing the smallest components of the specified vectors.

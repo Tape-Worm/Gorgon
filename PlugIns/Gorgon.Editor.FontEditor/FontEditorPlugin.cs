@@ -463,7 +463,7 @@ internal class FontEditorPlugin
 
         using Drawing.Graphics gDpi = Drawing.Graphics.FromHwnd(GorgonApplication.MainForm.Handle);
         float dpiScale = gDpi.DpiX / 96.0f;
-        GorgonPoint targetSize = new Vector2(256 * dpiScale, 256 * dpiScale).ToSize2();
+        GorgonPoint targetSize = new((int)(256 * dpiScale), (int)(256 * dpiScale));
 
         using GorgonFont font = await _previewerCodec.FromStreamAsync(fileStream, filePath);
         using GorgonRenderTarget2DView target = GorgonRenderTarget2DView.CreateRenderTarget(HostContentServices.GraphicsContext.Graphics, new GorgonTexture2DInfo(targetSize.X, targetSize.Y, BufferFormat.R8G8B8A8_UNorm)

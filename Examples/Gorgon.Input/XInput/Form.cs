@@ -187,7 +187,7 @@ public partial class Form : System.Windows.Forms.Form
         // Move at 100 units per second 
         float speed = panelDisplay.ClientSize.Width / 2.0f * GorgonTiming.Delta;
         PointF position = new((speed * moveVector.X) + _stickPosition[index].X,
-                                    (speed * -moveVector.Y) + _stickPosition[index].Y);
+                                    (speed * moveVector.Y) + _stickPosition[index].Y);
 
         // Limit the range of the positioning.
         if (position.X < -cursorSize.Width)

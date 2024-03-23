@@ -28,7 +28,6 @@ using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using Gorgon.Math;
 using Gorgon.Properties;
-using DX = SharpDX;
 
 namespace Gorgon.Native;
 
@@ -130,6 +129,31 @@ public sealed class GorgonNativeBuffer<T>
     public ref T this[int index] => ref _memoryBlock[index];
 
     /// <summary>
+    /// Function to allocate a block of memory for the buffer.
+    /// </summary>
+    /// <param name="count">The number of items in the buffer.</param>
+    /// <param name="alignment">The alignment for the memory block.</param>    
+    /// <param name="init"><b>true</b> to initialize the allocated memory, <b>false</b> to leave as-is.</param>
+    private unsafe void Allocate(int count, int alignment, bool init)
+    {
+        int size = TypeSize * count;
+        int mask = alignment - 1;
+
+        // Allocate our aligned block.
+        nint ptr = Marshal.AllocHGlobal(size + mask + nint.Size);
+
+        // Get the pointer address we'll expose to the world.
+        long alignedAddr = (long)((byte*)ptr + nint.Size + mask) & ~mask;
+        ((nint*)alignedAddr)[-1] = ptr;
+
+        _memoryBlock = new GorgonPtr<T>((nint)alignedAddr, count);
+        if (init)
+        {
+            _memoryBlock.Fill(0);
+        }
+    }
+
+    /// <summary>
     /// Function to validate parameters used to create a native buffer from a managed array.
     /// </summary>
     /// <typeparam name="TArrayType">The type of element in the array.</typeparam>
@@ -171,7 +195,10 @@ public sealed class GorgonNativeBuffer<T>
             return;
         }
 
-        DX.Utilities.FreeMemory(_memoryBlock);
+        unsafe
+        {
+            Marshal.FreeHGlobal(((nint*)_memoryBlock)[-1]);
+        }
         GC.RemoveMemoryPressure(SizeInBytes);
         _memoryBlock = GorgonPtr<T>.NullPtr;
 
@@ -602,8 +629,8 @@ public sealed class GorgonNativeBuffer<T>
             throw new ArgumentOutOfRangeException(nameof(count), Resources.GOR_ERR_DATABUFF_SIZE_TOO_SMALL);
         }
 
-        TypeSize = Unsafe.SizeOf<T>();
-        _memoryBlock = new GorgonPtr<T>(DX.Utilities.AllocateClearedMemory(TypeSize * count, align: alignment.Max(0)), count);
+        TypeSize = Unsafe.SizeOf<T>();     
+        Allocate(count, alignment.Max(0), true);
         _ownsMemory = true;
 
         GC.AddMemoryPressure(SizeInBytes);
